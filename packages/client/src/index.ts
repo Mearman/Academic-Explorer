@@ -54,8 +54,26 @@ export {
 	updateOpenAlexEmail,
 	cachedOpenAlex,
 	CachedOpenAlexClient,
-	type ClientApis
+	createCachedOpenAlexClient,
+	getCachePerformanceMetrics,
+	type ClientApis,
+	type CachedClientConfig
 } from "./cached-client";
+
+// Static data caching
+export {
+	staticDataProvider,
+	CacheTier,
+	Environment,
+	type StaticDataResult,
+	type CacheStatistics
+} from "./internal/static-data-provider";
+
+export {
+	toStaticEntityType,
+	cleanOpenAlexId,
+	type StaticEntityType
+} from "./internal/static-data-utils";
 
 // Advanced field selection utilities
 export {
@@ -151,6 +169,26 @@ export type {
 	SearchConceptsOptions,
 	AutocompleteOptions
 } from "./entities/concepts";
+
+// Static cache exports
+export {
+	GitHubPagesReader,
+	GitHubPagesReaderError,
+	createGitHubPagesReader,
+	defaultGitHubPagesConfig,
+	type GitHubPagesReaderConfig
+} from "./cache/static";
+
+// API Interceptor exports (development mode only)
+export {
+	ApiInterceptor,
+	apiInterceptor,
+	type InterceptedRequest,
+	type InterceptedResponse,
+	type InterceptedApiCall,
+	type CacheKeyComponents,
+	type ApiInterceptorConfig
+} from "./interceptors";
 
 // Re-export everything from types for convenience
 export * from "./types";
