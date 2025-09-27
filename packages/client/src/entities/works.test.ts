@@ -5,6 +5,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { WorksApi } from "./works";
 import { OpenAlexBaseClient } from "../client";
+import { buildFilterString } from "../utils/query-builder";
 import type { Work, OpenAlexResponse } from "../types";
 
 // Mock the base client
@@ -465,11 +466,11 @@ describe("WorksApi", () => {
 				"title.search": "machine learning",
 			};
 
-			// Access the private method through type assertion for testing
-			const filterString = (worksApi as unknown as { buildFilterString: (filters: unknown) => string }).buildFilterString(filters);
+			// Test the buildFilterString utility function
+			const filterString = buildFilterString(filters);
 
 			expect(filterString).toBe(
-				"publication_year:2023,is_oa:true,authorships.author.id:A123|A456,title.search:machine learning"
+				"publication_year:2023,is_oa:true,authorships.author.id:A123|A456,title.search:\"machine learning\""
 			);
 		});
 
@@ -480,7 +481,7 @@ describe("WorksApi", () => {
 				"title.search": undefined,
 			};
 
-			const filterString = (worksApi as unknown as { buildFilterString: (filters: unknown) => string }).buildFilterString(filters);
+			const filterString = buildFilterString(filters);
 
 			expect(filterString).toBe("publication_year:2023");
 		});
