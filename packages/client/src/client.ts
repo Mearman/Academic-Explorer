@@ -7,7 +7,6 @@ import type { OpenAlexError, OpenAlexResponse, QueryParams } from "./types";
 import { RETRY_CONFIG, calculateRetryDelay } from "./internal/rate-limit";
 import { validateApiResponse, trustApiContract } from "./internal/type-helpers";
 import { apiInterceptor } from "./interceptors";
-import { defaultDiskWriter } from "./cache/disk";
 
 export interface OpenAlexClientConfig {
   baseUrl?: string;
@@ -295,17 +294,24 @@ export class OpenAlexBaseClient {
 						responseTime
 					);
 
-					// Write to disk cache if intercepted successfully
-					if (interceptedCall) {
-						await defaultDiskWriter.writeToCache({
-							url: interceptedCall.request.url,
-							method: interceptedCall.request.method,
-							requestHeaders: interceptedCall.request.headers,
-							responseData: interceptedCall.response.data,
-							statusCode: interceptedCall.response.status,
-							responseHeaders: interceptedCall.response.headers,
-							timestamp: new Date(interceptedCall.response.timestamp).toISOString()
-						});
+					// Write to disk cache if intercepted successfully (Node.js only)
+					if (interceptedCall && typeof process !== 'undefined' && process.versions?.node) {
+						try {
+							// Dynamic import to avoid bundling Node.js modules in browser
+							const { defaultDiskWriter } = await import("./cache/disk");
+							await defaultDiskWriter.writeToCache({
+								url: interceptedCall.request.url,
+								method: interceptedCall.request.method,
+								requestHeaders: interceptedCall.request.headers,
+								responseData: interceptedCall.response.data,
+								statusCode: interceptedCall.response.status,
+								responseHeaders: interceptedCall.response.headers,
+								timestamp: new Date(interceptedCall.response.timestamp).toISOString()
+							});
+						} catch (diskError) {
+							// Silently fail disk caching in browser environments
+							console.debug('Disk caching unavailable (browser environment):', diskError);
+						}
 					}
 				} catch (interceptError) {
 					// Don't fail the request if interception fails
