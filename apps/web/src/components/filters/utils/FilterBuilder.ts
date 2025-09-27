@@ -341,7 +341,7 @@ export class FilterBuilder {
     queryString: string;
     validation?: FilterValidationResult;
   } {
-    const validation = entityType && this.options.validateInputs
+    const validation = entityType && this.options.validateInputs && filters
       ? this.validateFilters(filters, entityType)
       : undefined;
 
