@@ -227,6 +227,13 @@
       }
     },
     "changelog": {
+      "workspaceChangelog": {
+        "createRelease": "github",
+        "file": "{workspaceRoot}/CHANGELOG.md",
+        "renderOptions": {
+          "authors": false
+        }
+      },
       "projectChangelogs": {
         "file": "{projectRoot}/CHANGELOG.md",
         "renderOptions": {
@@ -245,15 +252,6 @@
           "conventionalCommits": true,
           "generatorOptions": {
             "fallbackCurrentVersionResolver": "disk"
-          }
-        },
-        "changelog": {
-          "workspaceChangelog": {
-            "createRelease": "github",
-            "file": "{workspaceRoot}/CHANGELOG.md",
-            "renderOptions": {
-              "authors": false
-            }
           }
         }
       },
