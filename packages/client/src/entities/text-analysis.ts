@@ -193,6 +193,15 @@ export class TextAnalysisApi {
   }
 
   /**
+   * Analyze text and return keywords, topics, and concepts (alias for analyzeText)
+   * @param options - Text analysis options including title and optional abstract
+   * @returns Promise resolving to complete text analysis results
+   */
+  async getText(options: TextAnalysisOptions): Promise<TextAnalysisResponse> {
+    return this.analyzeText(options);
+  }
+
+  /**
    * Extract keywords from text content
    * @param options - Text analysis options including title and optional abstract
    * @returns Promise resolving to keyword analysis results
