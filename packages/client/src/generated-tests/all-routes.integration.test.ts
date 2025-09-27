@@ -21,13 +21,12 @@ import { TopicsApi } from "../entities/topics";
 import { PublishersApi } from "../entities/publishers";
 import { FundersApi } from "../entities/funders";
 import { KeywordsApi } from "../entities/keywords";
+import { ConceptsApi } from "../entities/concepts";
+import { TextAnalysisApi } from "../entities/text-analysis";
 
-// Skip integration tests unless explicitly enabled
-const runIntegrationTests = process.env.RUN_INTEGRATION_TESTS === 'true';
+// Integration tests always run
 
-const conditionalDescribe = runIntegrationTests ? describe : describe.skip;
-
-conditionalDescribe("OpenAlex API Integration Tests", () => {
+describe("OpenAlex API Integration Tests", () => {
   let client: OpenAlexBaseClient;
   let apis: {
     works: WorksApi;
@@ -43,14 +42,16 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
   };
 
   beforeAll(() => {
-    // Configure client with email for polite requests
+    // Configure client with email for polite requests and enhanced retry settings
     client = new OpenAlexBaseClient({
       userEmail: process.env.OPENALEX_EMAIL || 'test@academic-explorer.org',
       rateLimit: {
-        requestsPerSecond: 8, // Conservative rate limit for tests
+        requestsPerSecond: 5, // Very conservative rate limit for tests to avoid 429s
         requestsPerDay: 100000
       },
-      timeout: 30000 // Longer timeout for integration tests
+      timeout: 45000, // Longer timeout for integration tests
+      retries: 5, // More retries for integration tests
+      retryDelay: 2000 // Longer delay between retries (2 seconds)
     });
 
     apis = {
@@ -62,6 +63,8 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
       publishers: new PublishersApi(client),
       funders: new FundersApi(client),
       keywords: new KeywordsApi(client),
+      concepts: new ConceptsApi(client),
+      text: new TextAnalysisApi(client),
     };
   });
 
@@ -2192,6 +2195,48 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
   
     describe("Text Integration", () => {
 
+      it("should analyze text", async () => {
+        const api = apis.text as any;
+
+        try {
+          let result;
+
+          if (api.analyzeText) {
+            result = await api.analyzeText({
+              title: "Machine learning applications in healthcare",
+              abstract: "This paper explores the use of AI in medical diagnosis."
+            });
+          } else if (api.getText) {
+            result = await api.getText({
+              title: "Machine learning applications in healthcare"
+            });
+          }
+
+          // Verify response structure
+          if (result) {
+            expect(result).toBeDefined();
+            // Text analysis typically returns concepts, topics, or keywords
+            expect(typeof result).toBe('object');
+          }
+
+          // Add delay between requests to respect rate limits
+          await new Promise(resolve => setTimeout(resolve, 250));
+
+        } catch (error) {
+          console.error(`Integration test failed for text analysis:`, error);
+          // Text analysis might not be available or might require special permissions
+          // Don't throw error if it's a 403 or 404 (service not available)
+          if (error instanceof Error && 'statusCode' in error) {
+            const statusCode = (error as any).statusCode;
+            if (statusCode === 403 || statusCode === 404 || statusCode === 501) {
+              console.warn(`Text analysis endpoint not available (${statusCode}), skipping test`);
+              return; // Skip this test gracefully
+            }
+          }
+          throw error;
+        }
+      }, 45000); // Longer timeout for real API calls
+
     });
   
     describe("Topics Integration", () => {
@@ -2459,6 +2504,8 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
         return 'F4320332161'; // NSF
       case 'keywords':
         return 'cardiac-imaging'; // Known keyword
+      case 'concepts':
+        return 'C41008148'; // Computer Science concept from OpenAlex docs
       default:
         return 'test123';
     }

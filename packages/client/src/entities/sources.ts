@@ -74,6 +74,17 @@ import { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";
 import { logger } from "../internal/logger";
 
+/**
+ * Options for searching sources
+ */
+export interface SearchSourcesOptions {
+  filters?: SourcesFilters;
+  sort?: "relevance_score:desc" | "cited_by_count" | "works_count" | "created_date";
+  page?: number;
+  per_page?: number;
+  select?: string[];
+}
+
 export class SourcesApi {
 	constructor(private client: OpenAlexBaseClient) {}
 
@@ -306,21 +317,19 @@ export class SourcesApi {
    */
 	async searchSources(
 		query: string,
-		filters: SourcesFilters = {},
-		params: QueryParams = {}
+		options: SearchSourcesOptions = {}
 	): Promise<OpenAlexResponse<Source>> {
-		// Use search parameter as recommended by OpenAlex API documentation
-		const requestParams: QueryParams = {
+		const params: QueryParams = {
 			search: query,
-			...params
+			sort: options.sort ?? (query.trim() ? "relevance_score:desc" : "works_count"),
 		};
 
-		// Add filters if provided
-		if (filters && Object.keys(filters).length > 0) {
-			requestParams.filter = buildFilterString(filters);
-		}
+		if (options.page !== undefined) params.page = options.page;
+		if (options.per_page !== undefined) params.per_page = options.per_page;
+		if (options.select !== undefined) params.select = options.select;
+		if (options.filters) params.filter = buildFilterString(options.filters);
 
-		return this.client.getResponse<Source>("sources", requestParams);
+		return this.client.getResponse<Source>("sources", params);
 	}
 
 	/**

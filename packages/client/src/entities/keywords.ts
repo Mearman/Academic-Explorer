@@ -255,7 +255,7 @@ export class KeywordsApi {
 			throw new Error("Search query must be a non-empty string");
 		}
 
-		const { filters = {}, sort = "relevance_score", page = 1, per_page = 25, select } = options;
+		const { filters = {}, sort = "relevance_score:desc", page = 1, per_page = 25, select } = options;
 
 		// Validate pagination parameters
 		if (page < 1) {

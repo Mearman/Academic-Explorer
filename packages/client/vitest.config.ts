@@ -22,6 +22,15 @@ export default defineConfig(
 
       // Longer timeout for API tests
       testTimeout: 15000,
+
+      // Sequential execution for integration tests to avoid rate limiting
+      pool: 'forks',
+      poolOptions: {
+        forks: {
+          singleFork: true,
+        },
+      },
+      maxConcurrency: 1, // Ensure tests run one at a time
     },
     resolve: {
       alias: {

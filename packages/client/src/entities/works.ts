@@ -345,7 +345,7 @@ export class WorksApi {
 	): Promise<OpenAlexResponse<Work>> {
 		const params: WorksQueryParams = {
 			search: query,
-			sort: options.sort ?? (query.trim() ? "relevance_score" : "publication_date"),
+			sort: options.sort ?? (query.trim() ? "relevance_score:desc" : "publication_date"),
 		};
 
 		if (options.page !== undefined) params.page = options.page;

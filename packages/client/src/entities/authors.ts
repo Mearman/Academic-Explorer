@@ -27,6 +27,17 @@ export interface AuthorWorksFilters extends AuthorsFilters {
   "primary_topic.id"?: string | string[];
 }
 
+/**
+ * Options for searching authors
+ */
+export interface SearchAuthorsOptions {
+  filters?: AuthorsFilters;
+  sort?: "relevance_score:desc" | "cited_by_count" | "works_count" | "created_date";
+  page?: number;
+  per_page?: number;
+  select?: string[];
+}
+
 export interface AuthorCollaboratorsFilters {
   "min_works"?: number;
   "from_publication_year"?: number;
@@ -264,21 +275,19 @@ export class AuthorsApi {
    */
 	async searchAuthors(
 		query: string,
-		filters: AuthorsFilters = {},
-		params: QueryParams = {}
+		options: SearchAuthorsOptions = {}
 	): Promise<OpenAlexResponse<Author>> {
-		// Use search parameter as recommended by OpenAlex API documentation
-		const requestParams: QueryParams = {
+		const params: QueryParams = {
 			search: query,
-			...params
+			sort: options.sort ?? (query.trim() ? "relevance_score:desc" : "works_count"),
 		};
 
-		// Add filters if provided
-		if (filters && Object.keys(filters).length > 0) {
-			requestParams.filter = buildFilterString(filters);
-		}
+		if (options.page !== undefined) params.page = options.page;
+		if (options.per_page !== undefined) params.per_page = options.per_page;
+		if (options.select !== undefined) params.select = options.select;
+		if (options.filters) params.filter = buildFilterString(options.filters);
 
-		return this.client.getResponse<Author>("authors", requestParams);
+		return this.client.getResponse<Author>("authors", params);
 	}
 
 	/**
