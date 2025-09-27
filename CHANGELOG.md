@@ -1,3 +1,9 @@
+## 8.2.1 (2025-09-27)
+
+### 🩹 Fixes
+
+- **config:** use correct project name for workspace github releases ([0cf75914](https://github.com/Mearman/Academic-Explorer/commit/0cf75914))
+
 ## 8.2.0 (2025-09-27)
 
 ### 🚀 Features
