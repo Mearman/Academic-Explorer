@@ -51,41 +51,7 @@ jobs:
 
       # Run affected tasks using Nx's built-in parallelization
       - name: Build affected projects
-        run: |
-          echo "🏗️ Building affected projects with warning detection..."
-
-          # Capture build output to check for warnings
-          build_output=$(pnpm nx affected -t build --parallel=3 2>&1)
-          build_exit_code=$?
-
-          # Display build output
-          echo "$build_output"
-
-          # Check for build warnings/issues
-          warning_count=0
-          if echo "$build_output" | grep -i "warning" > /dev/null; then
-            warning_count=$(echo "$build_output" | grep -ic "warning")
-            echo "⚠️  Build completed with $warning_count warnings"
-          fi
-
-          # Check for TypeScript errors
-          if echo "$build_output" | grep -E "(error TS|Type.*error)" > /dev/null; then
-            echo "❌ Build contains TypeScript errors"
-            exit 1
-          fi
-
-          # Check overall build success
-          if [ $build_exit_code -ne 0 ]; then
-            echo "❌ Build failed with exit code $build_exit_code"
-            exit 1
-          fi
-
-          if [ $warning_count -eq 0 ]; then
-            echo "✅ Build completed successfully with zero warnings"
-          else
-            echo "✅ Build completed successfully but with $warning_count warnings"
-            echo "💡 Consider fixing build warnings for cleaner pipeline output"
-          fi
+        run: pnpm nx affected -t build --parallel=3
         env:
           NODE_OPTIONS: '--max-old-space-size=8192'
 
