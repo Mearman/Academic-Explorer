@@ -16,6 +16,7 @@ import type {
 import type { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";
 import { AutocompleteApi } from "../utils/autocomplete";
+import { isValidWikidata, normalizeExternalId } from "../utils/id-resolver";
 
 /**
  * Strict query parameters specific to Concepts API
@@ -229,36 +230,63 @@ export class ConceptsApi {
 	}
 
 	/**
-	 * Get a single concept by its OpenAlex ID
+	 * Get a single concept by its OpenAlex ID or Wikidata ID
 	 *
-	 * @param id - The concept ID (must be a valid OpenAlex concept ID)
+	 * @param id - The concept ID (OpenAlex concept ID) or Wikidata ID in various formats:
+	 *   - Q123456
+	 *   - wikidata:Q123456
+	 *   - https://www.wikidata.org/wiki/Q123456
+	 *   - https://www.wikidata.org/entity/Q123456
 	 * @param params - Additional query parameters with strict typing
 	 * @returns Promise resolving to a concept
 	 * @throws {OpenAlexApiError} When the concept is not found or invalid ID format
 	 *
 	 * @example
 	 * ```typescript
-	 * const concept = await conceptsApi.getConcept('https://openalex.org/C123456789', {
+	 * // Using OpenAlex ID
+	 * const concept1 = await conceptsApi.getConcept('https://openalex.org/C123456789', {
 	 *   select: ['id', 'display_name', 'works_count']
 	 * });
+	 *
+	 * // Using Wikidata ID (various formats)
+	 * const concept2 = await conceptsApi.getConcept('Q123456');
+	 * const concept3 = await conceptsApi.getConcept('wikidata:Q123456');
+	 * const concept4 = await conceptsApi.getConcept('https://www.wikidata.org/wiki/Q123456');
 	 * ```
 	 */
 	async getConcept(id: string, params: StrictConceptsQueryParams | QueryParams = {}): Promise<Concept> {
 		if (!id || typeof id !== "string") {
 			throw new Error("Concept ID must be a non-empty string");
 		}
+
+		// Check if this might be a Wikidata ID and normalize it
+		let normalizedId = id;
+		if (isValidWikidata(id)) {
+			const wikidataId = normalizeExternalId(id, 'wikidata');
+			if (wikidataId) {
+				// The normalizer returns Q notation, but OpenAlex API expects wikidata: prefix
+				normalizedId = wikidataId.startsWith('Q') ? `wikidata:${wikidataId}` : wikidataId;
+			}
+			// If normalization failed, fall through to use original ID
+		}
+
+		// Handle case where ID is already in wikidata: format
+		if (id.startsWith('wikidata:Q')) {
+			normalizedId = id;
+		}
+
 		// If it's already QueryParams (has string sort), pass directly
 		if ("sort" in params && typeof params.sort === "string") {
 			if (this.isQueryParams(params)) {
-				return this.client.getById<Concept>("concepts", id, params);
+				return this.client.getById<Concept>("concepts", normalizedId, params);
 			}
 		}
 		// Otherwise, convert from StrictConceptsQueryParams
 		if (this.isStrictConceptsQueryParams(params)) {
-			return this.client.getById<Concept>("concepts", id, toQueryParams(params));
+			return this.client.getById<Concept>("concepts", normalizedId, toQueryParams(params));
 		}
 		// Default case - treat as basic params
-		return this.client.getById<Concept>("concepts", id, toQueryParams({}));
+		return this.client.getById<Concept>("concepts", normalizedId, toQueryParams({}));
 	}
 
 	/**
