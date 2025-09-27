@@ -12,6 +12,7 @@ import type {
 	OpenAlexId
 } from "../types";
 import type { OpenAlexBaseClient } from "../client";
+import { buildFilterString } from "../utils/query-builder";
 
 /**
  * Extended filters for specific author query methods
@@ -74,8 +75,15 @@ export class AuthorsApi {
    * });
    * ```
    */
-	async getAuthors(params: QueryParams & { filter?: string } = {}): Promise<OpenAlexResponse<Author>> {
-		return this.client.getResponse<Author>("authors", params);
+	async getAuthors(params: QueryParams & { filter?: string | AuthorsFilters } = {}): Promise<OpenAlexResponse<Author>> {
+		const processedParams = { ...params };
+
+		// Convert filter object to string if needed
+		if (processedParams.filter && typeof processedParams.filter === 'object') {
+			processedParams.filter = buildFilterString(processedParams.filter);
+		}
+
+		return this.client.getResponse<Author>("authors", processedParams);
 	}
 
 	/**
@@ -102,27 +110,15 @@ export class AuthorsApi {
 		filters: AuthorsFilters = {},
 		params: QueryParams = {}
 	): Promise<OpenAlexResponse<Author>> {
-		const filterStrings: string[] = [];
-
-		// Add search query
-		filterStrings.push(`default.search:${encodeURIComponent(query)}`);
-
-		// Convert filters to filter strings
-		Object.entries(filters).forEach(([key, value]) => {
-			if (value !== undefined && value !== null) {
-				if (Array.isArray(value)) {
-					filterStrings.push(`${key}:${value.map(v => encodeURIComponent(String(v))).join("%7C")}`);
-				} else if (typeof value === "boolean") {
-					filterStrings.push(`${key}:${value.toString()}`);
-				} else {
-					filterStrings.push(`${key}:${encodeURIComponent(String(value))}`);
-				}
-			}
-		});
+		// Build combined filters with search query
+		const combinedFilters = {
+			"default.search": query,
+			...filters
+		};
 
 		return this.getAuthors({
 			...params,
-			filter: filterStrings.join(",")
+			filter: buildFilterString(combinedFilters)
 		});
 	}
 
@@ -206,24 +202,15 @@ export class AuthorsApi {
 		filters: AuthorWorksFilters = {},
 		params: QueryParams = {}
 	): Promise<OpenAlexResponse<Work>> {
-		const filterStrings: string[] = [`authorships.author.id:${encodeURIComponent(authorId)}`];
-
-		// Add additional filters
-		Object.entries(filters).forEach(([key, value]) => {
-			if (value !== undefined && value !== null && key !== "authorships.author.id") {
-				if (Array.isArray(value)) {
-					filterStrings.push(`${key}:${value.map(v => encodeURIComponent(String(v))).join("%7C")}`);
-				} else if (typeof value === "boolean") {
-					filterStrings.push(`${key}:${value.toString()}`);
-				} else {
-					filterStrings.push(`${key}:${encodeURIComponent(String(value))}`);
-				}
-			}
-		});
+		// Build combined filters with author ID
+		const combinedFilters = {
+			"authorships.author.id": authorId,
+			...filters
+		};
 
 		return this.client.getResponse<Work>("works", {
 			...params,
-			filter: filterStrings.join(",")
+			filter: buildFilterString(combinedFilters)
 		});
 	}
 
@@ -469,29 +456,15 @@ export class AuthorsApi {
 		filters: AuthorsFilters = {},
 		params: QueryParams = {}
 	): Promise<OpenAlexResponse<Author>> {
-		const filterStrings: string[] = [];
-
-		// Convert filters to filter strings
-		Object.entries(filters).forEach(([key, value]) => {
-			if (value !== undefined && value !== null) {
-				if (Array.isArray(value)) {
-					filterStrings.push(`${key}:${value.map(v => encodeURIComponent(String(v))).join("%7C")}`);
-				} else if (typeof value === "boolean") {
-					filterStrings.push(`${key}:${value.toString()}`);
-				} else {
-					filterStrings.push(`${key}:${encodeURIComponent(String(value))}`);
-				}
-			}
-		});
-
 		const authorsParams: QueryParams & { filter?: string } = {
 			...params,
 			sort: "cited_by_count:desc",
 			per_page: Math.min(limit, 200)
 		};
 
-		if (filterStrings.length > 0) {
-			authorsParams.filter = filterStrings.join(",");
+		const filterString = buildFilterString(filters);
+		if (filterString) {
+			authorsParams.filter = filterString;
 		}
 
 		return this.getAuthors(authorsParams);
@@ -514,29 +487,15 @@ export class AuthorsApi {
 		filters: AuthorsFilters = {},
 		params: QueryParams = {}
 	): Promise<OpenAlexResponse<Author>> {
-		const filterStrings: string[] = [];
-
-		// Convert filters to filter strings
-		Object.entries(filters).forEach(([key, value]) => {
-			if (value !== undefined && value !== null) {
-				if (Array.isArray(value)) {
-					filterStrings.push(`${key}:${value.map(v => encodeURIComponent(String(v))).join("%7C")}`);
-				} else if (typeof value === "boolean") {
-					filterStrings.push(`${key}:${value.toString()}`);
-				} else {
-					filterStrings.push(`${key}:${encodeURIComponent(String(value))}`);
-				}
-			}
-		});
-
 		const authorsParams: QueryParams & { filter?: string } = {
 			...params,
 			sort: "works_count:desc",
 			per_page: Math.min(limit, 200)
 		};
 
-		if (filterStrings.length > 0) {
-			authorsParams.filter = filterStrings.join(",");
+		const filterString = buildFilterString(filters);
+		if (filterString) {
+			authorsParams.filter = filterString;
 		}
 
 		return this.getAuthors(authorsParams);

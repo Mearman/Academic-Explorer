@@ -5,9 +5,17 @@
 
 import type { Source, SourcesFilters, QueryParams, OpenAlexResponse, Work } from "../types";
 import { OpenAlexBaseClient } from "../client";
+import { buildFilterString } from "../utils/query-builder";
 
 export class SourcesApi {
 	constructor(private client: OpenAlexBaseClient) {}
+
+	/**
+	 * Type guard to check if value is SourcesFilters
+	 */
+	private isSourcesFilters(value: unknown): value is SourcesFilters {
+		return typeof value === "object" && value !== null && !Array.isArray(value);
+	}
 
 	/**
    * Get a single source/journal by ID
@@ -403,8 +411,13 @@ export class SourcesApi {
 		filters: SourcesFilters = {},
 		batchSize = 200
 	): AsyncGenerator<Source[], void, unknown> {
-		const params = this.buildFilterParams({ filter: filters });
-		yield* this.client.stream<Source>("sources", params, batchSize);
+		const queryParams: QueryParams = {};
+		const filterString = buildFilterString(filters);
+		// Only add filter if it's not empty
+		if (filterString) {
+			queryParams.filter = filterString;
+		}
+		yield* this.client.stream<Source>("sources", queryParams, batchSize);
 	}
 
 	/**
@@ -434,36 +447,26 @@ export class SourcesApi {
 
 	/**
    * Build filter parameters for API requests
-   * Converts SourcesFilters object to query string format
+   * Converts SourcesFilters object to query string format using standardized FilterBuilder
    * @private
    */
 	private buildFilterParams(params: Omit<QueryParams, "filter"> & { filter?: SourcesFilters }): QueryParams {
-		if (!params.filter) {
-			// Extract only QueryParams compatible fields
-			const { filter: _, ...queryParams } = params;
-			return queryParams;
-		}
+		const { filter, ...otherParams } = params;
+		const result: QueryParams = { ...otherParams };
 
-		const filterStrings: string[] = [];
-
-		Object.entries(params.filter).forEach(([key, value]) => {
-			if (value !== undefined && value !== null) {
-				if (Array.isArray(value)) {
-					filterStrings.push(`${key}:${value.join("|")}`);
-				} else if (typeof value === "boolean") {
-					filterStrings.push(`${key}:${value.toString()}`);
-				} else {
-					filterStrings.push(`${key}:${String(value)}`);
+		// Convert filters object to filter string, if it's not already a string
+		if (filter) {
+			if (typeof filter === "string") {
+				result.filter = filter;
+			} else if (this.isSourcesFilters(filter)) {
+				const filterString = buildFilterString(filter);
+				// Only add filter if it's not empty
+				if (filterString) {
+					result.filter = filterString;
 				}
 			}
-		});
-
-		const { filter: _, ...otherParams } = params;
-
-		const result: QueryParams = { ...otherParams };
-		if (filterStrings.length > 0) {
-			result.filter = filterStrings.join(",");
 		}
+
 		return result;
 	}
 }

@@ -10,6 +10,7 @@ import type {
 	OpenAlexResponse,
 } from "../types";
 import { OpenAlexBaseClient } from "../client";
+import { buildFilterString } from "../utils/query-builder";
 
 /**
  * Extended query parameters specific to Works API
@@ -90,7 +91,7 @@ export class WorksApi {
 			if (typeof params.filter === "string") {
 				queryParams.filter = params.filter;
 			} else if (this.isWorksFilters(params.filter)) {
-				queryParams.filter = this.buildFilterString(params.filter);
+				queryParams.filter = buildFilterString(params.filter);
 			}
 		}
 
@@ -125,7 +126,7 @@ export class WorksApi {
 		if (options.page !== undefined) params.page = options.page;
 		if (options.per_page !== undefined) params.per_page = options.per_page;
 		if (options.select !== undefined) params.select = options.select;
-		if (options.filters) params.filter = this.buildFilterString(options.filters);
+		if (options.filters) params.filter = buildFilterString(options.filters);
 
 		return this.getWorks(params);
 	}
@@ -281,7 +282,7 @@ export class WorksApi {
 		};
 
 		const queryParams: WorksQueryParams = {
-			filter: this.buildFilterString(filters),
+			filter: buildFilterString(filters),
 			per_page: referencesToFetch.length,
 		};
 		if (options.select !== undefined) {
@@ -332,7 +333,7 @@ export class WorksApi {
 		};
 
 		const queryParams: WorksQueryParams = {
-			filter: this.buildFilterString(filters),
+			filter: buildFilterString(filters),
 			per_page: relatedToFetch.length,
 		};
 		if (options.select !== undefined) {
@@ -378,7 +379,7 @@ export class WorksApi {
 			if (typeof params.filter === "string") {
 				queryParams.filter = params.filter;
 			} else if (this.isWorksFilters(params.filter)) {
-				queryParams.filter = this.buildFilterString(params.filter);
+				queryParams.filter = buildFilterString(params.filter);
 			}
 		}
 
@@ -417,7 +418,7 @@ export class WorksApi {
 			if (typeof params.filter === "string") {
 				queryParams.filter = params.filter;
 			} else if (this.isWorksFilters(params.filter)) {
-				queryParams.filter = this.buildFilterString(params.filter);
+				queryParams.filter = buildFilterString(params.filter);
 			}
 		}
 
@@ -449,41 +450,13 @@ export class WorksApi {
 			if (typeof params.filter === "string") {
 				queryParams.filter = params.filter;
 			} else if (this.isWorksFilters(params.filter)) {
-				queryParams.filter = this.buildFilterString(params.filter);
+				queryParams.filter = buildFilterString(params.filter);
 			}
 		}
 
 		return this.client.getAll<Work>("works", queryParams, maxResults);
 	}
 
-	/**
-   * Build OpenAlex filter string from filters object
-   *
-   * @param filters - WorksFilters object
-   * @returns Formatted filter string for OpenAlex API
-   *
-   * @private
-   */
-	private buildFilterString(filters: WorksFilters): string {
-		const filterParts: string[] = [];
-
-		Object.entries(filters).forEach(([key, value]) => {
-			if (value !== undefined && value !== null) {
-				if (Array.isArray(value)) {
-					// Handle array values (OR logic)
-					filterParts.push(`${key}:${value.join("|")}`);
-				} else if (typeof value === "boolean") {
-					// Handle boolean values
-					filterParts.push(`${key}:${String(value)}`);
-				} else {
-					// Handle string/number values
-					filterParts.push(`${key}:${String(value)}`);
-				}
-			}
-		});
-
-		return filterParts.join(",");
-	}
 
 	/**
    * Merge new filters with existing filters, handling both string and object formats
@@ -502,7 +475,7 @@ export class WorksApi {
 		if (existingFilters) {
 			if (typeof existingFilters === "string") {
 				// If existing filters are a string, append them to the new filter string
-				const newFilterString = this.buildFilterString(newFilters);
+				const newFilterString = buildFilterString(newFilters);
 				return `${newFilterString},${existingFilters}`;
 			} else {
 				// If existing filters are an object, merge them
@@ -510,7 +483,7 @@ export class WorksApi {
 			}
 		}
 
-		return this.buildFilterString(mergedFilters);
+		return buildFilterString(mergedFilters);
 	}
 
 	/**
@@ -545,7 +518,7 @@ export class WorksApi {
 			if (typeof params.filter === "string") {
 				queryParams.filter = params.filter;
 			} else if (this.isWorksFilters(params.filter)) {
-				queryParams.filter = this.buildFilterString(params.filter);
+				queryParams.filter = buildFilterString(params.filter);
 			}
 		}
 

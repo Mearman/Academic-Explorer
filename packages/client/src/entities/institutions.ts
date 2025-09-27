@@ -5,6 +5,7 @@
 
 import type { InstitutionEntity, InstitutionsFilters, QueryParams, OpenAlexResponse, Work, Author } from "../types";
 import { OpenAlexBaseClient } from "../client";
+import { buildFilterString } from "../utils/query-builder";
 
 /**
  * Extended query parameters specific to institutions API
@@ -407,16 +408,9 @@ export class InstitutionsApi {
 			...otherOptions
 		};
 
-		// Handle filters
+		// Handle filters using standardized FilterBuilder utility
 		if (filters && Object.keys(filters).length > 0) {
-			const filterPairs = Object.entries(filters)
-				.map(([key, value]) => {
-					if (Array.isArray(value)) {
-						return `${key}:${value.join("|")}`;
-					}
-					return `${key}:${String(value)}`;
-				});
-			queryParams.filter = filterPairs.join(",");
+			queryParams.filter = buildFilterString(filters);
 		}
 
 		// Add other parameters
