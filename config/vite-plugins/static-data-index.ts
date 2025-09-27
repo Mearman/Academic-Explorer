@@ -3,20 +3,24 @@ import { join, basename, resolve, dirname } from "path";
 import { watch } from "chokidar";
 import { existsSync } from "fs";
 import { fileURLToPath } from "url";
+import { type EntityType } from "@academic-explorer/utils/static-data/cache-utilities";
 
 // Get absolute path to the index generator
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const indexGeneratorPath = resolve(__dirname, "../../apps/web/src/lib/utils/static-data-index-generator.js");
 
-import {
-  generateAllIndexes,
-  generateIndexWithAutoDownload,
-  generateIndexForEntityType,
-  validateStaticDataIndex,
-  getEntityTypeFromPath,
-  type EntityType
-} from "../../apps/web/src/lib/utils/static-data-index-generator";
+// Dynamic import helper to avoid build-time module resolution issues
+const getIndexGenerators = async () => {
+  const module = await import(indexGeneratorPath);
+  return {
+    generateAllIndexes: module.generateAllIndexes,
+    generateIndexWithAutoDownload: module.generateIndexWithAutoDownload,
+    generateIndexForEntityType: module.generateIndexForEntityType,
+    validateStaticDataIndex: module.validateStaticDataIndex,
+    getEntityTypeFromPath: module.getEntityTypeFromPath
+  };
+};
 
 export interface StaticDataIndexPluginOptions {
   /** Enable auto-download of missing entities */
@@ -52,7 +56,8 @@ export function staticDataIndexPlugin(options: StaticDataIndexPluginOptions = {}
   };
 
   // Debounced file change handler to avoid excessive regeneration
-  const debouncedHandleFileChange = (filePath: string, action: string) => {
+  const debouncedHandleFileChange = async (filePath: string, action: string) => {
+    const { getEntityTypeFromPath } = await getIndexGenerators();
     const entityType = getEntityTypeFromPath(join(filePath, ".."));
     if (!entityType) {
       logVerbose(`🚫 Ignoring file change in non-entity directory: ${filePath}`);
@@ -76,6 +81,7 @@ export function staticDataIndexPlugin(options: StaticDataIndexPluginOptions = {}
 
   const handleFileChange = async (filePath: string, action: string, entityType: EntityType) => {
     try {
+      const { generateIndexWithAutoDownload, generateIndexForEntityType, validateStaticDataIndex } = await getIndexGenerators();
       const entityDir = join(staticDataDir, entityType);
       const fileName = basename(filePath);
 
@@ -151,6 +157,7 @@ export function staticDataIndexPlugin(options: StaticDataIndexPluginOptions = {}
 
     async buildStart() {
       try {
+        const { generateAllIndexes } = await getIndexGenerators();
         console.log(`🔄 Generating static data indexes (${config.command} mode)...`);
 
         if (opts.autoDownload) {
