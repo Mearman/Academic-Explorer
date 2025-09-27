@@ -1,3 +1,7 @@
+## 8.3.0 (2025-09-27)
+
+This was a version bump only for ui to align it with other projects, there were no code changes.
+
 ## 8.2.0 (2025-09-26)
 
 ### Features

@@ -1,3 +1,7 @@
+## 8.3.0 (2025-09-27)
+
+This was a version bump only for client to align it with other projects, there were no code changes.
+
 ## 1.2.1 (2025-09-27)
 
 ### 🩹 Fixes
