@@ -6,6 +6,8 @@
 import type { OpenAlexError, OpenAlexResponse, QueryParams } from "./types";
 import { RETRY_CONFIG, calculateRetryDelay } from "./internal/rate-limit";
 import { validateApiResponse, trustApiContract } from "./internal/type-helpers";
+import { apiInterceptor } from "./interceptors";
+import { defaultDiskWriter } from "./cache/disk";
 
 export interface OpenAlexClientConfig {
   baseUrl?: string;
@@ -225,21 +227,30 @@ export class OpenAlexBaseClient {
 		try {
 			await this.enforceRateLimit();
 
-			const controller = new AbortController();
-			const timeoutId = setTimeout(() => { controller.abort(); }, this.config.timeout);
-
-			const response = await fetch(url, {
+			// Intercept the request if enabled
+			const requestStartTime = Date.now();
+			const requestOptions: RequestInit = {
 				...options,
-				signal: controller.signal,
 				headers: {
 					"Accept": "application/json",
 					"User-Agent": "OpenAlex-TypeScript-Client/1.0",
 					...this.config.headers,
 					...(options.headers && typeof options.headers === "object" && !Array.isArray(options.headers) && !(options.headers instanceof Headers) ? options.headers : {}),
 				},
+			};
+
+			const interceptedRequest = apiInterceptor.interceptRequest(url, requestOptions);
+
+			const controller = new AbortController();
+			const timeoutId = setTimeout(() => { controller.abort(); }, this.config.timeout);
+
+			const response = await fetch(url, {
+				...requestOptions,
+				signal: controller.signal,
 			});
 
 			clearTimeout(timeoutId);
+			const responseTime = Date.now() - requestStartTime;
 
 			// Handle rate limiting from server - no retries at base client level
 			// Let the rate-limited client wrapper handle 429 retry logic
@@ -267,6 +278,39 @@ export class OpenAlexBaseClient {
 			// Handle other HTTP errors (no retry for 4xx except 429)
 			if (!response.ok) {
 				throw await this.parseError(response);
+			}
+
+			// Intercept the response if request was intercepted and response is successful
+			if (interceptedRequest && response.status >= 200 && response.status < 300) {
+				try {
+					// Clone the response to read the data without consuming the original stream
+					const responseClone = response.clone();
+					const responseData = await responseClone.json();
+
+					// Intercept the response
+					const interceptedCall = apiInterceptor.interceptResponse(
+						interceptedRequest,
+						response,
+						responseData,
+						responseTime
+					);
+
+					// Write to disk cache if intercepted successfully
+					if (interceptedCall) {
+						await defaultDiskWriter.writeToCache({
+							url: interceptedCall.request.url,
+							method: interceptedCall.request.method,
+							requestHeaders: interceptedCall.request.headers,
+							responseData: interceptedCall.response.data,
+							statusCode: interceptedCall.response.status,
+							responseHeaders: interceptedCall.response.headers,
+							timestamp: new Date(interceptedCall.response.timestamp).toISOString()
+						});
+					}
+				} catch (interceptError) {
+					// Don't fail the request if interception fails
+					console.debug('Response interception failed:', interceptError);
+				}
 			}
 
 			return response;
