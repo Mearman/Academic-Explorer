@@ -239,7 +239,7 @@
     },
     "groups": {
       "workspace": {
-        "projects": ["academic-explorer-monorepo"],
+        "projects": ["."],
         "projectsRelationship": "fixed",
         "version": {
           "conventionalCommits": true,
@@ -248,7 +248,7 @@
           }
         },
         "changelog": {
-          "projectChangelogs": {
+          "workspaceChangelog": {
             "createRelease": "github",
             "file": "{workspaceRoot}/CHANGELOG.md",
             "renderOptions": {
