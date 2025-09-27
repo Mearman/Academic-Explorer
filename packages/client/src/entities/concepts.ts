@@ -362,7 +362,7 @@ export class ConceptsApi {
 		const baseParams = {
 			search: query.trim(),
 			filter: buildFilterString(filters),
-			sort,
+			sort: sort as ConceptSortOption,
 			page,
 			per_page,
 		};

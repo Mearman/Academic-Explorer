@@ -268,7 +268,7 @@ export class KeywordsApi {
 		const baseParams = {
 			search: query.trim(),
 			filter: buildFilterString(filters),
-			sort,
+			sort: sort as KeywordSortOption,
 			page,
 			per_page,
 		};
