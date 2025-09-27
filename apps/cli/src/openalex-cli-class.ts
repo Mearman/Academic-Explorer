@@ -7,7 +7,7 @@ import { readFile, access, writeFile, mkdir, readdir, stat } from "fs/promises";
 import { join, resolve } from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-import { logger } from "@academic-explorer/utils/logger";
+import { logger, logError } from "@academic-explorer/utils/logger";
 import { z } from "zod";
 // TODO: Re-enable when openalex-client package build issues are resolved
 // import {
@@ -259,7 +259,7 @@ export class OpenAlexCLI {
         const entity = validatedResult.data.results[0];
 
         // Type guard to ensure entity has required properties
-        if (entity && 'id' in entity && 'display_name' in entity &&
+        if ('id' in entity && 'display_name' in entity &&
             typeof entity.id === 'string' && typeof entity.display_name === 'string') {
           // Save to cache if enabled
           if (cacheOptions.saveToCache) {
@@ -526,7 +526,7 @@ export class OpenAlexCLI {
         entities: entities.sort()
       };
     } catch (error) {
-      logger.error("general", `Failed to load entity summary for ${entityType}`, { error });
+      logError(logger, `Failed to load entity summary for ${entityType}`, error, "general");
       return null;
     }
   }
@@ -551,7 +551,7 @@ export class OpenAlexCLI {
       });
       return null;
     } catch (error) {
-      logger.error("general", `Failed to load unified index for ${entityType}`, { error });
+      logError(logger, `Failed to load unified index for ${entityType}`, error, "general");
       return null;
     }
   }
@@ -1174,7 +1174,7 @@ export class OpenAlexCLI {
       logger.warn("general", "Cache stats not available - client disabled");
       return Promise.resolve({ enabled: false });
     } catch (error) {
-      logger.error("general", "Failed to get cache stats", { error });
+      logError(logger, "Failed to get cache stats", error, "general");
       return Promise.resolve({ enabled: false });
     }
   }
@@ -1211,7 +1211,7 @@ export class OpenAlexCLI {
       logger.warn("general", "Well-populated entities analysis not available - synthetic cache disabled");
       return Promise.resolve([]);
     } catch (error) {
-      logger.error("general", "Failed to get well-populated entities", { error });
+      logError(logger, "Failed to get well-populated entities", error, "general");
       return Promise.resolve([]);
     }
   }
@@ -1230,7 +1230,7 @@ export class OpenAlexCLI {
       logger.warn("general", "Popular collections analysis not available - synthetic cache disabled");
       return Promise.resolve([]);
     } catch (error) {
-      logger.error("general", "Failed to get popular collections", { error });
+      logError(logger, "Failed to get popular collections", error, "general");
       return Promise.resolve([]);
     }
   }
@@ -1245,7 +1245,7 @@ export class OpenAlexCLI {
       logger.warn("general", "Synthetic cache clear not available - client disabled");
       return Promise.resolve();
     } catch (error) {
-      logger.error("general", "Failed to clear synthetic cache", { error });
+      logError(logger, "Failed to clear synthetic cache", error, "general");
       return Promise.reject(error instanceof Error ? error : new Error(String(error)));
     }
   }
@@ -1300,7 +1300,7 @@ export class OpenAlexCLI {
         gaps
       };
     } catch (error) {
-      logger.error("general", "Failed to analyze static data usage", { error });
+      logError(logger, "Failed to analyze static data usage", error, "general");
       return {
         entityDistribution: {},
         totalEntities: 0,

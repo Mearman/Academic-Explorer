@@ -6,7 +6,7 @@
  */
 
 import { Command } from "commander";
-import { logger } from "@academic-explorer/utils/logger";
+import { logger, logError } from "@academic-explorer/utils/logger";
 import { detectEntityType, SUPPORTED_ENTITIES } from "./entity-detection.js";
 
 const program = new Command();
@@ -27,7 +27,7 @@ program
       logger.debug("cli", "Entity type detected", { entityId, entityType });
     } catch (error) {
       console.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
-      logger.error("cli", "Failed to detect entity type", { entityId, error });
+      logError(logger, "Failed to detect entity type", error, "cli");
       process.exit(1);
     }
   });
