@@ -1,10 +1,10 @@
 {
-  "lastUpdated": "2025-09-27T16:51:55.748Z",
+  "lastUpdated": "2025-09-27T18:16:47.784Z",
   "path": "/",
   "entityTypes": {
     "authors": {
       "$ref": "./authors",
-      "last_modified": "2025-09-27T16:51:55.745Z"
+      "lastModified": "2025-09-27T18:16:47.784Z"
     }
   }
 }
