@@ -3,10 +3,12 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
+import { VitePWA } from 'vite-plugin-pwa'
 import path from 'path'
 import { execSync } from 'child_process'
 import { workspaceRoot } from '../../config/shared'
 import { staticDataIndexPlugin } from '../../config/vite-plugins/static-data-index'
+import { openalexCachePlugin } from '../../config/vite-plugins/openalex-cache'
 
 // Build metadata generation
 function getBuildInfo() {
@@ -56,6 +58,25 @@ export default defineConfig(({ mode: _mode }) => ({
   plugins: [
     // TanStack Router Plugin - must be before React plugin
     TanStackRouterVite(),
+    // PWA Plugin for TypeScript service worker support
+    VitePWA({
+      strategies: 'injectManifest',
+      srcDir: 'src/workers',
+      filename: 'openalex-sw.ts',
+      devOptions: {
+        enabled: true,
+        type: 'module'
+      },
+      injectRegister: null, // Manual registration in main.tsx
+      workbox: {
+        globPatterns: [] // Disable default precaching since we have custom logic
+      }
+    }),
+    // OpenAlex cache plugin for development request caching
+    openalexCachePlugin({
+      verbose: true, // Enable logging to see cache activity
+      enabled: true // Enable in development
+    }),
     // Static data index plugin for OpenAlex entity caching
     staticDataIndexPlugin({
       autoDownload: false, // Disable auto-download for now
@@ -274,7 +295,14 @@ export default defineConfig(({ mode: _mode }) => ({
   },
   build: {
     rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        sw: path.resolve(__dirname, 'src/workers/openalex-sw.ts')
+      },
       output: {
+        entryFileNames: (chunkInfo) => {
+          return chunkInfo.name === 'sw' ? 'openalex-sw.js' : 'assets/[name]-[hash].js';
+        },
         manualChunks: {
           // Core React and routing
           'vendor-react': ['react', 'react-dom'],

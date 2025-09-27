@@ -17,6 +17,9 @@ import "@mantine/dates/styles.css"
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen"
 
+// Import service worker registration
+import { registerOpenAlexServiceWorker } from "./lib/service-worker"
+
 // Create Mantine theme matching design tokens
 const theme = createTheme({
 	primaryColor: "blue",
@@ -94,6 +97,15 @@ declare module "@tanstack/react-router" {
     router: typeof router
   }
 }
+
+// Register service worker for OpenAlex API interception
+registerOpenAlexServiceWorker().then((registered) => {
+  if (registered) {
+    console.log('🔧 OpenAlex Service Worker registered - API requests will be intercepted');
+  }
+}).catch((error) => {
+  console.warn('⚠️ Failed to register OpenAlex Service Worker:', error);
+});
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {
