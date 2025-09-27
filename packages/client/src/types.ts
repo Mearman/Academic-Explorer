@@ -795,6 +795,19 @@ export interface TopicsFilters {
   "works_count"?: string | number;
 }
 
+export interface ConceptsFilters {
+  "cited_by_count"?: string | number;
+  "default.search"?: string;
+  "display_name.search"?: string;
+  "from_created_date"?: string;
+  "from_updated_date"?: string;
+  "level"?: number | string;
+  "to_created_date"?: string;
+  "to_updated_date"?: string;
+  "wikidata"?: string | string[];
+  "works_count"?: string | number;
+}
+
 export interface PublishersFilters {
   "cited_by_count"?: string | number;
   "country_codes"?: string | string[];
@@ -920,7 +933,7 @@ export interface OpenAlexError {
 // Union types for all entities
 export type OpenAlexEntity = Work | Author | Source | InstitutionEntity | Topic | Concept | Publisher | Funder | Keyword;
 export type EntityType = "works" | "authors" | "sources" | "institutions" | "topics" | "concepts" | "publishers" | "funders" | "keywords";
-export type EntityFilters = WorksFilters | AuthorsFilters | SourcesFilters | InstitutionsFilters | TopicsFilters | PublishersFilters | FundersFilters | KeywordsFilters;
+export type EntityFilters = WorksFilters | AuthorsFilters | SourcesFilters | InstitutionsFilters | TopicsFilters | ConceptsFilters | PublishersFilters | FundersFilters | KeywordsFilters;
 
 // Mapping from entity type to entity interface
 export type EntityTypeMap = {
