@@ -63,6 +63,11 @@ export default defineConfig(({ mode: _mode }) => ({
       strategies: 'injectManifest',
       srcDir: 'src/workers',
       filename: 'openalex-sw.ts',
+      injectManifest: {
+        swSrc: 'src/workers/openalex-sw.ts',
+        swDest: 'dist/openalex-sw.js',
+        injectionPoint: false // Disable manifest injection since we're not using precaching
+      },
       devOptions: {
         enabled: true,
         type: 'module'
