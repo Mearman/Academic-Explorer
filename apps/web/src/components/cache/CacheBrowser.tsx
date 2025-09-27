@@ -1,28 +1,33 @@
 import { useState, useEffect, useMemo } from 'react';
-import { 
-  Box, 
-  Group, 
-  Text, 
-  Card, 
-  Badge, 
-  Button, 
-  TextInput, 
-  MultiSelect, 
+import {
+  Box,
+  Group,
+  Text,
+  Card,
+  Badge,
+  Button,
+  TextInput,
+  MultiSelect,
   Select,
   Stack,
   NumberInput,
   Alert,
   ActionIcon,
-  Tooltip
+  Tooltip,
+  FileInput
 } from '@mantine/core';
-import { 
-  IconSearch, 
-  IconRefresh, 
-  IconTrash, 
+import {
+  IconSearch,
+  IconRefresh,
+  IconTrash,
   IconDatabase,
   IconInfoCircle,
   IconFilter,
-  IconExternalLink
+  IconExternalLink,
+  IconDownload,
+  IconUpload,
+  IconFileExport,
+  IconFileImport
 } from '@tabler/icons-react';
 import { type ColumnDef } from '@tanstack/react-table';
 import { useNavigate } from '@tanstack/react-router';
@@ -102,6 +107,11 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
   const [minSize, setMinSize] = useState<number | undefined>();
   const [maxSize, setMaxSize] = useState<number | undefined>();
 
+  // Export/Import state
+  const [isExporting, setIsExporting] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+  const [importFile, setImportFile] = useState<File | null>(null);
+
   const filters: Partial<CacheBrowserFilters> = useMemo(() => ({
     searchQuery,
     entityTypes: new Set(selectedTypes as CacheBrowserEntityType[]),
@@ -156,20 +166,189 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
   const clearCache = async () => {
     try {
       logger.debug('cache-browser', 'Clearing cache with filters', { filters });
-      
+
       const clearedCount = await cacheBrowserService.clearCache(filters);
-      
+
       logger.debug('cache-browser', 'Cache cleared', { clearedCount });
-      
+
       // Reload entities after clearing
       await loadCachedEntities();
-      
+
     } catch (error) {
       logger.error('cache-browser', 'Failed to clear cache', { error });
       setState(prev => ({
         ...prev,
         error: `Failed to clear cache: ${String(error)}`,
       }));
+    }
+  };
+
+  const exportToJSON = async () => {
+    setIsExporting(true);
+    try {
+      logger.debug('cache-browser', 'Exporting cache data to JSON');
+
+      // Get all entities without pagination for export
+      const exportOptions = { ...options, limit: undefined, offset: undefined };
+      const result = await cacheBrowserService.browse(filters, exportOptions);
+
+      const exportData = {
+        exportTimestamp: new Date().toISOString(),
+        totalEntities: result.entities.length,
+        stats: result.stats,
+        filters: filters,
+        entities: result.entities,
+      };
+
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+        type: 'application/json',
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `cache-export-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      logger.debug('cache-browser', 'JSON export completed', { count: result.entities.length });
+
+    } catch (error) {
+      logger.error('cache-browser', 'Failed to export to JSON', { error });
+      setState(prev => ({
+        ...prev,
+        error: `Failed to export to JSON: ${String(error)}`,
+      }));
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const exportToCSV = async () => {
+    setIsExporting(true);
+    try {
+      logger.debug('cache-browser', 'Exporting cache data to CSV');
+
+      // Get all entities without pagination for export
+      const exportOptions = { ...options, limit: undefined, offset: undefined };
+      const result = await cacheBrowserService.browse(filters, exportOptions);
+
+      // Convert entities to flat structure for CSV
+      const csvData = result.entities.map(entity => ({
+        id: entity.id,
+        type: entity.type,
+        label: entity.label,
+        storageLocation: entity.storageLocation,
+        dataSize: entity.dataSize,
+        cacheDatetime: new Date(entity.cacheTimestamp).toISOString(),
+        citationCount: entity.basicInfo?.citationCount || '',
+        worksCount: entity.basicInfo?.worksCount || '',
+        url: entity.basicInfo?.url || '',
+      }));
+
+      // Generate CSV headers
+      const headers = [
+        'ID', 'Type', 'Label', 'Storage Location', 'Data Size (bytes)',
+        'Cache Date', 'Citation Count', 'Works Count', 'URL'
+      ];
+
+      // Convert to CSV string
+      const csvContent = [
+        headers.join(','),
+        ...csvData.map(row => [
+          row.id,
+          row.type,
+          `"${row.label.replace(/"/g, '""')}"`, // Escape quotes in labels
+          row.storageLocation,
+          row.dataSize,
+          row.cacheDatetime,
+          row.citationCount,
+          row.worksCount,
+          `"${row.url.replace(/"/g, '""')}"`, // Escape quotes in URLs
+        ].join(','))
+      ].join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `cache-export-${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      logger.debug('cache-browser', 'CSV export completed', { count: result.entities.length });
+
+    } catch (error) {
+      logger.error('cache-browser', 'Failed to export to CSV', { error });
+      setState(prev => ({
+        ...prev,
+        error: `Failed to export to CSV: ${String(error)}`,
+      }));
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const importCacheData = async () => {
+    if (!importFile) return;
+
+    setIsImporting(true);
+    try {
+      logger.debug('cache-browser', 'Importing cache data', { fileName: importFile.name });
+
+      const text = await importFile.text();
+      const importData = JSON.parse(text);
+
+      // Validate the import data structure
+      if (!importData.entities || !Array.isArray(importData.entities)) {
+        throw new Error('Invalid import file: missing or invalid entities array');
+      }
+
+      // Import entities using the cache browser service
+      let importedCount = 0;
+      for (const entity of importData.entities) {
+        try {
+          // Here we would need a method to add entities back to cache
+          // For now, we'll log this as the cacheBrowserService might not have an import method
+          logger.debug('cache-browser', 'Would import entity', { entity: entity.id });
+          importedCount++;
+        } catch (error) {
+          logger.warn('cache-browser', 'Failed to import entity', { entity: entity.id, error });
+        }
+      }
+
+      logger.debug('cache-browser', 'Import completed', {
+        total: importData.entities.length,
+        imported: importedCount
+      });
+
+      // Note: Since we don't have a direct import method in cacheBrowserService,
+      // this is a placeholder implementation. In a real scenario, you'd need to
+      // implement the actual cache restoration logic.
+      setState(prev => ({
+        ...prev,
+        error: `Import functionality is not yet fully implemented. Would import ${importedCount} entities.`,
+      }));
+
+      // Reset import file
+      setImportFile(null);
+
+      // Reload entities
+      await loadCachedEntities();
+
+    } catch (error) {
+      logger.error('cache-browser', 'Failed to import cache data', { error });
+      setState(prev => ({
+        ...prev,
+        error: `Failed to import cache data: ${String(error)}`,
+      }));
+    } finally {
+      setIsImporting(false);
     }
   };
 
@@ -317,14 +496,61 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
             <Text size="xl" fw={600}>Cache Browser</Text>
             <Text size="sm" c="dimmed">Browse and manage cached OpenAlex entities</Text>
           </div>
-          
+
           <Group gap="xs">
+            {/* Export/Import Controls */}
+            <Group gap="xs">
+              <Button
+                leftSection={<IconDownload size={16} />}
+                variant="light"
+                color="blue"
+                onClick={() => { void exportToJSON(); }}
+                loading={isExporting}
+                disabled={state.isLoading || state.entities.length === 0}
+              >
+                Export JSON
+              </Button>
+
+              <Button
+                leftSection={<IconFileExport size={16} />}
+                variant="light"
+                color="green"
+                onClick={() => { void exportToCSV(); }}
+                loading={isExporting}
+                disabled={state.isLoading || state.entities.length === 0}
+              >
+                Export CSV
+              </Button>
+
+              <FileInput
+                placeholder="Select JSON file"
+                leftSection={<IconFileImport size={16} />}
+                value={importFile}
+                onChange={setImportFile}
+                accept=".json"
+                w={200}
+                clearable
+              />
+
+              <Button
+                leftSection={<IconUpload size={16} />}
+                variant="light"
+                color="violet"
+                onClick={() => { void importCacheData(); }}
+                loading={isImporting}
+                disabled={!importFile}
+              >
+                Import
+              </Button>
+            </Group>
+
+            {/* Existing Controls */}
             <Tooltip label="Refresh cache data">
               <ActionIcon onClick={() => { void loadCachedEntities(); }} loading={state.isLoading}>
                 <IconRefresh size={16} />
               </ActionIcon>
             </Tooltip>
-            
+
             <Button
               leftSection={<IconTrash size={16} />}
               variant="light"
