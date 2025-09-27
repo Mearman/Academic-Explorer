@@ -11,6 +11,7 @@ import type { StaticEntityType } from "./entity-detection.js";
 import type { EntityType } from "@academic-explorer/client";
 import { detectEntityType } from "./entity-detection.js";
 import { z } from "zod";
+import { StaticCacheManager } from "./cache/static-cache-manager.js";
 
 // Zod schemas for CLI validation
 const StaticEntityTypeSchema = z.enum(["authors", "works", "institutions", "topics", "publishers", "funders"]);
@@ -91,6 +92,25 @@ const StaticGenerateCommandOptionsSchema = z.object({
   force: z.boolean().optional(),
 });
 
+// New static cache command schemas
+const CacheGenerateStaticCommandOptionsSchema = z.object({
+  entityType: z.string().optional(),
+  limit: z.union([z.string(), z.undefined()]).optional(),
+  force: z.boolean().optional(),
+  dryRun: z.boolean().optional(),
+  format: z.string().optional(),
+});
+
+const CacheValidateStaticCommandOptionsSchema = z.object({
+  format: z.string().optional(),
+  verbose: z.boolean().optional(),
+});
+
+const CacheClearStaticCommandOptionsSchema = z.object({
+  entityType: z.string().optional(),
+  confirm: z.boolean().optional(),
+});
+
 const FetchCommandOptionsSchema = z.object({
   perPage: z.union([z.string(), z.undefined()]).optional(),
   page: z.union([z.string(), z.undefined()]).optional(),
@@ -115,6 +135,7 @@ function toStaticEntityType(entityType: EntityType): StaticEntityType {
 // CLI Commands
 const program = new Command();
 const cli = OpenAlexCLI.getInstance();
+const staticCacheManager = new StaticCacheManager();
 
 program
   .name("openalex-cli")
@@ -658,6 +679,190 @@ program
 
     await cli.clearSyntheticCache();
     console.log("Synthetic cache cleared successfully.");
+  });
+
+// Static cache management commands
+program
+  .command("cache:generate-static")
+  .description("Generate static cache with environment-aware operations")
+  .option("--entity-type <type>", "Generate for specific entity type only")
+  .option("--limit <limit>", "Limit number of entities to generate")
+  .option("--force", "Force regeneration even if files exist")
+  .option("--dry-run", "Show what would be generated without writing files")
+  .option("-f, --format <format>", "Output format (json, table)", "table")
+  .action(async (options: unknown) => {
+    const optionsValidation = CacheGenerateStaticCommandOptionsSchema.safeParse(options);
+    if (!optionsValidation.success) {
+      console.error(`Invalid options: ${optionsValidation.error.message}`);
+      process.exit(1);
+    }
+
+    const validatedOptions = optionsValidation.data;
+    let entityType: StaticEntityType | undefined;
+
+    if (validatedOptions.entityType) {
+      const entityTypeValidation = StaticEntityTypeSchema.safeParse(validatedOptions.entityType);
+      if (!entityTypeValidation.success) {
+        console.error(`Unsupported entity type: ${validatedOptions.entityType}`);
+        console.error(`Supported types: ${SUPPORTED_ENTITIES.join(", ")}`);
+        process.exit(1);
+      }
+      entityType = entityTypeValidation.data;
+    }
+
+    const config = staticCacheManager.getConfig();
+    console.log(`\nStatic Cache Generation (${config.mode} mode):`);
+    console.log("=".repeat(50));
+
+    if (config.mode === "production") {
+      console.error("Error: Cannot generate static cache in production mode");
+      console.error("Set NODE_ENV=development to enable cache generation");
+      process.exit(1);
+    }
+
+    try {
+      const limit = validatedOptions.limit ? parseInt(validatedOptions.limit) : undefined;
+      const generateOptions = {
+        entityTypes: entityType ? [entityType] : undefined,
+        limit,
+        force: !!validatedOptions.force,
+        dryRun: !!validatedOptions.dryRun,
+      };
+
+      await staticCacheManager.generateStaticCache(generateOptions);
+
+      console.log(`\nGeneration ${validatedOptions.dryRun ? "(Dry Run) " : ""}completed successfully`);
+
+      if (!validatedOptions.dryRun) {
+        console.log("Run 'pnpm cli cache:validate-static' to verify the generated cache");
+      }
+
+    } catch (error) {
+      console.error(`Generation failed: ${error instanceof Error ? error.message : String(error)}`);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("cache:validate-static")
+  .description("Validate static cache integrity and structure")
+  .option("-f, --format <format>", "Output format (json, table)", "table")
+  .option("--verbose", "Show detailed validation information")
+  .action(async (options: unknown) => {
+    const optionsValidation = CacheValidateStaticCommandOptionsSchema.safeParse(options);
+    if (!optionsValidation.success) {
+      console.error(`Invalid options: ${optionsValidation.error.message}`);
+      process.exit(1);
+    }
+
+    const validatedOptions = optionsValidation.data;
+    const config = staticCacheManager.getConfig();
+
+    console.log(`\nStatic Cache Validation (${config.mode} mode):`);
+    console.log("=".repeat(50));
+
+    try {
+      const validation = await staticCacheManager.validateCache();
+
+      if (validatedOptions.format === "json") {
+        console.log(JSON.stringify(validation, null, 2));
+        return;
+      }
+
+      console.log(`Status: ${validation.isValid ? "✓ VALID" : "✗ INVALID"}`);
+      console.log(`Errors: ${validation.errors.length}`);
+      console.log(`Warnings: ${validation.warnings.length}`);
+      console.log(`Corrupted Files: ${validation.corruptedFiles.length}`);
+      console.log(`Missing Indexes: ${validation.missingIndexes.length}`);
+
+      if (validatedOptions.verbose || !validation.isValid) {
+        if (validation.errors.length > 0) {
+          console.log("\nErrors:");
+          validation.errors.forEach((error, index) => {
+            console.log(`  ${index + 1}. ${error}`);
+          });
+        }
+
+        if (validation.warnings.length > 0) {
+          console.log("\nWarnings:");
+          validation.warnings.forEach((warning, index) => {
+            console.log(`  ${index + 1}. ${warning}`);
+          });
+        }
+
+        if (validation.corruptedFiles.length > 0) {
+          console.log("\nCorrupted Files:");
+          validation.corruptedFiles.forEach((file, index) => {
+            console.log(`  ${index + 1}. ${file}`);
+          });
+        }
+      }
+
+      console.log("\nEntity Counts:");
+      Object.entries(validation.entityCounts).forEach(([entityType, count]) => {
+        console.log(`  ${entityType}: ${count}`);
+      });
+
+    } catch (error) {
+      console.error(`Validation failed: ${error instanceof Error ? error.message : String(error)}`);
+      process.exit(1);
+    }
+  });
+
+program
+  .command("cache:clear-static")
+  .description("Clear static cache data")
+  .option("--entity-type <type>", "Clear only specific entity type")
+  .option("--confirm", "Skip confirmation prompt")
+  .action(async (options: unknown) => {
+    const optionsValidation = CacheClearStaticCommandOptionsSchema.safeParse(options);
+    if (!optionsValidation.success) {
+      console.error(`Invalid options: ${optionsValidation.error.message}`);
+      process.exit(1);
+    }
+
+    const validatedOptions = optionsValidation.data;
+    const config = staticCacheManager.getConfig();
+
+    if (config.mode === "production") {
+      console.error("Error: Cannot clear static cache in production mode");
+      console.error("Set NODE_ENV=development to enable cache clearing");
+      process.exit(1);
+    }
+
+    let entityTypes: StaticEntityType[] | undefined;
+    if (validatedOptions.entityType) {
+      const entityTypeValidation = StaticEntityTypeSchema.safeParse(validatedOptions.entityType);
+      if (!entityTypeValidation.success) {
+        console.error(`Unsupported entity type: ${validatedOptions.entityType}`);
+        console.error(`Supported types: ${SUPPORTED_ENTITIES.join(", ")}`);
+        process.exit(1);
+      }
+      entityTypes = [entityTypeValidation.data];
+    }
+
+    if (!validatedOptions.confirm) {
+      console.log("This will clear static cache data including:");
+      if (entityTypes) {
+        console.log(`- Entity data for: ${entityTypes.join(", ")}`);
+      } else {
+        console.log("- All entity data files");
+        console.log("- All index files");
+        console.log("- All query cache files");
+      }
+      console.log("");
+      console.log("To confirm, run with --confirm flag");
+      return;
+    }
+
+    try {
+      await staticCacheManager.clearStaticCache(entityTypes);
+      const targetDesc = entityTypes ? entityTypes.join(", ") : "all entity types";
+      console.log(`Static cache cleared successfully for: ${targetDesc}`);
+    } catch (error) {
+      console.error(`Clear operation failed: ${error instanceof Error ? error.message : String(error)}`);
+      process.exit(1);
+    }
   });
 
 program
