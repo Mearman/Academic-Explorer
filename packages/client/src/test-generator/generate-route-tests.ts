@@ -37,6 +37,50 @@ interface RouteTestCase {
 }
 
 /**
+ * Get the expected OpenAlex entity ID prefix for a given entity type
+ */
+function getEntityPrefix(entity: string): string {
+  switch (entity) {
+    case 'works': return 'W';
+    case 'authors': return 'A';
+    case 'sources': return 'S';
+    case 'institutions': return 'I';
+    case 'topics': return 'T';
+    case 'publishers': return 'P';
+    case 'funders': return 'F';
+    case 'keywords': return ''; // Keywords don't follow the standard prefix pattern
+    default: return '';
+  }
+}
+
+/**
+ * Check if an ID follows the OpenAlex entity ID pattern or is a valid external ID
+ */
+function isValidEntityId(id: string, expectedPrefix: string): boolean {
+  // Handle external IDs (these are always valid)
+  if (id.includes('doi.org') ||
+      id.includes('orcid.org') ||
+      id.startsWith('orcid:') ||
+      id.includes('ror.org') ||
+      id.startsWith('ror:') ||
+      id.includes('wikidata:') ||
+      id.startsWith('Q') ||
+      id.startsWith('pmid:') ||
+      /^\d{4}-\d{3}[\dX]$/.test(id) || // ISSN pattern
+      /^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/.test(id)) { // ORCID pattern
+    return true;
+  }
+
+  // For keywords, allow string-based IDs (no standard prefix pattern)
+  if (expectedPrefix === '') {
+    return id.length > 0 && /^[a-zA-Z0-9\-_]+$/.test(id);
+  }
+
+  // Check OpenAlex standard ID pattern: Prefix + numeric ID
+  return id.startsWith(expectedPrefix) && /^[A-Z]\d+$/.test(id);
+}
+
+/**
  * Categorize and analyze API paths to generate test cases
  */
 function categorizeApiPaths(paths: string[]): RouteTestCase[] {
@@ -63,39 +107,61 @@ function categorizeApiPaths(paths: string[]): RouteTestCase[] {
 
     let entity = pathParts[0];
     let operation = 'list';
-    let isCollection = true;
+    let isCollection: boolean;
     let requiresId = false;
     let externalIdType: RouteTestCase['externalIdType'];
 
     // Handle special endpoints
     if (entity === 'autocomplete') {
+      // Pattern: /autocomplete/{entity}
       entity = pathParts[1] || 'works';
       operation = 'autocomplete';
       isCollection = true;
     } else if (entity === 'text') {
-      entity = pathParts[1] || 'works';
+      // Pattern: /text (with query parameters, not /text/{entity})
+      entity = 'text'; // Keep as 'text' rather than assuming an entity type
       operation = 'text-analysis';
       isCollection = false;
-    } else if (pathParts.length > 1) {
-      // Single entity endpoints
-      const idPart = pathParts[1];
-      isCollection = false;
-      requiresId = true;
-      operation = 'get';
+    } else {
+      // Determine if this is a collection or individual resource operation
+      // Collection: /entity_type (e.g., /works, /authors)
+      // Individual: /entity_type/id (e.g., /works/W123456, /authors/A123456)
 
-      // Detect external ID types
-      if (idPart.includes('doi.org')) {
-        externalIdType = 'doi';
-      } else if (idPart.includes('orcid.org') || idPart.startsWith('orcid:') || /^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/.test(idPart)) {
-        externalIdType = 'orcid';
-      } else if (idPart.includes('ror.org') || idPart.startsWith('ror:')) {
-        externalIdType = 'ror';
-      } else if (idPart.includes('wikidata:') || idPart.startsWith('Q')) {
-        externalIdType = 'wikidata';
-      } else if (idPart.startsWith('pmid:')) {
-        externalIdType = 'pmid';
-      } else if (/^\d{4}-\d{3}[\dX]$/.test(idPart)) {
-        externalIdType = 'issn';
+      if (pathParts.length === 1) {
+        // Definitely a collection endpoint
+        isCollection = true;
+      } else if (pathParts.length === 2) {
+        // Check if the second part is a valid entity ID
+        const idPart = pathParts[1];
+        const expectedPrefix = getEntityPrefix(entity);
+
+        if (isValidEntityId(idPart, expectedPrefix)) {
+          // Valid entity ID - this is an individual resource request
+          isCollection = false;
+          requiresId = true;
+          operation = 'get';
+
+          // Detect external ID types
+          if (idPart.includes('doi.org')) {
+            externalIdType = 'doi';
+          } else if (idPart.includes('orcid.org') || idPart.startsWith('orcid:') || /^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/.test(idPart)) {
+            externalIdType = 'orcid';
+          } else if (idPart.includes('ror.org') || idPart.startsWith('ror:')) {
+            externalIdType = 'ror';
+          } else if (idPart.includes('wikidata:') || idPart.startsWith('Q')) {
+            externalIdType = 'wikidata';
+          } else if (idPart.startsWith('pmid:')) {
+            externalIdType = 'pmid';
+          } else if (/^\d{4}-\d{3}[\dX]$/.test(idPart)) {
+            externalIdType = 'issn';
+          }
+        } else {
+          // Invalid or unexpected ID format - treat as collection
+          isCollection = true;
+        }
+      } else {
+        // More than 2 path parts - treat as collection (might be a special endpoint)
+        isCollection = true;
       }
     }
 
@@ -110,14 +176,16 @@ function categorizeApiPaths(paths: string[]): RouteTestCase[] {
 
     // Generate description
     let description = '';
-    if (!isCollection) {
+
+    // Handle special operations first
+    if (operation === 'autocomplete') {
+      description = `Autocomplete ${entity}`;
+    } else if (operation === 'text-analysis') {
+      description = `Text analysis`;
+    } else if (!isCollection) {
       description = `Get single ${entity.slice(0, -1)} by ${externalIdType || 'ID'}`;
     } else {
-      if (operation === 'autocomplete') {
-        description = `Autocomplete ${entity}`;
-      } else if (operation === 'text-analysis') {
-        description = `Text analysis for ${entity}`;
-      } else if (operation === 'search') {
+      if (operation === 'search') {
         description = `Search ${entity}`;
       } else if (operation === 'filter') {
         description = `Filter ${entity}`;
