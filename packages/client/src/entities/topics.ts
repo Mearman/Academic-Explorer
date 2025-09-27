@@ -13,6 +13,7 @@ import type {
 	AutocompleteResult
 } from "../types";
 import { OpenAlexBaseClient } from "../client";
+import { isValidWikidata, normalizeExternalId } from "../utils/id-resolver";
 
 /**
  * TopicsApi provides methods for interacting with OpenAlex topics
@@ -26,12 +27,43 @@ export class TopicsApi {
 	}
 
 	/**
-   * Get a single topic by its OpenAlex ID
-   * @param id - The OpenAlex ID for the topic (e.g., 'T10138')
+   * Get a single topic by its OpenAlex ID or Wikidata ID
+   * @param id - The OpenAlex ID (e.g., 'T10138') or Wikidata ID in various formats:
+   *   - Q123456
+   *   - wikidata:Q123456
+   *   - https://www.wikidata.org/wiki/Q123456
+   *   - https://www.wikidata.org/entity/Q123456
    * @param params - Optional query parameters for additional data
    * @returns Promise resolving to the topic object
+   *
+   * @example
+   * ```typescript
+   * // Using OpenAlex ID
+   * const topic1 = await topicsApi.get('T10138');
+   *
+   * // Using Wikidata ID (various formats)
+   * const topic2 = await topicsApi.get('Q123456');
+   * const topic3 = await topicsApi.get('wikidata:Q123456');
+   * const topic4 = await topicsApi.get('https://www.wikidata.org/wiki/Q123456');
+   * ```
    */
 	async get(id: string, params: QueryParams = {}): Promise<Topic> {
+		// Check if this might be a Wikidata ID and normalize it
+		if (isValidWikidata(id)) {
+			const normalizedId = normalizeExternalId(id, 'wikidata');
+			if (normalizedId) {
+				// The normalizer returns Q notation, but OpenAlex API expects wikidata: prefix
+				const wikidataFormat = normalizedId.startsWith('Q') ? `wikidata:${normalizedId}` : normalizedId;
+				return this.client.getById<Topic>("topics", wikidataFormat, params);
+			}
+			// If normalization failed, fall through to use original ID
+		}
+
+		// Handle case where ID is already in wikidata: format
+		if (id.startsWith('wikidata:Q')) {
+			return this.client.getById<Topic>("topics", id, params);
+		}
+
 		return this.client.getById<Topic>("topics", id, params);
 	}
 

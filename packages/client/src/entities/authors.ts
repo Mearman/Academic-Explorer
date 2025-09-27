@@ -74,6 +74,63 @@ export class AuthorsApi {
 	constructor(private client: OpenAlexBaseClient) {}
 
 	/**
+	 * Normalize ORCID identifier to the format expected by OpenAlex API
+	 * Supports all ORCID formats: bare, URL, and prefixed formats
+	 * @param id - Input identifier that might be an ORCID
+	 * @returns Normalized ORCID URL if input is valid ORCID, null otherwise
+	 */
+	private normalizeOrcidId(id: string): string | null {
+		if (!id || typeof id !== 'string') {
+			return null;
+		}
+
+		const trimmedId = id.trim();
+
+		// ORCID format patterns
+		const orcidPatterns = [
+			// Bare format: 0000-0000-0000-0000
+			/^(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/i,
+			// URL format: https://orcid.org/0000-0000-0000-0000
+			/^https?:\/\/orcid\.org\/(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/i,
+			// URL without protocol: orcid.org/0000-0000-0000-0000
+			/orcid\.org\/(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])/i,
+			// Prefixed format: orcid:0000-0000-0000-0000
+			/^orcid:(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/i,
+		];
+
+		for (const pattern of orcidPatterns) {
+			const match = trimmedId.match(pattern);
+			if (match) {
+				const orcidId = match[1].toUpperCase();
+				// Validate ORCID format
+				if (this.validateOrcidFormat(orcidId)) {
+					return `https://orcid.org/${orcidId}`;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Validate ORCID format (basic format check - 4-4-4-3X pattern)
+	 * @param orcid - ORCID identifier to validate
+	 * @returns True if format is valid, false otherwise
+	 */
+	private validateOrcidFormat(orcid: string): boolean {
+		return /^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$/i.test(orcid);
+	}
+
+	/**
+	 * Check if an identifier is a valid ORCID in any supported format
+	 * @param id - Identifier to check
+	 * @returns True if the identifier is a valid ORCID, false otherwise
+	 */
+	isValidOrcid(id: string): boolean {
+		return this.normalizeOrcidId(id) !== null;
+	}
+
+	/**
 	 * Autocomplete authors based on partial name or query string
 	 * Provides fast suggestions for author names with built-in debouncing and caching
 	 * @param query - Search query string (e.g., partial author name)
@@ -128,21 +185,31 @@ export class AuthorsApi {
 	}
 
 	/**
-   * Get a single author by ID
-   * @param id - Author ID (OpenAlex ID, ORCID, or other supported format)
+   * Get a single author by ID with enhanced ORCID support
+   * @param id - Author ID (OpenAlex ID, ORCID in any format, or other supported format)
    * @param params - Query parameters for field selection and additional options
    * @returns Promise resolving to Author entity
    *
    * @example
    * ```typescript
+   * // OpenAlex ID
    * const author = await authorsApi.getAuthor('A2208157607');
+   *
+   * // ORCID formats - all supported
+   * const author1 = await authorsApi.getAuthor('0000-0003-1613-5981'); // Bare format
+   * const author2 = await authorsApi.getAuthor('https://orcid.org/0000-0003-1613-5981'); // URL format
+   * const author3 = await authorsApi.getAuthor('orcid:0000-0003-1613-5981'); // Prefixed format
+   *
+   * // With field selection
    * const authorWithSelect = await authorsApi.getAuthor('A2208157607', {
    *   select: ['id', 'display_name', 'works_count', 'cited_by_count']
    * });
    * ```
    */
 	async getAuthor(id: string, params: QueryParams = {}): Promise<Author> {
-		return this.client.getById<Author>("authors", id, params);
+		// Normalize ORCID if it's an ORCID identifier
+		const normalizedId = this.normalizeOrcidId(id) || id;
+		return this.client.getById<Author>("authors", normalizedId, params);
 	}
 
 	/**
@@ -200,23 +267,16 @@ export class AuthorsApi {
 		filters: AuthorsFilters = {},
 		params: QueryParams = {}
 	): Promise<OpenAlexResponse<Author>> {
-		// Build combined filters with search query
-		const combinedFilters = {
-			"default.search": query,
-			...filters
-		};
-
-		// Call client.getResponse directly to match test expectations
+		// Use search parameter as recommended by OpenAlex API documentation
 		const requestParams: QueryParams = {
-			filter: buildFilterString(combinedFilters)
+			search: query,
+			...params
 		};
 
-		// Only add additional params if they exist and are not empty
-		Object.keys(params).forEach(key => {
-			if (params[key] !== undefined && params[key] !== null) {
-				requestParams[key] = params[key];
-			}
-		});
+		// Add filters if provided
+		if (filters && Object.keys(filters).length > 0) {
+			requestParams.filter = buildFilterString(filters);
+		}
 
 		return this.client.getResponse<Author>("authors", requestParams);
 	}
@@ -245,7 +305,7 @@ export class AuthorsApi {
 	): Promise<OpenAlexResponse<Author>> {
 		return this.getAuthors({
 			...params,
-			filter: `last_known_institution.id:${encodeURIComponent(institutionId)}`
+			filter: `last_known_institution.id:${institutionId}`
 		});
 	}
 

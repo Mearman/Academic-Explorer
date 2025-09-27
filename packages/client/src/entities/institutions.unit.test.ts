@@ -32,7 +32,7 @@ describe("InstitutionsApi", () => {
 	});
 
 	describe("getInstitution", () => {
-		it("should fetch a single institution by ID", async () => {
+		it("should fetch a single institution by OpenAlex ID", async () => {
 			const mockInstitution: Partial<InstitutionEntity> = {
 				id: "I33213144",
 				display_name: "Harvard University",
@@ -50,6 +50,106 @@ describe("InstitutionsApi", () => {
 			expect(result).toEqual(mockInstitution);
 		});
 
+		it("should fetch a single institution by bare ROR ID", async () => {
+			const mockInstitution: Partial<InstitutionEntity> = {
+				id: "I33213144",
+				display_name: "Harvard University",
+				ror: "https://ror.org/01an7q238",
+			};
+
+			mockClient.getById.mockResolvedValue(mockInstitution as InstitutionEntity);
+
+			const result = await institutionsApi.getInstitution("01an7q238");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("institutions", "https://ror.org/01an7q238", {});
+			expect(result).toEqual(mockInstitution);
+		});
+
+		it("should fetch a single institution by ROR ID with ror: prefix", async () => {
+			const mockInstitution: Partial<InstitutionEntity> = {
+				id: "I33213144",
+				display_name: "Harvard University",
+				ror: "https://ror.org/01an7q238",
+			};
+
+			mockClient.getById.mockResolvedValue(mockInstitution as InstitutionEntity);
+
+			const result = await institutionsApi.getInstitution("ror:01an7q238");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("institutions", "https://ror.org/01an7q238", {});
+			expect(result).toEqual(mockInstitution);
+		});
+
+		it("should fetch a single institution by ROR URL", async () => {
+			const mockInstitution: Partial<InstitutionEntity> = {
+				id: "I33213144",
+				display_name: "Harvard University",
+				ror: "https://ror.org/01an7q238",
+			};
+
+			mockClient.getById.mockResolvedValue(mockInstitution as InstitutionEntity);
+
+			const result = await institutionsApi.getInstitution("https://ror.org/01an7q238");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("institutions", "https://ror.org/01an7q238", {});
+			expect(result).toEqual(mockInstitution);
+		});
+
+		it("should fetch a single institution by ROR domain format", async () => {
+			const mockInstitution: Partial<InstitutionEntity> = {
+				id: "I33213144",
+				display_name: "Harvard University",
+				ror: "https://ror.org/01an7q238",
+			};
+
+			mockClient.getById.mockResolvedValue(mockInstitution as InstitutionEntity);
+
+			const result = await institutionsApi.getInstitution("ror.org/01an7q238");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("institutions", "https://ror.org/01an7q238", {});
+			expect(result).toEqual(mockInstitution);
+		});
+
+		it("should handle ROR IDs case insensitively", async () => {
+			const mockInstitution: Partial<InstitutionEntity> = {
+				id: "I33213144",
+				display_name: "Harvard University",
+				ror: "https://ror.org/01an7q238",
+			};
+
+			mockClient.getById.mockResolvedValue(mockInstitution as InstitutionEntity);
+
+			await institutionsApi.getInstitution("01AN7Q238");
+			expect(mockClient.getById).toHaveBeenCalledWith("institutions", "https://ror.org/01an7q238", {});
+
+			await institutionsApi.getInstitution("ROR:01AN7Q238");
+			expect(mockClient.getById).toHaveBeenCalledWith("institutions", "https://ror.org/01an7q238", {});
+		});
+
+		it("should throw error for invalid ROR IDs", async () => {
+			// Invalid ROR IDs that should fail validation
+			const invalidRorIds = [
+				"05dxps05", // Too short
+				"05dxps0555", // Too long
+				"05dxpsi55", // Contains invalid character 'i'
+				"123456789", // All numbers, no letters
+				"ror:", // Empty ROR after prefix
+			];
+
+			for (const invalidRor of invalidRorIds) {
+				await expect(institutionsApi.getInstitution(invalidRor))
+					.rejects.toThrow();
+			}
+		});
+
+		it("should throw error for empty or null ID", async () => {
+			// Empty string should be caught by type validation first
+			await expect(institutionsApi.getInstitution("")).rejects.toThrow("Institution ID is required and must be a string");
+			await expect(institutionsApi.getInstitution("   ")).rejects.toThrow("Institution ID cannot be empty");
+			await expect(institutionsApi.getInstitution(null as any)).rejects.toThrow("Institution ID is required and must be a string");
+			await expect(institutionsApi.getInstitution(undefined as any)).rejects.toThrow("Institution ID is required and must be a string");
+		});
+
 		it("should pass additional parameters to client", async () => {
 			const mockInstitution: Partial<InstitutionEntity> = {
 				id: "I33213144",
@@ -62,6 +162,21 @@ describe("InstitutionsApi", () => {
 			await institutionsApi.getInstitution("I33213144", params);
 
 			expect(mockClient.getById).toHaveBeenCalledWith("institutions", "I33213144", params);
+		});
+
+		it("should pass additional parameters when using ROR ID", async () => {
+			const mockInstitution: Partial<InstitutionEntity> = {
+				id: "I33213144",
+				display_name: "Harvard University",
+				ror: "https://ror.org/01an7q238",
+			};
+
+			const params = { select: ["id", "display_name", "ror", "works_count"] };
+			mockClient.getById.mockResolvedValue(mockInstitution as InstitutionEntity);
+
+			await institutionsApi.getInstitution("ror:01an7q238", params);
+
+			expect(mockClient.getById).toHaveBeenCalledWith("institutions", "https://ror.org/01an7q238", params);
 		});
 	});
 

@@ -32,6 +32,34 @@ export interface InstitutionSearchOptions {
 
 /**
  * Comprehensive Institutions API class providing methods for institution data access
+ *
+ * ## ROR ID Support
+ *
+ * This API provides comprehensive support for Research Organization Registry (ROR) identifiers
+ * in addition to OpenAlex IDs. ROR IDs are automatically validated and normalized.
+ *
+ * ### Supported ROR Formats:
+ * - **Bare format**: `05dxps055` (9-character alphanumeric with letters)
+ * - **ROR prefix**: `ror:05dxps055` (ror: followed by 9-character ID)
+ * - **ROR URL**: `https://ror.org/05dxps055` (full HTTPS URL)
+ * - **ROR domain**: `ror.org/05dxps055` (domain without protocol)
+ *
+ * ### ROR Validation:
+ * - Format validation: Exactly 9 characters, alphanumeric, must contain letters
+ * - Character set validation: Uses ROR base32 (0-9, a-z excluding i, l, o, u)
+ * - Case insensitive: Accepts both uppercase and lowercase input
+ *
+ * ### Examples:
+ * ```typescript
+ * // All these formats are equivalent and valid for MIT:
+ * await institutionsApi.getInstitution('05dxps055');
+ * await institutionsApi.getInstitution('ror:05dxps055');
+ * await institutionsApi.getInstitution('https://ror.org/05dxps055');
+ * await institutionsApi.getInstitution('ror.org/05dxps055');
+ * ```
+ *
+ * Methods supporting ROR IDs: `getInstitution`, `getInstitutionWorks`,
+ * `getInstitutionAuthors`, `getAssociatedInstitutions`
  */
 export class InstitutionsApi {
 	private client: OpenAlexBaseClient;
@@ -43,20 +71,40 @@ export class InstitutionsApi {
 	/**
    * Get a single institution by its OpenAlex ID, ROR ID, or other identifier
    *
+   * Supports all ROR ID formats:
+   * - Bare format: `05dxps055`
+   * - ROR prefix: `ror:05dxps055`
+   * - ROR URL: `https://ror.org/05dxps055`
+   * - ROR domain: `ror.org/05dxps055`
+   *
+   * ROR IDs are automatically validated and normalized before querying.
+   *
    * @param id - Institution ID (OpenAlex ID, ROR ID, etc.)
    * @param params - Optional query parameters (select fields, etc.)
    * @returns Promise resolving to institution entity
+   * @throws Error if ROR ID format is invalid or fails checksum validation
    *
    * @example
    * ```typescript
+   * // OpenAlex ID
    * const institution = await institutionsApi.getInstitution('I33213144');
-   * const institutionWithSelect = await institutionsApi.getInstitution('I33213144', {
-   *   select: ['id', 'display_name', 'country_code', 'works_count']
+   *
+   * // ROR ID formats (all equivalent)
+   * const mit1 = await institutionsApi.getInstitution('05dxps055');
+   * const mit2 = await institutionsApi.getInstitution('ror:05dxps055');
+   * const mit3 = await institutionsApi.getInstitution('https://ror.org/05dxps055');
+   * const mit4 = await institutionsApi.getInstitution('ror.org/05dxps055');
+   *
+   * // With field selection
+   * const institutionWithSelect = await institutionsApi.getInstitution('05dxps055', {
+   *   select: ['id', 'display_name', 'country_code', 'works_count', 'ror']
    * });
    * ```
    */
 	async getInstitution(id: string, params: QueryParams = {}): Promise<InstitutionEntity> {
-		return this.client.getById<InstitutionEntity>("institutions", id, params);
+		// Validate and normalize ROR IDs if applicable
+		const processedId = this.validateAndNormalizeRor(id);
+		return this.client.getById<InstitutionEntity>("institutions", processedId, params);
 	}
 
 	/**
@@ -227,25 +275,35 @@ export class InstitutionsApi {
 	/**
    * Get works published by authors affiliated with a specific institution
    *
-   * @param institutionId - Institution OpenAlex ID
+   * Supports both OpenAlex IDs and ROR IDs for the institution identifier.
+   *
+   * @param institutionId - Institution OpenAlex ID or ROR ID (any format)
    * @param options - Optional search parameters for filtering works
    * @returns Promise resolving to works from the institution
    *
    * @example
    * ```typescript
+   * // Using OpenAlex ID
    * const harvardWorks = await institutionsApi.getInstitutionWorks('I136199984', {
    *   filters: { 'publication_year': '2023' },
    *   sort: 'cited_by_count',
    *   per_page: 100
    * });
+   *
+   * // Using ROR ID (all equivalent)
+   * const mitWorks1 = await institutionsApi.getInstitutionWorks('05dxps055');
+   * const mitWorks2 = await institutionsApi.getInstitutionWorks('ror:05dxps055');
+   * const mitWorks3 = await institutionsApi.getInstitutionWorks('https://ror.org/05dxps055');
    * ```
    */
 	async getInstitutionWorks(
 		institutionId: string,
 		options: InstitutionSearchOptions = {}
 	): Promise<OpenAlexResponse<Work>> {
+		// Validate and normalize ROR IDs if applicable
+		const processedId = this.validateAndNormalizeRor(institutionId);
 		const queryParams = {
-			filter: `authorships.institutions.id:${institutionId}`,
+			filter: `authorships.institutions.id:${processedId}`,
 			...this.buildQueryParams(options)
 		};
 		return this.client.getResponse<Work>("works", queryParams);
@@ -254,15 +312,24 @@ export class InstitutionsApi {
 	/**
    * Get authors affiliated with a specific institution
    *
-   * @param institutionId - Institution OpenAlex ID
+   * Supports both OpenAlex IDs and ROR IDs for the institution identifier.
+   *
+   * @param institutionId - Institution OpenAlex ID or ROR ID (any format)
    * @param options - Optional search parameters for filtering authors
    * @returns Promise resolving to authors at the institution
    *
    * @example
    * ```typescript
+   * // Using OpenAlex ID
    * const mitAuthors = await institutionsApi.getInstitutionAuthors('I121332964', {
    *   sort: 'cited_by_count',
    *   per_page: 50
+   * });
+   *
+   * // Using ROR ID formats
+   * const stanfordAuthors = await institutionsApi.getInstitutionAuthors('ror:00hj8s172', {
+   *   sort: 'works_count',
+   *   per_page: 100
    * });
    * ```
    */
@@ -270,8 +337,10 @@ export class InstitutionsApi {
 		institutionId: string,
 		options: InstitutionSearchOptions = {}
 	): Promise<OpenAlexResponse<Author>> {
+		// Validate and normalize ROR IDs if applicable
+		const processedId = this.validateAndNormalizeRor(institutionId);
 		const queryParams = {
-			filter: `last_known_institution.id:${institutionId}`,
+			filter: `last_known_institution.id:${processedId}`,
 			...this.buildQueryParams(options)
 		};
 		return this.client.getResponse<Author>("authors", queryParams);
@@ -280,26 +349,34 @@ export class InstitutionsApi {
 	/**
    * Get institutions associated with a specific institution (parent, child, or related institutions)
    *
-   * @param institutionId - Institution OpenAlex ID
+   * Supports both OpenAlex IDs and ROR IDs for the institution identifier.
+   *
+   * @param institutionId - Institution OpenAlex ID or ROR ID (any format)
    * @param options - Optional search parameters
    * @returns Promise resolving to associated institutions
    *
    * @example
    * ```typescript
+   * // Using OpenAlex ID
    * const relatedInstitutions = await institutionsApi.getAssociatedInstitutions('I33213144', {
    *   per_page: 25
    * });
+   *
+   * // Using ROR ID
+   * const cambridgeAssociated = await institutionsApi.getAssociatedInstitutions('ror:04gyf1771');
    * ```
    */
 	async getAssociatedInstitutions(
 		institutionId: string,
 		options: InstitutionSearchOptions = {}
 	): Promise<OpenAlexResponse<InstitutionEntity>> {
+		// Validate and normalize ROR IDs if applicable
+		const processedId = this.validateAndNormalizeRor(institutionId);
 		const params = {
 			...options,
 			filters: {
 				...options.filters,
-				"associated_institutions.id": institutionId
+				"associated_institutions.id": processedId
 			}
 		};
 		return this.getInstitutions(params);
@@ -455,6 +532,141 @@ export class InstitutionsApi {
 	): Promise<InstitutionEntity[]> {
 		const queryParams = this.buildQueryParams(options);
 		return this.client.getAll<InstitutionEntity>("institutions", queryParams, maxResults);
+	}
+
+	/**
+   * Validate and normalize ROR identifier if applicable
+   *
+   * @private
+   * @param id - Input identifier (could be ROR, OpenAlex ID, etc.)
+   * @returns Normalized identifier for OpenAlex API
+   * @throws Error if ROR ID format is invalid or fails validation
+   */
+	private validateAndNormalizeRor(id: string): string {
+		if (!id || typeof id !== 'string') {
+			throw new Error('Institution ID is required and must be a string');
+		}
+
+		const trimmedId = id.trim();
+		if (!trimmedId) {
+			throw new Error('Institution ID cannot be empty');
+		}
+
+		// Try to detect and normalize ROR ID
+		const normalizedRor = this.detectAndNormalizeRor(trimmedId);
+		if (normalizedRor) {
+			return normalizedRor;
+		}
+
+		// Not a ROR ID (or invalid ROR ID), return as-is for other identifier types
+		// This handles OpenAlex IDs, other external IDs, etc.
+		return trimmedId;
+	}
+
+	/**
+   * Detect and normalize ROR identifiers
+   *
+   * @private
+   * @param id - Input identifier
+   * @returns Normalized ROR URL or null if not a valid ROR ID
+   * @throws Error if identifier looks like a ROR ID but is invalid
+   */
+	private detectAndNormalizeRor(id: string): string | null {
+		if (!id || typeof id !== 'string') {
+			return null;
+		}
+
+		const trimmed = id.trim();
+
+		// ROR URL patterns
+		const urlMatch = trimmed.match(/^https?:\/\/ror\.org\/([a-z0-9]*)/i);
+		if (urlMatch) {
+			const rorId = urlMatch[1];
+			if (!rorId || rorId.length !== 9) {
+				throw new Error(`Invalid ROR ID format in URL: ${trimmed}`);
+			}
+			if (this.validateRorFormat(rorId)) {
+				return `https://ror.org/${rorId.toLowerCase()}`;
+			}
+			throw new Error(`Invalid ROR ID format: ${rorId}`);
+		}
+
+		// ROR domain pattern
+		const domainMatch = trimmed.match(/^ror\.org\/([a-z0-9]*)/i);
+		if (domainMatch) {
+			const rorId = domainMatch[1];
+			if (!rorId || rorId.length !== 9) {
+				throw new Error(`Invalid ROR ID format in domain: ${trimmed}`);
+			}
+			if (this.validateRorFormat(rorId)) {
+				return `https://ror.org/${rorId.toLowerCase()}`;
+			}
+			throw new Error(`Invalid ROR ID format: ${rorId}`);
+		}
+
+		// ROR prefix pattern
+		const prefixMatch = trimmed.match(/^ror:([a-z0-9]*)/i);
+		if (prefixMatch) {
+			const rorId = prefixMatch[1];
+			if (!rorId || rorId.length !== 9) {
+				throw new Error(`Invalid ROR ID format with ror: prefix: ${trimmed}`);
+			}
+			if (this.validateRorFormat(rorId)) {
+				return `https://ror.org/${rorId.toLowerCase()}`;
+			}
+			throw new Error(`Invalid ROR ID format: ${rorId}`);
+		}
+
+		// Bare ROR ID or malformed ROR-like ID
+		// Check for patterns that look like they could be intended as ROR IDs
+		if (/^[a-z0-9]{7,11}$/i.test(trimmed) && /[a-z]/i.test(trimmed)) {
+			// Don't treat OpenAlex IDs as ROR IDs (they start with specific prefixes)
+			if (/^[WASIPCFTKQ]/i.test(trimmed)) {
+				return null; // This is likely an OpenAlex ID, not a ROR ID
+			}
+
+			// Check if this looks like a ROR ID but has wrong length
+			if (trimmed.length !== 9) {
+				throw new Error(`Invalid ROR ID length: ${trimmed} (must be exactly 9 characters)`);
+			}
+
+			// Exactly 9 chars - validate as ROR
+			if (this.validateRorFormat(trimmed)) {
+				return `https://ror.org/${trimmed.toLowerCase()}`;
+			}
+			throw new Error(`Invalid ROR ID format: ${trimmed}`);
+		}
+
+		// Special case: all numbers (no letters) but ROR-like length
+		if (/^[0-9]{8,10}$/.test(trimmed)) {
+			throw new Error(`Invalid ROR ID: ${trimmed} (ROR IDs must contain letters)`);
+		}
+
+		return null;
+	}
+
+	/**
+   * Validate ROR format
+   *
+   * @private
+   * @param rorId - 9-character ROR identifier
+   * @returns true if valid ROR format
+   */
+	private validateRorFormat(rorId: string): boolean {
+		if (!rorId || typeof rorId !== 'string') {
+			return false;
+		}
+
+		const normalized = rorId.toLowerCase();
+
+		// Basic format validation: exactly 9 characters, alphanumeric, must contain at least one letter
+		if (!/^[a-z0-9]{9}$/i.test(normalized) || !/[a-z]/i.test(normalized)) {
+			return false;
+		}
+
+		// Validate against ROR base32 character set (0-9, a-z excluding i, l, o, u)
+		const validRorChars = /^[0-9a-hjkmnp-tv-z]{9}$/;
+		return validRorChars.test(normalized);
 	}
 
 	/**

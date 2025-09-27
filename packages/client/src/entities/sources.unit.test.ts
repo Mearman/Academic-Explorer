@@ -155,7 +155,7 @@ describe("SourcesApi", () => {
 			await sourcesApi.searchSources("nature science");
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
-				filter: "default.search:\"nature science\"",
+				search: "nature science",
 			});
 		});
 
@@ -180,7 +180,8 @@ describe("SourcesApi", () => {
 			await sourcesApi.searchSources("nature science", filters);
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
-				filter: "is_oa:true,country_code:US,default.search:\"nature science\"",
+				filter: "is_oa:true,country_code:US",
+				search: "nature science",
 			});
 		});
 
@@ -200,7 +201,7 @@ describe("SourcesApi", () => {
 			await sourcesApi.searchSources("nature science", {}, { per_page: 50, sort: "works_count:desc" });
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
-				filter: "default.search:\"nature science\"",
+				search: "nature science",
 				per_page: 50,
 				sort: "works_count:desc",
 			});
@@ -780,49 +781,393 @@ describe("SourcesApi", () => {
 		});
 	});
 
-	describe("getSourcesByISSN", () => {
-		it("should fetch sources by ISSN", async () => {
-			const mockResponse: OpenAlexResponse<Source> = {
-				results: [],
-				meta: {
-					count: 0,
-					db_response_time_ms: 50,
-					page: 1,
-					per_page: 25,
-				},
-			};
+	describe("ISSN Support", () => {
+		const mockResponse: OpenAlexResponse<Source> = {
+			results: [],
+			meta: {
+				count: 0,
+				db_response_time_ms: 50,
+				page: 1,
+				per_page: 25,
+			},
+		};
 
-			mockClient.getResponse.mockResolvedValue(mockResponse);
+		describe("getSource with ISSN detection", () => {
+			it("should resolve standard ISSN format via getSource", async () => {
+				mockClient.getResponse.mockResolvedValue({
+					...mockResponse,
+					results: [{
+						id: "S4306400886",
+						display_name: "Nature",
+						issn_l: "0028-0836",
+					} as Source]
+				});
 
-			await sourcesApi.getSourcesByISSN("0028-0836");
+				const result = await sourcesApi.getSource("0028-0836");
 
-			expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
-				filter: "ids.issn:0028-0836",
+				expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
+					filter: "ids.issn:0028-0836",
+					per_page: 1,
+				});
+				expect(result.display_name).toBe("Nature");
+			});
+
+			it("should resolve ISSN with prefix via getSource", async () => {
+				mockClient.getResponse.mockResolvedValue({
+					...mockResponse,
+					results: [{
+						id: "S4306400886",
+						display_name: "Nature",
+						issn_l: "0028-0836",
+					} as Source]
+				});
+
+				const result = await sourcesApi.getSource("ISSN 0028-0836");
+
+				expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
+					filter: "ids.issn:0028-0836",
+					per_page: 1,
+				});
+				expect(result.display_name).toBe("Nature");
+			});
+
+			it("should resolve ISSN with colon notation via getSource", async () => {
+				mockClient.getResponse.mockResolvedValue({
+					...mockResponse,
+					results: [{
+						id: "S4306400886",
+						display_name: "Nature",
+						issn_l: "0028-0836",
+					} as Source]
+				});
+
+				const result = await sourcesApi.getSource("issn:0028-0836");
+
+				expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
+					filter: "ids.issn:0028-0836",
+					per_page: 1,
+				});
+				expect(result.display_name).toBe("Nature");
+			});
+
+			it("should resolve bare 8-digit ISSN via getSource", async () => {
+				mockClient.getResponse.mockResolvedValue({
+					...mockResponse,
+					results: [{
+						id: "S4306400886",
+						display_name: "Nature",
+						issn_l: "0028-0836",
+					} as Source]
+				});
+
+				const result = await sourcesApi.getSource("00280836");
+
+				expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
+					filter: "ids.issn:0028-0836",
+					per_page: 1,
+				});
+				expect(result.display_name).toBe("Nature");
+			});
+
+			it("should handle X check digit in ISSN", async () => {
+				mockClient.getResponse.mockResolvedValue({
+					...mockResponse,
+					results: [{
+						id: "S137773608",
+						display_name: "Nature Communications",
+						issn_l: "2041-172X",
+					} as Source]
+				});
+
+				const result = await sourcesApi.getSource("issn 2041-172x");
+
+				expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
+					filter: "ids.issn:2041-172X",
+					per_page: 1,
+				});
+				expect(result.display_name).toBe("Nature Communications");
+			});
+
+			it("should throw error for invalid ISSN format", async () => {
+				await expect(sourcesApi.getSource("issn:invalid")).rejects.toThrow(
+					"Invalid ISSN format: issn:invalid"
+				);
+			});
+
+			it("should throw error when no source found for valid ISSN", async () => {
+				mockClient.getResponse.mockResolvedValue({
+					...mockResponse,
+					results: []
+				});
+
+				await expect(sourcesApi.getSource("1234-5678")).rejects.toThrow(
+					"No source found for ISSN: 1234-5678"
+				);
+			});
+
+			it("should fallback to standard getById for OpenAlex IDs", async () => {
+				const mockSource: Partial<Source> = {
+					id: "S4306400886",
+					display_name: "Nature",
+				};
+
+				mockClient.getById.mockResolvedValue(mockSource as Source);
+
+				const result = await sourcesApi.getSource("S4306400886");
+
+				expect(mockClient.getById).toHaveBeenCalledWith("sources", "S4306400886", {});
+				expect(result).toEqual(mockSource);
 			});
 		});
 
-		it("should handle additional parameters", async () => {
-			const mockResponse: OpenAlexResponse<Source> = {
-				results: [],
-				meta: {
-					count: 0,
-					db_response_time_ms: 50,
-					page: 1,
-					per_page: 25,
-				},
-			};
+		describe("getSourcesByISSN with format support", () => {
+			it("should fetch sources by standard ISSN format", async () => {
+				mockClient.getResponse.mockResolvedValue(mockResponse);
 
-			mockClient.getResponse.mockResolvedValue(mockResponse);
+				await sourcesApi.getSourcesByISSN("0028-0836");
 
-			await sourcesApi.getSourcesByISSN("0028-0836", {
-				per_page: 50,
-				sort: "works_count:desc",
+				expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
+					filter: "ids.issn:0028-0836",
+				});
 			});
 
-			expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
-				filter: "ids.issn:0028-0836",
-				per_page: 50,
-				sort: "works_count:desc",
+			it("should normalize ISSN with prefix", async () => {
+				mockClient.getResponse.mockResolvedValue(mockResponse);
+
+				await sourcesApi.getSourcesByISSN("ISSN 0028-0836");
+
+				expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
+					filter: "ids.issn:0028-0836",
+				});
+			});
+
+			it("should normalize ISSN with colon notation", async () => {
+				mockClient.getResponse.mockResolvedValue(mockResponse);
+
+				await sourcesApi.getSourcesByISSN("issn:0028-0836");
+
+				expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
+					filter: "ids.issn:0028-0836",
+				});
+			});
+
+			it("should normalize bare 8-digit ISSN format", async () => {
+				mockClient.getResponse.mockResolvedValue(mockResponse);
+
+				await sourcesApi.getSourcesByISSN("00280836");
+
+				expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
+					filter: "ids.issn:0028-0836",
+				});
+			});
+
+			it("should handle electronic ISSN format", async () => {
+				mockClient.getResponse.mockResolvedValue(mockResponse);
+
+				await sourcesApi.getSourcesByISSN("eissn:1476-4687");
+
+				expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
+					filter: "ids.issn:1476-4687",
+				});
+			});
+
+			it("should handle X check digit properly", async () => {
+				mockClient.getResponse.mockResolvedValue(mockResponse);
+
+				await sourcesApi.getSourcesByISSN("2041-172x");
+
+				expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
+					filter: "ids.issn:2041-172X",
+				});
+			});
+
+			it("should handle additional parameters", async () => {
+				mockClient.getResponse.mockResolvedValue(mockResponse);
+
+				await sourcesApi.getSourcesByISSN("0028-0836", {
+					per_page: 50,
+					sort: "works_count:desc",
+				});
+
+				expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
+					filter: "ids.issn:0028-0836",
+					per_page: 50,
+					sort: "works_count:desc",
+				});
+			});
+
+			it("should throw error for invalid ISSN format", async () => {
+				await expect(sourcesApi.getSourcesByISSN("invalid-issn")).rejects.toThrow(
+					"Invalid ISSN format: invalid-issn"
+				);
+			});
+
+			it("should throw error for empty ISSN", async () => {
+				await expect(sourcesApi.getSourcesByISSN("")).rejects.toThrow(
+					"Invalid ISSN format: "
+				);
+			});
+
+			it("should throw error for null ISSN", async () => {
+				await expect(sourcesApi.getSourcesByISSN(null as unknown as string)).rejects.toThrow(
+					"Invalid ISSN format: null"
+				);
+			});
+		});
+
+		describe("ISSN Format Validation", () => {
+			// Test private methods through public interface behavior
+			it("should accept various valid ISSN formats", async () => {
+				mockClient.getResponse.mockResolvedValue(mockResponse);
+
+				const validFormats = [
+					"0028-0836",
+					"ISSN 0028-0836",
+					"ISSN: 0028-0836",
+					"issn:0028-0836",
+					"EISSN 1476-4687",
+					"eissn:1476-4687",
+					"00280836",
+					"14764687",
+					"2041-172X",
+					"2041172X",
+					"issn 2041-172x",
+				];
+
+				for (const format of validFormats) {
+					// Should not throw an error
+					await expect(sourcesApi.getSourcesByISSN(format)).resolves.toBeDefined();
+				}
+			});
+
+			it("should reject invalid ISSN formats", async () => {
+				const invalidFormats = [
+					"invalid",
+					"123-456",
+					"12345678901",
+					"abcd-efgh",
+					"0028-08367",
+					"002-0836",
+					"S4306400886", // OpenAlex ID format
+					"10.1038/nature", // DOI format
+				];
+
+				for (const format of invalidFormats) {
+					await expect(sourcesApi.getSourcesByISSN(format)).rejects.toThrow(
+						`Invalid ISSN format: ${format}`
+					);
+				}
+			});
+		});
+
+		describe("validateISSN utility method", () => {
+			it("should validate standard ISSN format", () => {
+				const result = sourcesApi.validateISSN("0028-0836");
+				expect(result).toEqual({
+					isValid: true,
+					normalized: "0028-0836",
+					format: "standard",
+				});
+			});
+
+			it("should validate ISSN with prefix", () => {
+				const result = sourcesApi.validateISSN("ISSN 0028-0836");
+				expect(result).toEqual({
+					isValid: true,
+					normalized: "0028-0836",
+					format: "with_prefix",
+				});
+			});
+
+			it("should validate ISSN with scheme notation", () => {
+				const result = sourcesApi.validateISSN("issn:0028-0836");
+				expect(result).toEqual({
+					isValid: true,
+					normalized: "0028-0836",
+					format: "scheme_notation",
+				});
+			});
+
+			it("should validate bare ISSN format", () => {
+				const result = sourcesApi.validateISSN("00280836");
+				expect(result).toEqual({
+					isValid: true,
+					normalized: "0028-0836",
+					format: "bare",
+				});
+			});
+
+			it("should return error for invalid ISSN", () => {
+				const result = sourcesApi.validateISSN("invalid");
+				expect(result).toEqual({
+					isValid: false,
+					error: "Invalid ISSN format",
+				});
+			});
+
+			it("should return error for empty string", () => {
+				const result = sourcesApi.validateISSN("");
+				expect(result).toEqual({
+					isValid: false,
+					error: "ISSN must be a non-empty string",
+				});
+			});
+		});
+
+		describe("getSourcesByMultipleISSNs", () => {
+			it("should fetch sources for multiple ISSNs", async () => {
+				mockClient.getResponse.mockResolvedValue(mockResponse);
+
+				await sourcesApi.getSourcesByMultipleISSNs([
+					"0028-0836",
+					"ISSN 2041-1723",
+					"eissn:1476-4687"
+				]);
+
+				expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
+					filter: "ids.issn:0028-0836|2041-1723|1476-4687",
+				});
+			});
+
+			it("should handle additional parameters", async () => {
+				mockClient.getResponse.mockResolvedValue(mockResponse);
+
+				await sourcesApi.getSourcesByMultipleISSNs(
+					["0028-0836", "2041-1723"],
+					{ per_page: 50, sort: "works_count:desc" }
+				);
+
+				expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
+					filter: "ids.issn:0028-0836|2041-1723",
+					per_page: 50,
+					sort: "works_count:desc",
+				});
+			});
+
+			it("should throw error for empty array", async () => {
+				await expect(sourcesApi.getSourcesByMultipleISSNs([])).rejects.toThrow(
+					"ISSN array must be non-empty"
+				);
+			});
+
+			it("should throw error when no valid ISSNs found", async () => {
+				await expect(sourcesApi.getSourcesByMultipleISSNs(["invalid1", "invalid2"])).rejects.toThrow(
+					"No valid ISSNs found in: invalid1, invalid2"
+				);
+			});
+
+			it("should filter out invalid ISSNs and proceed with valid ones", async () => {
+				mockClient.getResponse.mockResolvedValue(mockResponse);
+
+				await sourcesApi.getSourcesByMultipleISSNs([
+					"0028-0836",    // valid
+					"invalid",      // invalid
+					"2041-1723"     // valid
+				]);
+
+				expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
+					filter: "ids.issn:0028-0836|2041-1723",
+				});
 			});
 		});
 	});

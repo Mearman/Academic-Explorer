@@ -73,8 +73,126 @@ describe("AuthorsApi", () => {
 
 			const result = await authorsApi.getAuthor("0000-0003-1613-5981");
 
-			expect(mockClient.getById).toHaveBeenCalledWith("authors", "0000-0003-1613-5981", {});
+			expect(mockClient.getById).toHaveBeenCalledWith("authors", "https://orcid.org/0000-0003-1613-5981", {});
 			expect(result).toEqual(mockAuthor);
+		});
+
+		it("should normalize ORCID URL format", async () => {
+			const mockAuthor: Partial<Author> = {
+				id: "A2208157607",
+				orcid: "0000-0003-1613-5981",
+				display_name: "ORCID Author",
+			};
+
+			mockClient.getById.mockResolvedValue(mockAuthor as Author);
+
+			const result = await authorsApi.getAuthor("https://orcid.org/0000-0003-1613-5981");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("authors", "https://orcid.org/0000-0003-1613-5981", {});
+			expect(result).toEqual(mockAuthor);
+		});
+
+		it("should normalize ORCID prefixed format", async () => {
+			const mockAuthor: Partial<Author> = {
+				id: "A2208157607",
+				orcid: "0000-0003-1613-5981",
+				display_name: "ORCID Author",
+			};
+
+			mockClient.getById.mockResolvedValue(mockAuthor as Author);
+
+			const result = await authorsApi.getAuthor("orcid:0000-0003-1613-5981");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("authors", "https://orcid.org/0000-0003-1613-5981", {});
+			expect(result).toEqual(mockAuthor);
+		});
+
+		it("should normalize ORCID with lowercase check digit", async () => {
+			const mockAuthor: Partial<Author> = {
+				id: "A2208157607",
+				orcid: "0000-0003-1613-598x",
+				display_name: "ORCID Author",
+			};
+
+			mockClient.getById.mockResolvedValue(mockAuthor as Author);
+
+			const result = await authorsApi.getAuthor("0000-0003-1613-598x");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("authors", "https://orcid.org/0000-0003-1613-598X", {});
+			expect(result).toEqual(mockAuthor);
+		});
+
+		it("should normalize HTTP ORCID URL", async () => {
+			const mockAuthor: Partial<Author> = {
+				id: "A2208157607",
+				orcid: "0000-0003-1613-5981",
+				display_name: "ORCID Author",
+			};
+
+			mockClient.getById.mockResolvedValue(mockAuthor as Author);
+
+			const result = await authorsApi.getAuthor("http://orcid.org/0000-0003-1613-5981");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("authors", "https://orcid.org/0000-0003-1613-5981", {});
+			expect(result).toEqual(mockAuthor);
+		});
+
+		it("should handle non-ORCID IDs without modification", async () => {
+			const mockAuthor: Partial<Author> = {
+				id: "A2208157607",
+				display_name: "Regular Author",
+			};
+
+			mockClient.getById.mockResolvedValue(mockAuthor as Author);
+
+			const result = await authorsApi.getAuthor("A2208157607");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("authors", "A2208157607", {});
+			expect(result).toEqual(mockAuthor);
+		});
+	});
+
+	describe("ORCID validation", () => {
+		describe("isValidOrcid", () => {
+			it("should validate bare ORCID format", () => {
+				expect(authorsApi.isValidOrcid("0000-0003-1613-5981")).toBe(true);
+				expect(authorsApi.isValidOrcid("0000-0002-1825-0097")).toBe(true);
+				expect(authorsApi.isValidOrcid("0000-0001-2345-678X")).toBe(true);
+			});
+
+			it("should validate ORCID URL format", () => {
+				expect(authorsApi.isValidOrcid("https://orcid.org/0000-0003-1613-5981")).toBe(true);
+				expect(authorsApi.isValidOrcid("http://orcid.org/0000-0002-1825-0097")).toBe(true);
+				expect(authorsApi.isValidOrcid("orcid.org/0000-0001-2345-678X")).toBe(true);
+			});
+
+			it("should validate ORCID prefixed format", () => {
+				expect(authorsApi.isValidOrcid("orcid:0000-0003-1613-5981")).toBe(true);
+				expect(authorsApi.isValidOrcid("orcid:0000-0002-1825-0097")).toBe(true);
+				expect(authorsApi.isValidOrcid("orcid:0000-0001-2345-678X")).toBe(true);
+			});
+
+			it("should handle case-insensitive check digits", () => {
+				expect(authorsApi.isValidOrcid("0000-0001-2345-678x")).toBe(true);
+				expect(authorsApi.isValidOrcid("0000-0001-2345-678X")).toBe(true);
+				expect(authorsApi.isValidOrcid("orcid:0000-0001-2345-678x")).toBe(true);
+			});
+
+			it("should reject invalid ORCID formats", () => {
+				expect(authorsApi.isValidOrcid("0000-0001-2345-67890")).toBe(false); // Too many digits
+				expect(authorsApi.isValidOrcid("0000-0001-2345-678")).toBe(false); // Too few digits
+				expect(authorsApi.isValidOrcid("0000-0001-2345-678Y")).toBe(false); // Invalid check digit
+				expect(authorsApi.isValidOrcid("000-0001-2345-6789")).toBe(false); // Invalid format
+				expect(authorsApi.isValidOrcid("A2208157607")).toBe(false); // Not an ORCID
+				expect(authorsApi.isValidOrcid("")).toBe(false); // Empty string
+				expect(authorsApi.isValidOrcid("   ")).toBe(false); // Whitespace only
+			});
+
+			it("should handle malformed inputs", () => {
+				expect(authorsApi.isValidOrcid("https://orcid.org/")).toBe(false); // Empty ORCID in URL
+				expect(authorsApi.isValidOrcid("orcid:")).toBe(false); // Empty ORCID with prefix
+				expect(authorsApi.isValidOrcid("https://orcid.org/invalid")).toBe(false); // Invalid ORCID in URL
+			});
 		});
 	});
 
@@ -137,7 +255,7 @@ describe("AuthorsApi", () => {
 			await authorsApi.searchAuthors("einstein");
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("authors", {
-				filter: "default.search:einstein",
+				search: "einstein",
 			});
 		});
 
@@ -156,7 +274,8 @@ describe("AuthorsApi", () => {
 			});
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("authors", {
-				filter: "default.search:machine%20learning,works_count:%3E10,has_orcid:true,cited_by_count:500",
+				search: "machine learning",
+				filter: "works_count:>10,has_orcid:true,cited_by_count:500",
 			});
 		});
 
@@ -174,7 +293,8 @@ describe("AuthorsApi", () => {
 			});
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("authors", {
-				filter: "default.search:query,last_known_institution.id:I27837315%7CI123456789,x_concepts.id:C41008148",
+				search: "query",
+				filter: "last_known_institution.id:I27837315|I123456789,x_concepts.id:C41008148",
 			});
 		});
 
@@ -193,7 +313,8 @@ describe("AuthorsApi", () => {
 			});
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("authors", {
-				filter: "default.search:test,works_count:50",
+				search: "test",
+				filter: "works_count:50",
 			});
 		});
 
@@ -211,7 +332,7 @@ describe("AuthorsApi", () => {
 			});
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("authors", {
-				filter: "default.search:test",
+				search: "test",
 				per_page: 100,
 				sort: "works_count:desc",
 			});
@@ -248,7 +369,7 @@ describe("AuthorsApi", () => {
 			await authorsApi.getAuthorsByInstitution("I27837315?test=value");
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("authors", {
-				filter: "last_known_institution.id:I27837315%3Ftest%3Dvalue",
+				filter: "last_known_institution.id:I27837315?test=value",
 			});
 		});
 
@@ -365,7 +486,7 @@ describe("AuthorsApi", () => {
 			await authorsApi.getAuthorWorks("A2208157607", filters);
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("works", {
-				filter: "authorships.author.id:A2208157607,publication_year:%3E2020,is_oa:true,cited_by_count:10,type:journal-article%7Cconference-paper,primary_topic.id:T10555%7CT11234",
+				filter: "authorships.author.id:A2208157607,publication_year:>2020,is_oa:true,cited_by_count:10,type:journal-article|conference-paper,primary_topic.id:T10555|T11234",
 			});
 		});
 
@@ -400,7 +521,7 @@ describe("AuthorsApi", () => {
 			await authorsApi.getAuthorWorks("A123?test=value");
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("works", {
-				filter: "authorships.author.id:A123%3Ftest%3Dvalue",
+				filter: "authorships.author.id:A123?test=value",
 			});
 		});
 	});
@@ -630,7 +751,7 @@ describe("AuthorsApi", () => {
 			});
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("works", {
-				filter: "authorships.author.id:A2208157607,publication_year:%3E%3D2020",
+				filter: "authorships.author.id:A2208157607,publication_year:>=2020",
 				select: ["authorships", "publication_year"],
 				per_page: 200,
 			});
@@ -873,7 +994,7 @@ describe("AuthorsApi", () => {
 			});
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("authors", {
-				filter: "last_known_institution.id:I27837315%7CI123456789",
+				filter: "last_known_institution.id:I27837315|I123456789",
 				sort: "cited_by_count:desc",
 				per_page: 25,
 			});
@@ -1037,7 +1158,7 @@ describe("AuthorsApi", () => {
 			await authorsApi.searchAuthors("");
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("authors", {
-				filter: "default.search:",
+				search: "",
 			});
 		});
 
@@ -1052,7 +1173,7 @@ describe("AuthorsApi", () => {
 			await authorsApi.searchAuthors('test & query with "quotes"');
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("authors", {
-				filter: "default.search:test%20%26%20query%20with%20%22quotes%22",
+				search: "test & query with \"quotes\"",
 			});
 		});
 	});

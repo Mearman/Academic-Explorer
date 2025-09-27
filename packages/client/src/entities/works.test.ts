@@ -52,6 +52,65 @@ describe("WorksApi", () => {
 				select: ["id", "display_name"],
 			});
 		});
+
+		it("should fetch a single work by PMID with lowercase prefix", async () => {
+			const mockWork: Partial<Work> = {
+				id: "W2741809807",
+				display_name: "Test Work from PubMed",
+				publication_year: 2023,
+				cited_by_count: 42,
+			};
+
+			mockClient.getById.mockResolvedValue(mockWork as Work);
+
+			const result = await worksApi.getWork("pmid:12345678");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "pmid:12345678", {});
+			expect(result).toEqual(mockWork);
+		});
+
+		it("should fetch a single work by PMID with uppercase prefix", async () => {
+			const mockWork: Partial<Work> = {
+				id: "W2741809807",
+				display_name: "Test Work from PubMed",
+				publication_year: 2023,
+				cited_by_count: 42,
+			};
+
+			mockClient.getById.mockResolvedValue(mockWork as Work);
+
+			const result = await worksApi.getWork("PMID:12345678");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "pmid:12345678", {});
+			expect(result).toEqual(mockWork);
+		});
+
+		it("should fetch a single work by bare numeric PMID", async () => {
+			const mockWork: Partial<Work> = {
+				id: "W2741809807",
+				display_name: "Test Work from PubMed",
+				publication_year: 2023,
+				cited_by_count: 42,
+			};
+
+			mockClient.getById.mockResolvedValue(mockWork as Work);
+
+			const result = await worksApi.getWork("12345678");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "pmid:12345678", {});
+			expect(result).toEqual(mockWork);
+		});
+
+		it("should handle invalid PMID formats gracefully", async () => {
+			const mockWork: Partial<Work> = { id: "invalid123", display_name: "Test" };
+			mockClient.getById.mockResolvedValue(mockWork as Work);
+
+			// Invalid PMIDs should be passed through as-is (no normalization)
+			const result = await worksApi.getWork("invalid123");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "invalid123", {});
+			expect(result).toEqual(mockWork);
+		});
 	});
 
 	describe("getWorks", () => {

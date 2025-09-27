@@ -17,6 +17,29 @@ import type {
 // Mock the base client
 vi.mock("../client");
 
+// Mock the ID resolver utilities
+vi.mock("../utils/id-resolver", () => ({
+	isValidWikidata: vi.fn((id: string) => {
+		// Mock implementation that recognizes various Wikidata formats
+		return /^Q\d+$/.test(id) ||
+		       id.startsWith('wikidata:Q') ||
+		       id.includes('wikidata.org/wiki/Q') ||
+		       id.includes('wikidata.org/entity/Q');
+	}),
+	normalizeExternalId: vi.fn((id: string, type: string) => {
+		if (type !== 'wikidata') return null;
+
+		// Extract Q number from various formats
+		if (/^Q\d+$/.test(id)) return id; // Already Q format
+		if (id.startsWith('wikidata:')) return id.replace('wikidata:', '');
+
+		const urlMatch = id.match(/wikidata\.org\/(?:wiki|entity)\/(Q\d+)/);
+		if (urlMatch) return urlMatch[1];
+
+		return null;
+	})
+}));
+
 describe("TopicsApi", () => {
 	let topicsApi: TopicsApi;
 	let mockClient: vi.Mocked<OpenAlexBaseClient>;
@@ -63,6 +86,93 @@ describe("TopicsApi", () => {
 			await topicsApi.get("T10138", params);
 
 			expect(mockClient.getById).toHaveBeenCalledWith("topics", "T10138", params);
+		});
+
+		// Wikidata ID tests
+		it("should handle Wikidata ID in Q format", async () => {
+			const mockTopic: Partial<Topic> = {
+				id: "T10138",
+				display_name: "Machine Learning",
+			};
+
+			mockClient.getById.mockResolvedValue(mockTopic as Topic);
+
+			const result = await topicsApi.get("Q123456");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("topics", "wikidata:Q123456", {});
+			expect(result).toEqual(mockTopic);
+		});
+
+		it("should handle Wikidata ID in wikidata: format", async () => {
+			const mockTopic: Partial<Topic> = {
+				id: "T10138",
+				display_name: "Artificial Intelligence",
+			};
+
+			mockClient.getById.mockResolvedValue(mockTopic as Topic);
+
+			const result = await topicsApi.get("wikidata:Q123456");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("topics", "wikidata:Q123456", {});
+			expect(result).toEqual(mockTopic);
+		});
+
+		it("should handle Wikidata URL wiki format", async () => {
+			const mockTopic: Partial<Topic> = {
+				id: "T10138",
+				display_name: "Deep Learning",
+			};
+
+			mockClient.getById.mockResolvedValue(mockTopic as Topic);
+
+			const result = await topicsApi.get("https://www.wikidata.org/wiki/Q123456");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("topics", "wikidata:Q123456", {});
+			expect(result).toEqual(mockTopic);
+		});
+
+		it("should handle Wikidata URL entity format", async () => {
+			const mockTopic: Partial<Topic> = {
+				id: "T10138",
+				display_name: "Neural Networks",
+			};
+
+			mockClient.getById.mockResolvedValue(mockTopic as Topic);
+
+			const result = await topicsApi.get("https://www.wikidata.org/entity/Q123456");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("topics", "wikidata:Q123456", {});
+			expect(result).toEqual(mockTopic);
+		});
+
+		it("should handle Wikidata ID with parameters", async () => {
+			const mockTopic: Partial<Topic> = {
+				id: "T10138",
+				display_name: "Computer Vision",
+			};
+
+			const params = { select: ["id", "display_name", "keywords"] };
+			mockClient.getById.mockResolvedValue(mockTopic as Topic);
+
+			const result = await topicsApi.get("Q789012", params);
+
+			expect(mockClient.getById).toHaveBeenCalledWith("topics", "wikidata:Q789012", params);
+			expect(result).toEqual(mockTopic);
+		});
+
+		it("should fall back to original ID for invalid Wikidata format", async () => {
+			const mockTopic: Partial<Topic> = {
+				id: "T10138",
+				display_name: "Test Topic",
+			};
+
+			mockClient.getById.mockResolvedValue(mockTopic as Topic);
+
+			const result = await topicsApi.get("Q-invalid");
+
+			// Should use original ID since Q-invalid is not a valid Wikidata format
+			expect(mockClient.getById).toHaveBeenCalledWith("topics", "Q-invalid", {});
+			expect(result).toEqual(mockTopic);
 		});
 	});
 

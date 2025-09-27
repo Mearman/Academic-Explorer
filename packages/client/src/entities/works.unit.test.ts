@@ -111,6 +111,107 @@ describe("WorksApi Unit Tests", () => {
 			expect(result).toEqual(mockWork);
 		});
 
+		it("should normalize and fetch work by bare DOI", async () => {
+			mockClient.getById.mockResolvedValue(mockWork);
+
+			const result = await worksApi.getWork("10.7717/peerj.4375");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "https://doi.org/10.7717/peerj.4375", {});
+			expect(result).toEqual(mockWork);
+		});
+
+		it("should normalize and fetch work by DOI with prefix", async () => {
+			mockClient.getById.mockResolvedValue(mockWork);
+
+			const result = await worksApi.getWork("doi:10.7717/peerj.4375");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "https://doi.org/10.7717/peerj.4375", {});
+			expect(result).toEqual(mockWork);
+		});
+
+		it("should handle DOI with uppercase prefix", async () => {
+			mockClient.getById.mockResolvedValue(mockWork);
+
+			const result = await worksApi.getWork("DOI:10.7717/peerj.4375");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "https://doi.org/10.7717/peerj.4375", {});
+			expect(result).toEqual(mockWork);
+		});
+
+		it("should normalize HTTP DOI URLs to HTTPS", async () => {
+			mockClient.getById.mockResolvedValue(mockWork);
+
+			const result = await worksApi.getWork("http://doi.org/10.7717/peerj.4375");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "https://doi.org/10.7717/peerj.4375", {});
+			expect(result).toEqual(mockWork);
+		});
+
+		it("should handle DOI URLs with www subdomain", async () => {
+			mockClient.getById.mockResolvedValue(mockWork);
+
+			const result = await worksApi.getWork("https://www.doi.org/10.7717/peerj.4375");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "https://doi.org/10.7717/peerj.4375", {});
+			expect(result).toEqual(mockWork);
+		});
+
+		it("should handle crossref.org redirect URLs", async () => {
+			mockClient.getById.mockResolvedValue(mockWork);
+
+			const result = await worksApi.getWork("https://www.crossref.org/iPage?doi=10.7717/peerj.4375");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "https://doi.org/10.7717/peerj.4375", {});
+			expect(result).toEqual(mockWork);
+		});
+
+		it("should handle URL-encoded DOIs in crossref redirects", async () => {
+			mockClient.getById.mockResolvedValue(mockWork);
+
+			const result = await worksApi.getWork("https://www.crossref.org/iPage?doi=10.7717%2Fpeerj.4375");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "https://doi.org/10.7717/peerj.4375", {});
+			expect(result).toEqual(mockWork);
+		});
+
+		it("should handle DOIs with complex suffixes", async () => {
+			mockClient.getById.mockResolvedValue(mockWork);
+
+			const result = await worksApi.getWork("10.1038/s41586-021-03819-2");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "https://doi.org/10.1038/s41586-021-03819-2", {});
+			expect(result).toEqual(mockWork);
+		});
+
+		it("should reject invalid DOI formats", async () => {
+			mockClient.getById.mockResolvedValue(mockWork);
+
+			// Invalid DOIs should pass through without normalization
+			const result = await worksApi.getWork("10.123/invalid");  // Registrant too short
+
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "10.123/invalid", {});
+			expect(result).toEqual(mockWork);
+		});
+
+		it("should reject DOIs with missing suffix", async () => {
+			mockClient.getById.mockResolvedValue(mockWork);
+
+			// Invalid DOIs should pass through without normalization
+			const result = await worksApi.getWork("10.1234/");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "10.1234/", {});
+			expect(result).toEqual(mockWork);
+		});
+
+		it("should handle DOIs with whitespace", async () => {
+			mockClient.getById.mockResolvedValue(mockWork);
+
+			const result = await worksApi.getWork("  10.7717/peerj.4375  ");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "https://doi.org/10.7717/peerj.4375", {});
+			expect(result).toEqual(mockWork);
+		});
+
 		it("should pass query parameters to client", async () => {
 			mockClient.getById.mockResolvedValue(mockWork);
 			const params: QueryParams = {
@@ -148,6 +249,110 @@ describe("WorksApi Unit Tests", () => {
 			await worksApi.getWork("W2741809807", undefined);
 
 			expect(mockClient.getById).toHaveBeenCalledWith("works", "W2741809807", {});
+		});
+
+		it("should fetch a work by PMID with lowercase prefix", async () => {
+			mockClient.getById.mockResolvedValue(mockWork);
+
+			const result = await worksApi.getWork("pmid:12345678");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "pmid:12345678", {});
+			expect(result).toEqual(mockWork);
+		});
+
+		it("should fetch a work by PMID with uppercase prefix", async () => {
+			mockClient.getById.mockResolvedValue(mockWork);
+
+			const result = await worksApi.getWork("PMID:12345678");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "pmid:12345678", {});
+			expect(result).toEqual(mockWork);
+		});
+
+		it("should fetch a work by bare numeric PMID", async () => {
+			mockClient.getById.mockResolvedValue(mockWork);
+
+			const result = await worksApi.getWork("12345678");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "pmid:12345678", {});
+			expect(result).toEqual(mockWork);
+		});
+
+		it("should normalize single digit PMID", async () => {
+			mockClient.getById.mockResolvedValue(mockWork);
+
+			const result = await worksApi.getWork("1");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "pmid:1", {});
+			expect(result).toEqual(mockWork);
+		});
+
+		it("should normalize 10-digit PMID (maximum length)", async () => {
+			mockClient.getById.mockResolvedValue(mockWork);
+
+			const result = await worksApi.getWork("1234567890");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "pmid:1234567890", {});
+			expect(result).toEqual(mockWork);
+		});
+
+		it("should handle PMID with whitespace", async () => {
+			mockClient.getById.mockResolvedValue(mockWork);
+
+			const result = await worksApi.getWork("  pmid:12345678  ");
+
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "pmid:12345678", {});
+			expect(result).toEqual(mockWork);
+		});
+
+		it("should reject invalid PMID with too many digits", async () => {
+			mockClient.getById.mockResolvedValue(mockWork);
+
+			const result = await worksApi.getWork("12345678901"); // 11 digits
+
+			// Should pass through as-is (not recognized as PMID)
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "12345678901", {});
+			expect(result).toEqual(mockWork);
+		});
+
+		it("should reject PMID starting with zero", async () => {
+			mockClient.getById.mockResolvedValue(mockWork);
+
+			const result = await worksApi.getWork("01234567");
+
+			// Should pass through as-is (not recognized as PMID)
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "01234567", {});
+			expect(result).toEqual(mockWork);
+		});
+
+		it("should reject PMID with non-numeric characters", async () => {
+			mockClient.getById.mockResolvedValue(mockWork);
+
+			const result = await worksApi.getWork("pmid:123abc45");
+
+			// Should pass through as-is (not recognized as valid PMID)
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "pmid:123abc45", {});
+			expect(result).toEqual(mockWork);
+		});
+
+		it("should reject empty PMID", async () => {
+			mockClient.getById.mockResolvedValue(mockWork);
+
+			const result = await worksApi.getWork("pmid:");
+
+			// Should pass through as-is (not recognized as valid PMID)
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "pmid:", {});
+			expect(result).toEqual(mockWork);
+		});
+
+		it("should handle mixed case in PMID prefix", async () => {
+			mockClient.getById.mockResolvedValue(mockWork);
+
+			const result = await worksApi.getWork("Pmid:12345678");
+
+			// Should pass through as-is (case sensitive, only pmid/PMID supported)
+			expect(mockClient.getById).toHaveBeenCalledWith("works", "Pmid:12345678", {});
+			expect(result).toEqual(mockWork);
 		});
 	});
 
