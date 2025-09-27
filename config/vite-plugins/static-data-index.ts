@@ -8,7 +8,7 @@ import {
   generateIndexForEntityType,
   validateStaticDataIndex,
   getEntityTypeFromPath,
-  type OpenAlexEntityType
+  type EntityType
 } from "../../apps/web/src/lib/utils/static-data-index-generator";
 
 export interface StaticDataIndexPluginOptions {
@@ -67,7 +67,7 @@ export function staticDataIndexPlugin(options: StaticDataIndexPluginOptions = {}
     changeDebounceMap.set(entityType, timeout);
   };
 
-  const handleFileChange = async (filePath: string, action: string, entityType: OpenAlexEntityType) => {
+  const handleFileChange = async (filePath: string, action: string, entityType: EntityType) => {
     try {
       const entityDir = join(staticDataDir, entityType);
       const fileName = basename(filePath);
