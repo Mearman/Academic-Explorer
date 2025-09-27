@@ -14,6 +14,7 @@ import type {
 } from "../types";
 import { OpenAlexBaseClient } from "../client";
 import { isValidWikidata, normalizeExternalId } from "../utils/id-resolver";
+import { buildFilterString } from "../utils/query-builder";
 
 /**
  * TopicsApi provides methods for interacting with OpenAlex topics
@@ -68,12 +69,48 @@ export class TopicsApi {
 	}
 
 	/**
+   * Get a single topic by its OpenAlex ID or Wikidata ID (alias for get)
+   * @param id - The OpenAlex ID or Wikidata ID
+   * @param params - Optional query parameters for additional data
+   * @returns Promise resolving to the topic object
+   */
+	async getTopic(id: string, params: QueryParams = {}): Promise<Topic> {
+		return this.get(id, params);
+	}
+
+	/**
    * Get multiple topics with optional filtering and sorting
    * @param params - Query parameters for filtering, sorting, and pagination
    * @returns Promise resolving to paginated topics response
    */
 	async getMultiple(params: QueryParams & TopicsFilters = {}): Promise<OpenAlexResponse<Topic>> {
 		return this.client.getResponse<Topic>("topics", params);
+	}
+
+	/**
+   * Get multiple topics with optional filtering and sorting (alias for getMultiple)
+   * @param params - Query parameters for filtering, sorting, and pagination
+   * @returns Promise resolving to paginated topics response
+   */
+	async getTopics(params: QueryParams & TopicsFilters & { filter?: TopicsFilters } = {}): Promise<OpenAlexResponse<Topic>> {
+		const processedParams = this.buildQueryParams(params);
+		return this.client.getResponse<Topic>("topics", processedParams);
+	}
+
+	/**
+	 * Build query parameters with proper filter processing
+	 * @private
+	 */
+	private buildQueryParams(params: QueryParams & TopicsFilters & { filter?: TopicsFilters } = {}): QueryParams {
+		const { filter, ...otherParams } = params;
+		const queryParams: QueryParams = { ...otherParams };
+
+		// Handle filter object conversion to string
+		if (filter && typeof filter === 'object' && Object.keys(filter).length > 0) {
+			queryParams.filter = buildFilterString(filter);
+		}
+
+		return queryParams;
 	}
 
 	/**
