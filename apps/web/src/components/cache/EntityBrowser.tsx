@@ -87,7 +87,7 @@ export function EntityBrowser({ className }: EntityBrowserProps) {
   ]);
   const [sortBy, setSortBy] = useState<CacheBrowserOptions['sortBy']>('timestamp');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
-  const [pageSize, setPageSize] = useState(50);
+  const [pageSize, setPageSize] = useState(100); // Increase default for virtualization
   const [currentPage, setCurrentPage] = useState(0);
 
   const filters: Partial<CacheBrowserFilters> = useMemo(() => ({
@@ -96,14 +96,18 @@ export function EntityBrowser({ className }: EntityBrowserProps) {
     storageLocations: new Set(['indexeddb', 'localstorage', 'repository']), // Include all storage
   }), [searchQuery, selectedTypes]);
 
+  // Determine if we should load more data for virtualization
+  const shouldLoadMore = state.entities.length > 200; // Enable virtualization for larger datasets
+  const effectiveLimit = shouldLoadMore ? Math.max(pageSize * 10, 1000) : pageSize; // Load more data when virtualizing
+
   const options: Partial<CacheBrowserOptions> = useMemo(() => ({
     sortBy,
     sortDirection,
-    limit: pageSize,
-    offset: currentPage * pageSize,
+    limit: effectiveLimit,
+    offset: shouldLoadMore ? 0 : currentPage * pageSize, // Reset offset when virtualizing
     includeBasicInfo: true,
     includeRepositoryData: true,
-  }), [sortBy, sortDirection, pageSize, currentPage]);
+  }), [sortBy, sortDirection, effectiveLimit, shouldLoadMore, pageSize, currentPage]);
 
   const loadEntities = async () => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
@@ -356,12 +360,13 @@ export function EntityBrowser({ className }: EntityBrowserProps) {
               <Select
                 label="Show"
                 data={[
-                  { value: '25', label: '25 items' },
                   { value: '50', label: '50 items' },
                   { value: '100', label: '100 items' },
+                  { value: '250', label: '250 items' },
+                  { value: '500', label: '500 items' },
                 ]}
                 value={pageSize.toString()}
-                onChange={(value) => { setPageSize(Number(value) || 50); }}
+                onChange={(value) => { setPageSize(Number(value) || 100); }}
                 w={120}
               />
             </Group>
@@ -390,6 +395,9 @@ export function EntityBrowser({ className }: EntityBrowserProps) {
             pageSize={pageSize}
             searchable={false} // We handle search ourselves
             onRowClick={handleEntityClick}
+            enableVirtualization={state.entities.length > 100} // Enable for large datasets
+            estimateSize={60} // Row height for EntityBrowser rows
+            maxHeight={700} // Reasonable height for entity browser
           />
           
           {state.hasMore && (
