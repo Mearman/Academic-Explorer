@@ -1,12 +1,13 @@
 {
-  "lastUpdated": "2025-09-27T16:51:55.744Z",
-  "path": "authors",
-  "files": {
-    "A5017898742": {
-      "$ref": "./A5017898742.json",
-      "retrieved_at": "2025-09-27T16:51:55.733Z",
-      "contentHash": "-bh7ofa"
+  "entityType": "authors",
+  "entityCount": 1,
+  "lastUpdated": "2025-09-27T17:42:12.727Z",
+  "entities": [
+    {
+      "id": "A5017898742",
+      "fileName": "A5017898742.json",
+      "size": 21012,
+      "lastModified": "2025-09-27T16:51:55.739Z"
     }
-  },
-  "directories": {}
+  ]
 }
