@@ -12,8 +12,7 @@
  * - Concurrent processing with configurable limits
  */
 
-import * as fs from 'fs/promises';
-import * as path from 'path';
+// Dynamic imports for Node.js modules to avoid browser bundling issues
 import { logger } from '../logger.js';
 import { isRecord } from '../validation.js';
 import type {
@@ -43,12 +42,28 @@ const logCategory = 'static-data-index';
 export class StaticDataIndexGenerator {
   private readonly config: IndexGenerationConfig;
   private progressCallbacks: Set<(progress: IndexGenerationProgress) => void> = new Set();
+  private fs: any;
+  private path: any;
 
   constructor(config: Partial<IndexGenerationConfig> = {}) {
     this.config = {
       ...DEFAULT_INDEX_CONFIG,
       ...config,
     };
+  }
+
+  /**
+   * Initialize Node.js modules (required before using any file operations)
+   */
+  private async initializeNodeModules(): Promise<void> {
+    if (!this.fs || !this.path) {
+      const [fsModule, pathModule] = await Promise.all([
+        import('fs').then(m => m.promises),
+        import('path')
+      ]);
+      this.fs = fsModule;
+      this.path = pathModule;
+    }
   }
 
   /**
@@ -82,6 +97,7 @@ export class StaticDataIndexGenerator {
    * Generate indexes for all entity types in the root directory
    */
   async generateAllIndexes(): Promise<IndexGenerationResult> {
+    await this.initializeNodeModules();
     const startTime = Date.now();
     const result: IndexGenerationResult = {
       success: false,
@@ -201,8 +217,9 @@ export class StaticDataIndexGenerator {
    * Generate index for a specific entity type
    */
   async generateIndexForEntityType(entityType: EntityType): Promise<string> {
-    const entityDir = path.join(this.config.rootPath, entityType);
-    const indexPath = path.join(entityDir, 'index.json');
+    await this.initializeNodeModules();
+    const entityDir = this.path.join(this.config.rootPath, entityType);
+    const indexPath = this.path.join(entityDir, 'index.json');
 
     logger.debug(logCategory, `Generating index for entity type: ${entityType}`, {
       entityDir,
@@ -211,7 +228,7 @@ export class StaticDataIndexGenerator {
 
     // Check if directory exists
     try {
-      const stat = await fs.stat(entityDir);
+      const stat = await this.fs.stat(entityDir);
       if (!stat.isDirectory()) {
         throw new Error(`Entity directory is not a directory: ${entityDir}`);
       }
@@ -246,7 +263,7 @@ export class StaticDataIndexGenerator {
               filesProcessed: index,
               totalFiles: entityFiles.length,
               progressPercent: (index / entityFiles.length) * 100,
-              currentFile: path.basename(filePath),
+              currentFile: this.path.basename(filePath),
               processingSpeed: index / ((Date.now() - startTime) / 1000),
               memoryUsageMB: this.getMemoryUsageMB(),
               errorsEncountered: 0,
@@ -276,7 +293,7 @@ export class StaticDataIndexGenerator {
     };
 
     // Write index to file
-    await fs.writeFile(indexPath, JSON.stringify(index, null, 2), 'utf8');
+    await this.fs.writeFile(indexPath, JSON.stringify(index, null, 2), 'utf8');
 
     logger.debug(logCategory, `Index generated successfully for ${entityType}`, {
       indexPath,
@@ -291,6 +308,7 @@ export class StaticDataIndexGenerator {
    * Validate an existing index and detect corruption
    */
   async validateIndex(indexPath: string): Promise<IndexValidationResult> {
+    await this.initializeNodeModules();
     const startTime = Date.now();
     const errors: IndexValidationError[] = [];
     const warnings: IndexValidationWarning[] = [];
@@ -298,7 +316,7 @@ export class StaticDataIndexGenerator {
 
     try {
       // Read and parse index file
-      const indexContent = await fs.readFile(indexPath, 'utf8');
+      const indexContent = await this.fs.readFile(indexPath, 'utf8');
       let index: EntityTypeIndex;
       try {
         const parsedData = JSON.parse(indexContent) as unknown;
@@ -345,7 +363,7 @@ export class StaticDataIndexGenerator {
         const metadata = index.entities[entityId];
         
         try {
-          const stat = await fs.stat(metadata.absolutePath);
+          const stat = await this.fs.stat(metadata.absolutePath);
           
           // Check if file modification time matches
           if (Math.abs(stat.mtimeMs - metadata.lastModified) > 1000) { // 1 second tolerance
@@ -529,9 +547,9 @@ export class StaticDataIndexGenerator {
         continue; // Skip if not in filter list
       }
 
-      const entityDir = path.join(this.config.rootPath, entityType);
+      const entityDir = this.path.join(this.config.rootPath, entityType);
       try {
-        const stat = await fs.stat(entityDir);
+        const stat = await this.fs.stat(entityDir);
         if (stat.isDirectory()) {
           discoveredTypes.push(entityType);
         }
@@ -551,16 +569,16 @@ export class StaticDataIndexGenerator {
     
     const scanDirectory = async (dir: string): Promise<void> => {
       try {
-        const entries = await fs.readdir(dir, { withFileTypes: true });
-        
+        const entries = await this.fs.readdir(dir, { withFileTypes: true });
+
         for (const entry of entries) {
-          const fullPath = path.join(dir, entry.name);
+          const fullPath = this.path.join(dir, entry.name);
           
           if (entry.isDirectory()) {
             await scanDirectory(fullPath); // Recursive scan
           } else if (entry.isFile() && entry.name.endsWith('.json')) {
             // Check file size limit
-            const stat = await fs.stat(fullPath);
+            const stat = await this.fs.stat(fullPath);
             if (stat.size <= this.config.maxFileSize) {
               files.push(fullPath);
             } else {
@@ -584,8 +602,8 @@ export class StaticDataIndexGenerator {
    * Extract metadata from an entity file
    */
   private async extractEntityMetadata(filePath: string, entityType: EntityType): Promise<EntityFileMetadata> {
-    const stat = await fs.stat(filePath);
-    const relativePath = path.relative(path.join(this.config.rootPath, entityType), filePath);
+    const stat = await this.fs.stat(filePath);
+    const relativePath = this.path.relative(this.path.join(this.config.rootPath, entityType), filePath);
     
     // Extract entity ID from filename or path
     const entityId = this.extractEntityIdFromPath(filePath, entityType);
@@ -616,7 +634,7 @@ export class StaticDataIndexGenerator {
    * Extract entity ID from file path using naming conventions
    */
   private extractEntityIdFromPath(filePath: string, entityType: EntityType): string {
-    const filename = path.basename(filePath, '.json');
+    const filename = this.path.basename(filePath, '.json');
     
     // Try different patterns based on entity type
     const patterns = [
@@ -643,7 +661,7 @@ export class StaticDataIndexGenerator {
    * Extract basic information from entity file content
    */
   private async extractBasicEntityInfo(filePath: string, entityType: EntityType): Promise<EntityFileMetadata['basicInfo']> {
-    const content = await fs.readFile(filePath, 'utf8');
+    const content = await this.fs.readFile(filePath, 'utf8');
     let entity: Record<string, unknown>;
     try {
       const parsedData = JSON.parse(content) as unknown;
@@ -729,7 +747,7 @@ export class StaticDataIndexGenerator {
    * Generate master index combining all entity type indexes
    */
   private async generateMasterIndex(typeIndexPaths: Record<EntityType, string>): Promise<string> {
-    const masterIndexPath = path.join(this.config.rootPath, 'index.json');
+    const masterIndexPath = this.path.join(this.config.rootPath, 'index.json');
     
     const masterIndex: MasterIndex = {
       generatedAt: Date.now(),
@@ -757,7 +775,7 @@ export class StaticDataIndexGenerator {
 
     for (const [entityType, indexPath] of Object.entries(typeIndexPaths)) {
       try {
-        const indexContent = await fs.readFile(indexPath, 'utf8');
+        const indexContent = await this.fs.readFile(indexPath, 'utf8');
         const index = JSON.parse(indexContent) as EntityTypeIndex;
         
         masterIndex.totalEntities += index.totalEntities;
@@ -794,7 +812,7 @@ export class StaticDataIndexGenerator {
         (totalEntitiesWithCitationCounts / masterIndex.totalEntities) * 100;
     }
 
-    await fs.writeFile(masterIndexPath, JSON.stringify(masterIndex, null, 2), 'utf8');
+    await this.fs.writeFile(masterIndexPath, JSON.stringify(masterIndex, null, 2), 'utf8');
     
     logger.debug(logCategory, 'Master index generated', {
       masterIndexPath,
@@ -820,9 +838,9 @@ export class StaticDataIndexGenerator {
    */
   private async createIndexBackup(indexPath: string): Promise<void> {
     try {
-      await fs.access(indexPath);
+      await this.fs.access(indexPath);
       const backupPath = `${indexPath}.backup.${Date.now()}`;
-      await fs.copyFile(indexPath, backupPath);
+      await this.fs.copyFile(indexPath, backupPath);
       logger.debug(logCategory, 'Index backup created', { indexPath, backupPath });
     } catch {
       // Index doesn't exist, no backup needed
@@ -833,15 +851,18 @@ export class StaticDataIndexGenerator {
    * Get current memory usage in MB
    */
   private getMemoryUsageMB(): number {
-    const usage = process.memoryUsage();
-    return Math.round(usage.heapUsed / 1024 / 1024);
+    if (typeof process !== 'undefined' && process.memoryUsage) {
+      const usage = process.memoryUsage();
+      return Math.round(usage.heapUsed / 1024 / 1024);
+    }
+    return 0; // Fallback for browser environments
   }
 
   /**
    * Extract entity type from index path
    */
   private extractEntityTypeFromPath(indexPath: string): EntityType | null {
-    const dirName = path.basename(path.dirname(indexPath));
+    const dirName = this.path.basename(this.path.dirname(indexPath));
     const entityTypes: EntityType[] = ['works', 'authors', 'sources', 'institutions', 'topics', 'publishers', 'funders', 'keywords', 'concepts'];
     return entityTypes.includes(dirName as EntityType) ? dirName as EntityType : null;
   }
@@ -850,7 +871,7 @@ export class StaticDataIndexGenerator {
    * Remove missing entities from index
    */
   private async removeMissingEntitiesFromIndex(indexPath: string, entityIds: string[]): Promise<void> {
-    const indexContent = await fs.readFile(indexPath, 'utf8');
+    const indexContent = await this.fs.readFile(indexPath, 'utf8');
     const index = JSON.parse(indexContent) as EntityTypeIndex;
     
     for (const entityId of entityIds) {
@@ -859,38 +880,38 @@ export class StaticDataIndexGenerator {
     
     index.totalEntities = Object.keys(index.entities).length;
     index.generatedAt = Date.now();
-    
-    await fs.writeFile(indexPath, JSON.stringify(index, null, 2), 'utf8');
+
+    await this.fs.writeFile(indexPath, JSON.stringify(index, null, 2), 'utf8');
   }
 
   /**
    * Update entity timestamps in index
    */
   private async updateEntityTimestamps(indexPath: string, entityIds: string[]): Promise<void> {
-    const indexContent = await fs.readFile(indexPath, 'utf8');
+    const indexContent = await this.fs.readFile(indexPath, 'utf8');
     const index = JSON.parse(indexContent) as EntityTypeIndex;
     
     for (const entityId of entityIds) {
       const entity = index.entities[entityId];
       if (entity) {
         try {
-          const stat = await fs.stat(entity.absolutePath);
+          const stat = await this.fs.stat(entity.absolutePath);
           entity.lastModified = stat.mtimeMs;
         } catch {
           // File doesn't exist, will be handled by other repair actions
         }
       }
     }
-    
+
     index.generatedAt = Date.now();
-    await fs.writeFile(indexPath, JSON.stringify(index, null, 2), 'utf8');
+    await this.fs.writeFile(indexPath, JSON.stringify(index, null, 2), 'utf8');
   }
 
   /**
    * Regenerate metadata for specific entities
    */
   private async regenerateEntityMetadata(indexPath: string, entityIds: string[]): Promise<void> {
-    const indexContent = await fs.readFile(indexPath, 'utf8');
+    const indexContent = await this.fs.readFile(indexPath, 'utf8');
     const index = JSON.parse(indexContent) as EntityTypeIndex;
     
     for (const entityId of entityIds) {
@@ -908,7 +929,7 @@ export class StaticDataIndexGenerator {
     
     index.totalEntities = Object.keys(index.entities).length;
     index.generatedAt = Date.now();
-    await fs.writeFile(indexPath, JSON.stringify(index, null, 2), 'utf8');
+    await this.fs.writeFile(indexPath, JSON.stringify(index, null, 2), 'utf8');
   }
 }
 
@@ -957,8 +978,7 @@ class Semaphore {
   }
 }
 
-// Convenience functions for external use
-const defaultGenerator = new StaticDataIndexGenerator();
+// Remove the default generator instance to avoid initialization issues
 
 /**
  * Generate indexes for all entity types in the specified root directory
@@ -987,14 +1007,16 @@ export async function generateIndexForEntityType(
  * Validate an existing index file
  */
 export async function validateIndex(indexPath: string): Promise<IndexValidationResult> {
-  return defaultGenerator.validateIndex(indexPath);
+  const generator = new StaticDataIndexGenerator();
+  return generator.validateIndex(indexPath);
 }
 
 /**
  * Repair a corrupted index using safe automatic repair actions
  */
 export async function repairIndex(validationResult: IndexValidationResult): Promise<boolean> {
-  return defaultGenerator.repairIndex(validationResult);
+  const generator = new StaticDataIndexGenerator();
+  return generator.repairIndex(validationResult);
 }
 
 /**
