@@ -155,7 +155,7 @@ describe("SourcesApi", () => {
 			await sourcesApi.searchSources("nature science");
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
-				filter: "default.search:nature science",
+				filter: "default.search:\"nature science\"",
 			});
 		});
 
@@ -180,7 +180,7 @@ describe("SourcesApi", () => {
 			await sourcesApi.searchSources("nature science", filters);
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
-				filter: "is_oa:true,country_code:US,default.search:nature science",
+				filter: "is_oa:true,country_code:US,default.search:\"nature science\"",
 			});
 		});
 
@@ -200,7 +200,7 @@ describe("SourcesApi", () => {
 			await sourcesApi.searchSources("nature science", {}, { per_page: 50, sort: "works_count:desc" });
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
-				filter: "default.search:nature science",
+				filter: "default.search:\"nature science\"",
 				per_page: 50,
 				sort: "works_count:desc",
 			});

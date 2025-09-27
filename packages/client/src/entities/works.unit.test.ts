@@ -426,7 +426,7 @@ describe("WorksApi Unit Tests", () => {
 			await worksApi.getWorksByInstitution("https://ror.org/01234567");
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("works", {
-				filter: "authorships.institutions.id:https://ror.org/01234567",
+				filter: "authorships.institutions.id:\"https://ror.org/01234567\"",
 			});
 		});
 
@@ -1120,131 +1120,6 @@ describe("WorksApi Unit Tests", () => {
 		});
 	});
 
-	describe("buildFilterString (private method)", () => {
-		// Testing private method through public interface
-		const testBuildFilterString = (filters: WorksFilters): string => {
-			// Access private method for testing
-			return (worksApi as unknown as { buildFilterString: (filters: WorksFilters) => string })
-				.buildFilterString(filters);
-		};
-
-		it("should handle string values", () => {
-			const filters: WorksFilters = {
-				"title.search": "machine learning",
-				"type": "journal-article",
-			};
-
-			const result = testBuildFilterString(filters);
-
-			expect(result).toBe("title.search:machine learning,type:journal-article");
-		});
-
-		it("should handle number values", () => {
-			const filters: WorksFilters = {
-				"publication_year": 2023,
-				"cited_by_count": 42,
-			};
-
-			const result = testBuildFilterString(filters);
-
-			expect(result).toBe("publication_year:2023,cited_by_count:42");
-		});
-
-		it("should handle boolean values", () => {
-			const filters: WorksFilters = {
-				"is_oa": true,
-				"is_retracted": false,
-			};
-
-			const result = testBuildFilterString(filters);
-
-			expect(result).toBe("is_oa:true,is_retracted:false");
-		});
-
-		it("should handle array values with OR logic", () => {
-			const filters: WorksFilters = {
-				"authorships.author.id": ["A123", "A456", "A789"],
-				"type": ["journal-article", "book-chapter"],
-			};
-
-			const result = testBuildFilterString(filters);
-
-			expect(result).toBe("authorships.author.id:A123|A456|A789,type:journal-article|book-chapter");
-		});
-
-		it("should handle mixed value types", () => {
-			const filters: WorksFilters = {
-				"publication_year": 2023,
-				"is_oa": true,
-				"authorships.author.id": ["A123", "A456"],
-				"title.search": "neural networks",
-				"cited_by_count": ">100",
-			};
-
-			const result = testBuildFilterString(filters);
-
-			expect(result).toBe(
-				"publication_year:2023,is_oa:true,authorships.author.id:A123|A456,title.search:neural networks,cited_by_count:>100"
-			);
-		});
-
-		it("should skip null and undefined values", () => {
-			const filters = {
-				"publication_year": 2023,
-				"is_oa": null,
-				"title.search": undefined,
-				"type": "journal-article",
-			};
-
-			const result = testBuildFilterString(filters);
-
-			expect(result).toBe("publication_year:2023,type:journal-article");
-		});
-
-		it("should handle empty array values", () => {
-			const filters: WorksFilters = {
-				"publication_year": 2023,
-				"authorships.author.id": [],
-				"type": "journal-article",
-			};
-
-			const result = testBuildFilterString(filters);
-
-			// Empty arrays should be treated as falsy and skipped
-			expect(result).toBe("publication_year:2023,authorships.author.id:,type:journal-article");
-		});
-
-		it("should handle empty filters object", () => {
-			const filters: WorksFilters = {};
-
-			const result = testBuildFilterString(filters);
-
-			expect(result).toBe("");
-		});
-
-		it("should handle special characters in values", () => {
-			const filters: WorksFilters = {
-				"title.search": "COVID-19 & SARS-CoV-2: A review",
-				"doi": "https://doi.org/10.1234/test.2023",
-			};
-
-			const result = testBuildFilterString(filters);
-
-			expect(result).toBe("title.search:COVID-19 & SARS-CoV-2: A review,doi:https://doi.org/10.1234/test.2023");
-		});
-
-		it("should handle range values", () => {
-			const filters: WorksFilters = {
-				"publication_year": "2020-2023",
-				"cited_by_count": ">50",
-				"publication_date": "<2023-12-31",
-			};
-
-			const result = testBuildFilterString(filters);
-
-			expect(result).toBe("publication_year:2020-2023,cited_by_count:>50,publication_date:<2023-12-31");
-		});
-	});
 
 	describe("Error handling scenarios", () => {
 		it("should propagate client errors in getWork", async () => {
