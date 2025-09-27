@@ -127,6 +127,16 @@ export class TopicsApi {
 	}
 
 	/**
+   * Search topics by name or keywords (alias for search)
+   * @param query - Search query string
+   * @param params - Optional additional query parameters
+   * @returns Promise resolving to search results
+   */
+	async searchTopics(query: string, params: QueryParams & TopicsFilters = {}): Promise<OpenAlexResponse<Topic>> {
+		return this.search(query, params);
+	}
+
+	/**
    * Autocomplete topics by name for quick search suggestions
    * @param query - Search query string for autocomplete suggestions
    * @returns Promise resolving to array of topic autocomplete results

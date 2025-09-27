@@ -95,6 +95,16 @@ export class PublishersApi {
 	}
 
 	/**
+   * Search publishers by name (alias for search)
+   * @param query - Search query string
+   * @param params - Optional additional query parameters
+   * @returns Promise resolving to search results
+   */
+	async searchPublishers(query: string, params: QueryParams & PublishersFilters = {}): Promise<OpenAlexResponse<Publisher>> {
+		return this.search(query, params);
+	}
+
+	/**
    * Autocomplete publishers by name for quick search suggestions
    * @param query - Search query string for autocomplete suggestions
    * @returns Promise resolving to array of publisher autocomplete results
