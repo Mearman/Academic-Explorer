@@ -375,6 +375,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_OPTIONS: '--max-old-space-size=8192'
 
+      - name: Push release commits and tags
+        run: |
+          echo "📤 Pushing release commits and tags to repository..."
+          git push origin main --follow-tags
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   # Deploy to GitHub Pages (main branch only)
   deploy:
     needs: [ci, workspace-quality, release]
