@@ -376,9 +376,19 @@ ${tests.map(test => `
         const mockResponse = createMockResponse<${getEntityType(entity)}>("${entity}", ${test.isCollection});
 
         if (${test.isCollection}) {
+          ${entity === 'text' ? `
+          // Text analysis methods use client.get() not getResponse
+          mockClient.get.mockResolvedValue(mockResponse as ${getEntityType(entity)});
+          ` : `
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<${getEntityType(entity)}>);
+          `}
         } else {
+          ${entity === 'text' ? `
+          // Text analysis methods use client.get() not getById
+          mockClient.get.mockResolvedValue(mockResponse as ${getEntityType(entity)});
+          ` : `
           mockClient.getById.mockResolvedValue(mockResponse as ${getEntityType(entity)});
+          `}
         }
 
         // Extract the expected parameters from the path
@@ -419,7 +429,15 @@ ${tests.map(test => `
           } else {
             // Collection operations (list, filter, etc.)
             if (api.get${entity.charAt(0).toUpperCase() + entity.slice(1)}) {
+              ${entity === 'text' ? `
+              // Text analysis methods require options parameter with title
+              result = await api.getText({
+                title: "type 1 diabetes research for children",
+                ...expectedParams
+              });
+              ` : `
               result = await api.get${entity.charAt(0).toUpperCase() + entity.slice(1)}(expectedParams);
+              `}
             }
           }
 
@@ -428,9 +446,17 @@ ${tests.map(test => `
 
           // Verify the correct client method was called
           if (${test.isCollection}) {
+            ${entity === 'text' ? `
+            expect(mockClient.get).toHaveBeenCalled();
+            ` : `
             expect(mockClient.getResponse).toHaveBeenCalled();
+            `}
           } else {
+            ${entity === 'text' ? `
+            expect(mockClient.get).toHaveBeenCalled();
+            ` : `
             expect(mockClient.getById).toHaveBeenCalled();
+            `}
           }
 
         } catch (error) {
@@ -511,9 +537,17 @@ ${tests.map(test => `
         const error = new OpenAlexApiError("Test error", 404);
 
         if (${test.isCollection}) {
+          ${entity === 'text' ? `
+          mockClient.get.mockRejectedValue(error);
+          ` : `
           mockClient.getResponse.mockRejectedValue(error);
+          `}
         } else {
+          ${entity === 'text' ? `
+          mockClient.get.mockRejectedValue(error);
+          ` : `
           mockClient.getById.mockRejectedValue(error);
+          `}
         }
 
         const api = apis.${entity} as any;
@@ -525,7 +559,12 @@ ${tests.map(test => `
             }
           } else {
             if (api.get${entity.charAt(0).toUpperCase() + entity.slice(1)}) {
+              ${entity === 'text' ? `
+              // Text analysis methods require options parameter
+              await expect(api.getText({ title: "test title for error handling" })).rejects.toThrow("Test error");
+              ` : `
               await expect(api.get${entity.charAt(0).toUpperCase() + entity.slice(1)}()).rejects.toThrow("Test error");
+              `}
             }
           }
         } catch (error) {
@@ -775,10 +814,17 @@ ${sampleTests.map(test => `
           } else {
             // Collection operations
             if (api.get${entity.charAt(0).toUpperCase() + entity.slice(1)}) {
+              ${entity === 'text' ? `
+              // Text analysis methods require options parameter with title
+              result = await api.getText({
+                title: "type 1 diabetes research for children"
+              });
+              ` : `
               result = await api.get${entity.charAt(0).toUpperCase() + entity.slice(1)}({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              `}
             }
           }
 
