@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SearchRouteImport } from './routes/search'
-import { Route as GraphRouteImport } from './routes/graph'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as EvaluationRouteImport } from './routes/evaluation'
 import { Route as ErrorTestRouteImport } from './routes/error-test'
@@ -36,11 +35,6 @@ import { Route as AuthorsOrcidOrcidRouteImport } from './routes/authors/orcid.$o
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GraphRoute = GraphRouteImport.update({
-  id: '/graph',
-  path: '/graph',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExploreRoute = ExploreRouteImport.update({
@@ -159,7 +153,6 @@ export interface FileRoutesByFullPath {
   '/error-test': typeof ErrorTestRoute
   '/evaluation': typeof EvaluationRouteWithChildren
   '/explore': typeof ExploreRouteWithChildren
-  '/graph': typeof GraphRoute
   '/search': typeof SearchRoute
   '/authors/$authorId': typeof AuthorsAuthorIdRoute
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
@@ -184,7 +177,6 @@ export interface FileRoutesByTo {
   '/error-test': typeof ErrorTestRoute
   '/evaluation': typeof EvaluationRouteWithChildren
   '/explore': typeof ExploreRouteWithChildren
-  '/graph': typeof GraphRoute
   '/search': typeof SearchRoute
   '/authors/$authorId': typeof AuthorsAuthorIdRoute
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
@@ -210,7 +202,6 @@ export interface FileRoutesById {
   '/error-test': typeof ErrorTestRoute
   '/evaluation': typeof EvaluationRouteWithChildren
   '/explore': typeof ExploreRouteWithChildren
-  '/graph': typeof GraphRoute
   '/search': typeof SearchRoute
   '/authors/$authorId': typeof AuthorsAuthorIdRoute
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
@@ -237,7 +228,6 @@ export interface FileRouteTypes {
     | '/error-test'
     | '/evaluation'
     | '/explore'
-    | '/graph'
     | '/search'
     | '/authors/$authorId'
     | '/evaluation/datasets'
@@ -262,7 +252,6 @@ export interface FileRouteTypes {
     | '/error-test'
     | '/evaluation'
     | '/explore'
-    | '/graph'
     | '/search'
     | '/authors/$authorId'
     | '/evaluation/datasets'
@@ -287,7 +276,6 @@ export interface FileRouteTypes {
     | '/error-test'
     | '/evaluation'
     | '/explore'
-    | '/graph'
     | '/search'
     | '/authors/$authorId'
     | '/evaluation/datasets'
@@ -313,7 +301,6 @@ export interface RootRouteChildren {
   ErrorTestRoute: typeof ErrorTestRoute
   EvaluationRoute: typeof EvaluationRouteWithChildren
   ExploreRoute: typeof ExploreRouteWithChildren
-  GraphRoute: typeof GraphRoute
   SearchRoute: typeof SearchRoute
   AuthorsAuthorIdRoute: typeof AuthorsAuthorIdRoute
   HttpsSplatRoute: typeof HttpsSplatRoute
@@ -334,13 +321,6 @@ declare module '@tanstack/react-router' {
       path: '/search'
       fullPath: '/search'
       preLoaderRoute: typeof SearchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/graph': {
-      id: '/graph'
-      path: '/graph'
-      fullPath: '/graph'
-      preLoaderRoute: typeof GraphRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/explore': {
@@ -527,7 +507,6 @@ const rootRouteChildren: RootRouteChildren = {
   ErrorTestRoute: ErrorTestRoute,
   EvaluationRoute: EvaluationRouteWithChildren,
   ExploreRoute: ExploreRouteWithChildren,
-  GraphRoute: GraphRoute,
   SearchRoute: SearchRoute,
   AuthorsAuthorIdRoute: AuthorsAuthorIdRoute,
   HttpsSplatRoute: HttpsSplatRoute,
