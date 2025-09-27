@@ -177,6 +177,19 @@ export default tseslint.config([
     },
   },
   {
+    // Service worker files should be allowed to use console for debugging
+    files: [
+      "**/*worker*.{ts,js}",
+      "**/src/workers/**/*.{ts,js}",
+      "**/*.worker.{ts,js}",
+      "**/*sw.{ts,js}",
+    ],
+    rules: {
+      "no-console": "off",
+      "@typescript-eslint/no-explicit-any": "warn", // Allow any for service worker event types
+    },
+  },
+  {
     // Markdown files - process with markdown plugin and apply no-emoji rule
     files: ["**/*.md"],
     plugins: {
