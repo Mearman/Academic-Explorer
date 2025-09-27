@@ -3,6 +3,7 @@ name: 'CI Pipeline'
 on:
   push:
     branches: [main]
+    tags: ['v*']
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -331,10 +332,10 @@ jobs:
         env:
           NODE_OPTIONS: '--max-old-space-size=8192'
 
-  # Release automation (main branch only)
+  # Release automation (main branch and tag pushes)
   release:
     needs: [ci, workspace-quality]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && success()
+    if: (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && github.event_name == 'push' && success()
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -357,18 +358,48 @@ jobs:
 
       - name: Run Nx release
         run: |
-          echo "🚀 Creating workspace release with GitHub release..."
-          pnpm nx release --skip-publish || {
-            echo "ℹ️ No release needed"
-          }
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "🏷️ Tag push detected - updating existing release for ${{ github.ref_name }}"
+            # For tag pushes, regenerate changelog and update existing release
+            pnpm nx release changelog --from=${{ github.ref_name }} --to=${{ github.ref_name }} || {
+              echo "ℹ️ Changelog generation completed"
+            }
+          else
+            echo "🚀 Creating workspace release with GitHub release..."
+            pnpm nx release --skip-publish || {
+              echo "ℹ️ No release needed"
+            }
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_OPTIONS: '--max-old-space-size=8192'
 
+      - name: Update GitHub release for tag pushes
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          echo "📝 Updating GitHub release for tag ${{ github.ref_name }}"
+          # Extract changelog content for this version
+          CHANGELOG_CONTENT=$(awk '/^## ${{ github.ref_name }}/, /^## [0-9]/ {if ($0 ~ /^## [0-9]/ && $0 !~ /^## ${{ github.ref_name }}/) exit; if ($0 !~ /^## ${{ github.ref_name }}/) print}' CHANGELOG.md)
+
+          # Update or create the GitHub release
+          if gh release view ${{ github.ref_name }} >/dev/null 2>&1; then
+            echo "Release exists, updating..."
+            echo "$CHANGELOG_CONTENT" | gh release edit ${{ github.ref_name }} --notes-file -
+          else
+            echo "Release doesn't exist, creating..."
+            echo "$CHANGELOG_CONTENT" | gh release create ${{ github.ref_name }} --title "${{ github.ref_name }}" --notes-file -
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Push release commits and tags
         run: |
-          echo "📤 Pushing release commits and tags to repository..."
-          git push origin main --follow-tags
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "🏷️ Tag push - no additional push needed"
+          else
+            echo "📤 Pushing release commits and tags to repository..."
+            git push origin main --follow-tags
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

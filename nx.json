@@ -233,7 +233,8 @@
         "file": "{workspaceRoot}/CHANGELOG.md",
         "renderOptions": {
           "authors": false
-        }
+        },
+        "releaseTagPattern": "v{version}"
       },
       "projectChangelogs": {
         "file": "{projectRoot}/CHANGELOG.md",
