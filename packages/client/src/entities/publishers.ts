@@ -13,6 +13,7 @@ import type {
 	AutocompleteResult
 } from "../types";
 import { OpenAlexBaseClient } from "../client";
+import { buildFilterString } from "../utils/query-builder";
 
 /**
  * PublishersApi provides methods for interacting with OpenAlex publishers
@@ -36,12 +37,48 @@ export class PublishersApi {
 	}
 
 	/**
+   * Get a single publisher by its OpenAlex ID (alias for get)
+   * @param id - The OpenAlex ID for the publisher (e.g., 'P4310320990')
+   * @param params - Optional query parameters for additional data
+   * @returns Promise resolving to the publisher object
+   */
+	async getPublisher(id: string, params: QueryParams = {}): Promise<Publisher> {
+		return this.get(id, params);
+	}
+
+	/**
    * Get multiple publishers with optional filtering and sorting
    * @param params - Query parameters for filtering, sorting, and pagination
    * @returns Promise resolving to paginated publishers response
    */
 	async getMultiple(params: QueryParams & PublishersFilters = {}): Promise<OpenAlexResponse<Publisher>> {
 		return this.client.getResponse<Publisher>("publishers", params);
+	}
+
+	/**
+   * Get multiple publishers with optional filtering and sorting (alias for getMultiple)
+   * @param params - Query parameters for filtering, sorting, and pagination
+   * @returns Promise resolving to paginated publishers response
+   */
+	async getPublishers(params: QueryParams & PublishersFilters & { filter?: PublishersFilters } = {}): Promise<OpenAlexResponse<Publisher>> {
+		const processedParams = this.buildQueryParams(params);
+		return this.client.getResponse<Publisher>("publishers", processedParams);
+	}
+
+	/**
+	 * Build query parameters with proper filter processing
+	 * @private
+	 */
+	private buildQueryParams(params: QueryParams & PublishersFilters & { filter?: PublishersFilters } = {}): QueryParams {
+		const { filter, ...otherParams } = params;
+		const queryParams: QueryParams = { ...otherParams };
+
+		// Handle filter object conversion to string
+		if (filter && typeof filter === 'object' && Object.keys(filter).length > 0) {
+			queryParams.filter = buildFilterString(filter);
+		}
+
+		return queryParams;
 	}
 
 	/**
