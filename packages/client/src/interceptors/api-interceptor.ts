@@ -138,7 +138,7 @@ export class ApiInterceptor {
     // Check Vite's __DEV__ flag
     if (typeof globalThis !== 'undefined' && '__DEV__' in globalThis) {
       try {
-        const devFlag = (globalThis as any).__DEV__;
+        const devFlag = (globalThis as unknown as { __DEV__?: boolean }).__DEV__;
         return devFlag === true;
       } catch {
         // Ignore errors if __DEV__ is not accessible

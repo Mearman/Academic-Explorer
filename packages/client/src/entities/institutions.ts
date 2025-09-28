@@ -163,7 +163,7 @@ export class InstitutionsApi {
 
 		} catch (error: unknown) {
 			// Format error for logging using type guards
-			const errorDetails = this.formatErrorForLogging(error);
+			const _errorDetails = this.formatErrorForLogging(error);
 			return [];
 		}
 	}
