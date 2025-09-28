@@ -34,7 +34,7 @@ describe('Comprehensive Redirect Integration Tests', () => {
             { regex: /^\/api\/api\.openalex\.org\/(.*)/, replacement: '/api/openalex/$1' },
             { regex: /^\/api\/openalex\.org\/(.*)/, replacement: '/api/openalex/$1' },
             { regex: /^\/api\/([A-Z]\d+.*)/, replacement: '/api/openalex/$1' },
-            { regex: /^\/api\/(works|authors|sources|institutions|topics|publishers|funders|keywords|concepts)/, replacement: '/api/openalex/$1' }
+            { regex: /^\/api\/(works|authors|sources|institutions|topics|publishers|funders|keywords|concepts|autocomplete|text)/, replacement: '/api/openalex/$1' }
           ];
 
           let shouldRedirect = false;
@@ -139,16 +139,20 @@ describe('Comprehensive Redirect Integration Tests', () => {
     it('should handle all URL variations consistently', async () => {
       let entityUrls = 0;
       let collectionUrls = 0;
+      let specialEndpointUrls = 0;
       let parameterizedUrls = 0;
 
       for (const testCase of allTestCases) {
         const pathSegments = testCase.path.split('/');
+        const firstSegment = pathSegments[0].split('?')[0];
 
         if (pathSegments.length >= 2) {
           entityUrls++;
         } else if (pathSegments.length === 1 && pathSegments[0].includes('?')) {
           collectionUrls++;
           parameterizedUrls++;
+        } else if (['autocomplete', 'text'].includes(firstSegment)) {
+          specialEndpointUrls++;
         }
 
         // Each test case should have exactly 5 web app variations and 5 API variations
@@ -165,8 +169,8 @@ describe('Comprehensive Redirect Integration Tests', () => {
         }
       }
 
-      console.log(`URL breakdown: ${entityUrls} entity URLs, ${collectionUrls} collection URLs, ${parameterizedUrls} with parameters`);
-      expect(entityUrls + collectionUrls).toBe(allTestCases.length);
+      console.log(`URL breakdown: ${entityUrls} entity URLs, ${collectionUrls} collection URLs, ${specialEndpointUrls} special endpoints, ${parameterizedUrls} with parameters`);
+      expect(entityUrls + collectionUrls + specialEndpointUrls).toBe(allTestCases.length);
     });
   });
 
