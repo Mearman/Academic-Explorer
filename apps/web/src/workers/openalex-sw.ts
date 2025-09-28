@@ -7,7 +7,12 @@ const CACHE_NAME = 'openalex-cache-v1';
 const OPENALEX_DOMAIN = 'api.openalex.org';
 
 // Cast self for service worker functionality
-const sw = self as any;
+const sw = self as unknown as {
+  addEventListener: (type: string, listener: (event: Event) => void) => void;
+  skipWaiting: () => void;
+  clients: { claim: () => void };
+  location: { hostname: string; port: string };
+};
 
 // Install event - set up the service worker
 sw.addEventListener('install', (_event) => {

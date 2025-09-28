@@ -32,12 +32,12 @@ const searchWorks = async (filters: SearchFilters): Promise<Work[]> => {
 		// Add date filters if provided
 		if (filters.startDate) {
 			const startYear = filters.startDate.getFullYear();
-			queryBuilder.addFilter('publication_year', `>=${startYear}` as any);
+			queryBuilder.addFilter('publication_year', `>=${startYear}`);
 		}
 
 		if (filters.endDate) {
 			const endYear = filters.endDate.getFullYear();
-			queryBuilder.addFilter('publication_year', `<=${endYear}` as any);
+			queryBuilder.addFilter('publication_year', `<=${endYear}`);
 		}
 
 		const response = await cachedOpenAlex.client.works.searchWorks(filters.query, {
