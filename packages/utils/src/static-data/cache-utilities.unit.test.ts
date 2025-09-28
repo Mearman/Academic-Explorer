@@ -308,67 +308,59 @@ describe('Directory Index Change Detection (Array Structure)', () => {
     expect(hasIndexChanged(oldIndex, newIndex)).toBe(true);
   });
 
-  it('should not detect change when only lastModified timestamp differs', async () => {
+  it('should detect change when lastRetrieved timestamp differs', async () => {
     const oldIndex: DirectoryIndex = {
-      entityType: "authors",
-      entityCount: 1,
       lastUpdated: "2025-09-28T12:00:00.000Z",
-      entities: [
-        {
-          id: "A123",
-          fileName: "A123.json",
-          lastModified: "2025-09-28T12:00:00.000Z",
+      files: {
+        "A123": {
+          url: "https://api.openalex.org/authors/A123",
+          $ref: "./A123.json",
+          lastRetrieved: "2025-09-28T12:00:00.000Z",
           contentHash: "abc123"
         }
-      ]
+      }
     };
 
     const newIndex: DirectoryIndex = {
-      entityType: "authors",
-      entityCount: 1,
       lastUpdated: "2025-09-28T12:00:00.000Z",
-      entities: [
-        {
-          id: "A123",
-          fileName: "A123.json",
-          lastModified: "2025-09-28T13:00:00.000Z", // Different timestamp but same content hash
+      files: {
+        "A123": {
+          url: "https://api.openalex.org/authors/A123",
+          $ref: "./A123.json",
+          lastRetrieved: "2025-09-28T13:00:00.000Z", // Different timestamp but same content hash
           contentHash: "abc123" // Same hash
         }
-      ]
+      }
     };
 
-    // This should trigger a change because lastModified changed
-    // which indicates the file was touched even if content didn't change
+    // This SHOULD trigger a change because lastRetrieved changed
+    // which indicates the file was re-fetched from the API
     expect(hasIndexChanged(oldIndex, newIndex)).toBe(true);
   });
 
   it('should detect no change when indexes are identical', async () => {
     const index1: DirectoryIndex = {
-      entityType: "authors",
-      entityCount: 1,
       lastUpdated: "2025-09-28T12:00:00.000Z",
-      entities: [
-        {
-          id: "A123",
-          fileName: "A123.json",
-          lastModified: "2025-09-28T12:00:00.000Z",
+      files: {
+        "A123": {
+          url: "https://api.openalex.org/authors/A123",
+          $ref: "./A123.json",
+          lastRetrieved: "2025-09-28T12:00:00.000Z",
           contentHash: "abc123"
         }
-      ]
+      }
     };
 
     const index2: DirectoryIndex = {
-      entityType: "authors",
-      entityCount: 1,
       lastUpdated: "2025-09-28T12:00:00.000Z",
-      entities: [
-        {
-          id: "A123",
-          fileName: "A123.json",
-          lastModified: "2025-09-28T12:00:00.000Z",
+      files: {
+        "A123": {
+          url: "https://api.openalex.org/authors/A123",
+          $ref: "./A123.json",
+          lastRetrieved: "2025-09-28T12:00:00.000Z",
           contentHash: "abc123"
         }
-      ]
+      }
     };
 
     expect(hasIndexChanged(index1, index2)).toBe(false);
@@ -376,29 +368,23 @@ describe('Directory Index Change Detection (Array Structure)', () => {
 
   it('should detect changes in subdirectories', async () => {
     const oldIndex: DirectoryIndex = {
-      entityType: "works",
-      entityCount: 0,
       lastUpdated: "2025-09-28T12:00:00.000Z",
-      entities: [],
-      subdirectories: {
+      files: {},
+      directories: {
         "queries": {
           $ref: "./queries",
-          entityCount: 1,
-          lastUpdated: "2025-09-28T12:00:00.000Z"
+          lastModified: "2025-09-28T12:00:00.000Z"
         }
       }
     };
 
     const newIndex: DirectoryIndex = {
-      entityType: "works",
-      entityCount: 0,
       lastUpdated: "2025-09-28T12:00:00.000Z",
-      entities: [],
-      subdirectories: {
+      files: {},
+      directories: {
         "queries": {
           $ref: "./queries",
-          entityCount: 2, // Entity count in subdirectory changed
-          lastUpdated: "2025-09-28T13:00:00.000Z"
+          lastModified: "2025-09-28T13:00:00.000Z" // Directory was modified
         }
       }
     };
@@ -522,41 +508,36 @@ describe('Integration: Full Content Change Detection', () => {
   it('should demonstrate index structure stability', async () => {
     // Real structure from the actual system
     const realIndex: DirectoryIndex = {
-      entityType: "authors",
-      entityCount: 1,
       lastUpdated: "2025-09-28T16:10:04.643Z",
-      entities: [
-        {
-          id: "A5017898742",
-          fileName: "A5017898742.json",
-          lastModified: "2025-09-28T12:56:10.732Z",
+      files: {
+        "A5017898742": {
+          url: "https://api.openalex.org/authors/A5017898742",
+          $ref: "./A5017898742.json",
+          lastRetrieved: "2025-09-28T12:56:10.732Z",
           contentHash: "c77e827545226162"
         }
-      ]
+      }
     };
 
     // Simulate the same index regenerated but with same content
     const regeneratedIndex: DirectoryIndex = {
-      entityType: "authors",
-      entityCount: 1,
       lastUpdated: "2025-09-28T16:10:04.643Z", // Same timestamp
-      entities: [
-        {
-          id: "A5017898742",
-          fileName: "A5017898742.json",
-          lastModified: "2025-09-28T12:56:10.732Z", // Same lastModified
+      files: {
+        "A5017898742": {
+          url: "https://api.openalex.org/authors/A5017898742",
+          $ref: "./A5017898742.json",
+          lastRetrieved: "2025-09-28T12:56:10.732Z", // Same lastRetrieved
           contentHash: "c77e827545226162" // Same content hash
         }
-      ]
+      }
     };
 
     function hasIndexChanged(oldIndex: DirectoryIndex | null, newIndex: DirectoryIndex): boolean {
       if (!oldIndex) return true;
       return (
         oldIndex.lastUpdated !== newIndex.lastUpdated ||
-        oldIndex.entityCount !== newIndex.entityCount ||
-        JSON.stringify(oldIndex.entities) !== JSON.stringify(newIndex.entities) ||
-        JSON.stringify(oldIndex.subdirectories) !== JSON.stringify(newIndex.subdirectories)
+        JSON.stringify(oldIndex.files) !== JSON.stringify(newIndex.files) ||
+        JSON.stringify(oldIndex.directories) !== JSON.stringify(newIndex.directories)
       );
     }
 
