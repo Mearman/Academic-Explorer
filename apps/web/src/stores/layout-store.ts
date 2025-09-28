@@ -6,8 +6,8 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { ProviderType } from "@academic-explorer/graph";
-import { getDefaultSectionPlacements, getAllSectionIds, getSectionById } from "@/stores/section-registry";
-import { updateGroupDefinition, getGroupDefinition, registerGroupDefinition } from "@/stores/group-registry";
+import { getDefaultSectionPlacements, getAllSectionIds, getSectionById } from "./section-registry";
+import { updateGroupDefinition, getGroupDefinition, registerGroupDefinition } from "./group-registry";
 import { createHybridStorage } from "@academic-explorer/utils/storage";
 import { logger } from "@academic-explorer/utils/logger";
 
