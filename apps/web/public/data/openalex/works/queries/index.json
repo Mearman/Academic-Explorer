@@ -1,19 +1,17 @@
 {
-  "entityType": "works",
-  "entityCount": 2,
-  "lastUpdated": "2025-09-28T14:04:15.591Z",
-  "entities": [
-    {
-      "id": "filter=author.id:A5017898742",
-      "fileName": "filter=author.id:A5017898742.json",
-      "lastModified": "2025-09-28T12:56:13.327Z",
+  "lastUpdated": "2025-09-28T14:08:24.469Z",
+  "files": {
+    "filter=author.id:A5017898742&select=display_name,id": {
+      "url": "https://api.openalex.org/works/filter=author.id:A5017898742&select=display_name,id",
+      "$ref": "./filter=author.id:A5017898742&select=display_name,id.json",
+      "lastRetrieved": "2025-09-28T12:56:12.476Z",
       "contentHash": "c8910972887c09da"
     },
-    {
-      "id": "filter=author.id:A5017898742&select=display_name,id",
-      "fileName": "filter=author.id:A5017898742&select=display_name,id.json",
-      "lastModified": "2025-09-28T12:56:12.476Z",
+    "filter=author.id:A5017898742": {
+      "url": "https://api.openalex.org/works/filter=author.id:A5017898742",
+      "$ref": "./filter=author.id:A5017898742.json",
+      "lastRetrieved": "2025-09-28T12:56:13.327Z",
       "contentHash": "c8910972887c09da"
     }
-  ]
+  }
 }
