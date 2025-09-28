@@ -770,37 +770,37 @@ program
       }
 
       console.log(`Status: ${validation.isValid ? "✓ VALID" : "✗ INVALID"}`);
-      console.log(`Errors: ${validation.errors.length}`);
-      console.log(`Warnings: ${validation.warnings.length}`);
-      console.log(`Corrupted Files: ${validation.corruptedFiles.length}`);
-      console.log(`Missing Indexes: ${validation.missingIndexes.length}`);
+      console.log(`Errors: ${validation.errors.length.toString()}`);
+      console.log(`Warnings: ${validation.warnings.length.toString()}`);
+      console.log(`Corrupted Files: ${validation.corruptedFiles.length.toString()}`);
+      console.log(`Missing Indexes: ${validation.missingIndexes.length.toString()}`);
 
       if (validatedOptions.verbose || !validation.isValid) {
         if (validation.errors.length > 0) {
           console.log("\nErrors:");
           validation.errors.forEach((error, index) => {
-            console.log(`  ${index + 1}. ${error}`);
+            console.log(`  ${(index + 1).toString()}. ${error}`);
           });
         }
 
         if (validation.warnings.length > 0) {
           console.log("\nWarnings:");
           validation.warnings.forEach((warning, index) => {
-            console.log(`  ${index + 1}. ${warning}`);
+            console.log(`  ${(index + 1).toString()}. ${warning}`);
           });
         }
 
         if (validation.corruptedFiles.length > 0) {
           console.log("\nCorrupted Files:");
           validation.corruptedFiles.forEach((file, index) => {
-            console.log(`  ${index + 1}. ${file}`);
+            console.log(`  ${(index + 1).toString()}. ${file}`);
           });
         }
       }
 
       console.log("\nEntity Counts:");
       Object.entries(validation.entityCounts).forEach(([entityType, count]) => {
-        console.log(`  ${entityType}: ${count}`);
+        console.log(`  ${entityType}: ${count.toString()}`);
       });
 
     } catch (error) {

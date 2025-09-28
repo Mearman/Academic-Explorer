@@ -4,6 +4,7 @@
  */
 
 import { readFile, access, writeFile, mkdir, readdir, stat } from "fs/promises";
+import { readFileSync, existsSync } from "fs";
 import { join, resolve } from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -220,7 +221,6 @@ function isDevelopmentMode(): boolean {
     // Check if we can find package.json with academic-explorer workspace name
     const packageJsonPath = resolve(projectRoot, "package.json");
     try {
-      const { readFileSync, existsSync } = require("fs");
       if (existsSync(packageJsonPath)) {
         const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
         if (packageJson.name === "academic-explorer") {

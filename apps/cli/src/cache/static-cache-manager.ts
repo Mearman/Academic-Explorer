@@ -47,16 +47,6 @@ interface CacheGenerationOptions {
   dryRun?: boolean;
 }
 
-// Simple hash function for content hashing
-function generateContentHash(content: string): string {
-  let hash = 0;
-  for (let i = 0; i < content.length; i++) {
-    const char = content.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32bit integer
-  }
-  return hash.toString(36);
-}
 
 // Zod schemas for validation
 const EntityIndexEntrySchema = z.object({
@@ -252,7 +242,7 @@ export class StaticCacheManager {
 
     for (const entityType of entityTypes) {
       currentStep++;
-      logger.debug("static-cache", `Generating cache for ${entityType} (${currentStep}/${totalSteps})`);
+      logger.debug("static-cache", `Generating cache for ${entityType} (${currentStep.toString()}/${totalSteps.toString()})`);
 
       try {
         await this.generateEntityTypeCache(entityType, options);
