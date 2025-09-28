@@ -343,7 +343,7 @@ export function VisualQueryBuilder({
   onQueryChange,
   onApply,
   disabled = false,
-  _compact = false,
+  compact: _compact = false,
 }: VisualQueryBuilderProps) {
   // Initialize with empty query or provided initial query
   const [query, setQuery] = useState<VisualQuery>(() => {
