@@ -4,14 +4,20 @@ import baseConfig from '../../eslint.config.base.js';
 export default tseslint.config([
   ...baseConfig,
   {
-    // Only apply strict rules to non-test TypeScript files
-    files: ['src/**/*.{ts,tsx}'],
+    // Global ignores for this package
     ignores: [
       '**/*.test.ts',
       '**/*.spec.ts',
       '**/*.unit.test.ts',
-      '**/*.integration.test.ts'
-    ],
+      '**/*.integration.test.ts',
+      'src/generated-tests/**/*',
+      'src/test-generator/**/*',
+      'src/**/__tests__/**/*'
+    ]
+  },
+  {
+    // Only apply strict rules to non-test TypeScript files
+    files: ['src/**/*.{ts,tsx}'],
     languageOptions: {
       parserOptions: {
         project: './tsconfig.json',
