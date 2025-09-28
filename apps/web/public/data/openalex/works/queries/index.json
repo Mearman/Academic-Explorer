@@ -1,17 +1,17 @@
 {
-  "lastUpdated": "2025-09-28T14:08:24.469Z",
+  "lastUpdated": "2025-09-28T16:30:53.182Z",
   "files": {
-    "filter=author.id:A5017898742&select=display_name,id": {
-      "url": "https://api.openalex.org/works/filter=author.id:A5017898742&select=display_name,id",
+    "filter=author.id%3AA5017898742&select=display_name,id": {
+      "url": "https://api.openalex.org/works/filter=author.id%3AA5017898742&select=display_name,id",
       "$ref": "./filter=author.id%3AA5017898742&select=display_name,id.json",
-      "lastRetrieved": "2025-09-28T12:56:12.476Z",
-      "contentHash": "c8910972887c09da"
+      "lastRetrieved": "2025-09-28T16:09:05.826Z",
+      "contentHash": "3bf7a5aa2508427b"
     },
-    "filter=author.id:A5017898742": {
-      "url": "https://api.openalex.org/works/filter=author.id:A5017898742",
+    "filter=author.id%3AA5017898742": {
+      "url": "https://api.openalex.org/works/filter=author.id%3AA5017898742",
       "$ref": "./filter=author.id%3AA5017898742.json",
-      "lastRetrieved": "2025-09-28T12:56:13.327Z",
-      "contentHash": "c8910972887c09da"
+      "lastRetrieved": "2025-09-28T16:09:05.827Z",
+      "contentHash": "3bf7a5aa2508427b"
     }
   }
 }

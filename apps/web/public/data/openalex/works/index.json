@@ -1,9 +1,9 @@
 {
-  "lastUpdated": "2025-09-28T14:08:24.470Z",
+  "lastUpdated": "2025-09-28T16:30:53.183Z",
   "directories": {
     "queries": {
       "$ref": "./queries",
-      "lastModified": "2025-09-28T14:08:24.469Z"
+      "lastModified": "2025-09-28T16:30:53.182Z"
     }
   }
 }
