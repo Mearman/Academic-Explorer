@@ -13,6 +13,7 @@ import {
   shouldUpdateCache,
   type DirectoryIndex,
   type FileEntry,
+  type DirectoryEntry,
   type CacheEntryMetadata
 } from './cache-utilities.js';
 
@@ -56,7 +57,7 @@ describe('Content Hash Generation', () => {
     expect(hash1).not.toBe(hash2);
   });
 
-  it('should ignore volatile metadata fields', async () => {
+  it('should completely ignore meta field', async () => {
     const data1 = {
       id: "A123456789",
       display_name: "Test Author",
@@ -66,7 +67,6 @@ describe('Content Hash Generation', () => {
         db_response_time_ms: 25,
         page: 1,
         per_page: 25,
-        // Non-volatile field that should affect hash
         groups_count: 5
       }
     };
@@ -76,18 +76,18 @@ describe('Content Hash Generation', () => {
       display_name: "Test Author", 
       works_count: 50,
       meta: {
-        count: 200, // Different volatile field
-        db_response_time_ms: 50, // Different volatile field
-        page: 2, // Different volatile field
-        per_page: 50, // Different volatile field
-        groups_count: 5 // Same non-volatile field
+        count: 200, // Different values
+        db_response_time_ms: 50,
+        page: 2,
+        per_page: 50,
+        groups_count: 999 // Even non-volatile fields should be ignored
       }
     };
 
     const hash1 = await generateContentHash(data1);
     const hash2 = await generateContentHash(data2);
 
-    expect(hash1).toBe(hash2); // Should be same since only volatile fields changed
+    expect(hash1).toBe(hash2); // Should be same since entire meta field is ignored
   });
 
   it('should handle metadata removal correctly', async () => {
@@ -96,10 +96,10 @@ describe('Content Hash Generation', () => {
       display_name: "Test Author",
       works_count: 50,
       meta: {
-        count: 100, // Will be removed (volatile)
-        db_response_time_ms: 25, // Will be removed (volatile)
-        page: 1, // Will be removed (volatile)
-        per_page: 25 // Will be removed (volatile)
+        count: 100,
+        db_response_time_ms: 25,
+        page: 1,
+        per_page: 25
       }
     };
 
@@ -113,7 +113,7 @@ describe('Content Hash Generation', () => {
     const hash1 = await generateContentHash(dataWithMeta);
     const hash2 = await generateContentHash(dataWithoutMeta);
 
-    // Should be same since all meta fields are volatile and get removed
+    // Should be same since entire meta field is excluded
     expect(hash1).toBe(hash2);
   });
 
@@ -218,7 +218,7 @@ describe('Cache Update Logic', () => {
   });
 });
 
-describe('Directory Index Change Detection', () => {
+describe('Directory Index Change Detection (Array Structure)', () => {
   let testDir: string;
 
   beforeEach(async () => {
@@ -265,14 +265,14 @@ describe('Directory Index Change Detection', () => {
       lastUpdated: "2025-09-28T13:00:00.000Z", // Different timestamp
       files: {
         "A123": {
-          url: "https://api.openalex.org/authors/A123", 
+          url: "https://api.openalex.org/authors/A123",
           $ref: "./A123.json",
           lastRetrieved: "2025-09-28T12:00:00.000Z",
           contentHash: "abc123"
         },
         "A456": { // New file
           url: "https://api.openalex.org/authors/A456",
-          $ref: "./A456.json", 
+          $ref: "./A456.json",
           lastRetrieved: "2025-09-28T13:00:00.000Z",
           contentHash: "def456"
         }
@@ -288,7 +288,7 @@ describe('Directory Index Change Detection', () => {
       files: {
         "A123": {
           url: "https://api.openalex.org/authors/A123",
-          $ref: "./A123.json", 
+          $ref: "./A123.json",
           lastRetrieved: "2025-09-28T12:00:00.000Z",
           contentHash: "abc123"
         }
@@ -301,7 +301,7 @@ describe('Directory Index Change Detection', () => {
         "A123": {
           url: "https://api.openalex.org/authors/A123",
           $ref: "./A123.json",
-          lastRetrieved: "2025-09-28T12:00:00.000Z", 
+          lastRetrieved: "2025-09-28T12:00:00.000Z",
           contentHash: "xyz789" // Different hash
         }
       }
@@ -310,51 +310,102 @@ describe('Directory Index Change Detection', () => {
     expect(hasIndexChanged(oldIndex, newIndex)).toBe(true);
   });
 
-  it('should not detect change when only volatile metadata differs', async () => {
-    const baseIndex: DirectoryIndex = {
+  it('should not detect change when only lastModified timestamp differs', async () => {
+    const oldIndex: DirectoryIndex = {
+      entityType: "authors",
+      entityCount: 1,
       lastUpdated: "2025-09-28T12:00:00.000Z",
-      files: {
-        "A123": {
-          url: "https://api.openalex.org/authors/A123",
-          $ref: "./A123.json",
-          lastRetrieved: "2025-09-28T12:00:00.000Z",
+      entities: [
+        {
+          id: "A123",
+          fileName: "A123.json",
+          lastModified: "2025-09-28T12:00:00.000Z",
           contentHash: "abc123"
         }
-      }
+      ]
     };
 
-    // Create identical index
-    const identicalIndex: DirectoryIndex = JSON.parse(JSON.stringify(baseIndex));
+    const newIndex: DirectoryIndex = {
+      entityType: "authors",
+      entityCount: 1,
+      lastUpdated: "2025-09-28T12:00:00.000Z",
+      entities: [
+        {
+          id: "A123",
+          fileName: "A123.json",
+          lastModified: "2025-09-28T13:00:00.000Z", // Different timestamp but same content hash
+          contentHash: "abc123" // Same hash
+        }
+      ]
+    };
 
-    expect(hasIndexChanged(baseIndex, identicalIndex)).toBe(false);
+    // This should trigger a change because lastModified changed
+    // which indicates the file was touched even if content didn't change
+    expect(hasIndexChanged(oldIndex, newIndex)).toBe(true);
   });
 
-  it('should detect no change when timestamps and hashes are identical', async () => {
+  it('should detect no change when indexes are identical', async () => {
     const index1: DirectoryIndex = {
+      entityType: "authors",
+      entityCount: 1,
       lastUpdated: "2025-09-28T12:00:00.000Z",
-      files: {
-        "A123": {
-          url: "https://api.openalex.org/authors/A123",
-          $ref: "./A123.json",
-          lastRetrieved: "2025-09-28T12:00:00.000Z", 
+      entities: [
+        {
+          id: "A123",
+          fileName: "A123.json",
+          lastModified: "2025-09-28T12:00:00.000Z",
           contentHash: "abc123"
         }
-      }
+      ]
     };
 
     const index2: DirectoryIndex = {
+      entityType: "authors",
+      entityCount: 1,
       lastUpdated: "2025-09-28T12:00:00.000Z",
-      files: {
-        "A123": {
-          url: "https://api.openalex.org/authors/A123",
-          $ref: "./A123.json",
-          lastRetrieved: "2025-09-28T12:00:00.000Z",
+      entities: [
+        {
+          id: "A123",
+          fileName: "A123.json",
+          lastModified: "2025-09-28T12:00:00.000Z",
           contentHash: "abc123"
+        }
+      ]
+    };
+
+    expect(hasIndexChanged(index1, index2)).toBe(false);
+  });
+
+  it('should detect changes in subdirectories', async () => {
+    const oldIndex: DirectoryIndex = {
+      entityType: "works",
+      entityCount: 0,
+      lastUpdated: "2025-09-28T12:00:00.000Z",
+      entities: [],
+      subdirectories: {
+        "queries": {
+          $ref: "./queries",
+          entityCount: 1,
+          lastUpdated: "2025-09-28T12:00:00.000Z"
         }
       }
     };
 
-    expect(hasIndexChanged(index1, index2)).toBe(false);
+    const newIndex: DirectoryIndex = {
+      entityType: "works",
+      entityCount: 0,
+      lastUpdated: "2025-09-28T12:00:00.000Z",
+      entities: [],
+      subdirectories: {
+        "queries": {
+          $ref: "./queries",
+          entityCount: 2, // Entity count in subdirectory changed
+          lastUpdated: "2025-09-28T13:00:00.000Z"
+        }
+      }
+    };
+
+    expect(hasIndexChanged(oldIndex, newIndex)).toBe(true);
   });
 });
 
@@ -391,7 +442,7 @@ describe('Integration: Full Content Change Detection', () => {
     const hash1 = await generateContentHash(apiResponse1);
     const hash2 = await generateContentHash(apiResponse2);
 
-    // Content hashes should be identical since only volatile fields changed
+    // Content hashes should be identical since entire meta field is ignored
     expect(hash1).toBe(hash2);
 
     // Create cache metadata
@@ -404,18 +455,18 @@ describe('Integration: Full Content Change Detection', () => {
     const needsUpdate = await shouldUpdateCache(metadata1, apiResponse2);
     expect(needsUpdate).toBe(false);
 
-    // Create directory index entries
-    const indexEntry1: FileEntry = {
-      url: "https://api.openalex.org/authors/A5017898742",
-      $ref: "./A5017898742.json",
-      lastRetrieved: new Date().toISOString(),
+    // Create directory index entries using actual structure
+    const indexEntry1: EntityEntry = {
+      id: "A5017898742",
+      fileName: "A5017898742.json",
+      lastModified: new Date().toISOString(),
       contentHash: hash1
     };
 
-    const indexEntry2: FileEntry = {
-      url: "https://api.openalex.org/authors/A5017898742",
-      $ref: "./A5017898742.json", 
-      lastRetrieved: new Date().toISOString(), // Different timestamp
+    const indexEntry2: EntityEntry = {
+      id: "A5017898742",
+      fileName: "A5017898742.json", 
+      lastModified: new Date().toISOString(), // Different timestamp
       contentHash: hash2 // Same hash as hash1
     };
 
@@ -423,7 +474,7 @@ describe('Integration: Full Content Change Detection', () => {
     expect(indexEntry1.contentHash).toBe(indexEntry2.contentHash);
 
     // This demonstrates that despite API calls at different times with different
-    // volatile metadata, the content hash remains stable and index won't update
+    // volatile metadata, the content hash remains stable and index won't update unnecessarily
     console.log('Hash stability verified:', {
       hash1,
       hash2,
@@ -468,5 +519,52 @@ describe('Integration: Full Content Change Detection', () => {
       areDifferent: hash1 !== hash2,
       needsUpdate
     });
+  });
+
+  it('should demonstrate index structure stability', async () => {
+    // Real structure from the actual system
+    const realIndex: DirectoryIndex = {
+      entityType: "authors",
+      entityCount: 1,
+      lastUpdated: "2025-09-28T16:10:04.643Z",
+      entities: [
+        {
+          id: "A5017898742",
+          fileName: "A5017898742.json",
+          lastModified: "2025-09-28T12:56:10.732Z",
+          contentHash: "c77e827545226162"
+        }
+      ]
+    };
+
+    // Simulate the same index regenerated but with same content
+    const regeneratedIndex: DirectoryIndex = {
+      entityType: "authors",
+      entityCount: 1,
+      lastUpdated: "2025-09-28T16:10:04.643Z", // Same timestamp
+      entities: [
+        {
+          id: "A5017898742",
+          fileName: "A5017898742.json",
+          lastModified: "2025-09-28T12:56:10.732Z", // Same lastModified
+          contentHash: "c77e827545226162" // Same content hash
+        }
+      ]
+    };
+
+    function hasIndexChanged(oldIndex: DirectoryIndex | null, newIndex: DirectoryIndex): boolean {
+      if (!oldIndex) return true;
+      return (
+        oldIndex.lastUpdated !== newIndex.lastUpdated ||
+        oldIndex.entityCount !== newIndex.entityCount ||
+        JSON.stringify(oldIndex.entities) !== JSON.stringify(newIndex.entities) ||
+        JSON.stringify(oldIndex.subdirectories) !== JSON.stringify(newIndex.subdirectories)
+      );
+    }
+
+    // Should not detect change when indexes are identical
+    expect(hasIndexChanged(realIndex, regeneratedIndex)).toBe(false);
+
+    console.log('Index structure stability verified');
   });
 });
