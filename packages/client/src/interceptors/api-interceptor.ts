@@ -372,7 +372,7 @@ export class ApiInterceptor {
       });
 
       return interceptedRequest;
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error("Failed to intercept request", { error, url });
       return null;
     }
@@ -468,7 +468,7 @@ export class ApiInterceptor {
       this.config.onApiCall(interceptedCall);
 
       return interceptedCall;
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error("Failed to intercept response", {
         error,
         requestId: request.requestId

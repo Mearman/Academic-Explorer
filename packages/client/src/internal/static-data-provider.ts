@@ -166,7 +166,6 @@ class LocalDiskCacheTier implements CacheTierInterface {
 
 			// Dynamic import for Node.js fs module
 			const fs = await import('fs');
-			const path = await import('path');
 
 			if (!fs.existsSync(filePath)) {
 				return { found: false };
