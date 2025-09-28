@@ -41,8 +41,8 @@ const logCategory = 'static-data-index';
 export class StaticDataIndexGenerator {
   private readonly config: IndexGenerationConfig;
   private progressCallbacks: Set<(progress: IndexGenerationProgress) => void> = new Set();
-  private fs: typeof import('fs/promises') | undefined;
-  private path: typeof import('path') | undefined;
+  private fs!: typeof import('fs/promises');
+  private path!: typeof import('path');
 
   constructor(config: Partial<IndexGenerationConfig> = {}) {
     this.config = {
