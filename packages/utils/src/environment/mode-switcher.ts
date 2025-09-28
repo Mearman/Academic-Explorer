@@ -5,7 +5,7 @@
  * Provides a unified interface for selecting and configuring cache strategies.
  */
 
-import { EnvironmentDetector, type BuildContext } from './environment-detector.js';
+import { EnvironmentDetector, EnvironmentMode, type BuildContext } from './environment-detector.js';
 import { CacheConfigFactory, type CacheConfig } from './cache-config.js';
 import {
   CacheStrategySelector,
