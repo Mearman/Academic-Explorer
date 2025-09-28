@@ -93,16 +93,16 @@ export default defineConfig({
 	// Output directories
 	outputDir: "test-results/playwright-artifacts",
 
-	// Web server configuration - disabled since dev server runs separately
-	// webServer: {
-	// 	command: "pnpm dev",
-	// 	port: 5173,
-	// 	reuseExistingServer: !process.env.CI,
-	// 	stdout: "pipe",
-	// 	stderr: "pipe",
-	// 	timeout: 120000,
-	// 	env: {
-	// 		NODE_ENV: "development"
-	// 	}
-	// }
+	// Web server configuration for E2E tests
+	webServer: {
+		command: "vite",
+		port: 5173,
+		reuseExistingServer: !process.env.CI,
+		stdout: "pipe",
+		stderr: "pipe",
+		timeout: 120000,
+		env: {
+			NODE_ENV: "development"
+		}
+	}
 })

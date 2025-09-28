@@ -60,7 +60,7 @@
     },
     "test": {
       "executor": "nx:run-commands",
-      "dependsOn": ["test:unit", "test:component", "test:integration"],
+      "dependsOn": ["test:unit", "test:component", "test:integration", "test:e2e"],
       "options": {
         "command": "echo 'All scoped tests completed successfully'",
         "cwd": "{projectRoot}"
@@ -120,8 +120,21 @@
       "cache": true
     },
     "test:e2e": {
-      "executor": "nx:noop",
-      "options": {},
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsx ../../scripts/run-e2e-tests.ts",
+        "cwd": "{projectRoot}"
+      },
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/vitest.workspace.ts",
+        "{projectRoot}/vitest.config.ts",
+        "{projectRoot}/playwright.config.ts"
+      ],
+      "outputs": [
+        "{projectRoot}/test-results"
+      ],
       "cache": false
     },
     "test:watch": {
