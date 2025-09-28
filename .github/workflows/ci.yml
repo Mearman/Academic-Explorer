@@ -49,9 +49,34 @@ jobs:
             ${{ runner.os }}-nx-${{ hashFiles('nx.json', '**/project.json') }}-
             ${{ runner.os }}-nx-
 
-      # Run affected tasks using Nx's built-in parallelization
+      # Build packages manually to avoid Nx hanging issues
       - name: Build affected projects
-        run: pnpm nx affected -t build --parallel=3
+        run: |
+          echo "🔨 Building packages manually to avoid Nx hanging..."
+
+          # Build packages in dependency order
+          echo "📦 Building utils package..."
+          pnpm --filter @academic-explorer/utils build
+
+          echo "📦 Building client package..."
+          pnpm --filter @academic-explorer/client build
+
+          echo "📦 Building graph package..."
+          pnpm --filter @academic-explorer/graph build
+
+          echo "📦 Building simulation package..."
+          pnpm --filter @academic-explorer/simulation build
+
+          echo "📦 Building ui package..."
+          pnpm --filter @academic-explorer/ui build
+
+          echo "🌐 Building web app with Vite directly..."
+          cd apps/web && pnpm vite build && cd ../..
+
+          echo "🛠️ Building CLI..."
+          pnpm --filter @academic-explorer/cli build
+
+          echo "✅ All builds completed successfully"
         env:
           NODE_OPTIONS: '--max-old-space-size=8192'
 
@@ -392,7 +417,20 @@ jobs:
         uses: ./.github/actions/setup-node-pnpm
 
       - name: Build production app
-        run: pnpm nx build web
+        run: |
+          echo "🔨 Building production app manually to avoid Nx hanging..."
+
+          # Build dependencies first
+          pnpm --filter @academic-explorer/utils build
+          pnpm --filter @academic-explorer/client build
+          pnpm --filter @academic-explorer/graph build
+          pnpm --filter @academic-explorer/simulation build
+          pnpm --filter @academic-explorer/ui build
+
+          # Build web app with Vite directly
+          cd apps/web && pnpm vite build && cd ../..
+
+          echo "✅ Production build completed"
         env:
           NODE_OPTIONS: '--max-old-space-size=8192'
 
