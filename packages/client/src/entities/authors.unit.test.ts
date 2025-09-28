@@ -269,9 +269,11 @@ describe("AuthorsApi", () => {
 			mockClient.getResponse.mockResolvedValue(mockResponse);
 
 			await authorsApi.searchAuthors("machine learning", {
-				"works_count": ">10",
-				"has_orcid": true,
-				"cited_by_count": 500,
+				filters: {
+					"works_count": ">10",
+					"has_orcid": true,
+					"cited_by_count": 500,
+				}
 			});
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("authors", {
@@ -290,8 +292,10 @@ describe("AuthorsApi", () => {
 			mockClient.getResponse.mockResolvedValue(mockResponse);
 
 			await authorsApi.searchAuthors("query", {
-				"last_known_institution.id": ["I27837315", "I123456789"],
-				"x_concepts.id": ["C41008148"],
+				filters: {
+					"last_known_institution.id": ["I27837315", "I123456789"],
+					"x_concepts.id": ["C41008148"],
+				}
 			});
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("authors", {
@@ -310,9 +314,11 @@ describe("AuthorsApi", () => {
 			mockClient.getResponse.mockResolvedValue(mockResponse);
 
 			await authorsApi.searchAuthors("test", {
-				"works_count": 50,
-				"has_orcid": null as unknown as boolean,
-				"cited_by_count": undefined as unknown as number,
+				filters: {
+					"works_count": 50,
+					"has_orcid": null as unknown as boolean,
+					"cited_by_count": undefined as unknown as number,
+				}
 			});
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("authors", {
@@ -330,7 +336,7 @@ describe("AuthorsApi", () => {
 
 			mockClient.getResponse.mockResolvedValue(mockResponse);
 
-			await authorsApi.searchAuthors("test", {}, {
+			await authorsApi.searchAuthors("test", {
 				per_page: 100,
 				sort: "works_count:desc",
 			});

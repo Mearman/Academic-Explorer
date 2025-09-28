@@ -12,6 +12,8 @@ import { logger } from "../internal/logger";
 export interface InterceptedRequest {
   /** Full request URL */
   url: string;
+  /** Final URL after redirects (if different from original) */
+  finalUrl?: string;
   /** HTTP method (typically GET for OpenAlex) */
   method: string;
   /** Request headers */
@@ -403,6 +405,26 @@ export class ApiInterceptor {
 
       const timestamp = Date.now();
 
+      // Capture final URL after redirects
+      if (response.url && response.url !== request.url) {
+        (request as InterceptedRequest).finalUrl = response.url;
+
+        // Re-extract entity info from final URL for correct cache key generation
+        const finalEntityType = this.extractEntityType(response.url);
+        const finalEntityId = this.extractEntityId(response.url);
+
+        if (finalEntityType) (request as InterceptedRequest).entityType = finalEntityType;
+        if (finalEntityId) (request as InterceptedRequest).entityId = finalEntityId;
+
+        logger.debug("Request redirected", {
+          requestId: request.requestId,
+          originalUrl: request.url,
+          finalUrl: response.url,
+          originalEntityId: this.extractEntityId(request.url),
+          finalEntityId
+        });
+      }
+
       // Extract response headers
       const headers: Record<string, string> = {};
       response.headers.forEach((value, key) => {
@@ -423,8 +445,9 @@ export class ApiInterceptor {
         requestId: request.requestId
       };
 
-      // Generate cache key
-      const urlObj = new URL(request.url);
+      // Generate cache key - use final URL if redirected, otherwise original URL
+      const effectiveUrl = request.finalUrl || request.url;
+      const urlObj = new URL(effectiveUrl);
       const cacheKeyComponents: CacheKeyComponents = {
         entityType: request.entityType,
         entityId: request.entityId,

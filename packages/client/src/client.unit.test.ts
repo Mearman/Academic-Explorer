@@ -234,6 +234,11 @@ describe("OpenAlexBaseClient", () => {
 				{ status: 500, statusText: "Internal Server Error" }
 			);
 
+			// Create client with short retry delay for fast testing
+			client = new OpenAlexBaseClient({ retryDelay: 1 }); // Even shorter delay
+
+			// Reset mock completely and set specific sequence
+			mockFetch.mockReset();
 			mockFetch
 				.mockResolvedValueOnce(errorResponse)
 				.mockResolvedValueOnce(errorResponse)
@@ -243,7 +248,7 @@ describe("OpenAlexBaseClient", () => {
 
 			expect(mockFetch).toHaveBeenCalledTimes(3); // Original + 2 retries
 			expect(result).toBeDefined();
-		});
+		}, 10000); // 10 second timeout
 
 		it("should throw OpenAlexApiError after max retries for server errors", async () => {
 			const errorResponse = new Response(
@@ -251,12 +256,14 @@ describe("OpenAlexBaseClient", () => {
 				{ status: 500, statusText: "Internal Server Error" }
 			);
 
+			// Reset mock completely and set specific mock
+			mockFetch.mockReset();
 			mockFetch.mockResolvedValue(errorResponse);
-			client = new OpenAlexBaseClient({ retries: 1 });
+			client = new OpenAlexBaseClient({ retries: 1, retryDelay: 1 });
 
 			await expect(client.get("works")).rejects.toThrow(OpenAlexApiError);
 			expect(mockFetch).toHaveBeenCalledTimes(2); // Original + 1 retry
-		});
+		}, 10000); // 10 second timeout
 
 		it("should handle network errors with retries", async () => {
 			const networkError = new Error("Network error");

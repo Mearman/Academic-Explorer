@@ -296,12 +296,15 @@ export class OpenAlexBaseClient {
 					);
 
 					// Write to disk cache if intercepted successfully (Node.js only)
-					if (interceptedCall && typeof process !== 'undefined' && process.versions?.node) {
+					// Check environment variable to determine if disk caching should be enabled
+					const diskCacheEnabled = process.env.ACADEMIC_EXPLORER_DISK_CACHE_ENABLED !== 'false';
+					if (interceptedCall && typeof process !== 'undefined' && process.versions?.node && diskCacheEnabled) {
 						try {
 							// Dynamic import to avoid bundling Node.js modules in browser
 							const { defaultDiskWriter } = await import("./cache/disk");
 							await defaultDiskWriter.writeToCache({
 								url: interceptedCall.request.url,
+								finalUrl: interceptedCall.request.finalUrl,
 								method: interceptedCall.request.method,
 								requestHeaders: interceptedCall.request.headers,
 								responseData: interceptedCall.response.data,

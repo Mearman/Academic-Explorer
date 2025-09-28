@@ -982,7 +982,7 @@ export class WorksApi {
 
 		// Merge with existing filters if present
 		const mergedFilter = this.mergeFilters(filters, params.filter);
-		return this.getWorks({ ...params, filter: mergedFilter, sort: "cited_by_count" });
+		return this.getWorks({ ...params, filter: mergedFilter, sort: "cited_by_count:desc" });
 	}
 }
 

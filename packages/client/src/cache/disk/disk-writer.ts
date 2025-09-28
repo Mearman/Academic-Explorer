@@ -6,6 +6,13 @@
 
 import type { EntityType, OpenAlexResponse, OpenAlexEntity } from '../../types';
 import { logger, logError } from '../../internal/logger';
+import {
+  DirectoryIndex,
+  FileEntry,
+  DirectoryEntry,
+  generateContentHash,
+  createCacheEntryMetadata
+} from '@academic-explorer/utils/static-data/cache-utilities';
 
 // Dynamic imports for Node.js modules to avoid browser bundling issues
 let fs: typeof import('fs/promises') | undefined;
@@ -50,6 +57,8 @@ export interface DiskWriterConfig {
 export interface CacheMetadata {
   /** Original request URL */
   url: string;
+  /** Final URL after redirects (if different from original) */
+  finalUrl?: string;
   /** Request method */
   method: string;
   /** Request headers */
@@ -80,6 +89,8 @@ export interface CacheMetadata {
 export interface InterceptedData {
   /** Original request URL */
   url: string;
+  /** Final URL after redirects (if different from original) */
+  finalUrl?: string;
   /** Request method */
   method: string;
   /** Request headers */
@@ -184,14 +195,15 @@ export class DiskCacheWriter {
         if (!path) {
           throw new Error('Node.js path module not initialized');
         }
-        await this.ensureDirectoryStructure(path.dirname(filePaths.dataFile));
+        await this.ensureDirectoryStructure(filePaths.directoryPath);
 
         // Prepare content and metadata
         const content = JSON.stringify(data.responseData, null, 2);
-        const contentHash = await this.generateContentHash(content);
+        const contentHash = await generateContentHash(data.responseData);
 
         const metadata: CacheMetadata = {
           url: data.url,
+          finalUrl: data.finalUrl,
           method: data.method,
           requestHeaders: data.requestHeaders,
           statusCode: data.statusCode,
@@ -208,6 +220,9 @@ export class DiskCacheWriter {
         // Write files atomically
         await this.writeFileAtomic(filePaths.dataFile, content);
         await this.writeFileAtomic(filePaths.metadataFile, JSON.stringify(metadata, null, 2));
+
+        // Update hierarchical index files
+        await this.updateHierarchicalIndexes(entityInfo, filePaths, metadata);
 
         logger.debug('Cache write successful', {
           entityType: entityInfo.entityType,
@@ -234,22 +249,24 @@ export class DiskCacheWriter {
   private async extractEntityInfo(data: InterceptedData): Promise<{
     entityType?: EntityType;
     entityId?: string;
+    queryParams?: string;
+    isQueryResponse?: boolean;
   }> {
     try {
       // Try to extract from URL first
       const urlInfo = this.extractEntityInfoFromUrl(data.url);
-      if (urlInfo.entityType && urlInfo.entityId) {
+      if (urlInfo.entityType) {
         return urlInfo;
       }
 
       // Try to extract from response data
       const responseInfo = this.extractEntityInfoFromResponse(data.responseData);
-      if (responseInfo.entityType && responseInfo.entityId) {
-        return responseInfo;
+      if (responseInfo.entityType) {
+        return { ...responseInfo, ...urlInfo };
       }
 
       // Default fallback - use URL hash
-      const urlHash = await this.generateContentHash(data.url);
+      const urlHash = await generateContentHash(data.url);
       return {
         entityType: 'works', // Default entity type
         entityId: `unknown_${urlHash.substring(0, 8)}`,
@@ -267,24 +284,47 @@ export class DiskCacheWriter {
   private extractEntityInfoFromUrl(url: string): {
     entityType?: EntityType;
     entityId?: string;
+    queryParams?: string;
+    isQueryResponse?: boolean;
   } {
     try {
       const urlObj = new URL(url);
       const pathParts = urlObj.pathname.split('/').filter(Boolean);
+      const queryParams = urlObj.search.slice(1); // Remove leading '?'
 
-      // OpenAlex API URL pattern: /entity_type/entity_id
-      if (pathParts.length >= 2) {
+      // Validate entity type
+      const validEntityTypes: EntityType[] = [
+        'works', 'authors', 'sources', 'institutions',
+        'topics', 'concepts', 'publishers', 'funders', 'keywords'
+      ];
+
+      // OpenAlex API URL pattern: /entity_type/entity_id or /entity_type?params
+      if (pathParts.length >= 1) {
         const entityType = pathParts[0] as EntityType;
-        const entityId = pathParts[1];
 
-        // Validate entity type
-        const validEntityTypes: EntityType[] = [
-          'works', 'authors', 'sources', 'institutions',
-          'topics', 'concepts', 'publishers', 'funders', 'keywords'
-        ];
-
-        if (validEntityTypes.includes(entityType) && entityId) {
-          return { entityType, entityId };
+        if (validEntityTypes.includes(entityType)) {
+          // Single entity: /entity_type/entity_id
+          if (pathParts.length >= 2 && !queryParams) {
+            const entityId = pathParts[1];
+            return { entityType, entityId, isQueryResponse: false };
+          }
+          // Query/filter response: /entity_type?params
+          else if (queryParams) {
+            return {
+              entityType,
+              queryParams,
+              isQueryResponse: true,
+              entityId: `collection_${Date.now()}`
+            };
+          }
+          // Collection without params: /entity_type
+          else {
+            return {
+              entityType,
+              isQueryResponse: true,
+              entityId: `collection_${Date.now()}`
+            };
+          }
         }
       }
 
@@ -300,6 +340,7 @@ export class DiskCacheWriter {
   private extractEntityInfoFromResponse(responseData: unknown): {
     entityType?: EntityType;
     entityId?: string;
+    isQueryResponse?: boolean;
   } {
     try {
       // Single entity response
@@ -308,6 +349,7 @@ export class DiskCacheWriter {
         return {
           entityType,
           entityId: responseData.id,
+          isQueryResponse: false
         };
       }
 
@@ -319,6 +361,7 @@ export class DiskCacheWriter {
           return {
             entityType,
             entityId: `collection_${Date.now()}`,
+            isQueryResponse: true
           };
         }
       }
@@ -373,23 +416,44 @@ export class DiskCacheWriter {
   private generateFilePaths(entityInfo: {
     entityType?: EntityType;
     entityId?: string;
+    queryParams?: string;
+    isQueryResponse?: boolean;
   }): {
     dataFile: string;
     metadataFile: string;
+    directoryPath: string;
   } {
     const entityType = entityInfo.entityType ?? 'unknown';
-    const entityId = entityInfo.entityId ?? 'unknown';
-
-    // Sanitize entity ID for filesystem
-    const sanitizedId = this.sanitizeFilename(entityId);
 
     if (!path) {
       throw new Error('Node.js path module not initialized');
     }
-    const dataFile = path.join(this.config.basePath, entityType, `${sanitizedId}.json`);
-    const metadataFile = path.join(this.config.basePath, entityType, `${sanitizedId}.meta.json`);
 
-    return { dataFile, metadataFile };
+    let directoryPath: string;
+    let filename: string;
+
+    if (entityInfo.isQueryResponse && entityInfo.queryParams) {
+      // Query/filter response: works/queries/filter=author.id:A123&select=display_name.json
+      const sanitizedQuery = this.sanitizeFilename(`filter=${entityInfo.queryParams}`);
+      directoryPath = path.join(this.config.basePath, entityType, 'queries');
+      filename = sanitizedQuery;
+    } else if (entityInfo.entityId && !entityInfo.isQueryResponse) {
+      // Single entity: works/W123456789.json
+      const sanitizedId = this.sanitizeFilename(entityInfo.entityId);
+      directoryPath = path.join(this.config.basePath, entityType);
+      filename = sanitizedId;
+    } else {
+      // Default fallback
+      const entityId = entityInfo.entityId ?? 'unknown';
+      const sanitizedId = this.sanitizeFilename(entityId);
+      directoryPath = path.join(this.config.basePath, entityType);
+      filename = sanitizedId;
+    }
+
+    const dataFile = path.join(directoryPath, `${filename}.json`);
+    const metadataFile = path.join(directoryPath, `${filename}.meta.json`);
+
+    return { dataFile, metadataFile, directoryPath };
   }
 
   /**
@@ -505,15 +569,6 @@ export class DiskCacheWriter {
     }
   }
 
-  /**
-   * Generate content hash for integrity verification
-   */
-  private async generateContentHash(content: string): Promise<string> {
-    if (!crypto) {
-      throw new Error('Node.js crypto module not initialized');
-    }
-    return crypto.createHash('sha256').update(content, 'utf8').digest('hex');
-  }
 
   /**
    * Check available disk space
@@ -590,6 +645,152 @@ export class DiskCacheWriter {
 
     if (!data.responseData) {
       throw new Error('Invalid response data: must be present');
+    }
+  }
+
+  /**
+   * Update hierarchical index.json files from the saved file up to the root
+   */
+  private async updateHierarchicalIndexes(
+    entityInfo: {
+      entityType?: EntityType;
+      entityId?: string;
+      queryParams?: string;
+      isQueryResponse?: boolean;
+    },
+    filePaths: {
+      dataFile: string;
+      metadataFile: string;
+      directoryPath: string;
+    },
+    metadata: CacheMetadata
+  ): Promise<void> {
+    if (!path || !fs) {
+      throw new Error('Node.js modules not initialized');
+    }
+
+    try {
+      // Start from the immediate directory containing the data file
+      let currentPath = filePaths.directoryPath;
+      const basePath = path.resolve(this.config.basePath);
+
+      while (currentPath && currentPath.startsWith(basePath)) {
+        await this.updateDirectoryIndex(currentPath, entityInfo, filePaths, metadata);
+
+        // Move up one directory level
+        const parentPath = path.dirname(currentPath);
+        if (parentPath === currentPath || !parentPath.startsWith(basePath)) {
+          break;
+        }
+        currentPath = parentPath;
+      }
+    } catch (error) {
+      logError('Failed to update hierarchical indexes', error);
+      throw new Error(`Index update failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  /**
+   * Update a single directory's index.json file
+   */
+  private async updateDirectoryIndex(
+    directoryPath: string,
+    entityInfo: {
+      entityType?: EntityType;
+      entityId?: string;
+      queryParams?: string;
+      isQueryResponse?: boolean;
+    },
+    filePaths: {
+      dataFile: string;
+      metadataFile: string;
+      directoryPath: string;
+    },
+    metadata: CacheMetadata
+  ): Promise<void> {
+    if (!path || !fs) {
+      throw new Error('Node.js modules not initialized');
+    }
+
+    const indexPath = path.join(directoryPath, 'index.json');
+    const basePath = path.resolve(this.config.basePath);
+    const relativePath = path.relative(basePath, directoryPath).replace(/\\/g, '/');
+    const displayPath = relativePath ? `/${relativePath}` : '/';
+
+    try {
+      // Read existing index or create new one
+      let indexData: DirectoryIndex = {
+        lastUpdated: new Date().toISOString()
+      };
+
+      try {
+        const existingContent = await fs.readFile(indexPath, 'utf8');
+        const existingData = JSON.parse(existingContent) as DirectoryIndex;
+        indexData = {
+          lastUpdated: new Date().toISOString(),
+          ...(existingData.directories && Object.keys(existingData.directories).length > 0 && { directories: existingData.directories }),
+          ...(existingData.files && Object.keys(existingData.files).length > 0 && { files: existingData.files })
+        };
+      } catch {
+        // File doesn't exist, use default structure
+      }
+
+      // Update timestamp
+      indexData.lastUpdated = new Date().toISOString();
+
+      // Determine if this is the directory containing our new file
+      const isContainingDirectory = directoryPath === filePaths.directoryPath;
+
+      if (isContainingDirectory) {
+        // Add the new file to the appropriate section
+        const filename = path.basename(filePaths.dataFile, '.json');
+        const relativeFilePath = `./${filename}.json`;
+
+        const fileEntry: FileEntry = {
+          url: metadata.url,
+          $ref: relativeFilePath,
+          lastRetrieved: new Date().toISOString(),
+          contentHash: metadata.contentHash
+        };
+
+        // Add to files section for query/filter responses
+        if (entityInfo.isQueryResponse && entityInfo.queryParams) {
+          if (!indexData.files) {
+            indexData.files = {};
+          }
+          indexData.files[filename] = fileEntry;
+        }
+        // For entity files, we don't add them to index (only directories)
+      } else {
+        // This is a parent directory, add directory reference
+        const relativePath = path.relative(directoryPath, filePaths.directoryPath);
+        const childDirName = relativePath.split(path.sep)[0];
+        if (childDirName && childDirName !== '.') {
+          if (!indexData.directories) {
+            indexData.directories = {};
+          }
+          const directoryEntry: DirectoryEntry = {
+            $ref: `./${childDirName}`,
+            lastModified: new Date().toISOString()
+          };
+          indexData.directories[childDirName] = directoryEntry;
+        }
+      }
+
+      // Write updated index
+      await this.writeFileAtomic(indexPath, JSON.stringify(indexData, null, 2));
+
+      logger.debug('Updated directory index', {
+        indexPath,
+        relativePath: displayPath,
+        isContainingDirectory,
+        hasFiles: Object.keys(indexData.files || {}).length > 0,
+        hasDirectories: Object.keys(indexData.directories || {}).length > 0
+      });
+
+    } catch (error) {
+      logError('Failed to update directory index', error);
+      throw new Error(`Directory index update failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
