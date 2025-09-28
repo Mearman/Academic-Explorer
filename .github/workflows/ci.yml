@@ -329,6 +329,10 @@ jobs:
         with:
           name: build-artifacts-${{ github.sha }}
 
+      - name: Install Playwright browsers
+        if: matrix.check == 'test:e2e'
+        run: pnpm exec playwright install --with-deps
+
       - name: Run ${{ matrix.check }}
         run: pnpm nx affected -t ${{ matrix.check }} --parallel=2
         env:

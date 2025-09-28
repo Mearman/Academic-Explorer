@@ -126,7 +126,7 @@ function getEntityPrefix(entityType: string): string {
  * Parse a unified index key to determine what type of resource it represents
  */
 interface ParsedKey {
-  entityType: "entity" | "query";
+  type: "entity" | "query";
   entityType: string;
   entityId?: string;
   queryParams?: Record<string, unknown>;
@@ -286,7 +286,7 @@ function parseOpenAlexApiUrl(url: string): ParsedKey | null {
       }
 
       return {
-        entityType: "query",
+        type: "query",
         entityType,
         queryParams,
         originalKey: url,
@@ -305,7 +305,7 @@ function parseOpenAlexApiUrl(url: string): ParsedKey | null {
       if (Object.keys(queryParams).length > 0) {
         // Entity with query params
         return {
-          entityType: "query",
+          type: "query",
           entityType,
           entityId,
           queryParams,
@@ -315,7 +315,7 @@ function parseOpenAlexApiUrl(url: string): ParsedKey | null {
       } else {
         // Pure entity
         return {
-          entityType: "entity",
+          type: "entity",
           entityType,
           entityId,
           originalKey: url,
@@ -340,7 +340,7 @@ function parseOpenAlexUrl(url: string): ParsedKey | null {
       const entityType = inferEntityTypeFromId(entityId);
 
       return {
-        entityType: "entity",
+        type: "entity",
         entityType,
         entityId,
         originalKey: url,
@@ -352,7 +352,7 @@ function parseOpenAlexUrl(url: string): ParsedKey | null {
       const entityId = pathParts[1];
 
       return {
-        entityType: "entity",
+        type: "entity",
         entityType,
         entityId,
         originalKey: url,
@@ -377,7 +377,7 @@ function parseRelativeQuery(key: string): ParsedKey | null {
     }
 
     return {
-      entityType: "query",
+      type: "query",
       entityType: path,
       queryParams,
       originalKey: key,
@@ -394,7 +394,7 @@ function parseEntityPath(key: string): ParsedKey | null {
     const [entityType, entityId] = parts;
 
     return {
-      entityType: "entity",
+      type: "entity",
       entityType,
       entityId,
       originalKey: key,
@@ -408,7 +408,7 @@ function parseDirectEntityId(key: string): ParsedKey | null {
   const entityType = inferEntityTypeFromId(key);
 
   return {
-    entityType: "entity",
+    type: "entity",
     entityType,
     entityId: key,
     originalKey: key,
