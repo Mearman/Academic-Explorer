@@ -1,0 +1,13 @@
+{
+  "entityType": "works",
+  "entityCount": 2,
+  "lastUpdated": "2025-09-28T13:03:38.683Z",
+  "entities": [],
+  "subdirectories": {
+    "queries": {
+      "$ref": "./queries",
+      "entityCount": 2,
+      "lastUpdated": "2025-09-28T13:03:38.678Z"
+    }
+  }
+}

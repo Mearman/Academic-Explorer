@@ -1,10 +1,14 @@
 {
-  "lastUpdated": "2025-09-28T05:15:29.725Z",
-  "path": "/",
-  "entityTypes": {
+  "lastUpdated": "2025-09-28T12:56:13.430Z",
+  "files": {},
+  "directories": {
     "authors": {
       "$ref": "./authors",
-      "lastModified": "2025-09-28T05:15:29.725Z"
+      "lastModified": "2025-09-28T12:56:10.833Z"
+    },
+    "works": {
+      "$ref": "./works",
+      "lastModified": "2025-09-28T12:56:12.578Z"
     }
   }
 }

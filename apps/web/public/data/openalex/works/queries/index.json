@@ -1,0 +1,19 @@
+{
+  "entityType": "works",
+  "entityCount": 2,
+  "lastUpdated": "2025-09-28T13:03:38.678Z",
+  "entities": [
+    {
+      "id": "filter=author.id:A5017898742",
+      "fileName": "filter=author.id:A5017898742.json",
+      "lastModified": "2025-09-28T12:56:13.327Z",
+      "contentHash": "c8910972887c09da"
+    },
+    {
+      "id": "filter=author.id:A5017898742&select=display_name,id",
+      "fileName": "filter=author.id:A5017898742&select=display_name,id.json",
+      "lastModified": "2025-09-28T12:56:12.476Z",
+      "contentHash": "c8910972887c09da"
+    }
+  ]
+}
