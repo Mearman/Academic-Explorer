@@ -140,7 +140,7 @@ export class IdResolver {
         /^https?:\/\/orcid\.org\/(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/i,
         /orcid\.org\/(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])/i,
       ],
-      normalize: (match: string, config?: IdValidationConfig): string | null => {
+      normalize: (match: string, _config?: IdValidationConfig): string | null => {
         const orcidMatch = match.match(/(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])/i);
         if (!orcidMatch) return null;
 

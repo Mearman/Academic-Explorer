@@ -252,7 +252,7 @@ export class FilterBuilder {
    * // Returns properly escaped value for OpenAlex API
    * ```
    */
-  escapeValue(value: string): string {
+  escapeValue(_value: string): string {
     // Implementation will be added in separate task
     throw new Error("FilterBuilder.escapeValue not yet implemented");
   }
@@ -272,7 +272,7 @@ export class FilterBuilder {
    * // Result: { 'publication_year': '2023', 'is_oa': 'true' }
    * ```
    */
-  parseFilterString(filterString: string): Record<string, FilterValue> {
+  parseFilterString(_filterString: string): Record<string, FilterValue> {
     // Implementation will be added in separate task
     throw new Error("FilterBuilder.parseFilterString not yet implemented");
   }
