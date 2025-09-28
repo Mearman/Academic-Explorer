@@ -190,6 +190,7 @@ jobs:
           # Create cache directory to prevent ENOENT errors in disk cache writer
           echo "📁 Creating cache directories for tests..."
           mkdir -p apps/web/public/data/openalex
+          mkdir -p packages/client/public/data/openalex
 
           # Run package tests with enhanced error reporting
           echo "🧪 Running critical package tests with enhanced validation..."
