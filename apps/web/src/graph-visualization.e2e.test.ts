@@ -102,7 +102,7 @@ describe('Graph Visualization E2E Tests', () => {
   async function tryServerOrOffline(page: Page): Promise<boolean> {
     try {
       const response = await page.goto(BASE_URL, {
-        timeout: 3000,
+        timeout: 2000,
         waitUntil: 'domcontentloaded'
       })
       return response !== null && response.status() < 400
@@ -120,12 +120,12 @@ describe('Graph Visualization E2E Tests', () => {
     if (serverAvailable) {
       // Navigate to the specific author URL
       await page.goto(AUTHOR_URL, {
-        waitUntil: 'networkidle',
-        timeout: 30000
+        waitUntil: 'domcontentloaded',
+        timeout: 10000
       })
 
-      // Wait for initial render
-      await page.waitForTimeout(3000)
+      // Wait for Academic Explorer header to appear instead of arbitrary timeout
+      await page.waitForSelector('text=Academic Explorer', { timeout: 5000 })
 
       // Check if page loaded successfully
       const pageContent = await page.locator('body').count()
@@ -156,10 +156,12 @@ describe('Graph Visualization E2E Tests', () => {
     const serverAvailable = await tryServerOrOffline(page)
 
     if (serverAvailable) {
-      await page.goto(AUTHOR_URL, { timeout: 30000 })
-      await page.waitForTimeout(5000)
+      await page.goto(AUTHOR_URL, { timeout: 10000 })
 
-      // Check for XYFlow/ReactFlow containers
+      // Wait for page to be ready
+      await page.waitForSelector('text=Academic Explorer', { timeout: 3000 })
+
+      // Check for XYFlow/ReactFlow containers with reduced timeout
       const graphSelectors = [
         '.react-flow',
         '.xyflow',
@@ -170,11 +172,13 @@ describe('Graph Visualization E2E Tests', () => {
 
       let graphFound = false
       for (const selector of graphSelectors) {
-        const count = await page.locator(selector).count()
-        if (count > 0) {
+        try {
+          await page.waitForSelector(selector, { timeout: 2000 })
           graphFound = true
           console.log(`✅ Found graph container: ${selector}`)
           break
+        } catch {
+          // Continue to next selector
         }
       }
     } else {
@@ -215,8 +219,17 @@ describe('Graph Visualization E2E Tests', () => {
     const serverAvailable = await tryServerOrOffline(page)
 
     if (serverAvailable) {
-      await page.goto(AUTHOR_URL, { timeout: 30000 })
-      await page.waitForTimeout(10000)
+      await page.goto(AUTHOR_URL, { timeout: 10000 })
+
+      // Wait for page to stabilize by waiting for specific elements instead of arbitrary timeout
+      await page.waitForSelector('text=Academic Explorer', { timeout: 3000 })
+
+      // Wait for any loading indicators to disappear (if they exist)
+      try {
+        await page.waitForSelector('[data-loading="true"]', { state: 'detached', timeout: 5000 })
+      } catch {
+        // Loading indicator might not exist, continue
+      }
     } else {
       // Test data loading simulation (already set up)
       const dataResult = await page.evaluate(() => {

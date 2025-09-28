@@ -121,9 +121,10 @@ describe("SavedQueries", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Save Current Query")).toBeDefined();
+      expect(screen.getByPlaceholderText("Enter a name for this query")).toBeDefined();
     });
-    expect(screen.getByLabelText("Query Name")).toBeDefined();
-    expect(screen.getByText("test search")).toBeDefined();
+    // Check for current query preview text
+    expect(screen.getByText(/Query: test search/)).toBeDefined();
   });
 
   it("saves a new query when form is submitted", async () => {
@@ -138,10 +139,15 @@ describe("SavedQueries", () => {
     // Open save modal
     await user.click(screen.getByText("Save Current"));
 
+    // Wait for modal to be fully open
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText("Enter a name for this query")).toBeDefined();
+    });
+
     // Fill in form
-    await user.type(screen.getByLabelText("Query Name"), "My New Query");
-    await user.type(screen.getByLabelText("Description"), "Test description");
-    await user.type(screen.getByLabelText("Tags"), "tag1, tag2");
+    await user.type(screen.getByPlaceholderText("Enter a name for this query"), "My New Query");
+    await user.type(screen.getByPlaceholderText("Optional description"), "Test description");
+    await user.type(screen.getByPlaceholderText("Comma-separated tags (optional)"), "tag1, tag2");
 
     // Submit form
     await user.click(screen.getByText("Save Query"));
@@ -183,10 +189,13 @@ describe("SavedQueries", () => {
     );
 
     // Open menu
-    const menuButton = screen.getByRole("button", { name: /menu/i });
+    const menuButton = screen.getByLabelText("Query menu");
     await user.click(menuButton);
 
-    // Click delete
+    // Wait for menu to open and click delete
+    await waitFor(() => {
+      expect(screen.getByText("Delete")).toBeDefined();
+    });
     await user.click(screen.getByText("Delete"));
 
     // Verify localStorage was updated (query removed)
@@ -208,8 +217,8 @@ describe("SavedQueries", () => {
       </Wrapper>
     );
 
-    // Find star button (should be empty star initially)
-    const starButton = screen.getByRole("button", { name: /star/i });
+    // Find star button (should be empty star initially since isFavorite is false)
+    const starButton = screen.getByLabelText("Add to favorites");
     await user.click(starButton);
 
     // Verify localStorage was updated with favorite status
@@ -232,13 +241,18 @@ describe("SavedQueries", () => {
     );
 
     // Open menu
-    const menuButton = screen.getByRole("button", { name: /menu/i });
+    const menuButton = screen.getByLabelText("Query menu");
     await user.click(menuButton);
 
-    // Click rename
+    // Wait for menu to open and click rename
+    await waitFor(() => {
+      expect(screen.getByText("Rename")).toBeDefined();
+    });
     await user.click(screen.getByText("Rename"));
 
-    expect(screen.getByText("Edit Query")).toBeDefined();
+    await waitFor(() => {
+      expect(screen.getByText("Edit Query")).toBeDefined();
+    });
     expect(screen.getByDisplayValue("Test Query")).toBeDefined();
   });
 
@@ -253,11 +267,18 @@ describe("SavedQueries", () => {
     );
 
     // Open menu and click rename
-    const menuButton = screen.getByRole("button", { name: /menu/i });
+    const menuButton = screen.getByLabelText("Query menu");
     await user.click(menuButton);
+
+    await waitFor(() => {
+      expect(screen.getByText("Rename")).toBeDefined();
+    });
     await user.click(screen.getByText("Rename"));
 
-    // Update name
+    // Wait for modal to open and update name
+    await waitFor(() => {
+      expect(screen.getByDisplayValue("Test Query")).toBeDefined();
+    });
     const nameInput = screen.getByDisplayValue("Test Query");
     await user.clear(nameInput);
     await user.type(nameInput, "Updated Query Name");
@@ -288,7 +309,11 @@ describe("SavedQueries", () => {
 
     // Open save modal and submit with valid data
     await user.click(screen.getByText("Save Current"));
-    await user.type(screen.getByLabelText("Query Name"), "Test Query");
+
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText("Enter a name for this query")).toBeDefined();
+    });
+    await user.type(screen.getByPlaceholderText("Enter a name for this query"), "Test Query");
     await user.click(screen.getByText("Save Query"));
 
     // Should show error
@@ -309,13 +334,18 @@ describe("SavedQueries", () => {
     // Open save modal
     await user.click(screen.getByText("Save Current"));
 
-    // Try to submit without name
-    const saveButton = screen.getByText("Save Query");
+    // Wait for modal to open and try to submit without name
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Save Query" })).toBeDefined();
+    });
+    const saveButton = screen.getByRole("button", { name: "Save Query" });
     expect(saveButton).toBeDisabled();
 
     // Add name - button should become enabled
-    await user.type(screen.getByLabelText("Query Name"), "Test");
-    expect(saveButton).not.toBeDisabled();
+    await user.type(screen.getByPlaceholderText("Enter a name for this query"), "Test");
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Save Query" })).not.toBeDisabled();
+    });
   });
 
   it("sorts queries with favorites first", () => {

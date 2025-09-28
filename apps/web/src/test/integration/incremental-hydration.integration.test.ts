@@ -72,38 +72,49 @@ describe("Entity Data Storage Integration", () => {
 				created_date: "2023-01-01"
 			};
 
-			// Mock the OpenAlex client response
-			vi.spyOn(graphDataService["deduplicationService"], "getEntity")
+			// Mock the OpenAlex client response - ensure the mock is set up before any operations
+			const mockGetEntity = vi.spyOn(graphDataService["deduplicationService"], "getEntity")
 				.mockResolvedValue(mockWork);
 
-			// Load the work into the graph
-			await graphDataService.loadEntityGraph("https://openalex.org/W123456789");
+			try {
+				// Load the work into the graph with proper error handling
+				await graphDataService.loadEntityGraph("https://openalex.org/W123456789");
 
-			const store = useGraphStore.getState();
+				// Verify the mock was called
+				expect(mockGetEntity).toHaveBeenCalledWith("https://openalex.org/W123456789");
 
-			// Verify the main work was added with entity data
-			expect("https://openalex.org/W123456789" in store.nodes).toBe(true);
-			const mainNode = store.nodes["https://openalex.org/W123456789"];
-			expect(mainNode.entityData).toBeDefined();
-			expect(mainNode.entityData?.referenced_works).toEqual([
-				"https://openalex.org/W987654321",
-				"https://openalex.org/W555666777"
-			]);
+				// Give a small delay for potential async state updates to complete
+				await new Promise(resolve => setTimeout(resolve, 10));
 
-			// Verify referenced works are NOT automatically created as nodes
-			// (they should be created through relationship detection or on-demand loading)
-			expect("https://openalex.org/W987654321" in store.nodes).toBe(false);
-			expect("https://openalex.org/W555666777" in store.nodes).toBe(false);
+				const store = useGraphStore.getState();
 
-			// Verify only the primary node exists (total nodes should be 1)
-			expect(Object.keys(store.nodes).length).toBe(1);
+				// Verify the main work was added with entity data
+				expect("https://openalex.org/W123456789" in store.nodes).toBe(true);
+				const mainNode = store.nodes["https://openalex.org/W123456789"];
+				expect(mainNode.entityData).toBeDefined();
+				expect(mainNode.entityData?.referenced_works).toEqual([
+					"https://openalex.org/W987654321",
+					"https://openalex.org/W555666777"
+				]);
 
-			logger.debug("integration", "Entity data storage test completed successfully", {
-				mainNodeId: mainNode.id,
-				hasEntityData: !!mainNode.entityData,
-				referencedWorksCount: mainNode.entityData?.referenced_works?.length,
-				totalNodes: Object.keys(store.nodes).length
-			});
+				// Verify referenced works are NOT automatically created as nodes
+				// (they should be created through relationship detection or on-demand loading)
+				expect("https://openalex.org/W987654321" in store.nodes).toBe(false);
+				expect("https://openalex.org/W555666777" in store.nodes).toBe(false);
+
+				// Verify only the primary node exists (total nodes should be 1)
+				expect(Object.keys(store.nodes).length).toBe(1);
+
+				logger.debug("integration", "Entity data storage test completed successfully", {
+					mainNodeId: mainNode.id,
+					hasEntityData: !!mainNode.entityData,
+					referencedWorksCount: mainNode.entityData?.referenced_works?.length,
+					totalNodes: Object.keys(store.nodes).length
+				});
+			} catch (error) {
+				logger.error("integration", "Failed to load entity graph", { error });
+				throw error;
+			}
 		});
 
 		it("should store entity data without creating referenced work nodes", async () => {
@@ -140,30 +151,41 @@ describe("Entity Data Storage Integration", () => {
 			};
 
 			// Mock the API to return only the primary work
-			vi.spyOn(graphDataService["deduplicationService"], "getEntity")
+			const mockGetEntity = vi.spyOn(graphDataService["deduplicationService"], "getEntity")
 				.mockResolvedValue(mockWork);
 
-			// Load the main work
-			await graphDataService.loadEntityGraph("https://openalex.org/W123456789");
+			try {
+				// Load the main work
+				await graphDataService.loadEntityGraph("https://openalex.org/W123456789");
 
-			const store = useGraphStore.getState();
+				// Verify the mock was called
+				expect(mockGetEntity).toHaveBeenCalledWith("https://openalex.org/W123456789");
 
-			// Verify only the primary work was loaded
-			expect(Object.keys(store.nodes).length).toBe(1);
-			expect("https://openalex.org/W123456789" in store.nodes).toBe(true);
+				// Give a small delay for potential async state updates to complete
+				await new Promise(resolve => setTimeout(resolve, 10));
 
-			// Verify referenced work is NOT automatically created as a node
-			expect("https://openalex.org/W987654321" in store.nodes).toBe(false);
+				const store = useGraphStore.getState();
 
-			// Verify the entity data contains referenced works information
-			const mainNode = store.nodes["https://openalex.org/W123456789"];
-			expect(mainNode.entityData?.referenced_works).toEqual(["https://openalex.org/W987654321"]);
+				// Verify only the primary work was loaded
+				expect(Object.keys(store.nodes).length).toBe(1);
+				expect("https://openalex.org/W123456789" in store.nodes).toBe(true);
 
-			logger.debug("integration", "Entity data test completed", {
-				totalNodes: Object.keys(store.nodes).length,
-				hasEntityData: !!mainNode.entityData,
-				referencedWorksCount: mainNode.entityData?.referenced_works?.length
-			});
+				// Verify referenced work is NOT automatically created as a node
+				expect("https://openalex.org/W987654321" in store.nodes).toBe(false);
+
+				// Verify the entity data contains referenced works information
+				const mainNode = store.nodes["https://openalex.org/W123456789"];
+				expect(mainNode.entityData?.referenced_works).toEqual(["https://openalex.org/W987654321"]);
+
+				logger.debug("integration", "Entity data test completed", {
+					totalNodes: Object.keys(store.nodes).length,
+					hasEntityData: !!mainNode.entityData,
+					referencedWorksCount: mainNode.entityData?.referenced_works?.length
+				});
+			} catch (error) {
+				logger.error("integration", "Failed to load entity graph in second test", { error });
+				throw error;
+			}
 		});
 	});
 

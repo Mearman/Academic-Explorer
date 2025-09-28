@@ -198,23 +198,63 @@ export const mockRouterHooks = {
  * Call this in your test setup to mock router dependencies
  */
 export function setupRouterMocks() {
-  // Mock @tanstack/react-router
-  vi.doMock('@tanstack/react-router', () => ({
-    ...mockRouterHooks,
-    Link: ({ children, to, ...props }: any) =>
-      React.createElement('a', { href: to, ...props }, children),
-    Outlet: ({ ...props }: any) =>
-      React.createElement('div', { 'data-testid': 'router-outlet', ...props }),
-    Navigate: ({ to }: any) =>
-      React.createElement('div', { 'data-testid': 'navigate', 'data-to': to }),
-    createRouter: vi.fn(() => createMockRouter()),
-    createRootRoute: vi.fn(),
-    createRoute: vi.fn(),
-    RouterProvider: ({ children }: any) => children
-  }));
+  // Mock @tanstack/react-router with vi.mock (top-level mocking)
+  vi.mock('@tanstack/react-router', async () => {
+    const actual = await vi.importActual('@tanstack/react-router');
+    return {
+      ...actual,
+      ...mockRouterHooks,
+      Link: ({ children, to, ...props }: any) =>
+        React.createElement('a', { href: to, ...props }, children),
+      Outlet: ({ ...props }: any) =>
+        React.createElement('div', { 'data-testid': 'router-outlet', ...props }),
+      Navigate: ({ to }: any) =>
+        React.createElement('div', { 'data-testid': 'navigate', 'data-to': to }),
+      createRouter: vi.fn(() => createMockRouter()),
+      createRootRoute: vi.fn(),
+      createRoute: vi.fn(),
+      RouterProvider: ({ children }: any) => children,
+      useRouterState: () => ({
+        status: 'idle' as const,
+        isFetching: false,
+        isLoading: false,
+        isTransitioning: false,
+        location: {
+          pathname: '/',
+          search: '',
+          hash: '',
+          href: '/',
+          state: undefined,
+          maskedLocation: undefined
+        },
+        resolvedLocation: {
+          pathname: '/',
+          search: '',
+          hash: '',
+          href: '/'
+        }
+      }),
+      useRouter: () => createMockRouter(),
+      useNavigate: () => vi.fn(),
+      useLocation: () => ({
+        pathname: '/',
+        search: '',
+        hash: '',
+        href: '/',
+        state: undefined,
+        maskedLocation: undefined
+      }),
+      useParams: () => ({}),
+      useSearch: () => ({}),
+      useMatches: () => [createMockMatch()],
+      useMatch: () => createMockMatch(),
+      useRouteContext: () => ({}),
+      useLoaderData: () => undefined
+    };
+  });
 
   // Mock specific router components used in the app
-  vi.doMock('@/lib/router', () => ({
+  vi.mock('@/lib/router', () => ({
     router: createMockRouter()
   }));
 }

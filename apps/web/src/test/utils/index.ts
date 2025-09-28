@@ -4,13 +4,17 @@
  */
 
 // Store mocking utilities
-// export * from './store-mocks';
+export * from './store-mocks';
 
 // Router mocking utilities
-// export * from './router-mocks';
+export * from './router-mocks';
 
 // Component mocking utilities
-// export * from './component-mocks';
+export * from './component-mocks';
+
+// Import specific setup functions for use in setupAllTestMocks
+import { setupComponentMocks } from './component-mocks';
+import { setupRouterMocks } from './router-mocks';
 
 // Re-export React Testing Library utilities with common patterns
 export { render, screen, fireEvent, waitFor, cleanup, act } from '@testing-library/react';
@@ -99,14 +103,11 @@ export const testUtils = {
  * Setup function to initialize all test mocks
  * Call this in your test setup files
  */
-// export function setupAllTestMocks() {
-//   // Import and setup all mocks
-//   const { setupComponentMocks } = require('./component-mocks');
-//   const { setupRouterMocks } = require('./router-mocks');
-
-//   setupComponentMocks();
-//   setupRouterMocks();
-// }
+export function setupAllTestMocks() {
+  // Setup all mocks directly
+  setupComponentMocks();
+  setupRouterMocks();
+}
 
 /**
  * Reset function to clean all test mocks

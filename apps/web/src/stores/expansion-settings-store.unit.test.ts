@@ -1,4 +1,8 @@
 /**
+ * @vitest-environment jsdom
+ */
+
+/**
  * Unit tests for expansion settings store
  * Tests Zustand store with Immer middleware for expansion configuration management
  */

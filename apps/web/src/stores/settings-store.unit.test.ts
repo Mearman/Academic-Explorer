@@ -1,4 +1,8 @@
 /**
+ * @vitest-environment jsdom
+ */
+
+/**
  * Settings store unit tests
  */
 

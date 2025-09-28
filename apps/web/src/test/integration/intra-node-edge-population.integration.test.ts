@@ -200,6 +200,16 @@ vi.mock("@/services/network-interceptor", () => ({
 	trackCacheOperation: vi.fn()
 }));
 
+// Mock request deduplication service to prevent API calls
+vi.mock("@/services/request-deduplication-service", () => ({
+	createRequestDeduplicationService: vi.fn(() => ({
+		getEntity: vi.fn(async (entityId: string, fallback: () => Promise<any>) => {
+			// Call the fallback function which should be our mocked API
+			return await fallback();
+		})
+	}))
+}));
+
 // Test data fixtures - realistic OpenAlex entities
 const createMockWork = (id: string, authorIds: string[] = [], sourceId?: string, referencedWorkIds: string[] = []): Work => ({
 	id,
@@ -351,16 +361,17 @@ const createMockInstitution = (id: string, parentIds: string[] = []): Institutio
 const createTestNode = (entityId: string, entityType: EntityType, entity: any): GraphNode => ({
 	id: entityId, // Use same ID pattern as production
 	entityId,
-	type: entityType,
+	entityType,
 	label: entity.display_name,
-	position: { x: 0, y: 0 },
+	x: 0,
+	y: 0,
 	externalIds: [],
 	entityData: entity
 });
 
 // Import services after mocks are set up
-import { useGraphStore } from "@/stores/graph-store";
-import { RelationshipDetectionService, createRelationshipDetectionService } from "@/services/relationship-detection-service";
+import { useGraphStore } from "../../stores/graph-store";
+import { RelationshipDetectionService, createRelationshipDetectionService } from "../../services/relationship-detection-service";
 import { cachedOpenAlex } from "@academic-explorer/client";
 
 describe("Intra-Node Edge Population Integration Tests", () => {
@@ -420,58 +431,20 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			// First, add the author node to the graph
 			const authorNode = createTestNode(authorId, "authors", author);
 			mockStore.addNode(authorNode);
-			console.log("After adding author - Direct access:", Object.keys(mockStore.nodes));
-			console.log("After adding author - Via getState:", Object.keys(mockStore.getState().nodes));
 
 			// Now add the work and detect relationships
 			const workNode = createTestNode(workId, "works", work);
 			mockStore.addNode(workNode);
-			console.log("After adding work - Direct access:", Object.keys(mockStore.nodes));
-			console.log("After adding work - Via getState:", Object.keys(mockStore.getState().nodes));
 
 			// Detect relationships for the work
 			const detectedEdges = await relationshipService.detectRelationshipsForNode(workNode.id);
-
-			// Debug API calls and detection results
-			console.log("API call count:", mockClient.works.getWork.mock.calls.length);
-			console.log("API calls made:", mockClient.works.getWork.mock.calls);
-			console.log("Detected edges count:", detectedEdges.length);
-			console.log("Detected edges:", detectedEdges);
-
-			// Debug API calls if still zero
-			if (mockClient.works.getWork.mock.calls.length === 0) {
-				console.log("No API calls made, checking entity data in store");
-				console.log("Work entity data authorships:", workNode.entityData.authorships);
-				console.log("Expected authorship author ID:", authorId);
-				console.log("Available nodes in store:", Object.keys(mockStore.nodes));
-
-				// Import type guards to test them
-				const { isWork, isAuthor } = await import("@academic-explorer/client");
-				console.log("- isWork type:", typeof isWork);
-				console.log("- isWork(workNode.entityData):", isWork(workNode.entityData));
-				console.log("- isAuthor(authorNode.entityData):", isAuthor(authorNode.entityData));
-
-				// Debug the actual entity data structure
-				console.log("- Work node structure:", {
-					id: workNode.id,
-					entityId: workNode.entityId,
-					entityType: workNode.entityType,
-					hasEntityData: !!workNode.entityData,
-					entityDataType: typeof workNode.entityData
-				});
-				console.log("- Author node structure:", {
-					id: authorNode.id,
-					entityId: authorNode.entityId,
-					entityType: authorNode.entityType
-				});
-			}
 
 			// Verify authorship edge was created
 			expect(detectedEdges).toHaveLength(1);
 			expect(detectedEdges[0]).toMatchObject({
 				source: authorId,
 				target: workId,
-				entityType: RelationType.AUTHORED,
+				type: RelationType.AUTHORED,
 				label: "authored"
 			});
 
@@ -482,7 +455,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			expect(edgeValues[0]).toMatchObject({
 				source: authorId,
 				target: workId,
-				entityType: RelationType.AUTHORED
+				type: RelationType.AUTHORED
 			});
 		});
 
@@ -515,7 +488,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			expect(detectedEdges[0]).toMatchObject({
 				source: workId,
 				target: sourceId,
-				entityType: RelationType.PUBLISHED_IN,
+				type: RelationType.PUBLISHED_IN,
 				label: "published in"
 			});
 		});
@@ -557,14 +530,14 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			expect(citationEdge1).toMatchObject({
 				source: citingWorkId,
 				target: referencedWorkId1,
-				entityType: RelationType.REFERENCES,
+				type: RelationType.REFERENCES,
 				label: "references"
 			});
 
 			expect(citationEdge2).toMatchObject({
 				source: citingWorkId,
 				target: referencedWorkId2,
-				entityType: RelationType.REFERENCES,
+				type: RelationType.REFERENCES,
 				label: "references"
 			});
 		});
@@ -598,7 +571,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			expect(detectedEdges[0]).toMatchObject({
 				source: authorId,
 				target: institutionId,
-				entityType: RelationType.AFFILIATED,
+				type: RelationType.AFFILIATED,
 				label: "affiliated with"
 			});
 		});
@@ -711,7 +684,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			expect(citationEdge).toMatchObject({
 				source: citingWorkId,
 				target: referencedWorkId,
-				entityType: RelationType.REFERENCES,
+				type: RelationType.REFERENCES,
 				label: "references"
 			});
 		});
@@ -754,7 +727,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			expect(edgeValues[0]).toMatchObject({
 				source: authorId,
 				target: workId,
-				entityType: RelationType.AUTHORED
+				type: RelationType.AUTHORED
 			});
 		});
 
@@ -870,7 +843,10 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 						"display_name",
 						"authorships",
 						"primary_location",
-						"referenced_works"
+						"referenced_works",
+						"publication_year",
+						"type",
+						"open_access"
 					]
 				})
 			);

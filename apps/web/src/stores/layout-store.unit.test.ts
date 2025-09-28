@@ -3,8 +3,22 @@
  */
 
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
-import { useLayoutStore } from "./layout-store";
 import type { ProviderType } from "@academic-explorer/graph";
+
+// Mock the section-registry and group-registry modules to avoid import resolution issues
+vi.mock("./section-registry", () => ({
+	getDefaultSectionPlacements: vi.fn(() => ({})),
+	getAllSectionIds: vi.fn(() => []),
+	getSectionById: vi.fn(() => ({})),
+}));
+
+vi.mock("./group-registry", () => ({
+	updateGroupDefinition: vi.fn(),
+	getGroupDefinition: vi.fn(() => ({})),
+	registerGroupDefinition: vi.fn(),
+}));
+
+import { useLayoutStore } from "./layout-store";
 
 // Mock localStorage for Zustand persistence
 const localStorageMock = (() => {
