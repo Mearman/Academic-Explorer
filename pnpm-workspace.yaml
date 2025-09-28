@@ -1,6 +1,6 @@
 packages:
   # Applications
-  - 'apps/*'
+  - "apps/*"
 
   # Shared packages
-  - 'packages/*'
+  - "packages/*"
