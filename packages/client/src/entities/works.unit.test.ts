@@ -461,7 +461,7 @@ describe("WorksApi Unit Tests", () => {
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("works", {
 				search: "machine learning",
-				sort: "relevance_score",
+				sort: "relevance_score:desc",
 			});
 			expect(result).toEqual(mockSearchResponse);
 		});
@@ -511,7 +511,7 @@ describe("WorksApi Unit Tests", () => {
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("works", {
 				search: specialQuery,
-				sort: "relevance_score",
+				sort: "relevance_score:desc",
 			});
 		});
 
