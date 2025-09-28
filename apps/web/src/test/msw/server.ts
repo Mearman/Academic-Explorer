@@ -17,7 +17,13 @@ export const server = setupServer(...openalexHandlers);
  */
 export const startMockServer = () => {
   server.listen({
-    onUnhandledRequest: "warn" // Log warnings for unhandled requests
+    onUnhandledRequest: (req, print) => {
+      // Only warn for actual external requests, not internal ones
+      const url = new URL(req.url);
+      if (url.hostname !== 'localhost' && url.hostname !== '127.0.0.1') {
+        print.warning();
+      }
+    }
   });
 };
 
@@ -33,4 +39,7 @@ export const stopMockServer = () => {
  */
 export const resetMockServer = () => {
   server.resetHandlers();
+
+  // Re-add default handlers to ensure clean state
+  server.use(...openalexHandlers);
 };

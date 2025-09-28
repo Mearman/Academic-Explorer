@@ -96,14 +96,15 @@ export function BaseTable<T>({
 	// Log performance metrics
 	useEffect(() => {
 		if (shouldVirtualize) {
+			const virtualItems = rowVirtualizer.getVirtualItems();
 			logger.debug('table-virtualization', 'Virtualized table active', {
 				totalRows: rows.length,
-				visibleRange: rowVirtualizer.getVirtualItems().length,
+				visibleRange: virtualItems.length,
 				estimateSize,
 				maxHeight,
 			});
 		}
-	}, [shouldVirtualize, rows.length, rowVirtualizer.getVirtualItems().length, estimateSize, maxHeight, rowVirtualizer]);
+	}, [shouldVirtualize, rows.length, estimateSize, maxHeight, rowVirtualizer]);
 
 	const handleRowClick = (row: T) => {
 		if (onRowClick) {
@@ -207,6 +208,8 @@ export function BaseTable<T>({
 									return (
 										<div
 											key={row.id}
+											role={onRowClick ? "button" : undefined}
+											tabIndex={onRowClick ? 0 : undefined}
 											style={{
 												position: 'absolute',
 												top: 0,
@@ -222,6 +225,12 @@ export function BaseTable<T>({
 												padding: '8px 12px',
 											}}
 											onClick={() => { handleRowClick(row.original); }}
+											onKeyDown={(e) => {
+												if (onRowClick && (e.key === 'Enter' || e.key === ' ')) {
+													e.preventDefault();
+													handleRowClick(row.original);
+												}
+											}}
 											onMouseEnter={(e) => {
 												if (onRowClick) {
 													e.currentTarget.style.backgroundColor = 'var(--mantine-color-blue-0)';

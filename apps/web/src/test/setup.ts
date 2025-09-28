@@ -9,7 +9,10 @@ import { vi } from 'vitest';
 // Skip for E2E tests running in Node environment where expect may not be available yet
 if (typeof window !== 'undefined') {
   // We're in a DOM environment (jsdom), load jest-dom after vitest globals are available
-  import('@testing-library/jest-dom/vitest');
+  import('@testing-library/jest-dom/vitest').catch(() => {
+    // Fallback to the old import if the new one fails
+    return import('@testing-library/jest-dom');
+  });
 }
 
 import { enableMapSet } from 'immer';
@@ -18,6 +21,12 @@ import { startMockServer, stopMockServer, resetMockServer } from './msw/server';
 
 // Configure test environment globals
 globalThis.__DEV__ = true;
+
+// Increase process event listener limits to prevent MaxListenersExceededWarning
+// This is common in test environments with multiple parallel operations
+if (typeof process !== 'undefined' && process.setMaxListeners) {
+  process.setMaxListeners(50);
+}
 
 // Enable Immer plugins for test environment
 enableMapSet();

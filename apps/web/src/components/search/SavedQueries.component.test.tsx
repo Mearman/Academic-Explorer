@@ -1,14 +1,15 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { vi, describe, it, beforeEach, afterEach, expect } from "vitest";
+import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MantineProvider } from "@mantine/core";
 import { SavedQueries, type SavedQuery } from "./SavedQueries";
 
 // Mock localStorage
 const mockLocalStorage = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
 };
 
 Object.defineProperty(window, "localStorage", {
@@ -16,11 +17,11 @@ Object.defineProperty(window, "localStorage", {
 });
 
 // Mock logger
-jest.mock("@academic-explorer/utils", () => ({
+vi.mock("@academic-explorer/utils", () => ({
   logger: {
-    debug: jest.fn(),
-    error: jest.fn(),
-    warn: jest.fn(),
+    debug: vi.fn(),
+    error: vi.fn(),
+    warn: vi.fn(),
   },
 }));
 
@@ -42,7 +43,7 @@ const mockSavedQuery: SavedQuery = {
 };
 
 describe("SavedQueries", () => {
-  const mockOnLoadQuery = jest.fn();
+  const mockOnLoadQuery = vi.fn();
   const mockCurrentQuery = {
     query: "test search",
     startDate: new Date("2023-01-01"),
@@ -50,8 +51,12 @@ describe("SavedQueries", () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockLocalStorage.getItem.mockReturnValue(null);
+  });
+
+  afterEach(() => {
+    cleanup();
   });
 
   it("renders empty state when no queries are saved", () => {
@@ -61,9 +66,9 @@ describe("SavedQueries", () => {
       </Wrapper>
     );
 
-    expect(screen.getByText("Saved Queries")).toBeInTheDocument();
-    expect(screen.getByText("No saved queries yet. Save your current search to get started.")).toBeInTheDocument();
-    expect(screen.getByText("0")).toBeInTheDocument(); // Badge count
+    expect(screen.getByText("Saved Queries")).toBeDefined();
+    expect(screen.getByText("No saved queries yet. Save your current search to get started.")).toBeDefined();
+    expect(screen.getByText("0")).toBeDefined(); // Badge count
   });
 
   it("renders saved queries from localStorage", () => {
@@ -75,12 +80,12 @@ describe("SavedQueries", () => {
       </Wrapper>
     );
 
-    expect(screen.getByText("Test Query")).toBeInTheDocument();
-    expect(screen.getByText("machine learning")).toBeInTheDocument();
-    expect(screen.getByText("Test description")).toBeInTheDocument();
-    expect(screen.getByText("AI")).toBeInTheDocument();
-    expect(screen.getByText("ML")).toBeInTheDocument();
-    expect(screen.getByText("1")).toBeInTheDocument(); // Badge count
+    expect(screen.getByText("Test Query")).toBeDefined();
+    expect(screen.getByText("machine learning")).toBeDefined();
+    expect(screen.getByText("Test description")).toBeDefined();
+    expect(screen.getByText("AI")).toBeDefined();
+    expect(screen.getByText("ML")).toBeDefined();
+    expect(screen.getByText("1")).toBeDefined(); // Badge count
   });
 
   it("shows save button when current query is provided", () => {
@@ -90,7 +95,7 @@ describe("SavedQueries", () => {
       </Wrapper>
     );
 
-    expect(screen.getByText("Save Current")).toBeInTheDocument();
+    expect(screen.getByText("Save Current")).toBeDefined();
   });
 
   it("hides save button when no current query is provided", () => {
@@ -100,7 +105,7 @@ describe("SavedQueries", () => {
       </Wrapper>
     );
 
-    expect(screen.queryByText("Save Current")).not.toBeInTheDocument();
+    expect(screen.queryByText("Save Current")).toBeNull();
   });
 
   it("opens save modal when save button is clicked", async () => {
@@ -114,9 +119,11 @@ describe("SavedQueries", () => {
 
     await user.click(screen.getByText("Save Current"));
 
-    expect(screen.getByText("Save Current Query")).toBeInTheDocument();
-    expect(screen.getByLabelText("Query Name")).toBeInTheDocument();
-    expect(screen.getByText("test search")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Save Current Query")).toBeDefined();
+    });
+    expect(screen.getByLabelText("Query Name")).toBeDefined();
+    expect(screen.getByText("test search")).toBeDefined();
   });
 
   it("saves a new query when form is submitted", async () => {
@@ -231,8 +238,8 @@ describe("SavedQueries", () => {
     // Click rename
     await user.click(screen.getByText("Rename"));
 
-    expect(screen.getByText("Edit Query")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("Test Query")).toBeInTheDocument();
+    expect(screen.getByText("Edit Query")).toBeDefined();
+    expect(screen.getByDisplayValue("Test Query")).toBeDefined();
   });
 
   it("renames a query when rename form is submitted", async () => {
@@ -286,7 +293,7 @@ describe("SavedQueries", () => {
 
     // Should show error
     await waitFor(() => {
-      expect(screen.getByText("Failed to save query")).toBeInTheDocument();
+      expect(screen.getByText("Failed to save query")).toBeDefined();
     });
   });
 
@@ -353,7 +360,7 @@ describe("SavedQueries", () => {
     );
 
     // Should display formatted dates
-    expect(screen.getByText(/Jan 1, 2023 - Dec 31, 2023/)).toBeInTheDocument();
-    expect(screen.getByText(/Created: Jun 1, 2023/)).toBeInTheDocument();
+    expect(screen.getByText(/Jan 1, 2023 - Dec 31, 2023/)).toBeDefined();
+    expect(screen.getByText(/Created: Jun 1, 2023/)).toBeDefined();
   });
 });

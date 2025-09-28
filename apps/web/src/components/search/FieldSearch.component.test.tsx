@@ -1,5 +1,5 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { render, screen, fireEvent, cleanup } from "@testing-library/react";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { MantineProvider } from "@mantine/core";
 import { FieldSearch, type FieldSearchValues } from "./FieldSearch";
 
@@ -7,6 +7,11 @@ import { FieldSearch, type FieldSearchValues } from "./FieldSearch";
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <MantineProvider>{children}</MantineProvider>
 );
+
+// Ensure proper cleanup between tests
+afterEach(() => {
+  cleanup();
+});
 
 describe("FieldSearch Component", () => {
   it("renders all search input fields with correct labels", () => {
@@ -29,10 +34,10 @@ describe("FieldSearch Component", () => {
       </TestWrapper>
     );
 
-    expect(screen.getByPlaceholderText("Search by title...")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Search by abstract content...")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Search by author name...")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Search by institution name...")).toBeInTheDocument();
+    expect(screen.getByLabelText("Search by work title")).toHaveAttribute("placeholder", "Search by title...");
+    expect(screen.getByLabelText("Search by abstract content")).toHaveAttribute("placeholder", "Search by abstract content...");
+    expect(screen.getByLabelText("Search by author name")).toHaveAttribute("placeholder", "Search by author name...");
+    expect(screen.getByLabelText("Search by institution name")).toHaveAttribute("placeholder", "Search by institution name...");
   });
 
   it("accepts custom placeholder text", () => {
@@ -47,11 +52,11 @@ describe("FieldSearch Component", () => {
       </TestWrapper>
     );
 
-    expect(screen.getByPlaceholderText("Custom title placeholder")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Custom author placeholder")).toBeInTheDocument();
+    expect(screen.getByLabelText("Search by work title")).toHaveAttribute("placeholder", "Custom title placeholder");
+    expect(screen.getByLabelText("Search by author name")).toHaveAttribute("placeholder", "Custom author placeholder");
     // Should still show default for fields not customized
-    expect(screen.getByPlaceholderText("Search by abstract content...")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Search by institution name...")).toBeInTheDocument();
+    expect(screen.getByLabelText("Search by abstract content")).toHaveAttribute("placeholder", "Search by abstract content...");
+    expect(screen.getByLabelText("Search by institution name")).toHaveAttribute("placeholder", "Search by institution name...");
   });
 
   it("calls onChange callback when field values change", () => {

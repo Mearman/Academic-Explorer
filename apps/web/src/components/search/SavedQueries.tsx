@@ -306,13 +306,11 @@ export function SavedQueries({
     return b.lastModified.getTime() - a.lastModified.getTime();
   });
 
-  const formatDate = (date: Date): string => {
+  const formatDateOnly = (date: Date): string => {
     return new Intl.DateTimeFormat('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
     }).format(date);
   };
 
@@ -366,6 +364,7 @@ export function SavedQueries({
                           variant="subtle"
                           size="sm"
                           onClick={() => { handleToggleFavorite(query.id); }}
+                          aria-label={query.isFavorite ? "Remove from favorites" : "Add to favorites"}
                         >
                           {query.isFavorite ? (
                             <IconStarFilled size={14} color="gold" />
@@ -386,8 +385,8 @@ export function SavedQueries({
                       {(query.startDate || query.endDate) && (
                         <Text size="xs" c="dimmed" mb="xs">
                           <IconCalendar size={12} style={{ marginRight: 4 }} />
-                          {query.startDate ? formatDate(query.startDate) : "No start"} - {" "}
-                          {query.endDate ? formatDate(query.endDate) : "No end"}
+                          {query.startDate ? formatDateOnly(query.startDate) : "No start"} - {" "}
+                          {query.endDate ? formatDateOnly(query.endDate) : "No end"}
                         </Text>
                       )}
 
@@ -408,9 +407,9 @@ export function SavedQueries({
                       )}
 
                       <Text size="xs" c="dimmed">
-                        Created: {formatDate(query.createdAt)}
+                        Created: {formatDateOnly(query.createdAt)}
                         {query.lastModified.getTime() !== query.createdAt.getTime() && (
-                          <> • Modified: {formatDate(query.lastModified)}</>
+                          <> • Modified: {formatDateOnly(query.lastModified)}</>
                         )}
                       </Text>
                     </Box>
@@ -422,6 +421,7 @@ export function SavedQueries({
                           color="blue"
                           size="sm"
                           onClick={() => { handleLoadQuery(query); }}
+                          aria-label="Load query"
                         >
                           <IconLoader size={14} />
                         </ActionIcon>
@@ -429,7 +429,7 @@ export function SavedQueries({
 
                       <Menu position="bottom-end">
                         <Menu.Target>
-                          <ActionIcon variant="subtle" size="sm">
+                          <ActionIcon variant="subtle" size="sm" aria-label="Query menu">
                             <IconDotsVertical size={14} />
                           </ActionIcon>
                         </Menu.Target>
@@ -506,8 +506,8 @@ export function SavedQueries({
               </Text>
               {(currentQuery.startDate || currentQuery.endDate) && (
                 <Text size="xs" c="dimmed">
-                  Date Range: {currentQuery.startDate ? formatDate(currentQuery.startDate) : "No start"} - {" "}
-                  {currentQuery.endDate ? formatDate(currentQuery.endDate) : "No end"}
+                  Date Range: {currentQuery.startDate ? formatDateOnly(currentQuery.startDate) : "No start"} - {" "}
+                  {currentQuery.endDate ? formatDateOnly(currentQuery.endDate) : "No end"}
                 </Text>
               )}
             </Paper>

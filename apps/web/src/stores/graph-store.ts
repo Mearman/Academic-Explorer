@@ -116,6 +116,9 @@ interface GraphState {
 	providerType: string | null;
 	setProvider: (provider: GraphProvider) => void;
 	setProviderType: (providerType: string) => void;
+
+	// Hydration state
+	hasPlaceholderOrLoadingNodes: () => boolean;
 }
 
 export const useGraphStore = create<GraphState>()(
@@ -781,6 +784,12 @@ export const useGraphStore = create<GraphState>()(
 
 			setProviderType: (providerType) => {
 				set({ providerType });
+			},
+
+			// Hydration state methods
+			hasPlaceholderOrLoadingNodes: () => {
+				// Always return false since we no longer have artificial hydration levels
+				return false;
 			},
 		})),
 		{

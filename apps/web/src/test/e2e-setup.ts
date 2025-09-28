@@ -5,15 +5,18 @@
 
 import { chromium, type Browser, type BrowserContext, type Page } from "@playwright/test"
 import { beforeAll, afterAll, beforeEach, afterEach } from "vitest"
-import { injectAxe, checkA11y, configureAxe } from "@axe-core/playwright"
+import { logger } from "@academic-explorer/utils";
+import { useGraphStore } from "@/stores/graph-store"
+import { useAnimatedGraphStore } from "@/stores/animated-graph-store"
+import { expect } from '@playwright/test'
 
 // Type guard for axe-core functions to ensure they are callable
 function isCallableFunction(fn: unknown): fn is (...args: unknown[]) => Promise<unknown> {
 	return typeof fn === "function"
 }
-import { logger } from "@academic-explorer/utils";
-import { useGraphStore } from "@/stores/graph-store"
-import { useAnimatedGraphStore } from "@/stores/animated-graph-store"
+
+// Safely import axe-core functions - will be initialized in setup
+let injectAxe: unknown, checkA11y: unknown, configureAxe: unknown;
 
 let browser: Browser | undefined
 let context: BrowserContext | undefined
@@ -21,6 +24,16 @@ let page: Page | undefined
 
 // Global browser setup
 beforeAll(async () => {
+	// Safely import axe-core functions
+	try {
+		const axeCore = await import("@axe-core/playwright");
+		injectAxe = axeCore.injectAxe;
+		checkA11y = axeCore.checkA11y;
+		configureAxe = axeCore.configureAxe;
+	} catch (error) {
+		logger.warn("general", "Failed to import @axe-core/playwright", error instanceof Error ? { error: error.message } : undefined, "e2e-setup");
+	}
+
 	browser = await chromium.launch({
 		headless: process.env.HEADLESS !== "false",
 		slowMo: process.env.SLOW_MO ? parseInt(process.env.SLOW_MO) : 0,
@@ -100,6 +113,9 @@ beforeEach(async () => {
 	globalThis.useGraphStore = useGraphStore // Expose useGraphStore globally
 	globalThis.useAnimatedGraphStore = useAnimatedGraphStore // Expose animated graph store for debugging and tests
 
+	// Make Playwright expect available globally
+	globalThis.expect = expect
+
 	// Expose accessibility testing functions globally
 	try {
 		if (isCallableFunction(checkA11y)) {
@@ -127,4 +143,5 @@ declare global {
   var e2eContext: BrowserContext
   var checkA11y: typeof checkA11y
   var useAnimatedGraphStore: typeof useAnimatedGraphStore
+  var expect: typeof expect
 }

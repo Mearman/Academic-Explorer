@@ -5,50 +5,184 @@
 
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { QueryClient } from "@tanstack/react-query";
-import { useGraphStore } from "@/stores/graph-store";
-import { RelationshipDetectionService, createRelationshipDetectionService } from "@/services/relationship-detection-service";
-import { cachedOpenAlex } from "@academic-explorer/client";
 import type { GraphNode, EntityType } from "@academic-explorer/graph";
 import { RelationType } from "@academic-explorer/graph";
 import type { Work, Author, Source, InstitutionEntity } from "@academic-explorer/client";
 
-// Mock the cached client with proper nested structure
-vi.mock("@academic-explorer/client");
-const mockCachedOpenAlex = vi.mocked(cachedOpenAlex);
+// Mock the graph store with properly shared state
+const { mockStore } = vi.hoisted(() => {
+	// This is the shared state object that both test and service will see
+	const sharedState = {
+		nodes: {} as Record<string, GraphNode>,
+		edges: {} as Record<string, any>,
+		// Store methods that operate on shared state
+		addNode: (node: GraphNode) => { sharedState.nodes[node.id] = node; },
+		addNodes: (nodes: GraphNode[]) => { nodes.forEach(node => { sharedState.nodes[node.id] = node; }); },
+		addEdge: (edge: any) => { sharedState.edges[edge.id] = edge; },
+		addEdges: (edges: any[]) => { edges.forEach(edge => { sharedState.edges[edge.id] = edge; }); },
+		getNode: (nodeId: string) => sharedState.nodes[nodeId],
+		clear: () => {
+			sharedState.nodes = {};
+			sharedState.edges = {};
+		},
+		// Add other methods as no-ops but also operate on shared state
+		removeNode: vi.fn(),
+		removeEdge: vi.fn(),
+		updateNode: vi.fn(),
+		setLoading: vi.fn(),
+		setError: vi.fn(),
+		setGraphData: vi.fn(),
+		selectNode: vi.fn(),
+		hoverNode: vi.fn(),
+		addToSelection: vi.fn(),
+		removeFromSelection: vi.fn(),
+		clearSelection: vi.fn(),
+		pinNode: vi.fn(),
+		unpinNode: vi.fn(),
+		clearAllPinnedNodes: vi.fn(),
+		isPinned: vi.fn(() => false),
+		setLayout: vi.fn(),
+		applyCurrentLayout: vi.fn(),
+		toggleEntityTypeVisibility: vi.fn(),
+		toggleEdgeTypeVisibility: vi.fn(),
+		setEntityTypeVisibility: vi.fn(),
+		setEdgeTypeVisibility: vi.fn(),
+		setAllEntityTypesVisible: vi.fn(),
+		resetEntityTypesToDefaults: vi.fn(),
+		getEntityTypeStats: vi.fn(() => ({ total: {}, visible: {}, searchResults: {} })),
+		getVisibleNodes: vi.fn(() => Object.values(sharedState.nodes)),
+		setShowAllCachedNodes: vi.fn(),
+		setTraversalDepth: vi.fn(),
+		updateSearchStats: vi.fn(),
+		markNodeAsLoading: vi.fn(),
+		markNodeAsLoaded: vi.fn(),
+		markNodeAsError: vi.fn(),
+		calculateNodeDepths: vi.fn(),
+		getMinimalNodes: vi.fn(() => Object.values(sharedState.nodes)),
+		getNodesWithinDepth: vi.fn(() => []),
+		getNeighbors: vi.fn(() => []),
+		getConnectedEdges: vi.fn(() => []),
+		findShortestPath: vi.fn(() => []),
+		getConnectedComponent: vi.fn(() => []),
+		setProvider: vi.fn(),
+		setProviderType: vi.fn(),
+		hasPlaceholderOrLoadingNodes: vi.fn(() => false)
+	};
 
-// Create properly structured mock for the nested client
-const mockClient = {
-	works: {
-		getWork: vi.fn()
-	},
-	authors: {
-		getAuthor: vi.fn()
-	},
-	sources: {
-		getSource: vi.fn()
-	},
-	institutions: {
-		getInstitution: vi.fn()
-	},
-	topics: {
-		get: vi.fn()
-	},
-	publishers: {
-		get: vi.fn()
-	},
-	funders: {
-		get: vi.fn()
-	},
-	keywords: {
-		getKeyword: vi.fn()
-	}
-};
+	// The mock store object that Zustand would normally return
+	const mockStore = {
+		getState: () => sharedState, // This returns the same shared state
+		setState: vi.fn(),
+		// Direct access to shared state properties and methods for tests
+		get nodes() { return sharedState.nodes; },
+		get edges() { return sharedState.edges; },
+		addNode: sharedState.addNode,
+		addNodes: sharedState.addNodes,
+		addEdge: sharedState.addEdge,
+		addEdges: sharedState.addEdges,
+		getNode: sharedState.getNode,
+		clear: sharedState.clear,
+		// All other methods
+		removeNode: sharedState.removeNode,
+		removeEdge: sharedState.removeEdge,
+		updateNode: sharedState.updateNode,
+		setLoading: sharedState.setLoading,
+		setError: sharedState.setError,
+		setGraphData: sharedState.setGraphData,
+		selectNode: sharedState.selectNode,
+		hoverNode: sharedState.hoverNode,
+		addToSelection: sharedState.addToSelection,
+		removeFromSelection: sharedState.removeFromSelection,
+		clearSelection: sharedState.clearSelection,
+		pinNode: sharedState.pinNode,
+		unpinNode: sharedState.unpinNode,
+		clearAllPinnedNodes: sharedState.clearAllPinnedNodes,
+		isPinned: sharedState.isPinned,
+		setLayout: sharedState.setLayout,
+		applyCurrentLayout: sharedState.applyCurrentLayout,
+		toggleEntityTypeVisibility: sharedState.toggleEntityTypeVisibility,
+		toggleEdgeTypeVisibility: sharedState.toggleEdgeTypeVisibility,
+		setEntityTypeVisibility: sharedState.setEntityTypeVisibility,
+		setEdgeTypeVisibility: sharedState.setEdgeTypeVisibility,
+		setAllEntityTypesVisible: sharedState.setAllEntityTypesVisible,
+		resetEntityTypesToDefaults: sharedState.resetEntityTypesToDefaults,
+		getEntityTypeStats: sharedState.getEntityTypeStats,
+		getVisibleNodes: sharedState.getVisibleNodes,
+		setShowAllCachedNodes: sharedState.setShowAllCachedNodes,
+		setTraversalDepth: sharedState.setTraversalDepth,
+		updateSearchStats: sharedState.updateSearchStats,
+		markNodeAsLoading: sharedState.markNodeAsLoading,
+		markNodeAsLoaded: sharedState.markNodeAsLoaded,
+		markNodeAsError: sharedState.markNodeAsError,
+		calculateNodeDepths: sharedState.calculateNodeDepths,
+		getMinimalNodes: sharedState.getMinimalNodes,
+		getNodesWithinDepth: sharedState.getNodesWithinDepth,
+		getNeighbors: sharedState.getNeighbors,
+		getConnectedEdges: sharedState.getConnectedEdges,
+		findShortestPath: sharedState.findShortestPath,
+		getConnectedComponent: sharedState.getConnectedComponent,
+		setProvider: sharedState.setProvider,
+		setProviderType: sharedState.setProviderType,
+		hasPlaceholderOrLoadingNodes: sharedState.hasPlaceholderOrLoadingNodes
+	};
 
-// Mock the cachedOpenAlex client structure
-Object.defineProperty(mockCachedOpenAlex, "client", {
-	value: mockClient,
-	writable: true
+	return { mockStore };
 });
+
+vi.mock("@/stores/graph-store", () => ({
+	useGraphStore: mockStore
+}));
+
+// Mock the cached client with proper nested structure
+vi.mock("@academic-explorer/client", () => {
+	const mockWorks = { getWork: vi.fn() };
+	const mockAuthors = { getAuthor: vi.fn() };
+	const mockSources = { getSource: vi.fn() };
+	const mockInstitutions = { getInstitution: vi.fn() };
+	const mockTopics = { get: vi.fn() };
+	const mockPublishers = { get: vi.fn() };
+	const mockFunders = { get: vi.fn() };
+	const mockKeywords = { getKeyword: vi.fn() };
+
+	const mockClient = {
+		works: mockWorks,
+		authors: mockAuthors,
+		sources: mockSources,
+		institutions: mockInstitutions,
+		topics: mockTopics,
+		publishers: mockPublishers,
+		funders: mockFunders,
+		keywords: mockKeywords
+	};
+
+	const mockCachedOpenAlex = {
+		client: mockClient
+	};
+
+	return {
+		cachedOpenAlex: mockCachedOpenAlex,
+	// Type guards that work with test data
+	isWork: vi.fn((entity: unknown) => entity !== null && typeof entity === "object" && "authorships" in entity),
+	isAuthor: vi.fn((entity: unknown) => entity !== null && typeof entity === "object" && "affiliations" in entity),
+	isSource: vi.fn((entity: unknown) => entity !== null && typeof entity === "object" && "issn_l" in entity),
+	isInstitution: vi.fn((entity: unknown) => entity !== null && typeof entity === "object" && "lineage" in entity),
+	isNonNull: vi.fn(<T>(value: T | null | undefined): value is T => value !== null && value !== undefined),
+	isOpenAlexEntity: vi.fn((entity: unknown) => entity !== null && typeof entity === "object" && "id" in entity),
+	ADVANCED_FIELD_SELECTIONS: {
+		works: { minimal: ["id", "display_name", "authorships", "primary_location", "referenced_works", "publication_year", "type", "open_access"] },
+		authors: { minimal: ["id", "display_name", "affiliations", "works_count", "last_known_institutions"] },
+		sources: { minimal: ["id", "display_name", "publisher", "type"] },
+		institutions: { minimal: ["id", "display_name", "lineage", "country_code", "type"] },
+		concepts: { minimal: ["id", "display_name", "keywords"] },
+		topics: { minimal: ["id", "display_name", "keywords"] },
+		publishers: { minimal: ["id", "display_name", "works_count"] },
+		funders: { minimal: ["id", "display_name", "works_count"] }
+	}
+	};
+});
+
+// Get reference to the mocked client for tests
+const mockClient = vi.mocked(cachedOpenAlex).client;
 
 // Mock logger to prevent test output noise
 vi.mock("@academic-explorer/utils/logger", () => ({
@@ -58,6 +192,12 @@ vi.mock("@academic-explorer/utils/logger", () => ({
 		error: vi.fn()
 	},
 	logError: vi.fn()
+}));
+
+// Mock network interceptor to prevent dependency issues
+vi.mock("@/services/network-interceptor", () => ({
+	trackDeduplication: vi.fn(),
+	trackCacheOperation: vi.fn()
 }));
 
 // Test data fixtures - realistic OpenAlex entities
@@ -218,72 +358,18 @@ const createTestNode = (entityId: string, entityType: EntityType, entity: any): 
 	entityData: entity
 });
 
+// Import services after mocks are set up
+import { useGraphStore } from "@/stores/graph-store";
+import { RelationshipDetectionService, createRelationshipDetectionService } from "@/services/relationship-detection-service";
+import { cachedOpenAlex } from "@academic-explorer/client";
+
 describe("Intra-Node Edge Population Integration Tests", () => {
 	let queryClient: QueryClient;
 	let relationshipService: RelationshipDetectionService;
 
-	beforeEach(() => {
-		// Reset graph store
-		useGraphStore.setState({
-			nodes: {},
-			edges: {},
-			selectedNodeId: null,
-			hoveredNodeId: null,
-			selectedNodes: {},
-			pinnedNodes: {},
-			showAllCachedNodes: false,
-			traversalDepth: 1,
-			nodeDepths: {},
-			provider: null,
-			providerType: "xyflow",
-			visibleEntityTypes: {
-				works: true,
-				authors: true,
-				sources: true,
-				institutions: true,
-				topics: true,
-				concepts: true,
-				publishers: true,
-				funders: true,
-				keywords: true
-			},
-			lastSearchStats: {},
-			visibleEdgeTypes: {
-				authored: true,
-				affiliated: true,
-				published_in: true,
-				funded_by: true,
-				related_to: true,
-				references: true,
-				source_published_by: true,
-				institution_child_of: true,
-				publisher_child_of: true,
-				work_has_topic: true,
-				work_has_keyword: true,
-				author_researches: true,
-				institution_located_in: true,
-				funder_located_in: true,
-				topic_part_of_field: true
-			},
-			currentLayout: {
-				entityType: "d3-force",
-				options: {
-					seed: 42,
-					iterations: 300,
-					linkDistance: 220,
-					linkStrength: 0.7,
-					chargeStrength: -600,
-					centerStrength: 0.03,
-					collisionRadius: 100,
-					velocityDecay: 0.4,
-					alpha: 1,
-					alphaDecay: 0.03,
-					collisionStrength: 0.8
-				}
-			},
-			isLoading: false,
-			error: null,
-		});
+	beforeEach(async () => {
+		// Clear the mocked store state
+		mockStore.clear();
 
 		// Create fresh services
 		queryClient = new QueryClient({
@@ -299,10 +385,10 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 		// Clear all mocks
 		vi.clearAllMocks();
 
-		// Reset mock functions
+		// Clear all mock functions
 		Object.values(mockClient).forEach(service => {
 			Object.values(service).forEach(method => {
-				if (typeof method === "function") {
+				if (typeof method === "function" && "mockReset" in method) {
 					method.mockReset();
 				}
 			});
@@ -315,8 +401,6 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 
 	describe("Single Node Relationship Detection", () => {
 		it("should detect and create authorship edges when adding a work with existing authors", async () => {
-			const store = useGraphStore.getState();
-
 			// Create test data
 			const authorId = "https://openalex.org/A123";
 			const workId = "https://openalex.org/W456";
@@ -324,19 +408,63 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			const author = createMockAuthor(authorId);
 			const work = createMockWork(workId, [authorId]);
 
-			// Mock API responses
-			mockClient.works.getWork.mockResolvedValue(work);
+			// Mock API responses - ensure the API returns the same work data
+			// Handle both with and without select parameters
+			mockClient.works.getWork.mockImplementation((id: string, params?: any) => {
+				if (id === workId) {
+					return Promise.resolve(work);
+				}
+				return Promise.reject(new Error(`Unknown work ID: ${id}`));
+			});
 
 			// First, add the author node to the graph
 			const authorNode = createTestNode(authorId, "authors", author);
-			store.addNode(authorNode);
+			mockStore.addNode(authorNode);
+			console.log("After adding author - Direct access:", Object.keys(mockStore.nodes));
+			console.log("After adding author - Via getState:", Object.keys(mockStore.getState().nodes));
 
 			// Now add the work and detect relationships
 			const workNode = createTestNode(workId, "works", work);
-			store.addNode(workNode);
+			mockStore.addNode(workNode);
+			console.log("After adding work - Direct access:", Object.keys(mockStore.nodes));
+			console.log("After adding work - Via getState:", Object.keys(mockStore.getState().nodes));
 
 			// Detect relationships for the work
 			const detectedEdges = await relationshipService.detectRelationshipsForNode(workNode.id);
+
+			// Debug API calls and detection results
+			console.log("API call count:", mockClient.works.getWork.mock.calls.length);
+			console.log("API calls made:", mockClient.works.getWork.mock.calls);
+			console.log("Detected edges count:", detectedEdges.length);
+			console.log("Detected edges:", detectedEdges);
+
+			// Debug API calls if still zero
+			if (mockClient.works.getWork.mock.calls.length === 0) {
+				console.log("No API calls made, checking entity data in store");
+				console.log("Work entity data authorships:", workNode.entityData.authorships);
+				console.log("Expected authorship author ID:", authorId);
+				console.log("Available nodes in store:", Object.keys(mockStore.nodes));
+
+				// Import type guards to test them
+				const { isWork, isAuthor } = await import("@academic-explorer/client");
+				console.log("- isWork type:", typeof isWork);
+				console.log("- isWork(workNode.entityData):", isWork(workNode.entityData));
+				console.log("- isAuthor(authorNode.entityData):", isAuthor(authorNode.entityData));
+
+				// Debug the actual entity data structure
+				console.log("- Work node structure:", {
+					id: workNode.id,
+					entityId: workNode.entityId,
+					entityType: workNode.entityType,
+					hasEntityData: !!workNode.entityData,
+					entityDataType: typeof workNode.entityData
+				});
+				console.log("- Author node structure:", {
+					id: authorNode.id,
+					entityId: authorNode.entityId,
+					entityType: authorNode.entityType
+				});
+			}
 
 			// Verify authorship edge was created
 			expect(detectedEdges).toHaveLength(1);
@@ -349,8 +477,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 
 			// Note: The RelationshipDetectionService adds edges to the store automatically
 			// So we should see them in the store after detection
-			const storeState = useGraphStore.getState();
-			const edgeValues = Object.values(storeState.edges).filter(Boolean);
+			const edgeValues = Object.values(mockStore.edges).filter(Boolean);
 			expect(edgeValues).toHaveLength(1);
 			expect(edgeValues[0]).toMatchObject({
 				source: authorId,
