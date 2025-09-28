@@ -191,7 +191,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
             return staticResult.data as T;
           }
         }
-      } catch (error) {
+      } catch (error: unknown) {
         logger.debug('client', 'Static cache lookup failed for getById', { endpoint, id: cleanId, error });
       }
     }
@@ -228,7 +228,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
         const staticEntityType = toStaticEntityType(entityType);
         return staticDataProvider.hasStaticData(staticEntityType, cleanId);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       logger.debug('client', 'Failed to check static entity existence', { id, error });
     }
 

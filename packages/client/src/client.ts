@@ -309,7 +309,7 @@ export class OpenAlexBaseClient {
 								responseHeaders: interceptedCall.response.headers,
 								timestamp: new Date(interceptedCall.response.timestamp).toISOString()
 							});
-						} catch (diskError) {
+						} catch (diskError: unknown) {
 							// Silently fail disk caching in browser environments
 							logger.debug("client", "Disk caching unavailable (browser environment)", { error: diskError });
 						}
