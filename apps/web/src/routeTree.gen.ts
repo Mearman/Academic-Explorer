@@ -29,8 +29,10 @@ import { Route as EvaluationDatasetsRouteImport } from './routes/evaluation/data
 import { Route as AuthorsAuthorIdRouteImport } from './routes/authors/$authorId'
 import { Route as WorksDoiDoiRouteImport } from './routes/works/doi.$doi'
 import { Route as SourcesIssnIssnRouteImport } from './routes/sources/issn.$issn'
+import { Route as OpenalexOrgSplatRouteImport } from './routes/openalex.org/$'
 import { Route as InstitutionsRorRorRouteImport } from './routes/institutions/ror.$ror'
 import { Route as AuthorsOrcidOrcidRouteImport } from './routes/authors/orcid.$orcid'
+import { Route as ApiOpenalexOrgSplatRouteImport } from './routes/api.openalex.org/$'
 
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
@@ -133,6 +135,11 @@ const SourcesIssnIssnRoute = SourcesIssnIssnRouteImport.update({
   path: '/sources/issn/$issn',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OpenalexOrgSplatRoute = OpenalexOrgSplatRouteImport.update({
+  id: '/openalex/org/$',
+  path: '/openalex/org/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InstitutionsRorRorRoute = InstitutionsRorRorRouteImport.update({
   id: '/institutions/ror/$ror',
   path: '/institutions/ror/$ror',
@@ -141,6 +148,11 @@ const InstitutionsRorRorRoute = InstitutionsRorRorRouteImport.update({
 const AuthorsOrcidOrcidRoute = AuthorsOrcidOrcidRouteImport.update({
   id: '/authors/orcid/$orcid',
   path: '/authors/orcid/$orcid',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiOpenalexOrgSplatRoute = ApiOpenalexOrgSplatRouteImport.update({
+  id: '/api/openalex/org/$',
+  path: '/api/openalex/org/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -165,8 +177,10 @@ export interface FileRoutesByFullPath {
   '/works/$workId': typeof WorksWorkIdRoute
   '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
   '/institutions/ror/$ror': typeof InstitutionsRorRorRoute
+  '/openalex/org/$': typeof OpenalexOrgSplatRoute
   '/sources/issn/$issn': typeof SourcesIssnIssnRoute
   '/works/doi/$doi': typeof WorksDoiDoiRoute
+  '/api/openalex/org/$': typeof ApiOpenalexOrgSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -189,8 +203,10 @@ export interface FileRoutesByTo {
   '/works/$workId': typeof WorksWorkIdRoute
   '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
   '/institutions/ror/$ror': typeof InstitutionsRorRorRoute
+  '/openalex/org/$': typeof OpenalexOrgSplatRoute
   '/sources/issn/$issn': typeof SourcesIssnIssnRoute
   '/works/doi/$doi': typeof WorksDoiDoiRoute
+  '/api/openalex/org/$': typeof ApiOpenalexOrgSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -214,8 +230,10 @@ export interface FileRoutesById {
   '/works/$workId': typeof WorksWorkIdRoute
   '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
   '/institutions/ror/$ror': typeof InstitutionsRorRorRoute
+  '/openalex/org/$': typeof OpenalexOrgSplatRoute
   '/sources/issn/$issn': typeof SourcesIssnIssnRoute
   '/works/doi/$doi': typeof WorksDoiDoiRoute
+  '/api/openalex/org/$': typeof ApiOpenalexOrgSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -240,8 +258,10 @@ export interface FileRouteTypes {
     | '/works/$workId'
     | '/authors/orcid/$orcid'
     | '/institutions/ror/$ror'
+    | '/openalex/org/$'
     | '/sources/issn/$issn'
     | '/works/doi/$doi'
+    | '/api/openalex/org/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -264,8 +284,10 @@ export interface FileRouteTypes {
     | '/works/$workId'
     | '/authors/orcid/$orcid'
     | '/institutions/ror/$ror'
+    | '/openalex/org/$'
     | '/sources/issn/$issn'
     | '/works/doi/$doi'
+    | '/api/openalex/org/$'
   id:
     | '__root__'
     | '/'
@@ -288,8 +310,10 @@ export interface FileRouteTypes {
     | '/works/$workId'
     | '/authors/orcid/$orcid'
     | '/institutions/ror/$ror'
+    | '/openalex/org/$'
     | '/sources/issn/$issn'
     | '/works/doi/$doi'
+    | '/api/openalex/org/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -310,8 +334,10 @@ export interface RootRouteChildren {
   WorksWorkIdRoute: typeof WorksWorkIdRoute
   AuthorsOrcidOrcidRoute: typeof AuthorsOrcidOrcidRoute
   InstitutionsRorRorRoute: typeof InstitutionsRorRorRoute
+  OpenalexOrgSplatRoute: typeof OpenalexOrgSplatRoute
   SourcesIssnIssnRoute: typeof SourcesIssnIssnRoute
   WorksDoiDoiRoute: typeof WorksDoiDoiRoute
+  ApiOpenalexOrgSplatRoute: typeof ApiOpenalexOrgSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -456,6 +482,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SourcesIssnIssnRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/openalex/org/$': {
+      id: '/openalex/org/$'
+      path: '/openalex/org/$'
+      fullPath: '/openalex/org/$'
+      preLoaderRoute: typeof OpenalexOrgSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/institutions/ror/$ror': {
       id: '/institutions/ror/$ror'
       path: '/institutions/ror/$ror'
@@ -468,6 +501,13 @@ declare module '@tanstack/react-router' {
       path: '/authors/orcid/$orcid'
       fullPath: '/authors/orcid/$orcid'
       preLoaderRoute: typeof AuthorsOrcidOrcidRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/openalex/org/$': {
+      id: '/api/openalex/org/$'
+      path: '/api/openalex/org/$'
+      fullPath: '/api/openalex/org/$'
+      preLoaderRoute: typeof ApiOpenalexOrgSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -516,8 +556,10 @@ const rootRouteChildren: RootRouteChildren = {
   WorksWorkIdRoute: WorksWorkIdRoute,
   AuthorsOrcidOrcidRoute: AuthorsOrcidOrcidRoute,
   InstitutionsRorRorRoute: InstitutionsRorRorRoute,
+  OpenalexOrgSplatRoute: OpenalexOrgSplatRoute,
   SourcesIssnIssnRoute: SourcesIssnIssnRoute,
   WorksDoiDoiRoute: WorksDoiDoiRoute,
+  ApiOpenalexOrgSplatRoute: ApiOpenalexOrgSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
