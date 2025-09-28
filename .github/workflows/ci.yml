@@ -175,8 +175,8 @@ jobs:
         run: |
           echo "🔍 Running TypeScript type checking with validation..."
 
-          # Capture typecheck output
-          typecheck_output=$(pnpm nx affected -t typecheck --parallel=3 2>&1)
+          # Capture typecheck output (serial execution to avoid hanging)
+          typecheck_output=$(pnpm nx affected -t typecheck --parallel=1 2>&1)
           typecheck_exit_code=$?
 
           # Display output
