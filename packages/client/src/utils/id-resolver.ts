@@ -444,7 +444,7 @@ export class IdResolver {
               metadata
             };
 
-          } catch (_error) {
+          } catch {
             // Continue to next pattern on normalization error
             continue;
           }
