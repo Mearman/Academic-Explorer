@@ -1,6 +1,6 @@
 /**
  * Example usage of the Static Data Index Generator
- * 
+ *
  * This file demonstrates how to use the static data index generator
  * for creating and managing entity indexes.
  */
@@ -14,6 +14,7 @@ import {
   type IndexGenerationConfig,
   type EntityType,
 } from './index.js';
+import { logger } from '../logger.js';
 
 /**
  * Example: Generate indexes for all entity types
@@ -31,15 +32,15 @@ export async function exampleGenerateAllIndexes(rootPath: string): Promise<void>
     const result = await generateAllIndexes(rootPath, config);
     
     if (result.success) {
-      console.log('✅ All indexes generated successfully');
-      console.log(`Total entities indexed: ${result.stats.entitiesIndexed}`);
-      console.log(`Total duration: ${result.stats.totalDurationMs}ms`);
-      console.log(`Generated indexes:`, Object.keys(result.generatedIndexes));
+      logger.info('static-data', 'All indexes generated successfully');
+      logger.info('static-data', `Total entities indexed: ${result.stats.entitiesIndexed}`);
+      logger.info('static-data', `Total duration: ${result.stats.totalDurationMs}ms`);
+      logger.info('static-data', 'Generated indexes:', Object.keys(result.generatedIndexes));
     } else {
-      console.error('❌ Index generation failed:', result.error?.message);
+      logger.error('static-data', 'Index generation failed:', result.error?.message);
     }
   } catch (error) {
-    console.error('❌ Unexpected error:', error);
+    logger.error('static-data', 'Unexpected error:', error);
   }
 }
 
@@ -58,9 +59,9 @@ export async function exampleGenerateEntityTypeIndex(
     };
 
     const indexPath = await generateIndexForEntityType(rootPath, entityType, config);
-    console.log(`✅ Index generated for ${entityType}: ${indexPath}`);
+    logger.info('static-data', `Index generated for ${entityType}: ${indexPath}`);
   } catch (error) {
-    console.error(`❌ Failed to generate index for ${entityType}:`, error);
+    logger.error('static-data', `Failed to generate index for ${entityType}:`, error);
   }
 }
 
@@ -72,49 +73,49 @@ export async function exampleValidateAndRepairIndex(indexPath: string): Promise<
     // Validate the index
     const validation = await validateIndex(indexPath);
     
-    console.log(`Index validation results for ${indexPath}:`);
-    console.log(`   Valid: ${validation.isValid ? '✅' : '❌'}`);
-    console.log(`   Entities validated: ${validation.entitiesValidated}`);
-    console.log(`   Errors found: ${validation.errors.length}`);
-    console.log(`   Warnings found: ${validation.warnings.length}`);
-    console.log(`   Duration: ${validation.performance.durationMs}ms`);
+    logger.info('static-data', `Index validation results for ${indexPath}:`);
+    logger.info('static-data', `   Valid: ${validation.isValid ? 'Valid' : 'Invalid'}`);
+    logger.info('static-data', `   Entities validated: ${validation.entitiesValidated}`);
+    logger.info('static-data', `   Errors found: ${validation.errors.length}`);
+    logger.info('static-data', `   Warnings found: ${validation.warnings.length}`);
+    logger.info('static-data', `   Duration: ${validation.performance.durationMs}ms`);
 
     // Show errors if any
     if (validation.errors.length > 0) {
-      console.log('\n❌ Errors found:');
+      logger.warn('static-data', 'Errors found:');
       for (const error of validation.errors) {
-        console.log(`   - ${error.type}: ${error.message}`);
+        logger.warn('static-data', `   - ${error.type}: ${error.message}`);
         if (error.canAutoRepair) {
-          console.log(`     🔧 Can be auto-repaired`);
+          logger.warn('static-data', '     Can be auto-repaired');
         }
       }
     }
 
     // Show warnings if any
     if (validation.warnings.length > 0) {
-      console.log('\n⚠️  Warnings found:');
+      logger.warn('static-data', 'Warnings found:');
       for (const warning of validation.warnings) {
-        console.log(`   - ${warning.type}: ${warning.message} (${warning.severity})`);
+        logger.warn('static-data', `   - ${warning.type}: ${warning.message} (${warning.severity})`);
       }
     }
 
     // Attempt repair if needed
     if (!validation.isValid && validation.repairActions.length > 0) {
-      console.log('\n🔧 Attempting to repair index...');
+      logger.info('static-data', 'Attempting to repair index...');
       const repaired = await repairIndex(validation);
-      
+
       if (repaired) {
-        console.log('✅ Index repair completed successfully');
-        
+        logger.info('static-data', 'Index repair completed successfully');
+
         // Re-validate to confirm repair
         const revalidation = await validateIndex(indexPath);
-        console.log(`   Re-validation: ${revalidation.isValid ? '✅ Valid' : '❌ Still invalid'}`);
+        logger.info('static-data', `   Re-validation: ${revalidation.isValid ? 'Valid' : 'Still invalid'}`);
       } else {
-        console.log('❌ Index repair failed');
+        logger.error('static-data', 'Index repair failed');
       }
     }
   } catch (error) {
-    console.error('❌ Validation/repair failed:', error);
+    logger.error('static-data', 'Validation/repair failed:', error);
   }
 }
 
@@ -138,27 +139,27 @@ export async function exampleCustomGeneratorWithProgress(rootPath: string): Prom
       const percent = Math.round(progress.progressPercent);
       const operation = progress.operation.charAt(0).toUpperCase() + progress.operation.slice(1);
       const speed = Math.round(progress.processingSpeed);
-      
-      console.log(
-        `📈 ${operation}: ${percent}% (${progress.filesProcessed}/${progress.totalFiles}) ` +
-        `- ${speed} files/sec - ${progress.currentEntityType}`
+
+      logger.debug(
+        'static-data',
+        `${operation}: ${percent}% (${progress.filesProcessed}/${progress.totalFiles}) - ${speed} files/sec - ${progress.currentEntityType}`
       );
 
       if (progress.currentFile) {
-        console.log(`   📄 Current: ${progress.currentFile}`);
+        logger.debug('static-data', `   Current: ${progress.currentFile}`);
       }
     });
 
     // Generate all indexes
     const result = await generator.generateAllIndexes();
-    
+
     if (result.success) {
-      console.log('🎉 Index generation completed with progress tracking!');
+      logger.info('static-data', 'Index generation completed with progress tracking!');
     } else {
-      console.error('❌ Index generation failed:', result.error?.message);
+      logger.error('static-data', 'Index generation failed:', result.error?.message);
     }
   } catch (error) {
-    console.error('❌ Custom generator failed:', error);
+    logger.error('static-data', 'Custom generator failed:', error);
   }
 }
 
@@ -166,8 +167,8 @@ export async function exampleCustomGeneratorWithProgress(rootPath: string): Prom
  * Example: Batch validation of multiple indexes
  */
 export async function exampleBatchValidation(indexPaths: string[]): Promise<void> {
-  console.log(`🔍 Validating ${indexPaths.length} indexes...`);
-  
+  logger.info('static-data', `Validating ${indexPaths.length} indexes...`);
+
   const results = await Promise.allSettled(
     indexPaths.map(async (indexPath) => {
       const validation = await validateIndex(indexPath);
@@ -183,18 +184,18 @@ export async function exampleBatchValidation(indexPaths: string[]): Promise<void
       const { indexPath, validation } = result.value;
       if (validation.isValid) {
         validCount++;
-        console.log(`✅ ${indexPath}: Valid (${validation.entitiesValidated} entities)`);
+        logger.info('static-data', `${indexPath}: Valid (${validation.entitiesValidated} entities)`);
       } else {
         invalidCount++;
-        console.log(`❌ ${indexPath}: Invalid (${validation.errors.length} errors)`);
+        logger.warn('static-data', `${indexPath}: Invalid (${validation.errors.length} errors)`);
       }
     } else {
       invalidCount++;
-      console.log(`❌ Validation failed: ${result.reason}`);
+      logger.error('static-data', `Validation failed: ${result.reason}`);
     }
   }
 
-  console.log(`\n📊 Validation summary: ${validCount} valid, ${invalidCount} invalid`);
+  logger.info('static-data', `Validation summary: ${validCount} valid, ${invalidCount} invalid`);
 }
 
 /**
@@ -233,19 +234,19 @@ export async function exampleErrorHandling(rootPath: string): Promise<void> {
     for (const [entityType, indexPath] of Object.entries(result.generatedIndexes)) {
       const validation = await validateIndex(indexPath);
       if (!validation.isValid) {
-        console.warn(`⚠️  Generated index for ${entityType} has validation issues`);
+        logger.warn('static-data', `Generated index for ${entityType} has validation issues`);
       }
     }
 
-    console.log('✅ Index generation and validation completed successfully');
+    logger.info('static-data', 'Index generation and validation completed successfully');
 
   } catch (error) {
     if (error instanceof Error) {
-      console.error(`❌ Error: ${error.message}`);
+      logger.error('static-data', `Error: ${error.message}`);
     } else {
-      console.error('❌ Unknown error occurred');
+      logger.error('static-data', 'Unknown error occurred');
     }
-    
+
     // Re-throw for calling code to handle
     throw error;
   }

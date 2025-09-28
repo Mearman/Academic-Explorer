@@ -29,7 +29,6 @@ import type {
   IndexRepairAction,
 } from './types.js';
 import {
-  CURRENT_SCHEMA_VERSION,
   DEFAULT_INDEX_CONFIG
 } from './types.js';
 
@@ -42,8 +41,8 @@ const logCategory = 'static-data-index';
 export class StaticDataIndexGenerator {
   private readonly config: IndexGenerationConfig;
   private progressCallbacks: Set<(progress: IndexGenerationProgress) => void> = new Set();
-  private fs: any;
-  private path: any;
+  private fs: typeof import('fs/promises') | undefined;
+  private path: typeof import('path') | undefined;
 
   constructor(config: Partial<IndexGenerationConfig> = {}) {
     this.config = {
@@ -232,7 +231,7 @@ export class StaticDataIndexGenerator {
       if (!stat.isDirectory()) {
         throw new Error(`Entity directory is not a directory: ${entityDir}`);
       }
-    } catch (error) {
+    } catch {
       throw new Error(`Entity directory does not exist: ${entityDir}`);
     }
 
@@ -438,7 +437,7 @@ export class StaticDataIndexGenerator {
           }
 
           entitiesValidated++;
-        } catch (error) {
+        } catch {
           errors.push({
             type: 'missing_file',
             message: `Entity file not found: ${entityId}`,
@@ -544,13 +543,14 @@ export class StaticDataIndexGenerator {
           case 'regenerate_metadata':
             await this.regenerateEntityMetadata(validationResult.indexPath, action.affectedEntityIds);
             break;
-          case 'rebuild_index':
+          case 'rebuild_index': {
             // Extract entity type from path and rebuild
             const entityType = this.extractEntityTypeFromPath(validationResult.indexPath);
             if (entityType) {
               await this.generateIndexForEntityType(entityType);
             }
             break;
+          }
         }
       }
 
@@ -596,7 +596,7 @@ export class StaticDataIndexGenerator {
   /**
    * Discover entity files in a directory
    */
-  private async discoverEntityFiles(entityDir: string, entityType: EntityType): Promise<string[]> {
+  private async discoverEntityFiles(entityDir: string, _entityType: EntityType): Promise<string[]> {
     const files: string[] = [];
     
     const scanDirectory = async (dir: string): Promise<void> => {
@@ -665,7 +665,7 @@ export class StaticDataIndexGenerator {
   /**
    * Extract entity ID from file path using naming conventions
    */
-  private extractEntityIdFromPath(filePath: string, entityType: EntityType): string {
+  private extractEntityIdFromPath(filePath: string, _entityType: EntityType): string {
     const filename = this.path.basename(filePath, '.json');
     
     // Try different patterns based on entity type
@@ -692,7 +692,7 @@ export class StaticDataIndexGenerator {
   /**
    * Extract basic information from entity file content
    */
-  private async extractBasicEntityInfo(filePath: string, entityType: EntityType): Promise<EntityFileMetadata['basicInfo']> {
+  private async extractBasicEntityInfo(filePath: string, _entityType: EntityType): Promise<EntityFileMetadata['basicInfo']> {
     const content = await this.fs.readFile(filePath, 'utf8');
     let entity: Record<string, unknown>;
     try {

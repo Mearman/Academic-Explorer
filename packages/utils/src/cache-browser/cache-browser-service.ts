@@ -204,7 +204,7 @@ export class CacheBrowserService {
 
           while (cursor && entities.length < this.config.maxScanItems) {
             const key = cursor.key as string;
-            const {value} = cursor;
+            const value = cursor.value as unknown;
 
             const entityMetadata = this.extractEntityMetadata(
               key, 
@@ -258,7 +258,7 @@ export class CacheBrowserService {
           if (entityMetadata && this.matchesTypeFilter(entityMetadata, filters)) {
             entities.push(entityMetadata);
           }
-        } catch (error) {
+        } catch {
           // Skip invalid JSON entries
           continue;
         }
@@ -271,7 +271,7 @@ export class CacheBrowserService {
     }
   }
 
-  private async scanRepositoryStore(filters: CacheBrowserFilters): Promise<CachedEntityMetadata[]> {
+  private async scanRepositoryStore(_filters: CacheBrowserFilters): Promise<CachedEntityMetadata[]> {
     // This would integrate with the repository store if available
     // For now, return empty array as repository store scanning would need
     // to be integrated at the application level
@@ -280,10 +280,10 @@ export class CacheBrowserService {
   }
 
   private extractEntityMetadata(
-    key: string, 
+    key: string,
     value: unknown,
     storageLocation: CachedEntityMetadata['storageLocation'],
-    storeName?: string
+    _storeName?: string
   ): CachedEntityMetadata | null {
     try {
       // Detect entity type from key
@@ -361,7 +361,7 @@ export class CacheBrowserService {
     return null;
   }
 
-  private extractBasicInfo(value: unknown, type: EntityType): CachedEntityMetadata['basicInfo'] | undefined {
+  private extractBasicInfo(value: unknown, _type: EntityType): CachedEntityMetadata['basicInfo'] | undefined {
     if (!value || typeof value !== 'object' || value === null) {
       return undefined;
     }

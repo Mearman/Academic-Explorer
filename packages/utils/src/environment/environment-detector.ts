@@ -68,16 +68,16 @@ export class EnvironmentDetector {
     if (typeof import.meta !== 'undefined') {
       try {
         // @ts-expect-error - import.meta.env is injected by Vite
-        const viteEnv = import.meta.env;
+        const viteEnv = import.meta.env as Record<string, unknown> | undefined;
         if (viteEnv) {
-          const viteMode = viteEnv.MODE?.toLowerCase();
+          const viteMode = (viteEnv.MODE as string | undefined)?.toLowerCase();
           if (viteMode === 'production') return EnvironmentMode.PRODUCTION;
           if (viteMode === 'test') return EnvironmentMode.TEST;
           if (viteMode === 'development') return EnvironmentMode.DEVELOPMENT;
 
           // Check Vite's DEV flag
-          if (viteEnv.DEV === true) return EnvironmentMode.DEVELOPMENT;
-          if (viteEnv.PROD === true) return EnvironmentMode.PRODUCTION;
+          if ((viteEnv.DEV as boolean | undefined) === true) return EnvironmentMode.DEVELOPMENT;
+          if ((viteEnv.PROD as boolean | undefined) === true) return EnvironmentMode.PRODUCTION;
         }
       } catch {
         // Ignore errors if import.meta.env is not available

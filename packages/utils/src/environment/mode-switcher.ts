@@ -15,6 +15,7 @@ import {
   CacheStorageType,
   type CacheStrategyConfig
 } from './cache-strategies.js';
+import { logger } from '../logger.js';
 
 /**
  * Runtime mode configuration options
@@ -362,7 +363,7 @@ export class ModeSwitcher {
       try {
         listener(config);
       } catch (error) {
-        console.error('Error in mode switcher listener:', error);
+        logger.error('mode-switcher', 'Error in mode switcher listener:', error);
       }
     }
   }
@@ -442,7 +443,7 @@ export function isDebugMode(): boolean {
  * Get environment description for current configuration
  */
 export function getEnvironmentDescription(): string {
-  const config = ModeSwitcher.getCurrentConfig();
+  const _config = ModeSwitcher.getCurrentConfig();
   return EnvironmentDetector.getEnvironmentDescription();
 }
 

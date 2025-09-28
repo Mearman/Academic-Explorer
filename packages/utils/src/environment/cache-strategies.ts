@@ -470,7 +470,7 @@ export class CacheStrategySelector {
 /**
  * Convenience function to get cache strategy for current environment
  */
-export function getCurrentCacheStrategy(options?: {
+export function getCurrentCacheStrategy(_options?: {
   useCase?: 'research' | 'production' | 'development' | 'testing';
   offline?: boolean;
   debug?: boolean;
