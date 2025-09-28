@@ -18,7 +18,7 @@ import "@mantine/dates/styles.css"
 import { routeTree } from "./routeTree.gen"
 
 // Import service worker registration
-import { registerOpenAlexServiceWorker } from "./lib/service-worker.js"
+import { registerOpenAlexServiceWorker } from "@/lib/service-worker"
 
 // Create Mantine theme matching design tokens
 const theme = createTheme({
