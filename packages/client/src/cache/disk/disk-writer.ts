@@ -10,8 +10,7 @@ import {
   DirectoryIndex,
   FileEntry,
   DirectoryEntry,
-  generateContentHash,
-  createCacheEntryMetadata
+  generateContentHash
 } from '@academic-explorer/utils/static-data/cache-utilities';
 
 // Dynamic imports for Node.js modules to avoid browser bundling issues

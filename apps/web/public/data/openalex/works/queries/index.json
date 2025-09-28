@@ -3,13 +3,13 @@
   "files": {
     "filter=author.id:A5017898742&select=display_name,id": {
       "url": "https://api.openalex.org/works/filter=author.id:A5017898742&select=display_name,id",
-      "$ref": "./filter=author.id:A5017898742&select=display_name,id.json",
+      "$ref": "./filter=author.id%3AA5017898742&select=display_name,id.json",
       "lastRetrieved": "2025-09-28T12:56:12.476Z",
       "contentHash": "c8910972887c09da"
     },
     "filter=author.id:A5017898742": {
       "url": "https://api.openalex.org/works/filter=author.id:A5017898742",
-      "$ref": "./filter=author.id:A5017898742.json",
+      "$ref": "./filter=author.id%3AA5017898742.json",
       "lastRetrieved": "2025-09-28T12:56:13.327Z",
       "contentHash": "c8910972887c09da"
     }

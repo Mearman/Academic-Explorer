@@ -27,11 +27,8 @@ import type {
   IndexValidationError,
   IndexValidationWarning,
   IndexRepairAction,
-  PathEntityTypeIndex,
-  PathRootIndex,
   PathDirectoryIndex,
   PathFileReference,
-  PathDirectoryReference,
 } from './types.js';
 import {
   DEFAULT_INDEX_CONFIG
