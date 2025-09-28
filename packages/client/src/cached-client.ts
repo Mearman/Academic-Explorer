@@ -144,13 +144,12 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   /**
    * Cache entity result in static data provider
    */
-  private async cacheEntityResult(entityType: string, id: string, data: OpenAlexEntity): Promise<void> {
+  private async cacheEntityResult(entityType: string, id: string, _data: OpenAlexEntity): Promise<void> {
     try {
-      const staticEntityType = toStaticEntityType(entityType);
       // Note: This would require extending the static data provider with a set method for caching API results
       // For now, we log the intent
       logger.debug('client', 'Would cache entity result', { entityType, id });
-    } catch (error) {
+    } catch (error: unknown) {
       logger.debug('client', 'Failed to cache entity result', { entityType, id, error });
     }
   }
