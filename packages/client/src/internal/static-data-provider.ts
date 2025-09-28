@@ -491,7 +491,7 @@ class StaticDataProvider {
 			if (tier.clear) {
 				try {
 					await tier.clear();
-				} catch (error) {
+				} catch (error: unknown) {
 					logger.warn('static-cache', 'Failed to clear cache tier', { tier: tier.constructor.name, error });
 				}
 			}

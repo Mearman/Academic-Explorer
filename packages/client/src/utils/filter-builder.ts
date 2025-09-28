@@ -139,7 +139,7 @@ export class FilterBuilder {
    * // Result: "publication_year:2023,is_oa:true,authorships.author.id:A1234|A5678"
    * ```
    */
-  buildFromObject(filters: EntityFilters | Partial<EntityFilters> | Record<string, FilterValue>): string {
+  buildFromObject(_filters: EntityFilters | Partial<EntityFilters> | Record<string, FilterValue>): string {
     // Implementation will be added in separate task
     throw new Error("FilterBuilder.buildFromObject not yet implemented");
   }
@@ -170,7 +170,7 @@ export class FilterBuilder {
    * });
    * ```
    */
-  buildFromExpression(expression: FilterExpression): string {
+  buildFromExpression(_expression: FilterExpression): string {
     // Implementation will be added in separate task
     throw new Error("FilterBuilder.buildFromExpression not yet implemented");
   }
