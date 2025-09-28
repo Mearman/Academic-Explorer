@@ -87,7 +87,7 @@ export class EnvironmentDetector {
     // Check global __DEV__ flag (from Vite define)
     if (typeof globalThis !== 'undefined' && '__DEV__' in globalThis) {
       try {
-        const devFlag = (globalThis as any).__DEV__;
+        const devFlag = (globalThis as unknown as { __DEV__?: boolean }).__DEV__;
         return devFlag ? EnvironmentMode.DEVELOPMENT : EnvironmentMode.PRODUCTION;
       } catch {
         // Ignore errors if __DEV__ is not accessible
@@ -188,7 +188,7 @@ export class EnvironmentDetector {
       // Check for Vite-injected build info
       if (typeof globalThis !== 'undefined' && '__BUILD_INFO__' in globalThis) {
         try {
-          const buildInfo = (globalThis as any).__BUILD_INFO__;
+          const buildInfo = (globalThis as unknown as { __BUILD_INFO__?: { buildTimestamp?: string; commitHash?: string; shortCommitHash?: string } }).__BUILD_INFO__;
           if (buildInfo && typeof buildInfo === 'object') {
             return {
               buildTimestamp: buildInfo.buildTimestamp,

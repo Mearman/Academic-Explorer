@@ -257,7 +257,7 @@ export class ModeSwitcher {
         isDevelopment: forcedMode === 'development',
         isProduction: forcedMode === 'production',
         isTest: forcedMode === 'test',
-        mode: forcedMode as any // Type assertion needed for enum conversion
+        mode: forcedMode as unknown as EnvironmentMode // Type assertion needed for enum conversion
       };
     }
 

@@ -32,9 +32,9 @@ export async function exampleGenerateAllIndexes(rootPath: string): Promise<void>
     
     if (result.success) {
       console.log('✅ All indexes generated successfully');
-      console.log(`📊 Total entities indexed: ${result.stats.entitiesIndexed}`);
-      console.log(`⏱️  Total duration: ${result.stats.totalDurationMs}ms`);
-      console.log(`📁 Generated indexes:`, Object.keys(result.generatedIndexes));
+      console.log(`Total entities indexed: ${result.stats.entitiesIndexed}`);
+      console.log(`Total duration: ${result.stats.totalDurationMs}ms`);
+      console.log(`Generated indexes:`, Object.keys(result.generatedIndexes));
     } else {
       console.error('❌ Index generation failed:', result.error?.message);
     }
@@ -72,7 +72,7 @@ export async function exampleValidateAndRepairIndex(indexPath: string): Promise<
     // Validate the index
     const validation = await validateIndex(indexPath);
     
-    console.log(`🔍 Index validation results for ${indexPath}:`);
+    console.log(`Index validation results for ${indexPath}:`);
     console.log(`   Valid: ${validation.isValid ? '✅' : '❌'}`);
     console.log(`   Entities validated: ${validation.entitiesValidated}`);
     console.log(`   Errors found: ${validation.errors.length}`);

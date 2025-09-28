@@ -204,7 +204,7 @@ export class CacheBrowserService {
 
           while (cursor && entities.length < this.config.maxScanItems) {
             const key = cursor.key as string;
-            const value = cursor.value;
+            const {value} = cursor;
 
             const entityMetadata = this.extractEntityMetadata(
               key, 
