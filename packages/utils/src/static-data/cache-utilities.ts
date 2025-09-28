@@ -4,7 +4,6 @@
  * Used by service worker, build plugins, and development cache middleware
  */
 
-import { createHash } from 'crypto';
 import { logger } from '../logger.js';
 
 export type EntityType = 'works' | 'authors' | 'sources' | 'institutions' | 'topics' | 'publishers' | 'funders' | 'concepts' | 'autocomplete';
@@ -24,11 +23,27 @@ export interface CacheEntryMetadata {
 }
 
 /**
- * Unified index entry structure
+ * File entry structure for cached API responses
  */
-export interface IndexEntry extends CacheEntryMetadata {
+export interface FileEntry {
+  /** Original API URL that generated this response */
+  url: string;
   /** Reference to the actual data file */
   $ref: string;
+  /** When the response was retrieved from the API */
+  lastRetrieved: string;
+  /** Content hash excluding volatile metadata fields */
+  contentHash: string;
+}
+
+/**
+ * Directory entry structure for subdirectories
+ */
+export interface DirectoryEntry {
+  /** Reference to the subdirectory */
+  $ref: string;
+  /** When the directory was last modified */
+  lastModified: string;
 }
 
 /**
@@ -37,17 +52,12 @@ export interface IndexEntry extends CacheEntryMetadata {
 export interface DirectoryIndex {
   /** When this index was last updated */
   lastUpdated: string;
-  /** Relative path from static data root */
-  path: string;
-  /** Entity type (for entity directories) */
-  entityType?: EntityType;
-  /** Files in this directory */
-  files: Record<string, IndexEntry>;
+  /** Relative path from static data root (optional, used by root index) */
+  path?: string;
+  /** Cached API responses in this directory */
+  files?: Record<string, FileEntry>;
   /** Subdirectories in this directory */
-  directories: Record<string, {
-    $ref: string;
-    lastModified: string;
-  }>;
+  directories?: Record<string, DirectoryEntry>;
 }
 
 /**
@@ -70,7 +80,7 @@ export interface ParsedOpenAlexUrl {
  * Generate content hash excluding volatile metadata fields
  * Uses SHA256 for consistency and excludes fields that change without content changing
  */
-export function generateContentHash(data: unknown): string {
+export async function generateContentHash(data: unknown): Promise<string> {
   try {
     // Create a copy and remove volatile metadata fields
     let cleanContent: unknown = data;
@@ -100,7 +110,22 @@ export function generateContentHash(data: unknown): string {
 
     // Generate stable hash
     const jsonString = JSON.stringify(cleanContent, Object.keys(cleanContent as object || {}).sort());
-    return createHash('sha256').update(jsonString).digest('hex').slice(0, 16);
+
+    // Use dynamic import for crypto to support both Node.js and browser environments
+    if (typeof globalThis.process !== 'undefined' && globalThis.process.versions?.node) {
+      // Node.js environment
+      const { createHash } = await import('crypto');
+      return createHash('sha256').update(jsonString).digest('hex').slice(0, 16);
+    } else {
+      // Browser environment - use a simple hash fallback
+      let hash = 0;
+      for (let i = 0; i < jsonString.length; i++) {
+        const char = jsonString.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
+      }
+      return Math.abs(hash).toString(16).padStart(8, '0');
+    }
   } catch (error) {
     logger.warn('cache', 'Failed to generate content hash', { error });
     return 'hash-error';
@@ -217,17 +242,17 @@ export function getStaticFilePath(url: string): string {
 /**
  * Determine if cached content needs updating based on content hash
  */
-export function shouldUpdateCache(
+export async function shouldUpdateCache(
   existingMetadata: CacheEntryMetadata | null,
   newData: unknown,
   maxAge?: number
-): boolean {
+): Promise<boolean> {
   if (!existingMetadata) {
     return true; // No existing cache
   }
 
   // Check content hash
-  const newContentHash = generateContentHash(newData);
+  const newContentHash = await generateContentHash(newData);
   if (existingMetadata.contentHash !== newContentHash) {
     return true; // Content has changed
   }
@@ -247,13 +272,13 @@ export function shouldUpdateCache(
 /**
  * Create cache entry metadata for new cached content
  */
-export function createCacheEntryMetadata(
+export async function createCacheEntryMetadata(
   data: unknown,
   sourceUrl?: string,
   contentType?: string
-): CacheEntryMetadata {
+): Promise<CacheEntryMetadata> {
   return {
-    contentHash: generateContentHash(data),
+    contentHash: await generateContentHash(data),
     lastModified: new Date().toISOString(),
     sourceUrl,
     contentType,

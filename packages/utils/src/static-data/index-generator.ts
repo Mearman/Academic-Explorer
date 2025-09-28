@@ -27,6 +27,11 @@ import type {
   IndexValidationError,
   IndexValidationWarning,
   IndexRepairAction,
+  PathEntityTypeIndex,
+  PathRootIndex,
+  PathDirectoryIndex,
+  PathFileReference,
+  PathDirectoryReference,
 } from './types.js';
 import {
   DEFAULT_INDEX_CONFIG
@@ -945,7 +950,7 @@ export class StaticDataIndexGenerator {
   private async regenerateEntityMetadata(indexPath: string, entityIds: string[]): Promise<void> {
     const indexContent = await this.fs.readFile(indexPath, 'utf8');
     const index = JSON.parse(indexContent) as EntityTypeIndex;
-    
+
     for (const entityId of entityIds) {
       const entity = index.entities[entityId];
       if (entity) {
@@ -958,10 +963,172 @@ export class StaticDataIndexGenerator {
         }
       }
     }
-    
+
     index.totalEntities = Object.keys(index.entities).length;
     index.generatedAt = Date.now();
     await this.fs.writeFile(indexPath, JSON.stringify(index, null, 2), 'utf8');
+  }
+
+  /**
+   * Generate hierarchical path-based indexes for all directories
+   * Creates index.json files with files/directories structure at every level
+   */
+  async generatePathBasedIndexes(): Promise<void> {
+    await this.initializeNodeModules();
+
+    logger.debug(logCategory, 'Starting hierarchical path-based index generation', {
+      rootPath: this.config.rootPath,
+    });
+
+    // Generate hierarchical indexes starting from root
+    await this.generateHierarchicalIndex(this.config.rootPath, '');
+
+    logger.debug(logCategory, 'Hierarchical path-based index generation completed', {
+      rootPath: this.config.rootPath,
+    });
+  }
+
+  /**
+   * Recursively generate hierarchical indexes for a directory and all subdirectories
+   */
+  private async generateHierarchicalIndex(dirPath: string, relativePath: string): Promise<void> {
+    try {
+      const entries = await this.fs.readdir(dirPath, { withFileTypes: true });
+      const indexPath = this.path.join(dirPath, 'index.json');
+      
+      const index: PathDirectoryIndex = {
+        lastUpdated: new Date().toISOString(),
+        path: relativePath || '/',
+        files: {},
+        directories: {},
+      };
+
+      // Process entries
+      for (const entry of entries) {
+        const entryPath = this.path.join(dirPath, entry.name);
+        const entryRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
+
+        if (entry.isFile() && entry.name.endsWith('.json')) {
+          // Skip index.json to avoid circular reference
+          if (entry.name === 'index.json') {
+            continue;
+          }
+
+          // Process JSON file
+          const fileRef = await this.createFileReference(entryPath, entry.name, entryRelativePath);
+          const fileName = this.path.basename(entry.name, '.json');
+          index.files[fileName] = fileRef;
+        } else if (entry.isDirectory()) {
+          // Process subdirectory
+          const stat = await this.fs.stat(entryPath);
+          index.directories[entry.name] = {
+            $ref: `./${entry.name}`,
+            lastModified: new Date(stat.mtime).toISOString(),
+          };
+
+          // Recursively generate index for subdirectory
+          await this.generateHierarchicalIndex(entryPath, entryRelativePath);
+        }
+      }
+
+      // Write index file
+      await this.fs.writeFile(indexPath, JSON.stringify(index, null, 2), 'utf8');
+      
+      logger.debug(logCategory, `Generated hierarchical index for ${relativePath || '/'}`, {
+        files: Object.keys(index.files).length,
+        directories: Object.keys(index.directories).length,
+      });
+    } catch (error) {
+      logger.warn(logCategory, `Failed to generate hierarchical index for ${relativePath}`, { error });
+    }
+  }
+
+  /**
+   * Create a file reference with metadata and content hash
+   */
+  private async createFileReference(
+    filePath: string,
+    fileName: string,
+    relativePath: string
+  ): Promise<PathFileReference> {
+    try {
+      const stat = await this.fs.stat(filePath);
+      const fileRef: PathFileReference = {
+        $ref: `./${fileName}`,
+        lastModified: new Date(stat.mtime).toISOString(),
+      };
+
+      // Add content hash if config allows
+      if (this.config.extractBasicInfo) {
+        try {
+          const content = await this.fs.readFile(filePath, 'utf8');
+          const crypto = await import('crypto');
+          const hash = crypto.createHash('sha256').update(content).digest('hex');
+          // Use shorter hash for readability (first 16 characters)
+          fileRef.contentHash = hash.substring(0, 16);
+        } catch {
+          // Skip hash if file can't be read
+        }
+      }
+
+      // Add URL for API response files
+      const url = this.reconstructApiUrl(relativePath);
+      if (url) {
+        fileRef.url = url;
+      }
+
+      return fileRef;
+    } catch (error) {
+      logger.warn(logCategory, `Failed to create file reference for ${filePath}`, { error });
+      throw error;
+    }
+  }
+
+  /**
+   * Reconstruct the original API URL from the file path
+   */
+  private reconstructApiUrl(relativePath: string): string | undefined {
+    try {
+      const baseUrl = this.config.baseApiUrl || 'https://api.openalex.org';
+      const pathParts = relativePath.split('/');
+      
+      // Skip non-API files
+      if (pathParts.length < 2) {
+        return undefined;
+      }
+
+      const entityType = pathParts[0];
+      const entityIdWithExt = pathParts[1];
+      
+      // Remove .json extension from entity ID
+      const entityId = entityIdWithExt.replace(/\.json$/, '');
+      
+      // Basic entity file: authors/A123.json -> authors/A123
+      if (pathParts.length === 2) {
+        return `${baseUrl}/${entityType}/${entityId}`;
+      }
+      
+      // Query file: authors/A123/queries/select=display_name.json
+      if (pathParts.length === 4 && pathParts[2] === 'queries') {
+        const queryParams = pathParts[3].replace(/\.json$/, '');
+        return `${baseUrl}/${entityType}/${entityId}?${queryParams}`;
+      }
+      
+      // Other patterns can be added here
+      return undefined;
+    } catch {
+      return undefined;
+    }
+  }
+
+
+
+  /**
+   * Extract entity ID from filename (without .json extension)
+   */
+  private extractEntityIdFromFilename(filePath: string): string {
+    const filename = this.path.basename(filePath, '.json');
+    return filename;
   }
 }
 
@@ -1049,6 +1216,18 @@ export async function validateIndex(indexPath: string): Promise<IndexValidationR
 export async function repairIndex(validationResult: IndexValidationResult): Promise<boolean> {
   const generator = new StaticDataIndexGenerator();
   return generator.repairIndex(validationResult);
+}
+
+/**
+ * Generate path-based indexes for all entity types in the specified root directory
+ * Creates hierarchical indexes that map entity IDs to file references
+ */
+export async function generatePathBasedIndexes(
+  rootPath: string,
+  config: Partial<IndexGenerationConfig> = {}
+): Promise<void> {
+  const generator = new StaticDataIndexGenerator({ ...config, rootPath });
+  return generator.generatePathBasedIndexes();
 }
 
 /**

@@ -33,6 +33,7 @@ export {
   StaticDataIndexGenerator,
   generateAllIndexes,
   generateIndexForEntityType,
+  generatePathBasedIndexes,
   validateIndex,
   repairIndex,
   createIndexGenerator,
@@ -51,6 +52,11 @@ export type {
   IndexGenerationConfig,
   IndexGenerationProgress,
   IndexGenerationResult,
+  PathFileReference,
+  PathDirectoryReference,
+  PathDirectoryIndex,
+  PathEntityTypeIndex,
+  PathRootIndex,
 } from './types.js';
 
 // Export constants

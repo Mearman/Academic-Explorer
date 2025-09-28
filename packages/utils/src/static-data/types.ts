@@ -229,6 +229,8 @@ export interface IndexGenerationConfig {
   createBackups: boolean;
   /** Schema version to use for generated indexes */
   schemaVersion: string;
+  /** Base API URL for reconstructing original request URLs */
+  baseApiUrl?: string;
 }
 
 /**
@@ -296,6 +298,71 @@ export interface IndexGenerationResult {
 }
 
 /**
+ * File reference with metadata for path-based indexes
+ */
+export interface PathFileReference {
+  /** JSON reference to the data file */
+  $ref: string;
+  /** File modification timestamp */
+  lastModified: string;
+  /** Content hash for integrity verification */
+  contentHash?: string;
+  /** Original API request URL */
+  url?: string;
+}
+
+/**
+ * Directory reference with metadata for hierarchical indexes
+ */
+export interface PathDirectoryReference {
+  /** JSON reference to the subdirectory */
+  $ref: string;
+  /** Directory modification timestamp */
+  lastModified: string;
+}
+
+/**
+ * Path-based entity type index structure
+ * Maps entity IDs to their corresponding JSON files
+ */
+export interface PathEntityTypeIndex {
+  /** Index generation timestamp */
+  lastUpdated: string;
+  /** Path this index represents (e.g., "/authors") */
+  path: string;
+  /** Map of entity IDs to file references */
+  responses: Record<string, PathFileReference>;
+}
+
+/**
+ * Hierarchical directory index structure
+ * Used for all directory levels in the cache hierarchy
+ */
+export interface PathDirectoryIndex {
+  /** Index generation timestamp */
+  lastUpdated: string;
+  /** Path this index represents (e.g., "/authors/A123/queries") */
+  path: string;
+  /** Map of file names to file references */
+  files: Record<string, PathFileReference>;
+  /** Map of directory names to directory references */
+  directories: Record<string, PathDirectoryReference>;
+}
+
+/**
+ * Path-based root index structure
+ * Maps entity type paths to their corresponding directories
+ */
+export interface PathRootIndex {
+  /** Index generation timestamp */
+  lastUpdated: string;
+  /** Root path this index represents (e.g., "/") */
+  path: string;
+  /** Map of entity type paths to directory references */
+  paths: Record<string, PathDirectoryReference>;
+}
+
+/**
  * Schema version constant for compatibility checking
  */
 export const CURRENT_SCHEMA_VERSION = '1.0.0';
@@ -312,4 +379,5 @@ export const DEFAULT_INDEX_CONFIG: Readonly<IndexGenerationConfig> = {
   concurrency: 4,
   createBackups: true,
   schemaVersion: CURRENT_SCHEMA_VERSION,
+  baseApiUrl: 'https://api.openalex.org',
 } as const;
