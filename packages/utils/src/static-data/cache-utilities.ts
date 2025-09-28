@@ -89,22 +89,9 @@ export async function generateContentHash(data: unknown): Promise<string> {
       const dataObj = data as Record<string, unknown>;
       cleanContent = { ...dataObj };
 
-      // Remove volatile OpenAlex metadata fields that change without content changing
-      if ('meta' in dataObj && typeof dataObj.meta === 'object' && dataObj.meta) {
-        const metaObj = dataObj.meta as Record<string, unknown>;
-        const cleanMeta = { ...metaObj };
-
-        // Remove timestamp-based fields that don't affect content
-        delete cleanMeta.count;
-        delete cleanMeta.db_response_time_ms;
-        delete cleanMeta.page;
-        delete cleanMeta.per_page;
-
-        if (Object.keys(cleanMeta).length > 0) {
-          (cleanContent as Record<string, unknown>).meta = cleanMeta;
-        } else {
-          delete (cleanContent as Record<string, unknown>).meta;
-        }
+      // Remove the entire meta field as it contains API metadata, not entity content
+      if ('meta' in dataObj) {
+        delete (cleanContent as Record<string, unknown>).meta;
       }
     }
 
