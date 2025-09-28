@@ -173,29 +173,11 @@ jobs:
 
       - name: Type check affected projects
         run: |
-          echo "🔍 Running TypeScript type checking with validation..."
+          echo "🔍 Running TypeScript type checking with direct command..."
 
-          # Capture typecheck output (serial execution to avoid hanging)
-          typecheck_output=$(pnpm nx affected -t typecheck --parallel=1 2>&1)
-          typecheck_exit_code=$?
-
-          # Display output
-          echo "$typecheck_output"
-
-          # Check for TypeScript errors
-          error_count=0
-          if echo "$typecheck_output" | grep -E "(error TS|Type.*error)" > /dev/null; then
-            error_count=$(echo "$typecheck_output" | grep -cE "(error TS|Type.*error)")
-            echo "❌ TypeScript found $error_count type errors"
-            echo ""
-            echo "📋 Type Errors Found:"
-            echo "$typecheck_output" | grep -E "(error TS|Type.*error)" | head -10
-            exit 1
-          fi
-
-          # Check for overall success
-          if [ $typecheck_exit_code -ne 0 ]; then
-            echo "❌ Type checking failed with exit code $typecheck_exit_code"
+          # Use direct typecheck command to avoid nx hanging issues
+          if ! pnpm typecheck; then
+            echo "❌ TypeScript type checking failed"
             exit 1
           fi
 
