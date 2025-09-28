@@ -150,7 +150,7 @@ export class ApiInterceptor {
       if (typeof globalThis !== 'undefined' && 'window' in globalThis) {
         const win = (globalThis as any).window;
         if (win && win.location && win.location.hostname) {
-          const hostname = win.location.hostname;
+          const {hostname} = win.location;
           // Local development indicators
           if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.endsWith('.local')) {
             return true;
@@ -411,7 +411,7 @@ export class ApiInterceptor {
 
       // Calculate response size
       const responseText = JSON.stringify(data);
-      const size = new Blob([responseText]).size;
+      const {size} = new Blob([responseText]);
 
       const interceptedResponse: InterceptedResponse = {
         status: response.status,
