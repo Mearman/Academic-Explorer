@@ -57,7 +57,10 @@ export default defineConfig(({ mode: _mode }) => ({
   },
   plugins: [
     // TanStack Router Plugin - must be before React plugin
-    TanStackRouterVite(),
+    TanStackRouterVite({
+      routesDirectory: path.resolve(__dirname, 'src/routes'),
+      generatedRouteTree: path.resolve(__dirname, 'src/routeTree.gen.ts'),
+    }),
     // PWA Plugin for TypeScript service worker support
     VitePWA({
       strategies: 'injectManifest',
