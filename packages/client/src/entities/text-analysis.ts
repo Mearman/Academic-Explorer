@@ -33,9 +33,7 @@ export interface TextAnalysisEntity {
 /**
  * Keyword entity from text analysis
  */
-export interface TextAnalysisKeyword extends TextAnalysisEntity {
-  /** Additional keyword-specific properties can be added here */
-}
+export type TextAnalysisKeyword = TextAnalysisEntity;
 
 /**
  * Topic entity from text analysis
