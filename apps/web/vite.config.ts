@@ -44,7 +44,7 @@ function getBuildInfo() {
 }
 
 // https://vite.dev/config/
-export default defineConfig(({ mode: _mode }) => ({
+export default defineConfig(({ mode: _mode, command }) => ({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
@@ -85,13 +85,13 @@ export default defineConfig(({ mode: _mode }) => ({
       verbose: true, // Enable logging to see cache activity
       enabled: true // Enable in development
     }),
-    // Static data index plugin for OpenAlex entity caching
-    staticDataIndexPlugin({
+    // Static data index plugin for OpenAlex entity caching (development only)
+    ...(command === 'serve' ? [staticDataIndexPlugin({
       autoDownload: false, // Disable auto-download for now
       validate: true, // Enable validation
       verbose: false, // Disable verbose logging for cleaner output
       debounceMs: 500 // 500ms debounce for file changes
-    }),
+    })] : []),
     // Only run OpenAlex data plugin in production builds, not during tests
     // ...(mode !== 'test' ? [openalexDataPlugin()] : []), // Temporarily disabled during monorepo refactoring
     // Temporarily disable devtools to avoid port conflicts
