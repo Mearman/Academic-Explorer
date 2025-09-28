@@ -676,7 +676,7 @@ export class InstitutionsApi {
    * @param options - Institution search options
    * @returns Formatted query parameters
    */
-	private buildQueryParams(options: InstitutionSearchOptions & { filter?: any } = {}): QueryParams {
+	private buildQueryParams(options: InstitutionSearchOptions & { filter?: string } = {}): QueryParams {
 		const { filters, filter, sort, page, per_page, select, ...otherOptions } = options;
 
 		const queryParams: QueryParams = {

@@ -314,7 +314,7 @@ export class OpenAlexBaseClient {
 							logger.debug("client", "Disk caching unavailable (browser environment)", { error: diskError });
 						}
 					}
-				} catch (interceptError) {
+				} catch (interceptError: unknown) {
 					// Don't fail the request if interception fails
 					logger.debug("client", "Response interception failed", { error: interceptError });
 				}

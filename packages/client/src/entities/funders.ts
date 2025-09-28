@@ -61,7 +61,7 @@ export class FundersApi {
    * @param params - Query parameters for filtering, sorting, and pagination
    * @returns Promise resolving to paginated funders response
    */
-	async getFunders(params: QueryParams & FundersFilters & { filter?: any } = {}): Promise<OpenAlexResponse<Funder>> {
+	async getFunders(params: QueryParams & FundersFilters & { filter?: string } = {}): Promise<OpenAlexResponse<Funder>> {
 		const processedParams = this.buildQueryParams(params);
 		return this.client.getResponse<Funder>("funders", processedParams);
 	}
@@ -70,7 +70,7 @@ export class FundersApi {
 	 * Build query parameters with proper filter processing
 	 * @private
 	 */
-	private buildQueryParams(params: QueryParams & FundersFilters & { filter?: any } = {}): QueryParams {
+	private buildQueryParams(params: QueryParams & FundersFilters & { filter?: string } = {}): QueryParams {
 		const { filter, ...otherParams } = params;
 		const queryParams: QueryParams = { ...otherParams };
 
