@@ -198,7 +198,7 @@ describe("WorksApi", () => {
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("works", {
 				search: "query",
-				sort: "relevance_score",
+				sort: "relevance_score:desc",
 			});
 		});
 	});

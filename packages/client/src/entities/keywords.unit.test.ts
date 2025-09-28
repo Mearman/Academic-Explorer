@@ -137,10 +137,9 @@ describe("KeywordsApi", () => {
 			expect(mockClient.getResponse).toHaveBeenCalledWith("keywords", {
 				search: "machine learning",
 				filter: "",
-				sort: "relevance_score",
+				sort: "relevance_score:desc",
 				page: 1,
 				per_page: 25,
-				select: undefined,
 			});
 		});
 

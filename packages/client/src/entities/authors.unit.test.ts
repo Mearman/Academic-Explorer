@@ -256,6 +256,7 @@ describe("AuthorsApi", () => {
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("authors", {
 				search: "einstein",
+				sort: "relevance_score:desc",
 			});
 		});
 
@@ -275,6 +276,7 @@ describe("AuthorsApi", () => {
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("authors", {
 				search: "machine learning",
+				sort: "relevance_score:desc",
 				filter: "works_count:>10,has_orcid:true,cited_by_count:500",
 			});
 		});
@@ -294,6 +296,7 @@ describe("AuthorsApi", () => {
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("authors", {
 				search: "query",
+				sort: "relevance_score:desc",
 				filter: "last_known_institution.id:I27837315|I123456789,x_concepts.id:C41008148",
 			});
 		});
@@ -314,6 +317,7 @@ describe("AuthorsApi", () => {
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("authors", {
 				search: "test",
+				sort: "relevance_score:desc",
 				filter: "works_count:50",
 			});
 		});
@@ -1159,6 +1163,7 @@ describe("AuthorsApi", () => {
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("authors", {
 				search: "",
+				sort: "works_count",
 			});
 		});
 
@@ -1174,6 +1179,7 @@ describe("AuthorsApi", () => {
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("authors", {
 				search: "test & query with \"quotes\"",
+				sort: "relevance_score:desc",
 			});
 		});
 	});
