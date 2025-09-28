@@ -366,7 +366,7 @@ export class GitHubPagesReader {
     // Basic validation - could be enhanced based on specific requirements
     try {
       JSON.stringify(data);
-    } catch (error) {
+    } catch (_error) {
       errors.push('Data is not serializable to JSON');
     }
 
@@ -399,7 +399,7 @@ export class GitHubPagesReader {
     // Check various indicators of production environment
     if (typeof globalThis !== 'undefined' && 'location' in globalThis) {
       // Browser environment
-      const { location } = globalThis as any;
+      const { location } = globalThis as unknown as { location: { hostname?: string } };
       const hostname = location?.hostname;
 
       if (hostname) {
