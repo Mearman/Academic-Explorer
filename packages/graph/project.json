@@ -10,6 +10,11 @@
         "command": "tsc -b",
         "cwd": "{projectRoot}"
       },
+      "inputs": [
+        "production",
+        "{projectRoot}/tsconfig.json",
+        "{projectRoot}/package.json"
+      ],
       "outputs": [
         "{projectRoot}/dist"
       ],
@@ -45,25 +50,15 @@
         "command": "vitest run",
         "cwd": "{projectRoot}"
       },
+      "inputs": [
+        "default",
+        "^production",
+        "{projectRoot}/vitest.config.ts"
+      ],
       "outputs": [
         "{projectRoot}/coverage"
       ],
       "cache": true
-    },
-    "test:unit": {
-      "executor": "nx:noop",
-      "options": {},
-      "cache": false
-    },
-    "test:integration": {
-      "executor": "nx:noop",
-      "options": {},
-      "cache": false
-    },
-    "test:component": {
-      "executor": "nx:noop",
-      "options": {},
-      "cache": false
     },
     "test:watch": {
       "executor": "nx:run-commands",

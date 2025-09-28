@@ -18,7 +18,6 @@
     },
     "typecheck": {
       "executor": "nx:run-commands",
-      "dependsOn": ["^build"],
       "options": {
         "command": "tsc --noEmit",
         "cwd": "{projectRoot}"
@@ -43,11 +42,15 @@
     },
     "test": {
       "executor": "nx:run-commands",
-      "dependsOn": ["^build"],
       "options": {
         "command": "vitest run",
         "cwd": "{projectRoot}"
       },
+      "inputs": [
+        "default",
+        "^production",
+        "{projectRoot}/vitest.config.ts"
+      ],
       "outputs": [
         "{projectRoot}/coverage"
       ],
@@ -55,7 +58,6 @@
     },
     "test:unit": {
       "executor": "nx:run-commands",
-      "dependsOn": ["^build"],
       "options": {
         "command": "vitest run --testNamePattern='.*\\.unit\\.test\\.ts$' --coverage",
         "cwd": "{projectRoot}"
@@ -72,7 +74,6 @@
     },
     "test:integration": {
       "executor": "nx:run-commands",
-      "dependsOn": ["^build"],
       "options": {
         "command": "vitest run --testNamePattern='.*\\.integration\\.test\\.ts$'",
         "cwd": "{projectRoot}"
@@ -86,11 +87,6 @@
         "{projectRoot}/coverage"
       ],
       "cache": true
-    },
-    "test:component": {
-      "executor": "nx:noop",
-      "options": {},
-      "cache": false
     },
     "test:watch": {
       "executor": "nx:run-commands",
