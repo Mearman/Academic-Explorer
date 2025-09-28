@@ -8,9 +8,9 @@ import type { EntityType, OpenAlexResponse, OpenAlexEntity } from '../../types';
 import { logger, logError } from '../../internal/logger';
 
 // Dynamic imports for Node.js modules to avoid browser bundling issues
-let fs: any;
-let path: any;
-let crypto: any;
+let fs: typeof import('fs/promises') | undefined;
+let path: typeof import('path') | undefined;
+let crypto: typeof import('crypto') | undefined;
 
 /**
  * Initialize Node.js modules (required before using any file operations)
@@ -104,9 +104,9 @@ interface FileLock {
 }
 
 /**
- * Disk space information
+ * Disk space information (unused but kept for future implementation)
  */
-interface DiskSpaceInfo {
+interface _DiskSpaceInfo {
   available: number;
   total: number;
   used: number;
@@ -181,6 +181,9 @@ export class DiskCacheWriter {
 
       try {
         // Ensure directory structure exists
+        if (!path) {
+          throw new Error('Node.js path module not initialized');
+        }
         await this.ensureDirectoryStructure(path.dirname(filePaths.dataFile));
 
         // Prepare content and metadata
@@ -380,6 +383,9 @@ export class DiskCacheWriter {
     // Sanitize entity ID for filesystem
     const sanitizedId = this.sanitizeFilename(entityId);
 
+    if (!path) {
+      throw new Error('Node.js path module not initialized');
+    }
     const dataFile = path.join(this.config.basePath, entityType, `${sanitizedId}.json`);
     const metadataFile = path.join(this.config.basePath, entityType, `${sanitizedId}.meta.json`);
 
@@ -403,6 +409,9 @@ export class DiskCacheWriter {
    */
   private async ensureDirectoryStructure(dirPath: string): Promise<void> {
     try {
+      if (!fs) {
+        throw new Error('Node.js fs module not initialized');
+      }
       await fs.mkdir(dirPath, { recursive: true });
     } catch (error) {
       logError('Failed to create directory structure', error);
@@ -414,6 +423,12 @@ export class DiskCacheWriter {
    * Write file atomically using temporary file
    */
   private async writeFileAtomic(filePath: string, content: string): Promise<void> {
+    if (!crypto) {
+      throw new Error('Node.js crypto module not initialized');
+    }
+    if (!fs) {
+      throw new Error('Node.js fs module not initialized');
+    }
     const tempPath = `${filePath}.tmp.${crypto.randomUUID()}`;
 
     try {
@@ -440,6 +455,9 @@ export class DiskCacheWriter {
    * Acquire file lock for concurrent access control
    */
   private async acquireFileLock(filePath: string): Promise<string> {
+    if (!crypto) {
+      throw new Error('Node.js crypto module not initialized');
+    }
     const lockId = crypto.randomUUID();
     const maxWaitTime = this.config.lockTimeoutMs;
     const startTime = Date.now();
@@ -491,6 +509,9 @@ export class DiskCacheWriter {
    * Generate content hash for integrity verification
    */
   private async generateContentHash(content: string): Promise<string> {
+    if (!crypto) {
+      throw new Error('Node.js crypto module not initialized');
+    }
     return crypto.createHash('sha256').update(content, 'utf8').digest('hex');
   }
 
@@ -499,6 +520,9 @@ export class DiskCacheWriter {
    */
   private async ensureSufficientDiskSpace(): Promise<void> {
     try {
+      if (!fs) {
+        throw new Error('Node.js fs module not initialized');
+      }
       const stats = await fs.statfs(this.config.basePath);
       const availableBytes = stats.bavail * stats.bsize;
 
