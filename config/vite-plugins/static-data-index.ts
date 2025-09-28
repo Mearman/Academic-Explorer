@@ -10,8 +10,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const indexGeneratorPath = resolve(__dirname, "../../apps/web/src/lib/utils/static-data-index-generator.ts");
 
-import { type EntityType } from "@academic-explorer/utils/static-data/cache-utilities";
-
 // Dynamic import helper to avoid build-time module resolution issues
 const getIndexGenerators = async () => {
   const module = await import(indexGeneratorPath);
