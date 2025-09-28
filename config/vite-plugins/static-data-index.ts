@@ -10,6 +10,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const indexGeneratorPath = resolve(__dirname, "../../apps/web/src/lib/utils/static-data-index-generator.ts");
 
+import { type EntityType } from "@academic-explorer/utils/static-data/cache-utilities";
+
 // Dynamic import helper to avoid build-time module resolution issues
 const getIndexGenerators = async () => {
   const module = await import(indexGeneratorPath);
@@ -21,6 +23,29 @@ const getIndexGenerators = async () => {
     getEntityTypeFromPath: module.getEntityTypeFromPath
   };
 };
+
+// Helper to find entity root directory from file path
+async function getEntityRootFromPath(filePath: string, staticDataDir: string): Promise<{ entityDir: string; entityType: EntityType } | null> {
+  try {
+    const { dirname } = await import('path');
+    let currentDir = dirname(filePath);
+    
+    while (currentDir.startsWith(staticDataDir)) {
+      const entityType = await getIndexGenerators().then(g => g.getEntityTypeFromPath(currentDir));
+      if (entityType) {
+        return {
+          entityDir: currentDir,
+          entityType
+        };
+      }
+      currentDir = dirname(currentDir);
+      if (currentDir === staticDataDir) break; // Reached root without finding entity
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
 
 export interface StaticDataIndexPluginOptions {
   /** Enable auto-download of missing entities */
@@ -57,50 +82,50 @@ export function staticDataIndexPlugin(options: StaticDataIndexPluginOptions = {}
 
   // Debounced file change handler to avoid excessive regeneration
   const debouncedHandleFileChange = async (filePath: string, action: string) => {
-    const { getEntityTypeFromPath } = await getIndexGenerators();
-    const entityType = getEntityTypeFromPath(join(filePath, ".."));
-    if (!entityType) {
+    const entityRoot = await getEntityRootFromPath(filePath, staticDataDir);
+    if (!entityRoot) {
       logVerbose(`🚫 Ignoring file change in non-entity directory: ${filePath}`);
       return;
     }
-
+  
+    const { entityType } = entityRoot;
+  
     // Clear existing timeout for this entity type
     const existingTimeout = changeDebounceMap.get(entityType);
     if (existingTimeout) {
       clearTimeout(existingTimeout);
     }
-
+  
     // Set new timeout
     const timeout = setTimeout(async () => {
-      await handleFileChange(filePath, action, entityType);
+      await handleFileChange(filePath, action, entityType, entityRoot.entityDir);
       changeDebounceMap.delete(entityType);
     }, opts.debounceMs);
-
+  
     changeDebounceMap.set(entityType, timeout);
   };
 
-  const handleFileChange = async (filePath: string, action: string, entityType: EntityType) => {
+  const handleFileChange = async (filePath: string, action: string, entityType: EntityType, entityDir: string) => {
     try {
       const { generateIndexWithAutoDownload, generateIndexForEntityType, validateStaticDataIndex } = await getIndexGenerators();
-      const entityDir = join(staticDataDir, entityType);
       const fileName = basename(filePath);
-
+  
       console.log(`${getActionIcon(action)} Static data ${action}: ${fileName} in ${entityType}`);
       logVerbose(`📁 Processing directory: ${entityDir}`);
-
+  
       // Skip if directory doesn't exist
       if (!existsSync(entityDir)) {
         logVerbose(`⚠️  Entity directory doesn't exist: ${entityDir}`);
         return;
       }
-
-      // Generate updated index
+  
+      // Generate updated index recursively
       if (opts.autoDownload) {
         await generateIndexWithAutoDownload(entityDir, entityType, staticDataDir);
       } else {
-        await generateIndexForEntityType(entityDir, entityType);
+        await generateIndexForEntityType(entityDir, entityType, true);
       }
-
+  
       // Validate if requested
       if (opts.validate && config.command === 'serve') {
         const isValid = await validateStaticDataIndex(entityDir);
@@ -108,7 +133,7 @@ export function staticDataIndexPlugin(options: StaticDataIndexPluginOptions = {}
           console.warn(`⚠️  Static data index validation failed for ${entityType}`);
         }
       }
-
+  
       // Trigger HMR for development
       if (server) {
         logVerbose(`🔄 Triggering HMR update for static data changes`);
@@ -117,10 +142,10 @@ export function staticDataIndexPlugin(options: StaticDataIndexPluginOptions = {}
           path: "*" // Reload all since static data could affect any route
         });
       }
-
+  
     } catch (error) {
       console.error(`❌ Failed to handle file change for ${entityType}:`, error);
-
+  
       // Send error notification to client in development
       if (server) {
         server.ws.send({
@@ -211,10 +236,10 @@ export function staticDataIndexPlugin(options: StaticDataIndexPluginOptions = {}
           // The generateAllIndexes call in buildStart will create the directory structure
         }
 
-        // Set up file watcher for development
+        // Set up file watcher for development - watch all JSON files recursively, including subdirs
         watcher = watch(join(staticDataDir, "**/*.json"), {
           ignored: [
-            "**/index.json", // Don't watch the generated index files
+            "**/index.json", // Don't watch the generated index files to avoid loops
             "**/.*", // Ignore hidden files
             "**/*.tmp", // Ignore temporary files
           ],

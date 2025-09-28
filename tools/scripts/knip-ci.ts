@@ -83,7 +83,7 @@ async function runKnipCI(): Promise<void> {
 
   try {
     // Run knip and capture output with timeout
-    const output = execSync('knip', {
+    const _output = execSync('knip', {
       encoding: 'utf-8',
       stdio: 'pipe',
       cwd: process.cwd(),
@@ -94,9 +94,10 @@ async function runKnipCI(): Promise<void> {
     console.log('✅ No issues detected by knip');
     process.exit(0);
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Knip found issues - parse and assess them
-    const output = error.stdout || error.stderr || '';
+    const execError = error as { stdout?: string; stderr?: string };
+    const output = execError.stdout || execError.stderr || '';
     const results = parseKnipOutput(output);
     const summary = formatSummary(results);
     const severity = assessSeverity(results);
