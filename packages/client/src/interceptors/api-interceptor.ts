@@ -148,7 +148,7 @@ export class ApiInterceptor {
     // Check browser-based indicators
     try {
       if (typeof globalThis !== 'undefined' && 'window' in globalThis) {
-        const win = (globalThis as any).window;
+        const win = (globalThis as unknown as { window?: Window }).window;
         if (win && win.location && win.location.hostname) {
           const {hostname} = win.location;
           // Local development indicators
