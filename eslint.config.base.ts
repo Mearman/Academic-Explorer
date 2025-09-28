@@ -4,6 +4,7 @@ import eslintComments from "eslint-plugin-eslint-comments";
 import unusedImports from "eslint-plugin-unused-imports";
 import tseslint from "typescript-eslint";
 import markdownPlugin from "@eslint/markdown";
+import nxPlugin from "@nx/eslint-plugin";
 import noEmojiPlugin from "./eslint-rules/no-emoji.ts";
 
 /**
@@ -85,6 +86,7 @@ export default tseslint.config([
     plugins: {
       "eslint-comments": eslintComments,
       "unused-imports": unusedImports,
+      "@nx": nxPlugin,
       "no-emoji-plugin": noEmojiPlugin,
     },
     rules: {
@@ -133,6 +135,35 @@ export default tseslint.config([
 
       // Emoji detection
       "no-emoji-plugin/no-emoji": "error",
+    },
+  },
+  {
+    // Nx dependency checks for buildable/publishable libraries
+    files: ["packages/*/src/**/*.{ts,tsx}"],
+    plugins: {
+      "@nx": nxPlugin,
+    },
+    rules: {
+      "@nx/dependency-checks": [
+        "error",
+        {
+          "buildTargets": ["build"],
+          "checkMissingDependencies": true,
+          "checkObsoleteDependencies": true,
+          "checkVersionMismatches": true,
+          "includeTransitiveDependencies": false,
+          "useLocalPathsForWorkspaceDependencies": true,
+          "ignoredDependencies": [
+            // Common dev dependencies that don't need to be in package.json
+            "vitest",
+            "@vitest/ui",
+            "@testing-library/*",
+            "eslint*",
+            "typescript",
+            "@types/*"
+          ]
+        }
+      ]
     },
   },
   {
@@ -187,6 +218,17 @@ export default tseslint.config([
     rules: {
       "no-console": "off",
       "@typescript-eslint/no-explicit-any": "warn", // Allow any for service worker event types
+    },
+  },
+  {
+    // CLI scripts and tools should be allowed to use emojis for user-friendly console output
+    files: [
+      "**/tools/scripts/**/*.{ts,js}",
+      "**/scripts/**/*.{ts,js}",
+      "**/*cli*.{ts,js}",
+    ],
+    rules: {
+      "no-emoji-plugin/no-emoji": "off",
     },
   },
   {
