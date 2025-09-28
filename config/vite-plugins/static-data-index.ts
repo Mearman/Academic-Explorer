@@ -67,7 +67,7 @@ export function staticDataIndexPlugin(options: StaticDataIndexPluginOptions = {}
   let watcher: ReturnType<typeof watch> | null = null;
   let config: ResolvedConfig;
   let server: ViteDevServer | null = null;
-  let changeDebounceMap = new Map<string, NodeJS.Timeout>();
+  const changeDebounceMap = new Map<string, NodeJS.Timeout>();
 
   const opts = {
     autoDownload: false,
@@ -240,6 +240,7 @@ export function staticDataIndexPlugin(options: StaticDataIndexPluginOptions = {}
             "**/index.json", // Don't watch the generated index files to avoid loops
             "**/.*", // Ignore hidden files
             "**/*.tmp", // Ignore temporary files
+            "**/queries/**", // Ignore query cache files - these are handled separately
           ],
           ignoreInitial: true,
           persistent: true,

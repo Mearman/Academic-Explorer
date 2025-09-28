@@ -607,8 +607,12 @@ export class StaticDataIndexGenerator {
 
         for (const entry of entries) {
           const fullPath = this.path.join(dir, entry.name);
-          
+
           if (entry.isDirectory()) {
+            // Skip queries directories - these contain query cache files, not entity files
+            if (entry.name === 'queries') {
+              continue;
+            }
             await scanDirectory(fullPath); // Recursive scan
           } else if (entry.isFile() && entry.name.endsWith('.json')) {
             // Check file size limit
