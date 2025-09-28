@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import {
   Group,
   Text,
@@ -111,7 +111,7 @@ export function EntityBrowser({ className }: EntityBrowserProps) {
     includeRepositoryData: true,
   }), [sortBy, sortDirection, effectiveLimit, shouldLoadMore, pageSize, currentPage]);
 
-  const loadEntities = async () => {
+  const loadEntities = useCallback(async () => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
     
     try {
@@ -141,7 +141,7 @@ export function EntityBrowser({ className }: EntityBrowserProps) {
         error: `Failed to load entities: ${String(error)}`,
       }));
     }
-  };
+  }, [filters, options]);
 
   // Load entities on filter/option changes
   useEffect(() => {

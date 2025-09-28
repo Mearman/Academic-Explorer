@@ -5,7 +5,7 @@
  * load conditions, large datasets, and stress scenarios.
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi, type MockedFunction } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 // Mock performance measurement APIs
 Object.defineProperty(global, 'performance', {

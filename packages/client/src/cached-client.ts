@@ -17,9 +17,7 @@ import { ConceptsApi } from './entities/concepts';
 import type { OpenAlexEntity } from './types';
 import {
 	staticDataProvider,
-	type StaticDataResult,
 	type CacheStatistics,
-	CacheTier,
 	Environment
 } from './internal/static-data-provider';
 import { toStaticEntityType, cleanOpenAlexId } from './internal/static-data-utils';

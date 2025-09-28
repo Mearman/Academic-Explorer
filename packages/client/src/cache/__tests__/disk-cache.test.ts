@@ -7,7 +7,6 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi, type MockedFunction } from 'vitest';
 import { vol } from 'memfs';
-import type { Stats } from 'fs';
 
 // Mock the file system
 vi.mock('fs', () => import('memfs').then(fs => ({ ...fs.fs })));

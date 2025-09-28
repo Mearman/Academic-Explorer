@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   Box,
   Group,
@@ -130,7 +130,7 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
     includeRepositoryData: true,
   }), [sortBy, sortDirection, pageSize, currentPage]);
 
-  const loadCachedEntities = async () => {
+  const loadCachedEntities = useCallback(async () => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
     
     try {
@@ -160,7 +160,7 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
         error: `Failed to load cached entities: ${String(error)}`,
       }));
     }
-  };
+  }, [filters, options]);
 
   const clearCache = async () => {
     try {
