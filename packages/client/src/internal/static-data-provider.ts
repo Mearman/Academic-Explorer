@@ -235,7 +235,7 @@ class LocalDiskCacheTier implements CacheTierInterface {
 				fs.rmSync(this.cacheDir, { recursive: true, force: true });
 			}
 			this.stats = { requests: 0, hits: 0, totalLoadTime: 0 };
-		} catch (error) {
+		} catch (error: unknown) {
 			logger.warn('static-cache', 'Failed to clear local disk cache', { error });
 		}
 	}
@@ -297,7 +297,7 @@ class GitHubPagesCacheTier implements CacheTierInterface {
 				tier: CacheTier.GITHUB_PAGES,
 				loadTime
 			};
-		} catch (error) {
+		} catch (error: unknown) {
 			logger.debug('static-cache', 'GitHub Pages cache miss', { entityType, id, error });
 			return { found: false };
 		}
@@ -423,7 +423,7 @@ class StaticDataProvider {
 					this.updateGlobalStats(result.tier || CacheTier.MEMORY, true, loadTime);
 					return result;
 				}
-			} catch (error) {
+			} catch (error: unknown) {
 				logger.debug('static-cache', 'Cache tier error', { tier: tier.constructor.name, error });
 			}
 		}
