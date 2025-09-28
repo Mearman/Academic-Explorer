@@ -90,6 +90,11 @@ export const baseVitestConfig: UserConfig = {
           name: 'unit',
           include: ['src/**/*.unit.test.ts'],
           environment: 'node',
+          env: {
+            // Disable disk caching for unit tests (they use mocks)
+            ACADEMIC_EXPLORER_TEST_TYPE: 'unit',
+            ACADEMIC_EXPLORER_DISK_CACHE_ENABLED: 'false',
+          },
         },
       },
       {
@@ -97,6 +102,11 @@ export const baseVitestConfig: UserConfig = {
           name: 'integration',
           include: ['src/**/*.integration.test.ts'],
           environment: 'node',
+          env: {
+            // Enable disk caching for integration tests (real API calls)
+            ACADEMIC_EXPLORER_TEST_TYPE: 'integration',
+            ACADEMIC_EXPLORER_DISK_CACHE_ENABLED: 'true',
+          },
         },
       },
     ],

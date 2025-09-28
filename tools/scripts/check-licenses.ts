@@ -76,17 +76,19 @@ function checkLicenses(): void {
       console.log(`✅ All ${totalPackages} packages have acceptable licenses`);
       console.log(`📝 Allowed licenses: ${config.allowed.join(', ')}`);
     }
-  } catch (error: any) {
-    if (error.code === 'ETIMEDOUT') {
+  } catch (error: unknown) {
+    const nodeError = error as NodeJS.ErrnoException;
+    if (nodeError.code === 'ETIMEDOUT') {
       console.warn('⏰ License check timed out - this is acceptable for large research projects');
       console.log('ℹ️  License compliance will be verified during release process');
       process.exit(0); // Don't fail CI for timeouts in research projects
-    } else if (error.signal === 'SIGTERM' || error.signal === 'SIGKILL') {
+    } else if ('signal' in nodeError && (nodeError.signal === 'SIGTERM' || nodeError.signal === 'SIGKILL')) {
       console.warn('⚠️  License check was terminated - likely due to system resource limits');
       console.log('ℹ️  License compliance will be verified during release process');
       process.exit(0); // Don't fail CI for system limits
     } else {
-      console.error('❌ Error checking licenses:', error.message || error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error('❌ Error checking licenses:', errorMessage);
       console.log('ℹ️  License compliance will be verified during release process');
       process.exit(1);
     }
