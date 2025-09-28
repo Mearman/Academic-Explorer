@@ -13,7 +13,6 @@ import {
   Alert,
   Modal,
   Tooltip,
-  Divider,
   ScrollArea,
   Box,
 } from "@mantine/core";

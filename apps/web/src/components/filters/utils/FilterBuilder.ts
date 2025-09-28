@@ -209,7 +209,7 @@ export class FilterBuilder {
    */
   validateFilters(
     filters: EntityFilters | Partial<EntityFilters>,
-    entityType: EntityType
+    _entityType: EntityType
   ): FilterValidationResult {
     const errors: string[] = [];
     const warnings: string[] = [];

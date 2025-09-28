@@ -1,9 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import {
-  Box,
   Group,
   Text,
-  Card,
   Badge,
   TextInput,
   MultiSelect,
@@ -14,12 +12,10 @@ import {
   Tooltip,
   Container,
   Paper,
-  VisuallyHidden
 } from '@mantine/core';
 import {
   IconSearch,
   IconRefresh,
-  IconDatabase,
   IconInfoCircle,
   IconExternalLink,
   IconFilter
@@ -82,9 +78,9 @@ export function EntityBrowser({ className }: EntityBrowserProps) {
   });
 
   // Accessibility state for screen reader announcements
-  const [announcement, setAnnouncement] = useState('');
-  const statusRegionRef = useRef<HTMLDivElement>(null);
-  const resultRegionRef = useRef<HTMLDivElement>(null);
+  const [_announcement, _setAnnouncement] = useState('');
+  const _statusRegionRef = useRef<HTMLDivElement>(null);
+  const _resultRegionRef = useRef<HTMLDivElement>(null);
 
   // Filter state - simplified for browsing
   const [searchQuery, setSearchQuery] = useState('');
@@ -150,7 +146,7 @@ export function EntityBrowser({ className }: EntityBrowserProps) {
   // Load entities on filter/option changes
   useEffect(() => {
     void loadEntities();
-  }, [filters, options]);
+  }, [filters, options, loadEntities]);
 
   // Reset page when filters change
   useEffect(() => {

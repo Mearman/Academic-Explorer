@@ -7,7 +7,7 @@ import React, { useCallback, useMemo } from "react";
 import { Group, ActionIcon, Tooltip, Text, Alert } from "@mantine/core";
 import { IconX, IconAlertCircle } from "@tabler/icons-react";
 import { useThemeColors } from "@/hooks/use-theme-colors";
-import type { FilterFieldProps, FilterCondition, FilterFieldConfig, EntityFilters } from "../types/filter-ui";
+import type { FilterFieldProps, FilterCondition, EntityFilters } from "../types/filter-ui";
 
 // Field type components - TODO: Implement these components
 // import { TextFilter } from "../fields/TextFilter";
@@ -68,7 +68,7 @@ export function FilterField<T extends EntityFilters = EntityFilters>({
 
   // Render the appropriate field component based on type
   const renderFieldComponent = () => {
-    const fieldProps = {
+    const _fieldProps = {
       value: condition.value,
       operator: condition.operator,
       config,

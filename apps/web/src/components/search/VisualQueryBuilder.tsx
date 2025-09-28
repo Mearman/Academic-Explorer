@@ -25,8 +25,6 @@ import {
   IconSearch,
   IconCalendar,
   IconUser,
-  IconBuilding,
-  IconBook,
   IconTags,
   IconInfoCircle,
 } from "@tabler/icons-react";

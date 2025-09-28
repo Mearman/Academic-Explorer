@@ -20,7 +20,6 @@ import {
   IconSearch,
   IconRefresh,
   IconTrash,
-  IconDatabase,
   IconInfoCircle,
   IconFilter,
   IconExternalLink,
@@ -196,7 +195,7 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
         exportTimestamp: new Date().toISOString(),
         totalEntities: result.entities.length,
         stats: result.stats,
-        filters: filters,
+        filters,
         entities: result.entities,
       };
 
@@ -355,7 +354,7 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
   // Load entities on filter/option changes
   useEffect(() => {
     void loadCachedEntities();
-  }, [filters, options]);
+  }, [filters, options, loadCachedEntities]);
 
   // Reset page when filters change
   useEffect(() => {
