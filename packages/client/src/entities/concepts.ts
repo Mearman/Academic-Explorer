@@ -17,6 +17,7 @@ import type { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";
 import { AutocompleteApi } from "../utils/autocomplete";
 import { isValidWikidata, normalizeExternalId } from "../utils/id-resolver";
+import { logger } from "@academic-explorer/utils";
 
 /**
  * Strict query parameters specific to Concepts API
@@ -229,7 +230,7 @@ export class ConceptsApi {
 		} catch (error: unknown) {
 			// Log error but return empty array for graceful degradation
 			const errorMessage = error instanceof Error ? error.message : "Unknown error";
-			console.warn(`[ConceptsApi] Autocomplete failed for query "${query}": ${errorMessage}`);
+			logger.warn("concepts-api", `Autocomplete failed for query "${query}": ${errorMessage}`);
 			return [];
 		}
 	}
@@ -432,7 +433,7 @@ export class ConceptsApi {
 		}
 
 		const filters: ConceptsFilters = {
-			"level": level,
+			level,
 		};
 
 		return this.getConcepts({

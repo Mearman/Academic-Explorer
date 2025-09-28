@@ -114,7 +114,7 @@ export class WorksApi {
 		// Check for prefixed formats: pmid:12345678 or PMID:12345678
 		const prefixMatch = cleanId.match(/^(?:pmid|PMID):(\d+)$/);
 		if (prefixMatch) {
-			const pmidNumber = prefixMatch[1];
+			const [, pmidNumber] = prefixMatch;
 			if (this.isValidPMIDNumber(pmidNumber)) {
 				return `pmid:${pmidNumber}`;
 			}
@@ -149,7 +149,7 @@ export class WorksApi {
 
 		// Reasonable length constraints (1-10 digits)
 		// Most PMIDs are 8 digits, but allowing for future growth
-		const length = pmidNumber.length;
+		const {length} = pmidNumber;
 		if (length < 1 || length > 10) {
 			return false;
 		}
@@ -179,7 +179,7 @@ export class WorksApi {
 		// Check for full DOI URL: https://doi.org/10.xxxx/yyyy
 		const doiUrlMatch = cleanId.match(/^https?:\/\/(?:www\.)?doi\.org\/(.+)$/i);
 		if (doiUrlMatch) {
-			const doiString = doiUrlMatch[1];
+			const [, doiString] = doiUrlMatch;
 			if (this.isValidDOIString(doiString)) {
 				return `https://doi.org/${doiString}`;
 			}
@@ -189,7 +189,8 @@ export class WorksApi {
 		// Check for crossref.org redirect: https://www.crossref.org/iPage?doi=10.xxxx/yyyy
 		const crossrefMatch = cleanId.match(/^https?:\/\/(?:www\.)?crossref\.org\/iPage\?doi=(.+)$/i);
 		if (crossrefMatch) {
-			const doiString = decodeURIComponent(crossrefMatch[1]);
+			const [, encodedDoi] = crossrefMatch;
+		const doiString = decodeURIComponent(encodedDoi);
 			if (this.isValidDOIString(doiString)) {
 				return `https://doi.org/${doiString}`;
 			}
@@ -199,7 +200,7 @@ export class WorksApi {
 		// Check for prefixed format: doi:10.xxxx/yyyy
 		const prefixMatch = cleanId.match(/^doi:(.+)$/i);
 		if (prefixMatch) {
-			const doiString = prefixMatch[1];
+			const [, doiString] = prefixMatch;
 			if (this.isValidDOIString(doiString)) {
 				return `https://doi.org/${doiString}`;
 			}

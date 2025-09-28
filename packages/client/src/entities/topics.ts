@@ -15,6 +15,7 @@ import type {
 import { OpenAlexBaseClient } from "../client";
 import { isValidWikidata, normalizeExternalId } from "../utils/id-resolver";
 import { buildFilterString } from "../utils/query-builder";
+import { logger } from "@academic-explorer/utils";
 
 /**
  * TopicsApi provides methods for interacting with OpenAlex topics
@@ -172,7 +173,7 @@ export class TopicsApi {
 		} catch (error: unknown) {
 			// Log error but return empty array for graceful degradation
 			const errorMessage = error instanceof Error ? error.message : "Unknown error";
-			console.warn(`[TopicsApi] Autocomplete failed for query "${query}": ${errorMessage}`);
+			logger.warn("topics-api", `Autocomplete failed for query "${query}": ${errorMessage}`);
 			return [];
 		}
 	}
