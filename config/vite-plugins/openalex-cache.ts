@@ -490,6 +490,41 @@ export function openalexCachePlugin(options: OpenAlexCachePluginOptions = {}): P
         return;
       }
 
+      // Add redirect middleware for API requests before OpenAlex cache middleware
+      server.middlewares.use('/api', (req, res, next) => {
+        const url = req.url || '';
+
+        // Skip if already canonical
+        if (url.startsWith('/api/openalex/')) {
+          return next();
+        }
+
+        // Define redirect patterns for various URL formats
+        const patterns = [
+          { regex: /^\/api\/https:\/\/api\.openalex\.org\/(.*)/, replacement: '/api/openalex/$1' },
+          { regex: /^\/api\/https:\/\/openalex\.org\/(.*)/, replacement: '/api/openalex/$1' },
+          { regex: /^\/api\/api\.openalex\.org\/(.*)/, replacement: '/api/openalex/$1' },
+          { regex: /^\/api\/openalex\.org\/(.*)/, replacement: '/api/openalex/$1' },
+          { regex: /^\/api\/([A-Z]\d+.*)/, replacement: '/api/openalex/$1' },
+          { regex: /^\/api\/(works|authors|sources|institutions|topics|publishers|funders|keywords|concepts|autocomplete|text)/, replacement: '/api/openalex/$1' }
+        ];
+
+        // Check each pattern for a match
+        for (const pattern of patterns) {
+          if (pattern.regex.test(url)) {
+            const redirectUrl = url.replace(pattern.regex, pattern.replacement);
+            logVerbose(`Redirecting ${url} -> ${redirectUrl}`);
+
+            // Perform internal redirect
+            req.url = redirectUrl;
+            return next();
+          }
+        }
+
+        // No redirect needed, continue
+        next();
+      });
+
       // Add middleware to intercept OpenAlex API requests
       server.middlewares.use('/api/openalex', async (req, res, next) => {
         try {
