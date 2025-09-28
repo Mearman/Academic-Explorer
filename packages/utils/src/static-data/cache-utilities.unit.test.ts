@@ -12,8 +12,6 @@ import {
   createCacheEntryMetadata,
   shouldUpdateCache,
   type DirectoryIndex,
-  type FileEntry,
-  type DirectoryEntry,
   type CacheEntryMetadata
 } from './cache-utilities.js';
 
