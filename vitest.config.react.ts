@@ -39,6 +39,20 @@ export default defineConfig(
           '**/*.story.*',
         ],
       },
+
+      // React-specific test projects
+      projects: [
+        // Include base projects (unit, integration)
+        ...((baseVitestConfig.test as any)?.projects || []),
+        // Add React component project
+        {
+          test: {
+            name: 'component',
+            include: ['src/**/*.component.test.{ts,tsx}'],
+            environment: 'jsdom',
+          },
+        },
+      ],
     },
   })
 );

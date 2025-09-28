@@ -82,6 +82,24 @@ export const baseVitestConfig: UserConfig = {
 
     // Retry configuration - less retries in CI to prevent hanging
     retry: process.env.CI ? 0 : 1,
+
+    // Standard test projects for consistent patterns across packages
+    projects: [
+      {
+        test: {
+          name: 'unit',
+          include: ['src/**/*.unit.test.ts'],
+          environment: 'node',
+        },
+      },
+      {
+        test: {
+          name: 'integration',
+          include: ['src/**/*.integration.test.ts'],
+          environment: 'node',
+        },
+      },
+    ],
   },
 };
 
