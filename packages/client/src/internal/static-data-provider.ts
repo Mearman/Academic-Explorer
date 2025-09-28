@@ -443,7 +443,7 @@ class StaticDataProvider {
 			if (tier.set) {
 				try {
 					await tier.set(entityType, id, data);
-				} catch (error) {
+				} catch (error: unknown) {
 					logger.debug('static-cache', 'Failed to promote to higher tier', { tier: tier.constructor.name, error });
 				}
 			}
@@ -458,7 +458,7 @@ class StaticDataProvider {
 				if (await tier.has(entityType, id)) {
 					return true;
 				}
-			} catch (error) {
+			} catch (error: unknown) {
 				logger.debug('static-cache', 'Cache tier has() error', { tier: tier.constructor.name, error });
 			}
 		}
@@ -476,7 +476,7 @@ class StaticDataProvider {
 			try {
 				const stats = await tierInterface.getStats();
 				this.globalStats.tierStats[tier] = stats;
-			} catch (error) {
+			} catch (error: unknown) {
 				logger.debug('static-cache', 'Failed to get tier stats', { tier, error });
 			}
 		}
