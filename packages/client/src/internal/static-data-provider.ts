@@ -171,7 +171,7 @@ class LocalDiskCacheTier implements CacheTierInterface {
 				return { found: false };
 			}
 
-			const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+			const data = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as unknown;
 
 			this.stats.hits++;
 			const loadTime = Date.now() - startTime;
@@ -184,7 +184,7 @@ class LocalDiskCacheTier implements CacheTierInterface {
 				tier: CacheTier.LOCAL_DISK,
 				loadTime
 			};
-		} catch (error) {
+		} catch (error: unknown) {
 			logger.debug('static-cache', 'Local disk cache miss', { entityType, id, error });
 			return { found: false };
 		}
@@ -219,7 +219,7 @@ class LocalDiskCacheTier implements CacheTierInterface {
 
 			// Write data
 			fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-		} catch (error) {
+		} catch (error: unknown) {
 			logger.warn('static-cache', 'Failed to write to local disk cache', { entityType, id, error });
 		}
 	}
