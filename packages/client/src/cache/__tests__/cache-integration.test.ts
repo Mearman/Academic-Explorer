@@ -10,7 +10,7 @@
  * - OpenAlex API (Ultimate fallback)
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi, type MockedFunction } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 // Mock various cache implementations
 const mockMemoryCache = {

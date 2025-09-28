@@ -7,6 +7,7 @@ import type { OpenAlexError, OpenAlexResponse, QueryParams } from "./types";
 import { RETRY_CONFIG, calculateRetryDelay } from "./internal/rate-limit";
 import { validateApiResponse, trustApiContract } from "./internal/type-helpers";
 import { apiInterceptor } from "./interceptors";
+import { logger } from "@academic-explorer/utils";
 
 export interface OpenAlexClientConfig {
   baseUrl?: string;
@@ -310,12 +311,12 @@ export class OpenAlexBaseClient {
 							});
 						} catch (diskError) {
 							// Silently fail disk caching in browser environments
-							console.debug('Disk caching unavailable (browser environment):', diskError);
+							logger.debug("client", "Disk caching unavailable (browser environment)", { error: diskError });
 						}
 					}
 				} catch (interceptError) {
 					// Don't fail the request if interception fails
-					console.debug('Response interception failed:', interceptError);
+					logger.debug("client", "Response interception failed", { error: interceptError });
 				}
 			}
 

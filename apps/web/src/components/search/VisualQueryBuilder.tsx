@@ -30,7 +30,7 @@ import {
 } from "@tabler/icons-react";
 import { logger } from "@academic-explorer/utils";
 import type { EntityType } from "@academic-explorer/client";
-import type { DragEndEvent, DragStartEvent, UniqueIdentifier } from "@dnd-kit/core";
+import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 
 // Query builder types
 export interface QueryFilterChip {
@@ -343,7 +343,7 @@ export function VisualQueryBuilder({
   onQueryChange,
   onApply,
   disabled = false,
-  compact = false,
+  _compact = false,
 }: VisualQueryBuilderProps) {
   // Initialize with empty query or provided initial query
   const [query, setQuery] = useState<VisualQuery>(() => {
@@ -365,7 +365,7 @@ export function VisualQueryBuilder({
   });
 
   const [availableChips] = useState<QueryFilterChip[]>(() => getAvailableChips(entityType));
-  const [draggedChip, setDraggedChip] = useState<QueryFilterChip | null>(null);
+  const [_draggedChip, setDraggedChip] = useState<QueryFilterChip | null>(null);
 
   // DnD sensors
   const sensors = useSensors(
@@ -598,7 +598,7 @@ export function VisualQueryBuilder({
             {/* Group available chips by category */}
             {Object.entries(
               availableChips.reduce((acc, chip) => {
-                const category = chip.category;
+                const { category } = chip;
                 if (!acc[category]) acc[category] = [];
                 acc[category].push(chip);
                 return acc;

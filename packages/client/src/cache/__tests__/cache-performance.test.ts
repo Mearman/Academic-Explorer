@@ -142,7 +142,7 @@ class MockHighPerformanceCache {
 
     try {
       const serializedData = JSON.stringify(data);
-      const size = new Blob([serializedData]).size;
+      const { size } = new Blob([serializedData]);
 
       // Check memory limits
       if (this.getCurrentMemoryUsage() + size > this.config.maxMemoryUsage) {

@@ -7,6 +7,7 @@ const config = [
       'src/**/*.{test,spec}.{ts,tsx}',
       'src/test/**/*.{ts,tsx}',
       'src/build-plugins/**/*',
+      'src/**/*.md', // Exclude markdown files from linting
     ],
   },
   ...reactConfig,
@@ -83,6 +84,19 @@ const config = [
       '@typescript-eslint/no-floating-promises': 'off',
       '@typescript-eslint/no-misused-promises': 'off',
       '@typescript-eslint/restrict-template-expressions': 'off',
+    },
+  },
+  {
+    // Utility scripts that need console output and relaxed rules
+    files: [
+      'src/**/static-data-index-generator.ts',
+      'src/lib/utils/static-data-index-generator.ts',
+    ],
+    rules: {
+      'no-console': 'off', // Utility scripts need console output
+      'no-emoji-plugin/no-emoji': 'off', // Allow emojis in utility scripts
+      '@typescript-eslint/no-explicit-any': 'off', // Utilities often deal with dynamic imports
+      'unused-imports/no-unused-vars': 'off', // Utility scripts may have intentionally unused params
     },
   },
   // Test files are handled by the base configuration with project: false

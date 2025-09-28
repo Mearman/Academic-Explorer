@@ -7,6 +7,7 @@ import React, { useState } from "react";
 import { Container, Title, Space, Group, Button, Code } from "@mantine/core";
 import { VisualQueryBuilder, type VisualQuery } from "./VisualQueryBuilder";
 import type { EntityType } from "@academic-explorer/client";
+import { logger } from "@academic-explorer/utils";
 
 export function VisualQueryBuilderExample() {
   const [entityType, setEntityType] = useState<EntityType>("works");
@@ -20,7 +21,7 @@ export function VisualQueryBuilderExample() {
   const handleQueryApply = (query: VisualQuery) => {
     setAppliedQuery(query);
     // Here you would typically execute the query against the OpenAlex API
-    console.log("Applied query:", query);
+    logger.debug("visual-query-builder", "Applied query", { query });
   };
 
   const switchEntityType = (newType: EntityType) => {

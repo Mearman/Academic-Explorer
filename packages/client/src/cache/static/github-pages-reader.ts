@@ -399,7 +399,7 @@ export class GitHubPagesReader {
     // Check various indicators of production environment
     if (typeof globalThis !== 'undefined' && 'location' in globalThis) {
       // Browser environment
-      const location = (globalThis as any).location;
+      const { location } = globalThis as any;
       const hostname = location?.hostname;
 
       if (hostname) {

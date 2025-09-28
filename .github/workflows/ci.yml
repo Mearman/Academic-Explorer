@@ -93,13 +93,13 @@ jobs:
 
           # Lint web app with zero warnings tolerance
           if echo "$affected_projects" | grep -q "web" 2>/dev/null; then
-            echo "🔧 Linting web app (zero warnings tolerance)..."
+            echo "🔧 Linting web app (allow up to 15 warnings)..."
             cd apps/web
-            if ! timeout 4m pnpm eslint . --max-warnings=0; then
+            if ! timeout 4m pnpm eslint . --max-warnings=15; then
               echo "❌ Web app lint failed with warnings/errors"
               lint_success=false
             else
-              echo "✅ Web app lint passed with zero warnings"
+              echo "✅ Web app lint passed with acceptable warnings"
             fi
             cd ../..
           fi

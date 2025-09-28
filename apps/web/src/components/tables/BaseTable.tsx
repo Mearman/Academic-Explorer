@@ -82,7 +82,7 @@ export function BaseTable<T>({
 	});
 
 	// Get rows for virtualization
-	const rows = table.getRowModel().rows;
+	const { rows } = table.getRowModel();
 
 	// Setup virtualizer
 	const rowVirtualizer = useVirtualizer({
@@ -103,7 +103,7 @@ export function BaseTable<T>({
 				maxHeight,
 			});
 		}
-	}, [shouldVirtualize, rows.length, rowVirtualizer.getVirtualItems().length, estimateSize, maxHeight]);
+	}, [shouldVirtualize, rows.length, rowVirtualizer.getVirtualItems().length, estimateSize, maxHeight, rowVirtualizer]);
 
 	const handleRowClick = (row: T) => {
 		if (onRowClick) {

@@ -14,7 +14,7 @@ import type {
 } from "../types";
 import type { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";
-import { AutocompleteApi } from "../utils/autocomplete";
+import { logger } from "@academic-explorer/utils";
 
 /**
  * Extended filters for specific author query methods
@@ -190,7 +190,7 @@ export class AuthorsApi {
 		} catch (error: unknown) {
 			// Log error but return empty array for graceful degradation
 			const errorMessage = error instanceof Error ? error.message : "Unknown error";
-			console.warn(`[AuthorsApi] Autocomplete failed for query "${query}": ${errorMessage}`);
+			logger.warn("authors-api", `Autocomplete failed for query "${query}": ${errorMessage}`);
 			return [];
 		}
 	}
