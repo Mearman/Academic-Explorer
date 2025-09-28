@@ -8,10 +8,20 @@ const OPENALEX_DOMAIN = 'api.openalex.org';
 
 // Cast self for service worker functionality
 const sw = self as unknown as {
-  addEventListener: (type: string, listener: (event: Event) => void) => void;
+  addEventListener: (type: string, listener: (event: ExtendableEvent | FetchEvent) => void) => void;
   skipWaiting: () => void;
-  clients: { claim: () => void };
+  clients: { claim: () => Promise<void> };
   location: { hostname: string; port: string };
+};
+
+// Service worker event types
+interface ExtendableEvent extends Event {
+  waitUntil: (promise: Promise<unknown>) => void;
+}
+
+interface FetchEvent extends ExtendableEvent {
+  request: Request;
+  respondWith: (response: Promise<Response> | Response) => void;
 };
 
 // Install event - set up the service worker
@@ -23,17 +33,18 @@ sw.addEventListener('install', (_event) => {
 // Activate event - clean up old caches
 sw.addEventListener('activate', (event) => {
   console.log('[OpenAlex SW] Activating service worker');
-  (event as any).waitUntil(sw.clients.claim()); // Take control immediately
+  (event as ExtendableEvent).waitUntil(sw.clients.claim()); // Take control immediately
 });
 
 // Fetch event - intercept network requests
 sw.addEventListener('fetch', (event) => {
-  const { request } = (event as any);
+  const fetchEvent = event as FetchEvent;
+  const { request } = fetchEvent;
   const url = new URL(request.url);
 
   // Only intercept OpenAlex API requests
   if (url.hostname === OPENALEX_DOMAIN) {
-    (event as any).respondWith(handleOpenAlexRequest(request));
+    fetchEvent.respondWith(handleOpenAlexRequest(request));
   }
 });
 
