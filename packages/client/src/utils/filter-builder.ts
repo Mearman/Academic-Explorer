@@ -192,7 +192,7 @@ export class FilterBuilder {
    * ]);
    * ```
    */
-  buildFromConditions(conditions: FilterCondition[]): string {
+  buildFromConditions(_conditions: FilterCondition[]): string {
     // Implementation will be added in separate task
     throw new Error("FilterBuilder.buildFromConditions not yet implemented");
   }
@@ -218,7 +218,7 @@ export class FilterBuilder {
    * }
    * ```
    */
-  validateFilters(filters: Record<string, FilterValue>): FilterValidationResult {
+  validateFilters(_filters: Record<string, FilterValue>): FilterValidationResult {
     // Implementation will be added in separate task
     throw new Error("FilterBuilder.validateFilters not yet implemented");
   }
@@ -232,7 +232,7 @@ export class FilterBuilder {
    * @param expression - The filter expression to validate
    * @returns Validation result with any error details
    */
-  validateExpression(expression: FilterExpression): FilterValidationResult {
+  validateExpression(_expression: FilterExpression): FilterValidationResult {
     // Implementation will be added in separate task
     throw new Error("FilterBuilder.validateExpression not yet implemented");
   }
