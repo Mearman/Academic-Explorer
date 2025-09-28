@@ -366,7 +366,7 @@ export class GitHubPagesReader {
     // Basic validation - could be enhanced based on specific requirements
     try {
       JSON.stringify(data);
-    } catch (_error) {
+    } catch {
       errors.push('Data is not serializable to JSON');
     }
 
