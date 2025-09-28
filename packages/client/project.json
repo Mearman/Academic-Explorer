@@ -47,25 +47,21 @@
     },
     "test": {
       "executor": "nx:run-commands",
+      "dependsOn": ["test:unit", "test:integration"],
       "options": {
-        "command": "vitest run",
+        "command": "echo 'All client tests completed successfully'",
         "cwd": "{projectRoot}"
       },
-      "inputs": [
-        "default",
-        "^production",
-        "{projectRoot}/vitest.config.ts"
-      ],
       "outputs": [
         "{projectRoot}/coverage"
       ],
       "cache": true
     },
     "test:unit": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/vite:test",
       "options": {
-        "command": "vitest run --testNamePattern='.*\\.unit\\.test\\.ts$' --coverage",
-        "cwd": "{projectRoot}"
+        "project": "unit",
+        "coverage": true
       },
       "inputs": [
         "default",
@@ -78,10 +74,9 @@
       "cache": true
     },
     "test:integration": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/vite:test",
       "options": {
-        "command": "vitest run --testNamePattern='.*\\.integration\\.test\\.ts$'",
-        "cwd": "{projectRoot}"
+        "project": "integration"
       },
       "inputs": [
         "default",

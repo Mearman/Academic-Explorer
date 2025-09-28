@@ -7,6 +7,7 @@
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
+      "dependsOn": ["client:build", "utils:build"],
       "outputs": [
         "{options.outputPath}"
       ],
@@ -36,32 +37,32 @@
       }
     },
     "test": {
-      "executor": "@nx/vite:test",
-      "outputs": [
-        "{options.coverage.reportsDirectory}"
-      ],
+      "executor": "nx:run-commands",
+      "dependsOn": ["test:unit", "test:integration"],
       "options": {
-        "passWithNoTests": true,
-        "reportsDirectory": "coverage/apps/cli",
+        "command": "echo 'All CLI tests completed successfully'",
+        "cwd": "{projectRoot}"
+      },
+      "outputs": [
+        "{projectRoot}/coverage"
+      ],
+      "cache": true
+    },
+    "test:unit": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "project": "unit",
         "coverage": {
           "enabled": true,
           "reportsDirectory": "coverage/apps/cli"
         }
-      }
-    },
-    "test:unit": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "vitest run --testNamePattern='.*\\.unit\\.test\\.ts$'",
-        "cwd": "{projectRoot}"
       },
       "cache": true
     },
     "test:integration": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/vite:test",
       "options": {
-        "command": "vitest run --testNamePattern='.*\\.integration\\.test\\.ts$'",
-        "cwd": "{projectRoot}"
+        "project": "integration"
       },
       "cache": true
     },
@@ -76,9 +77,5 @@
         "command": "rm -rf apps/cli/dist"
       }
     }
-  },
-  "implicitDependencies": [
-    "client",
-    "utils"
-  ]
+  }
 }

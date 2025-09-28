@@ -60,11 +60,10 @@
     },
     "test": {
       "executor": "nx:run-commands",
-      "dependsOn": ["^build"],
+      "dependsOn": ["test:unit", "test:component", "test:integration"],
       "options": {
-        "command": "vitest run --project=unit --project=component --coverage",
-        "cwd": "{projectRoot}",
-        "nodeOptions": ["--max-old-space-size=8192"]
+        "command": "echo 'All scoped tests completed successfully'",
+        "cwd": "{projectRoot}"
       },
       "inputs": [
         "default",
@@ -78,12 +77,11 @@
       "cache": true
     },
     "test:unit": {
-      "executor": "nx:run-commands",
-      "dependsOn": ["^build"],
+      "executor": "@nx/vite:test",
       "options": {
-        "command": "vitest run --project=unit --coverage",
-        "cwd": "{projectRoot}",
-        "nodeOptions": ["--max-old-space-size=8192"]
+        "config": "{projectRoot}/vitest.config.ts",
+        "project": "unit",
+        "coverage": true
       },
       "inputs": [
         "default",
@@ -97,21 +95,18 @@
       "cache": true
     },
     "test:component": {
-      "executor": "nx:run-commands",
-      "dependsOn": ["^build"],
+      "executor": "@nx/vite:test",
       "options": {
-        "command": "vitest run --project=component",
-        "cwd": "{projectRoot}"
+        "config": "{projectRoot}/vitest.config.ts",
+        "project": "component"
       },
       "cache": true
     },
     "test:integration": {
-      "executor": "nx:run-commands",
-      "dependsOn": ["^build"],
+      "executor": "@nx/vite:test",
       "options": {
-        "command": "vitest run --project=integration",
-        "cwd": "{projectRoot}",
-        "nodeOptions": ["--max-old-space-size=8192"]
+        "config": "{projectRoot}/vitest.config.ts",
+        "project": "integration"
       },
       "inputs": [
         "default",
@@ -131,9 +126,8 @@
     },
     "test:watch": {
       "executor": "nx:run-commands",
-      "dependsOn": ["^build"],
       "options": {
-        "command": "vitest --watch --project=unit --project=component --coverage",
+        "command": "tsx ../../scripts/with-cleanup.ts vitest --watch --project=unit --project=component --coverage",
         "cwd": "{projectRoot}"
       }
     },
@@ -141,7 +135,7 @@
       "executor": "nx:run-commands",
       "dependsOn": ["build"],
       "options": {
-        "command": "vite preview",
+        "command": "tsx ../../scripts/with-cleanup.ts vite preview",
         "cwd": "{projectRoot}"
       },
       "cache": true
