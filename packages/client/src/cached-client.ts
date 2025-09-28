@@ -75,7 +75,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       keywords: new KeywordsApi(this),
       textAnalysis: new TextAnalysisApi(this),
       concepts: new ConceptsApi(this),
-      getEntity: this.getEntityWithStaticCache.bind(this)
+      getEntity: this.getEntityWithStaticCache.bind(this) as (id: string) => Promise<OpenAlexEntity | null>
     };
   }
 
@@ -124,7 +124,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
           }
 
           return result;
-        } catch (apiError) {
+        } catch (apiError: unknown) {
           logger.warn('client', 'API request failed for entity', { id: cleanId, error: apiError });
           this.requestStats.errors++;
           return null;
@@ -134,7 +134,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       logger.warn('client', 'Could not determine entity type for ID', { id: cleanId });
       return null;
 
-    } catch (error) {
+    } catch (error: unknown) {
       this.requestStats.errors++;
       logger.error('client', 'Failed to get entity', { id: cleanId, error });
       return null;
