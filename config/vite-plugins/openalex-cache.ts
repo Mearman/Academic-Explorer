@@ -7,15 +7,26 @@ import type { Plugin, ResolvedConfig } from "vite";
 import { join } from "path";
 import { existsSync } from "fs";
 import { readFile, writeFile, mkdir } from "fs/promises";
+import { execSync } from "child_process";
 import {
   generateContentHash,
   parseOpenAlexUrl,
   getCacheFilePath,
   sanitizeFilename,
+  sanitizeUrlForCaching,
+  decodeFilename,
+  filenameToQuery,
+  hasCollision,
+  mergeCollision,
+  reconstructPossibleCollisions,
+  migrateToMultiUrl,
+  validateFileEntry,
   type DirectoryIndex,
   type FileEntry,
-  type DirectoryEntry
-} from "../../packages/utils/src/static-data/cache-utilities.js";
+  type DirectoryEntry,
+  type EntityType,
+  type CollisionInfo
+} from "../../packages/utils/src/static-data/cache-utilities.ts";
 
 export interface OpenAlexCachePluginOptions {
   /** Custom static data directory path (relative to project root) */
@@ -24,6 +35,14 @@ export interface OpenAlexCachePluginOptions {
   verbose?: boolean;
   /** Enable request caching (default: true in development) */
   enabled?: boolean;
+  /**
+   * Dry-run mode: Log all intended changes (file writes, index updates) without actually
+   * modifying the filesystem. Useful for testing migration strategies, verifying collision
+   * detection, or previewing the impact of cache regeneration without risking data loss.
+   * When enabled, the plugin simulates all operations and outputs JSON previews of what
+   * would be written to index files.
+   */
+  dryRun?: boolean;
 }
 
 interface CachedResponse {
@@ -45,6 +64,7 @@ export function openalexCachePlugin(options: OpenAlexCachePluginOptions = {}): P
     staticDataPath: "public/data/openalex",
     verbose: false,
     enabled: true,
+    dryRun: false,
     ...options
   };
 
@@ -124,7 +144,8 @@ export function openalexCachePlugin(options: OpenAlexCachePluginOptions = {}): P
     return (
       oldIndex.lastUpdated !== newIndex.lastUpdated ||
       JSON.stringify(oldIndex.files) !== JSON.stringify(newIndex.files) ||
-      JSON.stringify(oldIndex.directories) !== JSON.stringify(newIndex.directories)
+      JSON.stringify(oldIndex.directories) !== JSON.stringify(newIndex.directories) ||
+      JSON.stringify(oldIndex.aggregatedCollisions) !== JSON.stringify(newIndex.aggregatedCollisions)
     );
   };
 
@@ -208,7 +229,7 @@ export function openalexCachePlugin(options: OpenAlexCachePluginOptions = {}): P
   /**
    * Aggregate metadata from child directories
    */
-  const aggregateFromChildren = async (dir: string): Promise<{lastUpdated: string}> => {
+  const aggregateFromChildren = async (dir: string): Promise<{lastUpdated: string, aggregatedCollisions?: {totalMerged: number, lastCollision?: string, totalWithCollisions: number}}> => {
     try {
       const indexPath = join(dir, 'index.json');
       if (!existsSync(indexPath)) {
@@ -219,6 +240,19 @@ export function openalexCachePlugin(options: OpenAlexCachePluginOptions = {}): P
       const index: DirectoryIndex = JSON.parse(indexContent);
 
       let maxLastUpdated = index.lastUpdated || new Date().toISOString();
+
+      let totalMerged = 0;
+      let maxLastMerge: string | undefined;
+      let totalWithCollisions = 0;
+
+      // Aggregate from current index if it has aggregatedCollisions
+      if (index.aggregatedCollisions) {
+        totalMerged += index.aggregatedCollisions.totalMerged;
+        totalWithCollisions += index.aggregatedCollisions.totalWithCollisions;
+        if (index.aggregatedCollisions.lastCollision && (!maxLastMerge || index.aggregatedCollisions.lastCollision > maxLastMerge)) {
+          maxLastMerge = index.aggregatedCollisions.lastCollision;
+        }
+      }
 
       // Aggregate from subdirectories
       if (index.directories) {
@@ -235,6 +269,15 @@ export function openalexCachePlugin(options: OpenAlexCachePluginOptions = {}): P
               if (childIndex.lastUpdated && childIndex.lastUpdated > maxLastUpdated) {
                 maxLastUpdated = childIndex.lastUpdated;
               }
+
+              // Aggregate collisions from child
+              if (childIndex.aggregatedCollisions) {
+                totalMerged += childIndex.aggregatedCollisions.totalMerged;
+                totalWithCollisions += childIndex.aggregatedCollisions.totalWithCollisions;
+                if (childIndex.aggregatedCollisions.lastCollision && (!maxLastMerge || childIndex.aggregatedCollisions.lastCollision > maxLastMerge)) {
+                  maxLastMerge = childIndex.aggregatedCollisions.lastCollision;
+                }
+              }
             } catch (error) {
               console.error(`[openalex-cache] Failed to read child index ${childIndexPath}: ${error}`);
             }
@@ -242,7 +285,9 @@ export function openalexCachePlugin(options: OpenAlexCachePluginOptions = {}): P
         }
       }
 
-      return { lastUpdated: maxLastUpdated };
+      const aggregatedCollisions = totalMerged > 0 ? { totalMerged, lastCollision: maxLastMerge, totalWithCollisions } : undefined;
+
+      return { lastUpdated: maxLastUpdated, aggregatedCollisions };
     } catch (error) {
       console.error(`[openalex-cache] Failed to aggregate from children in ${dir}: ${error}`);
       return { lastUpdated: new Date().toISOString() };
@@ -252,7 +297,9 @@ export function openalexCachePlugin(options: OpenAlexCachePluginOptions = {}): P
   /**
    * Update a single directory index file with aggregation support
    */
-  const updateDirectoryIndexWithAggregation = async (dirPath: string, triggerUrl: string, newFileName?: string, retrieved_at?: string, contentHash?: string, aggregated?: {lastUpdated: string}): Promise<void> => {
+  const updateDirectoryIndexWithAggregation = async (dirPath: string, triggerUrl: string, newFileName?: string, retrieved_at?: string, contentHash?: string, aggregated?: {lastUpdated: string, aggregatedCollisions?: {totalMerged: number, lastCollision?: string, totalWithCollisions: number}}): Promise<void> => {
+    let migratedCount = 0;
+    let collisionsDetected = 0;
     try {
       const indexPath = join(dirPath, 'index.json');
       const { readdirSync, statSync } = await import('fs');
@@ -325,40 +372,150 @@ export function openalexCachePlugin(options: OpenAlexCachePluginOptions = {}): P
           // Use base name without .json extension as the key
           const baseName = item.replace(/\.json$/, '');
 
-          // Create ResponseEntry - we need the URL, but we don't have it here
-          // For now, we'll reconstruct it from the file path or skip if we can't determine the URL
-          // This is a limitation of the current approach where we scan files without knowing their URLs
-          try {
-            // Try to reconstruct URL from file path structure
-            let reconstructedUrl: string = '';
+          let fileEntry: FileEntry;
 
-            // If this is a query file in a queries directory
-            if (dirPath.includes('/queries') && baseName.startsWith('filter=')) {
-              const entityType = dirPath.split('/').slice(-2, -1)[0]; // Get entity type from path
-              const queryParams = baseName; // The filename is the query params
-              reconstructedUrl = `https://api.openalex.org/${entityType}?${queryParams}`;
+          // Check for existing entry to migrate
+          const existingEntry = index.files?.[baseName];
+          if (existingEntry) {
+            if (!('equivalentUrls' in existingEntry)) {
+              fileEntry = migrateToMultiUrl(existingEntry);
+              migratedCount++;
+              logVerbose(`Migrated legacy entry for ${baseName} in ${dirPath}`);
             } else {
-              // This is likely a single entity file
+              fileEntry = { ...existingEntry };
+            }
+          } else {
+            // New entry
+            fileEntry = {
+              url: '',
+              $ref: relativePath,
+              lastRetrieved: file_lastRetrieved,
+              contentHash: file_contentHash || 'unknown'
+            };
+          }
+
+          let primaryUrl = '';
+          try {
+            if (dirPath.includes('/queries')) {
+              // RECONSTRUCTION LOGIC: For query files in /queries/, reconstruct the canonical URL
+              // from the encoded filename. This reverses the normalization process (decodeFilename
+              // + filenameToQuery) to get the original query parameters, then builds the primary
+              // OpenAlex URL. Apply sanitizeUrlForCaching to ensure consistent normalization.
+              // This is crucial for populating FileEntry.url and enabling collision detection
+              // for existing cache files without requiring new requests.
+              const entityTypeStr = dirPath.split('/').slice(-2, -1)[0];
+              const entityType = entityTypeStr as EntityType;
+              // Decode filename to get original query params
+              const decodedQuery = decodeFilename(baseName);
+              const queryParams = filenameToQuery(decodedQuery);
+              const reconstructedUrl = `https://api.openalex.org/${entityTypeStr}${queryParams}`;
+              // Apply normalization to ensure consistency with runtime caching
+              const normalizedPath = sanitizeUrlForCaching(new URL(reconstructedUrl).pathname + new URL(reconstructedUrl).search);
+              primaryUrl = `https://api.openalex.org${normalizedPath}`;
+
+              // Ensure migrated to multi-URL format for collision support
+              fileEntry = migrateToMultiUrl(fileEntry);
+              fileEntry.url = primaryUrl;
+
+              // COLLISION MERGING: Proactively infer and merge possible colliding URLs
+              // using reconstructPossibleCollisions. This populates equivalentUrls with
+              // variations (e.g., with api_key or mailto params) that would normalize to
+              // the same filename, improving cache efficiency and debugging capabilities.
+              // Only merges if hasCollision confirms path equivalence.
+              const possibleUrls = reconstructPossibleCollisions(baseName, entityType);
+              let mergedThisEntry = 0;
+              for (const possibleUrl of possibleUrls) {
+                if (possibleUrl !== primaryUrl && hasCollision(fileEntry, possibleUrl)) {
+                  fileEntry = mergeCollision(fileEntry, possibleUrl);
+                  mergedThisEntry++;
+                }
+              }
+              if (mergedThisEntry > 0) {
+                collisionsDetected++;
+              }
+
+              // Ensure equivalentUrls[0] === url for consistency (primary URL first)
+              fileEntry.equivalentUrls![0] = primaryUrl;
+            } else {
+              // Non-query: single entity or collection (e.g., /authors/A123.json)
+              // Reconstruction is simpler: just prepend entity type and ID to base URL.
+              // Apply normalization for consistency even though no query params expected.
               const pathParts = dirPath.replace(staticDataDir, '').split('/').filter(Boolean);
               if (pathParts.length >= 1) {
                 const entityType = pathParts[0];
-                reconstructedUrl = `https://api.openalex.org/${entityType}/${baseName}`;
+                const reconstructedUrl = `https://api.openalex.org/${entityType}/${baseName}`;
+                // Apply normalization for consistency (will be no-op for paths without query params)
+                const normalizedPath = sanitizeUrlForCaching(new URL(reconstructedUrl).pathname + new URL(reconstructedUrl).search);
+                primaryUrl = `https://api.openalex.org${normalizedPath}`;
+                fileEntry.url = primaryUrl;
+                fileEntry = migrateToMultiUrl(fileEntry);
+                // For non-queries, typically no additional collisions
               }
             }
 
-            if (reconstructedUrl) {
-              const fileEntry: FileEntry = {
-                url: reconstructedUrl,
+            // Validate the reconstructed entry to catch any inconsistencies
+            if (!validateFileEntry(fileEntry)) {
+              logVerbose(`Validation failed for ${baseName} in ${dirPath}, falling back to simple entry`);
+              fileEntry = {
+                url: primaryUrl,
                 $ref: relativePath,
                 lastRetrieved: file_lastRetrieved,
                 contentHash: file_contentHash || 'unknown'
               };
-              index.files[baseName] = fileEntry;
             }
-          } catch {
-            // Skip files where we can't reconstruct the URL
+          } catch (error) {
+            logVerbose(`Reconstruction failed for ${item} in ${dirPath}: ${error}`);
+            // Fallback to simple entry without multi-URL features
+            fileEntry = {
+              url: primaryUrl,
+              $ref: relativePath,
+              lastRetrieved: file_lastRetrieved,
+              contentHash: file_contentHash || 'unknown'
+            };
+          }
+
+          if (fileEntry.url) {
+            index.files![baseName] = fileEntry;
           }
         }
+      }
+
+      // COLLISION MERGING IN AGGREGATION: Compute aggregated collision statistics
+      // from all FileEntries in this directory. Sums mergedCount across entries with
+      // collisions, tracks the latest merge timestamp, and counts files affected.
+      // This provides directory-level insights into cache efficiency (e.g., how many
+      // duplicates were avoided) without scanning individual files at runtime.
+      if (index.files) {
+        let totalMerged = 0;
+        let maxLastMerge: string | undefined;
+        let filesWithCollisions = 0;
+        for (const entry of Object.values(index.files)) {
+          const info = (entry as any).collisionInfo as CollisionInfo | undefined;
+          if (info && info.mergedCount > 0) {
+            totalMerged += info.mergedCount;
+            filesWithCollisions++;
+            if (info.lastMerge && (!maxLastMerge || info.lastMerge > maxLastMerge)) {
+              maxLastMerge = info.lastMerge;
+            }
+          }
+        }
+        index.aggregatedCollisions = totalMerged > 0 ? { totalMerged, lastCollision: maxLastMerge, totalWithCollisions: filesWithCollisions } : undefined;
+      }
+
+      // Merge aggregated collisions from child directories (recursive aggregation).
+      // Combines statistics from subdirectories to provide hierarchical views of
+      // collision patterns across the entire cache structure. Ensures root index
+      // reflects global cache health.
+      if (aggregated?.aggregatedCollisions && index.aggregatedCollisions) {
+        const childTotal = aggregated.aggregatedCollisions.totalMerged;
+        const currentTotal = index.aggregatedCollisions.totalMerged;
+        index.aggregatedCollisions.totalMerged = currentTotal + childTotal;
+        index.aggregatedCollisions.totalWithCollisions += aggregated.aggregatedCollisions.totalWithCollisions;
+        if (aggregated.aggregatedCollisions.lastCollision && (!index.aggregatedCollisions.lastCollision || aggregated.aggregatedCollisions.lastCollision > index.aggregatedCollisions.lastCollision)) {
+          index.aggregatedCollisions.lastCollision = aggregated.aggregatedCollisions.lastCollision;
+        }
+      } else if (aggregated?.aggregatedCollisions) {
+        index.aggregatedCollisions = aggregated.aggregatedCollisions;
       }
 
       // Update timestamp and apply aggregated data
@@ -373,7 +530,11 @@ export function openalexCachePlugin(options: OpenAlexCachePluginOptions = {}): P
         }
       }
 
-      // Check if index has actually changed before writing
+      logVerbose(`Directory ${dirPath}: ${migratedCount} entries migrated, ${collisionsDetected} collisions detected`);
+
+      // Check if index has actually changed before writing (optimization)
+      // Compares key fields (lastUpdated, files, directories, aggregatedCollisions)
+      // to avoid unnecessary file I/O when no structural changes occurred.
       const existingIndexContent = existsSync(indexPath) ?
         await readFile(indexPath, 'utf-8').catch(() => null) : null;
       let existingIndex: DirectoryIndex | null = null;
@@ -391,7 +552,16 @@ export function openalexCachePlugin(options: OpenAlexCachePluginOptions = {}): P
         return;
       }
 
+      // DRY-RUN OPTION: In dry-run mode, log the intended index update without writing.
+      // Outputs the full JSON structure that would be saved, allowing verification of
+      // reconstruction, migration, and aggregation logic before applying changes.
+      // Essential for safe migration testing on existing caches.
       // Save updated index
+      if (opts.dryRun) {
+        logVerbose(`[DRY-RUN] Would update directory index: ${indexPath}`);
+        logVerbose(JSON.stringify(index, null, 2));
+        return;
+      }
       await writeFile(indexPath, JSON.stringify(index, null, 2));
       logVerbose(`Updated directory index: ${dirPath}`);
 
@@ -430,10 +600,11 @@ export function openalexCachePlugin(options: OpenAlexCachePluginOptions = {}): P
         }
       }
 
-      // Reset directories
+      // Reset directories and files
       rootIndex.directories = {};
+      rootIndex.files = {};
 
-      // Scan for entity type directories
+      // Scan for entity type directories and collection files
       if (existsSync(staticDataDir)) {
         const items = readdirSync(staticDataDir);
 
@@ -456,6 +627,40 @@ export function openalexCachePlugin(options: OpenAlexCachePluginOptions = {}): P
                 lastModified: stats.mtime.toISOString()
               };
               rootIndex.directories[item] = directoryEntry;
+            }
+          } else if (item.endsWith('.json')) {
+            // Handle top-level collection files like authors.json, works.json
+            const baseName = item.replace(/\.json$/, '');
+
+            // Only include collection files for known entity types
+            const entityTypes = ['works', 'authors', 'sources', 'institutions', 'topics', 'publishers', 'funders'];
+            if (entityTypes.includes(baseName)) {
+              try {
+                // Read the cached file to get metadata
+                const file_lastRetrieved = stats.mtime.toISOString();
+                let file_contentHash = 'unknown';
+
+                try {
+                  const fileContent = await readFile(itemPath, 'utf-8');
+                  const cacheEntry = JSON.parse(fileContent);
+                  file_contentHash = await generateContentHash(cacheEntry);
+                } catch {
+                  // Skip files that can't be read or parsed
+                }
+
+                // Reconstruct the URL for this collection file
+                const reconstructedUrl = `https://api.openalex.org/${baseName}`;
+
+                const fileEntry: FileEntry = {
+                  url: reconstructedUrl,
+                  $ref: `./${item}`,
+                  lastRetrieved: file_lastRetrieved,
+                  contentHash: file_contentHash
+                };
+                rootIndex.files[baseName] = fileEntry;
+              } catch {
+                // Skip files where we can't process metadata
+              }
             }
           }
         }
@@ -552,11 +757,35 @@ export function openalexCachePlugin(options: OpenAlexCachePluginOptions = {}): P
 
           // Cache miss - fetch from API
           logVerbose(`Cache miss for ${req.url} - fetching from API`);
-          const response = await fetch(fullUrl);
+
+          // Auto-inject git email if mailto placeholder is present
+          let finalUrl = fullUrl;
+          if (fullUrl.includes('mailto=you@example.com')) {
+            try {
+              const gitEmail = execSync('git config user.email', { encoding: 'utf8' }).trim();
+              finalUrl = fullUrl.replace('mailto=you@example.com', `mailto=${gitEmail}`);
+              logVerbose(`Auto-injected git email: ${gitEmail}`);
+            } catch (error) {
+              logVerbose(`Failed to get git email, keeping placeholder: ${error}`);
+            }
+          }
+
+          const response = await fetch(finalUrl);
 
           if (!response.ok) {
             res.statusCode = response.status;
-            res.end(response.statusText);
+            // Try to get the error response body for better debugging
+            try {
+              const errorText = await response.text();
+              if (errorText) {
+                res.setHeader('Content-Type', 'application/json');
+                res.end(errorText);
+              } else {
+                res.end(response.statusText);
+              }
+            } catch {
+              res.end(response.statusText);
+            }
             return;
           }
 
