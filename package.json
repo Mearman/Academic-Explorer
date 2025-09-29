@@ -15,6 +15,7 @@
   "scripts": {
     "dev": "pnpm --filter @academic-explorer/web dev",
     "cli": "tsx apps/cli/src/openalex-cli.ts",
+    "generate:test-urls": "tsx scripts/generate-test-urls.ts",
     "build": "nx run-many -t build",
     "test": "nx run-many -t test",
     "lint": "nx run-many -t lint",

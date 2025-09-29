@@ -197,6 +197,13 @@ export default tseslint.config([
     },
   },
   {
+    // CLI files - allow console for user output
+    files: ["apps/cli/src/**/*.{ts,tsx}"],
+    rules: {
+      "no-console": "off",
+    },
+  },
+  {
     // Logger files should be allowed to use console
     files: [
       "**/logger.{ts,js}",

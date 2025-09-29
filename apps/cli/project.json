@@ -26,14 +26,17 @@
       }
     },
     "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": [
-        "{options.outputFile}"
-      ],
+      "executor": "nx:run-commands",
       "options": {
-        "lintFilePatterns": [
-          "apps/cli/src/**/*.ts"
-        ]
+        "command": "npx eslint src --ext .ts --max-warnings 1000",
+        "cwd": "apps/cli"
+      }
+    },
+    "lint:fix": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx eslint src --ext .ts --fix --max-warnings 1000",
+        "cwd": "apps/cli"
       }
     },
     "test": {
