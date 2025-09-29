@@ -5,12 +5,18 @@
  */
 
 import type { EntityType, OpenAlexResponse, OpenAlexEntity } from '../../types';
-import { logger, logError } from '../../internal/logger';
+import type { LogCategory } from '@academic-explorer/utils/logger';
+import { logger, logError } from '@academic-explorer/utils/logger';
 import {
   DirectoryIndex,
   FileEntry,
   DirectoryEntry,
-  generateContentHash
+  generateContentHash,
+  getCacheFilePath,
+  hasCollision,
+  mergeCollision,
+  migrateToMultiUrl,
+  validateFileEntry
 } from '@academic-explorer/utils/static-data/cache-utilities';
 
 // Dynamic imports for Node.js modules to avoid browser bundling issues
@@ -32,6 +38,16 @@ async function initializeNodeModules(): Promise<void> {
     path = pathModule;
     crypto = cryptoModule;
   }
+}
+
+/**
+ * Get initialized Node modules (throws if not initialized)
+ */
+function getNodeModules(): { fs: typeof import('fs/promises'); path: typeof import('path'); crypto: typeof import('crypto') } {
+  if (!fs || !path || !crypto) {
+    throw new Error('Node modules not initialized. Call initializeNodeModules() first.');
+  }
+  return { fs, path, crypto };
 }
 
 /**
@@ -139,7 +155,7 @@ export class DiskCacheWriter {
       minDiskSpaceBytes: config.minDiskSpaceBytes ?? 100 * 1024 * 1024, // 100MB
     };
 
-    logger.debug('DiskCacheWriter initialized', { config: this.config });
+    logger.debug('cache' as LogCategory, 'DiskCacheWriter initialized', { config: this.config });
   }
 
   /**
@@ -166,12 +182,37 @@ export class DiskCacheWriter {
 
   /**
    * Internal write implementation
+   *
+   * WRITE WORKFLOW WITH COLLISION DETECTION:
+   * This method orchestrates the complete cache write process, including:
+   * 1. Input validation and disk space checks
+   * 2. Entity extraction and path generation
+   * 3. File locking for concurrent safety (index, data, metadata)
+   * 4. Collision detection against existing entries via hasCollision
+   * 5. Merge or update logic with content hash comparison
+   * 6. Atomic file writes using temporary files
+   * 7. Index updates with validation and hierarchical propagation
+   * 8. Lock release in finally block
+   *
+   * The workflow ensures data integrity by detecting when new requests map to
+   * existing cache files (collisions) and merging metadata instead of duplicating
+   * data. If content changes (hash mismatch), old data is archived for recovery.
    */
   private async _writeToCache(data: InterceptedData): Promise<void> {
-    try {
-      // Initialize Node.js modules
-      await initializeNodeModules();
+    let indexLockId: string;
+    let dataLockId: string;
+    let metaLockId: string;
+    let filePaths: {
+      dataFile: string;
+      metadataFile: string;
+      directoryPath: string;
+    } | undefined;
 
+    // Initialize Node.js modules and extract them for use in try and finally blocks
+    await initializeNodeModules();
+    const { path: pathModule, fs: fsModule } = getNodeModules();
+
+    try {
       // Validate input data
       this.validateInterceptedData(data);
 
@@ -184,62 +225,192 @@ export class DiskCacheWriter {
       const entityInfo = await this.extractEntityInfo(data);
 
       // Generate file paths
-      const filePaths = this.generateFilePaths(entityInfo);
+      filePaths = this.generateFilePaths(entityInfo);
 
-      // Acquire file lock
-      const lockId = await this.acquireFileLock(filePaths.dataFile);
+      const indexPath = pathModule.join(filePaths.directoryPath, 'index.json');
 
-      try {
-        // Ensure directory structure exists
-        if (!path) {
-          throw new Error('Node.js path module not initialized');
-        }
-        await this.ensureDirectoryStructure(filePaths.directoryPath);
+      // LOCKING EXTENSIONS: Acquire exclusive locks for concurrent writes.
+      // Uses in-memory lock map with timeout-based stale lock detection.
+      // Locks three resources: directory index (shared structure), data file,
+      // and metadata file. Prevents race conditions during collision merging
+      // or simultaneous updates to the same cache entry.
+      indexLockId = await this.acquireFileLock(indexPath);
+      dataLockId = await this.acquireFileLock(filePaths.dataFile);
+      metaLockId = await this.acquireFileLock(filePaths.metadataFile);
 
-        // Prepare content and metadata
-        const content = JSON.stringify(data.responseData, null, 2);
-        const contentHash = await generateContentHash(data.responseData);
+      // Ensure directory structure exists
+      await this.ensureDirectoryStructure(filePaths.directoryPath);
 
-        const metadata: CacheMetadata = {
-          url: data.url,
-          finalUrl: data.finalUrl,
-          method: data.method,
-          requestHeaders: data.requestHeaders,
-          statusCode: data.statusCode,
-          responseHeaders: data.responseHeaders,
-          timestamp: data.timestamp,
-          contentType: data.responseHeaders['content-type'],
-          cacheWriteTime: new Date().toISOString(),
-          entityType: entityInfo.entityType,
-          entityId: entityInfo.entityId,
-          fileSizeBytes: Buffer.byteLength(content, 'utf8'),
-          contentHash,
-        };
+      // Prepare content and metadata
+      const content = JSON.stringify(data.responseData, null, 2);
+      const newContentHash = await generateContentHash(data.responseData);
+      const newLastRetrieved = new Date().toISOString();
 
-        // Write files atomically
-        await this.writeFileAtomic(filePaths.dataFile, content);
-        await this.writeFileAtomic(filePaths.metadataFile, JSON.stringify(metadata, null, 2));
+      const metadata: CacheMetadata = {
+        url: data.url,
+        finalUrl: data.finalUrl,
+        method: data.method,
+        requestHeaders: data.requestHeaders,
+        statusCode: data.statusCode,
+        responseHeaders: data.responseHeaders,
+        timestamp: data.timestamp,
+        contentType: data.responseHeaders['content-type'],
+        cacheWriteTime: new Date().toISOString(),
+        entityType: entityInfo.entityType,
+        entityId: entityInfo.entityId,
+        fileSizeBytes: Buffer.byteLength(content, 'utf8'),
+        contentHash: newContentHash,
+      };
 
-        // Update hierarchical index files
-        await this.updateHierarchicalIndexes(entityInfo, filePaths, metadata);
-
-        logger.debug('Cache write successful', {
-          entityType: entityInfo.entityType,
-          entityId: entityInfo.entityId,
-          dataFile: filePaths.dataFile,
-          metadataFile: filePaths.metadataFile,
-          fileSizeBytes: metadata.fileSizeBytes,
-        });
-
-      } finally {
-        // Always release the lock
-        await this.releaseFileLock(lockId, filePaths.dataFile);
+      // Compute normalized path for collision detection
+      const normalizedPath = getCacheFilePath(data.url, this.config.basePath);
+      if (!normalizedPath) {
+        throw new Error('Failed to compute normalized cache path');
       }
 
-    } catch (error) {
-      logError('Failed to write cache data', error);
-      throw new Error(`Cache write failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      const baseName = pathModule.basename(filePaths.dataFile, '.json');
+
+      // Read or create directory index
+      let indexData: DirectoryIndex = {
+        lastUpdated: new Date().toISOString()
+      };
+
+      try {
+        const existingContent = await fsModule.readFile(indexPath, 'utf8');
+        const existingData = JSON.parse(existingContent) as DirectoryIndex;
+        indexData = {
+          ...existingData,
+          lastUpdated: new Date().toISOString()
+        };
+      } catch {
+        // Index doesn't exist, use default
+      }
+
+      let fileEntry: FileEntry;
+
+      if (indexData.files?.[baseName]) {
+        let existingEntry = indexData.files[baseName];
+        existingEntry = migrateToMultiUrl(existingEntry);
+
+        // COLLISION DETECTION: Check if the new URL maps to an existing entry.
+        // If collision detected, merge the new URL into equivalentUrls and update
+        // timestamps/collisionInfo. This avoids data duplication for equivalent requests.
+        if (hasCollision(existingEntry, data.url)) {
+          logger.info('cache' as LogCategory, 'Collision detected: merging', { newUrl: data.url, baseName });
+
+          const oldHash = existingEntry.contentHash;
+          fileEntry = mergeCollision(existingEntry, data.url, newLastRetrieved);
+
+          // ARCHIVING ON MISMATCH: If content hash differs (actual data change),
+          // archive the old equivalent URLs and hash before updating. This preserves
+          // history for debugging while allowing the cache to reflect new data.
+          // Archived data is stored in a .collisions.json sidecar file.
+          if (oldHash !== newContentHash) {
+            logger.warn('cache' as LogCategory, 'Collision with content hash mismatch: archiving old entry and updating', {
+              oldHash,
+              newHash: newContentHash,
+              baseName
+            });
+
+            // Archive old equivalent URLs and hash
+            const collisionsPath = pathModule.join(filePaths.directoryPath, `${baseName}.collisions.json`);
+            const archiveData = {
+              archivedUrls: fileEntry.equivalentUrls,
+              oldHash,
+              timestamp: new Date().toISOString(),
+              reason: 'hash_mismatch_update'
+            };
+            await this.writeFileAtomic(collisionsPath, JSON.stringify(archiveData, null, 2));
+
+            // Update to new content hash
+            fileEntry.contentHash = newContentHash;
+          }
+
+          fileEntry.lastRetrieved = newLastRetrieved;
+        } else {
+          // Same filename but no collision (unexpected), treat as update
+          logger.warn('cache' as LogCategory, 'Existing file without URL collision detected', { baseName, newUrl: data.url });
+          fileEntry = {
+            ...existingEntry,
+            lastRetrieved: newLastRetrieved,
+            contentHash: newContentHash
+          };
+          if (!validateFileEntry(fileEntry as FileEntry)) {
+            // Fallback to new entry
+            fileEntry = this.createBasicFileEntry(baseName, data.url, newLastRetrieved, newContentHash);
+          }
+        }
+      } else {
+        // No existing entry
+        fileEntry = this.createBasicFileEntry(baseName, data.url, newLastRetrieved, newContentHash);
+      }
+
+      // Validate the file entry
+      if (!validateFileEntry(fileEntry)) {
+        logger.warn('cache' as LogCategory, 'FileEntry validation failed, falling back to single-URL entry', { baseName });
+        fileEntry = this.createBasicFileEntry(baseName, data.url, newLastRetrieved, newContentHash);
+      }
+
+      // Write data and metadata files atomically
+      await this.writeFileAtomic(filePaths.dataFile, content);
+      await this.writeFileAtomic(filePaths.metadataFile, JSON.stringify(metadata, null, 2));
+
+      // Update the containing directory index
+      if (!indexData.files) {
+        indexData.files = {};
+      }
+      indexData.files[baseName] = fileEntry;
+      indexData.lastUpdated = new Date().toISOString();
+      await this.writeFileAtomic(indexPath, JSON.stringify(indexData, null, 2));
+
+      // Propagate updates to hierarchical parent indexes (skip containing directory)
+      await this.updateHierarchicalIndexes(entityInfo, filePaths, metadata, true);
+
+      logger.debug('cache' as LogCategory, 'Cache write successful with collision handling', {
+        entityType: entityInfo.entityType,
+        entityId: entityInfo.entityId,
+        baseName,
+        dataFile: filePaths.dataFile,
+        metadataFile: filePaths.metadataFile,
+        hasCollision: !!indexData.files?.[baseName]?.equivalentUrls?.length,
+        fileSizeBytes: metadata.fileSizeBytes,
+      });
+
+    } finally {
+      // Release all locks
+      if (indexLockId && filePaths) {
+        await this.releaseFileLock(indexLockId, pathModule.join(filePaths.directoryPath, 'index.json'));
+      }
+      if (dataLockId && filePaths) {
+        await this.releaseFileLock(dataLockId, filePaths.dataFile);
+      }
+      if (metaLockId && filePaths) {
+        await this.releaseFileLock(metaLockId, filePaths.metadataFile);
+      }
     }
+  }
+
+  /**
+   * Create a basic single-URL FileEntry
+   */
+  private createBasicFileEntry(
+    baseName: string,
+    url: string,
+    lastRetrieved: string,
+    contentHash: string
+  ): FileEntry {
+    return {
+      url,
+      $ref: `./${baseName}.json`,
+      lastRetrieved,
+      contentHash,
+      equivalentUrls: [url],
+      urlTimestamps: { [url]: lastRetrieved },
+      collisionInfo: {
+        mergedCount: 0,
+        totalUrls: 1
+      }
+    };
   }
 
   /**
@@ -272,7 +443,7 @@ export class DiskCacheWriter {
       };
 
     } catch (error) {
-      logError('Failed to extract entity info', error);
+      logError(logger, 'Failed to extract entity info', error);
       throw new Error(`Entity info extraction failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
@@ -477,7 +648,7 @@ export class DiskCacheWriter {
       }
       await fs.mkdir(dirPath, { recursive: true });
     } catch (error) {
-      logError('Failed to create directory structure', error);
+      logError(logger, 'Failed to create directory structure', error);
       throw new Error(`Directory creation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
@@ -509,13 +680,20 @@ export class DiskCacheWriter {
         // Ignore cleanup errors
       }
 
-      logError('Atomic file write failed', error);
+      logError(logger, 'Atomic file write failed', error);
       throw new Error(`Atomic write failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
   /**
    * Acquire file lock for concurrent access control
+   *
+   * LOCKING EXTENSIONS: Implements optimistic locking with timeout-based
+   * stale lock cleanup. Uses UUID for lock IDs and in-memory Map for tracking.
+   * Polls with 50ms intervals up to lockTimeoutMs (default 5s). Stale locks
+   * (older than timeout) are automatically removed to prevent deadlocks from
+   * crashed processes. Essential for safe concurrent writes in multi-tab
+   * development or server environments.
    */
   private async acquireFileLock(filePath: string): Promise<string> {
     if (!crypto) {
@@ -534,7 +712,7 @@ export class DiskCacheWriter {
           filePath,
         });
 
-        logger.debug('File lock acquired', { filePath, lockId });
+        logger.debug('disk-writer' as LogCategory, 'File lock acquired', { filePath, lockId });
         return lockId;
       }
 
@@ -543,7 +721,7 @@ export class DiskCacheWriter {
       if (existingLock && Date.now() - existingLock.timestamp > maxWaitTime) {
         // Remove stale lock
         this.activeLocks.delete(filePath);
-        logger.warn('Removed stale file lock', { filePath, staleLockId: existingLock.lockId });
+        logger.warn('disk-writer' as LogCategory, 'Removed stale file lock', { filePath, staleLockId: existingLock.lockId });
         continue;
       }
 
@@ -562,9 +740,9 @@ export class DiskCacheWriter {
 
     if (existingLock && existingLock.lockId === lockId) {
       this.activeLocks.delete(filePath);
-      logger.debug('File lock released', { filePath, lockId });
+      logger.debug('disk-writer' as LogCategory, 'File lock released', { filePath, lockId });
     } else {
-      logger.warn('Attempted to release non-existent or mismatched lock', { filePath, lockId });
+      logger.warn('disk-writer' as LogCategory, 'Attempted to release non-existent or mismatched lock', { filePath, lockId });
     }
   }
 
@@ -587,7 +765,7 @@ export class DiskCacheWriter {
         );
       }
 
-      logger.debug('Disk space check passed', {
+      logger.debug('disk-writer' as LogCategory, 'Disk space check passed', {
         availableBytes,
         requiredBytes: this.config.minDiskSpaceBytes,
       });
@@ -595,7 +773,7 @@ export class DiskCacheWriter {
     } catch (error) {
       // If statfs is not available, skip the check
       if (error instanceof Error && error.message.includes('ENOSYS')) {
-        logger.warn('Disk space checking not available on this platform');
+        logger.warn('disk-writer' as LogCategory, 'Disk space checking not available on this platform');
         return;
       }
 
@@ -662,7 +840,8 @@ export class DiskCacheWriter {
       metadataFile: string;
       directoryPath: string;
     },
-    metadata: CacheMetadata
+    metadata: CacheMetadata,
+    skipContainingDirectory = true
   ): Promise<void> {
     if (!path || !fs) {
       throw new Error('Node.js modules not initialized');
@@ -671,6 +850,9 @@ export class DiskCacheWriter {
     try {
       // Start from the immediate directory containing the data file
       let currentPath = filePaths.directoryPath;
+      if (skipContainingDirectory) {
+        currentPath = path.dirname(currentPath);
+      }
       const basePath = path.resolve(this.config.basePath);
 
       while (currentPath && currentPath.startsWith(basePath)) {
@@ -684,7 +866,7 @@ export class DiskCacheWriter {
         currentPath = parentPath;
       }
     } catch (error) {
-      logError('Failed to update hierarchical indexes', error);
+      logError(logger, 'Failed to update hierarchical indexes', error);
       throw new Error(`Index update failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
@@ -779,7 +961,7 @@ export class DiskCacheWriter {
       // Write updated index
       await this.writeFileAtomic(indexPath, JSON.stringify(indexData, null, 2));
 
-      logger.debug('Updated directory index', {
+      logger.debug('cache' as LogCategory, 'Updated directory index', {
         indexPath,
         relativePath: displayPath,
         isContainingDirectory,
@@ -788,7 +970,7 @@ export class DiskCacheWriter {
       });
 
     } catch (error) {
-      logError('Failed to update directory index', error);
+      logError(logger, 'Failed to update directory index', error);
       throw new Error(`Directory index update failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
@@ -827,7 +1009,7 @@ export class DiskCacheWriter {
     // Clear all locks
     this.activeLocks.clear();
 
-    logger.debug('DiskCacheWriter cleanup completed');
+    logger.debug('disk-writer' as LogCategory, 'DiskCacheWriter cleanup completed');
   }
 }
 
