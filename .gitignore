@@ -81,3 +81,7 @@ packages/*/coverage
 **/.vite-temp/
 
 graph.json
+
+# Test cache data files (generated during test execution with unified hex encoding)
+apps/web/public/data/openalex/*
+!apps/web/public/data/openalex/index.json
