@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * OpenAlex CLI Client Class
  * Separated for better testability
@@ -10,6 +11,11 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { logger, logError } from "@academic-explorer/utils/logger";
 import { z } from "zod";
+import {
+  readIndexAsUnified,
+  type UnifiedIndex as UtilsUnifiedIndex,
+  type UnifiedIndexEntry as UtilsUnifiedIndexEntry
+} from "@academic-explorer/utils/static-data/cache-utilities";
 // TODO: Re-enable when openalex-client package build issues are resolved
 // import {
 //   CachedOpenAlexClient,
@@ -39,6 +45,10 @@ const EntityIndexEntrySchema = z.object({
   lastModified: z.string(),
   contentHash: z.string(),
 });
+
+// Type aliases to use the utilities package types
+type UnifiedIndexEntry = UtilsUnifiedIndexEntry;
+type UnifiedIndex = UtilsUnifiedIndex;
 
 // Cache statistics type definition
 interface CacheStats {
@@ -93,7 +103,6 @@ const UnifiedIndexSchema = z.record(z.string(), EntityIndexEntrySchema);
 
 // Type derived from schema
 type IndexEntry = z.infer<typeof EntityIndexEntrySchema>;
-type UnifiedIndex = z.infer<typeof UnifiedIndexSchema>;
 
 // Flexible query definition that can be partial and auto-populated
 interface QueryDefinition {
@@ -201,7 +210,7 @@ const projectRoot = resolve(__dirname, "../../..");
  */
 function isDevelopmentMode(): boolean {
   // Check NODE_ENV first (most reliable)
-  if (typeof process !== 'undefined' && process.env?.NODE_ENV) {
+  if (typeof process !== 'undefined' && process.env.NODE_ENV) {
     const nodeEnv = process.env.NODE_ENV.toLowerCase();
     if (nodeEnv === 'development' || nodeEnv === 'dev') return true;
     if (nodeEnv === 'production') return false;
@@ -312,17 +321,17 @@ export class OpenAlexCLI {
 
       const validatedResult = OpenAlexAPIResponseSchema.safeParse(apiResult);
       if (validatedResult.success && validatedResult.data.results.length > 0) {
-        const entity = validatedResult.data.results[0];
-
+        const entity = validatedResult.data.results[0] as { id: string; display_name: string; [key: string]: unknown };
+  
         // Type guard to ensure entity has required properties
         if ('id' in entity && 'display_name' in entity &&
             typeof entity.id === 'string' && typeof entity.display_name === 'string') {
           // Save to cache if enabled
           if (cacheOptions.saveToCache) {
-            await this.saveEntityToCache(entityType, entity as { id: string; display_name: string; [key: string]: unknown });
+            await this.saveEntityToCache(entityType, entity);
           }
-
-          return entity as { id: string; display_name: string; [key: string]: unknown };
+  
+          return entity;
         }
       }
     } catch (error) {
@@ -589,6 +598,7 @@ export class OpenAlexCLI {
 
   /**
    * Load unified index for entity type
+   * Automatically handles both DirectoryIndex and UnifiedIndex formats
    */
   async loadUnifiedIndex(entityType: StaticEntityType): Promise<UnifiedIndex | null> {
     try {
@@ -596,13 +606,19 @@ export class OpenAlexCLI {
       const indexContent = await readFile(indexPath, "utf-8");
       const parsed: unknown = JSON.parse(indexContent);
 
-      // Validate using Zod schema
+      // Use the adapter function to handle both formats
+      const unified = readIndexAsUnified(parsed);
+      if (unified) {
+        return unified;
+      }
+
+      // Fallback: try direct Zod validation for backwards compatibility
       const validationResult = UnifiedIndexSchema.safeParse(parsed);
       if (validationResult.success) {
         return validationResult.data;
       }
 
-      logger.error("general", `Invalid unified index format for ${entityType}`, {
+      logger.error("general", `Invalid index format for ${entityType}`, {
         error: validationResult.error.issues,
       });
       return null;
@@ -647,39 +663,40 @@ export class OpenAlexCLI {
       // Load index first to find the actual file path
       const indexPath = join(this.dataPath, entityType, "index.json");
       const indexContent = await readFile(indexPath, "utf-8");
-      const index: unknown = JSON.parse(indexContent);
+      const parsedIndex: unknown = JSON.parse(indexContent);
+
+      // Use adapter to convert any format to UnifiedIndex
+      const unifiedIndex = readIndexAsUnified(parsedIndex);
+      if (!unifiedIndex) {
+        logger.error("general", `Failed to read index for ${entityType}`, { entityId });
+        return null;
+      }
 
       // Find the entity entry in the index
       let entityEntry: { $ref: string; lastModified: string; contentHash: string } | null = null;
       const canonicalUrl = generateCanonicalEntityUrl(entityType, entityId);
 
-      // Validate the index structure first
-      const indexValidation = UnifiedIndexSchema.safeParse(index);
-      if (indexValidation.success) {
-        const validatedIndex = indexValidation.data;
-
-        // Check if the canonical URL exists directly in the index
-        if (canonicalUrl in validatedIndex) {
-          const validationResult = EntityIndexEntrySchema.safeParse(validatedIndex[canonicalUrl]);
-          if (validationResult.success && validationResult.data.$ref &&
-              validationResult.data.lastModified && validationResult.data.contentHash) {
-            entityEntry = validationResult.data as { $ref: string; lastModified: string; contentHash: string };
-          }
-        } else {
-          // Search for entity ID in all keys (may be in different URL formats)
-          for (const key in validatedIndex) {
-            if (Object.prototype.hasOwnProperty.call(validatedIndex, key)) {
-              const data = validatedIndex[key];
-              // Extract entity ID from the key and compare
-              const match = key.match(/[WASITCPFKG]\d{8,10}/);
-              if (match && match[0] === entityId) {
-                // Validate data structure with Zod
-                const validationResult = EntityIndexEntrySchema.safeParse(data);
-                if (validationResult.success && validationResult.data.$ref &&
-                    validationResult.data.lastModified && validationResult.data.contentHash) {
-                  entityEntry = validationResult.data as { $ref: string; lastModified: string; contentHash: string };
-                  break;
-                }
+      // Check if the canonical URL exists directly in the index
+      if (canonicalUrl in unifiedIndex) {
+        const validationResult = EntityIndexEntrySchema.safeParse(unifiedIndex[canonicalUrl]);
+        if (validationResult.success && validationResult.data.$ref &&
+            validationResult.data.lastModified && validationResult.data.contentHash) {
+          entityEntry = validationResult.data as { $ref: string; lastModified: string; contentHash: string };
+        }
+      } else {
+        // Search for entity ID in all keys (may be in different URL formats)
+        for (const key in unifiedIndex) {
+          if (Object.prototype.hasOwnProperty.call(unifiedIndex, key)) {
+            const data = unifiedIndex[key];
+            // Extract entity ID from the key and compare
+            const match = key.match(/[WASITCPFKG]\d{8,10}/);
+            if (match && match[0] === entityId) {
+              // Validate data structure with Zod
+              const validationResult = EntityIndexEntrySchema.safeParse(data);
+              if (validationResult.success && validationResult.data.$ref &&
+                  validationResult.data.lastModified && validationResult.data.contentHash) {
+                entityEntry = validationResult.data as { $ref: string; lastModified: string; contentHash: string };
+                break;
               }
             }
           }
@@ -1472,6 +1489,7 @@ export class OpenAlexCLI {
     return result;
   }
 }
+/* eslint-enable no-console */
 
 // Export types for testing
 export type { UnifiedIndex, IndexEntry, QueryOptions, CacheOptions };

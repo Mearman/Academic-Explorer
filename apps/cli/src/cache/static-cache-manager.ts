@@ -200,7 +200,7 @@ export class StaticCacheManager {
 
       // Validate index content
       const indexContent = await readFile(indexPath, "utf-8");
-      const index = JSON.parse(indexContent);
+      const index: Record<string, unknown> = JSON.parse(indexContent);
       const validation = UnifiedIndexSchema.safeParse(index);
 
       if (!validation.success) {

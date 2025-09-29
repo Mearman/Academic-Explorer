@@ -12,6 +12,8 @@ import type { EntityType } from "@academic-explorer/client";
 import { detectEntityType } from "./entity-detection.js";
 import { z } from "zod";
 import { StaticCacheManager } from "./cache/static-cache-manager.js";
+import { fileURLToPath } from "url";
+import { dirname, resolve, join } from "path";
 
 // Zod schemas for CLI validation
 const StaticEntityTypeSchema = z.enum(["authors", "works", "institutions", "topics", "publishers", "funders"]);
@@ -135,7 +137,17 @@ function toStaticEntityType(entityType: EntityType): StaticEntityType {
 // CLI Commands
 const program = new Command();
 const cli = OpenAlexCLI.getInstance();
-const staticCacheManager = new StaticCacheManager();
+
+// Always use the correct development path for the web app
+const currentFileUrl = import.meta.url;
+const currentFilePath = fileURLToPath(currentFileUrl);
+const projectRoot = resolve(dirname(currentFilePath), "../../..");
+const webAppCachePath = join(projectRoot, "apps", "web", "public", "data", "openalex");
+
+const staticCacheManager = new StaticCacheManager({
+  mode: 'development',
+  basePath: webAppCachePath
+});
 
 program
   .name("openalex-cli")
