@@ -1,14 +1,77 @@
 {
-  "lastUpdated": "2025-09-28T12:56:13.430Z",
-  "files": {},
+  "lastUpdated": "2025-09-29T22:55:11.524Z",
+  "files": {
+    "authors": {
+      "url": "https://api.openalex.org/authors",
+      "$ref": "./authors.json",
+      "lastRetrieved": "2025-09-29T22:54:39.755Z",
+      "contentHash": "3db646598be403a1"
+    },
+    "funders": {
+      "url": "https://api.openalex.org/funders",
+      "$ref": "./funders.json",
+      "lastRetrieved": "2025-09-29T22:54:42.790Z",
+      "contentHash": "3db646598be403a1"
+    },
+    "institutions": {
+      "url": "https://api.openalex.org/institutions",
+      "$ref": "./institutions.json",
+      "lastRetrieved": "2025-09-29T22:54:44.492Z",
+      "contentHash": "3db646598be403a1"
+    },
+    "publishers": {
+      "url": "https://api.openalex.org/publishers",
+      "$ref": "./publishers.json",
+      "lastRetrieved": "2025-09-29T22:54:47.384Z",
+      "contentHash": "3db646598be403a1"
+    },
+    "sources": {
+      "url": "https://api.openalex.org/sources",
+      "$ref": "./sources.json",
+      "lastRetrieved": "2025-09-29T22:54:48.842Z",
+      "contentHash": "3db646598be403a1"
+    },
+    "topics": {
+      "url": "https://api.openalex.org/topics",
+      "$ref": "./topics.json",
+      "lastRetrieved": "2025-09-29T22:54:51.398Z",
+      "contentHash": "3db646598be403a1"
+    },
+    "works": {
+      "url": "https://api.openalex.org/works",
+      "$ref": "./works.json",
+      "lastRetrieved": "2025-09-29T22:54:52.774Z",
+      "contentHash": "3db646598be403a1"
+    }
+  },
   "directories": {
     "authors": {
       "$ref": "./authors",
-      "lastModified": "2025-09-28T12:56:10.833Z"
+      "lastModified": "2025-09-29T22:54:37.977Z"
+    },
+    "funders": {
+      "$ref": "./funders",
+      "lastModified": "2025-09-29T22:54:38.101Z"
+    },
+    "institutions": {
+      "$ref": "./institutions",
+      "lastModified": "2025-09-29T22:54:38.329Z"
+    },
+    "publishers": {
+      "$ref": "./publishers",
+      "lastModified": "2025-09-29T22:54:38.587Z"
+    },
+    "sources": {
+      "$ref": "./sources",
+      "lastModified": "2025-09-29T22:54:38.822Z"
+    },
+    "topics": {
+      "$ref": "./topics",
+      "lastModified": "2025-09-29T22:54:39.045Z"
     },
     "works": {
       "$ref": "./works",
-      "lastModified": "2025-09-28T12:56:12.578Z"
+      "lastModified": "2025-09-29T22:54:39.501Z"
     }
   }
 }

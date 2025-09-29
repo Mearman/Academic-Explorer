@@ -1,9 +1,27 @@
 {
-  "lastUpdated": "2025-09-28T16:30:53.183Z",
+  "lastUpdated": "2025-09-29T23:11:45.327Z",
+  "files": {
+    "W2168909179": {
+      "$ref": "./W2168909179.json",
+      "contentHash": "428b9d0dfd73bae7",
+      "lastRetrieved": "2025-09-29T22:54:39.387Z",
+      "url": "https://api.openalex.org/works/W2168909179"
+    },
+    "W2741809807": {
+      "$ref": "./W2741809807.json",
+      "contentHash": "7c8353c7205f5fb9",
+      "lastRetrieved": "2025-09-29T22:54:39.502Z",
+      "url": "https://api.openalex.org/works/W2741809807"
+    }
+  },
   "directories": {
-    "queries": {
-      "$ref": "./queries",
-      "lastModified": "2025-09-28T16:30:53.182Z"
+    "W2138270253": {
+      "$ref": "./W2138270253",
+      "lastModified": "2025-09-29T23:11:45.323Z"
+    },
+    "W2741809807": {
+      "$ref": "./W2741809807",
+      "lastModified": "2025-09-29T23:11:45.326Z"
     }
   }
 }
