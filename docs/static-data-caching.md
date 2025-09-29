@@ -5,6 +5,8 @@ The Academic Explorer implements a sophisticated multi-tier caching system desig
 ## Table of Contents
 
 - [Architecture Overview](#architecture-overview)
+  - [Multi-Tier Cache System](#multi-tier-cache-system)
+  - [URL Collision Handling](#url-collision-handling)
 - [Development vs Production Behavior](#development-vs-production-behavior)
 - [Setup and Deployment](#setup-and-deployment)
 - [Configuration Options](#configuration-options)
@@ -68,6 +70,44 @@ The caching system implements a **Synthetic Response Cache** with five distinct 
 - **Limitations**: Rate limiting, network dependency
 - **Use Case**: Fallback for uncached entities, real-time updates
 
+### URL Collision Handling
+
+The static data cache now supports multi-URL collision handling to optimize storage and improve debugging. Multiple equivalent URLs (differing only in sensitive or normalized parameters) map to the same cache file, preventing data duplication while preserving request history.
+
+#### Multi-URL Support
+- **FileEntry Structure**: Enhanced with `equivalentUrls` (array of colliding URLs, primary first), `urlTimestamps` (when each URL was associated), and `collisionInfo` (merge statistics: `mergedCount`, `firstCollision`, `lastMerge`, `totalUrls`).
+- **Backward Compatibility**: Legacy single-URL entries are automatically migrated to multi-URL format during access, initializing fields with the original URL. No data loss occurs.
+- **Index Structure Updates**: Directory indexes now include `aggregatedCollisions` (directory-level stats: total merges, files with collisions, latest collision timestamp) for hierarchical insights.
+
+#### Collision Detection and Merging
+Collisions are detected when URLs normalize to the same filename (via `getCacheFilePath`). Common scenarios:
+- **Sensitive Parameters**: `?api_key=secret1` and `?api_key=secret2` both strip to `?` (base collection).
+- **Email Parameters**: `?mailto=user1@example.com` and `?mailto=user2@example.com` normalize identically.
+- **Pagination Normalization**: All `cursor=ABC123` values become `cursor=*`.
+
+**Example**: Two requests to works with different API keys:
+```
+Request 1: https://api.openalex.org/works?filter=doi:10.1234/abc&api_key=secret1
+Request 2: https://api.openalex.org/works?filter=doi:10.1234/abc&api_key=secret2
+```
+Both normalize to `public/data/openalex/works/queries/filter=doi_10.1234_abc.json`. The second request merges via `mergeCollision`, adding to `equivalentUrls` and updating `collisionInfo.mergedCount`.
+
+#### Migration Strategy
+- **Automatic Migration**: Use `migrateToMultiUrl` on legacy entries (those without `equivalentUrls` field) during index rebuilds (e.g., via Vite plugin or CLI).
+- **Detection**: Legacy entries are identified by the absence of the `equivalentUrls` field, triggering inline migration to the multi-URL format.
+- **Dry-Run Testing**: Enable `dryRun: true` in the OpenAlex cache plugin to preview migrations without writing files. Logs show reconstructed URLs and merged entries.
+- **Validation**: `validateFileEntry` ensures consistency post-migration (e.g., all URLs map to same path, timestamps complete).
+
+#### Impact on Invalidation and Debugging
+- **Invalidation**: Invalidate by primary URL or pattern matching `equivalentUrls`. Use `cache-invalidator.ts` for entity-specific purges.
+- **Debugging**: Query `equivalentUrls` via cache browser tools or CLI (`pnpm cli cache:inspect works/queries/filter=doi_10.1234_abc.json`). `collisionInfo` reveals merge history.
+- **Performance**: Minimal overhead—collision data stored only in indexes (not data files). Merges happen O(1) via hash checks.
+
+#### Usage Notes
+- **Plugin Option**: `dryRun` for safe testing: `{ dryRun: true }` in Vite config.
+- **Testing**: Run collision tests with `pnpm vitest --project=unit` (focus on `cache-utilities.test.ts`) or integration tests simulating multi-key requests.
+- **Querying Equivalents**: For debugging, use `reconstructPossibleCollisions` to generate variations from filenames.
+
 ### Cache Flow Diagram
 
 ```mermaid
@@ -81,7 +121,7 @@ graph TD
     E -->|Miss| G{Static Data?}
     G -->|Hit| H[Update IndexedDB] --> F
     G -->|Miss| I[OpenAlex API]
-    I --> J[Update All Tiers] --> Z
+    I --> J[Update All Tiers<br/>(Handle Collisions)] --> Z
 
     style A fill:#e1f5fe
     style Z fill:#c8e6c9
