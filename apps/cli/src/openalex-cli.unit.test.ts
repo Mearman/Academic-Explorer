@@ -112,19 +112,20 @@ vi.mock("fs/promises", async (importOriginal) => {
 // Mock fetch globally
 global.fetch = vi.fn();
 
-// Mock logger
-vi.mock("../lib/logger.js", () => ({
+// Mock logger - must match the import path used below
+vi.mock("@academic-explorer/utils/logger", () => ({
   logger: {
     debug: vi.fn(),
     warn: vi.fn(),
     error: vi.fn(),
   },
+  logError: vi.fn(),
 }));
 
 // Import after mocks are set up
 import { OpenAlexCLI } from "./openalex-cli-class.js";
 import { readFile, access, writeFile, mkdir } from "fs/promises";
-import { logger } from "@academic-explorer/utils/logger";
+import { logger, logError } from "@academic-explorer/utils/logger";
 
 describe("OpenAlexCLI", () => {
   let cli: any;
@@ -312,10 +313,11 @@ describe("OpenAlexCLI", () => {
       const result = await cli.loadIndex("nonexistent-entity-type");
 
       expect(result).toBeNull();
-      expect(logger.error).toHaveBeenCalledWith(
-        "general",
+      expect(logError).toHaveBeenCalledWith(
+        logger,
         "Failed to load unified index for nonexistent-entity-type",
-        expect.objectContaining({ error: expect.any(Error) })
+        expect.any(Error),
+        "general"
       );
     });
   });
@@ -345,8 +347,10 @@ describe("OpenAlexCLI", () => {
     it("should log error and return null for other file read errors", async () => {
       const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
-      // Use a non-existent entity type to trigger filesystem error
-      const result = await cli.loadEntity("nonexistent-type", "A5017898742");
+      // Mock readFile to throw a non-ENOENT error (e.g., permission error)
+      vi.mocked(readFile).mockRejectedValueOnce(new Error("EACCES: permission denied"));
+
+      const result = await cli.loadEntity("authors", "A5017898742");
 
       expect(result).toBeNull();
       expect(consoleSpy).toHaveBeenCalledWith(

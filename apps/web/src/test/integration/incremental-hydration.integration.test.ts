@@ -81,7 +81,10 @@ describe("Entity Data Storage Integration", () => {
 				await graphDataService.loadEntityGraph("https://openalex.org/W123456789");
 
 				// Verify the mock was called
-				expect(mockGetEntity).toHaveBeenCalledWith("https://openalex.org/W123456789");
+				expect(mockGetEntity).toHaveBeenCalledWith(
+					"https://openalex.org/W123456789",
+					expect.any(Function)
+				);
 
 				// Give a small delay for potential async state updates to complete
 				await new Promise(resolve => setTimeout(resolve, 10));
@@ -159,7 +162,10 @@ describe("Entity Data Storage Integration", () => {
 				await graphDataService.loadEntityGraph("https://openalex.org/W123456789");
 
 				// Verify the mock was called
-				expect(mockGetEntity).toHaveBeenCalledWith("https://openalex.org/W123456789");
+				expect(mockGetEntity).toHaveBeenCalledWith(
+					"https://openalex.org/W123456789",
+					expect.any(Function)
+				);
 
 				// Give a small delay for potential async state updates to complete
 				await new Promise(resolve => setTimeout(resolve, 10));
