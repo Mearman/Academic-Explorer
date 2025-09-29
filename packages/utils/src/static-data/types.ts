@@ -3,6 +3,8 @@
  * Provides type-safe interfaces for entity metadata, index structures, and validation
  */
 
+import type { FileEntry } from './cache-utilities.js';
+
 /**
  * OpenAlex entity types supported by the static data system
  */
@@ -297,19 +299,6 @@ export interface IndexGenerationResult {
   };
 }
 
-/**
- * File reference with metadata for path-based indexes
- */
-export interface PathFileReference {
-  /** JSON reference to the data file */
-  $ref: string;
-  /** File modification timestamp */
-  lastModified: string;
-  /** Content hash for integrity verification */
-  contentHash?: string;
-  /** Original API request URL */
-  url?: string;
-}
 
 /**
  * Directory reference with metadata for hierarchical indexes
@@ -331,7 +320,7 @@ export interface PathEntityTypeIndex {
   /** Path this index represents (e.g., "/authors") */
   path: string;
   /** Map of entity IDs to file references */
-  responses: Record<string, PathFileReference>;
+  responses: Record<string, FileEntry>;
 }
 
 /**
@@ -344,7 +333,7 @@ export interface PathDirectoryIndex {
   /** Path this index represents (e.g., "/authors/A123/queries") */
   path: string;
   /** Map of file names to file references */
-  files: Record<string, PathFileReference>;
+  files: Record<string, FileEntry>;
   /** Map of directory names to directory references */
   directories: Record<string, PathDirectoryReference>;
 }
