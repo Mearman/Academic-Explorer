@@ -15,6 +15,7 @@
 // Dynamic imports for Node.js modules to avoid browser bundling issues
 import { logger } from '../logger.js';
 import { isRecord } from '../validation.js';
+import { FileEntry } from './cache-utilities.js';
 import type {
   EntityType,
   EntityFileMetadata,
@@ -28,7 +29,6 @@ import type {
   IndexValidationWarning,
   IndexRepairAction,
   PathDirectoryIndex,
-  PathFileReference,
 } from './types.js';
 import {
   DEFAULT_INDEX_CONFIG
@@ -1051,12 +1051,14 @@ export class StaticDataIndexGenerator {
     filePath: string,
     fileName: string,
     relativePath: string
-  ): Promise<PathFileReference> {
+  ): Promise<FileEntry> {
     try {
       const stat = await this.fs.stat(filePath);
-      const fileRef: PathFileReference = {
+      const fileRef: FileEntry = {
         $ref: `./${fileName}`,
-        lastModified: new Date(stat.mtime).toISOString(),
+        lastRetrieved: new Date(stat.mtime).toISOString(),
+        url: '', // Will be set below
+        contentHash: '', // Will be set below if enabled
       };
 
       // Add content hash if config allows
@@ -1074,9 +1076,7 @@ export class StaticDataIndexGenerator {
 
       // Add URL for API response files
       const url = this.reconstructApiUrl(relativePath);
-      if (url) {
-        fileRef.url = url;
-      }
+      fileRef.url = url || '';
 
       return fileRef;
     } catch (error) {
