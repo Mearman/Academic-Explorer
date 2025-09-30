@@ -1,3 +1,9 @@
+## 9.0.2 (2025-09-30)
+
+### 🩹 Fixes
+
+- **shared-utils:** handle future dates gracefully in relative time display ([c4ce902e](https://github.com/Mearman/Academic-Explorer/commit/c4ce902e))
+
 ## 9.0.1 (2025-09-30)
 
 ### 🩹 Fixes

@@ -1,6 +1,6 @@
 {
   "name": "@academic-explorer/cli",
-  "version": "9.0.1",
+  "version": "9.0.2",
   "type": "module",
   "description": "Command-line interface for OpenAlex data access",
   "keywords": [

@@ -1,6 +1,6 @@
 {
   "name": "@academic-explorer/utils",
-  "version": "9.0.1",
+  "version": "9.0.2",
   "type": "module",
   "description": "Shared utilities and helpers for Academic Explorer",
   "keywords": [
