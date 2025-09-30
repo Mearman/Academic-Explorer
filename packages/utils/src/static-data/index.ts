@@ -52,7 +52,6 @@ export type {
   IndexGenerationConfig,
   IndexGenerationProgress,
   IndexGenerationResult,
-  PathFileReference,
   PathDirectoryReference,
   PathDirectoryIndex,
   PathEntityTypeIndex,
