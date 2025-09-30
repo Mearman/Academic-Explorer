@@ -198,6 +198,10 @@ export function isFuture(date: Date): boolean {
 
 /**
  * Get relative time string (e.g., "2 hours ago", "in 3 days")
+ *
+ * Note: If the date appears to be significantly in the future (>1 week),
+ * it likely indicates a system clock mismatch and returns "just now" to avoid
+ * confusing displays like "in 1 year" for recent builds.
  */
 export function getRelativeTime(date: Date, baseDate: Date = new Date()): string {
   const diffMs = date.getTime() - baseDate.getTime();
@@ -211,6 +215,12 @@ export function getRelativeTime(date: Date, baseDate: Date = new Date()): string
 
   const isPastDate = diffMs < 0;
   const {abs} = Math;
+
+  // If date is significantly in the future (>1 week), likely a clock mismatch
+  // Return "just now" instead of confusing future dates
+  if (!isPastDate && abs(diffDays) >= 7) {
+    return 'just now';
+  }
 
   if (abs(diffYears) >= 1) {
     const years = abs(diffYears);
