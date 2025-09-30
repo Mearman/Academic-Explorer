@@ -353,7 +353,7 @@
         "fallbackCurrentVersionResolver": "disk"
       },
       "fallbackCurrentVersionResolver": "disk",
-      "preserveLocalDependencyProtocols": false
+      "preserveLocalDependencyProtocols": true
     },
     "changelog": {
       "workspaceChangelog": {
