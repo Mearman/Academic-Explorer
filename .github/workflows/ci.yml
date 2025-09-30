@@ -338,11 +338,14 @@ jobs:
         env:
           NODE_OPTIONS: '--max-old-space-size=8192'
 
-  # Release automation (main branch and tag pushes)
+  # Release automation (main branch only)
   release:
     needs: [ci, workspace-quality]
-    if: (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && github.event_name == 'push' && success()
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && success()
     runs-on: ubuntu-latest
+    outputs:
+      workspace_released: ${{ steps.check-workspace-release.outputs.released }}
+      workspace_version: ${{ steps.check-workspace-release.outputs.version }}
     permissions:
       contents: write
       pull-requests: write
@@ -362,50 +365,66 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Run Nx release
+      - name: Release packages with Nx
         run: |
-          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            echo "🏷️ Tag push detected - updating existing release for ${{ github.ref_name }}"
-            # For tag pushes, regenerate changelog and update existing release
-            pnpm nx release changelog --from=${{ github.ref_name }} --to=${{ github.ref_name }} || {
-              echo "ℹ️ Changelog generation completed"
-            }
-          else
-            echo "🚀 Creating workspace release with GitHub release..."
-            pnpm nx release --skip-publish || {
-              echo "ℹ️ No release needed"
-            }
-          fi
+          echo "📦 Releasing individual packages with independent versioning..."
+          pnpm nx release --skip-publish || {
+            echo "ℹ️ No package releases needed"
+          }
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_OPTIONS: '--max-old-space-size=8192'
 
-      - name: Update GitHub release for tag pushes
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Install semantic-release
         run: |
-          echo "📝 Updating GitHub release for tag ${{ github.ref_name }}"
-          # Extract changelog content for this version
-          CHANGELOG_CONTENT=$(awk '/^## ${{ github.ref_name }}/, /^## [0-9]/ {if ($0 ~ /^## [0-9]/ && $0 !~ /^## ${{ github.ref_name }}/) exit; if ($0 !~ /^## ${{ github.ref_name }}/) print}' CHANGELOG.md)
+          npm install -g \
+            semantic-release \
+            @semantic-release/commit-analyzer \
+            @semantic-release/release-notes-generator \
+            @semantic-release/changelog \
+            @semantic-release/npm \
+            @semantic-release/github
 
-          # Update or create the GitHub release
-          if gh release view ${{ github.ref_name }} >/dev/null 2>&1; then
-            echo "Release exists, updating..."
-            echo "$CHANGELOG_CONTENT" | gh release edit ${{ github.ref_name }} --notes-file -
-          else
-            echo "Release doesn't exist, creating..."
-            echo "$CHANGELOG_CONTENT" | gh release create ${{ github.ref_name }} --title "${{ github.ref_name }}" --notes-file -
-          fi
+      - name: Run semantic-release for workspace
+        id: semantic-release
+        run: |
+          echo "🚀 Creating workspace release with semantic-release..."
+          npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Push release commits and tags
+      - name: Check if workspace release was created
+        id: check-workspace-release
         run: |
-          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            echo "🏷️ Tag push - no additional push needed"
+          # Check if semantic-release created a new workspace tag
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -n "$LATEST_TAG" ] && [[ "$LATEST_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] && git tag --points-at ${{ github.sha }} | grep -q "$LATEST_TAG"; then
+            echo "released=true" >> $GITHUB_OUTPUT
+            echo "version=${LATEST_TAG#v}" >> $GITHUB_OUTPUT
+            echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+            echo "✅ Workspace release created: $LATEST_TAG against commit ${{ github.sha }}"
           else
-            echo "📤 Pushing release commits and tags to repository..."
-            git push origin main --follow-tags
+            echo "released=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ No workspace release created"
           fi
+
+      - name: Update workspace version and create follow-up commit
+        if: steps.check-workspace-release.outputs.released == 'true'
+        run: |
+          echo "📝 Updating package.json version to ${{ steps.check-workspace-release.outputs.version }}"
+
+          # Update root package.json version (semantic-release doesn't do this when npmPublish is false)
+          npm version ${{ steps.check-workspace-release.outputs.version }} --no-git-tag-version
+
+          # Commit the version bump (CHANGELOG.md was already updated by semantic-release)
+          git add package.json CHANGELOG.md
+          git commit -m "chore(release): workspace ${{ steps.check-workspace-release.outputs.version }} [skip ci]
+
+          Automated version bump for workspace release ${{ steps.check-workspace-release.outputs.tag }}"
+
+          # Push the follow-up commit
+          echo "📤 Pushing version bump commit..."
+          git push origin main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

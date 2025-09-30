@@ -341,7 +341,7 @@
   },
   "defaultProject": "web",
   "release": {
-    "projectsRelationship": "fixed",
+    "projectsRelationship": "independent",
     "projects": [
       "packages/*",
       "apps/*",
@@ -356,14 +356,6 @@
       "preserveLocalDependencyProtocols": true
     },
     "changelog": {
-      "workspaceChangelog": {
-        "createRelease": "github",
-        "file": "{workspaceRoot}/CHANGELOG.md",
-        "renderOptions": {
-          "authors": false
-        },
-        "releaseTagPattern": "v{version}"
-      },
       "projectChangelogs": {
         "file": "{projectRoot}/CHANGELOG.md",
         "renderOptions": {
@@ -371,6 +363,7 @@
         }
       }
     },
+    "releaseTagPattern": "{projectName}@{version}",
     "git": {
       "commitMessage": "chore(release): version packages [skip ci]"
     }
