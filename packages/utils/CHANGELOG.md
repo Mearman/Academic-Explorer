@@ -1,3 +1,9 @@
+## 9.0.1 (2025-09-30)
+
+### 🩹 Fixes
+
+- **web,shared-utils:** fix build-time metadata injection ([a4e29ff7](https://github.com/Mearman/Academic-Explorer/commit/a4e29ff7))
+
 # 9.0.0 (2025-09-30)
 
 ### 🚀 Features

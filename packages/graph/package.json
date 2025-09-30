@@ -1,6 +1,6 @@
 {
   "name": "@academic-explorer/graph",
-  "version": "9.0.0",
+  "version": "9.0.1",
   "type": "module",
   "description": "Core graph data structures and types for Academic Explorer",
   "keywords": [
