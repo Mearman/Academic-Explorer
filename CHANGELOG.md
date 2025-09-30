@@ -1,3 +1,22 @@
+## 8.43.4 (2025-09-30)
+
+### 🩹 Fixes
+
+- **versions:** restore independent package versioning from correct baseline
+
+  All package versions have been corrected to reflect their true change history from monorepo creation. Each package (except web) started at 1.0.0 when extracted from the main app, while web inherited its pre-monorepo version of 8.1.0.
+
+  **Corrected Package Versions:**
+  - `@academic-explorer/web`: 8.43.4 (from 8.1.0 baseline)
+  - `@academic-explorer/cli`: 1.3.0 (from 1.0.0 baseline)
+  - `@academic-explorer/client`: 1.28.0 (from 1.0.0 baseline)
+  - `@academic-explorer/graph`: 1.14.0 (from 1.0.0 baseline)
+  - `@academic-explorer/utils`: 2.1.3 (from 1.0.0 baseline, includes breaking change)
+  - `@academic-explorer/simulation`: 1.0.4 (from 1.0.0 baseline)
+  - `@academic-explorer/ui`: 1.3.0 (from 1.0.0 baseline)
+
+  All package changelogs have been rewritten to accurately reflect their independent version history with proper semantic versioning based on conventional commits.
+
 ## 8.2.1 (2025-09-27)
 
 ### 🩹 Fixes

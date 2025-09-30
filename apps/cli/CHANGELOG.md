@@ -1,81 +1,51 @@
-## 9.0.2 (2025-09-30)
+# Changelog
 
-This was a version bump only for cli to align it with other projects, there were no code changes.
-
-## 9.0.1 (2025-09-30)
-
-This was a version bump only for cli to align it with other projects, there were no code changes.
-
-# 9.0.0 (2025-09-30)
+## 1.3.0 (2025-09-30)
 
 ### 🚀 Features
 
-- **cli:** integrate unified index adapters ([65f3913e](https://github.com/Mearman/Academic-Explorer/commit/65f3913e))
-- **cli:** improve cache management and CLI functionality ([2972aa02](https://github.com/Mearman/Academic-Explorer/commit/2972aa02))
-- **config:** implement scoped test dependencies across all projects ([17e80743](https://github.com/Mearman/Academic-Explorer/commit/17e80743))
-- **cli:** integrate static data caching and cache management ([817b3aea](https://github.com/Mearman/Academic-Explorer/commit/817b3aea))
+- feat(cli): integrate unified index adapters ([65f3913e](https://github.com/Mearman/Academic-Explorer/commit/65f3913e))
 
-### 🩹 Fixes
-
-- **client:** update cache implementations for raw api response storage ([c83ae158](https://github.com/Mearman/Academic-Explorer/commit/c83ae158))
-
-## 8.3.1 (2025-09-27)
-
-### 🩹 Fixes
-
-- **cli:** resolve unnecessary conditional ESLint warning ([236e5f69](https://github.com/Mearman/Academic-Explorer/commit/236e5f69))
-- **cli:** resolve ESLint errors and warnings ([3f6c3efe](https://github.com/Mearman/Academic-Explorer/commit/3f6c3efe))
-
-### 🧱 Updated Dependencies
-
-- Updated client to 1.2.1
-
-## 8.3.0 (2025-09-26)
+## 1.2.0 (2025-09-28)
 
 ### 🚀 Features
 
-- ACHIEVE 100% TEST PERFECTION (840/840 ✅) ([2056e999](https://github.com/Mearman/Academic-Explorer/commit/2056e999))
+- feat(cli): improve cache management and CLI functionality ([2972aa02](https://github.com/Mearman/Academic-Explorer/commit/2972aa02))
 
-### 🧱 Updated Dependencies
+## 1.1.3 (2025-09-27)
 
-- Updated client to 1.2.0
-- Updated utils to 8.3.0
+### 🩹 Fixes
 
-### ❤️ Thank You
+- fix(client): update cache implementations for raw api response storage ([c83ae158](https://github.com/Mearman/Academic-Explorer/commit/c83ae158))
 
-- Joseph Mearman
+## 1.1.2 (2025-09-27)
 
-## 8.2.1 (2025-09-26)
+### 🩹 Fixes
 
-### 🧱 Updated Dependencies
+- fix(cli): resolve unnecessary conditional ESLint warning ([236e5f69](https://github.com/Mearman/Academic-Explorer/commit/236e5f69))
 
-- Updated client to 1.1.1
-- Updated utils to 8.2.1
+## 1.1.1 (2025-09-27)
 
-## 8.2.0 (2025-09-26)
+### 🩹 Fixes
 
-### Features
+- fix(cli): resolve ESLint errors and warnings ([3f6c3efe](https://github.com/Mearman/Academic-Explorer/commit/3f6c3efe))
 
-- **monorepo:** add apps and packages structure ([79961238](https://github.com/Mearman/Academic-Explorer/commit/79961238))
+## 1.1.0 (2025-09-27)
 
-### Fixes
+### 🚀 Features
 
-- **web,cli:** resolve module imports and improve stability ([f3eab918](https://github.com/Mearman/Academic-Explorer/commit/f3eab918))
-- **config:** correct vitest configuration import paths ([1c085b6e](https://github.com/Mearman/Academic-Explorer/commit/1c085b6e))
-- resolve React app mounting and EntityDetectionService integration ([41f1e856](https://github.com/Mearman/Academic-Explorer/commit/41f1e856))
-- resolve nx task configuration, typescript errors, and react component issues ([a954d719](https://github.com/Mearman/Academic-Explorer/commit/a954d719))
-- **lint:** resolve remaining lint violations across monorepo ([c824e599](https://github.com/Mearman/Academic-Explorer/commit/c824e599))
-- **lint:** resolve major linting violations across monorepo ([dabe58f4](https://github.com/Mearman/Academic-Explorer/commit/dabe58f4))
+- feat(cli): integrate static data caching and cache management ([817b3aea](https://github.com/Mearman/Academic-Explorer/commit/817b3aea))
 
-### Performance
+## 1.0.1 (2025-09-26)
 
-- optimize TypeScript compilation and CI performance ([decd092e](https://github.com/Mearman/Academic-Explorer/commit/decd092e))
+### 🩹 Fixes
 
-### 🧱 Updated Dependencies
+- fix(web,cli): resolve module imports and improve stability ([f3eab918](https://github.com/Mearman/Academic-Explorer/commit/f3eab918))
 
-- Updated client to 1.1.0
-- Updated utils to 8.2.0
+## 1.0.0 (2025-09-24)
 
-### Thank You
+### 🚀 Features
 
-- Joseph Mearman
+- feat(monorepo): add apps and packages structure ([79961238](https://github.com/Mearman/Academic-Explorer/commit/79961238))
+
+Initial release of CLI package as part of monorepo structure.

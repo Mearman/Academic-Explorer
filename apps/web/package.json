@@ -1,6 +1,6 @@
 {
   "name": "@academic-explorer/web",
-  "version": "9.0.2",
+  "version": "8.43.4",
   "type": "module",
   "description": "Academic Explorer Web App - React SPA for OpenAlex API exploration",
   "keywords": [
