@@ -1,30 +1,74 @@
-import { defineConfig, mergeConfig } from 'vitest/config';
+import { defineConfig } from 'vitest/config';
 import { resolve } from 'path';
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
-import reactConfig from '../../vitest.config.react';
+import react from '@vitejs/plugin-react';
 
-export default defineConfig(
-  mergeConfig(reactConfig, {
-    plugins: [
-      vanillaExtractPlugin(),
+export default defineConfig({
+  plugins: [
+    react(),
+    vanillaExtractPlugin(),
+  ],
+  test: {
+    environment: 'jsdom',
+    include: [
+      'src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+      'src/**/*.component.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
     ],
-    test: {
-      // Package-specific coverage thresholds
-      coverage: {
-        thresholds: {
-          global: {
-            branches: 80,
-            functions: 80,
-            lines: 80,
-            statements: 80,
-          },
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/',
+        'src/test/',
+        '**/*.d.ts',
+        '**/*.stories.*',
+        '**/*.config.*',
+        'dist/',
+        'coverage/',
+        '**/*.test.*',
+        '**/*.spec.*',
+      ],
+      thresholds: {
+        global: {
+          branches: 80,
+          functions: 80,
+          lines: 80,
+          statements: 80,
         },
       },
     },
-    resolve: {
-      alias: {
-        '@': resolve(__dirname, 'src'),
+    pool: process.env.CI ? 'threads' : 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
+      threads: {
+        singleThread: true,
       },
     },
-  })
-);
+    testTimeout: process.env.CI ? 30000 : 10000,
+    hookTimeout: process.env.CI ? 30000 : 10000,
+    silent: true,
+    projects: [
+      {
+        test: {
+          name: 'ui-unit',
+          include: ['src/**/*.unit.test.ts'],
+          environment: 'jsdom',
+        },
+      },
+      {
+        test: {
+          name: 'ui-component',
+          include: ['src/**/*.component.test.{ts,tsx}'],
+          environment: 'jsdom',
+        },
+      },
+    ],
+  },
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src'),
+    },
+  },
+});
