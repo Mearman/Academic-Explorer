@@ -18,13 +18,15 @@ export interface BuildInfo {
 /**
  * Get build information from global metadata injected during build
  * This relies on build-time metadata injection via Vite or similar bundler
+ *
+ * Note: __BUILD_INFO__ is a compile-time constant replaced by Vite's define option.
+ * In environments without build-time injection (e.g., CLI, tests), it falls back to defaults.
  */
 export function getBuildInfo(): BuildInfo {
-  // Check if build metadata is available globally (injected by build process)
-  const globalBuildInfo = (globalThis as Record<string, unknown>)['__BUILD_INFO__'] as BuildInfo | undefined;
-
-  if (globalBuildInfo) {
-    return globalBuildInfo;
+  // __BUILD_INFO__ is replaced at compile-time by Vite's define option
+  // Use typeof check to handle environments where it's not defined
+  if (typeof __BUILD_INFO__ !== 'undefined') {
+    return __BUILD_INFO__;
   }
 
   // Fallback for development or when build info is not available

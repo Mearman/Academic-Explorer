@@ -6,6 +6,7 @@ import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import { VitePWA } from 'vite-plugin-pwa'
 import path from 'path'
 import { execSync } from 'child_process'
+import { readFileSync } from 'fs'
 import { workspaceRoot } from '../../config/shared'
 import { staticDataIndexPlugin } from '../../config/vite-plugins/static-data-index'
 import { openalexCachePlugin } from '../../config/vite-plugins/openalex-cache'
@@ -13,6 +14,11 @@ import { openalexCachePlugin } from '../../config/vite-plugins/openalex-cache'
 // Build metadata generation
 function getBuildInfo() {
   try {
+    // Read version from package.json instead of relying on npm_package_version
+    const packageJson = JSON.parse(
+      readFileSync(path.resolve(__dirname, 'package.json'), 'utf-8')
+    ) as { version: string };
+
     const now = new Date()
     const commitHash = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim()
     const shortCommitHash = execSync('git rev-parse --short HEAD', { encoding: 'utf8' }).trim()
@@ -26,18 +32,18 @@ function getBuildInfo() {
       shortCommitHash,
       commitTimestamp: commitDate.toISOString(),
       branchName,
-      version: process.env.npm_package_version ?? '0.0.0',
+      version: packageJson.version,
       repositoryUrl: 'https://github.com/Mearman/Academic-Explorer'
     }
   } catch (error) {
-    console.warn('Failed to get git information:', error)
+    console.warn('Failed to get build metadata:', error)
     return {
       buildTimestamp: new Date().toISOString(),
       commitHash: 'unknown',
       shortCommitHash: 'unknown',
       commitTimestamp: new Date().toISOString(),
       branchName: 'unknown',
-      version: process.env.npm_package_version ?? '0.0.0',
+      version: '0.0.0',
       repositoryUrl: 'https://github.com/Mearman/Academic-Explorer'
     }
   }
