@@ -1,3 +1,16 @@
+# 9.0.0 (2025-09-30)
+
+### 🚀 Features
+
+- **cli:** integrate unified index adapters ([65f3913e](https://github.com/Mearman/Academic-Explorer/commit/65f3913e))
+- **cli:** improve cache management and CLI functionality ([2972aa02](https://github.com/Mearman/Academic-Explorer/commit/2972aa02))
+- **config:** implement scoped test dependencies across all projects ([17e80743](https://github.com/Mearman/Academic-Explorer/commit/17e80743))
+- **cli:** integrate static data caching and cache management ([817b3aea](https://github.com/Mearman/Academic-Explorer/commit/817b3aea))
+
+### 🩹 Fixes
+
+- **client:** update cache implementations for raw api response storage ([c83ae158](https://github.com/Mearman/Academic-Explorer/commit/c83ae158))
+
 ## 8.3.1 (2025-09-27)
 
 ### 🩹 Fixes

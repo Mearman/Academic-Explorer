@@ -1,3 +1,50 @@
+# 9.0.0 (2025-09-30)
+
+### 🚀 Features
+
+- **web:** implement openalex url redirect routes ([77720c5b](https://github.com/Mearman/Academic-Explorer/commit/77720c5b))
+- **web:** update openalex static data indices ([a04292d5](https://github.com/Mearman/Academic-Explorer/commit/a04292d5))
+- **web:** implement e2e test infrastructure ([7e7d0fdd](https://github.com/Mearman/Academic-Explorer/commit/7e7d0fdd))
+- **config:** implement scoped test dependencies across all projects ([17e80743](https://github.com/Mearman/Academic-Explorer/commit/17e80743))
+- **config:** add build infrastructure improvements and workarounds ([ac794d47](https://github.com/Mearman/Academic-Explorer/commit/ac794d47))
+- **web:** add static data file support to service worker ([21209398](https://github.com/Mearman/Academic-Explorer/commit/21209398))
+- **web:** configure pwa and openalex caching for development ([03b4a328](https://github.com/Mearman/Academic-Explorer/commit/03b4a328))
+- **web:** add openalex service worker for api request interception ([3a6f26bf](https://github.com/Mearman/Academic-Explorer/commit/3a6f26bf))
+- **web:** add vite-plugin-pwa for typescript service worker support ([a0c96bed](https://github.com/Mearman/Academic-Explorer/commit/a0c96bed))
+- **build:** enhance vite plugin for static data index generation ([2849e3ac](https://github.com/Mearman/Academic-Explorer/commit/2849e3ac))
+- **web:** replace mock data with real OpenAlex API integration in search route ([bfcc5873](https://github.com/Mearman/Academic-Explorer/commit/bfcc5873))
+- **web:** add export/import capabilities to CacheBrowser ([c142cc8c](https://github.com/Mearman/Academic-Explorer/commit/c142cc8c))
+- **web:** add virtualization support to BaseTable for large dataset performance ([d0cd4e68](https://github.com/Mearman/Academic-Explorer/commit/d0cd4e68))
+- **web:** add dnd-kit and react-virtual dependencies for advanced ui features ([120d0d2b](https://github.com/Mearman/Academic-Explorer/commit/120d0d2b))
+- **web:** add advanced search components with drag-drop query builder ([7ec17437](https://github.com/Mearman/Academic-Explorer/commit/7ec17437))
+- **web:** add /browse route for entity browsing ([75185ab9](https://github.com/Mearman/Academic-Explorer/commit/75185ab9))
+- **web:** add cache browser route and update route tree ([a2d69f4e](https://github.com/Mearman/Academic-Explorer/commit/a2d69f4e))
+- **web:** add cache browser UI component ([b759dd41](https://github.com/Mearman/Academic-Explorer/commit/b759dd41))
+- **ui:** add modular filter component infrastructure ([d1c39c82](https://github.com/Mearman/Academic-Explorer/commit/d1c39c82))
+
+### 🩹 Fixes
+
+- **config:** resolve ci failures - browsers, duplicate keys, fast refresh ([a9bbca75](https://github.com/Mearman/Academic-Explorer/commit/a9bbca75))
+- **web:** correct import paths to use relative imports ([fecd5296](https://github.com/Mearman/Academic-Explorer/commit/fecd5296))
+- **web:** improve test infrastructure and component stability ([39095ef5](https://github.com/Mearman/Academic-Explorer/commit/39095ef5))
+- **web:** temporarily disable service worker import to resolve CI TypeScript issue ([40a575b1](https://github.com/Mearman/Academic-Explorer/commit/40a575b1))
+- **web:** use path mapping for service worker import ([9759f555](https://github.com/Mearman/Academic-Explorer/commit/9759f555))
+- **web:** add explicit .js extension to service worker import ([f4bcf408](https://github.com/Mearman/Academic-Explorer/commit/f4bcf408))
+- **web:** complete service worker TypeScript strict compliance ([a72f2ed1](https://github.com/Mearman/Academic-Explorer/commit/a72f2ed1))
+- **web:** resolve remaining TypeScript any type violations ([578586e0](https://github.com/Mearman/Academic-Explorer/commit/578586e0))
+- **web:** correct props destructuring in VisualQueryBuilder ([4252694c](https://github.com/Mearman/Academic-Explorer/commit/4252694c))
+- **config:** improve eslint configuration and ci lint tolerance ([8f0c703d](https://github.com/Mearman/Academic-Explorer/commit/8f0c703d))
+- **web,client:** resolve critical eslint issues blocking ci ([eb18bb74](https://github.com/Mearman/Academic-Explorer/commit/eb18bb74))
+- **web:** resolve eslint warnings and errors for clean ci ([d4cd584b](https://github.com/Mearman/Academic-Explorer/commit/d4cd584b))
+- **web:** disable static data index plugin during builds ([a2747d4b](https://github.com/Mearman/Academic-Explorer/commit/a2747d4b))
+- **web:** resolve PWA manifest injection build errors ([c39fcc21](https://github.com/Mearman/Academic-Explorer/commit/c39fcc21))
+- **web:** add null check in FilterBuilder validateFilters call ([0a0b7f68](https://github.com/Mearman/Academic-Explorer/commit/0a0b7f68))
+- **client,web:** resolve TypeScript errors for test regeneration ([5afb0326](https://github.com/Mearman/Academic-Explorer/commit/5afb0326))
+
+### 🔥 Performance
+
+- **web:** optimize EntityBrowser for large datasets with virtualization ([57972471](https://github.com/Mearman/Academic-Explorer/commit/57972471))
+
 ## 8.3.1 (2025-09-27)
 
 ### 🧱 Updated Dependencies

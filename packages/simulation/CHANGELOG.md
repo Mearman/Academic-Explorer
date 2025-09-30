@@ -1,3 +1,9 @@
+# 9.0.0 (2025-09-30)
+
+### 🩹 Fixes
+
+- **monorepo:** resolve circular dependencies and task hanging issues ([06466e9c](https://github.com/Mearman/Academic-Explorer/commit/06466e9c))
+
 ## 8.3.0 (2025-09-26)
 
 ### 🚀 Features

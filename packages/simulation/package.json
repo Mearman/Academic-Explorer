@@ -1,6 +1,6 @@
 {
   "name": "@academic-explorer/simulation",
-  "version": "8.3.0",
+  "version": "9.0.0",
   "type": "module",
   "description": "Force-directed graph simulation engine for Academic Explorer",
   "keywords": [

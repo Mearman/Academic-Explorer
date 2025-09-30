@@ -1,3 +1,11 @@
+# 9.0.0 (2025-09-30)
+
+### 🩹 Fixes
+
+- **ui-components:** allow tests to pass when no test files exist ([c1614023](https://github.com/Mearman/Academic-Explorer/commit/c1614023))
+- **ui-components:** resolve duplicate vitest project names ([0c95c9ea](https://github.com/Mearman/Academic-Explorer/commit/0c95c9ea))
+- **monorepo:** resolve circular dependencies and task hanging issues ([06466e9c](https://github.com/Mearman/Academic-Explorer/commit/06466e9c))
+
 ## 8.3.0 (2025-09-27)
 
 This was a version bump only for ui to align it with other projects, there were no code changes.

@@ -1,3 +1,13 @@
+# 9.0.0 (2025-09-30)
+
+### 🚀 Features
+
+- **client:** integrate TextAnalysisApi and ConceptsApi into main client exports ([9ea447c5](https://github.com/Mearman/Academic-Explorer/commit/9ea447c5))
+
+### 🩹 Fixes
+
+- **monorepo:** resolve circular dependencies and task hanging issues ([06466e9c](https://github.com/Mearman/Academic-Explorer/commit/06466e9c))
+
 ## 8.3.1 (2025-09-27)
 
 ### 🩹 Fixes
