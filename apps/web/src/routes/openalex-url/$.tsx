@@ -41,7 +41,7 @@ function OpenAlexUrlComponent() {
       const searchParams = new URLSearchParams(url.search);
       logger.debug("openalex-url", `Path: ${path}, Search params: ${JSON.stringify(Object.fromEntries(searchParams.entries()))}`);
 
-      logger.info(
+      logger.debug(
         "openalex-url",
         `Parsed OpenAlex URL: path=${path}, params=${JSON.stringify(Object.fromEntries(searchParams.entries()))}`,
       );

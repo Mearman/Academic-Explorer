@@ -209,6 +209,7 @@ export function BaseTable<T>({
 										<div
 											key={row.id}
 											role={onRowClick ? "button" : undefined}
+											aria-label={onRowClick ? "Select this row" : undefined}
 											tabIndex={onRowClick ? 0 : undefined}
 											style={{
 												position: 'absolute',
@@ -229,6 +230,8 @@ export function BaseTable<T>({
 												if (e.key === 'Enter' || e.key === ' ') {
 													e.preventDefault();
 													handleRowClick(row.original);
+												} else if (e.key === 'Escape') {
+													e.currentTarget.blur();
 												}
 											} : undefined}
 											onMouseEnter={onRowClick ? (e) => {
@@ -313,6 +316,7 @@ export function BaseTable<T>({
 								<Table.Tr
 									key={row.id}
 									role={onRowClick ? "button" : undefined}
+									aria-label={onRowClick ? "Select this row" : undefined}
 									tabIndex={onRowClick ? 0 : undefined}
 									style={{
 										cursor: onRowClick ? "pointer" : "default",
@@ -322,6 +326,8 @@ export function BaseTable<T>({
 										if (e.key === 'Enter' || e.key === ' ') {
 											e.preventDefault();
 											handleRowClick(row.original);
+										} else if (e.key === 'Escape') {
+											(e.target as HTMLElement).blur();
 										}
 									} : undefined}
 								>
