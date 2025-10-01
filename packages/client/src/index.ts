@@ -69,6 +69,8 @@ export {
 	type CacheStatistics
 } from "./internal/static-data-provider";
 
+export { logger } from "./internal/logger";
+
 export {
 	toStaticEntityType,
 	cleanOpenAlexId,

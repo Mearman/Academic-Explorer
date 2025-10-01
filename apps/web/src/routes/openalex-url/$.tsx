@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { EntityDetectionService } from "@academic-explorer/graph";
-import { logger } from "@academic-explorer/utils";
+import { logger } from "@/lib/logger";
 
 export const Route = createFileRoute("/openalex-url/$")({
   component: OpenAlexUrlComponent,

@@ -206,7 +206,6 @@ export function BaseTable<T>({
 								{rowVirtualizer.getVirtualItems().map((virtualRow) => {
 									const row = rows[virtualRow.index];
 									return (
-										{/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
 										<div
 											key={row.id}
 											role={onRowClick ? "button" : undefined}
@@ -313,10 +312,18 @@ export function BaseTable<T>({
 							table.getRowModel().rows.map((row) => (
 								<Table.Tr
 									key={row.id}
+									role={onRowClick ? "button" : undefined}
+									tabIndex={onRowClick ? 0 : undefined}
 									style={{
 										cursor: onRowClick ? "pointer" : "default",
 									}}
 									onClick={onRowClick ? () => handleRowClick(row.original) : undefined}
+									onKeyDown={onRowClick ? (e) => {
+										if (e.key === 'Enter' || e.key === ' ') {
+											e.preventDefault();
+											handleRowClick(row.original);
+										}
+									} : undefined}
 								>
 									{row.getVisibleCells().map((cell) => (
 										<Table.Td key={cell.id}>
