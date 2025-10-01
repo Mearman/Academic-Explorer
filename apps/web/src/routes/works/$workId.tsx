@@ -74,5 +74,9 @@ function WorkRoute() {
 
 	// Return null - the graph is visible from MainLayout
 	// The route content is just for triggering the data load
-	return null;
+	return (
+	  <div>
+	    <h1>Work</h1>
+	  </div>
+	);
 }

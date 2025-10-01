@@ -13,17 +13,22 @@ function OpenAlexUrlComponent() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("[DEBUG openalex-url] useEffect triggered, splat:", splat);
     if (!splat) {
+      console.log("[DEBUG openalex-url] No splat, returning early");
       return;
     }
     const decodedSplat = decodeURIComponent(splat as string);
+    console.log("[DEBUG openalex-url] Decoded splat:", decodedSplat);
     try {
       // Validate and parse the splat as a full URL
       const url = new URL(
         decodedSplat.startsWith("http") ? decodedSplat : `https://api.openalex.org/${decodedSplat}`,
       );
+      console.log("[DEBUG openalex-url] Parsed URL:", url.toString());
 
       if (url.origin !== "https://api.openalex.org") {
+        console.log("[DEBUG openalex-url] Invalid origin:", url.origin);
         logger.warn(
           "openalex-url",
           `Invalid OpenAlex URL origin: ${url.origin}`,
@@ -34,6 +39,7 @@ function OpenAlexUrlComponent() {
       // Extract path and query parameters
       const path = url.pathname;
       const searchParams = new URLSearchParams(url.search);
+      console.log("[DEBUG openalex-url] Path:", path, "Search params:", Object.fromEntries(searchParams.entries()));
 
       logger.info(
         "openalex-url",
@@ -42,12 +48,16 @@ function OpenAlexUrlComponent() {
 
       // Check for single entity pattern: /entityType/id or just /id
       const pathParts = path.split("/").filter((p) => p);
+      console.log("[DEBUG openalex-url] Path parts:", pathParts, "Length:", pathParts.length);
       if (pathParts.length === 2) {
         const id = pathParts[1];
+        console.log("[DEBUG openalex-url] Length 2, ID:", id);
 
         const detection = EntityDetectionService.detectEntity(id);
+        console.log("[DEBUG openalex-url] Detection for length 2:", detection);
         if (detection?.entityType) {
           const targetPath = `/${detection.entityType}/${id}`;
+          console.log("[DEBUG openalex-url] Navigating to (length 2):", targetPath, "with search:", Object.fromEntries(searchParams));
           navigate({
             to: targetPath,
             search: Object.fromEntries(searchParams),
@@ -58,9 +68,13 @@ function OpenAlexUrlComponent() {
       } else if (pathParts.length === 1) {
         // Handle single OpenAlex entity ID: /W2741809807
         const id = pathParts[0];
+        console.log("[DEBUG openalex-url] Length 1, treating as ID:", id);
+
         const detection = EntityDetectionService.detectEntity(id);
+        console.log("[DEBUG openalex-url] Detection for length 1 ID:", detection);
         if (detection?.entityType) {
           const targetPath = `/${detection.entityType}/${id}`;
+          console.log("[DEBUG openalex-url] Navigating to (length 1 ID):", targetPath, "with search:", Object.fromEntries(searchParams));
           navigate({
             to: targetPath,
             search: Object.fromEntries(searchParams),
@@ -68,12 +82,15 @@ function OpenAlexUrlComponent() {
           });
           return;
         }
+        console.log("[DEBUG openalex-url] No detection for length 1 ID, continuing");
       }
 
       // Handle autocomplete
+      console.log("[DEBUG openalex-url] Checking autocomplete, path starts with /autocomplete/?", path.startsWith("/autocomplete/"));
       if (path.startsWith("/autocomplete/")) {
         const subPath = path.substring("/autocomplete/".length);
         const targetPath = `/autocomplete/${subPath}`;
+        console.log("[DEBUG openalex-url] Autocomplete match, navigating to:", targetPath, "with search:", Object.fromEntries(searchParams));
         navigate({
           to: targetPath,
           search: Object.fromEntries(searchParams),
@@ -95,8 +112,10 @@ function OpenAlexUrlComponent() {
       };
 
       const entityType = entityMap[pathParts[0]];
+      console.log("[DEBUG openalex-url] Entity map check, pathParts[0]:", pathParts[0], "entityType:", entityType, "length:", pathParts.length);
       if (entityType && pathParts.length === 1) {
         const targetPath = `/${entityType}`;
+        console.log("[DEBUG openalex-url] Entity list match, navigating to:", targetPath, "with search:", Object.fromEntries(searchParams));
         navigate({
           to: targetPath,
           search: Object.fromEntries(searchParams),
@@ -104,14 +123,17 @@ function OpenAlexUrlComponent() {
         });
         return;
       }
+      console.log("[DEBUG openalex-url] No entity list match, falling to search");
 
       // Fallback to search for unmapped paths
       const fallbackPath = `/search?q=${encodeURIComponent(decodedSplat)}`;
+      console.log("[DEBUG openalex-url] Fallback navigating to:", fallbackPath);
       navigate({
         to: fallbackPath,
         replace: true,
       });
     } catch (error) {
+      console.log("[DEBUG openalex-url] Error in parsing:", error);
       logger.error(
         "openalex-url",
         `Failed to parse OpenAlex URL for splat ${decodedSplat}: ${error instanceof Error ? error.message : String(error)}`,

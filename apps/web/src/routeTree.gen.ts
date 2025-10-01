@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WorksRouteImport } from './routes/works'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as PublishersRouteImport } from './routes/publishers'
 import { Route as FundersRouteImport } from './routes/funders'
@@ -20,6 +21,7 @@ import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as ExternalIdRouteImport } from './routes/$externalId'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WorksIndexRouteImport } from './routes/works/index'
 import { Route as SourcesIndexRouteImport } from './routes/sources/index'
 import { Route as WorksWorkIdRouteImport } from './routes/works/$workId'
 import { Route as TopicsTopicIdRouteImport } from './routes/topics/$topicId'
@@ -38,6 +40,11 @@ import { Route as InstitutionsRorRorRouteImport } from './routes/institutions/ro
 import { Route as AuthorsOrcidOrcidRouteImport } from './routes/authors/orcid.$orcid'
 import { Route as ApiOpenalexOrgSplatRouteImport } from './routes/api.openalex.org/$'
 
+const WorksRoute = WorksRouteImport.update({
+  id: '/works',
+  path: '/works',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
@@ -93,15 +100,20 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorksIndexRoute = WorksIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => WorksRoute,
+} as any)
 const SourcesIndexRoute = SourcesIndexRouteImport.update({
   id: '/sources/',
   path: '/sources/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WorksWorkIdRoute = WorksWorkIdRouteImport.update({
-  id: '/works/$workId',
-  path: '/works/$workId',
-  getParentRoute: () => rootRouteImport,
+  id: '/$workId',
+  path: '/$workId',
+  getParentRoute: () => WorksRoute,
 } as any)
 const TopicsTopicIdRoute = TopicsTopicIdRouteImport.update({
   id: '/topics/$topicId',
@@ -150,9 +162,9 @@ const AuthorsAuthorIdRoute = AuthorsAuthorIdRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const WorksDoiDoiRoute = WorksDoiDoiRouteImport.update({
-  id: '/works/doi/$doi',
-  path: '/works/doi/$doi',
-  getParentRoute: () => rootRouteImport,
+  id: '/doi/$doi',
+  path: '/doi/$doi',
+  getParentRoute: () => WorksRoute,
 } as any)
 const SourcesIssnIssnRoute = SourcesIssnIssnRouteImport.update({
   id: '/sources/issn/$issn',
@@ -192,6 +204,7 @@ export interface FileRoutesByFullPath {
   '/funders': typeof FundersRoute
   '/publishers': typeof PublishersRoute
   '/search': typeof SearchRoute
+  '/works': typeof WorksRouteWithChildren
   '/authors/$authorId': typeof AuthorsAuthorIdRoute
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
   '/evaluation/results': typeof EvaluationResultsRoute
@@ -203,6 +216,7 @@ export interface FileRoutesByFullPath {
   '/topics/$topicId': typeof TopicsTopicIdRoute
   '/works/$workId': typeof WorksWorkIdRoute
   '/sources': typeof SourcesIndexRoute
+  '/works/': typeof WorksIndexRoute
   '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
   '/institutions/ror/$ror': typeof InstitutionsRorRorRoute
   '/openalex/org/$': typeof OpenalexOrgSplatRoute
@@ -233,6 +247,7 @@ export interface FileRoutesByTo {
   '/topics/$topicId': typeof TopicsTopicIdRoute
   '/works/$workId': typeof WorksWorkIdRoute
   '/sources': typeof SourcesIndexRoute
+  '/works': typeof WorksIndexRoute
   '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
   '/institutions/ror/$ror': typeof InstitutionsRorRorRoute
   '/openalex/org/$': typeof OpenalexOrgSplatRoute
@@ -253,6 +268,7 @@ export interface FileRoutesById {
   '/funders': typeof FundersRoute
   '/publishers': typeof PublishersRoute
   '/search': typeof SearchRoute
+  '/works': typeof WorksRouteWithChildren
   '/authors/$authorId': typeof AuthorsAuthorIdRoute
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
   '/evaluation/results': typeof EvaluationResultsRoute
@@ -264,6 +280,7 @@ export interface FileRoutesById {
   '/topics/$topicId': typeof TopicsTopicIdRoute
   '/works/$workId': typeof WorksWorkIdRoute
   '/sources/': typeof SourcesIndexRoute
+  '/works/': typeof WorksIndexRoute
   '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
   '/institutions/ror/$ror': typeof InstitutionsRorRorRoute
   '/openalex/org/$': typeof OpenalexOrgSplatRoute
@@ -285,6 +302,7 @@ export interface FileRouteTypes {
     | '/funders'
     | '/publishers'
     | '/search'
+    | '/works'
     | '/authors/$authorId'
     | '/evaluation/datasets'
     | '/evaluation/results'
@@ -296,6 +314,7 @@ export interface FileRouteTypes {
     | '/topics/$topicId'
     | '/works/$workId'
     | '/sources'
+    | '/works/'
     | '/authors/orcid/$orcid'
     | '/institutions/ror/$ror'
     | '/openalex/org/$'
@@ -326,6 +345,7 @@ export interface FileRouteTypes {
     | '/topics/$topicId'
     | '/works/$workId'
     | '/sources'
+    | '/works'
     | '/authors/orcid/$orcid'
     | '/institutions/ror/$ror'
     | '/openalex/org/$'
@@ -345,6 +365,7 @@ export interface FileRouteTypes {
     | '/funders'
     | '/publishers'
     | '/search'
+    | '/works'
     | '/authors/$authorId'
     | '/evaluation/datasets'
     | '/evaluation/results'
@@ -356,6 +377,7 @@ export interface FileRouteTypes {
     | '/topics/$topicId'
     | '/works/$workId'
     | '/sources/'
+    | '/works/'
     | '/authors/orcid/$orcid'
     | '/institutions/ror/$ror'
     | '/openalex/org/$'
@@ -376,24 +398,30 @@ export interface RootRouteChildren {
   FundersRoute: typeof FundersRoute
   PublishersRoute: typeof PublishersRoute
   SearchRoute: typeof SearchRoute
+  WorksRoute: typeof WorksRouteWithChildren
   AuthorsAuthorIdRoute: typeof AuthorsAuthorIdRoute
   HttpsSplatRoute: typeof HttpsSplatRoute
   InstitutionsInstitutionIdRoute: typeof InstitutionsInstitutionIdRoute
   OpenalexUrlSplatRoute: typeof OpenalexUrlSplatRoute
   SourcesSourceIdRoute: typeof SourcesSourceIdRoute
   TopicsTopicIdRoute: typeof TopicsTopicIdRoute
-  WorksWorkIdRoute: typeof WorksWorkIdRoute
   SourcesIndexRoute: typeof SourcesIndexRoute
   AuthorsOrcidOrcidRoute: typeof AuthorsOrcidOrcidRoute
   InstitutionsRorRorRoute: typeof InstitutionsRorRorRoute
   OpenalexOrgSplatRoute: typeof OpenalexOrgSplatRoute
   SourcesIssnIssnRoute: typeof SourcesIssnIssnRoute
-  WorksDoiDoiRoute: typeof WorksDoiDoiRoute
   ApiOpenalexOrgSplatRoute: typeof ApiOpenalexOrgSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/works': {
+      id: '/works'
+      path: '/works'
+      fullPath: '/works'
+      preLoaderRoute: typeof WorksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/search': {
       id: '/search'
       path: '/search'
@@ -471,6 +499,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/works/': {
+      id: '/works/'
+      path: '/'
+      fullPath: '/works/'
+      preLoaderRoute: typeof WorksIndexRouteImport
+      parentRoute: typeof WorksRoute
+    }
     '/sources/': {
       id: '/sources/'
       path: '/sources'
@@ -480,10 +515,10 @@ declare module '@tanstack/react-router' {
     }
     '/works/$workId': {
       id: '/works/$workId'
-      path: '/works/$workId'
+      path: '/$workId'
       fullPath: '/works/$workId'
       preLoaderRoute: typeof WorksWorkIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof WorksRoute
     }
     '/topics/$topicId': {
       id: '/topics/$topicId'
@@ -550,10 +585,10 @@ declare module '@tanstack/react-router' {
     }
     '/works/doi/$doi': {
       id: '/works/doi/$doi'
-      path: '/works/doi/$doi'
+      path: '/doi/$doi'
       fullPath: '/works/doi/$doi'
       preLoaderRoute: typeof WorksDoiDoiRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof WorksRoute
     }
     '/sources/issn/$issn': {
       id: '/sources/issn/$issn'
@@ -618,6 +653,20 @@ const ExploreRouteChildren: ExploreRouteChildren = {
 const ExploreRouteWithChildren =
   ExploreRoute._addFileChildren(ExploreRouteChildren)
 
+interface WorksRouteChildren {
+  WorksWorkIdRoute: typeof WorksWorkIdRoute
+  WorksIndexRoute: typeof WorksIndexRoute
+  WorksDoiDoiRoute: typeof WorksDoiDoiRoute
+}
+
+const WorksRouteChildren: WorksRouteChildren = {
+  WorksWorkIdRoute: WorksWorkIdRoute,
+  WorksIndexRoute: WorksIndexRoute,
+  WorksDoiDoiRoute: WorksDoiDoiRoute,
+}
+
+const WorksRouteWithChildren = WorksRoute._addFileChildren(WorksRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ExternalIdRoute: ExternalIdRoute,
@@ -630,19 +679,18 @@ const rootRouteChildren: RootRouteChildren = {
   FundersRoute: FundersRoute,
   PublishersRoute: PublishersRoute,
   SearchRoute: SearchRoute,
+  WorksRoute: WorksRouteWithChildren,
   AuthorsAuthorIdRoute: AuthorsAuthorIdRoute,
   HttpsSplatRoute: HttpsSplatRoute,
   InstitutionsInstitutionIdRoute: InstitutionsInstitutionIdRoute,
   OpenalexUrlSplatRoute: OpenalexUrlSplatRoute,
   SourcesSourceIdRoute: SourcesSourceIdRoute,
   TopicsTopicIdRoute: TopicsTopicIdRoute,
-  WorksWorkIdRoute: WorksWorkIdRoute,
   SourcesIndexRoute: SourcesIndexRoute,
   AuthorsOrcidOrcidRoute: AuthorsOrcidOrcidRoute,
   InstitutionsRorRorRoute: InstitutionsRorRorRoute,
   OpenalexOrgSplatRoute: OpenalexOrgSplatRoute,
   SourcesIssnIssnRoute: SourcesIssnIssnRoute,
-  WorksDoiDoiRoute: WorksDoiDoiRoute,
   ApiOpenalexOrgSplatRoute: ApiOpenalexOrgSplatRoute,
 }
 export const routeTree = rootRouteImport
