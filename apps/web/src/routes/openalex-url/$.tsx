@@ -16,10 +16,11 @@ function OpenAlexUrlComponent() {
     if (!splat) {
       return;
     }
+    const decodedSplat = decodeURIComponent(splat as string);
     try {
       // Validate and parse the splat as a full URL
       const url = new URL(
-        splat.startsWith("http") ? splat : `https://api.openalex.org/${splat}`,
+        decodedSplat.startsWith("http") ? decodedSplat : `https://api.openalex.org/${decodedSplat}`,
       );
 
       if (url.origin !== "https://api.openalex.org") {
@@ -105,7 +106,7 @@ function OpenAlexUrlComponent() {
       }
 
       // Fallback to search for unmapped paths
-      const fallbackPath = `/search?q=${encodeURIComponent(splat)}`;
+      const fallbackPath = `/search?q=${encodeURIComponent(decodedSplat)}`;
       navigate({
         to: fallbackPath,
         replace: true,
@@ -113,7 +114,7 @@ function OpenAlexUrlComponent() {
     } catch (error) {
       logger.error(
         "openalex-url",
-        `Failed to parse OpenAlex URL for splat ${splat}: ${error instanceof Error ? error.message : String(error)}`,
+        `Failed to parse OpenAlex URL for splat ${decodedSplat}: ${error instanceof Error ? error.message : String(error)}`,
       );
     }
   }, [splat, navigate]);
@@ -127,10 +128,12 @@ function OpenAlexUrlComponent() {
     );
   }
 
+  const decodedSplat = decodeURIComponent(splat);
+
   return (
     <div>
       <h1>OpenAlex URL Handler</h1>
-      <p>Processing {splat}...</p>
+      <p>Processing {decodedSplat}...</p>
     </div>
   );
 }
