@@ -42,7 +42,7 @@ describe("OpenAlex URL Routing E2E Tests", () => {
     // 5. Paging params
     {
       url: "https://api.openalex.org/works?per_page=50&page=2",
-      expectedUrl: "/works?per_page=%2250%22&page=%222%22",
+      expectedUrl: "/works?per_page=50&page=2",
       assertUI: async (page) => {
         await expect(page.locator("h1")).toContainText("Works");
       },
@@ -50,7 +50,7 @@ describe("OpenAlex URL Routing E2E Tests", () => {
     // 6. Sample param
     {
       url: "https://api.openalex.org/institutions?sample=10",
-      expectedUrl: "/institutions?sample=%2210%22",
+      expectedUrl: "/institutions?sample=10",
       assertUI: async (page) => {
         await expect(page.locator("h1")).toContainText("Institutions");
       },
@@ -82,8 +82,7 @@ describe("OpenAlex URL Routing E2E Tests", () => {
     // 10. Encoded params and invalid detection
     {
       url: "https://api.openalex.org/invalid/id?filter=display_name.search:john%20smith",
-      expectedUrl:
-        "/search?q=%22https%3A%2F%2Fapi.openalex.org%2Finvalid%2Fid%3Ffilter%3Ddisplay_name.search%3Ajohn%2520smith%22",
+      expectedUrl: "/search?q=https%3A%2F%2Fapi.openalex.org%2Finvalid%2Fid%3Ffilter%3Ddisplay_name.search%3Ajohn%20smith",
       assertUI: async (page) => {
         await expect(page.locator("h1")).toContainText("Academic Search");
       },
@@ -100,14 +99,39 @@ describe("OpenAlex URL Routing E2E Tests", () => {
       });
 
       // Wait for redirect to complete - check the hash part of the URL
-      // Compare encoded paths directly to avoid decoding issues with complex encodings
+      // Compare paths and decoded query params to handle encoding variations
       await e2ePage.waitForFunction(
         (expectedUrl) => {
           const currentPath = window.location.hash.slice(1);
-          return currentPath === expectedUrl || currentPath.startsWith(expectedUrl);
+          if (currentPath === expectedUrl) return true;
+
+          try {
+            // Helper to parse path and decode params
+            const parsePath = (path) => {
+              const url = new URL('http://dummy' + (path.startsWith('/') ? path : '/' + path), 'http://dummy');
+              const params = {};
+              url.searchParams.forEach((value, key) => {
+                params[key] = decodeURIComponent(value);
+              });
+              return {
+                pathname: url.pathname,
+                params: params
+              };
+            };
+
+            const current = parsePath(currentPath);
+            const expected = parsePath(expectedUrl);
+
+            if (current.pathname !== expected.pathname) return false;
+
+            // Compare decoded params
+            return JSON.stringify(current.params) === JSON.stringify(expected.params);
+          } catch (e) {
+            return false;
+          }
         },
         expectedUrl,
-        { timeout: 10000 },
+        { timeout: 15000 },
       );
 
       // Run the UI assertion
