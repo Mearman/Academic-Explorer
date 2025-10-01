@@ -1,3 +1,12 @@
+## 8.2.1 (2025-10-01)
+
+### 🩹 Fixes
+
+- **monorepo:** restore independent package versioning from correct baseline ([f4962602](https://github.com/Mearman/Academic-Explorer/commit/f4962602))
+- **ui-components:** allow tests to pass when no test files exist ([c1614023](https://github.com/Mearman/Academic-Explorer/commit/c1614023))
+- **ui-components:** resolve duplicate vitest project names ([0c95c9ea](https://github.com/Mearman/Academic-Explorer/commit/0c95c9ea))
+- **monorepo:** resolve circular dependencies and task hanging issues ([06466e9c](https://github.com/Mearman/Academic-Explorer/commit/06466e9c))
+
 # Changelog
 
 All notable changes to the `@academic-explorer/ui` package (formerly `@academic-explorer/ui-components`) will be documented in this file.

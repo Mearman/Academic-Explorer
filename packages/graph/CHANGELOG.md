@@ -1,3 +1,18 @@
+## 8.4.0 (2025-10-01)
+
+### 🚀 Features
+
+- **client:** integrate TextAnalysisApi and ConceptsApi into main client exports ([9ea447c5](https://github.com/Mearman/Academic-Explorer/commit/9ea447c5))
+
+### 🩹 Fixes
+
+- **monorepo:** restore independent package versioning from correct baseline ([f4962602](https://github.com/Mearman/Academic-Explorer/commit/f4962602))
+- **monorepo:** resolve circular dependencies and task hanging issues ([06466e9c](https://github.com/Mearman/Academic-Explorer/commit/06466e9c))
+
+### 🧱 Updated Dependencies
+
+- Updated utils to 9.0.0
+
 # Changelog
 
 All notable changes to the @academic-explorer/graph package will be documented in this file.

@@ -1,3 +1,10 @@
+## 8.3.1 (2025-10-01)
+
+### 🩹 Fixes
+
+- **monorepo:** restore independent package versioning from correct baseline ([f4962602](https://github.com/Mearman/Academic-Explorer/commit/f4962602))
+- **monorepo:** resolve circular dependencies and task hanging issues ([06466e9c](https://github.com/Mearman/Academic-Explorer/commit/06466e9c))
+
 # Changelog
 
 All notable changes to the `@academic-explorer/simulation` package will be documented in this file.
