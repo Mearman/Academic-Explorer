@@ -12,16 +12,10 @@ function OpenAlexUrlComponent() {
   const { _splat: splat } = Route.useParams();
   const navigate = useNavigate();
 
-  if (!splat) {
-    return (
-      <div>
-        <h1>OpenAlex URL Handler</h1>
-        <p>Invalid URL</p>
-      </div>
-    );
-  }
-
   useEffect(() => {
+    if (!splat) {
+      return;
+    }
     try {
       // Validate and parse the splat as a full URL
       const url = new URL(
@@ -111,6 +105,15 @@ function OpenAlexUrlComponent() {
       );
     }
   }, [splat, navigate]);
+
+  if (!splat) {
+    return (
+      <div>
+        <h1>OpenAlex URL Handler</h1>
+        <p>Invalid URL</p>
+      </div>
+    );
+  }
 
   return (
     <div>
