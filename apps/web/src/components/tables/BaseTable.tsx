@@ -206,6 +206,7 @@ export function BaseTable<T>({
 								{rowVirtualizer.getVirtualItems().map((virtualRow) => {
 									const row = rows[virtualRow.index];
 									return (
+										{/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
 										<div
 											key={row.id}
 											role={onRowClick ? "button" : undefined}
