@@ -8,6 +8,20 @@ export const Route = createFileRoute("/openalex-url/$")({
   component: OpenAlexUrlComponent,
 });
 
+function parseSearchParams(params: URLSearchParams): Record<string, unknown> {
+  const obj: Record<string, unknown> = {};
+  const numericKeys = new Set(["per_page", "page", "sample"]);
+  params.forEach((value, key) => {
+    if (numericKeys.has(key)) {
+      const num = Number(value);
+      obj[key] = isNaN(num) ? value : num;
+    } else {
+      obj[key] = value;
+    }
+  });
+  return obj;
+}
+
 function OpenAlexUrlComponent() {
   const { _splat: splat } = Route.useParams();
   const navigate = useNavigate();
@@ -51,16 +65,12 @@ function OpenAlexUrlComponent() {
       logger.debug("openalex-url", `Path parts: ${JSON.stringify(pathParts)}, Length: ${pathParts.length}`);
       if (pathParts.length === 2) {
         const id = pathParts[1];
-        logger.debug("openalex-url", `Length 2, ID: ${id}`);
-
         const detection = EntityDetectionService.detectEntity(id);
-        logger.debug("openalex-url", `Detection for length 2: ${JSON.stringify(detection)}`);
         if (detection?.entityType) {
           const targetPath = `/${detection.entityType}/${id}`;
-          logger.debug("openalex-url", `Navigating to (length 2): ${targetPath} with search: ${JSON.stringify(Object.fromEntries(searchParams))}`);
           navigate({
             to: targetPath,
-            search: Object.fromEntries(searchParams),
+            search: parseSearchParams(searchParams),
             replace: true,
           });
           return;
@@ -75,11 +85,13 @@ function OpenAlexUrlComponent() {
         if (detection?.entityType) {
           const targetPath = `/${detection.entityType}/${id}`;
           logger.debug("openalex-url", `Navigating to (length 1 ID): ${targetPath} with search: ${JSON.stringify(Object.fromEntries(searchParams))}`);
+          logger.debug("openalex-url", `About to navigate for length 1 ID`);
           navigate({
             to: targetPath,
-            search: Object.fromEntries(searchParams),
+            search: parseSearchParams(searchParams),
             replace: true,
           });
+          logger.debug("openalex-url", `Navigation called for length 1 ID`);
           return;
         }
         logger.debug("openalex-url", "No detection for length 1 ID, continuing");
@@ -91,11 +103,13 @@ function OpenAlexUrlComponent() {
         const subPath = path.substring("/autocomplete/".length);
         const targetPath = `/autocomplete/${subPath}`;
         logger.debug("openalex-url", `Autocomplete match, navigating to: ${targetPath} with search: ${JSON.stringify(Object.fromEntries(searchParams))}`);
+        logger.debug("openalex-url", `About to navigate for autocomplete`);
         navigate({
           to: targetPath,
-          search: Object.fromEntries(searchParams),
+          search: parseSearchParams(searchParams),
           replace: true,
         });
+        logger.debug("openalex-url", `Navigation called for autocomplete`);
         return;
       }
 
@@ -112,13 +126,11 @@ function OpenAlexUrlComponent() {
       };
 
       const entityType = entityMap[pathParts[0]];
-      logger.debug("openalex-url", `Entity map check, pathParts[0]: ${pathParts[0]}, entityType: ${entityType}, length: ${pathParts.length}`);
       if (entityType && pathParts.length === 1) {
         const targetPath = `/${entityType}`;
-        logger.debug("openalex-url", `Entity list match, navigating to: ${targetPath} with search: ${JSON.stringify(Object.fromEntries(searchParams))}`);
         navigate({
           to: targetPath,
-          search: Object.fromEntries(searchParams),
+          search: parseSearchParams(searchParams),
           replace: true,
         });
         return;
@@ -128,10 +140,12 @@ function OpenAlexUrlComponent() {
       // Fallback to search for unmapped paths
       const fallbackPath = `/search?q=${encodeURIComponent(decodedSplat)}`;
       logger.debug("openalex-url", `Fallback navigating to: ${fallbackPath}`);
+      logger.debug("openalex-url", `About to navigate for fallback search`);
       navigate({
         to: fallbackPath,
         replace: true,
       });
+      logger.debug("openalex-url", `Navigation called for fallback search`);
     } catch (error) {
       logger.debug("openalex-url", `Error in parsing: ${error}`);
       logger.error(
