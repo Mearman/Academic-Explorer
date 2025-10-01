@@ -39,12 +39,25 @@ function OpenAlexUrlComponent() {
         `Parsed OpenAlex URL: path=${path}, params=${JSON.stringify(Object.fromEntries(searchParams.entries()))}`,
       );
 
-      // Check for single entity pattern: /entityType/id
+      // Check for single entity pattern: /entityType/id or just /id
       const pathParts = path.split("/").filter((p) => p);
       if (pathParts.length === 2) {
         const entityTypeCandidate = pathParts[0];
         const id = pathParts[1];
 
+        const detection = EntityDetectionService.detectEntity(id);
+        if (detection?.entityType) {
+          const targetPath = `/${detection.entityType}/${id}`;
+          navigate({
+            to: targetPath,
+            search: Object.fromEntries(searchParams),
+            replace: true,
+          });
+          return;
+        }
+      } else if (pathParts.length === 1) {
+        // Handle single OpenAlex entity ID: /W2741809807
+        const id = pathParts[0];
         const detection = EntityDetectionService.detectEntity(id);
         if (detection?.entityType) {
           const targetPath = `/${detection.entityType}/${id}`;
