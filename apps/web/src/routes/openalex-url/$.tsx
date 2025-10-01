@@ -42,7 +42,6 @@ function OpenAlexUrlComponent() {
       // Check for single entity pattern: /entityType/id or just /id
       const pathParts = path.split("/").filter((p) => p);
       if (pathParts.length === 2) {
-        const entityTypeCandidate = pathParts[0];
         const id = pathParts[1];
 
         const detection = EntityDetectionService.detectEntity(id);

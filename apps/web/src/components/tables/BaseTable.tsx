@@ -224,21 +224,19 @@ export function BaseTable<T>({
 												alignItems: 'center',
 												padding: '8px 12px',
 											}}
-											onClick={() => { handleRowClick(row.original); }}
-											onKeyDown={(e) => {
-												if (onRowClick && (e.key === 'Enter' || e.key === ' ')) {
+											onClick={onRowClick ? () => handleRowClick(row.original) : undefined}
+											onKeyDown={onRowClick ? (e) => {
+												if (e.key === 'Enter' || e.key === ' ') {
 													e.preventDefault();
 													handleRowClick(row.original);
 												}
-											}}
-											onMouseEnter={(e) => {
-												if (onRowClick) {
-													e.currentTarget.style.backgroundColor = 'var(--mantine-color-blue-0)';
-												}
-											}}
-											onMouseLeave={(e) => {
+											} : undefined}
+											onMouseEnter={onRowClick ? (e) => {
+												e.currentTarget.style.backgroundColor = 'var(--mantine-color-blue-0)';
+											} : undefined}
+											onMouseLeave={onRowClick ? (e) => {
 												e.currentTarget.style.backgroundColor = virtualRow.index % 2 === 0 ? 'var(--mantine-color-gray-0)' : 'transparent';
-											}}
+											} : undefined}
 										>
 											{row.getVisibleCells().map((cell, cellIndex) => (
 												<div
@@ -317,7 +315,7 @@ export function BaseTable<T>({
 									style={{
 										cursor: onRowClick ? "pointer" : "default",
 									}}
-									onClick={() => { handleRowClick(row.original); }}
+									onClick={onRowClick ? () => handleRowClick(row.original) : undefined}
 								>
 									{row.getVisibleCells().map((cell) => (
 										<Table.Td key={cell.id}>

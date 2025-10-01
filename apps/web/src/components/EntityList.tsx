@@ -2,14 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { BaseTable } from '@/components/tables/BaseTable';
 import { logger } from '@academic-explorer/utils';
 import { cachedOpenAlex as openAlex } from '@academic-explorer/client';
-import type { OpenAlexResponse } from '@academic-explorer/client';
+import type { OpenAlexResponse, Funder, Publisher, Source } from '@academic-explorer/client';
 
 export type EntityType = 'funders' | 'publishers' | 'sources';
+
+type Entity = Funder | Publisher | Source;
 
 export interface ColumnConfig {
   key: string;
   header: string;
-  render?: (value: any, row: any) => React.ReactNode;
+  render?: (value: unknown, row: Entity) => React.ReactNode;
 }
 
 export interface EntityListProps {
@@ -19,14 +21,8 @@ export interface EntityListProps {
   title?: string;
 }
 
-interface GenericEntity {
-  id: string;
-  display_name: string;
-  [key: string]: any;
-}
-
 export function EntityList({ entityType, columns, perPage = 50, title }: EntityListProps) {
-  const [data, setData] = useState<GenericEntity[]>([]);
+  const [data, setData] = useState<Entity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,7 +32,7 @@ export function EntityList({ entityType, columns, perPage = 50, title }: EntityL
         setLoading(true);
         setError(null);
 
-        let response: OpenAlexResponse<GenericEntity> | null = null;
+        let response: OpenAlexResponse<Entity> | null = null;
 
         switch (entityType) {
           case 'funders':
