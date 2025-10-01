@@ -101,7 +101,11 @@ class E2ETestRunner {
     this.devServerProcess = spawn('vite', [], {
       stdio: ['ignore', 'pipe', 'pipe'],
       shell: true,
-      detached: process.platform !== 'win32'
+      detached: process.platform !== 'win32',
+      env: {
+        ...process.env,
+        RUNNING_E2E: 'true'
+      }
     });
 
     // Handle server output

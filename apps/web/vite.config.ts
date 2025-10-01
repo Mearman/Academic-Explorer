@@ -66,6 +66,13 @@ export default defineConfig(({ mode: _mode, command }) => ({
     TanStackRouterVite({
       routesDirectory: path.resolve(__dirname, 'src/routes'),
       generatedRouteTree: path.resolve(__dirname, 'src/routeTree.gen.ts'),
+      globOptions: {
+        ignore: [
+          '**/*.test.{ts,tsx}',
+          '**/*.e2e.{ts,tsx}',
+          '**/*.integration.{ts,tsx}'
+        ]
+      },
     }),
     // PWA Plugin for TypeScript service worker support
     VitePWA({
@@ -92,7 +99,7 @@ export default defineConfig(({ mode: _mode, command }) => ({
       enabled: true // Enable in development
     }),
     // Static data index plugin for OpenAlex entity caching (development only)
-    ...(command === 'serve' ? [staticDataIndexPlugin({
+    ...(command === 'serve' && _mode !== 'test' && !process.env.RUNNING_E2E ? [staticDataIndexPlugin({
       autoDownload: false, // Disable auto-download for now
       validate: true, // Enable validation
       verbose: false, // Disable verbose logging for cleaner output

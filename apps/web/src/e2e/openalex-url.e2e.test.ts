@@ -95,68 +95,24 @@ describe("OpenAlex URL Routing E2E Tests", () => {
       // Navigate to the openalex-url route with the encoded OpenAlex URL
       const encodedUrl = encodeURIComponent(url);
       await e2ePage.goto(`/#/openalex-url/${encodedUrl}`, {
-        waitUntil: 'networkidle',
-        timeout: 30000
+        waitUntil: "networkidle",
+        timeout: 30000,
       });
 
       // Wait for redirect to complete - check the hash part of the URL
       await e2ePage.waitForFunction(
         (expectedUrl) => {
           const hash = window.location.hash;
-          return hash === `#${expectedUrl}` || hash.startsWith(`#${expectedUrl}`);
+          return (
+            hash === `#${expectedUrl}` || hash.startsWith(`#${expectedUrl}`)
+          );
         },
         expectedUrl,
-        { timeout: 10000 }
+        { timeout: 10000 },
       );
 
       // Run the UI assertion
       await assertUI(e2ePage);
     });
-  });
-
-    // Check initial hash after navigation
-    const initialHash = await e2ePage.evaluate(() => window.location.hash);
-    console.log("Initial hash after navigation:", initialHash);
-
-    // Wait a bit for any redirects to happen
-    await e2ePage.waitForTimeout(2000);
-
-    // Check hash after waiting
-    const finalHash = await e2ePage.evaluate(() => window.location.hash);
-    console.log(
-      "Final hash after waiting:",
-      finalHash,
-      "Expected:",
-      `#${expectedUrl}`,
-    );
-
-    // Check if redirect happened
-    if (finalHash !== `#${expectedUrl}`) {
-      console.log("Redirect did not happen as expected");
-      // Let's see what the page content shows
-      const pageTitle = await e2ePage.title();
-      console.log("Page title:", pageTitle);
-      const h1Text = await e2ePage.locator("h1").first().textContent();
-      console.log("H1 text:", h1Text);
-    }
-
-    // Wait for redirect to complete - check the hash part of the URL
-    await e2ePage.waitForFunction(
-      (expectedUrl) => {
-        const hash = window.location.hash;
-        console.log(
-          "Current hash in waitForFunction:",
-          hash,
-          "Expected:",
-          `#${expectedUrl}`,
-        );
-        return hash === `#${expectedUrl}` || hash.startsWith(`#${expectedUrl}`);
-      },
-      expectedUrl,
-      { timeout: 10000 },
-    );
-
-    // Run the UI assertion
-    await assertUI(e2ePage);
   });
 });
