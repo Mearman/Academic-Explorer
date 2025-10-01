@@ -178,6 +178,17 @@ export async function generateContentHash(data: unknown): Promise<string> {
  * Parse OpenAlex URL into structured information
  */
 export function parseOpenAlexUrl(url: string): ParsedOpenAlexUrl | null {
+  if (typeof url !== 'string' || url.trim().length === 0) {
+    logger.warn('cache', 'Invalid URL input for parsing', { url: typeof url });
+    return null;
+  }
+
+  // Basic validation: must start with http(s)://
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    logger.warn('cache', 'URL does not start with http(s)://', { url });
+    return null;
+  }
+
   try {
     const urlObj = new URL(url);
 
@@ -320,6 +331,15 @@ export function normalizeQueryForCaching(queryString: string): string {
  * This is reversible and creates consistent filenames regardless of input format
  */
 export function encodeFilename(filename: string): string {
+  if (typeof filename !== 'string') {
+    logger.warn('cache', 'Invalid filename input for encoding', { filename: typeof filename });
+    return '';
+  }
+
+  if (filename.length === 0) {
+    return '';
+  }
+
   try {
     // First decode any URL encoding to get original characters
     // This handles cases where input is already URL-encoded (e.g., "filter%3Ayear%3A2020")
@@ -576,6 +596,19 @@ export function filenameToQuery(filename: string): string {
  * Ignores parameter order and sensitive parameters (api_key, mailto)
  */
 export function areUrlsEquivalentForCaching(url1: string, url2: string): boolean {
+  if (typeof url1 !== 'string' || typeof url2 !== 'string' ||
+      url1.trim().length === 0 || url2.trim().length === 0) {
+    logger.warn('cache', 'Invalid URL inputs for equivalence comparison', { url1: typeof url1, url2: typeof url2 });
+    return false;
+  }
+
+  // Basic validation: must start with http(s)://
+  if ((!url1.startsWith('http://') && !url1.startsWith('https://')) ||
+      (!url2.startsWith('http://') && !url2.startsWith('https://'))) {
+    logger.warn('cache', 'URLs do not start with http(s):// for equivalence comparison', { url1, url2 });
+    return false;
+  }
+
   try {
     const urlObj1 = new URL(url1);
     const urlObj2 = new URL(url2);
