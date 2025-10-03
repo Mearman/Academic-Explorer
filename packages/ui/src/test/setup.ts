@@ -1,26 +1,43 @@
-import '@testing-library/jest-dom';
-import { vi } from 'vitest';
+import "@testing-library/jest-dom";
+import { vi } from "vitest";
 
 // Mock IntersectionObserver for tests
 global.IntersectionObserver = class IntersectionObserver {
   root = null;
-  rootMargin = '';
+  rootMargin = "";
   thresholds = [];
   observe() {}
   disconnect() {}
   unobserve() {}
-  takeRecords() { return []; }
+  takeRecords() {
+    return [];
+  }
 } as unknown as typeof IntersectionObserver;
 
 // Mock ResizeObserver for tests
 global.ResizeObserver = class ResizeObserver {
   observe() {}
-  disconnect() {}
   unobserve() {}
+  disconnect() {}
 };
 
+// Mock window.matchMedia for Mantine components
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: vi.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(), // deprecated
+    removeListener: vi.fn(), // deprecated
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
 // Mock window.matchMedia
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(window, "matchMedia", {
   writable: true,
   value: vi.fn().mockImplementation((query) => ({
     matches: false,
@@ -35,9 +52,9 @@ Object.defineProperty(window, 'matchMedia', {
 });
 
 // Mock clipboard API
-Object.defineProperty(navigator, 'clipboard', {
+Object.defineProperty(navigator, "clipboard", {
   value: {
     writeText: vi.fn().mockResolvedValue(undefined),
-    readText: vi.fn().mockResolvedValue(''),
+    readText: vi.fn().mockResolvedValue(""),
   },
 });
