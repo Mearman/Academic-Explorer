@@ -1,0 +1,1 @@
+export { RichEntityView } from "./RichEntityView";
