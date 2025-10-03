@@ -211,7 +211,7 @@ export const arrayMatchers: ArrayMatcher[] = [
       const topicArray = array as TopicItem[];
       return (
         <Group gap="xs" wrap="wrap">
-          {topicArray.slice(0, 8).map((topic, index) => (
+          {topicArray.map((topic, index) => (
             <Badge
               key={index}
               variant="dot"
@@ -221,11 +221,6 @@ export const arrayMatchers: ArrayMatcher[] = [
               {topic.display_name} ({topic.count})
             </Badge>
           ))}
-          {topicArray.length > 8 && (
-            <Badge variant="outline" size="sm">
-              +{topicArray.length - 8} more
-            </Badge>
-          )}
         </Group>
       );
     },
@@ -381,7 +376,6 @@ export const arrayMatchers: ArrayMatcher[] = [
         <Group gap="xs" wrap="wrap">
           {conceptArray
             .sort((a, b) => b.score - a.score)
-            .slice(0, 6)
             .map((concept, index) => (
               <Badge
                 key={index}
@@ -392,11 +386,6 @@ export const arrayMatchers: ArrayMatcher[] = [
                 {concept.display_name} ({(concept.score * 100).toFixed(0)}%)
               </Badge>
             ))}
-          {conceptArray.length > 6 && (
-            <Badge variant="outline" size="sm">
-              +{conceptArray.length - 6} more
-            </Badge>
-          )}
         </Group>
       );
     },
