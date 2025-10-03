@@ -34,6 +34,7 @@ import { useGraphData } from "@/hooks/use-graph-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { logger } from "@academic-explorer/utils/logger";
 import type { GraphNode, EntityType } from "@academic-explorer/graph";
+import { useNavigate } from "@tanstack/react-router";
 
 import {
   IconFile,
@@ -88,11 +89,38 @@ const NodeItem: React.FC<NodeItemProps> = ({
   const { colors } = themeColors;
   const pinnedNodes = useGraphStore((state) => state.pinnedNodes);
   const isPinned = pinnedNodes[node.id] ?? false;
+  const navigate = useNavigate();
 
   const entityTypeOption = entityTypeOptions.find(
     (opt) => opt.type === node.entityType,
   );
   const IconComponent = entityTypeOption?.icon ?? IconFile;
+
+  const handleEntityClick = () => {
+    if (node.entityId) {
+      // Navigate to entity detail page
+      if (node.entityType === "authors" && node.entityId.startsWith("A")) {
+        void navigate({ to: `/authors/${node.entityId}` });
+      } else if (node.entityType === "works" && node.entityId.startsWith("W")) {
+        void navigate({ to: `/works/${node.entityId}` });
+      } else if (
+        node.entityType === "sources" &&
+        node.entityId.startsWith("S")
+      ) {
+        void navigate({ to: `/sources/${node.entityId}` });
+      } else if (
+        node.entityType === "institutions" &&
+        node.entityId.startsWith("I")
+      ) {
+        void navigate({ to: `/institutions/${node.entityId}` });
+      } else if (
+        node.entityType === "topics" &&
+        node.entityId.startsWith("T")
+      ) {
+        void navigate({ to: `/topics/${node.entityId}` });
+      }
+    }
+  };
 
   return (
     <Card
@@ -118,7 +146,18 @@ const NodeItem: React.FC<NodeItemProps> = ({
           />
           <IconComponent size={16} color={colors.text.secondary} />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <Text size="sm" fw={500} truncate title={node.label}>
+            <Text
+              size="sm"
+              fw={500}
+              truncate
+              title={node.label}
+              style={{
+                cursor: node.entityId ? "pointer" : "default",
+                textDecoration: node.entityId ? "underline" : "none",
+                color: node.entityId ? colors.primary : colors.text.primary,
+              }}
+              onClick={node.entityId ? handleEntityClick : undefined}
+            >
               {node.label}
             </Text>
             <Group gap="xs">
