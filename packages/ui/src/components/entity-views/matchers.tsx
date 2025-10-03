@@ -272,7 +272,7 @@ export const arrayMatchers: ArrayMatcher[] = [
                     </Table.Td>
                     <Table.Td>
                       <Badge variant="light" color="blue" size="sm">
-                        {(topic.value * 100).toFixed(3)}%
+                        {(topic.value * 1_000_000).toFixed()}%
                       </Badge>
                     </Table.Td>
                     <Table.Td>
