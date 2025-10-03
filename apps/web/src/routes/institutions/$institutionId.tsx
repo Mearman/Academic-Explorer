@@ -56,7 +56,6 @@ function InstitutionRoute() {
 
   // Fetch entity data for title
   const rawEntityData = useRawEntityData({
-    entityType,
     entityId: institutionId,
     enabled: !!institutionId,
   });

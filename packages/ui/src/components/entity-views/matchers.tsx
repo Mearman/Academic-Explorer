@@ -10,7 +10,6 @@ import {
   Text,
   Card,
   Stack,
-  Box,
   Anchor,
   Tooltip,
   ActionIcon,
@@ -254,7 +253,7 @@ export const arrayMatchers: ArrayMatcher[] = [
     render: (array: unknown[], _fieldName: string): React.ReactNode => {
       const topicArray = array as TopicShareItem[];
       return (
-        <Box style={{ maxHeight: "400px", overflow: "auto" }}>
+        <>
           <Table striped withTableBorder>
             <Table.Thead>
               <Table.Tr>
@@ -305,7 +304,7 @@ export const arrayMatchers: ArrayMatcher[] = [
               Showing top 15 topics by share of {topicArray.length} total
             </Text>
           )}
-        </Box>
+        </>
       );
     },
   },
@@ -328,7 +327,7 @@ export const arrayMatchers: ArrayMatcher[] = [
     render: (array: unknown[], _fieldName: string): React.ReactNode => {
       const citationArray = array as CitationHistoryItem[];
       return (
-        <Box style={{ maxHeight: "300px", overflow: "auto" }}>
+        <>
           <Table striped withTableBorder>
             <Table.Thead>
               <Table.Tr>
@@ -355,7 +354,7 @@ export const arrayMatchers: ArrayMatcher[] = [
               Showing 10 most recent years of {citationArray.length} total
             </Text>
           )}
-        </Box>
+        </>
       );
     },
   },

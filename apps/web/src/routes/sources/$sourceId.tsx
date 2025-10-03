@@ -25,7 +25,6 @@ function SourceRoute() {
 
   // Fetch entity data for title
   const rawEntityData = useRawEntityData({
-    entityType,
     entityId: sourceId,
     enabled: !!sourceId,
   });

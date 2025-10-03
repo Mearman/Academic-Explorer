@@ -26,7 +26,7 @@ function AuthorRoute() {
   const nodeCount = useGraphStore((state) => state.totalNodeCount);
 
   // Step 2: Re-enable useRawEntityData (entity data fetching)
-  const rawEntityData = useRawEntityData({ entityType, entityId: authorId });
+  const rawEntityData = useRawEntityData({ entityId: authorId });
 
   // Step 3: Testing useEntityDocumentTitle hook
   useEntityDocumentTitle(rawEntityData.data);

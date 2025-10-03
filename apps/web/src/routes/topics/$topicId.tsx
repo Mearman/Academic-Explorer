@@ -25,7 +25,6 @@ function TopicRoute() {
 
   // Fetch entity data for title
   const rawEntityData = useRawEntityData({
-    entityType,
     entityId: topicId,
     enabled: !!topicId,
   });

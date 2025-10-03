@@ -56,7 +56,6 @@ function WorkRoute() {
 
   // Fetch entity data for title
   const rawEntityData = useRawEntityData({
-    entityType,
     entityId: workId,
     enabled: !!workId,
   });
