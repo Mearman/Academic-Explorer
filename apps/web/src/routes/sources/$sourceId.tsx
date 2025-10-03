@@ -85,6 +85,22 @@ function SourceRoute() {
     );
   }
 
+  // Show error if no data available
+  if (!rawEntityData.data) {
+    return (
+      <div className="p-4 text-center text-red-500">
+        <h2>No Source Data Available</h2>
+        <p>Source ID: {sourceId}</p>
+        <button
+          onClick={() => rawEntityData.refetch?.()}
+          className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   // Show content based on view mode
   return (
     <div className="p-4 max-w-full overflow-auto">
