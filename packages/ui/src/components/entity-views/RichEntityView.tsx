@@ -19,11 +19,11 @@ const RichEntityView: React.FC<RichEntityViewProps> = ({
   const getDisplayName = (
     entity: OpenAlexEntity | Record<string, unknown>,
   ): string => {
-    const entityAny = entity as any; // Type assertion for flexible access
+    const entityRecord = entity as Record<string, unknown>;
     return (
-      entityAny.display_name ||
-      entityAny.title ||
-      entityAny.name ||
+      (entityRecord.display_name as string) ||
+      (entityRecord.title as string) ||
+      (entityRecord.name as string) ||
       `${detectedType} Entity`
     );
   };
@@ -37,39 +37,42 @@ const RichEntityView: React.FC<RichEntityViewProps> = ({
       value: string | number;
       color?: string;
     }> = [];
-    const entityAny = entity as any; // Type assertion for flexible access
+    const entityRecord = entity as Record<string, unknown>;
 
-    if (entityAny.works_count !== undefined && entityAny.works_count !== null) {
+    if (
+      entityRecord.works_count !== undefined &&
+      entityRecord.works_count !== null
+    ) {
       metrics.push({
         label: "Works",
-        value: entityAny.works_count.toLocaleString(),
+        value: (entityRecord.works_count as number).toLocaleString(),
         color: "green",
       });
     }
 
     if (
-      entityAny.cited_by_count !== undefined &&
-      entityAny.cited_by_count !== null
+      entityRecord.cited_by_count !== undefined &&
+      entityRecord.cited_by_count !== null
     ) {
       metrics.push({
         label: "Citations",
-        value: entityAny.cited_by_count.toLocaleString(),
+        value: (entityRecord.cited_by_count as number).toLocaleString(),
         color: "orange",
       });
     }
 
-    if (entityAny.publication_year) {
+    if (entityRecord.publication_year) {
       metrics.push({
         label: "Year",
-        value: entityAny.publication_year,
+        value: entityRecord.publication_year as number,
         color: "blue",
       });
     }
 
-    if (entityAny.type) {
+    if (entityRecord.type) {
       metrics.push({
         label: "Type",
-        value: entityAny.type,
+        value: entityRecord.type as string,
         color: "purple",
       });
     }

@@ -10,31 +10,11 @@ import {
   findObjectMatcher,
   findValueMatcher,
 } from "./matchers";
-import {
-  formatFieldName,
-  groupFields,
-  type FieldPriority,
-} from "./field-detection";
+import { formatFieldName, groupFields } from "./field-detection";
 
 interface FieldRendererProps {
   fieldName: string;
   value: unknown;
-}
-
-/**
- * Convert FieldPriority to numeric priority for matchers
- */
-function priorityToNumber(priority: FieldPriority): number {
-  switch (priority) {
-    case "high":
-      return 10;
-    case "medium":
-      return 5;
-    case "low":
-      return 1;
-    default:
-      return 5;
-  }
 }
 
 /**

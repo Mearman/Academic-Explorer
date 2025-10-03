@@ -17,24 +17,76 @@ import {
 } from "@mantine/core";
 import { IconCopy, IconExternalLink } from "@tabler/icons-react";
 
+interface TopicShareItem {
+  id: string;
+  display_name: string;
+  value: number;
+  subfield: {
+    display_name: string;
+  };
+  field: {
+    display_name: string;
+  };
+  domain: {
+    display_name: string;
+  };
+}
+
+interface AuthorItem {
+  author: {
+    display_name: string;
+    id: string;
+  };
+  author_position: string;
+}
+
+interface InstitutionItem {
+  display_name: string;
+  country_code: string;
+}
+
+interface TopicItem {
+  display_name: string;
+  count: number;
+}
+
+interface CitationHistoryItem {
+  year: number;
+  cited_by_count: number;
+  works_count: number;
+}
+
+interface ConceptItem {
+  display_name: string;
+  level: number;
+  score: number;
+}
+
+interface AffiliationItem {
+  institution: {
+    display_name: string;
+  };
+  years: number[];
+}
+
 export interface ArrayMatcher {
   name: string;
-  detect: (array: any[]) => boolean;
-  render: (array: any[], fieldName: string) => React.ReactNode;
+  detect: (array: unknown[]) => boolean;
+  render: (array: unknown[], fieldName: string) => React.ReactNode;
   priority?: number; // Higher priority matchers are checked first
 }
 
 export interface ObjectMatcher {
   name: string;
-  detect: (obj: any) => boolean;
-  render: (obj: any, fieldName: string) => React.ReactNode;
+  detect: (obj: unknown) => boolean;
+  render: (obj: unknown, fieldName: string) => React.ReactNode;
   priority?: number;
 }
 
 export interface ValueMatcher {
   name: string;
-  detect: (value: any) => boolean;
-  render: (value: any, fieldName: string) => React.ReactNode;
+  detect: (value: unknown) => boolean;
+  render: (value: unknown, fieldName: string) => React.ReactNode;
   priority?: number;
 }
 
@@ -46,61 +98,65 @@ export const arrayMatchers: ArrayMatcher[] = [
   {
     name: "authors",
     priority: 10,
-    detect: (array: any[]) => {
+    detect: (array: unknown[]): boolean => {
       if (!Array.isArray(array) || array.length === 0) return false;
 
-      const first = array[0];
+      const first = array[0] as Record<string, unknown>;
       return (
         typeof first === "object" &&
         first !== null &&
         "author" in first &&
         "author_position" in first &&
         typeof first.author === "object" &&
-        first.author?.display_name
+        first.author !== null &&
+        (first.author as Record<string, unknown>).display_name !== undefined
       );
     },
-    render: (array: any[], fieldName: string) => (
-      <Group gap="xs" wrap="wrap">
-        {array.slice(0, 10).map((authorship: any, index: number) => {
-          const { author } = authorship;
-          const position = authorship.author_position;
-          const positionLabel =
-            position === "first"
-              ? " (First)"
-              : position === "last"
-                ? " (Last)"
-                : "";
+    render: (array: unknown[], _fieldName: string): React.ReactNode => {
+      const authorArray = array as AuthorItem[];
+      return (
+        <Group gap="xs" wrap="wrap">
+          {authorArray.slice(0, 10).map((authorship, index) => {
+            const { author } = authorship;
+            const position = authorship.author_position;
+            const positionLabel =
+              position === "first"
+                ? " (First)"
+                : position === "last"
+                  ? " (Last)"
+                  : "";
 
-          return (
-            <Badge
-              key={index}
-              variant="outline"
-              size="sm"
-              style={{ cursor: "pointer" }}
-              onClick={() => {
-                // Could navigate to author page
-                console.log("Navigate to author:", author.id);
-              }}
-            >
-              {author.display_name}
-              {positionLabel}
+            return (
+              <Badge
+                key={index}
+                variant="outline"
+                size="sm"
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  // Could navigate to author page
+                  // TODO: Implement navigation to author page
+                }}
+              >
+                {author.display_name}
+                {positionLabel}
+              </Badge>
+            );
+          })}
+          {authorArray.length > 10 && (
+            <Badge variant="outline" size="sm">
+              +{authorArray.length - 10} more
             </Badge>
-          );
-        })}
-        {array.length > 10 && (
-          <Badge variant="outline" size="sm">
-            +{array.length - 10} more
-          </Badge>
-        )}
-      </Group>
-    ),
+          )}
+        </Group>
+      );
+    },
   },
 
   // Institution array matcher (from authors.last_known_institutions)
   {
     name: "institutions",
     priority: 9,
-    detect: (array: any[]) => {
+    detect: (array: unknown[]): boolean => {
       if (!Array.isArray(array) || array.length === 0) return false;
 
       const first = array[0];
@@ -111,34 +167,37 @@ export const arrayMatchers: ArrayMatcher[] = [
         "country_code" in first
       );
     },
-    render: (array: any[], fieldName: string) => (
-      <Stack gap="xs">
-        {array.slice(0, 5).map((institution: any, index: number) => (
-          <Group key={index} justify="space-between" wrap="nowrap">
-            <Text size="sm" style={{ flex: 1 }}>
-              {institution.display_name}
+    render: (array: unknown[], _fieldName: string): React.ReactNode => {
+      const institutionArray = array as InstitutionItem[];
+      return (
+        <Stack gap="xs">
+          {institutionArray.slice(0, 5).map((institution, index) => (
+            <Group key={index} justify="space-between" wrap="nowrap">
+              <Text size="sm" style={{ flex: 1 }}>
+                {institution.display_name}
+              </Text>
+              {institution.country_code && (
+                <Badge size="sm" variant="outline">
+                  {institution.country_code.toUpperCase()}
+                </Badge>
+              )}
+            </Group>
+          ))}
+          {institutionArray.length > 5 && (
+            <Text size="sm" c="dimmed">
+              +{institutionArray.length - 5} more institutions
             </Text>
-            {institution.country_code && (
-              <Badge size="sm" variant="outline">
-                {institution.country_code.toUpperCase()}
-              </Badge>
-            )}
-          </Group>
-        ))}
-        {array.length > 5 && (
-          <Text size="sm" c="dimmed">
-            +{array.length - 5} more institutions
-          </Text>
-        )}
-      </Stack>
-    ),
+          )}
+        </Stack>
+      );
+    },
   },
 
   // Topic array matcher (from authors.topics or works.topics)
   {
     name: "topics",
     priority: 8,
-    detect: (array: any[]) => {
+    detect: (array: unknown[]): boolean => {
       if (!Array.isArray(array) || array.length === 0) return false;
 
       const first = array[0];
@@ -149,32 +208,113 @@ export const arrayMatchers: ArrayMatcher[] = [
         "count" in first
       );
     },
-    render: (array: any[], fieldName: string) => (
-      <Group gap="xs" wrap="wrap">
-        {array.slice(0, 8).map((topic: any, index: number) => (
-          <Badge
-            key={index}
-            variant="dot"
-            size="sm"
-            color={getTopicColor(topic)}
-          >
-            {topic.display_name} ({topic.count})
-          </Badge>
-        ))}
-        {array.length > 8 && (
-          <Badge variant="outline" size="sm">
-            +{array.length - 8} more
-          </Badge>
-        )}
-      </Group>
-    ),
+    render: (array: unknown[], _fieldName: string): React.ReactNode => {
+      const topicArray = array as TopicItem[];
+      return (
+        <Group gap="xs" wrap="wrap">
+          {topicArray.slice(0, 8).map((topic, index) => (
+            <Badge
+              key={index}
+              variant="dot"
+              size="sm"
+              color={getTopicColor(topic)}
+            >
+              {topic.display_name} ({topic.count})
+            </Badge>
+          ))}
+          {topicArray.length > 8 && (
+            <Badge variant="outline" size="sm">
+              +{topicArray.length - 8} more
+            </Badge>
+          )}
+        </Group>
+      );
+    },
+  },
+
+  // Topic share array matcher (topic_share with hierarchical data)
+  {
+    name: "topic-share",
+    priority: 9,
+    detect: (array: unknown[]): boolean => {
+      if (!Array.isArray(array) || array.length === 0) return false;
+
+      const first = array[0];
+      return (
+        typeof first === "object" &&
+        first !== null &&
+        "id" in first &&
+        "display_name" in first &&
+        "value" in first &&
+        "subfield" in first &&
+        "field" in first &&
+        "domain" in first
+      );
+    },
+    render: (array: unknown[], _fieldName: string): React.ReactNode => {
+      const topicArray = array as TopicShareItem[];
+      return (
+        <Box style={{ maxHeight: "400px", overflow: "auto" }}>
+          <Table striped withTableBorder>
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>Topic</Table.Th>
+                <Table.Th>Share</Table.Th>
+                <Table.Th>Subfield</Table.Th>
+                <Table.Th>Field</Table.Th>
+                <Table.Th>Domain</Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              {topicArray
+                .sort((a, b) => (b.value || 0) - (a.value || 0))
+                .slice(0, 15)
+                .map((topic, index) => (
+                  <Table.Tr key={topic.id || index}>
+                    <Table.Td>
+                      <Text size="sm" fw={500}>
+                        {topic.display_name}
+                      </Text>
+                    </Table.Td>
+                    <Table.Td>
+                      <Badge variant="light" color="blue" size="sm">
+                        {(topic.value * 100).toFixed(3)}%
+                      </Badge>
+                    </Table.Td>
+                    <Table.Td>
+                      <Text size="xs" c="dimmed">
+                        {topic.subfield?.display_name}
+                      </Text>
+                    </Table.Td>
+                    <Table.Td>
+                      <Text size="xs" c="dimmed">
+                        {topic.field?.display_name}
+                      </Text>
+                    </Table.Td>
+                    <Table.Td>
+                      <Text size="xs" c="dimmed">
+                        {topic.domain?.display_name}
+                      </Text>
+                    </Table.Td>
+                  </Table.Tr>
+                ))}
+            </Table.Tbody>
+          </Table>
+          {topicArray.length > 15 && (
+            <Text size="sm" c="dimmed" mt="xs">
+              Showing top 15 topics by share of {topicArray.length} total
+            </Text>
+          )}
+        </Box>
+      );
+    },
   },
 
   // Citation history matcher (counts_by_year)
   {
     name: "citation-history",
     priority: 10,
-    detect: (array: any[]) => {
+    detect: (array: unknown[]): boolean => {
       if (!Array.isArray(array) || array.length === 0) return false;
 
       const first = array[0];
@@ -185,43 +325,46 @@ export const arrayMatchers: ArrayMatcher[] = [
         "cited_by_count" in first
       );
     },
-    render: (array: any[], fieldName: string) => (
-      <Box style={{ maxHeight: "300px", overflow: "auto" }}>
-        <Table striped withTableBorder>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Year</Table.Th>
-              <Table.Th>Citations</Table.Th>
-              <Table.Th>Works</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {array
-              .sort((a, b) => b.year - a.year)
-              .slice(0, 10)
-              .map((count: any) => (
-                <Table.Tr key={count.year}>
-                  <Table.Td>{count.year}</Table.Td>
-                  <Table.Td>{count.cited_by_count || 0}</Table.Td>
-                  <Table.Td>{count.works_count || 0}</Table.Td>
-                </Table.Tr>
-              ))}
-          </Table.Tbody>
-        </Table>
-        {array.length > 10 && (
-          <Text size="sm" c="dimmed" mt="xs">
-            Showing 10 most recent years of {array.length} total
-          </Text>
-        )}
-      </Box>
-    ),
+    render: (array: unknown[], _fieldName: string): React.ReactNode => {
+      const citationArray = array as CitationHistoryItem[];
+      return (
+        <Box style={{ maxHeight: "300px", overflow: "auto" }}>
+          <Table striped withTableBorder>
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>Year</Table.Th>
+                <Table.Th>Citations</Table.Th>
+                <Table.Th>Works</Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              {citationArray
+                .sort((a, b) => b.year - a.year)
+                .slice(0, 10)
+                .map((count) => (
+                  <Table.Tr key={count.year}>
+                    <Table.Td>{count.year}</Table.Td>
+                    <Table.Td>{count.cited_by_count || 0}</Table.Td>
+                    <Table.Td>{count.works_count || 0}</Table.Td>
+                  </Table.Tr>
+                ))}
+            </Table.Tbody>
+          </Table>
+          {citationArray.length > 10 && (
+            <Text size="sm" c="dimmed" mt="xs">
+              Showing 10 most recent years of {citationArray.length} total
+            </Text>
+          )}
+        </Box>
+      );
+    },
   },
 
   // Concept array matcher (x_concepts)
   {
     name: "concepts",
     priority: 7,
-    detect: (array: any[]) => {
+    detect: (array: unknown[]): boolean => {
       if (!Array.isArray(array) || array.length === 0) return false;
 
       const first = array[0];
@@ -233,35 +376,38 @@ export const arrayMatchers: ArrayMatcher[] = [
         "score" in first
       );
     },
-    render: (array: any[], fieldName: string) => (
-      <Group gap="xs" wrap="wrap">
-        {array
-          .sort((a, b) => b.score - a.score)
-          .slice(0, 6)
-          .map((concept: any, index: number) => (
-            <Badge
-              key={index}
-              variant="light"
-              size="sm"
-              color={getConceptColor(concept.level)}
-            >
-              {concept.display_name} ({(concept.score * 100).toFixed(0)}%)
+    render: (array: unknown[], _fieldName: string): React.ReactNode => {
+      const conceptArray = array as ConceptItem[];
+      return (
+        <Group gap="xs" wrap="wrap">
+          {conceptArray
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 6)
+            .map((concept, index) => (
+              <Badge
+                key={index}
+                variant="light"
+                size="sm"
+                color={getConceptColor(concept.level)}
+              >
+                {concept.display_name} ({(concept.score * 100).toFixed(0)}%)
+              </Badge>
+            ))}
+          {conceptArray.length > 6 && (
+            <Badge variant="outline" size="sm">
+              +{conceptArray.length - 6} more
             </Badge>
-          ))}
-        {array.length > 6 && (
-          <Badge variant="outline" size="sm">
-            +{array.length - 6} more
-          </Badge>
-        )}
-      </Group>
-    ),
+          )}
+        </Group>
+      );
+    },
   },
 
   // Affiliation array matcher (from authors.affiliations)
   {
     name: "affiliations",
     priority: 6,
-    detect: (array: any[]) => {
+    detect: (array: unknown[]): boolean => {
       if (!Array.isArray(array) || array.length === 0) return false;
 
       const first = array[0];
@@ -272,27 +418,30 @@ export const arrayMatchers: ArrayMatcher[] = [
         "years" in first
       );
     },
-    render: (array: any[], fieldName: string) => (
-      <Stack gap="xs">
-        {array.slice(0, 3).map((affiliation: any, index: number) => (
-          <Card key={index} padding="xs" radius="sm" withBorder>
-            <Group justify="space-between" wrap="nowrap">
-              <Text size="sm" style={{ flex: 1 }}>
-                {affiliation.institution?.display_name}
-              </Text>
-              <Badge size="sm" variant="outline">
-                {affiliation.years?.join("-") || "Unknown"}
-              </Badge>
-            </Group>
-          </Card>
-        ))}
-        {array.length > 3 && (
-          <Text size="sm" c="dimmed">
-            +{array.length - 3} more affiliations
-          </Text>
-        )}
-      </Stack>
-    ),
+    render: (array: unknown[], _fieldName: string): React.ReactNode => {
+      const affiliationArray = array as AffiliationItem[];
+      return (
+        <Stack gap="xs">
+          {affiliationArray.slice(0, 3).map((affiliation, index) => (
+            <Card key={index} padding="xs" radius="sm" withBorder>
+              <Group justify="space-between" wrap="nowrap">
+                <Text size="sm" style={{ flex: 1 }}>
+                  {affiliation.institution?.display_name}
+                </Text>
+                <Badge size="sm" variant="outline">
+                  {affiliation.years?.join("-") || "Unknown"}
+                </Badge>
+              </Group>
+            </Card>
+          ))}
+          {affiliationArray.length > 3 && (
+            <Text size="sm" c="dimmed">
+              +{affiliationArray.length - 3} more affiliations
+            </Text>
+          )}
+        </Stack>
+      );
+    },
   },
 ];
 
@@ -304,10 +453,10 @@ export const objectMatchers: ObjectMatcher[] = [
   {
     name: "id-object",
     priority: 10,
-    detect: (obj: any) => {
+    detect: (obj: unknown): boolean => {
       if (typeof obj !== "object" || obj === null) return false;
 
-      const keys = Object.keys(obj);
+      const keys = Object.keys(obj as Record<string, unknown>);
       return keys.some(
         (key) =>
           key === "openalex" ||
@@ -318,100 +467,117 @@ export const objectMatchers: ObjectMatcher[] = [
           key === "scopus",
       );
     },
-    render: (obj: any, fieldName: string) => (
-      <Group gap="xs" wrap="wrap">
-        {Object.entries(obj).map(([key, value]: [string, any]) => {
-          if (!value) return null;
+    render: (obj: unknown, _fieldName: string): React.ReactNode => {
+      const idObj = obj as Record<string, string>;
+      return (
+        <Group gap="xs" wrap="wrap">
+          {Object.entries(idObj).map(([key, value]) => {
+            if (!value) return null;
 
-          const displayKey = key.toUpperCase();
-          const isSpecialId = key === "orcid" || key === "doi" || key === "ror";
+            const displayKey = key.toUpperCase();
+            const isSpecialId =
+              key === "orcid" || key === "doi" || key === "ror";
 
-          return (
-            <Group key={key} gap="xs" wrap="nowrap">
-              <Badge
-                variant={isSpecialId ? "filled" : "light"}
-                size="sm"
-                color={getIdColor(key)}
-              >
-                {displayKey}: {value}
-              </Badge>
-              <Tooltip label="Copy to clipboard">
-                <ActionIcon
+            return (
+              <Group key={key} gap="xs" wrap="nowrap">
+                <Badge
+                  variant={isSpecialId ? "filled" : "light"}
                   size="sm"
-                  variant="subtle"
-                  onClick={() => navigator.clipboard.writeText(value)}
+                  color={getIdColor(key)}
                 >
-                  <IconCopy size={14} />
-                </ActionIcon>
-              </Tooltip>
-            </Group>
-          );
-        })}
-      </Group>
-    ),
+                  {displayKey}: {value}
+                </Badge>
+                <Tooltip label="Copy to clipboard">
+                  <ActionIcon
+                    size="sm"
+                    variant="subtle"
+                    onClick={() => navigator.clipboard.writeText(value)}
+                  >
+                    <IconCopy size={14} />
+                  </ActionIcon>
+                </Tooltip>
+              </Group>
+            );
+          })}
+        </Group>
+      );
+    },
   },
 
   // Summary stats matcher (h_index, i10_index, etc.)
   {
     name: "summary-stats",
     priority: 9,
-    detect: (obj: any) => {
+    detect: (obj: unknown): boolean => {
       if (typeof obj !== "object" || obj === null) return false;
 
+      const objKeys = obj as Record<string, unknown>;
       return (
-        "h_index" in obj || "i10_index" in obj || "2yr_mean_citedness" in obj
+        "h_index" in objKeys ||
+        "i10_index" in objKeys ||
+        "2yr_mean_citedness" in objKeys
       );
     },
-    render: (obj: any, fieldName: string) => (
-      <Group gap="md">
-        {obj.h_index !== undefined && (
-          <Badge color="purple" variant="light" size="lg">
-            H-index: {obj.h_index}
-          </Badge>
-        )}
-        {obj.i10_index !== undefined && (
-          <Badge color="purple" variant="light" size="lg">
-            i10-index: {obj.i10_index}
-          </Badge>
-        )}
-        {obj["2yr_mean_citedness"] !== undefined && (
-          <Badge color="purple" variant="light" size="lg">
-            2yr Mean Citedness: {obj["2yr_mean_citedness"].toFixed(2)}
-          </Badge>
-        )}
-      </Group>
-    ),
+    render: (obj: unknown, _fieldName: string): React.ReactNode => {
+      const statsObj = obj as Record<string, number>;
+      return (
+        <Group gap="md">
+          {statsObj.h_index !== undefined && (
+            <Badge color="purple" variant="light" size="lg">
+              H-index: {statsObj.h_index}
+            </Badge>
+          )}
+          {statsObj.i10_index !== undefined && (
+            <Badge color="purple" variant="light" size="lg">
+              i10-index: {statsObj.i10_index}
+            </Badge>
+          )}
+          {statsObj["2yr_mean_citedness"] !== undefined && (
+            <Badge color="purple" variant="light" size="lg">
+              2yr Mean Citedness: {statsObj["2yr_mean_citedness"].toFixed(2)}
+            </Badge>
+          )}
+        </Group>
+      );
+    },
   },
 
   // Geographic data matcher
   {
     name: "geo-data",
     priority: 8,
-    detect: (obj: any) => {
+    detect: (obj: unknown): boolean => {
       if (typeof obj !== "object" || obj === null) return false;
 
-      return "city" in obj || "country_code" in obj || "latitude" in obj;
+      const objKeys = obj as Record<string, unknown>;
+      return (
+        "city" in objKeys || "country_code" in objKeys || "latitude" in objKeys
+      );
     },
-    render: (obj: any, fieldName: string) => (
-      <Group gap="md">
-        {obj.city && (
-          <Text size="sm">
-            <strong>City:</strong> {obj.city}
-          </Text>
-        )}
-        {obj.country_code && (
-          <Text size="sm">
-            <strong>Country:</strong> {obj.country_code.toUpperCase()}
-          </Text>
-        )}
-        {obj.latitude && obj.longitude && (
-          <Text size="sm">
-            <strong>Coordinates:</strong> {obj.latitude.toFixed(4)},{" "}
-            {obj.longitude.toFixed(4)}
-          </Text>
-        )}
-      </Group>
-    ),
+    render: (obj: unknown, _fieldName: string): React.ReactNode => {
+      const geoObj = obj as Record<string, string | number>;
+      return (
+        <Group gap="md">
+          {geoObj.city && (
+            <Text size="sm">
+              <strong>City:</strong> {geoObj.city}
+            </Text>
+          )}
+          {geoObj.country_code && (
+            <Text size="sm">
+              <strong>Country:</strong>{" "}
+              {geoObj.country_code.toString().toUpperCase()}
+            </Text>
+          )}
+          {geoObj.latitude && geoObj.longitude && (
+            <Text size="sm">
+              <strong>Coordinates:</strong> {Number(geoObj.latitude).toFixed(4)}
+              , {Number(geoObj.longitude).toFixed(4)}
+            </Text>
+          )}
+        </Group>
+      );
+    },
   },
 ];
 
@@ -423,94 +589,103 @@ export const valueMatchers: ValueMatcher[] = [
   {
     name: "doi",
     priority: 10,
-    detect: (value: any) => {
+    detect: (value: unknown): boolean => {
       if (typeof value !== "string") return false;
       return /^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i.test(value);
     },
-    render: (value: any, fieldName: string) => (
-      <Group gap="xs" wrap="nowrap">
-        <Badge color="blue" variant="light">
-          DOI: {value}
-        </Badge>
-        <Tooltip label="Open in DOI resolver">
-          <ActionIcon
-            size="sm"
-            variant="subtle"
-            component="a"
-            href={`https://doi.org/${value}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <IconExternalLink size={14} />
-          </ActionIcon>
-        </Tooltip>
-      </Group>
-    ),
+    render: (value: unknown, _fieldName: string): React.ReactNode => {
+      const doiValue = value as string;
+      return (
+        <Group gap="xs" wrap="nowrap">
+          <Badge color="blue" variant="light">
+            DOI: {doiValue}
+          </Badge>
+          <Tooltip label="Open in DOI resolver">
+            <ActionIcon
+              size="sm"
+              variant="subtle"
+              component="a"
+              href={`https://doi.org/${doiValue}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <IconExternalLink size={14} />
+            </ActionIcon>
+          </Tooltip>
+        </Group>
+      );
+    },
   },
 
   // ORCID matcher
   {
     name: "orcid",
     priority: 9,
-    detect: (value: any) => {
+    detect: (value: unknown): boolean => {
       if (typeof value !== "string") return false;
       return /^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/.test(value);
     },
-    render: (value: any, fieldName: string) => (
-      <Group gap="xs" wrap="nowrap">
-        <Badge color="green" variant="light">
-          ORCID: {value}
-        </Badge>
-        <Tooltip label="Open in ORCID">
-          <ActionIcon
-            size="sm"
-            variant="subtle"
-            component="a"
-            href={`https://orcid.org/${value}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <IconExternalLink size={14} />
-          </ActionIcon>
-        </Tooltip>
-      </Group>
-    ),
+    render: (value: unknown, _fieldName: string): React.ReactNode => {
+      const orcidValue = value as string;
+      return (
+        <Group gap="xs" wrap="nowrap">
+          <Badge color="green" variant="light">
+            ORCID: {orcidValue}
+          </Badge>
+          <Tooltip label="Open in ORCID">
+            <ActionIcon
+              size="sm"
+              variant="subtle"
+              component="a"
+              href={`https://orcid.org/${orcidValue}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <IconExternalLink size={14} />
+            </ActionIcon>
+          </Tooltip>
+        </Group>
+      );
+    },
   },
 
   // ROR matcher
   {
     name: "ror",
     priority: 8,
-    detect: (value: any) => {
+    detect: (value: unknown): boolean => {
       if (typeof value !== "string") return false;
       return /^0[a-zA-Z0-9]{8}$/.test(value);
     },
-    render: (value: any, fieldName: string) => (
-      <Group gap="xs" wrap="nowrap">
-        <Badge color="orange" variant="light">
-          ROR: {value}
-        </Badge>
-        <Tooltip label="Open in ROR">
-          <ActionIcon
-            size="sm"
-            variant="subtle"
-            component="a"
-            href={`https://ror.org/${value}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <IconExternalLink size={14} />
-          </ActionIcon>
-        </Tooltip>
-      </Group>
-    ),
+    render: (value: unknown, _fieldName: string): React.ReactNode => {
+      const rorValue = value as string;
+      return (
+        <Group gap="xs" wrap="nowrap">
+          <Badge color="orange" variant="light">
+            ROR: {rorValue}
+          </Badge>
+          <Tooltip label="Open in ROR">
+            <ActionIcon
+              size="sm"
+              variant="subtle"
+              component="a"
+              href={`https://ror.org/${rorValue}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <IconExternalLink size={14} />
+            </ActionIcon>
+          </Tooltip>
+        </Group>
+      );
+    },
   },
 
   // URL matcher
   {
     name: "url",
     priority: 7,
-    detect: (value: any) => {
+    detect: (value: unknown): boolean => {
       if (typeof value !== "string") return false;
       try {
         new URL(value);
@@ -519,33 +694,44 @@ export const valueMatchers: ValueMatcher[] = [
         return false;
       }
     },
-    render: (value: any, fieldName: string) => (
-      <Anchor href={value} target="_blank" rel="noopener noreferrer" size="sm">
-        {value}
-      </Anchor>
-    ),
+    render: (value: unknown, _fieldName: string): React.ReactNode => {
+      const urlValue = value as string;
+      return (
+        <Anchor
+          href={urlValue}
+          target="_blank"
+          rel="noopener noreferrer"
+          size="sm"
+        >
+          {urlValue}
+        </Anchor>
+      );
+    },
   },
 
   // ISSN matcher
   {
     name: "issn",
     priority: 6,
-    detect: (value: any) => {
+    detect: (value: unknown): boolean => {
       if (typeof value !== "string") return false;
       return /^\d{4}-\d{3}[\dX]$/.test(value);
     },
-    render: (value: any, fieldName: string) => (
-      <Badge color="teal" variant="light">
-        ISSN: {value}
-      </Badge>
-    ),
+    render: (value: unknown, _fieldName: string): React.ReactNode => {
+      const issnValue = value as string;
+      return (
+        <Badge color="teal" variant="light">
+          ISSN: {issnValue}
+        </Badge>
+      );
+    },
   },
 ];
 
 /**
  * Helper functions for styling
  */
-function getTopicColor(topic: any): string {
+function getTopicColor(topic: TopicItem): string {
   const colors = ["blue", "green", "orange", "red", "purple", "cyan"];
   const score = topic.count || 0;
   return colors[Math.min(Math.floor(score / 10), colors.length - 1)];
@@ -574,7 +760,7 @@ function getIdColor(key: string): string {
 /**
  * Find the best matcher for a given value
  */
-export function findArrayMatcher(array: any[]): ArrayMatcher | null {
+export function findArrayMatcher(array: unknown[]): ArrayMatcher | null {
   const sortedMatchers = arrayMatchers.sort(
     (a, b) => (b.priority || 0) - (a.priority || 0),
   );
@@ -587,7 +773,7 @@ export function findArrayMatcher(array: any[]): ArrayMatcher | null {
   return null;
 }
 
-export function findObjectMatcher(obj: any): ObjectMatcher | null {
+export function findObjectMatcher(obj: unknown): ObjectMatcher | null {
   const sortedMatchers = objectMatchers.sort(
     (a, b) => (b.priority || 0) - (a.priority || 0),
   );
@@ -600,7 +786,7 @@ export function findObjectMatcher(obj: any): ObjectMatcher | null {
   return null;
 }
 
-export function findValueMatcher(value: any): ValueMatcher | null {
+export function findValueMatcher(value: unknown): ValueMatcher | null {
   const sortedMatchers = valueMatchers.sort(
     (a, b) => (b.priority || 0) - (a.priority || 0),
   );

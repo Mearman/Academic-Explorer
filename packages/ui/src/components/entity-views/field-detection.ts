@@ -118,6 +118,7 @@ export function getFieldPriority(fieldName: string): FieldPriority {
     "cited_by_count",
     "type",
     "publication_year",
+    "topic_share",
   ];
 
   const mediumPriorityFields = [
@@ -195,6 +196,10 @@ export function getFieldGroup(fieldName: string): FieldGroup {
     counts_by_year: "temporal",
     publication_year: "temporal",
     publication_date: "temporal",
+
+    // Topics
+    topic_share: "relationships",
+    topics: "relationships",
   };
 
   return groupMappings[fieldName] || "other";
@@ -238,6 +243,7 @@ export function formatFieldName(fieldName: string): string {
     counts_by_year: "Citation History",
     summary_stats: "Statistics",
     x_concepts: "Concepts",
+    topic_share: "Topic Share",
     is_oa: "Open Access",
     is_in_doaj: "DOAJ Listed",
     apc_usd: "APC Price (USD)",
