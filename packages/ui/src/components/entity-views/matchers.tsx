@@ -15,6 +15,7 @@ import {
   ActionIcon,
 } from "@mantine/core";
 import { IconCopy, IconExternalLink } from "@tabler/icons-react";
+import { validateExternalId } from "@academic-explorer/client/utils/id-resolver";
 
 interface TopicShareItem {
   id: string;
@@ -466,20 +467,53 @@ export const objectMatchers: ObjectMatcher[] = [
             const isSpecialId =
               key === "orcid" || key === "doi" || key === "ror";
 
+            // Check if this is an OpenAlex ID that should be linked
+            const validation = validateExternalId(value);
+            let relativeUrl: string | null = null;
+
+            if (validation.isValid) {
+              if (validation.type === "openalex") {
+                relativeUrl = convertToRelativeUrl(
+                  `https://openalex.org/${value}`,
+                );
+              } else if (validation.type === "ror") {
+                // For ROR IDs, we can't easily resolve to OpenAlex institution IDs
+                // in the UI layer, so we'll link to external ROR page for now
+                relativeUrl = null;
+              }
+            }
+
             return (
               <Group key={key} gap="xs" wrap="nowrap">
-                <Badge
-                  variant={isSpecialId ? "filled" : "light"}
-                  size="sm"
-                  color={getIdColor(key)}
-                >
-                  {displayKey}: {value}
-                </Badge>
+                {relativeUrl ? (
+                  <Anchor
+                    href={relativeUrl}
+                    style={{ textDecoration: "none" }}
+                    aria-label={`Navigate to ${key} ${value}`}
+                  >
+                    <Badge
+                      variant={isSpecialId ? "filled" : "light"}
+                      size="sm"
+                      color={getIdColor(key)}
+                    >
+                      {displayKey}: {value}
+                    </Badge>
+                  </Anchor>
+                ) : (
+                  <Badge
+                    variant={isSpecialId ? "filled" : "light"}
+                    size="sm"
+                    color={getIdColor(key)}
+                  >
+                    {displayKey}: {value}
+                  </Badge>
+                )}
                 <Tooltip label="Copy to clipboard">
                   <ActionIcon
                     size="sm"
                     variant="subtle"
                     onClick={() => navigator.clipboard.writeText(value)}
+                    aria-label={`Copy ${key} ${value} to clipboard`}
                   >
                     <IconCopy size={14} />
                   </ActionIcon>
@@ -596,6 +630,7 @@ export const valueMatchers: ValueMatcher[] = [
               href={`https://doi.org/${doiValue}`}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label={`Open DOI ${doiValue} in external resolver`}
             >
               <IconExternalLink size={14} />
             </ActionIcon>
@@ -628,6 +663,7 @@ export const valueMatchers: ValueMatcher[] = [
               href={`https://orcid.org/${orcidValue}`}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label={`Open ORCID ${orcidValue} in external profile`}
             >
               <IconExternalLink size={14} />
             </ActionIcon>
@@ -660,6 +696,7 @@ export const valueMatchers: ValueMatcher[] = [
               href={`https://ror.org/${rorValue}`}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label={`Open ROR ${rorValue} in external registry`}
             >
               <IconExternalLink size={14} />
             </ActionIcon>
@@ -684,16 +721,28 @@ export const valueMatchers: ValueMatcher[] = [
     },
     render: (value: unknown, _fieldName: string): React.ReactNode => {
       const urlValue = value as string;
-      return (
-        <Anchor
-          href={urlValue}
-          target="_blank"
-          rel="noopener noreferrer"
-          size="sm"
-        >
-          {urlValue}
-        </Anchor>
-      );
+      const relativeUrl = convertToRelativeUrl(urlValue);
+
+      if (relativeUrl) {
+        // Use relative URL for OpenAlex links
+        return (
+          <Anchor href={relativeUrl} size="sm">
+            {urlValue}
+          </Anchor>
+        );
+      } else {
+        // Use external link for other URLs
+        return (
+          <Anchor
+            href={urlValue}
+            target="_blank"
+            rel="noopener noreferrer"
+            size="sm"
+          >
+            {urlValue}
+          </Anchor>
+        );
+      }
     },
   },
 
@@ -715,6 +764,107 @@ export const valueMatchers: ValueMatcher[] = [
     },
   },
 ];
+
+/**
+ * URL conversion utilities for OpenAlex links using existing canonical route logic
+ */
+export function convertToRelativeUrl(url: string): string | null {
+  try {
+    const urlObj = new URL(url);
+
+    // Convert OpenAlex API URLs to relative paths
+    if (urlObj.hostname === "api.openalex.org") {
+      const path = urlObj.pathname.substring(1); // Remove leading slash
+      const { search } = urlObj;
+      // For API URLs, preserve the full path with query parameters
+      return `./${path}${search}`;
+    }
+
+    // Convert OpenAlex entity URLs to relative paths
+    if (urlObj.hostname === "openalex.org") {
+      const pathParts = urlObj.pathname.split("/").filter(Boolean);
+      if (pathParts.length === 1) {
+        const fullPath = pathParts[0];
+        return determineCanonicalRoute(fullPath);
+      }
+    }
+
+    // For ROR URLs, we need special handling - they should link to institutions
+    // But we can't resolve ROR to OpenAlex ID here, so we'll handle this in the matcher
+    if (urlObj.hostname === "ror.org") {
+      return null; // Will be handled specially in the matcher
+    }
+
+    return null; // Not an OpenAlex URL
+  } catch {
+    return null; // Invalid URL
+  }
+}
+
+export function isOpenAlexUrl(url: string): boolean {
+  try {
+    const urlObj = new URL(url);
+    return (
+      urlObj.hostname === "api.openalex.org" ||
+      urlObj.hostname === "openalex.org" ||
+      urlObj.hostname === "ror.org"
+    );
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Determine the canonical relative route for a given path (adapted from redirect-test-utils)
+ */
+export function determineCanonicalRoute(path: string): string {
+  // Handle paths that start with entity type (e.g., "works?filter=...")
+  if (path.includes("?")) {
+    const [entityType] = path.split("?");
+    return `./${entityType}`;
+  }
+
+  // Handle entity paths (e.g., "W123456789", "works/W123456789")
+  const pathSegments = path.split("/");
+  if (pathSegments.length === 1) {
+    // Single segment like "W123456789" - extract entity type from first character
+    const entityId = pathSegments[0];
+    const entityType = getEntityTypeFromId(entityId);
+    return `./${entityType}/${entityId}`;
+  } else if (pathSegments.length >= 2) {
+    // Multi-segment path like "works/W123456789"
+    const entityType = pathSegments[0];
+    const entityId = pathSegments[1].split("?")[0]; // Remove query params for entity routes
+    return `./${entityType}/${entityId}`;
+  }
+
+  return `./${path}`;
+}
+
+/**
+ * Extract entity type from OpenAlex ID prefix
+ */
+function getEntityTypeFromId(id: string): string {
+  const firstChar = id.charAt(0).toLowerCase();
+  switch (firstChar) {
+    case "w":
+      return "works";
+    case "a":
+      return "authors";
+    case "i":
+      return "institutions";
+    case "s":
+      return "sources";
+    case "t":
+      return "topics";
+    case "p":
+      return "publishers";
+    case "f":
+      return "funders";
+    default:
+      return "works"; // fallback
+  }
+}
 
 /**
  * Helper functions for styling
