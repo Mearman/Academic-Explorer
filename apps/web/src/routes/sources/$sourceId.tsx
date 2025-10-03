@@ -99,7 +99,7 @@ function SourceRoute() {
           {JSON.stringify(rawEntityData.data, null, 2)}
         </pre>
       ) : (
-        <RichEntityView entity={rawEntityData.data!} entityType={entityType} />
+        <RichEntityView entity={rawEntityData.data} entityType={entityType} />
       )}
     </div>
   );

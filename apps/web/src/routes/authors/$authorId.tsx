@@ -126,6 +126,22 @@ function AuthorRoute() {
     );
   }
 
+  // Show error if no data available
+  if (!rawEntityData.data) {
+    return (
+      <div className="p-4 text-center text-red-500">
+        <h2>No Author Data Available</h2>
+        <p>Author ID: {authorId}</p>
+        <button
+          onClick={() => rawEntityData.refetch?.()}
+          className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   // Show content based on view mode
   return (
     <div className="p-4 max-w-full overflow-auto">
@@ -140,7 +156,7 @@ function AuthorRoute() {
           {JSON.stringify(rawEntityData.data, null, 2)}
         </pre>
       ) : (
-        <RichEntityView entity={rawEntityData.data!} entityType={entityType} />
+        <RichEntityView entity={rawEntityData.data} entityType={entityType} />
       )}
     </div>
   );

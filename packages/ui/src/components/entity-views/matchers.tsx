@@ -272,7 +272,7 @@ export const arrayMatchers: ArrayMatcher[] = [
                     </Table.Td>
                     <Table.Td>
                       <Badge variant="light" color="blue" size="sm">
-                        {(topic.value * 100).toFixed(3)}%
+                        {topic.value.toFixed(3)}%
                       </Badge>
                     </Table.Td>
                     <Table.Td>
@@ -383,7 +383,7 @@ export const arrayMatchers: ArrayMatcher[] = [
                 size="sm"
                 color={getConceptColor(concept.level)}
               >
-                {concept.display_name} ({(concept.score * 100).toFixed(0)}%)
+                {concept.display_name} ({concept.score.toFixed(0)}%)
               </Badge>
             ))}
         </Group>
