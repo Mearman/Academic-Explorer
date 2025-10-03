@@ -18,8 +18,12 @@
     "assumeChangesOnlyAffectDirectDependencies": true
   },
   "include": ["src/**/*"],
-  "exclude": ["**/*.test.*", "**/*.spec.*", "**/*.stories.*", "dist", "node_modules"],
-  "references": [
-    { "path": "../utils" }
-  ]
+  "exclude": [
+    "**/*.test.*",
+    "**/*.spec.*",
+    "**/*.stories.*",
+    "dist",
+    "node_modules"
+  ],
+  "references": [{ "path": "../client" }, { "path": "../utils" }]
 }
