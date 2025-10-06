@@ -1,12 +1,12 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { useEffect } from "react"
-import {
-	IconSearch,
-} from "@tabler/icons-react"
+import { useGraphData } from "@/hooks/use-graph-data";
+import { useGraphStore } from "@/stores/graph-store";
 import { EntityDetectionService } from "@academic-explorer/graph";
-import { useGraphData } from "@/hooks/use-graph-data"
-import { useGraphStore } from "@/stores/graph-store"
 import { logError, logger } from "@academic-explorer/utils/logger";
+import {
+    IconSearch,
+} from "@tabler/icons-react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/$externalId")({
 	component: ExternalIdRoute,
@@ -27,6 +27,14 @@ function ExternalIdRoute() {
 				// Decode the parameter
 				const decodedId = decodeURIComponent(externalId)
 
+				// Skip known route prefixes that should be handled by other routes
+				const knownRoutePrefixes = ['openalex-url', 'api', 'autocomplete', 'authors', 'works', 'institutions', 'sources', 'funders', 'publishers', 'topics', 'concepts', 'about', 'browse', 'cache', 'error-test', 'evaluation', 'explore', 'search'];
+				if (knownRoutePrefixes.includes(decodedId)) {
+					// This is a known route prefix, let other routes handle it
+					return;
+				}
+
+				console.log(`ExternalIdRoute: Processing external ID: ${decodedId}`);
 
 				// Detect entity type and ID type
 				const detection = EntityDetectionService.detectEntity(decodedId)

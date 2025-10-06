@@ -146,7 +146,11 @@ function InstitutionRoute() {
           {JSON.stringify(rawEntityData.data, null, 2)}
         </pre>
       ) : (
-        <RichEntityView entity={rawEntityData.data} entityType={entityType} />
+        <RichEntityView
+          entity={rawEntityData.data}
+          entityType={entityType}
+          onNavigate={(path: string) => void navigate({ to: path })}
+        />
       )}
     </div>
   );

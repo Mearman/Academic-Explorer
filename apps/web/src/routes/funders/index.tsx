@@ -1,7 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router';
 import { EntityList, type ColumnConfig } from '@/components/EntityList';
+import { createFileRoute } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/funders')({
+export const Route = createFileRoute('/funders/')({
   component: FundersRoute,
 });
 

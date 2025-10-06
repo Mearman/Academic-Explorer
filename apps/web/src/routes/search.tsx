@@ -1,32 +1,32 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import {
-  Title,
-  Text,
-  Stack,
-  Alert,
-  Container,
-  Card,
-  Badge,
-  Anchor,
-} from "@mantine/core";
-import { IconInfoCircle } from "@tabler/icons-react";
-import { SearchInterface } from "../components/search/SearchInterface";
-import { BaseTable } from "../components/tables/BaseTable";
-import {
-  formatLargeNumber,
-} from "@academic-explorer/utils";
-import { pageTitle, pageDescription } from "../styles/layout.css";
-import type { ColumnDef } from "@tanstack/react-table";
-import { logger } from "@academic-explorer/utils";
-import {
-  cachedOpenAlex,
-  type Work,
-  createWorksQuery,
-  type WorksFilters,
+    cachedOpenAlex,
+    createWorksQuery,
+    type Work,
+    type WorksFilters,
 } from "@academic-explorer/client";
 import { convertToRelativeUrl } from "@academic-explorer/ui/components/entity-views/matchers";
+import {
+    formatLargeNumber,
+    logger,
+} from "@academic-explorer/utils";
+import {
+    Alert,
+    Anchor,
+    Badge,
+    Card,
+    Container,
+    Stack,
+    Text,
+    Title,
+} from "@mantine/core";
+import { IconInfoCircle } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import type { ColumnDef } from "@tanstack/react-table";
+import { useState } from "react";
+import { SearchInterface } from "../components/search/SearchInterface";
+import { BaseTable } from "../components/tables/BaseTable";
+import { pageDescription, pageTitle } from "../styles/layout.css";
 
 interface SearchFilters {
   query: string;
@@ -91,6 +91,7 @@ const searchWorks = async (filters: SearchFilters): Promise<Work[]> => {
 };
 
 function SearchPage() {
+  console.log("SearchPage: Rendering");
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
     query: "",
     startDate: null,

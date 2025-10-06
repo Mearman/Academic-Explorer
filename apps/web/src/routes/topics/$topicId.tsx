@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useGraphStore } from "@/stores/graph-store";
@@ -14,6 +14,7 @@ export const Route = createFileRoute("/topics/$topicId")({
 
 function TopicRoute() {
   const { topicId } = Route.useParams();
+  const navigate = useNavigate();
 
   const entityType = "topic" as const;
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
@@ -115,7 +116,11 @@ function TopicRoute() {
           {JSON.stringify(rawEntityData.data, null, 2)}
         </pre>
       ) : (
-        <RichEntityView entity={rawEntityData.data} entityType={entityType} />
+        <RichEntityView
+          entity={rawEntityData.data}
+          entityType={entityType}
+          onNavigate={(path: string) => void navigate({ to: path })}
+        />
       )}
     </div>
   );

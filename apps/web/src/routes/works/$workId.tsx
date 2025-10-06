@@ -1,21 +1,21 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
-import { useGraphData } from "@/hooks/use-graph-data";
-import { useGraphStore } from "@/stores/graph-store";
-import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useEntityDocumentTitle } from "@/hooks/use-document-title";
+import { useGraphData } from "@/hooks/use-graph-data";
+import { useRawEntityData } from "@/hooks/use-raw-entity-data";
+import { useGraphStore } from "@/stores/graph-store";
+import { EntityDetectionService } from "@academic-explorer/graph";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
-import { EntityDetectionService } from "@academic-explorer/graph";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/works/$workId")({
   component: WorkRoute,
 });
 
 function WorkRoute() {
-  const { workId } = Route.useParams();
-  const navigate = useNavigate();
+	const { workId } = Route.useParams()
+	const navigate = useNavigate()
 
   const entityType = "work" as const;
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
@@ -140,7 +140,11 @@ function WorkRoute() {
           {JSON.stringify(rawEntityData.data, null, 2)}
         </pre>
       ) : (
-        <RichEntityView entity={rawEntityData.data} entityType={entityType} />
+        <RichEntityView
+          entity={rawEntityData.data}
+          entityType={entityType}
+          onNavigate={(path: string) => void navigate({ to: path })}
+        />
       )}
     </div>
   );
