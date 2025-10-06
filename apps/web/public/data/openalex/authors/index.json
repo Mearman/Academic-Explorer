@@ -1,1 +1,17 @@
-{}
+{
+  "lastUpdated": "2025-10-06T12:15:41.476Z",
+  "files": {
+    "A5006060960": {
+      "url": "https://api.openalex.org?%2Fauthors%2FA5006060960=",
+      "$ref": "./A5006060960.json",
+      "lastRetrieved": "2025-10-06T12:15:41.373Z",
+      "contentHash": "c6bc20a8b301606c"
+    }
+  },
+  "directories": {
+    "queries": {
+      "$ref": "./queries",
+      "lastModified": "2025-10-06T12:03:17.037Z"
+    }
+  }
+}

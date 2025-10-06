@@ -1,1 +1,11 @@
-{}
+{
+  "lastUpdated": "2025-10-06T12:03:27.700Z",
+  "files": {
+    "unknown_75b0e39e": {
+      "url": "https://api.openalex.org/works0",
+      "$ref": "./unknown_75b0e39e.json",
+      "lastRetrieved": "2025-10-06T12:03:27.700Z",
+      "contentHash": "5021e624e752b001"
+    }
+  }
+}
