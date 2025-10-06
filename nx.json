@@ -44,9 +44,9 @@
       "inputs": [
         "production",
         "^production",
-  "{workspaceRoot}/vite.config.base.ts",
+        "{workspaceRoot}/vite.config.base.ts",
         "{workspaceRoot}/config/**/*",
-  "{projectRoot}/vite.config.base.ts",
+        "{projectRoot}/vite.config.base.ts",
         "{projectRoot}/tsconfig.json",
         "{projectRoot}/package.json"
       ],
@@ -86,7 +86,7 @@
       "cache": true,
       "inputs": [
         "^production",
-  "{workspaceRoot}/vite.config.base.ts",
+        "{workspaceRoot}/vite.config.base.ts",
         "{workspaceRoot}/config/**/*"
       ],
       "dependsOn": ["build"]
