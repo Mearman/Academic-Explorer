@@ -16,16 +16,16 @@
     "assumeChangesOnlyAffectDirectDependencies": true,
     "baseUrl": ".",
     "paths": {
-      "@academic-explorer/graph": ["packages/graph/src/index.ts"],
-      "@academic-explorer/graph/*": ["packages/graph/src/*"],
-      "@academic-explorer/utils": ["packages/utils/src/index.ts"],
-      "@academic-explorer/utils/*": ["packages/utils/src/*"],
-      "@academic-explorer/simulation": ["packages/simulation/src/index.ts"],
-      "@academic-explorer/simulation/*": ["packages/simulation/src/*"],
       "@academic-explorer/client": ["packages/client/src/index.ts"],
       "@academic-explorer/client/*": ["packages/client/src/*"],
+      "@academic-explorer/graph": ["packages/graph/src/index.ts"],
+      "@academic-explorer/graph/*": ["packages/graph/src/*"],
+      "@academic-explorer/simulation": ["packages/simulation/src/index.ts"],
+      "@academic-explorer/simulation/*": ["packages/simulation/src/*"],
       "@academic-explorer/ui": ["packages/ui/src/index.ts"],
-      "@academic-explorer/ui/*": ["packages/ui/src/*"]
+      "@academic-explorer/ui/*": ["packages/ui/src/*"],
+      "@academic-explorer/utils": ["packages/utils/src/index.ts"],
+      "@academic-explorer/utils/*": ["packages/utils/src/*"]
     },
     "allowJs": false,
     "strict": true,

@@ -21,8 +21,16 @@
     "assumeChangesOnlyAffectDirectDependencies": true
   },
   "include": ["src/**/*"],
-  "exclude": ["dist", "node_modules", "**/*.test.ts", "**/*.spec.ts", "src/test-generator/**/*"],
+  "exclude": [
+    "dist",
+    "node_modules",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "src/test-generator/**/*"
+  ],
   "references": [
-    { "path": "../utils" }
+    {
+      "path": "../utils"
+    }
   ]
 }
