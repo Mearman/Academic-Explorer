@@ -3,7 +3,7 @@ import type { KnipConfig } from 'knip';
 const config: KnipConfig = {
   entry: [
     'src/main.tsx',
-    'vite.config.ts',
+  'vite.config.base.ts',
     'vitest.config.*.ts',
     'playwright.config.ts',
     'eslint.config.js',

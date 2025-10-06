@@ -249,7 +249,7 @@ The application is configured for deployment to GitHub Pages using hash-based ro
 
 **Vite Configuration for GitHub Pages:**
 ```typescript
-// apps/web/vite.config.ts
+// apps/web/vite.config.base.ts
 export default defineConfig({
   base: './', // Relative paths for GitHub Pages
   build: {
@@ -700,7 +700,7 @@ export VITE_MEMORY_CACHE_SIZE=200
 - Assets not loading
 
 **Diagnosis:**
-- Check base URL configuration in `vite.config.ts`
+- Check base URL configuration in `vite.config.base.ts`
 - Verify hash routing is enabled
 - Check GitHub Pages settings
 
@@ -774,7 +774,7 @@ VITE_BUNDLE_ANALYZER=true pnpm build
 
 **Solutions:**
 ```typescript
-// Optimize chunk splitting in vite.config.ts
+// Optimize chunk splitting in vite.config.base.ts
 export default defineConfig({
   build: {
     rollupOptions: {

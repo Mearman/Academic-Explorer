@@ -1,3 +1,5 @@
+import path from "path";
+import { fileURLToPath } from "url";
 import reactConfig from '../../eslint.config.react.ts';
 
 const config = [
@@ -19,7 +21,7 @@ const config = [
         // Temporarily disable type-aware linting for performance
         project: false,
         // project: './tsconfig.json',
-        // tsconfigRootDir: import.meta.dirname,
+        tsconfigRootDir: path.dirname(fileURLToPath(import.meta.url)),
       },
     },
     rules: {
@@ -64,13 +66,13 @@ const config = [
   },
   {
     // Config files - use dedicated tsconfig and disable type-aware rules
-    files: ['*.config.{ts,js}', 'vite.config.ts', 'vitest.config.ts', 'eslint.config.ts', 'playwright.config.ts', 'knip.ts'],
+  files: ['*.config.{ts,js}', 'vite.config.base.ts', 'vitest.config.ts', 'eslint.config.ts', 'playwright.config.ts', 'knip.ts'],
     languageOptions: {
       parserOptions: {
         // Temporarily disable type-aware linting for performance
         project: false,
         // project: './tsconfig.config.json',
-        // tsconfigRootDir: import.meta.dirname,
+        tsconfigRootDir: path.dirname(fileURLToPath(import.meta.url)),
       },
     },
     rules: {

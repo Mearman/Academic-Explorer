@@ -1,10 +1,12 @@
 import js from "@eslint/js";
-import globals from "globals";
-import eslintComments from "eslint-plugin-eslint-comments";
-import unusedImports from "eslint-plugin-unused-imports";
-import tseslint from "typescript-eslint";
 import markdownPlugin from "@eslint/markdown";
 import nxPlugin from "@nx/eslint-plugin";
+import eslintComments from "eslint-plugin-eslint-comments";
+import unusedImports from "eslint-plugin-unused-imports";
+import globals from "globals";
+import path from "path";
+import tseslint from "typescript-eslint";
+import { fileURLToPath } from "url";
 import noEmojiPlugin from "./eslint-rules/no-emoji.ts";
 
 /**
@@ -81,6 +83,7 @@ export default tseslint.config([
         project: false,
         ecmaVersion: 2020,
         sourceType: "module",
+        tsconfigRootDir: path.dirname(fileURLToPath(import.meta.url)),
       },
     },
     plugins: {

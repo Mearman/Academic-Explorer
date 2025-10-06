@@ -39,7 +39,7 @@ const config: KnipConfig = {
         "tools/scripts/*.{ts,js}",
         "config/shared.ts",
         "config/vite-plugins/static-data-index.ts",
-        "vite.config.ts",
+  "vite.config.base.ts",
         "nx.json"
       ],
       project: [

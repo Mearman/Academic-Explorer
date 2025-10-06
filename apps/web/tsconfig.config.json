@@ -43,10 +43,10 @@
     "noImplicitAny": false,
     "noImplicitReturns": false
   },
-  "include": [
+    "include": [
     "*.config.ts",
     "*.config.js",
-    "vite.config.ts",
+    "vite.config.base.ts",
     "vitest.config.ts",
     "eslint.config.ts",
     "playwright.config.ts",

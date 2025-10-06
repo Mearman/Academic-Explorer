@@ -19,7 +19,17 @@
     /* Path mapping */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@academic-explorer/graph": ["../../packages/graph/src/index.ts"],
+      "@academic-explorer/graph/*": ["../../packages/graph/src/*"],
+      "@academic-explorer/utils": ["../../packages/utils/src/index.ts"],
+      "@academic-explorer/utils/*": ["../../packages/utils/src/*"],
+      "@academic-explorer/simulation": ["../../packages/simulation/src/index.ts"],
+      "@academic-explorer/simulation/*": ["../../packages/simulation/src/*"],
+      "@academic-explorer/client": ["../../packages/client/dist/index.d.ts"],
+      "@academic-explorer/client/*": ["../../packages/client/dist/*"],
+      "@academic-explorer/ui": ["../../packages/ui/src/index.ts"],
+      "@academic-explorer/ui/*": ["../../packages/ui/src/*"]
     },
 
     /* Linting - Less strict for test files */
