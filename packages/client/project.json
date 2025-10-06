@@ -62,7 +62,7 @@
     "test:unit": {
       "executor": "@nx/vite:test",
       "options": {
-        "project": "client-unit",
+        "project": "unit",
         "coverage": true
       },
   "inputs": ["default", "^production", "{workspaceRoot}/vite.config.base.ts", "{projectRoot}/vitest.config.ts"],
@@ -72,7 +72,7 @@
 "test:integration": {
       "executor": "@nx/vite:test",
       "options": {
-        "project": "client-integration"
+        "project": "integration"
       },
   "inputs": ["default", "^production", "{workspaceRoot}/vite.config.base.ts", "{projectRoot}/vitest.config.ts"],
   "outputs": ["{projectRoot}/coverage"],
