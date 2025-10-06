@@ -4,12 +4,16 @@
  * Separated for better testability
  */
 
-import { readFile, access, writeFile, mkdir, readdir, stat } from "fs/promises";
-import { readFileSync, existsSync } from "fs";
-import { join, resolve } from "path";
+import { logError, logger } from "@academic-explorer/utils/logger";
+import {
+  getStaticDataCachePath, readIndexAsUnified,
+  type UnifiedIndex as UtilsUnifiedIndex,
+  type UnifiedIndexEntry as UtilsUnifiedIndexEntry
+} from "@academic-explorer/utils/static-data/cache-utilities";
+import { existsSync, readFileSync } from "fs";
+import { access, mkdir, readdir, readFile, stat, writeFile } from "fs/promises";
+import { dirname, join, resolve } from "path";
 import { fileURLToPath } from "url";
-import { dirname } from "path";
-import { logger, logError } from "@academic-explorer/utils/logger";
 import { z } from "zod";
 
 // Timeout wrapper for async file operations to prevent hanging
@@ -68,12 +72,6 @@ async function safeMkdir(
     () => undefined,
   );
 }
-import { getStaticDataCachePath } from "@academic-explorer/utils/static-data/cache-utilities";
-import {
-  readIndexAsUnified,
-  type UnifiedIndex as UtilsUnifiedIndex,
-  type UnifiedIndexEntry as UtilsUnifiedIndexEntry,
-} from "@academic-explorer/utils/static-data/cache-utilities";
 // TODO: Re-enable when openalex-client package build issues are resolved
 // import {
 //   CachedOpenAlexClient,
@@ -541,7 +539,6 @@ export class OpenAlexCLI {
       throw error;
     }
 
-    return null;
   }
 
   /**
@@ -1826,5 +1823,6 @@ export class OpenAlexCLI {
 /* eslint-enable no-console */
 
 // Export types for testing
-export type { UnifiedIndex, IndexEntry, QueryOptions, CacheOptions };
 export { SUPPORTED_ENTITIES };
+export type { CacheOptions, IndexEntry, QueryOptions, UnifiedIndex };
+
