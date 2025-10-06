@@ -87,3 +87,6 @@ apps/web/public/data/openalex/*
 !apps/web/public/data/openalex/index.json
 test-results.json
 debug-homepage.png
+
+vite.config.*.timestamp*
+vitest.config.*.timestamp*
