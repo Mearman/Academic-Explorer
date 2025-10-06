@@ -5,9 +5,18 @@
  */
 
 import path from "node:path";
-import { logger } from '../logger.js';
+import { logger } from "../logger.js";
 
-export type EntityType = 'works' | 'authors' | 'sources' | 'institutions' | 'topics' | 'publishers' | 'funders' | 'concepts' | 'autocomplete';
+export type EntityType =
+  | "works"
+  | "authors"
+  | "sources"
+  | "institutions"
+  | "topics"
+  | "publishers"
+  | "funders"
+  | "concepts"
+  | "autocomplete";
 
 /**
  * Metadata structure for cached files
@@ -141,37 +150,43 @@ export async function generateContentHash(data: unknown): Promise<string> {
     // Create a copy and remove volatile metadata fields
     let cleanContent: unknown = data;
 
-    if (data && typeof data === 'object' && !Array.isArray(data)) {
+    if (data && typeof data === "object" && !Array.isArray(data)) {
       const dataObj = data as Record<string, unknown>;
       cleanContent = { ...dataObj };
 
       // Remove the entire meta field as it contains API metadata, not entity content
-      if ('meta' in dataObj) {
+      if ("meta" in dataObj) {
         delete (cleanContent as Record<string, unknown>).meta;
       }
     }
 
     // Generate stable hash
-    const jsonString = JSON.stringify(cleanContent, Object.keys(cleanContent as object || {}).sort());
+    const jsonString = JSON.stringify(
+      cleanContent,
+      Object.keys((cleanContent as object) || {}).sort(),
+    );
 
     // Use dynamic import for crypto to support both Node.js and browser environments
-    if (typeof globalThis.process !== 'undefined' && globalThis.process.versions?.node) {
+    if (
+      typeof globalThis.process !== "undefined" &&
+      globalThis.process.versions?.node
+    ) {
       // Node.js environment
-      const { createHash } = await import('crypto');
-      return createHash('sha256').update(jsonString).digest('hex').slice(0, 16);
+      const { createHash } = await import("crypto");
+      return createHash("sha256").update(jsonString).digest("hex").slice(0, 16);
     } else {
       // Browser environment - use a simple hash fallback
       let hash = 0;
       for (let i = 0; i < jsonString.length; i++) {
         const char = jsonString.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
+        hash = (hash << 5) - hash + char;
         hash = hash & hash; // Convert to 32bit integer
       }
-      return Math.abs(hash).toString(16).padStart(8, '0');
+      return Math.abs(hash).toString(16).padStart(8, "0");
     }
   } catch (error) {
-    logger.warn('cache', 'Failed to generate content hash', { error });
-    return 'hash-error';
+    logger.warn("cache", "Failed to generate content hash", { error });
+    return "hash-error";
   }
 }
 
@@ -179,14 +194,14 @@ export async function generateContentHash(data: unknown): Promise<string> {
  * Parse OpenAlex URL into structured information
  */
 export function parseOpenAlexUrl(url: string): ParsedOpenAlexUrl | null {
-  if (typeof url !== 'string' || url.trim().length === 0) {
-    logger.warn('cache', 'Invalid URL input for parsing', { url: typeof url });
+  if (typeof url !== "string" || url.trim().length === 0) {
+    logger.warn("cache", "Invalid URL input for parsing", { url: typeof url });
     return null;
   }
 
   // Basic validation: must start with http(s)://
-  if (!url.startsWith('http://') && !url.startsWith('https://')) {
-    logger.warn('cache', 'URL does not start with http(s)://', { url });
+  if (!url.startsWith("http://") && !url.startsWith("https://")) {
+    logger.warn("cache", "URL does not start with http(s)://", { url });
     return null;
   }
 
@@ -194,11 +209,11 @@ export function parseOpenAlexUrl(url: string): ParsedOpenAlexUrl | null {
     const urlObj = new URL(url);
 
     // Only handle api.openalex.org URLs
-    if (urlObj.hostname !== 'api.openalex.org') {
+    if (urlObj.hostname !== "api.openalex.org") {
       return null;
     }
 
-    const pathSegments = urlObj.pathname.split('/').filter(Boolean);
+    const pathSegments = urlObj.pathname.split("/").filter(Boolean);
 
     if (pathSegments.length === 0) {
       return null;
@@ -206,7 +221,17 @@ export function parseOpenAlexUrl(url: string): ParsedOpenAlexUrl | null {
 
     // Detect entity type from first path segment
     const entityType = pathSegments[0] as EntityType;
-    const isValidEntityType = ['works', 'authors', 'sources', 'institutions', 'topics', 'publishers', 'funders', 'concepts', 'autocomplete'].includes(entityType);
+    const isValidEntityType = [
+      "works",
+      "authors",
+      "sources",
+      "institutions",
+      "topics",
+      "publishers",
+      "funders",
+      "concepts",
+      "autocomplete",
+    ].includes(entityType);
 
     // Extract entity ID for single entity URLs
     let entityId: string | undefined;
@@ -222,7 +247,7 @@ export function parseOpenAlexUrl(url: string): ParsedOpenAlexUrl | null {
       entityId,
     };
   } catch (error) {
-    logger.warn('cache', 'Failed to parse OpenAlex URL', { url, error });
+    logger.warn("cache", "Failed to parse OpenAlex URL", { url, error });
     return null;
   }
 }
@@ -230,81 +255,107 @@ export function parseOpenAlexUrl(url: string): ParsedOpenAlexUrl | null {
 /**
  * Remove sensitive parameters from URL query string for caching
  * Strips api_key and mailto parameters completely from the query
+ * Handles both query-only strings (?param=value) and path+query strings (/path?param=value)
  */
-export function sanitizeUrlForCaching(queryString: string): string {
-  if (!queryString) return queryString;
+export function sanitizeUrlForCaching(urlString: string): string {
+  if (!urlString) return urlString;
 
   try {
-    // Parse query string (remove leading ? if present)
-    const cleanQuery = queryString.startsWith('?') ? queryString.slice(1) : queryString;
-    const params = new URLSearchParams(cleanQuery);
+    // Check if this is a path+query string or just a query string
+    const hasPath =
+      urlString.includes("/") && urlString.split("?")[0].includes("/");
+    let path = "";
+    let query = "";
+
+    if (hasPath) {
+      // Split path and query
+      [path, query] = urlString.split("?", 2);
+    } else {
+      // Just query string
+      query = urlString.startsWith("?") ? urlString.slice(1) : urlString;
+    }
+
+    if (!query) return path || ""; // No query parameters
+
+    const params = new URLSearchParams(query);
 
     // Remove sensitive parameters completely
-    params.delete('api_key');
-    params.delete('mailto');
+    params.delete("api_key");
+    params.delete("mailto");
 
-    // Return sanitized query string
+    // Return sanitized result
     const result = params.toString();
-    return result ? `?${result}` : '';
-  } catch (error) {
+    if (hasPath) {
+      return result ? `${path}?${result}` : path;
+    } else {
+      return result ? `?${result}` : "";
+    }
+  } catch {
     // Fallback to regex approach if URLSearchParams fails
-    logger.warn('cache', 'Failed to parse query string with URLSearchParams, using regex fallback', { queryString, error });
-
-    return queryString
-      // Remove API keys completely (handle different positions in query string)
-      .replace(/[?&]api_key=[^&]*/g, '')
-      .replace(/api_key=[^&]*&?/g, '')
-      // Remove email addresses completely
-      .replace(/[?&]mailto=[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}/g, '')
-      .replace(/mailto=[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}&?/g, '')
-      // Clean up any remaining & at start or multiple &
-      .replace(/^[?&]+/, '?')
-      .replace(/&+/g, '&')
-      .replace(/[?&]$/, '');
+    const hasPath =
+      urlString.includes("/") && urlString.split("?")[0].includes("/");
+    return (
+      urlString
+        // Remove API keys completely (handle different positions in query string)
+        .replace(/[?&]api_key=[^&]*/g, "")
+        .replace(/api_key=[^&]*&?/g, "")
+        // Remove email addresses completely
+        .replace(/[?&]mailto=[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}/g, "")
+        .replace(/mailto=[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}&?/g, "")
+        // Clean up any remaining & at start or multiple &
+        .replace(/^[?&]+/, hasPath ? "?" : "")
+        .replace(/&+/g, "&")
+        .replace(/[?&]$/, "")
+    );
   }
 }
 
 /**
- * Normalize query string for consistent filesystem naming
- * Handles cursor normalization and parameter sorting
+ * Normalize query string for consistent filename generation
+ * - Normalizes cursor values to "*" for pagination consistency
+ * - Sorts parameters alphabetically for deterministic ordering
+ * - URL encodes parameter values for filesystem safety
  */
 export function normalizeQueryForFilename(queryString: string): string {
-  if (!queryString) return queryString;
+  if (!queryString || queryString === "?") {
+    return "";
+  }
 
   try {
-    // Parse query string (remove leading ? if present)
-    const cleanQuery = queryString.startsWith('?') ? queryString.slice(1) : queryString;
-    const params = new URLSearchParams(cleanQuery);
+    // Remove leading ? if present
+    const cleanQuery = queryString.startsWith("?")
+      ? queryString.slice(1)
+      : queryString;
 
-    // Handle cursor parameter - normalize all cursor values to *
-    if (params.has('cursor')) {
-      params.set('cursor', '*');
+    if (!cleanQuery) {
+      return "";
     }
 
-    // Sort parameters alphabetically for consistent cache filenames
+    const params = new URLSearchParams(cleanQuery);
+
+    // Normalize cursor values to "*" for consistency
+    if (params.has("cursor")) {
+      params.set("cursor", "*");
+    }
+
+    // Sort parameters alphabetically for consistent ordering
     const sortedParams = new URLSearchParams();
     const keys = Array.from(params.keys()).sort();
-    keys.forEach(key => {
+    for (const key of keys) {
       const value = params.get(key);
       if (value !== null) {
         sortedParams.set(key, value);
       }
-    });
+    }
 
-    // Return normalized query string
     const result = sortedParams.toString();
-    return result ? `?${result}` : '';
+    return result ? `?${result}` : "";
   } catch (error) {
-    // Fallback to regex approach if URLSearchParams fails
-    logger.warn('cache', 'Failed to parse query string with URLSearchParams, using regex fallback', { queryString, error });
-
-    return queryString
-      // Replace specific cursor values with * (but keep existing cursor=*)
-      .replace(/cursor=(?!\*)[A-Za-z0-9+/=]+/g, 'cursor=*')
-      // Clean up any remaining & at start or multiple &
-      .replace(/^[?&]+/, '?')
-      .replace(/&+/g, '&')
-      .replace(/[?&]$/, '');
+    logger.warn("cache", "Failed to normalize query for filename", {
+      queryString,
+      error,
+    });
+    return queryString; // Return original on error
   }
 }
 
@@ -332,13 +383,15 @@ export function normalizeQueryForCaching(queryString: string): string {
  * This is reversible and creates consistent filenames regardless of input format
  */
 export function encodeFilename(filename: string): string {
-  if (typeof filename !== 'string') {
-    logger.warn('cache', 'Invalid filename input for encoding', { filename: typeof filename });
-    return '';
+  if (typeof filename !== "string") {
+    logger.warn("cache", "Invalid filename input for encoding", {
+      filename: typeof filename,
+    });
+    return "";
   }
 
   if (filename.length === 0) {
-    return '';
+    return "";
   }
 
   try {
@@ -348,15 +401,21 @@ export function encodeFilename(filename: string): string {
 
     // Then encode all special characters with hex format
     // Encodes: filesystem-unsafe (<>"|*?/\) + URL-special (:=%&+,)
-    return decoded.replace(/[<>:"|*?/\\%=&+,]/g, char =>
-      `__${char.charCodeAt(0).toString(16).toUpperCase()}__`
+    return decoded.replace(
+      /[<>:"|*?/\\%=&+,]/g,
+      (char) => `__${char.charCodeAt(0).toString(16).toUpperCase()}__`,
     );
   } catch (error) {
     // Fallback if decoding fails (e.g., malformed URL encoding)
     // Just encode filesystem-unsafe characters
-    logger.warn('cache', 'Failed to decode URL encoding in filename, using fallback', { filename, error });
-    return filename.replace(/[<>"|*?/\\]/g, char =>
-      `__${char.charCodeAt(0).toString(16).toUpperCase()}__`
+    logger.warn(
+      "cache",
+      "Failed to decode URL encoding in filename, using fallback",
+      { filename, error },
+    );
+    return filename.replace(
+      /[<>"|*?/\\]/g,
+      (char) => `__${char.charCodeAt(0).toString(16).toUpperCase()}__`,
     );
   }
 }
@@ -367,7 +426,7 @@ export function encodeFilename(filename: string): string {
  */
 export function decodeFilename(filename: string): string {
   return filename.replace(/__([0-9A-F]+)__/g, (match, hex) =>
-    String.fromCharCode(parseInt(hex, 16))
+    String.fromCharCode(parseInt(hex, 16)),
   );
 }
 
@@ -383,7 +442,10 @@ export function sanitizeFilename(filename: string): string {
  * Generate cache file path from OpenAlex URL
  * This is the canonical mapping used by all systems
  */
-export function getCacheFilePath(url: string, staticDataRoot: string): string | null {
+export function getCacheFilePath(
+  url: string,
+  staticDataRoot: string,
+): string | null {
   const parsed = parseOpenAlexUrl(url);
   if (!parsed) {
     return null;
@@ -397,34 +459,39 @@ export function getCacheFilePath(url: string, staticDataRoot: string): string | 
       const normalizedQuery = normalizeQueryForCaching(queryString.slice(1)); // Remove leading '?'
 
       // If all query parameters were stripped, treat this as a base collection URL
-      if (!normalizedQuery || normalizedQuery === '?') {
+      if (!normalizedQuery || normalizedQuery === "?") {
         // Re-classify as base collection: works?api_key=secret → works.json (not works/queries/base.json)
         if (pathSegments.length === 1) {
           return `${staticDataRoot}/${pathSegments[0]}.json`;
         } else if (pathSegments.length > 1) {
           // For nested paths without meaningful query params
           const fileName = pathSegments[pathSegments.length - 1];
-          const dirPath = pathSegments.slice(0, -1).join('/');
+          const dirPath = pathSegments.slice(0, -1).join("/");
           return `${staticDataRoot}/${dirPath}/${fileName}.json`;
         }
       }
 
       // Handle actual query parameters - create query file
-      const baseDir = pathSegments.join('/');
-      const cleanQuery = normalizedQuery.startsWith('?') ? normalizedQuery.slice(1) : normalizedQuery;
+      const baseDir = pathSegments.join("/");
+      const cleanQuery = normalizedQuery.startsWith("?")
+        ? normalizedQuery.slice(1)
+        : normalizedQuery;
       const queryFilename = sanitizeFilename(cleanQuery);
 
       // Ensure we have a valid filename for the query
-      if (!queryFilename || queryFilename.trim() === '') {
+      if (!queryFilename || queryFilename.trim() === "") {
         // This should not happen if normalization worked correctly
         // Log a warning and treat as base collection
-        logger.warn('cache', 'Empty query filename after normalization', { url, normalizedQuery });
+        logger.warn("cache", "Empty query filename after normalization", {
+          url,
+          normalizedQuery,
+        });
         if (pathSegments.length === 1) {
           return `${staticDataRoot}/${pathSegments[0]}.json`;
         }
         // For complex paths, fall back to entity-style naming
         const fileName = pathSegments[pathSegments.length - 1];
-        const dirPath = pathSegments.slice(0, -1).join('/');
+        const dirPath = pathSegments.slice(0, -1).join("/");
         return `${staticDataRoot}/${dirPath}/${fileName}.json`;
       }
 
@@ -436,7 +503,7 @@ export function getCacheFilePath(url: string, staticDataRoot: string): string | 
     } else if (pathSegments.length > 2) {
       // For nested paths: /authors/A123/works → authors/A123/works.json
       const fileName = pathSegments[pathSegments.length - 1];
-      const dirPath = pathSegments.slice(0, -1).join('/');
+      const dirPath = pathSegments.slice(0, -1).join("/");
       return `${staticDataRoot}/${dirPath}/${fileName}.json`;
     } else if (pathSegments.length === 1) {
       // For root collections: /authors → authors.json (at top level)
@@ -445,7 +512,7 @@ export function getCacheFilePath(url: string, staticDataRoot: string): string | 
 
     return null;
   } catch (error) {
-    logger.warn('cache', 'Failed to generate cache file path', { url, error });
+    logger.warn("cache", "Failed to generate cache file path", { url, error });
     return null;
   }
 }
@@ -461,7 +528,7 @@ export function getStaticFilePath(url: string): string {
   }
 
   // Use the same logic as cache file path but with /data/openalex prefix
-  const cacheFilePath = getCacheFilePath(url, '');
+  const cacheFilePath = getCacheFilePath(url, "");
   return `/data/openalex${cacheFilePath}`;
 }
 
@@ -471,7 +538,7 @@ export function getStaticFilePath(url: string): string {
 export async function shouldUpdateCache(
   existingMetadata: CacheEntryMetadata | null,
   newData: unknown,
-  maxAge?: number
+  maxAge?: number,
 ): Promise<boolean> {
   if (!existingMetadata) {
     return true; // No existing cache
@@ -501,7 +568,7 @@ export async function shouldUpdateCache(
 export async function createCacheEntryMetadata(
   data: unknown,
   sourceUrl?: string,
-  contentType?: string
+  contentType?: string,
 ): Promise<CacheEntryMetadata> {
   return {
     contentHash: await generateContentHash(data),
@@ -515,28 +582,28 @@ export async function createCacheEntryMetadata(
  * Validate that data appears to be a valid OpenAlex entity
  */
 export function isValidOpenAlexEntity(data: unknown): boolean {
-  if (!data || typeof data !== 'object') {
+  if (!data || typeof data !== "object") {
     return false;
   }
 
   const obj = data as Record<string, unknown>;
 
   // OpenAlex entities should have id and display_name
-  return typeof obj.id === 'string' && typeof obj.display_name === 'string';
+  return typeof obj.id === "string" && typeof obj.display_name === "string";
 }
 
 /**
  * Validate that data appears to be a valid OpenAlex query result
  */
 export function isValidOpenAlexQueryResult(data: unknown): boolean {
-  if (!data || typeof data !== 'object') {
+  if (!data || typeof data !== "object") {
     return false;
   }
 
   const obj = data as Record<string, unknown>;
 
   // OpenAlex query results should have results array and meta object
-  return Array.isArray(obj.results) && typeof obj.meta === 'object';
+  return Array.isArray(obj.results) && typeof obj.meta === "object";
 }
 
 /**
@@ -544,15 +611,27 @@ export function isValidOpenAlexQueryResult(data: unknown): boolean {
  */
 export function extractEntityType(pathOrUrl: string): EntityType | null {
   // Handle URLs
-  if (pathOrUrl.startsWith('http')) {
+  if (pathOrUrl.startsWith("http")) {
     const parsed = parseOpenAlexUrl(pathOrUrl);
     return parsed?.entityType || null;
   }
 
   // Handle file paths
-  const segments = pathOrUrl.split('/').filter(Boolean);
+  const segments = pathOrUrl.split("/").filter(Boolean);
   for (const segment of segments) {
-    if (['works', 'authors', 'sources', 'institutions', 'topics', 'publishers', 'funders', 'concepts', 'autocomplete'].includes(segment)) {
+    if (
+      [
+        "works",
+        "authors",
+        "sources",
+        "institutions",
+        "topics",
+        "publishers",
+        "funders",
+        "concepts",
+        "autocomplete",
+      ].includes(segment)
+    ) {
       return segment as EntityType;
     }
   }
@@ -564,15 +643,19 @@ export function extractEntityType(pathOrUrl: string): EntityType | null {
  * Combines normalization and encoding for cache file naming
  */
 export function queryToFilename(queryString: string): string {
-  if (!queryString) return '';
+  if (!queryString) return "";
 
   // Remove leading ? if present
-  const cleanQuery = queryString.startsWith('?') ? queryString.slice(1) : queryString;
-  if (!cleanQuery) return '';
+  const cleanQuery = queryString.startsWith("?")
+    ? queryString.slice(1)
+    : queryString;
+  if (!cleanQuery) return "";
 
   // Normalize for consistent naming
   const normalized = normalizeQueryForFilename(`?${cleanQuery}`);
-  const normalizedClean = normalized.startsWith('?') ? normalized.slice(1) : normalized;
+  const normalizedClean = normalized.startsWith("?")
+    ? normalized.slice(1)
+    : normalized;
 
   // Encode for filesystem safety
   return encodeFilename(normalizedClean);
@@ -583,30 +666,46 @@ export function queryToFilename(queryString: string): string {
  * Reverses the queryToFilename transformation
  */
 export function filenameToQuery(filename: string): string {
-  if (!filename) return '';
+  if (!filename) return "";
 
   // Decode from filesystem-safe format
   const decoded = decodeFilename(filename);
 
   // Add leading ? if we have content
-  return decoded ? `?${decoded}` : '';
+  return decoded ? `?${decoded}` : "";
 }
 
 /**
  * Check if two URLs are equivalent for caching purposes
  * Ignores parameter order and sensitive parameters (api_key, mailto)
  */
-export function areUrlsEquivalentForCaching(url1: string, url2: string): boolean {
-  if (typeof url1 !== 'string' || typeof url2 !== 'string' ||
-      url1.trim().length === 0 || url2.trim().length === 0) {
-    logger.warn('cache', 'Invalid URL inputs for equivalence comparison', { url1: typeof url1, url2: typeof url2 });
+export function areUrlsEquivalentForCaching(
+  url1: string,
+  url2: string,
+): boolean {
+  if (
+    typeof url1 !== "string" ||
+    typeof url2 !== "string" ||
+    url1.trim().length === 0 ||
+    url2.trim().length === 0
+  ) {
+    logger.warn("cache", "Invalid URL inputs for equivalence comparison", {
+      url1: typeof url1,
+      url2: typeof url2,
+    });
     return false;
   }
 
   // Basic validation: must start with http(s)://
-  if ((!url1.startsWith('http://') && !url1.startsWith('https://')) ||
-      (!url2.startsWith('http://') && !url2.startsWith('https://'))) {
-    logger.warn('cache', 'URLs do not start with http(s):// for equivalence comparison', { url1, url2 });
+  if (
+    (!url1.startsWith("http://") && !url1.startsWith("https://")) ||
+    (!url2.startsWith("http://") && !url2.startsWith("https://"))
+  ) {
+    logger.warn(
+      "cache",
+      "URLs do not start with http(s):// for equivalence comparison",
+      { url1, url2 },
+    );
     return false;
   }
 
@@ -615,7 +714,10 @@ export function areUrlsEquivalentForCaching(url1: string, url2: string): boolean
     const urlObj2 = new URL(url2);
 
     // Must have same hostname and pathname
-    if (urlObj1.hostname !== urlObj2.hostname || urlObj1.pathname !== urlObj2.pathname) {
+    if (
+      urlObj1.hostname !== urlObj2.hostname ||
+      urlObj1.pathname !== urlObj2.pathname
+    ) {
       return false;
     }
 
@@ -625,7 +727,11 @@ export function areUrlsEquivalentForCaching(url1: string, url2: string): boolean
 
     return normalized1 === normalized2;
   } catch (error) {
-    logger.warn('cache', 'Failed to compare URLs for equivalence', { url1, url2, error });
+    logger.warn("cache", "Failed to compare URLs for equivalence", {
+      url1,
+      url2,
+      error,
+    });
     return false;
   }
 }
@@ -633,9 +739,7 @@ export function areUrlsEquivalentForCaching(url1: string, url2: string): boolean
 /**
  * Type guard to check if a FileEntry supports multiple URLs (has been enhanced)
  */
-export function isMultiUrlFileEntry(
-  entry: unknown
-): entry is FileEntry & {
+export function isMultiUrlFileEntry(entry: unknown): entry is FileEntry & {
   equivalentUrls: string[];
   urlTimestamps: Record<string, string>;
   collisionInfo: CollisionInfo;
@@ -643,11 +747,11 @@ export function isMultiUrlFileEntry(
   // Accept entries that declare the multi-url fields even if arrays are empty;
   // validation will catch empty-equivalentUrls as invalid when appropriate.
   if (
-    typeof entry !== 'object' ||
+    typeof entry !== "object" ||
     entry === null ||
-    !('equivalentUrls' in entry) ||
-    !('urlTimestamps' in entry) ||
-    !('collisionInfo' in entry)
+    !("equivalentUrls" in entry) ||
+    !("urlTimestamps" in entry) ||
+    !("collisionInfo" in entry)
   ) {
     return false;
   }
@@ -656,9 +760,9 @@ export function isMultiUrlFileEntry(
 
   return (
     Array.isArray(candidate.equivalentUrls) &&
-    typeof candidate.urlTimestamps === 'object' &&
+    typeof candidate.urlTimestamps === "object" &&
     candidate.urlTimestamps !== null &&
-    typeof candidate.collisionInfo === 'object' &&
+    typeof candidate.collisionInfo === "object" &&
     candidate.collisionInfo !== null
   );
 }
@@ -679,13 +783,16 @@ export function isMultiUrlFileEntry(
  * @param newUrl - The incoming URL to check for collision
  * @returns true if the URLs map to the same cache path
  */
-export function hasCollision(existingEntry: FileEntry, newUrl: string): boolean {
-  if (!existingEntry || typeof newUrl !== 'string') {
+export function hasCollision(
+  existingEntry: FileEntry,
+  newUrl: string,
+): boolean {
+  if (!existingEntry || typeof newUrl !== "string") {
     return false;
   }
 
-  const existingPath = getCacheFilePath(existingEntry.url, '');
-  const newPath = getCacheFilePath(newUrl, '');
+  const existingPath = getCacheFilePath(existingEntry.url, "");
+  const newPath = getCacheFilePath(newUrl, "");
 
   return existingPath === newPath;
 }
@@ -698,7 +805,7 @@ export function hasCollision(existingEntry: FileEntry, newUrl: string): boolean 
 export function mergeCollision(
   existingEntry: FileEntry,
   newUrl: string,
-  currentTime: string = new Date().toISOString()
+  currentTime: string = new Date().toISOString(),
 ): FileEntry {
   const entry = migrateToMultiUrl(existingEntry);
 
@@ -724,8 +831,16 @@ export function mergeCollision(
   // Debug: show state before sorting to help triage ordering issues in tests
   try {
     // eslint-disable-next-line no-console
-    console.log('[cache-utilities debug] beforeSort', JSON.stringify({ equivalentUrls: entry.equivalentUrls, urlTimestamps: entry.urlTimestamps }));
-  } catch (e) { void e; }
+    console.log(
+      "[cache-utilities debug] beforeSort",
+      JSON.stringify({
+        equivalentUrls: entry.equivalentUrls,
+        urlTimestamps: entry.urlTimestamps,
+      }),
+    );
+  } catch (e) {
+    void e;
+  }
 
   // Keep equivalentUrls ordered by recency (most recent first) when we have timestamps.
   try {
@@ -748,14 +863,17 @@ export function mergeCollision(
     }
   } catch {
     // Non-fatal: if sorting fails, keep existing order and log a warning.
-    logger.warn('cache', 'Failed to sort equivalentUrls by recency');
+    logger.warn("cache", "Failed to sort equivalentUrls by recency");
   }
   // For normalized collisions, keep at most two non-primary literal URLs (the
   // most recent ones), and always keep the primary entry.url (if present)
   // as the last element. This matches test expectations around recency and
   // limits growth of equivalentUrls for repeated merges.
   try {
-    if (Array.isArray(entry.equivalentUrls) && entry.equivalentUrls.length > 1) {
+    if (
+      Array.isArray(entry.equivalentUrls) &&
+      entry.equivalentUrls.length > 1
+    ) {
       const normalizeForCollision = (url: string): string => {
         try {
           const u = new URL(url);
@@ -804,14 +922,22 @@ export function mergeCollision(
 
   // Targeted debug: when we have grown to multiple equivalent URLs, print ordering to help tests
   try {
-    if (Array.isArray(entry.equivalentUrls) && entry.equivalentUrls.length >= 4) {
+    if (
+      Array.isArray(entry.equivalentUrls) &&
+      entry.equivalentUrls.length >= 4
+    ) {
       // eslint-disable-next-line no-console
-      console.log('[cache-utilities debug] ordering', JSON.stringify({ equivalentUrls: entry.equivalentUrls, urlTimestamps: entry.urlTimestamps }));
+      console.log(
+        "[cache-utilities debug] ordering",
+        JSON.stringify({
+          equivalentUrls: entry.equivalentUrls,
+          urlTimestamps: entry.urlTimestamps,
+        }),
+      );
     }
   } catch {
     // ignore
   }
-
 
   return entry;
 }
@@ -823,7 +949,7 @@ export function mergeCollision(
  */
 export function reconstructPossibleCollisions(
   queryFilename: string,
-  entityType: EntityType
+  entityType: EntityType,
 ): string[] {
   const base = `https://api.openalex.org/${entityType}`;
   const queryStr = filenameToQuery(decodeFilename(queryFilename));
@@ -832,23 +958,27 @@ export function reconstructPossibleCollisions(
   const variations: string[] = [canonical];
 
   // Variation with api_key (which gets stripped)
-  const apiKeyQuery = queryStr ? `${queryStr}&api_key=dummy` : '?api_key=dummy';
+  const apiKeyQuery = queryStr ? `${queryStr}&api_key=dummy` : "?api_key=dummy";
   variations.push(`${base}${apiKeyQuery}`);
 
   // Variation with mailto (which gets stripped)
-  const mailtoQuery = queryStr ? `${queryStr}&mailto=test@example.com` : '?mailto=test@example.com';
+  const mailtoQuery = queryStr
+    ? `${queryStr}&mailto=test@example.com`
+    : "?mailto=test@example.com";
   variations.push(`${base}${mailtoQuery}`);
 
   // If cursor=*, add variation with actual cursor value (which normalizes to *)
-  if (queryStr.includes('cursor=*')) {
+  if (queryStr.includes("cursor=*")) {
     // Simpler approach: remove the normalized cursor marker and append a concrete
     // cursor token at the end. Preserve raw characters so tests can match exact
     // literal strings (they expect unencoded ':' and '/'). This mirrors prior
     // implementation.
-    let cursorLess = queryStr.replace(/[?&]cursor=\*/g, '');
-    if (cursorLess.startsWith('&')) cursorLess = cursorLess.slice(1);
-    if (cursorLess.endsWith('&')) cursorLess = cursorLess.slice(0, -1);
-    const withCursor = cursorLess ? `?${cursorLess}&cursor=MTIzNDU2` : '?cursor=MTIzNDU2';
+    let cursorLess = queryStr.replace(/[?&]cursor=\*/g, "");
+    if (cursorLess.startsWith("&")) cursorLess = cursorLess.slice(1);
+    if (cursorLess.endsWith("&")) cursorLess = cursorLess.slice(0, -1);
+    const withCursor = cursorLess
+      ? `?${cursorLess}&cursor=MTIzNDU2`
+      : "?cursor=MTIzNDU2";
     variations.push(`${base}${withCursor}`);
   }
 
@@ -896,20 +1026,24 @@ export function validateFileEntry(entry: FileEntry): boolean {
 
   // Check equivalentUrls[0] === url consistency
   if (entry.equivalentUrls[0] !== entry.url) {
-    errors.push(`equivalentUrls[0] ('${entry.equivalentUrls[0]}') does not match url ('${entry.url}')`);
+    errors.push(
+      `equivalentUrls[0] ('${entry.equivalentUrls[0]}') does not match url ('${entry.url}')`,
+    );
   }
 
   // Validate all equivalent URLs normalize to the same cache path
-  const basePath = getCacheFilePath(entry.url, '');
+  const basePath = getCacheFilePath(entry.url, "");
   if (basePath) {
     for (const url of entry.equivalentUrls) {
-      const urlPath = getCacheFilePath(url, '');
+      const urlPath = getCacheFilePath(url, "");
       if (urlPath !== basePath) {
-        errors.push(`URL '${url}' maps to '${urlPath}' but expected '${basePath}'`);
+        errors.push(
+          `URL '${url}' maps to '${urlPath}' but expected '${basePath}'`,
+        );
       }
     }
   } else {
-    errors.push('Cannot compute base cache path from primary url');
+    errors.push("Cannot compute base cache path from primary url");
   }
 
   // Validate timestamps coverage
@@ -921,11 +1055,16 @@ export function validateFileEntry(entry: FileEntry): boolean {
 
   // Validate collisionInfo consistency
   if (entry.collisionInfo.totalUrls !== entry.equivalentUrls.length) {
-    errors.push(`collisionInfo.totalUrls (${entry.collisionInfo.totalUrls}) does not match equivalentUrls.length (${entry.equivalentUrls.length})`);
+    errors.push(
+      `collisionInfo.totalUrls (${entry.collisionInfo.totalUrls}) does not match equivalentUrls.length (${entry.equivalentUrls.length})`,
+    );
   }
 
   if (errors.length > 0) {
-    logger.warn('cache', 'FileEntry validation failed', { errors, entryUrl: entry.url });
+    logger.warn("cache", "FileEntry validation failed", {
+      errors,
+      entryUrl: entry.url,
+    });
     return false;
   }
 
@@ -949,7 +1088,9 @@ export type UnifiedIndex = Record<string, UnifiedIndexEntry>;
  * Flattens the hierarchical DirectoryIndex structure into a flat map
  * suitable for CLI consumption
  */
-export function directoryIndexToUnifiedIndex(dirIndex: DirectoryIndex): UnifiedIndex {
+export function directoryIndexToUnifiedIndex(
+  dirIndex: DirectoryIndex,
+): UnifiedIndex {
   const unified: UnifiedIndex = {};
 
   // Process all files in the directory index
@@ -961,7 +1102,7 @@ export function directoryIndexToUnifiedIndex(dirIndex: DirectoryIndex): UnifiedI
         unified[url] = {
           $ref: fileEntry.$ref,
           lastModified: fileEntry.lastRetrieved,
-          contentHash: fileEntry.contentHash
+          contentHash: fileEntry.contentHash,
         };
       }
     }
@@ -974,19 +1115,21 @@ export function directoryIndexToUnifiedIndex(dirIndex: DirectoryIndex): UnifiedI
  * Convert UnifiedIndex to DirectoryIndex format
  * Creates a hierarchical DirectoryIndex from a flat UnifiedIndex map
  */
-export function unifiedIndexToDirectoryIndex(unifiedIndex: UnifiedIndex): DirectoryIndex {
+export function unifiedIndexToDirectoryIndex(
+  unifiedIndex: UnifiedIndex,
+): DirectoryIndex {
   const files: Record<string, FileEntry> = {};
 
   // Convert each unified entry to a FileEntry
   for (const [url, entry] of Object.entries(unifiedIndex)) {
     // Extract the key from the $ref (filename without ./ prefix and .json extension)
-    const key = entry.$ref.replace(/^\.\//, '').replace(/\.json$/, '');
+    const key = entry.$ref.replace(/^\.\//, "").replace(/\.json$/, "");
 
     const fileEntry: FileEntry = {
       url,
       $ref: entry.$ref,
       lastRetrieved: entry.lastModified,
-      contentHash: entry.contentHash
+      contentHash: entry.contentHash,
     };
 
     files[key] = fileEntry;
@@ -994,7 +1137,7 @@ export function unifiedIndexToDirectoryIndex(unifiedIndex: UnifiedIndex): Direct
 
   return {
     lastUpdated: new Date().toISOString(),
-    files
+    files,
   };
 }
 
@@ -1002,7 +1145,7 @@ export function unifiedIndexToDirectoryIndex(unifiedIndex: UnifiedIndex): Direct
  * Check if an index is in UnifiedIndex format (flat structure)
  */
 export function isUnifiedIndex(index: unknown): index is UnifiedIndex {
-  if (!index || typeof index !== 'object') {
+  if (!index || typeof index !== "object") {
     return false;
   }
 
@@ -1013,17 +1156,21 @@ export function isUnifiedIndex(index: unknown): index is UnifiedIndex {
   const obj = index as Record<string, unknown>;
 
   // Check if it has DirectoryIndex properties (lastUpdated, files, directories)
-  if ('lastUpdated' in obj || 'files' in obj || 'directories' in obj) {
+  if ("lastUpdated" in obj || "files" in obj || "directories" in obj) {
     return false; // This is a DirectoryIndex
   }
 
   // Check if all values are UnifiedIndexEntry-like
   for (const value of Object.values(obj)) {
-    if (!value || typeof value !== 'object') {
+    if (!value || typeof value !== "object") {
       return false;
     }
     const entry = value as Record<string, unknown>;
-    if (!('$ref' in entry) || !('lastModified' in entry) || !('contentHash' in entry)) {
+    if (
+      !("$ref" in entry) ||
+      !("lastModified" in entry) ||
+      !("contentHash" in entry)
+    ) {
       return false;
     }
   }
@@ -1035,22 +1182,26 @@ export function isUnifiedIndex(index: unknown): index is UnifiedIndex {
  * Check if an index is in DirectoryIndex format (hierarchical structure)
  */
 export function isDirectoryIndex(index: unknown): index is DirectoryIndex {
-  if (!index || typeof index !== 'object') {
+  if (!index || typeof index !== "object") {
     return false;
   }
 
   const obj = index as Record<string, unknown>;
 
   // DirectoryIndex must have lastUpdated
-  if (!('lastUpdated' in obj) || typeof obj.lastUpdated !== 'string') {
+  if (!("lastUpdated" in obj) || typeof obj.lastUpdated !== "string") {
     return false;
   }
 
   // If it has files or directories, they should be objects
-  if ('files' in obj && obj.files !== null && typeof obj.files !== 'object') {
+  if ("files" in obj && obj.files !== null && typeof obj.files !== "object") {
     return false;
   }
-  if ('directories' in obj && obj.directories !== null && typeof obj.directories !== 'object') {
+  if (
+    "directories" in obj &&
+    obj.directories !== null &&
+    typeof obj.directories !== "object"
+  ) {
     return false;
   }
 
@@ -1070,7 +1221,7 @@ export function readIndexAsUnified(index: unknown): UnifiedIndex | null {
     return directoryIndexToUnifiedIndex(index);
   }
 
-  logger.warn('cache', 'Unknown index format', { index });
+  logger.warn("cache", "Unknown index format", { index });
   return null;
 }
 
@@ -1087,7 +1238,7 @@ export function readIndexAsDirectory(index: unknown): DirectoryIndex | null {
     return unifiedIndexToDirectoryIndex(index);
   }
 
-  logger.warn('cache', 'Unknown index format', { index });
+  logger.warn("cache", "Unknown index format", { index });
   return null;
 }
 
