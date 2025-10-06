@@ -113,7 +113,7 @@ describe('DiskCacheWriter', () => {
     it('should initialize with default config', () => {
       const defaultWriter = new DiskCacheWriter();
       expect(defaultWriter).toBeDefined();
-      // Defaults: basePath 'public/data/openalex', maxConcurrentWrites 10, etc.
+      // Defaults: basePath 'apps/web/public/data/openalex', maxConcurrentWrites 10, etc.
     });
 
     it('should use provided config', () => {
