@@ -4,6 +4,7 @@
  * Used by service worker, build plugins, and development cache middleware
  */
 
+import path from "node:path";
 import { logger } from '../logger.js';
 
 export type EntityType = 'works' | 'authors' | 'sources' | 'institutions' | 'topics' | 'publishers' | 'funders' | 'concepts' | 'autocomplete';
@@ -1088,4 +1089,20 @@ export function readIndexAsDirectory(index: unknown): DirectoryIndex | null {
 
   logger.warn('cache', 'Unknown index format', { index });
   return null;
+}
+
+/**
+ * Static data cache path (relative to workspace root)
+ */
+export const STATIC_DATA_CACHE_PATH = "apps/web/public/data/openalex";
+
+/**
+ * Get the absolute path to the static data cache directory
+ * @param projectRoot - Optional project root override (defaults to current working directory)
+ */
+export function getStaticDataCachePath(projectRoot?: string): string {
+  // In Node.js environments, we can try to detect the project root
+  // For browser environments, this should be provided
+  const root = projectRoot || process.cwd?.() || "";
+  return path.join(root, STATIC_DATA_CACHE_PATH);
 }
