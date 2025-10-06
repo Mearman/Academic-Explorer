@@ -11,6 +11,7 @@ import {
   DirectoryIndex,
   FileEntry,
   generateContentHash,
+  sanitizeUrlForCaching,
   STATIC_DATA_CACHE_PATH,
 } from "@academic-explorer/utils/static-data/cache-utilities";
 import type { EntityType, OpenAlexEntity, OpenAlexResponse } from "../../types";
@@ -257,9 +258,10 @@ export class DiskCacheWriter {
         // Index doesn't exist, use default
       }
 
-      // Create or update file entry
+      // Create or update file entry with sanitized URL
+      const sanitizedUrl = sanitizeUrlForCaching(data.url);
       const fileEntry: FileEntry = {
-        url: data.url,
+        url: sanitizedUrl,
         $ref: `./${baseName}.json`,
         lastRetrieved: newLastRetrieved,
         contentHash: newContentHash,
@@ -277,24 +279,15 @@ export class DiskCacheWriter {
       await this.writeFileAtomic(indexPath, JSON.stringify(indexData, null, 2));
 
       // Propagate updates to hierarchical parent indexes (skip containing directory)
-      await this.updateHierarchicalIndexes(
-        entityInfo,
-        filePaths,
-        data,
-        true,
-      );
+      await this.updateHierarchicalIndexes(entityInfo, filePaths, data, true);
 
-      logger.debug(
-        "cache" as LogCategory,
-        "Cache write successful",
-        {
-          entityType: entityInfo.entityType,
-          entityId: entityInfo.entityId,
-          baseName,
-          dataFile: filePaths.dataFile,
-          fileSizeBytes: Buffer.byteLength(content, "utf8"),
-        },
-      );
+      logger.debug("cache" as LogCategory, "Cache write successful", {
+        entityType: entityInfo.entityType,
+        entityId: entityInfo.entityId,
+        baseName,
+        dataFile: filePaths.dataFile,
+        fileSizeBytes: Buffer.byteLength(content, "utf8"),
+      });
     } finally {
       // Release all locks
       if (indexLockId && filePaths) {
@@ -376,7 +369,11 @@ export class DiskCacheWriter {
     try {
       const urlObj = new URL(url);
       const pathParts = urlObj.pathname.split("/").filter(Boolean);
-      const queryParams = urlObj.search.slice(1); // Remove leading '?'
+      // Sanitize query parameters to remove sensitive information like api_key and mailto
+      const sanitizedQuery = sanitizeUrlForCaching(urlObj.search);
+      const queryParams = sanitizedQuery.startsWith("?")
+        ? sanitizedQuery.slice(1)
+        : sanitizedQuery; // Remove leading '?'
 
       // Validate entity type
       const validEntityTypes: EntityType[] = [
