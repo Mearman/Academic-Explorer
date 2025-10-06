@@ -598,7 +598,7 @@ export function openalexDataPlugin(): Plugin {
       async handler() {
         logger.debug("general", "Starting comprehensive OpenAlex data management");
 
-        const dataPath = "public/data/openalex";
+        const dataPath = "apps/web/public/data/openalex";
 
         for (const entityType of ENTITY_TYPES) {
           try {
