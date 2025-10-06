@@ -14,10 +14,10 @@ A robust disk-based cache writing system for OpenAlex API responses with atomic 
 
 ## Directory Structure
 
-The cache creates the following structure under `public/data/openalex/`:
+The cache creates the following structure under `apps/web/public/data/openalex/`:
 
 ```
-public/data/openalex/
+apps/web/public/data/openalex/
 ├── authors/
 │   ├── A123456789.json      # Author entity data
 │   ├── A123456789.meta.json # Metadata for author
@@ -76,7 +76,7 @@ await writer.writeToCache(interceptedData);
 
 ## Configuration Options
 
-- **basePath**: Directory where cache files are stored (default: `public/data/openalex`)
+- **basePath**: Directory where cache files are stored (default: `apps/web/public/data/openalex`)
 - **maxConcurrentWrites**: Maximum number of concurrent write operations (default: 10)
 - **lockTimeoutMs**: Timeout for file lock acquisition in milliseconds (default: 5000)
 - **checkDiskSpace**: Whether to validate available disk space before writing (default: true)

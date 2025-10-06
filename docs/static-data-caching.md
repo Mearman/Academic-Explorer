@@ -90,7 +90,7 @@ Collisions are detected when URLs normalize to the same filename (via `getCacheF
 Request 1: https://api.openalex.org/works?filter=doi:10.1234/abc&api_key=secret1
 Request 2: https://api.openalex.org/works?filter=doi:10.1234/abc&api_key=secret2
 ```
-Both normalize to `public/data/openalex/works/queries/filter=doi_10.1234_abc.json`. The second request merges via `mergeCollision`, adding to `equivalentUrls` and updating `collisionInfo.mergedCount`.
+Both normalize to `apps/web/public/data/openalex/works/queries/filter=doi_10.1234_abc.json`. The second request merges via `mergeCollision`, adding to `equivalentUrls` and updating `collisionInfo.mergedCount`.
 
 #### Migration Strategy
 - **Automatic Migration**: Use `migrateToMultiUrl` on legacy entries (those without `equivalentUrls` field) during index rebuilds (e.g., via Vite plugin or CLI).
