@@ -68,6 +68,7 @@ async function safeMkdir(
     () => undefined,
   );
 }
+import { getStaticDataCachePath } from "@academic-explorer/utils/static-data/cache-utilities";
 import {
   readIndexAsUnified,
   type UnifiedIndex as UtilsUnifiedIndex,
@@ -226,7 +227,6 @@ interface CacheOptions {
 }
 
 // Configuration
-const STATIC_DATA_PATH = "public/data/openalex";
 const SUPPORTED_ENTITIES: readonly StaticEntityType[] = [
   "authors",
   "works",
@@ -323,10 +323,10 @@ function isDevelopmentMode(): boolean {
 function getStaticDataPath(): string {
   if (isDevelopmentMode()) {
     // In development, save to apps/web/public/data/openalex so the web app can read it
-    return join(projectRoot, "apps", "web", "public", "data", "openalex");
+    return getStaticDataCachePath();
   } else {
     // In production/distribution, use the standard path
-    return join(projectRoot, STATIC_DATA_PATH);
+    return getStaticDataCachePath();
   }
 }
 

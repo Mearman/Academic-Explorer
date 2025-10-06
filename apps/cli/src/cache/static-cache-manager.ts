@@ -57,7 +57,7 @@ const EntityIndexEntrySchema = z.object({
 
 const UnifiedIndexSchema = z.record(z.string(), EntityIndexEntrySchema);
 
-const STATIC_DATA_PATH = "public/data/openalex";
+const STATIC_DATA_PATH = "apps/web/public/data/openalex";
 const SUPPORTED_ENTITIES: readonly StaticEntityType[] = ["authors", "works", "institutions", "topics", "publishers", "funders"] as const;
 
 export class StaticCacheManager {
