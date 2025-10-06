@@ -1,12 +1,6 @@
 {
-  "lastUpdated": "2025-10-06T12:15:41.513Z",
+  "lastUpdated": "2025-10-06T13:24:48.540Z",
   "files": {
-    "authors": {
-      "url": "https://api.openalex.org/authors",
-      "$ref": "./authors.json",
-      "lastRetrieved": "2025-09-29T22:54:39.755Z",
-      "contentHash": "3db646598be403a1"
-    },
     "funders": {
       "url": "https://api.openalex.org/funders",
       "$ref": "./funders.json",
@@ -36,19 +30,9 @@
       "$ref": "./topics.json",
       "lastRetrieved": "2025-09-29T22:54:51.398Z",
       "contentHash": "3db646598be403a1"
-    },
-    "works": {
-      "url": "https://api.openalex.org/works",
-      "$ref": "./works.json",
-      "lastRetrieved": "2025-10-06T12:03:17.042Z",
-      "contentHash": "5021e624e752b001"
     }
   },
   "directories": {
-    "authors": {
-      "$ref": "./authors",
-      "lastModified": "2025-10-06T12:15:41.374Z"
-    },
     "funders": {
       "$ref": "./funders",
       "lastModified": "2025-10-06T10:53:58.286Z"

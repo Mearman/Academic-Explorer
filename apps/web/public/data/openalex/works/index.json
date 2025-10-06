@@ -1,11 +1,17 @@
 {
-  "lastUpdated": "2025-10-06T12:03:27.700Z",
+  "lastUpdated": "2025-10-06T13:24:58.792Z",
   "files": {
     "unknown_75b0e39e": {
-      "url": "https://api.openalex.org/works0",
+      "url": "?https%3A%2F%2Fapi.openalex.org%2Fworks0=",
       "$ref": "./unknown_75b0e39e.json",
-      "lastRetrieved": "2025-10-06T12:03:27.700Z",
+      "lastRetrieved": "2025-10-06T13:24:58.791Z",
       "contentHash": "5021e624e752b001"
+    },
+    "W123%2Fspecial-chars": {
+      "url": "?https%3A%2F%2Fapi.openalex.org%2Fworks%2FW123%2Fspecial-chars=",
+      "$ref": "./W123%2Fspecial-chars.json",
+      "lastRetrieved": "2025-10-06T13:24:58.779Z",
+      "contentHash": "44136fa355b3678a"
     }
   }
 }
