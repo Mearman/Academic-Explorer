@@ -6,20 +6,16 @@
  * - Generates and maintains complete index files for all entity types
  * - Always runs at build time to ensure complete data availability
  */
-import { readFile, writeFile, readdir, stat, access, mkdir, unlink } from "fs/promises";
+import { logger } from "@academic-explorer/utils";
+import {
+    generateContentHash,
+    parseOpenAlexUrl,
+    type IndexEntry
+} from "@academic-explorer/utils/static-data/cache-utilities";
+import { access, mkdir, readdir, readFile, stat, unlink, writeFile } from "fs/promises";
 import { join } from "path";
 import type { Plugin } from "vite";
 import { z } from "zod";
-import { logger } from "@academic-explorer/utils";
-import {
-  generateContentHash,
-  parseOpenAlexUrl,
-  getCacheFilePath,
-  sanitizeFilename,
-  type EntityType,
-  type DirectoryIndex,
-  type IndexEntry
-} from "@academic-explorer/utils/static-data/cache-utilities";
 
 /**
  * Simple fetch function for OpenAlex API queries

@@ -1,10 +1,10 @@
+import { STATIC_DATA_CACHE_PATH } from "@academic-explorer/utils/static-data/cache-utilities";
 import { tanstackRouter } from "@tanstack/router-vite-plugin";
 import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { VitePWA } from "vite-plugin-pwa";
 import { openalexCachePlugin } from "../../../config/vite-plugins/openalex-cache";
-import { STATIC_DATA_CACHE_PATH } from "@academic-explorer/utils/static-data/cache-utilities";
 
 /**
  * Plugin configuration for the web app

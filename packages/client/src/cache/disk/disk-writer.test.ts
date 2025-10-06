@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { DiskCacheWriter, type InterceptedData, type DiskWriterConfig } from './disk-writer.js';
+import { logger } from '@/lib/logger.js';
 import { generateContentHash, hasCollision, mergeCollision, migrateToMultiUrl, validateFileEntry } from '@academic-explorer/utils/static-data/cache-utilities.js';
+import * as cryptoModule from 'node:crypto';
 import * as fsModule from 'node:fs/promises';
 import * as pathModule from 'node:path';
-import * as cryptoModule from 'node:crypto';
-import { logger } from '@/lib/logger.js';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { DiskCacheWriter, type DiskWriterConfig, type InterceptedData } from './disk-writer.js';
 
 // Mock Node.js modules
 vi.mock('node:fs/promises', () => ({
