@@ -60,6 +60,12 @@
           "reportsDirectory": "coverage/apps/cli"
         }
       },
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/vite.config.base.ts",
+        "{projectRoot}/vitest.config.ts"
+      ],
       "cache": true
     },
     "test:integration": {
@@ -67,6 +73,12 @@
       "options": {
         "project": "integration"
       },
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/vite.config.base.ts",
+        "{projectRoot}/vitest.config.ts"
+      ],
       "cache": true
     },
     "test:component": {

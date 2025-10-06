@@ -52,6 +52,8 @@
       "inputs": [
         "default",
         "^production",
+        "{workspaceRoot}/vite.config.base.ts",
+        "{projectRoot}/vite.config.ts",
         "{projectRoot}/vitest.config.ts"
       ],
       "outputs": [

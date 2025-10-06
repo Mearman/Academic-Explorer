@@ -47,6 +47,12 @@
         "command": "echo 'All utils tests completed successfully'",
         "cwd": "{projectRoot}"
       },
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/vite.config.base.ts",
+        "{projectRoot}/vitest.config.ts"
+      ],
       "outputs": [
         "{projectRoot}/coverage"
       ],
@@ -61,6 +67,7 @@
       "inputs": [
         "default",
         "^production",
+        "{workspaceRoot}/vite.config.base.ts",
         "{projectRoot}/vitest.config.ts"
       ],
       "outputs": [
@@ -76,6 +83,7 @@
       "inputs": [
         "default",
         "^production",
+        "{workspaceRoot}/vite.config.base.ts",
         "{projectRoot}/vitest.config.ts"
       ],
       "outputs": [

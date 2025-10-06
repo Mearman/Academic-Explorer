@@ -16,9 +16,7 @@
         "{projectRoot}/tsconfig.json",
         "{projectRoot}/package.json"
       ],
-      "outputs": [
-        "{projectRoot}/dist"
-      ],
+      "outputs": ["{projectRoot}/dist"],
       "cache": true
     },
     "typecheck": {
@@ -52,43 +50,35 @@
         "command": "echo 'All client tests completed successfully'",
         "cwd": "{projectRoot}"
       },
-      "outputs": [
-        "{projectRoot}/coverage"
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/vite.config.base.ts",
+        "{projectRoot}/vitest.config.ts"
       ],
+      "outputs": ["{projectRoot}/coverage"],
       "cache": true
     },
     "test:unit": {
       "executor": "@nx/vite:test",
       "options": {
-        "project": "unit",
+        "project": "client-unit",
         "coverage": true
       },
-      "inputs": [
-        "default",
-        "^production",
-        "{projectRoot}/vitest.config.ts"
-      ],
-      "outputs": [
-        "{projectRoot}/coverage"
-      ],
-      "cache": true
-    },
-    "test:integration": {
+  "inputs": ["default", "^production", "{workspaceRoot}/vite.config.base.ts", "{projectRoot}/vitest.config.ts"],
+  "outputs": ["{projectRoot}/coverage"],
+  "cache": true
+},
+"test:integration": {
       "executor": "@nx/vite:test",
       "options": {
-        "project": "integration"
+        "project": "client-integration"
       },
-      "inputs": [
-        "default",
-        "^production",
-        "{projectRoot}/vitest.config.ts"
-      ],
-      "outputs": [
-        "{projectRoot}/coverage"
-      ],
-      "cache": true
-    },
-    "test:watch": {
+  "inputs": ["default", "^production", "{workspaceRoot}/vite.config.base.ts", "{projectRoot}/vitest.config.ts"],
+  "outputs": ["{projectRoot}/coverage"],
+  "cache": true
+},
+"test:watch": {
       "executor": "nx:run-commands",
       "options": {
         "command": "vitest",

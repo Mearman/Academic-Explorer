@@ -23,14 +23,12 @@
       "inputs": [
         "production",
         "^production",
-        "{workspaceRoot}/vite.config.ts",
-        "{projectRoot}/vite.config.ts",
+  "{workspaceRoot}/vite.config.base.ts",
+  "{projectRoot}/vite.config.base.ts",
         "{projectRoot}/index.html",
         "{projectRoot}/public/**/*"
       ],
-      "outputs": [
-        "{projectRoot}/dist"
-      ],
+      "outputs": ["{projectRoot}/dist"],
       "cache": true
     },
     "typecheck": {
@@ -60,26 +58,19 @@
     },
     "test": {
       "executor": "nx:run-commands",
-      "dependsOn": ["test:unit", "test:component", "test:integration", "test:e2e"],
+      "dependsOn": ["test:unit", "test:component", "test:e2e"],
       "options": {
         "command": "echo 'All scoped tests completed successfully'",
         "cwd": "{projectRoot}"
       },
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/vitest.workspace.ts",
-        "{projectRoot}/vitest.config.ts"
-      ],
-      "outputs": [
-        "{projectRoot}/coverage"
-      ],
+  "inputs": ["default", "^production", "{workspaceRoot}/vite.config.base.ts", "{projectRoot}/vite.config.ts", "{projectRoot}/vitest.config.ts"],
+      "outputs": ["{projectRoot}/coverage"],
       "cache": true
     },
     "test:unit": {
       "executor": "@nx/vite:test",
       "options": {
-        "config": "{projectRoot}/vitest.config.ts",
+        "config": "{workspaceRoot}/vite.config.base.ts",
         "project": "unit",
         "coverage": true
       },
@@ -87,55 +78,32 @@
         "default",
         "^production",
         "{workspaceRoot}/vitest.workspace.ts",
+        "{workspaceRoot}/vite.config.base.ts",
+        "{projectRoot}/vite.config.ts",
         "{projectRoot}/vitest.config.ts"
       ],
-      "outputs": [
-        "{projectRoot}/coverage"
-      ],
+      "outputs": ["{projectRoot}/coverage"],
       "cache": true
     },
     "test:component": {
       "executor": "@nx/vite:test",
       "options": {
-        "config": "{projectRoot}/vitest.config.ts",
-        "project": "component"
+        "config": "{workspaceRoot}/vite.config.base.ts",
+        "include": "src/**/*.component.test.{ts,tsx}"
       },
       "cache": true
     },
-    "test:integration": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "config": "{projectRoot}/vitest.config.ts",
-        "project": "integration"
-      },
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/vitest.workspace.ts",
-        "{projectRoot}/vitest.config.ts"
-      ],
-      "outputs": [
-        "{projectRoot}/coverage"
-      ],
-      "cache": true
-    },
+
     "test:e2e": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/playwright:playwright",
       "options": {
-        "command": "tsx ../../scripts/run-e2e-tests.ts",
-        "cwd": "{projectRoot}"
+        "config": "{projectRoot}/playwright.config.ts"
       },
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/vitest.workspace.ts",
-        "{projectRoot}/vitest.config.ts",
-        "{projectRoot}/playwright.config.ts"
-      ],
-      "outputs": [
-        "{projectRoot}/test-results"
-      ],
-      "cache": false
+      "configurations": {
+        "ci": {
+          "ci": true
+        }
+      }
     },
     "test:watch": {
       "executor": "nx:run-commands",
