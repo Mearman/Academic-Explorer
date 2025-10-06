@@ -4,9 +4,9 @@
  * with atomic operations, file locking, and metadata generation
  */
 
-import type { EntityType, OpenAlexResponse, OpenAlexEntity } from '../../types';
-import type { LogCategory } from '@academic-explorer/utils/logger';
-import { logger, logError } from '@academic-explorer/utils/logger';
+import type { EntityType, OpenAlexResponse, OpenAlexEntity } from "../../types";
+import type { LogCategory } from "@academic-explorer/utils/logger";
+import { logger, logError } from "@academic-explorer/utils/logger";
 import {
   DirectoryIndex,
   FileEntry,
@@ -16,13 +16,13 @@ import {
   hasCollision,
   mergeCollision,
   migrateToMultiUrl,
-  validateFileEntry
-} from '@academic-explorer/utils/static-data/cache-utilities';
+  validateFileEntry,
+} from "@academic-explorer/utils/static-data/cache-utilities";
 
 // Dynamic imports for Node.js modules to avoid browser bundling issues
-let fs: typeof import('fs/promises') | undefined;
-let path: typeof import('path') | undefined;
-let crypto: typeof import('crypto') | undefined;
+let fs: typeof import("fs/promises") | undefined;
+let path: typeof import("path") | undefined;
+let crypto: typeof import("crypto") | undefined;
 
 /**
  * Initialize Node.js modules (required before using any file operations)
@@ -30,9 +30,9 @@ let crypto: typeof import('crypto') | undefined;
 async function initializeNodeModules(): Promise<void> {
   if (!fs || !path || !crypto) {
     const [fsModule, pathModule, cryptoModule] = await Promise.all([
-      import('node:fs'),
-      import('node:path'),
-      import('node:crypto')
+      import("node:fs"),
+      import("node:path"),
+      import("node:crypto"),
     ]);
     fs = fsModule.promises;
     path = pathModule;
@@ -43,9 +43,15 @@ async function initializeNodeModules(): Promise<void> {
 /**
  * Get initialized Node modules (throws if not initialized)
  */
-function getNodeModules(): { fs: typeof import('fs/promises'); path: typeof import('path'); crypto: typeof import('crypto') } {
+function getNodeModules(): {
+  fs: typeof import("fs/promises");
+  path: typeof import("path");
+  crypto: typeof import("crypto");
+} {
   if (!fs || !path || !crypto) {
-    throw new Error('Node modules not initialized. Call initializeNodeModules() first.');
+    throw new Error(
+      "Node modules not initialized. Call initializeNodeModules() first.",
+    );
   }
   return { fs, path, crypto };
 }
@@ -148,14 +154,16 @@ export class DiskCacheWriter {
 
   constructor(config: Partial<DiskWriterConfig> = {}) {
     this.config = {
-      basePath: config.basePath ?? 'public/data/openalex',
+      basePath: config.basePath ?? "public/data/openalex",
       maxConcurrentWrites: config.maxConcurrentWrites ?? 10,
       lockTimeoutMs: config.lockTimeoutMs ?? 5000,
       checkDiskSpace: config.checkDiskSpace ?? true,
       minDiskSpaceBytes: config.minDiskSpaceBytes ?? 100 * 1024 * 1024, // 100MB
     };
 
-    logger.debug('cache' as LogCategory, 'DiskCacheWriter initialized', { config: this.config });
+    logger.debug("cache" as LogCategory, "DiskCacheWriter initialized", {
+      config: this.config,
+    });
   }
 
   /**
@@ -202,11 +210,13 @@ export class DiskCacheWriter {
     let indexLockId: string;
     let dataLockId: string;
     let metaLockId: string;
-    let filePaths: {
-      dataFile: string;
-      metadataFile: string;
-      directoryPath: string;
-    } | undefined;
+    let filePaths:
+      | {
+          dataFile: string;
+          metadataFile: string;
+          directoryPath: string;
+        }
+      | undefined;
 
     // Initialize Node.js modules and extract them for use in try and finally blocks
     await initializeNodeModules();
@@ -227,7 +237,7 @@ export class DiskCacheWriter {
       // Generate file paths
       filePaths = this.generateFilePaths(entityInfo);
 
-      const indexPath = pathModule.join(filePaths.directoryPath, 'index.json');
+      const indexPath = pathModule.join(filePaths.directoryPath, "index.json");
 
       // LOCKING EXTENSIONS: Acquire exclusive locks for concurrent writes.
       // Uses in-memory lock map with timeout-based stale lock detection.
@@ -254,33 +264,33 @@ export class DiskCacheWriter {
         statusCode: data.statusCode,
         responseHeaders: data.responseHeaders,
         timestamp: data.timestamp,
-        contentType: data.responseHeaders['content-type'],
+        contentType: data.responseHeaders["content-type"],
         cacheWriteTime: new Date().toISOString(),
         entityType: entityInfo.entityType,
         entityId: entityInfo.entityId,
-        fileSizeBytes: Buffer.byteLength(content, 'utf8'),
+        fileSizeBytes: Buffer.byteLength(content, "utf8"),
         contentHash: newContentHash,
       };
 
       // Compute normalized path for collision detection
       const normalizedPath = getCacheFilePath(data.url, this.config.basePath);
       if (!normalizedPath) {
-        throw new Error('Failed to compute normalized cache path');
+        throw new Error("Failed to compute normalized cache path");
       }
 
-      const baseName = pathModule.basename(filePaths.dataFile, '.json');
+      const baseName = pathModule.basename(filePaths.dataFile, ".json");
 
       // Read or create directory index
       let indexData: DirectoryIndex = {
-        lastUpdated: new Date().toISOString()
+        lastUpdated: new Date().toISOString(),
       };
 
       try {
-        const existingContent = await fsModule.readFile(indexPath, 'utf8');
+        const existingContent = await fsModule.readFile(indexPath, "utf8");
         const existingData = JSON.parse(existingContent) as DirectoryIndex;
         indexData = {
           ...existingData,
-          lastUpdated: new Date().toISOString()
+          lastUpdated: new Date().toISOString(),
         };
       } catch {
         // Index doesn't exist, use default
@@ -296,7 +306,10 @@ export class DiskCacheWriter {
         // If collision detected, merge the new URL into equivalentUrls and update
         // timestamps/collisionInfo. This avoids data duplication for equivalent requests.
         if (hasCollision(existingEntry, data.url)) {
-          logger.info('cache' as LogCategory, 'Collision detected: merging', { newUrl: data.url, baseName });
+          logger.info("cache" as LogCategory, "Collision detected: merging", {
+            newUrl: data.url,
+            baseName,
+          });
 
           const oldHash = existingEntry.contentHash;
           fileEntry = mergeCollision(existingEntry, data.url, newLastRetrieved);
@@ -306,21 +319,31 @@ export class DiskCacheWriter {
           // history for debugging while allowing the cache to reflect new data.
           // Archived data is stored in a .collisions.json sidecar file.
           if (oldHash !== newContentHash) {
-            logger.warn('cache' as LogCategory, 'Collision with content hash mismatch: archiving old entry and updating', {
-              oldHash,
-              newHash: newContentHash,
-              baseName
-            });
+            logger.warn(
+              "cache" as LogCategory,
+              "Collision with content hash mismatch: archiving old entry and updating",
+              {
+                oldHash,
+                newHash: newContentHash,
+                baseName,
+              },
+            );
 
             // Archive old equivalent URLs and hash
-            const collisionsPath = pathModule.join(filePaths.directoryPath, `${baseName}.collisions.json`);
+            const collisionsPath = pathModule.join(
+              filePaths.directoryPath,
+              `${baseName}.collisions.json`,
+            );
             const archiveData = {
-              archivedUrls: fileEntry.equivalentUrls,
+              archivedUrls: fileEntry.equivalentUrls || [fileEntry.url],
               oldHash,
               timestamp: new Date().toISOString(),
-              reason: 'hash_mismatch_update'
+              reason: "hash_mismatch_update",
             };
-            await this.writeFileAtomic(collisionsPath, JSON.stringify(archiveData, null, 2));
+            await this.writeFileAtomic(
+              collisionsPath,
+              JSON.stringify(archiveData, null, 2),
+            );
 
             // Update to new content hash
             fileEntry.contentHash = newContentHash;
@@ -329,31 +352,57 @@ export class DiskCacheWriter {
           fileEntry.lastRetrieved = newLastRetrieved;
         } else {
           // Same filename but no collision (unexpected), treat as update
-          logger.warn('cache' as LogCategory, 'Existing file without URL collision detected', { baseName, newUrl: data.url });
+          logger.warn(
+            "cache" as LogCategory,
+            "Existing file without URL collision detected",
+            { baseName, newUrl: data.url },
+          );
           fileEntry = {
             ...existingEntry,
             lastRetrieved: newLastRetrieved,
-            contentHash: newContentHash
+            contentHash: newContentHash,
           };
           if (!validateFileEntry(fileEntry as FileEntry)) {
             // Fallback to new entry
-            fileEntry = this.createBasicFileEntry(baseName, data.url, newLastRetrieved, newContentHash);
+            fileEntry = this.createBasicFileEntry(
+              baseName,
+              data.url,
+              newLastRetrieved,
+              newContentHash,
+            );
           }
         }
       } else {
         // No existing entry
-        fileEntry = this.createBasicFileEntry(baseName, data.url, newLastRetrieved, newContentHash);
+        fileEntry = this.createBasicFileEntry(
+          baseName,
+          data.url,
+          newLastRetrieved,
+          newContentHash,
+        );
       }
 
       // Validate the file entry
       if (!validateFileEntry(fileEntry)) {
-        logger.warn('cache' as LogCategory, 'FileEntry validation failed, falling back to single-URL entry', { baseName });
-        fileEntry = this.createBasicFileEntry(baseName, data.url, newLastRetrieved, newContentHash);
+        logger.warn(
+          "cache" as LogCategory,
+          "FileEntry validation failed, falling back to single-URL entry",
+          { baseName },
+        );
+        fileEntry = this.createBasicFileEntry(
+          baseName,
+          data.url,
+          newLastRetrieved,
+          newContentHash,
+        );
       }
 
       // Write data and metadata files atomically
       await this.writeFileAtomic(filePaths.dataFile, content);
-      await this.writeFileAtomic(filePaths.metadataFile, JSON.stringify(metadata, null, 2));
+      await this.writeFileAtomic(
+        filePaths.metadataFile,
+        JSON.stringify(metadata, null, 2),
+      );
 
       // Update the containing directory index
       if (!indexData.files) {
@@ -364,22 +413,33 @@ export class DiskCacheWriter {
       await this.writeFileAtomic(indexPath, JSON.stringify(indexData, null, 2));
 
       // Propagate updates to hierarchical parent indexes (skip containing directory)
-      await this.updateHierarchicalIndexes(entityInfo, filePaths, metadata, true);
+      await this.updateHierarchicalIndexes(
+        entityInfo,
+        filePaths,
+        metadata,
+        true,
+      );
 
-      logger.debug('cache' as LogCategory, 'Cache write successful with collision handling', {
-        entityType: entityInfo.entityType,
-        entityId: entityInfo.entityId,
-        baseName,
-        dataFile: filePaths.dataFile,
-        metadataFile: filePaths.metadataFile,
-        hasCollision: !!indexData.files?.[baseName]?.equivalentUrls?.length,
-        fileSizeBytes: metadata.fileSizeBytes,
-      });
-
+      logger.debug(
+        "cache" as LogCategory,
+        "Cache write successful with collision handling",
+        {
+          entityType: entityInfo.entityType,
+          entityId: entityInfo.entityId,
+          baseName,
+          dataFile: filePaths.dataFile,
+          metadataFile: filePaths.metadataFile,
+          hasCollision: !!indexData.files?.[baseName]?.equivalentUrls?.length,
+          fileSizeBytes: metadata.fileSizeBytes,
+        },
+      );
     } finally {
       // Release all locks
       if (indexLockId && filePaths) {
-        await this.releaseFileLock(indexLockId, pathModule.join(filePaths.directoryPath, 'index.json'));
+        await this.releaseFileLock(
+          indexLockId,
+          pathModule.join(filePaths.directoryPath, "index.json"),
+        );
       }
       if (dataLockId && filePaths) {
         await this.releaseFileLock(dataLockId, filePaths.dataFile);
@@ -397,19 +457,13 @@ export class DiskCacheWriter {
     baseName: string,
     url: string,
     lastRetrieved: string,
-    contentHash: string
+    contentHash: string,
   ): FileEntry {
     return {
       url,
       $ref: `./${baseName}.json`,
       lastRetrieved,
       contentHash,
-      equivalentUrls: [url],
-      urlTimestamps: { [url]: lastRetrieved },
-      collisionInfo: {
-        mergedCount: 0,
-        totalUrls: 1
-      }
     };
   }
 
@@ -430,7 +484,9 @@ export class DiskCacheWriter {
       }
 
       // Try to extract from response data
-      const responseInfo = this.extractEntityInfoFromResponse(data.responseData);
+      const responseInfo = this.extractEntityInfoFromResponse(
+        data.responseData,
+      );
       if (responseInfo.entityType) {
         return { ...responseInfo, ...urlInfo };
       }
@@ -438,13 +494,14 @@ export class DiskCacheWriter {
       // Default fallback - use URL hash
       const urlHash = await generateContentHash(data.url);
       return {
-        entityType: 'works', // Default entity type
+        entityType: "works", // Default entity type
         entityId: `unknown_${urlHash.substring(0, 8)}`,
       };
-
     } catch (error) {
-      logError(logger, 'Failed to extract entity info', error);
-      throw new Error(`Entity info extraction failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      logError(logger, "Failed to extract entity info", error);
+      throw new Error(
+        `Entity info extraction failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }
 
@@ -459,13 +516,20 @@ export class DiskCacheWriter {
   } {
     try {
       const urlObj = new URL(url);
-      const pathParts = urlObj.pathname.split('/').filter(Boolean);
+      const pathParts = urlObj.pathname.split("/").filter(Boolean);
       const queryParams = urlObj.search.slice(1); // Remove leading '?'
 
       // Validate entity type
       const validEntityTypes: EntityType[] = [
-        'works', 'authors', 'sources', 'institutions',
-        'topics', 'concepts', 'publishers', 'funders', 'keywords'
+        "works",
+        "authors",
+        "sources",
+        "institutions",
+        "topics",
+        "concepts",
+        "publishers",
+        "funders",
+        "keywords",
       ];
 
       // OpenAlex API URL pattern: /entity_type/entity_id or /entity_type?params
@@ -484,7 +548,7 @@ export class DiskCacheWriter {
               entityType,
               queryParams,
               isQueryResponse: true,
-              entityId: `collection_${Date.now()}`
+              entityId: entityType, // Use entity type as ID for collections
             };
           }
           // Collection without params: /entity_type
@@ -492,7 +556,7 @@ export class DiskCacheWriter {
             return {
               entityType,
               isQueryResponse: true,
-              entityId: `collection_${Date.now()}`
+              entityId: entityType, // Use entity type as ID for collections
             };
           }
         }
@@ -519,19 +583,22 @@ export class DiskCacheWriter {
         return {
           entityType,
           entityId: responseData.id,
-          isQueryResponse: false
+          isQueryResponse: false,
         };
       }
 
       // Collection response
-      if (this.isOpenAlexResponse(responseData) && responseData.results.length > 0) {
+      if (
+        this.isOpenAlexResponse(responseData) &&
+        responseData.results.length > 0
+      ) {
         const firstResult = responseData.results[0];
         if (this.isOpenAlexEntity(firstResult)) {
           const entityType = this.detectEntityType(firstResult);
           return {
             entityType,
-            entityId: `collection_${Date.now()}`,
-            isQueryResponse: true
+            entityId: entityType, // Use entity type as ID for collections
+            isQueryResponse: true,
           };
         }
       }
@@ -546,20 +613,26 @@ export class DiskCacheWriter {
    * Type guard for OpenAlex entity
    */
   private isOpenAlexEntity(data: unknown): data is OpenAlexEntity {
-    return typeof data === 'object' &&
-           data !== null &&
-           typeof (data as { id?: unknown }).id === 'string' &&
-           typeof (data as { display_name?: unknown }).display_name === 'string';
+    return (
+      typeof data === "object" &&
+      data !== null &&
+      typeof (data as { id?: unknown }).id === "string" &&
+      typeof (data as { display_name?: unknown }).display_name === "string"
+    );
   }
 
   /**
    * Type guard for OpenAlex response
    */
-  private isOpenAlexResponse(data: unknown): data is OpenAlexResponse<OpenAlexEntity> {
-    return typeof data === 'object' &&
-           data !== null &&
-           Array.isArray((data as { results?: unknown }).results) &&
-           typeof (data as { meta?: unknown }).meta === 'object';
+  private isOpenAlexResponse(
+    data: unknown,
+  ): data is OpenAlexResponse<OpenAlexEntity> {
+    return (
+      typeof data === "object" &&
+      data !== null &&
+      Array.isArray((data as { results?: unknown }).results) &&
+      typeof (data as { meta?: unknown }).meta === "object"
+    );
   }
 
   /**
@@ -567,17 +640,19 @@ export class DiskCacheWriter {
    */
   private detectEntityType(entity: OpenAlexEntity): EntityType {
     // Try to detect based on specific properties
-    if ('doi' in entity || 'publication_year' in entity) return 'works';
-    if ('orcid' in entity || 'last_known_institutions' in entity) return 'authors';
-    if ('issn_l' in entity || 'publisher' in entity) return 'sources';
-    if ('ror' in entity || 'country_code' in entity) return 'institutions';
-    if ('description' in entity && 'keywords' in entity) return 'topics';
-    if ('wikidata' in entity && 'level' in entity) return 'concepts';
-    if ('hierarchy_level' in entity || 'parent_publisher' in entity) return 'publishers';
-    if ('grants_count' in entity) return 'funders';
+    if ("doi" in entity || "publication_year" in entity) return "works";
+    if ("orcid" in entity || "last_known_institutions" in entity)
+      return "authors";
+    if ("issn_l" in entity || "publisher" in entity) return "sources";
+    if ("ror" in entity || "country_code" in entity) return "institutions";
+    if ("description" in entity && "keywords" in entity) return "topics";
+    if ("wikidata" in entity && "level" in entity) return "concepts";
+    if ("hierarchy_level" in entity || "parent_publisher" in entity)
+      return "publishers";
+    if ("grants_count" in entity) return "funders";
 
     // Default fallback
-    return 'works';
+    return "works";
   }
 
   /**
@@ -593,10 +668,10 @@ export class DiskCacheWriter {
     metadataFile: string;
     directoryPath: string;
   } {
-    const entityType = entityInfo.entityType ?? 'unknown';
+    const entityType = entityInfo.entityType ?? "unknown";
 
     if (!path) {
-      throw new Error('Node.js path module not initialized');
+      throw new Error("Node.js path module not initialized");
     }
 
     let directoryPath: string;
@@ -604,17 +679,26 @@ export class DiskCacheWriter {
 
     if (entityInfo.isQueryResponse && entityInfo.queryParams) {
       // Query/filter response: works/queries/filter=author.id:A123&select=display_name.json
-      const sanitizedQuery = this.sanitizeFilename(`filter=${entityInfo.queryParams}`);
-      directoryPath = path.join(this.config.basePath, entityType, 'queries');
+      const sanitizedQuery = this.sanitizeFilename(
+        `filter=${entityInfo.queryParams}`,
+      );
+      directoryPath = path.join(this.config.basePath, entityType, "queries");
       filename = sanitizedQuery;
     } else if (entityInfo.entityId && !entityInfo.isQueryResponse) {
       // Single entity: works/W123456789.json
       const sanitizedId = this.sanitizeFilename(entityInfo.entityId);
       directoryPath = path.join(this.config.basePath, entityType);
       filename = sanitizedId;
+    } else if (
+      entityInfo.isQueryResponse &&
+      entityInfo.entityId === entityType
+    ) {
+      // Collection response: works.json (not works/works.json)
+      directoryPath = this.config.basePath;
+      filename = entityType;
     } else {
       // Default fallback
-      const entityId = entityInfo.entityId ?? 'unknown';
+      const entityId = entityInfo.entityId ?? "unknown";
       const sanitizedId = this.sanitizeFilename(entityId);
       directoryPath = path.join(this.config.basePath, entityType);
       filename = sanitizedId;
@@ -631,10 +715,10 @@ export class DiskCacheWriter {
    */
   private sanitizeFilename(filename: string): string {
     return filename
-      .replace(/[<>:"/\\|?*]/g, '_') // Replace invalid characters
-      .replace(/\s+/g, '_') // Replace spaces with underscores
-      .replace(/_{2,}/g, '_') // Replace multiple underscores with single
-      .replace(/^_|_$/g, '') // Remove leading/trailing underscores
+      .replace(/[<>:"/\\|?*]/g, "_") // Replace invalid characters
+      .replace(/\s+/g, "_") // Replace spaces with underscores
+      .replace(/_{2,}/g, "_") // Replace multiple underscores with single
+      .replace(/^_|_$/g, "") // Remove leading/trailing underscores
       .substring(0, 200); // Limit length
   }
 
@@ -644,34 +728,38 @@ export class DiskCacheWriter {
   private async ensureDirectoryStructure(dirPath: string): Promise<void> {
     try {
       if (!fs) {
-        throw new Error('Node.js fs module not initialized');
+        throw new Error("Node.js fs module not initialized");
       }
       await fs.mkdir(dirPath, { recursive: true });
     } catch (error) {
-      logError(logger, 'Failed to create directory structure', error);
-      throw new Error(`Directory creation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      logError(logger, "Failed to create directory structure", error);
+      throw new Error(
+        `Directory creation failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }
 
   /**
    * Write file atomically using temporary file
    */
-  private async writeFileAtomic(filePath: string, content: string): Promise<void> {
+  private async writeFileAtomic(
+    filePath: string,
+    content: string,
+  ): Promise<void> {
     if (!crypto) {
-      throw new Error('Node.js crypto module not initialized');
+      throw new Error("Node.js crypto module not initialized");
     }
     if (!fs) {
-      throw new Error('Node.js fs module not initialized');
+      throw new Error("Node.js fs module not initialized");
     }
     const tempPath = `${filePath}.tmp.${crypto.randomUUID()}`;
 
     try {
       // Write to temporary file first
-      await fs.writeFile(tempPath, content, 'utf8');
+      await fs.writeFile(tempPath, content, "utf8");
 
       // Atomically move to final location
       await fs.rename(tempPath, filePath);
-
     } catch (error) {
       // Clean up temporary file if it exists
       try {
@@ -680,8 +768,10 @@ export class DiskCacheWriter {
         // Ignore cleanup errors
       }
 
-      logError(logger, 'Atomic file write failed', error);
-      throw new Error(`Atomic write failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      logError(logger, "Atomic file write failed", error);
+      throw new Error(
+        `Atomic write failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }
 
@@ -697,7 +787,7 @@ export class DiskCacheWriter {
    */
   private async acquireFileLock(filePath: string): Promise<string> {
     if (!crypto) {
-      throw new Error('Node.js crypto module not initialized');
+      throw new Error("Node.js crypto module not initialized");
     }
     const lockId = crypto.randomUUID();
     const maxWaitTime = this.config.lockTimeoutMs;
@@ -712,7 +802,10 @@ export class DiskCacheWriter {
           filePath,
         });
 
-        logger.debug('disk-writer' as LogCategory, 'File lock acquired', { filePath, lockId });
+        logger.debug("disk-writer" as LogCategory, "File lock acquired", {
+          filePath,
+          lockId,
+        });
         return lockId;
       }
 
@@ -721,7 +814,10 @@ export class DiskCacheWriter {
       if (existingLock && Date.now() - existingLock.timestamp > maxWaitTime) {
         // Remove stale lock
         this.activeLocks.delete(filePath);
-        logger.warn('disk-writer' as LogCategory, 'Removed stale file lock', { filePath, staleLockId: existingLock.lockId });
+        logger.warn("disk-writer" as LogCategory, "Removed stale file lock", {
+          filePath,
+          staleLockId: existingLock.lockId,
+        });
         continue;
       }
 
@@ -729,23 +825,34 @@ export class DiskCacheWriter {
       await this.sleep(50);
     }
 
-    throw new Error(`Failed to acquire file lock for ${filePath} within ${maxWaitTime}ms`);
+    throw new Error(
+      `Failed to acquire file lock for ${filePath} within ${maxWaitTime}ms`,
+    );
   }
 
   /**
    * Release file lock
    */
-  private async releaseFileLock(lockId: string, filePath: string): Promise<void> {
+  private async releaseFileLock(
+    lockId: string,
+    filePath: string,
+  ): Promise<void> {
     const existingLock = this.activeLocks.get(filePath);
 
     if (existingLock && existingLock.lockId === lockId) {
       this.activeLocks.delete(filePath);
-      logger.debug('disk-writer' as LogCategory, 'File lock released', { filePath, lockId });
+      logger.debug("disk-writer" as LogCategory, "File lock released", {
+        filePath,
+        lockId,
+      });
     } else {
-      logger.warn('disk-writer' as LogCategory, 'Attempted to release non-existent or mismatched lock', { filePath, lockId });
+      logger.warn(
+        "disk-writer" as LogCategory,
+        "Attempted to release non-existent or mismatched lock",
+        { filePath, lockId },
+      );
     }
   }
-
 
   /**
    * Check available disk space
@@ -753,7 +860,7 @@ export class DiskCacheWriter {
   private async ensureSufficientDiskSpace(): Promise<void> {
     try {
       if (!fs) {
-        throw new Error('Node.js fs module not initialized');
+        throw new Error("Node.js fs module not initialized");
       }
       const stats = await fs.statfs(this.config.basePath);
       const availableBytes = stats.bavail * stats.bsize;
@@ -761,19 +868,21 @@ export class DiskCacheWriter {
       if (availableBytes < this.config.minDiskSpaceBytes) {
         throw new Error(
           `Insufficient disk space: ${this.formatBytes(availableBytes)} available, ` +
-          `${this.formatBytes(this.config.minDiskSpaceBytes)} required`
+            `${this.formatBytes(this.config.minDiskSpaceBytes)} required`,
         );
       }
 
-      logger.debug('disk-writer' as LogCategory, 'Disk space check passed', {
+      logger.debug("disk-writer" as LogCategory, "Disk space check passed", {
         availableBytes,
         requiredBytes: this.config.minDiskSpaceBytes,
       });
-
     } catch (error) {
       // If statfs is not available, skip the check
-      if (error instanceof Error && error.message.includes('ENOSYS')) {
-        logger.warn('disk-writer' as LogCategory, 'Disk space checking not available on this platform');
+      if (error instanceof Error && error.message.includes("ENOSYS")) {
+        logger.warn(
+          "disk-writer" as LogCategory,
+          "Disk space checking not available on this platform",
+        );
         return;
       }
 
@@ -785,7 +894,7 @@ export class DiskCacheWriter {
    * Format bytes for human-readable display
    */
   private formatBytes(bytes: number): string {
-    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const units = ["B", "KB", "MB", "GB", "TB"];
     let size = bytes;
     let unitIndex = 0;
 
@@ -801,27 +910,37 @@ export class DiskCacheWriter {
    * Validate intercepted data structure
    */
   private validateInterceptedData(data: InterceptedData): void {
-    if (!data || typeof data !== 'object') {
-      throw new Error('Invalid intercepted data: must be an object');
+    if (!data || typeof data !== "object") {
+      throw new Error("Invalid intercepted data: must be an object");
     }
 
-    const requiredFields = ['url', 'method', 'responseData', 'statusCode', 'timestamp'];
-    const missingFields = requiredFields.filter(field => !(field in data));
+    const requiredFields = [
+      "url",
+      "method",
+      "responseData",
+      "statusCode",
+      "timestamp",
+    ];
+    const missingFields = requiredFields.filter((field) => !(field in data));
 
     if (missingFields.length > 0) {
-      throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+      throw new Error(`Missing required fields: ${missingFields.join(", ")}`);
     }
 
-    if (typeof data.url !== 'string' || !data.url) {
-      throw new Error('Invalid URL: must be a non-empty string');
+    if (typeof data.url !== "string" || !data.url) {
+      throw new Error("Invalid URL: must be a non-empty string");
     }
 
-    if (typeof data.statusCode !== 'number' || data.statusCode < 100 || data.statusCode > 599) {
-      throw new Error('Invalid status code: must be a number between 100-599');
+    if (
+      typeof data.statusCode !== "number" ||
+      data.statusCode < 100 ||
+      data.statusCode > 599
+    ) {
+      throw new Error("Invalid status code: must be a number between 100-599");
     }
 
     if (!data.responseData) {
-      throw new Error('Invalid response data: must be present');
+      throw new Error("Invalid response data: must be present");
     }
   }
 
@@ -841,10 +960,10 @@ export class DiskCacheWriter {
       directoryPath: string;
     },
     metadata: CacheMetadata,
-    skipContainingDirectory = true
+    skipContainingDirectory = true,
   ): Promise<void> {
     if (!path || !fs) {
-      throw new Error('Node.js modules not initialized');
+      throw new Error("Node.js modules not initialized");
     }
 
     try {
@@ -856,7 +975,12 @@ export class DiskCacheWriter {
       const basePath = path.resolve(this.config.basePath);
 
       while (currentPath && currentPath.startsWith(basePath)) {
-        await this.updateDirectoryIndex(currentPath, entityInfo, filePaths, metadata);
+        await this.updateDirectoryIndex(
+          currentPath,
+          entityInfo,
+          filePaths,
+          metadata,
+        );
 
         // Move up one directory level
         const parentPath = path.dirname(currentPath);
@@ -866,8 +990,10 @@ export class DiskCacheWriter {
         currentPath = parentPath;
       }
     } catch (error) {
-      logError(logger, 'Failed to update hierarchical indexes', error);
-      throw new Error(`Index update failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      logError(logger, "Failed to update hierarchical indexes", error);
+      throw new Error(
+        `Index update failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }
 
@@ -887,30 +1013,38 @@ export class DiskCacheWriter {
       metadataFile: string;
       directoryPath: string;
     },
-    metadata: CacheMetadata
+    metadata: CacheMetadata,
   ): Promise<void> {
     if (!path || !fs) {
-      throw new Error('Node.js modules not initialized');
+      throw new Error("Node.js modules not initialized");
     }
 
-    const indexPath = path.join(directoryPath, 'index.json');
+    const indexPath = path.join(directoryPath, "index.json");
     const basePath = path.resolve(this.config.basePath);
-    const relativePath = path.relative(basePath, directoryPath).replace(/\\/g, '/');
-    const displayPath = relativePath ? `/${relativePath}` : '/';
+    const relativePath = path
+      .relative(basePath, directoryPath)
+      .replace(/\\/g, "/");
+    const displayPath = relativePath ? `/${relativePath}` : "/";
 
     try {
       // Read existing index or create new one
       let indexData: DirectoryIndex = {
-        lastUpdated: new Date().toISOString()
+        lastUpdated: new Date().toISOString(),
       };
 
       try {
-        const existingContent = await fs.readFile(indexPath, 'utf8');
+        const existingContent = await fs.readFile(indexPath, "utf8");
         const existingData = JSON.parse(existingContent) as DirectoryIndex;
         indexData = {
           lastUpdated: new Date().toISOString(),
-          ...(existingData.directories && Object.keys(existingData.directories).length > 0 && { directories: existingData.directories }),
-          ...(existingData.files && Object.keys(existingData.files).length > 0 && { files: existingData.files })
+          ...(existingData.directories &&
+            Object.keys(existingData.directories).length > 0 && {
+              directories: existingData.directories,
+            }),
+          ...(existingData.files &&
+            Object.keys(existingData.files).length > 0 && {
+              files: existingData.files,
+            }),
         };
       } catch {
         // File doesn't exist, use default structure
@@ -924,14 +1058,14 @@ export class DiskCacheWriter {
 
       if (isContainingDirectory) {
         // Add the new file to the appropriate section
-        const filename = path.basename(filePaths.dataFile, '.json');
+        const filename = path.basename(filePaths.dataFile, ".json");
         const relativeFilePath = `./${filename}.json`;
 
         const fileEntry: FileEntry = {
           url: metadata.url,
           $ref: relativeFilePath,
           lastRetrieved: new Date().toISOString(),
-          contentHash: metadata.contentHash
+          contentHash: metadata.contentHash,
         };
 
         // Add to files section for query/filter responses
@@ -944,15 +1078,18 @@ export class DiskCacheWriter {
         // For entity files, we don't add them to index (only directories)
       } else {
         // This is a parent directory, add directory reference
-        const relativePath = path.relative(directoryPath, filePaths.directoryPath);
+        const relativePath = path.relative(
+          directoryPath,
+          filePaths.directoryPath,
+        );
         const childDirName = relativePath.split(path.sep)[0];
-        if (childDirName && childDirName !== '.') {
+        if (childDirName && childDirName !== ".") {
           if (!indexData.directories) {
             indexData.directories = {};
           }
           const directoryEntry: DirectoryEntry = {
             $ref: `./${childDirName}`,
-            lastModified: new Date().toISOString()
+            lastModified: new Date().toISOString(),
           };
           indexData.directories[childDirName] = directoryEntry;
         }
@@ -961,17 +1098,18 @@ export class DiskCacheWriter {
       // Write updated index
       await this.writeFileAtomic(indexPath, JSON.stringify(indexData, null, 2));
 
-      logger.debug('cache' as LogCategory, 'Updated directory index', {
+      logger.debug("cache" as LogCategory, "Updated directory index", {
         indexPath,
         relativePath: displayPath,
         isContainingDirectory,
         hasFiles: Object.keys(indexData.files || {}).length > 0,
-        hasDirectories: Object.keys(indexData.directories || {}).length > 0
+        hasDirectories: Object.keys(indexData.directories || {}).length > 0,
       });
-
     } catch (error) {
-      logError(logger, 'Failed to update directory index', error);
-      throw new Error(`Directory index update failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      logError(logger, "Failed to update directory index", error);
+      throw new Error(
+        `Directory index update failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }
 
@@ -979,7 +1117,7 @@ export class DiskCacheWriter {
    * Sleep for specified milliseconds
    */
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   /**
@@ -1009,7 +1147,10 @@ export class DiskCacheWriter {
     // Clear all locks
     this.activeLocks.clear();
 
-    logger.debug('disk-writer' as LogCategory, 'DiskCacheWriter cleanup completed');
+    logger.debug(
+      "disk-writer" as LogCategory,
+      "DiskCacheWriter cleanup completed",
+    );
   }
 }
 

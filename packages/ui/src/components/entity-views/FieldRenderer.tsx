@@ -15,6 +15,7 @@ import { formatFieldName, groupFields } from "./field-detection";
 interface FieldRendererProps {
   fieldName: string;
   value: unknown;
+  onNavigate?: (path: string) => void;
 }
 
 /**
@@ -23,6 +24,7 @@ interface FieldRendererProps {
 export const FieldRenderer: React.FC<FieldRendererProps> = ({
   fieldName,
   value,
+  onNavigate,
 }) => {
   // Try value matchers first (for special types like DOI, ORCID, etc.)
   const valueMatcher = findValueMatcher(value);
@@ -46,7 +48,7 @@ export const FieldRenderer: React.FC<FieldRendererProps> = ({
           <Text size="sm" fw={500} mb="xs">
             {formatFieldName(fieldName)}:
           </Text>
-          {arrayMatcher.render(value, fieldName)}
+          {arrayMatcher.render(value, fieldName, onNavigate)}
         </Box>
       );
     }
@@ -61,7 +63,7 @@ export const FieldRenderer: React.FC<FieldRendererProps> = ({
           <Text size="sm" fw={500} mb="xs">
             {formatFieldName(fieldName)}:
           </Text>
-          {objectMatcher.render(value, fieldName)}
+          {objectMatcher.render(value, fieldName, onNavigate)}
         </Box>
       );
     }
@@ -199,14 +201,20 @@ export const DefaultValueRenderer: React.FC<{ value: unknown }> = ({
  */
 export const EntityFieldRenderer: React.FC<{
   entity: OpenAlexEntity | Record<string, unknown>;
-}> = ({ entity }) => {
+  onNavigate?: (path: string) => void;
+}> = ({ entity, onNavigate }) => {
   const groupedFields = groupFields(entity);
 
   return (
     <Stack gap="lg">
       {/* High priority fields first */}
       {groupedFields.high.map(([fieldName, value]) => (
-        <FieldRenderer key={fieldName} fieldName={fieldName} value={value} />
+        <FieldRenderer
+          key={fieldName}
+          fieldName={fieldName}
+          value={value}
+          onNavigate={onNavigate}
+        />
       ))}
 
       {/* Medium priority fields */}
@@ -219,6 +227,7 @@ export const EntityFieldRenderer: React.FC<{
               key={fieldName}
               fieldName={fieldName}
               value={value}
+              onNavigate={onNavigate}
             />
           ))}
         </>
@@ -235,6 +244,7 @@ export const EntityFieldRenderer: React.FC<{
                 key={fieldName}
                 fieldName={fieldName}
                 value={value}
+                onNavigate={onNavigate}
               />
             ))}
           </Stack>

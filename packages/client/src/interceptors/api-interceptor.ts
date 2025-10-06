@@ -3,8 +3,8 @@
  * Captures API requests and responses in development mode for caching analysis
  */
 
-import type { EntityType, QueryParams } from "../types";
 import { logger } from "../internal/logger";
+import type { EntityType, QueryParams } from "../types";
 
 /**
  * Represents an intercepted OpenAlex API request
@@ -131,8 +131,8 @@ export class ApiInterceptor {
    */
   private isDevelopmentMode(): boolean {
     // Check NODE_ENV first (most reliable)
-    if (typeof process !== 'undefined' && process.env?.NODE_ENV) {
-      const nodeEnv = process.env.NODE_ENV.toLowerCase();
+    if (typeof globalThis.process !== 'undefined' && globalThis.process.env?.NODE_ENV) {
+      const nodeEnv = globalThis.process.env.NODE_ENV.toLowerCase();
       if (nodeEnv === 'development' || nodeEnv === 'dev') return true;
       if (nodeEnv === 'production') return false;
     }

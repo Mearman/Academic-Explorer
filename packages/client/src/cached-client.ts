@@ -2,25 +2,25 @@
  * Cached Client - Integrated static data caching with multi-tier fallback
  */
 
-import { OpenAlexBaseClient, type OpenAlexClientConfig } from './client';
-import { WorksApi } from './entities/works';
-import { AuthorsApi } from './entities/authors';
-import { SourcesApi } from './entities/sources';
-import { InstitutionsApi } from './entities/institutions';
-import { TopicsApi } from './entities/topics';
 import { logger } from '@academic-explorer/utils';
-import { PublishersApi } from './entities/publishers';
-import { FundersApi } from './entities/funders';
-import { KeywordsApi } from './entities/keywords';
-import { TextAnalysisApi } from './entities/text-analysis';
+import { OpenAlexBaseClient, type OpenAlexClientConfig } from './client';
+import { AuthorsApi } from './entities/authors';
 import { ConceptsApi } from './entities/concepts';
-import type { OpenAlexEntity } from './types';
+import { FundersApi } from './entities/funders';
+import { InstitutionsApi } from './entities/institutions';
+import { KeywordsApi } from './entities/keywords';
+import { PublishersApi } from './entities/publishers';
+import { SourcesApi } from './entities/sources';
+import { TextAnalysisApi } from './entities/text-analysis';
+import { TopicsApi } from './entities/topics';
+import { WorksApi } from './entities/works';
 import {
-	staticDataProvider,
-	type CacheStatistics,
-	Environment
+    Environment,
+    staticDataProvider,
+    type CacheStatistics
 } from './internal/static-data-provider';
-import { toStaticEntityType, cleanOpenAlexId } from './internal/static-data-utils';
+import { cleanOpenAlexId, toStaticEntityType } from './internal/static-data-utils';
+import type { OpenAlexEntity } from './types';
 
 export interface ClientApis {
   works: WorksApi;
@@ -125,8 +125,24 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
 
           return result;
         } catch (apiError: unknown) {
-          logger.warn('client', 'API request failed for entity', { id: cleanId, error: apiError });
+          // If the API call failed due to rate limiting or network/server issues, try static cache as a graceful fallback
+          logger.warn('client', 'API request failed for entity - attempting static cache fallback', { id: cleanId, error: apiError });
           this.requestStats.errors++;
+
+          if (this.staticCacheEnabled) {
+            try {
+              const staticEntityType = toStaticEntityType(entityType);
+              const staticResult = await staticDataProvider.getStaticData(staticEntityType, cleanId);
+              if (staticResult.found && staticResult.data) {
+                this.requestStats.cacheHits++;
+                logger.debug('client', 'Static cache fallback successful after API error', { id: cleanId, tier: staticResult.tier });
+                return staticResult.data as OpenAlexEntity;
+              }
+            } catch (staticError: unknown) {
+              logger.debug('client', 'Static cache fallback failed', { id: cleanId, error: staticError });
+            }
+          }
+
           return null;
         }
       }
@@ -196,8 +212,33 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       }
     }
 
-    // Fallback to parent implementation
-    return super.getById<T>(endpoint, cleanId, params);
+    // Fallback to parent implementation, but catch API errors and try static cache before giving up
+    try {
+      return await super.getById<T>(endpoint, cleanId, params);
+    } catch (apiError: unknown) {
+      logger.warn('client', 'API getById failed, attempting static cache fallback', { endpoint, id: cleanId, error: apiError });
+
+      // If static cache is enabled, attempt to return cached data
+      if (this.staticCacheEnabled) {
+        try {
+          const entityType = this.detectEntityTypeFromId(cleanId);
+          if (entityType) {
+            const staticEntityType = toStaticEntityType(entityType);
+            const staticResult = await staticDataProvider.getStaticData(staticEntityType, cleanId);
+            if (staticResult.found && staticResult.data) {
+              this.requestStats.cacheHits++;
+              logger.debug('client', 'Static cache hit during getById fallback', { endpoint, id: cleanId, tier: staticResult.tier });
+              return staticResult.data as T;
+            }
+          }
+        } catch (staticError: unknown) {
+          logger.debug('client', 'Static cache fallback failed during getById', { endpoint, id: cleanId, error: staticError });
+        }
+      }
+
+      // Re-throw the original API error if nothing else works
+      throw apiError;
+    }
   }
 
   /**

@@ -3,11 +3,11 @@
  * Handles requests, rate limiting, error handling, and response parsing
  */
 
-import type { OpenAlexError, OpenAlexResponse, QueryParams } from "./types";
-import { RETRY_CONFIG, calculateRetryDelay } from "./internal/rate-limit";
-import { validateApiResponse, trustApiContract } from "./internal/type-helpers";
-import { apiInterceptor } from "./interceptors";
 import { logger } from "@academic-explorer/utils";
+import { apiInterceptor } from "./interceptors";
+import { RETRY_CONFIG, calculateRetryDelay } from "./internal/rate-limit";
+import { trustApiContract, validateApiResponse } from "./internal/type-helpers";
+import type { OpenAlexError, OpenAlexResponse, QueryParams } from "./types";
 
 export interface OpenAlexClientConfig {
   baseUrl?: string;
@@ -188,7 +188,7 @@ export class OpenAlexBaseClient {
 		};
 
 		try {
-			const errorData: unknown = await response.json();
+		const errorData: unknown = await response.json();
 
 			if (isOpenAlexError(errorData)) {
 				return new OpenAlexApiError(
@@ -220,11 +220,33 @@ export class OpenAlexBaseClient {
 		options: RequestInit = {},
 		retryCount = 0
 	): Promise<Response> {
+		// Log real API calls for debugging
+		if (url.includes('api.openalex.org') && !url.includes('test') && !url.includes('localhost')) {
+			logger.warn("client", "Making real OpenAlex API call in test environment", {
+				url: url.substring(0, 100), // Truncate for readability
+				method: options.method || 'GET',
+				retryCount
+			});
+		}
+
 		// Determine max attempts: use config.retries if explicitly set (including 0), otherwise use RETRY_CONFIG
 		const maxServerRetries = this.config.retries !== 3 ? this.config.retries : RETRY_CONFIG.server.maxAttempts; // 3 is default
 		const maxNetworkRetries = this.config.retries !== 3 ? this.config.retries : RETRY_CONFIG.network.maxAttempts; // 3 is default
 
 		try {
+			// Short-circuit if host is under cooldown to avoid additional bursts
+			try {
+				const host = new URL(url).hostname;
+				const cooldownUntil = hostCooldowns.get(host);
+				if (cooldownUntil && Date.now() < cooldownUntil) {
+					throw new OpenAlexRateLimitError(
+						`Host ${host} is in cooldown until ${new Date(cooldownUntil).toISOString()}`,
+						cooldownUntil - Date.now()
+					);
+				}
+			} catch {
+				// If URL parsing fails or no cooldown, continue with normal flow
+			}
 			await this.enforceRateLimit();
 
 			// Intercept the request if enabled
@@ -252,14 +274,34 @@ export class OpenAlexBaseClient {
 			clearTimeout(timeoutId);
 			const responseTime = Date.now() - requestStartTime;
 
-			// Handle rate limiting from server - no retries at base client level
-			// Let the rate-limited client wrapper handle 429 retry logic
+			// Handle rate limiting from server (HTTP 429) with retry/backoff
 			if (response.status === 429) {
 				const retryAfter = response.headers.get("Retry-After");
-				const retryAfterMs = retryAfter ? parseInt(retryAfter) * 1000 : undefined;
+				const retryAfterMs = retryAfter ? parseRetryAfterToMs(retryAfter) : undefined;
+
+				// Use rate-limited retry strategy from internal config
+				const maxRateLimitAttempts = RETRY_CONFIG.rateLimited.maxAttempts;
+				if (retryCount < maxRateLimitAttempts) {
+					const waitTime = calculateRetryDelay(retryCount, RETRY_CONFIG.rateLimited, retryAfterMs);
+					await this.sleep(waitTime);
+					return await this.makeRequest(url, options, retryCount + 1);
+				}
+
+				// Exhausted retries - set host cooldown (if provided) and surface a rate limit error to callers
+				try {
+					const host = new URL(url).hostname;
+					if (retryAfterMs) {
+						hostCooldowns.set(host, Date.now() + retryAfterMs);
+					} else {
+						// Set a conservative default cooldown
+						hostCooldowns.set(host, Date.now() + 10000);
+					}
+				} catch {
+					// ignore URL parsing failures
+				}
 
 				throw new OpenAlexRateLimitError(
-					`Rate limit exceeded (HTTP 429)`,
+					`Rate limit exceeded (HTTP 429) after ${String(maxRateLimitAttempts)} attempts`,
 					retryAfterMs
 				);
 			}
@@ -297,8 +339,8 @@ export class OpenAlexBaseClient {
 
 					// Write to disk cache if intercepted successfully (Node.js only)
 					// Check environment variable to determine if disk caching should be enabled
-					const diskCacheEnabled = process.env.ACADEMIC_EXPLORER_DISK_CACHE_ENABLED !== 'false';
-					if (interceptedCall && typeof process !== 'undefined' && process.versions?.node && diskCacheEnabled) {
+					const diskCacheEnabled = globalThis.process?.env?.ACADEMIC_EXPLORER_DISK_CACHE_ENABLED !== 'false';
+					if (interceptedCall && typeof globalThis.process !== 'undefined' && globalThis.process.versions?.node && diskCacheEnabled) {
 						try {
 							// Dynamic import to avoid bundling Node.js modules in browser
 							const { defaultDiskWriter } = await import("./cache/disk");
@@ -472,5 +514,30 @@ export class OpenAlexBaseClient {
 	}
 }
 
+/**
+ * Parse Retry-After header value into milliseconds.
+ * Accepts either integer seconds or HTTP-date formats. Returns undefined if unparsable.
+ */
+function parseRetryAfterToMs(value: string | null | undefined): number | undefined {
+	if (!value) return undefined;
+	// If it's an integer number of seconds
+	const seconds = Number(value);
+	if (!Number.isNaN(seconds) && Number.isFinite(seconds)) {
+		return Math.max(0, Math.floor(seconds)) * 1000;
+	}
+
+	// Try parsing as HTTP-date
+	const parsed = Date.parse(value);
+	if (!Number.isNaN(parsed)) {
+		const diff = parsed - Date.now();
+		return diff > 0 ? diff : 0;
+	}
+
+	return undefined;
+}
+
 // Default client instance
 export const defaultClient = new OpenAlexBaseClient();
+
+// Global cooldown map per host to avoid repeated bursts after 429s
+export const hostCooldowns: Map<string, number> = new Map();

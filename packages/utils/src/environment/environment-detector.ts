@@ -57,8 +57,8 @@ export class EnvironmentDetector {
    */
   static detectMode(): EnvironmentMode {
     // Check NODE_ENV first (most reliable)
-    if (typeof process !== 'undefined' && process.env?.NODE_ENV) {
-      const nodeEnv = process.env.NODE_ENV.toLowerCase();
+    if (typeof globalThis.process !== 'undefined' && globalThis.process.env?.NODE_ENV) {
+      const nodeEnv = globalThis.process.env.NODE_ENV.toLowerCase();
       if (nodeEnv === 'production') return EnvironmentMode.PRODUCTION;
       if (nodeEnv === 'test') return EnvironmentMode.TEST;
       if (nodeEnv === 'development') return EnvironmentMode.DEVELOPMENT;
@@ -130,7 +130,7 @@ export class EnvironmentDetector {
    * Detect if running in Node.js context
    */
   static isNode(): boolean {
-    return typeof process !== 'undefined' && process.versions?.node !== undefined;
+    return typeof globalThis.process !== 'undefined' && globalThis.process.versions?.node !== undefined;
   }
 
   /**

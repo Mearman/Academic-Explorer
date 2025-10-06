@@ -8,8 +8,8 @@
  * and identifier format specifications.
  */
 
-import type { EntityType } from '../types/core';
 import { logger } from '@academic-explorer/utils';
+import type { EntityType } from '../types/core';
 
 /**
  * Detection result containing the detected entity type and normalized identifier
@@ -41,8 +41,8 @@ export class EntityDetectionService {
       name: 'OpenAlex URL',
       entityType: 'works', // Will be overridden by prefix detection
       patterns: [
-        /^https?:\/\/openalex\.org\/([WASIPCFKQT]\d+)$/i,
-        /openalex\.org\/([WASIPCFKQT]\d+)/i,
+        /^https?:\/\/(?:api\.)?openalex\.org\/([WASIPCFKQT]\d+)$/i,
+        /(?:api\.)?openalex\.org\/([WASIPCFKQT]\d+)/i,
       ],
       normalize: (match: string): string | null => {
         const idMatch = match.match(/([WASIPCFKQT]\d+)/i);
@@ -418,7 +418,7 @@ export class EntityDetectionService {
         name: 'OpenAlex URL',
         entityType: 'works', // varies by prefix
         description: 'OpenAlex URL format',
-        examples: ['https://openalex.org/W2741809807', 'https://openalex.org/A5023888391'],
+        examples: ['https://openalex.org/W2741809807', 'https://api.openalex.org/W2741809807', 'https://openalex.org/A5023888391'],
       },
     ];
   }

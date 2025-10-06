@@ -1,12 +1,11 @@
-import { defineConfig } from 'vite';
-import { resolve } from 'path';
-import { fileURLToPath, URL } from 'node:url';
 import react from '@vitejs/plugin-react';
+import { fileURLToPath, URL } from 'node:url';
+import { resolve } from 'path';
+import { defineConfig, mergeConfig } from 'vite';
+import baseConfig from '../../vite.config.base';
 
-export default defineConfig({
-  plugins: [
-    react(),
-  ],
+const uiOverrides = defineConfig({
+  plugins: [react()],
   build: {
     emptyOutDir: true,
     lib: {
@@ -60,3 +59,5 @@ export default defineConfig({
     },
   },
 });
+
+export default mergeConfig(baseConfig, uiOverrides);

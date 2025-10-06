@@ -194,3 +194,6 @@ export {
 
 // Re-export everything from types for convenience
 export * from "./types";
+
+// Re-export all utils (including validateExternalId)
+export * from "./utils";

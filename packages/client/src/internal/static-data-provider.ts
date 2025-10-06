@@ -3,8 +3,8 @@
  * Implements multi-tier caching with environment detection and automatic fallback
  */
 
-import type { StaticEntityType } from './static-data-utils';
 import { logger } from '@academic-explorer/utils';
+import type { StaticEntityType } from './static-data-utils';
 
 export interface StaticDataResult {
 	found: boolean;
@@ -255,6 +255,19 @@ class LocalDiskCacheTier implements CacheTierInterface {
 class GitHubPagesCacheTier implements CacheTierInterface {
 	private stats = { requests: 0, hits: 0, totalLoadTime: 0 };
 	private baseUrl = 'https://username.github.io/academic-explorer-cache/'; // Configure as needed
+	// Track recent failures per URL to avoid repeated bursts against remote
+	private recentFailures: Map<string, { lastFailure: number; attempts: number; cooldownUntil?: number }> = new Map();
+	// Configurable retry policy for remote tier
+	private retryConfig = (() => {
+		const isTest = Boolean(globalThis.process?.env?.VITEST || globalThis.process?.env?.NODE_ENV === 'test');
+		return {
+			maxAttempts: 3,
+			baseDelayMs: isTest ? 50 : 1000,
+			maxDelayMs: isTest ? 200 : 10000,
+			jitterMs: isTest ? 0 : 500,
+			cooldownMs: isTest ? 1000 : 30_000 // shorter cooldown in tests
+		};
+	})();
 
 	private getUrl(entityType: StaticEntityType, id: string): string {
 		// Sanitize ID for URL
@@ -265,40 +278,96 @@ class GitHubPagesCacheTier implements CacheTierInterface {
 	async get(entityType: StaticEntityType, id: string): Promise<StaticDataResult> {
 		const startTime = Date.now();
 		this.stats.requests++;
+		const url = this.getUrl(entityType, id);
 
-		try {
-			const url = this.getUrl(entityType, id);
-			const response = await fetch(url, {
-				method: 'GET',
-				headers: {
-					'Accept': 'application/json',
-					'Cache-Control': 'max-age=3600' // 1 hour cache
-				},
-				signal: AbortSignal.timeout(10000) // 10 second timeout
-			});
+		// If we recently hit repeated failures for this URL, respect cooldown
+		const failureState = this.recentFailures.get(url);
+		if (failureState?.cooldownUntil && Date.now() < failureState.cooldownUntil) {
+			logger.debug('static-cache', 'Skipping GitHub Pages fetch due to recent failures', { url, entityType, id, failureState });
+			return { found: false };
+		}
 
-			if (!response.ok) {
-				if (response.status === 404) {
+		const attemptFetch = async (attempt: number): Promise<StaticDataResult> => {
+			try {
+				const response = await fetch(url, {
+					method: 'GET',
+					headers: {
+						'Accept': 'application/json',
+						'Cache-Control': 'max-age=3600' // 1 hour cache
+					},
+					signal: AbortSignal.timeout(10000) // 10 second timeout
+				});
+
+				if (!response.ok) {
+					// If not found, treat as cache miss (no need to retry)
+					if (response.status === 404) {
+						return { found: false };
+					}
+
+					// For server or rate-limit responses, throw to trigger retry logic
+					// Create a typed error object so TypeScript is happy
+					const typedErr: { message: string; status: number; retryAfter?: string } = {
+						message: `HTTP ${response.status}: ${response.statusText}`,
+						status: response.status,
+						retryAfter: response.headers.get('Retry-After') ?? undefined
+					};
+					throw typedErr;
+				}
+
+				const data = await response.json();
+
+				// Success — clear any recorded failures
+				this.recentFailures.delete(url);
+
+				this.stats.hits++;
+				const loadTime = Date.now() - startTime;
+				this.stats.totalLoadTime += loadTime;
+
+				return {
+					found: true,
+					data,
+					cacheHit: true,
+					tier: CacheTier.GITHUB_PAGES,
+					loadTime
+				};
+			} catch (error: unknown) {
+				// Network error or HTTP 5xx/429
+				logger.debug('static-cache', 'GitHub Pages fetch attempt failed', { url, entityType, id, attempt, error });
+
+				// Update failure state
+				const prev = this.recentFailures.get(url) ?? { lastFailure: 0, attempts: 0, cooldownUntil: undefined };
+				const newState = { lastFailure: Date.now(), attempts: prev.attempts + 1, cooldownUntil: prev.cooldownUntil };
+				this.recentFailures.set(url, newState);
+
+				// If it's a typed error object with a status of 404, don't retry
+				const typed = error as { status?: number; retryAfter?: string } | undefined;
+				if (typed?.status === 404) {
 					return { found: false };
 				}
-				throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+
+				// Determine whether to retry
+				if (attempt < this.retryConfig.maxAttempts) {
+					// Respect Retry-After header if present
+					const retryAfterSec = typed?.retryAfter ? parseInt(typed.retryAfter) : undefined;
+					const base = this.retryConfig.baseDelayMs * Math.pow(2, attempt - 1);
+					const jitter = Math.random() * this.retryConfig.jitterMs;
+					const delay = Math.min((retryAfterSec ? retryAfterSec * 1000 : base) + jitter, this.retryConfig.maxDelayMs);
+					await new Promise(r => setTimeout(r, delay));
+					return attemptFetch(attempt + 1);
+				}
+
+				// Exhausted retries — set a cooldown to avoid hammering the remote
+				newState.cooldownUntil = Date.now() + this.retryConfig.cooldownMs;
+				this.recentFailures.set(url, newState);
+
+				return { found: false };
 			}
+		};
 
-			const data = await response.json();
-
-			this.stats.hits++;
-			const loadTime = Date.now() - startTime;
-			this.stats.totalLoadTime += loadTime;
-
-			return {
-				found: true,
-				data,
-				cacheHit: true,
-				tier: CacheTier.GITHUB_PAGES,
-				loadTime
-			};
-		} catch (error: unknown) {
-			logger.debug('static-cache', 'GitHub Pages cache miss', { entityType, id, error });
+		try {
+			return await attemptFetch(1);
+		} catch (finalErr) {
+			logger.debug('static-cache', 'GitHub Pages fetch final failure', { url, entityType, id, error: String(finalErr) });
 			return { found: false };
 		}
 	}

@@ -97,3 +97,26 @@ export type {
 
 // Contextual cache context enum (alternative to interface)
 export { CacheContext as ContextualCacheContext } from './services/cache-types';
+
+// Execution Strategy
+export {
+  BaseExecutionStrategy,
+  MainThreadExecutionStrategy,
+  SimpleTaskExecutorRegistry,
+  createExecutionStrategy,
+  detectWorkerSupport,
+  ExecutionMode,
+  type Task,
+  type TaskResult,
+  type TaskStats,
+  type TaskExecutor
+} from './services/execution-strategy';
+
+// Force Simulation
+export {
+  createForceSimulationExecutor,
+  type ForceSimulationTask,
+  type ForceSimulationNode,
+  type ForceSimulationLink,
+  type TaskExecutor as ForceTaskExecutor
+} from './forces';

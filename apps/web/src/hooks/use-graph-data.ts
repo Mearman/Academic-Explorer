@@ -7,7 +7,7 @@
 import { createGraphDataService } from "@/services/graph-data-service";
 import { useGraphStore } from "@/stores/graph-store";
 import type { EntityType, ExpansionOptions, SearchOptions } from "@academic-explorer/graph";
-import { logError, logger } from "@academic-explorer/utils/logger";
+// import { logError, logger } from "@academic-explorer/utils/logger";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 
@@ -25,7 +25,7 @@ export function useGraphData() {
 		try {
 			await service.loadEntityGraph(entityId);
 		} catch (err) {
-			logError(logger, "Failed to load entity in graph data hook", err, "useGraphData", "graph");
+			// logError(logger, "Failed to load entity in graph data hook", err, "useGraphData", "graph");
 		}
 	}, [service]);
 
@@ -33,7 +33,7 @@ export function useGraphData() {
 		try {
 			await service.loadEntityIntoGraph(entityId);
 		} catch (err) {
-			logError(logger, "Failed to load entity into graph in graph data hook", err, "useGraphData", "graph");
+			// logError(logger, "Failed to load entity into graph in graph data hook", err, "useGraphData", "graph");
 		}
 	}, [service]);
 
@@ -41,19 +41,19 @@ export function useGraphData() {
 		try {
 			await service.loadEntityIntoRepository(entityId);
 		} catch (err) {
-			logError(logger, "Failed to load entity into repository in graph data hook", err, "useGraphData", "repository");
+			// logError(logger, "Failed to load entity into repository in graph data hook", err, "useGraphData", "repository");
 		}
 	}, [service]);
 
 	const expandNode = useCallback(async (nodeId: string, options?: Partial<ExpansionOptions>) => {
-		logger.debug("graph", "useGraphData.expandNode called", { nodeId, options });
+		// logger.debug("graph", "useGraphData.expandNode called", { nodeId, options });
 
 		try {
 			const store = useGraphStore.getState();
 
 			// Get the node to expand
 			const node = store.nodes[nodeId];
-			logger.debug("graph", "Node found, expanding via service", { nodeId, nodeType: node.entityType });
+			// logger.debug("graph", "Node found, expanding via service", { nodeId, nodeType: node.entityType });
 
 			// Direct service call - no worker dependency
 			store.setLoading(true);
@@ -67,22 +67,22 @@ export function useGraphData() {
 					store.calculateNodeDepths();
 				}
 
-				logger.debug("graph", "Node expansion completed via service", { nodeId }, "useGraphData");
+				// logger.debug("graph", "Node expansion completed via service", { nodeId }, "useGraphData");
 			} catch (err) {
-				logger.error("graph", "Service expansion failed", {
-					nodeId,
-					error: err instanceof Error ? err.message : "Unknown error"
-				}, "useGraphData");
-				logError(logger, "Failed to expand node via service", err, "useGraphData", "graph");
+				// logger.error("graph", "Service expansion failed", {
+				// 	nodeId,
+				// 	error: err instanceof Error ? err.message : "Unknown error"
+				// }, "useGraphData");
+				// logError(logger, "Failed to expand node via service", err, "useGraphData", "graph");
 				store.setError(err instanceof Error ? err.message : "Failed to expand node");
 			} finally {
 				store.setLoading(false);
 			}
 		} catch (error) {
-			logger.error("graph", "useGraphData.expandNode ERROR", {
-				nodeId,
-				error: error instanceof Error ? error.message : String(error)
-			}, "useGraphData");
+			// logger.error("graph", "useGraphData.expandNode ERROR", {
+			// 	nodeId,
+			// 	error: error instanceof Error ? error.message : String(error)
+			// }, "useGraphData");
 		}
 	}, [service]);
 
@@ -99,12 +99,12 @@ export function useGraphData() {
 		const limit = options?.limit ?? 10;
 		const force = options?.force ?? true;
 
-		logger.debug("graph", "expandAllNodesOfType called", {
-			entityType,
-			depth,
-			limit,
-			force
-		}, "useGraphData");
+		// logger.debug("graph", "expandAllNodesOfType called", {
+		// 	entityType,
+		// 	depth,
+		// 	limit,
+		// 	force
+		// }, "useGraphData");
 
 		try {
 			await service.expandAllNodesOfType(entityType, {
@@ -120,15 +120,15 @@ export function useGraphData() {
 				store.calculateNodeDepths();
 			}
 
-			logger.debug("graph", "expandAllNodesOfType completed successfully", {
-				entityType
-			}, "useGraphData");
+			// logger.debug("graph", "expandAllNodesOfType completed successfully", {
+			// 	entityType
+			// }, "useGraphData");
 		} catch (err) {
-			logger.error("graph", "expandAllNodesOfType failed", {
-				entityType,
-				error: err instanceof Error ? err.message : "Unknown error"
-			}, "useGraphData");
-			logError(logger, "Failed to expand all nodes of type in graph data hook", err, "useGraphData", "graph");
+			// logger.error("graph", "expandAllNodesOfType failed", {
+			// 	entityType,
+			// 	error: err instanceof Error ? err.message : "Unknown error"
+			// }, "useGraphData");
+			// logError(logger, "Failed to expand all nodes of type in graph data hook", err, "useGraphData", "graph");
 			store.setError(err instanceof Error ? err.message : `Failed to expand all ${entityType} nodes`);
 		} finally {
 			store.setLoading(false);
@@ -147,7 +147,7 @@ export function useGraphData() {
 		try {
 			await service.searchAndVisualize(query, searchOptions);
 		} catch (err) {
-			logError(logger, "Failed to perform graph search operation", err, "useGraphData", "graph");
+			// logError(logger, "Failed to perform graph search operation", err, "useGraphData", "graph");
 		}
 	}, [service]);
 
@@ -155,7 +155,7 @@ export function useGraphData() {
 		try {
 			service.loadAllCachedNodes();
 		} catch (err) {
-			logError(logger, "Failed to load cached nodes in graph data hook", err, "useGraphData", "graph");
+			// logError(logger, "Failed to load cached nodes in graph data hook", err, "useGraphData", "graph");
 		}
 	}, [service]);
 
@@ -169,7 +169,7 @@ export function useGraphData() {
 		try {
 			await service.hydrateNode(nodeId);
 		} catch (err) {
-			logError(logger, "Failed to hydrate node in graph data hook", err, "useGraphData", "graph");
+			// logError(logger, "Failed to hydrate node in graph data hook", err, "useGraphData", "graph");
 		}
 	}, [service]);
 

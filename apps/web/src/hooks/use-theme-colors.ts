@@ -27,7 +27,7 @@ export function useThemeColors() {
 	// Base color utilities - memoized to prevent React 19 infinite loops
 	const getColor = useCallback((color: string, shade: number = 5) => {
 		if (color in theme.colors) {
-			return theme.colors[color][shade];
+			return theme.colors[color][shade] || color;
 		}
 		return color;
 	}, [theme.colors]);
@@ -59,9 +59,9 @@ export function useThemeColors() {
 
 		// Semantic colors
 		primary: theme.colors.blue[5],
-		success: theme.colors.green[5],
-		warning: theme.colors.yellow[5],
-		error: theme.colors.red[5],
+		success: theme.colors.green[5] || "#10b981",
+		warning: theme.colors.yellow[5] || "#f59e0b",
+		error: theme.colors.red[5] || "#ef4444",
 		info: theme.colors.blue[5],
 
 		// Academic entity colors

@@ -3,11 +3,6 @@
   "private": true,
   "version": "0.2.0",
   "type": "module",
-  "scripts": {
-    "verify": "tsx scripts/verify-lint-fixes.ts",
-    "verify:package": "tsx scripts/verify-package.ts",
-    "verify:quick": "tsx scripts/quick-verify.ts"
-  },
   "dependencies": {
     "@octokit/rest": "^22.0.0"
   }

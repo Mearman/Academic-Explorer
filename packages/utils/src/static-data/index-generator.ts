@@ -1,9 +1,9 @@
 /**
  * Static Data Index Generator
- * 
+ *
  * Generates and manages index files for entity type directories to enable
  * fast entity lookups without scanning entire directory structures.
- * 
+ *
  * Features:
  * - Efficient entity file discovery and metadata extraction
  * - Automatic index regeneration when files change
@@ -17,21 +17,21 @@ import { logger } from '../logger.js';
 import { isRecord } from '../validation.js';
 import { FileEntry } from './cache-utilities.js';
 import type {
-  EntityType,
-  EntityFileMetadata,
-  EntityTypeIndex,
-  MasterIndex,
-  IndexGenerationConfig,
-  IndexGenerationProgress,
-  IndexGenerationResult,
-  IndexValidationResult,
-  IndexValidationError,
-  IndexValidationWarning,
-  IndexRepairAction,
-  PathDirectoryIndex,
+    EntityFileMetadata,
+    EntityType,
+    EntityTypeIndex,
+    IndexGenerationConfig,
+    IndexGenerationProgress,
+    IndexGenerationResult,
+    IndexRepairAction,
+    IndexValidationError,
+    IndexValidationResult,
+    IndexValidationWarning,
+    MasterIndex,
+    PathDirectoryIndex,
 } from './types.js';
 import {
-  DEFAULT_INDEX_CONFIG
+    DEFAULT_INDEX_CONFIG
 } from './types.js';
 
 // Use the main logger instance with appropriate category
@@ -137,11 +137,11 @@ export class StaticDataIndexGenerator {
       // Generate index for each entity type
       for (let i = 0; i < entityTypes.length; i++) {
         const entityType = entityTypes[i];
-        
+
         try {
           const indexPath = await this.generateIndexForEntityType(entityType);
           result.generatedIndexes[entityType] = indexPath;
-          
+
           // Update progress
           this.emitProgress({
             operation: 'processing',
@@ -244,7 +244,7 @@ export class StaticDataIndexGenerator {
 
     // Discover entity files
     const entityFiles = await this.discoverEntityFiles(entityDir, entityType);
-    
+
     // Process files with concurrency control
     const entities: Record<string, EntityFileMetadata> = {};
     const semaphore = new Semaphore(this.config.concurrency);
@@ -370,7 +370,7 @@ export class StaticDataIndexGenerator {
         });
         throw parseError;
       }
-      
+
       // Validate index structure
       if (!this.validateIndexStructure(index)) {
         errors.push({
@@ -394,10 +394,10 @@ export class StaticDataIndexGenerator {
 
       for (const entityId of entityIds) {
         const metadata = index.entities[entityId];
-        
+
         try {
           const stat = await this.fs.stat(metadata.absolutePath);
-          
+
           // Check if file modification time matches
           if (Math.abs(stat.mtimeMs - metadata.lastModified) > 1000) { // 1 second tolerance
             warnings.push({
@@ -487,7 +487,7 @@ export class StaticDataIndexGenerator {
 
     } catch (error) {
       logger.error(logCategory, 'Index validation failed', { error, indexPath });
-      
+
       return {
         isValid: false,
         entityType: 'works', // fallback
@@ -515,7 +515,7 @@ export class StaticDataIndexGenerator {
    */
   async repairIndex(validationResult: IndexValidationResult): Promise<boolean> {
     const safeActions = validationResult.repairActions.filter(action => action.isSafeAutoRepair);
-    
+
     if (safeActions.length === 0) {
       logger.warn(logCategory, 'No safe repair actions available', {
         indexPath: validationResult.indexPath,
@@ -600,7 +600,7 @@ export class StaticDataIndexGenerator {
    */
   private async discoverEntityFiles(entityDir: string, _entityType: EntityType): Promise<string[]> {
     const files: string[] = [];
-    
+
     const scanDirectory = async (dir: string): Promise<void> => {
       try {
         const entries = await this.fs.readdir(dir, { withFileTypes: true });
@@ -642,7 +642,7 @@ export class StaticDataIndexGenerator {
   private async extractEntityMetadata(filePath: string, entityType: EntityType): Promise<EntityFileMetadata> {
     const stat = await this.fs.stat(filePath);
     const relativePath = this.path.relative(this.path.join(this.config.rootPath, entityType), filePath);
-    
+
     // Extract entity ID from filename or path
     const entityId = this.extractEntityIdFromPath(filePath, entityType);
 
@@ -673,7 +673,7 @@ export class StaticDataIndexGenerator {
    */
   private extractEntityIdFromPath(filePath: string, _entityType: EntityType): string {
     const filename = this.path.basename(filePath, '.json');
-    
+
     // Try different patterns based on entity type
     const patterns = [
       /^([WASIGTPFKC]\d+)$/, // Standard OpenAlex ID format
@@ -753,7 +753,7 @@ export class StaticDataIndexGenerator {
   private computeEntityTypeStats(entities: Record<string, EntityFileMetadata>): EntityTypeIndex['stats'] {
     const entityList = Object.values(entities);
     const fileSizes = entityList.map(e => e.fileSize);
-    
+
     const stats: EntityTypeIndex['stats'] = {
       lastModified: Math.max(...entityList.map(e => e.lastModified)),
       oldestModified: Math.min(...entityList.map(e => e.lastModified)),
@@ -786,7 +786,7 @@ export class StaticDataIndexGenerator {
    */
   private async generateMasterIndex(typeIndexPaths: Record<EntityType, string>): Promise<string> {
     const masterIndexPath = this.path.join(this.config.rootPath, 'index.json');
-    
+
     const masterIndex: MasterIndex = {
       generatedAt: Date.now(),
       schemaVersion: this.config.schemaVersion,
@@ -815,11 +815,11 @@ export class StaticDataIndexGenerator {
       try {
         const indexContent = await this.fs.readFile(indexPath, 'utf8');
         const index = JSON.parse(indexContent) as EntityTypeIndex;
-        
+
         masterIndex.totalEntities += index.totalEntities;
         masterIndex.totalSize += index.totalSize;
         masterIndex.entitiesByType[entityType as EntityType] = index.totalEntities;
-        
+
         masterIndex.globalStats.lastModified = Math.max(
           masterIndex.globalStats.lastModified,
           index.stats.lastModified
@@ -842,16 +842,16 @@ export class StaticDataIndexGenerator {
 
     // Calculate coverage percentages
     if (masterIndex.totalEntities > 0) {
-      masterIndex.globalStats.coverage.withBasicInfo = 
+      masterIndex.globalStats.coverage.withBasicInfo =
         (totalEntitiesWithBasicInfo / masterIndex.totalEntities) * 100;
-      masterIndex.globalStats.coverage.withExternalIds = 
+      masterIndex.globalStats.coverage.withExternalIds =
         (totalEntitiesWithExternalIds / masterIndex.totalEntities) * 100;
-      masterIndex.globalStats.coverage.withCitationCounts = 
+      masterIndex.globalStats.coverage.withCitationCounts =
         (totalEntitiesWithCitationCounts / masterIndex.totalEntities) * 100;
     }
 
     await this.fs.writeFile(masterIndexPath, JSON.stringify(masterIndex, null, 2), 'utf8');
-    
+
     logger.debug(logCategory, 'Master index generated', {
       masterIndexPath,
       totalEntities: masterIndex.totalEntities,
@@ -866,7 +866,7 @@ export class StaticDataIndexGenerator {
    */
   private validateIndexStructure(index: unknown): index is EntityTypeIndex {
     if (!isRecord(index)) return false;
-    
+
     const requiredFields = ['entityType', 'directoryPath', 'generatedAt', 'schemaVersion', 'totalEntities', 'entities', 'stats'];
     return requiredFields.every(field => field in index);
   }
@@ -889,8 +889,8 @@ export class StaticDataIndexGenerator {
    * Get current memory usage in MB
    */
   private getMemoryUsageMB(): number {
-    if (typeof process !== 'undefined' && process.memoryUsage) {
-      const usage = process.memoryUsage();
+    if (typeof globalThis.process !== 'undefined' && globalThis.process.memoryUsage) {
+      const usage = globalThis.process.memoryUsage();
       return Math.round(usage.heapUsed / 1024 / 1024);
     }
     return 0; // Fallback for browser environments
@@ -911,11 +911,11 @@ export class StaticDataIndexGenerator {
   private async removeMissingEntitiesFromIndex(indexPath: string, entityIds: string[]): Promise<void> {
     const indexContent = await this.fs.readFile(indexPath, 'utf8');
     const index = JSON.parse(indexContent) as EntityTypeIndex;
-    
+
     for (const entityId of entityIds) {
       delete index.entities[entityId];
     }
-    
+
     index.totalEntities = Object.keys(index.entities).length;
     index.generatedAt = Date.now();
 
@@ -928,7 +928,7 @@ export class StaticDataIndexGenerator {
   private async updateEntityTimestamps(indexPath: string, entityIds: string[]): Promise<void> {
     const indexContent = await this.fs.readFile(indexPath, 'utf8');
     const index = JSON.parse(indexContent) as EntityTypeIndex;
-    
+
     for (const entityId of entityIds) {
       const entity = index.entities[entityId];
       if (entity) {
@@ -996,7 +996,7 @@ export class StaticDataIndexGenerator {
     try {
       const entries = await this.fs.readdir(dirPath, { withFileTypes: true });
       const indexPath = this.path.join(dirPath, 'index.json');
-      
+
       const index: PathDirectoryIndex = {
         lastUpdated: new Date().toISOString(),
         path: relativePath || '/',
@@ -1034,7 +1034,7 @@ export class StaticDataIndexGenerator {
 
       // Write index file
       await this.fs.writeFile(indexPath, JSON.stringify(index, null, 2), 'utf8');
-      
+
       logger.debug(logCategory, `Generated hierarchical index for ${relativePath || '/'}`, {
         files: Object.keys(index.files).length,
         directories: Object.keys(index.directories).length,
@@ -1092,7 +1092,7 @@ export class StaticDataIndexGenerator {
     try {
       const baseUrl = this.config.baseApiUrl || 'https://api.openalex.org';
       const pathParts = relativePath.split('/');
-      
+
       // Skip non-API files
       if (pathParts.length < 2) {
         return undefined;
@@ -1100,21 +1100,21 @@ export class StaticDataIndexGenerator {
 
       const entityType = pathParts[0];
       const entityIdWithExt = pathParts[1];
-      
+
       // Remove .json extension from entity ID
       const entityId = entityIdWithExt.replace(/\.json$/, '');
-      
+
       // Basic entity file: authors/A123.json -> authors/A123
       if (pathParts.length === 2) {
         return `${baseUrl}/${entityType}/${entityId}`;
       }
-      
+
       // Query file: authors/A123/queries/select=display_name.json
       if (pathParts.length === 4 && pathParts[2] === 'queries') {
         const queryParams = pathParts[3].replace(/\.json$/, '');
         return `${baseUrl}/${entityType}/${entityId}?${queryParams}`;
       }
-      
+
       // Other patterns can be added here
       return undefined;
     } catch {

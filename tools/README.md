@@ -33,28 +33,6 @@ pnpm verify:full
 - Release readiness check
 - After major refactoring
 
-### quick-verify.ts
-Fast lint/typecheck/test verification that stops on first failure.
-
-```bash
-pnpm verify:quick
-./tools/scripts/quick-verify.ts
-```
-
-### verify-lint-fixes.ts
-Detailed verification after automated lint fixes.
-
-```bash
-pnpm verify:lint-fixes
-```
-
-### verify-package.ts
-Individual package verification with detailed reporting.
-
-```bash
-pnpm verify:package <package-name>
-```
-
 ## Other Scripts
 
 ### check-licenses.ts
@@ -74,24 +52,23 @@ Automated coverage reporting for pull requests.
 **Development Workflow:**
 ```bash
 # Quick check during development
-pnpm verify:quick
+pnpm validate
 
 # Full verification before commit
-pnpm verify:full
+pnpm validate
 
 # Detailed analysis after fixes
-pnpm verify:lint-fixes
+pnpm validate
 ```
 
 **CI Pipeline:**
 ```bash
-# Use full-verify as quality gate
-./tools/scripts/full-verify.ts --verbose --no-stop-on-failure
+# Use validate as quality gate
+pnpm validate
 ```
 
 **Package Development:**
 ```bash
 # Focus on specific package
-pnpm verify:package web
-pnpm verify:package client
+pnpm validate
 ```

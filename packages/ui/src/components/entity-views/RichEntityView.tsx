@@ -7,11 +7,13 @@ import { EntityFieldRenderer } from "./FieldRenderer";
 interface RichEntityViewProps {
   entity: OpenAlexEntity;
   entityType?: string;
+  onNavigate?: (path: string) => void;
 }
 
 const RichEntityView: React.FC<RichEntityViewProps> = ({
   entity,
   entityType,
+  onNavigate,
 }) => {
   const detectedType = entityType || getEntityType(entity);
 
@@ -105,7 +107,7 @@ const RichEntityView: React.FC<RichEntityViewProps> = ({
       </Card>
 
       {/* Intelligent Field Rendering */}
-      <EntityFieldRenderer entity={entity} />
+      <EntityFieldRenderer entity={entity} onNavigate={onNavigate} />
     </Stack>
   );
 };

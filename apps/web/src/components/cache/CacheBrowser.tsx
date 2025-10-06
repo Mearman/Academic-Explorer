@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from "react";
 import {
   Box,
   Group,
@@ -14,8 +14,8 @@ import {
   Alert,
   ActionIcon,
   Tooltip,
-  FileInput
-} from '@mantine/core';
+  FileInput,
+} from "@mantine/core";
 import {
   IconSearch,
   IconRefresh,
@@ -26,20 +26,20 @@ import {
   IconDownload,
   IconUpload,
   IconFileExport,
-  IconFileImport
-} from '@tabler/icons-react';
-import { type ColumnDef } from '@tanstack/react-table';
-import { useNavigate } from '@tanstack/react-router';
+  IconFileImport,
+} from "@tabler/icons-react";
+import { type ColumnDef } from "@tanstack/react-table";
+import { useNavigate } from "@tanstack/react-router";
 import {
   cacheBrowserService,
   type CachedEntityMetadata,
   type CacheBrowserStats,
   type CacheBrowserFilters,
   type CacheBrowserOptions,
-  type CacheBrowserEntityType
-} from '@academic-explorer/utils';
-import { logger } from '@academic-explorer/utils';
-import { BaseTable } from '@/components/tables/BaseTable';
+  type CacheBrowserEntityType,
+} from "@academic-explorer/utils";
+import { logger } from "@academic-explorer/utils";
+import { BaseTable } from "@/components/tables/BaseTable";
 
 interface CacheBrowserState {
   entities: CachedEntityMetadata[];
@@ -55,37 +55,54 @@ interface CacheBrowserProps {
 }
 
 const ENTITY_TYPE_OPTIONS = [
-  { value: 'works', label: 'Works' },
-  { value: 'authors', label: 'Authors' },
-  { value: 'sources', label: 'Sources' },
-  { value: 'institutions', label: 'Institutions' },
-  { value: 'topics', label: 'Topics' },
-  { value: 'publishers', label: 'Publishers' },
-  { value: 'funders', label: 'Funders' },
-  { value: 'keywords', label: 'Keywords' },
-  { value: 'concepts', label: 'Concepts' },
+  { value: "works", label: "Works" },
+  { value: "authors", label: "Authors" },
+  { value: "sources", label: "Sources" },
+  { value: "institutions", label: "Institutions" },
+  { value: "topics", label: "Topics" },
+  { value: "publishers", label: "Publishers" },
+  { value: "funders", label: "Funders" },
+  { value: "keywords", label: "Keywords" },
+  { value: "concepts", label: "Concepts" },
 ];
 
 const STORAGE_LOCATION_OPTIONS = [
-  { value: 'indexeddb', label: 'IndexedDB' },
-  { value: 'localstorage', label: 'LocalStorage' },
-  { value: 'repository', label: 'Repository' },
-  { value: 'memory', label: 'Memory' },
+  { value: "indexeddb", label: "IndexedDB" },
+  { value: "localstorage", label: "LocalStorage" },
+  { value: "repository", label: "Repository" },
+  { value: "memory", label: "Memory" },
 ];
 
 const SORT_OPTIONS = [
-  { value: 'timestamp', label: 'Cache Date' },
-  { value: 'type', label: 'Entity Type' },
-  { value: 'label', label: 'Name' },
-  { value: 'size', label: 'Size' },
+  { value: "timestamp", label: "Cache Date" },
+  { value: "type", label: "Entity Type" },
+  { value: "label", label: "Name" },
+  { value: "size", label: "Size" },
 ];
 
 export function CacheBrowser({ className }: CacheBrowserProps) {
   const navigate = useNavigate();
-  
+
   const [state, setState] = useState<CacheBrowserState>({
     entities: [],
-    stats: null,
+    stats: {
+      totalEntities: 0,
+      entitiesByType: {
+        works: 0,
+        authors: 0,
+        sources: 0,
+        institutions: 0,
+        topics: 0,
+        publishers: 0,
+        funders: 0,
+        keywords: 0,
+        concepts: 0,
+      },
+      entitiesByStorage: {},
+      totalCacheSize: 0,
+      oldestEntry: 0,
+      newestEntry: 0,
+    },
     isLoading: false,
     error: null,
     hasMore: false,
@@ -93,11 +110,18 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
   });
 
   // Filter state
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTypes, setSelectedTypes] = useState<string[]>(['works', 'authors']);
-  const [selectedStorage, setSelectedStorage] = useState<string[]>(['indexeddb', 'localstorage']);
-  const [sortBy, setSortBy] = useState<CacheBrowserOptions['sortBy']>('timestamp');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([
+    "works",
+    "authors",
+  ]);
+  const [selectedStorage, setSelectedStorage] = useState<string[]>([
+    "indexeddb",
+    "localstorage",
+  ]);
+  const [sortBy, setSortBy] =
+    useState<CacheBrowserOptions["sortBy"]>("timestamp");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [pageSize, setPageSize] = useState(50);
   const [currentPage, setCurrrentPage] = useState(0);
 
@@ -111,34 +135,59 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
   const [isImporting, setIsImporting] = useState(false);
   const [importFile, setImportFile] = useState<File | null>(null);
 
-  const filters: Partial<CacheBrowserFilters> = useMemo(() => ({
-    searchQuery,
-    entityTypes: new Set(selectedTypes as CacheBrowserEntityType[]),
-    storageLocations: new Set(selectedStorage),
-    sizeRange: (minSize !== undefined || maxSize !== undefined) ? {
-      min: minSize || 0,
-      max: maxSize || Number.MAX_SAFE_INTEGER,
-    } : undefined,
-  }), [searchQuery, selectedTypes, selectedStorage, minSize, maxSize]);
+  const filters: Partial<CacheBrowserFilters> = useMemo(
+    () => ({
+      searchQuery,
+      entityTypes: new Set(selectedTypes as CacheBrowserEntityType[]),
+      storageLocations: new Set(selectedStorage),
+      sizeRange:
+        minSize !== undefined || maxSize !== undefined
+          ? {
+              min: minSize || 0,
+              max: maxSize || Number.MAX_SAFE_INTEGER,
+            }
+          : undefined,
+    }),
+    [searchQuery, selectedTypes, selectedStorage, minSize, maxSize],
+  );
 
-  const options: Partial<CacheBrowserOptions> = useMemo(() => ({
-    sortBy,
-    sortDirection,
-    limit: pageSize,
-    offset: currentPage * pageSize,
-    includeBasicInfo: true,
-    includeRepositoryData: true,
-  }), [sortBy, sortDirection, pageSize, currentPage]);
+  const options: Partial<CacheBrowserOptions> = useMemo(
+    () => ({
+      sortBy,
+      sortDirection,
+      limit: pageSize,
+      offset: currentPage * pageSize,
+      includeBasicInfo: true,
+      includeRepositoryData: true,
+    }),
+    [sortBy, sortDirection, pageSize, currentPage],
+  );
 
   const loadCachedEntities = useCallback(async () => {
-    setState(prev => ({ ...prev, isLoading: true, error: null }));
-    
+    setState((prev) => ({ ...prev, isLoading: true, error: null }));
+
     try {
-      logger.debug('cache-browser', 'Loading cached entities', { filters, options });
-      
+      logger.debug("cache-browser", "Loading cached entities", {
+        filters,
+        options,
+      });
+
       const result = await cacheBrowserService.browse(filters, options);
-      
-      setState(prev => ({
+
+      if (!result) {
+        logger.error("cache-browser", "No result returned from browse", {
+          filters,
+          options,
+        });
+        setState((prev) => ({
+          ...prev,
+          isLoading: false,
+          error: "No result returned from cache browser service",
+        }));
+        return;
+      }
+
+      setState((prev) => ({
         ...prev,
         entities: result.entities,
         stats: result.stats,
@@ -147,14 +196,15 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
         isLoading: false,
       }));
 
-      logger.debug('cache-browser', 'Loaded cached entities', {
+      logger.debug("cache-browser", "Loaded cached entities", {
         count: result.entities.length,
         total: result.totalMatching,
       });
-
     } catch (error) {
-      logger.error('cache-browser', 'Failed to load cached entities', { error });
-      setState(prev => ({
+      logger.error("cache-browser", "Failed to load cached entities", {
+        error,
+      });
+      setState((prev) => ({
         ...prev,
         isLoading: false,
         error: `Failed to load cached entities: ${String(error)}`,
@@ -164,18 +214,17 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
 
   const clearCache = async () => {
     try {
-      logger.debug('cache-browser', 'Clearing cache with filters', { filters });
+      logger.debug("cache-browser", "Clearing cache with filters", { filters });
 
       const clearedCount = await cacheBrowserService.clearCache(filters);
 
-      logger.debug('cache-browser', 'Cache cleared', { clearedCount });
+      logger.debug("cache-browser", "Cache cleared", { clearedCount });
 
       // Reload entities after clearing
       await loadCachedEntities();
-
     } catch (error) {
-      logger.error('cache-browser', 'Failed to clear cache', { error });
-      setState(prev => ({
+      logger.error("cache-browser", "Failed to clear cache", { error });
+      setState((prev) => ({
         ...prev,
         error: `Failed to clear cache: ${String(error)}`,
       }));
@@ -185,7 +234,7 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
   const exportToJSON = async () => {
     setIsExporting(true);
     try {
-      logger.debug('cache-browser', 'Exporting cache data to JSON');
+      logger.debug("cache-browser", "Exporting cache data to JSON");
 
       // Get all entities without pagination for export
       const exportOptions = { ...options, limit: undefined, offset: undefined };
@@ -200,23 +249,24 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
       };
 
       const blob = new Blob([JSON.stringify(exportData, null, 2)], {
-        type: 'application/json',
+        type: "application/json",
       });
 
       const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.download = `cache-export-${new Date().toISOString().split('T')[0]}.json`;
+      link.download = `cache-export-${new Date().toISOString().split("T")[0]}.json`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      logger.debug('cache-browser', 'JSON export completed', { count: result.entities.length });
-
+      logger.debug("cache-browser", "JSON export completed", {
+        count: result.entities.length,
+      });
     } catch (error) {
-      logger.error('cache-browser', 'Failed to export to JSON', { error });
-      setState(prev => ({
+      logger.error("cache-browser", "Failed to export to JSON", { error });
+      setState((prev) => ({
         ...prev,
         error: `Failed to export to JSON: ${String(error)}`,
       }));
@@ -228,63 +278,73 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
   const exportToCSV = async () => {
     setIsExporting(true);
     try {
-      logger.debug('cache-browser', 'Exporting cache data to CSV');
+      logger.debug("cache-browser", "Exporting cache data to CSV");
 
       // Get all entities without pagination for export
       const exportOptions = { ...options, limit: undefined, offset: undefined };
       const result = await cacheBrowserService.browse(filters, exportOptions);
 
       // Convert entities to flat structure for CSV
-      const csvData = result.entities.map(entity => ({
+      const csvData = result.entities.map((entity) => ({
         id: entity.id,
         type: entity.type,
         label: entity.label,
         storageLocation: entity.storageLocation,
         dataSize: entity.dataSize,
         cacheDatetime: new Date(entity.cacheTimestamp).toISOString(),
-        citationCount: entity.basicInfo?.citationCount || '',
-        worksCount: entity.basicInfo?.worksCount || '',
-        url: entity.basicInfo?.url || '',
+        citationCount: entity.basicInfo?.citationCount || "",
+        worksCount: entity.basicInfo?.worksCount || "",
+        url: entity.basicInfo?.url || "",
       }));
 
       // Generate CSV headers
       const headers = [
-        'ID', 'Type', 'Label', 'Storage Location', 'Data Size (bytes)',
-        'Cache Date', 'Citation Count', 'Works Count', 'URL'
+        "ID",
+        "Type",
+        "Label",
+        "Storage Location",
+        "Data Size (bytes)",
+        "Cache Date",
+        "Citation Count",
+        "Works Count",
+        "URL",
       ];
 
       // Convert to CSV string
       const csvContent = [
-        headers.join(','),
-        ...csvData.map(row => [
-          row.id,
-          row.type,
-          `"${row.label.replace(/"/g, '""')}"`, // Escape quotes in labels
-          row.storageLocation,
-          row.dataSize,
-          row.cacheDatetime,
-          row.citationCount,
-          row.worksCount,
-          `"${row.url.replace(/"/g, '""')}"`, // Escape quotes in URLs
-        ].join(','))
-      ].join('\n');
+        headers.join(","),
+        ...csvData.map((row) =>
+          [
+            row.id,
+            row.type,
+            `"${row.label.replace(/"/g, '""')}"`, // Escape quotes in labels
+            row.storageLocation,
+            row.dataSize,
+            row.cacheDatetime,
+            row.citationCount,
+            row.worksCount,
+            `"${row.url.replace(/"/g, '""')}"`, // Escape quotes in URLs
+          ].join(","),
+        ),
+      ].join("\n");
 
-      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const blob = new Blob([csvContent], { type: "text/csv" });
 
       const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.download = `cache-export-${new Date().toISOString().split('T')[0]}.csv`;
+      link.download = `cache-export-${new Date().toISOString().split("T")[0]}.csv`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      logger.debug('cache-browser', 'CSV export completed', { count: result.entities.length });
-
+      logger.debug("cache-browser", "CSV export completed", {
+        count: result.entities.length,
+      });
     } catch (error) {
-      logger.error('cache-browser', 'Failed to export to CSV', { error });
-      setState(prev => ({
+      logger.error("cache-browser", "Failed to export to CSV", { error });
+      setState((prev) => ({
         ...prev,
         error: `Failed to export to CSV: ${String(error)}`,
       }));
@@ -298,14 +358,18 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
 
     setIsImporting(true);
     try {
-      logger.debug('cache-browser', 'Importing cache data', { fileName: importFile.name });
+      logger.debug("cache-browser", "Importing cache data", {
+        fileName: importFile.name,
+      });
 
       const text = await importFile.text();
       const importData = JSON.parse(text);
 
       // Validate the import data structure
       if (!importData.entities || !Array.isArray(importData.entities)) {
-        throw new Error('Invalid import file: missing or invalid entities array');
+        throw new Error(
+          "Invalid import file: missing or invalid entities array",
+        );
       }
 
       // Import entities using the cache browser service
@@ -314,22 +378,27 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
         try {
           // Here we would need a method to add entities back to cache
           // For now, we'll log this as the cacheBrowserService might not have an import method
-          logger.debug('cache-browser', 'Would import entity', { entity: entity.id });
+          logger.debug("cache-browser", "Would import entity", {
+            entity: entity.id,
+          });
           importedCount++;
         } catch (error) {
-          logger.warn('cache-browser', 'Failed to import entity', { entity: entity.id, error });
+          logger.warn("cache-browser", "Failed to import entity", {
+            entity: entity.id,
+            error,
+          });
         }
       }
 
-      logger.debug('cache-browser', 'Import completed', {
+      logger.debug("cache-browser", "Import completed", {
         total: importData.entities.length,
-        imported: importedCount
+        imported: importedCount,
       });
 
       // Note: Since we don't have a direct import method in cacheBrowserService,
       // this is a placeholder implementation. In a real scenario, you'd need to
       // implement the actual cache restoration logic.
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         error: `Import functionality is not yet fully implemented. Would import ${importedCount} entities.`,
       }));
@@ -339,10 +408,9 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
 
       // Reload entities
       await loadCachedEntities();
-
     } catch (error) {
-      logger.error('cache-browser', 'Failed to import cache data', { error });
-      setState(prev => ({
+      logger.error("cache-browser", "Failed to import cache data", { error });
+      setState((prev) => ({
         ...prev,
         error: `Failed to import cache data: ${String(error)}`,
       }));
@@ -362,9 +430,9 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
   }, [searchQuery, selectedTypes, selectedStorage, minSize, maxSize]);
 
   const formatSize = (bytes: number): string => {
-    if (bytes === 0) return '0 B';
+    if (bytes === 0) return "0 B";
     const k = 1024;
-    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const sizes = ["B", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
   };
@@ -375,116 +443,117 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
 
   const handleEntityClick = (entity: CachedEntityMetadata) => {
     // Navigate to entity detail page
-    if (entity.type === 'authors' && entity.id.startsWith('A')) {
+    if (entity.type === "authors" && entity.id.startsWith("A")) {
       void navigate({ to: `/authors/${entity.id}` });
-    } else if (entity.type === 'works' && entity.id.startsWith('W')) {
+    } else if (entity.type === "works" && entity.id.startsWith("W")) {
       void navigate({ to: `/works/${entity.id}` });
-    } else if (entity.type === 'sources' && entity.id.startsWith('S')) {
+    } else if (entity.type === "sources" && entity.id.startsWith("S")) {
       void navigate({ to: `/sources/${entity.id}` });
-    } else if (entity.type === 'institutions' && entity.id.startsWith('I')) {
+    } else if (entity.type === "institutions" && entity.id.startsWith("I")) {
       void navigate({ to: `/institutions/${entity.id}` });
-    } else if (entity.type === 'topics' && entity.id.startsWith('T')) {
+    } else if (entity.type === "topics" && entity.id.startsWith("T")) {
       void navigate({ to: `/topics/${entity.id}` });
     } else {
-      logger.debug('cache-browser', 'No route defined for entity', { entity });
+      logger.debug("cache-browser", "No route defined for entity", { entity });
     }
   };
 
-  const columns: ColumnDef<CachedEntityMetadata>[] = useMemo(() => [
-    {
-      accessorKey: 'type',
-      header: 'Type',
-      cell: ({ getValue }) => (
-        <Badge variant="light" size="sm">
-          {String(getValue())}
-        </Badge>
-      ),
-    },
-    {
-      accessorKey: 'label',
-      header: 'Name',
-      cell: ({ row }) => (
-        <Group gap="xs">
-          <Text size="sm" fw={500}>
-            {row.original.label}
-          </Text>
-          {row.original.basicInfo?.url && (
-            <ActionIcon
-              size="xs"
-              variant="subtle"
-              onClick={(e) => {
-                e.stopPropagation();
-                if (row.original.basicInfo?.url) {
-                  window.open(row.original.basicInfo.url, '_blank');
-                }
-              }}
-            >
-              <IconExternalLink size={12} />
-            </ActionIcon>
-          )}
-        </Group>
-      ),
-    },
-    {
-      accessorKey: 'id',
-      header: 'ID',
-      cell: ({ getValue }) => (
-        <Text size="xs" c="dimmed" ff="monospace">
-          {String(getValue())}
-        </Text>
-      ),
-    },
-    {
-      accessorKey: 'storageLocation',
-      header: 'Storage',
-      cell: ({ getValue }) => (
-        <Badge variant="outline" size="xs">
-          {String(getValue())}
-        </Badge>
-      ),
-    },
-    {
-      accessorKey: 'dataSize',
-      header: 'Size',
-      cell: ({ getValue }) => (
-        <Text size="xs">
-          {formatSize(Number(getValue()))}
-        </Text>
-      ),
-    },
-    {
-      accessorKey: 'cacheTimestamp',
-      header: 'Cached',
-      cell: ({ getValue }) => (
-        <Text size="xs" c="dimmed">
-          {formatDate(Number(getValue()))}
-        </Text>
-      ),
-    },
-    {
-      accessorKey: 'basicInfo',
-      header: 'Info',
-      cell: ({ row }) => {
-        const info = row.original.basicInfo;
-        if (!info) return null;
-        
-        return (
-          <Stack gap={1}>
-            {info.citationCount !== undefined && (
-              <Text size="xs" c="dimmed">
-                Citations: {info.citationCount.toLocaleString()}
-              </Text>
-            )}
-            {info.worksCount !== undefined && (
-              <Text size="xs" c="dimmed">
-                Works: {info.worksCount.toLocaleString()}
-              </Text>
-            )}
-          </Stack>
-        );
+  const columns: ColumnDef<CachedEntityMetadata>[] = useMemo(
+    () => [
+      {
+        accessorKey: "type",
+        header: "Type",
+        cell: ({ getValue }) => (
+          <Badge variant="light" size="sm">
+            {String(getValue())}
+          </Badge>
+        ),
       },
-    },
-  ], []);
+      {
+        accessorKey: "label",
+        header: "Name",
+        cell: ({ row }) => (
+          <Group gap="xs">
+            <Text size="sm" fw={500}>
+              {row.original.label}
+            </Text>
+            {row.original.basicInfo?.url && (
+              <ActionIcon
+                size="xs"
+                variant="subtle"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (row.original.basicInfo?.url) {
+                    window.open(row.original.basicInfo.url, "_blank");
+                  }
+                }}
+              >
+                <IconExternalLink size={12} />
+              </ActionIcon>
+            )}
+          </Group>
+        ),
+      },
+      {
+        accessorKey: "id",
+        header: "ID",
+        cell: ({ getValue }) => (
+          <Text size="xs" c="dimmed" ff="monospace">
+            {String(getValue())}
+          </Text>
+        ),
+      },
+      {
+        accessorKey: "storageLocation",
+        header: "Storage",
+        cell: ({ getValue }) => (
+          <Badge variant="outline" size="xs">
+            {String(getValue())}
+          </Badge>
+        ),
+      },
+      {
+        accessorKey: "dataSize",
+        header: "Size",
+        cell: ({ getValue }) => (
+          <Text size="xs">{formatSize(Number(getValue()))}</Text>
+        ),
+      },
+      {
+        accessorKey: "cacheTimestamp",
+        header: "Cached",
+        cell: ({ getValue }) => (
+          <Text size="xs" c="dimmed">
+            {formatDate(Number(getValue()))}
+          </Text>
+        ),
+      },
+      {
+        accessorKey: "basicInfo",
+        header: "Info",
+        cell: ({ row }) => {
+          const info = row.original.basicInfo;
+          if (!info) return null;
+
+          return (
+            <Stack gap={1}>
+              {info.citationCount !== undefined && (
+                <Text size="xs" c="dimmed">
+                  Citations: {info.citationCount.toLocaleString()}
+                </Text>
+              )}
+              {info.worksCount !== undefined && (
+                <Text size="xs" c="dimmed">
+                  Works: {info.worksCount.toLocaleString()}
+                </Text>
+              )}
+            </Stack>
+          );
+        },
+      },
+    ],
+    [],
+  );
 
   return (
     <Box className={className}>
@@ -492,8 +561,12 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
         {/* Header */}
         <Group justify="space-between">
           <div>
-            <Text size="xl" fw={600}>Cache Browser</Text>
-            <Text size="sm" c="dimmed">Browse and manage cached OpenAlex entities</Text>
+            <Text size="xl" fw={600}>
+              Cache Browser
+            </Text>
+            <Text size="sm" c="dimmed">
+              Browse and manage cached OpenAlex entities
+            </Text>
           </div>
 
           <Group gap="xs">
@@ -503,7 +576,9 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
                 leftSection={<IconDownload size={16} />}
                 variant="light"
                 color="blue"
-                onClick={() => { void exportToJSON(); }}
+                onClick={() => {
+                  void exportToJSON();
+                }}
                 loading={isExporting}
                 disabled={state.isLoading || state.entities.length === 0}
               >
@@ -514,7 +589,9 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
                 leftSection={<IconFileExport size={16} />}
                 variant="light"
                 color="green"
-                onClick={() => { void exportToCSV(); }}
+                onClick={() => {
+                  void exportToCSV();
+                }}
                 loading={isExporting}
                 disabled={state.isLoading || state.entities.length === 0}
               >
@@ -535,7 +612,9 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
                 leftSection={<IconUpload size={16} />}
                 variant="light"
                 color="violet"
-                onClick={() => { void importCacheData(); }}
+                onClick={() => {
+                  void importCacheData();
+                }}
                 loading={isImporting}
                 disabled={!importFile}
               >
@@ -545,7 +624,12 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
 
             {/* Existing Controls */}
             <Tooltip label="Refresh cache data">
-              <ActionIcon onClick={() => { void loadCachedEntities(); }} loading={state.isLoading}>
+              <ActionIcon
+                onClick={() => {
+                  void loadCachedEntities();
+                }}
+                loading={state.isLoading}
+              >
                 <IconRefresh size={16} />
               </ActionIcon>
             </Tooltip>
@@ -554,7 +638,9 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
               leftSection={<IconTrash size={16} />}
               variant="light"
               color="red"
-              onClick={() => { void clearCache(); }}
+              onClick={() => {
+                void clearCache();
+              }}
               disabled={state.isLoading || state.entities.length === 0}
             >
               Clear Filtered
@@ -567,23 +653,39 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
           <Card p="md" withBorder>
             <Group gap="xl">
               <div>
-                <Text size="lg" fw={600}>{state.stats.totalEntities.toLocaleString()}</Text>
-                <Text size="xs" c="dimmed">Total Entities</Text>
+                <Text size="lg" fw={600}>
+                  {state.stats.totalEntities.toLocaleString()}
+                </Text>
+                <Text size="xs" c="dimmed">
+                  Total Entities
+                </Text>
               </div>
-              
+
               <div>
-                <Text size="lg" fw={600}>{formatSize(state.stats.totalCacheSize)}</Text>
-                <Text size="xs" c="dimmed">Total Size</Text>
+                <Text size="lg" fw={600}>
+                  {formatSize(state.stats.totalCacheSize)}
+                </Text>
+                <Text size="xs" c="dimmed">
+                  Total Size
+                </Text>
               </div>
-              
+
               <div>
-                <Text size="lg" fw={600}>{Object.keys(state.stats.entitiesByStorage).length}</Text>
-                <Text size="xs" c="dimmed">Storage Types</Text>
+                <Text size="lg" fw={600}>
+                  {Object.keys(state.stats.entitiesByStorage).length}
+                </Text>
+                <Text size="xs" c="dimmed">
+                  Storage Types
+                </Text>
               </div>
-              
+
               <div>
-                <Text size="lg" fw={600}>{state.totalMatching.toLocaleString()}</Text>
-                <Text size="xs" c="dimmed">Matching Filters</Text>
+                <Text size="lg" fw={600}>
+                  {state.totalMatching.toLocaleString()}
+                </Text>
+                <Text size="xs" c="dimmed">
+                  Matching Filters
+                </Text>
               </div>
             </Group>
           </Card>
@@ -598,7 +700,9 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
                 variant="subtle"
                 size="xs"
                 leftSection={<IconFilter size={14} />}
-                onClick={() => { setShowAdvancedFilters(!showAdvancedFilters); }}
+                onClick={() => {
+                  setShowAdvancedFilters(!showAdvancedFilters);
+                }}
               >
                 Advanced
               </Button>
@@ -609,9 +713,11 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
                 placeholder="Search entities..."
                 leftSection={<IconSearch size={16} />}
                 value={searchQuery}
-                onChange={(e) => { setSearchQuery(e.target.value); }}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                }}
               />
-              
+
               <MultiSelect
                 placeholder="Entity types"
                 data={ENTITY_TYPE_OPTIONS}
@@ -619,7 +725,7 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
                 onChange={setSelectedTypes}
                 clearable
               />
-              
+
               <MultiSelect
                 placeholder="Storage locations"
                 data={STORAGE_LOCATION_OPTIONS}
@@ -634,31 +740,37 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
                 label="Sort by"
                 data={SORT_OPTIONS}
                 value={sortBy}
-                onChange={(value) => { setSortBy(value as CacheBrowserOptions['sortBy']); }}
+                onChange={(value) => {
+                  setSortBy(value as CacheBrowserOptions["sortBy"]);
+                }}
                 w={150}
               />
-              
+
               <Select
                 label="Direction"
                 data={[
-                  { value: 'desc', label: 'Descending' },
-                  { value: 'asc', label: 'Ascending' },
+                  { value: "desc", label: "Descending" },
+                  { value: "asc", label: "Ascending" },
                 ]}
                 value={sortDirection}
-                onChange={(value) => { setSortDirection(value as 'asc' | 'desc'); }}
+                onChange={(value) => {
+                  setSortDirection(value as "asc" | "desc");
+                }}
                 w={120}
               />
-              
+
               <Select
                 label="Page size"
                 data={[
-                  { value: '25', label: '25' },
-                  { value: '50', label: '50' },
-                  { value: '100', label: '100' },
-                  { value: '200', label: '200' },
+                  { value: "25", label: "25" },
+                  { value: "50", label: "50" },
+                  { value: "100", label: "100" },
+                  { value: "200", label: "200" },
                 ]}
                 value={pageSize.toString()}
-                onChange={(value) => { setPageSize(Number(value) || 50); }}
+                onChange={(value) => {
+                  setPageSize(Number(value) || 50);
+                }}
                 w={100}
               />
             </Group>
@@ -669,15 +781,19 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
                   label="Min size (bytes)"
                   placeholder="0"
                   value={minSize}
-                  onChange={(value) => { setMinSize(Number(value) || undefined); }}
+                  onChange={(value) => {
+                    setMinSize(Number(value) || undefined);
+                  }}
                   w={150}
                 />
-                
+
                 <NumberInput
                   label="Max size (bytes)"
                   placeholder="No limit"
                   value={maxSize}
-                  onChange={(value) => { setMaxSize(Number(value) || undefined); }}
+                  onChange={(value) => {
+                    setMaxSize(Number(value) || undefined);
+                  }}
                   w={150}
                 />
               </Group>
@@ -692,7 +808,9 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
             color="red"
             title="Error"
             withCloseButton
-            onClose={() => { setState(prev => ({ ...prev, error: null })); }}
+            onClose={() => {
+              setState((prev) => ({ ...prev, error: null }));
+            }}
           >
             {state.error}
           </Alert>
@@ -708,12 +826,14 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
             searchable={false} // We handle search ourselves
             onRowClick={handleEntityClick}
           />
-          
+
           {state.hasMore && (
             <Group justify="center" mt="md">
               <Button
                 variant="light"
-                onClick={() => { setCurrrentPage(prev => prev + 1); }}
+                onClick={() => {
+                  setCurrrentPage((prev) => prev + 1);
+                }}
                 loading={state.isLoading}
               >
                 Load More

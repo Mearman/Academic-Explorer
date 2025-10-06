@@ -14,7 +14,7 @@ export interface RedirectTestCase {
  */
 export async function generateRedirectTestCases(): Promise<RedirectTestCase[]> {
   const { urls } = await extractOpenAlexPaths({
-    searchDir: '../../docs/openalex-docs'
+    searchDir: '../../../../docs/openalex-docs'
   });
 
   const testCases: RedirectTestCase[] = [];
