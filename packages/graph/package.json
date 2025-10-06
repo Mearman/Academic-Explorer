@@ -70,9 +70,9 @@
     "@academic-explorer/utils": "workspace:*"
   },
   "devDependencies": {
-    "typescript": "~5.9.2",
+    "typescript": "~5.9.3",
     "vitest": "^3.2.4",
-    "eslint": "^9.36.0",
+    "eslint": "^9.37.0",
     "@vitest/coverage-v8": "^3.2.4"
   },
   "publishConfig": {
