@@ -54,7 +54,7 @@ describe("Cache Population Integration Tests", () => {
     const testViteConfig = defineConfig({
       plugins: [
         openalexCachePlugin({
-          staticDataPath: "./public/data/openalex",
+          staticDataPath: "apps/web/public/data/openalex",
           verbose: true,
         }),
       ],
@@ -266,7 +266,7 @@ describe("Cache Population Integration Tests", () => {
             );
           } else {
             // Check if URL is cached as fallback
-            const staticDataDir = "./public/data/openalex";
+            const staticDataDir = "./apps/web/public/data/openalex";
             if (isUrlCached(originalUrl, staticDataDir)) {
               results.entities.success++;
               console.log(
@@ -281,7 +281,7 @@ describe("Cache Population Integration Tests", () => {
           }
         } catch (error) {
           // Check if URL is cached as fallback for network errors
-          const staticDataDir = "./public/data/openalex";
+          const staticDataDir = "./apps/web/public/data/openalex";
           if (isUrlCached(originalUrl, staticDataDir)) {
             results.entities.success++;
             console.log(
@@ -317,7 +317,7 @@ describe("Cache Population Integration Tests", () => {
             );
           } else {
             // Check if URL is cached as fallback
-            const staticDataDir = "./public/data/openalex";
+            const staticDataDir = "./apps/web/public/data/openalex";
             if (isUrlCached(originalUrl, staticDataDir)) {
               results.collections.success++;
               console.log(
@@ -332,7 +332,7 @@ describe("Cache Population Integration Tests", () => {
           }
         } catch (error) {
           // Check if URL is cached as fallback for network errors
-          const staticDataDir = "./public/data/openalex";
+          const staticDataDir = "./apps/web/public/data/openalex";
           if (isUrlCached(originalUrl, staticDataDir)) {
             results.collections.success++;
             console.log(
