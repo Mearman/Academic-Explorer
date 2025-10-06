@@ -3,37 +3,37 @@
  * Tests all methods including CRUD, search, filtering, hierarchy, and streaming
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { TopicsApi } from "./topics";
-import { OpenAlexBaseClient } from "../client";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { OpenAlexBaseClient } from '../client';
 import type {
-  Topic,
   Author,
-  Work,
   OpenAlexResponse,
+  Topic,
   TopicsFilters,
-} from "../types";
+  Work,
+} from '../types';
+import { TopicsApi } from './topics';
 
 // Mock the base client
-vi.mock("../client");
+vi.mock('../client');
 
 // Mock the ID resolver utilities
-vi.mock("../utils/id-resolver", () => ({
+vi.mock('../utils/id-resolver', () => ({
   isValidWikidata: vi.fn((id: string) => {
     // Mock implementation that recognizes various Wikidata formats
     return (
       /^Q\d+$/.test(id) ||
-      id.startsWith("wikidata:Q") ||
-      id.includes("wikidata.org/wiki/Q") ||
-      id.includes("wikidata.org/entity/Q")
+      id.startsWith('wikidata:Q') ||
+      id.includes('wikidata.org/wiki/Q') ||
+      id.includes('wikidata.org/entity/Q')
     );
   }),
   normalizeExternalId: vi.fn((id: string, type: string) => {
-    if (type !== "wikidata") return null;
+    if (type !== 'wikidata') return null;
 
     // Extract Q number from various formats
     if (/^Q\d+$/.test(id)) return id; // Already Q format
-    if (id.startsWith("wikidata:")) return id.replace("wikidata:", "");
+    if (id.startsWith('wikidata:')) return id.replace('wikidata:', '');
 
     const urlMatch = id.match(/wikidata\.org\/(?:wiki|entity)\/(Q\d+)/);
     if (urlMatch) return urlMatch[1];
@@ -42,7 +42,7 @@ vi.mock("../utils/id-resolver", () => ({
   }),
 }));
 
-describe("TopicsApi", () => {
+describe('TopicsApi', () => {
   let topicsApi: TopicsApi;
   let mockClient: vi.Mocked<OpenAlexBaseClient>;
 
@@ -56,42 +56,12 @@ describe("TopicsApi", () => {
 
     topicsApi = new TopicsApi(mockClient);
   });
-    mockNormalizeExternalId = vi.fn((id: string, type: string) => {
-      if (type !== "wikidata") return null;
 
-      // Extract Q number from various formats
-      if (/^Q\d+$/.test(id)) return id; // Already Q format
-      if (id.startsWith("wikidata:")) return id.replace("wikidata:", "");
-
-      const urlMatch = id.match(/wikidata\.org\/(?:wiki|entity)\/(Q\d+)/);
-      if (urlMatch) return urlMatch[1];
-
-      return null;
-    });
-
-    // Import and setup the mocked functions
-    const {
-      isValidWikidata,
-      normalizeExternalId,
-    } = require("../utils/id-resolver");
-    vi.mocked(isValidWikidata).mockImplementation(mockIsValidWikidata);
-    vi.mocked(normalizeExternalId).mockImplementation(mockNormalizeExternalId);
-
-    mockClient = {
-      getById: vi.fn(),
-      getResponse: vi.fn(),
-      stream: vi.fn(),
-      getAll: vi.fn(),
-    } as unknown as vi.Mocked<OpenAlexBaseClient>;
-
-    topicsApi = new TopicsApi(mockClient);
-  });
-
-  describe("get", () => {
-    it("should fetch a single topic by ID", async () => {
+  describe('get', () => {
+    it('should fetch a single topic by ID', async () => {
       const mockTopic: Partial<Topic> = {
-        id: "T10138",
-        display_name: "Artificial intelligence",
+        id: 'T10138',
+        display_name: 'Artificial intelligence',
         level: 2,
         score: 0.95,
         works_count: 100000,
@@ -100,148 +70,148 @@ describe("TopicsApi", () => {
 
       mockClient.getById.mockResolvedValue(mockTopic as Topic);
 
-      const result = await topicsApi.get("T10138");
+      const result = await topicsApi.get('T10138');
 
-      expect(mockClient.getById).toHaveBeenCalledWith("topics", "T10138", {});
+      expect(mockClient.getById).toHaveBeenCalledWith('topics', 'T10138', {});
       expect(result).toEqual(mockTopic);
     });
 
-    it("should pass additional parameters to client", async () => {
+    it('should pass additional parameters to client', async () => {
       const mockTopic: Partial<Topic> = {
-        id: "T10138",
-        display_name: "Artificial intelligence",
+        id: 'T10138',
+        display_name: 'Artificial intelligence',
       };
 
-      const params = { select: ["id", "display_name"] };
+      const params = { select: ['id', 'display_name'] };
       mockClient.getById.mockResolvedValue(mockTopic as Topic);
 
-      await topicsApi.get("T10138", params);
+      await topicsApi.get('T10138', params);
 
       expect(mockClient.getById).toHaveBeenCalledWith(
-        "topics",
-        "T10138",
+        'topics',
+        'T10138',
         params,
       );
     });
 
     // Wikidata ID tests
-    it("should handle Wikidata ID in Q format", async () => {
+    it('should handle Wikidata ID in Q format', async () => {
       const mockTopic: Partial<Topic> = {
-        id: "T10138",
-        display_name: "Machine Learning",
+        id: 'T10138',
+        display_name: 'Machine Learning',
       };
 
       mockClient.getById.mockResolvedValue(mockTopic as Topic);
 
-      const result = await topicsApi.get("Q123456");
+      const result = await topicsApi.get('Q123456');
 
       expect(mockClient.getById).toHaveBeenCalledWith(
-        "topics",
-        "wikidata:Q123456",
+        'topics',
+        'wikidata:Q123456',
         {},
       );
       expect(result).toEqual(mockTopic);
     });
 
-    it("should handle Wikidata ID in wikidata: format", async () => {
+    it('should handle Wikidata ID in wikidata: format', async () => {
       const mockTopic: Partial<Topic> = {
-        id: "T10138",
-        display_name: "Artificial Intelligence",
+        id: 'T10138',
+        display_name: 'Artificial Intelligence',
       };
 
       mockClient.getById.mockResolvedValue(mockTopic as Topic);
 
-      const result = await topicsApi.get("wikidata:Q123456");
+      const result = await topicsApi.get('wikidata:Q123456');
 
       expect(mockClient.getById).toHaveBeenCalledWith(
-        "topics",
-        "wikidata:Q123456",
+        'topics',
+        'wikidata:Q123456',
         {},
       );
       expect(result).toEqual(mockTopic);
     });
 
-    it("should handle Wikidata URL wiki format", async () => {
+    it('should handle Wikidata URL wiki format', async () => {
       const mockTopic: Partial<Topic> = {
-        id: "T10138",
-        display_name: "Deep Learning",
+        id: 'T10138',
+        display_name: 'Deep Learning',
       };
 
       mockClient.getById.mockResolvedValue(mockTopic as Topic);
 
       const result = await topicsApi.get(
-        "https://www.wikidata.org/wiki/Q123456",
+        'https://www.wikidata.org/wiki/Q123456',
       );
 
       expect(mockClient.getById).toHaveBeenCalledWith(
-        "topics",
-        "wikidata:Q123456",
+        'topics',
+        'wikidata:Q123456',
         {},
       );
       expect(result).toEqual(mockTopic);
     });
 
-    it("should handle Wikidata URL entity format", async () => {
+    it('should handle Wikidata URL entity format', async () => {
       const mockTopic: Partial<Topic> = {
-        id: "T10138",
-        display_name: "Neural Networks",
+        id: 'T10138',
+        display_name: 'Neural Networks',
       };
 
       mockClient.getById.mockResolvedValue(mockTopic as Topic);
 
       const result = await topicsApi.get(
-        "https://www.wikidata.org/entity/Q123456",
+        'https://www.wikidata.org/entity/Q123456',
       );
 
       expect(mockClient.getById).toHaveBeenCalledWith(
-        "topics",
-        "wikidata:Q123456",
+        'topics',
+        'wikidata:Q123456',
         {},
       );
       expect(result).toEqual(mockTopic);
     });
 
-    it("should handle Wikidata ID with parameters", async () => {
+    it('should handle Wikidata ID with parameters', async () => {
       const mockTopic: Partial<Topic> = {
-        id: "T10138",
-        display_name: "Computer Vision",
+        id: 'T10138',
+        display_name: 'Computer Vision',
       };
 
-      const params = { select: ["id", "display_name", "keywords"] };
+      const params = { select: ['id', 'display_name', 'keywords'] };
       mockClient.getById.mockResolvedValue(mockTopic as Topic);
 
-      const result = await topicsApi.get("Q789012", params);
+      const result = await topicsApi.get('Q789012', params);
 
       expect(mockClient.getById).toHaveBeenCalledWith(
-        "topics",
-        "wikidata:Q789012",
+        'topics',
+        'wikidata:Q789012',
         params,
       );
       expect(result).toEqual(mockTopic);
     });
 
-    it("should fall back to original ID for invalid Wikidata format", async () => {
+    it('should fall back to original ID for invalid Wikidata format', async () => {
       const mockTopic: Partial<Topic> = {
-        id: "T10138",
-        display_name: "Test Topic",
+        id: 'T10138',
+        display_name: 'Test Topic',
       };
 
       mockClient.getById.mockResolvedValue(mockTopic as Topic);
 
-      const result = await topicsApi.get("Q-invalid");
+      const result = await topicsApi.get('Q-invalid');
 
       // Should use original ID since Q-invalid is not a valid Wikidata format
       expect(mockClient.getById).toHaveBeenCalledWith(
-        "topics",
-        "Q-invalid",
+        'topics',
+        'Q-invalid',
         {},
       );
       expect(result).toEqual(mockTopic);
     });
   });
 
-  describe("getMultiple", () => {
-    it("should fetch multiple topics without parameters", async () => {
+  describe('getMultiple', () => {
+    it('should fetch multiple topics without parameters', async () => {
       const mockResponse: OpenAlexResponse<Topic> = {
         results: [],
         meta: {
@@ -256,11 +226,11 @@ describe("TopicsApi", () => {
 
       const result = await topicsApi.getMultiple();
 
-      expect(mockClient.getResponse).toHaveBeenCalledWith("topics", {});
+      expect(mockClient.getResponse).toHaveBeenCalledWith('topics', {});
       expect(result).toEqual(mockResponse);
     });
 
-    it("should fetch multiple topics with parameters", async () => {
+    it('should fetch multiple topics with parameters', async () => {
       const mockResponse: OpenAlexResponse<Topic> = {
         results: [],
         meta: {
@@ -272,8 +242,8 @@ describe("TopicsApi", () => {
       };
 
       const params = {
-        filter: "level:1",
-        sort: "cited_by_count:desc",
+        filter: 'level:1',
+        sort: 'cited_by_count:desc',
         per_page: 50,
       };
 
@@ -281,10 +251,10 @@ describe("TopicsApi", () => {
 
       await topicsApi.getMultiple(params);
 
-      expect(mockClient.getResponse).toHaveBeenCalledWith("topics", params);
+      expect(mockClient.getResponse).toHaveBeenCalledWith('topics', params);
     });
 
-    it("should handle TopicsFilters and QueryParams combination", async () => {
+    it('should handle TopicsFilters and QueryParams combination', async () => {
       const mockResponse: OpenAlexResponse<Topic> = {
         results: [],
         meta: {
@@ -297,8 +267,8 @@ describe("TopicsApi", () => {
 
       const params = {
         level: 1,
-        works_count: ">1000",
-        sort: "score:desc",
+        works_count: '>1000',
+        sort: 'score:desc',
         per_page: 20,
       };
 
@@ -306,12 +276,12 @@ describe("TopicsApi", () => {
 
       await topicsApi.getMultiple(params);
 
-      expect(mockClient.getResponse).toHaveBeenCalledWith("topics", params);
+      expect(mockClient.getResponse).toHaveBeenCalledWith('topics', params);
     });
   });
 
-  describe("search", () => {
-    it("should search topics with query", async () => {
+  describe('search', () => {
+    it('should search topics with query', async () => {
       const mockResponse: OpenAlexResponse<Topic> = {
         results: [],
         meta: {
@@ -324,14 +294,14 @@ describe("TopicsApi", () => {
 
       mockClient.getResponse.mockResolvedValue(mockResponse);
 
-      await topicsApi.search("machine learning");
+      await topicsApi.search('machine learning');
 
-      expect(mockClient.getResponse).toHaveBeenCalledWith("topics", {
-        search: "machine learning",
+      expect(mockClient.getResponse).toHaveBeenCalledWith('topics', {
+        search: 'machine learning',
       });
     });
 
-    it("should search topics with query and additional parameters", async () => {
+    it('should search topics with query and additional parameters', async () => {
       const mockResponse: OpenAlexResponse<Topic> = {
         results: [],
         meta: {
@@ -344,25 +314,25 @@ describe("TopicsApi", () => {
 
       const params = {
         level: 2,
-        sort: "score:desc",
+        sort: 'score:desc',
         per_page: 30,
       };
 
       mockClient.getResponse.mockResolvedValue(mockResponse);
 
-      await topicsApi.search("artificial intelligence", params);
+      await topicsApi.search('artificial intelligence', params);
 
-      expect(mockClient.getResponse).toHaveBeenCalledWith("topics", {
-        search: "artificial intelligence",
+      expect(mockClient.getResponse).toHaveBeenCalledWith('topics', {
+        search: 'artificial intelligence',
         level: 2,
-        sort: "score:desc",
+        sort: 'score:desc',
         per_page: 30,
       });
     });
   });
 
-  describe("filters", () => {
-    it("should apply topic-specific filters", async () => {
+  describe('filters', () => {
+    it('should apply topic-specific filters', async () => {
       const mockResponse: OpenAlexResponse<Topic> = {
         results: [],
         meta: {
@@ -375,17 +345,17 @@ describe("TopicsApi", () => {
 
       const filters: TopicsFilters = {
         level: 1,
-        works_count: ">10000",
+        works_count: '>10000',
       };
 
       mockClient.getResponse.mockResolvedValue(mockResponse);
 
       await topicsApi.filters(filters);
 
-      expect(mockClient.getResponse).toHaveBeenCalledWith("topics", filters);
+      expect(mockClient.getResponse).toHaveBeenCalledWith('topics', filters);
     });
 
-    it("should combine filters with additional parameters", async () => {
+    it('should combine filters with additional parameters', async () => {
       const mockResponse: OpenAlexResponse<Topic> = {
         results: [],
         meta: {
@@ -398,26 +368,26 @@ describe("TopicsApi", () => {
 
       const filters: TopicsFilters = {
         level: 2,
-        cited_by_count: ">50000",
+        cited_by_count: '>50000',
       };
 
-      const params = { sort: "display_name:asc", per_page: 50 };
+      const params = { sort: 'display_name:asc', per_page: 50 };
 
       mockClient.getResponse.mockResolvedValue(mockResponse);
 
       await topicsApi.filters(filters, params);
 
-      expect(mockClient.getResponse).toHaveBeenCalledWith("topics", {
+      expect(mockClient.getResponse).toHaveBeenCalledWith('topics', {
         level: 2,
-        cited_by_count: ">50000",
-        sort: "display_name:asc",
+        cited_by_count: '>50000',
+        sort: 'display_name:asc',
         per_page: 50,
       });
     });
   });
 
-  describe("randomSample", () => {
-    it("should get random topics with default count", async () => {
+  describe('randomSample', () => {
+    it('should get random topics with default count', async () => {
       const mockResponse: OpenAlexResponse<Topic> = {
         results: [],
         meta: {
@@ -432,13 +402,13 @@ describe("TopicsApi", () => {
 
       await topicsApi.randomSample();
 
-      expect(mockClient.getResponse).toHaveBeenCalledWith("topics", {
+      expect(mockClient.getResponse).toHaveBeenCalledWith('topics', {
         sample: 10,
         per_page: 10,
       });
     });
 
-    it("should get random topics with custom count", async () => {
+    it('should get random topics with custom count', async () => {
       const mockResponse: OpenAlexResponse<Topic> = {
         results: [],
         meta: {
@@ -453,13 +423,13 @@ describe("TopicsApi", () => {
 
       await topicsApi.randomSample(25);
 
-      expect(mockClient.getResponse).toHaveBeenCalledWith("topics", {
+      expect(mockClient.getResponse).toHaveBeenCalledWith('topics', {
         sample: 25,
         per_page: 25,
       });
     });
 
-    it("should limit count to maximum of 50", async () => {
+    it('should limit count to maximum of 50', async () => {
       const mockResponse: OpenAlexResponse<Topic> = {
         results: [],
         meta: {
@@ -474,13 +444,13 @@ describe("TopicsApi", () => {
 
       await topicsApi.randomSample(100);
 
-      expect(mockClient.getResponse).toHaveBeenCalledWith("topics", {
+      expect(mockClient.getResponse).toHaveBeenCalledWith('topics', {
         sample: 50,
         per_page: 50,
       });
     });
 
-    it("should combine random sample with additional parameters", async () => {
+    it('should combine random sample with additional parameters', async () => {
       const mockResponse: OpenAlexResponse<Topic> = {
         results: [],
         meta: {
@@ -491,22 +461,22 @@ describe("TopicsApi", () => {
         },
       };
 
-      const params = { select: ["id", "display_name", "level"] };
+      const params = { select: ['id', 'display_name', 'level'] };
 
       mockClient.getResponse.mockResolvedValue(mockResponse);
 
       await topicsApi.randomSample(15, params);
 
-      expect(mockClient.getResponse).toHaveBeenCalledWith("topics", {
-        select: ["id", "display_name", "level"],
+      expect(mockClient.getResponse).toHaveBeenCalledWith('topics', {
+        select: ['id', 'display_name', 'level'],
         sample: 15,
         per_page: 15,
       });
     });
   });
 
-  describe("getTopicWorks", () => {
-    it("should get works for a topic", async () => {
+  describe('getTopicWorks', () => {
+    it('should get works for a topic', async () => {
       const mockResponse: OpenAlexResponse<Work> = {
         results: [],
         meta: {
@@ -519,14 +489,14 @@ describe("TopicsApi", () => {
 
       mockClient.getResponse.mockResolvedValue(mockResponse);
 
-      await topicsApi.getTopicWorks("T10138");
+      await topicsApi.getTopicWorks('T10138');
 
-      expect(mockClient.getResponse).toHaveBeenCalledWith("works", {
-        filter: "topics.id:T10138",
+      expect(mockClient.getResponse).toHaveBeenCalledWith('works', {
+        filter: 'topics.id:T10138',
       });
     });
 
-    it("should get works for a topic with parameters", async () => {
+    it('should get works for a topic with parameters', async () => {
       const mockResponse: OpenAlexResponse<Work> = {
         results: [],
         meta: {
@@ -538,25 +508,25 @@ describe("TopicsApi", () => {
       };
 
       const params = {
-        sort: "cited_by_count:desc",
+        sort: 'cited_by_count:desc',
         per_page: 50,
-        filter: "publication_year:2023",
+        filter: 'publication_year:2023',
       };
 
       mockClient.getResponse.mockResolvedValue(mockResponse);
 
-      await topicsApi.getTopicWorks("T10138", params);
+      await topicsApi.getTopicWorks('T10138', params);
 
-      expect(mockClient.getResponse).toHaveBeenCalledWith("works", {
-        sort: "cited_by_count:desc",
+      expect(mockClient.getResponse).toHaveBeenCalledWith('works', {
+        sort: 'cited_by_count:desc',
         per_page: 50,
-        filter: "topics.id:T10138",
+        filter: 'topics.id:T10138',
       });
     });
   });
 
-  describe("getTopicAuthors", () => {
-    it("should get authors for a topic", async () => {
+  describe('getTopicAuthors', () => {
+    it('should get authors for a topic', async () => {
       const mockResponse: OpenAlexResponse<Author> = {
         results: [],
         meta: {
@@ -569,14 +539,14 @@ describe("TopicsApi", () => {
 
       mockClient.getResponse.mockResolvedValue(mockResponse);
 
-      await topicsApi.getTopicAuthors("T10138");
+      await topicsApi.getTopicAuthors('T10138');
 
-      expect(mockClient.getResponse).toHaveBeenCalledWith("authors", {
-        filter: "topics.id:T10138",
+      expect(mockClient.getResponse).toHaveBeenCalledWith('authors', {
+        filter: 'topics.id:T10138',
       });
     });
 
-    it("should get authors for a topic with parameters", async () => {
+    it('should get authors for a topic with parameters', async () => {
       const mockResponse: OpenAlexResponse<Author> = {
         results: [],
         meta: {
@@ -588,26 +558,26 @@ describe("TopicsApi", () => {
       };
 
       const params = {
-        sort: "works_count:desc",
+        sort: 'works_count:desc',
         per_page: 30,
-        select: ["id", "display_name", "works_count"],
+        select: ['id', 'display_name', 'works_count'],
       };
 
       mockClient.getResponse.mockResolvedValue(mockResponse);
 
-      await topicsApi.getTopicAuthors("T10138", params);
+      await topicsApi.getTopicAuthors('T10138', params);
 
-      expect(mockClient.getResponse).toHaveBeenCalledWith("authors", {
-        sort: "works_count:desc",
+      expect(mockClient.getResponse).toHaveBeenCalledWith('authors', {
+        sort: 'works_count:desc',
         per_page: 30,
-        select: ["id", "display_name", "works_count"],
-        filter: "topics.id:T10138",
+        select: ['id', 'display_name', 'works_count'],
+        filter: 'topics.id:T10138',
       });
     });
   });
 
-  describe("getSubfields", () => {
-    it("should get subfields without field ID", async () => {
+  describe('getSubfields', () => {
+    it('should get subfields without field ID', async () => {
       const mockResponse: OpenAlexResponse<Topic> = {
         results: [],
         meta: {
@@ -622,10 +592,10 @@ describe("TopicsApi", () => {
 
       await topicsApi.getSubfields();
 
-      expect(mockClient.getResponse).toHaveBeenCalledWith("topics", {});
+      expect(mockClient.getResponse).toHaveBeenCalledWith('topics', {});
     });
 
-    it("should get subfields for a specific field", async () => {
+    it('should get subfields for a specific field', async () => {
       const mockResponse: OpenAlexResponse<Topic> = {
         results: [],
         meta: {
@@ -638,14 +608,14 @@ describe("TopicsApi", () => {
 
       mockClient.getResponse.mockResolvedValue(mockResponse);
 
-      await topicsApi.getSubfields("T12345");
+      await topicsApi.getSubfields('T12345');
 
-      expect(mockClient.getResponse).toHaveBeenCalledWith("topics", {
-        "field.id": "T12345",
+      expect(mockClient.getResponse).toHaveBeenCalledWith('topics', {
+        'field.id': 'T12345',
       });
     });
 
-    it("should get subfields with additional parameters", async () => {
+    it('should get subfields with additional parameters', async () => {
       const mockResponse: OpenAlexResponse<Topic> = {
         results: [],
         meta: {
@@ -656,22 +626,22 @@ describe("TopicsApi", () => {
         },
       };
 
-      const params = { sort: "works_count:desc", per_page: 50 };
+      const params = { sort: 'works_count:desc', per_page: 50 };
 
       mockClient.getResponse.mockResolvedValue(mockResponse);
 
-      await topicsApi.getSubfields("T12345", params);
+      await topicsApi.getSubfields('T12345', params);
 
-      expect(mockClient.getResponse).toHaveBeenCalledWith("topics", {
-        "field.id": "T12345",
-        sort: "works_count:desc",
+      expect(mockClient.getResponse).toHaveBeenCalledWith('topics', {
+        'field.id': 'T12345',
+        sort: 'works_count:desc',
         per_page: 50,
       });
     });
   });
 
-  describe("getFields", () => {
-    it("should get fields without domain ID", async () => {
+  describe('getFields', () => {
+    it('should get fields without domain ID', async () => {
       const mockResponse: OpenAlexResponse<Topic> = {
         results: [],
         meta: {
@@ -686,10 +656,10 @@ describe("TopicsApi", () => {
 
       await topicsApi.getFields();
 
-      expect(mockClient.getResponse).toHaveBeenCalledWith("topics", {});
+      expect(mockClient.getResponse).toHaveBeenCalledWith('topics', {});
     });
 
-    it("should get fields for a specific domain", async () => {
+    it('should get fields for a specific domain', async () => {
       const mockResponse: OpenAlexResponse<Topic> = {
         results: [],
         meta: {
@@ -702,14 +672,14 @@ describe("TopicsApi", () => {
 
       mockClient.getResponse.mockResolvedValue(mockResponse);
 
-      await topicsApi.getFields("T54321");
+      await topicsApi.getFields('T54321');
 
-      expect(mockClient.getResponse).toHaveBeenCalledWith("topics", {
-        "domain.id": "T54321",
+      expect(mockClient.getResponse).toHaveBeenCalledWith('topics', {
+        'domain.id': 'T54321',
       });
     });
 
-    it("should get fields with additional parameters", async () => {
+    it('should get fields with additional parameters', async () => {
       const mockResponse: OpenAlexResponse<Topic> = {
         results: [],
         meta: {
@@ -720,22 +690,22 @@ describe("TopicsApi", () => {
         },
       };
 
-      const params = { sort: "display_name:asc", per_page: 100 };
+      const params = { sort: 'display_name:asc', per_page: 100 };
 
       mockClient.getResponse.mockResolvedValue(mockResponse);
 
-      await topicsApi.getFields("T54321", params);
+      await topicsApi.getFields('T54321', params);
 
-      expect(mockClient.getResponse).toHaveBeenCalledWith("topics", {
-        "domain.id": "T54321",
-        sort: "display_name:asc",
+      expect(mockClient.getResponse).toHaveBeenCalledWith('topics', {
+        'domain.id': 'T54321',
+        sort: 'display_name:asc',
         per_page: 100,
       });
     });
   });
 
-  describe("getDomains", () => {
-    it("should get domains", async () => {
+  describe('getDomains', () => {
+    it('should get domains', async () => {
       const mockResponse: OpenAlexResponse<Topic> = {
         results: [],
         meta: {
@@ -750,12 +720,12 @@ describe("TopicsApi", () => {
 
       await topicsApi.getDomains();
 
-      expect(mockClient.getResponse).toHaveBeenCalledWith("topics", {
-        sort: "cited_by_count:desc",
+      expect(mockClient.getResponse).toHaveBeenCalledWith('topics', {
+        sort: 'cited_by_count:desc',
       });
     });
 
-    it("should get domains with parameters", async () => {
+    it('should get domains with parameters', async () => {
       const mockResponse: OpenAlexResponse<Topic> = {
         results: [],
         meta: {
@@ -766,26 +736,26 @@ describe("TopicsApi", () => {
         },
       };
 
-      const params = { per_page: 10, select: ["id", "display_name", "level"] };
+      const params = { per_page: 10, select: ['id', 'display_name', 'level'] };
 
       mockClient.getResponse.mockResolvedValue(mockResponse);
 
       await topicsApi.getDomains(params);
 
-      expect(mockClient.getResponse).toHaveBeenCalledWith("topics", {
+      expect(mockClient.getResponse).toHaveBeenCalledWith('topics', {
         per_page: 10,
-        select: ["id", "display_name", "level"],
-        sort: "cited_by_count:desc",
+        select: ['id', 'display_name', 'level'],
+        sort: 'cited_by_count:desc',
       });
     });
   });
 
-  describe("stream", () => {
-    it("should stream topics", async () => {
+  describe('stream', () => {
+    it('should stream topics', async () => {
       const mockBatch: Topic[] = [
         {
-          id: "T1",
-          display_name: "Computer Science",
+          id: 'T1',
+          display_name: 'Computer Science',
           level: 1,
           score: 0.98,
           works_count: 50000,
@@ -804,15 +774,15 @@ describe("TopicsApi", () => {
         batches.push(batch);
       }
 
-      expect(mockClient.stream).toHaveBeenCalledWith("topics", {}, 200);
+      expect(mockClient.stream).toHaveBeenCalledWith('topics', {}, 200);
       expect(batches).toEqual([mockBatch]);
     });
 
-    it("should stream topics with parameters and custom batch size", async () => {
+    it('should stream topics with parameters and custom batch size', async () => {
       const mockBatch: Topic[] = [
         {
-          id: "T1",
-          display_name: "Artificial Intelligence",
+          id: 'T1',
+          display_name: 'Artificial Intelligence',
           level: 2,
           score: 0.95,
         } as Topic,
@@ -830,17 +800,17 @@ describe("TopicsApi", () => {
         batches.push(batch);
       }
 
-      expect(mockClient.stream).toHaveBeenCalledWith("topics", params, 100);
+      expect(mockClient.stream).toHaveBeenCalledWith('topics', params, 100);
       expect(batches).toEqual([mockBatch]);
     });
   });
 
-  describe("getAll", () => {
-    it("should get all topics", async () => {
+  describe('getAll', () => {
+    it('should get all topics', async () => {
       const mockTopics: Topic[] = [
         {
-          id: "T1",
-          display_name: "Machine Learning",
+          id: 'T1',
+          display_name: 'Machine Learning',
           level: 2,
           score: 0.92,
           works_count: 30000,
@@ -852,25 +822,25 @@ describe("TopicsApi", () => {
 
       const result = await topicsApi.getAll();
 
-      expect(mockClient.getAll).toHaveBeenCalledWith("topics", {}, undefined);
+      expect(mockClient.getAll).toHaveBeenCalledWith('topics', {}, undefined);
       expect(result).toEqual(mockTopics);
     });
 
-    it("should get all topics with parameters and limit", async () => {
+    it('should get all topics with parameters and limit', async () => {
       const mockTopics: Topic[] = [
         {
-          id: "T1",
-          display_name: "Deep Learning",
+          id: 'T1',
+          display_name: 'Deep Learning',
           level: 3,
         } as Topic,
       ];
 
       mockClient.getAll.mockResolvedValue(mockTopics);
 
-      const params = { level: 3, works_count: ">1000" };
+      const params = { level: 3, works_count: '>1000' };
       await topicsApi.getAll(params, 500);
 
-      expect(mockClient.getAll).toHaveBeenCalledWith("topics", params, 500);
+      expect(mockClient.getAll).toHaveBeenCalledWith('topics', params, 500);
     });
   });
 });
