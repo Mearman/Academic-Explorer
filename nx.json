@@ -40,65 +40,38 @@
   "targetDefaults": {
     "build": {
       "cache": true,
-      "dependsOn": [
-        "^build"
-      ],
+      "dependsOn": ["^build"],
       "inputs": [
         "production",
         "^production",
-        "{workspaceRoot}/vite.config.ts",
+  "{workspaceRoot}/vite.config.base.ts",
         "{workspaceRoot}/config/**/*",
-        "{projectRoot}/vite.config.ts",
+  "{projectRoot}/vite.config.base.ts",
         "{projectRoot}/tsconfig.json",
         "{projectRoot}/package.json"
       ],
-      "outputs": [
-        "{projectRoot}/dist"
-      ]
+      "outputs": ["{projectRoot}/dist"]
     },
     "test": {
       "cache": true,
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/config/**/*"
-      ],
-      "outputs": [
-        "{projectRoot}/coverage"
-      ]
+      "parallel": 1,
+      "inputs": ["default", "^production", "{workspaceRoot}/config/**/*"],
+      "outputs": ["{projectRoot}/coverage"]
     },
     "test:unit:run": {
       "cache": true,
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/config/**/*"
-      ],
-      "outputs": [
-        "{projectRoot}/coverage"
-      ]
+      "inputs": ["default", "^production", "{workspaceRoot}/config/**/*"],
+      "outputs": ["{projectRoot}/coverage"]
     },
     "test:component:run": {
       "cache": true,
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/config/**/*"
-      ],
-      "outputs": [
-        "{projectRoot}/coverage"
-      ]
+      "inputs": ["default", "^production", "{workspaceRoot}/config/**/*"],
+      "outputs": ["{projectRoot}/coverage"]
     },
     "test:integration:run": {
       "cache": true,
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/config/**/*"
-      ],
-      "outputs": [
-        "{projectRoot}/coverage"
-      ]
+      "inputs": ["default", "^production", "{workspaceRoot}/config/**/*"],
+      "outputs": ["{projectRoot}/coverage"]
     },
     "test:e2e:run": {
       "cache": true,
@@ -108,20 +81,16 @@
         "{workspaceRoot}/config/**/*",
         "{workspaceRoot}/playwright.config.ts"
       ],
-      "outputs": [
-        "{projectRoot}/coverage"
-      ]
+      "outputs": ["{projectRoot}/coverage"]
     },
     "preview": {
       "cache": true,
       "inputs": [
         "^production",
-        "{workspaceRoot}/vite.config.ts",
+  "{workspaceRoot}/vite.config.base.ts",
         "{workspaceRoot}/config/**/*"
       ],
-      "dependsOn": [
-        "build"
-      ]
+      "dependsOn": ["build"]
     },
     "lint:fix": {
       "cache": true,
@@ -131,9 +100,7 @@
         "{workspaceRoot}/eslint.config.*.ts",
         "{projectRoot}/eslint.config.ts"
       ],
-      "outputs": [
-        "{projectRoot}/**/*.{js,jsx,ts,tsx}"
-      ],
+      "outputs": ["{projectRoot}/**/*.{js,jsx,ts,tsx}"],
       "options": {
         "fix": true,
         "cache": true,
@@ -142,6 +109,7 @@
     },
     "lint": {
       "cache": true,
+      "dependsOn": ["lint:fix"],
       "inputs": [
         "default",
         "{workspaceRoot}/eslint.config.ts",
@@ -159,13 +127,9 @@
         "{workspaceRoot}/config/**/*",
         "{projectRoot}/tsconfig*.json"
       ],
-      "outputs": [
-        "{projectRoot}/dist/tsc"
-      ],
+      "outputs": ["{projectRoot}/dist/tsc"],
       "options": {
-        "cacheableOperations": [
-          "typecheck"
-        ]
+        "cacheableOperations": ["typecheck"]
       }
     },
     "knip": {
@@ -200,15 +164,11 @@
         "{workspaceRoot}/tsconfig*.json",
         "{workspaceRoot}/package.json"
       ],
-      "outputs": [
-        "{projectRoot}/**/*.{js,jsx,ts,tsx}"
-      ]
+      "outputs": ["{projectRoot}/**/*.{js,jsx,ts,tsx}"]
     },
     "a11y:test": {
       "cache": false,
-      "dependsOn": [
-        "build"
-      ],
+      "dependsOn": ["build"],
       "inputs": [
         "^production",
         "{workspaceRoot}/.pa11yci.json",
@@ -217,9 +177,7 @@
     },
     "a11y:lighthouse": {
       "cache": false,
-      "dependsOn": [
-        "build"
-      ],
+      "dependsOn": ["build"],
       "inputs": [
         "^production",
         "{workspaceRoot}/.lighthouserc.js",
@@ -228,64 +186,47 @@
     },
     "a11y:dev": {
       "cache": false,
-      "inputs": [
-        "default",
-        "{workspaceRoot}/.pa11yci-dev.json"
-      ]
+      "inputs": ["default", "{workspaceRoot}/.pa11yci-dev.json"]
     },
     "a11y:ci": {
       "cache": false,
-      "dependsOn": [
-        "a11y:test",
-        "a11y:lighthouse"
-      ],
+      "dependsOn": ["a11y:test", "a11y:lighthouse"],
       "inputs": []
     },
     "test:a11y": {
       "cache": true,
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/config/**/*"
-      ],
-      "outputs": [
-        "{projectRoot}/coverage"
-      ]
+      "inputs": ["default", "^production", "{workspaceRoot}/config/**/*"],
+      "outputs": ["{projectRoot}/coverage"]
     },
     "test:a11y:e2e": {
       "cache": true,
-      "dependsOn": [
-        "build"
-      ],
+      "dependsOn": ["build"],
       "inputs": [
         "default",
         "^production",
         "{workspaceRoot}/config/**/*",
         "{workspaceRoot}/playwright.config.ts"
       ],
-      "outputs": [
-        "{projectRoot}/coverage"
-      ]
+      "outputs": ["{projectRoot}/coverage"]
     },
     "verify:a11y": {
       "cache": true,
-      "dependsOn": [
-        "lint",
-        "test:a11y",
-        "a11y:ci"
-      ],
+      "dependsOn": ["lint", "test:a11y", "a11y:ci"],
       "inputs": [],
       "outputs": []
     },
     "build-storybook": {
       "cache": true
+    },
+    "validate": {
+      "cache": true,
+      "dependsOn": ["build", "test", "lint"],
+      "inputs": [],
+      "outputs": []
     }
   },
   "namedInputs": {
-    "default": [
-      "{projectRoot}/**/*",
-      "sharedGlobals"
-    ],
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "production": [
       "default",
       "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
@@ -327,10 +268,7 @@
   "tasksRunnerOptions": {
     "default": {
       "options": {
-        "runtimeCacheInputs": [
-          "node -v",
-          "pnpm -v"
-        ],
+        "runtimeCacheInputs": ["node -v", "pnpm -v"],
         "processTimeout": 600000,
         "lifeCycle": {
           "onProcessSignal": "cleanup",
@@ -342,11 +280,7 @@
   "defaultProject": "web",
   "release": {
     "projectsRelationship": "independent",
-    "projects": [
-      "packages/*",
-      "apps/*",
-      "tools/*"
-    ],
+    "projects": ["packages/*", "apps/*", "tools/*"],
     "version": {
       "conventionalCommits": true,
       "currentVersionResolverMetadata": {
