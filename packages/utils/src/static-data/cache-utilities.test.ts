@@ -1,29 +1,30 @@
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  hasCollision,
-  mergeCollision,
-  reconstructPossibleCollisions,
-  migrateToMultiUrl,
-  validateFileEntry,
-  directoryIndexToUnifiedIndex,
-  unifiedIndexToDirectoryIndex,
-  isUnifiedIndex,
-  isDirectoryIndex,
-  readIndexAsUnified,
-  readIndexAsDirectory,
-  type FileEntry,
-  type EntityType
+    directoryIndexToUnifiedIndex,
+    getCacheFilePath,
+    hasCollision,
+    isDirectoryIndex,
+    isUnifiedIndex,
+    mergeCollision,
+    migrateToMultiUrl,
+    readIndexAsDirectory,
+    readIndexAsUnified,
+    reconstructPossibleCollisions,
+    unifiedIndexToDirectoryIndex,
+    validateFileEntry,
+    type EntityType,
+    type FileEntry
 } from './cache-utilities.js';
-import { getCacheFilePath } from './cache-utilities.js';
 
-// Mock getCacheFilePath for controlled testing
-vi.mock('./cache-utilities.js', () => {
-  const actual = vi.importActual('./cache-utilities.js');
+// Mock getCacheFilePath for controlled testing. Use async factory so we can
+// import the original module and override only the named export we need.
+vi.mock('./cache-utilities.js', async () => {
+  const actual = await vi.importActual('./cache-utilities.js');
   return {
     ...actual,
-    getCacheFilePath: vi.fn()
-  };
+    getCacheFilePath: vi.fn(),
+  } as typeof actual;
 });
 
 const mockGetCacheFilePath = getCacheFilePath as unknown as ReturnType<typeof vi.fn>;
@@ -459,9 +460,7 @@ describe('Cache Utilities - Collision Handling', () => {
     });
   });
 
-  describe('Cache Utilities - Collision Handling', () => {
-    // All tests passed
-  });
+  // duplicate describe removed
 });
 
 describe('Index Format Adapters', () => {

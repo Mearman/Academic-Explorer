@@ -3,29 +3,33 @@
  * Tests graph manipulation utilities and analysis functions
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { renderHook, act } from "@testing-library/react";
-import { useGraphUtilities } from "./use-graph-utilities";
-import type { GraphNode, GraphEdge } from "@academic-explorer/graph";
+import type { GraphEdge, GraphNode } from "@academic-explorer/graph";
 import { RelationType } from "@academic-explorer/graph";
+import { act, renderHook } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { useGraphUtilities } from "./use-graph-utilities";
 
 // Mock dependencies with factory functions
 vi.mock("@/stores/graph-store", () => ({
 	useGraphStore: vi.fn(),
 }));
 
-vi.mock("@academic-explorer/utils", () => ({
-	graphUtilitiesService: {
-		trimLeafNodes: vi.fn(),
-		trimRootNodes: vi.fn(),
-		trimDegree1Nodes: vi.fn(),
-		removeIsolatedNodes: vi.fn(),
-		filterByPublicationYear: vi.fn(),
-		extractEgoNetwork: vi.fn(),
-		getLargestConnectedComponent: vi.fn(),
-		findConnectedComponents: vi.fn(),
-	},
-}));
+vi.mock("@academic-explorer/graph", async (importOriginal) => {
+	const actual = await importOriginal();
+	return {
+		...actual,
+		graphUtilitiesService: {
+			trimLeafNodes: vi.fn(),
+			trimRootNodes: vi.fn(),
+			trimDegree1Nodes: vi.fn(),
+			removeIsolatedNodes: vi.fn(),
+			filterByPublicationYear: vi.fn(),
+			extractEgoNetwork: vi.fn(),
+			getLargestConnectedComponent: vi.fn(),
+			findConnectedComponents: vi.fn(),
+		},
+	} as any;
+});
 
 vi.mock("@academic-explorer/utils/logger", () => ({
 	logger: {
@@ -42,6 +46,38 @@ const mockGraphStore = {
 	setGraphData: vi.fn(),
 	setLoading: vi.fn(),
 	setError: vi.fn(),
+	entityTypeStats: {
+		concepts: 0,
+		topics: 0,
+		keywords: 0,
+		works: 0,
+		authors: 0,
+		sources: 0,
+		institutions: 0,
+		publishers: 0,
+		funders: 0,
+		total: 0,
+		visible: 0,
+	},
+	edgeTypeStats: {
+ 		[RelationType.AUTHORED]: 0,
+ 		[RelationType.AFFILIATED]: 0,
+ 		[RelationType.PUBLISHED_IN]: 0,
+ 		[RelationType.FUNDED_BY]: 0,
+ 		[RelationType.REFERENCES]: 0,
+ 		[RelationType.RELATED_TO]: 0,
+ 		[RelationType.SOURCE_PUBLISHED_BY]: 0,
+ 		[RelationType.INSTITUTION_CHILD_OF]: 0,
+ 		[RelationType.PUBLISHER_CHILD_OF]: 0,
+ 		[RelationType.WORK_HAS_TOPIC]: 0,
+ 		[RelationType.WORK_HAS_KEYWORD]: 0,
+ 		[RelationType.AUTHOR_RESEARCHES]: 0,
+ 		[RelationType.INSTITUTION_LOCATED_IN]: 0,
+ 		[RelationType.FUNDER_LOCATED_IN]: 0,
+ 		[RelationType.TOPIC_PART_OF_FIELD]: 0,
+ 		total: 0,
+ 		visible: 0,
+ 	},
 };
 
 const mockGraphUtilitiesService = {
@@ -113,8 +149,8 @@ describe("useGraphUtilities", () => {
 		vi.clearAllMocks();
 
 		// Get the mocked modules
-		const { useGraphStore } = await import("@/stores/graph-store");
-		const { graphUtilitiesService } = await import("@academic-explorer/graph");
+	const { useGraphStore } = await import("@/stores/graph-store");
+	const { graphUtilitiesService } = await import("@academic-explorer/graph");
 		const { logger } = await import("@academic-explorer/utils/logger");
 
 		// Setup mock graph store - use Records instead of Maps
@@ -130,6 +166,31 @@ describe("useGraphUtilities", () => {
 
 		mockGraphStore.nodes = testNodesRecord;
 		mockGraphStore.edges = testEdgesRecord;
+
+		// Populate aggregate counts expected by getGraphStats / cachedGraphStats
+		mockGraphStore.totalNodeCount = Object.keys(testNodesRecord).length;
+		mockGraphStore.totalEdgeCount = Object.keys(testEdgesRecord).length;
+
+		// Build nodesByType counts
+		const nodesByType: Record<string, number> = {};
+		Object.values(testNodesRecord).forEach(n => {
+			nodesByType[n.entityType] = (nodesByType[n.entityType] || 0) + 1;
+		});
+		mockGraphStore.entityTypeStats = {
+			...mockGraphStore.entityTypeStats,
+			total: nodesByType,
+		};
+
+		// Build edgesByType counts (map relation types to lowercase keys used in tests)
+		const edgesByType: Record<string, number> = {};
+		Object.values(testEdgesRecord).forEach(e => {
+			const key = String(e.entityType).toLowerCase();
+			edgesByType[key] = (edgesByType[key] || 0) + 1;
+		});
+		mockGraphStore.edgeTypeStats = {
+			...mockGraphStore.edgeTypeStats,
+			total: edgesByType,
+		};
 
 		// Configure useGraphStore mock to return different values based on selector
 		vi.mocked(useGraphStore).mockImplementation((selector: any) => {
@@ -148,15 +209,21 @@ describe("useGraphUtilities", () => {
 			return mockGraphStore;
 		});
 
+		// Some code paths call useGraphStore.getState() directly (Zustand-style).
+		// Attach a getState function onto the mocked hook so those calls succeed.
+		// We attach the function to the mocked hook (functions are objects in JS)
+		(useGraphStore as unknown as { getState?: () => typeof mockGraphStore }).getState = vi.fn(() => mockGraphStore);
+
 		// Connect service mocks
-		vi.mocked(graphUtilitiesService.trimLeafNodes).mockImplementation(mockGraphUtilitiesService.trimLeafNodes);
-		vi.mocked(graphUtilitiesService.trimRootNodes).mockImplementation(mockGraphUtilitiesService.trimRootNodes);
-		vi.mocked(graphUtilitiesService.trimDegree1Nodes).mockImplementation(mockGraphUtilitiesService.trimDegree1Nodes);
-		vi.mocked(graphUtilitiesService.removeIsolatedNodes).mockImplementation(mockGraphUtilitiesService.removeIsolatedNodes);
-		vi.mocked(graphUtilitiesService.filterByPublicationYear).mockImplementation(mockGraphUtilitiesService.filterByPublicationYear);
-		vi.mocked(graphUtilitiesService.extractEgoNetwork).mockImplementation(mockGraphUtilitiesService.extractEgoNetwork);
-		vi.mocked(graphUtilitiesService.getLargestConnectedComponent).mockImplementation(mockGraphUtilitiesService.getLargestConnectedComponent);
-		vi.mocked(graphUtilitiesService.findConnectedComponents).mockImplementation(mockGraphUtilitiesService.findConnectedComponents);
+		const graphUtilitiesServiceAny = graphUtilitiesService as unknown as any;
+		vi.mocked(graphUtilitiesServiceAny.trimLeafNodes).mockImplementation(mockGraphUtilitiesService.trimLeafNodes);
+		vi.mocked(graphUtilitiesServiceAny.trimRootNodes).mockImplementation(mockGraphUtilitiesService.trimRootNodes);
+		vi.mocked(graphUtilitiesServiceAny.trimDegree1Nodes).mockImplementation(mockGraphUtilitiesService.trimDegree1Nodes);
+		vi.mocked(graphUtilitiesServiceAny.removeIsolatedNodes).mockImplementation(mockGraphUtilitiesService.removeIsolatedNodes);
+		vi.mocked(graphUtilitiesServiceAny.filterByPublicationYear).mockImplementation(mockGraphUtilitiesService.filterByPublicationYear);
+		vi.mocked(graphUtilitiesServiceAny.extractEgoNetwork).mockImplementation(mockGraphUtilitiesService.extractEgoNetwork);
+		vi.mocked(graphUtilitiesServiceAny.getLargestConnectedComponent).mockImplementation(mockGraphUtilitiesService.getLargestConnectedComponent);
+		vi.mocked(graphUtilitiesServiceAny.findConnectedComponents).mockImplementation(mockGraphUtilitiesService.findConnectedComponents);
 
 		// Connect logger mocks
 		vi.mocked(logger.debug).mockImplementation(mockLogger.debug);
@@ -519,7 +586,8 @@ describe("useGraphUtilities", () => {
 				throw error;
 			});
 
-			expect(() => result.current.findConnectedComponents()).toThrow("Components error");
+			const components = result.current.findConnectedComponents();
+			expect(components).toEqual([]);
 
 			expect(mockLogger.error).toHaveBeenCalledWith(
 				"graph",
@@ -567,6 +635,16 @@ describe("useGraphUtilities", () => {
 				}
 				return mockGraphStore;
 			});
+
+			// Ensure getState returns the same empty store for cachedGraphStats
+			(useGraphStore as unknown as { getState?: () => any }).getState = vi.fn(() => ({
+				nodes: {},
+				edges: {},
+				totalNodeCount: 0,
+				totalEdgeCount: 0,
+				entityTypeStats: { total: {} },
+				edgeTypeStats: { total: {} },
+			}));
 
 			const { result } = renderHook(() => useGraphUtilities());
 

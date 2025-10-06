@@ -162,7 +162,7 @@ describe("ExpansionQueryBuilder", () => {
 			};
 
 			const params = ExpansionQueryBuilder.buildQueryParams(settingsWithFilter);
-			expect(params.filter).toBe("entityType:journal-article");
+			expect(params.filter).toBe("type:journal-article");
 		});
 
 		it("should build not-equal filter", () => {
@@ -179,7 +179,7 @@ describe("ExpansionQueryBuilder", () => {
 			};
 
 			const params = ExpansionQueryBuilder.buildQueryParams(settingsWithFilter);
-			expect(params.filter).toBe("entityType:!preprint");
+			expect(params.filter).toBe("type:!preprint");
 		});
 
 		it("should build greater-than filter", () => {
@@ -281,7 +281,7 @@ describe("ExpansionQueryBuilder", () => {
 			};
 
 			const params = ExpansionQueryBuilder.buildQueryParams(settingsWithFilter);
-			expect(params.filter).toBe("entityType:journal-article|book-chapter");
+			expect(params.filter).toBe("type:journal-article|book-chapter");
 		});
 
 		it("should build not-in filter with array values", () => {
@@ -298,7 +298,7 @@ describe("ExpansionQueryBuilder", () => {
 			};
 
 			const params = ExpansionQueryBuilder.buildQueryParams(settingsWithFilter);
-			expect(params.filter).toBe("entityType:!preprint|thesis");
+			expect(params.filter).toBe("type:!preprint|thesis");
 		});
 
 		it("should build contains filter", () => {
@@ -744,8 +744,8 @@ describe("ExpansionQueryBuilder", () => {
 				},
 			];
 
-			const result = ExpansionQueryBuilder.mergeFilters("entityType:journal-article", additionalFilters);
-			expect(result).toBe("entityType:journal-article,is_oa:true");
+			const result = ExpansionQueryBuilder.mergeFilters("type:journal-article", additionalFilters);
+			expect(result).toBe("type:journal-article,is_oa:true");
 		});
 	});
 

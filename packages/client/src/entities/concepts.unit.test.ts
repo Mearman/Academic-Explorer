@@ -13,30 +13,32 @@ vi.mock("../client");
 
 // Mock the ID resolver utilities
 vi.mock("../utils/id-resolver", () => ({
-	isValidWikidata: vi.fn((id: string) => {
-		// Mock implementation that recognizes various Wikidata formats
-		return /^Q\d+$/.test(id) ||
-		       id.startsWith('wikidata:Q') ||
-		       id.includes('wikidata.org/wiki/Q') ||
-		       id.includes('wikidata.org/entity/Q');
-	}),
-	normalizeExternalId: vi.fn((id: string, type: string) => {
-		if (type !== 'wikidata') return null;
+  isValidWikidata: vi.fn((id: string) => {
+    // Mock implementation that recognizes various Wikidata formats
+    return (
+      /^Q\d+$/.test(id) ||
+      id.startsWith("wikidata:Q") ||
+      id.includes("wikidata.org/wiki/Q") ||
+      id.includes("wikidata.org/entity/Q")
+    );
+  }),
+  normalizeExternalId: vi.fn((id: string, type: string) => {
+    if (type !== "wikidata") return null;
 
-		// Extract Q number from various formats
-		if (/^Q\d+$/.test(id)) return id; // Already Q format
-		if (id.startsWith('wikidata:')) return id.replace('wikidata:', '');
+    // Extract Q number from various formats
+    if (/^Q\d+$/.test(id)) return id; // Already Q format
+    if (id.startsWith("wikidata:")) return id.replace("wikidata:", "");
 
-		const urlMatch = id.match(/wikidata\.org\/(?:wiki|entity)\/(Q\d+)/);
-		if (urlMatch) return urlMatch[1];
+    const urlMatch = id.match(/wikidata\.org\/(?:wiki|entity)\/(Q\d+)/);
+    if (urlMatch) return urlMatch[1];
 
-		return null;
-	})
+    return null;
+  }),
 }));
 
 describe("ConceptsApi", () => {
-	let conceptsApi: ConceptsApi;
-	let mockClient: vi.Mocked<OpenAlexBaseClient>;
+  let conceptsApi: ConceptsApi;
+  let mockClient: vi.Mocked<OpenAlexBaseClient>;
 
 	beforeEach(() => {
 		mockClient = {
@@ -48,187 +50,273 @@ describe("ConceptsApi", () => {
 
 		conceptsApi = new ConceptsApi(mockClient);
 	});
+    mockNormalizeExternalId = vi.fn((id: string, type: string) => {
+      if (type !== "wikidata") return null;
 
-	describe("getConcept - Wikidata ID support", () => {
-		it("should fetch a single concept by OpenAlex ID", async () => {
-			const mockConcept: Partial<Concept> = {
-				id: "C71924100",
-				display_name: "Medicine",
-				level: 0,
-				works_count: 100000,
-				cited_by_count: 500000,
-			};
+      // Extract Q number from various formats
+      if (/^Q\d+$/.test(id)) return id; // Already Q format
+      if (id.startsWith("wikidata:")) return id.replace("wikidata:", "");
 
-			mockClient.getById.mockResolvedValue(mockConcept as Concept);
+      const urlMatch = id.match(/wikidata\.org\/(?:wiki|entity)\/(Q\d+)/);
+      if (urlMatch) return urlMatch[1];
 
-			const result = await conceptsApi.getConcept("C71924100");
+      return null;
+    });
 
-			expect(mockClient.getById).toHaveBeenCalledWith("concepts", "C71924100", {});
-			expect(result).toEqual(mockConcept);
-		});
+    // Import and setup the mocked functions
+    const {
+      isValidWikidata,
+      normalizeExternalId,
+    } = require("../utils/id-resolver");
+    vi.mocked(isValidWikidata).mockImplementation(mockIsValidWikidata);
+    vi.mocked(normalizeExternalId).mockImplementation(mockNormalizeExternalId);
 
-		it("should handle Wikidata ID in Q format", async () => {
-			const mockConcept: Partial<Concept> = {
-				id: "C71924100",
-				display_name: "Medicine",
-				level: 0,
-			};
+    mockClient = {
+      getById: vi.fn(),
+      getResponse: vi.fn(),
+      stream: vi.fn(),
+      getAll: vi.fn(),
+    } as unknown as vi.Mocked<OpenAlexBaseClient>;
 
-			mockClient.getById.mockResolvedValue(mockConcept as Concept);
+    conceptsApi = new ConceptsApi(mockClient);
+  });
 
-			const result = await conceptsApi.getConcept("Q11190");
+  describe("getConcept - Wikidata ID support", () => {
+    it("should fetch a single concept by OpenAlex ID", async () => {
+      const mockConcept: Partial<Concept> = {
+        id: "C71924100",
+        display_name: "Medicine",
+        level: 0,
+        works_count: 100000,
+        cited_by_count: 500000,
+      };
 
-			expect(mockClient.getById).toHaveBeenCalledWith("concepts", "wikidata:Q11190", {});
-			expect(result).toEqual(mockConcept);
-		});
+      mockClient.getById.mockResolvedValue(mockConcept as Concept);
 
-		it("should handle Wikidata ID in wikidata: format", async () => {
-			const mockConcept: Partial<Concept> = {
-				id: "C71924100",
-				display_name: "Computer Science",
-				level: 0,
-			};
+      const result = await conceptsApi.getConcept("C71924100");
 
-			mockClient.getById.mockResolvedValue(mockConcept as Concept);
+      expect(mockClient.getById).toHaveBeenCalledWith(
+        "concepts",
+        "C71924100",
+        {},
+      );
+      expect(result).toEqual(mockConcept);
+    });
 
-			const result = await conceptsApi.getConcept("wikidata:Q11190");
+    it("should handle Wikidata ID in Q format", async () => {
+      const mockConcept: Partial<Concept> = {
+        id: "C71924100",
+        display_name: "Medicine",
+        level: 0,
+      };
 
-			expect(mockClient.getById).toHaveBeenCalledWith("concepts", "wikidata:Q11190", {});
-			expect(result).toEqual(mockConcept);
-		});
+      mockClient.getById.mockResolvedValue(mockConcept as Concept);
 
-		it("should handle Wikidata URL wiki format", async () => {
-			const mockConcept: Partial<Concept> = {
-				id: "C71924100",
-				display_name: "Biology",
-				level: 0,
-			};
+      const result = await conceptsApi.getConcept("Q11190");
 
-			mockClient.getById.mockResolvedValue(mockConcept as Concept);
+      expect(mockClient.getById).toHaveBeenCalledWith(
+        "concepts",
+        "wikidata:Q11190",
+        {},
+      );
+      expect(result).toEqual(mockConcept);
+    });
 
-			const result = await conceptsApi.getConcept("https://www.wikidata.org/wiki/Q11190");
+    it("should handle Wikidata ID in wikidata: format", async () => {
+      const mockConcept: Partial<Concept> = {
+        id: "C71924100",
+        display_name: "Computer Science",
+        level: 0,
+      };
 
-			expect(mockClient.getById).toHaveBeenCalledWith("concepts", "wikidata:Q11190", {});
-			expect(result).toEqual(mockConcept);
-		});
+      mockClient.getById.mockResolvedValue(mockConcept as Concept);
 
-		it("should handle Wikidata URL entity format", async () => {
-			const mockConcept: Partial<Concept> = {
-				id: "C71924100",
-				display_name: "Physics",
-				level: 0,
-			};
+      const result = await conceptsApi.getConcept("wikidata:Q11190");
 
-			mockClient.getById.mockResolvedValue(mockConcept as Concept);
+      expect(mockClient.getById).toHaveBeenCalledWith(
+        "concepts",
+        "wikidata:Q11190",
+        {},
+      );
+      expect(result).toEqual(mockConcept);
+    });
 
-			const result = await conceptsApi.getConcept("https://www.wikidata.org/entity/Q11190");
+    it("should handle Wikidata URL wiki format", async () => {
+      const mockConcept: Partial<Concept> = {
+        id: "C71924100",
+        display_name: "Biology",
+        level: 0,
+      };
 
-			expect(mockClient.getById).toHaveBeenCalledWith("concepts", "wikidata:Q11190", {});
-			expect(result).toEqual(mockConcept);
-		});
+      mockClient.getById.mockResolvedValue(mockConcept as Concept);
 
-		it("should handle Wikidata ID with parameters", async () => {
-			const mockConcept: Partial<Concept> = {
-				id: "C71924100",
-				display_name: "Chemistry",
-				level: 0,
-			};
+      const result = await conceptsApi.getConcept(
+        "https://www.wikidata.org/wiki/Q11190",
+      );
 
-			const params = { select: ["id", "display_name", "level"] };
-			mockClient.getById.mockResolvedValue(mockConcept as Concept);
+      expect(mockClient.getById).toHaveBeenCalledWith(
+        "concepts",
+        "wikidata:Q11190",
+        {},
+      );
+      expect(result).toEqual(mockConcept);
+    });
 
-			const result = await conceptsApi.getConcept("Q11190", params);
+    it("should handle Wikidata URL entity format", async () => {
+      const mockConcept: Partial<Concept> = {
+        id: "C71924100",
+        display_name: "Physics",
+        level: 0,
+      };
 
-			expect(mockClient.getById).toHaveBeenCalledWith("concepts", "wikidata:Q11190", params);
-			expect(result).toEqual(mockConcept);
-		});
+      mockClient.getById.mockResolvedValue(mockConcept as Concept);
 
-		it("should fall back to original ID for invalid Wikidata format", async () => {
-			const mockConcept: Partial<Concept> = {
-				id: "C71924100",
-				display_name: "Test Concept",
-				level: 0,
-			};
+      const result = await conceptsApi.getConcept(
+        "https://www.wikidata.org/entity/Q11190",
+      );
 
-			mockClient.getById.mockResolvedValue(mockConcept as Concept);
+      expect(mockClient.getById).toHaveBeenCalledWith(
+        "concepts",
+        "wikidata:Q11190",
+        {},
+      );
+      expect(result).toEqual(mockConcept);
+    });
 
-			const result = await conceptsApi.getConcept("Q-invalid");
+    it("should handle Wikidata ID with parameters", async () => {
+      const mockConcept: Partial<Concept> = {
+        id: "C71924100",
+        display_name: "Chemistry",
+        level: 0,
+      };
 
-			// Should use original ID since Q-invalid is not a valid Wikidata format
-			expect(mockClient.getById).toHaveBeenCalledWith("concepts", "Q-invalid", {});
-			expect(result).toEqual(mockConcept);
-		});
+      const params = { select: ["id", "display_name", "level"] };
+      mockClient.getById.mockResolvedValue(mockConcept as Concept);
 
-		it("should throw error for empty ID", async () => {
-			await expect(conceptsApi.getConcept("")).rejects.toThrow(
-				"Concept ID must be a non-empty string"
-			);
-		});
+      const result = await conceptsApi.getConcept("Q11190", params);
 
-		it("should throw error for non-string ID", async () => {
-			await expect(conceptsApi.getConcept(null as unknown as string)).rejects.toThrow(
-				"Concept ID must be a non-empty string"
-			);
-		});
-	});
+      expect(mockClient.getById).toHaveBeenCalledWith(
+        "concepts",
+        "wikidata:Q11190",
+        params,
+      );
+      expect(result).toEqual(mockConcept);
+    });
 
-	// Additional comprehensive test coverage for various Wikidata formats
-	describe("comprehensive Wikidata ID support", () => {
-		const validWikidataFormats = [
-			{ input: "Q42", expected: "wikidata:Q42", description: "simple Q ID" },
-			{ input: "Q1234567890", expected: "wikidata:Q1234567890", description: "long Q ID" },
-			{ input: "wikidata:Q42", expected: "wikidata:Q42", description: "already prefixed" },
-			{ input: "https://www.wikidata.org/wiki/Q42", expected: "wikidata:Q42", description: "wiki URL" },
-			{ input: "https://www.wikidata.org/entity/Q42", expected: "wikidata:Q42", description: "entity URL" },
-		];
+    it("should fall back to original ID for invalid Wikidata format", async () => {
+      const mockConcept: Partial<Concept> = {
+        id: "C71924100",
+        display_name: "Test Concept",
+        level: 0,
+      };
 
-		validWikidataFormats.forEach(({ input, expected, description }) => {
-			it(`should normalize ${description}: ${input} -> ${expected}`, async () => {
-				const mockConcept: Partial<Concept> = {
-					id: "C71924100",
-					display_name: "Test Concept",
-					level: 0,
-				};
+      mockClient.getById.mockResolvedValue(mockConcept as Concept);
 
-				mockClient.getById.mockResolvedValue(mockConcept as Concept);
+      const result = await conceptsApi.getConcept("Q-invalid");
 
-				await conceptsApi.getConcept(input);
+      // Should use original ID since Q-invalid is not a valid Wikidata format
+      expect(mockClient.getById).toHaveBeenCalledWith(
+        "concepts",
+        "Q-invalid",
+        {},
+      );
+      expect(result).toEqual(mockConcept);
+    });
 
-				expect(mockClient.getById).toHaveBeenCalledWith("concepts", expected, {});
-			});
-		});
+    it("should throw error for empty ID", async () => {
+      await expect(conceptsApi.getConcept("")).rejects.toThrow(
+        "Concept ID must be a non-empty string",
+      );
+    });
 
-		const invalidFormats = [
-			"Q",           // No number
-			"Q-123",       // Invalid character
-			"Q123.456",    // Decimal point
-			"Q123abc",     // Letters after number
-			"P123",        // P instead of Q
-			"123",         // No Q prefix
-			"",            // Empty string
-			"   ",         // Whitespace only
-		];
+    it("should throw error for non-string ID", async () => {
+      await expect(
+        conceptsApi.getConcept(null as unknown as string),
+      ).rejects.toThrow("Concept ID must be a non-empty string");
+    });
+  });
 
-		invalidFormats.forEach((invalidId) => {
-			if (invalidId.trim() === "") {
-				// Skip empty/whitespace tests since they throw errors
-				return;
-			}
+  // Additional comprehensive test coverage for various Wikidata formats
+  describe("comprehensive Wikidata ID support", () => {
+    const validWikidataFormats = [
+      { input: "Q42", expected: "wikidata:Q42", description: "simple Q ID" },
+      {
+        input: "Q1234567890",
+        expected: "wikidata:Q1234567890",
+        description: "long Q ID",
+      },
+      {
+        input: "wikidata:Q42",
+        expected: "wikidata:Q42",
+        description: "already prefixed",
+      },
+      {
+        input: "https://www.wikidata.org/wiki/Q42",
+        expected: "wikidata:Q42",
+        description: "wiki URL",
+      },
+      {
+        input: "https://www.wikidata.org/entity/Q42",
+        expected: "wikidata:Q42",
+        description: "entity URL",
+      },
+    ];
 
-			it(`should pass through invalid Wikidata format: "${invalidId}"`, async () => {
-				const mockConcept: Partial<Concept> = {
-					id: "C71924100",
-					display_name: "Test Concept",
-					level: 0,
-				};
+    validWikidataFormats.forEach(({ input, expected, description }) => {
+      it(`should normalize ${description}: ${input} -> ${expected}`, async () => {
+        const mockConcept: Partial<Concept> = {
+          id: "C71924100",
+          display_name: "Test Concept",
+          level: 0,
+        };
 
-				mockClient.getById.mockResolvedValue(mockConcept as Concept);
+        mockClient.getById.mockResolvedValue(mockConcept as Concept);
 
-				await conceptsApi.getConcept(invalidId);
+        await conceptsApi.getConcept(input);
 
-				// Should use original ID since it's not valid Wikidata format
-				expect(mockClient.getById).toHaveBeenCalledWith("concepts", invalidId, {});
-			});
-		});
-	});
+        expect(mockClient.getById).toHaveBeenCalledWith(
+          "concepts",
+          expected,
+          {},
+        );
+      });
+    });
+
+    const invalidFormats = [
+      "Q", // No number
+      "Q-123", // Invalid character
+      "Q123.456", // Decimal point
+      "Q123abc", // Letters after number
+      "P123", // P instead of Q
+      "123", // No Q prefix
+      "", // Empty string
+      "   ", // Whitespace only
+    ];
+
+    invalidFormats.forEach((invalidId) => {
+      if (invalidId.trim() === "") {
+        // Skip empty/whitespace tests since they throw errors
+        return;
+      }
+
+      it(`should pass through invalid Wikidata format: "${invalidId}"`, async () => {
+        const mockConcept: Partial<Concept> = {
+          id: "C71924100",
+          display_name: "Test Concept",
+          level: 0,
+        };
+
+        mockClient.getById.mockResolvedValue(mockConcept as Concept);
+
+        await conceptsApi.getConcept(invalidId);
+
+        // Should use original ID since it's not valid Wikidata format
+        expect(mockClient.getById).toHaveBeenCalledWith(
+          "concepts",
+          invalidId,
+          {},
+        );
+      });
+    });
+  });
 });

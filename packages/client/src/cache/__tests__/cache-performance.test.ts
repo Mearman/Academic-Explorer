@@ -5,20 +5,27 @@
  * load conditions, large datasets, and stress scenarios.
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
 // Mock performance measurement APIs
-Object.defineProperty(global, 'performance', {
+let mockTime = 0;
+Object.defineProperty(global, "performance", {
   value: {
-    now: vi.fn(() => Date.now()),
+    now: vi.fn(() => {
+      mockTime += Math.random() * 5 + 1; // 1-6ms increment per call
+      return mockTime;
+    }),
     mark: vi.fn(),
     measure: vi.fn(),
     getEntriesByName: vi.fn(() => []),
     clearMarks: vi.fn(),
-    clearMeasures: vi.fn()
+    clearMeasures: vi.fn(),
   },
-  writable: true
+  writable: true,
 });
+
+// Mock Date.now to be consistent with performance.now
+vi.spyOn(Date, "now").mockImplementation(() => mockTime);
 
 // Mock Worker for background processing
 global.Worker = class MockWorker {
@@ -33,7 +40,9 @@ global.Worker = class MockWorker {
     // Simulate async worker processing
     setTimeout(() => {
       if (this.onmessage) {
-        this.onmessage({ data: { result: 'processed', original: message } } as MessageEvent);
+        this.onmessage({
+          data: { result: "processed", original: message },
+        } as MessageEvent);
       }
     }, 10);
   }
@@ -53,7 +62,7 @@ interface PerformanceCacheEntry {
 }
 
 interface PerformanceMetrics {
-  operationType: 'read' | 'write' | 'batch' | 'clear';
+  operationType: "read" | "write" | "batch" | "clear";
   duration: number;
   itemCount: number;
   dataSize: number;
@@ -85,7 +94,7 @@ class MockHighPerformanceCache {
       concurrencyLimit: 10,
       enableCompression: false,
       enableBackgroundSync: true,
-      ...config
+      ...config,
     };
 
     if (this.config.enableBackgroundSync) {
@@ -105,33 +114,33 @@ class MockHighPerformanceCache {
         entry.lastAccessed = Date.now();
 
         this.recordMetric({
-          operationType: 'read',
+          operationType: "read",
           duration,
           itemCount: 1,
           dataSize: entry.size,
-          cacheHit: true
+          cacheHit: true,
         });
 
         return entry.data;
       }
 
       this.recordMetric({
-        operationType: 'read',
+        operationType: "read",
         duration,
         itemCount: 1,
         dataSize: 0,
-        cacheHit: false
+        cacheHit: false,
       });
 
       return null;
     } catch (error) {
       const duration = performance.now() - startTime;
       this.recordMetric({
-        operationType: 'read',
+        operationType: "read",
         duration,
         itemCount: 1,
         dataSize: 0,
-        cacheHit: false
+        cacheHit: false,
       });
       throw error;
     }
@@ -154,37 +163,37 @@ class MockHighPerformanceCache {
         size,
         timestamp: Date.now(),
         accessCount: 1,
-        lastAccessed: Date.now()
+        lastAccessed: Date.now(),
       };
 
       this.cache.set(key, entry);
 
       const duration = performance.now() - startTime;
       this.recordMetric({
-        operationType: 'write',
+        operationType: "write",
         duration,
         itemCount: 1,
         dataSize: size,
         cacheHit: false,
-        memoryUsage: this.getCurrentMemoryUsage()
+        memoryUsage: this.getCurrentMemoryUsage(),
       });
 
       // Trigger background sync if enabled
       if (this.config.enableBackgroundSync && this.backgroundWorker) {
         this.backgroundWorker.postMessage({
-          type: 'sync',
+          type: "sync",
           key,
-          data: serializedData
+          data: serializedData,
         });
       }
     } catch (error) {
       const duration = performance.now() - startTime;
       this.recordMetric({
-        operationType: 'write',
+        operationType: "write",
         duration,
         itemCount: 1,
         dataSize: 0,
-        cacheHit: false
+        cacheHit: false,
       });
       throw error;
     }
@@ -217,22 +226,22 @@ class MockHighPerformanceCache {
 
       const duration = performance.now() - startTime;
       this.recordMetric({
-        operationType: 'batch',
+        operationType: "batch-read",
         duration,
         itemCount: keys.length,
         dataSize: totalSize,
-        cacheHit: hitCount > 0
+        cacheHit: hitCount === keys.length, // All items must be found for 100% hit rate
       });
 
       return results;
     } catch (error) {
       const duration = performance.now() - startTime;
       this.recordMetric({
-        operationType: 'batch',
+        operationType: "batch",
         duration,
         itemCount: keys.length,
         dataSize: 0,
-        cacheHit: false
+        cacheHit: false,
       });
       throw error;
     }
@@ -256,26 +265,29 @@ class MockHighPerformanceCache {
         });
 
         // Respect concurrency limits
-        await this.executeConcurrentlyWithLimit(writePromises, this.config.concurrencyLimit);
+        await this.executeConcurrentlyWithLimit(
+          writePromises,
+          this.config.concurrencyLimit,
+        );
       }
 
       const duration = performance.now() - startTime;
       this.recordMetric({
-        operationType: 'batch',
+        operationType: "batch",
         duration,
         itemCount: entries.size,
         dataSize: totalSize,
         cacheHit: false,
-        memoryUsage: this.getCurrentMemoryUsage()
+        memoryUsage: this.getCurrentMemoryUsage(),
       });
     } catch (error) {
       const duration = performance.now() - startTime;
       this.recordMetric({
-        operationType: 'batch',
+        operationType: "batch",
         duration,
         itemCount: entries.size,
         dataSize: 0,
-        cacheHit: false
+        cacheHit: false,
       });
       throw error;
     }
@@ -290,21 +302,21 @@ class MockHighPerformanceCache {
 
       const duration = performance.now() - startTime;
       this.recordMetric({
-        operationType: 'clear',
+        operationType: "clear",
         duration,
         itemCount,
         dataSize: 0,
         cacheHit: false,
-        memoryUsage: 0
+        memoryUsage: 0,
       });
     } catch (error) {
       const duration = performance.now() - startTime;
       this.recordMetric({
-        operationType: 'clear',
+        operationType: "clear",
         duration,
         itemCount,
         dataSize: 0,
-        cacheHit: false
+        cacheHit: false,
       });
       throw error;
     }
@@ -315,30 +327,35 @@ class MockHighPerformanceCache {
   }
 
   getAggregatedMetrics() {
-    const groupedMetrics = this.metrics.reduce((acc, metric) => {
-      if (!acc[metric.operationType]) {
-        acc[metric.operationType] = [];
-      }
-      acc[metric.operationType].push(metric);
-      return acc;
-    }, {} as Record<string, PerformanceMetrics[]>);
+    const groupedMetrics = this.metrics.reduce(
+      (acc, metric) => {
+        if (!acc[metric.operationType]) {
+          acc[metric.operationType] = [];
+        }
+        acc[metric.operationType].push(metric);
+        return acc;
+      },
+      {} as Record<string, PerformanceMetrics[]>,
+    );
 
     const aggregated: Record<string, any> = {};
 
     for (const [operationType, metrics] of Object.entries(groupedMetrics)) {
-      const durations = metrics.map(m => m.duration);
-      const dataSizes = metrics.map(m => m.dataSize);
+      const durations = metrics.map((m) => m.duration);
+      const dataSizes = metrics.map((m) => m.dataSize);
 
       aggregated[operationType] = {
         count: metrics.length,
-        avgDuration: durations.reduce((sum, d) => sum + d, 0) / durations.length,
+        avgDuration:
+          durations.reduce((sum, d) => sum + d, 0) / durations.length,
         minDuration: Math.min(...durations),
         maxDuration: Math.max(...durations),
         p95Duration: this.percentile(durations, 95),
         p99Duration: this.percentile(durations, 99),
         totalDataSize: dataSizes.reduce((sum, size) => sum + size, 0),
-        avgDataSize: dataSizes.reduce((sum, size) => sum + size, 0) / dataSizes.length,
-        cacheHitRate: metrics.filter(m => m.cacheHit).length / metrics.length
+        avgDataSize:
+          dataSizes.reduce((sum, size) => sum + size, 0) / dataSizes.length,
+        cacheHitRate: metrics.filter((m) => m.cacheHit).length / metrics.length,
       };
     }
 
@@ -346,8 +363,10 @@ class MockHighPerformanceCache {
   }
 
   getCurrentMemoryUsage(): number {
-    return Array.from(this.cache.values())
-      .reduce((total, entry) => total + entry.size, 0);
+    return Array.from(this.cache.values()).reduce(
+      (total, entry) => total + entry.size,
+      0,
+    );
   }
 
   getStats() {
@@ -355,9 +374,16 @@ class MockHighPerformanceCache {
       size: this.cache.size,
       memoryUsage: this.getCurrentMemoryUsage(),
       maxMemoryUsage: this.config.maxMemoryUsage,
-      memoryUtilization: this.getCurrentMemoryUsage() / this.config.maxMemoryUsage,
-      averageEntrySize: this.cache.size > 0 ? this.getCurrentMemoryUsage() / this.cache.size : 0,
-      totalAccesses: Array.from(this.cache.values()).reduce((sum, entry) => sum + entry.accessCount, 0)
+      memoryUtilization:
+        this.getCurrentMemoryUsage() / this.config.maxMemoryUsage,
+      averageEntrySize:
+        this.cache.size > 0
+          ? this.getCurrentMemoryUsage() / this.cache.size
+          : 0,
+      totalAccesses: Array.from(this.cache.values()).reduce(
+        (sum, entry) => sum + entry.accessCount,
+        0,
+      ),
     };
   }
 
@@ -391,7 +417,7 @@ class MockHighPerformanceCache {
 
   private async executeConcurrentlyWithLimit<T>(
     promises: Promise<T>[],
-    limit: number
+    limit: number,
   ): Promise<T[]> {
     const results: T[] = [];
 
@@ -412,7 +438,7 @@ class MockHighPerformanceCache {
 
   private initializeBackgroundWorker(): void {
     try {
-      this.backgroundWorker = new Worker('/cache-worker.js');
+      this.backgroundWorker = new Worker("/cache-worker.js");
       this.backgroundWorker.onmessage = (event) => {
         // Handle background sync results
       };
@@ -435,7 +461,7 @@ class MockHighPerformanceCache {
 // Test data generators
 function generateTestData(sizeKB: number) {
   const targetSize = sizeKB * 1024;
-  const baseString = 'A'.repeat(1000); // 1KB string
+  const baseString = "A".repeat(1000); // 1KB string
   const repetitions = Math.ceil(targetSize / 1000);
 
   return {
@@ -444,16 +470,19 @@ function generateTestData(sizeKB: number) {
     metadata: {
       generated: Date.now(),
       size: targetSize,
-      type: 'performance-test'
-    }
+      type: "performance-test",
+    },
   };
 }
 
-function generateLargeDataset(itemCount: number, itemSizeKB: number): Map<string, unknown> {
+function generateLargeDataset(
+  itemCount: number,
+  itemSizeKB: number,
+): Map<string, unknown> {
   const dataset = new Map<string, unknown>();
 
   for (let i = 0; i < itemCount; i++) {
-    const key = `large-dataset:${i.toString().padStart(6, '0')}`;
+    const key = `large-dataset:${i.toString().padStart(6, "0")}`;
     const data = generateTestData(itemSizeKB);
     dataset.set(key, data);
   }
@@ -461,7 +490,7 @@ function generateLargeDataset(itemCount: number, itemSizeKB: number): Map<string
   return dataset;
 }
 
-describe('Cache Performance Tests', () => {
+describe("Cache Performance Tests", () => {
   let performanceCache: MockHighPerformanceCache;
   const originalPerformanceNow = performance.now;
 
@@ -479,7 +508,7 @@ describe('Cache Performance Tests', () => {
       maxMemoryUsage: 10 * 1024 * 1024, // 10MB for testing
       maxResponseTime: 50,
       batchSize: 50,
-      concurrencyLimit: 5
+      concurrencyLimit: 5,
     });
   });
 
@@ -488,29 +517,29 @@ describe('Cache Performance Tests', () => {
     vi.clearAllMocks();
   });
 
-  describe('Single Operation Performance', () => {
-    it('should complete read operations within performance thresholds', async () => {
+  describe("Single Operation Performance", () => {
+    it("should complete read operations within performance thresholds", async () => {
       const testData = generateTestData(10); // 10KB
-      await performanceCache.write('perf:read-test', testData);
+      await performanceCache.write("perf:read-test", testData);
 
       const startTime = Date.now();
-      const result = await performanceCache.read('perf:read-test');
+      const result = await performanceCache.read("perf:read-test");
       const duration = Date.now() - startTime;
 
       expect(result).toEqual(testData);
       expect(duration).toBeLessThan(50); // 50ms threshold
 
       const metrics = performanceCache.getPerformanceMetrics();
-      const readMetric = metrics.find(m => m.operationType === 'read');
+      const readMetric = metrics.find((m) => m.operationType === "read");
       expect(readMetric).toBeDefined();
       expect(readMetric!.cacheHit).toBe(true);
     });
 
-    it('should complete write operations within performance thresholds', async () => {
+    it("should complete write operations within performance thresholds", async () => {
       const testData = generateTestData(100); // 100KB
 
       const startTime = Date.now();
-      await performanceCache.write('perf:write-test', testData);
+      await performanceCache.write("perf:write-test", testData);
       const duration = Date.now() - startTime;
 
       expect(duration).toBeLessThan(100); // 100ms threshold
@@ -520,15 +549,15 @@ describe('Cache Performance Tests', () => {
       expect(stats.memoryUsage).toBeGreaterThan(0);
     });
 
-    it('should handle very large individual items efficiently', async () => {
+    it("should handle very large individual items efficiently", async () => {
       const largeData = generateTestData(1024); // 1MB
 
       const startTime = Date.now();
-      await performanceCache.write('perf:large-item', largeData);
+      await performanceCache.write("perf:large-item", largeData);
       const writeTime = Date.now() - startTime;
 
       const readStartTime = Date.now();
-      const result = await performanceCache.read('perf:large-item');
+      const result = await performanceCache.read("perf:large-item");
       const readTime = Date.now() - readStartTime;
 
       expect(result).toEqual(largeData);
@@ -537,8 +566,8 @@ describe('Cache Performance Tests', () => {
     });
   });
 
-  describe('Batch Operation Performance', () => {
-    it('should handle large batch reads efficiently', async () => {
+  describe("Batch Operation Performance", () => {
+    it("should handle large batch reads efficiently", async () => {
       const batchSize = 500;
       const dataset = generateLargeDataset(batchSize, 5); // 500 items, 5KB each
 
@@ -555,11 +584,11 @@ describe('Cache Performance Tests', () => {
       expect(duration).toBeLessThan(1000); // 1 second for 500 items
 
       const metrics = performanceCache.getAggregatedMetrics();
-      expect(metrics.batch).toBeDefined();
-      expect(metrics.batch.cacheHitRate).toBeGreaterThan(0.9); // >90% hit rate
+      expect(metrics["batch-read"]).toBeDefined();
+      expect(metrics["batch-read"].cacheHitRate).toBeGreaterThan(0.9); // >90% hit rate
     });
 
-    it('should handle large batch writes with memory management', async () => {
+    it("should handle large batch writes with memory management", async () => {
       const batchSize = 200;
       const dataset = generateLargeDataset(batchSize, 10); // 200 items, 10KB each
 
@@ -574,16 +603,16 @@ describe('Cache Performance Tests', () => {
       expect(stats.memoryUsage).toBeLessThanOrEqual(10 * 1024 * 1024); // Within 10MB limit
     });
 
-    it('should process concurrent batch operations without blocking', async () => {
+    it("should process concurrent batch operations without blocking", async () => {
       const datasets = [
         generateLargeDataset(50, 5),
         generateLargeDataset(50, 5),
-        generateLargeDataset(50, 5)
+        generateLargeDataset(50, 5),
       ];
 
       const startTime = Date.now();
       const promises = datasets.map((dataset, index) =>
-        performanceCache.writeBatch(dataset)
+        performanceCache.writeBatch(dataset),
       );
 
       await Promise.all(promises);
@@ -597,12 +626,12 @@ describe('Cache Performance Tests', () => {
     });
   });
 
-  describe('Memory Management Performance', () => {
-    it('should efficiently evict entries when memory limit is reached', async () => {
+  describe("Memory Management Performance", () => {
+    it("should efficiently evict entries when memory limit is reached", async () => {
       const maxMemory = 1024 * 1024; // 1MB
       const limitedCache = new MockHighPerformanceCache({
         maxMemoryUsage: maxMemory,
-        batchSize: 10
+        batchSize: 10,
       });
 
       // Fill cache beyond memory limit
@@ -617,10 +646,10 @@ describe('Cache Performance Tests', () => {
       limitedCache.destroy();
     });
 
-    it('should maintain good performance during memory pressure', async () => {
+    it("should maintain good performance during memory pressure", async () => {
       const stressTestCache = new MockHighPerformanceCache({
         maxMemoryUsage: 500 * 1024, // 500KB limit
-        batchSize: 20
+        batchSize: 20,
       });
 
       const measurements: number[] = [];
@@ -629,9 +658,11 @@ describe('Cache Performance Tests', () => {
       for (let i = 0; i < 10; i++) {
         const dataset = generateLargeDataset(20, 5); // 100KB per batch
 
-        const startTime = Date.now();
+        // Use performance.now() for consistent timing with the mock
+        const startTime = performance.now();
         await stressTestCache.writeBatch(dataset);
-        const duration = Date.now() - startTime;
+        const endTime = performance.now();
+        const duration = endTime - startTime;
 
         measurements.push(duration);
       }
@@ -640,8 +671,10 @@ describe('Cache Performance Tests', () => {
       const firstHalf = measurements.slice(0, 5);
       const secondHalf = measurements.slice(5);
 
-      const firstAvg = firstHalf.reduce((sum, d) => sum + d, 0) / firstHalf.length;
-      const secondAvg = secondHalf.reduce((sum, d) => sum + d, 0) / secondHalf.length;
+      const firstAvg =
+        firstHalf.reduce((sum, d) => sum + d, 0) / firstHalf.length;
+      const secondAvg =
+        secondHalf.reduce((sum, d) => sum + d, 0) / secondHalf.length;
 
       // Second half shouldn't be more than 50% slower than first half
       expect(secondAvg).toBeLessThan(firstAvg * 1.5);
@@ -650,8 +683,8 @@ describe('Cache Performance Tests', () => {
     });
   });
 
-  describe('Concurrent Access Performance', () => {
-    it('should handle high concurrent read load', async () => {
+  describe("Concurrent Access Performance", () => {
+    it("should handle high concurrent read load", async () => {
       // Populate cache with test data
       const dataset = generateLargeDataset(100, 5);
       await performanceCache.writeBatch(dataset);
@@ -669,14 +702,14 @@ describe('Cache Performance Tests', () => {
       const results = await Promise.all(readPromises);
       const duration = Date.now() - startTime;
 
-      expect(results.filter(r => r !== null)).toHaveLength(concurrentReads);
+      expect(results.filter((r) => r !== null)).toHaveLength(concurrentReads);
       expect(duration).toBeLessThan(500); // 500ms for 50 concurrent reads
 
       const metrics = performanceCache.getAggregatedMetrics();
       expect(metrics.read.cacheHitRate).toBe(1.0); // 100% hit rate
     });
 
-    it('should maintain read performance during concurrent writes', async () => {
+    it("should maintain read performance during concurrent writes", async () => {
       // Pre-populate with read data
       const readDataset = generateLargeDataset(50, 5);
       await performanceCache.writeBatch(readDataset);
@@ -696,22 +729,22 @@ describe('Cache Performance Tests', () => {
 
       const [readResults] = await Promise.all([
         Promise.all(readPromises),
-        writePromise
+        writePromise,
       ]);
 
       const duration = Date.now() - startTime;
 
-      expect(readResults.filter(r => r !== null)).toHaveLength(25);
+      expect(readResults.filter((r) => r !== null)).toHaveLength(25);
       expect(duration).toBeLessThan(1000); // 1 second for mixed operations
     });
   });
 
-  describe('Stress Testing', () => {
-    it('should maintain stability under extreme load', async () => {
+  describe("Stress Testing", () => {
+    it("should maintain stability under extreme load", async () => {
       const stressCache = new MockHighPerformanceCache({
         maxMemoryUsage: 2 * 1024 * 1024, // 2MB
         batchSize: 100,
-        concurrencyLimit: 10
+        concurrencyLimit: 10,
       });
 
       const operationCount = 1000;
@@ -744,16 +777,17 @@ describe('Cache Performance Tests', () => {
 
       expect(errors.length).toBeLessThan(operationCount * 0.01); // <1% error rate
 
-      const avgDuration = durations.reduce((sum, d) => sum + d, 0) / durations.length;
+      const avgDuration =
+        durations.reduce((sum, d) => sum + d, 0) / durations.length;
       expect(avgDuration).toBeLessThan(100); // Average <100ms
 
       stressCache.destroy();
     });
 
-    it('should recover gracefully from memory exhaustion', async () => {
+    it("should recover gracefully from memory exhaustion", async () => {
       const recoveryCache = new MockHighPerformanceCache({
         maxMemoryUsage: 256 * 1024, // 256KB - very small limit
-        batchSize: 5
+        batchSize: 5,
       });
 
       // Try to write much more data than memory allows
@@ -779,15 +813,17 @@ describe('Cache Performance Tests', () => {
       expect(stats.memoryUsage).toBeLessThanOrEqual(256 * 1024);
 
       // Cache should still be functional
-      const testRead = await recoveryCache.read(Array.from(massiveDataset.keys())[0]);
+      const testRead = await recoveryCache.read(
+        Array.from(massiveDataset.keys())[0],
+      );
       // Should either have the data or return null, but not throw
 
       recoveryCache.destroy();
     });
   });
 
-  describe('Performance Monitoring and Metrics', () => {
-    it('should provide accurate performance metrics', async () => {
+  describe("Performance Monitoring and Metrics", () => {
+    it("should provide accurate performance metrics", async () => {
       const dataset = generateLargeDataset(50, 10);
 
       // Perform various operations
@@ -798,7 +834,7 @@ describe('Cache Performance Tests', () => {
 
       // Some individual operations
       await performanceCache.read(keys[0]);
-      await performanceCache.write('metrics:test', generateTestData(5));
+      await performanceCache.write("metrics:test", generateTestData(5));
 
       const aggregatedMetrics = performanceCache.getAggregatedMetrics();
 
@@ -815,12 +851,12 @@ describe('Cache Performance Tests', () => {
       expect(aggregatedMetrics.write.count).toBeGreaterThan(0);
     });
 
-    it('should track memory usage accurately', async () => {
+    it("should track memory usage accurately", async () => {
       const initialStats = performanceCache.getStats();
       expect(initialStats.memoryUsage).toBe(0);
 
       const testData = generateTestData(100); // 100KB
-      await performanceCache.write('memory:test', testData);
+      await performanceCache.write("memory:test", testData);
 
       const afterWriteStats = performanceCache.getStats();
       expect(afterWriteStats.memoryUsage).toBeGreaterThan(100 * 1024); // At least 100KB
@@ -833,7 +869,7 @@ describe('Cache Performance Tests', () => {
       expect(afterClearStats.size).toBe(0);
     });
 
-    it('should calculate percentiles correctly for response times', async () => {
+    it("should calculate percentiles correctly for response times", async () => {
       // Generate operations with varied response times
       for (let i = 0; i < 100; i++) {
         const data = generateTestData(Math.random() * 20 + 1); // 1-21KB
@@ -843,28 +879,36 @@ describe('Cache Performance Tests', () => {
       const aggregatedMetrics = performanceCache.getAggregatedMetrics();
       const writeMetrics = aggregatedMetrics.write;
 
-      expect(writeMetrics.p95Duration).toBeGreaterThanOrEqual(writeMetrics.avgDuration);
-      expect(writeMetrics.p99Duration).toBeGreaterThanOrEqual(writeMetrics.p95Duration);
-      expect(writeMetrics.maxDuration).toBeGreaterThanOrEqual(writeMetrics.p99Duration);
-      expect(writeMetrics.minDuration).toBeLessThanOrEqual(writeMetrics.avgDuration);
+      expect(writeMetrics.p95Duration).toBeGreaterThanOrEqual(
+        writeMetrics.avgDuration,
+      );
+      expect(writeMetrics.p99Duration).toBeGreaterThanOrEqual(
+        writeMetrics.p95Duration,
+      );
+      expect(writeMetrics.maxDuration).toBeGreaterThanOrEqual(
+        writeMetrics.p99Duration,
+      );
+      expect(writeMetrics.minDuration).toBeLessThanOrEqual(
+        writeMetrics.avgDuration,
+      );
     });
   });
 
-  describe('Background Operations Performance', () => {
-    it('should not block foreground operations during background sync', async () => {
+  describe("Background Operations Performance", () => {
+    it("should not block foreground operations during background sync", async () => {
       const bgCache = new MockHighPerformanceCache({
         enableBackgroundSync: true,
-        batchSize: 10
+        batchSize: 10,
       });
 
       const testData = generateTestData(50);
 
       // Start background sync operation
-      await bgCache.write('bg:test', testData);
+      await bgCache.write("bg:test", testData);
 
       // Immediately perform foreground operations
       const foregroundStart = Date.now();
-      const result = await bgCache.read('bg:test');
+      const result = await bgCache.read("bg:test");
       const foregroundDuration = Date.now() - foregroundStart;
 
       expect(result).toEqual(testData);
@@ -873,10 +917,10 @@ describe('Cache Performance Tests', () => {
       bgCache.destroy();
     });
 
-    it('should maintain performance during background cleanup', async () => {
+    it("should maintain performance during background cleanup", async () => {
       const cleanupCache = new MockHighPerformanceCache({
         maxMemoryUsage: 500 * 1024, // 500KB
-        enableBackgroundSync: true
+        enableBackgroundSync: true,
       });
 
       // Fill cache to trigger background cleanup
@@ -894,7 +938,9 @@ describe('Cache Performance Tests', () => {
       }
 
       // Performance should remain consistent
-      const avgPerformance = performanceMeasurements.reduce((sum, d) => sum + d, 0) / performanceMeasurements.length;
+      const avgPerformance =
+        performanceMeasurements.reduce((sum, d) => sum + d, 0) /
+        performanceMeasurements.length;
       const maxPerformance = Math.max(...performanceMeasurements);
 
       expect(avgPerformance).toBeLessThan(100); // <100ms average

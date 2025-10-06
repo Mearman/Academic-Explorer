@@ -166,7 +166,7 @@ describe("URL Matcher", () => {
     );
 
     const link = container.querySelector("a");
-    expect(link).toBeInTheDocument();
+    expect(link).toBeTruthy();
     expect(link?.getAttribute("href")).toBe(
       "./works?filter=author.id:A5025875274",
     );
@@ -186,7 +186,7 @@ describe("URL Matcher", () => {
     );
 
     const link = container.querySelector("a");
-    expect(link).toBeInTheDocument();
+    expect(link).toBeTruthy();
     expect(link?.getAttribute("href")).toBe(externalUrl);
     expect(link?.getAttribute("target")).toBe("_blank");
     expect(link?.getAttribute("rel")).toBe("noopener noreferrer");
@@ -232,16 +232,16 @@ describe("ID Object Matcher", () => {
     const openAlexLink = container.querySelector(
       'a[href="./works/W123456789"]',
     );
-    expect(openAlexLink).toBeInTheDocument();
+    expect(openAlexLink).toBeTruthy();
     expect(openAlexLink?.textContent).toContain("OPENALEX: W123456789");
 
     // Check ORCID badge (should not be linked)
-    const orcidBadge = container.querySelector('[data-testid="badge"]');
-    expect(orcidBadge).toBeInTheDocument();
+    const orcidBadge = container.querySelector(".mantine-Badge-root");
+    expect(orcidBadge).toBeTruthy();
 
     // Check copy buttons exist
     const copyButtons = container.querySelectorAll(
-      '[data-testid="action-icon"]',
+      'button[aria-label*="Copy"]',
     );
     expect(copyButtons.length).toBeGreaterThan(0);
   });
@@ -261,7 +261,7 @@ describe("ID Object Matcher", () => {
 
     // ROR should not have a link (handled specially)
     const rorLink = container.querySelector('a[href*="ror.org"]');
-    expect(rorLink).not.toBeInTheDocument();
+    expect(rorLink).toBeFalsy();
 
     // But should still show the badge
     const rorBadge = container.textContent;
@@ -294,7 +294,7 @@ describe("DOI Matcher", () => {
     const link = container.querySelector(
       'a[href="https://doi.org/10.1234/example"]',
     );
-    expect(link).toBeInTheDocument();
+    expect(link).toBeTruthy();
     expect(link?.getAttribute("target")).toBe("_blank");
   });
 });
@@ -323,7 +323,7 @@ describe("ORCID Matcher", () => {
     const link = container.querySelector(
       'a[href="https://orcid.org/0000-0000-0000-0000"]',
     );
-    expect(link).toBeInTheDocument();
+    expect(link).toBeTruthy();
     expect(link?.getAttribute("target")).toBe("_blank");
   });
 });
@@ -350,7 +350,7 @@ describe("ROR Matcher", () => {
     );
 
     const link = container.querySelector('a[href="https://ror.org/02t274039"]');
-    expect(link).toBeInTheDocument();
+    expect(link).toBeTruthy();
     expect(link?.getAttribute("target")).toBe("_blank");
   });
 });

@@ -1,8 +1,34 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+/**
+ * @vitest-environment jsdom
+ */
 import { MantineProvider } from '@mantine/core';
-import { BaseTable } from '../BaseTable';
 import { type ColumnDef } from '@tanstack/react-table';
+import '@testing-library/jest-dom/vitest';
+import { render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
+import { BaseTable } from '../BaseTable';
+
+// Mock window.matchMedia for Mantine
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(), // deprecated
+    removeListener: vi.fn(), // deprecated
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
+// Mock ResizeObserver for Mantine
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}));
 
 interface TestData {
   id: string;

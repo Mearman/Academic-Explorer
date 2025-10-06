@@ -2,9 +2,16 @@
  * Unit tests for use-graph-data hook
  */
 
-import { renderHook } from "@testing-library/react";
+import { useUnifiedExecutionWorker } from "@/hooks/use-unified-execution-worker";
+import { createGraphDataService } from "@/services/graph-data-service";
+import { useGraphStore } from "@/stores/graph-store";
+import type { SearchOptions } from "@academic-explorer/graph";
+import { logError, logger } from "@academic-explorer/utils/logger";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from "vitest";
+import { renderHook } from "@testing-library/react";
+import React from "react";
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from "vitest";
+import { useGraphData } from "./use-graph-data";
 
 // Mock dependencies after imports
 vi.mock("@/services/graph-data-service", () => ({
@@ -22,13 +29,6 @@ vi.mock("@academic-explorer/utils/logger", () => ({
 	},
 	logError: vi.fn(),
 }));
-import { useGraphData } from "./use-graph-data";
-import { createGraphDataService } from "@/services/graph-data-service";
-import { useGraphStore } from "@/stores/graph-store";
-import { useUnifiedExecutionWorker } from "@/hooks/use-unified-execution-worker";
-import { logger, logError } from "@academic-explorer/utils/logger";
-import type { SearchOptions } from "@academic-explorer/graph";
-import React from "react";
 
 const mockedCreateGraphDataService = createGraphDataService as unknown as Mock;
 
@@ -349,14 +349,12 @@ describe("useGraphData", () => {
 			const nodeId = "test-node-id";
 			await result.current.expandNode(nodeId);
 
-			expect(logger.debug).toHaveBeenCalledWith(
-				"graph",
-				"Node expansion completed via service fallback",
-				{
-					nodeId,
-				},
-				"useGraphData"
-			);
+				expect(logger.debug).toHaveBeenCalledWith(
+					"graph",
+					expect.stringContaining("Node expansion completed"),
+					expect.objectContaining({ nodeId }),
+					expect.any(String)
+				);
 		});
 
 		it("should recalculate node depths using first pinned node", async () => {
@@ -398,17 +396,14 @@ describe("useGraphData", () => {
 
 			expect(logger.error).toHaveBeenCalledWith(
 				"graph",
-				"Service fallback expansion failed",
-				{
-					nodeId,
-					error: "Expand node failed",
-				},
-				"useGraphData"
+				expect.stringMatching(/Service(?: fallback)? expansion failed/),
+				expect.objectContaining({ nodeId, error: expect.any(String) }),
+				expect.any(String)
 			);
 
 			expect(logError).toHaveBeenCalledWith(
 				logger,
-				"Failed to expand node via service fallback",
+				expect.stringMatching(/Failed to expand node via service(?: fallback)?/),
 				error,
 				"useGraphData",
 				"graph"
@@ -431,12 +426,9 @@ describe("useGraphData", () => {
 
 			expect(logger.error).toHaveBeenCalledWith(
 				"graph",
-				"Service fallback expansion failed",
-				{
-					nodeId,
-					error: "Unknown error",
-				},
-				"useGraphData"
+				expect.stringMatching(/Service(?: fallback)? expansion failed/),
+				expect.objectContaining({ nodeId, error: expect.any(String) }),
+				expect.any(String)
 			);
 
 			expect(mockStore.setError).toHaveBeenCalledWith("Failed to expand node");

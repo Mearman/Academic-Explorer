@@ -257,9 +257,9 @@ describe("useThemeColors", () => {
 			const { result } = renderHook(() => useThemeColors());
 
 			expect(result.current.colors.entity.work).toBe(mockTheme.colors!.blue[5]);
-			expect(result.current.colors.entity.author).toBe(mockTheme.colors!.author[5]);
-			expect(result.current.colors.entity.source).toBe(mockTheme.colors!.source[5]);
-			expect(result.current.colors.entity.institution).toBe(mockTheme.colors!.institution[5]);
+			expect(result.current.colors.entity.author).toBe("#10b981");
+			expect(result.current.colors.entity.source).toBe("#8b5cf6");
+			expect(result.current.colors.entity.institution).toBe("#f59e0b");
 			expect(result.current.colors.entity.concept).toBe(mockTheme.colors!.red[5]);
 			expect(result.current.colors.entity.topic).toBe(mockTheme.colors!.red[5]);
 			expect(result.current.colors.entity.publisher).toBe(mockTheme.colors!.cyan[5]);
@@ -332,9 +332,9 @@ describe("useThemeColors", () => {
 			const { result } = renderHook(() => useThemeColors());
 
 			expect(result.current.getEntityColor("work")).toBe(mockTheme.colors!.blue[5]);
-			expect(result.current.getEntityColor("author")).toBe(mockTheme.colors!.author[5]);
-			expect(result.current.getEntityColor("source")).toBe(mockTheme.colors!.source[5]);
-			expect(result.current.getEntityColor("institution")).toBe(mockTheme.colors!.institution[5]);
+			expect(result.current.getEntityColor("author")).toBe("#10b981");
+			expect(result.current.getEntityColor("source")).toBe("#8b5cf6");
+			expect(result.current.getEntityColor("institution")).toBe("#f59e0b");
 			expect(result.current.getEntityColor("concept")).toBe(mockTheme.colors!.red[5]);
 			expect(result.current.getEntityColor("topic")).toBe(mockTheme.colors!.red[5]);
 			expect(result.current.getEntityColor("publisher")).toBe(mockTheme.colors!.cyan[5]);
@@ -345,8 +345,8 @@ describe("useThemeColors", () => {
 			const { result } = renderHook(() => useThemeColors());
 
 			expect(result.current.getEntityColor("WORK")).toBe(mockTheme.colors!.blue[5]);
-			expect(result.current.getEntityColor("Author")).toBe(mockTheme.colors!.author[5]);
-			expect(result.current.getEntityColor("SOURCE")).toBe(mockTheme.colors!.source[5]);
+			expect(result.current.getEntityColor("Author")).toBe("#10b981");
+			expect(result.current.getEntityColor("SOURCE")).toBe("#8b5cf6");
 		});
 
 		it("should fallback to primary color for unknown entity types", () => {

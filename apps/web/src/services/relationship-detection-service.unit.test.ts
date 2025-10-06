@@ -45,6 +45,7 @@ describe("RelationshipDetectionService", () => {
 			refreshEntity: vi.fn()
 		};
 		(service as any).deduplicationService = mockDeduplicationService;
+		(service as any).client = { getEntity: mockDeduplicationService.getEntity };
 	});
 
 	describe("detectRelationshipsForNode", () => {
@@ -286,10 +287,9 @@ describe("RelationshipDetectionService", () => {
 				id: "A123-authored-W456",
 				source: "A123",
 				target: "W456",
-				entityType: RelationType.AUTHORED,
+				type: "authored",
 				label: "authored",
-				weight: 1.0,
-				metadata: undefined
+				weight: 1.0
 			});
 		});
 	});

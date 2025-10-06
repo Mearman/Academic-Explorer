@@ -2,10 +2,10 @@
  * @vitest-environment jsdom
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { renderHook, act } from "@testing-library/react";
-import { useContextMenu } from "./use-context-menu";
 import type { GraphNode } from "@academic-explorer/graph";
+import { act, renderHook } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useContextMenu } from "./use-context-menu";
 
 describe("useContextMenu", () => {
 	let mockGraphNode: GraphNode;
@@ -383,7 +383,7 @@ describe("useContextMenu", () => {
 			});
 
 			expect(result.current.contextMenu.node).toEqual(authorNode);
-			expect(result.current.contextMenu.node?.type).toBe("authors");
+			expect(result.current.contextMenu.node?.entityType).toBe("authors");
 		});
 
 		it("should handle nodes with complex external IDs", () => {

@@ -3,117 +3,71 @@
  * Tests the author-specific pages and data loading
  */
 
-import { describe, it, beforeEach } from 'vitest'
-import type { Page } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
-declare global {
-  var e2ePage: Page
-  var expect: any
-}
-
-describe('Author Routes E2E Tests', () => {
+test.describe('Author Routes E2E Tests', () => {
   const TEST_AUTHOR_ID = 'A5017898742' // Known test author from requirements
   const BASE_URL = 'http://localhost:5173'
   const AUTHOR_URL = `${BASE_URL}/#/authors/${TEST_AUTHOR_ID}`
 
-  beforeEach(async () => {
-    // Set up basic HTML content with proper DOM structure
-    await e2ePage.setContent(`
-      <!DOCTYPE html>
-      <html lang="en" data-mantine-color-scheme="light">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Academic Explorer</title>
-        </head>
-        <body>
-          <div id="root">
-            <header role="banner">
-              <h1>Academic Explorer</h1>
-              <nav>
-                <a href="/">Home</a>
-              </nav>
-              <button aria-label="Toggle color scheme">Toggle Theme</button>
-            </header>
-            <main>
-              <div class="loading-state">Loading...</div>
-              <div class="author-content" style="display: none;">
-                <h2>Author Profile</h2>
-                <div class="react-flow" data-testid="rf__wrapper"></div>
-              </div>
-            </main>
-          </div>
-          <script>
-            // Simulate data loading
-            setTimeout(() => {
-              const loading = document.querySelector('.loading-state');
-              const content = document.querySelector('.author-content');
-              if (loading) loading.style.display = 'none';
-              if (content) content.style.display = 'block';
-            }, 1000);
-          </script>
-        </body>
-      </html>
-    `);
-  })
+  test('should load author page without infinite loops', async ({ page }) => {
+    await page.goto(`${BASE_URL}/authors/${TEST_AUTHOR_ID}`)
 
-  it('should load author page without infinite loops', async () => {
-    // Check that page loaded without JavaScript errors
+    // Check that page loaded successfully - header title should be visible
+    const headerTitle = page.locator('header').locator('text=Academic Explorer')
+    await expect(headerTitle).toBeVisible()
+
+    // Verify no JavaScript errors occurred
     const errors: string[] = []
-    e2ePage.on('pageerror', (error) => {
+    page.on('pageerror', (error) => {
       errors.push(error.message)
     })
 
-    // Wait for potential data loading and rendering
-    await e2ePage.waitForTimeout(2000)
-
-    // Verify no critical JavaScript errors occurred
-    const criticalErrors = errors.filter(error =>
-      !error.includes('Warning') &&
-      !error.includes('ResizeObserver') &&
-      !error.includes('Non-passive event listener')
-    )
-    expect(criticalErrors).toHaveLength(0)
-
-    // Verify page structure is present
-    const root = e2ePage.locator('#root')
-    await expect(root).toBeVisible()
+    // Wait a bit to ensure no delayed errors
+    await page.waitForTimeout(2000)
+    expect(errors).toHaveLength(0)
   })
 
-  it('should display correct URL and maintain routing', async () => {
+  test('should display correct URL and maintain routing', async ({ page }) => {
+    await page.goto(`${BASE_URL}/authors/${TEST_AUTHOR_ID}`)
+
     // Check that the page title is correct
-    const title = await e2ePage.title()
+    const title = await page.title()
     expect(title).toContain('Academic Explorer')
 
     // Verify basic page structure
-    const root = e2ePage.locator('#root')
+    const root = page.locator('#root')
     await expect(root).toBeVisible()
   })
 
-  it('should have proper header and navigation', async () => {
+  test('should have proper header and navigation', async ({ page }) => {
+    await page.goto(`${BASE_URL}/authors/${TEST_AUTHOR_ID}`)
+
     // Header should be present
-    const header = e2ePage.locator('header, [role="banner"]')
+    const header = page.locator('header, [role="banner"]')
     await expect(header).toBeVisible()
 
     // Academic Explorer title in header
-    const appTitle = e2ePage.locator('text=Academic Explorer')
+    const appTitle = page.locator('header').locator('text=Academic Explorer')
     await expect(appTitle).toBeVisible()
 
     // Navigation should be present
-    const homeLink = e2ePage.locator('nav a[href="/"]')
+    const homeLink = page.locator('nav a:has-text("Home")')
     await expect(homeLink).toBeVisible()
 
     // Theme toggle should be present
-    const themeToggle = e2ePage.locator('button[aria-label="Toggle color scheme"]')
+    const themeToggle = page.locator('button[aria-label="Toggle color scheme"]')
     await expect(themeToggle).toBeVisible()
   })
 
-  it('should attempt to load graph visualization', async () => {
+  test('should attempt to load graph visualization', async ({ page }) => {
+    await page.goto(`${BASE_URL}/authors/${TEST_AUTHOR_ID}`)
+
     // Wait for potential graph loading
-    await e2ePage.waitForTimeout(2000)
+    await page.waitForTimeout(2000)
 
     // Look for graph container elements (XYFlow uses these classes)
-    const graphContainer = e2ePage.locator('.react-flow, [data-testid="rf__wrapper"], .xyflow')
+    const graphContainer = page.locator('.react-flow, [data-testid="rf__wrapper"], .xyflow')
 
     // Graph might be loading or might need data - check if container exists
     const containerExists = await graphContainer.count() > 0
@@ -122,8 +76,8 @@ describe('Author Routes E2E Tests', () => {
       console.log('Graph container found - visualization is loading')
     } else {
       // Check for any loading indicators or error states
-      const loadingIndicators = await e2ePage.locator('text=Loading, [role="progressbar"], .loading-state').count()
-      const errorStates = await e2ePage.locator('text=Error').count()
+      const loadingIndicators = await page.locator('text=Loading, [role="progressbar"], .loading-state').count()
+      const errorStates = await page.locator('text=Error').count()
 
       console.log(`Graph container not found. Loading indicators: ${loadingIndicators}, Error states: ${errorStates}`)
     }
@@ -132,16 +86,18 @@ describe('Author Routes E2E Tests', () => {
     expect(true).toBe(true)
   })
 
-  it('should handle author data loading states', async () => {
+  test('should handle author data loading states', async ({ page }) => {
+    await page.goto(`${BASE_URL}/authors/${TEST_AUTHOR_ID}`)
+
     // Wait for initial loading
-    await e2ePage.waitForTimeout(2000)
+    await page.waitForTimeout(2000)
 
     // Check for any loading states or data display
     const possibleStates = await Promise.all([
-      e2ePage.locator('text=Loading').count(),
-      e2ePage.locator('text=Error').count(),
-      e2ePage.locator('[role="progressbar"]').count(),
-      e2ePage.locator('text=Author Profile').count()
+      page.locator('text=Loading').count(),
+      page.locator('text=Error').count(),
+      page.locator('[role="progressbar"]').count(),
+      page.locator('text=Author Profile').count()
     ])
 
     const [loadingCount, errorCount, progressCount, authorCount] = possibleStates
@@ -155,53 +111,53 @@ describe('Author Routes E2E Tests', () => {
     expect(true).toBe(true)
   })
 
-  it('should maintain proper page structure', async () => {
+  test('should maintain proper page structure', async ({ page }) => {
+    await page.goto(`${BASE_URL}/authors/${TEST_AUTHOR_ID}`)
 
     // Check basic HTML structure
-    const html = e2ePage.locator('html')
+    const html = page.locator('html')
     const langAttr = await html.getAttribute('lang')
     expect(langAttr).toBe('en')
 
     // Check for root div
-    const root = e2ePage.locator('#root')
+    const root = page.locator('#root')
     await expect(root).toBeVisible()
 
     // Check that React has rendered something
-    const body = e2ePage.locator('body')
+    const body = page.locator('body')
     const bodyContent = await body.innerHTML()
     expect(bodyContent.length).toBeGreaterThan(100) // Should have substantial content
   })
 
-  it('should handle navigation back to homepage', async () => {
-    // Start at author page - already set up in beforeEach
+  test('should handle navigation back to homepage', async ({ page }) => {
+    await page.goto(`${BASE_URL}/authors/${TEST_AUTHOR_ID}`)
 
     // Find home link and verify it's properly configured for navigation
-    const homeLink = e2ePage.locator('nav a[href="/"]')
+    const homeLink = page.locator('nav a:has-text("Home")')
     await expect(homeLink).toBeVisible()
 
-    // Verify the link has the correct href attribute for navigation
-    const href = await homeLink.getAttribute('href')
-    expect(href).toBe('/')
+    // Click home link to navigate back
+    await homeLink.click()
 
-    // Verify navigation structure is properly maintained
-    const nav = e2ePage.locator('nav')
-    await expect(nav).toBeVisible()
+    // Wait for homepage content instead of URL
+    await page.waitForSelector('h1:has-text("Academic Explorer")', { timeout: 5000 })
 
-    // Verify the page maintains its structure with navigation available
-    const root = e2ePage.locator('#root')
-    await expect(root).toBeVisible()
+    // Verify we're back on the homepage
+    const title = page.locator('h1:has-text("Academic Explorer")')
+    await expect(title).toBeVisible()
   })
 
-  it('should not have memory leaks or infinite updates', async () => {
+  test('should not have memory leaks or infinite updates', async ({ page }) => {
+    await page.goto(`${BASE_URL}/authors/${TEST_AUTHOR_ID}`)
 
     // Monitor console for excessive logging or errors
     const consoleMessages: string[] = []
-    e2ePage.on('console', (msg) => {
+    page.on('console', (msg) => {
       consoleMessages.push(msg.text())
     })
 
     // Wait and observe for memory leaks or excessive updates
-    await e2ePage.waitForTimeout(10000)
+    await page.waitForTimeout(10000)
 
     // Check that we don't have excessive console output (indicating infinite loops)
     const excessiveLogging = consoleMessages.length > 100
@@ -220,38 +176,41 @@ describe('Author Routes E2E Tests', () => {
     expect(infiniteLoopIndicators).toHaveLength(0)
   })
 
-  it('should handle different author IDs gracefully', async () => {
+  test('should handle different author IDs gracefully', async ({ page }) => {
     // Test with a different author ID format - the page structure should handle any ID
     const alternativeAuthorId = 'A123456789'
+    await page.goto(`${BASE_URL}/authors/${alternativeAuthorId}`)
 
     // Page should load without crashing
-    const root = e2ePage.locator('#root')
+    const root = page.locator('#root')
     await expect(root).toBeVisible()
 
     // Should maintain header structure
-    const appTitle = e2ePage.locator('text=Academic Explorer')
+    const appTitle = page.locator('header').locator('text=Academic Explorer')
     await expect(appTitle).toBeVisible()
 
     // Navigation should still work
-    const homeLink = e2ePage.locator('nav a[href="/"]')
+    const homeLink = page.locator('nav a:has-text("Home")')
     await expect(homeLink).toBeVisible()
   })
 
-  it('should preserve application state during navigation', async () => {
+  test('should preserve application state during navigation', async ({ page }) => {
+    await page.goto(`${BASE_URL}/authors/${TEST_AUTHOR_ID}`)
+
     // Test theme toggle functionality on the current page
-    const themeToggle = e2ePage.locator('button[aria-label="Toggle color scheme"]')
+    const themeToggle = page.locator('button[aria-label="Toggle color scheme"]')
     await expect(themeToggle).toBeVisible()
 
     // Test clicking the theme toggle
     await themeToggle.click()
-    await e2ePage.waitForTimeout(500)
+    await page.waitForTimeout(500)
 
     // Verify the toggle button is still functional
     await expect(themeToggle).toBeVisible()
 
     // In a real app, theme state would be preserved across navigation
     // This test verifies the theme toggle exists and works
-    const htmlElement = e2ePage.locator('html')
+    const htmlElement = page.locator('html')
     const colorScheme = await htmlElement.getAttribute('data-mantine-color-scheme')
     expect(colorScheme).toBeDefined()
   })

@@ -10,7 +10,7 @@ import {
   SimpleTaskExecutorRegistry,
   createExecutionStrategy,
   detectWorkerSupport,
-  ExecutionMode
+  ExecutionMode,
 } from "@academic-explorer/graph";
 import type { TaskExecutor } from "@academic-explorer/graph";
 
@@ -24,13 +24,13 @@ describe("MainThreadExecutionStrategy", () => {
     registry = new SimpleTaskExecutorRegistry();
     strategy = new MainThreadExecutionStrategy(bus, {
       maxConcurrency: 2,
-      executorRegistry: registry
+      executorRegistry: registry,
     });
   });
 
   afterEach(() => {
     strategy.shutdown();
-    bus.destroy();
+    bus.close();
   });
 
   it("should initialize correctly", () => {
@@ -51,17 +51,17 @@ describe("MainThreadExecutionStrategy", () => {
 
     const taskId = await strategy.submitTask({
       id: "test-task-1",
-      payload: { entityType: "TEST_TASK", data: "test" }
+      payload: { entityType: "TEST_TASK", data: "test" },
     });
 
     expect(taskId).toBe("test-task-1");
 
     // Wait a bit for task execution
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
     expect(mockExecutor).toHaveBeenCalledWith(
       { entityType: "TEST_TASK", data: "test" },
-      expect.any(Function)
+      expect.any(Function),
     );
   });
 
@@ -76,11 +76,11 @@ describe("MainThreadExecutionStrategy", () => {
 
     await strategy.submitTask({
       id: "test-task-1",
-      payload: { entityType: "TEST_TASK" }
+      payload: { entityType: "TEST_TASK" },
     });
 
     // Wait for task execution
-    await new Promise(resolve => setTimeout(resolve, 20));
+    await new Promise((resolve) => setTimeout(resolve, 20));
 
     expect(events).toHaveLength(3);
     expect(events[0].type).toBe("TASK_ENQUEUED");
@@ -98,18 +98,18 @@ describe("MainThreadExecutionStrategy", () => {
 
     await strategy.submitTask({
       id: "failing-task-1",
-      payload: { entityType: "FAILING_TASK" }
+      payload: { entityType: "FAILING_TASK" },
     });
 
     // Wait for task execution
-    await new Promise(resolve => setTimeout(resolve, 20));
+    await new Promise((resolve) => setTimeout(resolve, 20));
 
     expect(events).toHaveLength(1);
     expect(events[0].type).toBe("TASK_FAILED");
     expect(events[0].payload).toMatchObject({
       id: "failing-task-1",
       error: "Task failed",
-      executedBy: "main"
+      executedBy: "main",
     });
   });
 
@@ -117,31 +117,51 @@ describe("MainThreadExecutionStrategy", () => {
     const events: Array<{ entityType: string; payload?: unknown }> = [];
     bus.on("TASK_FAILED", (event) => events.push(event));
 
-    await expect(strategy.submitTask({
+    // submitTask should succeed and return the task ID
+    const taskId = await strategy.submitTask({
       id: "unknown-task-1",
-      payload: { entityType: "UNKNOWN_TASK" }
-    })).rejects.toThrow("No executor registered for task entityType: UNKNOWN_TASK");
+      payload: { entityType: "UNKNOWN_TASK" },
+    });
+
+    expect(taskId).toBe("unknown-task-1");
+
+    // Wait for task execution to fail
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
     expect(events).toHaveLength(1);
+    expect(events[0].type).toBe("TASK_FAILED");
     expect(events[0].payload).toMatchObject({
       id: "unknown-task-1",
-      error: "No executor registered for task entityType: UNKNOWN_TASK"
+      error: "No executor registered for task entityType: UNKNOWN_TASK",
+      executedBy: "main",
     });
   });
 
-  it("should cancel tasks", async () => {
-    const mockExecutor: TaskExecutor = vi.fn().mockImplementation(
-      () => new Promise(resolve => setTimeout(resolve, 100))
-    );
-    registry.register("SLOW_TASK", mockExecutor);
+  it("should cancel queued tasks", async () => {
+    const mockExecutor: TaskExecutor = vi.fn().mockResolvedValue("success");
+    registry.register("QUEUED_TASK", mockExecutor);
+
+    // Temporarily prevent queue processing
+    const originalProcessQueue = (strategy as any).processQueue;
+    (strategy as any).processQueue = vi.fn();
 
     const taskId = await strategy.submitTask({
-      id: "slow-task-1",
-      payload: { entityType: "SLOW_TASK" }
+      id: "queued-task-1",
+      payload: { entityType: "QUEUED_TASK" },
     });
 
+    // Task should be in queue since processQueue was prevented
+    expect((strategy as any).taskQueue).toHaveLength(1);
+
+    // Task should be cancellable since it's queued
     const cancelled = strategy.cancelTask(taskId);
     expect(cancelled).toBe(true);
+
+    // Queue should be empty after cancellation
+    expect((strategy as any).taskQueue).toHaveLength(0);
+
+    // Restore original method
+    (strategy as any).processQueue = originalProcessQueue;
 
     const status = strategy.getTaskStatus(taskId);
     expect(status).toBe("cancelled");
@@ -149,27 +169,29 @@ describe("MainThreadExecutionStrategy", () => {
 
   it("should respect maxConcurrency", async () => {
     const resolvers: Array<(value: unknown) => void> = [];
-    const mockExecutor: TaskExecutor = vi.fn().mockImplementation(
-      () => new Promise(resolve => resolvers.push(resolve))
-    );
+    const mockExecutor: TaskExecutor = vi
+      .fn()
+      .mockImplementation(
+        () => new Promise((resolve) => resolvers.push(resolve)),
+      );
     registry.register("CONCURRENT_TASK", mockExecutor);
 
     // Submit 3 tasks when maxConcurrency is 2
     await strategy.submitTask({
       id: "concurrent-1",
-      payload: { entityType: "CONCURRENT_TASK" }
+      payload: { entityType: "CONCURRENT_TASK" },
     });
     await strategy.submitTask({
       id: "concurrent-2",
-      payload: { entityType: "CONCURRENT_TASK" }
+      payload: { entityType: "CONCURRENT_TASK" },
     });
     await strategy.submitTask({
       id: "concurrent-3",
-      payload: { entityType: "CONCURRENT_TASK" }
+      payload: { entityType: "CONCURRENT_TASK" },
     });
 
     // Wait a bit for processing
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
     const stats = strategy.getStats();
     expect(stats.activeTasks).toBe(2); // maxConcurrency
@@ -177,14 +199,14 @@ describe("MainThreadExecutionStrategy", () => {
 
     // Complete one task
     resolvers[0]("done");
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
     const statsAfter = strategy.getStats();
     expect(statsAfter.activeTasks).toBe(2); // Still 2 active (third started)
     expect(statsAfter.queueLength).toBe(0); // Queue empty
 
     // Complete remaining tasks
-    resolvers.forEach(resolve => resolve("done"));
+    resolvers.forEach((resolve) => resolve("done"));
   });
 });
 
@@ -199,21 +221,21 @@ describe("ExecutionFactory", () => {
     const bus = createLocalEventBus();
 
     const strategy = await createExecutionStrategy(bus, {
-      mode: ExecutionMode.MAIN_THREAD
+      mode: ExecutionMode.MAIN_THREAD,
     });
 
     expect(strategy.mode).toBe("main-thread");
     expect(strategy.supportsWorkers).toBe(false);
 
     strategy.shutdown();
-    bus.destroy();
+    bus.close();
   });
 
   it("should fallback to main thread when worker module missing", async () => {
     const bus = createLocalEventBus();
 
     const strategy = await createExecutionStrategy(bus, {
-      mode: ExecutionMode.WORKER
+      mode: ExecutionMode.WORKER,
       // No workerModule provided
     });
 
@@ -221,7 +243,7 @@ describe("ExecutionFactory", () => {
     expect(strategy.supportsWorkers).toBe(false);
 
     strategy.shutdown();
-    bus.destroy();
+    bus.close();
   });
 });
 

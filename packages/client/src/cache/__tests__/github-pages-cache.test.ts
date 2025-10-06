@@ -5,7 +5,7 @@
  * in production for pre-built static cache files.
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi, type MockedFunction } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi, type MockedFunction } from 'vitest';
 
 // Mock fetch for network requests
 const mockFetch = vi.fn() as MockedFunction<typeof fetch>;
@@ -93,15 +93,33 @@ class MockGitHubPagesCache {
       }
 
       const filePattern = this.getFilePattern(entityId);
-      const matchingFile = manifest.entities[entityType].files.find(
+
+      // Prefer exact filename matches or simple includes
+      let matchingFile = manifest.entities[entityType].files.find(
         file => file.includes(filePattern)
       );
+
+      // If no simple include match found, attempt to match ranged filenames like "000-999.json"
+      if (!matchingFile) {
+        const idNum = Number(entityId.replace(/^[^0-9]+/, ''));
+        for (const file of manifest.entities[entityType].files) {
+          const rangeMatch = file.match(/(\d+)-(\d+)\.json$/);
+          if (rangeMatch) {
+            const start = Number(rangeMatch[1]);
+            const end = Number(rangeMatch[2]);
+            if (!Number.isNaN(idNum) && idNum >= start && idNum <= end) {
+              matchingFile = file;
+              break;
+            }
+          }
+        }
+      }
 
       if (!matchingFile) {
         return null;
       }
 
-      const fileUrl = `${this.config.baseUrl}/static-cache/${entityType}/${matchingFile}`;
+  const fileUrl = `${this.config.baseUrl}/static-cache/${entityType}/${matchingFile}`;
       const response = await this.fetchWithRetry(fileUrl);
 
       if (!response.ok) {
@@ -191,11 +209,18 @@ class MockGitHubPagesCache {
 
   private async fetchWithRetry(url: string): Promise<Response> {
     let lastError: Error | null = null;
+    // DEBUG: show configured retryAttempts for visibility
+    // eslint-disable-next-line no-console
+    console.debug('[DEBUG] fetchWithRetry configured retryAttempts=', this.config.retryAttempts, 'for url=', url);
 
-    for (let attempt = 1; attempt <= this.config.retryAttempts; attempt++) {
+    // Interpret retryAttempts as "number of retries" so total attempts = retries + 1
+    const totalAttempts = Math.max(1, this.config.retryAttempts + 1);
+
+    for (let attempt = 0; attempt < totalAttempts; attempt++) {
+      let timeoutId: any;
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), this.config.timeout);
+        timeoutId = setTimeout(() => controller.abort(), this.config.timeout);
 
         const response = await fetch(url, {
           signal: controller.signal,
@@ -206,13 +231,32 @@ class MockGitHubPagesCache {
         });
 
         clearTimeout(timeoutId);
+
+        // Treat falsy responses as errors (some mocks may return undefined)
+        if (!response) {
+          const noResErr = new Error('No response from fetch');
+          if (!lastError) lastError = noResErr;
+          // If we have more attempts left, continue and retry
+          if (attempt < totalAttempts - 1) {
+            const delay = Math.pow(2, attempt) * 1000; // Exponential backoff (0 -> 1s)
+            await new Promise(resolve => setTimeout(resolve, delay));
+            continue;
+          }
+          break; // fall through to throw
+        }
+
         return response;
       } catch (error) {
-        lastError = error instanceof Error ? error : new Error('Unknown error');
+        // Preserve the first error so tests that assert the original failure see it
+        const err = error instanceof Error ? error : new Error('Unknown error');
+        if (!lastError) lastError = err;
+        if (timeoutId) clearTimeout(timeoutId);
 
-        if (attempt < this.config.retryAttempts) {
-          const delay = Math.pow(2, attempt - 1) * 1000; // Exponential backoff
+        // Retry if attempts remain
+        if (attempt < totalAttempts - 1) {
+          const delay = Math.pow(2, attempt) * 1000; // Exponential backoff (0 -> 1s)
           await new Promise(resolve => setTimeout(resolve, delay));
+          continue;
         }
       }
     }

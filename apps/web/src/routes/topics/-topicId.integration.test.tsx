@@ -34,6 +34,7 @@ vi.mock('@academic-explorer/graph', () => ({
 vi.mock('@tanstack/react-router', () => ({
   useParams: vi.fn(),
   useNavigate: vi.fn(),
+  createFileRoute: vi.fn(() => vi.fn((options) => options)),
 }));
 
 // Mock ViewToggle

@@ -4,7 +4,6 @@ import { createMemoryHistory } from 'history';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 import { Route as OpenAlexUrlRoute } from './$.tsx';
 import { EntityDetectionService } from "@academic-explorer/graph";
-import { syntheticData } from '@/lib/utils/synthetic-data'; // For stubbing if needed
 
 // Mock EntityDetectionService
 vi.mock("@academic-explorer/graph", () => ({

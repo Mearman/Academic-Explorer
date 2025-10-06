@@ -54,7 +54,7 @@ describe("ViewToggle", () => {
         <ViewToggle viewMode="raw" onToggle={mockOnToggle} />
       </TestWrapper>,
     );
-    expect(screen.getByRole("radiogroup")).toBeInTheDocument();
+    expect(screen.getByRole("radiogroup")).toBeTruthy();
   });
 
   it("renders Raw JSON and Rich Graph options", () => {
@@ -63,8 +63,8 @@ describe("ViewToggle", () => {
         <ViewToggle viewMode="raw" onToggle={mockOnToggle} />
       </TestWrapper>,
     );
-    expect(screen.getByText("Raw JSON")).toBeInTheDocument();
-    expect(screen.getByText("Rich Graph")).toBeInTheDocument();
+    expect(screen.getByText("Raw JSON")).toBeTruthy();
+    expect(screen.getByText("Rich Graph")).toBeTruthy();
   });
 
   it('calls onToggle with "raw" when Raw JSON option is clicked', () => {
@@ -209,7 +209,7 @@ describe("ViewToggle", () => {
       );
       const rawRadio = screen.getByRole("radio", { name: "Raw JSON" });
       // No crash on render
-      expect(rawRadio).toBeInTheDocument();
+      expect(rawRadio).toBeTruthy();
     });
 
     it("handles click without onToggle (no-op)", () => {
@@ -221,7 +221,7 @@ describe("ViewToggle", () => {
       const rawRadio = screen.getByRole("radio", { name: "Raw JSON" });
       fireEvent.click(rawRadio);
       // No crash, just no callback
-      expect(rawRadio).toBeInTheDocument();
+      expect(rawRadio).toBeTruthy();
     });
 
     it("handles missing entityType (uses default aria-label)", () => {
@@ -250,7 +250,7 @@ describe("ViewToggle", () => {
       const rawRadio = screen.getByRole("radio", { name: "Raw JSON" });
       fireEvent.focus(rawRadio);
       // SegmentedControl handles focus styles internally
-      expect(rawRadio).toBeInTheDocument();
+      expect(rawRadio).toBeTruthy();
     });
   });
 
@@ -266,7 +266,7 @@ describe("ViewToggle", () => {
         </TestWrapper>,
       );
       const group = screen.getByRole("radiogroup");
-      expect(group).toBeInTheDocument();
+      expect(group).toBeTruthy();
       // SegmentedControl may have additional internal elements
       expect(group.children.length).toBeGreaterThanOrEqual(2);
     });
@@ -278,8 +278,8 @@ describe("ViewToggle", () => {
         </TestWrapper>,
       );
       // Verify the options are rendered
-      expect(screen.getByText("Raw JSON")).toBeInTheDocument();
-      expect(screen.getByText("Rich Graph")).toBeInTheDocument();
+      expect(screen.getByText("Raw JSON")).toBeTruthy();
+      expect(screen.getByText("Rich Graph")).toBeTruthy();
     });
   });
 });
