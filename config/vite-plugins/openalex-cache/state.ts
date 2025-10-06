@@ -12,10 +12,20 @@ export class PluginState {
   setConfig(config: ResolvedConfig, options: OpenAlexCachePluginOptions): void {
     this.config = config;
     this.options = options;
-    this.staticDataDir = join(
-      config.root,
-      options.staticDataPath || "public/data/openalex",
-    );
+
+    const staticDataPath = options.staticDataPath || "public/data/openalex";
+
+    // If path starts with "apps/", treat as absolute from workspace root
+    // Otherwise, treat as relative to project root
+    if (staticDataPath.startsWith("apps/")) {
+      // Find workspace root (parent of apps/ directory)
+      const workspaceRoot = config.root.includes("/apps/")
+        ? config.root.substring(0, config.root.indexOf("/apps/") + 1)
+        : config.root;
+      this.staticDataDir = join(workspaceRoot, staticDataPath);
+    } else {
+      this.staticDataDir = join(config.root, staticDataPath);
+    }
   }
 
   getConfig(): ResolvedConfig | undefined {

@@ -11,10 +11,17 @@ export const createLogVerbose = (verbose: boolean) => (message: string) => {
 };
 
 /**
- * Check if we're in development mode
+ * Check if we're in development mode or test mode
  */
 export const isDevelopment = (config: ResolvedConfig): boolean => {
   return config.command === "serve";
+};
+
+/**
+ * Check if we're in test mode
+ */
+export const isTest = (): boolean => {
+  return typeof process !== "undefined" && process.env.VITEST === "true";
 };
 
 /**
@@ -24,5 +31,5 @@ export const shouldEnablePlugin = (
   options: OpenAlexCachePluginOptions,
   config: ResolvedConfig,
 ): boolean => {
-  return options.enabled !== false && isDevelopment(config);
+  return options.enabled !== false && (isDevelopment(config) || isTest());
 };

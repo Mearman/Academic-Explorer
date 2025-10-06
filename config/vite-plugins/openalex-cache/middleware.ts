@@ -157,17 +157,21 @@ export function createCacheMiddleware(
         }
       }
 
-      const data = await fetchFromAPI(finalUrl);
+      const { data, isMocked } = await fetchFromAPI(finalUrl);
 
-      // Save to cache
-      await saveToCache(
-        cachePath,
-        fullUrl,
-        data,
-        context,
-        updateDirectoryIndexes,
-      );
-      logVerbose(`Cached response for ${req.url}`);
+      // Only save to cache if response is not mocked
+      if (!isMocked) {
+        await saveToCache(
+          cachePath,
+          fullUrl,
+          data,
+          context,
+          updateDirectoryIndexes,
+        );
+        logVerbose(`Cached response for ${req.url}`);
+      } else {
+        logVerbose(`Skipped caching mocked response for ${req.url}`);
+      }
 
       // Send response
       res.setHeader("Content-Type", "application/json");

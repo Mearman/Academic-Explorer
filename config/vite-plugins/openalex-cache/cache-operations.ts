@@ -91,7 +91,9 @@ export const saveToCache = async (
 /**
  * Fetch data from the OpenAlex API with response validation
  */
-export const fetchFromAPI = async (url: string): Promise<unknown> => {
+export const fetchFromAPI = async (
+  url: string,
+): Promise<{ data: unknown; isMocked: boolean }> => {
   const response = await fetch(url);
 
   if (!response.ok) {
@@ -101,6 +103,11 @@ export const fetchFromAPI = async (url: string): Promise<unknown> => {
   }
 
   const data = await response.json();
+
+  // Check if response is from MSW (mocked)
+  const isMocked =
+    response.headers.get("x-powered-by") === "msw" ||
+    response.headers.get("x-msw-request-id") !== null;
 
   // Validate OpenAlex response structure
   const parsedUrl = parseOpenAlexUrl(url);
@@ -127,5 +134,5 @@ export const fetchFromAPI = async (url: string): Promise<unknown> => {
     }
   }
 
-  return data;
+  return { data, isMocked };
 };
