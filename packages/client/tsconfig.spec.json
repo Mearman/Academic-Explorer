@@ -1,7 +1,19 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": false,
     "outDir": "../../dist/out-tsc",
+    "rootDir": "./src",
+    "incremental": true,
     "tsBuildInfoFile": "../../dist/out-tsc/.tsbuildinfo",
     "types": [
       "vitest/globals",
@@ -18,7 +30,17 @@
     "src/**/*.spec.tsx",
     "src/**/*.test.js",
     "src/**/*.spec.js",
-    "src/**/*.jsx",
     "src/**/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.js",
+    "**/*.jsx"
+  ],
+  "references": [
+    {
+      "path": "../utils"
+    }
   ]
 }
