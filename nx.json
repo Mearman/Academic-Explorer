@@ -305,6 +305,6 @@
   "cli": {
     "packageManager": "pnpm"
   },
-  "parallel": 4,
+  "parallel": 1,
   "cacheDirectory": ".nx/cache"
 }
