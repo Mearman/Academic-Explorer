@@ -54,7 +54,6 @@
     },
     "test": {
       "cache": true,
-      "parallel": 1,
       "inputs": ["default", "^production", "{workspaceRoot}/config/**/*"],
       "outputs": ["{projectRoot}/coverage"]
     },
