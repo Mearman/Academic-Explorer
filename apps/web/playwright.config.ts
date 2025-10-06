@@ -6,10 +6,10 @@
 import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
-  // Test directory - but we use Vitest to run tests, so this is mainly for config
-  testDir: "./src/e2e",
+  // Test directory - using src for all tests
+  testDir: "./src",
 
-  // Test files pattern (though Vitest handles discovery)
+  // Test files pattern for E2E tests
   testMatch: "**/*.e2e.test.ts",
 
   // Run tests in serial to prevent memory issues
@@ -95,7 +95,7 @@ export default defineConfig({
 
   // Web server configuration for E2E tests
   webServer: {
-    command: "vite",
+    command: "cd ../../ && pnpm dev",
     port: 5173,
     reuseExistingServer: !process.env.CI,
     stdout: "pipe",

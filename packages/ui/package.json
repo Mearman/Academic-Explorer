@@ -64,6 +64,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@academic-explorer/client": "workspace:*",
     "@tanstack/react-table": "^8.21.3"
   },
   "peerDependencies": {

@@ -28,7 +28,6 @@
     "test": "vitest --project=unit --project=component --coverage",
     "test:unit": "vitest --project=unit --coverage",
     "test:component": "vitest --project=component",
-    "test:e2e": "vitest run --project=e2e",
     "test:watch": "vitest --watch --project=unit --project=component --coverage",
     "clean": "rm -rf dist coverage .nx/cache .tanstack node_modules/.vite"
   },

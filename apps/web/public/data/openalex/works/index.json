@@ -1,27 +1,151 @@
 {
-  "lastUpdated": "2025-09-29T23:11:45.327Z",
+  "lastUpdated": "2025-10-04T23:11:23.964Z",
   "files": {
+    "W123%2Fspecial-chars": {
+      "url": "https://api.openalex.org?%2Fworks%2FW123%2Fspecial-chars=",
+      "$ref": "./W123%2Fspecial-chars.json",
+      "lastRetrieved": "2025-10-04T18:13:33.862Z",
+      "contentHash": "44136fa355b3678a"
+    },
+    "W123%2Fspecial-chars.meta": {
+      "url": "https://api.openalex.org?%2Fworks%2FW123%2Fspecial-chars.meta=",
+      "$ref": "./W123%2Fspecial-chars.meta.json",
+      "lastRetrieved": "2025-10-04T18:13:33.865Z",
+      "contentHash": "44136fa355b3678a"
+    },
     "W2168909179": {
+      "url": "https://api.openalex.org?%2Fworks%2FW2168909179=",
       "$ref": "./W2168909179.json",
-      "contentHash": "428b9d0dfd73bae7",
       "lastRetrieved": "2025-09-29T22:54:39.387Z",
-      "url": "https://api.openalex.org/works/W2168909179"
+      "contentHash": "428b9d0dfd73bae7"
     },
     "W2741809807": {
+      "url": "https://api.openalex.org?%2Fworks%2FW2741809807=",
       "$ref": "./W2741809807.json",
-      "contentHash": "7c8353c7205f5fb9",
       "lastRetrieved": "2025-09-29T22:54:39.502Z",
-      "url": "https://api.openalex.org/works/W2741809807"
+      "contentHash": "7c8353c7205f5fb9"
+    },
+    "collection_1759600416547": {
+      "url": "https://api.openalex.org?%2Fworks%2Fcollection_1759600416547=",
+      "$ref": "./collection_1759600416547.json",
+      "lastRetrieved": "2025-10-04T17:53:36.549Z",
+      "contentHash": "5021e624e752b001"
+    },
+    "collection_1759600416547.meta": {
+      "url": "https://api.openalex.org?%2Fworks%2Fcollection_1759600416547.meta=",
+      "$ref": "./collection_1759600416547.meta.json",
+      "lastRetrieved": "2025-10-04T17:53:36.550Z",
+      "contentHash": "5021e624e752b001"
+    },
+    "collection_1759600416577": {
+      "url": "https://api.openalex.org?%2Fworks%2Fcollection_1759600416577=",
+      "$ref": "./collection_1759600416577.json",
+      "lastRetrieved": "2025-10-04T17:53:36.583Z",
+      "contentHash": "5021e624e752b001"
+    },
+    "collection_1759600416577.meta": {
+      "url": "https://api.openalex.org?%2Fworks%2Fcollection_1759600416577.meta=",
+      "$ref": "./collection_1759600416577.meta.json",
+      "lastRetrieved": "2025-10-04T17:53:36.584Z",
+      "contentHash": "5021e624e752b001"
+    },
+    "collection_1759600668953": {
+      "url": "https://api.openalex.org?%2Fworks%2Fcollection_1759600668953=",
+      "$ref": "./collection_1759600668953.json",
+      "lastRetrieved": "2025-10-04T17:57:48.975Z",
+      "contentHash": "5021e624e752b001"
+    },
+    "collection_1759600668953.meta": {
+      "url": "https://api.openalex.org?%2Fworks%2Fcollection_1759600668953.meta=",
+      "$ref": "./collection_1759600668953.meta.json",
+      "lastRetrieved": "2025-10-04T17:57:48.979Z",
+      "contentHash": "5021e624e752b001"
+    },
+    "collection_1759600668992": {
+      "url": "https://api.openalex.org?%2Fworks%2Fcollection_1759600668992=",
+      "$ref": "./collection_1759600668992.json",
+      "lastRetrieved": "2025-10-04T17:57:49.348Z",
+      "contentHash": "5021e624e752b001"
+    },
+    "collection_1759600668992.meta": {
+      "url": "https://api.openalex.org?%2Fworks%2Fcollection_1759600668992.meta=",
+      "$ref": "./collection_1759600668992.meta.json",
+      "lastRetrieved": "2025-10-04T17:57:49.350Z",
+      "contentHash": "5021e624e752b001"
+    },
+    "collection_1759600994447": {
+      "url": "https://api.openalex.org?%2Fworks%2Fcollection_1759600994447=",
+      "$ref": "./collection_1759600994447.json",
+      "lastRetrieved": "2025-10-04T18:03:14.455Z",
+      "contentHash": "5021e624e752b001"
+    },
+    "collection_1759600994447.meta": {
+      "url": "https://api.openalex.org?%2Fworks%2Fcollection_1759600994447.meta=",
+      "$ref": "./collection_1759600994447.meta.json",
+      "lastRetrieved": "2025-10-04T18:03:14.456Z",
+      "contentHash": "5021e624e752b001"
+    },
+    "collection_1759601026515": {
+      "url": "https://api.openalex.org?%2Fworks%2Fcollection_1759601026515=",
+      "$ref": "./collection_1759601026515.json",
+      "lastRetrieved": "2025-10-04T18:03:46.519Z",
+      "contentHash": "5021e624e752b001"
+    },
+    "collection_1759601026515.meta": {
+      "url": "https://api.openalex.org?%2Fworks%2Fcollection_1759601026515.meta=",
+      "$ref": "./collection_1759601026515.meta.json",
+      "lastRetrieved": "2025-10-04T18:03:46.519Z",
+      "contentHash": "5021e624e752b001"
+    },
+    "collection_1759601583807": {
+      "url": "https://api.openalex.org?%2Fworks%2Fcollection_1759601583807=",
+      "$ref": "./collection_1759601583807.json",
+      "lastRetrieved": "2025-10-04T18:13:03.810Z",
+      "contentHash": "5021e624e752b001"
+    },
+    "collection_1759601583807.meta": {
+      "url": "https://api.openalex.org?%2Fworks%2Fcollection_1759601583807.meta=",
+      "$ref": "./collection_1759601583807.meta.json",
+      "lastRetrieved": "2025-10-04T18:13:03.810Z",
+      "contentHash": "5021e624e752b001"
+    },
+    "collection_1759601602371": {
+      "url": "https://api.openalex.org?%2Fworks%2Fcollection_1759601602371=",
+      "$ref": "./collection_1759601602371.json",
+      "lastRetrieved": "2025-10-04T18:13:22.410Z",
+      "contentHash": "5021e624e752b001"
+    },
+    "collection_1759601602371.meta": {
+      "url": "https://api.openalex.org?%2Fworks%2Fcollection_1759601602371.meta=",
+      "$ref": "./collection_1759601602371.meta.json",
+      "lastRetrieved": "2025-10-04T18:13:22.426Z",
+      "contentHash": "5021e624e752b001"
+    },
+    "unknown_75b0e39e": {
+      "url": "https://api.openalex.org?%2Fworks%2Funknown_75b0e39e=",
+      "$ref": "./unknown_75b0e39e.json",
+      "lastRetrieved": "2025-10-04T18:13:34.136Z",
+      "contentHash": "5021e624e752b001"
+    },
+    "unknown_75b0e39e.meta": {
+      "url": "https://api.openalex.org?%2Fworks%2Funknown_75b0e39e.meta=",
+      "$ref": "./unknown_75b0e39e.meta.json",
+      "lastRetrieved": "2025-10-04T18:13:34.141Z",
+      "contentHash": "5021e624e752b001"
     }
   },
   "directories": {
     "W2138270253": {
       "$ref": "./W2138270253",
-      "lastModified": "2025-09-29T23:11:45.323Z"
+      "lastModified": "2025-09-29T22:54:34.462Z"
     },
     "W2741809807": {
       "$ref": "./W2741809807",
-      "lastModified": "2025-09-29T23:11:45.326Z"
+      "lastModified": "2025-09-29T22:54:34.464Z"
+    },
+    "queries": {
+      "$ref": "./queries",
+      "lastModified": "2025-10-04T23:11:23.109Z"
     }
   }
 }

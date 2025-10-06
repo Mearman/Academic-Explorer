@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-09-29T22:55:11.524Z",
+  "lastUpdated": "2025-10-04T23:11:24.012Z",
   "files": {
     "authors": {
       "url": "https://api.openalex.org/authors",
@@ -47,7 +47,7 @@
   "directories": {
     "authors": {
       "$ref": "./authors",
-      "lastModified": "2025-09-29T22:54:37.977Z"
+      "lastModified": "2025-09-29T23:52:31.626Z"
     },
     "funders": {
       "$ref": "./funders",
@@ -71,7 +71,7 @@
     },
     "works": {
       "$ref": "./works",
-      "lastModified": "2025-09-29T22:54:39.501Z"
+      "lastModified": "2025-10-04T18:13:34.146Z"
     }
   }
 }

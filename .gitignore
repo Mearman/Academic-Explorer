@@ -77,7 +77,7 @@ packages/*/coverage
 # Vitest temporary compiled config files
 **/*.timestamp-*.mjs
 # Vite temporary compiled config files
-**/vite.config.ts.timestamp-*.mjs
+**/vite.config.base.ts.timestamp-*.mjs
 **/.vite-temp/
 
 graph.json
@@ -85,3 +85,5 @@ graph.json
 # Test cache data files (generated during test execution with unified hex encoding)
 apps/web/public/data/openalex/*
 !apps/web/public/data/openalex/index.json
+test-results.json
+debug-homepage.png

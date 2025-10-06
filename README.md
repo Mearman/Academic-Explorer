@@ -31,10 +31,12 @@ Academic Explorer/
 ```
 
 ### [Applications](apps/README.md)
+
 - **[`apps/web`](apps/README.md)** - React SPA for interactive OpenAlex exploration
 - **[`apps/cli`](apps/README.md)** - Command-line interface for data management
 
 ### [Shared Packages](packages/README.md)
+
 - **[`packages/client`](packages/README.md)** - TypeScript OpenAlex API client with caching
 - **[`packages/graph`](packages/README.md)** - Core graph data structures and entity management
 - **[`packages/simulation`](packages/README.md)** - Force-directed graph simulation engine
@@ -55,23 +57,27 @@ pnpm cli stats
 pnpm cli search authors "machine learning"
 
 # Run quality checks
-pnpm verify
+pnpm validate
 ```
 
 ## Development Commands
 
 ### Essential Commands
+
 ```bash
 pnpm dev              # Start web development server
 pnpm cli              # OpenAlex CLI tool
 pnpm build            # Build all projects
-pnpm test             # Run all tests
+pnpm test             # Run all tests sequentially with verbose output (Nx-managed)
+pnpm test:verbose     # Run tests in parallel with verbose output (may hang)
+pnpm test:sequential  # Alias for pnpm test
 pnpm typecheck        # TypeScript validation
 pnpm lint             # ESLint checking
-pnpm verify           # Complete quality pipeline
+pnpm validate           # Complete quality pipeline
 ```
 
 ### Nx Monorepo Commands
+
 ```bash
 nx graph              # View dependency graph
 nx affected:test      # Test only changed projects
@@ -80,6 +86,7 @@ nx run-many -t test   # Run tests across all projects
 ```
 
 ### CLI Features
+
 ```bash
 # Entity operations
 pnpm cli get A5017898742
@@ -99,6 +106,7 @@ pnpm cli static:generate
 ## Core Features
 
 ### Web Application
+
 - **Interactive Knowledge Graphs** - Force-directed visualizations with deterministic layouts
 - **Entity-Centric Routing** - Direct access via OpenAlex IDs, DOIs, ORCIDs
 - **Multi-Tier Caching** - Memory → localStorage → IndexedDB → Static → API
@@ -106,13 +114,16 @@ pnpm cli static:generate
 - **Accessibility First** - WCAG2AA compliance with automated testing
 
 ### CLI Tool
+
 - **Intelligent Caching** - Field-level entity caching with 80-99% bandwidth savings
 - **Surgical API Requests** - Fetch only missing entity fields
 - **Cache Analytics** - Field coverage analysis and usage patterns
 - **Static Data Generation** - Pre-computed entity and query optimization
 
 ### Synthetic Response Cache
+
 Advanced caching system with surgical API optimization:
+
 - **EntityFieldAccumulator** - Field-level caching with TTL policies
 - **CollectionResultMapper** - Query result mapping with pagination
 - **SyntheticResponseGenerator** - Response synthesis from cached + API data
@@ -131,6 +142,7 @@ Advanced caching system with surgical API optimization:
 ## OpenAlex Integration
 
 ### Supported Entity Types
+
 - **W** - Works (papers, articles, books)
 - **A** - Authors (researchers, scientists)
 - **S** - Sources (journals, repositories)
@@ -140,6 +152,7 @@ Advanced caching system with surgical API optimization:
 - **T** - Topics (research areas, subjects)
 
 ### URL Patterns
+
 ```
 /authors/A123456789                    # Direct author access
 /works/W2741809807                     # Direct work access
@@ -151,7 +164,9 @@ Advanced caching system with surgical API optimization:
 ## Architecture
 
 ### Component Architecture
+
 Following Atomic Design methodology:
+
 ```
 apps/web/src/components/
 ├── atoms/           # Button, Input, Icon
@@ -162,6 +177,7 @@ apps/web/src/components/
 ```
 
 ### Force Simulation System
+
 - **Web Worker Execution** - Non-blocking force calculations
 - **Deterministic Layouts** - Fixed seeds for consistent positioning
 - **Animated Streaming** - Real-time position updates
@@ -169,6 +185,7 @@ apps/web/src/components/
 - **Performance Scaling** - Dynamic configuration based on graph size
 
 ### Worker System
+
 - **Data Fetching Worker** - Background OpenAlex API operations
 - **Force Animation Worker** - D3 force simulation execution
 - **Event Bridge** - Cross-context communication
@@ -183,15 +200,17 @@ Part of PhD research on **cultural heritage data preservation and citizen scienc
 ## Contributing
 
 ### Quality Pipeline
+
 ```bash
 pnpm typecheck        # TypeScript validation
 pnpm test             # Full test suite
 pnpm build            # Production build
 pnpm lint             # Code quality
-pnpm verify           # Complete verification
+pnpm validate           # Complete verification
 ```
 
 ### Development Guidelines
+
 - **Memory Constraints**: Tests run serially to prevent OOM errors
 - **No `any` Types**: Use `unknown` with type guards
 - **DRY Principle**: Create abstractions over duplication
@@ -200,14 +219,18 @@ pnpm verify           # Complete verification
 ## Deployment
 
 ### Web Application
+
 Built for GitHub Pages with hash-based routing:
+
 ```bash
 pnpm build
 # Deploy apps/web/dist/ to GitHub Pages
 ```
 
 ### CLI Tool
+
 Distributed as part of the monorepo:
+
 ```bash
 pnpm cli --help
 ```
@@ -222,4 +245,4 @@ pnpm cli --help
 
 ---
 
-*PhD Research • Bangor University • Cultural Heritage + Computational Methods*
+_PhD Research • Bangor University • Cultural Heritage + Computational Methods_
