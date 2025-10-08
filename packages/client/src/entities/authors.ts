@@ -4,13 +4,13 @@
  */
 
 import type {
-	Author,
-	AuthorsFilters,
-	QueryParams,
-	OpenAlexResponse,
-	Work,
-	OpenAlexId,
-	AutocompleteResult
+  Author,
+  AuthorsFilters,
+  QueryParams,
+  OpenAlexResponse,
+  Work,
+  OpenAlexId,
+  AutocompleteResult,
 } from "../types";
 import type { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";
@@ -20,10 +20,10 @@ import { logger } from "@academic-explorer/utils";
  * Extended filters for specific author query methods
  */
 export interface AuthorWorksFilters extends AuthorsFilters {
-  "publication_year"?: number | string;
-  "cited_by_count"?: string | number;
-  "is_oa"?: boolean;
-  "type"?: string | string[];
+  publication_year?: number | string;
+  cited_by_count?: string | number;
+  is_oa?: boolean;
+  type?: string | string[];
   "primary_topic.id"?: string | string[];
 }
 
@@ -32,16 +32,20 @@ export interface AuthorWorksFilters extends AuthorsFilters {
  */
 export interface SearchAuthorsOptions {
   filters?: AuthorsFilters;
-  sort?: "relevance_score:desc" | "cited_by_count" | "works_count" | "created_date";
+  sort?:
+    | "relevance_score:desc"
+    | "cited_by_count"
+    | "works_count"
+    | "created_date";
   page?: number;
   per_page?: number;
   select?: string[];
 }
 
 export interface AuthorCollaboratorsFilters {
-  "min_works"?: number;
-  "from_publication_year"?: number;
-  "to_publication_year"?: number;
+  min_works?: number;
+  from_publication_year?: number;
+  to_publication_year?: number;
 }
 
 /**
@@ -56,7 +60,8 @@ export interface GroupByResult {
 /**
  * Grouped response specifically for Authors with statistics
  */
-export interface GroupedResponse<T> extends Omit<OpenAlexResponse<T>, 'group_by'> {
+export interface GroupedResponse<T>
+  extends Omit<OpenAlexResponse<T>, "group_by"> {
   group_by: GroupByResult[];
 }
 
@@ -73,7 +78,7 @@ export interface AuthorGroupingOptions {
 /**
  * Options for author autocomplete queries
  */
-export interface AutocompleteOptions extends Pick<QueryParams, 'per_page'> {
+export interface AutocompleteOptions extends Pick<QueryParams, "per_page"> {
   /** Maximum number of autocomplete results to return (default: 25, max: 200) */
   per_page?: number;
 }
@@ -82,120 +87,132 @@ export interface AutocompleteOptions extends Pick<QueryParams, 'per_page'> {
  * Authors API class providing comprehensive methods for author entity operations
  */
 export class AuthorsApi {
-	constructor(private client: OpenAlexBaseClient) {}
+  constructor(private client: OpenAlexBaseClient) {}
 
-	/**
-	 * Normalize ORCID identifier to the format expected by OpenAlex API
-	 * Supports all ORCID formats: bare, URL, and prefixed formats
-	 * @param id - Input identifier that might be an ORCID
-	 * @returns Normalized ORCID URL if input is valid ORCID, null otherwise
-	 */
-	private normalizeOrcidId(id: string): string | null {
-		if (!id || typeof id !== 'string') {
-			return null;
-		}
+  /**
+   * Normalize ORCID identifier to the format expected by OpenAlex API
+   * Supports all ORCID formats: bare, URL, and prefixed formats
+   * @param id - Input identifier that might be an ORCID
+   * @returns Normalized ORCID URL if input is valid ORCID, null otherwise
+   */
+  private normalizeOrcidId(id: string): string | null {
+    if (!id || typeof id !== "string") {
+      return null;
+    }
 
-		const trimmedId = id.trim();
+    const trimmedId = id.trim();
 
-		// ORCID format patterns
-		const orcidPatterns = [
-			// Bare format: 0000-0000-0000-0000
-			/^(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/i,
-			// URL format: https://orcid.org/0000-0000-0000-0000
-			/^https?:\/\/orcid\.org\/(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/i,
-			// URL without protocol: orcid.org/0000-0000-0000-0000
-			/orcid\.org\/(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])/i,
-			// Prefixed format: orcid:0000-0000-0000-0000
-			/^orcid:(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/i,
-		];
+    // ORCID format patterns
+    const orcidPatterns = [
+      // Bare format: 0000-0000-0000-0000
+      /^(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/i,
+      // URL format: https://orcid.org/0000-0000-0000-0000
+      /^https?:\/\/orcid\.org\/(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/i,
+      // URL without protocol: orcid.org/0000-0000-0000-0000
+      /orcid\.org\/(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])/i,
+      // Prefixed format: orcid:0000-0000-0000-0000
+      /^orcid:(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/i,
+    ];
 
-		for (const pattern of orcidPatterns) {
-			const match = trimmedId.match(pattern);
-			if (match) {
-				const orcidId = match[1].toUpperCase();
-				// Validate ORCID format
-				if (this.validateOrcidFormat(orcidId)) {
-					return `https://orcid.org/${orcidId}`;
-				}
-			}
-		}
+    for (const pattern of orcidPatterns) {
+      const match = trimmedId.match(pattern);
+      if (match) {
+        const orcidId = match[1].toUpperCase();
+        // Validate ORCID format
+        if (this.validateOrcidFormat(orcidId)) {
+          return `https://orcid.org/${orcidId}`;
+        }
+      }
+    }
 
-		return null;
-	}
+    return null;
+  }
 
-	/**
-	 * Validate ORCID format (basic format check - 4-4-4-3X pattern)
-	 * @param orcid - ORCID identifier to validate
-	 * @returns True if format is valid, false otherwise
-	 */
-	private validateOrcidFormat(orcid: string): boolean {
-		return /^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$/i.test(orcid);
-	}
+  /**
+   * Validate ORCID format (basic format check - 4-4-4-3X pattern)
+   * @param orcid - ORCID identifier to validate
+   * @returns True if format is valid, false otherwise
+   */
+  private validateOrcidFormat(orcid: string): boolean {
+    return /^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$/i.test(orcid);
+  }
 
-	/**
-	 * Check if an identifier is a valid ORCID in any supported format
-	 * @param id - Identifier to check
-	 * @returns True if the identifier is a valid ORCID, false otherwise
-	 */
-	isValidOrcid(id: string): boolean {
-		return this.normalizeOrcidId(id) !== null;
-	}
+  /**
+   * Check if an identifier is a valid ORCID in any supported format
+   * @param id - Identifier to check
+   * @returns True if the identifier is a valid ORCID, false otherwise
+   */
+  isValidOrcid(id: string): boolean {
+    return this.normalizeOrcidId(id) !== null;
+  }
 
-	/**
-	 * Autocomplete authors based on partial name or query string
-	 * Provides fast suggestions for author names with built-in debouncing and caching
-	 * @param query - Search query string (e.g., partial author name)
-	 * @param options - Optional parameters for autocomplete behavior
-	 * @returns Promise resolving to array of autocomplete results
-	 *
-	 * @example
-	 * ```typescript
-	 * // Basic autocomplete
-	 * const suggestions = await authorsApi.autocomplete('einstein');
-	 *
-	 * // Limit number of results
-	 * const limitedSuggestions = await authorsApi.autocomplete('marie curie', {
-	 *   per_page: 10
-	 * });
-	 * ```
-	 */
-	async autocomplete(query: string, options: AutocompleteOptions = {}): Promise<AutocompleteResult[]> {
-		// Validate query parameter
-		if (!query || typeof query !== 'string') {
-			throw new Error('Query parameter is required and must be a non-empty string');
-		}
+  /**
+   * Autocomplete authors based on partial name or query string
+   * Provides fast suggestions for author names with built-in debouncing and caching
+   * @param query - Search query string (e.g., partial author name)
+   * @param options - Optional parameters for autocomplete behavior
+   * @returns Promise resolving to array of autocomplete results
+   *
+   * @example
+   * ```typescript
+   * // Basic autocomplete
+   * const suggestions = await authorsApi.autocomplete('einstein');
+   *
+   * // Limit number of results
+   * const limitedSuggestions = await authorsApi.autocomplete('marie curie', {
+   *   per_page: 10
+   * });
+   * ```
+   */
+  async autocomplete(
+    query: string,
+    options: AutocompleteOptions = {},
+  ): Promise<AutocompleteResult[]> {
+    // Validate query parameter
+    if (!query || typeof query !== "string") {
+      throw new Error(
+        "Query parameter is required and must be a non-empty string",
+      );
+    }
 
-		const trimmedQuery = query.trim();
-		if (trimmedQuery.length === 0) {
-			return [];
-		}
+    const trimmedQuery = query.trim();
+    if (trimmedQuery.length === 0) {
+      return [];
+    }
 
-		try {
-			const endpoint = "autocomplete/authors";
-			const queryParams: QueryParams & { q: string } = {
-				q: trimmedQuery,
-			};
+    try {
+      const endpoint = "autocomplete/authors";
+      const queryParams: QueryParams & { q: string } = {
+        q: trimmedQuery,
+      };
 
-			// Apply per_page limit if specified
-			if (options.per_page !== undefined && options.per_page > 0) {
-				queryParams.per_page = Math.min(options.per_page, 200); // Respect OpenAlex API limits
-			}
+      // Apply per_page limit if specified
+      if (options.per_page !== undefined && options.per_page > 0) {
+        queryParams.per_page = Math.min(options.per_page, 200); // Respect OpenAlex API limits
+      }
 
-			const response = await this.client.getResponse<AutocompleteResult>(endpoint, queryParams);
+      const response = await this.client.getResponse<AutocompleteResult>(
+        endpoint,
+        queryParams,
+      );
 
-			return response.results.map(result => ({
-				...result,
-				entity_type: "author" as const,
-			}));
-		} catch (error: unknown) {
-			// Log error but return empty array for graceful degradation
-			const errorMessage = error instanceof Error ? error.message : "Unknown error";
-			logger.warn("authors-api", `Autocomplete failed for query "${query}": ${errorMessage}`);
-			return [];
-		}
-	}
+      return response.results.map((result) => ({
+        ...result,
+        entity_type: "author" as const,
+      }));
+    } catch (error: unknown) {
+      // Log error but return empty array for graceful degradation
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      logger.warn(
+        "authors-api",
+        `Autocomplete failed for query "${query}": ${errorMessage}`,
+      );
+      return [];
+    }
+  }
 
-	/**
+  /**
    * Get a single author by ID with enhanced ORCID support
    * @param id - Author ID (OpenAlex ID, ORCID in any format, or other supported format)
    * @param params - Query parameters for field selection and additional options
@@ -217,13 +234,13 @@ export class AuthorsApi {
    * });
    * ```
    */
-	async getAuthor(id: string, params: QueryParams = {}): Promise<Author> {
-		// Normalize ORCID if it's an ORCID identifier
-		const normalizedId = this.normalizeOrcidId(id) || id;
-		return this.client.getById<Author>("authors", normalizedId, params);
-	}
+  async getAuthor(id: string, params: QueryParams = {}): Promise<Author> {
+    // Normalize ORCID if it's an ORCID identifier
+    const normalizedId = this.normalizeOrcidId(id) || id;
+    return this.client.getById<Author>("authors", normalizedId, params);
+  }
 
-	/**
+  /**
    * Get multiple authors with optional filtering and pagination
    * @param params - Query parameters including filters, sorting, and pagination
    * @returns Promise resolving to OpenAlexResponse containing authors
@@ -243,18 +260,20 @@ export class AuthorsApi {
    * });
    * ```
    */
-	async getAuthors(params: QueryParams & { filter?: string | AuthorsFilters } = {}): Promise<OpenAlexResponse<Author>> {
-		const processedParams = { ...params };
+  async getAuthors(
+    params: QueryParams & { filter?: string | AuthorsFilters } = {},
+  ): Promise<OpenAlexResponse<Author>> {
+    const processedParams = { ...params };
 
-		// Convert filter object to string if needed
-		if (processedParams.filter && typeof processedParams.filter === 'object') {
-			processedParams.filter = buildFilterString(processedParams.filter);
-		}
+    // Convert filter object to string if needed
+    if (processedParams.filter && typeof processedParams.filter === "object") {
+      processedParams.filter = buildFilterString(processedParams.filter);
+    }
 
-		return this.client.getResponse<Author>("authors", processedParams);
-	}
+    return this.client.getResponse<Author>("authors", processedParams);
+  }
 
-	/**
+  /**
    * Search authors by query string with optional filters
    * @param query - Search query string
    * @param filters - Optional AuthorsFilters for refined searching
@@ -273,24 +292,30 @@ export class AuthorsApi {
    * });
    * ```
    */
-	async searchAuthors(
-		query: string,
-		options: SearchAuthorsOptions = {}
-	): Promise<OpenAlexResponse<Author>> {
-		const params: QueryParams = {
-			search: query,
-			sort: options.sort ?? (query.trim() ? "relevance_score:desc" : "works_count"),
-		};
+  async searchAuthors(
+    query: string,
+    options: SearchAuthorsOptions = {},
+  ): Promise<OpenAlexResponse<Author>> {
+    const params: QueryParams = {
+      search: query,
+      sort: options.sort
+        ? options.sort.includes(":")
+          ? options.sort
+          : `${options.sort}:desc`
+        : query.trim()
+          ? "relevance_score:desc"
+          : "works_count",
+    };
 
-		if (options.page !== undefined) params.page = options.page;
-		if (options.per_page !== undefined) params.per_page = options.per_page;
-		if (options.select !== undefined) params.select = options.select;
-		if (options.filters) params.filter = buildFilterString(options.filters);
+    if (options.page !== undefined) params.page = options.page;
+    if (options.per_page !== undefined) params.per_page = options.per_page;
+    if (options.select !== undefined) params.select = options.select;
+    if (options.filters) params.filter = buildFilterString(options.filters);
 
-		return this.client.getResponse<Author>("authors", params);
-	}
+    return this.client.getResponse<Author>("authors", params);
+  }
 
-	/**
+  /**
    * Get authors affiliated with a specific institution
    * @param institutionId - Institution ID (OpenAlex ID or ROR)
    * @param params - Additional query parameters
@@ -308,17 +333,17 @@ export class AuthorsApi {
    * });
    * ```
    */
-	async getAuthorsByInstitution(
-		institutionId: string,
-		params: QueryParams = {}
-	): Promise<OpenAlexResponse<Author>> {
-		return this.getAuthors({
-			...params,
-			filter: `last_known_institution.id:${institutionId}`
-		});
-	}
+  async getAuthorsByInstitution(
+    institutionId: string,
+    params: QueryParams = {},
+  ): Promise<OpenAlexResponse<Author>> {
+    return this.getAuthors({
+      ...params,
+      filter: `last_known_institution.id:${institutionId}`,
+    });
+  }
 
-	/**
+  /**
    * Get authors from a specific country
    * @param countryCode - ISO 2-letter country code
    * @param params - Additional query parameters
@@ -336,17 +361,17 @@ export class AuthorsApi {
    * });
    * ```
    */
-	async getAuthorsByCountry(
-		countryCode: string,
-		params: QueryParams = {}
-	): Promise<OpenAlexResponse<Author>> {
-		return this.getAuthors({
-			...params,
-			filter: `last_known_institution.country_code:${countryCode.toUpperCase()}`
-		});
-	}
+  async getAuthorsByCountry(
+    countryCode: string,
+    params: QueryParams = {},
+  ): Promise<OpenAlexResponse<Author>> {
+    return this.getAuthors({
+      ...params,
+      filter: `last_known_institution.country_code:${countryCode.toUpperCase()}`,
+    });
+  }
 
-	/**
+  /**
    * Get works authored by a specific author
    * @param authorId - Author ID
    * @param filters - Optional filters for works
@@ -365,24 +390,24 @@ export class AuthorsApi {
    * });
    * ```
    */
-	async getAuthorWorks(
-		authorId: string,
-		filters: AuthorWorksFilters = {},
-		params: QueryParams = {}
-	): Promise<OpenAlexResponse<Work>> {
-		// Build combined filters with author ID
-		const combinedFilters = {
-			"authorships.author.id": authorId,
-			...filters
-		};
+  async getAuthorWorks(
+    authorId: string,
+    filters: AuthorWorksFilters = {},
+    params: QueryParams = {},
+  ): Promise<OpenAlexResponse<Work>> {
+    // Build combined filters with author ID
+    const combinedFilters = {
+      "authorships.author.id": authorId,
+      ...filters,
+    };
 
-		return this.client.getResponse<Work>("works", {
-			...params,
-			filter: buildFilterString(combinedFilters)
-		});
-	}
+    return this.client.getResponse<Work>("works", {
+      ...params,
+      filter: buildFilterString(combinedFilters),
+    });
+  }
 
-	/**
+  /**
    * Get research concepts associated with an author
    * @param authorId - Author ID
    * @param params - Additional query parameters
@@ -393,19 +418,26 @@ export class AuthorsApi {
    * const concepts = await authorsApi.getAuthorConcepts('A2208157607');
    * ```
    */
-	async getAuthorConcepts(
-		authorId: string,
-		params: QueryParams = {}
-	): Promise<Array<{ id: OpenAlexId; display_name: string; score: number; level: number }>> {
-		const author = await this.getAuthor(authorId, {
-			...params,
-			select: ["x_concepts"]
-		});
+  async getAuthorConcepts(
+    authorId: string,
+    params: QueryParams = {},
+  ): Promise<
+    Array<{
+      id: OpenAlexId;
+      display_name: string;
+      score: number;
+      level: number;
+    }>
+  > {
+    const author = await this.getAuthor(authorId, {
+      ...params,
+      select: ["x_concepts"],
+    });
 
-		return author.x_concepts ?? [];
-	}
+    return author.x_concepts ?? [];
+  }
 
-	/**
+  /**
    * Get research topics associated with an author
    * @param authorId - Author ID
    * @param params - Additional query parameters
@@ -416,26 +448,28 @@ export class AuthorsApi {
    * const topics = await authorsApi.getAuthorTopics('A2208157607');
    * ```
    */
-	async getAuthorTopics(
-		authorId: string,
-		params: QueryParams = {}
-	): Promise<Array<{
-    id: OpenAlexId;
-    display_name: string;
-    count: number;
-    subfield?: { id: OpenAlexId; display_name: string };
-    field?: { id: OpenAlexId; display_name: string };
-    domain?: { id: OpenAlexId; display_name: string };
-  }>> {
-		const author = await this.getAuthor(authorId, {
-			...params,
-			select: ["topics"]
-		});
+  async getAuthorTopics(
+    authorId: string,
+    params: QueryParams = {},
+  ): Promise<
+    Array<{
+      id: OpenAlexId;
+      display_name: string;
+      count: number;
+      subfield?: { id: OpenAlexId; display_name: string };
+      field?: { id: OpenAlexId; display_name: string };
+      domain?: { id: OpenAlexId; display_name: string };
+    }>
+  > {
+    const author = await this.getAuthor(authorId, {
+      ...params,
+      select: ["topics"],
+    });
 
-		return author.topics ?? [];
-	}
+    return author.topics ?? [];
+  }
 
-	/**
+  /**
    * Get frequent collaborators of an author
    * @param authorId - Author ID
    * @param filters - Optional filters for collaboration analysis
@@ -453,107 +487,117 @@ export class AuthorsApi {
    * });
    * ```
    */
-	async getAuthorCollaborators(
-		authorId: string,
-		filters: AuthorCollaboratorsFilters = {},
-		params: QueryParams = {}
-	): Promise<Array<{
-    author: Author;
-    collaboration_count: number;
-    first_collaboration_year?: number;
-    last_collaboration_year?: number;
-  }>> {
-		// First, get all works by this author to analyze co-authorships
-		const worksFilters: AuthorWorksFilters = {};
-		if (filters.from_publication_year) {
-			worksFilters["publication_year"] = `>=${filters.from_publication_year.toString()}`;
-		}
+  async getAuthorCollaborators(
+    authorId: string,
+    filters: AuthorCollaboratorsFilters = {},
+    params: QueryParams = {},
+  ): Promise<
+    Array<{
+      author: Author;
+      collaboration_count: number;
+      first_collaboration_year?: number;
+      last_collaboration_year?: number;
+    }>
+  > {
+    // First, get all works by this author to analyze co-authorships
+    const worksFilters: AuthorWorksFilters = {};
+    if (filters.from_publication_year) {
+      worksFilters["publication_year"] =
+        `>=${filters.from_publication_year.toString()}`;
+    }
 
-		const works = await this.getAuthorWorks(authorId, worksFilters, {
-			...params,
-			select: ["authorships", "publication_year"],
-			per_page: 200 // Get more works for better collaboration analysis
-		});
+    const works = await this.getAuthorWorks(authorId, worksFilters, {
+      ...params,
+      select: ["authorships", "publication_year"],
+      per_page: 200, // Get more works for better collaboration analysis
+    });
 
-		const collaboratorStats = new Map<string, {
-      count: number;
-      years: number[];
-      author_info?: Author;
-    }>();
+    const collaboratorStats = new Map<
+      string,
+      {
+        count: number;
+        years: number[];
+        author_info?: Author;
+      }
+    >();
 
-		// Analyze co-authorships
-		works.results.forEach(work => {
-			const coauthorIds = work.authorships
-				.map(auth => auth.author.id)
-				.filter(id => id !== authorId);
+    // Analyze co-authorships
+    works.results.forEach((work) => {
+      const coauthorIds = work.authorships
+        .map((auth) => auth.author.id)
+        .filter((id) => id !== authorId);
 
-			coauthorIds.forEach(coauthorId => {
-				if (!collaboratorStats.has(coauthorId)) {
-					collaboratorStats.set(coauthorId, {
-						count: 0,
-						years: []
-					});
-				}
+      coauthorIds.forEach((coauthorId) => {
+        if (!collaboratorStats.has(coauthorId)) {
+          collaboratorStats.set(coauthorId, {
+            count: 0,
+            years: [],
+          });
+        }
 
-				const stats = collaboratorStats.get(coauthorId);
-				if (!stats) return;
-				stats.count++;
-				if (work.publication_year) {
-					stats.years.push(work.publication_year);
-				}
-			});
-		});
+        const stats = collaboratorStats.get(coauthorId);
+        if (!stats) return;
+        stats.count++;
+        if (work.publication_year) {
+          stats.years.push(work.publication_year);
+        }
+      });
+    });
 
-		// Filter by minimum works if specified
-		const minWorks = filters.min_works ?? 1;
-		const filteredCollaborators = Array.from(collaboratorStats.entries())
-			.filter(([, stats]) => stats.count >= minWorks)
-			.sort(([, a], [, b]) => b.count - a.count);
+    // Filter by minimum works if specified
+    const minWorks = filters.min_works ?? 1;
+    const filteredCollaborators = Array.from(collaboratorStats.entries())
+      .filter(([, stats]) => stats.count >= minWorks)
+      .sort(([, a], [, b]) => b.count - a.count);
 
-		// Get author details for top collaborators
-		const collaboratorResults = await Promise.allSettled(
-			filteredCollaborators.slice(0, 50).map(async ([collaboratorId, stats]) => {
-				try {
-					const collaboratorAuthor = await this.getAuthor(collaboratorId, {
-						select: ["id", "display_name", "works_count", "cited_by_count"]
-					});
+    // Get author details for top collaborators
+    const collaboratorResults = await Promise.allSettled(
+      filteredCollaborators
+        .slice(0, 50)
+        .map(async ([collaboratorId, stats]) => {
+          try {
+            const collaboratorAuthor = await this.getAuthor(collaboratorId, {
+              select: ["id", "display_name", "works_count", "cited_by_count"],
+            });
 
-					const result: {
-						author: Author;
-						collaboration_count: number;
-						first_collaboration_year?: number;
-						last_collaboration_year?: number;
-					} = {
-						author: collaboratorAuthor,
-						collaboration_count: stats.count,
-					};
+            const result: {
+              author: Author;
+              collaboration_count: number;
+              first_collaboration_year?: number;
+              last_collaboration_year?: number;
+            } = {
+              author: collaboratorAuthor,
+              collaboration_count: stats.count,
+            };
 
-					if (stats.years.length > 0) {
-						result.first_collaboration_year = Math.min(...stats.years);
-						result.last_collaboration_year = Math.max(...stats.years);
-					}
+            if (stats.years.length > 0) {
+              result.first_collaboration_year = Math.min(...stats.years);
+              result.last_collaboration_year = Math.max(...stats.years);
+            }
 
-					return result;
-				} catch {
-					// Skip authors that can't be fetched
-					return null;
-				}
-			})
-		);
+            return result;
+          } catch {
+            // Skip authors that can't be fetched
+            return null;
+          }
+        }),
+    );
 
-		return collaboratorResults
-			.filter((result): result is PromiseFulfilledResult<{
-        author: Author;
-        collaboration_count: number;
-        first_collaboration_year?: number;
-        last_collaboration_year?: number;
-      }> =>
-				result.status === "fulfilled" && result.value !== null
-			)
-			.map(result => result.value);
-	}
+    return collaboratorResults
+      .filter(
+        (
+          result,
+        ): result is PromiseFulfilledResult<{
+          author: Author;
+          collaboration_count: number;
+          first_collaboration_year?: number;
+          last_collaboration_year?: number;
+        }> => result.status === "fulfilled" && result.value !== null,
+      )
+      .map((result) => result.value);
+  }
 
-	/**
+  /**
    * Get a random sample of authors
    * @param count - Number of random authors to return (max 200)
    * @param params - Additional query parameters
@@ -570,21 +614,21 @@ export class AuthorsApi {
    * });
    * ```
    */
-	async getRandomAuthors(
-		count: number = 25,
-		params: QueryParams & { filter?: string } = {}
-	): Promise<OpenAlexResponse<Author>> {
-		// Ensure count is within reasonable bounds
-		const sampleSize = Math.min(Math.max(count, 1), 200);
+  async getRandomAuthors(
+    count: number = 25,
+    params: QueryParams & { filter?: string } = {},
+  ): Promise<OpenAlexResponse<Author>> {
+    // Ensure count is within reasonable bounds
+    const sampleSize = Math.min(Math.max(count, 1), 200);
 
-		return this.getAuthors({
-			...params,
-			sample: sampleSize,
-			seed: Math.floor(Math.random() * 1000000) // Random seed for variety
-		});
-	}
+    return this.getAuthors({
+      ...params,
+      sample: sampleSize,
+      seed: Math.floor(Math.random() * 1000000), // Random seed for variety
+    });
+  }
 
-	/**
+  /**
    * Get authors with ORCID identifiers
    * @param params - Additional query parameters
    * @returns Promise resolving to OpenAlexResponse containing authors with ORCIDs
@@ -594,14 +638,16 @@ export class AuthorsApi {
    * const authorsWithOrcid = await authorsApi.getAuthorsWithOrcid();
    * ```
    */
-	async getAuthorsWithOrcid(params: QueryParams = {}): Promise<OpenAlexResponse<Author>> {
-		return this.getAuthors({
-			...params,
-			filter: "has_orcid:true"
-		});
-	}
+  async getAuthorsWithOrcid(
+    params: QueryParams = {},
+  ): Promise<OpenAlexResponse<Author>> {
+    return this.getAuthors({
+      ...params,
+      filter: "has_orcid:true",
+    });
+  }
 
-	/**
+  /**
    * Get most cited authors globally or with filters
    * @param limit - Number of authors to return
    * @param filters - Optional filters to refine search
@@ -619,26 +665,26 @@ export class AuthorsApi {
    * });
    * ```
    */
-	async getMostCitedAuthors(
-		limit: number = 50,
-		filters: AuthorsFilters = {},
-		params: QueryParams = {}
-	): Promise<OpenAlexResponse<Author>> {
-		const authorsParams: QueryParams & { filter?: string } = {
-			...params,
-			sort: "cited_by_count:desc",
-			per_page: Math.min(limit, 200)
-		};
+  async getMostCitedAuthors(
+    limit: number = 50,
+    filters: AuthorsFilters = {},
+    params: QueryParams = {},
+  ): Promise<OpenAlexResponse<Author>> {
+    const authorsParams: QueryParams & { filter?: string } = {
+      ...params,
+      sort: "cited_by_count:desc",
+      per_page: Math.min(limit, 200),
+    };
 
-		const filterString = buildFilterString(filters);
-		if (filterString) {
-			authorsParams.filter = filterString;
-		}
+    const filterString = buildFilterString(filters);
+    if (filterString) {
+      authorsParams.filter = filterString;
+    }
 
-		return this.getAuthors(authorsParams);
-	}
+    return this.getAuthors(authorsParams);
+  }
 
-	/**
+  /**
    * Get most productive authors (by works count)
    * @param limit - Number of authors to return
    * @param filters - Optional filters to refine search
@@ -650,26 +696,26 @@ export class AuthorsApi {
    * const productiveAuthors = await authorsApi.getMostProductiveAuthors(100);
    * ```
    */
-	async getMostProductiveAuthors(
-		limit: number = 50,
-		filters: AuthorsFilters = {},
-		params: QueryParams = {}
-	): Promise<OpenAlexResponse<Author>> {
-		const authorsParams: QueryParams & { filter?: string } = {
-			...params,
-			sort: "works_count:desc",
-			per_page: Math.min(limit, 200)
-		};
+  async getMostProductiveAuthors(
+    limit: number = 50,
+    filters: AuthorsFilters = {},
+    params: QueryParams = {},
+  ): Promise<OpenAlexResponse<Author>> {
+    const authorsParams: QueryParams & { filter?: string } = {
+      ...params,
+      sort: "works_count:desc",
+      per_page: Math.min(limit, 200),
+    };
 
-		const filterString = buildFilterString(filters);
-		if (filterString) {
-			authorsParams.filter = filterString;
-		}
+    const filterString = buildFilterString(filters);
+    if (filterString) {
+      authorsParams.filter = filterString;
+    }
 
-		return this.getAuthors(authorsParams);
-	}
+    return this.getAuthors(authorsParams);
+  }
 
-	/**
+  /**
    * Stream all authors matching the given criteria
    * Useful for processing large datasets
    * @param params - Query parameters for filtering
@@ -688,14 +734,14 @@ export class AuthorsApi {
    * }
    * ```
    */
-	async *streamAuthors(
-		params: QueryParams & { filter?: string } = {},
-		batchSize: number = 200
-	): AsyncGenerator<Author[], void, unknown> {
-		yield* this.client.stream<Author>("authors", params, batchSize);
-	}
+  async *streamAuthors(
+    params: QueryParams & { filter?: string } = {},
+    batchSize: number = 200,
+  ): AsyncGenerator<Author[], void, unknown> {
+    yield* this.client.stream<Author>("authors", params, batchSize);
+  }
 
-	/**
+  /**
    * Get statistical aggregations for authors grouped by a specific field
    * @param groupBy - Field to group by (e.g., 'last_known_institution.country_code', 'publication_year', 'topics.id')
    * @param filters - Optional filters to apply before grouping
@@ -714,26 +760,26 @@ export class AuthorsApi {
    * });
    * ```
    */
-	async getStats(
-		groupBy: string,
-		filters: AuthorsFilters = {}
-	): Promise<GroupByResult[]> {
-		const params: QueryParams & { filter?: string } = {
-			group_by: groupBy,
-			per_page: 0 // Only get grouping stats, no individual results
-		};
+  async getStats(
+    groupBy: string,
+    filters: AuthorsFilters = {},
+  ): Promise<GroupByResult[]> {
+    const params: QueryParams & { filter?: string } = {
+      group_by: groupBy,
+      per_page: 0, // Only get grouping stats, no individual results
+    };
 
-		const filterString = buildFilterString(filters);
-		if (filterString) {
-			params.filter = filterString;
-		}
+    const filterString = buildFilterString(filters);
+    if (filterString) {
+      params.filter = filterString;
+    }
 
-		const response = await this.client.getResponse<Author>("authors", params);
+    const response = await this.client.getResponse<Author>("authors", params);
 
-		return response.group_by || [];
-	}
+    return response.group_by || [];
+  }
 
-	/**
+  /**
    * Get authors grouped by a specific field with full author data
    * @param field - Field to group by
    * @param options - Additional options for filtering and pagination
@@ -754,30 +800,30 @@ export class AuthorsApi {
    * });
    * ```
    */
-	async getAuthorsGroupedBy(
-		field: string,
-		options: AuthorGroupingOptions = {}
-	): Promise<GroupedResponse<Author>> {
-		const { filters = {}, sort, per_page = 25, page } = options;
+  async getAuthorsGroupedBy(
+    field: string,
+    options: AuthorGroupingOptions = {},
+  ): Promise<GroupedResponse<Author>> {
+    const { filters = {}, sort, per_page = 25, page } = options;
 
-		const params: QueryParams & { filter?: string } = {
-			group_by: field,
-			per_page,
-			...(sort && { sort }),
-			...(page && { page })
-		};
+    const params: QueryParams & { filter?: string } = {
+      group_by: field,
+      per_page,
+      ...(sort && { sort }),
+      ...(page && { page }),
+    };
 
-		const filterString = buildFilterString(filters);
-		if (filterString) {
-			params.filter = filterString;
-		}
+    const filterString = buildFilterString(filters);
+    if (filterString) {
+      params.filter = filterString;
+    }
 
-		const response = await this.client.getResponse<Author>("authors", params);
+    const response = await this.client.getResponse<Author>("authors", params);
 
-		// Transform the response to match GroupedResponse type
-		return {
-			...response,
-			group_by: response.group_by || []
-		} as GroupedResponse<Author>;
-	}
+    // Transform the response to match GroupedResponse type
+    return {
+      ...response,
+      group_by: response.group_by || [],
+    } as GroupedResponse<Author>;
+  }
 }

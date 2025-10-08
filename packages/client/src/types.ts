@@ -16,7 +16,9 @@ export type DateString = string; // ISO 8601 date string (e.g., "2023-01-15")
 export type NumericFilter = string | number; // Supports comparison operators like ">100", ">=50", etc.
 
 // Utility type for making all fields except id optional (for partial hydration)
-type PartialExceptId<T> = { id: T extends { id: infer U } ? U : never } & Partial<Omit<T, "id">>;
+type PartialExceptId<T> = {
+  id: T extends { id: infer U } ? U : never;
+} & Partial<Omit<T, "id">>;
 
 // Common utility types
 export interface OpenAlexResponse<T> {
@@ -32,6 +34,9 @@ export interface OpenAlexResponse<T> {
     key: string;
     key_display_name: string;
     count: number;
+    cited_by_count?: number;
+    works_count?: number;
+    h_index?: number;
   }>;
 }
 
@@ -640,7 +645,6 @@ export interface KeywordCountsByYear {
   readonly cited_by_count: number;
 }
 
-
 /**
  * Text Analysis Result - For /text endpoint
  */
@@ -669,171 +673,171 @@ export interface WorksFilters {
   "authorships.institutions.country_code"?: string | string[];
   "authorships.institutions.type"?: string | string[];
   "best_oa_location.source.id"?: string | string[];
-  "cited_by_count"?: string | number;
+  cited_by_count?: string | number;
   "concepts.id"?: string | string[];
-  "corresponding_author_ids"?: string | string[];
-  "corresponding_institution_ids"?: string | string[];
+  corresponding_author_ids?: string | string[];
+  corresponding_institution_ids?: string | string[];
   "default.search"?: string;
   "display_name.search"?: string;
-  "doi"?: string | string[];
-  "from_created_date"?: string;
-  "from_publication_date"?: string;
-  "from_updated_date"?: string;
-  "fulltext_origin"?: string | string[];
+  doi?: string | string[];
+  from_created_date?: string;
+  from_publication_date?: string;
+  from_updated_date?: string;
+  fulltext_origin?: string | string[];
   "grants.funder"?: string | string[];
-  "has_abstract"?: boolean;
-  "has_doi"?: boolean;
-  "has_fulltext"?: boolean;
-  "has_oa_accepted_or_published_version"?: boolean;
-  "has_oa_submitted_version"?: boolean;
-  "has_references"?: boolean;
+  has_abstract?: boolean;
+  has_doi?: boolean;
+  has_fulltext?: boolean;
+  has_oa_accepted_or_published_version?: boolean;
+  has_oa_submitted_version?: boolean;
+  has_references?: boolean;
   "host_venue.id"?: string | string[];
   "host_venue.issn"?: string | string[];
   "host_venue.lineage"?: string | string[];
   "host_venue.publisher"?: string | string[];
   "ids.openalex"?: string | string[];
-  "is_oa"?: boolean;
-  "is_paratext"?: boolean;
-  "is_retracted"?: boolean;
-  "language"?: string | string[];
+  is_oa?: boolean;
+  is_paratext?: boolean;
+  is_retracted?: boolean;
+  language?: string | string[];
   "locations.source.id"?: string | string[];
   "open_access.is_oa"?: boolean;
   "primary_location.source.id"?: string | string[];
   "primary_topic.id"?: string | string[];
-  "publication_date"?: string;
-  "publication_year"?: number | string;
-  "referenced_works"?: string | string[];
-  "repository"?: string | string[];
+  publication_date?: string;
+  publication_year?: number | string;
+  referenced_works?: string | string[];
+  repository?: string | string[];
   "sustainable_development_goals.id"?: string | string[];
   "title.search"?: string;
-  "to_created_date"?: string;
-  "to_publication_date"?: string;
-  "to_updated_date"?: string;
+  to_created_date?: string;
+  to_publication_date?: string;
+  to_updated_date?: string;
   "topics.id"?: string | string[];
-  "type"?: string | string[];
-  "type_crossref"?: string | string[];
-  "version"?: string | string[];
+  type?: string | string[];
+  type_crossref?: string | string[];
+  version?: string | string[];
 }
 
 export interface AuthorsFilters {
   "affiliations.institution.id"?: string | string[];
   "affiliations.institution.ror"?: string | string[];
   "affiliations.institution.country_code"?: string | string[];
-  "cited_by_count"?: string | number;
+  cited_by_count?: string | number;
   "default.search"?: string;
   "display_name.search"?: string;
-  "from_created_date"?: string;
-  "from_updated_date"?: string;
-  "has_orcid"?: boolean;
+  from_created_date?: string;
+  from_updated_date?: string;
+  has_orcid?: boolean;
   "last_known_institution.id"?: string | string[];
   "last_known_institution.ror"?: string | string[];
   "last_known_institution.country_code"?: string | string[];
-  "orcid"?: string | string[];
-  "to_created_date"?: string;
-  "to_updated_date"?: string;
+  orcid?: string | string[];
+  to_created_date?: string;
+  to_updated_date?: string;
   "topics.id"?: string | string[];
-  "works_count"?: string | number;
+  works_count?: string | number;
   "x_concepts.id"?: string | string[];
 }
 
 export interface SourcesFilters {
-  "apc_usd"?: string | number;
-  "cited_by_count"?: string | number;
-  "country_code"?: string | string[];
+  apc_usd?: string | number;
+  cited_by_count?: string | number;
+  country_code?: string | string[];
   "default.search"?: string;
   "display_name.search"?: string;
-  "from_created_date"?: string;
-  "from_updated_date"?: string;
-  "has_issn"?: boolean;
-  "host_organization"?: string | string[];
-  "host_organization_lineage"?: string | string[];
+  from_created_date?: string;
+  from_updated_date?: string;
+  has_issn?: boolean;
+  host_organization?: string | string[];
+  host_organization_lineage?: string | string[];
   "ids.issn"?: string | string[];
-  "is_in_doaj"?: boolean;
-  "is_oa"?: boolean;
-  "issn"?: string | string[];
-  "publisher"?: string | string[];
-  "to_created_date"?: string;
-  "to_updated_date"?: string;
+  is_in_doaj?: boolean;
+  is_oa?: boolean;
+  issn?: string | string[];
+  publisher?: string | string[];
+  to_created_date?: string;
+  to_updated_date?: string;
   "topics.id"?: string | string[];
-  "type"?: string | string[];
-  "works_count"?: string | number;
+  type?: string | string[];
+  works_count?: string | number;
   "x_concepts.id"?: string | string[];
 }
 
 export interface InstitutionsFilters {
   "associated_institutions.id"?: string | string[];
-  "cited_by_count"?: string | number;
-  "country_code"?: string | string[];
+  cited_by_count?: string | number;
+  country_code?: string | string[];
   "default.search"?: string;
   "display_name.search"?: string;
-  "from_created_date"?: string;
-  "from_updated_date"?: string;
-  "has_ror"?: boolean;
-  "is_global_south"?: boolean;
-  "lineage"?: string | string[];
-  "ror"?: string | string[];
-  "to_created_date"?: string;
-  "to_updated_date"?: string;
+  from_created_date?: string;
+  from_updated_date?: string;
+  has_ror?: boolean;
+  is_global_south?: boolean;
+  lineage?: string | string[];
+  ror?: string | string[];
+  to_created_date?: string;
+  to_updated_date?: string;
   "topics.id"?: string | string[];
-  "type"?: string | string[];
-  "works_count"?: string | number;
+  type?: string | string[];
+  works_count?: string | number;
   "x_concepts.id"?: string | string[];
 }
 
 export interface TopicsFilters {
-  "cited_by_count"?: string | number;
+  cited_by_count?: string | number;
   "default.search"?: string;
   "display_name.search"?: string;
   "domain.id"?: string | string[];
   "field.id"?: string | string[];
-  "from_created_date"?: string;
-  "from_updated_date"?: string;
+  from_created_date?: string;
+  from_updated_date?: string;
   "keywords.search"?: string;
   "subfield.id"?: string | string[];
-  "to_created_date"?: string;
-  "to_updated_date"?: string;
-  "works_count"?: string | number;
+  to_created_date?: string;
+  to_updated_date?: string;
+  works_count?: string | number;
 }
 
 export interface ConceptsFilters {
-  "cited_by_count"?: string | number;
+  cited_by_count?: string | number;
   "default.search"?: string;
   "display_name.search"?: string;
-  "from_created_date"?: string;
-  "from_updated_date"?: string;
-  "level"?: number | string;
-  "to_created_date"?: string;
-  "to_updated_date"?: string;
-  "wikidata"?: string | string[];
-  "works_count"?: string | number;
+  from_created_date?: string;
+  from_updated_date?: string;
+  level?: number | string;
+  to_created_date?: string;
+  to_updated_date?: string;
+  wikidata?: string | string[];
+  works_count?: string | number;
 }
 
 export interface PublishersFilters {
-  "cited_by_count"?: string | number;
-  "country_codes"?: string | string[];
+  cited_by_count?: string | number;
+  country_codes?: string | string[];
   "default.search"?: string;
   "display_name.search"?: string;
-  "from_created_date"?: string;
-  "from_updated_date"?: string;
-  "lineage"?: string | string[];
-  "parent_publisher"?: string | string[];
-  "to_created_date"?: string;
-  "to_updated_date"?: string;
-  "works_count"?: string | number;
+  from_created_date?: string;
+  from_updated_date?: string;
+  lineage?: string | string[];
+  parent_publisher?: string | string[];
+  to_created_date?: string;
+  to_updated_date?: string;
+  works_count?: string | number;
 }
 
 export interface FundersFilters {
-  "cited_by_count"?: string | number;
-  "country_code"?: string | string[];
+  cited_by_count?: string | number;
+  country_code?: string | string[];
   "default.search"?: string;
   "display_name.search"?: string;
-  "from_created_date"?: string;
-  "from_updated_date"?: string;
-  "grants_count"?: string | number;
-  "to_created_date"?: string;
-  "to_updated_date"?: string;
+  from_created_date?: string;
+  from_updated_date?: string;
+  grants_count?: string | number;
+  to_created_date?: string;
+  to_updated_date?: string;
   "topics.id"?: string | string[];
-  "works_count"?: string | number;
+  works_count?: string | number;
 }
 
 /**
@@ -844,7 +848,7 @@ export interface FundersFilters {
  */
 export interface KeywordsFilters {
   /** Filter by citation count (e.g., ">100", ">=50", "<1000") */
-  "cited_by_count"?: NumericFilter;
+  cited_by_count?: NumericFilter;
 
   /** Default search across multiple fields */
   "default.search"?: string;
@@ -853,21 +857,20 @@ export interface KeywordsFilters {
   "display_name.search"?: string;
 
   /** Filter by creation date (ISO 8601 date string, e.g., "2020-01-01") */
-  "from_created_date"?: DateString;
+  from_created_date?: DateString;
 
   /** Filter by last update date (ISO 8601 date string) */
-  "from_updated_date"?: DateString;
+  from_updated_date?: DateString;
 
   /** Filter by creation date upper bound (ISO 8601 date string) */
-  "to_created_date"?: DateString;
+  to_created_date?: DateString;
 
   /** Filter by last update date upper bound (ISO 8601 date string) */
-  "to_updated_date"?: DateString;
+  to_updated_date?: DateString;
 
   /** Filter by works count (e.g., ">10", ">=5", "<100") */
-  "works_count"?: NumericFilter;
+  works_count?: NumericFilter;
 }
-
 
 // Statistical endpoint parameters
 export interface StatsParams {
@@ -910,7 +913,16 @@ export interface AutocompleteResult {
   hint?: string;
   cited_by_count?: number;
   works_count?: number;
-  entity_type: "work" | "author" | "source" | "institution" | "topic" | "publisher" | "funder" | "concept" | "keyword";
+  entity_type:
+    | "work"
+    | "author"
+    | "source"
+    | "institution"
+    | "topic"
+    | "publisher"
+    | "funder"
+    | "concept"
+    | "keyword";
   external_id?: string;
   filter_key?: string;
 }
@@ -931,19 +943,46 @@ export interface OpenAlexError {
 }
 
 // Union types for all entities
-export type OpenAlexEntity = Work | Author | Source | InstitutionEntity | Topic | Concept | Publisher | Funder | Keyword;
-export type EntityType = "works" | "authors" | "sources" | "institutions" | "topics" | "concepts" | "publishers" | "funders" | "keywords";
-export type EntityFilters = WorksFilters | AuthorsFilters | SourcesFilters | InstitutionsFilters | TopicsFilters | ConceptsFilters | PublishersFilters | FundersFilters | KeywordsFilters;
+export type OpenAlexEntity =
+  | Work
+  | Author
+  | Source
+  | InstitutionEntity
+  | Topic
+  | Concept
+  | Publisher
+  | Funder
+  | Keyword;
+export type EntityType =
+  | "works"
+  | "authors"
+  | "sources"
+  | "institutions"
+  | "topics"
+  | "concepts"
+  | "publishers"
+  | "funders"
+  | "keywords";
+export type EntityFilters =
+  | WorksFilters
+  | AuthorsFilters
+  | SourcesFilters
+  | InstitutionsFilters
+  | TopicsFilters
+  | ConceptsFilters
+  | PublishersFilters
+  | FundersFilters
+  | KeywordsFilters;
 
 // Mapping from entity type to entity interface
 export type EntityTypeMap = {
-	works: Work;
-	authors: Author;
-	sources: Source;
-	institutions: InstitutionEntity;
-	topics: Topic;
-	concepts: Concept;
-	publishers: Publisher;
-	funders: Funder;
-	keywords: Keyword;
+  works: Work;
+  authors: Author;
+  sources: Source;
+  institutions: InstitutionEntity;
+  topics: Topic;
+  concepts: Concept;
+  publishers: Publisher;
+  funders: Funder;
+  keywords: Keyword;
 };

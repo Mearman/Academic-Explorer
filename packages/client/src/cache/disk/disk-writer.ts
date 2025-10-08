@@ -22,6 +22,19 @@ let path: typeof import("path") | undefined;
 let crypto: typeof import("crypto") | undefined;
 
 /**
+ * For testing: allow injecting mock Node.js modules
+ */
+export function __setMockModules(
+  mockFs?: typeof import("fs/promises"),
+  mockPath?: typeof import("path"),
+  mockCrypto?: typeof import("crypto"),
+): void {
+  fs = mockFs;
+  path = mockPath;
+  crypto = mockCrypto;
+}
+
+/**
  * Initialize Node.js modules (required before using any file operations)
  */
 async function initializeNodeModules(): Promise<void> {
@@ -198,8 +211,8 @@ export class DiskCacheWriter {
    * 6. Lock release in finally block
    */
   private async _writeToCache(data: InterceptedData): Promise<void> {
-    let indexLockId: string;
-    let dataLockId: string;
+    let indexLockId: string | undefined;
+    let dataLockId: string | undefined;
     let filePaths:
       | {
           dataFile: string;
@@ -975,6 +988,13 @@ export class DiskCacheWriter {
   /**
    * Get current cache statistics
    */
+  /**
+   * Get the current configuration (for testing)
+   */
+  public getConfig(): Readonly<Required<DiskWriterConfig>> {
+    return this.config;
+  }
+
   public getCacheStats(): {
     activeLocks: number;
     activeWrites: number;

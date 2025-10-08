@@ -8,20 +8,20 @@
  * of all 308 unique API paths.
  */
 
-import * as fs from 'fs/promises';
-import * as path from 'path';
-import { fileURLToPath } from 'url';
+import * as fs from "fs/promises";
+import * as path from "path";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Import our path extraction function
-import { extractOpenAlexPaths } from '../../../../scripts/extract-openalex-paths.js';
+import { extractOpenAlexPaths } from "../../../../scripts/extract-openalex-paths.js";
 
 interface RouteTestCase {
   id: string;
   path: string;
-  method: 'GET';
+  method: "GET";
   entity: string;
   operation: string;
   isCollection: boolean;
@@ -32,7 +32,7 @@ interface RouteTestCase {
   hasPagination: boolean;
   hasSelect: boolean;
   requiresId: boolean;
-  externalIdType?: 'doi' | 'orcid' | 'ror' | 'issn' | 'wikidata' | 'pmid';
+  externalIdType?: "doi" | "orcid" | "ror" | "issn" | "wikidata" | "pmid";
   description: string;
 }
 
@@ -41,15 +41,24 @@ interface RouteTestCase {
  */
 function getEntityPrefix(entity: string): string {
   switch (entity) {
-    case 'works': return 'W';
-    case 'authors': return 'A';
-    case 'sources': return 'S';
-    case 'institutions': return 'I';
-    case 'topics': return 'T';
-    case 'publishers': return 'P';
-    case 'funders': return 'F';
-    case 'keywords': return ''; // Keywords don't follow the standard prefix pattern
-    default: return '';
+    case "works":
+      return "W";
+    case "authors":
+      return "A";
+    case "sources":
+      return "S";
+    case "institutions":
+      return "I";
+    case "topics":
+      return "T";
+    case "publishers":
+      return "P";
+    case "funders":
+      return "F";
+    case "keywords":
+      return ""; // Keywords don't follow the standard prefix pattern
+    default:
+      return "";
   }
 }
 
@@ -58,21 +67,24 @@ function getEntityPrefix(entity: string): string {
  */
 function isValidEntityId(id: string, expectedPrefix: string): boolean {
   // Handle external IDs (these are always valid)
-  if (id.includes('doi.org') ||
-      id.includes('orcid.org') ||
-      id.startsWith('orcid:') ||
-      id.includes('ror.org') ||
-      id.startsWith('ror:') ||
-      id.includes('wikidata:') ||
-      id.startsWith('Q') ||
-      id.startsWith('pmid:') ||
-      /^\d{4}-\d{3}[\dX]$/.test(id) || // ISSN pattern
-      /^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/.test(id)) { // ORCID pattern
+  if (
+    id.includes("doi.org") ||
+    id.includes("orcid.org") ||
+    id.startsWith("orcid:") ||
+    id.includes("ror.org") ||
+    id.startsWith("ror:") ||
+    id.includes("wikidata:") ||
+    id.startsWith("Q") ||
+    id.startsWith("pmid:") ||
+    /^\d{4}-\d{3}[\dX]$/.test(id) || // ISSN pattern
+    /^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/.test(id)
+  ) {
+    // ORCID pattern
     return true;
   }
 
   // For keywords, allow string-based IDs (no standard prefix pattern)
-  if (expectedPrefix === '') {
+  if (expectedPrefix === "") {
     return id.length > 0 && /^[a-zA-Z0-9\-_]+$/.test(id);
   }
 
@@ -89,27 +101,32 @@ function categorizeApiPaths(paths: string[]): RouteTestCase[] {
 
   for (const originalPath of paths) {
     // Clean path of query parameters for analysis
-    const [basePath, queryString] = originalPath.split('?');
+    const [basePath, queryString] = originalPath.split("?");
     const hasQuery = Boolean(queryString);
 
     // Parse query parameters
-    const searchParams = new URLSearchParams(queryString || '');
-    const hasFilter = searchParams.has('filter');
-    const hasSearch = searchParams.has('search');
-    const hasGroupBy = searchParams.has('group_by') || searchParams.has('group-by');
-    const hasPagination = searchParams.has('page') || searchParams.has('per_page') || searchParams.has('per-page') || searchParams.has('cursor');
-    const hasSelect = searchParams.has('select');
+    const searchParams = new URLSearchParams(queryString || "");
+    const hasFilter = searchParams.has("filter");
+    const hasSearch = searchParams.has("search");
+    const hasGroupBy =
+      searchParams.has("group_by") || searchParams.has("group-by");
+    const hasPagination =
+      searchParams.has("page") ||
+      searchParams.has("per_page") ||
+      searchParams.has("per-page") ||
+      searchParams.has("cursor");
+    const hasSelect = searchParams.has("select");
 
     // Determine entity and operation from path
-    const pathParts = basePath.split('/').filter(Boolean);
+    const pathParts = basePath.split("/").filter(Boolean);
 
     if (pathParts.length === 0) continue;
 
     let entity = pathParts[0];
-    let operation = 'list';
+    let operation = "list";
     let isCollection: boolean;
     let requiresId = false;
-    let externalIdType: RouteTestCase['externalIdType'];
+    let externalIdType: RouteTestCase["externalIdType"];
 
     // Check if the first path part is actually an entity ID (e.g., /W2741809807)
     if (pathParts.length === 1) {
@@ -119,17 +136,34 @@ function categorizeApiPaths(paths: string[]): RouteTestCase[] {
         // Determine entity type from ID prefix
         const prefix = potentialId.charAt(0);
         switch (prefix) {
-          case 'W': entity = 'works'; break;
-          case 'A': entity = 'authors'; break;
-          case 'S': entity = 'sources'; break;
-          case 'I': entity = 'institutions'; break;
-          case 'T': entity = 'topics'; break;
-          case 'P': entity = 'publishers'; break;
-          case 'F': entity = 'funders'; break;
-          case 'K': entity = 'keywords'; break;
-          default: entity = 'works'; // fallback
+          case "W":
+            entity = "works";
+            break;
+          case "A":
+            entity = "authors";
+            break;
+          case "S":
+            entity = "sources";
+            break;
+          case "I":
+            entity = "institutions";
+            break;
+          case "T":
+            entity = "topics";
+            break;
+          case "P":
+            entity = "publishers";
+            break;
+          case "F":
+            entity = "funders";
+            break;
+          case "K":
+            entity = "keywords";
+            break;
+          default:
+            entity = "works"; // fallback
         }
-        operation = 'get';
+        operation = "get";
         isCollection = false;
         requiresId = true;
       } else {
@@ -139,15 +173,15 @@ function categorizeApiPaths(paths: string[]): RouteTestCase[] {
     }
 
     // Handle special endpoints
-    if (entity === 'autocomplete') {
+    if (entity === "autocomplete") {
       // Pattern: /autocomplete/{entity}
-      entity = pathParts[1] || 'works';
-      operation = 'autocomplete';
+      entity = pathParts[1] || "works";
+      operation = "autocomplete";
       isCollection = true;
-    } else if (entity === 'text') {
+    } else if (entity === "text") {
       // Pattern: /text (with query parameters, not /text/{entity})
-      entity = 'text'; // Keep as 'text' rather than assuming an entity type
-      operation = 'text-analysis';
+      entity = "text"; // Keep as 'text' rather than assuming an entity type
+      operation = "text-analysis";
       isCollection = false;
     } else {
       // Determine if this is a collection or individual resource operation
@@ -166,21 +200,25 @@ function categorizeApiPaths(paths: string[]): RouteTestCase[] {
           // Valid entity ID - this is an individual resource request
           isCollection = false;
           requiresId = true;
-          operation = 'get';
+          operation = "get";
 
           // Detect external ID types
-          if (idPart.includes('doi.org')) {
-            externalIdType = 'doi';
-          } else if (idPart.includes('orcid.org') || idPart.startsWith('orcid:') || /^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/.test(idPart)) {
-            externalIdType = 'orcid';
-          } else if (idPart.includes('ror.org') || idPart.startsWith('ror:')) {
-            externalIdType = 'ror';
-          } else if (idPart.includes('wikidata:') || idPart.startsWith('Q')) {
-            externalIdType = 'wikidata';
-          } else if (idPart.startsWith('pmid:')) {
-            externalIdType = 'pmid';
+          if (idPart.includes("doi.org")) {
+            externalIdType = "doi";
+          } else if (
+            idPart.includes("orcid.org") ||
+            idPart.startsWith("orcid:") ||
+            /^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/.test(idPart)
+          ) {
+            externalIdType = "orcid";
+          } else if (idPart.includes("ror.org") || idPart.startsWith("ror:")) {
+            externalIdType = "ror";
+          } else if (idPart.includes("wikidata:") || idPart.startsWith("Q")) {
+            externalIdType = "wikidata";
+          } else if (idPart.startsWith("pmid:")) {
+            externalIdType = "pmid";
           } else if (/^\d{4}-\d{3}[\dX]$/.test(idPart)) {
-            externalIdType = 'issn';
+            externalIdType = "issn";
           }
         } else {
           // Invalid or unexpected ID format - treat as collection
@@ -194,42 +232,42 @@ function categorizeApiPaths(paths: string[]): RouteTestCase[] {
 
     // Special cases for search and filter operations
     if (hasSearch && isCollection) {
-      operation = 'search';
+      operation = "search";
     } else if (hasFilter && isCollection) {
-      operation = 'filter';
+      operation = "filter";
     } else if (hasGroupBy && isCollection) {
-      operation = 'group';
+      operation = "group";
     }
 
     // Generate description
-    let description = '';
+    let description = "";
 
     // Handle special operations first
-    if (operation === 'autocomplete') {
+    if (operation === "autocomplete") {
       description = `Autocomplete ${entity}`;
-    } else if (operation === 'text-analysis') {
+    } else if (operation === "text-analysis") {
       description = `Text analysis`;
     } else if (!isCollection) {
-      description = `Get single ${entity.slice(0, -1)} by ${externalIdType || 'ID'}`;
+      description = `Get single ${entity.slice(0, -1)} by ${externalIdType || "ID"}`;
     } else {
-      if (operation === 'search') {
+      if (operation === "search") {
         description = `Search ${entity}`;
-      } else if (operation === 'filter') {
+      } else if (operation === "filter") {
         description = `Filter ${entity}`;
-      } else if (operation === 'group') {
+      } else if (operation === "group") {
         description = `Group ${entity} statistics`;
       } else {
         description = `List ${entity}`;
       }
     }
 
-    if (hasSelect) description += ' with field selection';
-    if (hasPagination) description += ' with pagination';
+    if (hasSelect) description += " with field selection";
+    if (hasPagination) description += " with pagination";
 
     testCases.push({
-      id: `test_${String(idCounter++).padStart(3, '0')}`,
+      id: `test_${String(idCounter++).padStart(3, "0")}`,
       path: originalPath,
-      method: 'GET',
+      method: "GET",
       entity,
       operation,
       isCollection,
@@ -241,7 +279,7 @@ function categorizeApiPaths(paths: string[]): RouteTestCase[] {
       hasSelect,
       requiresId,
       externalIdType,
-      description
+      description,
     });
   }
 
@@ -252,18 +290,21 @@ function categorizeApiPaths(paths: string[]): RouteTestCase[] {
  * Generate unit test file content
  */
 function generateUnitTests(testCases: RouteTestCase[]): string {
-  const entitiesByType = testCases.reduce((acc, test) => {
-    if (!acc[test.entity]) acc[test.entity] = [];
-    acc[test.entity].push(test);
-    return acc;
-  }, {} as Record<string, RouteTestCase[]>);
+  const entitiesByType = testCases.reduce(
+    (acc, test) => {
+      if (!acc[test.entity]) acc[test.entity] = [];
+      acc[test.entity].push(test);
+      return acc;
+    },
+    {} as Record<string, RouteTestCase[]>,
+  );
 
   return `/**
  * Generated Unit Tests for OpenAlex API Routes
  *
  * This file contains comprehensive unit tests for all ${testCases.length} OpenAlex API routes
  * found in the documentation. Tests are automatically generated and cover:
- * - All entity types (${Object.keys(entitiesByType).join(', ')})
+ * - All entity types (${Object.keys(entitiesByType).join(", ")})
  * - All operation types (get, list, search, filter, group, autocomplete, text-analysis)
  * - All parameter combinations (filters, pagination, field selection, etc.)
  * - External ID support (DOI, ORCID, ROR, ISSN, Wikidata, PMID)
@@ -368,27 +409,39 @@ describe("OpenAlex API Routes - Generated Tests", () => {
     return mockEntity;
   };
 
-${Object.entries(entitiesByType).map(([entity, tests]) => `
+${Object.entries(entitiesByType)
+  .map(
+    ([entity, tests]) => `
   describe("${entity.charAt(0).toUpperCase() + entity.slice(1)} Entity Routes", () => {
-${tests.map(test => `
+${tests
+  .map(
+    (test) => `
     describe("${test.description}", () => {
       it("should handle ${test.path} - ${test.id}", async () => {
         const mockResponse = createMockResponse<${getEntityType(entity)}>("${entity}", ${test.isCollection});
 
         if (${test.isCollection}) {
-          ${entity === 'text' ? `
+          ${
+            entity === "text"
+              ? `
           // Text analysis methods use client.get() not getResponse
           mockClient.get.mockResolvedValue(mockResponse as ${getEntityType(entity)});
-          ` : `
+          `
+              : `
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<${getEntityType(entity)}>);
-          `}
+          `
+          }
         } else {
-          ${entity === 'text' ? `
+          ${
+            entity === "text"
+              ? `
           // Text analysis methods use client.get() not getById
           mockClient.get.mockResolvedValue(mockResponse as ${getEntityType(entity)});
-          ` : `
+          `
+              : `
           mockClient.getById.mockResolvedValue(mockResponse as ${getEntityType(entity)});
-          `}
+          `
+          }
         }
 
         // Extract the expected parameters from the path
@@ -429,15 +482,19 @@ ${tests.map(test => `
           } else {
             // Collection operations (list, filter, etc.)
             if (api.get${entity.charAt(0).toUpperCase() + entity.slice(1)}) {
-              ${entity === 'text' ? `
+              ${
+                entity === "text"
+                  ? `
               // Text analysis methods require options parameter with title
               result = await api.getText({
                 title: "type 1 diabetes research for children",
                 ...expectedParams
               });
-              ` : `
+              `
+                  : `
               result = await api.get${entity.charAt(0).toUpperCase() + entity.slice(1)}(expectedParams);
-              `}
+              `
+              }
             }
           }
 
@@ -446,17 +503,25 @@ ${tests.map(test => `
 
           // Verify the correct client method was called
           if (${test.isCollection}) {
-            ${entity === 'text' ? `
+            ${
+              entity === "text"
+                ? `
             expect(mockClient.get).toHaveBeenCalled();
-            ` : `
+            `
+                : `
             expect(mockClient.getResponse).toHaveBeenCalled();
-            `}
+            `
+            }
           } else {
-            ${entity === 'text' ? `
+            ${
+              entity === "text"
+                ? `
             expect(mockClient.get).toHaveBeenCalled();
-            ` : `
+            `
+                : `
             expect(mockClient.getById).toHaveBeenCalled();
-            `}
+            `
+            }
           }
 
         } catch (error) {
@@ -471,7 +536,9 @@ ${tests.map(test => `
         }
       });
 
-      ${test.hasFilter ? `
+      ${
+        test.hasFilter
+          ? `
       it("should handle filters correctly for ${test.path}", async () => {
         const mockResponse = createMockResponse<${getEntityType(entity)}>("${entity}", true);
         mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<${getEntityType(entity)}>);
@@ -493,9 +560,13 @@ ${tests.map(test => `
           );
         }
       });
-      ` : ''}
+      `
+          : ""
+      }
 
-      ${test.hasSearch ? `
+      ${
+        test.hasSearch
+          ? `
       it("should handle search correctly for ${test.path}", async () => {
         const mockResponse = createMockResponse<${getEntityType(entity)}>("${entity}", true);
         mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<${getEntityType(entity)}>);
@@ -512,9 +583,13 @@ ${tests.map(test => `
           );
         }
       });
-      ` : ''}
+      `
+          : ""
+      }
 
-      ${test.externalIdType ? `
+      ${
+        test.externalIdType
+          ? `
       it("should handle ${test.externalIdType} external ID for ${test.path}", async () => {
         const mockResponse = createMockResponse<${getEntityType(entity)}>("${entity}", false);
         mockClient.getById.mockResolvedValue(mockResponse as ${getEntityType(entity)});
@@ -531,23 +606,33 @@ ${tests.map(test => `
           );
         }
       });
-      ` : ''}
+      `
+          : ""
+      }
 
       it("should handle errors correctly for ${test.path}", async () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (${test.isCollection}) {
-          ${entity === 'text' ? `
+          ${
+            entity === "text"
+              ? `
           mockClient.get.mockRejectedValue(error);
-          ` : `
+          `
+              : `
           mockClient.getResponse.mockRejectedValue(error);
-          `}
+          `
+          }
         } else {
-          ${entity === 'text' ? `
+          ${
+            entity === "text"
+              ? `
           mockClient.get.mockRejectedValue(error);
-          ` : `
+          `
+              : `
           mockClient.getById.mockRejectedValue(error);
-          `}
+          `
+          }
         }
 
         const api = apis.${entity} as any;
@@ -559,12 +644,16 @@ ${tests.map(test => `
             }
           } else {
             if (api.get${entity.charAt(0).toUpperCase() + entity.slice(1)}) {
-              ${entity === 'text' ? `
+              ${
+                entity === "text"
+                  ? `
               // Text analysis methods require options parameter
               await expect(api.getText({ title: "test title for error handling" })).rejects.toThrow("Test error");
-              ` : `
+              `
+                  : `
               await expect(api.get${entity.charAt(0).toUpperCase() + entity.slice(1)}()).rejects.toThrow("Test error");
-              `}
+              `
+              }
             }
           }
         } catch (error) {
@@ -577,9 +666,13 @@ ${tests.map(test => `
         }
       });
     });
-`).join('')}
+`,
+  )
+  .join("")}
   });
-`).join('')}
+`,
+  )
+  .join("")}
 
   // Helper function to generate test external IDs
   function getTestExternalId(type: string): string {
@@ -690,15 +783,24 @@ ${tests.map(test => `
  */
 function getEntityType(entity: string): string {
   switch (entity) {
-    case 'works': return 'Work';
-    case 'authors': return 'Author';
-    case 'sources': return 'Source';
-    case 'institutions': return 'Institution';
-    case 'topics': return 'Topic';
-    case 'publishers': return 'Publisher';
-    case 'funders': return 'Funder';
-    case 'keywords': return 'Keyword';
-    default: return 'unknown';
+    case "works":
+      return "Work";
+    case "authors":
+      return "Author";
+    case "sources":
+      return "Source";
+    case "institutions":
+      return "Institution";
+    case "topics":
+      return "Topic";
+    case "publishers":
+      return "Publisher";
+    case "funders":
+      return "Funder";
+    case "keywords":
+      return "Keyword";
+    default:
+      return "unknown";
   }
 }
 
@@ -706,11 +808,14 @@ function getEntityType(entity: string): string {
  * Generate integration test file content
  */
 function generateIntegrationTests(testCases: RouteTestCase[]): string {
-  const entitiesByType = testCases.reduce((acc, test) => {
-    if (!acc[test.entity]) acc[test.entity] = [];
-    acc[test.entity].push(test);
-    return acc;
-  }, {} as Record<string, RouteTestCase[]>);
+  const entitiesByType = testCases.reduce(
+    (acc, test) => {
+      if (!acc[test.entity]) acc[test.entity] = [];
+      acc[test.entity].push(test);
+      return acc;
+    },
+    {} as Record<string, RouteTestCase[]>,
+  );
 
   return `/**
  * Generated Integration Tests for OpenAlex API Routes
@@ -781,19 +886,22 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
 
   // Test a representative sample of routes to verify they work end-to-end
   describe("Representative Route Sampling", () => {
-${Object.entries(entitiesByType).map(([entity, tests]) => {
-  // Select representative test cases from each entity
-  const sampleTests = [
-    tests.find(t => !t.isCollection && !t.hasQuery), // Simple get by ID
-    tests.find(t => t.isCollection && !t.hasQuery), // Simple list
-    tests.find(t => t.hasSearch), // Search
-    tests.find(t => t.hasFilter), // Filter
-    tests.find(t => t.externalIdType) // External ID
-  ].filter(Boolean);
+${Object.entries(entitiesByType)
+  .map(([entity, tests]) => {
+    // Select representative test cases from each entity
+    const sampleTests = [
+      tests.find((t) => !t.isCollection && !t.hasQuery), // Simple get by ID
+      tests.find((t) => t.isCollection && !t.hasQuery), // Simple list
+      tests.find((t) => t.hasSearch), // Search
+      tests.find((t) => t.hasFilter), // Filter
+      tests.find((t) => t.externalIdType), // External ID
+    ].filter(Boolean) as NonNullable<(typeof tests)[0]>[];
 
-  return `
+    return `
     describe("${entity.charAt(0).toUpperCase() + entity.slice(1)} Integration", () => {
-${sampleTests.map(test => `
+${sampleTests
+  .map(
+    (test) => `
       it("should ${test.description.toLowerCase()}", async () => {
         const api = apis.${entity} as any;
 
@@ -814,17 +922,21 @@ ${sampleTests.map(test => `
           } else {
             // Collection operations
             if (api.get${entity.charAt(0).toUpperCase() + entity.slice(1)}) {
-              ${entity === 'text' ? `
+              ${
+                entity === "text"
+                  ? `
               // Text analysis methods require options parameter with title
               result = await api.getText({
                 title: "type 1 diabetes research for children"
               });
-              ` : `
+              `
+                  : `
               result = await api.get${entity.charAt(0).toUpperCase() + entity.slice(1)}({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
-              `}
+              `
+              }
             }
           }
 
@@ -853,10 +965,13 @@ ${sampleTests.map(test => `
           }
         }
       }, 45000); // Longer timeout for real API calls
-`).join('')}
+`,
+  )
+  .join("")}
     });
   `;
-}).join('')}
+  })
+  .join("")}
   });
 
   // Test error handling with real API
@@ -1077,62 +1192,82 @@ export class TestUtils {
  * Main execution function
  */
 async function main() {
-  console.log('🚀 Generating comprehensive OpenAlex API route tests...\n');
+  console.log("🚀 Generating comprehensive OpenAlex API route tests...\n");
 
   try {
     // Extract all API paths from documentation
-    console.log('📖 Extracting API paths from documentation...');
+    console.log("📖 Extracting API paths from documentation...");
     const extractionResult = await extractOpenAlexPaths({
-      searchDir: path.resolve(__dirname, '../../../../docs/openalex-docs')
+      searchDir: path.resolve(__dirname, "../../../../docs/openalex-docs"),
     });
 
     console.log(`✅ Found ${extractionResult.paths.length} unique API paths`);
 
     // Categorize and analyze paths
-    console.log('🔍 Analyzing and categorizing API routes...');
+    console.log("🔍 Analyzing and categorizing API routes...");
     const testCases = categorizeApiPaths(extractionResult.paths);
 
     const stats = {
       total: testCases.length,
-      byEntity: testCases.reduce((acc, test) => {
-        acc[test.entity] = (acc[test.entity] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>),
-      byOperation: testCases.reduce((acc, test) => {
-        acc[test.operation] = (acc[test.operation] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>),
-      withExternalIds: testCases.filter(t => t.externalIdType).length,
-      withFilters: testCases.filter(t => t.hasFilter).length,
-      withSearch: testCases.filter(t => t.hasSearch).length,
+      byEntity: testCases.reduce(
+        (acc, test) => {
+          acc[test.entity] = (acc[test.entity] || 0) + 1;
+          return acc;
+        },
+        {} as Record<string, number>,
+      ),
+      byOperation: testCases.reduce(
+        (acc, test) => {
+          acc[test.operation] = (acc[test.operation] || 0) + 1;
+          return acc;
+        },
+        {} as Record<string, number>,
+      ),
+      withExternalIds: testCases.filter((t) => t.externalIdType).length,
+      withFilters: testCases.filter((t) => t.hasFilter).length,
+      withSearch: testCases.filter((t) => t.hasSearch).length,
     };
 
-    console.log('📊 Test case statistics:');
+    console.log("📊 Test case statistics:");
     console.log(`   Total test cases: ${stats.total}`);
-    console.log(`   By entity: ${Object.entries(stats.byEntity).map(([k,v]) => `${k}(${v})`).join(', ')}`);
-    console.log(`   By operation: ${Object.entries(stats.byOperation).map(([k,v]) => `${k}(${v})`).join(', ')}`);
+    console.log(
+      `   By entity: ${Object.entries(stats.byEntity)
+        .map(([k, v]) => `${k}(${v})`)
+        .join(", ")}`,
+    );
+    console.log(
+      `   By operation: ${Object.entries(stats.byOperation)
+        .map(([k, v]) => `${k}(${v})`)
+        .join(", ")}`,
+    );
     console.log(`   With external IDs: ${stats.withExternalIds}`);
     console.log(`   With filters: ${stats.withFilters}`);
     console.log(`   With search: ${stats.withSearch}`);
 
     // Create test directory if it doesn't exist
-    const testDir = path.join(__dirname, '..', 'generated-tests');
+    const testDir = path.join(__dirname, "..", "generated-tests");
     await fs.mkdir(testDir, { recursive: true });
 
     // Generate unit tests
-    console.log('\n🧪 Generating unit tests...');
+    console.log("\n🧪 Generating unit tests...");
     const unitTestContent = generateUnitTests(testCases);
-    await fs.writeFile(path.join(testDir, 'all-routes.unit.test.ts'), unitTestContent);
+    await fs.writeFile(
+      path.join(testDir, "all-routes.unit.test.ts"),
+      unitTestContent,
+    );
 
     // Generate integration tests
-    console.log('🌐 Generating integration tests...');
+    console.log("🌐 Generating integration tests...");
     const integrationTestContent = generateIntegrationTests(testCases);
-    await fs.writeFile(path.join(testDir, 'all-routes.integration.test.ts'), integrationTestContent);
+    await fs.writeFile(
+      path.join(testDir, "all-routes.integration.test.ts"),
+      integrationTestContent,
+    );
 
     // Generate test configuration
-    console.log('⚙️ Generating test configuration...');
+    console.log("⚙️ Generating test configuration...");
     const configContent = generateTestConfig();
-    await fs.writeFile(path.join(testDir, 'test-config.ts'), configContent);
+    await fs.writeFile(path.join(testDir, "test-config.ts"), configContent);
 
     // Generate test summary
     const summaryContent = `# Generated OpenAlex API Tests
@@ -1148,8 +1283,8 @@ This directory contains automatically generated comprehensive tests for all Open
 ## Coverage Statistics
 
 - **Total routes tested**: ${stats.total}
-- **Entities covered**: ${Object.keys(stats.byEntity).length} (${Object.keys(stats.byEntity).join(', ')})
-- **Operation types**: ${Object.keys(stats.byOperation).length} (${Object.keys(stats.byOperation).join(', ')})
+- **Entities covered**: ${Object.keys(stats.byEntity).length} (${Object.keys(stats.byEntity).join(", ")})
+- **Operation types**: ${Object.keys(stats.byOperation).length} (${Object.keys(stats.byOperation).join(", ")})
 - **Routes with external ID support**: ${stats.withExternalIds}
 - **Routes with filter support**: ${stats.withFilters}
 - **Routes with search support**: ${stats.withSearch}
@@ -1177,24 +1312,30 @@ pnpm test generated-tests/
 Generated on: ${new Date().toISOString()}
 `;
 
-    await fs.writeFile(path.join(testDir, 'README.md'), summaryContent);
+    await fs.writeFile(path.join(testDir, "README.md"), summaryContent);
 
     console.log(`\n✅ Test generation complete!`);
     console.log(`📁 Generated files in: packages/client/src/generated-tests/`);
     console.log(`📝 Total test cases: ${testCases.length}`);
-    console.log(`🎯 Entities covered: ${Object.keys(stats.byEntity).join(', ')}`);
+    console.log(
+      `🎯 Entities covered: ${Object.keys(stats.byEntity).join(", ")}`,
+    );
     console.log(`\n🚀 Run tests with: pnpm test generated-tests/`);
-
   } catch (error) {
-    console.error('❌ Error generating tests:', error);
+    console.error("❌ Error generating tests:", error);
     process.exit(1);
   }
 }
 
 // Export for programmatic use
-export { categorizeApiPaths, generateUnitTests, generateIntegrationTests, generateTestConfig };
+export {
+  categorizeApiPaths,
+  generateUnitTests,
+  generateIntegrationTests,
+  generateTestConfig,
+};
 
 // Run if called directly
-if (process.argv[1] && process.argv[1].endsWith('generate-route-tests.ts')) {
+if (process.argv[1] && process.argv[1].endsWith("generate-route-tests.ts")) {
   main().catch(console.error);
 }

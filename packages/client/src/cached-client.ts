@@ -2,25 +2,28 @@
  * Cached Client - Integrated static data caching with multi-tier fallback
  */
 
-import { logger } from '@academic-explorer/utils';
-import { OpenAlexBaseClient, type OpenAlexClientConfig } from './client';
-import { AuthorsApi } from './entities/authors';
-import { ConceptsApi } from './entities/concepts';
-import { FundersApi } from './entities/funders';
-import { InstitutionsApi } from './entities/institutions';
-import { KeywordsApi } from './entities/keywords';
-import { PublishersApi } from './entities/publishers';
-import { SourcesApi } from './entities/sources';
-import { TextAnalysisApi } from './entities/text-analysis';
-import { TopicsApi } from './entities/topics';
-import { WorksApi } from './entities/works';
+import { logger } from "@academic-explorer/utils";
+import { OpenAlexBaseClient, type OpenAlexClientConfig } from "./client";
+import { AuthorsApi } from "./entities/authors";
+import { ConceptsApi } from "./entities/concepts";
+import { FundersApi } from "./entities/funders";
+import { InstitutionsApi } from "./entities/institutions";
+import { KeywordsApi } from "./entities/keywords";
+import { PublishersApi } from "./entities/publishers";
+import { SourcesApi } from "./entities/sources";
+import { TextAnalysisApi } from "./entities/text-analysis";
+import { TopicsApi } from "./entities/topics";
+import { WorksApi } from "./entities/works";
 import {
-    Environment,
-    staticDataProvider,
-    type CacheStatistics
-} from './internal/static-data-provider';
-import { cleanOpenAlexId, toStaticEntityType } from './internal/static-data-utils';
-import type { OpenAlexEntity } from './types';
+  staticDataProvider,
+  type CacheStatistics,
+  type EnvironmentInfo,
+} from "./internal/static-data-provider";
+import {
+  cleanOpenAlexId,
+  toStaticEntityType,
+} from "./internal/static-data-utils";
+import type { OpenAlexEntity } from "./types";
 
 export interface ClientApis {
   works: WorksApi;
@@ -37,9 +40,9 @@ export interface ClientApis {
 }
 
 export interface CachedClientConfig extends OpenAlexClientConfig {
-	staticCacheEnabled?: boolean;
-	staticCacheGitHubPagesUrl?: string;
-	staticCacheLocalDir?: string;
+  staticCacheEnabled?: boolean;
+  staticCacheGitHubPagesUrl?: string;
+  staticCacheLocalDir?: string;
 }
 
 export class CachedOpenAlexClient extends OpenAlexBaseClient {
@@ -50,7 +53,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
     totalRequests: 0,
     cacheHits: 0,
     apiFallbacks: 0,
-    errors: 0
+    errors: 0,
   };
 
   constructor(config: CachedClientConfig = {}) {
@@ -60,7 +63,9 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
     // Configure static cache URLs if provided
     if (config.staticCacheGitHubPagesUrl) {
       // TODO: Configure GitHub Pages URL in static data provider
-      logger.debug('client', 'Static cache GitHub Pages URL configured', { url: config.staticCacheGitHubPagesUrl });
+      logger.debug("client", "Static cache GitHub Pages URL configured", {
+        url: config.staticCacheGitHubPagesUrl,
+      });
     }
 
     // Create API instances with enhanced caching
@@ -75,14 +80,18 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       keywords: new KeywordsApi(this),
       textAnalysis: new TextAnalysisApi(this),
       concepts: new ConceptsApi(this),
-      getEntity: this.getEntityWithStaticCache.bind(this) as (id: string) => Promise<OpenAlexEntity | null>
+      getEntity: this.getEntityWithStaticCache.bind(this) as (
+        id: string,
+      ) => Promise<OpenAlexEntity | null>,
     };
   }
 
   /**
    * Enhanced entity getter with static cache integration
    */
-  private async getEntityWithStaticCache(id: string): Promise<OpenAlexEntity | null> {
+  private async getEntityWithStaticCache(
+    id: string,
+  ): Promise<OpenAlexEntity | null> {
     const cleanId = cleanOpenAlexId(id);
     this.requestStats.totalRequests++;
 
@@ -92,31 +101,46 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
         const entityType = this.detectEntityTypeFromId(cleanId);
 
         if (entityType) {
-          const staticEntityType = toStaticEntityType(entityType);
-          const staticResult = await staticDataProvider.getStaticData(staticEntityType, cleanId);
+          try {
+            const staticEntityType = toStaticEntityType(entityType);
+            const staticResult = await staticDataProvider.getStaticData(
+              staticEntityType,
+              cleanId,
+            );
 
-          if (staticResult.found && staticResult.data) {
-            this.requestStats.cacheHits++;
-            logger.debug('client', 'Static cache hit for entity', {
+            if (staticResult.found && staticResult.data) {
+              this.requestStats.cacheHits++;
+              logger.debug("client", "Static cache hit for entity", {
+                id: cleanId,
+                entityType,
+                tier: staticResult.tier,
+                loadTime: staticResult.loadTime,
+              });
+              return staticResult.data as OpenAlexEntity;
+            }
+          } catch (staticError: unknown) {
+            // Handle static cache errors gracefully - return null without API fallback
+            logger.debug("client", "Static cache error, handling gracefully", {
               id: cleanId,
-              entityType,
-              tier: staticResult.tier,
-              loadTime: staticResult.loadTime
+              error: staticError,
             });
-            return staticResult.data as OpenAlexEntity;
+            return null;
           }
         }
       }
 
       // Fallback to API
       this.requestStats.apiFallbacks++;
-      logger.debug('client', 'Falling back to API for entity', { id: cleanId });
+      logger.debug("client", "Falling back to API for entity", { id: cleanId });
 
       // Try to get from API using appropriate endpoint
       const entityType = this.detectEntityTypeFromId(cleanId);
       if (entityType) {
         try {
-          const result = await this.getById<OpenAlexEntity>(`${entityType}`, cleanId);
+          const result = await this.getById<OpenAlexEntity>(
+            `${entityType}`,
+            cleanId,
+          );
 
           // Cache the result for future use if static cache is enabled
           if (this.staticCacheEnabled && result) {
@@ -126,20 +150,34 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
           return result;
         } catch (apiError: unknown) {
           // If the API call failed due to rate limiting or network/server issues, try static cache as a graceful fallback
-          logger.warn('client', 'API request failed for entity - attempting static cache fallback', { id: cleanId, error: apiError });
+          logger.warn(
+            "client",
+            "API request failed for entity - attempting static cache fallback",
+            { id: cleanId, error: apiError },
+          );
           this.requestStats.errors++;
 
           if (this.staticCacheEnabled) {
             try {
               const staticEntityType = toStaticEntityType(entityType);
-              const staticResult = await staticDataProvider.getStaticData(staticEntityType, cleanId);
+              const staticResult = await staticDataProvider.getStaticData(
+                staticEntityType,
+                cleanId,
+              );
               if (staticResult.found && staticResult.data) {
                 this.requestStats.cacheHits++;
-                logger.debug('client', 'Static cache fallback successful after API error', { id: cleanId, tier: staticResult.tier });
+                logger.debug(
+                  "client",
+                  "Static cache fallback successful after API error",
+                  { id: cleanId, tier: staticResult.tier },
+                );
                 return staticResult.data as OpenAlexEntity;
               }
             } catch (staticError: unknown) {
-              logger.debug('client', 'Static cache fallback failed', { id: cleanId, error: staticError });
+              logger.debug("client", "Static cache fallback failed", {
+                id: cleanId,
+                error: staticError,
+              });
             }
           }
 
@@ -147,12 +185,13 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
         }
       }
 
-      logger.warn('client', 'Could not determine entity type for ID', { id: cleanId });
+      logger.warn("client", "Could not determine entity type for ID", {
+        id: cleanId,
+      });
       return null;
-
     } catch (error: unknown) {
       this.requestStats.errors++;
-      logger.error('client', 'Failed to get entity', { id: cleanId, error });
+      logger.error("client", "Failed to get entity", { id: cleanId, error });
       return null;
     }
   }
@@ -160,13 +199,21 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   /**
    * Cache entity result in static data provider
    */
-  private async cacheEntityResult(entityType: string, id: string, _data: OpenAlexEntity): Promise<void> {
+  private async cacheEntityResult(
+    entityType: string,
+    id: string,
+    _data: OpenAlexEntity,
+  ): Promise<void> {
     try {
       // Note: This would require extending the static data provider with a set method for caching API results
       // For now, we log the intent
-      logger.debug('client', 'Would cache entity result', { entityType, id });
+      logger.debug("client", "Would cache entity result", { entityType, id });
     } catch (error: unknown) {
-      logger.debug('client', 'Failed to cache entity result', { entityType, id, error });
+      logger.debug("client", "Failed to cache entity result", {
+        entityType,
+        id,
+        error,
+      });
     }
   }
 
@@ -174,13 +221,13 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
    * Detect OpenAlex entity type from ID prefix
    */
   private detectEntityTypeFromId(id: string): string | null {
-    if (id.startsWith('W')) return 'works';
-    if (id.startsWith('A')) return 'authors';
-    if (id.startsWith('S')) return 'sources';
-    if (id.startsWith('I')) return 'institutions';
-    if (id.startsWith('T')) return 'topics';
-    if (id.startsWith('P')) return 'publishers';
-    if (id.startsWith('F')) return 'funders';
+    if (id.startsWith("W")) return "works";
+    if (id.startsWith("A")) return "authors";
+    if (id.startsWith("S")) return "sources";
+    if (id.startsWith("I")) return "institutions";
+    if (id.startsWith("T")) return "topics";
+    if (id.startsWith("P")) return "publishers";
+    if (id.startsWith("F")) return "funders";
     return null;
   }
 
@@ -194,21 +241,28 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       // Try static cache first for simple getById requests without parameters
       try {
         const entityType = this.detectEntityTypeFromId(cleanId);
-        if (entityType === endpoint.replace(/s$/, '') + 's') {
+        if (entityType === endpoint.replace(/s$/, "") + "s") {
           const staticEntityType = toStaticEntityType(entityType);
-          const staticResult = await staticDataProvider.getStaticData(staticEntityType, cleanId);
+          const staticResult = await staticDataProvider.getStaticData(
+            staticEntityType,
+            cleanId,
+          );
 
           if (staticResult.found && staticResult.data) {
-            logger.debug('client', 'Static cache hit for getById', {
+            logger.debug("client", "Static cache hit for getById", {
               endpoint,
               id: cleanId,
-              tier: staticResult.tier
+              tier: staticResult.tier,
             });
             return staticResult.data as T;
           }
         }
       } catch (error: unknown) {
-        logger.debug('client', 'Static cache lookup failed for getById', { endpoint, id: cleanId, error });
+        logger.debug("client", "Static cache lookup failed for getById", {
+          endpoint,
+          id: cleanId,
+          error,
+        });
       }
     }
 
@@ -216,7 +270,11 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
     try {
       return await super.getById<T>(endpoint, cleanId, params);
     } catch (apiError: unknown) {
-      logger.warn('client', 'API getById failed, attempting static cache fallback', { endpoint, id: cleanId, error: apiError });
+      logger.warn(
+        "client",
+        "API getById failed, attempting static cache fallback",
+        { endpoint, id: cleanId, error: apiError },
+      );
 
       // If static cache is enabled, attempt to return cached data
       if (this.staticCacheEnabled) {
@@ -224,15 +282,26 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
           const entityType = this.detectEntityTypeFromId(cleanId);
           if (entityType) {
             const staticEntityType = toStaticEntityType(entityType);
-            const staticResult = await staticDataProvider.getStaticData(staticEntityType, cleanId);
+            const staticResult = await staticDataProvider.getStaticData(
+              staticEntityType,
+              cleanId,
+            );
             if (staticResult.found && staticResult.data) {
               this.requestStats.cacheHits++;
-              logger.debug('client', 'Static cache hit during getById fallback', { endpoint, id: cleanId, tier: staticResult.tier });
+              logger.debug(
+                "client",
+                "Static cache hit during getById fallback",
+                { endpoint, id: cleanId, tier: staticResult.tier },
+              );
               return staticResult.data as T;
             }
           }
         } catch (staticError: unknown) {
-          logger.debug('client', 'Static cache fallback failed during getById', { endpoint, id: cleanId, error: staticError });
+          logger.debug(
+            "client",
+            "Static cache fallback failed during getById",
+            { endpoint, id: cleanId, error: staticError },
+          );
         }
       }
 
@@ -270,7 +339,10 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
         return staticDataProvider.hasStaticData(staticEntityType, cleanId);
       }
     } catch (error: unknown) {
-      logger.debug('client', 'Failed to check static entity existence', { id, error });
+      logger.debug("client", "Failed to check static entity existence", {
+        id,
+        error,
+      });
     }
 
     return false;
@@ -281,14 +353,21 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
    */
   async clearStaticCache(): Promise<void> {
     await staticDataProvider.clearCache();
-    logger.debug('client', 'Static cache cleared');
+    logger.debug("client", "Static cache cleared");
   }
 
   /**
    * Get static cache environment info
    */
-  getStaticCacheEnvironment(): Environment {
-    return staticDataProvider.getEnvironment();
+  getStaticCacheEnvironment(): EnvironmentInfo {
+    return staticDataProvider.getEnvironmentInfo();
+  }
+
+  /**
+   * Get the current static cache enabled state
+   */
+  getStaticCacheEnabled(): boolean {
+    return this.staticCacheEnabled;
   }
 
   /**
@@ -296,7 +375,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
    */
   setStaticCacheEnabled(enabled: boolean): void {
     this.staticCacheEnabled = enabled;
-    logger.debug('client', 'Static cache enabled state changed', { enabled });
+    logger.debug("client", "Static cache enabled state changed", { enabled });
   }
 
   updateConfig(config: Partial<CachedClientConfig>): void {
@@ -307,7 +386,9 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
     }
 
     if (config.staticCacheGitHubPagesUrl) {
-      logger.debug('client', 'Static cache configuration updated', { url: config.staticCacheGitHubPagesUrl });
+      logger.debug("client", "Static cache configuration updated", {
+        url: config.staticCacheGitHubPagesUrl,
+      });
     }
   }
 }
@@ -316,13 +397,15 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
  * Default cached client instance with static caching enabled
  */
 export const cachedOpenAlex: CachedOpenAlexClient = new CachedOpenAlexClient({
-  staticCacheEnabled: true
+  staticCacheEnabled: true,
 });
 
 /**
  * Create a new cached client with custom configuration
  */
-export function createCachedOpenAlexClient(config: CachedClientConfig = {}): CachedOpenAlexClient {
+export function createCachedOpenAlexClient(
+  config: CachedClientConfig = {},
+): CachedOpenAlexClient {
   return new CachedOpenAlexClient(config);
 }
 
@@ -345,7 +428,7 @@ export async function getCachePerformanceMetrics(): Promise<{
     errors: number;
     cacheHitRate: number;
   };
-  environment: Environment;
+  environment: EnvironmentInfo;
 }> {
   const staticCache = await cachedOpenAlex.getStaticCacheStats();
   const requestStats = cachedOpenAlex.getRequestStats();
@@ -355,8 +438,11 @@ export async function getCachePerformanceMetrics(): Promise<{
     staticCache,
     requestStats: {
       ...requestStats,
-      cacheHitRate: requestStats.totalRequests > 0 ? requestStats.cacheHits / requestStats.totalRequests : 0
+      cacheHitRate:
+        requestStats.totalRequests > 0
+          ? requestStats.cacheHits / requestStats.totalRequests
+          : 0,
     },
-    environment
+    environment,
   };
 }
