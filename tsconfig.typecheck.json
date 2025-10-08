@@ -1,0 +1,25 @@
+{
+  "extends": "./tsconfig.base.json",
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./apps/web/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/client/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/graph/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/utils/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/ui/tsconfig.typecheck.json"
+    },
+    {
+      "path": "./packages/simulation/tsconfig.typecheck.json"
+    }
+  ]
+}
