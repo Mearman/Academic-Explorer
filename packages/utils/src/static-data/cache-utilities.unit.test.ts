@@ -65,7 +65,7 @@ describe("Cache Utilities - Collision Handling", () => {
 
       // Test with real function
       const realResult = hasCollision(entry, collidingUrl);
-      expect(realResult).toBe(false); // URLs have different cache paths due to sanitization not working
+      expect(realResult).toBe(true); // URLs have the same cache path after api_key sanitization
     });
 
     it("should not detect collision when paths differ", () => {
@@ -94,7 +94,7 @@ describe("Cache Utilities - Collision Handling", () => {
       const equivalentUrl =
         "https://api.openalex.org/works?api_key=secret&filter=doi:10.1234/test&mailto=user@example.com";
       const mockPathFn = vi.fn().mockReturnValue("/same/path.json");
-      expect(hasCollision(entry, equivalentUrl, mockPathFn)).toBe(false); // Mock should make paths same but function returns false
+      expect(hasCollision(entry, equivalentUrl, mockPathFn)).toBe(true); // Mock makes both URLs return same path, so they collide
     });
 
     it("should not collide with non-equivalent query parameters", () => {
@@ -413,7 +413,7 @@ describe("Cache Utilities - Collision Handling", () => {
         },
       };
 
-      expect(validateFileEntry(validEntry, getCacheFilePath)).toBe(false); // Validation fails due to sanitization issues
+      expect(validateFileEntry(validEntry, getCacheFilePath)).toBe(true); // Validation passes - URLs map to same path after sanitization
     });
 
     it("should invalidate when equivalentUrls[0] !== url", () => {
@@ -551,7 +551,7 @@ describe("Cache Utilities - Collision Handling", () => {
 
       const mockPathFn = vi.fn().mockReturnValue("/mock/path/data.json");
 
-      expect(validateFileEntry(validEntry, mockPathFn)).toBe(false); // Validation fails due to sanitization issues
+      expect(validateFileEntry(validEntry, mockPathFn)).toBe(true); // Validation passes - mock makes all URLs map to same path
     });
   });
 
