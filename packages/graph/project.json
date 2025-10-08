@@ -15,15 +15,21 @@
         "{projectRoot}/tsconfig.json",
         "{projectRoot}/package.json"
       ],
-      "outputs": [
-        "{projectRoot}/dist"
-      ],
+      "outputs": ["{projectRoot}/dist"],
       "cache": true
     },
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
         "command": "tsc --noEmit",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "typecheck:all": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit --project tsconfig.typecheck.json",
         "cwd": "{projectRoot}"
       },
       "cache": true
@@ -56,9 +62,7 @@
         "{workspaceRoot}/vite.config.base.ts",
         "{projectRoot}/vitest.config.ts"
       ],
-      "outputs": [
-        "{projectRoot}/coverage"
-      ],
+      "outputs": ["{projectRoot}/coverage"],
       "cache": true
     },
     "test:watch": {

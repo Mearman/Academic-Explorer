@@ -27,6 +27,14 @@
       },
       "cache": true
     },
+    "typecheck:all": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit --project tsconfig.typecheck.json",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
     "lint": {
       "executor": "nx:run-commands",
       "options": {
@@ -65,20 +73,30 @@
         "project": "unit",
         "coverage": true
       },
-  "inputs": ["default", "^production", "{workspaceRoot}/vite.config.base.ts", "{projectRoot}/vitest.config.ts"],
-  "outputs": ["{projectRoot}/coverage"],
-  "cache": true
-},
-"test:integration": {
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/vite.config.base.ts",
+        "{projectRoot}/vitest.config.ts"
+      ],
+      "outputs": ["{projectRoot}/coverage"],
+      "cache": true
+    },
+    "test:integration": {
       "executor": "@nx/vite:test",
       "options": {
         "project": "integration"
       },
-  "inputs": ["default", "^production", "{workspaceRoot}/vite.config.base.ts", "{projectRoot}/vitest.config.ts"],
-  "outputs": ["{projectRoot}/coverage"],
-  "cache": true
-},
-"test:watch": {
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/vite.config.base.ts",
+        "{projectRoot}/vitest.config.ts"
+      ],
+      "outputs": ["{projectRoot}/coverage"],
+      "cache": true
+    },
+    "test:watch": {
       "executor": "nx:run-commands",
       "options": {
         "command": "vitest",

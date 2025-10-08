@@ -8,9 +8,7 @@
     "build": {
       "executor": "@nx/js:tsc",
       "dependsOn": ["client:build", "utils:build"],
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "apps/cli/dist",
         "main": "apps/cli/src/simple-cli.ts",
@@ -22,6 +20,13 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "tsc --noEmit",
+        "cwd": "apps/cli"
+      }
+    },
+    "typecheck:all": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit --project tsconfig.typecheck.json",
         "cwd": "apps/cli"
       }
     },
@@ -46,9 +51,7 @@
         "command": "echo 'All CLI tests completed successfully'",
         "cwd": "{projectRoot}"
       },
-      "outputs": [
-        "{projectRoot}/coverage"
-      ],
+      "outputs": ["{projectRoot}/coverage"],
       "cache": true
     },
     "test:unit": {

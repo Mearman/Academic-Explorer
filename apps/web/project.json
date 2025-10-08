@@ -23,8 +23,8 @@
       "inputs": [
         "production",
         "^production",
-  "{workspaceRoot}/vite.config.base.ts",
-  "{projectRoot}/vite.config.base.ts",
+        "{workspaceRoot}/vite.config.base.ts",
+        "{projectRoot}/vite.config.base.ts",
         "{projectRoot}/index.html",
         "{projectRoot}/public/**/*"
       ],
@@ -35,6 +35,15 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "tsc --noEmit",
+        "cwd": "{projectRoot}",
+        "nodeOptions": ["--max-old-space-size=8192"]
+      },
+      "cache": true
+    },
+    "typecheck:all": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit --project tsconfig.typecheck.json",
         "cwd": "{projectRoot}",
         "nodeOptions": ["--max-old-space-size=8192"]
       },
@@ -63,7 +72,13 @@
         "command": "echo 'All scoped tests completed successfully'",
         "cwd": "{projectRoot}"
       },
-  "inputs": ["default", "^production", "{workspaceRoot}/vite.config.base.ts", "{projectRoot}/vite.config.ts", "{projectRoot}/vitest.config.ts"],
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/vite.config.base.ts",
+        "{projectRoot}/vite.config.ts",
+        "{projectRoot}/vitest.config.ts"
+      ],
       "outputs": ["{projectRoot}/coverage"],
       "cache": true
     },
