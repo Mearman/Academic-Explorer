@@ -9,13 +9,9 @@ import { logError, logger } from "@academic-explorer/utils/logger";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
-export const Route = createFileRoute("/works/$workId")({
-  component: WorkRoute,
-});
-
 function WorkRoute() {
-	const { workId } = Route.useParams()
-	const navigate = useNavigate()
+  const { workId } = Route.useParams();
+  const navigate = useNavigate();
 
   const entityType = "work" as const;
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
@@ -149,3 +145,9 @@ function WorkRoute() {
     </div>
   );
 }
+
+export const Route = createFileRoute("/works/$workId")({
+  component: WorkRoute,
+});
+
+export default WorkRoute;

@@ -188,10 +188,9 @@ describe("ViewToggle", () => {
    */
   describe("Edge Cases", () => {
     it("handles invalid viewMode gracefully (no active state)", () => {
-      // @ts-expect-error Testing invalid prop
       render(
         <TestWrapper>
-          <ViewToggle viewMode="invalid" as any onToggle={mockOnToggle} />
+          <ViewToggle viewMode={"invalid" as any} onToggle={mockOnToggle} />
         </TestWrapper>,
       );
       const rawRadio = screen.getByRole("radio", { name: "Raw JSON" });
@@ -204,7 +203,7 @@ describe("ViewToggle", () => {
     it("renders without onToggle", () => {
       render(
         <TestWrapper>
-          <ViewToggle viewMode="raw" />
+          <ViewToggle viewMode="raw" onToggle={() => {}} />
         </TestWrapper>,
       );
       const rawRadio = screen.getByRole("radio", { name: "Raw JSON" });
@@ -215,7 +214,7 @@ describe("ViewToggle", () => {
     it("handles click without onToggle (no-op)", () => {
       render(
         <TestWrapper>
-          <ViewToggle viewMode="raw" />
+          <ViewToggle viewMode="raw" onToggle={() => {}} />
         </TestWrapper>,
       );
       const rawRadio = screen.getByRole("radio", { name: "Raw JSON" });

@@ -3,7 +3,7 @@ import { SegmentedControl } from "@mantine/core";
 
 export type ViewMode = "raw" | "rich";
 
-interface ViewToggleProps {
+export interface ViewToggleProps {
   viewMode: ViewMode;
   onToggle: (mode: ViewMode) => void;
   entityType?: string;

@@ -69,7 +69,7 @@ describe("MainThreadExecutionStrategy", () => {
     const mockExecutor: TaskExecutor = vi.fn().mockResolvedValue("success");
     registry.register("TEST_TASK", mockExecutor);
 
-    const events: Array<{ entityType: string; payload?: unknown }> = [];
+    const events: Array<{ type: string; payload?: unknown }> = [];
     bus.on("TASK_ENQUEUED", (event) => events.push(event));
     bus.on("TASK_STARTED", (event) => events.push(event));
     bus.on("TASK_COMPLETED", (event) => events.push(event));
@@ -93,7 +93,7 @@ describe("MainThreadExecutionStrategy", () => {
     const mockExecutor: TaskExecutor = vi.fn().mockRejectedValue(error);
     registry.register("FAILING_TASK", mockExecutor);
 
-    const events: Array<{ entityType: string; payload?: unknown }> = [];
+    const events: Array<{ type: string; payload?: unknown }> = [];
     bus.on("TASK_FAILED", (event) => events.push(event));
 
     await strategy.submitTask({
@@ -114,7 +114,7 @@ describe("MainThreadExecutionStrategy", () => {
   });
 
   it("should handle missing executors", async () => {
-    const events: Array<{ entityType: string; payload?: unknown }> = [];
+    const events: Array<{ type: string; payload?: unknown }> = [];
     bus.on("TASK_FAILED", (event) => events.push(event));
 
     // submitTask should succeed and return the task ID

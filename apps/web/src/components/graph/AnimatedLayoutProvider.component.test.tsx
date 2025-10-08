@@ -2,9 +2,35 @@
  * Tests for AnimatedLayoutProvider React 19 compatibility
  * Verifies that the component renders correctly and provides context
  */
+/**
+ * @vitest-environment jsdom
+ */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, cleanup } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+// Mock ResizeObserver before importing Mantine
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}));
+
+// Mock window.matchMedia before importing Mantine
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: vi.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(), // deprecated
+    removeListener: vi.fn(), // deprecated
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
+import { cleanup, render, screen } from "@testing-library/react";
 import { ReactFlowProvider } from "@xyflow/react";
 import { AnimatedLayoutProvider } from "./AnimatedLayoutProvider";
 import { useAnimatedLayoutContext } from "./animated-layout-context";
@@ -17,11 +43,14 @@ vi.mock("@/stores/animated-graph-store", () => {
     restartRequested: false,
   };
 
-  const mockStore = vi.fn((selector) => {
-    return selector ? selector(mockState) : mockState;
-  });
-
-  mockStore.getState = vi.fn(() => mockState);
+  const mockStore = Object.assign(
+    vi.fn((selector) => {
+      return selector ? selector(mockState) : mockState;
+    }),
+    {
+      getState: vi.fn(() => mockState),
+    },
+  );
 
   return {
     useAnimatedGraphStore: mockStore,
@@ -186,7 +215,6 @@ describe("AnimatedLayoutProvider", () => {
         <AnimatedLayoutProvider
           enabled={true}
           onLayoutChange={onLayoutChange}
-          fitViewAfterLayout={false}
           autoStartOnNodeChange={true}
           containerDimensions={{ width: 800, height: 600 }}
         >

@@ -1,0 +1,1023 @@
+
+> @academic-explorer/client@1.3.0 test
+> vitest run src/cache/disk/disk-writer.unit.test.ts
+
+
+ RUN  v3.2.4 /Users/joe/Documents/Research/PhD/Academic Explorer/packages/client
+
+stdout | src/cache/disk/disk-writer.unit.test.ts
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'apps/web/public/data/openalex'[39m,
+    maxConcurrentWrites: [33m10[39m,
+    lockTimeoutMs: [33m5000[39m,
+    checkDiskSpace: [33mtrue[39m,
+    minDiskSpaceBytes: [33m104857600[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Initialization and Configuration > should initialize with default config
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'/mock/base/path'[39m,
+    maxConcurrentWrites: [33m5[39m,
+    lockTimeoutMs: [33m1000[39m,
+    checkDiskSpace: [33mfalse[39m,
+    minDiskSpaceBytes: [33m0[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Initialization and Configuration > should initialize with default config
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'apps/web/public/data/openalex'[39m,
+    maxConcurrentWrites: [33m10[39m,
+    lockTimeoutMs: [33m5000[39m,
+    checkDiskSpace: [33mtrue[39m,
+    minDiskSpaceBytes: [33m104857600[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Initialization and Configuration > should initialize with default config
+[disk-writer] DiskCacheWriter cleanup completed 
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Initialization and Configuration > should use provided config
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'/mock/base/path'[39m,
+    maxConcurrentWrites: [33m5[39m,
+    lockTimeoutMs: [33m1000[39m,
+    checkDiskSpace: [33mfalse[39m,
+    minDiskSpaceBytes: [33m0[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Initialization and Configuration > should use provided config
+[disk-writer] DiskCacheWriter cleanup completed 
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Initialization and Configuration > should initialize Node modules on first use
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'/mock/base/path'[39m,
+    maxConcurrentWrites: [33m5[39m,
+    lockTimeoutMs: [33m1000[39m,
+    checkDiskSpace: [33mfalse[39m,
+    minDiskSpaceBytes: [33m0[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Initialization and Configuration > should initialize Node modules on first use
+[disk-writer] File lock acquired { filePath: [32m'/mock/base/path/index.json'[39m, lockId: [32m'mock-uuid'[39m }
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Initialization and Configuration > should initialize Node modules on first use
+[disk-writer] File lock acquired { filePath: [32m'/mock/base/path/works.json'[39m, lockId: [32m'mock-uuid'[39m }
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Initialization and Configuration > should initialize Node modules on first use
+[cache] Cache write successful {
+  entityType: [32m'works'[39m,
+  entityId: [32m'works'[39m,
+  baseName: [32m'works.json'[39m,
+  dataFile: [32m'/mock/base/path/works.json'[39m,
+  fileSizeBytes: [33m19[39m
+}
+[disk-writer] File lock released { filePath: [32m'/mock/base/path/index.json'[39m, lockId: [32m'mock-uuid'[39m }
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Initialization and Configuration > should initialize Node modules on first use
+[disk-writer] File lock released { filePath: [32m'/mock/base/path/works.json'[39m, lockId: [32m'mock-uuid'[39m }
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Initialization and Configuration > should initialize Node modules on first use
+[disk-writer] DiskCacheWriter cleanup completed 
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > writeToCache > should enforce concurrent write limits
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'/mock/base/path'[39m,
+    maxConcurrentWrites: [33m5[39m,
+    lockTimeoutMs: [33m1000[39m,
+    checkDiskSpace: [33mfalse[39m,
+    minDiskSpaceBytes: [33m0[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > writeToCache > should enforce concurrent write limits
+[disk-writer] DiskCacheWriter cleanup completed 
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > writeToCache > should check disk space if enabled
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'/mock/base/path'[39m,
+    maxConcurrentWrites: [33m5[39m,
+    lockTimeoutMs: [33m1000[39m,
+    checkDiskSpace: [33mfalse[39m,
+    minDiskSpaceBytes: [33m0[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > writeToCache > should check disk space if enabled
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'/mock/base/path'[39m,
+    maxConcurrentWrites: [33m5[39m,
+    lockTimeoutMs: [33m1000[39m,
+    checkDiskSpace: [33mtrue[39m,
+    minDiskSpaceBytes: [33m0[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > writeToCache > should check disk space if enabled
+[disk-writer] Disk space check passed { availableBytes: [33m1024000000[39m, requiredBytes: [33m0[39m }
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > writeToCache > should check disk space if enabled
+[disk-writer] File lock acquired { filePath: [32m'/mock/base/path/index.json'[39m, lockId: [32m'mock-uuid'[39m }
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > writeToCache > should check disk space if enabled
+[disk-writer] File lock acquired { filePath: [32m'/mock/base/path/works.json'[39m, lockId: [32m'mock-uuid'[39m }
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > writeToCache > should check disk space if enabled
+[cache] Cache write successful {
+  entityType: [32m'works'[39m,
+  entityId: [32m'works'[39m,
+  baseName: [32m'works.json'[39m,
+  dataFile: [32m'/mock/base/path/works.json'[39m,
+  fileSizeBytes: [33m19[39m
+}
+[disk-writer] File lock released { filePath: [32m'/mock/base/path/index.json'[39m, lockId: [32m'mock-uuid'[39m }
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > writeToCache > should check disk space if enabled
+[disk-writer] File lock released { filePath: [32m'/mock/base/path/works.json'[39m, lockId: [32m'mock-uuid'[39m }
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > writeToCache > should check disk space if enabled
+[disk-writer] DiskCacheWriter cleanup completed 
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > writeToCache > should throw on insufficient disk space
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'/mock/base/path'[39m,
+    maxConcurrentWrites: [33m5[39m,
+    lockTimeoutMs: [33m1000[39m,
+    checkDiskSpace: [33mfalse[39m,
+    minDiskSpaceBytes: [33m0[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > writeToCache > should throw on insufficient disk space
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'/mock/base/path'[39m,
+    maxConcurrentWrites: [33m5[39m,
+    lockTimeoutMs: [33m1000[39m,
+    checkDiskSpace: [33mtrue[39m,
+    minDiskSpaceBytes: [33m0[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > writeToCache > should throw on insufficient disk space
+[disk-writer] Disk space check passed { availableBytes: [33m1[39m, requiredBytes: [33m0[39m }
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > writeToCache > should throw on insufficient disk space
+[disk-writer] File lock acquired { filePath: [32m'/mock/base/path/index.json'[39m, lockId: [32m'mock-uuid'[39m }
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > writeToCache > should throw on insufficient disk space
+[disk-writer] File lock acquired { filePath: [32m'/mock/base/path/works.json'[39m, lockId: [32m'mock-uuid'[39m }
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > writeToCache > should throw on insufficient disk space
+[cache] Cache write successful {
+  entityType: [32m'works'[39m,
+  entityId: [32m'works'[39m,
+  baseName: [32m'works.json'[39m,
+  dataFile: [32m'/mock/base/path/works.json'[39m,
+  fileSizeBytes: [33m19[39m
+}
+[disk-writer] File lock released { filePath: [32m'/mock/base/path/index.json'[39m, lockId: [32m'mock-uuid'[39m }
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > writeToCache > should throw on insufficient disk space
+[disk-writer] File lock released { filePath: [32m'/mock/base/path/works.json'[39m, lockId: [32m'mock-uuid'[39m }
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > writeToCache > should throw on insufficient disk space
+[disk-writer] DiskCacheWriter cleanup completed 
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Collision Handling in Writes > should merge colliding entry with matching hash
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'/mock/base/path'[39m,
+    maxConcurrentWrites: [33m5[39m,
+    lockTimeoutMs: [33m1000[39m,
+    checkDiskSpace: [33mfalse[39m,
+    minDiskSpaceBytes: [33m0[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Collision Handling in Writes > should merge colliding entry with matching hash
+[disk-writer] File lock acquired {
+  filePath: [32m'/mock/base/path/works/queries/index.json'[39m,
+  lockId: [32m'mock-uuid'[39m
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Collision Handling in Writes > should merge colliding entry with matching hash
+[disk-writer] File lock released {
+  filePath: [32m'/mock/base/path/works/queries/index.json'[39m,
+  lockId: [32m'mock-uuid'[39m
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Collision Handling in Writes > should merge colliding entry with matching hash
+[disk-writer] DiskCacheWriter cleanup completed 
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Collision Handling in Writes > should archive on hash mismatch and overwrite
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'/mock/base/path'[39m,
+    maxConcurrentWrites: [33m5[39m,
+    lockTimeoutMs: [33m1000[39m,
+    checkDiskSpace: [33mfalse[39m,
+    minDiskSpaceBytes: [33m0[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Collision Handling in Writes > should archive on hash mismatch and overwrite
+[disk-writer] File lock acquired {
+  filePath: [32m'/mock/base/path/works/queries/query.collisions.json'[39m,
+  lockId: [32m'mock-uuid'[39m
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Collision Handling in Writes > should archive on hash mismatch and overwrite
+[disk-writer] File lock acquired {
+  filePath: [32m'/mock/base/path/works/queries/index.json'[39m,
+  lockId: [32m'mock-uuid'[39m
+}
+
+stderr | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Collision Handling in Writes > should archive on hash mismatch and overwrite
+[disk-writer] Attempted to release non-existent or mismatched lock {
+  filePath: [32m'/mock/base/path/works/queries/query.json/index.json'[39m,
+  lockId: [32m'mock-uuid'[39m
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Collision Handling in Writes > should archive on hash mismatch and overwrite
+[cache] Cache write successful {
+  entityType: [32m'works'[39m,
+  entityId: [32m'works'[39m,
+  baseName: [32m'index.json'[39m,
+  dataFile: [32m'/mock/base/path/works/queries/index.json'[39m,
+  fileSizeBytes: [33m53[39m
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Collision Handling in Writes > should archive on hash mismatch and overwrite
+[disk-writer] File lock released {
+  filePath: [32m'/mock/base/path/works/queries/index.json'[39m,
+  lockId: [32m'mock-uuid'[39m
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Collision Handling in Writes > should archive on hash mismatch and overwrite
+[disk-writer] DiskCacheWriter cleanup completed 
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Collision Handling in Writes > should migrate legacy entry during write
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'/mock/base/path'[39m,
+    maxConcurrentWrites: [33m5[39m,
+    lockTimeoutMs: [33m1000[39m,
+    checkDiskSpace: [33mfalse[39m,
+    minDiskSpaceBytes: [33m0[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Collision Handling in Writes > should migrate legacy entry during write
+[disk-writer] DiskCacheWriter cleanup completed 
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Collision Handling in Writes > should log warning on validation failure and fallback
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'/mock/base/path'[39m,
+    maxConcurrentWrites: [33m5[39m,
+    lockTimeoutMs: [33m1000[39m,
+    checkDiskSpace: [33mfalse[39m,
+    minDiskSpaceBytes: [33m0[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Collision Handling in Writes > should log warning on validation failure and fallback
+[disk-writer] DiskCacheWriter cleanup completed 
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > File Locking and Atomicity > should acquire and release locks for files
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'/mock/base/path'[39m,
+    maxConcurrentWrites: [33m5[39m,
+    lockTimeoutMs: [33m1000[39m,
+    checkDiskSpace: [33mfalse[39m,
+    minDiskSpaceBytes: [33m0[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > File Locking and Atomicity > should acquire and release locks for files
+[disk-writer] DiskCacheWriter cleanup completed 
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > File Locking and Atomicity > should timeout on lock acquisition failure
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'/mock/base/path'[39m,
+    maxConcurrentWrites: [33m5[39m,
+    lockTimeoutMs: [33m1000[39m,
+    checkDiskSpace: [33mfalse[39m,
+    minDiskSpaceBytes: [33m0[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > File Locking and Atomicity > should timeout on lock acquisition failure
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'/mock/base/path'[39m,
+    maxConcurrentWrites: [33m5[39m,
+    lockTimeoutMs: [33m1[39m,
+    checkDiskSpace: [33mfalse[39m,
+    minDiskSpaceBytes: [33m0[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > File Locking and Atomicity > should timeout on lock acquisition failure
+[disk-writer] DiskCacheWriter cleanup completed 
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > File Locking and Atomicity > should handle concurrent writes to same path atomically
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'/mock/base/path'[39m,
+    maxConcurrentWrites: [33m5[39m,
+    lockTimeoutMs: [33m1000[39m,
+    checkDiskSpace: [33mfalse[39m,
+    minDiskSpaceBytes: [33m0[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > File Locking and Atomicity > should handle concurrent writes to same path atomically
+[disk-writer] DiskCacheWriter cleanup completed 
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Hierarchical Index Updates > should update containing directory index
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'/mock/base/path'[39m,
+    maxConcurrentWrites: [33m5[39m,
+    lockTimeoutMs: [33m1000[39m,
+    checkDiskSpace: [33mfalse[39m,
+    minDiskSpaceBytes: [33m0[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Hierarchical Index Updates > should update containing directory index
+[disk-writer] File lock acquired { filePath: [32m'/mock/index.json'[39m, lockId: [32m'mock-uuid'[39m }
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Hierarchical Index Updates > should update containing directory index
+[disk-writer] File lock acquired { filePath: [32m'/mock/meta.json'[39m, lockId: [32m'mock-uuid'[39m }
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Hierarchical Index Updates > should update containing directory index
+[cache] Cache write successful {
+  entityType: [32m'works'[39m,
+  entityId: [32m'W123'[39m,
+  baseName: [32m'meta.json'[39m,
+  dataFile: [32m'/mock/meta.json'[39m,
+  fileSizeBytes: [33m18[39m
+}
+
+stderr | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Hierarchical Index Updates > should update containing directory index
+[disk-writer] Attempted to release non-existent or mismatched lock { filePath: [32m'/mock/base/path/works/W123.json'[39m, lockId: [32m'mock-uuid'[39m }
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Hierarchical Index Updates > should update containing directory index
+[disk-writer] File lock released { filePath: [32m'/mock/meta.json'[39m, lockId: [32m'mock-uuid'[39m }
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Hierarchical Index Updates > should update containing directory index
+[disk-writer] DiskCacheWriter cleanup completed 
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Hierarchical Index Updates > should propagate updates to parent indexes
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'/mock/base/path'[39m,
+    maxConcurrentWrites: [33m5[39m,
+    lockTimeoutMs: [33m1000[39m,
+    checkDiskSpace: [33mfalse[39m,
+    minDiskSpaceBytes: [33m0[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Hierarchical Index Updates > should propagate updates to parent indexes
+[disk-writer] DiskCacheWriter cleanup completed 
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Hierarchical Index Updates > should include merged collisionInfo in propagation
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'/mock/base/path'[39m,
+    maxConcurrentWrites: [33m5[39m,
+    lockTimeoutMs: [33m1000[39m,
+    checkDiskSpace: [33mfalse[39m,
+    minDiskSpaceBytes: [33m0[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Hierarchical Index Updates > should include merged collisionInfo in propagation
+[disk-writer] DiskCacheWriter cleanup completed 
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Edge Cases > should handle invalid URLs and empty directories
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'/mock/base/path'[39m,
+    maxConcurrentWrites: [33m5[39m,
+    lockTimeoutMs: [33m1000[39m,
+    checkDiskSpace: [33mfalse[39m,
+    minDiskSpaceBytes: [33m0[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Edge Cases > should handle invalid URLs and empty directories
+[disk-writer] File lock acquired {
+  filePath: [32m'/mock/base/path/works/authors/W123/index.json'[39m,
+  lockId: [32m'mock-uuid'[39m
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Edge Cases > should handle invalid URLs and empty directories
+[disk-writer] File lock acquired { filePath: [32m'/mock/base/path/works/index.json'[39m, lockId: [32m'mock-uuid'[39m }
+
+stderr | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Edge Cases > should handle invalid URLs and empty directories
+[disk-writer] Attempted to release non-existent or mismatched lock {
+  filePath: [32m'/mock/base/path/works/authors/W123/data.json'[39m,
+  lockId: [32m'mock-uuid'[39m
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Edge Cases > should handle invalid URLs and empty directories
+[cache] Cache write successful {
+  entityType: [32m'works'[39m,
+  entityId: [32m'unknown_fallback'[39m,
+  baseName: [32m'index.json'[39m,
+  dataFile: [32m'/mock/base/path/works/index.json'[39m,
+  fileSizeBytes: [33m2[39m
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Edge Cases > should handle invalid URLs and empty directories
+[disk-writer] File lock released { filePath: [32m'/mock/base/path/works/index.json'[39m, lockId: [32m'mock-uuid'[39m }
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Edge Cases > should handle invalid URLs and empty directories
+[disk-writer] DiskCacheWriter cleanup completed 
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Edge Cases > should handle large collision sets
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'/mock/base/path'[39m,
+    maxConcurrentWrites: [33m5[39m,
+    lockTimeoutMs: [33m1000[39m,
+    checkDiskSpace: [33mfalse[39m,
+    minDiskSpaceBytes: [33m0[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Edge Cases > should handle large collision sets
+[disk-writer] DiskCacheWriter cleanup completed 
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Edge Cases > should maintain backward compatibility for legacy reads
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'/mock/base/path'[39m,
+    maxConcurrentWrites: [33m5[39m,
+    lockTimeoutMs: [33m1000[39m,
+    checkDiskSpace: [33mfalse[39m,
+    minDiskSpaceBytes: [33m0[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Edge Cases > should maintain backward compatibility for legacy reads
+[disk-writer] DiskCacheWriter cleanup completed 
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Edge Cases > should use primary url for legacy compatibility
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'/mock/base/path'[39m,
+    maxConcurrentWrites: [33m5[39m,
+    lockTimeoutMs: [33m1000[39m,
+    checkDiskSpace: [33mfalse[39m,
+    minDiskSpaceBytes: [33m0[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Edge Cases > should use primary url for legacy compatibility
+[disk-writer] DiskCacheWriter cleanup completed 
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Cleanup and Stats > should cleanup active writes and locks
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'/mock/base/path'[39m,
+    maxConcurrentWrites: [33m5[39m,
+    lockTimeoutMs: [33m1000[39m,
+    checkDiskSpace: [33mfalse[39m,
+    minDiskSpaceBytes: [33m0[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Cleanup and Stats > should cleanup active writes and locks
+[disk-writer] DiskCacheWriter cleanup completed 
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Cleanup and Stats > should cleanup active writes and locks
+[disk-writer] DiskCacheWriter cleanup completed 
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Cleanup and Stats > should return cache stats
+[cache] DiskCacheWriter initialized {
+  config: {
+    basePath: [32m'/mock/base/path'[39m,
+    maxConcurrentWrites: [33m5[39m,
+    lockTimeoutMs: [33m1000[39m,
+    checkDiskSpace: [33mfalse[39m,
+    minDiskSpaceBytes: [33m0[39m
+  }
+}
+
+stdout | src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Cleanup and Stats > should return cache stats
+[disk-writer] DiskCacheWriter cleanup completed 
+
+ ❯ |unit| src/cache/disk/disk-writer.unit.test.ts (22 tests | 15 failed) 2048ms
+   ✓ DiskCacheWriter > Initialization and Configuration > should initialize with default config 2ms
+   ✓ DiskCacheWriter > Initialization and Configuration > should use provided config 1ms
+   ✓ DiskCacheWriter > Initialization and Configuration > should initialize Node modules on first use 3ms
+   ✓ DiskCacheWriter > writeToCache > should enforce concurrent write limits 1ms
+   ✓ DiskCacheWriter > writeToCache > should check disk space if enabled 4ms
+   × DiskCacheWriter > writeToCache > should throw on insufficient disk space 6ms
+     → promise resolved "undefined" instead of rejecting
+   × DiskCacheWriter > Collision Handling in Writes > should merge colliding entry with matching hash 1017ms
+     → Failed to acquire file lock for /mock/base/path/works/queries/index.json within 1000ms
+   × DiskCacheWriter > Collision Handling in Writes > should archive on hash mismatch and overwrite 3ms
+     → expected "spy" to be called with arguments: [ StringContaining{…}, …(1) ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "query.collisions.json",[90m
+[32m-   StringContaining "\"reason\":\"hash_mismatch_update\"",[90m
+[31m+   "/mock/base/path/works/queries/index.json.tmp.mock-uuid",[90m
+[31m+   "{[90m
+[31m+   \"results\": [[90m
+[31m+     {[90m
+[31m+       \"id\": \"W123\"[90m
+[31m+     }[90m
+[31m+   ][90m
+[31m+ }",[90m
+[31m+   "utf8",[90m
+[2m  ][22m
+
+[1m  2nd spy call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "query.collisions.json",[90m
+[32m-   StringContaining "\"reason\":\"hash_mismatch_update\"",[90m
+[31m+   "/mock/base/path/works/queries/query.collisions.json.tmp.mock-uuid",[90m
+[31m+   "{[90m
+[31m+   \"files\": {[90m
+[31m+     \"query\": {[90m
+[31m+       \"url\": \"https://api.openalex.org/works?filter=doi:10.1234/test\",[90m
+[31m+       \"$ref\": \"./query.json\",[90m
+[31m+       \"lastRetrieved\": \"2023-01-01T00:00:00Z\",[90m
+[31m+       \"contentHash\": \"mock-hash\"[90m
+[31m+     },[90m
+[31m+     \"index.json\": {[90m
+[31m+       \"url\": \"https://api.openalex.org/works?filter=doi:10.1234/test&api_key=secret\",[90m
+[31m+       \"$ref\": \"./index.json.json\",[90m
+[31m+       \"lastRetrieved\": \"2025-10-08T20:45:02.569Z\",[90m
+[31m+       \"contentHash\": \"new-hash\"[90m
+[31m+     }[90m
+[31m+   },[90m
+[31m+   \"lastUpdated\": \"2025-10-08T20:45:02.569Z\"[90m
+[31m+ }",[90m
+[31m+   "utf8",[90m
+[2m  ][22m
+[39m[90m
+
+Number of calls: [1m2[22m
+[39m
+   × DiskCacheWriter > Collision Handling in Writes > should migrate legacy entry during write 0ms
+     → Missing required fields: url, method, responseData, statusCode, timestamp
+   × DiskCacheWriter > Collision Handling in Writes > should log warning on validation failure and fallback 0ms
+     → Missing required fields: url, method, responseData, statusCode, timestamp
+   × DiskCacheWriter > File Locking and Atomicity > should acquire and release locks for files 0ms
+     → Missing required fields: url, method, responseData, statusCode, timestamp
+   × DiskCacheWriter > File Locking and Atomicity > should timeout on lock acquisition failure 2ms
+     → expected [Function] to throw error including 'Failed to acquire file lock' but got 'Missing required fields: url, method,…'
+   × DiskCacheWriter > File Locking and Atomicity > should handle concurrent writes to same path atomically 1002ms
+     → expected 0 to be greater than 0
+   × DiskCacheWriter > Hierarchical Index Updates > should update containing directory index 2ms
+     → expected "spy" to be called with arguments: [ …(2) ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[32m-   "/mock/base/path/works/index.json",[90m
+[32m-   Any<String>,[90m
+[31m+   "/mock/meta.json.tmp.mock-uuid",[90m
+[31m+   "{[90m
+[31m+   \"id\": \"W123\"[90m
+[31m+ }",[90m
+[31m+   "utf8",[90m
+[2m  ][22m
+
+[1m  2nd spy call:
+
+[22m[2m  [[22m
+[32m-   "/mock/base/path/works/index.json",[90m
+[32m-   Any<String>,[90m
+[31m+   "/mock/index.json.tmp.mock-uuid",[90m
+[31m+   "{[90m
+[31m+   \"files\": {[90m
+[31m+     \"query\": {[90m
+[31m+       \"url\": \"https://api.openalex.org/works?filter=doi:10.1234/test\",[90m
+[31m+       \"$ref\": \"./query.json\",[90m
+[31m+       \"lastRetrieved\": \"2023-01-01T00:00:00Z\",[90m
+[31m+       \"contentHash\": \"old-hash\"[90m
+[31m+     },[90m
+[31m+     \"meta.json\": {[90m
+[31m+       \"url\": \"https://api.openalex.org/works/W123\",[90m
+[31m+       \"$ref\": \"./meta.json.json\",[90m
+[31m+       \"lastRetrieved\": \"2025-10-08T20:45:03.577Z\",[90m
+[31m+       \"contentHash\": \"new-hash\"[90m
+[31m+     }[90m
+[31m+   },[90m
+[31m+   \"lastUpdated\": \"2025-10-08T20:45:03.577Z\"[90m
+[31m+ }",[90m
+[31m+   "utf8",[90m
+[2m  ][22m
+[39m[90m
+
+Number of calls: [1m2[22m
+[39m
+   × DiskCacheWriter > Hierarchical Index Updates > should propagate updates to parent indexes 0ms
+     → Missing required fields: url, method, responseData, statusCode, timestamp
+   × DiskCacheWriter > Hierarchical Index Updates > should include merged collisionInfo in propagation 1ms
+     → Missing required fields: url, method, responseData, statusCode, timestamp
+   ✓ DiskCacheWriter > Edge Cases > should handle invalid URLs and empty directories 1ms
+   × DiskCacheWriter > Edge Cases > should handle large collision sets 0ms
+     → Missing required fields: url, method, responseData, statusCode, timestamp
+   × DiskCacheWriter > Edge Cases > should maintain backward compatibility for legacy reads 0ms
+     → Missing required fields: url, method, responseData, statusCode, timestamp
+   × DiskCacheWriter > Edge Cases > should use primary url for legacy compatibility 0ms
+     → Missing required fields: method, responseData, statusCode, timestamp
+   × DiskCacheWriter > Cleanup and Stats > should cleanup active writes and locks 1ms
+     → expected 1 to be +0 // Object.is equality
+   ✓ DiskCacheWriter > Cleanup and Stats > should return cache stats 0ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 15 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |unit| src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > writeToCache > should throw on insufficient disk space
+AssertionError: promise resolved "undefined" instead of rejecting
+
+[32m- Expected:[39m 
+Error {
+  "message": "rejected promise",
+}
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ src/cache/disk/disk-writer.unit.test.ts:251:54
+    249|         timestamp: "2023-01-01T00:00:00Z",
+    250|       };
+    251|       await expect(diskCheckWriter.writeToCache(data)).rejects.toThrow(
+       |                                                      ^
+    252|         "Insufficient disk space",
+    253|       );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/15]⎯
+
+ FAIL  |unit| src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Collision Handling in Writes > should merge colliding entry with matching hash
+Error: Failed to acquire file lock for /mock/base/path/works/queries/index.json within 1000ms
+ ❯ DiskCacheWriter.acquireFileLock src/cache/disk/disk-writer.ts:695:11
+    693|     }
+    694| 
+    695|     throw new Error(
+       |           ^
+    696|       `Failed to acquire file lock for ${filePath} within ${maxWaitTim…
+    697|     );
+ ❯ DiskCacheWriter._writeToCache src/cache/disk/disk-writer.ts:246:20
+ ❯ DiskCacheWriter.writeToCache src/cache/disk/disk-writer.ts:195:7
+ ❯ src/cache/disk/disk-writer.unit.test.ts:284:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/15]⎯
+
+ FAIL  |unit| src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Collision Handling in Writes > should archive on hash mismatch and overwrite
+AssertionError: expected "spy" to be called with arguments: [ StringContaining{…}, …(1) ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "query.collisions.json",[90m
+[32m-   StringContaining "\"reason\":\"hash_mismatch_update\"",[90m
+[31m+   "/mock/base/path/works/queries/index.json.tmp.mock-uuid",[90m
+[31m+   "{[90m
+[31m+   \"results\": [[90m
+[31m+     {[90m
+[31m+       \"id\": \"W123\"[90m
+[31m+     }[90m
+[31m+   ][90m
+[31m+ }",[90m
+[31m+   "utf8",[90m
+[2m  ][22m
+
+[1m  2nd spy call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "query.collisions.json",[90m
+[32m-   StringContaining "\"reason\":\"hash_mismatch_update\"",[90m
+[31m+   "/mock/base/path/works/queries/query.collisions.json.tmp.mock-uuid",[90m
+[31m+   "{[90m
+[31m+   \"files\": {[90m
+[31m+     \"query\": {[90m
+[31m+       \"url\": \"https://api.openalex.org/works?filter=doi:10.1234/test\",[90m
+[31m+       \"$ref\": \"./query.json\",[90m
+[31m+       \"lastRetrieved\": \"2023-01-01T00:00:00Z\",[90m
+[31m+       \"contentHash\": \"mock-hash\"[90m
+[31m+     },[90m
+[31m+     \"index.json\": {[90m
+[31m+       \"url\": \"https://api.openalex.org/works?filter=doi:10.1234/test&api_key=secret\",[90m
+[31m+       \"$ref\": \"./index.json.json\",[90m
+[31m+       \"lastRetrieved\": \"2025-10-08T20:45:02.569Z\",[90m
+[31m+       \"contentHash\": \"new-hash\"[90m
+[31m+     }[90m
+[31m+   },[90m
+[31m+   \"lastUpdated\": \"2025-10-08T20:45:02.569Z\"[90m
+[31m+ }",[90m
+[31m+   "utf8",[90m
+[2m  ][22m
+[39m[90m
+
+Number of calls: [1m2[22m
+[39m
+ ❯ src/cache/disk/disk-writer.unit.test.ts:329:32
+    327|       await writer.writeToCache(data);
+    328| 
+    329|       expect(mockFs.writeFile).toHaveBeenCalledWith(
+       |                                ^
+    330|         expect.stringContaining("query.collisions.json"),
+    331|         expect.stringContaining('"reason":"hash_mismatch_update"'),
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/15]⎯
+
+ FAIL  |unit| src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Collision Handling in Writes > should migrate legacy entry during write
+Error: Missing required fields: url, method, responseData, statusCode, timestamp
+ ❯ DiskCacheWriter.validateInterceptedData src/cache/disk/disk-writer.ts:794:13
+    792| 
+    793|     if (missingFields.length > 0) {
+    794|       throw new Error(`Missing required fields: ${missingFields.join("…
+       |             ^
+    795|     }
+    796| 
+ ❯ DiskCacheWriter._writeToCache src/cache/disk/disk-writer.ts:229:12
+ ❯ DiskCacheWriter.writeToCache src/cache/disk/disk-writer.ts:195:7
+ ❯ src/cache/disk/disk-writer.unit.test.ts:356:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/15]⎯
+
+ FAIL  |unit| src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Collision Handling in Writes > should log warning on validation failure and fallback
+Error: Missing required fields: url, method, responseData, statusCode, timestamp
+ ❯ DiskCacheWriter.validateInterceptedData src/cache/disk/disk-writer.ts:794:13
+    792| 
+    793|     if (missingFields.length > 0) {
+    794|       throw new Error(`Missing required fields: ${missingFields.join("…
+       |             ^
+    795|     }
+    796| 
+ ❯ DiskCacheWriter._writeToCache src/cache/disk/disk-writer.ts:229:12
+ ❯ DiskCacheWriter.writeToCache src/cache/disk/disk-writer.ts:195:7
+ ❯ src/cache/disk/disk-writer.unit.test.ts:368:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/15]⎯
+
+ FAIL  |unit| src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > File Locking and Atomicity > should acquire and release locks for files
+Error: Missing required fields: url, method, responseData, statusCode, timestamp
+ ❯ DiskCacheWriter.validateInterceptedData src/cache/disk/disk-writer.ts:794:13
+    792| 
+    793|     if (missingFields.length > 0) {
+    794|       throw new Error(`Missing required fields: ${missingFields.join("…
+       |             ^
+    795|     }
+    796| 
+ ❯ DiskCacheWriter._writeToCache src/cache/disk/disk-writer.ts:229:12
+ ❯ DiskCacheWriter.writeToCache src/cache/disk/disk-writer.ts:195:7
+ ❯ src/cache/disk/disk-writer.unit.test.ts:387:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/15]⎯
+
+ FAIL  |unit| src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > File Locking and Atomicity > should timeout on lock acquisition failure
+AssertionError: expected [Function] to throw error including 'Failed to acquire file lock' but got 'Missing required fields: url, method,…'
+
+Expected: [32m"[7mFailed to ac[27mquire fi[7mle lock[27m"[39m
+Received: [31m"[7mMissing re[27mquire[7md[27m fi[7melds: url, method, responseData, statusCode, timestamp[27m"[39m
+
+ ❯ src/cache/disk/disk-writer.unit.test.ts:410:7
+    408|       });
+    409| 
+    410|       await expect(shortTimeoutWriter.writeToCache(data)).rejects.toTh…
+       |       ^
+    411|         "Failed to acquire file lock",
+    412|       );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/15]⎯
+
+ FAIL  |unit| src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > File Locking and Atomicity > should handle concurrent writes to same path atomically
+AssertionError: expected 0 to be greater than 0
+ ❯ src/cache/disk/disk-writer.unit.test.ts:431:44
+    429|       // Second should wait for first
+    430|       await vi.waitFor(() => {
+    431|         expect(writer["activeLocks"].size).toBeGreaterThan(0);
+       |                                            ^
+    432|       });
+    433| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/15]⎯
+
+ FAIL  |unit| src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Hierarchical Index Updates > should update containing directory index
+AssertionError: expected "spy" to be called with arguments: [ …(2) ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[32m-   "/mock/base/path/works/index.json",[90m
+[32m-   Any<String>,[90m
+[31m+   "/mock/meta.json.tmp.mock-uuid",[90m
+[31m+   "{[90m
+[31m+   \"id\": \"W123\"[90m
+[31m+ }",[90m
+[31m+   "utf8",[90m
+[2m  ][22m
+
+[1m  2nd spy call:
+
+[22m[2m  [[22m
+[32m-   "/mock/base/path/works/index.json",[90m
+[32m-   Any<String>,[90m
+[31m+   "/mock/index.json.tmp.mock-uuid",[90m
+[31m+   "{[90m
+[31m+   \"files\": {[90m
+[31m+     \"query\": {[90m
+[31m+       \"url\": \"https://api.openalex.org/works?filter=doi:10.1234/test\",[90m
+[31m+       \"$ref\": \"./query.json\",[90m
+[31m+       \"lastRetrieved\": \"2023-01-01T00:00:00Z\",[90m
+[31m+       \"contentHash\": \"old-hash\"[90m
+[31m+     },[90m
+[31m+     \"meta.json\": {[90m
+[31m+       \"url\": \"https://api.openalex.org/works/W123\",[90m
+[31m+       \"$ref\": \"./meta.json.json\",[90m
+[31m+       \"lastRetrieved\": \"2025-10-08T20:45:03.577Z\",[90m
+[31m+       \"contentHash\": \"new-hash\"[90m
+[31m+     }[90m
+[31m+   },[90m
+[31m+   \"lastUpdated\": \"2025-10-08T20:45:03.577Z\"[90m
+[31m+ }",[90m
+[31m+   "utf8",[90m
+[2m  ][22m
+[39m[90m
+
+Number of calls: [1m2[22m
+[39m
+ ❯ src/cache/disk/disk-writer.unit.test.ts:462:32
+    460|       await writer.writeToCache(data);
+    461| 
+    462|       expect(mockFs.writeFile).toHaveBeenCalledWith(
+       |                                ^
+    463|         "/mock/base/path/works/index.json",
+    464|         expect.any(String),
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/15]⎯
+
+ FAIL  |unit| src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Hierarchical Index Updates > should propagate updates to parent indexes
+Error: Missing required fields: url, method, responseData, statusCode, timestamp
+ ❯ DiskCacheWriter.validateInterceptedData src/cache/disk/disk-writer.ts:794:13
+    792| 
+    793|     if (missingFields.length > 0) {
+    794|       throw new Error(`Missing required fields: ${missingFields.join("…
+       |             ^
+    795|     }
+    796| 
+ ❯ DiskCacheWriter._writeToCache src/cache/disk/disk-writer.ts:229:12
+ ❯ DiskCacheWriter.writeToCache src/cache/disk/disk-writer.ts:195:7
+ ❯ src/cache/disk/disk-writer.unit.test.ts:489:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/15]⎯
+
+ FAIL  |unit| src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Hierarchical Index Updates > should include merged collisionInfo in propagation
+Error: Missing required fields: url, method, responseData, statusCode, timestamp
+ ❯ DiskCacheWriter.validateInterceptedData src/cache/disk/disk-writer.ts:794:13
+    792| 
+    793|     if (missingFields.length > 0) {
+    794|       throw new Error(`Missing required fields: ${missingFields.join("…
+       |             ^
+    795|     }
+    796| 
+ ❯ DiskCacheWriter._writeToCache src/cache/disk/disk-writer.ts:229:12
+ ❯ DiskCacheWriter.writeToCache src/cache/disk/disk-writer.ts:195:7
+ ❯ src/cache/disk/disk-writer.unit.test.ts:516:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/15]⎯
+
+ FAIL  |unit| src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Edge Cases > should handle large collision sets
+Error: Missing required fields: url, method, responseData, statusCode, timestamp
+ ❯ DiskCacheWriter.validateInterceptedData src/cache/disk/disk-writer.ts:794:13
+    792| 
+    793|     if (missingFields.length > 0) {
+    794|       throw new Error(`Missing required fields: ${missingFields.join("…
+       |             ^
+    795|     }
+    796| 
+ ❯ DiskCacheWriter._writeToCache src/cache/disk/disk-writer.ts:229:12
+ ❯ DiskCacheWriter.writeToCache src/cache/disk/disk-writer.ts:195:7
+ ❯ src/cache/disk/disk-writer.unit.test.ts:559:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/15]⎯
+
+ FAIL  |unit| src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Edge Cases > should maintain backward compatibility for legacy reads
+Error: Missing required fields: url, method, responseData, statusCode, timestamp
+ ❯ DiskCacheWriter.validateInterceptedData src/cache/disk/disk-writer.ts:794:13
+    792| 
+    793|     if (missingFields.length > 0) {
+    794|       throw new Error(`Missing required fields: ${missingFields.join("…
+       |             ^
+    795|     }
+    796| 
+ ❯ DiskCacheWriter._writeToCache src/cache/disk/disk-writer.ts:229:12
+ ❯ DiskCacheWriter.writeToCache src/cache/disk/disk-writer.ts:195:7
+ ❯ src/cache/disk/disk-writer.unit.test.ts:579:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/15]⎯
+
+ FAIL  |unit| src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Edge Cases > should use primary url for legacy compatibility
+Error: Missing required fields: method, responseData, statusCode, timestamp
+ ❯ DiskCacheWriter.validateInterceptedData src/cache/disk/disk-writer.ts:794:13
+    792| 
+    793|     if (missingFields.length > 0) {
+    794|       throw new Error(`Missing required fields: ${missingFields.join("…
+       |             ^
+    795|     }
+    796| 
+ ❯ DiskCacheWriter._writeToCache src/cache/disk/disk-writer.ts:229:12
+ ❯ DiskCacheWriter.writeToCache src/cache/disk/disk-writer.ts:195:7
+ ❯ src/cache/disk/disk-writer.unit.test.ts:588:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/15]⎯
+
+ FAIL  |unit| src/cache/disk/disk-writer.unit.test.ts > DiskCacheWriter > Cleanup and Stats > should cleanup active writes and locks
+AssertionError: expected 1 to be +0 // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 0[39m
+[31m+ 1[39m
+
+ ❯ src/cache/disk/disk-writer.unit.test.ts:614:41
+    612| 
+    613|       expect(writer["activeLocks"].size).toBe(0);
+    614|       expect(writer["writeQueue"].size).toBe(0);
+       |                                         ^
+    615|     });
+    616| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/15]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 2 unhandled errors during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Missing required fields: url, method, responseData, statusCode, timestamp
+ ❯ DiskCacheWriter.validateInterceptedData src/cache/disk/disk-writer.ts:794:13
+ ❯ DiskCacheWriter._writeToCache src/cache/disk/disk-writer.ts:229:12
+ ❯ DiskCacheWriter.writeToCache src/cache/disk/disk-writer.ts:195:7
+
+This error originated in "src/cache/disk/disk-writer.unit.test.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "should handle concurrent writes to same path atomically". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: Missing required fields: url, method, responseData, statusCode, timestamp
+ ❯ DiskCacheWriter.validateInterceptedData src/cache/disk/disk-writer.ts:794:13
+ ❯ DiskCacheWriter._writeToCache src/cache/disk/disk-writer.ts:229:12
+ ❯ DiskCacheWriter.writeToCache src/cache/disk/disk-writer.ts:195:7
+
+This error originated in "src/cache/disk/disk-writer.unit.test.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "should handle concurrent writes to same path atomically". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  1 failed (1)
+      Tests  15 failed | 7 passed (22)
+     Errors  2 errors
+   Start at  21:45:01
+   Duration  2.52s (transform 100ms, setup 0ms, collect 135ms, tests 2.05s, environment 0ms, prepare 62ms)
+
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path /Users/joe/Documents/Research/PhD/Academic Explorer/packages/client
+npm error workspace @academic-explorer/client@1.3.0
+npm error location /Users/joe/Documents/Research/PhD/Academic Explorer/packages/client
+npm error command failed
+npm error command sh -c vitest run src/cache/disk/disk-writer.unit.test.ts

@@ -1,0 +1,22 @@
+{
+  "id": "https://openalex.org/A123456789",
+  "display_name": "Mock Author A123456789",
+  "display_name_alternatives": [],
+  "works_count": 50,
+  "cited_by_count": 500,
+  "ids": {
+    "openalex": "https://openalex.org/A123456789"
+  },
+  "last_known_institutions": [],
+  "affiliations": [],
+  "x_concepts": [],
+  "works_api_url": "https://api.openalex.org/works?filter=author.id:A123456789",
+  "updated_date": "2023-01-01",
+  "created_date": "2023-01-01",
+  "summary_stats": {
+    "2yr_mean_citedness": 5,
+    "h_index": 10,
+    "i10_index": 5
+  },
+  "counts_by_year": []
+}

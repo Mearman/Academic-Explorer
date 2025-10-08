@@ -4,10 +4,10 @@
  */
 
 import type {
-    Author,
-    InstitutionEntity,
-    Source,
-    Work,
+  Author,
+  InstitutionEntity,
+  Source,
+  Work,
 } from "@academic-explorer/client";
 import type { EntityType, GraphNode } from "@academic-explorer/graph";
 import { RelationType } from "@academic-explorer/graph";
@@ -92,7 +92,57 @@ const { mockStore } = vi.hoisted(() => {
 
   // The mock store object that Zustand would normally return
   const mockStore = {
-    getState: () => sharedState, // This returns the same shared state
+    getState: () => ({
+      ...sharedState,
+      // Include all methods in the state object for tests that call getState()
+      addNode: sharedState.addNode,
+      addNodes: sharedState.addNodes,
+      addEdge: sharedState.addEdge,
+      addEdges: sharedState.addEdges,
+      getNode: sharedState.getNode,
+      clear: sharedState.clear,
+      removeNode: sharedState.removeNode,
+      removeEdge: sharedState.removeEdge,
+      updateNode: sharedState.updateNode,
+      setLoading: sharedState.setLoading,
+      setError: sharedState.setError,
+      setGraphData: sharedState.setGraphData,
+      selectNode: sharedState.selectNode,
+      hoverNode: sharedState.hoverNode,
+      addToSelection: sharedState.addToSelection,
+      removeFromSelection: sharedState.removeFromSelection,
+      clearSelection: sharedState.clearSelection,
+      pinNode: sharedState.pinNode,
+      unpinNode: sharedState.unpinNode,
+      clearAllPinnedNodes: sharedState.clearAllPinnedNodes,
+      isPinned: sharedState.isPinned,
+      setLayout: sharedState.setLayout,
+      applyCurrentLayout: sharedState.applyCurrentLayout,
+      toggleEntityTypeVisibility: sharedState.toggleEntityTypeVisibility,
+      toggleEdgeTypeVisibility: sharedState.toggleEdgeTypeVisibility,
+      setEntityTypeVisibility: sharedState.setEntityTypeVisibility,
+      setEdgeTypeVisibility: sharedState.setEdgeTypeVisibility,
+      setAllEntityTypesVisible: sharedState.setAllEntityTypesVisible,
+      resetEntityTypesToDefaults: sharedState.resetEntityTypesToDefaults,
+      getEntityTypeStats: sharedState.getEntityTypeStats,
+      getVisibleNodes: sharedState.getVisibleNodes,
+      setShowAllCachedNodes: sharedState.setShowAllCachedNodes,
+      setTraversalDepth: sharedState.setTraversalDepth,
+      updateSearchStats: sharedState.updateSearchStats,
+      markNodeAsLoading: sharedState.markNodeAsLoading,
+      markNodeAsLoaded: sharedState.markNodeAsLoaded,
+      markNodeAsError: sharedState.markNodeAsError,
+      calculateNodeDepths: sharedState.calculateNodeDepths,
+      getMinimalNodes: sharedState.getMinimalNodes,
+      getNodesWithinDepth: sharedState.getNodesWithinDepth,
+      getNeighbors: sharedState.getNeighbors,
+      getConnectedEdges: sharedState.getConnectedEdges,
+      findShortestPath: sharedState.findShortestPath,
+      getConnectedComponent: sharedState.getConnectedComponent,
+      setProvider: sharedState.setProvider,
+      setProviderType: sharedState.setProviderType,
+      hasPlaceholderOrLoadingNodes: sharedState.hasPlaceholderOrLoadingNodes,
+    }),
     setState: vi.fn(),
     // Direct access to shared state properties and methods for tests
     get nodes() {
@@ -291,162 +341,165 @@ const createMockWork = (
   authorIds: string[] = [],
   sourceId?: string,
   referencedWorkIds: string[] = [],
-): Work => ({
-  id,
-  display_name: `Test Work ${id}`,
-  authorships: authorIds.map((authorId, index) => ({
-    author: {
-      id: authorId,
-      display_name: `Test Author ${authorId}`,
-    },
-    institutions: [],
-    is_corresponding: false,
-    raw_author_name: `Test Author ${authorId}`,
-    raw_affiliation_strings: [],
-    author_position: `first` as const,
-    countries: [],
-  })),
-  locations: [], // Required by isWork type guard
-  primary_location: sourceId
-    ? {
-        source: {
-          id: sourceId,
-          display_name: `Test Source ${sourceId}`,
-          issn_l: `1234-567${sourceId.slice(-1)}`,
-          issn: [`1234-567${sourceId.slice(-1)}`],
+): Work =>
+  ({
+    id,
+    display_name: `Test Work ${id}`,
+    authorships: authorIds.map((authorId, index) => ({
+      author: {
+        id: authorId,
+        display_name: `Test Author ${authorId}`,
+      },
+      institutions: [],
+      is_corresponding: false,
+      raw_author_name: `Test Author ${authorId}`,
+      raw_affiliation_strings: [],
+      author_position: `first` as const,
+      countries: [],
+    })),
+    locations: [], // Required by isWork type guard
+    primary_location: sourceId
+      ? {
+          source: {
+            id: sourceId,
+            display_name: `Test Source ${sourceId}`,
+            issn_l: `1234-567${sourceId.slice(-1)}`,
+            issn: [`1234-567${sourceId.slice(-1)}`],
+            is_oa: false,
+            is_in_doaj: false,
+            type: "journal",
+          } as any,
+          landing_page_url: `https://example.com/${id}`,
           is_oa: false,
-          is_in_doaj: false,
-          type: "journal",
-        } as any,
-        landing_page_url: `https://example.com/${id}`,
-        is_oa: false,
-        version: undefined,
-        license: undefined,
-      }
-    : undefined,
-  referenced_works: referencedWorkIds,
-  publication_year: 2023,
-  type: "article",
-  open_access: {
-    is_oa: false,
-    oa_date: undefined,
-    oa_url: undefined,
-    any_repository_has_fulltext: false,
-  },
-  biblio: {
-    volume: "1",
-    issue: "1",
-    first_page: "1",
-    last_page: "10",
-  },
-  is_retracted: false,
-  is_paratext: false,
-  language: "en",
-  grants: [],
-  apc_list: undefined,
-  apc_paid: undefined,
-  has_fulltext: false,
-  fulltext_origin: undefined,
-  cited_by_count: 0,
-  cited_by_api_url: `https://api.openalex.org/works?filter=cites:${id}`,
-  counts_by_year: [],
-  updated_date: new Date().toISOString(),
-  created_date: new Date().toISOString(),
-} as any);
+          version: undefined,
+          license: undefined,
+        }
+      : undefined,
+    referenced_works: referencedWorkIds,
+    publication_year: 2023,
+    type: "article",
+    open_access: {
+      is_oa: false,
+      oa_date: undefined,
+      oa_url: undefined,
+      any_repository_has_fulltext: false,
+    },
+    biblio: {
+      volume: "1",
+      issue: "1",
+      first_page: "1",
+      last_page: "10",
+    },
+    is_retracted: false,
+    is_paratext: false,
+    language: "en",
+    grants: [],
+    apc_list: undefined,
+    apc_paid: undefined,
+    has_fulltext: false,
+    fulltext_origin: undefined,
+    cited_by_count: 0,
+    cited_by_api_url: `https://api.openalex.org/works?filter=cites:${id}`,
+    counts_by_year: [],
+    updated_date: new Date().toISOString(),
+    created_date: new Date().toISOString(),
+  }) as any;
 
-const createMockAuthor = (
-  id: string,
-  institutionIds: string[] = [],
-): Author => ({
-  id,
-  display_name: `Test Author ${id}`,
-  affiliations: institutionIds.map((institutionId) => ({
-    institution: {
+const createMockAuthor = (id: string, institutionIds: string[] = []): Author =>
+  ({
+    id,
+    display_name: `Test Author ${id}`,
+    affiliations: institutionIds.map((institutionId) => ({
+      institution: {
+        id: institutionId,
+        display_name: `Test Institution ${institutionId}`,
+        type: "education",
+      } as any,
+      years: [2023],
+    })),
+    orcid: undefined,
+    works_count: 10,
+    cited_by_count: 100,
+    last_known_institutions: institutionIds.map((institutionId) => ({
+      // Required by isAuthor type guard
       id: institutionId,
       display_name: `Test Institution ${institutionId}`,
       type: "education",
-    } as any,
-    years: [2023],
-  })),
-  orcid: undefined,
-  works_count: 10,
-  cited_by_count: 100,
-  last_known_institutions: institutionIds.map((institutionId) => ({
-    // Required by isAuthor type guard
-    id: institutionId,
-    display_name: `Test Institution ${institutionId}`,
-    type: "education",
-  })) as any,
-  counts_by_year: [],
-  works_api_url: `https://api.openalex.org/works?filter=author.id:${id}`,
-  updated_date: new Date().toISOString(),
-  created_date: new Date().toISOString(),
-} as any);
+    })) as any,
+    counts_by_year: [],
+    works_api_url: `https://api.openalex.org/works?filter=author.id:${id}`,
+    updated_date: new Date().toISOString(),
+    created_date: new Date().toISOString(),
+  }) as any;
 
-const createMockSource = (id: string, publisherId?: string): Source => ({
-  id,
-  display_name: `Test Source ${id}`,
-  issn_l: `1234-567${id.slice(-1)}`,
-  issn: [`1234-567${id.slice(-1)}`],
-  publisher: publisherId || undefined,
-  host_organization_name: publisherId ? `Test Publisher ${publisherId}` : undefined,
-  host_organization_lineage: publisherId ? [publisherId] : [],
-  entityType: "journal",
-  homepage_url: `https://example.com/source/${id}`,
-  apc_prices: [],
-  apc_usd: undefined,
-  country_code: "US",
-  societies: [],
-  is_oa: false,
-  is_in_doaj: false,
-  works_count: 1000,
-  cited_by_count: 5000,
-  h_index: 25,
-  i10_index: 100,
-  counts_by_year: [],
-  works_api_url: `https://api.openalex.org/works?filter=primary_location.source.id:${id}`,
-  updated_date: new Date().toISOString(),
-  created_date: new Date().toISOString(),
-} as any);
+const createMockSource = (id: string, publisherId?: string): Source =>
+  ({
+    id,
+    display_name: `Test Source ${id}`,
+    issn_l: `1234-567${id.slice(-1)}`,
+    issn: [`1234-567${id.slice(-1)}`],
+    publisher: publisherId || undefined,
+    host_organization_name: publisherId
+      ? `Test Publisher ${publisherId}`
+      : undefined,
+    host_organization_lineage: publisherId ? [publisherId] : [],
+    entityType: "journal",
+    homepage_url: `https://example.com/source/${id}`,
+    apc_prices: [],
+    apc_usd: undefined,
+    country_code: "US",
+    societies: [],
+    is_oa: false,
+    is_in_doaj: false,
+    works_count: 1000,
+    cited_by_count: 5000,
+    h_index: 25,
+    i10_index: 100,
+    counts_by_year: [],
+    works_api_url: `https://api.openalex.org/works?filter=primary_location.source.id:${id}`,
+    updated_date: new Date().toISOString(),
+    created_date: new Date().toISOString(),
+  }) as any;
 
 const createMockInstitution = (
   id: string,
   parentIds: string[] = [],
-): InstitutionEntity => ({
-  id,
-  display_name: `Test Institution ${id}`,
-  ror: `https://ror.org/${id}`,
-  country_code: "US",
-  entityType: "education",
-  lineage: [id, ...parentIds],
-  homepage_url: `https://example.com/institution/${id}`,
-  image_url: undefined,
-  image_thumbnail_url: undefined,
-  display_name_acronyms: [],
-  display_name_alternatives: [],
-  works_count: 5000,
-  cited_by_count: 25000,
-  counts_by_year: [],
-  works_api_url: `https://api.openalex.org/works?filter=institutions.id:${id}`,
-  updated_date: new Date().toISOString(),
-  created_date: new Date().toISOString(),
-  geo: {
-    city: "Test City",
-    geonames_city_id: "123456",
-    region: "Test State",
+): InstitutionEntity =>
+  ({
+    id,
+    display_name: `Test Institution ${id}`,
+    ror: `https://ror.org/${id}`,
     country_code: "US",
-    country: "United States",
-    latitude: 40.7128,
-    longitude: -74.006,
-  },
-  international: {
-    display_name: {
-      en: `Test Institution ${id}`,
+    entityType: "education",
+    lineage: [id, ...parentIds],
+    homepage_url: `https://example.com/institution/${id}`,
+    image_url: undefined,
+    image_thumbnail_url: undefined,
+    display_name_acronyms: [],
+    display_name_alternatives: [],
+    works_count: 5000,
+    cited_by_count: 25000,
+    counts_by_year: [],
+    works_api_url: `https://api.openalex.org/works?filter=institutions.id:${id}`,
+    updated_date: new Date().toISOString(),
+    created_date: new Date().toISOString(),
+    geo: {
+      city: "Test City",
+      geonames_city_id: "123456",
+      region: "Test State",
+      country_code: "US",
+      country: "United States",
+      latitude: 40.7128,
+      longitude: -74.006,
     },
-  },
-  repositories: [],
-  roles: [],
-} as any);
+    international: {
+      display_name: {
+        en: `Test Institution ${id}`,
+      },
+    },
+    repositories: [],
+    roles: [],
+  }) as any;
 
 // Helper to create test graph nodes matching the actual GraphNode interface
 const createTestNode = (
@@ -466,8 +519,8 @@ const createTestNode = (
 
 // Import services after mocks are set up
 import {
-    RelationshipDetectionService,
-    createRelationshipDetectionService,
+  RelationshipDetectionService,
+  createRelationshipDetectionService,
 } from "../../services/relationship-detection-service";
 import { useGraphStore } from "../../stores/graph-store";
 
@@ -494,14 +547,14 @@ describe("Intra-Node Edge Population Integration Tests", () => {
     vi.clearAllMocks();
 
     // Clear all mock functions
-    mockWorks.getWork.mockReset();
-    mockAuthors.getAuthor.mockReset();
-    mockSources.getSource.mockReset();
-    mockInstitutions.getInstitution.mockReset();
-    mockTopics.get.mockReset();
-    mockPublishers.get.mockReset();
-    mockFunders.get.mockReset();
-    mockKeywords.getKeyword.mockReset();
+    mockClient.works.getWork.mockReset();
+    mockClient.authors.getAuthor.mockReset();
+    mockClient.sources.getSource.mockReset();
+    mockClient.institutions.getInstitution.mockReset();
+    mockClient.topics.get.mockReset();
+    mockClient.publishers.get.mockReset();
+    mockClient.funders.get.mockReset();
+    mockClient.keywords.getKeyword.mockReset();
   });
 
   afterEach(() => {
@@ -519,12 +572,14 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 
       // Mock API responses - ensure the API returns the same work data
       // Handle both with and without select parameters
-      mockWorks.getWork.mockImplementation((id: string, params?: any) => {
-        if (id === workId) {
-          return Promise.resolve(work);
-        }
-        return Promise.reject(new Error(`Unknown work ID: ${id}`));
-      });
+      mockClient.works.getWork.mockImplementation(
+        (id: string, params?: any) => {
+          if (id === workId) {
+            return Promise.resolve(work);
+          }
+          return Promise.reject(new Error(`Unknown work ID: ${id}`));
+        },
+      );
 
       // First, add the author node to the graph
       const authorNode = createTestNode(authorId, "authors", author);
@@ -569,7 +624,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       const work = createMockWork(workId, [], sourceId);
 
       // Mock API responses
-      mockWorks.getWork.mockResolvedValue(work);
+      mockClient.works.getWork.mockResolvedValue(work);
 
       // First, add the source node to the graph
       const sourceNode = createTestNode(sourceId, "sources", source);
@@ -609,16 +664,18 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       ]);
 
       // Mock API responses - ensure the API returns the correct work data
-      mockWorks.getWork.mockImplementation((id: string, params?: any) => {
-        console.log("Mock getWork called with id:", id);
-        if (id === citingWorkId) {
-          return Promise.resolve({
-            ...citingWork,
-            referenced_works: [referencedWorkId1, referencedWorkId2],
-          });
-        }
-        return Promise.reject(new Error(`Unknown work ID: ${id}`));
-      });
+      mockClient.works.getWork.mockImplementation(
+        (id: string, params?: any) => {
+          console.log("Mock getWork called with id:", id);
+          if (id === citingWorkId) {
+            return Promise.resolve({
+              ...citingWork,
+              referenced_works: [referencedWorkId1, referencedWorkId2],
+            });
+          }
+          return Promise.reject(new Error(`Unknown work ID: ${id}`));
+        },
+      );
 
       // First, add the referenced works to the graph
       const referencedNode1 = createTestNode(
@@ -743,7 +800,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       mockClient.authors.getAuthor.mockResolvedValue(author);
       mockClient.institutions.getInstitution.mockResolvedValue(institution);
       mockClient.sources.getSource.mockResolvedValue(source);
-      mockWorks.getWork.mockResolvedValue(work);
+      mockClient.works.getWork.mockResolvedValue(work);
 
       // Create all nodes
       const authorNode = createTestNode(authorId, "authors", author);
@@ -819,7 +876,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       ]);
 
       // Mock API responses
-      mockWorks.getWork.mockImplementation((id: string) => {
+      mockClient.works.getWork.mockImplementation((id: string) => {
         if (id === referencedWorkId) return Promise.resolve(referencedWork);
         if (id === citingWorkId) return Promise.resolve(citingWork);
         return Promise.reject(new Error(`Unknown work ID: ${id}`));
@@ -870,7 +927,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       const work = createMockWork(workId, [authorId]);
 
       // Mock API responses
-      mockWorks.getWork.mockResolvedValue(work);
+      mockClient.works.getWork.mockResolvedValue(work);
 
       // Add nodes to the graph
       const authorNode = createTestNode(authorId, "authors", author);
@@ -915,7 +972,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 
       // Mock API responses
       mockClient.authors.getAuthor.mockResolvedValue(author);
-      mockWorks.getWork.mockImplementation((id: string) => {
+      mockClient.works.getWork.mockImplementation((id: string) => {
         if (id === workId1) return Promise.resolve(work1);
         if (id === workId2) return Promise.resolve(work2);
         return Promise.reject(new Error(`Unknown work ID: ${id}`));
@@ -958,7 +1015,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       const author = createMockAuthor(authorId);
 
       // Mock API to fail for the work
-      mockWorks.getWork.mockRejectedValue(new Error("API Error"));
+      mockClient.works.getWork.mockRejectedValue(new Error("API Error"));
 
       // Add nodes to the graph
       const authorNode = createTestNode(authorId, "authors", author);
@@ -1008,7 +1065,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       const work = createMockWork(workId, ["https://openalex.org/A123"]);
 
       // Mock API response
-      mockWorks.getWork.mockResolvedValue(work);
+      mockClient.works.getWork.mockResolvedValue(work);
 
       // Add node and detect relationships
       const workNode = createTestNode(workId, "works", work);
@@ -1017,7 +1074,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       await relationshipService.detectRelationshipsForNode(workNode.id);
 
       // Verify API was called with field selection (minimal fields only)
-      expect(mockWorks.getWork).toHaveBeenCalledWith(
+      expect(mockClient.works.getWork).toHaveBeenCalledWith(
         workId,
         expect.objectContaining({
           select: [
@@ -1051,7 +1108,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       });
 
       // Mock API responses
-      mockWorks.getWork.mockImplementation((id: string) => {
+      mockClient.works.getWork.mockImplementation((id: string) => {
         const work = works.find((w) => w.id === id);
         return work
           ? Promise.resolve(work)

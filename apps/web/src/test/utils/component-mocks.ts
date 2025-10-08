@@ -3,8 +3,8 @@
  * Provides mocks for complex external components and libraries
  */
 
-import { vi } from 'vitest';
-import React from 'react';
+import { vi } from "vitest";
+import React from "react";
 
 /**
  * Mock XYFlow/React Flow components and hooks
@@ -12,34 +12,42 @@ import React from 'react';
  */
 export const mockXYFlow = () => {
   const mockNode = {
-    id: 'test-node',
+    id: "test-node",
     position: { x: 0, y: 0 },
-    data: { label: 'Test Node' },
-    type: 'default'
+    data: { label: "Test Node" },
+    type: "default",
   };
 
   const mockEdge = {
-    id: 'test-edge',
-    source: 'test-source',
-    target: 'test-target',
-    type: 'default'
+    id: "test-edge",
+    source: "test-source",
+    target: "test-target",
+    type: "default",
   };
 
-  vi.doMock('@xyflow/react', () => ({
+  vi.doMock("@xyflow/react", () => ({
     ReactFlow: ({ children, ...props }: any) =>
-      React.createElement('div', { 'data-testid': 'react-flow', ...props }, children),
+      React.createElement(
+        "div",
+        { "data-testid": "react-flow", ...props },
+        children,
+      ),
     MiniMap: (props: any) =>
-      React.createElement('div', { 'data-testid': 'minimap', ...props }),
+      React.createElement("div", { "data-testid": "minimap", ...props }),
     Controls: (props: any) =>
-      React.createElement('div', { 'data-testid': 'controls', ...props }),
+      React.createElement("div", { "data-testid": "controls", ...props }),
     Background: (props: any) =>
-      React.createElement('div', { 'data-testid': 'background', ...props }),
+      React.createElement("div", { "data-testid": "background", ...props }),
     Panel: ({ children, ...props }: any) =>
-      React.createElement('div', { 'data-testid': 'panel', ...props }, children),
+      React.createElement(
+        "div",
+        { "data-testid": "panel", ...props },
+        children,
+      ),
     Handle: (props: any) =>
-      React.createElement('div', { 'data-testid': 'handle', ...props }),
+      React.createElement("div", { "data-testid": "handle", ...props }),
     NodeResizer: (props: any) =>
-      React.createElement('div', { 'data-testid': 'node-resizer', ...props }),
+      React.createElement("div", { "data-testid": "node-resizer", ...props }),
 
     // Hooks
     useNodesState: () => [[mockNode], vi.fn(), vi.fn()],
@@ -64,7 +72,7 @@ export const mockXYFlow = () => {
       getIntersectingNodes: vi.fn(() => []),
       isNodeIntersecting: vi.fn(() => false),
       updateNode: vi.fn(),
-      updateNodeData: vi.fn()
+      updateNodeData: vi.fn(),
     }),
     useStore: vi.fn(),
     useStoreApi: vi.fn(),
@@ -88,19 +96,19 @@ export const mockXYFlow = () => {
 
     // Types and constants
     Position: {
-      Top: 'top',
-      Right: 'right',
-      Bottom: 'bottom',
-      Left: 'left'
+      Top: "top",
+      Right: "right",
+      Bottom: "bottom",
+      Left: "left",
     },
     MarkerType: {
-      Arrow: 'arrow',
-      ArrowClosed: 'arrowclosed'
+      Arrow: "arrow",
+      ArrowClosed: "arrowclosed",
     },
     ConnectionMode: {
-      Strict: 'strict',
-      Loose: 'loose'
-    }
+      Strict: "strict",
+      Loose: "loose",
+    },
   }));
 };
 
@@ -119,54 +127,54 @@ export const mockD3Force = () => {
     alphaTarget: vi.fn().mockReturnThis(),
     alphaDecay: vi.fn().mockReturnThis(),
     velocityDecay: vi.fn().mockReturnThis(),
-    find: vi.fn()
+    find: vi.fn(),
   };
 
-  vi.doMock('d3-force', () => ({
+  vi.doMock("d3-force", () => ({
     forceSimulation: vi.fn(() => mockSimulation),
     forceLink: vi.fn(() => ({
       id: vi.fn().mockReturnThis(),
       distance: vi.fn().mockReturnThis(),
       strength: vi.fn().mockReturnThis(),
-      iterations: vi.fn().mockReturnThis()
+      iterations: vi.fn().mockReturnThis(),
     })),
     forceManyBody: vi.fn(() => ({
       strength: vi.fn().mockReturnThis(),
       theta: vi.fn().mockReturnThis(),
       distanceMin: vi.fn().mockReturnThis(),
-      distanceMax: vi.fn().mockReturnThis()
+      distanceMax: vi.fn().mockReturnThis(),
     })),
     forceCenter: vi.fn(() => ({
       x: vi.fn().mockReturnThis(),
       y: vi.fn().mockReturnThis(),
-      strength: vi.fn().mockReturnThis()
+      strength: vi.fn().mockReturnThis(),
     })),
     forceCollide: vi.fn(() => ({
       radius: vi.fn().mockReturnThis(),
       strength: vi.fn().mockReturnThis(),
-      iterations: vi.fn().mockReturnThis()
+      iterations: vi.fn().mockReturnThis(),
     })),
     forceX: vi.fn(() => ({
       x: vi.fn().mockReturnThis(),
-      strength: vi.fn().mockReturnThis()
+      strength: vi.fn().mockReturnThis(),
     })),
     forceY: vi.fn(() => ({
       y: vi.fn().mockReturnThis(),
-      strength: vi.fn().mockReturnThis()
-    }))
+      strength: vi.fn().mockReturnThis(),
+    })),
   }));
 
-  vi.doMock('d3-drag', () => ({
+  vi.doMock("d3-drag", () => ({
     drag: vi.fn(() => ({
       subject: vi.fn().mockReturnThis(),
       on: vi.fn().mockReturnThis(),
       filter: vi.fn().mockReturnThis(),
       touchable: vi.fn().mockReturnThis(),
-      clickDistance: vi.fn().mockReturnThis()
-    }))
+      clickDistance: vi.fn().mockReturnThis(),
+    })),
   }));
 
-  vi.doMock('d3-selection', () => ({
+  vi.doMock("d3-selection", () => ({
     select: vi.fn(() => ({
       call: vi.fn().mockReturnThis(),
       on: vi.fn().mockReturnThis(),
@@ -178,9 +186,9 @@ export const mockD3Force = () => {
       exit: vi.fn().mockReturnThis(),
       remove: vi.fn().mockReturnThis(),
       append: vi.fn().mockReturnThis(),
-      selectAll: vi.fn().mockReturnThis()
+      selectAll: vi.fn().mockReturnThis(),
     })),
-    selectAll: vi.fn()
+    selectAll: vi.fn(),
   }));
 };
 
@@ -195,7 +203,7 @@ export const mockWebWorker = () => {
     onerror: null,
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn()
+    dispatchEvent: vi.fn(),
   };
 
   global.Worker = vi.fn().mockImplementation(() => mockWorker);
@@ -243,11 +251,13 @@ export const mockCanvas = () => {
     drawImage: vi.fn(),
     createLinearGradient: vi.fn(),
     createRadialGradient: vi.fn(),
-    createPattern: vi.fn()
+    createPattern: vi.fn(),
   };
 
-  HTMLCanvasElement.prototype.getContext = vi.fn(() => mockContext);
-  HTMLCanvasElement.prototype.toDataURL = vi.fn(() => 'data:image/png;base64,test');
+  HTMLCanvasElement.prototype.getContext = vi.fn(() => mockContext as any);
+  HTMLCanvasElement.prototype.toDataURL = vi.fn(
+    () => "data:image/png;base64,test",
+  );
   HTMLCanvasElement.prototype.toBlob = vi.fn();
 
   return mockContext;
@@ -272,30 +282,30 @@ export const mockIndexedDB = () => {
         getAll: vi.fn(),
         getAllKeys: vi.fn(),
         openCursor: vi.fn(),
-        openKeyCursor: vi.fn()
+        openKeyCursor: vi.fn(),
       })),
       abort: vi.fn(),
       commit: vi.fn(),
       addEventListener: vi.fn(),
-      removeEventListener: vi.fn()
+      removeEventListener: vi.fn(),
     })),
     addEventListener: vi.fn(),
-    removeEventListener: vi.fn()
+    removeEventListener: vi.fn(),
   };
 
   const mockRequest = {
     result: mockDB,
     error: null,
-    readyState: 'done',
+    readyState: "done",
     addEventListener: vi.fn(),
-    removeEventListener: vi.fn()
+    removeEventListener: vi.fn(),
   };
 
   global.indexedDB = {
     open: vi.fn(() => mockRequest),
     deleteDatabase: vi.fn(() => mockRequest),
     databases: vi.fn(() => Promise.resolve([])),
-    cmp: vi.fn()
+    cmp: vi.fn(),
   } as any;
 
   return { mockDB, mockRequest };

@@ -8,10 +8,6 @@ import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
 
-export const Route = createFileRoute("/sources/$sourceId")({
-  component: SourceRoute,
-});
-
 function SourceRoute() {
   const { sourceId } = Route.useParams();
   const navigate = useNavigate();
@@ -125,3 +121,9 @@ function SourceRoute() {
     </div>
   );
 }
+
+export const Route = createFileRoute("/sources/$sourceId")({
+  component: SourceRoute,
+});
+
+export default SourceRoute;

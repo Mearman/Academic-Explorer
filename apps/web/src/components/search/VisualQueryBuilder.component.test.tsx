@@ -1,13 +1,42 @@
-import { MantineProvider } from "@mantine/core";
-import "@testing-library/jest-dom/vitest";
+/**
+ * Component tests for VisualQueryBuilder component
+ * @vitest-environment jsdom
+ */
+
 import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
+// Mock ResizeObserver before importing Mantine
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}));
+
+// Mock window.matchMedia before importing Mantine
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: vi.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(), // deprecated
+    removeListener: vi.fn(), // deprecated
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
+import { MantineProvider } from "@mantine/core";
 import { VisualQueryBuilder, type VisualQuery } from "./VisualQueryBuilder.tsx";
 
 // Mock DnD Kit
 vi.mock("@dnd-kit/core", () => ({
-  DndContext: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  DndContext: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
   closestCenter: vi.fn(),
   KeyboardSensor: vi.fn(),
   PointerSensor: vi.fn(),
@@ -16,7 +45,9 @@ vi.mock("@dnd-kit/core", () => ({
 }));
 
 vi.mock("@dnd-kit/sortable", () => ({
-  SortableContext: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  SortableContext: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
   sortableKeyboardCoordinates: vi.fn(),
   verticalListSortingStrategy: vi.fn(),
   useSortable: vi.fn(() => ({
@@ -66,12 +97,12 @@ describe("VisualQueryBuilder", () => {
         onQueryChange={mockOnQueryChange}
         onApply={mockOnApply}
       />,
-      { wrapper: TestWrapper }
+      { wrapper: TestWrapper },
     );
 
-    expect(screen.getByText("Visual Query Builder")).toBeInTheDocument();
-    expect(screen.getByText("Query Group 1")).toBeInTheDocument();
-    expect(screen.getByText("Filter Palette")).toBeInTheDocument();
+    expect(screen.getByText("Visual Query Builder")).toBeTruthy();
+    expect(screen.getByText("Query Group 1")).toBeTruthy();
+    expect(screen.getByText("Filter Palette")).toBeTruthy();
   });
 
   it("displays instructions for users", () => {
@@ -80,10 +111,12 @@ describe("VisualQueryBuilder", () => {
         entityType="works"
         onQueryChange={mockOnQueryChange}
       />,
-      { wrapper: TestWrapper }
+      { wrapper: TestWrapper },
     );
 
-    expect(screen.getAllByText(/Drag filter chips from the palette/)).toHaveLength(1);
+    expect(
+      screen.getAllByText(/Drag filter chips from the palette/),
+    ).toHaveLength(1);
   });
 
   it("renders available filter chips by category", () => {
@@ -92,7 +125,7 @@ describe("VisualQueryBuilder", () => {
         entityType="works"
         onQueryChange={mockOnQueryChange}
       />,
-      { wrapper: TestWrapper }
+      { wrapper: TestWrapper },
     );
 
     // Check for category headers (one instance per category)
@@ -115,7 +148,7 @@ describe("VisualQueryBuilder", () => {
         entityType="works"
         onQueryChange={mockOnQueryChange}
       />,
-      { wrapper: TestWrapper }
+      { wrapper: TestWrapper },
     );
 
     expect(screen.getAllByText("Work Type")).toHaveLength(1);
@@ -128,7 +161,7 @@ describe("VisualQueryBuilder", () => {
         entityType="authors"
         onQueryChange={mockOnQueryChange}
       />,
-      { wrapper: TestWrapper }
+      { wrapper: TestWrapper },
     );
 
     expect(screen.getAllByText("Works Count")).toHaveLength(1);
@@ -142,12 +175,12 @@ describe("VisualQueryBuilder", () => {
         onQueryChange={mockOnQueryChange}
         onApply={mockOnApply}
       />,
-      { wrapper: TestWrapper }
+      { wrapper: TestWrapper },
     );
 
-    const applyButtons = screen.getAllByRole("button", { name: /apply query/i });
-    expect(applyButtons.length).toBeGreaterThan(0);
-    applyButtons.forEach(button => expect(button).toBeDisabled()); // Should be disabled when no chips
+    const applyButton = screen.getByRole("button", { name: "Apply Query" });
+    expect(applyButton).toBeInTheDocument();
+    expect((applyButton as HTMLButtonElement).disabled).toBe(true); // Should be disabled when no chips
   });
 
   it("hides apply button when onApply is not provided", () => {
@@ -157,11 +190,13 @@ describe("VisualQueryBuilder", () => {
         onQueryChange={mockOnQueryChange}
         onApply={undefined}
       />,
-      { wrapper: TestWrapper }
+      { wrapper: TestWrapper },
     );
 
     // When onApply is explicitly undefined, apply buttons should not exist
-    const applyButtons = screen.queryAllByRole("button", { name: /apply query/i });
+    const applyButtons = screen.queryAllByRole("button", {
+      name: /apply query/i,
+    });
     expect(applyButtons).toHaveLength(0);
   });
 
@@ -171,10 +206,12 @@ describe("VisualQueryBuilder", () => {
         entityType="works"
         onQueryChange={mockOnQueryChange}
       />,
-      { wrapper: TestWrapper }
+      { wrapper: TestWrapper },
     );
 
-    const addGroupButtons = screen.getAllByRole("button", { name: /add group/i });
+    const addGroupButtons = screen.getAllByRole("button", {
+      name: /add group/i,
+    });
     fireEvent.click(addGroupButtons[0]);
 
     expect(mockOnQueryChange).toHaveBeenCalledWith(
@@ -183,7 +220,7 @@ describe("VisualQueryBuilder", () => {
           expect.objectContaining({ id: expect.stringMatching(/^group-/) }),
           expect.objectContaining({ id: expect.stringMatching(/^group-/) }),
         ]),
-      })
+      }),
     );
   });
 
@@ -217,11 +254,11 @@ describe("VisualQueryBuilder", () => {
         initialQuery={initialQuery}
         onQueryChange={mockOnQueryChange}
       />,
-      { wrapper: TestWrapper }
+      { wrapper: TestWrapper },
     );
 
-    expect(screen.getByText("Test Chip")).toBeInTheDocument();
-    expect(screen.getByText("1 filter")).toBeInTheDocument();
+    expect(screen.getByText("Test Chip")).toBeTruthy();
+    expect(screen.getByText("1 filter")).toBeTruthy();
   });
 
   it.skip("disables interactions when disabled prop is true", () => {
@@ -232,15 +269,23 @@ describe("VisualQueryBuilder", () => {
         onApply={mockOnApply}
         disabled={true}
       />,
-      { wrapper: TestWrapper }
+      { wrapper: TestWrapper },
     );
 
-    const addGroupButtons = screen.getAllByRole("button", { name: /add group/i });
-    const applyButtons = screen.getAllByRole("button", { name: /apply query/i });
+    const addGroupButtons = screen.getAllByRole("button", {
+      name: /add group/i,
+    });
+    const applyButtons = screen.getAllByRole("button", {
+      name: /apply query/i,
+    });
 
     // Check that buttons have disabled attribute
-    addGroupButtons.forEach(button => expect(button).toHaveAttribute('disabled'));
-    applyButtons.forEach(button => expect(button).toHaveAttribute('disabled'));
+    addGroupButtons.forEach((button) =>
+      expect(button).toHaveAttribute("disabled"),
+    );
+    applyButtons.forEach((button) =>
+      expect(button).toHaveAttribute("disabled"),
+    );
   });
 
   it("shows correct chip count in group description", () => {
@@ -282,10 +327,10 @@ describe("VisualQueryBuilder", () => {
         initialQuery={initialQuery}
         onQueryChange={mockOnQueryChange}
       />,
-      { wrapper: TestWrapper }
+      { wrapper: TestWrapper },
     );
 
-    expect(screen.getByText("2 filters")).toBeInTheDocument();
+    expect(screen.getByText("2 filters")).toBeTruthy();
   });
 
   it("shows empty drop zone message when group has no chips", () => {
@@ -294,7 +339,7 @@ describe("VisualQueryBuilder", () => {
         entityType="works"
         onQueryChange={mockOnQueryChange}
       />,
-      { wrapper: TestWrapper }
+      { wrapper: TestWrapper },
     );
 
     const dropMessages = screen.getAllByText("Drop filter chips here");
@@ -331,11 +376,13 @@ describe("VisualQueryBuilder", () => {
         initialQuery={initialQuery}
         onQueryChange={mockOnQueryChange}
       />,
-      { wrapper: TestWrapper }
+      { wrapper: TestWrapper },
     );
 
     const clearButtons = screen.getAllByRole("button", { name: /clear all/i });
-    const enabledClearButtons = clearButtons.filter(button => !button.hasAttribute('disabled'));
+    const enabledClearButtons = clearButtons.filter(
+      (button) => !button.hasAttribute("disabled"),
+    );
     expect(enabledClearButtons.length).toBeGreaterThan(0);
   });
 });

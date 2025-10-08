@@ -1,0 +1,65 @@
+{
+  "lastUpdated": "2025-10-08T21:16:47.713Z",
+  "files": {
+    "filter=page=2&per_page=50&filter=is_oa%3Atrue&select=id%2Cdisplay_name%2Cpublication_year&sample=100&seed=42": {
+      "url": "https://api.openalex.org/works?page=2&per_page=50&filter=is_oa%3Atrue&select=id%2Cdisplay_name%2Cpublication_year&sample=100&seed=42",
+      "$ref": "./filter=page=2&per_page=50&filter=is_oa%3Atrue&select=id%2Cdisplay_name%2Cpublication_year&sample=100&seed=42.json",
+      "lastRetrieved": "2025-10-08T21:16:37.237Z",
+      "contentHash": "5021e624e752b001"
+    },
+    "filter=page=1&select=id": {
+      "url": "https://api.openalex.org/works?page=1&select=id",
+      "$ref": "./filter=page=1&select=id.json",
+      "lastRetrieved": "2025-10-08T21:16:37.241Z",
+      "contentHash": "5021e624e752b001"
+    },
+    "filter=search=machine+learning+%26+AI&filter=title.search%3A%22deep+learning%22": {
+      "url": "https://api.openalex.org/works?search=machine+learning+%26+AI&filter=title.search%3A%22deep+learning%22",
+      "$ref": "./filter=search=machine+learning+%26+AI&filter=title.search%3A%22deep+learning%22.json",
+      "lastRetrieved": "2025-10-08T21:16:37.251Z",
+      "contentHash": "5021e624e752b001"
+    },
+    "filter=select=id%2Cdisplay_name": {
+      "url": "https://api.openalex.org/works/W123?select=id%2Cdisplay_name",
+      "$ref": "./filter=select=id%2Cdisplay_name.json",
+      "lastRetrieved": "2025-10-08T21:16:47.474Z",
+      "contentHash": "fb6d08e8002b7d8e"
+    },
+    "filter=per_page=2": {
+      "url": "https://api.openalex.org/works?per_page=2",
+      "$ref": "./filter=per_page=2.json",
+      "lastRetrieved": "2025-10-08T21:16:47.535Z",
+      "contentHash": "a695960dbd857a99"
+    },
+    "filter=per_page=200": {
+      "url": "https://api.openalex.org/works?per_page=200",
+      "$ref": "./filter=per_page=200.json",
+      "lastRetrieved": "2025-10-08T21:16:47.554Z",
+      "contentHash": "a695960dbd857a99"
+    },
+    "filter=select=field0%2Cfield1%2Cfield2%2Cfield3%2Cfield4%2Cfield5%2Cfield6%2Cfield7%2Cfield8%2Cfield9%2Cfield10%2Cfield11%2Cfield12%2Cfield13%2Cfield14%2Cfield15%2Cfield16%2Cfield17%2Cfield18%2Cfield1": {
+      "url": "https://api.openalex.org/works?select=field0%2Cfield1%2Cfield2%2Cfield3%2Cfield4%2Cfield5%2Cfield6%2Cfield7%2Cfield8%2Cfield9%2Cfield10%2Cfield11%2Cfield12%2Cfield13%2Cfield14%2Cfield15%2Cfield16%2Cfield17%2Cfield18%2Cfield19%2Cfield20%2Cfield21%2Cfield22%2Cfield23%2Cfield24%2Cfield25%2Cfield26%2Cfield27%2Cfield28%2Cfield29%2Cfield30%2Cfield31%2Cfield32%2Cfield33%2Cfield34%2Cfield35%2Cfield36%2Cfield37%2Cfield38%2Cfield39%2Cfield40%2Cfield41%2Cfield42%2Cfield43%2Cfield44%2Cfield45%2Cfield46%2Cfield47%2Cfield48%2Cfield49%2Cfield50%2Cfield51%2Cfield52%2Cfield53%2Cfield54%2Cfield55%2Cfield56%2Cfield57%2Cfield58%2Cfield59%2Cfield60%2Cfield61%2Cfield62%2Cfield63%2Cfield64%2Cfield65%2Cfield66%2Cfield67%2Cfield68%2Cfield69%2Cfield70%2Cfield71%2Cfield72%2Cfield73%2Cfield74%2Cfield75%2Cfield76%2Cfield77%2Cfield78%2Cfield79%2Cfield80%2Cfield81%2Cfield82%2Cfield83%2Cfield84%2Cfield85%2Cfield86%2Cfield87%2Cfield88%2Cfield89%2Cfield90%2Cfield91%2Cfield92%2Cfield93%2Cfield94%2Cfield95%2Cfield96%2Cfield97%2Cfield98%2Cfield99",
+      "$ref": "./filter=select=field0%2Cfield1%2Cfield2%2Cfield3%2Cfield4%2Cfield5%2Cfield6%2Cfield7%2Cfield8%2Cfield9%2Cfield10%2Cfield11%2Cfield12%2Cfield13%2Cfield14%2Cfield15%2Cfield16%2Cfield17%2Cfield18%2Cfield1.json",
+      "lastRetrieved": "2025-10-08T21:16:47.703Z",
+      "contentHash": "5021e624e752b001"
+    },
+    "filter=select=id%2Cdisplay_name%2Cpublication_year%2Ctype%2Copen_access%2Cauthorships%2Cprimary_location%2Creferenced_works": {
+      "url": "https://api.openalex.org/works/W123456789?select=id%2Cdisplay_name%2Cpublication_year%2Ctype%2Copen_access%2Cauthorships%2Cprimary_location%2Creferenced_works",
+      "$ref": "./filter=select=id%2Cdisplay_name%2Cpublication_year%2Ctype%2Copen_access%2Cauthorships%2Cprimary_location%2Creferenced_works.json",
+      "lastRetrieved": "2025-10-08T14:21:29.237Z",
+      "contentHash": "b2e976b4abec2ba7"
+    },
+    "filter=search=machine+learning&per_page=10": {
+      "url": "https://api.openalex.org/works?search=machine+learning&per_page=10",
+      "$ref": "./filter=search=machine+learning&per_page=10.json",
+      "lastRetrieved": "2025-10-08T14:04:37.454Z",
+      "contentHash": "dd796f6d32a769cc"
+    },
+    "filter=select=id%2Creferenced_works": {
+      "url": "https://api.openalex.org/works/W123?select=id%2Creferenced_works",
+      "$ref": "./filter=select=id%2Creferenced_works.json",
+      "lastRetrieved": "2025-10-08T13:00:03.684Z",
+      "contentHash": "c1928a2679f2bcf3"
+    }
+  }
+}

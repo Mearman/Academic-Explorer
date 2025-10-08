@@ -1,63 +1,81 @@
+// Ensure TextEncoder/TextDecoder are available synchronously before any other code
+// This is critical for esbuild to work properly in test environments
+try {
+  const util = require("util");
+  global.TextEncoder = util.TextEncoder;
+  global.TextDecoder = util.TextDecoder;
+  globalThis.TextEncoder = util.TextEncoder;
+  globalThis.TextDecoder = util.TextDecoder;
+} catch (err) {
+  // If util import fails, create minimal implementations
+  const Buffer = require("buffer").Buffer;
+
+  global.TextEncoder = class {
+    encoding = "utf-8";
+    encode(input = "") {
+      const buf = Buffer.from(String(input), "utf-8");
+      return new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
+    }
+    encodeInto(input, dest) {
+      const encoded = this.encode(input);
+      const copied = Math.min(encoded.length, dest.length);
+      dest.set(encoded.subarray(0, copied));
+      return { read: input.length, written: copied };
+    }
+  };
+
+  global.TextDecoder = class {
+    encoding = "utf-8";
+    fatal = false;
+    ignoreBOM = false;
+    decode(input) {
+      return Buffer.from(input).toString("utf-8");
+    }
+  };
+
+  globalThis.TextEncoder = global.TextEncoder;
+  globalThis.TextDecoder = global.TextDecoder;
+}
+
 /**
  * Vitest setup file
  * This file runs before each test file
  */
 
 // Make this a module to allow top-level await
-export { };
+export {};
 
 // Only load Vitest in actual test environments, not during dev server startup
-if (typeof process !== 'undefined' && process.env.VITEST) {
-  const { vi } = await import('vitest');
+if (typeof process !== "undefined" && process.env.VITEST) {
+  const { vi } = await import("vitest");
 
-  // Ensure minimal TextEncoder/TextDecoder implementations synchronously
-  // so they're available before any other modules (like esbuild) are loaded.
-  // Some test environments may import modules before async setup runs, which
-  // can trigger esbuild's invariant check. A quick sync fallback prevents that.
-  if (typeof (global as any).TextEncoder === 'undefined') {
+  if (typeof (global as any).TextDecoder === "undefined") {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(global as any).TextEncoder = class {
-      encode(input = '') {
-        // Buffer is available in Node-based test environments; this returns a Uint8Array
-        // which satisfies esbuild's invariant check.
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const Buffer = require('buffer').Buffer;
-        return new Uint8Array(Buffer.from(String(input), 'utf-8'));
-      }
-    } as any;
-  }
-
-  if (typeof (global as any).TextDecoder === 'undefined') {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(global as any).TextDecoder = class {
+    (global as any).TextDecoder = class {
       decode(input: Uint8Array | Buffer) {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const Buffer = require('buffer').Buffer;
-        return Buffer.from(input as any).toString('utf-8');
+        const Buffer = require("buffer").Buffer;
+        return Buffer.from(input as any).toString("utf-8");
       }
     } as any;
   }
 
-  // Only import jest-dom for component tests where DOM assertions are needed
-  // Skip for E2E tests running in Node environment where expect may not be available yet
-  if (typeof window !== 'undefined') {
-    // We're in a DOM environment (jsdom), load jest-dom after vitest globals are available
-    import('@testing-library/jest-dom/vitest').catch(() => {
-      // Fallback to the old import if the new one fails
-      return import('@testing-library/jest-dom');
-    });
-  }
+  // Import jest-dom for all tests - it will work in jsdom environment
+  // The vitest environment should be set to jsdom for component tests
+  await import("@testing-library/jest-dom/vitest");
 
-  const { enableMapSet } = await import('immer');
-  await import('vitest-axe/extend-expect');
-  const { resetMockServer, startMockServer, stopMockServer } = await import('./msw/server');
+  const { enableMapSet } = await import("immer");
+  await import("vitest-axe/extend-expect");
+  const { resetMockServer, startMockServer, stopMockServer } = await import(
+    "./msw/server"
+  );
 
   // Configure test environment globals
   (globalThis as any).__DEV__ = true;
 
   // Increase process event listener limits to prevent MaxListenersExceededWarning
   // This is common in test environments with multiple parallel operations
-  if (typeof process !== 'undefined' && process.setMaxListeners) {
+  if (typeof process !== "undefined" && process.setMaxListeners) {
     process.setMaxListeners(50);
   }
 
@@ -65,11 +83,11 @@ if (typeof process !== 'undefined' && process.env.VITEST) {
   enableMapSet();
 
   // Environment-aware DOM mocking (only for jsdom environment)
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     // Mock matchMedia for component tests that use responsive hooks
-    Object.defineProperty(window, 'matchMedia', {
+    Object.defineProperty(window, "matchMedia", {
       writable: true,
-      value: vi.fn().mockImplementation(query => ({
+      value: vi.fn().mockImplementation((query) => ({
         matches: false,
         media: query,
         onchange: null,
@@ -96,45 +114,7 @@ if (typeof process !== 'undefined' && process.env.VITEST) {
     global.sessionStorage = mockStorage;
   }
 
-  // Ensure TextEncoder/TextDecoder are available and behave correctly for
-  // environments that run esbuild (some Node test environments lack the
-  // browser implementations). Use Node's util.TextEncoder/TextDecoder when
-  // available, otherwise provide a simple Buffer-based fallback.
-  try {
-    // Top-level await is allowed in this module; attempt to import util
-    const util = await import('util');
-    if (typeof global.TextEncoder === 'undefined' || typeof global.TextDecoder === 'undefined') {
-      // @ts-ignore - assign polyfills to global
-      global.TextEncoder = util.TextEncoder;
-      // @ts-ignore
-      global.TextDecoder = util.TextDecoder;
-    }
-  } catch (err) {
-    // Fallback: minimal Buffer-based implementations
-    // These satisfy esbuild's invariant checks (encode returns a Uint8Array)
-    // and are adequate for tests that simply need TextEncoder/TextDecoder.
-    // @ts-ignore
-    if (typeof global.TextEncoder === 'undefined') {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      // @ts-ignore
-      global.TextEncoder = class {
-        encode(input = '') {
-          return new Uint8Array(Buffer.from(String(input), 'utf-8'));
-        }
-      } as any;
-    }
-
-    // @ts-ignore
-    if (typeof global.TextDecoder === 'undefined') {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      // @ts-ignore
-      global.TextDecoder = class {
-        decode(input: Uint8Array | Buffer) {
-          return Buffer.from(input).toString('utf-8');
-        }
-      } as any;
-    }
-  }
+  // TextEncoder/TextDecoder setup is handled above synchronously
 
   // Mock ResizeObserver for components that measure elements
   global.ResizeObserver = class ResizeObserver {
@@ -152,7 +132,11 @@ if (typeof process !== 'undefined' && process.env.VITEST) {
 
   // Setup MSW server for API mocking
   // Only in test environments with proper globals
-  if (typeof beforeAll === 'function' && typeof afterAll === 'function' && typeof afterEach === 'function') {
+  if (
+    typeof beforeAll === "function" &&
+    typeof afterAll === "function" &&
+    typeof afterEach === "function"
+  ) {
     beforeAll(() => {
       startMockServer();
     });
@@ -173,25 +157,26 @@ if (typeof process !== 'undefined' && process.env.VITEST) {
   }
 
   // React Query setup for component tests
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     // Only set up React Query in DOM environment (component tests)
-    const { QueryClient } = await import('@tanstack/react-query');
+    const { QueryClient } = await import("@tanstack/react-query");
 
     // Create a new QueryClient for each test
-    const createTestQueryClient = () => new QueryClient({
-      defaultOptions: {
-        queries: {
-          // Turn off retries for tests
-          retry: false,
-          // Turn off refetch on window focus for tests
-          refetchOnWindowFocus: false,
+    const createTestQueryClient = () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            // Turn off retries for tests
+            retry: false,
+            // Turn off refetch on window focus for tests
+            refetchOnWindowFocus: false,
+          },
+          mutations: {
+            // Turn off retries for tests
+            retry: false,
+          },
         },
-        mutations: {
-          // Turn off retries for tests
-          retry: false,
-        },
-      },
-    });
+      });
 
     // Make QueryClient available globally for tests
     (global as any).testQueryClient = createTestQueryClient();
@@ -200,15 +185,17 @@ if (typeof process !== 'undefined' && process.env.VITEST) {
   // Partial module mocks to protect integration tests that expect
   // certain exports from framework libraries. These mocks are safe
   // fallbacks that preserve original behavior when available.
-  if (typeof vi !== 'undefined') {
+  if (typeof vi !== "undefined") {
     // Partially mock @tanstack/react-router to ensure createFileRoute exists
     // Tests often import createFileRoute and expect it to return a route
     // factory. If the real module is present, we preserve it via importOriginal.
     try {
-      vi.mock(import('@tanstack/react-router'), async (importOriginal) => {
+      vi.mock(import("@tanstack/react-router"), async (importOriginal) => {
         const actual = await importOriginal();
         // Provide a minimal createFileRoute if it's not exported by the real module
-        const createFileRoute = actual.createFileRoute ?? ((path: string) => (opts: any) => ({ path, ...opts }));
+        const createFileRoute =
+          actual.createFileRoute ??
+          ((path: string) => (opts: any) => ({ path, ...opts }));
         return {
           ...actual,
           createFileRoute,
@@ -220,7 +207,10 @@ if (typeof process !== 'undefined' && process.env.VITEST) {
 
     // Simple stub for 'history' package if imports fail in test transforms
     try {
-      vi.mock('history', () => ({ createBrowserHistory: () => ({ listen: () => {}, push: () => {} }) }));
+      vi.mock("history", () => ({
+        createBrowserHistory: () => ({ listen: () => {}, push: () => {} }),
+        createMemoryHistory: () => ({ listen: () => {}, push: () => {} }),
+      }));
     } catch (e) {
       // ignore
     }

@@ -6,15 +6,22 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { logger } from "@academic-explorer/utils/logger";
-import type { SimulationLink, NodePosition } from "@academic-explorer/simulation/types";
+import type {
+  SimulationLink,
+  NodePosition,
+} from "@academic-explorer/simulation";
 import type { GraphNode, GraphEdge } from "@academic-explorer/graph";
 
 // Type guards for safe type checking
-function isMetadataWithNodeId(metadata: unknown): metadata is { nodeId: string } {
-  return typeof metadata === "object" &&
-         metadata !== null &&
-         "nodeId" in metadata &&
-         typeof (metadata as { nodeId: unknown }).nodeId === "string";
+function isMetadataWithNodeId(
+  metadata: unknown,
+): metadata is { nodeId: string } {
+  return (
+    typeof metadata === "object" &&
+    metadata !== null &&
+    "nodeId" in metadata &&
+    typeof (metadata as { nodeId: unknown }).nodeId === "string"
+  );
 }
 
 function isExpansionResult(result: unknown): result is {
@@ -24,14 +31,16 @@ function isExpansionResult(result: unknown): result is {
   links?: SimulationLink[];
   positions?: NodePosition[];
 } {
-  return typeof result === "object" &&
-         result !== null &&
-         "requestId" in result &&
-         typeof (result as { requestId: unknown }).requestId === "string" &&
-         "nodes" in result &&
-         Array.isArray((result as { nodes: unknown }).nodes) &&
-         "edges" in result &&
-         Array.isArray((result as { edges: unknown }).edges);
+  return (
+    typeof result === "object" &&
+    result !== null &&
+    "requestId" in result &&
+    typeof (result as { requestId: unknown }).requestId === "string" &&
+    "nodes" in result &&
+    Array.isArray((result as { nodes: unknown }).nodes) &&
+    "edges" in result &&
+    Array.isArray((result as { edges: unknown }).edges)
+  );
 }
 
 export interface WebWorkerTaskSystem {
@@ -76,7 +85,11 @@ export interface UseWebWorkerOptions {
   onProgress?: (progress: number, requestId?: string) => void;
   onSuccess?: (result: unknown, requestId?: string) => void;
   onExpansionProgress?: (nodeId: string, progress: number) => void;
-  onExpansionComplete?: (result: {requestId: string; nodes: GraphNode[]; edges: GraphEdge[]}) => void;
+  onExpansionComplete?: (result: {
+    requestId: string;
+    nodes: GraphNode[];
+    edges: GraphEdge[];
+  }) => void;
   onExpansionError?: (nodeId: string, error: string) => void;
   autoTerminate?: boolean; // Auto-terminate on unmount (default: true)
 }
@@ -100,13 +113,19 @@ interface _TaskSystem<T = unknown> {
   getStats: () => WorkerStats;
   isWorkerReady: boolean;
   onExpansionProgress?: (nodeId: string, progress: number) => void;
-  onExpansionComplete?: (result: {requestId: string; nodes: GraphNode[]; edges: GraphEdge[]; links?: SimulationLink[]; positions?: NodePosition[] }) => void;
+  onExpansionComplete?: (result: {
+    requestId: string;
+    nodes: GraphNode[];
+    edges: GraphEdge[];
+    links?: SimulationLink[];
+    positions?: NodePosition[];
+  }) => void;
   onExpansionError?: (nodeId: string, error: string) => void;
 }
 
 export function useWebWorker(
   workerFactory: () => Worker,
-  options: UseWebWorkerOptions = {}
+  options: UseWebWorkerOptions = {},
 ): WebWorkerTaskSystem {
   const {
     onMessage,
@@ -116,7 +135,7 @@ export function useWebWorker(
     onExpansionProgress,
     onExpansionComplete,
     onExpansionError,
-    autoTerminate = true
+    autoTerminate = true,
   } = options;
 
   const workerRef = useRef<Worker | null>(null);
@@ -127,7 +146,7 @@ export function useWebWorker(
     messagesSent: 0,
     errors: 0,
     averageResponseTime: 0,
-    lastActivity: 0
+    lastActivity: 0,
   });
   const [isWorkerReady, setIsWorkerReady] = useState(false);
 
@@ -146,12 +165,12 @@ export function useWebWorker(
 
       // Setup message handler
       const messageHandler = (event: MessageEvent<WorkerResponse>) => {
-        const {data} = event;
+        const { data } = event;
 
-        setStats(prev => ({
+        setStats((prev) => ({
           ...prev,
           messagesReceived: prev.messagesReceived + 1,
-          lastActivity: Date.now()
+          lastActivity: Date.now(),
         }));
 
         // Calculate response time if requestId is present
@@ -168,8 +187,10 @@ export function useWebWorker(
             responseTimes.current = responseTimes.current.slice(-100);
           }
 
-          const averageResponseTime = responseTimes.current.reduce((sum, time) => sum + time, 0) / responseTimes.current.length;
-          setStats(prev => ({ ...prev, averageResponseTime }));
+          const averageResponseTime =
+            responseTimes.current.reduce((sum, time) => sum + time, 0) /
+            responseTimes.current.length;
+          setStats((prev) => ({ ...prev, averageResponseTime }));
         }
 
         // Handle different response types
@@ -187,7 +208,11 @@ export function useWebWorker(
             setError(null);
             setIsLoading(false);
             onSuccess?.(data.result, data.requestId);
-            if (data.requestId && onExpansionComplete && isExpansionResult(data.result)) {
+            if (
+              data.requestId &&
+              onExpansionComplete &&
+              isExpansionResult(data.result)
+            ) {
               onExpansionComplete(data.result);
             }
             break;
@@ -195,7 +220,7 @@ export function useWebWorker(
           case "ERROR":
             setError(data.error ?? "Unknown worker error");
             setIsLoading(false);
-            setStats(prev => ({ ...prev, errors: prev.errors + 1 }));
+            setStats((prev) => ({ ...prev, errors: prev.errors + 1 }));
             if (data.requestId && onExpansionError) {
               onExpansionError(data.requestId, data.error ?? "Unknown error");
             }
@@ -213,14 +238,14 @@ export function useWebWorker(
         const errorMessage = `Worker error: ${errorEvent.message}`;
         setError(errorMessage);
         setIsLoading(false);
-        setStats(prev => ({ ...prev, errors: prev.errors + 1 }));
+        setStats((prev) => ({ ...prev, errors: prev.errors + 1 }));
         onError?.(errorEvent);
 
         logger.error("worker", "Worker error occurred", {
           message: errorEvent.message,
           filename: errorEvent.filename,
           lineno: errorEvent.lineno,
-          colno: errorEvent.colno
+          colno: errorEvent.colno,
         });
       };
 
@@ -228,10 +253,11 @@ export function useWebWorker(
 
       // Setup unhandled error handler
       const messageErrorHandler = (event: MessageEvent) => {
-        const errorMessage = "Worker message error (serialization/deserialization failed)";
+        const errorMessage =
+          "Worker message error (serialization/deserialization failed)";
         setError(errorMessage);
         setIsLoading(false);
-        setStats(prev => ({ ...prev, errors: prev.errors + 1 }));
+        setStats((prev) => ({ ...prev, errors: prev.errors + 1 }));
 
         logger.error("worker", "Worker message error", { event });
       };
@@ -239,11 +265,13 @@ export function useWebWorker(
       worker.onmessageerror = messageErrorHandler;
 
       logger.debug("worker", "Worker initialized successfully");
-
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to create worker";
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to create worker";
       setError(errorMessage);
-      logger.error("worker", "Failed to initialize worker", { error: errorMessage });
+      logger.error("worker", "Failed to initialize worker", {
+        error: errorMessage,
+      });
       setIsWorkerReady(false);
     }
 
@@ -261,20 +289,34 @@ export function useWebWorker(
         setIsWorkerReady(false);
       }
     };
-  }, [workerFactory, onMessage, onError, onProgress, onSuccess, onExpansionProgress, onExpansionComplete, onExpansionError, autoTerminate]);
+  }, [
+    workerFactory,
+    onMessage,
+    onError,
+    onProgress,
+    onSuccess,
+    onExpansionProgress,
+    onExpansionComplete,
+    onExpansionError,
+    autoTerminate,
+  ]);
 
   // Post message to worker with automatic request ID generation
   const postMessage = useCallback((data: WorkerRequest) => {
     if (!workerRef.current) {
       const error = "Worker not available";
       setError(error);
-      logger.warn("worker", "Attempted to post message to unavailable worker", { data });
+      logger.warn("worker", "Attempted to post message to unavailable worker", {
+        data,
+      });
       return null;
     }
 
     try {
       // Generate request ID if not provided
-      const requestId = data.requestId ?? `req-${Date.now().toString()}-${Math.random().toString(36).substring(2)}`;
+      const requestId =
+        data.requestId ??
+        `req-${Date.now().toString()}-${Math.random().toString(36).substring(2)}`;
       const messageWithId: WorkerRequest = { ...data, requestId };
 
       // Track request timing
@@ -284,48 +326,57 @@ export function useWebWorker(
       setError(null);
       workerRef.current.postMessage(messageWithId);
 
-      setStats(prev => ({
+      setStats((prev) => ({
         ...prev,
         messagesSent: prev.messagesSent + 1,
-        lastActivity: Date.now()
+        lastActivity: Date.now(),
       }));
 
       logger.debug("worker", "Message posted to worker", {
         entityType: data.type,
         requestId,
-        hasData: !!data.data
+        hasData: !!data.data,
       });
 
       return requestId;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to post message";
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to post message";
       setError(errorMessage);
       setIsLoading(false);
-      logger.error("worker", "Failed to post message to worker", { error: errorMessage, data });
+      logger.error("worker", "Failed to post message to worker", {
+        error: errorMessage,
+        data,
+      });
       return null;
     }
   }, []);
 
   // Submit task to worker
-  const submitTask = useCallback(async (task: WorkerRequest): Promise<void> => {
-    const requestId = postMessage(task);
-    if (!requestId) {
-      throw new Error("Failed to submit task: worker not available");
-    }
-    // Wait for completion or error (simplified - in real impl, use promise from queue)
-    return new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => { reject(new Error("Task timeout")); }, 30000);
-      const checkStatus = () => {
-        if (stats.averageResponseTime > 0) {
-          clearTimeout(timeout);
-          resolve();
-        } else {
-          setTimeout(checkStatus, 100);
-        }
-      };
-      checkStatus();
-    });
-  }, [postMessage, stats.averageResponseTime]);
+  const submitTask = useCallback(
+    async (task: WorkerRequest): Promise<void> => {
+      const requestId = postMessage(task);
+      if (!requestId) {
+        throw new Error("Failed to submit task: worker not available");
+      }
+      // Wait for completion or error (simplified - in real impl, use promise from queue)
+      return new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error("Task timeout"));
+        }, 30000);
+        const checkStatus = () => {
+          if (stats.averageResponseTime > 0) {
+            clearTimeout(timeout);
+            resolve();
+          } else {
+            setTimeout(checkStatus, 100);
+          }
+        };
+        checkStatus();
+      });
+    },
+    [postMessage, stats.averageResponseTime],
+  );
 
   // Get stats
   const getStats = useCallback(() => stats, [stats]);
@@ -385,6 +436,6 @@ export function useWebWorker(
     // Performance metrics
     averageResponseTime: stats.averageResponseTime,
     totalMessages: stats.messagesReceived + stats.messagesSent,
-    errorRate: stats.messagesSent > 0 ? stats.errors / stats.messagesSent : 0
+    errorRate: stats.messagesSent > 0 ? stats.errors / stats.messagesSent : 0,
   };
 }

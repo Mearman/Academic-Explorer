@@ -8,10 +8,10 @@ import { logger } from "@academic-explorer/utils";
 type EventListener = (...args: unknown[]) => void;
 
 export class EventEmitter {
-  private events = new Map<string, Set<EventListener>>();
+  private events = new Map<string | symbol, Set<EventListener>>();
   private maxListeners = 10;
 
-  on(event: string, listener: EventListener): this {
+  on(event: string | symbol, listener: EventListener): this {
     // Ensure the event has a listeners set
     let listeners = this.events.get(event);
     if (!listeners) {
@@ -23,13 +23,16 @@ export class EventEmitter {
 
     // Warn if too many listeners (like Node.js EventEmitter)
     if (listeners.size > this.maxListeners) {
-      logger.warn("event-emitter", `Possible EventEmitter memory leak detected. ${listeners.size} listeners added to event "${event}". Use setMaxListeners() to increase limit.`);
+      logger.warn(
+        "event-emitter",
+        `Possible EventEmitter memory leak detected. ${listeners.size} listeners added to event "${String(event)}". Use setMaxListeners() to increase limit.`,
+      );
     }
 
     return this;
   }
 
-  off(event: string, listener: EventListener): this {
+  off(event: string | symbol, listener: EventListener): this {
     const listeners = this.events.get(event);
     if (listeners) {
       listeners.delete(listener);
@@ -41,11 +44,11 @@ export class EventEmitter {
   }
 
   // Alias for Node.js compatibility
-  removeListener(event: string, listener: EventListener): this {
+  removeListener(event: string | symbol, listener: EventListener): this {
     return this.off(event, listener);
   }
 
-  emit(event: string, ...args: unknown[]): boolean {
+  emit(event: string | symbol, ...args: unknown[]): boolean {
     const listeners = this.events.get(event);
     if (!listeners || listeners.size === 0) {
       return false;
@@ -62,7 +65,7 @@ export class EventEmitter {
     return true;
   }
 
-  once(event: string, listener: EventListener): this {
+  once(event: string | symbol, listener: EventListener): this {
     const onceWrapper = (...args: unknown[]) => {
       this.off(event, onceWrapper);
       listener(...args);
@@ -71,7 +74,7 @@ export class EventEmitter {
     return this.on(event, onceWrapper);
   }
 
-  removeAllListeners(event?: string): this {
+  removeAllListeners(event?: string | symbol): this {
     if (event) {
       this.events.delete(event);
     } else {
@@ -80,7 +83,7 @@ export class EventEmitter {
     return this;
   }
 
-  listenerCount(event: string): number {
+  listenerCount(event: string | symbol): number {
     const listeners = this.events.get(event);
     return listeners ? listeners.size : 0;
   }
@@ -94,7 +97,7 @@ export class EventEmitter {
     return this.maxListeners;
   }
 
-  eventNames(): string[] {
+  eventNames(): (string | symbol)[] {
     return Array.from(this.events.keys());
   }
 }

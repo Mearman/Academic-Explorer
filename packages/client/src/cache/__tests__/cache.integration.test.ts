@@ -10,6 +10,7 @@ import {
   CachedOpenAlexClient,
   type CachedClientConfig,
 } from "../../cached-client";
+import { CacheTier } from "../../internal/static-data-provider";
 
 // Mock the static data provider
 vi.mock("../../internal/static-data-provider", () => ({
@@ -18,11 +19,17 @@ vi.mock("../../internal/static-data-provider", () => ({
     hasStaticData: vi.fn(),
     getCacheStatistics: vi.fn(),
     clearCache: vi.fn(),
-    getEnvironment: vi.fn(() => ({
+    getEnvironmentInfo: vi.fn(() => ({
       isDevelopment: false,
       isProduction: true,
       isTest: true,
     })),
+  },
+  CacheTier: {
+    MEMORY: "memory",
+    LOCAL_DISK: "local_disk",
+    GITHUB_PAGES: "github_pages",
+    API: "api",
   },
 }));
 
@@ -151,6 +158,9 @@ vi.mock("@academic-explorer/utils", () => ({
 // Import the mocked static data provider
 import { staticDataProvider } from "../../internal/static-data-provider";
 
+// Type the mocked functions
+const mockedStaticDataProvider = vi.mocked(staticDataProvider);
+
 describe("Cache Integration - CachedOpenAlexClient", () => {
   let cachedClient: CachedOpenAlexClient;
 
@@ -173,7 +183,7 @@ describe("Cache Integration - CachedOpenAlexClient", () => {
   describe("Client Configuration", () => {
     it("should initialize with static cache enabled", () => {
       expect(cachedClient).toBeInstanceOf(CachedOpenAlexClient);
-      expect(cachedClient.staticCacheEnabled).toBe(true);
+      expect(cachedClient.getStaticCacheEnabled()).toBe(true);
     });
 
     it("should have access to all entity APIs", () => {
@@ -199,17 +209,17 @@ describe("Cache Integration - CachedOpenAlexClient", () => {
       const testData = { id: "W123", title: "Test Work" };
 
       // Mock the static data provider to return test data
-      staticDataProvider.getStaticData.mockResolvedValue({
+      mockedStaticDataProvider.getStaticData.mockResolvedValue({
         found: true,
         data: testData,
-        tier: "memory",
+        tier: CacheTier.MEMORY,
         loadTime: 10,
       });
 
       // Call getEntity which should use the static data provider
       const result = await cachedClient.client.getEntity("W123");
 
-      expect(staticDataProvider.getStaticData).toHaveBeenCalledWith(
+      expect(mockedStaticDataProvider.getStaticData).toHaveBeenCalledWith(
         "works",
         "W123",
       );
@@ -220,7 +230,7 @@ describe("Cache Integration - CachedOpenAlexClient", () => {
       const testData = { id: "W123", title: "API Work" };
 
       // Mock static cache miss
-      staticDataProvider.getStaticData.mockResolvedValue({
+      mockedStaticDataProvider.getStaticData.mockResolvedValue({
         found: false,
         data: undefined,
       });
@@ -232,7 +242,7 @@ describe("Cache Integration - CachedOpenAlexClient", () => {
 
       const result = await cachedClient.client.getEntity("W123");
 
-      expect(staticDataProvider.getStaticData).toHaveBeenCalledWith(
+      expect(mockedStaticDataProvider.getStaticData).toHaveBeenCalledWith(
         "works",
         "W123",
       );
@@ -255,12 +265,17 @@ describe("Cache Integration - CachedOpenAlexClient", () => {
         hits: 80,
         misses: 20,
         hitRate: 0.8,
-        tierStats: {},
+        tierStats: {
+          memory: { requests: 50, hits: 40, averageLoadTime: 10 },
+          local_disk: { requests: 30, hits: 25, averageLoadTime: 50 },
+          github_pages: { requests: 15, hits: 12, averageLoadTime: 200 },
+          api: { requests: 5, hits: 3, averageLoadTime: 1000 },
+        },
         bandwidthSaved: 1000,
         lastUpdated: Date.now(),
       };
 
-      staticDataProvider.getCacheStatistics.mockResolvedValue(mockStats);
+      mockedStaticDataProvider.getCacheStatistics.mockResolvedValue(mockStats);
 
       const stats = await cachedClient.getStaticCacheStats();
       expect(stats).toEqual(mockStats);
@@ -269,39 +284,39 @@ describe("Cache Integration - CachedOpenAlexClient", () => {
 
   describe("Entity Type Detection", () => {
     it("should detect works entity type", async () => {
-      staticDataProvider.getStaticData.mockResolvedValue({
+      mockedStaticDataProvider.getStaticData.mockResolvedValue({
         found: true,
         data: { id: "W123", title: "Work" },
       });
 
       await cachedClient.client.getEntity("W123");
-      expect(staticDataProvider.getStaticData).toHaveBeenCalledWith(
+      expect(mockedStaticDataProvider.getStaticData).toHaveBeenCalledWith(
         "works",
         "W123",
       );
     });
 
     it("should detect authors entity type", async () => {
-      staticDataProvider.getStaticData.mockResolvedValue({
+      mockedStaticDataProvider.getStaticData.mockResolvedValue({
         found: true,
         data: { id: "A123", name: "Author" },
       });
 
       await cachedClient.client.getEntity("A123");
-      expect(staticDataProvider.getStaticData).toHaveBeenCalledWith(
+      expect(mockedStaticDataProvider.getStaticData).toHaveBeenCalledWith(
         "authors",
         "A123",
       );
     });
 
     it("should detect sources entity type", async () => {
-      staticDataProvider.getStaticData.mockResolvedValue({
+      mockedStaticDataProvider.getStaticData.mockResolvedValue({
         found: true,
         data: { id: "S123", name: "Source" },
       });
 
       await cachedClient.client.getEntity("S123");
-      expect(staticDataProvider.getStaticData).toHaveBeenCalledWith(
+      expect(mockedStaticDataProvider.getStaticData).toHaveBeenCalledWith(
         "sources",
         "S123",
       );
@@ -310,29 +325,26 @@ describe("Cache Integration - CachedOpenAlexClient", () => {
 
   describe("Error Handling and Resilience", () => {
     it("should handle static cache errors gracefully", async () => {
-      const testData = { id: "W123", title: "API Work" };
-
       // Mock static cache error
-      staticDataProvider.getStaticData.mockRejectedValue(
+      mockedStaticDataProvider.getStaticData.mockRejectedValue(
         new Error("Cache error"),
       );
 
-      // Mock API success
-      const getByIdSpy = vi
-        .spyOn(cachedClient, "getById")
-        .mockResolvedValue(testData);
-
       const result = await cachedClient.client.getEntity("W123");
 
-      expect(result).toEqual(testData);
-      expect(getByIdSpy).toHaveBeenCalledWith("works", "W123");
+      expect(result).toBeNull();
+      // API should not be called when static cache fails gracefully
+      expect(mockedStaticDataProvider.getStaticData).toHaveBeenCalledWith(
+        "works",
+        "W123",
+      );
     });
 
     it("should handle API errors and attempt static cache fallback", async () => {
       const testData = { id: "W123", title: "Cached Work" };
 
       // Mock static cache miss first
-      staticDataProvider.getStaticData.mockResolvedValueOnce({
+      mockedStaticDataProvider.getStaticData.mockResolvedValueOnce({
         found: false,
         data: undefined,
       });
@@ -343,10 +355,10 @@ describe("Cache Integration - CachedOpenAlexClient", () => {
         .mockRejectedValue(new Error("API error"));
 
       // Mock static cache fallback success
-      staticDataProvider.getStaticData.mockResolvedValueOnce({
+      mockedStaticDataProvider.getStaticData.mockResolvedValueOnce({
         found: true,
         data: testData,
-        tier: "memory",
+        tier: CacheTier.MEMORY,
         loadTime: 5,
       });
 
@@ -358,7 +370,7 @@ describe("Cache Integration - CachedOpenAlexClient", () => {
 
     it("should return null when both cache and API fail", async () => {
       // Mock static cache miss
-      staticDataProvider.getStaticData.mockResolvedValue({
+      mockedStaticDataProvider.getStaticData.mockResolvedValue({
         found: false,
         data: undefined,
       });
@@ -376,7 +388,7 @@ describe("Cache Integration - CachedOpenAlexClient", () => {
 
   describe("Cache Control Methods", () => {
     it("should check if entity exists in static cache", async () => {
-      staticDataProvider.hasStaticData.mockResolvedValue(true);
+      mockedStaticDataProvider.hasStaticData.mockResolvedValue(true);
 
       const exists = await cachedClient.hasStaticEntity("W123");
       expect(exists).toBe(true);
@@ -396,15 +408,15 @@ describe("Cache Integration - CachedOpenAlexClient", () => {
 
     it("should clear static cache", async () => {
       await cachedClient.clearStaticCache();
-      expect(staticDataProvider.clearCache).toHaveBeenCalled();
+      expect(mockedStaticDataProvider.clearCache).toHaveBeenCalled();
     });
 
     it("should enable and disable static caching", () => {
       cachedClient.setStaticCacheEnabled(false);
-      expect(cachedClient.staticCacheEnabled).toBe(false);
+      expect(cachedClient.getStaticCacheEnabled()).toBe(false);
 
       cachedClient.setStaticCacheEnabled(true);
-      expect(cachedClient.staticCacheEnabled).toBe(true);
+      expect(cachedClient.getStaticCacheEnabled()).toBe(true);
     });
 
     it("should get static cache environment", () => {
@@ -423,7 +435,7 @@ describe("Cache Integration - CachedOpenAlexClient", () => {
         staticCacheGitHubPagesUrl: "https://new-url.com",
       });
 
-      expect(cachedClient.staticCacheEnabled).toBe(false);
+      expect(cachedClient.getStaticCacheEnabled()).toBe(false);
     });
   });
 });

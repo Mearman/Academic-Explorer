@@ -10,10 +10,12 @@ import { useGraphStore } from "@/stores/graph-store";
 import type { EntityType, SearchOptions } from "@academic-explorer/graph";
 import type {
   Work,
+  PartialWork,
   Author,
+  Institution,
   Source,
-  InstitutionEntity,
   OpenAlexEntity,
+  OpenAlexResponse,
 } from "@academic-explorer/client";
 
 // Mock client
@@ -129,12 +131,18 @@ describe("GraphDataService", () => {
   let mockExpansionSettingsStore: any;
 
   // Test data fixtures
-  const mockWorkEntity: Work = {
+  const mockWorkEntity: PartialWork = {
     id: "W123456789",
     display_name: "Test Work",
-    entityType: "article",
+    type: "article",
     publication_year: 2023,
     doi: "10.1234/test",
+    ids: {
+      openalex: "W123456789",
+      doi: "10.1234/test",
+    },
+    locations: [],
+    locations_count: 1,
     authorships: [
       {
         author: {
@@ -148,26 +156,31 @@ describe("GraphDataService", () => {
             id: "I123456789",
             display_name: "Test Institution",
             ror: "01abc23de",
+            type: "education",
           },
         ],
+        countries: [],
+        is_corresponding: false,
       },
     ],
-    primary_location: {
-      source: {
-        id: "S123456789",
-        display_name: "Test Source",
-        issn_l: "1234-5678",
-      },
-    },
+    countries_distinct_count: 1,
+    institutions_distinct_count: 1,
+    corresponding_author_ids: [],
+    corresponding_institution_ids: [],
     cited_by_count: 100,
-    referenced_works_count: 50,
-    referenced_works: ["W111111111", "W222222222", "W333333333"],
+    cited_by_api_url: "https://api.openalex.org/works?filter=cites:W123456789",
+    counts_by_year: [],
+    updated_date: "2023-01-01T00:00:00.000000Z",
+    created_date: "2023-01-01T00:00:00.000000Z",
+    indexed_in: [],
     open_access: {
       is_oa: true,
       oa_date: "2023-01-01",
       oa_url: "https://example.com/open-access-url",
+      any_repository_has_fulltext: false,
     },
-  } as Work;
+    concepts: [],
+  };
 
   const mockAuthorEntity: Author = {
     id: "A123456789",
@@ -227,30 +240,35 @@ describe("GraphDataService", () => {
           return {
             entityType: "works",
             normalizedId: id,
+            originalInput: id,
             detectionMethod: "OpenAlex ID",
           };
         } else if (id.startsWith("A")) {
           return {
             entityType: "authors",
             normalizedId: id,
+            originalInput: id,
             detectionMethod: "OpenAlex ID",
           };
         } else if (id.startsWith("S")) {
           return {
             entityType: "sources",
             normalizedId: id,
+            originalInput: id,
             detectionMethod: "OpenAlex ID",
           };
         } else if (id.startsWith("I")) {
           return {
             entityType: "institutions",
             normalizedId: id,
+            originalInput: id,
             detectionMethod: "OpenAlex ID",
           };
         }
         return {
           entityType: "works",
           normalizedId: id,
+          originalInput: id,
           detectionMethod: "OpenAlex ID",
         };
       },
@@ -301,7 +319,7 @@ describe("GraphDataService", () => {
 
         switch (entityId) {
           case "W123456789":
-            return Promise.resolve(mockWorkEntity);
+            return Promise.resolve(mockWorkEntity as OpenAlexEntity);
           case "A123456789":
             return Promise.resolve(mockAuthorEntity);
           default:
@@ -317,7 +335,7 @@ describe("GraphDataService", () => {
         : id;
       switch (entityId) {
         case "W123456789":
-          return Promise.resolve(mockWorkEntity);
+          return Promise.resolve(mockWorkEntity as OpenAlexEntity);
         case "A123456789":
           return Promise.resolve(mockAuthorEntity);
         default:
@@ -453,6 +471,7 @@ describe("GraphDataService", () => {
   describe("searchAndVisualize", () => {
     const searchQuery = "machine learning";
     const searchOptions: SearchOptions = {
+      query: searchQuery,
       entityTypes: ["works"],
       limit: 10,
     };
@@ -460,26 +479,26 @@ describe("GraphDataService", () => {
     beforeEach(() => {
       // Mock the individual client methods
       vi.mocked(cachedOpenAlex.client.works.getWorks).mockResolvedValue({
-        results: [mockWorkEntity],
-        meta: { count: 1, per_page: 25, page: 1 },
+        results: [mockWorkEntity as Work],
+        meta: { count: 1, per_page: 25, page: 1, db_response_time_ms: 50 },
       });
       vi.mocked(cachedOpenAlex.client.authors.getAuthors).mockResolvedValue({
         results: [],
-        meta: { count: 0, per_page: 25, page: 1 },
+        meta: { count: 0, per_page: 25, page: 1, db_response_time_ms: 30 },
       });
       vi.mocked(cachedOpenAlex.client.sources.getSources).mockResolvedValue({
         results: [],
-        meta: { count: 0, per_page: 25, page: 1 },
+        meta: { count: 0, per_page: 25, page: 1, db_response_time_ms: 40 },
       });
       vi.mocked(
         cachedOpenAlex.client.institutions.searchInstitutions,
       ).mockResolvedValue({
         results: [],
-        meta: { count: 0, per_page: 25, page: 1 },
+        meta: { count: 0, per_page: 25, page: 1, db_response_time_ms: 35 },
       });
       vi.mocked(cachedOpenAlex.client.topics.getMultiple).mockResolvedValue({
         results: [],
-        meta: { count: 0, per_page: 25, page: 1 },
+        meta: { count: 0, per_page: 25, page: 1, db_response_time_ms: 45 },
       });
     });
 
@@ -543,7 +562,7 @@ describe("GraphDataService", () => {
     });
 
     it("should extract DOI from work entity", async () => {
-      const workWithDoi = {
+      const workWithDoi: PartialWork = {
         ...mockWorkEntity,
         doi: "10.1234/test-doi",
       };
@@ -567,7 +586,7 @@ describe("GraphDataService", () => {
     });
 
     it("should extract ORCID from author entity", async () => {
-      const authorWithOrcid = {
+      const authorWithOrcid: Author = {
         ...mockAuthorEntity,
         orcid: "0000-0000-0000-0001",
       };
@@ -596,13 +615,31 @@ describe("GraphDataService", () => {
       const unknownEntity = {
         id: "X123456789",
         display_name: "Unknown Entity",
-        entityType: "article",
+        type: "article",
         authorships: [],
-        referenced_works: [],
-        open_access: { is_oa: false },
-      } as OpenAlexEntity;
+        locations: [],
+        locations_count: 0,
+        countries_distinct_count: 0,
+        institutions_distinct_count: 0,
+        corresponding_author_ids: [],
+        corresponding_institution_ids: [],
+        cited_by_count: 0,
+        cited_by_api_url:
+          "https://api.openalex.org/works?filter=cites:X123456789",
+        counts_by_year: [],
+        updated_date: "2023-01-01T00:00:00.000000Z",
+        created_date: "2023-01-01T00:00:00.000000Z",
+        indexed_in: [],
+        open_access: {
+          is_oa: false,
+          any_repository_has_fulltext: false,
+        },
+        concepts: [],
+      };
 
-      mockDeduplicationService.getEntity.mockResolvedValueOnce(unknownEntity);
+      mockDeduplicationService.getEntity.mockResolvedValueOnce(
+        unknownEntity as unknown as OpenAlexEntity,
+      );
 
       await service.loadEntityGraph("X123456789");
 
@@ -610,18 +647,34 @@ describe("GraphDataService", () => {
     });
 
     it("should handle missing optional entity properties", async () => {
-      const minimalWork: Work = {
+      const minimalWork: PartialWork = {
         id: "W123456789",
         display_name: "Minimal Work",
-        entityType: "article",
+        type: "article",
         authorships: [],
-        referenced_works: [],
+        locations: [],
+        locations_count: 0,
+        countries_distinct_count: 0,
+        institutions_distinct_count: 0,
+        corresponding_author_ids: [],
+        corresponding_institution_ids: [],
+        cited_by_count: 0,
+        cited_by_api_url:
+          "https://api.openalex.org/works?filter=cites:W123456789",
+        counts_by_year: [],
+        updated_date: "2023-01-01T00:00:00.000000Z",
+        created_date: "2023-01-01T00:00:00.000000Z",
+        indexed_in: [],
         open_access: {
           is_oa: false,
+          any_repository_has_fulltext: false,
         },
-      } as Work;
+        concepts: [],
+      };
 
-      mockDeduplicationService.getEntity.mockResolvedValueOnce(minimalWork);
+      mockDeduplicationService.getEntity.mockResolvedValueOnce(
+        minimalWork as Work,
+      );
 
       await service.loadEntityGraph("W123456789");
 

@@ -11,8 +11,17 @@ export * from "./types/expansion-settings";
 export * from "./types/cache";
 
 // Phase 1: Core Data Models & Services
-export { GraphManager, type GraphManagerOptions, type GraphChangeEvent } from './data/graph-manager';
-export { EntityResolver, type IEntityResolver, type EntityExpansionOptions, type ExpansionResult } from './services/entity-resolver-interface';
+export {
+  GraphManager,
+  type GraphManagerOptions,
+  type GraphChangeEvent,
+} from "./data/graph-manager";
+export {
+  EntityResolver,
+  type IEntityResolver,
+  type EntityExpansionOptions,
+  type ExpansionResult,
+} from "./services/entity-resolver-interface";
 export {
   GraphRepository,
   IndexedDBAdapter,
@@ -21,7 +30,7 @@ export {
   type GraphSnapshot,
   type GraphHistoryEntry,
   type StorageAdapter,
-} from './data/graph-repository';
+} from "./data/graph-repository";
 
 // Graph constants and configuration
 export * from "./constants";
@@ -33,7 +42,7 @@ export {
   batchCalculateAttachments,
   type NodeBounds,
   type AttachmentPoint,
-  type EdgeAttachment
+  type EdgeAttachment,
 } from "./utils/edge-calculations";
 export * from "./utils/node-helpers";
 export * from "./utils/performance-config";
@@ -55,7 +64,7 @@ export {
   isValidIdentifier,
   detectEntity,
   type DetectionResult,
-} from './services/entity-detection-service';
+} from "./services/entity-detection-service";
 
 // Force system
 export * from "./forces";
@@ -73,7 +82,7 @@ export {
   type CacheStats,
   type EntityData,
   type EntityDataProvider,
-} from './services/smart-entity-cache';
+} from "./services/smart-entity-cache";
 
 // Contextual Field Selector Service - Interface only
 // Implementation should be provided by applications
@@ -93,10 +102,10 @@ export type {
   SmartCache,
   FieldUsagePattern,
   CacheHealth,
-} from './services/cache-types';
+} from "./services/cache-types";
 
 // Contextual cache context enum (alternative to interface)
-export { CacheContext as ContextualCacheContext } from './services/cache-types';
+export { CacheContext as ContextualCacheContext } from "./services/cache-types";
 
 // Execution Strategy
 export {
@@ -109,8 +118,8 @@ export {
   type Task,
   type TaskResult,
   type TaskStats,
-  type TaskExecutor
-} from './services/execution-strategy';
+  type TaskExecutor,
+} from "./services/execution-strategy";
 
 // Force Simulation
 export {
@@ -118,5 +127,4 @@ export {
   type ForceSimulationTask,
   type ForceSimulationNode,
   type ForceSimulationLink,
-  type TaskExecutor as ForceTaskExecutor
-} from './forces';
+} from "./forces";

@@ -9,9 +9,9 @@
  * Environment mode enumeration
  */
 export enum EnvironmentMode {
-  DEVELOPMENT = 'development',
-  PRODUCTION = 'production',
-  TEST = 'test'
+  DEVELOPMENT = "development",
+  PRODUCTION = "production",
+  TEST = "test",
 }
 
 /**
@@ -57,27 +57,31 @@ export class EnvironmentDetector {
    */
   static detectMode(): EnvironmentMode {
     // Check NODE_ENV first (most reliable)
-    if (typeof globalThis.process !== 'undefined' && globalThis.process.env?.NODE_ENV) {
+    if (
+      typeof globalThis.process !== "undefined" &&
+      globalThis.process.env?.NODE_ENV
+    ) {
       const nodeEnv = globalThis.process.env.NODE_ENV.toLowerCase();
-      if (nodeEnv === 'production') return EnvironmentMode.PRODUCTION;
-      if (nodeEnv === 'test') return EnvironmentMode.TEST;
-      if (nodeEnv === 'development') return EnvironmentMode.DEVELOPMENT;
+      if (nodeEnv === "production") return EnvironmentMode.PRODUCTION;
+      if (nodeEnv === "test") return EnvironmentMode.TEST;
+      if (nodeEnv === "development") return EnvironmentMode.DEVELOPMENT;
     }
 
     // Check Vite environment variables
-    if (typeof import.meta !== 'undefined') {
+    if (typeof import.meta !== "undefined") {
       try {
-        // @ts-expect-error - import.meta.env is injected by Vite
-        const viteEnv = import.meta.env as Record<string, unknown> | undefined;
+        const viteEnv = (import.meta as { env?: Record<string, unknown> }).env;
         if (viteEnv) {
           const viteMode = (viteEnv.MODE as string | undefined)?.toLowerCase();
-          if (viteMode === 'production') return EnvironmentMode.PRODUCTION;
-          if (viteMode === 'test') return EnvironmentMode.TEST;
-          if (viteMode === 'development') return EnvironmentMode.DEVELOPMENT;
+          if (viteMode === "production") return EnvironmentMode.PRODUCTION;
+          if (viteMode === "test") return EnvironmentMode.TEST;
+          if (viteMode === "development") return EnvironmentMode.DEVELOPMENT;
 
           // Check Vite's DEV flag
-          if ((viteEnv.DEV as boolean | undefined) === true) return EnvironmentMode.DEVELOPMENT;
-          if ((viteEnv.PROD as boolean | undefined) === true) return EnvironmentMode.PRODUCTION;
+          if ((viteEnv.DEV as boolean | undefined) === true)
+            return EnvironmentMode.DEVELOPMENT;
+          if ((viteEnv.PROD as boolean | undefined) === true)
+            return EnvironmentMode.PRODUCTION;
         }
       } catch {
         // Ignore errors if import.meta.env is not available
@@ -85,32 +89,42 @@ export class EnvironmentDetector {
     }
 
     // Check global __DEV__ flag (from Vite define)
-    if (typeof globalThis !== 'undefined' && '__DEV__' in globalThis) {
+    if (typeof globalThis !== "undefined" && "__DEV__" in globalThis) {
       try {
-        const devFlag = (globalThis as unknown as { __DEV__?: boolean }).__DEV__;
-        return devFlag ? EnvironmentMode.DEVELOPMENT : EnvironmentMode.PRODUCTION;
+        const devFlag = (globalThis as unknown as { __DEV__?: boolean })
+          .__DEV__;
+        return devFlag
+          ? EnvironmentMode.DEVELOPMENT
+          : EnvironmentMode.PRODUCTION;
       } catch {
         // Ignore errors if __DEV__ is not accessible
       }
     }
 
     // Browser-based detection
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const hostname = window.location?.hostname;
 
       // Local development indicators
-      if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname?.endsWith('.local')) {
+      if (
+        hostname === "localhost" ||
+        hostname === "127.0.0.1" ||
+        hostname?.endsWith(".local")
+      ) {
         return EnvironmentMode.DEVELOPMENT;
       }
 
       // Development port indicators
       const port = window.location?.port;
-      if (port && ['3000', '5173', '8080', '4173'].includes(port)) {
+      if (port && ["3000", "5173", "8080", "4173"].includes(port)) {
         return EnvironmentMode.DEVELOPMENT;
       }
 
       // GitHub Pages or custom domain = production
-      if (hostname === 'academic-explorer.joenash.uk' || hostname?.endsWith('.github.io')) {
+      if (
+        hostname === "academic-explorer.joenash.uk" ||
+        hostname?.endsWith(".github.io")
+      ) {
         return EnvironmentMode.PRODUCTION;
       }
     }
@@ -123,23 +137,28 @@ export class EnvironmentDetector {
    * Detect if running in browser context
    */
   static isBrowser(): boolean {
-    return typeof window !== 'undefined' && typeof document !== 'undefined';
+    return typeof window !== "undefined" && typeof document !== "undefined";
   }
 
   /**
    * Detect if running in Node.js context
    */
   static isNode(): boolean {
-    return typeof globalThis.process !== 'undefined' && globalThis.process.versions?.node !== undefined;
+    return (
+      typeof globalThis.process !== "undefined" &&
+      globalThis.process.versions?.node !== undefined
+    );
   }
 
   /**
    * Detect if running in Web Worker context
    */
   static isWorker(): boolean {
-    return typeof globalThis !== 'undefined' &&
-           'importScripts' in globalThis &&
-           typeof window === 'undefined';
+    return (
+      typeof globalThis !== "undefined" &&
+      "importScripts" in globalThis &&
+      typeof window === "undefined"
+    );
   }
 
   /**
@@ -153,17 +172,17 @@ export class EnvironmentDetector {
     const protocol = window.location?.protocol;
 
     // Local development indicators
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    if (hostname === "localhost" || hostname === "127.0.0.1") {
       return true;
     }
 
     // Development ports
-    if (port && ['3000', '5173', '8080', '4173'].includes(port)) {
+    if (port && ["3000", "5173", "8080", "4173"].includes(port)) {
       return true;
     }
 
     // HTTP in development (vs HTTPS in production)
-    if (protocol === 'http:' && hostname !== 'localhost') {
+    if (protocol === "http:" && hostname !== "localhost") {
       return true;
     }
 
@@ -177,7 +196,11 @@ export class EnvironmentDetector {
     if (!this.isBrowser()) return false;
 
     const hostname = window.location?.hostname;
-    return hostname === 'academic-explorer.joenash.uk' || hostname?.endsWith('.github.io') || false;
+    return (
+      hostname === "academic-explorer.joenash.uk" ||
+      hostname?.endsWith(".github.io") ||
+      false
+    );
   }
 
   /**
@@ -186,13 +209,21 @@ export class EnvironmentDetector {
   static getBuildInfo(): { buildTimestamp?: string; commitHash?: string } {
     try {
       // Check for Vite-injected build info
-      if (typeof globalThis !== 'undefined' && '__BUILD_INFO__' in globalThis) {
+      if (typeof globalThis !== "undefined" && "__BUILD_INFO__" in globalThis) {
         try {
-          const buildInfo = (globalThis as unknown as { __BUILD_INFO__?: { buildTimestamp?: string; commitHash?: string; shortCommitHash?: string } }).__BUILD_INFO__;
-          if (buildInfo && typeof buildInfo === 'object') {
+          const buildInfo = (
+            globalThis as unknown as {
+              __BUILD_INFO__?: {
+                buildTimestamp?: string;
+                commitHash?: string;
+                shortCommitHash?: string;
+              };
+            }
+          ).__BUILD_INFO__;
+          if (buildInfo && typeof buildInfo === "object") {
             return {
               buildTimestamp: buildInfo.buildTimestamp,
-              commitHash: buildInfo.commitHash || buildInfo.shortCommitHash
+              commitHash: buildInfo.commitHash || buildInfo.shortCommitHash,
             };
           }
         } catch {
@@ -255,7 +286,7 @@ export class EnvironmentDetector {
       isDevServer,
       isGitHubPages,
       hostname: this.getHostname(),
-      protocol: this.getProtocol()
+      protocol: this.getProtocol(),
     };
 
     return this._cachedContext;
@@ -275,24 +306,24 @@ export class EnvironmentDetector {
     const context = this.getBuildContext();
 
     if (context.isTest) {
-      return 'Test Environment';
+      return "Test Environment";
     }
 
     if (context.isDevelopment) {
       if (context.isDevServer) {
-        return `Development Server (${context.hostname}:${window.location?.port || 'unknown'})`;
+        return `Development Server (${context.hostname}:${window.location?.port || "unknown"})`;
       }
-      return 'Development Build';
+      return "Development Build";
     }
 
     if (context.isProduction) {
       if (context.isGitHubPages) {
         return `Production (GitHub Pages: ${context.hostname})`;
       }
-      return 'Production Build';
+      return "Production Build";
     }
 
-    return 'Unknown Environment';
+    return "Unknown Environment";
   }
 }
 

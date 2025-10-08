@@ -1,6 +1,32 @@
-import { render, screen, fireEvent, cleanup } from "@testing-library/react";
-import { describe, it, expect, vi, afterEach } from "vitest";
+/**
+ * @vitest-environment jsdom
+ */
+
+// Mock ResizeObserver before importing Mantine
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}));
+
+// Mock window.matchMedia before importing Mantine
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: vi.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(), // deprecated
+    removeListener: vi.fn(), // deprecated
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
 import { MantineProvider } from "@mantine/core";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { FieldSearch, type FieldSearchValues } from "./FieldSearch";
 
 // Test wrapper with Mantine provider
@@ -18,26 +44,42 @@ describe("FieldSearch Component", () => {
     render(
       <TestWrapper>
         <FieldSearch />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     expect(screen.getByLabelText("Search by work title")).toBeInTheDocument();
-    expect(screen.getByLabelText("Search by abstract content")).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Search by abstract content"),
+    ).toBeInTheDocument();
     expect(screen.getByLabelText("Search by author name")).toBeInTheDocument();
-    expect(screen.getByLabelText("Search by institution name")).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Search by institution name"),
+    ).toBeInTheDocument();
   });
 
   it("shows default placeholder text", () => {
     render(
       <TestWrapper>
         <FieldSearch />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
-    expect(screen.getByLabelText("Search by work title")).toHaveAttribute("placeholder", "Search by title...");
-    expect(screen.getByLabelText("Search by abstract content")).toHaveAttribute("placeholder", "Search by abstract content...");
-    expect(screen.getByLabelText("Search by author name")).toHaveAttribute("placeholder", "Search by author name...");
-    expect(screen.getByLabelText("Search by institution name")).toHaveAttribute("placeholder", "Search by institution name...");
+    expect(screen.getByLabelText("Search by work title")).toHaveAttribute(
+      "placeholder",
+      "Search by title...",
+    );
+    expect(screen.getByLabelText("Search by abstract content")).toHaveAttribute(
+      "placeholder",
+      "Search by abstract content...",
+    );
+    expect(screen.getByLabelText("Search by author name")).toHaveAttribute(
+      "placeholder",
+      "Search by author name...",
+    );
+    expect(screen.getByLabelText("Search by institution name")).toHaveAttribute(
+      "placeholder",
+      "Search by institution name...",
+    );
   });
 
   it("accepts custom placeholder text", () => {
@@ -49,14 +91,26 @@ describe("FieldSearch Component", () => {
     render(
       <TestWrapper>
         <FieldSearch placeholders={customPlaceholders} />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
-    expect(screen.getByLabelText("Search by work title")).toHaveAttribute("placeholder", "Custom title placeholder");
-    expect(screen.getByLabelText("Search by author name")).toHaveAttribute("placeholder", "Custom author placeholder");
+    expect(screen.getByLabelText("Search by work title")).toHaveAttribute(
+      "placeholder",
+      "Custom title placeholder",
+    );
+    expect(screen.getByLabelText("Search by author name")).toHaveAttribute(
+      "placeholder",
+      "Custom author placeholder",
+    );
     // Should still show default for fields not customized
-    expect(screen.getByLabelText("Search by abstract content")).toHaveAttribute("placeholder", "Search by abstract content...");
-    expect(screen.getByLabelText("Search by institution name")).toHaveAttribute("placeholder", "Search by institution name...");
+    expect(screen.getByLabelText("Search by abstract content")).toHaveAttribute(
+      "placeholder",
+      "Search by abstract content...",
+    );
+    expect(screen.getByLabelText("Search by institution name")).toHaveAttribute(
+      "placeholder",
+      "Search by institution name...",
+    );
   });
 
   it("calls onChange callback when field values change", () => {
@@ -65,7 +119,7 @@ describe("FieldSearch Component", () => {
     render(
       <TestWrapper>
         <FieldSearch onChange={mockOnChange} />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     const titleInput = screen.getByLabelText("Search by work title");
@@ -85,7 +139,7 @@ describe("FieldSearch Component", () => {
     render(
       <TestWrapper>
         <FieldSearch onSearch={mockOnSearch} />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     // Add some text to enable the search button
@@ -107,7 +161,7 @@ describe("FieldSearch Component", () => {
     render(
       <TestWrapper>
         <FieldSearch />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     const searchButton = screen.getByRole("button", { name: /search/i });
@@ -118,7 +172,7 @@ describe("FieldSearch Component", () => {
     render(
       <TestWrapper>
         <FieldSearch />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     const titleInput = screen.getByLabelText("Search by work title");
@@ -132,18 +186,22 @@ describe("FieldSearch Component", () => {
     render(
       <TestWrapper>
         <FieldSearch />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     // Initially no clear button
-    expect(screen.queryByRole("button", { name: /clear all/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /clear all/i }),
+    ).not.toBeInTheDocument();
 
     // Add some text
     const titleInput = screen.getByLabelText("Search by work title");
     fireEvent.change(titleInput, { target: { value: "test" } });
 
     // Clear button should appear
-    expect(screen.getByRole("button", { name: /clear all/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /clear all/i }),
+    ).toBeInTheDocument();
   });
 
   it("clears all fields when clear button is clicked", () => {
@@ -152,7 +210,7 @@ describe("FieldSearch Component", () => {
     render(
       <TestWrapper>
         <FieldSearch onChange={mockOnChange} />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     // Add text to multiple fields
@@ -184,7 +242,7 @@ describe("FieldSearch Component", () => {
     render(
       <TestWrapper>
         <FieldSearch initialValues={initialValues} />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     expect(screen.getByDisplayValue("Initial title")).toBeInTheDocument();
@@ -195,7 +253,7 @@ describe("FieldSearch Component", () => {
     render(
       <TestWrapper>
         <FieldSearch isLoading={true} />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     expect(screen.getByLabelText("Search by work title")).toBeDisabled();
@@ -208,9 +266,11 @@ describe("FieldSearch Component", () => {
     render(
       <TestWrapper>
         <FieldSearch showSearchButton={false} />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
-    expect(screen.queryByRole("button", { name: /search/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /search/i }),
+    ).not.toBeInTheDocument();
   });
 });

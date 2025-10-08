@@ -1,66 +1,77 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useNavigate } from '@tanstack/react-router';
-import { MantineProvider } from '@mantine/core';
-import SourceRoute from './$sourceId';
-import { useRawEntityData } from '@/hooks/use-raw-entity-data';
-import { useGraphData } from '@/hooks/use-graph-data';
-import { useEntityDocumentTitle } from '@/hooks/use-document-title';
-import { EntityDetectionService } from '@academic-explorer/graph';
-import { useParams } from '@tanstack/react-router';
-import { setupRouterMocks } from '@/test/utils/router-mocks';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
+import { MantineProvider } from "@mantine/core";
+import { Route as SourceRouteComponent } from "./$sourceId";
+
+// Extract the component from the route
+const SourceRouteComponentComponent = SourceRouteComponent.options.component!;
+import { useRawEntityData } from "@/hooks/use-raw-entity-data";
+import { useGraphData } from "@/hooks/use-graph-data";
+import { useEntityDocumentTitle } from "@/hooks/use-document-title";
+import { EntityDetectionService } from "@academic-explorer/graph";
+import { useParams } from "@tanstack/react-router";
+import { setupRouterMocks } from "@/test/utils/router-mocks";
 
 // Mock hooks
-vi.mock('@/hooks/use-raw-entity-data', () => ({
+vi.mock("@/hooks/use-raw-entity-data", () => ({
   useRawEntityData: vi.fn(),
 }));
 
-vi.mock('@/hooks/use-graph-data', () => ({
+vi.mock("@/hooks/use-graph-data", () => ({
   useGraphData: vi.fn(),
 }));
 
-vi.mock('@/hooks/use-document-title', () => ({
+vi.mock("@/hooks/use-document-title", () => ({
   useEntityDocumentTitle: vi.fn(),
 }));
 
-vi.mock('@academic-explorer/graph', () => ({
+vi.mock("@academic-explorer/graph", () => ({
   EntityDetectionService: {
     detectEntity: vi.fn(),
   },
 }));
 
 // Mock router hooks
-vi.mock('@tanstack/react-router', () => ({
+vi.mock("@tanstack/react-router", () => ({
   useParams: vi.fn(),
   useNavigate: vi.fn(),
 }));
 
 // Mock ViewToggle
-vi.mock('@/ui/components/ViewToggle/ViewToggle', () => ({
+vi.mock("@/ui/components/ViewToggle/ViewToggle", () => ({
   default: ({ viewMode, onToggle, entityType }: any) => (
-    <div data-testid="view-toggle" data-view-mode={viewMode} data-entity-type={entityType}>
-      <button data-testid="toggle-raw" onClick={() => onToggle('raw')}>Raw</button>
-      <button data-testid="toggle-rich" onClick={() => onToggle('rich')}>Rich</button>
+    <div
+      data-testid="view-toggle"
+      data-view-mode={viewMode}
+      data-entity-type={entityType}
+    >
+      <button data-testid="toggle-raw" onClick={() => onToggle("raw")}>
+        Raw
+      </button>
+      <button data-testid="toggle-rich" onClick={() => onToggle("rich")}>
+        Rich
+      </button>
     </div>
   ),
 }));
 
 // Mock useGraphStore for nodeCount
-vi.mock('@/stores/graph-store', () => ({
+vi.mock("@/stores/graph-store", () => ({
   useGraphStore: vi.fn(),
 }));
 
 // Synthetic mock data for source
 const mockSourceData = {
-  id: 'https://openalex.org/S123',
-  display_name: 'Sample Source',
-  issn: '1234-5678',
-  publisher: 'Sample Publisher',
+  id: "https://openalex.org/S123",
+  display_name: "Sample Source",
+  issn: "1234-5678",
+  publisher: "Sample Publisher",
   // ... more fields
 };
 
-describe('SourceRoute Integration Tests', () => {
+describe("SourceRouteComponent Integration Tests", () => {
   let queryClient: QueryClient;
 
   beforeEach(() => {
@@ -74,15 +85,17 @@ describe('SourceRoute Integration Tests', () => {
     setupRouterMocks();
 
     // Mock useParams
-    (useParams as any).mockReturnValue({ sourceId: 'S123' });
+    (useParams as any).mockReturnValue({ sourceId: "S123" });
 
     // Mock useNavigate
     (useNavigate as any).mockReturnValue(vi.fn());
 
     // Mock EntityDetectionService
-    EntityDetectionService.detectEntity.mockReturnValue({
-      entityType: 'sources',
-      normalizedId: 'S123',
+    vi.mocked(EntityDetectionService.detectEntity).mockReturnValue({
+      entityType: "sources",
+      normalizedId: "S123",
+      originalInput: "S123",
+      detectionMethod: "OpenAlex ID",
     });
 
     // Mock useRawEntityData
@@ -103,21 +116,25 @@ describe('SourceRoute Integration Tests', () => {
 
     // Mock useEntityDocumentTitle
     (useEntityDocumentTitle as any).mockImplementation((data) => {
-      document.title = data ? `${data.display_name} - Academic Explorer` : 'Academic Explorer';
+      document.title = data
+        ? `${data.display_name} - Academic Explorer`
+        : "Academic Explorer";
     });
 
     // Mock useGraphStore
-    const mockUseGraphStore = require('@/stores/graph-store').useGraphStore;
-    mockUseGraphStore.mockImplementation((selector) => selector({ totalNodeCount: 0 }));
+    const mockUseGraphStore = require("@/stores/graph-store").useGraphStore;
+    mockUseGraphStore.mockImplementation((selector) =>
+      selector({ totalNodeCount: 0 }),
+    );
   });
 
   afterEach(() => {
     queryClient.clear();
     vi.clearAllMocks();
-    document.title = 'Academic Explorer';
+    document.title = "Academic Explorer";
   });
 
-  it('renders loading state when rawEntityData is loading', () => {
+  it("renders loading state when rawEntityData is loading", () => {
     (useRawEntityData as any).mockReturnValue({
       data: null,
       isLoading: true,
@@ -128,17 +145,17 @@ describe('SourceRoute Integration Tests', () => {
     render(
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
-          <SourceRoute />
+          <SourceRouteComponentComponent />
         </MantineProvider>
-      </QueryClientProvider>
+      </QueryClientProvider>,
     );
 
-    expect(screen.getByText('Loading Source...')).toBeInTheDocument();
-    expect(screen.getByText('Source ID: S123')).toBeInTheDocument();
+    expect(screen.getByText("Loading Source...")).toBeInTheDocument();
+    expect(screen.getByText("Source ID: S123")).toBeInTheDocument();
   });
 
-  it('renders error state with retry button when rawEntityData has error', () => {
-    const mockError = new Error('API Error');
+  it("renders error state with retry button when rawEntityData has error", () => {
+    const mockError = new Error("API Error");
     (useRawEntityData as any).mockReturnValue({
       data: null,
       isLoading: false,
@@ -149,76 +166,95 @@ describe('SourceRoute Integration Tests', () => {
     render(
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
-          <SourceRoute />
+          <SourceRouteComponentComponent />
         </MantineProvider>
-      </QueryClientProvider>
+      </QueryClientProvider>,
     );
 
-    expect(screen.getByText('Error Loading Source')).toBeInTheDocument();
-    expect(screen.getByText('Source ID: S123')).toBeInTheDocument();
+    expect(screen.getByText("Error Loading Source")).toBeInTheDocument();
+    expect(screen.getByText("Source ID: S123")).toBeInTheDocument();
     expect(screen.getByText(`Error: ${mockError.message}`)).toBeInTheDocument();
 
-    const retryButton = screen.getByRole('button', { name: /retry/i });
+    const retryButton = screen.getByRole("button", { name: /retry/i });
     fireEvent.click(retryButton);
     expect((useRawEntityData as any)().refetch).toHaveBeenCalled();
   });
 
-  it('renders ViewToggle and rich view (null content) by default', () => {
+  it("renders ViewToggle and rich view (null content) by default", () => {
     render(
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
-          <SourceRoute />
+          <SourceRouteComponentComponent />
         </MantineProvider>
-      </QueryClientProvider>
+      </QueryClientProvider>,
     );
 
-    expect(screen.getByTestId('view-toggle')).toBeInTheDocument();
-    expect(screen.getByTestId('view-toggle')).toHaveAttribute('data-view-mode', 'rich');
-    expect(screen.getByTestId('view-toggle')).toHaveAttribute('data-entity-type', 'source');
+    expect(screen.getByTestId("view-toggle")).toBeInTheDocument();
+    expect(screen.getByTestId("view-toggle")).toHaveAttribute(
+      "data-view-mode",
+      "rich",
+    );
+    expect(screen.getByTestId("view-toggle")).toHaveAttribute(
+      "data-entity-type",
+      "source",
+    );
 
-    expect(screen.queryByTestId('json-pre')).not.toBeInTheDocument();
+    expect(screen.queryByTestId("json-pre")).not.toBeInTheDocument();
   });
 
-  it('toggles to raw view and renders JSON in <pre>', async () => {
+  it("toggles to raw view and renders JSON in <pre>", async () => {
     render(
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
-          <SourceRoute />
+          <SourceRouteComponentComponent />
         </MantineProvider>
-      </QueryClientProvider>
+      </QueryClientProvider>,
     );
 
-    const rawButton = screen.getByTestId('toggle-raw');
+    const rawButton = screen.getByTestId("toggle-raw");
     fireEvent.click(rawButton);
 
     await waitFor(() => {
-      expect(screen.getByTestId('view-toggle')).toHaveAttribute('data-view-mode', 'raw');
+      expect(screen.getByTestId("view-toggle")).toHaveAttribute(
+        "data-view-mode",
+        "raw",
+      );
     });
 
-    const preElement = screen.getByTestId('json-pre');
+    const preElement = screen.getByTestId("json-pre");
     expect(preElement).toBeInTheDocument();
     expect(preElement).toHaveTextContent(mockSourceData.display_name);
   });
 
-  it('toggles back to rich view and hides JSON', async () => {
+  it("toggles back to rich view and hides JSON", async () => {
     render(
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
-          <SourceRoute />
+          <SourceRouteComponentComponent />
         </MantineProvider>
-      </QueryClientProvider>
+      </QueryClientProvider>,
     );
 
-    fireEvent.click(screen.getByTestId('toggle-raw'));
-    await waitFor(() => expect(screen.getByTestId('view-toggle')).toHaveAttribute('data-view-mode', 'raw'));
+    fireEvent.click(screen.getByTestId("toggle-raw"));
+    await waitFor(() =>
+      expect(screen.getByTestId("view-toggle")).toHaveAttribute(
+        "data-view-mode",
+        "raw",
+      ),
+    );
 
-    fireEvent.click(screen.getByTestId('toggle-rich'));
-    await waitFor(() => expect(screen.getByTestId('view-toggle')).toHaveAttribute('data-view-mode', 'rich'));
+    fireEvent.click(screen.getByTestId("toggle-rich"));
+    await waitFor(() =>
+      expect(screen.getByTestId("view-toggle")).toHaveAttribute(
+        "data-view-mode",
+        "rich",
+      ),
+    );
 
-    expect(screen.queryByTestId('json-pre')).not.toBeInTheDocument();
+    expect(screen.queryByTestId("json-pre")).not.toBeInTheDocument();
   });
 
-  it('does not refetch data on view toggle', async () => {
+  it("does not refetch data on view toggle", async () => {
     const mockRefetch = vi.fn();
     (useRawEntityData as any).mockReturnValue({
       data: mockSourceData,
@@ -230,65 +266,77 @@ describe('SourceRoute Integration Tests', () => {
     render(
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
-          <SourceRoute />
+          <SourceRouteComponentComponent />
         </MantineProvider>
-      </QueryClientProvider>
+      </QueryClientProvider>,
     );
 
     expect(mockRefetch).not.toHaveBeenCalled();
 
-    fireEvent.click(screen.getByTestId('toggle-raw'));
-    await waitFor(() => expect(screen.getByTestId('view-toggle')).toHaveAttribute('data-view-mode', 'raw'));
+    fireEvent.click(screen.getByTestId("toggle-raw"));
+    await waitFor(() =>
+      expect(screen.getByTestId("view-toggle")).toHaveAttribute(
+        "data-view-mode",
+        "raw",
+      ),
+    );
 
     expect(mockRefetch).not.toHaveBeenCalled();
 
-    fireEvent.click(screen.getByTestId('toggle-rich'));
-    await waitFor(() => expect(screen.getByTestId('view-toggle')).toHaveAttribute('data-view-mode', 'rich'));
+    fireEvent.click(screen.getByTestId("toggle-rich"));
+    await waitFor(() =>
+      expect(screen.getByTestId("view-toggle")).toHaveAttribute(
+        "data-view-mode",
+        "rich",
+      ),
+    );
 
     expect(mockRefetch).not.toHaveBeenCalled();
   });
 
-  it('sets document title correctly with entity data', () => {
+  it("sets document title correctly with entity data", () => {
     render(
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
-          <SourceRoute />
+          <SourceRouteComponentComponent />
         </MantineProvider>
-      </QueryClientProvider>
+      </QueryClientProvider>,
     );
 
     expect(useEntityDocumentTitle).toHaveBeenCalledWith(mockSourceData);
-    expect(document.title).toBe('Sample Source - Academic Explorer');
+    expect(document.title).toBe("Sample Source - Academic Explorer");
   });
 
-  it('handles normalization and redirect', async () => {
+  it("handles normalization and redirect", async () => {
     const mockNavigate = vi.fn();
     (useNavigate as any).mockReturnValue(mockNavigate);
 
-    EntityDetectionService.detectEntity.mockReturnValue({
-      entityType: 'sources',
-      normalizedId: 'S456',
+    vi.mocked(EntityDetectionService.detectEntity).mockReturnValue({
+      entityType: "sources",
+      normalizedId: "S456",
+      originalInput: "S456",
+      detectionMethod: "OpenAlex ID",
     });
 
     render(
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
-          <SourceRoute />
+          <SourceRouteComponentComponent />
         </MantineProvider>
-      </QueryClientProvider>
+      </QueryClientProvider>,
     );
 
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith({
-        to: '/sources/$sourceId',
-        params: { sourceId: 'S456' },
+        to: "/sources/$sourceId",
+        params: { sourceId: "S456" },
         search: expect.any(Function),
         replace: true,
       });
     });
   });
 
-  it('loads entity into graph correctly (initial empty graph)', async () => {
+  it("loads entity into graph correctly (initial empty graph)", async () => {
     const mockLoadEntity = vi.fn().mockResolvedValue(undefined);
     (useGraphData as any).mockReturnValue({
       loadEntity: mockLoadEntity,
@@ -297,23 +345,25 @@ describe('SourceRoute Integration Tests', () => {
       error: null,
     });
 
-    const mockUseGraphStore = require('@/stores/graph-store').useGraphStore;
-    mockUseGraphStore.mockImplementation((selector) => selector({ totalNodeCount: 0 }));
+    const mockUseGraphStore = require("@/stores/graph-store").useGraphStore;
+    mockUseGraphStore.mockImplementation((selector) =>
+      selector({ totalNodeCount: 0 }),
+    );
 
     render(
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
-          <SourceRoute />
+          <SourceRouteComponentComponent />
         </MantineProvider>
-      </QueryClientProvider>
+      </QueryClientProvider>,
     );
 
     await waitFor(() => {
-      expect(mockLoadEntity).toHaveBeenCalledWith('S123');
+      expect(mockLoadEntity).toHaveBeenCalledWith("S123");
     });
   });
 
-  it('loads entity into existing graph incrementally', async () => {
+  it("loads entity into existing graph incrementally", async () => {
     const mockLoadEntityIntoGraph = vi.fn().mockResolvedValue(undefined);
     (useGraphData as any).mockReturnValue({
       loadEntity: vi.fn(),
@@ -322,19 +372,21 @@ describe('SourceRoute Integration Tests', () => {
       error: null,
     });
 
-    const mockUseGraphStore = require('@/stores/graph-store').useGraphStore;
-    mockUseGraphStore.mockImplementation((selector) => selector({ totalNodeCount: 5 }));
+    const mockUseGraphStore = require("@/stores/graph-store").useGraphStore;
+    mockUseGraphStore.mockImplementation((selector) =>
+      selector({ totalNodeCount: 5 }),
+    );
 
     render(
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
-          <SourceRoute />
+          <SourceRouteComponentComponent />
         </MantineProvider>
-      </QueryClientProvider>
+      </QueryClientProvider>,
     );
 
     await waitFor(() => {
-      expect(mockLoadEntityIntoGraph).toHaveBeenCalledWith('S123');
+      expect(mockLoadEntityIntoGraph).toHaveBeenCalledWith("S123");
     });
   });
 });

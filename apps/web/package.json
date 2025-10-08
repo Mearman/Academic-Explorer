@@ -25,10 +25,10 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "vitest --project=unit --project=component --coverage",
-    "test:unit": "vitest --project=unit --coverage",
-    "test:component": "vitest --project=component",
-    "test:watch": "vitest --watch --project=unit --project=component --coverage",
+    "test": "vitest --coverage",
+    "test:unit": "vitest --coverage",
+    "test:component": "vitest",
+    "test:watch": "vitest --watch --coverage",
     "clean": "rm -rf dist coverage .nx/cache .tanstack node_modules/.vite"
   },
   "dependencies": {
@@ -68,6 +68,7 @@
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
     "eslint": "^9.36.0",
+    "history": "^5.3.0",
     "jsdom": "^27.0.0",
     "msw": "^2.11.3",
     "tsx": "^4.20.5",

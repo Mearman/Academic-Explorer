@@ -123,6 +123,12 @@ export interface DirectoryIndex {
   files?: Record<string, FileEntry>;
   /** Subdirectories in this directory */
   directories?: Record<string, DirectoryEntry>;
+  /** Aggregated collision statistics from this directory and subdirectories */
+  aggregatedCollisions?: {
+    totalMerged: number;
+    lastCollision?: string;
+    totalWithCollisions: number;
+  };
 }
 
 /**
@@ -233,6 +239,11 @@ export function parseOpenAlexUrl(url: string): ParsedOpenAlexUrl | null {
       "autocomplete",
     ].includes(entityType);
 
+    // Invalid entity types should return null
+    if (!isValidEntityType) {
+      return null;
+    }
+
     // Extract entity ID for single entity URLs
     let entityId: string | undefined;
     if (pathSegments.length === 2 && !urlObj.search) {
@@ -243,7 +254,7 @@ export function parseOpenAlexUrl(url: string): ParsedOpenAlexUrl | null {
       pathSegments,
       isQuery: !!urlObj.search,
       queryString: urlObj.search,
-      entityType: isValidEntityType ? entityType : undefined,
+      entityType,
       entityId,
     };
   } catch (error) {
@@ -260,53 +271,34 @@ export function parseOpenAlexUrl(url: string): ParsedOpenAlexUrl | null {
 export function sanitizeUrlForCaching(urlString: string): string {
   if (!urlString) return urlString;
 
-  try {
-    // Check if this is a path+query string or just a query string
-    const hasPath =
-      urlString.includes("/") && urlString.split("?")[0].includes("/");
-    let path = "";
-    let query = "";
+  // Handle both full URLs with ? and query-only strings
+  const hasPath = urlString.includes("?");
+  let path = "";
+  let query = "";
 
-    if (hasPath) {
-      // Split path and query
-      [path, query] = urlString.split("?", 2);
-    } else {
-      // Just query string
-      query = urlString.startsWith("?") ? urlString.slice(1) : urlString;
+  if (hasPath) {
+    [path, query] = urlString.split("?", 2);
+  } else {
+    query = urlString;
+  }
+
+  // Split by & and filter out sensitive parameters
+  const paramPairs = query.split("&");
+  const filteredParams: string[] = [];
+  for (const param of paramPairs) {
+    const key = param.split("=")[0];
+    if (key !== "api_key" && key !== "mailto") {
+      filteredParams.push(param);
     }
+  }
 
-    if (!query) return path || ""; // No query parameters
+  const sanitizedQuery = filteredParams.join("&");
 
-    const params = new URLSearchParams(query);
-
-    // Remove sensitive parameters completely
-    params.delete("api_key");
-    params.delete("mailto");
-
-    // Return sanitized result
-    const result = params.toString();
-    if (hasPath) {
-      return result ? `${path}?${result}` : path;
-    } else {
-      return result ? `?${result}` : "";
-    }
-  } catch {
-    // Fallback to regex approach if URLSearchParams fails
-    const hasPath =
-      urlString.includes("/") && urlString.split("?")[0].includes("/");
-    return (
-      urlString
-        // Remove API keys completely (handle different positions in query string)
-        .replace(/[?&]api_key=[^&]*/g, "")
-        .replace(/api_key=[^&]*&?/g, "")
-        // Remove email addresses completely
-        .replace(/[?&]mailto=[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}/g, "")
-        .replace(/mailto=[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}&?/g, "")
-        // Clean up any remaining & at start or multiple &
-        .replace(/^[?&]+/, hasPath ? "?" : "")
-        .replace(/&+/g, "&")
-        .replace(/[?&]$/, "")
-    );
+  // Reconstruct the result
+  if (hasPath) {
+    return sanitizedQuery ? `${path}?${sanitizedQuery}` : path;
+  } else {
+    return sanitizedQuery;
   }
 }
 
@@ -737,6 +729,32 @@ export function areUrlsEquivalentForCaching(
 }
 
 /**
+ * Check if a URL would collide with an existing FileEntry (map to the same cache path)
+ * @param entry Existing file entry
+ * @param url URL to check for collision
+ * @param getCacheFilePathFn Function to get cache path (defaults to getCacheFilePath)
+ * @returns true if the URL maps to the same cache path as the entry
+ */
+export function hasCollision(
+  entry: FileEntry,
+  url: string,
+  getCacheFilePathFn = getCacheFilePath,
+): boolean {
+  if (!entry || !url) {
+    return false;
+  }
+
+  const entryPath = getCacheFilePathFn(entry.url, "");
+  const urlPath = getCacheFilePathFn(url, "");
+
+  console.log(
+    `hasCollision: entryPath="${entryPath}", urlPath="${urlPath}", equal=${entryPath === urlPath}`,
+  );
+
+  return entryPath !== null && urlPath !== null && entryPath === urlPath;
+}
+
+/**
  * Type guard to check if a FileEntry supports multiple URLs (has been enhanced)
  */
 export function isMultiUrlFileEntry(entry: unknown): entry is FileEntry & {
@@ -768,36 +786,6 @@ export function isMultiUrlFileEntry(entry: unknown): entry is FileEntry & {
 }
 
 /**
- * Check if a new URL would collide with an existing FileEntry
- * (i.e., maps to the same cache file path after normalization).
- *
- * Collisions occur when different URLs normalize to the same filename due to:
- * - Stripped sensitive parameters (api_key, mailto)
- * - Normalized cursor pagination (all cursors become *)
- * - Alphabetical parameter sorting
- *
- * This function is used during cache writes to detect when a new request
- * should merge with existing data rather than creating a duplicate file.
- *
- * @param existingEntry - The current FileEntry from the index
- * @param newUrl - The incoming URL to check for collision
- * @returns true if the URLs map to the same cache path
- */
-export function hasCollision(
-  existingEntry: FileEntry,
-  newUrl: string,
-): boolean {
-  if (!existingEntry || typeof newUrl !== "string") {
-    return false;
-  }
-
-  const existingPath = getCacheFilePath(existingEntry.url, "");
-  const newPath = getCacheFilePath(newUrl, "");
-
-  return existingPath === newPath;
-}
-
-/**
  * Merge a new colliding URL into an existing FileEntry
  * Updates equivalentUrls, timestamps, and collision statistics
  * @param currentTime Optional current timestamp; defaults to now
@@ -826,20 +814,6 @@ export function mergeCollision(
         entry.collisionInfo.firstCollision = currentTime;
       }
     }
-  }
-
-  // Debug: show state before sorting to help triage ordering issues in tests
-  try {
-    // eslint-disable-next-line no-console
-    console.log(
-      "[cache-utilities debug] beforeSort",
-      JSON.stringify({
-        equivalentUrls: entry.equivalentUrls,
-        urlTimestamps: entry.urlTimestamps,
-      }),
-    );
-  } catch (e) {
-    void e;
   }
 
   // Keep equivalentUrls ordered by recency (most recent first) when we have timestamps.
@@ -920,25 +894,6 @@ export function mergeCollision(
     // ignore dedupe errors
   }
 
-  // Targeted debug: when we have grown to multiple equivalent URLs, print ordering to help tests
-  try {
-    if (
-      Array.isArray(entry.equivalentUrls) &&
-      entry.equivalentUrls.length >= 4
-    ) {
-      // eslint-disable-next-line no-console
-      console.log(
-        "[cache-utilities debug] ordering",
-        JSON.stringify({
-          equivalentUrls: entry.equivalentUrls,
-          urlTimestamps: entry.urlTimestamps,
-        }),
-      );
-    }
-  } catch {
-    // ignore
-  }
-
   return entry;
 }
 
@@ -1016,7 +971,10 @@ export function migrateToMultiUrl(entry: FileEntry): FileEntry {
  * Checks equivalentUrls[0] === url and that all URLs map to the same cache path
  * Logs warnings for any issues found
  */
-export function validateFileEntry(entry: FileEntry): boolean {
+export function validateFileEntry(
+  entry: FileEntry,
+  getCacheFilePathFn = getCacheFilePath,
+): boolean {
   if (!isMultiUrlFileEntry(entry)) {
     // Legacy entries are considered valid
     return true;
@@ -1032,10 +990,10 @@ export function validateFileEntry(entry: FileEntry): boolean {
   }
 
   // Validate all equivalent URLs normalize to the same cache path
-  const basePath = getCacheFilePath(entry.url, "");
+  const basePath = getCacheFilePathFn(entry.url, "");
   if (basePath) {
     for (const url of entry.equivalentUrls) {
-      const urlPath = getCacheFilePath(url, "");
+      const urlPath = getCacheFilePathFn(url, "");
       if (urlPath !== basePath) {
         errors.push(
           `URL '${url}' maps to '${urlPath}' but expected '${basePath}'`,

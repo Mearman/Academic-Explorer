@@ -3,15 +3,16 @@
  * Provides consistent mocking patterns for Zustand stores
  */
 
-import { vi } from 'vitest';
-import type { StateCreator } from 'zustand';
+import { vi } from "vitest";
+import type { StateCreator } from "zustand";
+import React from "react";
 
 /**
  * Creates a mock Zustand store for testing
  * Provides a consistent way to mock store state and actions
  */
 export function createMockStore<T extends Record<string, unknown>>(
-  initialState: Partial<T> = {}
+  initialState: Partial<T> = {},
 ): T & {
   __mockReset: () => void;
   __mockUpdate: (update: Partial<T>) => void;
@@ -20,16 +21,16 @@ export function createMockStore<T extends Record<string, unknown>>(
 
   const mockStore = new Proxy(state, {
     get(target, prop) {
-      if (prop === '__mockReset') {
+      if (prop === "__mockReset") {
         return () => {
-          Object.keys(target).forEach(key => {
+          Object.keys(target).forEach((key) => {
             delete (target as any)[key];
           });
           Object.assign(target, initialState);
         };
       }
 
-      if (prop === '__mockUpdate') {
+      if (prop === "__mockUpdate") {
         return (update: Partial<T>) => {
           Object.assign(target, update);
         };
@@ -40,7 +41,7 @@ export function createMockStore<T extends Record<string, unknown>>(
     set(target, prop, value) {
       (target as any)[prop] = value;
       return true;
-    }
+    },
   });
 
   return mockStore as T & {
@@ -52,72 +53,76 @@ export function createMockStore<T extends Record<string, unknown>>(
 /**
  * Mock graph store with common test state
  */
-export const createMockGraphStore = () => createMockStore({
-  nodes: new Map(),
-  edges: new Map(),
-  selectedNodeId: null,
-  currentLayout: {
-    entityType: 'd3-force' as const,
-    options: {}
-  },
-  addNode: vi.fn(),
-  removeNode: vi.fn(),
-  updateNode: vi.fn(),
-  addEdge: vi.fn(),
-  removeEdge: vi.fn(),
-  setSelectedNode: vi.fn(),
-  setLayout: vi.fn(),
-  clearGraph: vi.fn(),
-  resetToInitialState: vi.fn()
-});
+export const createMockGraphStore = () =>
+  createMockStore({
+    nodes: new Map(),
+    edges: new Map(),
+    selectedNodeId: null,
+    currentLayout: {
+      entityType: "d3-force" as const,
+      options: {},
+    },
+    addNode: vi.fn(),
+    removeNode: vi.fn(),
+    updateNode: vi.fn(),
+    addEdge: vi.fn(),
+    removeEdge: vi.fn(),
+    setSelectedNode: vi.fn(),
+    setLayout: vi.fn(),
+    clearGraph: vi.fn(),
+    resetToInitialState: vi.fn(),
+  });
 
 /**
  * Mock layout store with common test state
  */
-export const createMockLayoutStore = () => createMockStore({
-  animationEnabled: true,
-  autoLayout: false,
-  layoutType: 'd3-force' as const,
-  isRunning: false,
-  iterations: 0,
-  maxIterations: 100,
-  toggleAnimation: vi.fn(),
-  setAutoLayout: vi.fn(),
-  setLayoutType: vi.fn(),
-  startLayout: vi.fn(),
-  stopLayout: vi.fn(),
-  resetLayout: vi.fn()
-});
+export const createMockLayoutStore = () =>
+  createMockStore({
+    animationEnabled: true,
+    autoLayout: false,
+    layoutType: "d3-force" as const,
+    isRunning: false,
+    iterations: 0,
+    maxIterations: 100,
+    toggleAnimation: vi.fn(),
+    setAutoLayout: vi.fn(),
+    setLayoutType: vi.fn(),
+    startLayout: vi.fn(),
+    stopLayout: vi.fn(),
+    resetLayout: vi.fn(),
+  });
 
 /**
  * Mock settings store with common test state
  */
-export const createMockSettingsStore = () => createMockStore({
-  theme: 'light' as const,
-  language: 'en',
-  autoSave: true,
-  enableNotifications: true,
-  setTheme: vi.fn(),
-  setLanguage: vi.fn(),
-  setAutoSave: vi.fn(),
-  setEnableNotifications: vi.fn(),
-  resetSettings: vi.fn()
-});
+export const createMockSettingsStore = () =>
+  createMockStore({
+    theme: "light" as const,
+    language: "en",
+    autoSave: true,
+    enableNotifications: true,
+    setTheme: vi.fn(),
+    setLanguage: vi.fn(),
+    setAutoSave: vi.fn(),
+    setEnableNotifications: vi.fn(),
+    resetSettings: vi.fn(),
+  });
 
 /**
  * Mock expansion settings store with common test state
  */
-export const createMockExpansionSettingsStore = () => createMockStore({
-  maxDepth: 2,
-  maxNodes: 100,
-  enableAutoExpansion: false,
-  expansionDelay: 1000,
-  setMaxDepth: vi.fn(),
-  setMaxNodes: vi.fn(),
-  setEnableAutoExpansion: vi.fn(),
-  setExpansionDelay: vi.fn(),
-  resetToDefaults: vi.fn()
-});
+export const createMockExpansionSettingsStore = () =>
+  createMockStore({
+    maxDepth: 2,
+    maxNodes: 100,
+    enableAutoExpansion: false,
+    expansionDelay: 1000,
+    setMaxDepth: vi.fn(),
+    setMaxNodes: vi.fn(),
+    setEnableAutoExpansion: vi.fn(),
+    setExpansionDelay: vi.fn(),
+    resetToDefaults: vi.fn(),
+  });
 
 /**
  * Utility to mock a store module completely
@@ -125,7 +130,8 @@ export const createMockExpansionSettingsStore = () => createMockStore({
  */
 export function mockStoreModule<T>(storeName: string, mockStore: T): void {
   vi.doMock(`@/stores/${storeName}`, () => ({
-    [`use${storeName.charAt(0).toUpperCase() + storeName.slice(1)}`]: () => mockStore
+    [`use${storeName.charAt(0).toUpperCase() + storeName.slice(1)}`]: () =>
+      mockStore,
   }));
 }
 
@@ -139,32 +145,34 @@ export function withMockStores<P extends Record<string, unknown>>(
     graphStore?: ReturnType<typeof createMockGraphStore>;
     layoutStore?: ReturnType<typeof createMockLayoutStore>;
     settingsStore?: ReturnType<typeof createMockSettingsStore>;
-    expansionSettingsStore?: ReturnType<typeof createMockExpansionSettingsStore>;
-  }
+    expansionSettingsStore?: ReturnType<
+      typeof createMockExpansionSettingsStore
+    >;
+  },
 ) {
   return function MockedComponent(props: P) {
     // Mock stores before rendering
     if (stores?.graphStore) {
-      vi.doMock('@/stores/graph-store', () => ({
-        useGraphStore: () => stores.graphStore
+      vi.doMock("@/stores/graph-store", () => ({
+        useGraphStore: () => stores.graphStore,
       }));
     }
 
     if (stores?.layoutStore) {
-      vi.doMock('@/stores/layout-store', () => ({
-        useLayoutStore: () => stores.layoutStore
+      vi.doMock("@/stores/layout-store", () => ({
+        useLayoutStore: () => stores.layoutStore,
       }));
     }
 
     if (stores?.settingsStore) {
-      vi.doMock('@/stores/settings-store', () => ({
-        useSettingsStore: () => stores.settingsStore
+      vi.doMock("@/stores/settings-store", () => ({
+        useSettingsStore: () => stores.settingsStore,
       }));
     }
 
     if (stores?.expansionSettingsStore) {
-      vi.doMock('@/stores/expansion-settings-store', () => ({
-        useExpansionSettingsStore: () => stores.expansionSettingsStore
+      vi.doMock("@/stores/expansion-settings-store", () => ({
+        useExpansionSettingsStore: () => stores.expansionSettingsStore,
       }));
     }
 
@@ -177,5 +185,5 @@ export function withMockStores<P extends Record<string, unknown>>(
  * Call this in beforeEach to ensure clean test state
  */
 export function resetMockStores(...stores: Array<{ __mockReset: () => void }>) {
-  stores.forEach(store => store.__mockReset());
+  stores.forEach((store) => store.__mockReset());
 }

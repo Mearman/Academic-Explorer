@@ -60,6 +60,7 @@ describe("Cache Population Integration Tests", () => {
       ],
       server: {
         port: DEV_SERVER_PORT,
+        host: "127.0.0.1",
       },
     });
 
@@ -382,8 +383,8 @@ describe("Cache Population Integration Tests", () => {
     it("should serve cached responses on subsequent requests", async () => {
       console.log("🔄 Testing cache hit behavior...");
 
-      // Use a simple entity that we know exists
-      const testPath = "works/W2741809807?select=id,display_name";
+      // Use a simple entity that we know exists and is cached
+      const testPath = "works/W123456789";
       const testUrl = `${BASE_URL}/api/openalex/${testPath}`;
 
       // First request - should populate cache

@@ -9,10 +9,6 @@ import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { EntityDetectionService } from "@academic-explorer/graph";
 
-export const Route = createFileRoute("/institutions/$institutionId")({
-  component: InstitutionRoute,
-});
-
 function InstitutionRoute() {
   const { institutionId } = Route.useParams();
   const navigate = useNavigate();
@@ -155,3 +151,9 @@ function InstitutionRoute() {
     </div>
   );
 }
+
+export const Route = createFileRoute("/institutions/$institutionId")({
+  component: InstitutionRoute,
+});
+
+export default InstitutionRoute;

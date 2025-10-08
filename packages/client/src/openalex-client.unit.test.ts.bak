@@ -2,7 +2,7 @@
  * Comprehensive unit tests for OpenAlexClient class
  */
 
-import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
+import { describe, it, expect, vi, beforeEach, type Mock, type Mocked } from "vitest";
 import { OpenAlexClient, createOpenAlexClient, openAlex } from "./openalex-client";
 import { OpenAlexBaseClient } from "./client";
 import { WorksApi } from "./entities/works";
@@ -42,16 +42,16 @@ vi.mock("./utils/query-builder");
 
 describe("OpenAlexClient", () => {
 	let client: OpenAlexClient;
-	let mockBaseClient: vi.Mocked<OpenAlexBaseClient>;
-	let mockWorksApi: vi.Mocked<WorksApi>;
-	let mockAuthorsApi: vi.Mocked<AuthorsApi>;
-	let mockSourcesApi: vi.Mocked<SourcesApi>;
-	let mockInstitutionsApi: vi.Mocked<InstitutionsApi>;
-	let mockTopicsApi: vi.Mocked<TopicsApi>;
-	let mockPublishersApi: vi.Mocked<PublishersApi>;
-	let mockFundersApi: vi.Mocked<FundersApi>;
-	let mockKeywordsApi: vi.Mocked<KeywordsApi>;
-	let mockAutocompleteApi: vi.Mocked<AutocompleteApi>;
+	let mockBaseClient: Mocked<OpenAlexBaseClient>;
+	let mockWorksApi: Mocked<WorksApi>;
+	let mockAuthorsApi: Mocked<AuthorsApi>;
+	let mockSourcesApi: Mocked<SourcesApi>;
+	let mockInstitutionsApi: Mocked<InstitutionsApi>;
+	let mockTopicsApi: Mocked<TopicsApi>;
+	let mockPublishersApi: Mocked<PublishersApi>;
+	let mockFundersApi: Mocked<FundersApi>;
+	let mockKeywordsApi: Mocked<KeywordsApi>;
+	let mockAutocompleteApi: Mocked<AutocompleteApi>;
 
 	beforeEach(() => {
 		// Create mocked base client

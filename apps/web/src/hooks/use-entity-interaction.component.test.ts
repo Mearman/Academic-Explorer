@@ -1,14 +1,15 @@
 /**
  * Unit tests for useEntityInteraction hook
  * Tests entity interaction logic for graph nodes and sidebar entities
+ * @vitest-environment jsdom
  */
 
 import type { GraphNode } from "@academic-explorer/graph";
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
-    INTERACTION_PRESETS,
-    useEntityInteraction,
+  INTERACTION_PRESETS,
+  useEntityInteraction,
 } from "./use-entity-interaction";
 
 // Mock dependencies with factory functions
@@ -36,18 +37,108 @@ vi.mock("@academic-explorer/utils/logger", () => ({
 }));
 
 const mockGraphStore = {
+  // Core state
   nodes: {} as Record<string, any>,
+  edges: {} as Record<string, any>,
+  isLoading: false,
+  error: null,
+
+  // Essential methods
+  addNode: vi.fn(),
+  addNodes: vi.fn(),
+  addEdge: vi.fn(),
+  addEdges: vi.fn(),
+  removeNode: vi.fn(),
+  removeEdge: vi.fn(),
+  updateNode: vi.fn(),
+  getNode: vi.fn(),
+  setLoading: vi.fn(),
+  setError: vi.fn(),
+  clear: vi.fn(),
+  setGraphData: vi.fn(),
+
+  // Selection and interaction
   selectedNodeId: null as string | null,
+  hoveredNodeId: null,
+  selectedNodes: {},
   selectNode: vi.fn().mockImplementation((nodeId: string | null) => {
     // Simulate state guard behavior - only update if different
     if (mockGraphStore.selectedNodeId !== nodeId) {
       mockGraphStore.selectedNodeId = nodeId;
     }
   }),
+  hoverNode: vi.fn(),
+  addToSelection: vi.fn(),
+  removeFromSelection: vi.fn(),
+  clearSelection: vi.fn(),
+
+  // Pinning system
+  pinnedNodes: {},
   pinNode: vi.fn(),
+  unpinNode: vi.fn(),
   clearAllPinnedNodes: vi.fn(),
+  isPinned: vi.fn(),
+
+  // Layout system
+  currentLayout: {} as any,
+  setLayout: vi.fn(),
+  applyCurrentLayout: vi.fn(),
+
+  // Visibility state
+  visibleEntityTypes: {} as any,
+  visibleEdgeTypes: {} as any,
+  toggleEntityTypeVisibility: vi.fn(),
+  toggleEdgeTypeVisibility: vi.fn(),
+  setEntityTypeVisibility: vi.fn(),
+  setEdgeTypeVisibility: vi.fn(),
+  setAllEntityTypesVisible: vi.fn(),
+  resetEntityTypesToDefaults: vi.fn(),
+  getEntityTypeStats: vi.fn(),
+  getVisibleNodes: vi.fn(),
+
+  // Cache settings
+  showAllCachedNodes: false,
+  setShowAllCachedNodes: vi.fn(),
+  traversalDepth: 1,
+  setTraversalDepth: vi.fn(),
+
+  // Statistics
+  totalNodeCount: 0,
+  totalEdgeCount: 0,
+  entityTypeStats: {} as any,
+  edgeTypeStats: {} as any,
+  lastSearchStats: {},
+  updateSearchStats: vi.fn(),
+
+  // Node state management
+  markNodeAsLoading: vi.fn(),
+  markNodeAsLoaded: vi.fn(),
+  markNodeAsError: vi.fn(),
+  calculateNodeDepths: vi.fn(),
+  getMinimalNodes: vi.fn(),
+  getNodesWithinDepth: vi.fn(),
+  nodeDepths: {},
+
+  // Graph algorithms
+  getNeighbors: vi.fn(),
+  getConnectedEdges: vi.fn(),
+  findShortestPath: vi.fn(),
+  getConnectedComponent: vi.fn(),
+
+  // Computed getters
+  cachedVisibleNodes: [],
+
+  // Provider reference
+  provider: null,
+  providerType: null,
+  setProvider: vi.fn(),
+  setProviderType: vi.fn(),
+
+  // Hydration state
+  hasPlaceholderOrLoadingNodes: vi.fn(),
+
   getState: vi.fn(),
-};
+} as any;
 
 const mockLayoutStore = {
   previewEntityId: null as string | null,
@@ -61,8 +152,17 @@ const mockLayoutStore = {
 };
 
 const mockGraphData = {
+  loadEntity: vi.fn(),
   loadEntityIntoGraph: vi.fn(),
+  loadEntityIntoRepository: vi.fn(),
+  loadAllCachedNodes: vi.fn(),
   expandNode: vi.fn(),
+  expandAllNodesOfType: vi.fn(),
+  search: vi.fn(),
+  clearGraph: vi.fn(),
+  hydrateNode: vi.fn(),
+  isLoading: false,
+  error: null,
 };
 
 const mockLogger = {
@@ -86,8 +186,8 @@ describe("useEntityInteraction", () => {
     entityId,
     entityType: "works",
     label: "Test Work",
-    x: 100,  // Direct x coordinate
-    y: 200,  // Direct y coordinate
+    x: 100, // Direct x coordinate
+    y: 200, // Direct y coordinate
     externalIds: [],
     entityData: entityData ?? {
       id: entityId,

@@ -8,10 +8,6 @@ import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
 
-export const Route = createFileRoute("/topics/$topicId")({
-  component: TopicRoute,
-});
-
 function TopicRoute() {
   const { topicId } = Route.useParams();
   const navigate = useNavigate();
@@ -125,3 +121,9 @@ function TopicRoute() {
     </div>
   );
 }
+
+export const Route = createFileRoute("/topics/$topicId")({
+  component: TopicRoute,
+});
+
+export default TopicRoute;

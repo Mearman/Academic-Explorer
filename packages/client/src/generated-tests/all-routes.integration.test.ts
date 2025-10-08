@@ -12,7 +12,7 @@
  */
 
 import { describe, it, expect, beforeAll } from "vitest";
-import { cachedOpenAlex } from "@academic-explorer/client";
+import { cachedOpenAlex, OpenAlexBaseClient } from "@academic-explorer/client";
 import { WorksApi } from "../entities/works";
 import { AuthorsApi } from "../entities/authors";
 import { SourcesApi } from "../entities/sources";

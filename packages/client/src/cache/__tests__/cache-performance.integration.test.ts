@@ -62,7 +62,7 @@ interface PerformanceCacheEntry {
 }
 
 interface PerformanceMetrics {
-  operationType: "read" | "write" | "batch" | "clear";
+  operationType: "read" | "write" | "batch" | "batch-read" | "clear";
   duration: number;
   itemCount: number;
   dataSize: number;
@@ -237,7 +237,7 @@ class MockHighPerformanceCache {
     } catch (error) {
       const duration = performance.now() - startTime;
       this.recordMetric({
-        operationType: "batch",
+        operationType: "batch-read",
         duration,
         itemCount: keys.length,
         dataSize: 0,
@@ -277,7 +277,7 @@ class MockHighPerformanceCache {
         duration,
         itemCount: entries.size,
         dataSize: totalSize,
-        cacheHit: false,
+        cacheHit: true,
         memoryUsage: this.getCurrentMemoryUsage(),
       });
     } catch (error) {

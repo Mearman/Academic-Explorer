@@ -11,25 +11,36 @@ import { createLocalEventBus } from "@academic-explorer/graph";
 // import { useUnifiedTaskSystem } from "@academic-explorer/graph"; // Disabled - using stub implementation
 import type {
   ForceSimulationConfig,
-  ForceSimulationNode
+  ForceSimulationNode,
 } from "@academic-explorer/graph";
-import type { SimulationLink, NodePosition } from "@academic-explorer/simulation/types";
+import type {
+  SimulationLink,
+  NodePosition,
+} from "@academic-explorer/simulation";
 import type { GraphNode, GraphEdge } from "@academic-explorer/graph";
 
 // Type guards for safe event handling
-function isEventWithPayload(event: unknown): event is { payload: Record<string, unknown> } {
-  return typeof event === "object" &&
-         event !== null &&
-         "payload" in event &&
-         typeof (event as { payload: unknown }).payload === "object" &&
-         (event as { payload: unknown }).payload !== null;
+function isEventWithPayload(
+  event: unknown,
+): event is { payload: Record<string, unknown> } {
+  return (
+    typeof event === "object" &&
+    event !== null &&
+    "payload" in event &&
+    typeof (event as { payload: unknown }).payload === "object" &&
+    (event as { payload: unknown }).payload !== null
+  );
 }
 
-function isPayloadWithResult(payload: Record<string, unknown>): payload is { result: unknown } {
+function isPayloadWithResult(
+  payload: Record<string, unknown>,
+): payload is { result: unknown } {
   return "result" in payload;
 }
 
-function isPayloadWithError(payload: Record<string, unknown>): payload is { error: unknown; id?: string } {
+function isPayloadWithError(
+  payload: Record<string, unknown>,
+): payload is { error: unknown; id?: string } {
   return "error" in payload;
 }
 
@@ -65,19 +76,21 @@ const ForceSimulationCompleteSchema = z.object({
 
 const ForceSimulationCompleteEnvelopeSchema = z.object({
   id: z.string().optional(),
-  result: ForceSimulationCompleteSchema
+  result: ForceSimulationCompleteSchema,
 });
 
-const ForceSimulationControlAckSchema = z.object({
-  entityType: z.literal("FORCE_SIMULATION_CONTROL_ACK"),
-  action: z.string(),
-  status: z.string().optional(),
-  timestamp: z.number().optional()
-}).strict();
+const ForceSimulationControlAckSchema = z
+  .object({
+    entityType: z.literal("FORCE_SIMULATION_CONTROL_ACK"),
+    action: z.string(),
+    status: z.string().optional(),
+    timestamp: z.number().optional(),
+  })
+  .strict();
 
 const ForceSimulationControlAckEnvelopeSchema = z.object({
   id: z.string().optional(),
-  result: ForceSimulationControlAckSchema
+  result: ForceSimulationControlAckSchema,
 });
 
 interface AnimationState {
@@ -105,17 +118,20 @@ interface UseUnifiedExecutionWorkerOptions {
   onPositionUpdate?: (positions: NodePosition[]) => void;
   onAnimationComplete?: (
     positions: NodePosition[],
-    stats: { totalIterations: number; finalAlpha: number; reason: string }
+    stats: { totalIterations: number; finalAlpha: number; reason: string },
   ) => void;
   onAnimationError?: (error: string) => void;
 
   // Data fetching callbacks
-  onExpansionProgress?: (nodeId: string, progress: { completed: number; total: number; stage: string }) => void;
+  onExpansionProgress?: (
+    nodeId: string,
+    progress: { completed: number; total: number; stage: string },
+  ) => void;
   onExpansionComplete?: (result: {
     requestId: string;
     nodes: GraphNode[];
     edges: GraphEdge[];
-    statistics?: unknown
+    statistics?: unknown;
   }) => void;
   onExpansionError?: (nodeId: string, error: string) => void;
 
@@ -163,7 +179,9 @@ interface _TaskSystem {
   shutdown(): Promise<void>;
 }
 
-export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOptions = {}) {
+export function useUnifiedExecutionWorker(
+  options: UseUnifiedExecutionWorkerOptions = {},
+) {
   const {
     onPositionUpdate,
     onAnimationComplete,
@@ -173,33 +191,40 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
     executionMode: _executionMode = "auto",
     enableWorkerFallback: _enableWorkerFallback = true,
     maxConcurrency = 2,
-    progressThrottleMs: _progressThrottleMs = 16
+    progressThrottleMs: _progressThrottleMs = 16,
   } = options;
 
   // Create event bus
   const [bus] = useState(() => createLocalEventBus());
 
   // Worker module path
-  const _workerModulePath = new URL("../workers/background.worker.ts", import.meta.url).href;
+  const _workerModulePath = new URL(
+    "../workers/background.worker.ts",
+    import.meta.url,
+  ).href;
 
   // Create unified task system (stub implementation)
-  const taskSystem: _TaskSystem = useMemo(() => ({
-    submitTask: () => Promise.resolve("stub-task-id"),
-    cancelTask: async () => {},
-    getExecutionMode: () => "main-thread",
-    getStats: () => Promise.resolve({
-      queueLength: 0,
-      activeTasks: 0,
-      processing: false,
-      maxConcurrency,
-      strategyMode: "main-thread",
-      supportsWorkers: false,
-      initialized: true
+  const taskSystem: _TaskSystem = useMemo(
+    () => ({
+      submitTask: () => Promise.resolve("stub-task-id"),
+      cancelTask: async () => {},
+      getExecutionMode: () => "main-thread",
+      getStats: () =>
+        Promise.resolve({
+          queueLength: 0,
+          activeTasks: 0,
+          processing: false,
+          maxConcurrency,
+          strategyMode: "main-thread",
+          supportsWorkers: false,
+          initialized: true,
+        }),
+      isUsingWorkers: () => false,
+      isInitialized: () => true,
+      shutdown: async () => {},
     }),
-    isUsingWorkers: () => false,
-    isInitialized: () => true,
-    shutdown: async () => {}
-  }), [maxConcurrency]);
+    [maxConcurrency],
+  );
 
   // State management
   const [animationState, setAnimationState] = useState<AnimationState>({
@@ -210,19 +235,20 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
     progress: 0,
     fps: 0,
     nodeCount: 0,
-    linkCount: 0
+    linkCount: 0,
   });
 
   const [nodePositions, _setNodePositions] = useState<NodePosition[]>([]);
   const nodePositionsRef = useRef<NodePosition[]>([]);
-  const [performanceMetrics, setPerformanceMetrics] = useState<PerformanceMetrics>({
-    averageFPS: 0,
-    minFPS: Infinity,
-    maxFPS: 0,
-    frameCount: 0,
-    totalAnimationTime: 0,
-    averageResponseTime: 0
-  });
+  const [performanceMetrics, setPerformanceMetrics] =
+    useState<PerformanceMetrics>({
+      averageFPS: 0,
+      minFPS: Infinity,
+      maxFPS: 0,
+      frameCount: 0,
+      totalAnimationTime: 0,
+      averageResponseTime: 0,
+    });
 
   // Refs for tracking
   const isAnimatingRef = useRef(false);
@@ -242,134 +268,172 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
   }, []);
 
   // Event handlers (reuse from original hook with minor adjustments)
-  const handleForceSimulationProgress = useCallback((payload: unknown) => {
-    const validationResult = ForceSimulationProgressSchema.safeParse(payload);
-    if (!validationResult.success) {
-      logger.warn("execution", "Invalid force simulation progress payload", { payload, error: validationResult.error });
-      return;
-    }
+  const handleForceSimulationProgress = useCallback(
+    (payload: unknown) => {
+      const validationResult = ForceSimulationProgressSchema.safeParse(payload);
+      if (!validationResult.success) {
+        logger.warn("execution", "Invalid force simulation progress payload", {
+          payload,
+          error: validationResult.error,
+        });
+        return;
+      }
 
-    const { messageType, alpha, iteration, positions, fps, nodeCount, linkCount, progress, id } = validationResult.data;
+      const {
+        messageType,
+        alpha,
+        iteration,
+        positions,
+        fps,
+        nodeCount,
+        linkCount,
+        progress,
+        id,
+      } = validationResult.data;
 
-    if (id) {
-      addActiveTask(id);
-    }
+      if (id) {
+        addActiveTask(id);
+      }
 
-    switch (messageType) {
-      case "started":
-        isAnimatingRef.current = true;
-        animationStartTimeRef.current = Date.now();
-        setAnimationState(prev => ({
-          ...prev,
-          isRunning: true,
-          isPaused: false,
-          nodeCount: nodeCount ?? 0,
-          linkCount: linkCount ?? 0
-        }));
-        break;
-
-       case "tick":
-         if (Array.isArray(positions) && typeof alpha === "number" && typeof iteration === "number" && typeof progress === "number") {
-          // Update position reference and notify via callback
-          nodePositionsRef.current = positions.map(pos => ({ ...pos }));
-          onPositionUpdate?.(positions);
-
-          setAnimationState(prev => ({
+      switch (messageType) {
+        case "started":
+          isAnimatingRef.current = true;
+          animationStartTimeRef.current = Date.now();
+          setAnimationState((prev) => ({
             ...prev,
-            alpha,
-            iteration,
-            progress,
-            fps: fps ?? prev.fps
+            isRunning: true,
+            isPaused: false,
+            nodeCount: nodeCount ?? 0,
+            linkCount: linkCount ?? 0,
           }));
+          break;
 
-          if (fps) {
-            setPerformanceMetrics(prev => ({
-              averageFPS: (prev.averageFPS * prev.frameCount + fps) / (prev.frameCount + 1),
-              minFPS: Math.min(prev.minFPS, fps),
-              maxFPS: Math.max(prev.maxFPS, fps),
-              frameCount: prev.frameCount + 1,
-              totalAnimationTime: Date.now() - animationStartTimeRef.current,
-              averageResponseTime: prev.averageResponseTime
+        case "tick":
+          if (
+            Array.isArray(positions) &&
+            typeof alpha === "number" &&
+            typeof iteration === "number" &&
+            typeof progress === "number"
+          ) {
+            // Update position reference and notify via callback
+            nodePositionsRef.current = positions.map((pos) => ({ ...pos }));
+            onPositionUpdate?.(positions);
+
+            setAnimationState((prev) => ({
+              ...prev,
+              alpha,
+              iteration,
+              progress,
+              fps: fps ?? prev.fps,
             }));
+
+            if (fps) {
+              setPerformanceMetrics((prev) => ({
+                averageFPS:
+                  (prev.averageFPS * prev.frameCount + fps) /
+                  (prev.frameCount + 1),
+                minFPS: Math.min(prev.minFPS, fps),
+                maxFPS: Math.max(prev.maxFPS, fps),
+                frameCount: prev.frameCount + 1,
+                totalAnimationTime: Date.now() - animationStartTimeRef.current,
+                averageResponseTime: prev.averageResponseTime,
+              }));
+            }
+          }
+          break;
+
+        case "paused":
+          setAnimationState((prev) => ({ ...prev, isPaused: true }));
+          break;
+
+        case "resumed":
+          setAnimationState((prev) => ({ ...prev, isPaused: false }));
+          break;
+      }
+    },
+    [addActiveTask, onPositionUpdate],
+  );
+
+  const handleForceSimulationComplete = useCallback(
+    (payload: unknown) => {
+      const ackResult =
+        ForceSimulationControlAckEnvelopeSchema.safeParse(payload);
+      if (ackResult.success) {
+        const ackId = ackResult.data.id;
+        if (ackId) {
+          removeActiveTask(ackId);
+          if (currentTaskRef.current === ackId) {
+            currentTaskRef.current = null;
           }
         }
-        break;
+        return;
+      }
 
-      case "paused":
-        setAnimationState(prev => ({ ...prev, isPaused: true }));
-        break;
+      const envelopeResult =
+        ForceSimulationCompleteEnvelopeSchema.safeParse(payload);
+      if (!envelopeResult.success) {
+        logger.warn("execution", "Invalid force simulation complete payload", {
+          payload,
+          error: envelopeResult.error,
+        });
+        return;
+      }
 
-      case "resumed":
-        setAnimationState(prev => ({ ...prev, isPaused: false }));
-        break;
-    }
-  }, [addActiveTask, onPositionUpdate]);
+      const { id, result } = envelopeResult.data;
 
-  const handleForceSimulationComplete = useCallback((payload: unknown) => {
-    const ackResult = ForceSimulationControlAckEnvelopeSchema.safeParse(payload);
-    if (ackResult.success) {
-      const ackId = ackResult.data.id;
-      if (ackId) {
-        removeActiveTask(ackId);
-        if (currentTaskRef.current === ackId) {
+      if (id) {
+        removeActiveTask(id);
+        if (currentTaskRef.current === id) {
           currentTaskRef.current = null;
         }
       }
-      return;
-    }
 
-    const envelopeResult = ForceSimulationCompleteEnvelopeSchema.safeParse(payload);
-    if (!envelopeResult.success) {
-      logger.warn("execution", "Invalid force simulation complete payload", { payload, error: envelopeResult.error });
-      return;
-    }
+      const { positions, totalIterations, finalAlpha, reason } = result;
 
-    const { id, result } = envelopeResult.data;
-
-    if (id) {
-      removeActiveTask(id);
-      if (currentTaskRef.current === id) {
+      isAnimatingRef.current = false;
+      if (!id) {
         currentTaskRef.current = null;
       }
-    }
 
-    const { positions, totalIterations, finalAlpha, reason } = result;
+      if (progressThrottleRef.current) {
+        clearTimeout(progressThrottleRef.current);
+        progressThrottleRef.current = null;
+      }
 
-    isAnimatingRef.current = false;
-    if (!id) {
-      currentTaskRef.current = null;
-    }
+      if (Array.isArray(positions)) {
+        nodePositionsRef.current = positions.map((pos) => ({ ...pos }));
+        onPositionUpdate?.(positions);
+        onAnimationComplete?.(positions, {
+          totalIterations,
+          finalAlpha,
+          reason,
+        });
+      }
 
-    if (progressThrottleRef.current) {
-      clearTimeout(progressThrottleRef.current);
-      progressThrottleRef.current = null;
-    }
+      setAnimationState((prev) => ({
+        ...prev,
+        isRunning: false,
+        isPaused: false,
+        progress: 1,
+        alpha: finalAlpha,
+      }));
 
-    if (Array.isArray(positions)) {
-      nodePositionsRef.current = positions.map(pos => ({ ...pos }));
-      onPositionUpdate?.(positions);
-      onAnimationComplete?.(positions, { totalIterations, finalAlpha, reason });
-    }
+      setPerformanceMetrics((prev) => ({
+        ...prev,
+        totalAnimationTime: Date.now() - animationStartTimeRef.current,
+      }));
+    },
+    [onPositionUpdate, onAnimationComplete, removeActiveTask],
+  );
 
-    setAnimationState(prev => ({
-      ...prev,
-      isRunning: false,
-      isPaused: false,
-      progress: 1,
-      alpha: finalAlpha
-    }));
-
-    setPerformanceMetrics(prev => ({
-      ...prev,
-      totalAnimationTime: Date.now() - animationStartTimeRef.current
-    }));
-  }, [onPositionUpdate, onAnimationComplete, removeActiveTask]);
-
-  const handleError = useCallback((error: string) => {
-    logger.error("execution", "Unified execution error", { error });
-    onAnimationError?.(error);
-    onExpansionError?.("unknown", error);
-  }, [onAnimationError, onExpansionError]);
+  const handleError = useCallback(
+    (error: string) => {
+      logger.error("execution", "Unified execution error", { error });
+      onAnimationError?.(error);
+      onExpansionError?.("unknown", error);
+    },
+    [onAnimationError, onExpansionError],
+  );
 
   // Event listeners
   useEffect(() => {
@@ -379,27 +443,40 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
 
     const forceProgressHandler = (event: unknown) => {
       if (!isEventWithPayload(event)) return;
-      const {payload} = event;
+      const { payload } = event;
 
-      const taskId = "id" in payload && typeof payload.id === "string" ? payload.id : undefined;
+      const taskId =
+        "id" in payload && typeof payload.id === "string"
+          ? payload.id
+          : undefined;
       if (taskId && !activeTaskIdsRef.current.has(taskId)) {
         return;
       }
 
-      if (payload && typeof payload === "object" && "type" in payload && payload.type === "worker:force-simulation-progress") {
+      if (
+        payload &&
+        typeof payload === "object" &&
+        "type" in payload &&
+        payload.type === "worker:force-simulation-progress"
+      ) {
         handleForceSimulationProgress(payload);
       }
     };
     const _forceProgressUnsub = bus.on("TASK_PROGRESS", forceProgressHandler);
-    unsubscribers.push(() => { bus.off("TASK_PROGRESS", forceProgressHandler); });
+    unsubscribers.push(() => {
+      bus.off("TASK_PROGRESS", forceProgressHandler);
+    });
 
     const forceCompleteHandler = (event: unknown) => {
       if (!isEventWithPayload(event) || !isPayloadWithResult(event.payload)) {
         return;
       }
-      const {payload} = event;
+      const { payload } = event;
 
-      const taskId = "id" in payload && typeof payload.id === "string" ? payload.id : undefined;
+      const taskId =
+        "id" in payload && typeof payload.id === "string"
+          ? payload.id
+          : undefined;
       if (taskId && !activeTaskIdsRef.current.has(taskId)) {
         return;
       }
@@ -407,12 +484,17 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
       handleForceSimulationComplete(payload);
     };
     const _forceCompleteUnsub = bus.on("TASK_SUCCESS", forceCompleteHandler);
-    unsubscribers.push(() => { bus.off("TASK_SUCCESS", forceCompleteHandler); });
+    unsubscribers.push(() => {
+      bus.off("TASK_SUCCESS", forceCompleteHandler);
+    });
 
     const errorHandler = (event: unknown) => {
       if (isEventWithPayload(event) && isPayloadWithError(event.payload)) {
         const taskPayload = event.payload;
-        const taskId = "id" in taskPayload && typeof taskPayload.id === "string" ? taskPayload.id : undefined;
+        const taskId =
+          "id" in taskPayload && typeof taskPayload.id === "string"
+            ? taskPayload.id
+            : undefined;
         if (taskId && !activeTaskIdsRef.current.has(taskId)) {
           return;
         }
@@ -423,113 +505,128 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
       }
     };
     const _errorUnsub = bus.on("TASK_FAILED", errorHandler);
-    unsubscribers.push(() => { bus.off("TASK_FAILED", errorHandler); });
+    unsubscribers.push(() => {
+      bus.off("TASK_FAILED", errorHandler);
+    });
 
     return () => {
-      unsubscribers.forEach(unsub => { unsub(); });
+      unsubscribers.forEach((unsub) => {
+        unsub();
+      });
 
       if (progressThrottleRef.current) {
         clearTimeout(progressThrottleRef.current);
         progressThrottleRef.current = null;
       }
     };
-  }, [bus, handleForceSimulationProgress, handleForceSimulationComplete, handleError, removeActiveTask]);
+  }, [
+    bus,
+    handleForceSimulationProgress,
+    handleForceSimulationComplete,
+    handleError,
+    removeActiveTask,
+  ]);
 
   // Animation control methods (same API as original hook)
-  const startAnimation = useCallback(async ({
-    nodes,
-    links,
-    config,
-    pinnedNodes
-  }: {
-    nodes: ForceSimulationNode[];
-    links: SimulationLink[];
-    config?: ForceSimulationConfig;
-    pinnedNodes?: Set<string>;
-  }) => {
-    logger.debug("execution", "Starting animation with unified execution", {
-      nodeCount: nodes.length,
-      linkCount: links.length,
-      ...(pinnedNodes && { pinnedCount: pinnedNodes.size }),
-      executionMode: taskSystem.getExecutionMode()
-    });
+  const startAnimation = useCallback(
+    async ({
+      nodes,
+      links,
+      config,
+      pinnedNodes,
+    }: {
+      nodes: ForceSimulationNode[];
+      links: SimulationLink[];
+      config?: ForceSimulationConfig;
+      pinnedNodes?: Set<string>;
+    }) => {
+      logger.debug("execution", "Starting animation with unified execution", {
+        nodeCount: nodes.length,
+        linkCount: links.length,
+        ...(pinnedNodes && { pinnedCount: pinnedNodes.size }),
+        executionMode: taskSystem.getExecutionMode(),
+      });
 
-    if (nodes.length === 0) {
-      logger.warn("execution", "Cannot start animation with no nodes");
-      return;
-    }
-
-    // Cancel existing animation
-    const previousTaskId = currentTaskRef.current;
-    if (previousTaskId) {
-      await taskSystem.cancelTask(previousTaskId);
-      removeActiveTask(previousTaskId);
-      isAnimatingRef.current = false;
-      currentTaskRef.current = null;
-    }
-
-    // Merge with existing positions
-    const positionMap = new Map(nodePositionsRef.current.map(pos => [pos.id, pos]));
-    const seededNodes = nodes.map((node) => {
-      const existingPosition = positionMap.get(node.id);
-      if (!existingPosition) {
-        return node;
+      if (nodes.length === 0) {
+        logger.warn("execution", "Cannot start animation with no nodes");
+        return;
       }
 
-      return {
-        ...node,
-        x: existingPosition.x,
-        y: existingPosition.y,
-        fx: typeof node.fx === "number" ? existingPosition.x : undefined,
-        fy: typeof node.fy === "number" ? existingPosition.y : undefined
-      };
-    });
+      // Cancel existing animation
+      const previousTaskId = currentTaskRef.current;
+      if (previousTaskId) {
+        await taskSystem.cancelTask(previousTaskId);
+        removeActiveTask(previousTaskId);
+        isAnimatingRef.current = false;
+        currentTaskRef.current = null;
+      }
 
-    // Reset performance metrics
-    setPerformanceMetrics({
-      averageFPS: 0,
-      minFPS: Infinity,
-      maxFPS: 0,
-      frameCount: 0,
-      totalAnimationTime: 0,
-      averageResponseTime: 0
-    });
+      // Merge with existing positions
+      const positionMap = new Map(
+        nodePositionsRef.current.map((pos) => [pos.id, pos]),
+      );
+      const seededNodes = nodes.map((node) => {
+        const existingPosition = positionMap.get(node.id);
+        if (!existingPosition) {
+          return node;
+        }
 
-    const taskId = `force-simulation-${Date.now().toString()}`;
-    try {
-      addActiveTask(taskId);
-
-      const submittedTaskId = await taskSystem.submitTask({
-        id: taskId,
-        payload: {
-          entityType: "FORCE_SIMULATION_START",
-          nodes: seededNodes,
-          links,
-          config,
-          pinnedNodes: pinnedNodes ? Array.from(pinnedNodes) : []
-        },
-        timeout: 300000
+        return {
+          ...node,
+          x: existingPosition.x,
+          y: existingPosition.y,
+          fx: typeof node.fx === "number" ? existingPosition.x : undefined,
+          fy: typeof node.fy === "number" ? existingPosition.y : undefined,
+        };
       });
 
-      currentTaskRef.current = submittedTaskId;
-
-      logger.debug("execution", "Animation started with unified execution", {
-        nodeCount: seededNodes.length,
-        linkCount: links.length,
-        pinnedCount: pinnedNodes?.size ?? 0,
-        taskId: submittedTaskId,
-        executionMode: taskSystem.getExecutionMode()
+      // Reset performance metrics
+      setPerformanceMetrics({
+        averageFPS: 0,
+        minFPS: Infinity,
+        maxFPS: 0,
+        frameCount: 0,
+        totalAnimationTime: 0,
+        averageResponseTime: 0,
       });
 
-      return submittedTaskId;
-    } catch (error) {
-      removeActiveTask(taskId);
-      const errorMessage = `Failed to start animation: ${error instanceof Error ? error.message : String(error)}`;
-      logger.error("execution", errorMessage, { error });
-      onAnimationError?.(errorMessage);
-      return null;
-    }
-  }, [taskSystem, addActiveTask, removeActiveTask, onAnimationError]);
+      const taskId = `force-simulation-${Date.now().toString()}`;
+      try {
+        addActiveTask(taskId);
+
+        const submittedTaskId = await taskSystem.submitTask({
+          id: taskId,
+          payload: {
+            entityType: "FORCE_SIMULATION_START",
+            nodes: seededNodes,
+            links,
+            config,
+            pinnedNodes: pinnedNodes ? Array.from(pinnedNodes) : [],
+          },
+          timeout: 300000,
+        });
+
+        currentTaskRef.current = submittedTaskId;
+
+        logger.debug("execution", "Animation started with unified execution", {
+          nodeCount: seededNodes.length,
+          linkCount: links.length,
+          pinnedCount: pinnedNodes?.size ?? 0,
+          taskId: submittedTaskId,
+          executionMode: taskSystem.getExecutionMode(),
+        });
+
+        return submittedTaskId;
+      } catch (error) {
+        removeActiveTask(taskId);
+        const errorMessage = `Failed to start animation: ${error instanceof Error ? error.message : String(error)}`;
+        logger.error("execution", errorMessage, { error });
+        onAnimationError?.(errorMessage);
+        return null;
+      }
+    },
+    [taskSystem, addActiveTask, removeActiveTask, onAnimationError],
+  );
 
   // Other animation controls (similar pattern to startAnimation)
   const stopAnimation = useCallback(async () => {
@@ -544,8 +641,8 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
       await taskSystem.submitTask({
         id: stopTaskId,
         payload: {
-          entityType: "FORCE_SIMULATION_STOP"
-        }
+          entityType: "FORCE_SIMULATION_STOP",
+        },
       });
 
       removeActiveTask(stopTaskId);
@@ -556,10 +653,10 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
       isAnimatingRef.current = false;
       currentTaskRef.current = null;
 
-      setAnimationState(prev => ({
+      setAnimationState((prev) => ({
         ...prev,
         isRunning: false,
-        isPaused: false
+        isPaused: false,
       }));
     } catch (error) {
       removeActiveTask(stopTaskId);
@@ -575,15 +672,21 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
         await taskSystem.submitTask({
           id: taskId,
           payload: {
-            entityType: "FORCE_SIMULATION_PAUSE"
-          }
+            entityType: "FORCE_SIMULATION_PAUSE",
+          },
         });
       } catch (error) {
         removeActiveTask(taskId);
         logger.error("execution", "Failed to pause animation", { error });
       }
     }
-  }, [animationState.isRunning, animationState.isPaused, taskSystem, addActiveTask, removeActiveTask]);
+  }, [
+    animationState.isRunning,
+    animationState.isPaused,
+    taskSystem,
+    addActiveTask,
+    removeActiveTask,
+  ]);
 
   const resumeAnimation = useCallback(async () => {
     if (animationState.isRunning && animationState.isPaused) {
@@ -593,198 +696,228 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
         await taskSystem.submitTask({
           id: taskId,
           payload: {
-            entityType: "FORCE_SIMULATION_RESUME"
-          }
+            entityType: "FORCE_SIMULATION_RESUME",
+          },
         });
       } catch (error) {
         removeActiveTask(taskId);
         logger.error("execution", "Failed to resume animation", { error });
       }
     }
-  }, [animationState.isRunning, animationState.isPaused, taskSystem, addActiveTask, removeActiveTask]);
+  }, [
+    animationState.isRunning,
+    animationState.isPaused,
+    taskSystem,
+    addActiveTask,
+    removeActiveTask,
+  ]);
 
-  const updateParameters = useCallback(async (config: Partial<ForceSimulationConfig>) => {
-    if (animationState.isRunning) {
-      const taskId = `force-simulation-update-${Date.now().toString()}`;
-      addActiveTask(taskId);
+  const updateParameters = useCallback(
+    async (config: Partial<ForceSimulationConfig>) => {
+      if (animationState.isRunning) {
+        const taskId = `force-simulation-update-${Date.now().toString()}`;
+        addActiveTask(taskId);
+        try {
+          await taskSystem.submitTask({
+            id: taskId,
+            payload: {
+              entityType: "FORCE_SIMULATION_UPDATE_PARAMETERS",
+              config,
+            },
+          });
+        } catch (error) {
+          removeActiveTask(taskId);
+          logger.error("execution", "Failed to update parameters", { error });
+        }
+      }
+    },
+    [animationState.isRunning, taskSystem, addActiveTask, removeActiveTask],
+  );
+
+  const reheatAnimation = useCallback(
+    async ({
+      nodes,
+      links,
+      config,
+      pinnedNodes,
+      alpha = 0.5,
+    }: {
+      nodes: ForceSimulationNode[];
+      links: SimulationLink[];
+      config?: ForceSimulationConfig;
+      pinnedNodes?: Set<string>;
+      alpha?: number;
+    }) => {
+      if (nodes.length === 0) {
+        logger.warn("execution", "Cannot reheat animation with no nodes");
+        return;
+      }
+
+      const taskId = `force-simulation-reheat-${Date.now().toString()}`;
       try {
-        await taskSystem.submitTask({
+        addActiveTask(taskId);
+
+        const resultTaskId = await taskSystem.submitTask({
           id: taskId,
           payload: {
-            entityType: "FORCE_SIMULATION_UPDATE_PARAMETERS",
-            config
-          }
+            entityType: "FORCE_SIMULATION_REHEAT",
+            nodes,
+            links,
+            config,
+            pinnedNodes: pinnedNodes ? Array.from(pinnedNodes) : [],
+            alpha,
+          },
+          timeout: 300000,
         });
+
+        logger.debug(
+          "execution",
+          "Animation reheat started with unified execution",
+          {
+            nodeCount: nodes.length,
+            linkCount: links.length,
+            pinnedCount: pinnedNodes?.size ?? 0,
+            alpha,
+            taskId: resultTaskId,
+            executionMode: taskSystem.getExecutionMode(),
+          },
+        );
+
+        if (resultTaskId && resultTaskId !== taskId) {
+          addActiveTask(resultTaskId);
+        }
+
+        return resultTaskId || taskId;
       } catch (error) {
         removeActiveTask(taskId);
-        logger.error("execution", "Failed to update parameters", { error });
+        const errorMessage = `Failed to reheat animation: ${error instanceof Error ? error.message : String(error)}`;
+        logger.error("execution", errorMessage, { error });
+        onAnimationError?.(errorMessage);
+        return null;
       }
-    }
-  }, [animationState.isRunning, taskSystem, addActiveTask, removeActiveTask]);
+    },
+    [taskSystem, addActiveTask, removeActiveTask, onAnimationError],
+  );
 
-  const reheatAnimation = useCallback(async ({
-    nodes,
-    links,
-    config,
-    pinnedNodes,
-    alpha = 0.5
-  }: {
-    nodes: ForceSimulationNode[];
-    links: SimulationLink[];
-    config?: ForceSimulationConfig;
-    pinnedNodes?: Set<string>;
-    alpha?: number;
-  }) => {
-    if (nodes.length === 0) {
-      logger.warn("execution", "Cannot reheat animation with no nodes");
-      return;
-    }
-
-    const taskId = `force-simulation-reheat-${Date.now().toString()}`;
-    try {
-      addActiveTask(taskId);
-
-      const resultTaskId = await taskSystem.submitTask({
-        id: taskId,
-        payload: {
-          entityType: "FORCE_SIMULATION_REHEAT",
-          nodes,
-          links,
-          config,
-          pinnedNodes: pinnedNodes ? Array.from(pinnedNodes) : [],
-          alpha
-        },
-        timeout: 300000
-      });
-
-      logger.debug("execution", "Animation reheat started with unified execution", {
-        nodeCount: nodes.length,
-        linkCount: links.length,
-        pinnedCount: pinnedNodes?.size ?? 0,
-        alpha,
-        taskId: resultTaskId,
-        executionMode: taskSystem.getExecutionMode()
-      });
-
-      if (resultTaskId && resultTaskId !== taskId) {
-        addActiveTask(resultTaskId);
+  const updateSimulationLinks = useCallback(
+    async ({
+      links,
+      alpha = 1.0,
+    }: {
+      links: SimulationLink[];
+      alpha?: number;
+    }) => {
+      if (links.length === 0) {
+        logger.warn("execution", "Cannot update simulation with no links");
+        return;
       }
 
-      return resultTaskId || taskId;
-    } catch (error) {
-      removeActiveTask(taskId);
-      const errorMessage = `Failed to reheat animation: ${error instanceof Error ? error.message : String(error)}`;
-      logger.error("execution", errorMessage, { error });
-      onAnimationError?.(errorMessage);
-      return null;
-    }
-  }, [taskSystem, addActiveTask, removeActiveTask, onAnimationError]);
+      const taskId = `force-simulation-update-links-${Date.now().toString()}`;
+      try {
+        addActiveTask(taskId);
 
-  const updateSimulationLinks = useCallback(async ({
-    links,
-    alpha = 1.0
-  }: {
-    links: SimulationLink[];
-    alpha?: number;
-  }) => {
-    if (links.length === 0) {
-      logger.warn("execution", "Cannot update simulation with no links");
-      return;
-    }
+        const resultTaskId = await taskSystem.submitTask({
+          id: taskId,
+          payload: {
+            entityType: "FORCE_SIMULATION_UPDATE_LINKS",
+            links,
+            alpha,
+          },
+          priority: 100,
+          timeout: 300000,
+        });
 
-    const taskId = `force-simulation-update-links-${Date.now().toString()}`;
-    try {
-      addActiveTask(taskId);
+        logger.debug(
+          "execution",
+          "Simulation links update started with unified execution",
+          {
+            linkCount: links.length,
+            alpha,
+            priority: 100,
+            taskId: resultTaskId,
+            executionMode: taskSystem.getExecutionMode(),
+          },
+        );
 
-      const resultTaskId = await taskSystem.submitTask({
-        id: taskId,
-        payload: {
-          entityType: "FORCE_SIMULATION_UPDATE_LINKS",
-          links,
-          alpha
-        },
-        priority: 100,
-        timeout: 300000
-      });
+        if (resultTaskId && resultTaskId !== taskId) {
+          addActiveTask(resultTaskId);
+        }
 
-      logger.debug("execution", "Simulation links update started with unified execution", {
-        linkCount: links.length,
-        alpha,
-        priority: 100,
-        taskId: resultTaskId,
-        executionMode: taskSystem.getExecutionMode()
-      });
+        return resultTaskId;
+      } catch (error: unknown) {
+        removeActiveTask(taskId);
+        const errorMessage = `Failed to update simulation links: ${error instanceof Error ? error.message : String(error)}`;
+        logger.error("execution", errorMessage, { error });
+        onAnimationError?.(errorMessage);
+        return null;
+      }
+    },
+    [taskSystem, addActiveTask, removeActiveTask, onAnimationError],
+  );
 
-      if (resultTaskId && resultTaskId !== taskId) {
-        addActiveTask(resultTaskId);
+  const updateSimulationNodes = useCallback(
+    async ({
+      nodes,
+      pinnedNodes,
+      alpha = 1.0,
+    }: {
+      nodes: ForceSimulationNode[];
+      pinnedNodes?: Set<string> | string[];
+      alpha?: number;
+    }) => {
+      if (nodes.length === 0) {
+        logger.warn("execution", "Cannot update simulation with no nodes");
+        return;
       }
 
-      return resultTaskId;
-    } catch (error: unknown) {
-      removeActiveTask(taskId);
-      const errorMessage = `Failed to update simulation links: ${error instanceof Error ? error.message : String(error)}`;
-      logger.error("execution", errorMessage, { error });
-      onAnimationError?.(errorMessage);
-      return null;
-    }
-  }, [taskSystem, addActiveTask, removeActiveTask, onAnimationError]);
+      const taskId = `force-simulation-update-nodes-${Date.now().toString()}`;
+      try {
+        addActiveTask(taskId);
 
-  const updateSimulationNodes = useCallback(async ({
-    nodes,
-    pinnedNodes,
-    alpha = 1.0
-  }: {
-    nodes: ForceSimulationNode[];
-    pinnedNodes?: Set<string> | string[];
-    alpha?: number;
-  }) => {
-    if (nodes.length === 0) {
-      logger.warn("execution", "Cannot update simulation with no nodes");
-      return;
-    }
+        const pinnedArray = Array.isArray(pinnedNodes)
+          ? pinnedNodes
+          : Array.from(pinnedNodes ?? []);
 
-    const taskId = `force-simulation-update-nodes-${Date.now().toString()}`;
-    try {
-      addActiveTask(taskId);
+        const resultTaskId = await taskSystem.submitTask({
+          id: taskId,
+          payload: {
+            entityType: "FORCE_SIMULATION_UPDATE_NODES",
+            nodes,
+            pinnedNodes: pinnedArray,
+            alpha,
+          },
+          priority: 100,
+          timeout: 300000,
+        });
 
-      const pinnedArray = Array.isArray(pinnedNodes)
-        ? pinnedNodes
-        : Array.from(pinnedNodes ?? []);
+        logger.debug(
+          "execution",
+          "Simulation nodes update started with unified execution",
+          {
+            nodeCount: nodes.length,
+            pinnedCount: pinnedArray.length,
+            alpha,
+            priority: 100,
+            taskId: resultTaskId || taskId,
+            executionMode: taskSystem.getExecutionMode(),
+          },
+        );
 
-      const resultTaskId = await taskSystem.submitTask({
-        id: taskId,
-        payload: {
-          entityType: "FORCE_SIMULATION_UPDATE_NODES",
-          nodes,
-          pinnedNodes: pinnedArray,
-          alpha
-        },
-        priority: 100,
-        timeout: 300000
-      });
+        if (resultTaskId && resultTaskId !== taskId) {
+          addActiveTask(resultTaskId);
+        }
 
-      logger.debug("execution", "Simulation nodes update started with unified execution", {
-        nodeCount: nodes.length,
-        pinnedCount: pinnedArray.length,
-        alpha,
-        priority: 100,
-        taskId: resultTaskId || taskId,
-        executionMode: taskSystem.getExecutionMode()
-      });
-
-      if (resultTaskId && resultTaskId !== taskId) {
-        addActiveTask(resultTaskId);
+        return resultTaskId;
+      } catch (error) {
+        removeActiveTask(taskId);
+        const errorMessage = `Failed to update simulation nodes: ${error instanceof Error ? error.message : String(error)}`;
+        logger.error("execution", errorMessage, { error });
+        onAnimationError?.(errorMessage);
+        return null;
       }
-
-      return resultTaskId;
-    } catch (error) {
-      removeActiveTask(taskId);
-      const errorMessage = `Failed to update simulation nodes: ${error instanceof Error ? error.message : String(error)}`;
-      logger.error("execution", errorMessage, { error });
-      onAnimationError?.(errorMessage);
-      return null;
-    }
-  }, [taskSystem, addActiveTask, removeActiveTask, onAnimationError]);
+    },
+    [taskSystem, addActiveTask, removeActiveTask, onAnimationError],
+  );
 
   // Get execution statistics
   const [systemStats, setSystemStats] = useState<SystemStats>({
@@ -794,7 +927,7 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
     maxConcurrency,
     strategyMode: "main-thread",
     supportsWorkers: false,
-    initialized: false
+    initialized: false,
   });
 
   useEffect(() => {
@@ -808,9 +941,13 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
     };
 
     void updateStats();
-    const interval = setInterval(() => { void updateStats(); }, 1000); // Update every second
+    const interval = setInterval(() => {
+      void updateStats();
+    }, 1000); // Update every second
 
-    return () => { clearInterval(interval); };
+    return () => {
+      clearInterval(interval);
+    };
   }, [taskSystem]);
 
   return {
@@ -844,7 +981,10 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
     },
 
     // Computed properties
-    isIdle: !animationState.isRunning && !animationState.isPaused && !systemStats.processing,
+    isIdle:
+      !animationState.isRunning &&
+      !animationState.isPaused &&
+      !systemStats.processing,
     canPause: animationState.isRunning && !animationState.isPaused,
     canResume: animationState.isRunning && animationState.isPaused,
     canStop: animationState.isRunning || animationState.isPaused,
@@ -854,8 +994,10 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
       ...performanceMetrics,
       isOptimal: performanceMetrics.averageFPS >= 30,
       hasFrameDrops: performanceMetrics.minFPS < 15,
-      efficiency: performanceMetrics.frameCount > 0 ?
-        (performanceMetrics.averageFPS / 60) * 100 : 0
-    }
+      efficiency:
+        performanceMetrics.frameCount > 0
+          ? (performanceMetrics.averageFPS / 60) * 100
+          : 0,
+    },
   };
 }
