@@ -123,7 +123,7 @@ const authorMatcher: ArrayMatcher = {
     const authorArray = array as AuthorItem[];
     return (
       <Group gap="xs" wrap="wrap">
-        {authorArray.slice(0, 10).map((authorship, index) => {
+        {authorArray.map((authorship, index) => {
           const { author } = authorship;
           const position = authorship.author_position;
           const positionLabel =
@@ -150,11 +150,6 @@ const authorMatcher: ArrayMatcher = {
             </Badge>
           );
         })}
-        {authorArray.length > 10 && (
-          <Badge variant="outline" size="sm">
-            +{authorArray.length - 10} more
-          </Badge>
-        )}
       </Group>
     );
   },
@@ -178,7 +173,7 @@ const institutionMatcher: ArrayMatcher = {
     const institutionArray = array as InstitutionItem[];
     return (
       <Stack gap="xs">
-        {institutionArray.slice(0, 5).map((institution, index) => (
+        {institutionArray.map((institution, index) => (
           <Group key={index} justify="space-between" wrap="nowrap">
             <Text size="sm" style={{ flex: 1 }}>
               {institution.display_name}
@@ -190,11 +185,6 @@ const institutionMatcher: ArrayMatcher = {
             )}
           </Group>
         ))}
-        {institutionArray.length > 5 && (
-          <Text size="sm" c="dimmed">
-            +{institutionArray.length - 5} more institutions
-          </Text>
-        )}
       </Stack>
     );
   },
@@ -268,7 +258,6 @@ const topicShareMatcher: ArrayMatcher = {
           <Table.Tbody>
             {topicArray
               .sort((a, b) => (b.value || 0) - (a.value || 0))
-              .slice(0, 15)
               .map((topic, index) => (
                 <Table.Tr key={topic.id || index}>
                   <Table.Td>
@@ -300,11 +289,6 @@ const topicShareMatcher: ArrayMatcher = {
               ))}
           </Table.Tbody>
         </Table>
-        {topicArray.length > 15 && (
-          <Text size="sm" c="dimmed" mt="xs">
-            Showing top 15 topics by share of {topicArray.length} total
-          </Text>
-        )}
       </>
     );
   },
@@ -339,7 +323,6 @@ const citationHistoryMatcher: ArrayMatcher = {
           <Table.Tbody>
             {citationArray
               .sort((a, b) => b.year - a.year)
-              .slice(0, 10)
               .map((count) => (
                 <Table.Tr key={count.year}>
                   <Table.Td>{count.year}</Table.Td>
@@ -349,11 +332,6 @@ const citationHistoryMatcher: ArrayMatcher = {
               ))}
           </Table.Tbody>
         </Table>
-        {citationArray.length > 10 && (
-          <Text size="sm" c="dimmed" mt="xs">
-            Showing 10 most recent years of {citationArray.length} total
-          </Text>
-        )}
       </>
     );
   },
@@ -413,7 +391,7 @@ const affiliationMatcher: ArrayMatcher = {
     const affiliationArray = array as AffiliationItem[];
     return (
       <Stack gap="xs">
-        {affiliationArray.slice(0, 3).map((affiliation, index) => (
+        {affiliationArray.map((affiliation, index) => (
           <Card key={index} padding="xs" radius="sm" withBorder>
             <Group justify="space-between" wrap="nowrap">
               <Text size="sm" style={{ flex: 1 }}>
@@ -425,11 +403,6 @@ const affiliationMatcher: ArrayMatcher = {
             </Group>
           </Card>
         ))}
-        {affiliationArray.length > 3 && (
-          <Text size="sm" c="dimmed">
-            +{affiliationArray.length - 3} more affiliations
-          </Text>
-        )}
       </Stack>
     );
   },
