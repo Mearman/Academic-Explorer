@@ -84,7 +84,10 @@ function ApiOpenAlexRoute() {
   const navigate = useNavigate();
 
   logger.debug(
+    "routing",
     `ApiOpenAlexRoute: Called with _splat=${_splat}, search=${JSON.stringify(search)}`,
+    { _splat, search },
+    "ApiOpenAlexRoute",
   );
 
   useEffect(() => {
@@ -102,12 +105,20 @@ function ApiOpenAlexRoute() {
         const decodedSplat = decodeURIComponent(fullPath);
         const fullUrl = `https://api.openalex.org/${decodedSplat}`;
 
-        logger.debug(`ApiOpenAlexRoute: fullUrl=${fullUrl}`);
+        logger.debug(
+          "routing",
+          `ApiOpenAlexRoute: fullUrl=${fullUrl}`,
+          { fullUrl },
+          "ApiOpenAlexRoute",
+        );
 
         // First check if it's an OpenAlex query URL (with parameters)
         const queryUrlParse = parseOpenAlexQueryUrl(fullUrl);
         logger.debug(
+          "routing",
           `ApiOpenAlexRoute: queryUrlParse=${JSON.stringify(queryUrlParse)}`,
+          { queryUrlParse },
+          "ApiOpenAlexRoute",
         );
         if (queryUrlParse && queryUrlParse.queryParams.toString()) {
           // This is an OpenAlex query URL, redirect to list route with query params
@@ -118,7 +129,10 @@ function ApiOpenAlexRoute() {
 
           const listRoute = `/${queryUrlParse.entityType}/`;
           logger.debug(
+            "routing",
             `ApiOpenAlexRoute: Navigating to ${listRoute} with search ${JSON.stringify(searchObj)}`,
+            { listRoute, searchObj },
+            "ApiOpenAlexRoute",
           );
           void navigate({
             to: listRoute,

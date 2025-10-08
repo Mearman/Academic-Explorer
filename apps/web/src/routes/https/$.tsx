@@ -78,7 +78,12 @@ function HttpsRoute() {
   const { _splat } = Route.useParams();
   const navigate = useNavigate();
 
-  logger.debug(`HttpsRoute: Called with _splat=${_splat}`);
+  logger.debug(
+    "routing",
+    `HttpsRoute: Called with _splat=${_splat}`,
+    { _splat },
+    "HttpsRoute",
+  );
 
   useEffect(() => {
     const resolveHttpsUrl = () => {
@@ -96,7 +101,10 @@ function HttpsRoute() {
         // First check if it's an OpenAlex query URL (with parameters)
         const queryUrlParse = parseOpenAlexQueryUrl(fullUrl);
         logger.debug(
+          "routing",
           `HttpsRoute: queryUrlParse=${JSON.stringify(queryUrlParse)}`,
+          { queryUrlParse },
+          "HttpsRoute",
         );
         if (queryUrlParse && queryUrlParse.queryParams.toString()) {
           // This is an OpenAlex query URL, redirect to list route with query params

@@ -263,7 +263,7 @@ export function useGraphData() {
     async (nodeId: string) => {
       try {
         await service.hydrateNode(nodeId);
-      } catch (err) {
+      } catch {
         // logError(logger, "Failed to hydrate node in graph data hook", err, "useGraphData", "graph");
       }
     },
