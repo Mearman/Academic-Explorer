@@ -1,57 +1,29 @@
 {
-  "lastUpdated": "2025-10-06T13:24:48.540Z",
+  "lastUpdated": "2025-10-08T21:16:37.232Z",
   "files": {
-    "funders": {
-      "url": "https://api.openalex.org/funders",
-      "$ref": "./funders.json",
-      "lastRetrieved": "2025-09-29T22:54:42.790Z",
-      "contentHash": "3db646598be403a1"
-    },
-    "institutions": {
-      "url": "https://api.openalex.org/institutions",
-      "$ref": "./institutions.json",
-      "lastRetrieved": "2025-09-29T22:54:44.492Z",
-      "contentHash": "3db646598be403a1"
-    },
-    "publishers": {
-      "url": "https://api.openalex.org/publishers",
-      "$ref": "./publishers.json",
-      "lastRetrieved": "2025-09-29T22:54:47.384Z",
-      "contentHash": "3db646598be403a1"
+    "authors": {
+      "url": "https://api.openalex.org/authors",
+      "$ref": "./authors.json",
+      "lastRetrieved": "2025-10-08T21:16:37.221Z",
+      "contentHash": "5021e624e752b001"
     },
     "sources": {
       "url": "https://api.openalex.org/sources",
       "$ref": "./sources.json",
-      "lastRetrieved": "2025-09-29T22:54:48.842Z",
+      "lastRetrieved": "2025-10-06T14:10:20.319Z",
       "contentHash": "3db646598be403a1"
     },
-    "topics": {
-      "url": "https://api.openalex.org/topics",
-      "$ref": "./topics.json",
-      "lastRetrieved": "2025-09-29T22:54:51.398Z",
-      "contentHash": "3db646598be403a1"
+    "works": {
+      "url": "https://api.openalex.org/works",
+      "$ref": "./works.json",
+      "lastRetrieved": "2025-10-08T21:16:37.231Z",
+      "contentHash": "5021e624e752b001"
     }
   },
   "directories": {
-    "funders": {
-      "$ref": "./funders",
-      "lastModified": "2025-10-06T10:53:58.286Z"
-    },
-    "institutions": {
-      "$ref": "./institutions",
-      "lastModified": "2025-10-06T10:53:58.284Z"
-    },
-    "publishers": {
-      "$ref": "./publishers",
-      "lastModified": "2025-10-06T10:53:58.285Z"
-    },
-    "sources": {
-      "$ref": "./sources",
-      "lastModified": "2025-09-29T22:54:38.822Z"
-    },
-    "topics": {
-      "$ref": "./topics",
-      "lastModified": "2025-10-06T10:53:58.285Z"
+    "authors": {
+      "$ref": "./authors",
+      "lastModified": "2025-10-06T14:10:23.600Z"
     }
   }
 }

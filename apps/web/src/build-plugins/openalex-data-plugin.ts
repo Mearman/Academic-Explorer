@@ -8,11 +8,19 @@
  */
 import { logger } from "@academic-explorer/utils";
 import {
-    generateContentHash,
-    parseOpenAlexUrl,
-    type IndexEntry
+  generateContentHash,
+  parseOpenAlexUrl,
+  type UnifiedIndexEntry,
 } from "@academic-explorer/utils/static-data/cache-utilities";
-import { access, mkdir, readdir, readFile, stat, unlink, writeFile } from "fs/promises";
+import {
+  access,
+  mkdir,
+  readdir,
+  readFile,
+  stat,
+  unlink,
+  writeFile,
+} from "fs/promises";
 import { join } from "path";
 import type { Plugin } from "vite";
 import { z } from "zod";
@@ -28,7 +36,7 @@ async function fetchOpenAlexQuery(url: string): Promise<unknown> {
       logger.error("general", "OpenAlex query failed", {
         url,
         status: response.status,
-        statusText: response.statusText
+        statusText: response.statusText,
       });
       return null;
     }
@@ -36,7 +44,7 @@ async function fetchOpenAlexQuery(url: string): Promise<unknown> {
   } catch (error) {
     logger.error("general", "Error fetching OpenAlex query", {
       url,
-      error: error instanceof Error ? error.message : String(error)
+      error: error instanceof Error ? error.message : String(error),
     });
     return null;
   }
@@ -52,7 +60,7 @@ interface IndexEntry {
 
 // Unified index: keys can be queries, entities, or URLs in various formats
 interface UnifiedIndex {
-  [key: string]: IndexEntry;
+  [key: string]: UnifiedIndexEntry;
 }
 
 // Zod schemas for type validation
@@ -78,42 +86,56 @@ const OldEntityIndexSchema = z.object({
 const OldQueryIndexSchema = z.object({
   entityType: z.string().optional(),
   queries: z.union([
-    z.array(z.object({
-      query: QueryDefinitionSchema,
-      lastModified: z.string().optional(),
-      contentHash: z.string().optional(),
-    })),
+    z.array(
+      z.object({
+        query: QueryDefinitionSchema,
+        lastModified: z.string().optional(),
+        contentHash: z.string().optional(),
+      }),
+    ),
     z.record(z.string(), QueryDefinitionSchema),
   ]),
 });
 
 const RequestsWrapperSchema = z.object({
-  requests: z.record(z.string(), z.object({
-    $ref: z.string().optional(),
-    lastModified: z.string().optional(),
-    contentHash: z.string().optional(),
-  })),
+  requests: z.record(
+    z.string(),
+    z.object({
+      $ref: z.string().optional(),
+      lastModified: z.string().optional(),
+      contentHash: z.string().optional(),
+    }),
+  ),
 });
 
 const FlatIndexSchema = z.record(z.string(), IndexEntrySchema);
 
-
-const ENTITY_TYPES = ["works", "authors", "institutions", "topics", "sources", "publishers", "funders", "concepts", "autocomplete"];
+const ENTITY_TYPES = [
+  "works",
+  "authors",
+  "institutions",
+  "topics",
+  "sources",
+  "publishers",
+  "funders",
+  "concepts",
+  "autocomplete",
+];
 
 /**
  * Get the OpenAlex ID prefix for a given entity type
  */
 function getEntityPrefix(entityType: string): string {
   const prefixMap: Record<string, string> = {
-    "works": "W",
-    "authors": "A",
-    "institutions": "I",
-    "topics": "T",
-    "sources": "S",
-    "publishers": "P",
-    "funders": "F",
-    "concepts": "C",
-    "autocomplete": "" // Autocomplete doesn't use entity prefixes, only queries
+    works: "W",
+    authors: "A",
+    institutions: "I",
+    topics: "T",
+    sources: "S",
+    publishers: "P",
+    funders: "F",
+    concepts: "C",
+    autocomplete: "", // Autocomplete doesn't use entity prefixes, only queries
   };
   return prefixMap[entityType] ?? "";
 }
@@ -163,10 +185,13 @@ function detectMalformedFilename(filename: string): boolean {
 function detectAndCleanMalformedKey(key: string): string {
   // Pattern 1: Double-encoded URLs embedded in entity paths
   // Example: "https://api.openalex.org/authors/Ahttps%2F%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5025875274"
-  const doubleEncodedPattern = /^https:\/\/api\.openalex\.org\/(\w+)\/[A-Z]https%2F%2F/;
+  const doubleEncodedPattern =
+    /^https:\/\/api\.openalex\.org\/(\w+)\/[A-Z]https%2F%2F/;
   if (doubleEncodedPattern.test(key)) {
     // Extract the embedded encoded URL and decode it
-    const match = key.match(/^https:\/\/api\.openalex\.org\/\w+\/[A-Z](https%2F%2F.+)$/);
+    const match = key.match(
+      /^https:\/\/api\.openalex\.org\/\w+\/[A-Z](https%2F%2F.+)$/,
+    );
     if (match) {
       try {
         let embeddedUrl = decodeURIComponent(match[1]);
@@ -174,7 +199,7 @@ function detectAndCleanMalformedKey(key: string): string {
         embeddedUrl = embeddedUrl.replace(/^https\/\/\//, "https://");
         logger.debug("general", "Extracted embedded URL from malformed key", {
           original: key,
-          extracted: embeddedUrl
+          extracted: embeddedUrl,
         });
         return embeddedUrl;
       } catch {
@@ -195,7 +220,7 @@ function detectAndCleanMalformedKey(key: string): string {
       decodedUrl = decodedUrl.replace(/^https\/\/\//, "https://");
       logger.debug("general", "Decoded malformed entity ID", {
         original: key,
-        decoded: decodedUrl
+        decoded: decodedUrl,
       });
       return decodedUrl;
     } catch {
@@ -214,7 +239,10 @@ function detectAndCleanMalformedKey(key: string): string {
     previous = current;
     try {
       const decoded = decodeURIComponent(current);
-      if (decoded !== current && (decoded.startsWith("https://") || decoded.match(/^[A-Z]\d+$/))) {
+      if (
+        decoded !== current &&
+        (decoded.startsWith("https://") || decoded.match(/^[A-Z]\d+$/))
+      ) {
         current = decoded;
         attempts++;
       } else {
@@ -229,7 +257,7 @@ function detectAndCleanMalformedKey(key: string): string {
     logger.debug("general", "Progressive decoding cleaned malformed key", {
       original: key,
       cleaned: current,
-      attempts
+      attempts,
     });
   }
 
@@ -249,7 +277,7 @@ function parseIndexKey(key: string): ParsedKey | null {
   }
 
   if (key.startsWith("https://openalex.org/")) {
-    return parseOpenAlexUrl(key);
+    return parseOpenAlexUrlForPlugin(key);
   }
 
   // Handle relative paths and entity IDs
@@ -270,7 +298,7 @@ function parseIndexKey(key: string): ParsedKey | null {
 function parseOpenAlexApiUrl(url: string): ParsedKey | null {
   try {
     const urlObj = new URL(url);
-    const pathParts = urlObj.pathname.split("/").filter(p => p);
+    const pathParts = urlObj.pathname.split("/").filter((p) => p);
 
     if (pathParts.length === 1) {
       // Query: https://api.openalex.org/works?per_page=30&page=1
@@ -286,7 +314,7 @@ function parseOpenAlexApiUrl(url: string): ParsedKey | null {
         entityType,
         queryParams,
         originalKey: url,
-        canonicalUrl: url
+        canonicalUrl: url,
       };
     } else if (pathParts.length === 2) {
       // Entity: https://api.openalex.org/works/W2241997964
@@ -306,7 +334,7 @@ function parseOpenAlexApiUrl(url: string): ParsedKey | null {
           entityId,
           queryParams,
           originalKey: url,
-          canonicalUrl: url
+          canonicalUrl: url,
         };
       } else {
         // Pure entity
@@ -315,7 +343,7 @@ function parseOpenAlexApiUrl(url: string): ParsedKey | null {
           entityType,
           entityId,
           originalKey: url,
-          canonicalUrl: `https://api.openalex.org/${entityType}/${entityId}`
+          canonicalUrl: `https://api.openalex.org/${entityType}/${entityId}`,
         };
       }
     }
@@ -325,10 +353,10 @@ function parseOpenAlexApiUrl(url: string): ParsedKey | null {
   return null;
 }
 
-function parseOpenAlexUrl(url: string): ParsedKey | null {
+function parseOpenAlexUrlForPlugin(url: string): ParsedKey | null {
   try {
     const urlObj = new URL(url);
-    const pathParts = urlObj.pathname.split("/").filter(p => p);
+    const pathParts = urlObj.pathname.split("/").filter((p) => p);
 
     if (pathParts.length === 1) {
       // Direct entity: https://openalex.org/W2241997964
@@ -340,7 +368,7 @@ function parseOpenAlexUrl(url: string): ParsedKey | null {
         entityType,
         entityId,
         originalKey: url,
-        canonicalUrl: `https://api.openalex.org/${entityType}/${entityId}`
+        canonicalUrl: `https://api.openalex.org/${entityType}/${entityId}`,
       };
     } else if (pathParts.length === 2) {
       // Entity with entityType: https://openalex.org/works/W2241997964
@@ -352,7 +380,7 @@ function parseOpenAlexUrl(url: string): ParsedKey | null {
         entityType,
         entityId,
         originalKey: url,
-        canonicalUrl: `https://api.openalex.org/${entityType}/${entityId}`
+        canonicalUrl: `https://api.openalex.org/${entityType}/${entityId}`,
       };
     }
   } catch {
@@ -377,7 +405,7 @@ function parseRelativeQuery(key: string): ParsedKey | null {
       entityType: path,
       queryParams,
       originalKey: key,
-      canonicalUrl: `https://api.openalex.org/${path}?${queryString}`
+      canonicalUrl: `https://api.openalex.org/${path}?${queryString}`,
     };
   } catch {
     return null;
@@ -394,7 +422,7 @@ function parseEntityPath(key: string): ParsedKey | null {
       entityType,
       entityId,
       originalKey: key,
-      canonicalUrl: `https://api.openalex.org/${entityType}/${entityId}`
+      canonicalUrl: `https://api.openalex.org/${entityType}/${entityId}`,
     };
   }
   return null;
@@ -408,7 +436,7 @@ function parseDirectEntityId(key: string): ParsedKey | null {
     entityType,
     entityId: key,
     originalKey: key,
-    canonicalUrl: `https://api.openalex.org/${entityType}/${key}`
+    canonicalUrl: `https://api.openalex.org/${entityType}/${key}`,
   };
 }
 
@@ -437,19 +465,19 @@ function inferEntityTypeFromId(id: string): string {
 async function downloadEntityWithEncodedFilename(
   entityType: string,
   entityId: string,
-  targetFilePath: string
+  targetFilePath: string,
 ): Promise<boolean | "not_found" | { redirected: true; finalUrl: string }> {
   try {
     // Entity type mapping (same as in openalex-downloader)
     const ENTITY_TYPE_TO_ENDPOINT: Record<string, string> = {
-      "authors": "authors",
-      "works": "works",
-      "institutions": "institutions",
-      "topics": "topics",
-      "publishers": "publishers",
-      "funders": "funders",
-      "sources": "sources",
-      "concepts": "concepts"
+      authors: "authors",
+      works: "works",
+      institutions: "institutions",
+      topics: "topics",
+      publishers: "publishers",
+      funders: "funders",
+      sources: "sources",
+      concepts: "concepts",
     };
 
     const endpoint = ENTITY_TYPE_TO_ENDPOINT[entityType];
@@ -461,7 +489,10 @@ async function downloadEntityWithEncodedFilename(
     // Construct API URL using same config as openalex-downloader
     const apiUrl = `https://api.openalex.org/${endpoint}/${entityId}`;
 
-    logger.debug("general", "Downloading entity from OpenAlex", { entityType, entityId });
+    logger.debug("general", "Downloading entity from OpenAlex", {
+      entityType,
+      entityId,
+    });
 
     // Follow redirects manually to handle chains and track final URL
     let currentUrl = apiUrl;
@@ -483,7 +514,7 @@ async function downloadEntityWithEncodedFilename(
             entityType,
             entityId,
             status: response.status,
-            currentUrl
+            currentUrl,
           });
           return false;
         }
@@ -498,7 +529,7 @@ async function downloadEntityWithEncodedFilename(
           status: response.status,
           from: currentUrl,
           to: redirectUrl,
-          redirectCount: redirectCount + 1
+          redirectCount: redirectCount + 1,
         });
 
         currentUrl = redirectUrl;
@@ -510,24 +541,33 @@ async function downloadEntityWithEncodedFilename(
       // Non-redirect response - process it
       if (!response.ok) {
         if (response.status === 404) {
-          logger.warn("general", "Entity not found (404) after redirect chain - will remove from index", {
-            entityType,
-            entityId,
-            status: response.status,
-            finalUrl,
-            redirectChain: redirectChain.length > 1 ? redirectChain : undefined
-          });
+          logger.warn(
+            "general",
+            "Entity not found (404) after redirect chain - will remove from index",
+            {
+              entityType,
+              entityId,
+              status: response.status,
+              finalUrl,
+              redirectChain:
+                redirectChain.length > 1 ? redirectChain : undefined,
+            },
+          );
           return "not_found";
         }
 
-        logger.error("general", "Failed to download entity after redirect chain", {
-          entityType,
-          entityId,
-          status: response.status,
-          statusText: response.statusText,
-          finalUrl,
-          redirectChain: redirectChain.length > 1 ? redirectChain : undefined
-        });
+        logger.error(
+          "general",
+          "Failed to download entity after redirect chain",
+          {
+            entityType,
+            entityId,
+            status: response.status,
+            statusText: response.statusText,
+            finalUrl,
+            redirectChain: redirectChain.length > 1 ? redirectChain : undefined,
+          },
+        );
         return false;
       }
 
@@ -537,7 +577,7 @@ async function downloadEntityWithEncodedFilename(
         logger.error("general", "Failed to download entity: empty response", {
           entityType,
           entityId,
-          finalUrl
+          finalUrl,
         });
         return false;
       }
@@ -553,17 +593,24 @@ async function downloadEntityWithEncodedFilename(
       const wasRedirected = redirectCount > 0;
 
       if (wasRedirected) {
-        logger.debug("general", "Downloaded and saved redirected entity after chain", {
-          entityType,
-          entityId,
-          originalUrl: apiUrl,
-          finalUrl,
-          redirectCount,
-          redirectChain
-        });
+        logger.debug(
+          "general",
+          "Downloaded and saved redirected entity after chain",
+          {
+            entityType,
+            entityId,
+            originalUrl: apiUrl,
+            finalUrl,
+            redirectCount,
+            redirectChain,
+          },
+        );
         return { redirected: true, finalUrl };
       } else {
-        logger.debug("general", "Downloaded and saved entity", { entityType, entityId });
+        logger.debug("general", "Downloaded and saved entity", {
+          entityType,
+          entityId,
+        });
         return true;
       }
     }
@@ -573,14 +620,14 @@ async function downloadEntityWithEncodedFilename(
       entityType,
       entityId,
       maxRedirects,
-      redirectChain
+      redirectChain,
     });
     return false;
   } catch (error) {
     logger.error("general", "Error downloading entity", {
       entityType,
       entityId,
-      error: error instanceof Error ? error.message : String(error)
+      error: error instanceof Error ? error.message : String(error),
     });
     return false;
   }
@@ -592,7 +639,10 @@ export function openalexDataPlugin(): Plugin {
     buildStart: {
       order: "pre",
       async handler() {
-        logger.debug("general", "Starting comprehensive OpenAlex data management");
+        logger.debug(
+          "general",
+          "Starting comprehensive OpenAlex data management",
+        );
 
         const dataPath = "apps/web/public/data/openalex";
 
@@ -604,14 +654,18 @@ export function openalexDataPlugin(): Plugin {
             let index = await loadUnifiedIndex(dataPath, entityType);
 
             // 2. Seed missing data based on index entries and get updates to apply
-            const { keysToRemove, redirectUpdates } = await seedMissingData(dataPath, entityType, index);
+            const { keysToRemove, redirectUpdates } = await seedMissingData(
+              dataPath,
+              entityType,
+              index,
+            );
 
             // 3. Apply index updates: remove 404 entries and update redirected entries
             if (keysToRemove.size > 0 || redirectUpdates.length > 0) {
               logger.debug("general", "Applying index updates", {
                 removals: keysToRemove.size,
                 redirects: redirectUpdates.length,
-                entityType
+                entityType,
               });
 
               // Create new index without removed keys and with updated redirected keys
@@ -624,12 +678,17 @@ export function openalexDataPlugin(): Plugin {
                 }
 
                 // Check if this key has a redirect update
-                const redirectUpdate = redirectUpdates.find(update => update.oldKey === key);
+                const redirectUpdate = redirectUpdates.find(
+                  (update) => update.oldKey === key,
+                );
                 if (redirectUpdate) {
                   // Use new key with updated metadata
                   const fixedMetadata = { ...redirectUpdate.metadata };
                   // Fix $ref if it exists and needs updating
-                  if ("$ref" in fixedMetadata && typeof fixedMetadata.$ref === "string") {
+                  if (
+                    "$ref" in fixedMetadata &&
+                    typeof fixedMetadata.$ref === "string"
+                  ) {
                     fixedMetadata.$ref = `./${urlToEncodedKey(redirectUpdate.newKey)}.json`;
                   }
                   updatedIndex[redirectUpdate.newKey] = fixedMetadata;
@@ -645,7 +704,7 @@ export function openalexDataPlugin(): Plugin {
                 removedCount: keysToRemove.size,
                 redirectedCount: redirectUpdates.length,
                 totalCount: Object.keys(index).length,
-                entityType
+                entityType,
               });
             }
 
@@ -656,39 +715,48 @@ export function openalexDataPlugin(): Plugin {
             await migrateQueryFilesToEntityDirectory(dataPath, entityType);
 
             // 6. Scan and update unified index with both entities and queries
-            const unifiedIndex = await updateUnifiedIndex(dataPath, entityType, index);
+            const unifiedIndex = await updateUnifiedIndex(
+              dataPath,
+              entityType,
+              index,
+            );
 
             // 7. Save unified index
             await saveUnifiedIndex(dataPath, entityType, unifiedIndex);
-
           } catch (error) {
             logger.error("general", "Error processing entity type", {
               entityType,
-              error: error instanceof Error ? error.message : String(error)
+              error: error instanceof Error ? error.message : String(error),
             });
           }
         }
 
         // Generate main index with JSON $ref structure
         try {
-          logger.debug("general", "Generating main index with JSON $ref structure");
+          logger.debug(
+            "general",
+            "Generating main index with JSON $ref structure",
+          );
           await generateMainIndex(dataPath);
         } catch (error) {
           logger.error("general", "Error generating main index", {
-            error: error instanceof Error ? error.message : String(error)
+            error: error instanceof Error ? error.message : String(error),
           });
         }
 
         logger.debug("general", "OpenAlex data management completed");
-      }
-    }
+      },
+    },
   };
 }
 
 /**
  * Load unified index for an entity type
  */
-async function loadUnifiedIndex(dataPath: string, entityType: string): Promise<UnifiedIndex> {
+async function loadUnifiedIndex(
+  dataPath: string,
+  entityType: string,
+): Promise<UnifiedIndex> {
   const indexPath = join(dataPath, entityType, "index.json");
 
   try {
@@ -700,7 +768,9 @@ async function loadUnifiedIndex(dataPath: string, entityType: string): Promise<U
     if (requestsWrapper.success) {
       // Clean and normalize existing unified format from requests
       const cleaned: UnifiedIndex = {};
-      for (const [key, entry] of Object.entries(requestsWrapper.data.requests)) {
+      for (const [key, entry] of Object.entries(
+        requestsWrapper.data.requests,
+      )) {
         // Validate entry structure
         const validatedEntry = IndexEntrySchema.safeParse(entry);
         if (!validatedEntry.success) continue;
@@ -710,7 +780,9 @@ async function loadUnifiedIndex(dataPath: string, entityType: string): Promise<U
         if (parsedKey && parsedKey.type === "entity") {
           // Only include entity entries in the entity index
           // Normalize the canonical URL to decoded form
-          const canonicalKey = normalizeUrlForDeduplication(parsedKey.canonicalUrl);
+          const canonicalKey = normalizeUrlForDeduplication(
+            parsedKey.canonicalUrl,
+          );
           const cleanEntry: IndexEntry = {};
           if (validatedEntry.data.lastModified) {
             cleanEntry.lastModified = validatedEntry.data.lastModified;
@@ -722,8 +794,12 @@ async function loadUnifiedIndex(dataPath: string, entityType: string): Promise<U
           // Merge with existing entry if duplicate canonical keys exist
           if (cleaned[canonicalKey]) {
             // Keep the most recent lastModified
-            if (cleanEntry.lastModified && (!cleaned[canonicalKey].lastModified ||
-                cleanEntry.lastModified > (cleaned[canonicalKey].lastModified ?? ''))) {
+            if (
+              cleanEntry.lastModified &&
+              (!cleaned[canonicalKey].lastModified ||
+                cleanEntry.lastModified >
+                  (cleaned[canonicalKey].lastModified ?? ""))
+            ) {
               cleaned[canonicalKey] = cleanEntry;
             }
           } else {
@@ -738,7 +814,10 @@ async function loadUnifiedIndex(dataPath: string, entityType: string): Promise<U
     // Try parsing as flat index format
     const flatIndex = FlatIndexSchema.safeParse(parsed);
     if (flatIndex.success) {
-      logger.debug("general", "Converting flat index format to requests wrapper format");
+      logger.debug(
+        "general",
+        "Converting flat index format to requests wrapper format",
+      );
       // Clean and normalize existing unified format from flat structure
       const cleaned: UnifiedIndex = {};
       for (const [key, entry] of Object.entries(flatIndex.data)) {
@@ -746,7 +825,9 @@ async function loadUnifiedIndex(dataPath: string, entityType: string): Promise<U
         const parsedKey = parseIndexKey(key);
         if (parsedKey) {
           // Normalize the canonical URL to decoded form
-          const canonicalKey = normalizeUrlForDeduplication(parsedKey.canonicalUrl);
+          const canonicalKey = normalizeUrlForDeduplication(
+            parsedKey.canonicalUrl,
+          );
           const cleanEntry: IndexEntry = {};
           if (entry.lastModified) {
             cleanEntry.lastModified = entry.lastModified;
@@ -758,8 +839,12 @@ async function loadUnifiedIndex(dataPath: string, entityType: string): Promise<U
           // Merge with existing entry if duplicate canonical keys exist
           if (cleaned[canonicalKey]) {
             // Keep the most recent lastModified
-            if (cleanEntry.lastModified && (!cleaned[canonicalKey].lastModified ||
-                cleanEntry.lastModified > (cleaned[canonicalKey].lastModified ?? ''))) {
+            if (
+              cleanEntry.lastModified &&
+              (!cleaned[canonicalKey].lastModified ||
+                cleanEntry.lastModified >
+                  (cleaned[canonicalKey].lastModified ?? ""))
+            ) {
               cleaned[canonicalKey] = cleanEntry;
             }
           } else {
@@ -791,7 +876,9 @@ function convertOldIndexToUnified(oldIndex: unknown): UnifiedIndex {
     for (const entityId of entityIndex.data.entities) {
       // Ensure entityId has proper OpenAlex prefix
       const prefix = getEntityPrefix(entityIndex.data.entityType);
-      const fullEntityId = entityId.startsWith(prefix) ? entityId : prefix + entityId;
+      const fullEntityId = entityId.startsWith(prefix)
+        ? entityId
+        : prefix + entityId;
 
       // Create canonical URL entry
       const canonicalKey = `https://api.openalex.org/${entityIndex.data.entityType}/${fullEntityId}`;
@@ -807,11 +894,14 @@ function convertOldIndexToUnified(oldIndex: unknown): UnifiedIndex {
     if (Array.isArray(queryIndex.data.queries)) {
       // New flexible query format
       for (const queryEntry of queryIndex.data.queries) {
-        const canonicalKey = generateCanonicalQueryKey(queryEntry.query, entityType);
+        const canonicalKey = generateCanonicalQueryKey(
+          queryEntry.query,
+          entityType,
+        );
         if (canonicalKey) {
           const cleanEntry: IndexEntry = {
             lastModified: queryEntry.lastModified,
-            contentHash: queryEntry.contentHash
+            contentHash: queryEntry.contentHash,
           };
           unified[canonicalKey] = cleanEntry;
         }
@@ -820,7 +910,10 @@ function convertOldIndexToUnified(oldIndex: unknown): UnifiedIndex {
       // Old object-based query format
       for (const [, entry] of Object.entries(queryIndex.data.queries)) {
         // Generate canonical key from the old entry
-        const canonicalKey = generateCanonicalQueryKeyFromEntry(entry, entityType);
+        const canonicalKey = generateCanonicalQueryKeyFromEntry(
+          entry,
+          entityType,
+        );
         if (canonicalKey) {
           // Parse the entry with Zod to ensure type safety
           const parsedEntry = QueryDefinitionSchema.safeParse(entry);
@@ -845,7 +938,10 @@ function convertOldIndexToUnified(oldIndex: unknown): UnifiedIndex {
 /**
  * Generate canonical query key from a query definition
  */
-function generateCanonicalQueryKey(query: unknown, entityType: string): string | null {
+function generateCanonicalQueryKey(
+  query: unknown,
+  entityType: string,
+): string | null {
   const parsed = QueryDefinitionSchema.safeParse(query);
   if (!parsed.success) {
     return null;
@@ -876,7 +972,10 @@ function generateCanonicalQueryKey(query: unknown, entityType: string): string |
 /**
  * Generate canonical query key from old entry format
  */
-function generateCanonicalQueryKeyFromEntry(entry: unknown, entityType: string): string | null {
+function generateCanonicalQueryKeyFromEntry(
+  entry: unknown,
+  entityType: string,
+): string | null {
   const parsed = QueryDefinitionSchema.safeParse(entry);
   if (!parsed.success) {
     return null;
@@ -907,14 +1006,26 @@ function generateCanonicalQueryKeyFromEntry(entry: unknown, entityType: string):
  * Seed missing data based on unified index entries
  * Returns updates to be applied to the index: removals and redirects
  */
-async function seedMissingData(dataPath: string, entityType: string, index: UnifiedIndex): Promise<{
+async function seedMissingData(
+  dataPath: string,
+  entityType: string,
+  index: UnifiedIndex,
+): Promise<{
   keysToRemove: Set<string>;
-  redirectUpdates: Array<{ oldKey: string; newKey: string; metadata: IndexEntry }>;
+  redirectUpdates: Array<{
+    oldKey: string;
+    newKey: string;
+    metadata: IndexEntry;
+  }>;
 }> {
   let downloadedEntities = 0;
   let executedQueries = 0;
   const keysToRemove = new Set<string>();
-  const redirectUpdates: Array<{ oldKey: string; newKey: string; metadata: IndexEntry }> = [];
+  const redirectUpdates: Array<{
+    oldKey: string;
+    newKey: string;
+    metadata: IndexEntry;
+  }> = [];
 
   for (const [key, metadata] of Object.entries(index)) {
     // Check if this key contains malformed patterns and can be cleaned
@@ -924,34 +1035,46 @@ async function seedMissingData(dataPath: string, entityType: string, index: Unif
       logger.warn("general", "Found malformed index key - will fix", {
         entityType,
         originalKey: key,
-        cleanedKey: cleanKey
+        cleanedKey: cleanKey,
       });
 
       // Parse the cleaned key to verify it's valid and belongs to this entity type
       const cleanedParsed = parseIndexKey(cleanKey);
-      if (cleanedParsed && cleanedParsed.entityType === entityType && cleanedParsed.type === "entity") {
+      if (
+        cleanedParsed &&
+        cleanedParsed.entityType === entityType &&
+        cleanedParsed.type === "entity"
+      ) {
         // Valid cleaned key - add to redirect updates
         redirectUpdates.push({
           oldKey: key,
           newKey: cleanKey,
           metadata: {
             ...metadata,
-            lastModified: new Date().toISOString()
-          }
+            lastModified: new Date().toISOString(),
+          },
         });
-        logger.warn("general", "Will replace malformed key with cleaned version", {
-          entityType,
-          oldKey: key,
-          newKey: cleanKey
-        });
+        logger.warn(
+          "general",
+          "Will replace malformed key with cleaned version",
+          {
+            entityType,
+            oldKey: key,
+            newKey: cleanKey,
+          },
+        );
       } else {
         // Cleaned key is still invalid or doesn't belong to this entity type
         logger.warn("general", "Cleaned key is still invalid - will remove", {
           entityType,
           originalKey: key,
           cleanedKey: cleanKey,
-          ...(cleanedParsed?.entityType !== undefined && { cleanedEntityType: cleanedParsed.entityType }),
-          ...(cleanedParsed?.type !== undefined && { cleanedType: cleanedParsed.type })
+          ...(cleanedParsed?.entityType !== undefined && {
+            cleanedEntityType: cleanedParsed.entityType,
+          }),
+          ...(cleanedParsed?.type !== undefined && {
+            cleanedType: cleanedParsed.type,
+          }),
         });
         keysToRemove.add(key);
       }
@@ -963,7 +1086,7 @@ async function seedMissingData(dataPath: string, entityType: string, index: Unif
       // If we can't parse it even after cleaning, mark for removal
       logger.warn("general", "Unparseable index key - will remove", {
         entityType,
-        key
+        key,
       });
       keysToRemove.add(key);
       continue;
@@ -982,25 +1105,34 @@ async function seedMissingData(dataPath: string, entityType: string, index: Unif
       } catch {
         // File doesn't exist - download it
         try {
-          logger.debug("general", "Downloading entity", { entityType, entityId: parsed.entityId });
+          logger.debug("general", "Downloading entity", {
+            entityType,
+            entityId: parsed.entityId,
+          });
           await mkdir(join(dataPath, entityType), { recursive: true });
           if (parsed.entityId) {
-            const result = await downloadEntityWithEncodedFilename(entityType, parsed.entityId, entityFilePath);
+            const result = await downloadEntityWithEncodedFilename(
+              entityType,
+              parsed.entityId,
+              entityFilePath,
+            );
 
             if (result === true) {
-              logger.debug("general", "Downloaded entity file", { encodedFilename });
+              logger.debug("general", "Downloaded entity file", {
+                encodedFilename,
+              });
               downloadedEntities++;
             } else if (result === "not_found") {
               logger.warn("general", "Entity not found - removing from index", {
                 entityId: parsed.entityId,
-                key
+                key,
               });
               keysToRemove.add(key);
             } else if (typeof result === "object" && "redirected" in result) {
               logger.warn("general", "Entity redirected - updating index key", {
                 entityId: parsed.entityId,
                 oldKey: key,
-                newKey: result.finalUrl
+                newKey: result.finalUrl,
               });
 
               // Add redirect update
@@ -1009,22 +1141,28 @@ async function seedMissingData(dataPath: string, entityType: string, index: Unif
                 newKey: result.finalUrl,
                 metadata: {
                   ...metadata,
-                  lastModified: new Date().toISOString()
-                }
+                  lastModified: new Date().toISOString(),
+                },
               });
               downloadedEntities++;
             } else {
-              logger.warn("general", "Failed to download entity: no data returned", { entityId: parsed.entityId });
+              logger.warn(
+                "general",
+                "Failed to download entity: no data returned",
+                { entityId: parsed.entityId },
+              );
             }
           }
         } catch (downloadError) {
           logger.error("general", "Error downloading entity", {
             entityId: parsed.entityId,
-            error: downloadError instanceof Error ? downloadError.message : String(downloadError)
+            error:
+              downloadError instanceof Error
+                ? downloadError.message
+                : String(downloadError),
           });
         }
       }
-
     } else {
       // Check if query result file exists in the entity directory
       const filename = generateFilenameFromParsedKey(parsed);
@@ -1046,16 +1184,26 @@ async function seedMissingData(dataPath: string, entityType: string, index: Unif
             const entityDir = join(dataPath, entityType);
             await mkdir(entityDir, { recursive: true });
             // Write the query result directly to entity directory
-            await writeFile(join(entityDir, filename), JSON.stringify(queryResult, null, 2));
+            await writeFile(
+              join(entityDir, filename),
+              JSON.stringify(queryResult, null, 2),
+            );
             logger.debug("general", "Executed and cached query", { filename });
             executedQueries++;
           } else {
-            logger.warn("general", "Failed to execute query: no data returned", { key });
+            logger.warn(
+              "general",
+              "Failed to execute query: no data returned",
+              { key },
+            );
           }
         } catch (queryError) {
           logger.error("general", "Error executing query", {
             key,
-            error: queryError instanceof Error ? queryError.message : String(queryError)
+            error:
+              queryError instanceof Error
+                ? queryError.message
+                : String(queryError),
           });
         }
       }
@@ -1063,7 +1211,10 @@ async function seedMissingData(dataPath: string, entityType: string, index: Unif
   }
 
   if (downloadedEntities > 0 || executedQueries > 0) {
-    logger.debug("general", "Downloaded entities and executed queries", { downloadedEntities, executedQueries });
+    logger.debug("general", "Downloaded entities and executed queries", {
+      downloadedEntities,
+      executedQueries,
+    });
   } else {
     logger.debug("general", "All referenced data files present");
   }
@@ -1071,14 +1222,14 @@ async function seedMissingData(dataPath: string, entityType: string, index: Unif
   if (keysToRemove.size > 0) {
     logger.debug("general", "Found invalid entities to remove from index", {
       count: keysToRemove.size,
-      entityType
+      entityType,
     });
   }
 
   if (redirectUpdates.length > 0) {
     logger.debug("general", "Found redirected entities to update in index", {
       count: redirectUpdates.length,
-      entityType
+      entityType,
     });
   }
 
@@ -1102,7 +1253,10 @@ function formatJsonConsistently(jsonContent: string): string {
 /**
  * Reformat existing JSON files for consistency
  */
-async function reformatExistingFiles(dataPath: string, entityType: string): Promise<void> {
+async function reformatExistingFiles(
+  dataPath: string,
+  entityType: string,
+): Promise<void> {
   const entityDir = join(dataPath, entityType);
 
   try {
@@ -1129,7 +1283,9 @@ async function reformatExistingFiles(dataPath: string, entityType: string): Prom
     }
 
     if (reformattedCount > 0) {
-      logger.debug("general", "Reformatted files for consistent formatting", { reformattedCount });
+      logger.debug("general", "Reformatted files for consistent formatting", {
+        reformattedCount,
+      });
     }
   } catch {
     // Directory doesn't exist or other error - skip silently
@@ -1141,14 +1297,16 @@ async function reformatExistingFiles(dataPath: string, entityType: string): Prom
  * Uses standard URL encoding for safe filename generation
  */
 function urlToEncodedKey(url: string): string {
-  return encodeURIComponent(url)
-    // Remove extra dot encoding - encodeURIComponent already handles URL safety
-    // .replace(/\./g, "%2E")  // Don't double-encode dots
-    .replace(/!/g, "%21")   // Encode exclamation marks
-    .replace(/'/g, "%27")   // Encode single quotes
-    .replace(/\(/g, "%28") // Encode parentheses
-    .replace(/\)/g, "%29")
-    .replace(/\*/g, "%2A"); // Encode asterisks
+  return (
+    encodeURIComponent(url)
+      // Remove extra dot encoding - encodeURIComponent already handles URL safety
+      // .replace(/\./g, "%2E")  // Don't double-encode dots
+      .replace(/!/g, "%21") // Encode exclamation marks
+      .replace(/'/g, "%27") // Encode single quotes
+      .replace(/\(/g, "%28") // Encode parentheses
+      .replace(/\)/g, "%29")
+      .replace(/\*/g, "%2A")
+  ); // Encode asterisks
 }
 
 /**
@@ -1171,7 +1329,11 @@ function generateFilenameFromParsedKey(parsed: ParsedKey): string | null {
 /**
  * Update unified index with both entity and query file metadata
  */
-async function updateUnifiedIndex(dataPath: string, entityType: string, index: UnifiedIndex): Promise<UnifiedIndex> {
+async function updateUnifiedIndex(
+  dataPath: string,
+  entityType: string,
+  index: UnifiedIndex,
+): Promise<UnifiedIndex> {
   // Scan entity files
   const entityDir = join(dataPath, entityType);
   try {
@@ -1188,16 +1350,18 @@ async function updateUnifiedIndex(dataPath: string, entityType: string, index: U
             entityType,
             file,
             entityId,
-            filePath
+            filePath,
           });
           try {
             await unlink(filePath);
-            logger.debug("general", "Successfully removed malformed file", { filePath });
+            logger.debug("general", "Successfully removed malformed file", {
+              filePath,
+            });
             continue; // Skip processing this file
           } catch (error) {
             logger.error("general", "Failed to remove malformed file", {
               filePath,
-              error: error instanceof Error ? error.message : String(error)
+              error: error instanceof Error ? error.message : String(error),
             });
             // Continue processing even if removal failed
           }
@@ -1206,7 +1370,9 @@ async function updateUnifiedIndex(dataPath: string, entityType: string, index: U
         try {
           const fileStat = await stat(filePath);
           const fileContent = await readFile(filePath, "utf-8");
-          const contentHash = generateContentHash(JSON.parse(fileContent));
+          const contentHash = await generateContentHash(
+            JSON.parse(fileContent),
+          );
 
           // Determine file type based on content structure only
           let fileType: "entity" | "query" = "entity";
@@ -1216,7 +1382,12 @@ async function updateUnifiedIndex(dataPath: string, entityType: string, index: U
             if (Array.isArray(parsed)) {
               // Query results as direct array
               fileType = "query";
-            } else if (parsed && typeof parsed === "object" && "results" in parsed && Array.isArray(parsed.results)) {
+            } else if (
+              parsed &&
+              typeof parsed === "object" &&
+              "results" in parsed &&
+              Array.isArray(parsed.results)
+            ) {
               // Query results wrapped in object with results property
               fileType = "query";
             }
@@ -1224,9 +1395,9 @@ async function updateUnifiedIndex(dataPath: string, entityType: string, index: U
             // If we can't parse, assume it's an entity file
           }
 
-          const metadata: IndexEntry = {
+          const metadata: UnifiedIndexEntry = {
             lastModified: fileStat.mtime.toISOString(),
-            contentHash
+            contentHash,
           };
 
           if (fileType === "entity") {
@@ -1260,7 +1431,9 @@ async function updateUnifiedIndex(dataPath: string, entityType: string, index: U
               } else {
                 // This is a simple entity ID - construct the canonical URL
                 const prefix = getEntityPrefix(entityType);
-                const fullEntityId = entityId.startsWith(prefix) ? entityId : prefix + entityId;
+                const fullEntityId = entityId.startsWith(prefix)
+                  ? entityId
+                  : prefix + entityId;
                 canonicalUrl = `https://api.openalex.org/${entityType}/${fullEntityId}`;
               }
             }
@@ -1270,16 +1443,25 @@ async function updateUnifiedIndex(dataPath: string, entityType: string, index: U
             Object.assign(index[canonicalUrl], metadata);
           } else {
             // This is a query file
-            const canonicalQueryUrl = determineCanonicalQueryUrl(entityType, entityId, fileContent);
+            const canonicalQueryUrl = determineCanonicalQueryUrl(
+              entityType,
+              entityId,
+              fileContent,
+            );
             if (canonicalQueryUrl) {
               // Use canonical URL as index key
 
               // Check for duplicates with same content hash
               let isDuplicate = false;
-              for (const [existingKey, existingEntry] of Object.entries(index)) {
+              for (const [existingKey, existingEntry] of Object.entries(
+                index,
+              )) {
                 if (existingEntry.contentHash === contentHash) {
                   isDuplicate = true;
-                  logger.debug("general", "Skipping duplicate query", { canonicalQueryUrl, matchesKey: existingKey });
+                  logger.debug("general", "Skipping duplicate query", {
+                    canonicalQueryUrl,
+                    matchesKey: existingKey,
+                  });
                   break;
                 }
               }
@@ -1287,13 +1469,18 @@ async function updateUnifiedIndex(dataPath: string, entityType: string, index: U
               if (!isDuplicate) {
                 index[canonicalQueryUrl] ??= {};
                 Object.assign(index[canonicalQueryUrl], metadata);
-                logger.debug("general", "Added query to index", { canonicalQueryUrl });
+                logger.debug("general", "Added query to index", {
+                  canonicalQueryUrl,
+                });
               }
             } else {
-              logger.warn("general", "Could not determine canonical URL for query file", { file });
+              logger.warn(
+                "general",
+                "Could not determine canonical URL for query file",
+                { file },
+              );
             }
           }
-
         } catch {
           logger.warn("general", "Error reading file", { file });
         }
@@ -1308,17 +1495,20 @@ async function updateUnifiedIndex(dataPath: string, entityType: string, index: U
 
   logger.debug("general", "Updated unified index with entities and queries", {
     entityType,
-    entryCount: Object.keys(index).length
+    entryCount: Object.keys(index).length,
   });
   return index;
 }
-
 
 /**
  * Determine the canonical query URL for a query file
  * This tries multiple approaches to decode the filename and reconstruct the original query
  */
-function determineCanonicalQueryUrl(entityType: string, filename: string, fileContent: string): string | null {
+function determineCanonicalQueryUrl(
+  entityType: string,
+  filename: string,
+  fileContent: string,
+): string | null {
   // Try multiple decoding approaches
 
   // Approach 1: Try standard URL decoding
@@ -1338,12 +1528,14 @@ function determineCanonicalQueryUrl(entityType: string, filename: string, fileCo
   try {
     if (filename.startsWith("https-:")) {
       // Decode: https-::api.openalex.org:autocomplete?q="..." → https://api.openalex.org/autocomplete?q="..."
-      logger.debug("general", "Decoding legacy custom URL encoding", { filename });
+      logger.debug("general", "Decoding legacy custom URL encoding", {
+        filename,
+      });
       let withoutProtocol = filename.substring(7); // Remove 'https-:'
       withoutProtocol = withoutProtocol
-        .replace(/:/g, "/")     // : → /
-        .replace(/-/g, "=")     // - → =
-        .replace(/%22/g, '"');  // %22 → "
+        .replace(/:/g, "/") // : → /
+        .replace(/-/g, "=") // - → =
+        .replace(/%22/g, '"'); // %22 → "
       const decodedUrl = `https://${withoutProtocol}`;
       logger.debug("general", "Legacy decoded to", { decodedUrl });
       return decodedUrl;
@@ -1360,7 +1552,9 @@ function determineCanonicalQueryUrl(entityType: string, filename: string, fileCo
       const searchParams = new URLSearchParams();
       for (const [key, value] of Object.entries(params)) {
         if (Array.isArray(value)) {
-          const stringArray = value.filter((item): item is string => typeof item === "string");
+          const stringArray = value.filter(
+            (item): item is string => typeof item === "string",
+          );
           searchParams.set(key, stringArray.join(","));
         } else {
           searchParams.set(key, String(value));
@@ -1420,7 +1614,11 @@ function determineCanonicalQueryUrl(entityType: string, filename: string, fileCo
       "results" in queryResult &&
       Array.isArray(queryResult.results)
     ) {
-      const reconstructedUrl = reverseEngineerQueryUrl(entityType, queryResult, filename);
+      const reconstructedUrl = reverseEngineerQueryUrl(
+        entityType,
+        queryResult,
+        filename,
+      );
       if (reconstructedUrl) {
         return reconstructedUrl;
       }
@@ -1430,7 +1628,9 @@ function determineCanonicalQueryUrl(entityType: string, filename: string, fileCo
   }
 
   // Approach 6: Fallback - decode filename to reconstruct URL
-  logger.warn("general", "Using filename-based URL reconstruction", { filename });
+  logger.warn("general", "Using filename-based URL reconstruction", {
+    filename,
+  });
   try {
     // Try to decode the filename as URL-encoded
     const cleanFilename = filename.replace(/\.json$/, "");
@@ -1452,7 +1652,11 @@ function determineCanonicalQueryUrl(entityType: string, filename: string, fileCo
 /**
  * Try to reverse-engineer the original query URL from the results
  */
-function reverseEngineerQueryUrl(entityType: string, queryResult: unknown, _filename: string): string | null {
+function reverseEngineerQueryUrl(
+  entityType: string,
+  queryResult: unknown,
+  _filename: string,
+): string | null {
   if (
     !queryResult ||
     typeof queryResult !== "object" ||
@@ -1478,14 +1682,23 @@ function reverseEngineerQueryUrl(entityType: string, queryResult: unknown, _file
   // Common patterns to detect:
 
   // Pattern 1: If only id, display_name, publication_year -> likely author.id query with select
-  if (fields.length === 3 && fields.includes("id") && fields.includes("display_name") && fields.includes("publication_year")) {
+  if (
+    fields.length === 3 &&
+    fields.includes("id") &&
+    fields.includes("display_name") &&
+    fields.includes("publication_year")
+  ) {
     // This looks like filter=author.id:XXXX&select=id,display_name,publication_year
     // Try to infer the author ID from the pattern or use a common one we know exists
     return `https://api.openalex.org/${entityType}?filter=author.id:A5017898742&select=id,display_name,publication_year`;
   }
 
   // Pattern 2: If only id, display_name -> likely author.id query with select
-  if (fields.length === 2 && fields.includes("id") && fields.includes("display_name")) {
+  if (
+    fields.length === 2 &&
+    fields.includes("id") &&
+    fields.includes("display_name")
+  ) {
     return `https://api.openalex.org/${entityType}?filter=author.id:A5017898742&select=id,display_name`;
   }
 
@@ -1516,7 +1729,10 @@ function reverseEngineerQueryUrl(entityType: string, queryResult: unknown, _file
  * Remove duplicate entries where both prefixed and non-prefixed versions exist
  * Keep the prefixed version (canonical) and remove the non-prefixed version
  */
-function deduplicateIndexEntries(index: UnifiedIndex, entityType: string): UnifiedIndex {
+function deduplicateIndexEntries(
+  index: UnifiedIndex,
+  entityType: string,
+): UnifiedIndex {
   const prefix = getEntityPrefix(entityType);
   const keysToRemove: string[] = [];
 
@@ -1540,7 +1756,7 @@ function deduplicateIndexEntries(index: UnifiedIndex, entityType: string): Unifi
           keysToRemove.push(key);
           logger.debug("general", "Removing duplicate non-prefixed entry", {
             entityId,
-            keeping: `${prefix}${entityId}`
+            keeping: `${prefix}${entityId}`,
           });
         }
       }
@@ -1548,21 +1764,30 @@ function deduplicateIndexEntries(index: UnifiedIndex, entityType: string): Unifi
   }
 
   // Remove the duplicate entries by creating new object
-  const filteredEntries = Object.entries(index).filter(([key]) => !keysToRemove.includes(key));
+  const filteredEntries = Object.entries(index).filter(
+    ([key]) => !keysToRemove.includes(key),
+  );
   return Object.fromEntries(filteredEntries);
 }
 
 /**
  * Save unified index to file with requests wrapper
  */
-async function saveUnifiedIndex(dataPath: string, entityType: string, index: UnifiedIndex) {
+async function saveUnifiedIndex(
+  dataPath: string,
+  entityType: string,
+  index: UnifiedIndex,
+) {
   const indexPath = join(dataPath, entityType, "index.json");
 
   try {
     await mkdir(join(dataPath, entityType), { recursive: true });
 
     // Convert the index to use $ref pointers while preserving metadata
-    const refIndex: Record<string, { $ref: string; lastModified: string; contentHash: string }> = {};
+    const refIndex: Record<
+      string,
+      { $ref: string; lastModified: string; contentHash: string }
+    > = {};
 
     for (const [canonicalUrl, metadata] of Object.entries(index)) {
       // Generate encoded filename from canonical URL
@@ -1572,19 +1797,20 @@ async function saveUnifiedIndex(dataPath: string, entityType: string, index: Uni
       refIndex[canonicalUrl] = {
         $ref: `./${encodedFilename}`,
         lastModified: metadata.lastModified ?? new Date().toISOString(),
-        contentHash: metadata.contentHash ?? ""
+        contentHash: metadata.contentHash ?? "",
       };
     }
 
     // Write the flattened index directly (no requests wrapper)
     await writeFile(indexPath, JSON.stringify(refIndex, null, 2));
-    logger.debug("general", "Saved unified index with $ref pointers and metadata");
+    logger.debug(
+      "general",
+      "Saved unified index with $ref pointers and metadata",
+    );
   } catch (error) {
     logger.error("general", "Error saving unified index", error);
   }
 }
-
-
 
 /**
  * Normalize URL by decoding URL-encoded characters for deduplication
@@ -1598,12 +1824,16 @@ function normalizeUrlForDeduplication(url: string): string {
   }
 }
 
-
 /**
  * Migrate query files from queries subdirectory to entity directory with simplified names
  */
-async function migrateQueryFilesToEntityDirectory(dataPath: string, entityType: string) {
-  logger.debug("general", "Migrating query files to entity directory", { entityType });
+async function migrateQueryFilesToEntityDirectory(
+  dataPath: string,
+  entityType: string,
+) {
+  logger.debug("general", "Migrating query files to entity directory", {
+    entityType,
+  });
 
   const entityDir = join(dataPath, entityType);
   const queriesDir = join(dataPath, entityType, "queries");
@@ -1620,7 +1850,11 @@ async function migrateQueryFilesToEntityDirectory(dataPath: string, entityType: 
           const fileContent = await readFile(queryFilePath, "utf-8");
 
           // Determine if this is a query file and get its canonical URL
-          const canonicalUrl = determineCanonicalQueryUrl(entityType, file.replace(".json", ""), fileContent);
+          const canonicalUrl = determineCanonicalQueryUrl(
+            entityType,
+            file.replace(".json", ""),
+            fileContent,
+          );
 
           if (canonicalUrl) {
             // Generate the simplified filename
@@ -1632,7 +1866,9 @@ async function migrateQueryFilesToEntityDirectory(dataPath: string, entityType: 
               // Check if the target file already exists
               try {
                 await stat(newFilePath);
-                logger.debug("general", "File already exists, skipping", { newFilename });
+                logger.debug("general", "File already exists, skipping", {
+                  newFilename,
+                });
                 continue;
               } catch {
                 // File doesn't exist, proceed with move
@@ -1645,16 +1881,25 @@ async function migrateQueryFilesToEntityDirectory(dataPath: string, entityType: 
                 // Remove from old location
                 await unlink(queryFilePath);
 
-                logger.debug("general", "Moved query file", { from: file, to: newFilename });
+                logger.debug("general", "Moved query file", {
+                  from: file,
+                  to: newFilename,
+                });
                 movedFiles++;
               } catch {
                 logger.warn("general", "Failed to move file", { file });
               }
             } else {
-              logger.warn("general", "Could not generate filename for file", { file });
+              logger.warn("general", "Could not generate filename for file", {
+                file,
+              });
             }
           } else {
-            logger.warn("general", "Could not determine canonical URL for file", { file });
+            logger.warn(
+              "general",
+              "Could not determine canonical URL for file",
+              { file },
+            );
           }
         } catch {
           logger.warn("general", "Could not process query file", { file });
@@ -1666,7 +1911,9 @@ async function migrateQueryFilesToEntityDirectory(dataPath: string, entityType: 
   }
 
   if (movedFiles > 0) {
-    logger.debug("general", "Moved query files to entity directory", { movedFiles });
+    logger.debug("general", "Moved query files to entity directory", {
+      movedFiles,
+    });
   } else {
     logger.debug("general", "No query files found to move");
   }
@@ -1720,25 +1967,29 @@ async function generateMainIndex(dataPath: string): Promise<void> {
   discoveredEntityTypes.sort();
 
   // Create JSON Schema compliant main index that references and spreads all entity indexes
-  const entityRefs = discoveredEntityTypes.map(entityType => ({
-    $ref: `./${entityType}/index.json`
+  const entityRefs = discoveredEntityTypes.map((entityType) => ({
+    $ref: `./${entityType}/index.json`,
   }));
 
   // Check if main index exists and compare content structure (excluding lastModified)
-  let existingMainIndex: { lastModified?: string; [key: string]: unknown } | null = null;
+  let existingMainIndex: {
+    lastModified?: string;
+    [key: string]: unknown;
+  } | null = null;
   try {
     const existingContent = await readFile(mainIndexPath, "utf-8");
     const parsed: unknown = JSON.parse(existingContent);
     if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
       // Safe property access without type assertion
       const hasLastModified = "lastModified" in parsed;
-      const lastModifiedValue = hasLastModified && typeof parsed.lastModified === "string"
-        ? parsed.lastModified
-        : undefined;
+      const lastModifiedValue =
+        hasLastModified && typeof parsed.lastModified === "string"
+          ? parsed.lastModified
+          : undefined;
 
       existingMainIndex = {
         lastModified: lastModifiedValue,
-        ...Object.fromEntries(Object.entries(parsed))
+        ...Object.fromEntries(Object.entries(parsed)),
       };
     }
   } catch {
@@ -1750,17 +2001,20 @@ async function generateMainIndex(dataPath: string): Promise<void> {
     $schema: "https://json-schema.org/draft/2020-12/schema",
     $id: "https://api.openalex.org/schema/index",
     title: "OpenAlex Static Data Index",
-    description: "Root index merging all entity-specific data via JSON Schema references",
+    description:
+      "Root index merging all entity-specific data via JSON Schema references",
     entityType: "object",
     version: "1.0.0",
-    allOf: entityRefs
+    allOf: entityRefs,
   };
 
   // Compare content structure (excluding lastModified) to determine if update is needed
   let contentChanged = true;
   if (existingMainIndex) {
-    const { lastModified: _existingLastModified, ...existingContent } = existingMainIndex;
-    const contentMatches = JSON.stringify(existingContent) === JSON.stringify(newMainIndexContent);
+    const { lastModified: _existingLastModified, ...existingContent } =
+      existingMainIndex;
+    const contentMatches =
+      JSON.stringify(existingContent) === JSON.stringify(newMainIndexContent);
     contentChanged = !contentMatches;
   }
 
@@ -1769,19 +2023,23 @@ async function generateMainIndex(dataPath: string): Promise<void> {
     ...newMainIndexContent,
     lastModified: contentChanged
       ? new Date().toISOString()
-      : existingMainIndex?.lastModified ?? new Date().toISOString()
+      : (existingMainIndex?.lastModified ?? new Date().toISOString()),
   };
 
   // Only write if content has changed
   if (contentChanged) {
     await writeFile(mainIndexPath, JSON.stringify(mainIndex, null, 2), "utf-8");
-    logger.debug("general", "Updated main index with JSON Schema $ref structure", {
-      entityTypeCount: discoveredEntityTypes.length,
-      contentChanged
-    });
+    logger.debug(
+      "general",
+      "Updated main index with JSON Schema $ref structure",
+      {
+        entityTypeCount: discoveredEntityTypes.length,
+        contentChanged,
+      },
+    );
   } else {
     logger.debug("general", "Main index content unchanged - skipping write", {
-      entityTypeCount: discoveredEntityTypes.length
+      entityTypeCount: discoveredEntityTypes.length,
     });
   }
 }

@@ -1,17 +1,28 @@
 {
-  "lastUpdated": "2025-10-06T12:15:41.476Z",
+  "lastUpdated": "2025-10-08T14:04:37.251Z",
   "files": {
     "A5006060960": {
-      "url": "https://api.openalex.org?%2Fauthors%2FA5006060960=",
+      "url": "https://api.openalex.org/authors/A5006060960",
       "$ref": "./A5006060960.json",
-      "lastRetrieved": "2025-10-06T12:15:41.373Z",
-      "contentHash": "c6bc20a8b301606c"
+      "lastRetrieved": "2025-10-06T14:10:23.497Z",
+      "contentHash": "c6bc20a8b301606c",
+      "equivalentUrls": [
+        "https://api.openalex.org/authors/A5006060960"
+      ],
+      "urlTimestamps": {
+        "https://api.openalex.org/authors/A5006060960": "2025-10-06T14:10:23.497Z"
+      },
+      "collisionInfo": {
+        "mergedCount": 0,
+        "totalUrls": 1
+      }
+    },
+    "A123456789": {
+      "url": "https://api.openalex.org/authors/A123456789",
+      "$ref": "./A123456789.json",
+      "lastRetrieved": "2025-10-08T14:04:37.250Z",
+      "contentHash": "076a62d97d063dfd"
     }
   },
-  "directories": {
-    "queries": {
-      "$ref": "./queries",
-      "lastModified": "2025-10-06T12:03:17.037Z"
-    }
-  }
+  "directories": {}
 }
