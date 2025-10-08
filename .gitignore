@@ -83,8 +83,7 @@ packages/*/coverage
 graph.json
 
 # Test cache data files (generated during test execution with unified hex encoding)
-apps/web/public/data/openalex/*
-!apps/web/public/data/openalex/index.json
+
 test-results.json
 debug-homepage.png
 
