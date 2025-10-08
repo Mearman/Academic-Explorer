@@ -747,7 +747,8 @@ export function hasCollision(
   const entryPath = getCacheFilePathFn(entry.url, "");
   const urlPath = getCacheFilePathFn(url, "");
 
-  console.log(
+  logger.debug(
+    "cache",
     `hasCollision: entryPath="${entryPath}", urlPath="${urlPath}", equal=${entryPath === urlPath}`,
   );
 
