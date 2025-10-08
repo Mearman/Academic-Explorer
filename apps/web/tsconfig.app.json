@@ -32,15 +32,22 @@
   },
   "include": ["src"],
   "exclude": [
-    "src/**/*.test.ts",
-    "src/**/*.test.tsx",
-    "src/**/*.spec.ts",
-    "src/**/*.spec.tsx",
-    "src/test/**/*",
     "packages/shared-utils/src/openalex/debug-types.ts",
     "packages/shared-utils/src/openalex/test-advanced-fields.ts",
     "src/scripts/environmental-prisma-search-fixed.ts",
     "src/scripts/environmental-prisma-search.ts",
-    "src/scripts/find-non-prisma-equivalents.ts"
+    "src/scripts/find-non-prisma-equivalents.ts",
+    "src/build-plugins",
+    "**/*.test.*",
+    "**/*.spec.*",
+    "src/__tests__"
+  ]
+  "exclude": [
+    "packages/shared-utils/src/openalex/debug-types.ts",
+    "packages/shared-utils/src/openalex/test-advanced-fields.ts",
+    "src/scripts/environmental-prisma-search-fixed.ts",
+    "src/scripts/environmental-prisma-search.ts",
+    "src/scripts/find-non-prisma-equivalents.ts",
+    "src/build-plugins"
   ]
 }

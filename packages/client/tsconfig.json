@@ -1,24 +1,9 @@
 {
+  "extends": "../../tsconfig.library.json",
   "compilerOptions": {
-    "composite": true,
-    "target": "ES2022",
-    "lib": ["ES2022"],
-    "module": "ES2022",
-    "moduleResolution": "bundler",
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "strict": false,
-    "declaration": true,
-    "declarationMap": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": false,
-    "outDir": "./dist",
-    "declarationDir": "./dist",
     "rootDir": "./src",
-    "incremental": true,
-    "tsBuildInfoFile": "./dist/.tsbuildinfo",
-    "assumeChangesOnlyAffectDirectDependencies": true
+    "outDir": "./dist",
+    "tsBuildInfoFile": "./dist/.tsbuildinfo"
   },
   "include": ["src/**/*"],
   "exclude": [
@@ -28,9 +13,5 @@
     "**/*.spec.ts",
     "src/test-generator/**/*"
   ],
-  "references": [
-    {
-      "path": "../utils"
-    }
-  ]
+  "references": [{ "path": "../utils" }]
 }

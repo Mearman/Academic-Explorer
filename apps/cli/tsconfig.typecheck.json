@@ -18,12 +18,16 @@
     "incremental": true,
     "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "assumeChangesOnlyAffectDirectDependencies": true,
-    "composite": true
+    "composite": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@academic-explorer/client": ["../../packages/client/dist/index.d.ts"],
+      "@academic-explorer/client/*": ["../../packages/client/dist/*"],
+      "@academic-explorer/utils": ["../../packages/utils/dist/index.d.ts"],
+      "@academic-explorer/utils/*": ["../../packages/utils/dist/*"]
+    }
   },
-  "include": ["src/**/*"],
-  "exclude": ["dist", "node_modules", "**/*.test.ts"],
-  "references": [
-    { "path": "../../packages/client" },
-    { "path": "../../packages/utils" }
-  ]
+  "include": ["src/**/*", "**/*.test.*", "**/*.spec.*"],
+  "exclude": ["dist"]
 }

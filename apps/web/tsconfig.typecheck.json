@@ -1,0 +1,29 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@academic-explorer/graph": ["../../packages/graph/src/index.ts"],
+      "@academic-explorer/graph/*": ["../../packages/graph/src/*"],
+      "@academic-explorer/utils": ["../../packages/utils/src/index.ts"],
+      "@academic-explorer/utils/*": ["../../packages/utils/src/*"],
+      "@academic-explorer/simulation": [
+        "../../packages/simulation/src/index.ts"
+      ],
+      "@academic-explorer/simulation/*": ["../../packages/simulation/src/*"],
+      "@academic-explorer/client": ["../../packages/client/dist/index.d.ts"],
+      "@academic-explorer/client/*": ["../../packages/client/dist/*"],
+      "@academic-explorer/ui": ["../../packages/ui/src/index.ts"],
+      "@academic-explorer/ui/*": ["../../packages/ui/src/*"],
+      "@academic-explorer/ui/components/ViewToggle": [
+        "../../packages/ui/src/components/ViewToggle/index.ts"
+      ],
+      "@academic-explorer/ui/components/entity-views": [
+        "../../packages/ui/src/components/entity-views/index.ts"
+      ]
+    }
+  },
+  "include": ["src/**/*", "**/*.test.*", "**/*.spec.*"],
+  "exclude": ["src/build-plugins/**/*"]
+}

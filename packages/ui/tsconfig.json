@@ -1,29 +1,9 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "../../tsconfig.react.json",
   "compilerOptions": {
-    "declaration": true,
-    "outDir": "./dist",
     "rootDir": "./src",
-    "noEmit": false,
-    "jsx": "react-jsx",
-    "moduleResolution": "bundler",
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "isolatedModules": true,
-    "skipLibCheck": true,
-    "strict": false,
-    "incremental": true,
-    "composite": true,
-    "tsBuildInfoFile": "./dist/.tsbuildinfo",
-    "assumeChangesOnlyAffectDirectDependencies": true
+    "outDir": "./dist",
+    "tsBuildInfoFile": "./dist/.tsbuildinfo"
   },
-  "include": ["src/**/*"],
-  "exclude": [
-    "**/*.test.*",
-    "**/*.spec.*",
-    "**/*.stories.*",
-    "dist",
-    "node_modules"
-  ],
   "references": [{ "path": "../client" }, { "path": "../utils" }]
 }

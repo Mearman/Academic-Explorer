@@ -1,16 +1,17 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "../../tsconfig.library.json",
   "compilerOptions": {
-    "declaration": true,
-    "outDir": "./dist",
     "rootDir": "./src",
-    "composite": true,
-    "noEmit": false,
+    "outDir": "./dist",
     "tsBuildInfoFile": "./dist/.tsbuildinfo"
   },
   "include": ["src/**/*"],
-  "exclude": ["**/*.test.*", "**/*.spec.*", "src/__tests__/**/*", "dist"],
-  "references": [
-    { "path": "../utils" }
-  ]
+  "exclude": [
+    "**/*.test.*",
+    "**/*.spec.*",
+    "src/__tests__/**/*",
+    "dist",
+    "node_modules"
+  ],
+  "references": [{ "path": "../utils" }]
 }
