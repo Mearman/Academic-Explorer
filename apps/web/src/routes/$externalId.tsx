@@ -51,7 +51,12 @@ function ExternalIdRoute() {
           return;
         }
 
-        logger.debug(`ExternalIdRoute: Processing external ID: ${decodedId}`);
+        logger.debug(
+          "routing",
+          `ExternalIdRoute: Processing external ID: ${decodedId}`,
+          { decodedId },
+          "ExternalIdRoute",
+        );
 
         // Detect entity type and ID type
         const detection = EntityDetectionService.detectEntity(decodedId);

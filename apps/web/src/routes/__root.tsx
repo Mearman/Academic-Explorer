@@ -5,7 +5,7 @@ import { logger } from "@academic-explorer/utils/logger";
 import { themeClass } from "../styles/theme.css";
 
 function RootLayout() {
-  logger.debug("RootLayout: Rendering");
+  logger.debug("routing", "RootLayout: Rendering", {}, "RootLayout");
   return (
     <div
       className={themeClass}
