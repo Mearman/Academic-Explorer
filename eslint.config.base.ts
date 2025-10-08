@@ -8,6 +8,7 @@ import path from "path";
 import tseslint from "typescript-eslint";
 import { fileURLToPath } from "url";
 import noEmojiPlugin from "./eslint-rules/no-emoji.ts";
+import testFileNamingPlugin from "./eslint-rules/test-file-naming.ts";
 
 /**
  * Base ESLint configuration for Academic Explorer monorepo
@@ -91,6 +92,7 @@ export default tseslint.config([
       "unused-imports": unusedImports,
       "@nx": nxPlugin,
       "no-emoji-plugin": noEmojiPlugin,
+      "test-file-naming-plugin": testFileNamingPlugin,
     },
     rules: {
       // TypeScript-specific rules
@@ -197,6 +199,7 @@ export default tseslint.config([
       "@typescript-eslint/no-unsafe-assignment": "off",
       "@typescript-eslint/no-unsafe-member-access": "off",
       "no-console": "off",
+      "test-file-naming-plugin/test-file-naming": "error",
     },
   },
   {
