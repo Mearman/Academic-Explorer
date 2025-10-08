@@ -19,12 +19,13 @@ export class PluginState {
     // Otherwise, treat as relative to project root
     if (staticDataPath.startsWith("apps/")) {
       // Find workspace root (parent of apps/ directory)
-      const workspaceRoot = config.root.includes("/apps/")
-        ? config.root.substring(0, config.root.indexOf("/apps/") + 1)
-        : config.root;
+      const root = config.root || process.cwd();
+      const workspaceRoot = root.includes("/apps/")
+        ? root.substring(0, root.indexOf("/apps/") + 1)
+        : root;
       this.staticDataDir = join(workspaceRoot, staticDataPath);
     } else {
-      this.staticDataDir = join(config.root, staticDataPath);
+      this.staticDataDir = join(config.root || process.cwd(), staticDataPath);
     }
   }
 
