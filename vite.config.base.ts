@@ -3,6 +3,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 // Workspace-level Vite configuration
 // Individual apps have their own vite.config.ts files for app-specific overrides
 const getEnvironmentConfig = () => {
