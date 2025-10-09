@@ -7,7 +7,7 @@
  * Format a date to ISO string (YYYY-MM-DD)
  */
 export function formatDateToISO(date: Date): string {
-  const parts = date.toISOString().split('T');
+  const parts = date.toISOString().split("T");
   return parts[0] ?? "";
 }
 
@@ -15,22 +15,26 @@ export function formatDateToISO(date: Date): string {
  * Format a date to a human-readable string
  */
 export function formatDateToHuman(date: Date): string {
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  }) || "";
+  return (
+    date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }) || ""
+  );
 }
 
 /**
  * Format a date to a short string (MM/DD/YYYY)
  */
 export function formatDateToShort(date: Date): string {
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  }) || "";
+  return (
+    date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }) || ""
+  );
 }
 
 /**
@@ -75,7 +79,11 @@ export function msBetween(date1: Date, date2: Date): number {
 /**
  * Check if a date is within a certain range
  */
-export function isDateInRange(date: Date, startDate: Date, endDate: Date): boolean {
+export function isDateInRange(
+  date: Date,
+  startDate: Date,
+  endDate: Date,
+): boolean {
   return date >= startDate && date <= endDate;
 }
 
@@ -203,7 +211,10 @@ export function isFuture(date: Date): boolean {
  * it likely indicates a system clock mismatch and returns "just now" to avoid
  * confusing displays like "in 1 year" for recent builds.
  */
-export function getRelativeTime(date: Date, baseDate: Date = new Date()): string {
+export function getRelativeTime(
+  date: Date,
+  baseDate: Date = new Date(),
+): string {
   const diffMs = date.getTime() - baseDate.getTime();
   const diffSeconds = Math.floor(diffMs / 1000);
   const diffMinutes = Math.floor(diffSeconds / 60);
@@ -214,57 +225,57 @@ export function getRelativeTime(date: Date, baseDate: Date = new Date()): string
   const diffYears = Math.floor(diffDays / 365);
 
   const isPastDate = diffMs < 0;
-  const {abs} = Math;
+  const { abs } = Math;
 
   // If date is significantly in the future (>1 week), likely a clock mismatch
   // Return "just now" instead of confusing future dates
   if (!isPastDate && abs(diffDays) >= 7) {
-    return 'just now';
+    return "just now";
   }
 
   if (abs(diffYears) >= 1) {
     const years = abs(diffYears);
     return isPastDate
-      ? `${years} year${years > 1 ? 's' : ''} ago`
-      : `in ${years} year${years > 1 ? 's' : ''}`;
+      ? `${years} year${years > 1 ? "s" : ""} ago`
+      : `in ${years} year${years > 1 ? "s" : ""}`;
   }
 
   if (abs(diffMonths) >= 1) {
     const months = abs(diffMonths);
     return isPastDate
-      ? `${months} month${months > 1 ? 's' : ''} ago`
-      : `in ${months} month${months > 1 ? 's' : ''}`;
+      ? `${months} month${months > 1 ? "s" : ""} ago`
+      : `in ${months} month${months > 1 ? "s" : ""}`;
   }
 
   if (abs(diffWeeks) >= 1) {
     const weeks = abs(diffWeeks);
     return isPastDate
-      ? `${weeks} week${weeks > 1 ? 's' : ''} ago`
-      : `in ${weeks} week${weeks > 1 ? 's' : ''}`;
+      ? `${weeks} week${weeks > 1 ? "s" : ""} ago`
+      : `in ${weeks} week${weeks > 1 ? "s" : ""}`;
   }
 
   if (abs(diffDays) >= 1) {
     const days = abs(diffDays);
     return isPastDate
-      ? `${days} day${days > 1 ? 's' : ''} ago`
-      : `in ${days} day${days > 1 ? 's' : ''}`;
+      ? `${days} day${days > 1 ? "s" : ""} ago`
+      : `in ${days} day${days > 1 ? "s" : ""}`;
   }
 
   if (abs(diffHours) >= 1) {
     const hours = abs(diffHours);
     return isPastDate
-      ? `${hours} hour${hours > 1 ? 's' : ''} ago`
-      : `in ${hours} hour${hours > 1 ? 's' : ''}`;
+      ? `${hours} hour${hours > 1 ? "s" : ""} ago`
+      : `in ${hours} hour${hours > 1 ? "s" : ""}`;
   }
 
   if (abs(diffMinutes) >= 1) {
     const minutes = abs(diffMinutes);
     return isPastDate
-      ? `${minutes} minute${minutes > 1 ? 's' : ''} ago`
-      : `in ${minutes} minute${minutes > 1 ? 's' : ''}`;
+      ? `${minutes} minute${minutes > 1 ? "s" : ""} ago`
+      : `in ${minutes} minute${minutes > 1 ? "s" : ""}`;
   }
 
-  return 'just now';
+  return "just now";
 }
 
 /**
@@ -301,7 +312,11 @@ export function formatElapsed(startTime: number): string {
 /**
  * Create a date range array between two dates
  */
-export function createDateRange(startDate: Date, endDate: Date, stepDays = 1): Date[] {
+export function createDateRange(
+  startDate: Date,
+  endDate: Date,
+  stepDays = 1,
+): Date[] {
   const dates: Date[] = [];
   const current = new Date(startDate);
 
@@ -324,18 +339,20 @@ export function getDaysInMonth(year: number, month: number): number {
  * Check if a year is a leap year
  */
 export function isLeapYear(year: number): boolean {
-  return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
 }
 
 /**
  * Get the week number of the year for a date
  */
 export function getWeekNumber(date: Date): number {
-  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const d = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+  );
   const dayNum = d.getUTCDay() || 7;
   d.setUTCDate(d.getUTCDate() + 4 - dayNum);
   const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
 }
 
 /**
