@@ -60,7 +60,6 @@ function AuthorRoute() {
         search: (prev) => prev, // Preserve existing search params
         replace: true,
       });
-      return;
     }
   }, [authorId, navigate]);
 

@@ -46,7 +46,6 @@ function WorkRoute() {
         search: (prev) => prev, // Preserve existing search params
         replace: true,
       });
-      return;
     }
   }, [workId, navigate]);
 

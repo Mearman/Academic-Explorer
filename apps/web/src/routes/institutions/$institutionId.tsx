@@ -46,7 +46,6 @@ function InstitutionRoute() {
         search: (prev) => prev, // Preserve existing search params
         replace: true,
       });
-      return;
     }
   }, [institutionId, navigate]);
 
