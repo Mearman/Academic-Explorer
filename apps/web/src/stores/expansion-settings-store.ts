@@ -49,7 +49,7 @@ interface ExpansionSettingsState {
 // Initialize with default settings
 const initializeDefaultSettings = (): Record<ExpansionTarget, ExpansionSettings> => {
 	// Explicitly create the complete settings object with all required keys
-	const settings = {
+	return {
 		// Entity types
 		works: getDefaultSettingsForTarget("works"),
 		authors: getDefaultSettingsForTarget("authors"),
@@ -78,8 +78,6 @@ const initializeDefaultSettings = (): Record<ExpansionTarget, ExpansionSettings>
 		[RelationType.FUNDER_LOCATED_IN]: getDefaultSettingsForTarget(RelationType.FUNDER_LOCATED_IN),
 		[RelationType.TOPIC_PART_OF_FIELD]: getDefaultSettingsForTarget(RelationType.TOPIC_PART_OF_FIELD)
 	};
-
-	return settings;
 };
 
 export const useExpansionSettingsStore = create<ExpansionSettingsState>()(

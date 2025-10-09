@@ -6,7 +6,11 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import type { GraphNode, GraphEdge, EntityType } from "@academic-explorer/graph";
+import type {
+  GraphNode,
+  GraphEdge,
+  EntityType,
+} from "@academic-explorer/graph";
 import { RelationType } from "@academic-explorer/graph";
 import { createHybridStorage } from "@academic-explorer/utils/storage";
 import { logger } from "@academic-explorer/utils/logger";
@@ -69,316 +73,326 @@ interface RepositoryState {
 
 // Helper function to create initial node type filter state
 const createInitialNodeTypeFilter = (): Record<EntityType, boolean> => ({
-	works: true,
-	authors: true,
-	sources: true,
-	institutions: true,
-	topics: true,
-	concepts: true,
-	publishers: true,
-	funders: true,
-	keywords: true,
+  works: true,
+  authors: true,
+  sources: true,
+  institutions: true,
+  topics: true,
+  concepts: true,
+  publishers: true,
+  funders: true,
+  keywords: true,
 });
 
 // Helper function to create initial edge type filter state
 const createInitialEdgeTypeFilter = (): Record<RelationType, boolean> => ({
-	[RelationType.AUTHORED]: true,
-	[RelationType.AFFILIATED]: true,
-	[RelationType.PUBLISHED_IN]: true,
-	[RelationType.FUNDED_BY]: true,
-	[RelationType.REFERENCES]: true,
-	[RelationType.RELATED_TO]: true,
-	[RelationType.SOURCE_PUBLISHED_BY]: true,
-	[RelationType.INSTITUTION_CHILD_OF]: true,
-	[RelationType.PUBLISHER_CHILD_OF]: true,
-	[RelationType.WORK_HAS_TOPIC]: true,
-	[RelationType.WORK_HAS_KEYWORD]: true,
-	[RelationType.AUTHOR_RESEARCHES]: true,
-	[RelationType.INSTITUTION_LOCATED_IN]: true,
-	[RelationType.FUNDER_LOCATED_IN]: true,
-	[RelationType.TOPIC_PART_OF_FIELD]: true,
+  [RelationType.AUTHORED]: true,
+  [RelationType.AFFILIATED]: true,
+  [RelationType.PUBLISHED_IN]: true,
+  [RelationType.FUNDED_BY]: true,
+  [RelationType.REFERENCES]: true,
+  [RelationType.RELATED_TO]: true,
+  [RelationType.SOURCE_PUBLISHED_BY]: true,
+  [RelationType.INSTITUTION_CHILD_OF]: true,
+  [RelationType.PUBLISHER_CHILD_OF]: true,
+  [RelationType.WORK_HAS_TOPIC]: true,
+  [RelationType.WORK_HAS_KEYWORD]: true,
+  [RelationType.AUTHOR_RESEARCHES]: true,
+  [RelationType.INSTITUTION_LOCATED_IN]: true,
+  [RelationType.FUNDER_LOCATED_IN]: true,
+  [RelationType.TOPIC_PART_OF_FIELD]: true,
 });
 
 export const useRepositoryStore = create<RepositoryState>()(
-	persist(
-		immer((set, get) => ({
-			// Initial state
-			repositoryMode: false,
-			repositoryNodes: {},
-			repositoryEdges: {},
-			searchQuery: "",
-			nodeTypeFilter: createInitialNodeTypeFilter(),
-			edgeTypeFilter: createInitialEdgeTypeFilter(),
-			selectedRepositoryNodes: {},
-			selectedRepositoryEdges: {},
+  persist(
+    immer((set, get) => ({
+      // Initial state
+      repositoryMode: false,
+      repositoryNodes: {},
+      repositoryEdges: {},
+      searchQuery: "",
+      nodeTypeFilter: createInitialNodeTypeFilter(),
+      edgeTypeFilter: createInitialEdgeTypeFilter(),
+      selectedRepositoryNodes: {},
+      selectedRepositoryEdges: {},
 
-			// Cached computed state
-			filteredNodes: [],
-			filteredEdges: [],
-			totalNodeCount: 0,
-			totalEdgeCount: 0,
-			selectedNodeCount: 0,
-			selectedEdgeCount: 0,
+      // Cached computed state
+      filteredNodes: [],
+      filteredEdges: [],
+      totalNodeCount: 0,
+      totalEdgeCount: 0,
+      selectedNodeCount: 0,
+      selectedEdgeCount: 0,
 
-			// Repository mode actions
-			setRepositoryMode: (enabled: boolean) => {
-				set(state => {
-					state.repositoryMode = enabled;
-					logger.debug("repository", `Repository mode ${enabled ? "enabled" : "disabled"}`, {
-						nodeCount: Object.keys(state.repositoryNodes).length,
-						edgeCount: Object.keys(state.repositoryEdges).length
-					});
-				});
-			},
+      // Repository mode actions
+      setRepositoryMode: (enabled: boolean) => {
+        set((state) => {
+          state.repositoryMode = enabled;
+          logger.debug(
+            "repository",
+            `Repository mode ${enabled ? "enabled" : "disabled"}`,
+            {
+              nodeCount: Object.keys(state.repositoryNodes).length,
+              edgeCount: Object.keys(state.repositoryEdges).length,
+            },
+          );
+        });
+      },
 
-			addToRepository: (nodes: GraphNode[], edges: GraphEdge[] = []) => {
-				set(state => {
-					let addedNodes = 0;
-					let addedEdges = 0;
+      addToRepository: (nodes: GraphNode[], edges: GraphEdge[] = []) => {
+        set((state) => {
+          let addedNodes = 0;
+          let addedEdges = 0;
 
-					// Add nodes
-					for (const node of nodes) {
-						if (!(node.id in state.repositoryNodes)) {
-							state.repositoryNodes[node.id] = node;
-							addedNodes++;
-						}
-					}
+          // Add nodes
+          for (const node of nodes) {
+            if (!(node.id in state.repositoryNodes)) {
+              state.repositoryNodes[node.id] = node;
+              addedNodes++;
+            }
+          }
 
-					// Add edges
-					for (const edge of edges) {
-						if (!(edge.id in state.repositoryEdges)) {
-							state.repositoryEdges[edge.id] = edge;
-							addedEdges++;
-						}
-					}
+          // Add edges
+          for (const edge of edges) {
+            if (!(edge.id in state.repositoryEdges)) {
+              state.repositoryEdges[edge.id] = edge;
+              addedEdges++;
+            }
+          }
 
-					logger.debug("repository", "Added items to repository", {
-						addedNodes,
-						addedEdges,
-						totalNodes: Object.keys(state.repositoryNodes).length,
-						totalEdges: Object.keys(state.repositoryEdges).length
-					});
-				});
+          logger.debug("repository", "Added items to repository", {
+            addedNodes,
+            addedEdges,
+            totalNodes: Object.keys(state.repositoryNodes).length,
+            totalEdges: Object.keys(state.repositoryEdges).length,
+          });
+        });
 
-				// Recompute cached state
-				get().recomputeFilteredNodes();
-				get().recomputeFilteredEdges();
-				get().recomputeCounts();
-			},
+        // Recompute cached state
+        get().recomputeFilteredNodes();
+        get().recomputeFilteredEdges();
+        get().recomputeCounts();
+      },
 
-			removeFromRepository: (nodeIds: string[], edgeIds: string[] = []) => {
-				set(state => {
-					// Remove nodes
-					for (const nodeId of nodeIds) {
-						const { [nodeId]: _, ...remainingNodes } = state.repositoryNodes;
-						state.repositoryNodes = remainingNodes;
-						state.selectedRepositoryNodes[nodeId] = false;
-					}
+      removeFromRepository: (nodeIds: string[], edgeIds: string[] = []) => {
+        set((state) => {
+          // Remove nodes
+          for (const nodeId of nodeIds) {
+            const { [nodeId]: _, ...remainingNodes } = state.repositoryNodes;
+            state.repositoryNodes = remainingNodes;
+            state.selectedRepositoryNodes[nodeId] = false;
+          }
 
-					// Remove edges
-					for (const edgeId of edgeIds) {
-						const { [edgeId]: _, ...remainingEdges } = state.repositoryEdges;
-						state.repositoryEdges = remainingEdges;
-						state.selectedRepositoryEdges[edgeId] = false;
-					}
+          // Remove edges
+          for (const edgeId of edgeIds) {
+            const { [edgeId]: _, ...remainingEdges } = state.repositoryEdges;
+            state.repositoryEdges = remainingEdges;
+            state.selectedRepositoryEdges[edgeId] = false;
+          }
 
-					logger.debug("repository", "Removed items from repository", {
-						removedNodes: nodeIds.length,
-						removedEdges: edgeIds.length,
-						remainingNodes: Object.keys(state.repositoryNodes).length,
-						remainingEdges: Object.keys(state.repositoryEdges).length
-					});
-				});
+          logger.debug("repository", "Removed items from repository", {
+            removedNodes: nodeIds.length,
+            removedEdges: edgeIds.length,
+            remainingNodes: Object.keys(state.repositoryNodes).length,
+            remainingEdges: Object.keys(state.repositoryEdges).length,
+          });
+        });
 
-				// Recompute cached state
-				get().recomputeFilteredNodes();
-				get().recomputeFilteredEdges();
-				get().recomputeCounts();
-			},
+        // Recompute cached state
+        get().recomputeFilteredNodes();
+        get().recomputeFilteredEdges();
+        get().recomputeCounts();
+      },
 
-			clearRepository: () => {
-				set(state => {
-					const nodeCount = Object.keys(state.repositoryNodes).length;
-					const edgeCount = Object.keys(state.repositoryEdges).length;
+      clearRepository: () => {
+        set((state) => {
+          const nodeCount = Object.keys(state.repositoryNodes).length;
+          const edgeCount = Object.keys(state.repositoryEdges).length;
 
-					state.repositoryNodes = {};
-					state.repositoryEdges = {};
-					state.selectedRepositoryNodes = {};
-					state.selectedRepositoryEdges = {};
+          state.repositoryNodes = {};
+          state.repositoryEdges = {};
+          state.selectedRepositoryNodes = {};
+          state.selectedRepositoryEdges = {};
 
-					logger.debug("repository", "Cleared repository", {
-						clearedNodes: nodeCount,
-						clearedEdges: edgeCount
-					});
-				});
+          logger.debug("repository", "Cleared repository", {
+            clearedNodes: nodeCount,
+            clearedEdges: edgeCount,
+          });
+        });
 
-				// Recompute cached state
-				get().recomputeFilteredNodes();
-				get().recomputeFilteredEdges();
-				get().recomputeCounts();
-			},
+        // Recompute cached state
+        get().recomputeFilteredNodes();
+        get().recomputeFilteredEdges();
+        get().recomputeCounts();
+      },
 
-			// Search and filter actions
-			setSearchQuery: (query: string) => {
-				set(state => {
-					state.searchQuery = query;
-				});
-				get().recomputeFilteredNodes();
-				get().recomputeFilteredEdges();
-			},
+      // Search and filter actions
+      setSearchQuery: (query: string) => {
+        set((state) => {
+          state.searchQuery = query;
+        });
+        get().recomputeFilteredNodes();
+        get().recomputeFilteredEdges();
+      },
 
-			setNodeTypeFilter: (entityType: EntityType, enabled: boolean) => {
-				set(state => {
-					state.nodeTypeFilter[entityType] = enabled;
-				});
-				get().recomputeFilteredNodes();
-			},
+      setNodeTypeFilter: (entityType: EntityType, enabled: boolean) => {
+        set((state) => {
+          state.nodeTypeFilter[entityType] = enabled;
+        });
+        get().recomputeFilteredNodes();
+      },
 
-			setEdgeTypeFilter: (relationType: RelationType, enabled: boolean) => {
-				set(state => {
-					state.edgeTypeFilter[relationType] = enabled;
-				});
-				get().recomputeFilteredEdges();
-			},
+      setEdgeTypeFilter: (relationType: RelationType, enabled: boolean) => {
+        set((state) => {
+          state.edgeTypeFilter[relationType] = enabled;
+        });
+        get().recomputeFilteredEdges();
+      },
 
-			resetFilters: () => {
-				set(state => {
-					state.searchQuery = "";
-					state.nodeTypeFilter = createInitialNodeTypeFilter();
-					state.edgeTypeFilter = createInitialEdgeTypeFilter();
-				});
-				get().recomputeFilteredNodes();
-				get().recomputeFilteredEdges();
-			},
+      resetFilters: () => {
+        set((state) => {
+          state.searchQuery = "";
+          state.nodeTypeFilter = createInitialNodeTypeFilter();
+          state.edgeTypeFilter = createInitialEdgeTypeFilter();
+        });
+        get().recomputeFilteredNodes();
+        get().recomputeFilteredEdges();
+      },
 
-			// Selection actions
-			selectRepositoryNode: (nodeId: string, selected: boolean) => {
-				set(state => {
-					if (selected) {
-						state.selectedRepositoryNodes[nodeId] = true;
-					} else {
-						state.selectedRepositoryNodes[nodeId] = false;
-					}
-				});
-				get().recomputeCounts();
-			},
+      // Selection actions
+      selectRepositoryNode: (nodeId: string, selected: boolean) => {
+        set((state) => {
+          if (selected) {
+            state.selectedRepositoryNodes[nodeId] = true;
+          } else {
+            state.selectedRepositoryNodes[nodeId] = false;
+          }
+        });
+        get().recomputeCounts();
+      },
 
-			selectRepositoryEdge: (edgeId: string, selected: boolean) => {
-				set(state => {
-					if (selected) {
-						state.selectedRepositoryEdges[edgeId] = true;
-					} else {
-						state.selectedRepositoryEdges[edgeId] = false;
-					}
-				});
-				get().recomputeCounts();
-			},
+      selectRepositoryEdge: (edgeId: string, selected: boolean) => {
+        set((state) => {
+          if (selected) {
+            state.selectedRepositoryEdges[edgeId] = true;
+          } else {
+            state.selectedRepositoryEdges[edgeId] = false;
+          }
+        });
+        get().recomputeCounts();
+      },
 
-			selectAllNodes: () => {
-				set(state => {
-					const filteredNodes = get().getFilteredNodes();
-					for (const node of filteredNodes) {
-						state.selectedRepositoryNodes[node.id] = true;
-					}
-				});
-				get().recomputeCounts();
-			},
+      selectAllNodes: () => {
+        set((state) => {
+          const filteredNodes = get().getFilteredNodes();
+          for (const node of filteredNodes) {
+            state.selectedRepositoryNodes[node.id] = true;
+          }
+        });
+        get().recomputeCounts();
+      },
 
-			selectAllEdges: () => {
-				set(state => {
-					const filteredEdges = get().getFilteredEdges();
-					for (const edge of filteredEdges) {
-						state.selectedRepositoryEdges[edge.id] = true;
-					}
-				});
-				get().recomputeCounts();
-			},
+      selectAllEdges: () => {
+        set((state) => {
+          const filteredEdges = get().getFilteredEdges();
+          for (const edge of filteredEdges) {
+            state.selectedRepositoryEdges[edge.id] = true;
+          }
+        });
+        get().recomputeCounts();
+      },
 
-			clearAllSelections: () => {
-				set(state => {
-					state.selectedRepositoryNodes = {};
-					state.selectedRepositoryEdges = {};
-				});
-				get().recomputeCounts();
-			},
+      clearAllSelections: () => {
+        set((state) => {
+          state.selectedRepositoryNodes = {};
+          state.selectedRepositoryEdges = {};
+        });
+        get().recomputeCounts();
+      },
 
-			// Computed getters (stable references)
-			getFilteredNodes: () => {
-				return get().filteredNodes;
-			},
+      // Computed getters (stable references)
+      getFilteredNodes: () => {
+        return get().filteredNodes;
+      },
 
-			getFilteredEdges: () => {
-				return get().filteredEdges;
-			},
+      getFilteredEdges: () => {
+        return get().filteredEdges;
+      },
 
-			getSelectedNodes: () => {
-				const state = get();
-				return state.filteredNodes.filter(node => state.selectedRepositoryNodes[node.id]);
-			},
+      getSelectedNodes: () => {
+        const state = get();
+        return state.filteredNodes.filter(
+          (node) => state.selectedRepositoryNodes[node.id],
+        );
+      },
 
-			getSelectedEdges: () => {
-				const state = get();
-				return state.filteredEdges.filter(edge => state.selectedRepositoryEdges[edge.id]);
-			},
+      getSelectedEdges: () => {
+        const state = get();
+        return state.filteredEdges.filter(
+          (edge) => state.selectedRepositoryEdges[edge.id],
+        );
+      },
 
-			// Cache update functions
-			recomputeFilteredNodes: () => {
-				set(state => {
-					const nodes = Object.values(state.repositoryNodes);
-					const query = state.searchQuery.toLowerCase();
+      // Cache update functions
+      recomputeFilteredNodes: () => {
+        set((state) => {
+          const nodes = Object.values(state.repositoryNodes);
+          const query = state.searchQuery.toLowerCase();
 
-					state.filteredNodes = nodes.filter(node => {
-						// Type filter
-						if (!state.nodeTypeFilter[node.entityType]) {
-							return false;
-						}
+          state.filteredNodes = nodes.filter((node) => {
+            // Type filter
+            if (!state.nodeTypeFilter[node.entityType]) {
+              return false;
+            }
 
-						// Search query filter
-						if (query && !node.label.toLowerCase().includes(query)) {
-							return false;
-						}
+            // Search query filter
+            if (query && !node.label.toLowerCase().includes(query)) {
+              return false;
+            }
 
-						return true;
-					});
-				});
-			},
+            return true;
+          });
+        });
+      },
 
-			recomputeFilteredEdges: () => {
-				set(state => {
-					const edges = Object.values(state.repositoryEdges);
+      recomputeFilteredEdges: () => {
+        set((state) => {
+          const edges = Object.values(state.repositoryEdges);
 
-					state.filteredEdges = edges.filter(edge => {
-						// Type filter
-						if (!state.edgeTypeFilter[edge.type]) {
-							return false;
-						}
+          state.filteredEdges = edges.filter((edge) => {
+            // Type filter
+            return state.edgeTypeFilter[edge.type];
+          });
+        });
+      },
 
-						return true;
-					});
-				});
-			},
-
-			recomputeCounts: () => {
-				set(state => {
-					state.totalNodeCount = Object.keys(state.repositoryNodes).length;
-					state.totalEdgeCount = Object.keys(state.repositoryEdges).length;
-					state.selectedNodeCount = Object.keys(state.selectedRepositoryNodes).length;
-					state.selectedEdgeCount = Object.keys(state.selectedRepositoryEdges).length;
-				});
-			},
-		})),
-		{
-			name: "repository-storage",
-			storage: createJSONStorage(() => createHybridStorage({
-				dbName: "academic-explorer",
-				storeName: "repository-store",
-				version: 1
-			})),
-			partialize: (state) => ({
-				repositoryMode: state.repositoryMode,
-				nodeTypeFilter: state.nodeTypeFilter,
-				edgeTypeFilter: state.edgeTypeFilter,
-			}),
-		}
-	)
+      recomputeCounts: () => {
+        set((state) => {
+          state.totalNodeCount = Object.keys(state.repositoryNodes).length;
+          state.totalEdgeCount = Object.keys(state.repositoryEdges).length;
+          state.selectedNodeCount = Object.keys(
+            state.selectedRepositoryNodes,
+          ).length;
+          state.selectedEdgeCount = Object.keys(
+            state.selectedRepositoryEdges,
+          ).length;
+        });
+      },
+    })),
+    {
+      name: "repository-storage",
+      storage: createJSONStorage(() =>
+        createHybridStorage({
+          dbName: "academic-explorer",
+          storeName: "repository-store",
+          version: 1,
+        }),
+      ),
+      partialize: (state) => ({
+        repositoryMode: state.repositoryMode,
+        nodeTypeFilter: state.nodeTypeFilter,
+        edgeTypeFilter: state.edgeTypeFilter,
+      }),
+    },
+  ),
 );

@@ -447,66 +447,80 @@ export function getCacheFilePath(
 
   try {
     if (isQuery) {
-      // Normalize query string to remove sensitive information before caching
-      const normalizedQuery = normalizeQueryForCaching(queryString.slice(1)); // Remove leading '?'
-
-      // If all query parameters were stripped, treat this as a base collection URL
-      if (!normalizedQuery || normalizedQuery === "?") {
-        // Re-classify as base collection: works?api_key=secret → works.json (not works/queries/base.json)
-        if (pathSegments.length === 1) {
-          return `${staticDataRoot}/${pathSegments[0]}.json`;
-        } else if (pathSegments.length > 1) {
-          // For nested paths without meaningful query params
-          const fileName = pathSegments[pathSegments.length - 1];
-          const dirPath = pathSegments.slice(0, -1).join("/");
-          return `${staticDataRoot}/${dirPath}/${fileName}.json`;
-        }
-      }
-
-      // Handle actual query parameters - create query file
-      const baseDir = pathSegments.join("/");
-      const cleanQuery = normalizedQuery.startsWith("?")
-        ? normalizedQuery.slice(1)
-        : normalizedQuery;
-      const queryFilename = sanitizeFilename(cleanQuery);
-
-      // Ensure we have a valid filename for the query
-      if (!queryFilename || queryFilename.trim() === "") {
-        // This should not happen if normalization worked correctly
-        // Log a warning and treat as base collection
-        logger.warn("cache", "Empty query filename after normalization", {
-          url,
-          normalizedQuery,
-        });
-        if (pathSegments.length === 1) {
-          return `${staticDataRoot}/${pathSegments[0]}.json`;
-        }
-        // For complex paths, fall back to entity-style naming
-        const fileName = pathSegments[pathSegments.length - 1];
-        const dirPath = pathSegments.slice(0, -1).join("/");
-        return `${staticDataRoot}/${dirPath}/${fileName}.json`;
-      }
-
-      return `${staticDataRoot}/${baseDir}/queries/${queryFilename}.json`;
-    } else if (pathSegments.length === 2) {
-      // For single entities: /authors/A123 → authors/A123.json
-      const [entityType, entityId] = pathSegments;
-      return `${staticDataRoot}/${entityType}/${entityId}.json`;
-    } else if (pathSegments.length > 2) {
-      // For nested paths: /authors/A123/works → authors/A123/works.json
-      const fileName = pathSegments[pathSegments.length - 1];
-      const dirPath = pathSegments.slice(0, -1).join("/");
-      return `${staticDataRoot}/${dirPath}/${fileName}.json`;
-    } else if (pathSegments.length === 1) {
-      // For root collections: /authors → authors.json (at top level)
-      return `${staticDataRoot}/${pathSegments[0]}.json`;
+      return generateQueryFilePath(pathSegments, queryString, staticDataRoot, url);
     }
-
-    return null;
+    return generateEntityFilePath(pathSegments, staticDataRoot);
   } catch (error) {
     logger.warn("cache", "Failed to generate cache file path", { url, error });
     return null;
   }
+}
+
+function generateQueryFilePath(
+  pathSegments: string[],
+  queryString: string,
+  staticDataRoot: string,
+  url: string
+): string | null {
+  // Normalize query string to remove sensitive information before caching
+  const normalizedQuery = normalizeQueryForCaching(queryString.slice(1)); // Remove leading '?'
+
+  // If all query parameters were stripped, treat this as a base collection URL
+  if (!normalizedQuery || normalizedQuery === "?") {
+    return generateBaseCollectionPath(pathSegments, staticDataRoot);
+  }
+
+  // Handle actual query parameters - create query file
+  const baseDir = pathSegments.join("/");
+  const cleanQuery = normalizedQuery.startsWith("?")
+    ? normalizedQuery.slice(1)
+    : normalizedQuery;
+  const queryFilename = sanitizeFilename(cleanQuery);
+
+  // Ensure we have a valid filename for the query
+  if (!queryFilename || queryFilename.trim() === "") {
+    // This should not happen if normalization worked correctly
+    logger.warn("cache", "Empty query filename after normalization", {
+      url,
+      normalizedQuery,
+    });
+    return generateBaseCollectionPath(pathSegments, staticDataRoot);
+  }
+
+  return `${staticDataRoot}/${baseDir}/queries/${queryFilename}.json`;
+}
+
+function generateEntityFilePath(pathSegments: string[], staticDataRoot: string): string | null {
+  if (pathSegments.length === 1) {
+    // For root collections: /authors → authors.json (at top level)
+    return `${staticDataRoot}/${pathSegments[0]}.json`;
+  }
+
+  if (pathSegments.length === 2) {
+    // For single entities: /authors/A123 → authors/A123.json
+    const [entityType, entityId] = pathSegments;
+    return `${staticDataRoot}/${entityType}/${entityId}.json`;
+  }
+
+  if (pathSegments.length > 2) {
+    // For nested paths: /authors/A123/works → authors/A123/works.json
+    const fileName = pathSegments[pathSegments.length - 1];
+    const dirPath = pathSegments.slice(0, -1).join("/");
+    return `${staticDataRoot}/${dirPath}/${fileName}.json`;
+  }
+
+  return null;
+}
+
+function generateBaseCollectionPath(pathSegments: string[], staticDataRoot: string): string {
+  if (pathSegments.length === 1) {
+    return `${staticDataRoot}/${pathSegments[0]}.json`;
+  }
+
+  // For nested paths without meaningful query params
+  const fileName = pathSegments[pathSegments.length - 1];
+  const dirPath = pathSegments.slice(0, -1).join("/");
+  return `${staticDataRoot}/${dirPath}/${fileName}.json`;
 }
 
 /**
@@ -675,6 +689,27 @@ export function areUrlsEquivalentForCaching(
   url1: string,
   url2: string,
 ): boolean {
+  if (!areValidUrlInputs(url1, url2)) {
+    return false;
+  }
+
+  if (!areValidHttpUrls(url1, url2)) {
+    return false;
+  }
+
+  try {
+    return compareUrlComponents(url1, url2);
+  } catch (error) {
+    logger.warn("cache", "Failed to compare URLs for equivalence", {
+      url1,
+      url2,
+      error,
+    });
+    return false;
+  }
+}
+
+function areValidUrlInputs(url1: string, url2: string): boolean {
   if (
     typeof url1 !== "string" ||
     typeof url2 !== "string" ||
@@ -687,8 +722,10 @@ export function areUrlsEquivalentForCaching(
     });
     return false;
   }
+  return true;
+}
 
-  // Basic validation: must start with http(s)://
+function areValidHttpUrls(url1: string, url2: string): boolean {
   if (
     (!url1.startsWith("http://") && !url1.startsWith("https://")) ||
     (!url2.startsWith("http://") && !url2.startsWith("https://"))
@@ -700,32 +737,26 @@ export function areUrlsEquivalentForCaching(
     );
     return false;
   }
+  return true;
+}
 
-  try {
-    const urlObj1 = new URL(url1);
-    const urlObj2 = new URL(url2);
+function compareUrlComponents(url1: string, url2: string): boolean {
+  const urlObj1 = new URL(url1);
+  const urlObj2 = new URL(url2);
 
-    // Must have same hostname and pathname
-    if (
-      urlObj1.hostname !== urlObj2.hostname ||
-      urlObj1.pathname !== urlObj2.pathname
-    ) {
-      return false;
-    }
-
-    // Normalize both query strings for comparison
-    const normalized1 = normalizeQueryForCaching(urlObj1.search);
-    const normalized2 = normalizeQueryForCaching(urlObj2.search);
-
-    return normalized1 === normalized2;
-  } catch (error) {
-    logger.warn("cache", "Failed to compare URLs for equivalence", {
-      url1,
-      url2,
-      error,
-    });
+  // Must have same hostname and pathname
+  if (
+    urlObj1.hostname !== urlObj2.hostname ||
+    urlObj1.pathname !== urlObj2.pathname
+  ) {
     return false;
   }
+
+  // Normalize both query strings for comparison
+  const normalized1 = normalizeQueryForCaching(urlObj1.search);
+  const normalized2 = normalizeQueryForCaching(urlObj2.search);
+
+  return normalized1 === normalized2;
 }
 
 /**

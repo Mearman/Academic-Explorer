@@ -216,63 +216,33 @@ export function getRelativeTime(
   baseDate: Date = new Date(),
 ): string {
   const diffMs = date.getTime() - baseDate.getTime();
-  const diffSeconds = Math.floor(diffMs / 1000);
-  const diffMinutes = Math.floor(diffSeconds / 60);
-  const diffHours = Math.floor(diffMinutes / 60);
-  const diffDays = Math.floor(diffHours / 24);
-  const diffWeeks = Math.floor(diffDays / 7);
-  const diffMonths = Math.floor(diffDays / 30);
-  const diffYears = Math.floor(diffDays / 365);
-
   const isPastDate = diffMs < 0;
-  const { abs } = Math;
+  const absDiffMs = Math.abs(diffMs);
 
   // If date is significantly in the future (>1 week), likely a clock mismatch
   // Return "just now" instead of confusing future dates
-  if (!isPastDate && abs(diffDays) >= 7) {
+  if (!isPastDate && absDiffMs >= 7 * 24 * 60 * 60 * 1000) {
     return "just now";
   }
 
-  if (abs(diffYears) >= 1) {
-    const years = abs(diffYears);
-    return isPastDate
-      ? `${years} year${years > 1 ? "s" : ""} ago`
-      : `in ${years} year${years > 1 ? "s" : ""}`;
-  }
+  // Define time units in descending order
+  const timeUnits = [
+    { name: "year", divisor: 365 * 24 * 60 * 60 * 1000 },
+    { name: "month", divisor: 30 * 24 * 60 * 60 * 1000 },
+    { name: "week", divisor: 7 * 24 * 60 * 60 * 1000 },
+    { name: "day", divisor: 24 * 60 * 60 * 1000 },
+    { name: "hour", divisor: 60 * 60 * 1000 },
+    { name: "minute", divisor: 60 * 1000 },
+  ];
 
-  if (abs(diffMonths) >= 1) {
-    const months = abs(diffMonths);
-    return isPastDate
-      ? `${months} month${months > 1 ? "s" : ""} ago`
-      : `in ${months} month${months > 1 ? "s" : ""}`;
-  }
-
-  if (abs(diffWeeks) >= 1) {
-    const weeks = abs(diffWeeks);
-    return isPastDate
-      ? `${weeks} week${weeks > 1 ? "s" : ""} ago`
-      : `in ${weeks} week${weeks > 1 ? "s" : ""}`;
-  }
-
-  if (abs(diffDays) >= 1) {
-    const days = abs(diffDays);
-    return isPastDate
-      ? `${days} day${days > 1 ? "s" : ""} ago`
-      : `in ${days} day${days > 1 ? "s" : ""}`;
-  }
-
-  if (abs(diffHours) >= 1) {
-    const hours = abs(diffHours);
-    return isPastDate
-      ? `${hours} hour${hours > 1 ? "s" : ""} ago`
-      : `in ${hours} hour${hours > 1 ? "s" : ""}`;
-  }
-
-  if (abs(diffMinutes) >= 1) {
-    const minutes = abs(diffMinutes);
-    return isPastDate
-      ? `${minutes} minute${minutes > 1 ? "s" : ""} ago`
-      : `in ${minutes} minute${minutes > 1 ? "s" : ""}`;
+  for (const unit of timeUnits) {
+    const value = Math.floor(absDiffMs / unit.divisor);
+    if (value >= 1) {
+      const suffix = value > 1 ? "s" : "";
+      return isPastDate
+        ? `${value} ${unit.name}${suffix} ago`
+        : `in ${value} ${unit.name}${suffix}`;
+    }
   }
 
   return "just now";

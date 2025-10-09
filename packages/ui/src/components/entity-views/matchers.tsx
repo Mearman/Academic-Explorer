@@ -4,15 +4,15 @@
 
 import { validateExternalId } from "@academic-explorer/client";
 import {
-  ActionIcon,
-  Anchor,
-  Badge,
-  Card,
-  Group,
-  Stack,
-  Table,
-  Text,
-  Tooltip,
+    ActionIcon,
+    Anchor,
+    Badge,
+    Card,
+    Group,
+    Stack,
+    Table,
+    Text,
+    Tooltip,
 } from "@mantine/core";
 import { IconCopy, IconExternalLink } from "@tabler/icons-react";
 import React from "react";
@@ -96,7 +96,7 @@ export interface ObjectMatcher {
 
 export interface ValueMatcher {
   name: string;
-  detect: (value: unknown) => boolean;
+  detect: (value: unknown, fieldName?: string) => boolean;
   render: (
     value: unknown,
     fieldName: string,
@@ -469,7 +469,9 @@ const entityIdArrayMatcher: ArrayMatcher = {
           const entityType = getEntityTypeFromId(id);
 
           if (onNavigate && relativeUrl) {
-            const routePath = relativeUrl.startsWith("#/") ? relativeUrl.slice(1) : relativeUrl;
+            const routePath = relativeUrl.startsWith("#/")
+              ? relativeUrl.slice(1)
+              : relativeUrl;
             return (
               <Anchor
                 key={index}
@@ -541,7 +543,9 @@ const affiliationMatcher: ArrayMatcher = {
 
                 if (onNavigate && relativeUrl) {
                   // Strip the hash prefix for router navigation
-                  const routePath = relativeUrl.startsWith("#/") ? relativeUrl.slice(1) : relativeUrl;
+                  const routePath = relativeUrl.startsWith("#/")
+                    ? relativeUrl.slice(1)
+                    : relativeUrl;
                   return (
                     <Anchor
                       href={relativeUrl}
@@ -644,12 +648,8 @@ const idObjectMatcher = {
           const validation = validateExternalId(value);
           let relativeUrl: string | null = null;
 
-          if (validation.isValid) {
-            if (validation.type === "openalex") {
-              relativeUrl = convertToRelativeUrl(
-                `https://openalex.org/${value}`,
-              );
-            }
+          if (validation.isValid && validation.type === "openalex") {
+            relativeUrl = convertToRelativeUrl(`https://openalex.org/${value}`);
             // ROR IDs in ID objects are not linked (handled specially)
           }
 
@@ -661,7 +661,9 @@ const idObjectMatcher = {
                   style={{ textDecoration: "none" }}
                   onClick={(e) => {
                     e.preventDefault();
-                    const routePath = relativeUrl.startsWith("#/") ? relativeUrl.slice(1) : relativeUrl;
+                    const routePath = relativeUrl.startsWith("#/")
+                      ? relativeUrl.slice(1)
+                      : relativeUrl;
                     onNavigate(routePath);
                   }}
                 >
@@ -782,7 +784,9 @@ const entityObjectMatcher = {
     const relativeUrl = convertToRelativeUrl(id);
 
     if (onNavigate && relativeUrl) {
-      const routePath = relativeUrl.startsWith("#/") ? relativeUrl.slice(1) : relativeUrl;
+      const routePath = relativeUrl.startsWith("#/")
+        ? relativeUrl.slice(1)
+        : relativeUrl;
       return (
         <Anchor
           href={relativeUrl}
@@ -890,10 +894,16 @@ const urlMatcher: ValueMatcher = {
     const urlValue = value as string;
     const relativeUrl = convertToRelativeUrl(urlValue);
 
-    if (relativeUrl && onNavigate && (relativeUrl.startsWith("/") || relativeUrl.startsWith("#/"))) {
+    if (
+      relativeUrl &&
+      onNavigate &&
+      (relativeUrl.startsWith("/") || relativeUrl.startsWith("#/"))
+    ) {
       // Use router navigation for internal routes
       // Strip the hash prefix for router navigation
-      const routePath = relativeUrl.startsWith("#/") ? relativeUrl.slice(1) : relativeUrl;
+      const routePath = relativeUrl.startsWith("#/")
+        ? relativeUrl.slice(1)
+        : relativeUrl;
       return (
         <Anchor
           href={relativeUrl}
@@ -1021,6 +1031,69 @@ const doiMatcher: ValueMatcher = {
     );
   },
 };
+
+const imageUrlMatcher: ValueMatcher = {
+  name: "imageUrl",
+  priority: 8,
+  detect: (value: unknown, fieldName?: string): boolean => {
+    if (typeof value !== "string") return false;
+    if (!fieldName) return false;
+
+    // Check if field name contains "image" or "thumbnail"
+    const lowerFieldName = fieldName.toLowerCase();
+    const isImageField =
+      lowerFieldName.includes("image") ||
+      lowerFieldName.includes("thumbnail") ||
+      lowerFieldName.includes("logo");
+
+    if (!isImageField) return false;
+
+    // Check if it's a valid URL
+    try {
+      new URL(value);
+      return true;
+    } catch {
+      return false;
+    }
+  },
+  render: (value: unknown, fieldName: string): React.ReactNode => {
+    const imageUrl = value as string;
+    const displayName = fieldName
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+
+    return (
+      <Stack gap="xs">
+        <Anchor
+          href={imageUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          size="sm"
+        >
+          {imageUrl}
+        </Anchor>
+        <img
+          src={imageUrl}
+          alt={displayName}
+          style={{
+            maxWidth: "300px",
+            maxHeight: "300px",
+            borderRadius: "8px",
+            border: "1px solid #dee2e6",
+            display: "block",
+          }}
+          onError={(e) => {
+            // If image fails to load, hide the img element
+            const target = e.target as HTMLImageElement;
+            target.style.display = "none";
+          }}
+        />
+      </Stack>
+    );
+  },
+};
+
 /**
  * Value Matchers - for detecting special value types
  */
@@ -1033,6 +1106,9 @@ export const valueMatchers: ValueMatcher[] = [
 
   // ROR matcher
   rorMatcher,
+
+  // Image URL matcher (higher priority than generic URL)
+  imageUrlMatcher,
 
   // URL matcher
   urlMatcher,
@@ -1115,12 +1191,10 @@ export function determineCanonicalRoute(path: string): string {
     // If it starts with a letter that indicates an entity type, treat as entity type
     if (
       ["w", "a", "i", "s", "t", "p", "f"].includes(firstChar) &&
-      segment.length > 1
+      segment.length > 1 &&
+      /^[a-z]+$/.test(segment)
     ) {
-      // Check if this looks like an entity type (all lowercase, no numbers)
-      if (/^[a-z]+$/.test(segment)) {
-        return `/${segment}`;
-      }
+      return `/${segment}`;
     }
 
     // Otherwise treat as entity ID
@@ -1232,13 +1306,16 @@ export function findObjectMatcher(obj: unknown): ObjectMatcher | null {
   return null;
 }
 
-export function findValueMatcher(value: unknown): ValueMatcher | null {
+export function findValueMatcher(
+  value: unknown,
+  fieldName?: string,
+): ValueMatcher | null {
   const sortedMatchers = valueMatchers.sort(
     (a, b) => (b.priority || 0) - (a.priority || 0),
   );
 
   for (const matcher of sortedMatchers) {
-    if (matcher.detect(value)) {
+    if (matcher.detect(value, fieldName)) {
       return matcher;
     }
   }

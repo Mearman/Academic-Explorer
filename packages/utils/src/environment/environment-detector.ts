@@ -57,25 +57,57 @@ export class EnvironmentDetector {
    */
   static detectMode(): EnvironmentMode {
     // Check NODE_ENV first (most reliable)
+    const nodeEnvMode = this.getModeFromNodeEnv();
+    if (nodeEnvMode) return nodeEnvMode;
+
+    // Check Vite environment variables
+    const viteMode = this.getModeFromViteEnv();
+    if (viteMode) return viteMode;
+
+    // Check global __DEV__ flag (from Vite define)
+    const devFlagMode = this.getModeFromDevFlag();
+    if (devFlagMode) return devFlagMode;
+
+    // Browser-based detection
+    const browserMode = this.getModeFromBrowser();
+    if (browserMode) return browserMode;
+
+    // Default to development if uncertain
+    return EnvironmentMode.DEVELOPMENT;
+  }
+
+  private static getModeFromNodeEnv(): EnvironmentMode | null {
     if (
       typeof globalThis.process !== "undefined" &&
       globalThis.process.env?.NODE_ENV
     ) {
       const nodeEnv = globalThis.process.env.NODE_ENV.toLowerCase();
-      if (nodeEnv === "production") return EnvironmentMode.PRODUCTION;
-      if (nodeEnv === "test") return EnvironmentMode.TEST;
-      if (nodeEnv === "development") return EnvironmentMode.DEVELOPMENT;
+      switch (nodeEnv) {
+        case "production":
+          return EnvironmentMode.PRODUCTION;
+        case "test":
+          return EnvironmentMode.TEST;
+        case "development":
+          return EnvironmentMode.DEVELOPMENT;
+      }
     }
+    return null;
+  }
 
-    // Check Vite environment variables
+  private static getModeFromViteEnv(): EnvironmentMode | null {
     if (typeof import.meta !== "undefined") {
       try {
         const viteEnv = (import.meta as { env?: Record<string, unknown> }).env;
         if (viteEnv) {
           const viteMode = (viteEnv.MODE as string | undefined)?.toLowerCase();
-          if (viteMode === "production") return EnvironmentMode.PRODUCTION;
-          if (viteMode === "test") return EnvironmentMode.TEST;
-          if (viteMode === "development") return EnvironmentMode.DEVELOPMENT;
+          switch (viteMode) {
+            case "production":
+              return EnvironmentMode.PRODUCTION;
+            case "test":
+              return EnvironmentMode.TEST;
+            case "development":
+              return EnvironmentMode.DEVELOPMENT;
+          }
 
           // Check Vite's DEV flag
           if ((viteEnv.DEV as boolean | undefined) === true)
@@ -87,8 +119,10 @@ export class EnvironmentDetector {
         // Ignore errors if import.meta.env is not available
       }
     }
+    return null;
+  }
 
-    // Check global __DEV__ flag (from Vite define)
+  private static getModeFromDevFlag(): EnvironmentMode | null {
     if (typeof globalThis !== "undefined" && "__DEV__" in globalThis) {
       try {
         const devFlag = (globalThis as unknown as { __DEV__?: boolean })
@@ -100,8 +134,10 @@ export class EnvironmentDetector {
         // Ignore errors if __DEV__ is not accessible
       }
     }
+    return null;
+  }
 
-    // Browser-based detection
+  private static getModeFromBrowser(): EnvironmentMode | null {
     if (typeof window !== "undefined") {
       const hostname = window.location?.hostname;
 
@@ -128,9 +164,7 @@ export class EnvironmentDetector {
         return EnvironmentMode.PRODUCTION;
       }
     }
-
-    // Default to development if uncertain
-    return EnvironmentMode.DEVELOPMENT;
+    return null;
   }
 
   /**

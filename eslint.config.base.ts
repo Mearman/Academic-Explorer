@@ -3,6 +3,7 @@ import markdownPlugin from "@eslint/markdown";
 import nxPlugin from "@nx/eslint-plugin";
 import eslintComments from "eslint-plugin-eslint-comments";
 import unusedImports from "eslint-plugin-unused-imports";
+import sonarjs from "eslint-plugin-sonarjs";
 import globals from "globals";
 import path from "path";
 import tseslint from "typescript-eslint";
@@ -90,6 +91,7 @@ export default tseslint.config([
     plugins: {
       "eslint-comments": eslintComments,
       "unused-imports": unusedImports,
+      sonarjs: sonarjs,
       "@nx": nxPlugin,
       "no-emoji-plugin": noEmojiPlugin,
       "test-file-naming-plugin": testFileNamingPlugin,
@@ -138,6 +140,21 @@ export default tseslint.config([
       "@typescript-eslint/no-unsafe-return": "off",
       "@typescript-eslint/no-unsafe-argument": "off",
 
+      // Code duplication and quality rules
+      "sonarjs/no-duplicate-string": "warn",
+      "sonarjs/no-duplicated-branches": "error",
+      "sonarjs/no-identical-functions": "error",
+      "sonarjs/cognitive-complexity": ["warn", 15],
+      "sonarjs/no-collapsible-if": "error",
+      "sonarjs/no-inverted-boolean-check": "error",
+      "sonarjs/no-redundant-jump": "error",
+      "sonarjs/no-same-line-conditional": "error",
+      "sonarjs/no-unused-collection": "error",
+      "sonarjs/prefer-immediate-return": "error",
+      "sonarjs/prefer-object-literal": "error",
+      "sonarjs/prefer-single-boolean-return": "error",
+      "sonarjs/prefer-while": "error",
+
       // Emoji detection
       "no-emoji-plugin/no-emoji": "error",
     },
@@ -152,23 +169,23 @@ export default tseslint.config([
       "@nx/dependency-checks": [
         "error",
         {
-          "buildTargets": ["build"],
-          "checkMissingDependencies": true,
-          "checkObsoleteDependencies": true,
-          "checkVersionMismatches": true,
-          "includeTransitiveDependencies": false,
-          "useLocalPathsForWorkspaceDependencies": true,
-          "ignoredDependencies": [
+          buildTargets: ["build"],
+          checkMissingDependencies: true,
+          checkObsoleteDependencies: true,
+          checkVersionMismatches: true,
+          includeTransitiveDependencies: false,
+          useLocalPathsForWorkspaceDependencies: true,
+          ignoredDependencies: [
             // Common dev dependencies that don't need to be in package.json
             "vitest",
             "@vitest/ui",
             "@testing-library/*",
             "eslint*",
             "typescript",
-            "@types/*"
-          ]
-        }
-      ]
+            "@types/*",
+          ],
+        },
+      ],
     },
   },
   {

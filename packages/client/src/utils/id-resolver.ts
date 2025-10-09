@@ -8,7 +8,7 @@
  * validation functions and enhanced normalization capabilities.
  */
 
-import { isString, isNonEmptyString } from '@academic-explorer/utils';
+import { isNonEmptyString, isString } from '@academic-explorer/utils';
 
 /**
  * Supported external identifier types
@@ -191,10 +191,8 @@ export class IdResolver {
         const prefix = openalexId[0].toUpperCase();
         const digits = openalexId.slice(1);
 
-        if (prefix === 'T' && digits.length < 4) {
-          return null; // Topics need at least 4 digits
-        } else if (prefix !== 'T' && digits.length < 6) {
-          return null; // Others need at least 6 digits (more flexible than 8)
+        if ((prefix === 'T' && digits.length < 4) || (prefix !== 'T' && digits.length < 6)) {
+          return null; // Topics need at least 4 digits, others need at least 6
         }
 
         openalexId = openalexId.toUpperCase();

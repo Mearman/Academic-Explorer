@@ -160,14 +160,7 @@ class MemoryCacheTier implements CacheTierInterface {
     hits: number;
     averageLoadTime: number;
   }> {
-    return {
-      requests: this.stats.requests,
-      hits: this.stats.hits,
-      averageLoadTime:
-        this.stats.requests > 0
-          ? this.stats.totalLoadTime / this.stats.requests
-          : 0,
-    };
+    return calculateCacheStats(this.stats);
   }
 }
 
@@ -294,14 +287,7 @@ class LocalDiskCacheTier implements CacheTierInterface {
     hits: number;
     averageLoadTime: number;
   }> {
-    return {
-      requests: this.stats.requests,
-      hits: this.stats.hits,
-      averageLoadTime:
-        this.stats.requests > 0
-          ? this.stats.totalLoadTime / this.stats.requests
-          : 0,
-    };
+    return calculateCacheStats(this.stats);
   }
 }
 
@@ -492,15 +478,28 @@ class GitHubPagesCacheTier implements CacheTierInterface {
     hits: number;
     averageLoadTime: number;
   }> {
-    return {
-      requests: this.stats.requests,
-      hits: this.stats.hits,
-      averageLoadTime:
-        this.stats.requests > 0
-          ? this.stats.totalLoadTime / this.stats.requests
-          : 0,
-    };
+    return calculateCacheStats(this.stats);
   }
+}
+
+/**
+ * Helper function to calculate cache statistics
+ */
+function calculateCacheStats(stats: {
+  requests: number;
+  hits: number;
+  totalLoadTime: number;
+}): {
+  requests: number;
+  hits: number;
+  averageLoadTime: number;
+} {
+  return {
+    requests: stats.requests,
+    hits: stats.hits,
+    averageLoadTime:
+      stats.requests > 0 ? stats.totalLoadTime / stats.requests : 0,
+  };
 }
 
 /**

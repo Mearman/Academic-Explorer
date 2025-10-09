@@ -186,8 +186,7 @@ export class TextAnalysisApi {
    */
   async analyzeText(options: TextAnalysisOptions): Promise<TextAnalysisResponse> {
     const params = this.buildParams(options);
-    const response = await this.client.get<TextAnalysisResponse>("text", params);
-    return response;
+    return await this.client.get<TextAnalysisResponse>("text", params);
   }
 
   /**
@@ -217,8 +216,7 @@ export class TextAnalysisApi {
    */
   async getKeywords(options: TextAnalysisOptions): Promise<TextAnalysisKeyword[]> {
     const params = this.buildParams(options);
-    const response = await this.client.get<TextAnalysisKeyword[]>("text/keywords", params);
-    return response;
+    return await this.client.get<TextAnalysisKeyword[]>("text/keywords", params);
   }
 
   /**
@@ -243,8 +241,7 @@ export class TextAnalysisApi {
    */
   async getTopics(options: TextAnalysisOptions): Promise<TextAnalysisTopic[]> {
     const params = this.buildParams(options);
-    const response = await this.client.get<TextAnalysisTopic[]>("text/topics", params);
-    return response;
+    return await this.client.get<TextAnalysisTopic[]>("text/topics", params);
   }
 
   /**
@@ -268,8 +265,7 @@ export class TextAnalysisApi {
    */
   async getConcepts(options: TextAnalysisOptions): Promise<TextAnalysisConcept[]> {
     const params = this.buildParams(options);
-    const response = await this.client.get<TextAnalysisConcept[]>("text/concepts", params);
-    return response;
+    return await this.client.get<TextAnalysisConcept[]>("text/concepts", params);
   }
 
   /**

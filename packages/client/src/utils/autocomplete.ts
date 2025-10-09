@@ -3,9 +3,9 @@
  * Provides shared types and base class for autocomplete functionality across all OpenAlex entity types
  */
 
-import type { AutocompleteResult, EntityType, QueryParams } from "../types";
 import { OpenAlexBaseClient } from "../client";
 import { logger } from "../internal/logger";
+import type { AutocompleteResult, EntityType, QueryParams } from "../types";
 
 /**
  * Autocomplete request options interface
@@ -86,8 +86,7 @@ export class BaseAutocompleteApi {
 		};
 
 		try {
-			const response = await this.client.get<AutocompleteResponse<T>>(endpoint, params);
-			return response;
+			return await this.client.get<AutocompleteResponse<T>>(endpoint, params);
 		} catch (error: unknown) {
 			const errorDetails = this.formatErrorForLogging(error);
 			logger.warn(`[AutocompleteApi] Request failed for endpoint "${endpoint}"`, {
@@ -153,11 +152,8 @@ export class BaseAutocompleteApi {
 		const now = Date.now();
 		const cached = this.debounceCache[cacheKey];
 
-		if (cached && (now - cached.timestamp < this.DEBOUNCE_DELAY)) {
-			// Type guard ensures safe return of cached promise
-			if (isValidCachedPromise<T>(cached.promise)) {
-				return cached.promise;
-			}
+		if (cached && (now - cached.timestamp < this.DEBOUNCE_DELAY) && isValidCachedPromise<T>(cached.promise)) {
+			return cached.promise;
 		}
 
 		// Clean up expired cache entries
@@ -240,10 +236,8 @@ export class BaseAutocompleteApi {
 			throw new Error('Query string is required and cannot be empty');
 		}
 
-		if (options.per_page !== undefined) {
-			if (options.per_page < 1 || options.per_page > 200) {
-				throw new Error('per_page must be between 1 and 200');
-			}
+		if (options.per_page !== undefined && (options.per_page < 1 || options.per_page > 200)) {
+			throw new Error('per_page must be between 1 and 200');
 		}
 
 		if (options.format !== undefined && options.format !== 'json') {

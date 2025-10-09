@@ -1128,8 +1128,7 @@ export class StaticDataIndexGenerator {
    * Extract entity ID from filename (without .json extension)
    */
   private extractEntityIdFromFilename(filePath: string): string {
-    const filename = this.path.basename(filePath, '.json');
-    return filename;
+    return this.path.basename(filePath, '.json');
   }
 }
 

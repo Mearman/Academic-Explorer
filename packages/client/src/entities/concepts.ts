@@ -6,18 +6,18 @@
  * This API is maintained for backward compatibility.
  */
 
-import type {
-	Concept,
-	ConceptsFilters,
-	QueryParams,
-	OpenAlexResponse,
-	AutocompleteResult
-} from "../types";
+import { logger } from "@academic-explorer/utils";
 import type { OpenAlexBaseClient } from "../client";
-import { buildFilterString } from "../utils/query-builder";
+import type {
+    AutocompleteResult,
+    Concept,
+    ConceptsFilters,
+    OpenAlexResponse,
+    QueryParams
+} from "../types";
 import { AutocompleteApi } from "../utils/autocomplete";
 import { isValidWikidata, normalizeExternalId } from "../utils/id-resolver";
-import { logger } from "@academic-explorer/utils";
+import { buildFilterString } from "../utils/query-builder";
 
 /**
  * Strict query parameters specific to Concepts API
@@ -282,10 +282,8 @@ export class ConceptsApi {
 		}
 
 		// If it's already QueryParams (has string sort), pass directly
-		if ("sort" in params && typeof params.sort === "string") {
-			if (this.isQueryParams(params)) {
-				return this.client.getById<Concept>("concepts", normalizedId, params);
-			}
+		if ("sort" in params && typeof params.sort === "string" && this.isQueryParams(params)) {
+			return this.client.getById<Concept>("concepts", normalizedId, params);
 		}
 		// Otherwise, convert from StrictConceptsQueryParams
 		if (this.isStrictConceptsQueryParams(params)) {
@@ -312,10 +310,8 @@ export class ConceptsApi {
 	 */
 	async getConcepts(params: StrictConceptsQueryParams | QueryParams = {}): Promise<OpenAlexResponse<Concept>> {
 		// If it's already QueryParams (has string sort), pass directly
-		if ("sort" in params && typeof params.sort === "string") {
-			if (this.isQueryParams(params)) {
-				return this.client.getResponse<Concept>("concepts", params);
-			}
+		if ("sort" in params && typeof params.sort === "string" && this.isQueryParams(params)) {
+			return this.client.getResponse<Concept>("concepts", params);
 		}
 		// Otherwise, convert from StrictConceptsQueryParams
 		if (this.isStrictConceptsQueryParams(params)) {
@@ -478,11 +474,9 @@ export class ConceptsApi {
 	 */
 	async *streamConcepts(params: StrictConceptsQueryParams | QueryParams = {}): AsyncGenerator<Concept[], void, unknown> {
 		// If it's already QueryParams (has string sort), pass directly
-		if ("sort" in params && typeof params.sort === "string") {
-			if (this.isQueryParams(params)) {
-				yield* this.client.stream<Concept>("concepts", params);
-				return;
-			}
+		if ("sort" in params && typeof params.sort === "string" && this.isQueryParams(params)) {
+			yield* this.client.stream<Concept>("concepts", params);
+			return;
 		}
 		// Otherwise, convert from StrictConceptsQueryParams
 		if (this.isStrictConceptsQueryParams(params)) {

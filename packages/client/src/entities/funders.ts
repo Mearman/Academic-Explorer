@@ -3,18 +3,18 @@
  * Provides methods for interacting with OpenAlex funders endpoint
  */
 
+import { logger } from "@academic-explorer/utils";
+import { OpenAlexBaseClient } from "../client";
 import type {
+	AutocompleteResult,
 	Funder,
 	FundersFilters,
-	Work,
 	Institution,
 	OpenAlexResponse,
 	QueryParams,
-	AutocompleteResult
+	Work
 } from "../types";
-import { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";
-import { logger } from "@academic-explorer/utils";
 
 /**
  * FundersApi provides methods for interacting with OpenAlex funders
@@ -178,10 +178,7 @@ export class FundersApi {
    * @returns Promise resolving to works funded by this funder (representing grants)
    */
 	async getFunderGrants(funderId: string, params: QueryParams = {}): Promise<OpenAlexResponse<Work>> {
-		return this.client.getResponse<Work>("works", {
-			...params,
-			filter: `grants.funder:${funderId}`,
-		});
+		return this.getFunderWorks(funderId, params);
 	}
 
 	/**

@@ -16,6 +16,13 @@ import {
   type FileEntry,
 } from "./cache-utilities";
 
+// Test constants
+const TEST_BASE_URL = "https://api.openalex.org/works";
+const TEST_URL_WITH_FILTER = `${TEST_BASE_URL}?filter=doi:10.1234/test`;
+const TEST_DATA_REF = "TEST_DATA_REF";
+const TEST_TIMESTAMP = "TEST_TIMESTAMP";
+const TEST_CONTENT_HASH = "TEST_CONTENT_HASH";
+
 // const mockGetCacheFilePath = getCacheFilePath as unknown as ReturnType<
 //   typeof vi.fn
 // >;
@@ -41,13 +48,9 @@ describe("Cache Utilities - Collision Handling", () => {
 
   describe("hasCollision", () => {
     it("should return false for null or invalid inputs", () => {
-      expect(
-        hasCollision(
-          null as any,
-          "https://api.openalex.org/works",
-          getCacheFilePath,
-        ),
-      ).toBe(false);
+      expect(hasCollision(null as any, "TEST_BASE_URL", getCacheFilePath)).toBe(
+        false,
+      );
       expect(hasCollision({} as FileEntry, null as any, getCacheFilePath)).toBe(
         false,
       );
@@ -55,13 +58,12 @@ describe("Cache Utilities - Collision Handling", () => {
 
     it("should detect collision when paths match", async () => {
       const entry: FileEntry = {
-        url: "https://api.openalex.org/works?filter=doi:10.1234/test",
-        $ref: "./data.json",
-        lastRetrieved: "2023-01-01T00:00:00Z",
-        contentHash: "abc123",
+        url: "TEST_URL_WITH_FILTER",
+        $ref: "TEST_DATA_REF",
+        lastRetrieved: "TEST_TIMESTAMP",
+        contentHash: "TEST_CONTENT_HASH",
       };
-      const collidingUrl =
-        "https://api.openalex.org/works?filter=doi:10.1234/test&api_key=secret";
+      const collidingUrl = "TEST_URL_WITH_FILTER&api_key=secret";
 
       // Test with real function
       const realResult = hasCollision(entry, collidingUrl);
@@ -70,10 +72,10 @@ describe("Cache Utilities - Collision Handling", () => {
 
     it("should not detect collision when paths differ", () => {
       const entry: FileEntry = {
-        url: "https://api.openalex.org/works?filter=doi:10.1234/test",
-        $ref: "./data.json",
-        lastRetrieved: "2023-01-01T00:00:00Z",
-        contentHash: "abc123",
+        url: "TEST_URL_WITH_FILTER",
+        $ref: "TEST_DATA_REF",
+        lastRetrieved: "TEST_TIMESTAMP",
+        contentHash: "TEST_CONTENT_HASH",
       };
       const nonCollidingUrl =
         "https://api.openalex.org/authors?filter=orcid:0000-0001-2345-6789";
@@ -86,26 +88,25 @@ describe("Cache Utilities - Collision Handling", () => {
 
     it("should handle equivalent URLs with different api_key/mailto", () => {
       const entry: FileEntry = {
-        url: "https://api.openalex.org/works?filter=doi:10.1234/test",
-        $ref: "./data.json",
-        lastRetrieved: "2023-01-01T00:00:00Z",
-        contentHash: "abc123",
+        url: "TEST_URL_WITH_FILTER",
+        $ref: "TEST_DATA_REF",
+        lastRetrieved: "TEST_TIMESTAMP",
+        contentHash: "TEST_CONTENT_HASH",
       };
       const equivalentUrl =
-        "https://api.openalex.org/works?api_key=secret&filter=doi:10.1234/test&mailto=user@example.com";
+        "TEST_BASE_URL?api_key=secret&filter=doi:10.1234/test&mailto=user@example.com";
       const mockPathFn = vi.fn().mockReturnValue("/same/path.json");
       expect(hasCollision(entry, equivalentUrl, mockPathFn)).toBe(true); // Mock makes both URLs return same path, so they collide
     });
 
     it("should not collide with non-equivalent query parameters", () => {
       const entry: FileEntry = {
-        url: "https://api.openalex.org/works?filter=doi:10.1234/test",
-        $ref: "./data.json",
-        lastRetrieved: "2023-01-01T00:00:00Z",
-        contentHash: "abc123",
+        url: "TEST_URL_WITH_FILTER",
+        $ref: "TEST_DATA_REF",
+        lastRetrieved: "TEST_TIMESTAMP",
+        contentHash: "TEST_CONTENT_HASH",
       };
-      const differentUrl =
-        "https://api.openalex.org/works?filter=doi:10.5678/other";
+      const differentUrl = "TEST_BASE_URL?filter=doi:10.5678/other";
       const mockPathFn = vi
         .fn()
         .mockReturnValueOnce("/mock/cache/test.json")
@@ -117,13 +118,12 @@ describe("Cache Utilities - Collision Handling", () => {
   describe("mergeCollision", () => {
     it("should add new URL to equivalentUrls if not present", () => {
       const entry: FileEntry = migrateToMultiUrl({
-        url: "https://api.openalex.org/works?filter=doi:10.1234/test",
-        $ref: "./data.json",
-        lastRetrieved: "2023-01-01T00:00:00Z",
-        contentHash: "abc123",
+        url: "TEST_URL_WITH_FILTER",
+        $ref: "TEST_DATA_REF",
+        lastRetrieved: "TEST_TIMESTAMP",
+        contentHash: "TEST_CONTENT_HASH",
       });
-      const newUrl =
-        "https://api.openalex.org/works?api_key=secret&filter=doi:10.1234/test";
+      const newUrl = "TEST_BASE_URL?api_key=secret&filter=doi:10.1234/test";
       const currentTime = "2023-01-02T00:00:00Z";
 
       const merged = mergeCollision(entry, newUrl, currentTime);
@@ -140,16 +140,13 @@ describe("Cache Utilities - Collision Handling", () => {
 
     it("should not add duplicate URL", () => {
       const entry: FileEntry = migrateToMultiUrl({
-        url: "https://api.openalex.org/works?filter=doi:10.1234/test",
-        $ref: "./data.json",
-        lastRetrieved: "2023-01-01T00:00:00Z",
-        contentHash: "abc123",
-        equivalentUrls: [
-          "https://api.openalex.org/works?filter=doi:10.1234/test",
-        ],
+        url: "TEST_URL_WITH_FILTER",
+        $ref: "TEST_DATA_REF",
+        lastRetrieved: "TEST_TIMESTAMP",
+        contentHash: "TEST_CONTENT_HASH",
+        equivalentUrls: ["TEST_URL_WITH_FILTER"],
         urlTimestamps: {
-          "https://api.openalex.org/works?filter=doi:10.1234/test":
-            "2023-01-01T00:00:00Z",
+          TEST_URL_WITH_FILTER: "TEST_TIMESTAMP",
         },
         collisionInfo: { mergedCount: 0, totalUrls: 1 },
       });
@@ -165,16 +162,13 @@ describe("Cache Utilities - Collision Handling", () => {
 
     it("should update timestamps and collision info correctly", () => {
       const entry: FileEntry = migrateToMultiUrl({
-        url: "https://api.openalex.org/works?filter=doi:10.1234/test",
-        $ref: "./data.json",
-        lastRetrieved: "2023-01-01T00:00:00Z",
-        contentHash: "abc123",
-        equivalentUrls: [
-          "https://api.openalex.org/works?filter=doi:10.1234/test",
-        ],
+        url: "TEST_URL_WITH_FILTER",
+        $ref: "TEST_DATA_REF",
+        lastRetrieved: "TEST_TIMESTAMP",
+        contentHash: "TEST_CONTENT_HASH",
+        equivalentUrls: ["TEST_URL_WITH_FILTER"],
         urlTimestamps: {
-          "https://api.openalex.org/works?filter=doi:10.1234/test":
-            "2023-01-01T00:00:00Z",
+          TEST_URL_WITH_FILTER: "TEST_TIMESTAMP",
         },
         collisionInfo: {
           mergedCount: 1,
@@ -183,7 +177,7 @@ describe("Cache Utilities - Collision Handling", () => {
         },
       });
       const newUrl =
-        "https://api.openalex.org/works?mailto=test@example.com&filter=doi:10.1234/test";
+        "TEST_BASE_URL?mailto=test@example.com&filter=doi:10.1234/test";
       const currentTime = "2023-01-02T00:00:00Z";
 
       const merged = mergeCollision(entry, newUrl, currentTime);
@@ -198,15 +192,15 @@ describe("Cache Utilities - Collision Handling", () => {
 
     it("should sort equivalentUrls by recency (most recent first)", () => {
       const entry: FileEntry = migrateToMultiUrl({
-        url: "https://api.openalex.org/works?filter=doi:10.1234/test",
-        $ref: "./data.json",
-        lastRetrieved: "2023-01-01T00:00:00Z",
-        contentHash: "abc123",
+        url: "TEST_URL_WITH_FILTER",
+        $ref: "TEST_DATA_REF",
+        lastRetrieved: "TEST_TIMESTAMP",
+        contentHash: "TEST_CONTENT_HASH",
       });
       const urls = [
-        "https://api.openalex.org/works?filter=doi:10.1234/test&api_key=old",
-        "https://api.openalex.org/works?filter=doi:10.1234/test&mailto=old@example.com",
-        "https://api.openalex.org/works?filter=doi:10.1234/test&api_key=new",
+        "TEST_URL_WITH_FILTER&api_key=old",
+        "TEST_URL_WITH_FILTER&mailto=old@example.com",
+        "TEST_URL_WITH_FILTER&api_key=new",
       ];
       const timestamps = [
         "2023-01-01T10:00:00Z",
@@ -227,13 +221,12 @@ describe("Cache Utilities - Collision Handling", () => {
 
     it("should dedupe URLs that normalize to the same path", () => {
       const entry: FileEntry = migrateToMultiUrl({
-        url: "https://api.openalex.org/works?filter=doi:10.1234/test",
-        $ref: "./data.json",
-        lastRetrieved: "2023-01-01T00:00:00Z",
-        contentHash: "abc123",
+        url: "TEST_URL_WITH_FILTER",
+        $ref: "TEST_DATA_REF",
+        lastRetrieved: "TEST_TIMESTAMP",
+        contentHash: "TEST_CONTENT_HASH",
       });
-      const duplicateNormalized =
-        "https://api.openalex.org/works?filter=doi:10.1234/test&api_key=ignored"; // Normalizes same
+      const duplicateNormalized = "TEST_URL_WITH_FILTER&api_key=ignored"; // Normalizes same
       const currentTime = "2023-01-02T00:00:00Z";
 
       const merged = mergeCollision(entry, duplicateNormalized, currentTime);
@@ -253,36 +246,28 @@ describe("Cache Utilities - Collision Handling", () => {
       const queryFilename = "filter=doi:10.1234/test&select=title";
       const result = reconstructPossibleCollisions(queryFilename, entityType);
 
-      expect(result).toContain(
-        "https://api.openalex.org/works?filter=doi:10.1234/test&select=title",
-      );
+      expect(result).toContain("TEST_URL_WITH_FILTER&select=title");
     });
 
     it("should include variation with api_key parameter", () => {
       const queryFilename = "filter=doi:10.1234/test";
       const result = reconstructPossibleCollisions(queryFilename, entityType);
 
-      expect(result).toContain(
-        "https://api.openalex.org/works?filter=doi:10.1234/test&api_key=dummy",
-      );
+      expect(result).toContain("TEST_URL_WITH_FILTER&api_key=dummy");
     });
 
     it("should include variation with mailto parameter", () => {
       const queryFilename = "filter=doi:10.1234/test";
       const result = reconstructPossibleCollisions(queryFilename, entityType);
 
-      expect(result).toContain(
-        "https://api.openalex.org/works?filter=doi:10.1234/test&mailto=test@example.com",
-      );
+      expect(result).toContain("TEST_URL_WITH_FILTER&mailto=test@example.com");
     });
 
     it("should include cursor variation when cursor=* is present", () => {
       const queryFilename = "cursor=*&filter=doi:10.1234/test";
       const result = reconstructPossibleCollisions(queryFilename, entityType);
 
-      expect(result).toContain(
-        "https://api.openalex.org/works?filter=doi:10.1234/test&cursor=MTIzNDU2",
-      );
+      expect(result).toContain("TEST_URL_WITH_FILTER&cursor=MTIzNDU2");
     });
 
     it("should not include cursor variation when no cursor=*", () => {
@@ -298,7 +283,7 @@ describe("Cache Utilities - Collision Handling", () => {
     it("should handle empty query filename", () => {
       const result = reconstructPossibleCollisions("", entityType);
       expect(result).toHaveLength(3); // canonical, api_key, mailto
-      expect(result[0]).toBe("https://api.openalex.org/works");
+      expect(result[0]).toBe("TEST_BASE_URL");
     });
 
     it("should filter only equivalent URLs (though impl generates all variants)", () => {
@@ -313,16 +298,13 @@ describe("Cache Utilities - Collision Handling", () => {
   describe("migrateToMultiUrl", () => {
     it("should return unchanged if already multi-URL format", () => {
       const multiEntry: FileEntry = {
-        url: "https://api.openalex.org/works?filter=doi:10.1234/test",
-        $ref: "./data.json",
-        lastRetrieved: "2023-01-01T00:00:00Z",
-        contentHash: "abc123",
-        equivalentUrls: [
-          "https://api.openalex.org/works?filter=doi:10.1234/test",
-        ],
+        url: "TEST_URL_WITH_FILTER",
+        $ref: "TEST_DATA_REF",
+        lastRetrieved: "TEST_TIMESTAMP",
+        contentHash: "TEST_CONTENT_HASH",
+        equivalentUrls: ["TEST_URL_WITH_FILTER"],
         urlTimestamps: {
-          "https://api.openalex.org/works?filter=doi:10.1234/test":
-            "2023-01-01T00:00:00Z",
+          TEST_URL_WITH_FILTER: "TEST_TIMESTAMP",
         },
         collisionInfo: { mergedCount: 0, totalUrls: 1 },
       };
@@ -335,10 +317,10 @@ describe("Cache Utilities - Collision Handling", () => {
 
     it("should migrate legacy single-URL entry to multi format", () => {
       const legacyEntry: FileEntry = {
-        url: "https://api.openalex.org/works?filter=doi:10.1234/test",
-        $ref: "./data.json",
-        lastRetrieved: "2023-01-01T00:00:00Z",
-        contentHash: "abc123",
+        url: "TEST_URL_WITH_FILTER",
+        $ref: "TEST_DATA_REF",
+        lastRetrieved: "TEST_TIMESTAMP",
+        contentHash: "TEST_CONTENT_HASH",
         // Missing equivalentUrls, urlTimestamps, collisionInfo
       };
 
@@ -361,9 +343,9 @@ describe("Cache Utilities - Collision Handling", () => {
 
     it("should handle partial legacy entries gracefully", () => {
       const partialEntry: Partial<FileEntry> & { url: string } = {
-        url: "https://api.openalex.org/works?filter=doi:10.1234/test",
-        $ref: "./data.json",
-        lastRetrieved: "2023-01-01T00:00:00Z",
+        url: "TEST_URL_WITH_FILTER",
+        $ref: "TEST_DATA_REF",
+        lastRetrieved: "TEST_TIMESTAMP",
         // Missing contentHash
       };
 
@@ -380,10 +362,10 @@ describe("Cache Utilities - Collision Handling", () => {
   describe("validateFileEntry", () => {
     it("should validate legacy single-URL entry as true", () => {
       const legacyEntry: FileEntry = {
-        url: "https://api.openalex.org/works?filter=doi:10.1234/test",
-        $ref: "./data.json",
-        lastRetrieved: "2023-01-01T00:00:00Z",
-        contentHash: "abc123",
+        url: "TEST_URL_WITH_FILTER",
+        $ref: "TEST_DATA_REF",
+        lastRetrieved: "TEST_TIMESTAMP",
+        contentHash: "TEST_CONTENT_HASH",
       };
 
       expect(validateFileEntry(legacyEntry)).toBe(true);
@@ -391,18 +373,17 @@ describe("Cache Utilities - Collision Handling", () => {
 
     it("should validate valid multi-URL entry", () => {
       const validEntry: FileEntry = {
-        url: "https://api.openalex.org/works?filter=doi:10.1234/test",
-        $ref: "./data.json",
-        lastRetrieved: "2023-01-01T00:00:00Z",
-        contentHash: "abc123",
+        url: "TEST_URL_WITH_FILTER",
+        $ref: "TEST_DATA_REF",
+        lastRetrieved: "TEST_TIMESTAMP",
+        contentHash: "TEST_CONTENT_HASH",
         equivalentUrls: [
-          "https://api.openalex.org/works?filter=doi:10.1234/test",
-          "https://api.openalex.org/works?api_key=secret&filter=doi:10.1234/test",
+          "TEST_URL_WITH_FILTER",
+          "TEST_BASE_URL?api_key=secret&filter=doi:10.1234/test",
         ],
         urlTimestamps: {
-          "https://api.openalex.org/works?filter=doi:10.1234/test":
-            "2023-01-01T00:00:00Z",
-          "https://api.openalex.org/works?api_key=secret&filter=doi:10.1234/test":
+          TEST_URL_WITH_FILTER: "TEST_TIMESTAMP",
+          "TEST_BASE_URL?api_key=secret&filter=doi:10.1234/test":
             "2023-01-02T00:00:00Z",
         },
         collisionInfo: {
@@ -418,15 +399,15 @@ describe("Cache Utilities - Collision Handling", () => {
 
     it("should invalidate when equivalentUrls[0] !== url", () => {
       const invalidEntry: FileEntry = {
-        url: "https://api.openalex.org/works?filter=doi:10.1234/test",
-        $ref: "./data.json",
-        lastRetrieved: "2023-01-01T00:00:00Z",
-        contentHash: "abc123",
+        url: "TEST_URL_WITH_FILTER",
+        $ref: "TEST_DATA_REF",
+        lastRetrieved: "TEST_TIMESTAMP",
+        contentHash: "TEST_CONTENT_HASH",
         equivalentUrls: [
-          "https://api.openalex.org/works?api_key=secret&filter=doi:10.1234/test",
+          "TEST_BASE_URL?api_key=secret&filter=doi:10.1234/test",
         ], // Wrong order
         urlTimestamps: {
-          "https://api.openalex.org/works?api_key=secret&filter=doi:10.1234/test":
+          "TEST_BASE_URL?api_key=secret&filter=doi:10.1234/test":
             "2023-01-02T00:00:00Z",
         },
         collisionInfo: { mergedCount: 0, totalUrls: 1 },
@@ -437,17 +418,16 @@ describe("Cache Utilities - Collision Handling", () => {
 
     it("should invalidate when URLs map to different cache paths", () => {
       const invalidEntry: FileEntry = {
-        url: "https://api.openalex.org/works?filter=doi:10.1234/test",
-        $ref: "./data.json",
-        lastRetrieved: "2023-01-01T00:00:00Z",
-        contentHash: "abc123",
+        url: "TEST_URL_WITH_FILTER",
+        $ref: "TEST_DATA_REF",
+        lastRetrieved: "TEST_TIMESTAMP",
+        contentHash: "TEST_CONTENT_HASH",
         equivalentUrls: [
-          "https://api.openalex.org/works?filter=doi:10.1234/test",
+          "TEST_URL_WITH_FILTER",
           "https://api.openalex.org/authors?filter=orcid:0000-0001-2345-6789", // Different path
         ],
         urlTimestamps: {
-          "https://api.openalex.org/works?filter=doi:10.1234/test":
-            "2023-01-01T00:00:00Z",
+          TEST_URL_WITH_FILTER: "TEST_TIMESTAMP",
           "https://api.openalex.org/authors?filter=orcid:0000-0001-2345-6789":
             "2023-01-02T00:00:00Z",
         },
@@ -464,17 +444,16 @@ describe("Cache Utilities - Collision Handling", () => {
 
     it("should invalidate when missing timestamp for a URL", () => {
       const invalidEntry: FileEntry = {
-        url: "https://api.openalex.org/works?filter=doi:10.1234/test",
-        $ref: "./data.json",
-        lastRetrieved: "2023-01-01T00:00:00Z",
-        contentHash: "abc123",
+        url: "TEST_URL_WITH_FILTER",
+        $ref: "TEST_DATA_REF",
+        lastRetrieved: "TEST_TIMESTAMP",
+        contentHash: "TEST_CONTENT_HASH",
         equivalentUrls: [
-          "https://api.openalex.org/works?filter=doi:10.1234/test",
-          "https://api.openalex.org/works?api_key=secret&filter=doi:10.1234/test",
+          "TEST_URL_WITH_FILTER",
+          "TEST_BASE_URL?api_key=secret&filter=doi:10.1234/test",
         ],
         urlTimestamps: {
-          "https://api.openalex.org/works?filter=doi:10.1234/test":
-            "2023-01-01T00:00:00Z",
+          TEST_URL_WITH_FILTER: "TEST_TIMESTAMP",
         }, // Missing second
         collisionInfo: { mergedCount: 1, totalUrls: 2 },
       };
@@ -486,18 +465,17 @@ describe("Cache Utilities - Collision Handling", () => {
 
     it("should invalidate when collisionInfo.totalUrls mismatches length", () => {
       const invalidEntry: FileEntry = {
-        url: "https://api.openalex.org/works?filter=doi:10.1234/test",
-        $ref: "./data.json",
-        lastRetrieved: "2023-01-01T00:00:00Z",
-        contentHash: "abc123",
+        url: "TEST_URL_WITH_FILTER",
+        $ref: "TEST_DATA_REF",
+        lastRetrieved: "TEST_TIMESTAMP",
+        contentHash: "TEST_CONTENT_HASH",
         equivalentUrls: [
-          "https://api.openalex.org/works?filter=doi:10.1234/test",
-          "https://api.openalex.org/works?api_key=secret&filter=doi:10.1234/test",
+          "TEST_URL_WITH_FILTER",
+          "TEST_BASE_URL?api_key=secret&filter=doi:10.1234/test",
         ],
         urlTimestamps: {
-          "https://api.openalex.org/works?filter=doi:10.1234/test":
-            "2023-01-01T00:00:00Z",
-          "https://api.openalex.org/works?api_key=secret&filter=doi:10.1234/test":
+          TEST_URL_WITH_FILTER: "TEST_TIMESTAMP",
+          "TEST_BASE_URL?api_key=secret&filter=doi:10.1234/test":
             "2023-01-02T00:00:00Z",
         },
         collisionInfo: { mergedCount: 1, totalUrls: 1 }, // Mismatch
@@ -510,10 +488,10 @@ describe("Cache Utilities - Collision Handling", () => {
 
     it("should handle empty equivalentUrls array as invalid", () => {
       const invalidEntry: FileEntry = {
-        url: "https://api.openalex.org/works?filter=doi:10.1234/test",
-        $ref: "./data.json",
-        lastRetrieved: "2023-01-01T00:00:00Z",
-        contentHash: "abc123",
+        url: "TEST_URL_WITH_FILTER",
+        $ref: "TEST_DATA_REF",
+        lastRetrieved: "TEST_TIMESTAMP",
+        contentHash: "TEST_CONTENT_HASH",
         equivalentUrls: [], // Empty
         urlTimestamps: {},
         collisionInfo: { mergedCount: 0, totalUrls: 0 },
@@ -524,27 +502,25 @@ describe("Cache Utilities - Collision Handling", () => {
 
     it("should validate when all URLs normalize to same path", () => {
       const validEntry: FileEntry = {
-        url: "https://api.openalex.org/works?filter=doi:10.1234/test",
-        $ref: "./data.json",
-        lastRetrieved: "2023-01-01T00:00:00Z",
-        contentHash: "abc123",
+        url: "TEST_URL_WITH_FILTER",
+        $ref: "TEST_DATA_REF",
+        lastRetrieved: "TEST_TIMESTAMP",
+        contentHash: "TEST_CONTENT_HASH",
         equivalentUrls: [
-          "https://api.openalex.org/works?filter=doi:10.1234/test",
-          "https://api.openalex.org/works?filter=doi:10.1234/test&api_key=secret",
-          "https://api.openalex.org/works?mailto=test@example.com&filter=doi:10.1234/test",
+          "TEST_URL_WITH_FILTER",
+          "TEST_URL_WITH_FILTER&api_key=secret",
+          "TEST_BASE_URL?mailto=test@example.com&filter=doi:10.1234/test",
         ],
         urlTimestamps: {
-          "https://api.openalex.org/works?filter=doi:10.1234/test":
-            "2023-01-01T00:00:00Z",
-          "https://api.openalex.org/works?filter=doi:10.1234/test&api_key=secret":
-            "2023-01-02T00:00:00Z",
-          "https://api.openalex.org/works?mailto=test@example.com&filter=doi:10.1234/test":
+          TEST_URL_WITH_FILTER: "TEST_TIMESTAMP",
+          "TEST_URL_WITH_FILTER&api_key=secret": "2023-01-02T00:00:00Z",
+          "TEST_BASE_URL?mailto=test@example.com&filter=doi:10.1234/test":
             "2023-01-03T00:00:00Z",
         },
         collisionInfo: {
           mergedCount: 2,
           totalUrls: 3,
-          firstCollision: "2023-01-01T00:00:00Z",
+          firstCollision: "TEST_TIMESTAMP",
           lastMerge: "2023-01-03T00:00:00Z",
         },
       };
@@ -562,16 +538,16 @@ describe("Index Format Adapters", () => {
   describe("directoryIndexToUnifiedIndex", () => {
     it("should convert DirectoryIndex to UnifiedIndex format", () => {
       const dirIndex = {
-        lastUpdated: "2023-01-01T00:00:00Z",
+        lastUpdated: "TEST_TIMESTAMP",
         files: {
           "filter=doi:10.1234/test": {
-            url: "https://api.openalex.org/works?filter=doi:10.1234/test",
+            url: "TEST_URL_WITH_FILTER",
             $ref: "./filter=doi:10.1234/test.json",
-            lastRetrieved: "2023-01-01T00:00:00Z",
-            contentHash: "abc123",
+            lastRetrieved: "TEST_TIMESTAMP",
+            contentHash: "TEST_CONTENT_HASH",
           },
           "filter=author:A123": {
-            url: "https://api.openalex.org/works?filter=author:A123",
+            url: "TEST_BASE_URL?filter=author:A123",
             $ref: "./filter=author:A123.json",
             lastRetrieved: "2023-01-02T00:00:00Z",
             contentHash: "def456",
@@ -580,7 +556,7 @@ describe("Index Format Adapters", () => {
         directories: {
           queries: {
             $ref: "./queries",
-            lastModified: "2023-01-01T00:00:00Z",
+            lastModified: "TEST_TIMESTAMP",
           },
         },
       };
@@ -588,12 +564,12 @@ describe("Index Format Adapters", () => {
       const unified = directoryIndexToUnifiedIndex(dirIndex);
 
       expect(unified).toEqual({
-        "https://api.openalex.org/works?filter=doi:10.1234/test": {
+        TEST_URL_WITH_FILTER: {
           $ref: "./filter=doi:10.1234/test.json",
-          lastModified: "2023-01-01T00:00:00Z",
-          contentHash: "abc123",
+          lastModified: "TEST_TIMESTAMP",
+          contentHash: "TEST_CONTENT_HASH",
         },
-        "https://api.openalex.org/works?filter=author:A123": {
+        "TEST_BASE_URL?filter=author:A123": {
           $ref: "./filter=author:A123.json",
           lastModified: "2023-01-02T00:00:00Z",
           contentHash: "def456",
@@ -603,11 +579,11 @@ describe("Index Format Adapters", () => {
 
     it("should handle DirectoryIndex with no files", () => {
       const dirIndex = {
-        lastUpdated: "2023-01-01T00:00:00Z",
+        lastUpdated: "TEST_TIMESTAMP",
         directories: {
           queries: {
             $ref: "./queries",
-            lastModified: "2023-01-01T00:00:00Z",
+            lastModified: "TEST_TIMESTAMP",
           },
         },
       };
@@ -620,12 +596,12 @@ describe("Index Format Adapters", () => {
   describe("unifiedIndexToDirectoryIndex", () => {
     it("should convert UnifiedIndex to DirectoryIndex format", () => {
       const unified = {
-        "https://api.openalex.org/works?filter=doi:10.1234/test": {
+        TEST_URL_WITH_FILTER: {
           $ref: "./filter=doi:10.1234/test.json",
-          lastModified: "2023-01-01T00:00:00Z",
-          contentHash: "abc123",
+          lastModified: "TEST_TIMESTAMP",
+          contentHash: "TEST_CONTENT_HASH",
         },
-        "https://api.openalex.org/works?filter=author:A123": {
+        "TEST_BASE_URL?filter=author:A123": {
           $ref: "./filter=author:A123.json",
           lastModified: "2023-01-02T00:00:00Z",
           contentHash: "def456",
@@ -636,13 +612,13 @@ describe("Index Format Adapters", () => {
 
       expect(dirIndex.files).toEqual({
         "filter=doi:10.1234/test": {
-          url: "https://api.openalex.org/works?filter=doi:10.1234/test",
+          url: "TEST_URL_WITH_FILTER",
           $ref: "./filter=doi:10.1234/test.json",
-          lastRetrieved: "2023-01-01T00:00:00Z",
-          contentHash: "abc123",
+          lastRetrieved: "TEST_TIMESTAMP",
+          contentHash: "TEST_CONTENT_HASH",
         },
         "filter=author:A123": {
-          url: "https://api.openalex.org/works?filter=author:A123",
+          url: "TEST_BASE_URL?filter=author:A123",
           $ref: "./filter=author:A123.json",
           lastRetrieved: "2023-01-02T00:00:00Z",
           contentHash: "def456",
@@ -655,10 +631,10 @@ describe("Index Format Adapters", () => {
   describe("isUnifiedIndex", () => {
     it("should identify valid UnifiedIndex format", () => {
       const unified = {
-        "https://api.openalex.org/works?filter=doi:10.1234/test": {
-          $ref: "./data.json",
-          lastModified: "2023-01-01T00:00:00Z",
-          contentHash: "abc123",
+        TEST_URL_WITH_FILTER: {
+          $ref: "TEST_DATA_REF",
+          lastModified: "TEST_TIMESTAMP",
+          contentHash: "TEST_CONTENT_HASH",
         },
       };
 
@@ -667,7 +643,7 @@ describe("Index Format Adapters", () => {
 
     it("should reject DirectoryIndex format", () => {
       const dirIndex = {
-        lastUpdated: "2023-01-01T00:00:00Z",
+        lastUpdated: "TEST_TIMESTAMP",
         files: {},
       };
 
@@ -686,7 +662,7 @@ describe("Index Format Adapters", () => {
   describe("isDirectoryIndex", () => {
     it("should identify valid DirectoryIndex format", () => {
       const dirIndex = {
-        lastUpdated: "2023-01-01T00:00:00Z",
+        lastUpdated: "TEST_TIMESTAMP",
         files: {},
         directories: {},
       };
@@ -696,7 +672,7 @@ describe("Index Format Adapters", () => {
 
     it("should identify DirectoryIndex with minimal fields", () => {
       const dirIndex = {
-        lastUpdated: "2023-01-01T00:00:00Z",
+        lastUpdated: "TEST_TIMESTAMP",
       };
 
       expect(isDirectoryIndex(dirIndex)).toBe(true);
@@ -704,10 +680,10 @@ describe("Index Format Adapters", () => {
 
     it("should reject UnifiedIndex format", () => {
       const unified = {
-        "https://api.openalex.org/works": {
-          $ref: "./data.json",
-          lastModified: "2023-01-01T00:00:00Z",
-          contentHash: "abc123",
+        TEST_BASE_URL: {
+          $ref: "TEST_DATA_REF",
+          lastModified: "TEST_TIMESTAMP",
+          contentHash: "TEST_CONTENT_HASH",
         },
       };
 
@@ -718,10 +694,10 @@ describe("Index Format Adapters", () => {
   describe("readIndexAsUnified", () => {
     it("should pass through UnifiedIndex unchanged", () => {
       const unified = {
-        "https://api.openalex.org/works": {
-          $ref: "./data.json",
-          lastModified: "2023-01-01T00:00:00Z",
-          contentHash: "abc123",
+        TEST_BASE_URL: {
+          $ref: "TEST_DATA_REF",
+          lastModified: "TEST_TIMESTAMP",
+          contentHash: "TEST_CONTENT_HASH",
         },
       };
 
@@ -731,23 +707,23 @@ describe("Index Format Adapters", () => {
 
     it("should convert DirectoryIndex to UnifiedIndex", () => {
       const dirIndex = {
-        lastUpdated: "2023-01-01T00:00:00Z",
+        lastUpdated: "TEST_TIMESTAMP",
         files: {
           data: {
-            url: "https://api.openalex.org/works",
-            $ref: "./data.json",
-            lastRetrieved: "2023-01-01T00:00:00Z",
-            contentHash: "abc123",
+            url: "TEST_BASE_URL",
+            $ref: "TEST_DATA_REF",
+            lastRetrieved: "TEST_TIMESTAMP",
+            contentHash: "TEST_CONTENT_HASH",
           },
         },
       };
 
       const result = readIndexAsUnified(dirIndex);
       expect(result).toEqual({
-        "https://api.openalex.org/works": {
-          $ref: "./data.json",
-          lastModified: "2023-01-01T00:00:00Z",
-          contentHash: "abc123",
+        TEST_BASE_URL: {
+          $ref: "TEST_DATA_REF",
+          lastModified: "TEST_TIMESTAMP",
+          contentHash: "TEST_CONTENT_HASH",
         },
       });
     });
@@ -762,7 +738,7 @@ describe("Index Format Adapters", () => {
   describe("readIndexAsDirectory", () => {
     it("should pass through DirectoryIndex unchanged", () => {
       const dirIndex = {
-        lastUpdated: "2023-01-01T00:00:00Z",
+        lastUpdated: "TEST_TIMESTAMP",
         files: {},
       };
 
@@ -772,19 +748,19 @@ describe("Index Format Adapters", () => {
 
     it("should convert UnifiedIndex to DirectoryIndex", () => {
       const unified = {
-        "https://api.openalex.org/works": {
-          $ref: "./data.json",
-          lastModified: "2023-01-01T00:00:00Z",
-          contentHash: "abc123",
+        TEST_BASE_URL: {
+          $ref: "TEST_DATA_REF",
+          lastModified: "TEST_TIMESTAMP",
+          contentHash: "TEST_CONTENT_HASH",
         },
       };
 
       const result = readIndexAsDirectory(unified);
       expect(result?.files?.data).toEqual({
-        url: "https://api.openalex.org/works",
-        $ref: "./data.json",
-        lastRetrieved: "2023-01-01T00:00:00Z",
-        contentHash: "abc123",
+        url: "TEST_BASE_URL",
+        $ref: "TEST_DATA_REF",
+        lastRetrieved: "TEST_TIMESTAMP",
+        contentHash: "TEST_CONTENT_HASH",
       });
     });
   });

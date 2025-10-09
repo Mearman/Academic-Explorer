@@ -2,7 +2,7 @@
  * Utilities for OpenAlex filter processing and validation
  */
 
-import type { OpenAlexFilterState } from './OpenAlexFilters';
+import type { OpenAlexFilterState } from "./OpenAlexFilters";
 
 // Default filter state for convenience
 export const DEFAULT_OPENALEX_FILTERS: OpenAlexFilterState = {
@@ -14,22 +14,29 @@ export const DEFAULT_OPENALEX_FILTERS: OpenAlexFilterState = {
 };
 
 // Utility function to convert filters to OpenAlex API format
-export function convertToOpenAlexAPIFilters(filters: OpenAlexFilterState): Record<string, unknown> {
+export function convertToOpenAlexAPIFilters(
+  filters: OpenAlexFilterState,
+): Record<string, unknown> {
   const apiFilters: Record<string, unknown> = {};
 
   // Convert date filters
   if (filters.fromPublicationDate) {
-    apiFilters["from_publication_date"] = filters.fromPublicationDate.toISOString().split('T')[0];
+    apiFilters["from_publication_date"] = filters.fromPublicationDate
+      .toISOString()
+      .split("T")[0];
   }
 
   if (filters.toPublicationDate) {
-    apiFilters["to_publication_date"] = filters.toPublicationDate.toISOString().split('T')[0];
+    apiFilters["to_publication_date"] = filters.toPublicationDate
+      .toISOString()
+      .split("T")[0];
   }
 
   // Convert citation count filters
   if (filters.minCitationCount !== "" && filters.maxCitationCount !== "") {
     // Both min and max specified - use range format
-    apiFilters["cited_by_count"] = `${filters.minCitationCount}-${filters.maxCitationCount}`;
+    apiFilters["cited_by_count"] =
+      `${filters.minCitationCount}-${filters.maxCitationCount}`;
   } else if (filters.minCitationCount !== "") {
     // Only min specified - use >= format
     apiFilters["cited_by_count"] = `>=${filters.minCitationCount}`;
@@ -54,20 +61,30 @@ export function validateOpenAlexFilters(filters: OpenAlexFilterState): {
   const errors: string[] = [];
 
   // Validate date range
-  if (filters.fromPublicationDate && filters.toPublicationDate) {
-    if (filters.fromPublicationDate > filters.toPublicationDate) {
-      errors.push("Publication start date must be before end date");
-    }
+  if (
+    filters.fromPublicationDate &&
+    filters.toPublicationDate &&
+    filters.fromPublicationDate > filters.toPublicationDate
+  ) {
+    errors.push("Publication start date must be before end date");
   }
 
   // Validate citation count range
-  const minCitations = typeof filters.minCitationCount === 'number' ? filters.minCitationCount : parseInt(String(filters.minCitationCount));
-  const maxCitations = typeof filters.maxCitationCount === 'number' ? filters.maxCitationCount : parseInt(String(filters.maxCitationCount));
+  const minCitations =
+    typeof filters.minCitationCount === "number"
+      ? filters.minCitationCount
+      : parseInt(String(filters.minCitationCount));
+  const maxCitations =
+    typeof filters.maxCitationCount === "number"
+      ? filters.maxCitationCount
+      : parseInt(String(filters.maxCitationCount));
 
-  if (!isNaN(minCitations) && !isNaN(maxCitations)) {
-    if (minCitations > maxCitations) {
-      errors.push("Minimum citation count must be less than or equal to maximum");
-    }
+  if (
+    !isNaN(minCitations) &&
+    !isNaN(maxCitations) &&
+    minCitations > maxCitations
+  ) {
+    errors.push("Minimum citation count must be less than or equal to maximum");
   }
 
   if (!isNaN(minCitations) && minCitations < 0) {

@@ -27,14 +27,14 @@ export const FieldRenderer: React.FC<FieldRendererProps> = ({
   onNavigate,
 }) => {
   // Try value matchers first (for special types like DOI, ORCID, etc.)
-  const valueMatcher = findValueMatcher(value);
+  const valueMatcher = findValueMatcher(value, fieldName);
   if (valueMatcher) {
     return (
       <Box>
         <Text size="sm" fw={500} mb="xs">
           {formatFieldName(fieldName)}:
         </Text>
-        {valueMatcher.render(value, fieldName)}
+        {valueMatcher.render(value, fieldName, onNavigate)}
       </Box>
     );
   }
@@ -137,7 +137,7 @@ export const ObjectRenderer: React.FC<{
  * Renders a single value
  */
 export const ValueRenderer: React.FC<{ value: unknown }> = ({ value }) => {
-  const matcher = findValueMatcher(value);
+  const matcher = findValueMatcher(value, "");
   if (matcher) {
     return matcher.render(value, "");
   }

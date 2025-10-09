@@ -43,7 +43,7 @@ export class FilterBuilder {
       escapeValues: true,
       includeEmpty: false,
       logicalOperator: "AND",
-      ...options
+      ...options,
     };
   }
 
@@ -68,12 +68,12 @@ export class FilterBuilder {
    */
   toQueryString(
     filters: EntityFilters | Partial<EntityFilters> | null | undefined,
-    entityType?: EntityType
+    entityType?: EntityType,
   ): string {
     logger.debug("filters", "Converting filters to query string", {
       filters,
       entityType,
-      options: this.options
+      options: this.options,
     });
 
     if (!filters || Object.keys(filters).length === 0) {
@@ -86,7 +86,7 @@ export class FilterBuilder {
       if (!validation.isValid) {
         logger.warn("filters", "Filter validation failed", {
           errors: validation.errors,
-          warnings: validation.warnings
+          warnings: validation.warnings,
         });
         // Continue with conversion but log issues
       }
@@ -129,8 +129,8 @@ export class FilterBuilder {
     if (Array.isArray(value)) {
       // Handle array values with OR logic using pipe separator
       const formattedValues = value
-        .filter(v => v !== undefined && v !== null && String(v).trim() !== "")
-        .map(v => this.escapeValue(String(v)));
+        .filter((v) => v !== undefined && v !== null && String(v).trim() !== "")
+        .map((v) => this.escapeValue(String(v)));
 
       return formattedValues.join("|");
     }
@@ -194,7 +194,7 @@ export class FilterBuilder {
     }
 
     if (Array.isArray(value)) {
-      return value.length === 0 || value.every(v => this.isEmpty(v));
+      return value.length === 0 || value.every((v) => this.isEmpty(v));
     }
 
     return false;
@@ -209,7 +209,7 @@ export class FilterBuilder {
    */
   validateFilters(
     filters: EntityFilters | Partial<EntityFilters>,
-    _entityType: EntityType
+    _entityType: EntityType,
   ): FilterValidationResult {
     const errors: string[] = [];
     const warnings: string[] = [];
@@ -231,42 +231,54 @@ export class FilterBuilder {
       /^has_.*$/,
       /^is_.*$/,
       /.*\.id$/,
-      /.*\.search$/
+      /.*\.search$/,
     ];
 
     Object.entries(filters).forEach(([field, value]) => {
       // Check if field follows known patterns
-      const isKnownPattern = commonFilterPatterns.some(pattern => pattern.test(field));
+      const isKnownPattern = commonFilterPatterns.some((pattern) =>
+        pattern.test(field),
+      );
       if (!isKnownPattern) {
         warnings.push(`Unknown filter field: ${field}`);
       }
 
       // Validate date fields
-      if (field.includes("date") && typeof value === "string") {
-        if (!this.isValidDateString(value)) {
-          errors.push(`Invalid date format for field ${field}: ${value}`);
-        }
+      if (
+        field.includes("date") &&
+        typeof value === "string" &&
+        !this.isValidDateString(value)
+      ) {
+        errors.push(`Invalid date format for field ${field}: ${value}`);
       }
 
       // Validate numeric fields
-      if (field.includes("count") && value !== null && value !== undefined) {
-        if (!this.isValidNumericFilter(value)) {
-          errors.push(`Invalid numeric value for field ${field}: ${value}`);
-        }
+      if (
+        field.includes("count") &&
+        value !== null &&
+        value !== undefined &&
+        !this.isValidNumericFilter(value)
+      ) {
+        errors.push(`Invalid numeric value for field ${field}: ${value}`);
       }
 
       // Validate boolean fields
-      if (field.startsWith("has_") || field.startsWith("is_")) {
-        if (typeof value !== "boolean" && value !== null && value !== undefined) {
-          warnings.push(`Expected boolean value for field ${field}, got: ${typeof value}`);
-        }
+      if (
+        (field.startsWith("has_") || field.startsWith("is_")) &&
+        typeof value !== "boolean" &&
+        value !== null &&
+        value !== undefined
+      ) {
+        warnings.push(
+          `Expected boolean value for field ${field}, got: ${typeof value}`,
+        );
       }
     });
 
     return {
       isValid: errors.length === 0,
       errors,
-      warnings
+      warnings,
     };
   }
 
@@ -336,14 +348,15 @@ export class FilterBuilder {
    */
   convertWithValidation(
     filters: EntityFilters | Partial<EntityFilters> | null | undefined,
-    entityType?: EntityType
+    entityType?: EntityType,
   ): {
     queryString: string;
     validation?: FilterValidationResult;
   } {
-    const validation = entityType && this.options.validateInputs && filters
-      ? this.validateFilters(filters, entityType)
-      : undefined;
+    const validation =
+      entityType && this.options.validateInputs && filters
+        ? this.validateFilters(filters, entityType)
+        : undefined;
 
     const queryString = this.toQueryString(filters, entityType);
 
@@ -369,7 +382,7 @@ export class FilterBuilder {
       validateInputs: true,
       escapeValues: true,
       includeEmpty: false,
-      logicalOperator: "AND"
+      logicalOperator: "AND",
     });
   }
 
@@ -383,7 +396,7 @@ export class FilterBuilder {
       validateInputs: false,
       escapeValues: false,
       includeEmpty: true,
-      logicalOperator: "OR"
+      logicalOperator: "OR",
     });
   }
 }
@@ -407,7 +420,7 @@ export const strictFilterBuilder = FilterBuilder.createStrict();
  */
 export function filtersToQueryString(
   filters: EntityFilters | Partial<EntityFilters> | null | undefined,
-  entityType?: EntityType
+  entityType?: EntityType,
 ): string {
   return defaultFilterBuilder.toQueryString(filters, entityType);
 }
@@ -421,7 +434,7 @@ export function filtersToQueryString(
  */
 export function validateFilters(
   filters: EntityFilters | Partial<EntityFilters>,
-  entityType: EntityType
+  entityType: EntityType,
 ): FilterValidationResult {
   return strictFilterBuilder.validateFilters(filters, entityType);
 }

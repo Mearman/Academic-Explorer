@@ -5,15 +5,16 @@
 
 import { logger } from "./logger.js";
 
-
+// Constants
+const DATA_EVALUATION_LOG_CONTEXT = "data-evaluation";
 
 // Default column mappings for STAR datasets
 export const DEFAULT_COLUMN_MAPPINGS = {
-  id: 'id',
-  title: 'title',
-  authors: 'authors',
-  year: 'year',
-  venue: 'venue'
+  id: "id",
+  title: "title",
+  authors: "authors",
+  year: "year",
+  venue: "venue",
 } as const;
 
 // Default matching configuration
@@ -22,7 +23,7 @@ export const DEFAULT_MATCHING_CONFIG = {
   authorWeight: 0.3,
   yearWeight: 0.2,
   venueWeight: 0.1,
-  threshold: 0.8
+  threshold: 0.8,
 } as const;
 
 // Default search configuration
@@ -30,7 +31,7 @@ export const DEFAULT_SEARCH_CONFIG = {
   maxResults: 100,
   includeFieldsOfStudy: true,
   includeAuthors: true,
-  includeVenue: true
+  includeVenue: true,
 } as const;
 
 export interface STARDataset {
@@ -113,7 +114,7 @@ export interface MissingPaperDetectionConfig {
 }
 
 export interface DetectionProgress {
-  phase: 'searching' | 'analyzing' | 'complete';
+  phase: "searching" | "analyzing" | "complete";
   currentPaper: number;
   totalPapers: number;
   percentage: number;
@@ -159,14 +160,20 @@ export interface MissingPaperDetectionResults {
  * Parse STAR file format
  * Stub implementation - applications should provide their own
  */
-export function parseSTARFile(_file: File, _columnMappings: typeof DEFAULT_COLUMN_MAPPINGS): Promise<ParseResult> {
-  logger.warn("data-evaluation", "parseSTARFile: Using stub implementation");
+export function parseSTARFile(
+  _file: File,
+  _columnMappings: typeof DEFAULT_COLUMN_MAPPINGS,
+): Promise<ParseResult> {
+  logger.warn(
+    DATA_EVALUATION_LOG_CONTEXT,
+    "parseSTARFile: Using stub implementation",
+  );
   return Promise.resolve({
     success: false,
     error: "Stub implementation - not implemented",
     metadata: {
-      errors: []
-    }
+      errors: [],
+    },
   });
 }
 
@@ -174,8 +181,15 @@ export function parseSTARFile(_file: File, _columnMappings: typeof DEFAULT_COLUM
  * Create STAR dataset from parse result
  * Stub implementation - applications should provide their own
  */
-export function createSTARDatasetFromParseResult(file: File, parseResult: ParseResult, reviewTopic: string): STARDataset {
-  logger.warn("data-evaluation", "createSTARDatasetFromParseResult: Using stub implementation");
+export function createSTARDatasetFromParseResult(
+  file: File,
+  parseResult: ParseResult,
+  reviewTopic: string,
+): STARDataset {
+  logger.warn(
+    DATA_EVALUATION_LOG_CONTEXT,
+    "createSTARDatasetFromParseResult: Using stub implementation",
+  );
   return {
     id: `dataset-${Date.now()}`,
     name: file.name,
@@ -184,7 +198,7 @@ export function createSTARDatasetFromParseResult(file: File, parseResult: ParseR
     metadata: {},
     originalPaperCount: 0,
     reviewTopic,
-    uploadDate: new Date()
+    uploadDate: new Date(),
   };
 }
 
@@ -196,9 +210,12 @@ export function compareAcademicExplorerResults(
   academicExplorerResults: WorkReference[],
   dataset: STARDataset,
   config: typeof DEFAULT_MATCHING_CONFIG,
-  onProgress?: (progress: ComparisonProgress) => void
+  onProgress?: (progress: ComparisonProgress) => void,
 ): ComparisonResults {
-  logger.warn("data-evaluation", "compareAcademicExplorerResults: Using stub implementation");
+  logger.warn(
+    DATA_EVALUATION_LOG_CONTEXT,
+    "compareAcademicExplorerResults: Using stub implementation",
+  );
 
   if (onProgress) {
     onProgress({
@@ -207,7 +224,7 @@ export function compareAcademicExplorerResults(
       total: 100,
       percentage: 0,
       message: "Initializing comparison process",
-      progress: 0
+      progress: 0,
     });
   }
 
@@ -217,7 +234,7 @@ export function compareAcademicExplorerResults(
       name: dataset.name,
       includedPapers: dataset.includedPapers,
       originalPaperCount: dataset.originalPaperCount,
-      excludedPapers: []
+      excludedPapers: [],
     },
     precision: 0,
     recall: 0,
@@ -227,7 +244,7 @@ export function compareAcademicExplorerResults(
     falseNegatives: [],
     additionalPapersFound: [],
     academicExplorerResults,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 }
 
@@ -237,9 +254,12 @@ export function compareAcademicExplorerResults(
  */
 export function searchBasedOnSTARDataset(
   dataset: STARDataset,
-  _config: typeof DEFAULT_SEARCH_CONFIG = DEFAULT_SEARCH_CONFIG
+  _config: typeof DEFAULT_SEARCH_CONFIG = DEFAULT_SEARCH_CONFIG,
 ): WorkReference[] {
-  logger.warn("data-evaluation", "searchBasedOnSTARDataset: Using stub implementation");
+  logger.warn(
+    DATA_EVALUATION_LOG_CONTEXT,
+    "searchBasedOnSTARDataset: Using stub implementation",
+  );
   return [];
 }
 
@@ -249,13 +269,16 @@ export function searchBasedOnSTARDataset(
  */
 export function calculateSearchCoverage(
   searchResults: WorkReference[],
-  dataset: STARDataset
+  dataset: STARDataset,
 ): SearchCoverage {
-  logger.warn("data-evaluation", "calculateSearchCoverage: Using stub implementation");
+  logger.warn(
+    DATA_EVALUATION_LOG_CONTEXT,
+    "calculateSearchCoverage: Using stub implementation",
+  );
   return {
     total: dataset.papers.length,
     found: 0,
-    coverage: 0
+    coverage: 0,
   };
 }
 
@@ -266,33 +289,36 @@ export function calculateSearchCoverage(
 export function detectMissingPapers(
   dataset: STARDataset,
   config: MissingPaperDetectionConfig,
-  onProgress?: (progress: DetectionProgress) => void
+  onProgress?: (progress: DetectionProgress) => void,
 ): MissingPaperDetectionResults {
-  logger.warn("data-evaluation", "detectMissingPapers: Using stub implementation");
+  logger.warn(
+    DATA_EVALUATION_LOG_CONTEXT,
+    "detectMissingPapers: Using stub implementation",
+  );
 
   // Simulate progress if callback provided
   if (onProgress) {
     onProgress({
-      phase: 'searching',
+      phase: "searching",
       currentPaper: 0,
       totalPapers: dataset.papers.length,
-      percentage: 0
+      percentage: 0,
     });
 
     // Simulate completion
     setTimeout(() => {
       onProgress({
-        phase: 'complete',
+        phase: "complete",
         currentPaper: dataset.papers.length,
         totalPapers: dataset.papers.length,
-        percentage: 100
+        percentage: 100,
       });
     }, 100);
   }
 
   return {
     id: `detection-${Date.now()}`,
-    datasetName: dataset.name || 'Unknown Dataset',
+    datasetName: dataset.name || "Unknown Dataset",
     totalInvestigated: dataset.papers.length,
     potentiallyMissing: [],
     confirmed: [],
@@ -303,7 +329,7 @@ export function detectMissingPapers(
     summary: {
       detectionRate: 0,
       falsePositiveRate: 0,
-      coverage: 0
+      coverage: 0,
     },
     detectionStatistics: {
       totalCandidates: 0,
@@ -313,15 +339,15 @@ export function detectMissingPapers(
         temporalGapAnalysis: 0,
         citationNetworkAnalysis: 0,
         authorNetworkAnalysis: 0,
-        keywordExpansionAnalysis: 0
-      }
+        keywordExpansionAnalysis: 0,
+      },
     },
     validationMetrics: {
       confidenceScore: 0,
-      algorithmicBias: []
+      algorithmicBias: [],
     },
     dataset: {
-      name: dataset.name || 'Unknown Dataset'
-    }
+      name: dataset.name || "Unknown Dataset",
+    },
   };
 }
