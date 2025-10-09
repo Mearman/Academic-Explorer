@@ -112,7 +112,9 @@ describe("useGraphPersistence", () => {
     currentLayout: "force-directed",
   };
 
-  const mockGraphSnapshot: GraphSnapshot = {
+  const mockGraphSnapshot: GraphSnapshot & {
+    viewport: { zoom: number; center: { x: number; y: number } };
+  } = {
     id: "snapshot_1234567890",
     name: "Test Snapshot",
     description: "A test snapshot",
@@ -120,6 +122,7 @@ describe("useGraphPersistence", () => {
     edges: [mockEdge],
     timestamp: 1234567890000,
     version: "1.0.0",
+    viewport: { zoom: 1, center: { x: 0, y: 0 } },
     metadata: {
       nodeCount: 2,
       edgeCount: 1,
