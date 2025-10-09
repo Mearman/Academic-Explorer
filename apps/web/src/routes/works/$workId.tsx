@@ -139,7 +139,10 @@ function WorkRoute() {
         <RichEntityView
           entity={rawEntityData.data}
           entityType={entityType}
-          onNavigate={(path: string) => void navigate({ to: path })}
+          onNavigate={(path: string) => {
+            // Handle paths with query parameters for hash-based routing
+            window.location.hash = path;
+          }}
         />
       )}
     </div>

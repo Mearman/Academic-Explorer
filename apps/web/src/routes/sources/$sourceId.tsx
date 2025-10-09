@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useGraphStore } from "@/stores/graph-store";
@@ -10,7 +10,6 @@ import { logError, logger } from "@academic-explorer/utils/logger";
 
 function SourceRoute() {
   const { sourceId } = Route.useParams();
-  const navigate = useNavigate();
 
   const entityType = "source" as const;
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
@@ -115,7 +114,10 @@ function SourceRoute() {
         <RichEntityView
           entity={rawEntityData.data}
           entityType={entityType}
-          onNavigate={(path: string) => void navigate({ to: path })}
+          onNavigate={(path: string) => {
+            // Handle paths with query parameters for hash-based routing
+            window.location.hash = path;
+          }}
         />
       )}
     </div>
