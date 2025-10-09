@@ -31,8 +31,6 @@
         "../../packages/simulation/src/index.ts"
       ],
       "@academic-explorer/simulation/*": ["../../packages/simulation/src/*"],
-      "@academic-explorer/client": ["../../packages/client/dist/index.d.ts"],
-      "@academic-explorer/client/*": ["../../packages/client/dist/*"],
       "@academic-explorer/ui": ["../../packages/ui/src/index.ts"],
       "@academic-explorer/ui/*": ["../../packages/ui/src/*"],
       "@academic-explorer/ui/components/ViewToggle": [

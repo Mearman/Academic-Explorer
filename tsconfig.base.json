@@ -16,8 +16,8 @@
     "assumeChangesOnlyAffectDirectDependencies": true,
     "baseUrl": ".",
     "paths": {
-      "@academic-explorer/client": ["packages/client/src/index.ts"],
-      "@academic-explorer/client/*": ["packages/client/src/*"],
+      "@academic-explorer/client": ["packages/client/dist/index.d.ts"],
+      "@academic-explorer/client/*": ["packages/client/dist/*"],
       "@academic-explorer/graph": ["packages/graph/src/index.ts"],
       "@academic-explorer/graph/*": ["packages/graph/src/*"],
       "@academic-explorer/simulation": ["packages/simulation/src/index.ts"],
