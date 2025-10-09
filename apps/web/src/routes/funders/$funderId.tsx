@@ -1,7 +1,8 @@
-import { EntityDetectionService } from "@academic-explorer/graph";
+import { useEntityDocumentTitle } from "@/hooks/use-document-title";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useGraphStore } from "@/stores/graph-store";
+import { EntityDetectionService } from "@academic-explorer/graph";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
@@ -24,6 +25,9 @@ function FunderRoute() {
     enabled: !!funderId,
   });
   const funder = rawEntityData.data;
+
+  // Update document title with funder name
+  useEntityDocumentTitle(funder);
 
   // Check if ID needs normalization and redirect if necessary
   useEffect(() => {
