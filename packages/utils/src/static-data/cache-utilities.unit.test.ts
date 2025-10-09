@@ -48,7 +48,7 @@ describe("Cache Utilities - Collision Handling", () => {
 
   describe("hasCollision", () => {
     it("should return false for null or invalid inputs", () => {
-      expect(hasCollision(null as any, "TEST_BASE_URL", getCacheFilePath)).toBe(
+      expect(hasCollision(null as any, TEST_BASE_URL, getCacheFilePath)).toBe(
         false,
       );
       expect(hasCollision({} as FileEntry, null as any, getCacheFilePath)).toBe(
@@ -58,12 +58,12 @@ describe("Cache Utilities - Collision Handling", () => {
 
     it("should detect collision when paths match", async () => {
       const entry: FileEntry = {
-        url: "TEST_URL_WITH_FILTER",
-        $ref: "TEST_DATA_REF",
-        lastRetrieved: "TEST_TIMESTAMP",
-        contentHash: "TEST_CONTENT_HASH",
+        url: TEST_URL_WITH_FILTER,
+        $ref: TEST_DATA_REF,
+        lastRetrieved: TEST_TIMESTAMP,
+        contentHash: TEST_CONTENT_HASH,
       };
-      const collidingUrl = "TEST_URL_WITH_FILTER&api_key=secret";
+      const collidingUrl = `${TEST_URL_WITH_FILTER}&api_key=secret`;
 
       // Test with real function
       const realResult = hasCollision(entry, collidingUrl);
@@ -72,10 +72,10 @@ describe("Cache Utilities - Collision Handling", () => {
 
     it("should not detect collision when paths differ", () => {
       const entry: FileEntry = {
-        url: "TEST_URL_WITH_FILTER",
-        $ref: "TEST_DATA_REF",
-        lastRetrieved: "TEST_TIMESTAMP",
-        contentHash: "TEST_CONTENT_HASH",
+        url: TEST_URL_WITH_FILTER,
+        $ref: TEST_DATA_REF,
+        lastRetrieved: TEST_TIMESTAMP,
+        contentHash: TEST_CONTENT_HASH,
       };
       const nonCollidingUrl =
         "https://api.openalex.org/authors?filter=orcid:0000-0001-2345-6789";
@@ -88,13 +88,13 @@ describe("Cache Utilities - Collision Handling", () => {
 
     it("should handle equivalent URLs with different api_key/mailto", () => {
       const entry: FileEntry = {
-        url: "TEST_URL_WITH_FILTER",
-        $ref: "TEST_DATA_REF",
-        lastRetrieved: "TEST_TIMESTAMP",
-        contentHash: "TEST_CONTENT_HASH",
+        url: TEST_URL_WITH_FILTER,
+        $ref: TEST_DATA_REF,
+        lastRetrieved: TEST_TIMESTAMP,
+        contentHash: TEST_CONTENT_HASH,
       };
       const equivalentUrl =
-        "TEST_BASE_URL?api_key=secret&filter=doi:10.1234/test&mailto=user@example.com";
+        `${TEST_BASE_URL}?api_key=secret&filter=doi:10.1234/test&mailto=user@example.com`;
       const mockPathFn = vi.fn().mockReturnValue("/same/path.json");
       expect(hasCollision(entry, equivalentUrl, mockPathFn)).toBe(true); // Mock makes both URLs return same path, so they collide
     });
@@ -198,9 +198,9 @@ describe("Cache Utilities - Collision Handling", () => {
         contentHash: "TEST_CONTENT_HASH",
       });
       const urls = [
-        "TEST_URL_WITH_FILTER&api_key=old",
-        "TEST_URL_WITH_FILTER&mailto=old@example.com",
-        "TEST_URL_WITH_FILTER&api_key=new",
+        `${TEST_URL_WITH_FILTER}&api_key=old`,
+        `${TEST_URL_WITH_FILTER}&mailto=old@example.com`,
+        `${TEST_URL_WITH_FILTER}&api_key=new`,
       ];
       const timestamps = [
         "2023-01-01T10:00:00Z",
@@ -221,12 +221,12 @@ describe("Cache Utilities - Collision Handling", () => {
 
     it("should dedupe URLs that normalize to the same path", () => {
       const entry: FileEntry = migrateToMultiUrl({
-        url: "TEST_URL_WITH_FILTER",
-        $ref: "TEST_DATA_REF",
-        lastRetrieved: "TEST_TIMESTAMP",
-        contentHash: "TEST_CONTENT_HASH",
+        url: TEST_URL_WITH_FILTER,
+        $ref: TEST_DATA_REF,
+        lastRetrieved: TEST_TIMESTAMP,
+        contentHash: TEST_CONTENT_HASH,
       });
-      const duplicateNormalized = "TEST_URL_WITH_FILTER&api_key=ignored"; // Normalizes same
+      const duplicateNormalized = `${TEST_URL_WITH_FILTER}&api_key=ignored`; // Normalizes same
       const currentTime = "2023-01-02T00:00:00Z";
 
       const merged = mergeCollision(entry, duplicateNormalized, currentTime);
@@ -246,28 +246,28 @@ describe("Cache Utilities - Collision Handling", () => {
       const queryFilename = "filter=doi:10.1234/test&select=title";
       const result = reconstructPossibleCollisions(queryFilename, entityType);
 
-      expect(result).toContain("TEST_URL_WITH_FILTER&select=title");
+      expect(result).toContain(`${TEST_URL_WITH_FILTER}&select=title`);
     });
 
     it("should include variation with api_key parameter", () => {
       const queryFilename = "filter=doi:10.1234/test";
       const result = reconstructPossibleCollisions(queryFilename, entityType);
 
-      expect(result).toContain("TEST_URL_WITH_FILTER&api_key=dummy");
+      expect(result).toContain(`${TEST_URL_WITH_FILTER}&api_key=dummy`);
     });
 
     it("should include variation with mailto parameter", () => {
       const queryFilename = "filter=doi:10.1234/test";
       const result = reconstructPossibleCollisions(queryFilename, entityType);
 
-      expect(result).toContain("TEST_URL_WITH_FILTER&mailto=test@example.com");
+      expect(result).toContain(`${TEST_URL_WITH_FILTER}&mailto=test@example.com`);
     });
 
     it("should include cursor variation when cursor=* is present", () => {
       const queryFilename = "cursor=*&filter=doi:10.1234/test";
       const result = reconstructPossibleCollisions(queryFilename, entityType);
 
-      expect(result).toContain("TEST_URL_WITH_FILTER&cursor=MTIzNDU2");
+      expect(result).toContain(`${TEST_URL_WITH_FILTER}&cursor=MTIzNDU2`);
     });
 
     it("should not include cursor variation when no cursor=*", () => {
@@ -283,7 +283,7 @@ describe("Cache Utilities - Collision Handling", () => {
     it("should handle empty query filename", () => {
       const result = reconstructPossibleCollisions("", entityType);
       expect(result).toHaveLength(3); // canonical, api_key, mailto
-      expect(result[0]).toBe("TEST_BASE_URL");
+      expect(result[0]).toBe(TEST_BASE_URL);
     });
 
     it("should filter only equivalent URLs (though impl generates all variants)", () => {
@@ -373,17 +373,17 @@ describe("Cache Utilities - Collision Handling", () => {
 
     it("should validate valid multi-URL entry", () => {
       const validEntry: FileEntry = {
-        url: "TEST_URL_WITH_FILTER",
-        $ref: "TEST_DATA_REF",
-        lastRetrieved: "TEST_TIMESTAMP",
-        contentHash: "TEST_CONTENT_HASH",
+        url: TEST_URL_WITH_FILTER,
+        $ref: TEST_DATA_REF,
+        lastRetrieved: TEST_TIMESTAMP,
+        contentHash: TEST_CONTENT_HASH,
         equivalentUrls: [
-          "TEST_URL_WITH_FILTER",
-          "TEST_BASE_URL?api_key=secret&filter=doi:10.1234/test",
+          TEST_URL_WITH_FILTER,
+          `${TEST_BASE_URL}?api_key=secret&filter=doi:10.1234/test`,
         ],
         urlTimestamps: {
-          TEST_URL_WITH_FILTER: "TEST_TIMESTAMP",
-          "TEST_BASE_URL?api_key=secret&filter=doi:10.1234/test":
+          [TEST_URL_WITH_FILTER]: TEST_TIMESTAMP,
+          [`${TEST_BASE_URL}?api_key=secret&filter=doi:10.1234/test`]:
             "2023-01-02T00:00:00Z",
         },
         collisionInfo: {
@@ -399,15 +399,15 @@ describe("Cache Utilities - Collision Handling", () => {
 
     it("should invalidate when equivalentUrls[0] !== url", () => {
       const invalidEntry: FileEntry = {
-        url: "TEST_URL_WITH_FILTER",
-        $ref: "TEST_DATA_REF",
-        lastRetrieved: "TEST_TIMESTAMP",
-        contentHash: "TEST_CONTENT_HASH",
+        url: TEST_URL_WITH_FILTER,
+        $ref: TEST_DATA_REF,
+        lastRetrieved: TEST_TIMESTAMP,
+        contentHash: TEST_CONTENT_HASH,
         equivalentUrls: [
-          "TEST_BASE_URL?api_key=secret&filter=doi:10.1234/test",
+          `${TEST_BASE_URL}?api_key=secret&filter=doi:10.1234/test`,
         ], // Wrong order
         urlTimestamps: {
-          "TEST_BASE_URL?api_key=secret&filter=doi:10.1234/test":
+          [`${TEST_BASE_URL}?api_key=secret&filter=doi:10.1234/test`]:
             "2023-01-02T00:00:00Z",
         },
         collisionInfo: { mergedCount: 0, totalUrls: 1 },
@@ -738,7 +738,7 @@ describe("Index Format Adapters", () => {
   describe("readIndexAsDirectory", () => {
     it("should pass through DirectoryIndex unchanged", () => {
       const dirIndex = {
-        lastUpdated: "TEST_TIMESTAMP",
+        lastUpdated: TEST_TIMESTAMP,
         files: {},
       };
 
@@ -748,19 +748,19 @@ describe("Index Format Adapters", () => {
 
     it("should convert UnifiedIndex to DirectoryIndex", () => {
       const unified = {
-        TEST_BASE_URL: {
-          $ref: "TEST_DATA_REF",
-          lastModified: "TEST_TIMESTAMP",
-          contentHash: "TEST_CONTENT_HASH",
+        [TEST_BASE_URL]: {
+          $ref: "./data.json",
+          lastModified: TEST_TIMESTAMP,
+          contentHash: TEST_CONTENT_HASH,
         },
       };
 
       const result = readIndexAsDirectory(unified);
       expect(result?.files?.data).toEqual({
-        url: "TEST_BASE_URL",
-        $ref: "TEST_DATA_REF",
-        lastRetrieved: "TEST_TIMESTAMP",
-        contentHash: "TEST_CONTENT_HASH",
+        url: TEST_BASE_URL,
+        $ref: "./data.json",
+        lastRetrieved: TEST_TIMESTAMP,
+        contentHash: TEST_CONTENT_HASH,
       });
     });
   });
