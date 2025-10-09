@@ -390,6 +390,8 @@ jobs:
         run: |
           echo "🔍 Determining next release version..."
           DRY_RUN_OUTPUT=$(npx semantic-release --dry-run 2>&1)
+          echo "Dry-run output:"
+          echo "$DRY_RUN_OUTPUT"
           if echo "$DRY_RUN_OUTPUT" | grep -q "The next version is"; then
             NEXT_VERSION=$(echo "$DRY_RUN_OUTPUT" | grep "The next version is" | head -1 | awk '{print $5}' | sed 's/://' | tr -d '[:space:]')
             echo "next_version=$NEXT_VERSION" >> $GITHUB_OUTPUT
@@ -421,6 +423,14 @@ jobs:
         run: |
           echo "🚀 Creating workspace release with semantic-release..."
           npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Force semantic-release run (debug)
+        if: steps.dry-run.outputs.no_release == 'true'
+        run: |
+          echo "🔧 Debug: Forcing semantic-release run to test if it works..."
+          npx semantic-release --dry-run
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
