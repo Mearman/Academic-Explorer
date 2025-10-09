@@ -5,9 +5,9 @@
 
 import { logger } from "@academic-explorer/utils/logger";
 import type {
-	ExpansionSettings,
-	SortCriteria,
-	FilterCriteria
+  ExpansionSettings,
+  SortCriteria,
+  FilterCriteria,
 } from "@academic-explorer/graph";
 
 export interface OpenAlexQueryParams {
@@ -21,41 +21,49 @@ export interface OpenAlexQueryParams {
  * Type guard to check if a value is an array with exactly 2 elements
  */
 function isTwoElementArray(value: unknown): value is [unknown, unknown] {
-	return Array.isArray(value) && value.length === 2;
+  return Array.isArray(value) && value.length === 2;
 }
 
 /**
  * Build OpenAlex query parameters from expansion settings
  */
-function buildQueryParams(settings: ExpansionSettings, baseSelect?: string[]): OpenAlexQueryParams {
-	const params: OpenAlexQueryParams = {};
+function buildQueryParams(
+  settings: ExpansionSettings,
+  baseSelect?: string[],
+): OpenAlexQueryParams {
+  const params: OpenAlexQueryParams = {};
 
-	// Always use maximum per_page for efficiency, handle total limit separately
-	params.per_page = 200; // OpenAlex maximum per page
+  // Always use maximum per_page for efficiency, handle total limit separately
+  params.per_page = 200; // OpenAlex maximum per page
 
-	// Build sort string
-	const sortString = buildSortString(settings.sorts ?? []);
-	if (sortString) {
-		params.sort = sortString;
-	}
+  // Build sort string
+  const sortString = buildSortString(settings.sorts ?? []);
+  if (sortString) {
+    params.sort = sortString;
+  }
 
-	// Build filter string
-	const filterString = buildFilterString(settings.filters ?? []);
-	if (filterString) {
-		params.filter = filterString;
-	}
+  // Build filter string
+  const filterString = buildFilterString(settings.filters ?? []);
+  if (filterString) {
+    params.filter = filterString;
+  }
 
-	// Set select fields if provided
-	if (baseSelect && baseSelect.length > 0) {
-		params.select = baseSelect;
-	}
+  // Set select fields if provided
+  if (baseSelect && baseSelect.length > 0) {
+    params.select = baseSelect;
+  }
 
-	logger.debug("expansion", "Built query parameters from settings", {
-		settings: settings.target,
-		params
-	}, "ExpansionQueryBuilder");
+  logger.debug(
+    "expansion",
+    "Built query parameters from settings",
+    {
+      settings: settings.target,
+      params,
+    },
+    "ExpansionQueryBuilder",
+  );
 
-	return params;
+  return params;
 }
 
 /**
@@ -63,18 +71,17 @@ function buildQueryParams(settings: ExpansionSettings, baseSelect?: string[]): O
  * Format: "property1:direction1,property2:direction2"
  */
 function buildSortString(sorts: SortCriteria[]): string | undefined {
-	if (sorts.length === 0) {
-		return undefined;
-	}
+  if (sorts.length === 0) {
+    return undefined;
+  }
 
-	const sortedCriteria = sorts
-		.sort((a, b) => a.priority - b.priority);
+  const sortedCriteria = sorts.sort((a, b) => a.priority - b.priority);
 
-	const sortParts = sortedCriteria.map(sort =>
-		`${sort.property}:${sort.direction}`
-	);
+  const sortParts = sortedCriteria.map(
+    (sort) => `${sort.property}:${sort.direction}`,
+  );
 
-	return sortParts.length > 0 ? sortParts.join(",") : undefined;
+  return sortParts.length > 0 ? sortParts.join(",") : undefined;
 }
 
 /**
@@ -82,262 +89,298 @@ function buildSortString(sorts: SortCriteria[]): string | undefined {
  * Format: "property1:operator1:value1,property2:operator2:value2"
  */
 function buildFilterString(filters: FilterCriteria[]): string | undefined {
-	const enabledFilters = filters.filter(filter =>
-		filter.enabled && filter.property
-	);
+  const enabledFilters = filters.filter(
+    (filter) => filter.enabled && filter.property,
+  );
 
-	if (enabledFilters.length === 0) {
-		return undefined;
-	}
+  if (enabledFilters.length === 0) {
+    return undefined;
+  }
 
-	const filterParts = enabledFilters
-		.map(filter => buildSingleFilter(filter))
-		.filter(part => part !== null);
+  const filterParts = enabledFilters
+    .map((filter) => buildSingleFilter(filter))
+    .filter((part) => part !== null);
 
-	return filterParts.length > 0 ? filterParts.join(",") : undefined;
+  return filterParts.length > 0 ? filterParts.join(",") : undefined;
 }
 
 /**
  * Build a single filter expression
  */
 function buildSingleFilter(filter: FilterCriteria): string | null {
-	const { property, operator, value } = filter;
+  const { property, operator, value } = filter;
 
-	try {
-		switch (operator) {
-			case "eq":
-				return `${property}:${formatValue(value)}`;
+  try {
+    switch (operator) {
+      case "eq":
+        return `${property}:${formatValue(value)}`;
 
-			case "ne":
-				return `${property}:!${formatValue(value)}`;
+      case "ne":
+        return `${property}:!${formatValue(value)}`;
 
-			case "gt":
-				return `${property}:>${formatValue(value)}`;
+      case "gt":
+        return `${property}:>${formatValue(value)}`;
 
-			case "lt":
-				return `${property}:<${formatValue(value)}`;
+      case "lt":
+        return `${property}:<${formatValue(value)}`;
 
-			case "gte":
-				return `${property}:>=${formatValue(value)}`;
+      case "gte":
+        return `${property}:>=${formatValue(value)}`;
 
-			case "lte":
-				return `${property}:<=${formatValue(value)}`;
+      case "lte":
+        return `${property}:<=${formatValue(value)}`;
 
-			case "contains":
-				// For string contains, use partial matching
-				return `${property}:${formatValue(value)}`;
+      case "contains":
+        // For string contains, use partial matching
+        return `${property}:${formatValue(value)}`;
 
-			case "startswith":
-				// OpenAlex doesn't have direct startswith, use contains
-				return `${property}:${formatValue(value)}`;
+      case "startswith":
+        // OpenAlex doesn't have direct startswith, use contains
+        return `${property}:${formatValue(value)}`;
 
-			case "endswith":
-				// OpenAlex doesn't have direct endswith, use contains
-				return `${property}:${formatValue(value)}`;
+      case "endswith":
+        // OpenAlex doesn't have direct endswith, use contains
+        return `${property}:${formatValue(value)}`;
 
-			case "between":
-				if (isTwoElementArray(value)) {
-					const min = value[0];
-					const max = value[1];
-					return `${property}:${formatValue(min)}-${formatValue(max)}`;
-				}
-				return null;
+      case "between":
+        if (isTwoElementArray(value)) {
+          const min = value[0];
+          const max = value[1];
+          return `${property}:${formatValue(min)}-${formatValue(max)}`;
+        }
+        return null;
 
-			case "in":
-				if (Array.isArray(value)) {
-					const formattedValues = value.map(v => formatValue(v));
-					return `${property}:${formattedValues.join("|")}`;
-				}
-				return `${property}:${formatValue(value)}`;
+      case "in":
+        if (Array.isArray(value)) {
+          const formattedValues = value.map((v) => formatValue(v));
+          return `${property}:${formattedValues.join("|")}`;
+        }
+        return `${property}:${formatValue(value)}`;
 
-			case "notin":
-				if (Array.isArray(value)) {
-					const formattedValues = value.map(v => formatValue(v));
-					return `${property}:!${formattedValues.join("|")}`;
-				}
-				return `${property}:!${formatValue(value)}`;
+      case "notin":
+        if (Array.isArray(value)) {
+          const formattedValues = value.map((v) => formatValue(v));
+          return `${property}:!${formattedValues.join("|")}`;
+        }
+        return `${property}:!${formatValue(value)}`;
 
-			default:
-				logger.warn("expansion", "Unknown filter operator", { operator }, "ExpansionQueryBuilder");
-				return null;
-		}
-	} catch (error) {
-		logger.warn("expansion", "Error building filter", { filter, error }, "ExpansionQueryBuilder");
-		return null;
-	}
+      default:
+        logger.warn(
+          "expansion",
+          "Unknown filter operator",
+          { operator },
+          "ExpansionQueryBuilder",
+        );
+        return null;
+    }
+  } catch (error) {
+    logger.warn(
+      "expansion",
+      "Error building filter",
+      { filter, error },
+      "ExpansionQueryBuilder",
+    );
+    return null;
+  }
 }
 
 /**
  * Format a value for use in OpenAlex filters
  */
 function formatValue(value: unknown): string {
-	if (value === null || value === undefined) {
-		return "";
-	}
+  if (value === null || value === undefined) {
+    return "";
+  }
 
-	if (typeof value === "string") {
-		// Escape special characters and spaces
-		return value.replace(/[,:|]/g, "\\$&");
-	}
+  if (typeof value === "string") {
+    // Escape special characters and spaces
+    return value.replace(/[,:|]/g, "\\$&");
+  }
 
-	if (typeof value === "boolean") {
-		return value ? "true" : "false";
-	}
+  if (typeof value === "boolean") {
+    return value ? "true" : "false";
+  }
 
-	if (typeof value === "number") {
-		return value.toString();
-	}
+  if (typeof value === "number") {
+    return value.toString();
+  }
 
-	if (value instanceof Date) {
-		return value.getFullYear().toString();
-	}
+  if (value instanceof Date) {
+    return value.getFullYear().toString();
+  }
 
-	// Convert everything else to string safely
-	if (typeof value === "object") {
-		return JSON.stringify(value);
-	}
+  // Convert everything else to string safely
+  if (typeof value === "object") {
+    return JSON.stringify(value);
+  }
 
-	// For primitive types that can be safely stringified
-	if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
-		return String(value);
-	}
+  // For primitive types that can be safely stringified
+  if (
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean"
+  ) {
+    return String(value);
+  }
 
-	// Fallback for any other type - return empty string to avoid [object Object]
-	return "";
+  // Fallback for any other type - return empty string to avoid [object Object]
+  return "";
 }
 
 /**
  * Validate expansion settings for OpenAlex compatibility
  */
-function validateSettings(settings: ExpansionSettings): { valid: boolean; errors: string[] } {
-	const errors: string[] = [];
+function validateSettings(settings: ExpansionSettings): {
+  valid: boolean;
+  errors: string[];
+} {
+  const errors: string[] = [];
 
-	// Validate limit
-	if (settings.limit !== undefined) {
-		if (settings.limit < 0) {
-			errors.push("Limit must be 0 (unlimited) or greater");
-		}
-		if (settings.limit > 10000) {
-			errors.push("Limit cannot exceed 10000 for performance reasons");
-		}
-	}
+  // Validate limit
+  if (settings.limit !== undefined) {
+    if (settings.limit < 0) {
+      errors.push("Limit must be 0 (unlimited) or greater");
+    }
+    if (settings.limit > 10000) {
+      errors.push("Limit cannot exceed 10000 for performance reasons");
+    }
+  }
 
-	// Validate sorts
-	for (const sort of settings.sorts ?? []) {
-		if (!sort.property) {
-			errors.push("Sort criteria must have a property");
-		}
-		if (!["asc", "desc"].includes(sort.direction)) {
-			errors.push(`Invalid sort direction: ${sort.direction}`);
-		}
-		if (sort.priority < 1) {
-			errors.push("Sort priority must be 1 or greater");
-		}
-	}
+  // Validate sorts
+  for (const sort of settings.sorts ?? []) {
+    if (!sort.property) {
+      errors.push("Sort criteria must have a property");
+    }
+    if (!["asc", "desc"].includes(sort.direction)) {
+      errors.push(`Invalid sort direction: ${sort.direction}`);
+    }
+    if (sort.priority < 1) {
+      errors.push("Sort priority must be 1 or greater");
+    }
+  }
 
-	// Check for duplicate sort properties
-	const sorts = settings.sorts ?? [];
-	const sortProperties = sorts.map(s => s.property);
-	const uniqueSortProperties = new Set(sortProperties);
-	if (sortProperties.length !== uniqueSortProperties.size) {
-		errors.push("Duplicate sort properties are not allowed");
-	}
+  // Check for duplicate sort properties
+  const sorts = settings.sorts ?? [];
+  const sortProperties = sorts.map((s) => s.property);
+  const uniqueSortProperties = new Set(sortProperties);
+  if (sortProperties.length !== uniqueSortProperties.size) {
+    errors.push("Duplicate sort properties are not allowed");
+  }
 
-	// Validate filters
-	for (const filter of settings.filters ?? []) {
-		if (!filter.property) {
-			errors.push("Filter criteria must have a property");
-		}
+  // Validate filters
+  for (const filter of settings.filters ?? []) {
+    if (!filter.property) {
+      errors.push("Filter criteria must have a property");
+    }
 
-		if (filter.operator === "between" && (!Array.isArray(filter.value) || filter.value.length !== 2)) {
-			errors.push("Between filter must have exactly 2 values");
-		}
+    if (
+      filter.operator === "between" &&
+      (!Array.isArray(filter.value) || filter.value.length !== 2)
+    ) {
+      errors.push("Between filter must have exactly 2 values");
+    }
 
-		if (["in", "notin"].includes(filter.operator) && filter.value !== null && filter.value !== undefined) {
-			if (!Array.isArray(filter.value) && typeof filter.value !== "string" && typeof filter.value !== "number") {
-				errors.push(`Filter operator ${filter.operator} requires array, string, or number value`);
-			}
-		}
-	}
+    if (
+      ["in", "notin"].includes(filter.operator) &&
+      filter.value !== null &&
+      filter.value !== undefined &&
+      !Array.isArray(filter.value) &&
+      typeof filter.value !== "string" &&
+      typeof filter.value !== "number"
+    ) {
+      errors.push(
+        `Filter operator ${filter.operator} requires array, string, or number value`,
+      );
+    }
+  }
 
-	return {
-		valid: errors.length === 0,
-		errors
-	};
+  return {
+    valid: errors.length === 0,
+    errors,
+  };
 }
 
 /**
  * Get example query string for preview
  */
 function getQueryPreview(settings: ExpansionSettings): string {
-	const params = buildQueryParams(settings);
-	const parts: string[] = [];
+  const params = buildQueryParams(settings);
+  const parts: string[] = [];
 
-	if (params.sort) {
-		parts.push(`sort=${params.sort}`);
-	}
-	if (params.filter) {
-		parts.push(`filter=${params.filter}`);
-	}
-	if (params.per_page) {
-		parts.push(`per_page=${params.per_page.toString()}`);
-	}
+  if (params.sort) {
+    parts.push(`sort=${params.sort}`);
+  }
+  if (params.filter) {
+    parts.push(`filter=${params.filter}`);
+  }
+  if (params.per_page) {
+    parts.push(`per_page=${params.per_page.toString()}`);
+  }
 
-	return parts.length > 0 ? `?${parts.join("&")}` : "";
+  return parts.length > 0 ? `?${parts.join("&")}` : "";
 }
 
 /**
  * Merge additional filters with expansion settings filters
  */
-function mergeFilters(baseFilters: string | undefined, additionalFilters: FilterCriteria[]): string | undefined {
-	const additionalFilterString = buildFilterString(additionalFilters);
+function mergeFilters(
+  baseFilters: string | undefined,
+  additionalFilters: FilterCriteria[],
+): string | undefined {
+  const additionalFilterString = buildFilterString(additionalFilters);
 
-	if (!baseFilters && !additionalFilterString) {
-		return undefined;
-	}
+  if (!baseFilters && !additionalFilterString) {
+    return undefined;
+  }
 
-	if (!baseFilters) {
-		return additionalFilterString;
-	}
+  if (!baseFilters) {
+    return additionalFilterString;
+  }
 
-	if (!additionalFilterString) {
-		return baseFilters;
-	}
+  if (!additionalFilterString) {
+    return baseFilters;
+  }
 
-	return `${baseFilters},${additionalFilterString}`;
+  return `${baseFilters},${additionalFilterString}`;
 }
 
 /**
  * Create a copy of settings with modified filters (useful for context-specific queries)
  */
-function withAdditionalFilters(settings: ExpansionSettings, additionalFilters: FilterCriteria[]): ExpansionSettings {
-	return {
-		...settings,
-		filters: [...(settings.filters ?? []), ...additionalFilters]
-	};
+function withAdditionalFilters(
+  settings: ExpansionSettings,
+  additionalFilters: FilterCriteria[],
+): ExpansionSettings {
+  return {
+    ...settings,
+    filters: [...(settings.filters ?? []), ...additionalFilters],
+  };
 }
 
 /**
  * Create a copy of settings with modified sort (useful for fallback sorting)
  */
-function withFallbackSort(settings: ExpansionSettings, fallbackSort: SortCriteria): ExpansionSettings {
-	// Only add fallback if no sorts are defined
-	if ((settings.sorts ?? []).length > 0) {
-		return settings;
-	}
+function withFallbackSort(
+  settings: ExpansionSettings,
+  fallbackSort: SortCriteria,
+): ExpansionSettings {
+  // Only add fallback if no sorts are defined
+  if ((settings.sorts ?? []).length > 0) {
+    return settings;
+  }
 
-	return {
-		...settings,
-		sorts: [{ ...fallbackSort, priority: 1 }]
-	};
+  return {
+    ...settings,
+    sorts: [{ ...fallbackSort, priority: 1 }],
+  };
 }
 
 // Export object with all functions
 export const ExpansionQueryBuilder = {
-	buildQueryParams,
-	validateSettings,
-	getQueryPreview,
-	mergeFilters,
-	withAdditionalFilters,
-	withFallbackSort
+  buildQueryParams,
+  validateSettings,
+  getQueryPreview,
+  mergeFilters,
+  withAdditionalFilters,
+  withFallbackSort,
 } as const;
