@@ -1,27 +1,69 @@
 {
-  "lastUpdated": "2025-10-08T14:04:37.251Z",
+  "lastUpdated": "2025-10-09T09:49:24.345Z",
   "files": {
-    "A5006060960": {
-      "url": "https://api.openalex.org/authors/A5006060960",
-      "$ref": "./A5006060960.json",
-      "lastRetrieved": "2025-10-06T14:10:23.497Z",
-      "contentHash": "c6bc20a8b301606c",
+    "A123456789": {
+      "url": "https://api.openalex.org/authors/A123456789",
+      "$ref": "./A123456789.json",
+      "lastRetrieved": "2025-10-08T14:04:37.251Z",
+      "contentHash": "076a62d97d063dfd",
       "equivalentUrls": [
-        "https://api.openalex.org/authors/A5006060960"
+        "https://api.openalex.org/authors/A123456789"
       ],
       "urlTimestamps": {
-        "https://api.openalex.org/authors/A5006060960": "2025-10-06T14:10:23.497Z"
+        "https://api.openalex.org/authors/A123456789": "2025-10-08T14:04:37.251Z"
       },
       "collisionInfo": {
         "mergedCount": 0,
         "totalUrls": 1
       }
     },
-    "A123456789": {
-      "url": "https://api.openalex.org/authors/A123456789",
-      "$ref": "./A123456789.json",
-      "lastRetrieved": "2025-10-08T14:04:37.250Z",
-      "contentHash": "076a62d97d063dfd"
+    "A5006060960": {
+      "url": "https://api.openalex.org/authors/A5006060960",
+      "$ref": "./A5006060960.json",
+      "lastRetrieved": "2025-10-06T14:10:23.498Z",
+      "contentHash": "c6bc20a8b301606c",
+      "equivalentUrls": [
+        "https://api.openalex.org/authors/A5006060960"
+      ],
+      "urlTimestamps": {
+        "https://api.openalex.org/authors/A5006060960": "2025-10-06T14:10:23.498Z"
+      },
+      "collisionInfo": {
+        "mergedCount": 0,
+        "totalUrls": 1
+      }
+    },
+    "A5017898742": {
+      "url": "https://api.openalex.org/authors/A5017898742",
+      "$ref": "./A5017898742.json",
+      "lastRetrieved": "2025-10-09T09:49:24.224Z",
+      "contentHash": "c77e827545226162",
+      "equivalentUrls": [
+        "https://api.openalex.org/authors/A5017898742"
+      ],
+      "urlTimestamps": {
+        "https://api.openalex.org/authors/A5017898742": "2025-10-09T09:49:24.224Z"
+      },
+      "collisionInfo": {
+        "mergedCount": 0,
+        "totalUrls": 1
+      }
+    },
+    "A5017898742works": {
+      "url": "https://api.openalex.org/authors/A5017898742works",
+      "$ref": "./A5017898742works.json",
+      "lastRetrieved": "2025-10-09T09:47:03.311Z",
+      "contentHash": "c77e827545226162",
+      "equivalentUrls": [
+        "https://api.openalex.org/authors/A5017898742works"
+      ],
+      "urlTimestamps": {
+        "https://api.openalex.org/authors/A5017898742works": "2025-10-09T09:47:03.311Z"
+      },
+      "collisionInfo": {
+        "mergedCount": 0,
+        "totalUrls": 1
+      }
     }
   },
   "directories": {}
