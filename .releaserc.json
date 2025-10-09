@@ -1,7 +1,7 @@
 {
   "branches": ["main"],
   "repositoryUrl": "https://github.com/Mearman/Academic-Explorer",
-  "tagFormat": "v${version}",
+  "tagFormat": "academic-explorer-monorepo@${version}",
   "plugins": [
     [
       "@semantic-release/commit-analyzer",
@@ -35,6 +35,11 @@
         "npmPublish": false
       }
     ],
-    "@semantic-release/github"
+    [
+      "@semantic-release/github",
+      {
+        "assets": []
+      }
+    ]
   ]
 }
