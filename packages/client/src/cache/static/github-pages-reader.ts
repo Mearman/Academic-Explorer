@@ -3,9 +3,9 @@
  * Fetches static data from GitHub Pages URL in production mode with caching and retry logic
  */
 
-import { MemoryCache } from '@academic-explorer/utils';
-import { logger } from '@academic-explorer/utils';
-import type { OpenAlexEntity, OpenAlexResponse } from '../../types';
+import { MemoryCache } from "@academic-explorer/utils";
+import { logger } from "@academic-explorer/utils";
+import type { OpenAlexEntity, OpenAlexResponse } from "../../types";
 
 /**
  * Configuration for GitHub Pages reader
@@ -64,10 +64,10 @@ export class GitHubPagesReaderError extends Error {
     message: string,
     public statusCode?: number,
     public url?: string,
-    public cause?: Error
+    public cause?: Error,
   ) {
     super(message);
-    this.name = 'GitHubPagesReaderError';
+    this.name = "GitHubPagesReaderError";
     Object.setPrototypeOf(this, GitHubPagesReaderError.prototype);
   }
 }
@@ -95,11 +95,14 @@ export class GitHubPagesReader {
     };
 
     // Initialize cache
-    this.cache = new MemoryCache<CachedStaticData<unknown>>({
-      maxSize: this.config.maxCacheSize,
-      defaultTtl: this.config.cacheTtl,
-      enableStats: true,
-    }, logger);
+    this.cache = new MemoryCache<CachedStaticData<unknown>>(
+      {
+        maxSize: this.config.maxCacheSize,
+        defaultTtl: this.config.cacheTtl,
+        enableStats: true,
+      },
+      logger,
+    );
 
     // Set up retry configuration
     this.retryConfig = {
@@ -112,7 +115,7 @@ export class GitHubPagesReader {
     // Detect production environment
     this.isProduction = this.detectProductionEnvironment();
 
-    logger.debug('static-cache', 'GitHubPagesReader initialized', {
+    logger.debug("static-cache", "GitHubPagesReader initialized", {
       baseUrl: this.config.baseUrl,
       isProduction: this.isProduction,
       cacheTtl: this.config.cacheTtl,
@@ -126,7 +129,11 @@ export class GitHubPagesReader {
   async fetchStaticData<T = unknown>(path: string): Promise<T | null> {
     // Only fetch in production mode
     if (!this.isProduction) {
-      logger.debug('static-cache', 'Skipping GitHub Pages fetch in non-production environment', { path });
+      logger.debug(
+        "static-cache",
+        "Skipping GitHub Pages fetch in non-production environment",
+        { path },
+      );
       return null;
     }
 
@@ -135,7 +142,10 @@ export class GitHubPagesReader {
     // Check cache first
     const cached = this.cache.get(cacheKey);
     if (cached) {
-      logger.debug('static-cache', 'Returning cached static data', { path, cacheKey });
+      logger.debug("static-cache", "Returning cached static data", {
+        path,
+        cacheKey,
+      });
       return cached.data as T;
     }
 
@@ -152,18 +162,26 @@ export class GitHubPagesReader {
 
       this.cache.set(cacheKey, cacheEntry);
 
-      logger.debug('static-cache', 'Successfully fetched and cached static data', {
-        path,
-        url,
-        dataSize: JSON.stringify(data).length,
-      });
+      logger.debug(
+        "static-cache",
+        "Successfully fetched and cached static data",
+        {
+          path,
+          url,
+          dataSize: JSON.stringify(data).length,
+        },
+      );
 
       return data;
     } catch (error) {
-      logger.error('static-cache', 'Failed to fetch static data from GitHub Pages', {
-        path,
-        error: error instanceof Error ? error.message : String(error),
-      });
+      logger.error(
+        "static-cache",
+        "Failed to fetch static data from GitHub Pages",
+        {
+          path,
+          error: error instanceof Error ? error.message : String(error),
+        },
+      );
 
       // Return null for graceful degradation
       return null;
@@ -173,7 +191,10 @@ export class GitHubPagesReader {
   /**
    * Fetch OpenAlex entity data from static cache
    */
-  async fetchEntity<T extends OpenAlexEntity>(entityType: string, entityId: string): Promise<T | null> {
+  async fetchEntity<T extends OpenAlexEntity>(
+    entityType: string,
+    entityId: string,
+  ): Promise<T | null> {
     const path = `entities/${entityType}/${entityId}.json`;
     return this.fetchStaticData<T>(path);
   }
@@ -183,7 +204,7 @@ export class GitHubPagesReader {
    */
   async fetchResponse<T extends OpenAlexEntity>(
     entityType: string,
-    queryHash: string
+    queryHash: string,
   ): Promise<OpenAlexResponse<T> | null> {
     const path = `responses/${entityType}/${queryHash}.json`;
     return this.fetchStaticData<OpenAlexResponse<T>>(path);
@@ -201,7 +222,7 @@ export class GitHubPagesReader {
    */
   clearCache(): void {
     this.cache.clear();
-    logger.debug('static-cache', 'GitHub Pages cache cleared');
+    logger.debug("static-cache", "GitHub Pages cache cleared");
   }
 
   /**
@@ -209,7 +230,11 @@ export class GitHubPagesReader {
    */
   updateConfig(newConfig: Partial<GitHubPagesReaderConfig>): void {
     this.config = { ...this.config, ...newConfig };
-    logger.debug('static-cache', 'GitHub Pages reader configuration updated', newConfig);
+    logger.debug(
+      "static-cache",
+      "GitHub Pages reader configuration updated",
+      newConfig,
+    );
   }
 
   /**
@@ -220,7 +245,7 @@ export class GitHubPagesReader {
 
     for (let attempt = 0; attempt <= this.retryConfig.maxRetries; attempt++) {
       try {
-        logger.debug('static-cache', 'Attempting to fetch from GitHub Pages', {
+        logger.debug("static-cache", "Attempting to fetch from GitHub Pages", {
           url,
           attempt: attempt + 1,
           maxRetries: this.retryConfig.maxRetries + 1,
@@ -232,7 +257,7 @@ export class GitHubPagesReader {
           throw new GitHubPagesReaderError(
             `HTTP ${response.status}: ${response.statusText}`,
             response.status,
-            url
+            url,
           );
         }
 
@@ -243,24 +268,28 @@ export class GitHubPagesReader {
           const validation = this.validateResponseData(data);
           if (!validation.isValid) {
             throw new GitHubPagesReaderError(
-              `Invalid data format: ${validation.errors.join(', ')}`,
+              `Invalid data format: ${validation.errors.join(", ")}`,
               undefined,
-              url
+              url,
             );
           }
         }
 
-        logger.debug('static-cache', 'Successfully fetched data from GitHub Pages', {
-          url,
-          attempt: attempt + 1,
-          dataSize: JSON.stringify(data).length,
-        });
+        logger.debug(
+          "static-cache",
+          "Successfully fetched data from GitHub Pages",
+          {
+            url,
+            attempt: attempt + 1,
+            dataSize: JSON.stringify(data).length,
+          },
+        );
 
         return data as T;
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
 
-        logger.warn('static-cache', 'GitHub Pages fetch attempt failed', {
+        logger.warn("static-cache", "GitHub Pages fetch attempt failed", {
           url,
           attempt: attempt + 1,
           error: lastError.message,
@@ -274,11 +303,15 @@ export class GitHubPagesReader {
         // Calculate delay with exponential backoff
         const delay = this.calculateRetryDelay(attempt);
 
-        logger.debug('static-cache', 'Retrying GitHub Pages fetch after delay', {
-          url,
-          attempt: attempt + 1,
-          delay,
-        });
+        logger.debug(
+          "static-cache",
+          "Retrying GitHub Pages fetch after delay",
+          {
+            url,
+            attempt: attempt + 1,
+            delay,
+          },
+        );
 
         await this.sleep(delay);
       }
@@ -289,7 +322,7 @@ export class GitHubPagesReader {
       `Failed to fetch after ${this.retryConfig.maxRetries + 1} attempts: ${lastError?.message}`,
       undefined,
       url,
-      lastError || undefined
+      lastError || undefined,
     );
   }
 
@@ -301,22 +334,20 @@ export class GitHubPagesReader {
     const timeoutId = setTimeout(() => controller.abort(), this.config.timeout);
 
     try {
-      const response = await fetch(url, {
+      return await fetch(url, {
         signal: controller.signal,
         headers: {
-          'Accept': 'application/json',
-          'Cache-Control': 'no-cache',
+          Accept: "application/json",
+          "Cache-Control": "no-cache",
         },
       });
-
-      return response;
     } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') {
+      if (error instanceof Error && error.name === "AbortError") {
         throw new GitHubPagesReaderError(
           `Request timeout after ${this.config.timeout}ms`,
           undefined,
           url,
-          error
+          error,
         );
       }
       throw error;
@@ -329,7 +360,8 @@ export class GitHubPagesReader {
    * Calculate retry delay with exponential backoff
    */
   private calculateRetryDelay(attempt: number): number {
-    const baseDelay = this.retryConfig.initialDelay *
+    const baseDelay =
+      this.retryConfig.initialDelay *
       Math.pow(this.retryConfig.backoffMultiplier, attempt);
 
     // Add jitter to prevent thundering herd
@@ -344,7 +376,7 @@ export class GitHubPagesReader {
    * Sleep for specified milliseconds
    */
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   /**
@@ -354,12 +386,12 @@ export class GitHubPagesReader {
     const errors: string[] = [];
 
     if (data === null || data === undefined) {
-      errors.push('Data is null or undefined');
+      errors.push("Data is null or undefined");
       return { isValid: false, errors };
     }
 
-    if (typeof data !== 'object') {
-      errors.push('Data is not an object');
+    if (typeof data !== "object") {
+      errors.push("Data is not an object");
       return { isValid: false, errors };
     }
 
@@ -367,7 +399,7 @@ export class GitHubPagesReader {
     try {
       JSON.stringify(data);
     } catch {
-      errors.push('Data is not serializable to JSON');
+      errors.push("Data is not serializable to JSON");
     }
 
     return { isValid: errors.length === 0, errors };
@@ -377,8 +409,8 @@ export class GitHubPagesReader {
    * Build full URL from path
    */
   private buildUrl(path: string): string {
-    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
-    const baseUrl = this.config.baseUrl.endsWith('/')
+    const cleanPath = path.startsWith("/") ? path.slice(1) : path;
+    const baseUrl = this.config.baseUrl.endsWith("/")
       ? this.config.baseUrl.slice(0, -1)
       : this.config.baseUrl;
 
@@ -397,28 +429,34 @@ export class GitHubPagesReader {
    */
   private detectProductionEnvironment(): boolean {
     // Check various indicators of production environment
-    if (typeof globalThis !== 'undefined' && 'location' in globalThis) {
+    if (typeof globalThis !== "undefined" && "location" in globalThis) {
       // Browser environment
-      const { location } = globalThis as unknown as { location: { hostname?: string } };
+      const { location } = globalThis as unknown as {
+        location: { hostname?: string };
+      };
       const hostname = location?.hostname;
 
       if (hostname) {
         // Consider it production if:
         // 1. Running on GitHub Pages domain
         // 2. Running on custom domain (not localhost or development domains)
-        const isGitHubPages = hostname.includes('github.io');
-        const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
-        const isDevelopment = hostname.includes('dev') || hostname.includes('test');
+        const isGitHubPages = hostname.includes("github.io");
+        const isLocalhost =
+          hostname === "localhost" || hostname === "127.0.0.1";
+        const isDevelopment =
+          hostname.includes("dev") || hostname.includes("test");
 
-        return Boolean(isGitHubPages || (!isLocalhost && !isDevelopment && hostname));
+        return Boolean(
+          isGitHubPages || (!isLocalhost && !isDevelopment && hostname),
+        );
       }
     }
 
     // Node.js environment - check environment variables
     const nodeEnv = process.env.NODE_ENV;
-    const isProd = nodeEnv === 'production';
+    const isProd = nodeEnv === "production";
 
-    logger.debug('static-cache', 'Production environment detection', {
+    logger.debug("static-cache", "Production environment detection", {
       nodeEnv,
       isProd,
     });
@@ -431,7 +469,7 @@ export class GitHubPagesReader {
  * Default GitHub Pages reader configuration
  */
 export const defaultGitHubPagesConfig: GitHubPagesReaderConfig = {
-  baseUrl: 'https://your-username.github.io/academic-explorer-data',
+  baseUrl: "https://your-username.github.io/academic-explorer-data",
   timeout: 10000,
   maxRetries: 3,
   initialRetryDelay: 1000,
@@ -445,7 +483,7 @@ export const defaultGitHubPagesConfig: GitHubPagesReaderConfig = {
  * Create a GitHub Pages reader instance with default configuration
  */
 export function createGitHubPagesReader(
-  config: Partial<GitHubPagesReaderConfig> = {}
+  config: Partial<GitHubPagesReaderConfig> = {},
 ): GitHubPagesReader {
   const fullConfig = { ...defaultGitHubPagesConfig, ...config };
   return new GitHubPagesReader(fullConfig);
