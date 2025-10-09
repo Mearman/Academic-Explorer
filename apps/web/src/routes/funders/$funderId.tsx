@@ -1,9 +1,11 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/funders/$funderId')({
-  component: RouteComponent,
-})
+function FunderRoute() {
+  const { funderId } = Route.useParams();
 
-function RouteComponent() {
-  return <div>Hello "/funders/$funderId"!</div>
+  return <div>Hello "/funders/$funderId"!</div>;
 }
+
+export const Route = createFileRoute("/funders/$funderId")({
+  component: FunderRoute,
+});
