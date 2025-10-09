@@ -1,0 +1,132 @@
+{
+  "id": "https://openalex.org/F4320321597",
+  "display_name": "Bangor University",
+  "alternate_titles": [
+    "University College of North Wales",
+    "University of Wales at Bangor",
+    "University of Wales, Bangor",
+    "University of Bangor",
+    "UCNW",
+    "University of North Wales"
+  ],
+  "country_code": "GB",
+  "description": "Welsh institute of higher education",
+  "homepage_url": "https://www.bangor.ac.uk",
+  "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Bangor University (50555605717).jpg",
+  "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Bangor University (50555605717).jpg&width=300",
+  "grants_count": 23,
+  "works_count": 153,
+  "cited_by_count": 2807,
+  "summary_stats": {
+    "2yr_mean_citedness": 3.973684210526316,
+    "h_index": 28,
+    "i10_index": 71
+  },
+  "ids": {
+    "openalex": "https://openalex.org/F4320321597",
+    "ror": "https://ror.org/006jb1a24",
+    "wikidata": "https://www.wikidata.org/entity/Q790029",
+    "crossref": "501100003547",
+    "doi": "https://doi.org/10.13039/501100003547"
+  },
+  "counts_by_year": [
+    {
+      "year": 2025,
+      "works_count": 11,
+      "oa_works_count": 3,
+      "cited_by_count": 473
+    },
+    {
+      "year": 2024,
+      "works_count": 9,
+      "oa_works_count": 5,
+      "cited_by_count": 588
+    },
+    {
+      "year": 2023,
+      "works_count": 18,
+      "oa_works_count": 15,
+      "cited_by_count": 489
+    },
+    {
+      "year": 2022,
+      "works_count": 20,
+      "oa_works_count": 18,
+      "cited_by_count": 436
+    },
+    {
+      "year": 2021,
+      "works_count": 8,
+      "oa_works_count": 6,
+      "cited_by_count": 322
+    },
+    {
+      "year": 2020,
+      "works_count": 21,
+      "oa_works_count": 18,
+      "cited_by_count": 203
+    },
+    {
+      "year": 2019,
+      "works_count": 14,
+      "oa_works_count": 13,
+      "cited_by_count": 121
+    },
+    {
+      "year": 2018,
+      "works_count": 16,
+      "oa_works_count": 14,
+      "cited_by_count": 73
+    },
+    {
+      "year": 2017,
+      "works_count": 14,
+      "oa_works_count": 13,
+      "cited_by_count": 49
+    },
+    {
+      "year": 2016,
+      "works_count": 9,
+      "oa_works_count": 7,
+      "cited_by_count": 21
+    },
+    {
+      "year": 2015,
+      "works_count": 1,
+      "oa_works_count": 1,
+      "cited_by_count": 11
+    },
+    {
+      "year": 2014,
+      "works_count": 6,
+      "oa_works_count": 0,
+      "cited_by_count": 6
+    },
+    {
+      "year": 2013,
+      "works_count": 3,
+      "oa_works_count": 0,
+      "cited_by_count": 3
+    },
+    {
+      "year": 2012,
+      "works_count": 1,
+      "oa_works_count": 0,
+      "cited_by_count": 7
+    }
+  ],
+  "roles": [
+    {
+      "role": "funder",
+      "id": "https://openalex.org/F4320321597",
+      "works_count": 153
+    },
+    {
+      "role": "institution",
+      "id": "https://openalex.org/I161548249",
+      "works_count": 32384
+    }
+  ],
+  "updated_date": "2025-10-08T19:05:55.304491",
+  "created_date": "2023-02-13"
+}

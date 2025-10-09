@@ -1,0 +1,22 @@
+{
+  "lastUpdated": "2025-10-09T10:45:04.403Z",
+  "files": {
+    "F4320321597": {
+      "url": "https://api.openalex.org/funders/F4320321597",
+      "$ref": "./F4320321597.json",
+      "lastRetrieved": "2025-10-09T10:45:04.301Z",
+      "contentHash": "a8f24a1c888aaa39",
+      "equivalentUrls": [
+        "https://api.openalex.org/funders/F4320321597"
+      ],
+      "urlTimestamps": {
+        "https://api.openalex.org/funders/F4320321597": "2025-10-09T10:45:04.301Z"
+      },
+      "collisionInfo": {
+        "mergedCount": 0,
+        "totalUrls": 1
+      }
+    }
+  },
+  "directories": {}
+}
