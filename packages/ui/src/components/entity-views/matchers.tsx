@@ -41,11 +41,13 @@ interface AuthorItem {
 }
 
 interface InstitutionItem {
+  id?: string;
   display_name: string;
   country_code: string;
 }
 
 interface TopicItem {
+  id?: string;
   display_name: string;
   count: number;
 }
@@ -64,6 +66,7 @@ interface ConceptItem {
 
 interface AffiliationItem {
   institution: {
+    id?: string;
     display_name: string;
   };
   years: number[];
@@ -94,7 +97,11 @@ export interface ObjectMatcher {
 export interface ValueMatcher {
   name: string;
   detect: (value: unknown) => boolean;
-  render: (value: unknown, fieldName: string) => React.ReactNode;
+  render: (
+    value: unknown,
+    fieldName: string,
+    onNavigate?: (path: string) => void,
+  ) => React.ReactNode;
   priority?: number;
 }
 
@@ -169,15 +176,33 @@ const institutionMatcher: ArrayMatcher = {
       "country_code" in first
     );
   },
-  render: (array: unknown[], _fieldName: string): React.ReactNode => {
+  render: (
+    array: unknown[],
+    _fieldName: string,
+    onNavigate?: (path: string) => void,
+  ): React.ReactNode => {
     const institutionArray = array as InstitutionItem[];
     return (
       <Stack gap="xs">
         {institutionArray.map((institution, index) => (
           <Group key={index} justify="space-between" wrap="nowrap">
-            <Text size="sm" style={{ flex: 1 }}>
-              {institution.display_name}
-            </Text>
+            {onNavigate && institution.id && institution.id.startsWith("I") ? (
+              <Anchor
+                href={`#/institutions/${institution.id}`}
+                size="sm"
+                style={{ flex: 1 }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onNavigate(`/institutions/${institution.id}`);
+                }}
+              >
+                {institution.display_name}
+              </Anchor>
+            ) : (
+              <Text size="sm" style={{ flex: 1 }}>
+                {institution.display_name}
+              </Text>
+            )}
             {institution.country_code && (
               <Badge size="sm" variant="outline">
                 {institution.country_code.toUpperCase()}
@@ -204,20 +229,45 @@ const topicMatcher: ArrayMatcher = {
       "count" in first
     );
   },
-  render: (array: unknown[], _fieldName: string): React.ReactNode => {
+  render: (
+    array: unknown[],
+    _fieldName: string,
+    onNavigate?: (path: string) => void,
+  ): React.ReactNode => {
     const topicArray = array as TopicItem[];
     return (
       <Group gap="xs" wrap="wrap">
-        {topicArray.map((topic, index) => (
-          <Badge
-            key={index}
-            variant="dot"
-            size="sm"
-            color={getTopicColor(topic)}
-          >
-            {topic.display_name} ({topic.count})
-          </Badge>
-        ))}
+        {topicArray.map((topic, index) =>
+          onNavigate && topic.id && topic.id.startsWith("T") ? (
+            <Anchor
+              key={index}
+              href={`#/topics/${topic.id}`}
+              style={{ textDecoration: "none" }}
+              onClick={(e) => {
+                e.preventDefault();
+                onNavigate(`/topics/${topic.id}`);
+              }}
+            >
+              <Badge
+                variant="dot"
+                size="sm"
+                color={getTopicColor(topic)}
+                style={{ cursor: "pointer" }}
+              >
+                {topic.display_name} ({topic.count})
+              </Badge>
+            </Anchor>
+          ) : (
+            <Badge
+              key={index}
+              variant="dot"
+              size="sm"
+              color={getTopicColor(topic)}
+            >
+              {topic.display_name} ({topic.count})
+            </Badge>
+          ),
+        )}
       </Group>
     );
   },
@@ -241,7 +291,11 @@ const topicShareMatcher: ArrayMatcher = {
       "domain" in first
     );
   },
-  render: (array: unknown[], _fieldName: string): React.ReactNode => {
+  render: (
+    array: unknown[],
+    _fieldName: string,
+    onNavigate?: (path: string) => void,
+  ): React.ReactNode => {
     const topicArray = array as TopicShareItem[];
     return (
       <>
@@ -261,9 +315,23 @@ const topicShareMatcher: ArrayMatcher = {
               .map((topic, index) => (
                 <Table.Tr key={topic.id || index}>
                   <Table.Td>
-                    <Text size="sm" fw={500}>
-                      {topic.display_name}
-                    </Text>
+                    {onNavigate && topic.id && topic.id.startsWith("T") ? (
+                      <Anchor
+                        href={`#/topics/${topic.id}`}
+                        size="sm"
+                        fw={500}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          onNavigate(`/topics/${topic.id}`);
+                        }}
+                      >
+                        {topic.display_name}
+                      </Anchor>
+                    ) : (
+                      <Text size="sm" fw={500}>
+                        {topic.display_name}
+                      </Text>
+                    )}
                   </Table.Td>
                   <Table.Td>
                     <Badge variant="light" color="blue" size="sm">
@@ -373,6 +441,73 @@ const conceptMatcher: ArrayMatcher = {
   },
 };
 
+const entityIdArrayMatcher: ArrayMatcher = {
+  name: "entity-id-array",
+  priority: 5,
+  detect: (array: unknown[]): boolean => {
+    if (!Array.isArray(array) || array.length === 0) return false;
+
+    // Check if all items are strings that look like OpenAlex IDs
+    return array.every((item) => {
+      if (typeof item !== "string") return false;
+      const validation = validateExternalId(item);
+      return validation.isValid && validation.type === "openalex";
+    });
+  },
+  render: (
+    array: unknown[],
+    fieldName: string,
+    onNavigate?: (path: string) => void,
+  ): React.ReactNode => {
+    const idArray = array as string[];
+    return (
+      <Group gap="xs" wrap="wrap">
+        {idArray.map((id, index) => {
+          const relativeUrl = convertToRelativeUrl(
+            `https://openalex.org/${id}`,
+          );
+          const entityType = getEntityTypeFromId(id);
+
+          if (onNavigate && relativeUrl) {
+            const routePath = relativeUrl.startsWith("#/") ? relativeUrl.slice(1) : relativeUrl;
+            return (
+              <Anchor
+                key={index}
+                href={relativeUrl}
+                style={{ textDecoration: "none" }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onNavigate(routePath);
+                }}
+              >
+                <Badge
+                  variant="light"
+                  size="sm"
+                  color={getEntityColor(entityType)}
+                  style={{ cursor: "pointer" }}
+                >
+                  {id}
+                </Badge>
+              </Anchor>
+            );
+          } else {
+            return (
+              <Badge
+                key={index}
+                variant="light"
+                size="sm"
+                color={getEntityColor(entityType)}
+              >
+                {id}
+              </Badge>
+            );
+          }
+        })}
+      </Group>
+    );
+  },
+};
+
 const affiliationMatcher: ArrayMatcher = {
   name: "affiliations",
   priority: 6,
@@ -387,16 +522,53 @@ const affiliationMatcher: ArrayMatcher = {
       "years" in first
     );
   },
-  render: (array: unknown[], _fieldName: string): React.ReactNode => {
+  render: (
+    array: unknown[],
+    _fieldName: string,
+    onNavigate?: (path: string) => void,
+  ): React.ReactNode => {
     const affiliationArray = array as AffiliationItem[];
     return (
       <Stack gap="xs">
         {affiliationArray.map((affiliation, index) => (
           <Card key={index} padding="xs" radius="sm" withBorder>
             <Group justify="space-between" wrap="nowrap">
-              <Text size="sm" style={{ flex: 1 }}>
-                {affiliation.institution?.display_name}
-              </Text>
+              {(() => {
+                const institutionId = affiliation.institution?.id;
+                const relativeUrl = institutionId
+                  ? convertToRelativeUrl(institutionId)
+                  : null;
+                
+                if (onNavigate && relativeUrl) {
+                  // Strip the hash prefix for router navigation
+                  const routePath = relativeUrl.startsWith("#/") ? relativeUrl.slice(1) : relativeUrl;
+                  return (
+                    <Anchor
+                      href={relativeUrl}
+                      size="sm"
+                      style={{ flex: 1 }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onNavigate(routePath);
+                      }}
+                    >
+                      {affiliation.institution?.display_name}
+                    </Anchor>
+                  );
+                } else if (relativeUrl) {
+                  return (
+                    <Anchor href={relativeUrl} size="sm" style={{ flex: 1 }}>
+                      {affiliation.institution?.display_name}
+                    </Anchor>
+                  );
+                } else {
+                  return (
+                    <Text size="sm" style={{ flex: 1 }}>
+                      {affiliation.institution?.display_name}
+                    </Text>
+                  );
+                }
+              })()}
               <Badge size="sm" variant="outline">
                 {affiliation.years?.join("-") || "Unknown"}
               </Badge>
@@ -432,6 +604,9 @@ export const arrayMatchers: ArrayMatcher[] = [
 
   // Affiliation array matcher (from authors.affiliations)
   affiliationMatcher,
+
+  // Entity ID array matcher (referenced_works, etc.)
+  entityIdArrayMatcher,
 ];
 
 const idObjectMatcher = {
@@ -451,7 +626,11 @@ const idObjectMatcher = {
         key === "scopus",
     );
   },
-  render: (obj: unknown, _fieldName: string): React.ReactNode => {
+  render: (
+    obj: unknown,
+    _fieldName: string,
+    onNavigate?: (path: string) => void,
+  ): React.ReactNode => {
     const idObj = obj as Record<string, string>;
     return (
       <Group gap="xs" wrap="wrap">
@@ -476,7 +655,26 @@ const idObjectMatcher = {
 
           return (
             <Group key={key} gap="xs" wrap="nowrap">
-              {relativeUrl ? (
+              {relativeUrl && onNavigate ? (
+                <Anchor
+                  href={relativeUrl}
+                  style={{ textDecoration: "none" }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const routePath = relativeUrl.startsWith("#/") ? relativeUrl.slice(1) : relativeUrl;
+                    onNavigate(routePath);
+                  }}
+                >
+                  <Badge
+                    variant={isSpecialId ? "filled" : "light"}
+                    size="sm"
+                    color={getIdColor(key)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    {displayKey}: {value}
+                  </Badge>
+                </Anchor>
+              ) : relativeUrl ? (
                 <Anchor
                   href={relativeUrl}
                   target={relativeUrl.startsWith("http") ? "_blank" : undefined}
@@ -558,6 +756,51 @@ const summaryStatsMatcher = {
     );
   },
 };
+const entityObjectMatcher = {
+  name: "entity-object",
+  priority: 11, // Higher than id-object matcher
+  detect: (obj: unknown): boolean => {
+    if (typeof obj !== "object" || obj === null) return false;
+
+    const objKeys = obj as Record<string, unknown>;
+    return (
+      "id" in objKeys &&
+      "display_name" in objKeys &&
+      typeof objKeys.id === "string" &&
+      objKeys.id.startsWith("https://openalex.org/")
+    );
+  },
+  render: (
+    obj: unknown,
+    _fieldName: string,
+    onNavigate?: (path: string) => void,
+  ): React.ReactNode => {
+    const entityObj = obj as Record<string, unknown>;
+    const id = entityObj.id as string;
+    const displayName = entityObj.display_name as string;
+
+    const relativeUrl = convertToRelativeUrl(id);
+
+    if (onNavigate && relativeUrl) {
+      const routePath = relativeUrl.startsWith("#/") ? relativeUrl.slice(1) : relativeUrl;
+      return (
+        <Anchor
+          href={relativeUrl}
+          size="sm"
+          onClick={(e) => {
+            e.preventDefault();
+            onNavigate(routePath);
+          }}
+        >
+          {displayName}
+        </Anchor>
+      );
+    } else {
+      return <Text size="sm">{displayName}</Text>;
+    }
+  },
+};
+
 const geoDataMatcher = {
   name: "geo-data",
   priority: 8,
@@ -598,6 +841,9 @@ const geoDataMatcher = {
  * Object Matchers - for detecting specific object structures
  */
 export const objectMatchers: ObjectMatcher[] = [
+  // Entity object matcher (source, publisher, funder objects)
+  entityObjectMatcher,
+
   // ID object matcher (ids: { openalex, orcid, doi, etc. })
   idObjectMatcher,
 
@@ -636,12 +882,32 @@ const urlMatcher: ValueMatcher = {
       return false;
     }
   },
-  render: (value: unknown, _fieldName: string): React.ReactNode => {
+  render: (
+    value: unknown,
+    _fieldName: string,
+    onNavigate?: (path: string) => void,
+  ): React.ReactNode => {
     const urlValue = value as string;
     const relativeUrl = convertToRelativeUrl(urlValue);
 
-    if (relativeUrl) {
-      // Use relative URL for OpenAlex links
+    if (relativeUrl && onNavigate && (relativeUrl.startsWith("/") || relativeUrl.startsWith("#/"))) {
+      // Use router navigation for internal routes
+      // Strip the hash prefix for router navigation
+      const routePath = relativeUrl.startsWith("#/") ? relativeUrl.slice(1) : relativeUrl;
+      return (
+        <Anchor
+          href={relativeUrl}
+          onClick={(e) => {
+            e.preventDefault();
+            onNavigate(routePath);
+          }}
+          size="sm"
+        >
+          {urlValue}
+        </Anchor>
+      );
+    } else if (relativeUrl) {
+      // Use browser navigation for other internal links
       return (
         <Anchor href={relativeUrl} size="sm">
           {urlValue}
@@ -782,20 +1048,25 @@ export function convertToRelativeUrl(url: string): string | null {
   try {
     const urlObj = new URL(url);
 
-    // Convert OpenAlex API URLs to relative paths
+    // Convert OpenAlex API URLs to entity routes
     if (urlObj.hostname === "api.openalex.org") {
-      const path = urlObj.pathname.substring(1); // Remove leading slash
-      const { search } = urlObj;
-      // For API URLs, preserve the full path with query parameters
-      return `./${path}${search}`;
+      // Extract entity type from path (e.g., /works, /authors, etc.)
+      const pathParts = urlObj.pathname.split("/").filter(Boolean);
+      if (pathParts.length > 0) {
+        const entityType = pathParts[0]; // e.g., "works", "authors"
+        const queryString = urlObj.search; // e.g., "?filter=author.id:A5017898742"
+        return `#/${entityType}${queryString}`;
+      }
+      return null;
     }
 
-    // Convert OpenAlex entity URLs to relative paths
+    // Convert OpenAlex entity URLs to hash routes
     if (urlObj.hostname === "openalex.org") {
       const pathParts = urlObj.pathname.split("/").filter(Boolean);
       if (pathParts.length === 1) {
         const fullPath = pathParts[0];
-        return determineCanonicalRoute(fullPath);
+        const route = determineCanonicalRoute(fullPath);
+        return route ? `#${route}` : null;
       }
     }
 
@@ -831,7 +1102,7 @@ export function determineCanonicalRoute(path: string): string {
   // Handle paths that start with entity type (e.g., "works?filter=...")
   if (path.includes("?")) {
     const [entityType] = path.split("?");
-    return `./${entityType}`;
+    return `/${entityType}`;
   }
 
   // Handle entity paths (e.g., "W123456789", "works/W123456789")
@@ -848,21 +1119,21 @@ export function determineCanonicalRoute(path: string): string {
     ) {
       // Check if this looks like an entity type (all lowercase, no numbers)
       if (/^[a-z]+$/.test(segment)) {
-        return `./${segment}`;
+        return `/${segment}`;
       }
     }
 
     // Otherwise treat as entity ID
     const entityType = getEntityTypeFromId(segment);
-    return `./${entityType}/${segment}`;
+    return `/${entityType}/${segment}`;
   } else if (pathSegments.length >= 2) {
     // Multi-segment path like "works/W123456789"
     const entityType = pathSegments[0];
     const entityId = pathSegments[1].split("?")[0]; // Remove query params for entity routes
-    return `./${entityType}/${entityId}`;
+    return `/${entityType}/${entityId}`;
   }
 
-  return `./${path}`;
+  return `/${path}`;
 }
 
 /**
@@ -917,6 +1188,19 @@ function getIdColor(key: string): string {
     wikidata: "blue",
   };
   return colorMap[key] || "gray";
+}
+
+function getEntityColor(entityType: string): string {
+  const colorMap: Record<string, string> = {
+    works: "blue",
+    authors: "green",
+    institutions: "orange",
+    sources: "purple",
+    topics: "red",
+    publishers: "teal",
+    funders: "cyan",
+  };
+  return colorMap[entityType] || "gray";
 }
 
 /**
