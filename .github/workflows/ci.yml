@@ -405,7 +405,7 @@ jobs:
         id: tag-check
         if: steps.dry-run.outputs.next_version != ''
         run: |
-          TAG="v${{ steps.dry-run.outputs.next_version }}"
+          TAG="academic-explorer-monorepo@${{ steps.dry-run.outputs.next_version }}"
           echo "🔍 Checking if tag '$TAG' exists..."
           if git tag -l "$TAG" | grep -q "^$TAG$"; then
             echo "tag_exists=true" >> $GITHUB_OUTPUT
@@ -430,7 +430,7 @@ jobs:
           echo "⏭️ Skipping semantic-release as tag already exists"
           echo "released=true" >> $GITHUB_OUTPUT
           echo "version=${{ steps.dry-run.outputs.next_version }}" >> $GITHUB_OUTPUT
-          echo "tag=v${{ steps.dry-run.outputs.next_version }}" >> $GITHUB_OUTPUT
+          echo "tag=academic-explorer-monorepo@${{ steps.dry-run.outputs.next_version }}" >> $GITHUB_OUTPUT
 
       - name: Check if workspace release was created
         id: check-workspace-release
