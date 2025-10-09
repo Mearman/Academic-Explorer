@@ -1,11 +1,22 @@
 import { EntityDetectionService } from "@academic-explorer/graph";
+import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { logger } from "@academic-explorer/utils/logger";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 function FunderRoute() {
   const { funderId } = Route.useParams();
   const navigate = useNavigate();
+
+  const entityType = "funder" as const;
+  const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+
+  // Fetch entity data for title
+  const rawEntityData = useRawEntityData({
+    entityId: funderId,
+    enabled: !!funderId,
+  });
+  const funder = rawEntityData.data;
 
   // Check if ID needs normalization and redirect if necessary
   useEffect(() => {
