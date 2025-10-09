@@ -53,6 +53,8 @@ const VALID_ENTITY_TYPES: EntityType[] = [
   "works", "authors", "sources", "institutions", "topics", "publishers", "funders", "concepts",
 ];
 
+const INDEX_FILENAME = "index.json";
+
 /**
  * Generate index for all entity types in the static data directory
  */
@@ -163,90 +165,22 @@ export async function generateIndexForEntityType(
     }
 
     // Process each file to extract metadata
-    const files: Record<string, FileEntry> = {};
+    const files = await processJsonFiles(entityDir, jsonFiles, entityType);
 
-    for (const fileName of jsonFiles) {
-      const filePath = path.join(entityDir, fileName);
-      const fileStats = await fs.stat(filePath);
-      const entityId = path.basename(fileName, ".json");
-
-      try {
-        const content = await fs.readFile(filePath, "utf-8");
-        const data = JSON.parse(content);
-
-        // Basic validation - ensure it looks like an OpenAlex entity
-        if (!isValidOpenAlexEntity(data)) {
-          console.warn(`⚠️  File ${fileName} doesn't appear to be a valid OpenAlex entity`);
-        }
-
-        // Create FileEntry with reconstructed URL
-        const reconstructedUrl = `https://api.openalex.org/${entityType}/${entityId}`;
-
-        files[entityId] = {
-          $ref: `./${fileName}`,
-          contentHash: await generateContentHash(data),
-          lastRetrieved: fileStats.mtime.toISOString(),
-          url: reconstructedUrl,
-        };
-      } catch (error) {
-        console.warn(`⚠️  Failed to validate file ${fileName}:`, error);
-        // Skip invalid files rather than adding them
-      }
-    }
-
+    // Process subdirectories if recursive
+    let directories: Record<string, DirectoryEntry> = {};
     let maxLastUpdated = new Date().toISOString();
-    const directories: Record<string, DirectoryEntry> = {};
 
     if (recursive) {
-      try {
-        // Get subdirectories (non-hidden directories)
-        const entries = await fs.readdir(entityDir, { withFileTypes: true });
-        const subdirs = entries
-          .filter(entry => entry.isDirectory() && !entry.name.startsWith(".") && entry.name !== "queries")
-          .map(entry => entry.name)
-          .sort(); // Sort for consistent order
-
-        console.log(`📁 Found ${subdirs.length} subdirectories in ${entityType}`);
-
-        for (const subdir of subdirs) {
-          const subPath = path.join(entityDir, subdir);
-          try {
-            // Recursively generate index for subdirectory (same entityType)
-            await generateIndexForEntityType(subPath, entityType, recursive);
-
-            // Read sub-index
-            const subIndexPath = path.join(subPath, "index.json");
-            if (await fileExists(subIndexPath)) {
-              const subContent = await fs.readFile(subIndexPath, "utf-8");
-              const subIndex: DirectoryIndex = JSON.parse(subContent);
-
-              // Track the maximum lastUpdated timestamp
-              if (subIndex.lastUpdated > maxLastUpdated) {
-                maxLastUpdated = subIndex.lastUpdated;
-              }
-
-              // Build directory entry
-              directories[subdir] = {
-                $ref: `./${subdir}`,
-                lastModified: subIndex.lastUpdated,
-              };
-            } else {
-              console.warn(`⚠️  No index found for subdirectory: ${subPath}`);
-            }
-          } catch (subError) {
-            console.warn(`⚠️  Failed to process subdirectory ${subdir}:`, subError);
-            // Continue with other subdirs
-          }
-        }
-      } catch (aggError) {
-        console.warn("⚠️  Failed to aggregate subdirectories:", aggError);
-      }
+      const { directories: subDirs, maxLastUpdated: subMaxUpdated } = await processSubdirectories(entityDir, entityType, recursive);
+      directories = subDirs;
+      maxLastUpdated = subMaxUpdated;
     }
 
     const overallLastUpdated = maxLastUpdated > new Date().toISOString() ? maxLastUpdated : new Date().toISOString();
 
     // Read existing index to check if content has changed
-    const indexPath = path.join(entityDir, "index.json");
+    const indexPath = path.join(entityDir, INDEX_FILENAME);
     let existingIndex: DirectoryIndex | null = null;
 
     try {
@@ -259,9 +193,7 @@ export async function generateIndexForEntityType(
     }
 
     // Check if content has actually changed (excluding lastUpdated field)
-    const contentChanged = !existingIndex ||
-      JSON.stringify(existingIndex.files || {}) !== JSON.stringify(files) ||
-      JSON.stringify(existingIndex.directories || {}) !== JSON.stringify(directories);
+    const contentChanged = hasIndexContentChanged(existingIndex, files, directories);
 
     // Create index with conditional lastUpdated
     const index: DirectoryIndex = {
@@ -289,7 +221,7 @@ export async function generateIndexForEntityType(
  */
 export async function validateStaticDataIndex(entityDir: string): Promise<boolean> {
   try {
-    const indexPath = path.join(entityDir, "index.json");
+    const indexPath = path.join(entityDir, INDEX_FILENAME);
 
     if (!(await fileExists(indexPath))) {
       console.warn(`⚠️  No index found at ${indexPath}`);
@@ -306,63 +238,17 @@ export async function validateStaticDataIndex(entityDir: string): Promise<boolea
     }
 
     // Check if all referenced files exist
-    let missingFiles = 0;
-    if (index.files) {
-      for (const [key, fileEntry] of Object.entries(index.files)) {
-        const fileName = fileEntry.$ref.replace("./", "");
-        const filePath = path.join(entityDir, fileName);
-        if (!(await fileExists(filePath))) {
-          console.warn(`⚠️  Referenced file not found: ${fileName}`);
-          missingFiles++;
-        }
-      }
-    }
-
+    const missingFiles = await validateIndexFiles(index, entityDir);
     if (missingFiles > 0) {
       console.warn(`⚠️  Index references ${missingFiles} missing files`);
       return false;
     }
 
     // Recursively validate directories if present
-    if (index.directories) {
-      let subdirIssues = 0;
-      for (const [subdirName, subdirMeta] of Object.entries(index.directories)) {
-        const subPath = path.join(entityDir, subdirName);
-        const subIndexPath = path.join(subPath, "index.json");
-
-        // Check if sub-index exists
-        if (!(await fileExists(subIndexPath))) {
-          console.warn(`⚠️  Subdirectory index not found: ${subIndexPath}`);
-          subdirIssues++;
-          continue;
-        }
-
-        // Read and validate sub-index
-        try {
-          const subContent = await fs.readFile(subIndexPath, "utf-8");
-          const subIndex: DirectoryIndex = JSON.parse(subContent);
-
-          // Check metadata consistency
-          if (subIndex.lastUpdated !== subdirMeta.lastModified) {
-            console.warn(`⚠️  Last updated mismatch in ${subdirName}: index=${subIndex.lastUpdated}, metadata=${subdirMeta.lastModified}`);
-            subdirIssues++;
-          }
-
-          // Recursively validate sub-index
-          const subValid = await validateStaticDataIndex(subPath);
-          if (!subValid) {
-            subdirIssues++;
-          }
-        } catch (subError) {
-          console.warn(`⚠️  Failed to validate subdirectory ${subdirName}:`, subError);
-          subdirIssues++;
-        }
-      }
-
-      if (subdirIssues > 0) {
-        console.warn(`⚠️  ${subdirIssues} subdirectory validation issues found`);
-        return false;
-      }
+    const subdirIssues = await validateIndexDirectories(index, entityDir);
+    if (subdirIssues > 0) {
+      console.warn(`⚠️  ${subdirIssues} subdirectory validation issues found`);
+      return false;
     }
 
     const fileCount = index.files ? Object.keys(index.files).length : 0;
@@ -381,7 +267,7 @@ export async function validateStaticDataIndex(entityDir: string): Promise<boolea
  */
 export async function getStaticDataIndex(entityDir: string): Promise<DirectoryIndex | null> {
   try {
-    const indexPath = path.join(entityDir, "index.json");
+    const indexPath = path.join(entityDir, INDEX_FILENAME);
 
     if (!(await fileExists(indexPath))) {
       return null;
@@ -409,6 +295,204 @@ async function ensureDirectoryExists(dirPath: string): Promise<void> {
     console.error(`❌ Failed to create directory ${dirPath}:`, error);
     throw error;
   }
+}
+
+/**
+ * Process JSON files in a directory and extract metadata
+ */
+async function processJsonFiles(
+  entityDir: string,
+  jsonFiles: string[],
+  entityType: EntityType,
+): Promise<Record<string, FileEntry>> {
+  const files: Record<string, FileEntry> = {};
+
+  for (const fileName of jsonFiles) {
+    const filePath = path.join(entityDir, fileName);
+    const fileStats = await fs.stat(filePath);
+    const entityId = path.basename(fileName, ".json");
+
+    try {
+      const content = await fs.readFile(filePath, "utf-8");
+      const data = JSON.parse(content);
+
+      // Basic validation - ensure it looks like an OpenAlex entity
+      if (!isValidOpenAlexEntity(data)) {
+        console.warn(`⚠️  File ${fileName} doesn't appear to be a valid OpenAlex entity`);
+      }
+
+      // Create FileEntry with reconstructed URL
+      const reconstructedUrl = `https://api.openalex.org/${entityType}/${entityId}`;
+
+      files[entityId] = {
+        $ref: `./${fileName}`,
+        contentHash: await generateContentHash(data),
+        lastRetrieved: fileStats.mtime.toISOString(),
+        url: reconstructedUrl,
+      };
+    } catch (error) {
+      console.warn(`⚠️  Failed to validate file ${fileName}:`, error);
+      // Skip invalid files rather than adding them
+    }
+  }
+
+  return files;
+}
+
+/**
+ * Process subdirectories and generate their indexes
+ */
+async function processSubdirectories(
+  entityDir: string,
+  entityType: EntityType,
+  recursive: boolean,
+): Promise<{ directories: Record<string, DirectoryEntry>; maxLastUpdated: string }> {
+  const directories: Record<string, DirectoryEntry> = {};
+  let maxLastUpdated = new Date().toISOString();
+
+  try {
+    // Get subdirectories (non-hidden directories)
+    const entries = await fs.readdir(entityDir, { withFileTypes: true });
+    const subdirs = entries
+      .filter(entry => entry.isDirectory() && !entry.name.startsWith(".") && entry.name !== "queries")
+      .map(entry => entry.name)
+      .sort(); // Sort for consistent order
+
+    console.log(`📁 Found ${subdirs.length} subdirectories in ${entityType}`);
+
+    for (const subdir of subdirs) {
+      const subPath = path.join(entityDir, subdir);
+      try {
+        // Recursively generate index for subdirectory (same entityType)
+        await generateIndexForEntityType(subPath, entityType, recursive);
+
+        // Read sub-index
+        const subIndexPath = path.join(subPath, INDEX_FILENAME);
+        if (await fileExists(subIndexPath)) {
+          const subContent = await fs.readFile(subIndexPath, "utf-8");
+          const subIndex: DirectoryIndex = JSON.parse(subContent);
+
+          // Track the maximum lastUpdated timestamp
+          if (subIndex.lastUpdated > maxLastUpdated) {
+            maxLastUpdated = subIndex.lastUpdated;
+          }
+
+          // Build directory entry
+          directories[subdir] = {
+            $ref: `./${subdir}`,
+            lastModified: subIndex.lastUpdated,
+          };
+        } else {
+          console.warn(`⚠️  No index found for subdirectory: ${subPath}`);
+        }
+      } catch (subError) {
+        console.warn(`⚠️  Failed to process subdirectory ${subdir}:`, subError);
+        // Continue with other subdirs
+      }
+    }
+  } catch (aggError) {
+    console.warn("⚠️  Failed to aggregate subdirectories:", aggError);
+  }
+
+  return { directories, maxLastUpdated };
+}
+
+/**
+ * Check if index content has changed
+ */
+function hasIndexContentChanged(
+  existingIndex: DirectoryIndex | null,
+  files: Record<string, FileEntry>,
+  directories: Record<string, DirectoryEntry>,
+): boolean {
+  if (!existingIndex) {
+    return true;
+  }
+
+  const filesChanged = JSON.stringify(existingIndex.files || {}) !== JSON.stringify(files);
+  const dirsChanged = JSON.stringify(existingIndex.directories || {}) !== JSON.stringify(directories);
+
+  return filesChanged || dirsChanged;
+}
+
+/**
+ * Validate that all files referenced in the index exist
+ */
+async function validateIndexFiles(
+  index: DirectoryIndex,
+  entityDir: string,
+): Promise<number> {
+  let missingFiles = 0;
+  
+  if (index.files) {
+    for (const [key, fileEntry] of Object.entries(index.files)) {
+      const fileName = fileEntry.$ref.replace("./", "");
+      const filePath = path.join(entityDir, fileName);
+      if (!(await fileExists(filePath))) {
+        console.warn(`⚠️  Referenced file not found: ${fileName}`);
+        missingFiles++;
+      }
+    }
+  }
+
+  return missingFiles;
+}
+
+/**
+ * Validate a single subdirectory and its index
+ */
+async function validateSubdirectory(
+  subdirName: string,
+  subdirMeta: DirectoryEntry,
+  entityDir: string,
+): Promise<boolean> {
+  const subPath = path.join(entityDir, subdirName);
+  const subIndexPath = path.join(subPath, INDEX_FILENAME);
+
+  // Check if sub-index exists
+  if (!(await fileExists(subIndexPath))) {
+    console.warn(`⚠️  Subdirectory index not found: ${subIndexPath}`);
+    return false;
+  }
+
+  // Read and validate sub-index
+  try {
+    const subContent = await fs.readFile(subIndexPath, "utf-8");
+    const subIndex: DirectoryIndex = JSON.parse(subContent);
+
+    // Check metadata consistency
+    if (subIndex.lastUpdated !== subdirMeta.lastModified) {
+      console.warn(`⚠️  Last updated mismatch in ${subdirName}: index=${subIndex.lastUpdated}, metadata=${subdirMeta.lastModified}`);
+      return false;
+    }
+
+    // Recursively validate sub-index
+    return await validateStaticDataIndex(subPath);
+  } catch (subError) {
+    console.warn(`⚠️  Failed to validate subdirectory ${subdirName}:`, subError);
+    return false;
+  }
+}
+
+/**
+ * Validate all subdirectories in the index
+ */
+async function validateIndexDirectories(
+  index: DirectoryIndex,
+  entityDir: string,
+): Promise<number> {
+  let subdirIssues = 0;
+
+  if (index.directories) {
+    for (const [subdirName, subdirMeta] of Object.entries(index.directories)) {
+      const isValid = await validateSubdirectory(subdirName, subdirMeta, entityDir);
+      if (!isValid) {
+        subdirIssues++;
+      }
+    }
+  }
+
+  return subdirIssues;
 }
 
 /**
