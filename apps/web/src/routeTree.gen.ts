@@ -30,6 +30,7 @@ import { Route as SourcesSourceIdRouteImport } from './routes/sources/$sourceId'
 import { Route as OpenalexUrlSplatRouteImport } from './routes/openalex-url/$'
 import { Route as InstitutionsInstitutionIdRouteImport } from './routes/institutions/$institutionId'
 import { Route as HttpsSplatRouteImport } from './routes/https/$'
+import { Route as FundersFunderIdRouteImport } from './routes/funders/$funderId'
 import { Route as ExploreGraphRouteImport } from './routes/explore/graph'
 import { Route as EvaluationResultsRouteImport } from './routes/evaluation/results'
 import { Route as EvaluationDatasetsRouteImport } from './routes/evaluation/datasets'
@@ -148,6 +149,11 @@ const HttpsSplatRoute = HttpsSplatRouteImport.update({
   path: '/https/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FundersFunderIdRoute = FundersFunderIdRouteImport.update({
+  id: '/funders/$funderId',
+  path: '/funders/$funderId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExploreGraphRoute = ExploreGraphRouteImport.update({
   id: '/graph',
   path: '/graph',
@@ -220,6 +226,7 @@ export interface FileRoutesByFullPath {
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
   '/evaluation/results': typeof EvaluationResultsRoute
   '/explore/graph': typeof ExploreGraphRoute
+  '/funders/$funderId': typeof FundersFunderIdRoute
   '/https/$': typeof HttpsSplatRoute
   '/institutions/$institutionId': typeof InstitutionsInstitutionIdRoute
   '/openalex-url/$': typeof OpenalexUrlSplatRoute
@@ -254,6 +261,7 @@ export interface FileRoutesByTo {
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
   '/evaluation/results': typeof EvaluationResultsRoute
   '/explore/graph': typeof ExploreGraphRoute
+  '/funders/$funderId': typeof FundersFunderIdRoute
   '/https/$': typeof HttpsSplatRoute
   '/institutions/$institutionId': typeof InstitutionsInstitutionIdRoute
   '/openalex-url/$': typeof OpenalexUrlSplatRoute
@@ -289,6 +297,7 @@ export interface FileRoutesById {
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
   '/evaluation/results': typeof EvaluationResultsRoute
   '/explore/graph': typeof ExploreGraphRoute
+  '/funders/$funderId': typeof FundersFunderIdRoute
   '/https/$': typeof HttpsSplatRoute
   '/institutions/$institutionId': typeof InstitutionsInstitutionIdRoute
   '/openalex-url/$': typeof OpenalexUrlSplatRoute
@@ -325,6 +334,7 @@ export interface FileRouteTypes {
     | '/evaluation/datasets'
     | '/evaluation/results'
     | '/explore/graph'
+    | '/funders/$funderId'
     | '/https/$'
     | '/institutions/$institutionId'
     | '/openalex-url/$'
@@ -359,6 +369,7 @@ export interface FileRouteTypes {
     | '/evaluation/datasets'
     | '/evaluation/results'
     | '/explore/graph'
+    | '/funders/$funderId'
     | '/https/$'
     | '/institutions/$institutionId'
     | '/openalex-url/$'
@@ -393,6 +404,7 @@ export interface FileRouteTypes {
     | '/evaluation/datasets'
     | '/evaluation/results'
     | '/explore/graph'
+    | '/funders/$funderId'
     | '/https/$'
     | '/institutions/$institutionId'
     | '/openalex-url/$'
@@ -425,6 +437,7 @@ export interface RootRouteChildren {
   SearchRoute: typeof SearchRoute
   ApiOpenalexOrgSplatRoute: typeof ApiOpenalexOrgSplatRoute
   AuthorsAuthorIdRoute: typeof AuthorsAuthorIdRoute
+  FundersFunderIdRoute: typeof FundersFunderIdRoute
   HttpsSplatRoute: typeof HttpsSplatRoute
   InstitutionsInstitutionIdRoute: typeof InstitutionsInstitutionIdRoute
   OpenalexUrlSplatRoute: typeof OpenalexUrlSplatRoute
@@ -594,6 +607,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HttpsSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/funders/$funderId': {
+      id: '/funders/$funderId'
+      path: '/funders/$funderId'
+      fullPath: '/funders/$funderId'
+      preLoaderRoute: typeof FundersFunderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/explore/graph': {
       id: '/explore/graph'
       path: '/graph'
@@ -711,6 +731,7 @@ const rootRouteChildren: RootRouteChildren = {
   SearchRoute: SearchRoute,
   ApiOpenalexOrgSplatRoute: ApiOpenalexOrgSplatRoute,
   AuthorsAuthorIdRoute: AuthorsAuthorIdRoute,
+  FundersFunderIdRoute: FundersFunderIdRoute,
   HttpsSplatRoute: HttpsSplatRoute,
   InstitutionsInstitutionIdRoute: InstitutionsInstitutionIdRoute,
   OpenalexUrlSplatRoute: OpenalexUrlSplatRoute,
