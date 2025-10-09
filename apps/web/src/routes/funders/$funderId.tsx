@@ -3,6 +3,8 @@ import { useGraphData } from "@/hooks/use-graph-data";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useGraphStore } from "@/stores/graph-store";
 import { EntityDetectionService } from "@academic-explorer/graph";
+import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
+import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
@@ -126,7 +128,31 @@ function FunderRoute() {
     );
   }
 
-  return <div>Hello "/funders/$funderId"!</div>;
+  // Show content based on view mode
+  return (
+    <div className="p-4 max-w-full overflow-auto">
+      <ViewToggle
+        viewMode={viewMode}
+        onToggle={setViewMode}
+        entityType={entityType}
+      />
+
+      {viewMode === "raw" ? (
+        <pre className="json-view p-4 bg-gray-100 overflow-auto mt-4">
+          {JSON.stringify(rawEntityData.data, null, 2)}
+        </pre>
+      ) : (
+        <RichEntityView
+          entity={rawEntityData.data}
+          entityType={entityType}
+          onNavigate={(path: string) => {
+            // Handle paths with query parameters for hash-based routing
+            window.location.hash = path;
+          }}
+        />
+      )}
+    </div>
+  );
 }
 
 export const Route = createFileRoute("/funders/$funderId")({
