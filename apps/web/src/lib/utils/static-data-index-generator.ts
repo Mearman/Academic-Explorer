@@ -5,11 +5,11 @@
 
 import {
   generateContentHash,
-  type EntityType,
   isValidOpenAlexEntity,
-  type DirectoryIndex,
-  type FileEntry,
   type DirectoryEntry,
+  type DirectoryIndex,
+  type EntityType,
+  type FileEntry,
 } from "@academic-explorer/utils/static-data/cache-utilities";
 
 // Dynamic imports for Node.js modules to avoid browser bundling issues
@@ -423,7 +423,7 @@ async function validateIndexFiles(
   entityDir: string,
 ): Promise<number> {
   let missingFiles = 0;
-  
+
   if (index.files) {
     for (const [key, fileEntry] of Object.entries(index.files)) {
       const fileName = fileEntry.$ref.replace("./", "");
