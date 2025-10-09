@@ -115,7 +115,7 @@
         "{workspaceRoot}/eslint.config.*.ts",
         "{projectRoot}/eslint.config.ts"
       ],
-      "outputs": []
+      "outputs": ["{workspaceRoot}/.nx/cache/lint-results/{projectName}.json"]
     },
     "typecheck": {
       "cache": true,
