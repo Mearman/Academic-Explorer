@@ -1,9 +1,9 @@
-name: 'CI Pipeline'
+name: "CI Pipeline"
 
 on:
   push:
     branches: [main]
-    tags: ['v*']
+    tags: ["v*"]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -14,8 +14,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: '20'
-  PNPM_VERSION: '10.16.1'
+  NODE_VERSION: "20"
+  PNPM_VERSION: "10.16.1"
   # Optional: Add Nx Cloud tokens for distributed caching
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   NX_CLOUD_ENCRYPTION_KEY: ${{ secrets.NX_CLOUD_ENCRYPTION_KEY }}
@@ -38,7 +38,7 @@ jobs:
       - name: Setup Nx SHAs
         uses: nrwl/nx-set-shas@v4
         with:
-          main-branch-name: 'main'
+          main-branch-name: "main"
 
       - name: Restore Nx cache
         uses: actions/cache@v4
@@ -78,7 +78,7 @@ jobs:
 
           echo "✅ All builds completed successfully"
         env:
-          NODE_OPTIONS: '--max-old-space-size=8192'
+          NODE_OPTIONS: "--max-old-space-size=8192"
 
       - name: Lint affected projects
         run: |
@@ -169,7 +169,7 @@ jobs:
             exit 1
           fi
         env:
-          NODE_OPTIONS: '--max-old-space-size=8192'
+          NODE_OPTIONS: "--max-old-space-size=8192"
 
       - name: Type check affected projects
         run: |
@@ -183,7 +183,7 @@ jobs:
 
           echo "✅ TypeScript type checking passed with zero errors"
         env:
-          NODE_OPTIONS: '--max-old-space-size=8192'
+          NODE_OPTIONS: "--max-old-space-size=8192"
 
       - name: Test affected projects
         run: |
@@ -259,7 +259,7 @@ jobs:
             exit 1
           fi
         env:
-          NODE_OPTIONS: '--max-old-space-size=8192'
+          NODE_OPTIONS: "--max-old-space-size=8192"
 
       - name: Upload build artifacts
         if: always()
@@ -322,7 +322,7 @@ jobs:
       - name: Setup Nx SHAs
         uses: nrwl/nx-set-shas@v4
         with:
-          main-branch-name: 'main'
+          main-branch-name: "main"
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -336,7 +336,7 @@ jobs:
       - name: Run ${{ matrix.check }}
         run: pnpm nx affected -t ${{ matrix.check }} --parallel=2
         env:
-          NODE_OPTIONS: '--max-old-space-size=8192'
+          NODE_OPTIONS: "--max-old-space-size=8192"
 
   # Release automation (main branch only)
   release:
@@ -373,7 +373,7 @@ jobs:
           }
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NODE_OPTIONS: '--max-old-space-size=8192'
+          NODE_OPTIONS: "--max-old-space-size=8192"
 
       - name: Install semantic-release
         run: |
@@ -453,9 +453,9 @@ jobs:
 
           # Check if semantic-release created a new workspace tag
           LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          if [ -n "$LATEST_TAG" ] && [[ "$LATEST_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] && git tag --points-at ${{ github.sha }} | grep -q "$LATEST_TAG"; then
+          if [ -n "$LATEST_TAG" ] && [[ "$LATEST_TAG" =~ ^academic-explorer-monorepo@[0-9]+\.[0-9]+\.[0-9]+$ ]] && git tag --points-at ${{ github.sha }} | grep -q "$LATEST_TAG"; then
             echo "released=true" >> $GITHUB_OUTPUT
-            echo "version=${LATEST_TAG#v}" >> $GITHUB_OUTPUT
+            echo "version=${LATEST_TAG#academic-explorer-monorepo@}" >> $GITHUB_OUTPUT
             echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
             echo "✅ Workspace release created: $LATEST_TAG against commit ${{ github.sha }}"
           else
@@ -521,7 +521,7 @@ jobs:
 
           echo "✅ Production build completed"
         env:
-          NODE_OPTIONS: '--max-old-space-size=8192'
+          NODE_OPTIONS: "--max-old-space-size=8192"
 
       - name: Add CNAME file
         run: echo "academic-explorer.joenash.uk" > ./apps/web/dist/CNAME
@@ -568,7 +568,7 @@ jobs:
           pnpm --filter @academic-explorer/web vitest run --project=e2e --reporter=verbose
         env:
           E2E_BASE_URL: https://academic-explorer.joenash.uk
-          NODE_OPTIONS: '--max-old-space-size=8192'
+          NODE_OPTIONS: "--max-old-space-size=8192"
         timeout-minutes: 15
 
       - name: Upload test artifacts on failure
@@ -584,7 +584,15 @@ jobs:
   # Aggregate status check for branch protection
   ci-success:
     runs-on: ubuntu-latest
-    needs: [ci, workspace-quality, extended-checks, release, deploy, production-smoke-tests]
+    needs:
+      [
+        ci,
+        workspace-quality,
+        extended-checks,
+        release,
+        deploy,
+        production-smoke-tests,
+      ]
     if: always()
     steps:
       - name: Check CI status
