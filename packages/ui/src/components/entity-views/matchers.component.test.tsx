@@ -227,8 +227,8 @@ describe("ID Object Matcher", () => {
       </MantineProvider>,
     );
 
-    // Check OpenAlex ID link
-    const openAlexLink = container.querySelector('a[href="/works/W123456789"]');
+    // Check OpenAlex ID link (hash-based routing)
+    const openAlexLink = container.querySelector('a[href="#/works/W123456789"]');
     expect(openAlexLink).toBeTruthy();
     expect(openAlexLink?.textContent).toContain("OPENALEX: W123456789");
 
@@ -379,15 +379,13 @@ describe("Array Matchers", () => {
 
       const { container } = render(<MantineProvider>{result}</MantineProvider>);
 
-      // Should have clickable text
-      const clickableText = container.querySelector(
-        '[style*="cursor: pointer"]',
-      );
-      expect(clickableText).toBeTruthy();
-      expect(clickableText?.textContent).toBe("Test University");
+      // Should have an anchor element with the institution name
+      const institutionLink = container.querySelector('a');
+      expect(institutionLink).toBeTruthy();
+      expect(institutionLink?.textContent).toBe("Test University");
 
-      // Clicking should call onNavigate
-      fireEvent.click(clickableText!);
+      // Clicking should call onNavigate (hash-based routing, but stripped in handler)
+      fireEvent.click(institutionLink!);
       expect(mockOnNavigate).toHaveBeenCalledWith("/institutions/I123");
     });
 
