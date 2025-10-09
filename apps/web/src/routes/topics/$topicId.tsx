@@ -1,12 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
-import { useGraphData } from "@/hooks/use-graph-data";
-import { useGraphStore } from "@/stores/graph-store";
-import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useEntityDocumentTitle } from "@/hooks/use-document-title";
+import { useGraphData } from "@/hooks/use-graph-data";
+import { useRawEntityData } from "@/hooks/use-raw-entity-data";
+import { useGraphStore } from "@/stores/graph-store";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 
 function TopicRoute() {
   const { topicId } = Route.useParams();

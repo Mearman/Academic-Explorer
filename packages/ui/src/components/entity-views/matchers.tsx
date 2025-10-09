@@ -538,7 +538,7 @@ const affiliationMatcher: ArrayMatcher = {
                 const relativeUrl = institutionId
                   ? convertToRelativeUrl(institutionId)
                   : null;
-                
+
                 if (onNavigate && relativeUrl) {
                   // Strip the hash prefix for router navigation
                   const routePath = relativeUrl.startsWith("#/") ? relativeUrl.slice(1) : relativeUrl;

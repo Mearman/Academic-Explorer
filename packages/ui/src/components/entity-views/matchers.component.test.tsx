@@ -34,16 +34,16 @@ vi.mock("@academic-explorer/client/utils/id-resolver", () => ({
   }),
 }));
 
-import { describe, it, expect, vi } from "vitest";
-import { render, fireEvent } from "@testing-library/react";
 import { MantineProvider } from "@mantine/core";
+import { fireEvent, render } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import {
-  valueMatchers,
-  objectMatchers,
-  arrayMatchers,
-  convertToRelativeUrl,
-  determineCanonicalRoute,
-  isOpenAlexUrl,
+    arrayMatchers,
+    convertToRelativeUrl,
+    determineCanonicalRoute,
+    isOpenAlexUrl,
+    objectMatchers,
+    valueMatchers,
 } from "./matchers";
 
 describe("URL Conversion Functions", () => {
