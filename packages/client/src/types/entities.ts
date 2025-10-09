@@ -1,0 +1,422 @@
+/**
+ * Entity interfaces for OpenAlex API
+ */
+
+import type {
+  OpenAlexId,
+  DOI,
+  ORCID,
+  RORId,
+  WikidataId,
+  WorkIds,
+  AuthorIds,
+  SourceIds,
+  InstitutionIds,
+  ConceptIds,
+  TopicIds,
+  PublisherIds,
+  FunderIds,
+  KeywordIds,
+  ConceptItem,
+  TopicItem,
+  SummaryStats,
+  APCInfo,
+  APCPrice,
+  PartialExceptId,
+} from "./base";
+
+/**
+ * Base entity interface that all OpenAlex entities extend
+ * Contains common properties shared across all entity types
+ */
+export interface BaseEntity {
+  /** Unique OpenAlex identifier */
+  id: OpenAlexId;
+
+  /** Primary display name for the entity */
+  display_name: string;
+
+  /** Total number of citations for works associated with this entity */
+  cited_by_count: number;
+
+  /** Year-by-year breakdown of works and citations */
+  counts_by_year: CountsByYear[];
+
+  /** ISO 8601 timestamp when the entity was last updated */
+  updated_date: string;
+
+  /** ISO 8601 timestamp when the entity was first created */
+  created_date: string;
+}
+
+/**
+ * Extended entity interface for entities that have associated works collections
+ * Used by Authors, Sources, Institutions, Topics, Publishers, and Funders
+ */
+export interface EntityWithWorks extends BaseEntity {
+  /** Total number of works associated with this entity */
+  works_count: number;
+
+  /** OpenAlex API URL for retrieving works associated with this entity */
+  works_api_url: string;
+}
+
+// Common utility types
+export interface CountsByYear {
+  year: number;
+  cited_by_count: number;
+  works_count?: number;
+  oa_works_count?: number;
+}
+
+export interface Location {
+  source?: {
+    id: OpenAlexId;
+    display_name: string;
+    issn_l?: string;
+    issn?: string[];
+    is_oa: boolean;
+    is_in_doaj: boolean;
+    host_organization?: OpenAlexId;
+    host_organization_name?: string;
+    host_organization_lineage?: OpenAlexId[];
+    type: string;
+  };
+  landing_page_url?: string;
+  pdf_url?: string;
+  is_oa: boolean;
+  version?: string;
+  license?: string;
+}
+
+export interface Institution {
+  id: OpenAlexId;
+  display_name: string;
+  ror?: RORId;
+  country_code?: string;
+  type: string;
+  lineage?: OpenAlexId[];
+}
+
+export interface Authorship {
+  author_position: "first" | "middle" | "last";
+  author: {
+    id: OpenAlexId;
+    display_name: string;
+    orcid?: ORCID;
+  };
+  institutions: Institution[];
+  countries: string[];
+  is_corresponding: boolean;
+  raw_author_name?: string;
+  raw_affiliation_strings?: string[];
+}
+
+// Work entity
+export interface Work extends BaseEntity {
+  doi?: DOI;
+  title?: string;
+  publication_year?: number;
+  publication_date?: string;
+  ids: WorkIds;
+  primary_location?: Location;
+  best_oa_location?: Location;
+  locations: Location[];
+  locations_count: number;
+  authorships: Authorship[];
+  countries_distinct_count: number;
+  institutions_distinct_count: number;
+  corresponding_author_ids: OpenAlexId[];
+  corresponding_institution_ids: OpenAlexId[];
+  apc_list?: APCInfo;
+  apc_paid?: APCInfo;
+  fwci?: number;
+  has_fulltext: boolean;
+  fulltext_origin?: string;
+  cited_by_api_url: string;
+  type: string;
+  type_crossref?: string;
+  indexed_in: string[];
+  open_access: {
+    is_oa: boolean;
+    oa_date?: string;
+    oa_url?: string;
+    any_repository_has_fulltext: boolean;
+  };
+  authorships_count?: number;
+  cited_by_percentile_year?: {
+    min: number;
+    max: number;
+  };
+  concepts: ConceptItem[];
+  mesh: Array<{
+    descriptor_ui: string;
+    descriptor_name: string;
+    qualifier_ui?: string;
+    qualifier_name?: string;
+    is_major_topic: boolean;
+  }>;
+  alternate_host_venues?: Array<{
+    id?: OpenAlexId;
+    display_name: string;
+    type: string;
+    url?: string;
+    is_oa: boolean;
+    version?: string;
+    license?: string;
+  }>;
+  referenced_works: OpenAlexId[];
+  referenced_works_count: number;
+  related_works: OpenAlexId[];
+  sustainable_development_goals?: Array<{
+    id: OpenAlexId;
+    display_name: string;
+    score: number;
+  }>;
+  grants?: Array<{
+    funder: OpenAlexId;
+    funder_display_name: string;
+    award_id?: string;
+  }>;
+  datasets?: string[];
+  versions?: OpenAlexId[];
+  is_retracted: boolean;
+  is_paratext: boolean;
+  abstract_inverted_index?: Record<string, number[]>;
+  biblio?: {
+    volume?: string;
+    issue?: string;
+    first_page?: string;
+    last_page?: string;
+  };
+  language?: string;
+  topics?: TopicItem[];
+  keywords?: Array<{
+    id: OpenAlexId;
+    display_name: string;
+    score: number;
+  }>;
+}
+
+// Partial hydration types - only id is guaranteed, all other fields are optional
+export type PartialWork = PartialExceptId<Work>;
+
+// Author entity
+export interface Author extends EntityWithWorks {
+  orcid?: ORCID;
+  display_name_alternatives?: string[];
+  ids: AuthorIds;
+  last_known_institutions?: Institution[];
+  affiliations: Array<{
+    institution: Institution;
+    years: number[];
+  }>;
+  summary_stats: SummaryStats;
+  x_concepts?: ConceptItem[];
+  topics?: TopicItem[];
+}
+
+export type PartialAuthor = PartialExceptId<Author>;
+
+// Source entity (journals, conferences, etc.)
+export interface Source extends EntityWithWorks {
+  issn_l?: string;
+  issn?: string[];
+  publisher?: string;
+  is_oa: boolean;
+  is_in_doaj: boolean;
+  ids: SourceIds;
+  homepage_url?: string;
+  apc_prices?: APCPrice[];
+  apc_usd?: number;
+  country_code?: string;
+  societies?: string[];
+  alternate_titles?: string[];
+  abbreviated_title?: string;
+  type: string;
+  x_concepts?: ConceptItem[];
+  summary_stats: SummaryStats;
+  topics?: TopicItem[];
+}
+
+// Institution entity
+export interface InstitutionEntity extends EntityWithWorks {
+  ror?: RORId;
+  country_code: string;
+  type: string;
+  homepage_url?: string;
+  image_url?: string;
+  image_thumbnail_url?: string;
+  display_name_acronyms?: string[];
+  display_name_alternatives?: string[];
+  ids: InstitutionIds;
+  geo: {
+    city?: string;
+    geonames_city_id?: string;
+    region?: string;
+    country_code: string;
+    country: string;
+    latitude?: number;
+    longitude?: number;
+  };
+  international: {
+    display_name: Record<string, string>;
+  };
+  associated_institutions?: Array<{
+    id: OpenAlexId;
+    display_name: string;
+    ror?: RORId;
+    country_code: string;
+    type: string;
+    relationship: string;
+  }>;
+  x_concepts?: ConceptItem[];
+  topics?: TopicItem[];
+  lineage?: OpenAlexId[];
+}
+
+// Concept entity (being phased out, replaced by Topics)
+export interface Concept extends EntityWithWorks {
+  wikidata?: WikidataId;
+  level: number;
+  description?: string;
+  ids: ConceptIds;
+  image_url?: string;
+  image_thumbnail_url?: string;
+  international: {
+    display_name: Record<string, string>;
+    description?: Record<string, string>;
+  };
+  ancestors?: Array<{
+    id: OpenAlexId;
+    wikidata?: WikidataId;
+    display_name: string;
+    level: number;
+  }>;
+  related_concepts?: ConceptItem[];
+}
+
+// Topic entity (replacing Concepts)
+export interface Topic extends EntityWithWorks {
+  description?: string;
+  keywords?: string[];
+  ids: TopicIds;
+  subfield: {
+    id: OpenAlexId;
+    display_name: string;
+  };
+  field: {
+    id: OpenAlexId;
+    display_name: string;
+  };
+  domain: {
+    id: OpenAlexId;
+    display_name: string;
+  };
+  siblings?: Array<{
+    id: OpenAlexId;
+    display_name: string;
+  }>;
+}
+
+// Publisher entity
+export interface Publisher extends EntityWithWorks {
+  alternate_titles?: string[];
+  country_codes?: string[];
+  hierarchy_level: number;
+  parent_publisher?: OpenAlexId;
+  lineage: OpenAlexId[];
+  sources_count: number;
+  ids: PublisherIds;
+  sources_api_url: string;
+}
+
+// Funder entity
+export interface Funder extends EntityWithWorks {
+  alternate_titles?: string[];
+  country_code?: string;
+  description?: string;
+  homepage_url?: string;
+  image_url?: string;
+  image_thumbnail_url?: string;
+  grants_count: number;
+  ids: FunderIds;
+  roles?: Array<{
+    role: string;
+    id: OpenAlexId;
+    works_count: number;
+  }>;
+  summary_stats: SummaryStats;
+  topics?: TopicItem[];
+}
+
+/**
+ * Keywords Entity - Research keywords and their usage
+ */
+export interface Keyword extends Omit<EntityWithWorks, "counts_by_year"> {
+  /** Optional description or definition of the keyword */
+  readonly description?: string;
+
+  /** Array of related or synonymous keywords */
+  readonly keywords?: readonly string[];
+
+  /** External identifiers for the keyword */
+  readonly ids: KeywordIds;
+
+  /** Year-by-year breakdown of works and citations (overrides BaseEntity) */
+  readonly counts_by_year: readonly KeywordCountsByYear[];
+}
+
+/**
+ * Year-by-year statistics for a keyword
+ */
+export interface KeywordCountsByYear {
+  /** Calendar year (4-digit year) */
+  readonly year: number;
+
+  /** Number of works published in this year with this keyword (non-negative) */
+  readonly works_count: number;
+
+  /** Number of citations in this year for works with this keyword (non-negative) */
+  readonly cited_by_count: number;
+}
+
+// Partial types for other entities
+export type PartialSource = PartialExceptId<Source>;
+export type PartialInstitution = PartialExceptId<InstitutionEntity>;
+
+// Union types for all entities
+export type OpenAlexEntity =
+  | Work
+  | Author
+  | Source
+  | InstitutionEntity
+  | Topic
+  | Concept
+  | Publisher
+  | Funder
+  | Keyword;
+
+export type EntityType =
+  | "works"
+  | "authors"
+  | "sources"
+  | "institutions"
+  | "topics"
+  | "concepts"
+  | "publishers"
+  | "funders"
+  | "keywords";
+
+// Mapping from entity type to entity interface
+export type EntityTypeMap = {
+  works: Work;
+  authors: Author;
+  sources: Source;
+  institutions: InstitutionEntity;
+  topics: Topic;
+  concepts: Concept;
+  publishers: Publisher;
+  funders: Funder;
+  keywords: Keyword;
+};

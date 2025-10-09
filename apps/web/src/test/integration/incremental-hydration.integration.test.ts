@@ -3,12 +3,12 @@
  * Verifies that entity data is properly stored and accessible on-demand
  */
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createGraphDataService } from "@/services/graph-data-service";
 import { useGraphStore } from "@/stores/graph-store";
-import { QueryClient } from "@tanstack/react-query";
-import { logger } from "@academic-explorer/utils/logger";
 import type { Work } from "@academic-explorer/client";
+import { logger } from "@academic-explorer/utils/logger";
+import { QueryClient } from "@tanstack/react-query";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 describe("Entity Data Storage Integration", () => {
   let queryClient: QueryClient;

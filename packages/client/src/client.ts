@@ -352,15 +352,17 @@ export class OpenAlexBaseClient {
       }
 
       // Handle server errors (5xx) with enhanced retry logic
-      if (!response.ok && response.status >= 500) {
-        if (retryCount < maxServerRetries) {
-          const waitTime =
-            this.config.retries !== 3
-              ? this.config.retryDelay * Math.pow(2, retryCount)
-              : calculateRetryDelay(retryCount, RETRY_CONFIG.server);
-          await this.sleep(waitTime);
-          return await this.makeRequest(url, options, retryCount + 1);
-        }
+      if (
+        !response.ok &&
+        response.status >= 500 &&
+        retryCount < maxServerRetries
+      ) {
+        const waitTime =
+          this.config.retries !== 3
+            ? this.config.retryDelay * Math.pow(2, retryCount)
+            : calculateRetryDelay(retryCount, RETRY_CONFIG.server);
+        await this.sleep(waitTime);
+        return await this.makeRequest(url, options, retryCount + 1);
       }
 
       // Handle other HTTP errors (no retry for 4xx except 429)
