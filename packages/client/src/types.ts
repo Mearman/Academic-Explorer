@@ -20,6 +20,42 @@ type PartialExceptId<T> = {
   id: T extends { id: infer U } ? U : never;
 } & Partial<Omit<T, "id">>;
 
+/**
+ * Base entity interface that all OpenAlex entities extend
+ * Contains common properties shared across all entity types
+ */
+export interface BaseEntity {
+  /** Unique OpenAlex identifier */
+  id: OpenAlexId;
+
+  /** Primary display name for the entity */
+  display_name: string;
+
+  /** Total number of citations for works associated with this entity */
+  cited_by_count: number;
+
+  /** Year-by-year breakdown of works and citations */
+  counts_by_year: CountsByYear[];
+
+  /** ISO 8601 timestamp when the entity was last updated */
+  updated_date: string;
+
+  /** ISO 8601 timestamp when the entity was first created */
+  created_date: string;
+}
+
+/**
+ * Extended entity interface for entities that have associated works collections
+ * Used by Authors, Sources, Institutions, Topics, Publishers, and Funders
+ */
+export interface EntityWithWorks extends BaseEntity {
+  /** Total number of works associated with this entity */
+  works_count: number;
+
+  /** OpenAlex API URL for retrieving works associated with this entity */
+  works_api_url: string;
+}
+
 // Common utility types
 export interface OpenAlexResponse<T> {
   results: T[];
@@ -91,11 +127,9 @@ export interface Authorship {
 }
 
 // Work entity
-export interface Work {
-  id: OpenAlexId;
+export interface Work extends BaseEntity {
   doi?: DOI;
   title?: string;
-  display_name: string;
   publication_year?: number;
   publication_date?: string;
   ids: {
@@ -129,11 +163,7 @@ export interface Work {
   fwci?: number;
   has_fulltext: boolean;
   fulltext_origin?: string;
-  cited_by_count: number;
   cited_by_api_url: string;
-  counts_by_year: CountsByYear[];
-  updated_date: string;
-  created_date: string;
   type: string;
   type_crossref?: string;
   indexed_in: string[];
@@ -224,13 +254,9 @@ export interface Work {
 export type PartialWork = PartialExceptId<Work>;
 
 // Author entity
-export interface Author {
-  id: OpenAlexId;
+export interface Author extends EntityWithWorks {
   orcid?: ORCID;
-  display_name: string;
   display_name_alternatives?: string[];
-  works_count: number;
-  cited_by_count: number;
   ids: {
     openalex: OpenAlexId;
     orcid?: ORCID;
@@ -244,10 +270,6 @@ export interface Author {
     institution: Institution;
     years: number[];
   }>;
-  counts_by_year: CountsByYear[];
-  works_api_url: string;
-  updated_date: string;
-  created_date: string;
   summary_stats: {
     "2yr_mean_citedness": number;
     h_index: number;
@@ -286,14 +308,10 @@ export type PartialSource = PartialExceptId<Source>;
 export type PartialInstitution = PartialExceptId<Institution>;
 
 // Source entity (journals, conferences, etc.)
-export interface Source {
-  id: OpenAlexId;
+export interface Source extends EntityWithWorks {
   issn_l?: string;
   issn?: string[];
-  display_name: string;
   publisher?: string;
-  works_count: number;
-  cited_by_count: number;
   is_oa: boolean;
   is_in_doaj: boolean;
   ids: {
@@ -322,10 +340,6 @@ export interface Source {
     level: number;
     score: number;
   }>;
-  counts_by_year: CountsByYear[];
-  works_api_url: string;
-  updated_date: string;
-  created_date: string;
   summary_stats: {
     "2yr_mean_citedness": number;
     h_index: number;
@@ -351,10 +365,8 @@ export interface Source {
 }
 
 // Institution entity
-export interface InstitutionEntity {
-  id: OpenAlexId;
+export interface InstitutionEntity extends EntityWithWorks {
   ror?: RORId;
-  display_name: string;
   country_code: string;
   type: string;
   homepage_url?: string;
@@ -362,8 +374,6 @@ export interface InstitutionEntity {
   image_thumbnail_url?: string;
   display_name_acronyms?: string[];
   display_name_alternatives?: string[];
-  works_count: number;
-  cited_by_count: number;
   ids: {
     openalex: OpenAlexId;
     ror?: RORId;
@@ -392,7 +402,6 @@ export interface InstitutionEntity {
     type: string;
     relationship: string;
   }>;
-  counts_by_year: CountsByYear[];
   x_concepts?: Array<{
     id: OpenAlexId;
     wikidata?: WikidataId;
@@ -400,9 +409,6 @@ export interface InstitutionEntity {
     level: number;
     score: number;
   }>;
-  works_api_url: string;
-  updated_date: string;
-  created_date: string;
   topics?: Array<{
     id: OpenAlexId;
     display_name: string;
@@ -424,14 +430,10 @@ export interface InstitutionEntity {
 }
 
 // Concept entity (being phased out, replaced by Topics)
-export interface Concept {
-  id: OpenAlexId;
+export interface Concept extends EntityWithWorks {
   wikidata?: WikidataId;
-  display_name: string;
   level: number;
   description?: string;
-  works_count: number;
-  cited_by_count: number;
   ids: {
     openalex: OpenAlexId;
     wikidata?: WikidataId;
@@ -459,16 +461,10 @@ export interface Concept {
     level: number;
     score: number;
   }>;
-  counts_by_year: CountsByYear[];
-  works_api_url: string;
-  updated_date: string;
-  created_date: string;
 }
 
 // Topic entity (replacing Concepts)
-export interface Topic {
-  id: OpenAlexId;
-  display_name: string;
+export interface Topic extends EntityWithWorks {
   description?: string;
   keywords?: string[];
   ids: {
@@ -491,42 +487,26 @@ export interface Topic {
     id: OpenAlexId;
     display_name: string;
   }>;
-  works_count: number;
-  cited_by_count: number;
-  counts_by_year: CountsByYear[];
-  works_api_url: string;
-  updated_date: string;
-  created_date: string;
 }
 
 // Publisher entity
-export interface Publisher {
-  id: OpenAlexId;
-  display_name: string;
+export interface Publisher extends EntityWithWorks {
   alternate_titles?: string[];
   country_codes?: string[];
   hierarchy_level: number;
   parent_publisher?: OpenAlexId;
   lineage: OpenAlexId[];
-  works_count: number;
-  cited_by_count: number;
   sources_count: number;
   ids: {
     openalex: OpenAlexId;
     ror?: RORId;
     wikidata?: WikidataId;
   };
-  counts_by_year: CountsByYear[];
-  works_api_url: string;
   sources_api_url: string;
-  updated_date: string;
-  created_date: string;
 }
 
 // Funder entity
-export interface Funder {
-  id: OpenAlexId;
-  display_name: string;
+export interface Funder extends EntityWithWorks {
   alternate_titles?: string[];
   country_code?: string;
   description?: string;
@@ -534,8 +514,6 @@ export interface Funder {
   image_url?: string;
   image_thumbnail_url?: string;
   grants_count: number;
-  works_count: number;
-  cited_by_count: number;
   ids: {
     openalex: OpenAlexId;
     ror?: RORId;
@@ -543,19 +521,11 @@ export interface Funder {
     crossref?: string;
     doi?: string;
   };
-  counts_by_year: Array<{
-    year: number;
-    works_count: number;
-    cited_by_count: number;
-  }>;
   roles?: Array<{
     role: string;
     id: OpenAlexId;
     works_count: number;
   }>;
-  works_api_url: string;
-  updated_date: string;
-  created_date: string;
   summary_stats: {
     "2yr_mean_citedness": number;
     h_index: number;
@@ -586,24 +556,12 @@ export interface Funder {
  * @interface Keyword
  * @description Represents a research keyword in the OpenAlex database with strict typing
  */
-export interface Keyword {
-  /** Unique OpenAlex identifier for the keyword */
-  readonly id: OpenAlexId;
-
-  /** Human-readable name/label for the keyword */
-  readonly display_name: string;
-
+export interface Keyword extends Omit<EntityWithWorks, 'counts_by_year'> {
   /** Optional description or definition of the keyword */
   readonly description?: string;
 
   /** Array of related or synonymous keywords */
   readonly keywords?: readonly string[];
-
-  /** Total number of works associated with this keyword (non-negative) */
-  readonly works_count: number;
-
-  /** Total number of citations for works with this keyword (non-negative) */
-  readonly cited_by_count: number;
 
   /** External identifiers for the keyword */
   readonly ids: {
@@ -614,18 +572,9 @@ export interface Keyword {
     /** Wikidata identifier if available */
     readonly wikidata?: WikidataId;
   };
-
-  /** Year-by-year breakdown of works and citations */
+  
+  /** Year-by-year breakdown of works and citations (overrides BaseEntity) */
   readonly counts_by_year: readonly KeywordCountsByYear[];
-
-  /** OpenAlex API URL for retrieving works associated with this keyword */
-  readonly works_api_url: string;
-
-  /** ISO 8601 timestamp when the keyword was last updated */
-  readonly updated_date: string;
-
-  /** ISO 8601 timestamp when the keyword was first created */
-  readonly created_date: string;
 }
 
 /**
