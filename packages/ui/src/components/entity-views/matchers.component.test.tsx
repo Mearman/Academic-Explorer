@@ -35,11 +35,12 @@ vi.mock("@academic-explorer/client/utils/id-resolver", () => ({
 }));
 
 import { describe, it, expect, vi } from "vitest";
-import { render } from "@testing-library/react";
+import { render, fireEvent } from "@testing-library/react";
 import { MantineProvider } from "@mantine/core";
 import {
   valueMatchers,
   objectMatchers,
+  arrayMatchers,
   convertToRelativeUrl,
   determineCanonicalRoute,
   isOpenAlexUrl,
@@ -47,41 +48,41 @@ import {
 
 describe("URL Conversion Functions", () => {
   describe("convertToRelativeUrl", () => {
-    it("should convert OpenAlex API URLs to relative paths", () => {
+    it("should convert OpenAlex API URLs to hash-based relative paths", () => {
       const apiUrl =
         "https://api.openalex.org/works?filter=author.id:A5025875274";
       const result = convertToRelativeUrl(apiUrl);
-      expect(result).toBe("./works?filter=author.id:A5025875274");
+      expect(result).toBe("#/works?filter=author.id:A5025875274");
     });
 
-    it("should convert OpenAlex entity URLs to relative paths", () => {
+    it("should convert OpenAlex entity URLs to hash-based relative paths", () => {
       const entityUrl = "https://openalex.org/I2799442855";
       const result = convertToRelativeUrl(entityUrl);
-      expect(result).toBe("./institutions/I2799442855");
+      expect(result).toBe("#/institutions/I2799442855");
     });
 
     it("should handle works URLs", () => {
       const workUrl = "https://openalex.org/W123456789";
       const result = convertToRelativeUrl(workUrl);
-      expect(result).toBe("./works/W123456789");
+      expect(result).toBe("#/works/W123456789");
     });
 
     it("should handle authors URLs", () => {
       const authorUrl = "https://openalex.org/A987654321";
       const result = convertToRelativeUrl(authorUrl);
-      expect(result).toBe("./authors/A987654321");
+      expect(result).toBe("#/authors/A987654321");
     });
 
     it("should handle sources URLs", () => {
       const sourceUrl = "https://openalex.org/S555666777";
       const result = convertToRelativeUrl(sourceUrl);
-      expect(result).toBe("./sources/S555666777");
+      expect(result).toBe("#/sources/S555666777");
     });
 
     it("should handle topics URLs", () => {
       const topicUrl = "https://openalex.org/T111222333";
       const result = convertToRelativeUrl(topicUrl);
-      expect(result).toBe("./topics/T111222333");
+      expect(result).toBe("#/topics/T111222333");
     });
 
     it("should return null for ROR URLs", () => {
@@ -105,25 +106,25 @@ describe("URL Conversion Functions", () => {
 
   describe("determineCanonicalRoute", () => {
     it("should handle entity routes with IDs", () => {
-      expect(determineCanonicalRoute("works/W123")).toBe("./works/W123");
-      expect(determineCanonicalRoute("authors/A456")).toBe("./authors/A456");
+      expect(determineCanonicalRoute("works/W123")).toBe("/works/W123");
+      expect(determineCanonicalRoute("authors/A456")).toBe("/authors/A456");
       expect(determineCanonicalRoute("institutions/I789")).toBe(
-        "./institutions/I789",
+        "/institutions/I789",
       );
     });
 
     it("should handle collection routes with query params", () => {
       expect(
         determineCanonicalRoute("works?filter=author.id:A5025875274"),
-      ).toBe("./works");
+      ).toBe("/works");
       expect(
         determineCanonicalRoute("authors?filter=institution.id:I123"),
-      ).toBe("./authors");
+      ).toBe("/authors");
     });
 
     it("should handle simple paths", () => {
-      expect(determineCanonicalRoute("works")).toBe("./works");
-      expect(determineCanonicalRoute("authors")).toBe("./authors");
+      expect(determineCanonicalRoute("works")).toBe("/works");
+      expect(determineCanonicalRoute("authors")).toBe("/authors");
     });
   });
 
@@ -167,9 +168,7 @@ describe("URL Matcher", () => {
 
     const link = container.querySelector("a");
     expect(link).toBeTruthy();
-    expect(link?.getAttribute("href")).toBe(
-      "./works?filter=author.id:A5025875274",
-    );
+    expect(link?.getAttribute("href")).toBe("#/works?filter=author.id:A5025875274");
     expect(link?.textContent).toBe(openAlexUrl);
   });
 
@@ -229,9 +228,7 @@ describe("ID Object Matcher", () => {
     );
 
     // Check OpenAlex ID link
-    const openAlexLink = container.querySelector(
-      'a[href="./works/W123456789"]',
-    );
+    const openAlexLink = container.querySelector('a[href="/works/W123456789"]');
     expect(openAlexLink).toBeTruthy();
     expect(openAlexLink?.textContent).toContain("OPENALEX: W123456789");
 
@@ -352,5 +349,76 @@ describe("ROR Matcher", () => {
     const link = container.querySelector('a[href="https://ror.org/02t274039"]');
     expect(link).toBeTruthy();
     expect(link?.getAttribute("target")).toBe("_blank");
+  });
+});
+
+describe("Array Matchers", () => {
+  describe("affiliationMatcher", () => {
+    it("should render affiliations with clickable institutions", () => {
+      const affiliationMatcher = arrayMatchers.find(
+        (m) => m.name === "affiliations",
+      )!;
+      expect(affiliationMatcher).toBeDefined();
+
+      const testData = [
+        {
+          institution: {
+            id: "https://openalex.org/I123",
+            display_name: "Test University",
+          },
+          years: [2020, 2021, 2022],
+        },
+      ];
+
+      const mockOnNavigate = vi.fn();
+      const result = affiliationMatcher.render(
+        testData,
+        "affiliations",
+        mockOnNavigate,
+      );
+
+      const { container } = render(<MantineProvider>{result}</MantineProvider>);
+
+      // Should have clickable text
+      const clickableText = container.querySelector(
+        '[style*="cursor: pointer"]',
+      );
+      expect(clickableText).toBeTruthy();
+      expect(clickableText?.textContent).toBe("Test University");
+
+      // Clicking should call onNavigate
+      fireEvent.click(clickableText!);
+      expect(mockOnNavigate).toHaveBeenCalledWith("/institutions/I123");
+    });
+
+    it("should render affiliations without navigation when onNavigate not provided", () => {
+      const affiliationMatcher = arrayMatchers.find(
+        (m) => m.name === "affiliations",
+      )!;
+      expect(affiliationMatcher).toBeDefined();
+
+      const testData = [
+        {
+          institution: {
+            id: "https://openalex.org/I123",
+            display_name: "Test University",
+          },
+          years: [2020, 2021, 2022],
+        },
+      ];
+
+      const result = affiliationMatcher.render(testData, "affiliations");
+
+      const { container } = render(<MantineProvider>{result}</MantineProvider>);
+
+      // Should not have clickable styling
+      const clickableText = container.querySelector(
+        '[style*="cursor: pointer"]',
+      );
+      expect(clickableText).toBeFalsy();
+
+      // Should still show the institution name
+      expect(container.textContent).toContain("Test University");
+    });
   });
 });
