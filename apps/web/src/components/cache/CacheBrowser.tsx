@@ -1,47 +1,45 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
-import {
-  Box,
-  Group,
-  Text,
-  Card,
-  Badge,
-  Button,
-  TextInput,
-  MultiSelect,
-  Select,
-  Stack,
-  NumberInput,
-  Alert,
-  ActionIcon,
-  Tooltip,
-  FileInput,
-} from "@mantine/core";
-import {
-  IconSearch,
-  IconRefresh,
-  IconTrash,
-  IconInfoCircle,
-  IconFilter,
-  IconExternalLink,
-  IconDownload,
-  IconUpload,
-  IconFileExport,
-  IconFileImport,
-} from "@tabler/icons-react";
-import { type ColumnDef } from "@tanstack/react-table";
-import { useNavigate } from "@tanstack/react-router";
+import { BaseTable } from "@/components/tables/BaseTable";
 import {
   cacheBrowserService,
-  type CachedEntityMetadata,
-  type CacheBrowserStats,
+  logger,
+  type CacheBrowserEntityType,
   type CacheBrowserFilters,
   type CacheBrowserOptions,
-  type CacheBrowserEntityType,
+  type CacheBrowserStats,
+  type CachedEntityMetadata,
 } from "@academic-explorer/utils";
-import { logger } from "@academic-explorer/utils";
-import { BaseTable } from "@/components/tables/BaseTable";
-
-const CACHE_BROWSER_LOGGER_NAME = "cache-browser";
+import {
+  ActionIcon,
+  Alert,
+  Badge,
+  Box,
+  Button,
+  Card,
+  FileInput,
+  Group,
+  MultiSelect,
+  NumberInput,
+  Select,
+  Stack,
+  Text,
+  TextInput,
+  Tooltip,
+} from "@mantine/core";
+import {
+  IconDownload,
+  IconExternalLink,
+  IconFileExport,
+  IconFileImport,
+  IconFilter,
+  IconInfoCircle,
+  IconRefresh,
+  IconSearch,
+  IconTrash,
+  IconUpload,
+} from "@tabler/icons-react";
+import { useNavigate } from "@tanstack/react-router";
+import { type ColumnDef } from "@tanstack/react-table";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface CacheBrowserState {
   entities: CachedEntityMetadata[];

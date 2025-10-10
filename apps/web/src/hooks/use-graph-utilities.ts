@@ -12,6 +12,9 @@ import {
 import { logger } from "@academic-explorer/utils/logger";
 import type { GraphNode, GraphEdge } from "@academic-explorer/graph";
 
+// Constants
+const UNKNOWN_ERROR_MESSAGE = "Unknown error";
+
 // Extended result type for graph utility operations
 interface GraphOperationResult {
   nodes: GraphNode[];
@@ -145,7 +148,7 @@ export const useGraphUtilities = () => {
       return result;
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
+        error instanceof Error ? error.message : UNKNOWN_ERROR_MESSAGE;
       logger.error("graph", "Trim leaf nodes failed", { error: errorMessage });
       setError(`Failed to trim leaf nodes: ${errorMessage}`);
       throw error;
@@ -175,7 +178,7 @@ export const useGraphUtilities = () => {
       return result;
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
+        error instanceof Error ? error.message : UNKNOWN_ERROR_MESSAGE;
       logger.error("graph", "Trim root nodes failed", { error: errorMessage });
       setError(`Failed to trim root nodes: ${errorMessage}`);
       throw error;
@@ -205,7 +208,7 @@ export const useGraphUtilities = () => {
       return result;
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
+        error instanceof Error ? error.message : UNKNOWN_ERROR_MESSAGE;
       logger.error("graph", "Trim degree 1 nodes failed", {
         error: errorMessage,
       });
@@ -237,7 +240,7 @@ export const useGraphUtilities = () => {
       return result;
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
+        error instanceof Error ? error.message : UNKNOWN_ERROR_MESSAGE;
       logger.error("graph", "Remove isolated nodes failed", {
         error: errorMessage,
       });
@@ -270,7 +273,7 @@ export const useGraphUtilities = () => {
         return result;
       } catch (error) {
         const errorMessage =
-          error instanceof Error ? error.message : "Unknown error";
+          error instanceof Error ? error.message : UNKNOWN_ERROR_MESSAGE;
         logger.error("graph", "Filter by publication year failed", {
           error: errorMessage,
           minYear,
@@ -300,7 +303,7 @@ export const useGraphUtilities = () => {
         return result;
       } catch (error) {
         const errorMessage =
-          error instanceof Error ? error.message : "Unknown error";
+          error instanceof Error ? error.message : UNKNOWN_ERROR_MESSAGE;
         logger.error("graph", "Extract ego network failed", {
           error: errorMessage,
           centerNodeId,
@@ -329,7 +332,7 @@ export const useGraphUtilities = () => {
       return result;
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
+        error instanceof Error ? error.message : UNKNOWN_ERROR_MESSAGE;
       logger.error("graph", "Get largest connected component failed", {
         error: errorMessage,
       });
@@ -379,7 +382,7 @@ export const useGraphUtilities = () => {
       return [];
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
+        error instanceof Error ? error.message : UNKNOWN_ERROR_MESSAGE;
       logger.error("graph", "Find connected components failed", {
         error: errorMessage,
       });

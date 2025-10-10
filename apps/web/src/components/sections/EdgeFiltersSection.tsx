@@ -13,261 +13,297 @@ import { logger } from "@academic-explorer/utils/logger";
 import { RelationType } from "@academic-explorer/graph";
 import { safeParseRelationType } from "@academic-explorer/utils";
 
+// Constants
+const FLEX_JUSTIFY_SPACE_BETWEEN = "space-between";
+
 interface EdgeFiltersSectionProps {
-	className?: string;
+  className?: string;
 }
 
 // Configuration for relation types with labels and descriptions
 const RELATION_TYPE_CONFIG = {
-	[RelationType.AUTHORED]: {
-		label: "Authored",
-		description: "Author wrote this work"
-	},
-	[RelationType.AFFILIATED]: {
-		label: "Affiliated",
-		description: "Author is affiliated with institution"
-	},
-	[RelationType.PUBLISHED_IN]: {
-		label: "Published In",
-		description: "Work was published in this source"
-	},
-	[RelationType.FUNDED_BY]: {
-		label: "Funded By",
-		description: "Work was funded by this organization"
-	},
-	[RelationType.REFERENCES]: {
-		label: "References",
-		description: "Work cites another work"
-	},
-	[RelationType.SOURCE_PUBLISHED_BY]: {
-		label: "Source Published By",
-		description: "Source is published by this publisher"
-	}
+  [RelationType.AUTHORED]: {
+    label: "Authored",
+    description: "Author wrote this work",
+  },
+  [RelationType.AFFILIATED]: {
+    label: "Affiliated",
+    description: "Author is affiliated with institution",
+  },
+  [RelationType.PUBLISHED_IN]: {
+    label: "Published In",
+    description: "Work was published in this source",
+  },
+  [RelationType.FUNDED_BY]: {
+    label: "Funded By",
+    description: "Work was funded by this organization",
+  },
+  [RelationType.REFERENCES]: {
+    label: "References",
+    description: "Work cites another work",
+  },
+  [RelationType.SOURCE_PUBLISHED_BY]: {
+    label: "Source Published By",
+    description: "Source is published by this publisher",
+  },
 };
 
 export const EdgeFiltersSection: React.FC<EdgeFiltersSectionProps> = ({
-	className = ""
+  className = "",
 }) => {
-	const themeColors = useThemeColors();
-	const {colors} = themeColors;
+  const themeColors = useThemeColors();
+  const { colors } = themeColors;
 
-	// Get edge state from store
-	const visibleEdgeTypes = useGraphStore((state) => state.visibleEdgeTypes);
-	const toggleEdgeTypeVisibility = useGraphStore((state) => state.toggleEdgeTypeVisibility);
-	const edgeTypeStats = useGraphStore((state) => state.edgeTypeStats);
+  // Get edge state from store
+  const visibleEdgeTypes = useGraphStore((state) => state.visibleEdgeTypes);
+  const toggleEdgeTypeVisibility = useGraphStore(
+    (state) => state.toggleEdgeTypeVisibility,
+  );
+  const edgeTypeStats = useGraphStore((state) => state.edgeTypeStats);
 
-	// Calculate visibility stats with proper types
-	const totalVisibleEdges = edgeTypeStats.visible;
-	const totalEdges = edgeTypeStats.total;
-	const visibleTypesCount = Object.values(visibleEdgeTypes).filter(Boolean).length;
-	const totalTypesCount = Object.keys(RELATION_TYPE_CONFIG).length;
+  // Calculate visibility stats with proper types
+  const totalVisibleEdges = edgeTypeStats.visible;
+  const totalEdges = edgeTypeStats.total;
+  const visibleTypesCount =
+    Object.values(visibleEdgeTypes).filter(Boolean).length;
+  const totalTypesCount = Object.keys(RELATION_TYPE_CONFIG).length;
 
-	const handleShowAll = () => {
-		logger.debug("ui", "Showing all edge types");
-		Object.keys(RELATION_TYPE_CONFIG).forEach(edgeTypeKey => {
-			const parsedType = safeParseRelationType(edgeTypeKey);
-			const edgeType = edgeTypeKey as RelationType;
-			if (parsedType && !visibleEdgeTypes[edgeType]) {
-				toggleEdgeTypeVisibility(edgeType);
-			}
-		});
-	};
+  const handleShowAll = () => {
+    logger.debug("ui", "Showing all edge types");
+    Object.keys(RELATION_TYPE_CONFIG).forEach((edgeTypeKey) => {
+      const parsedType = safeParseRelationType(edgeTypeKey);
+      const edgeType = edgeTypeKey as RelationType;
+      if (parsedType && !visibleEdgeTypes[edgeType]) {
+        toggleEdgeTypeVisibility(edgeType);
+      }
+    });
+  };
 
-	const handleHideAll = () => {
-		logger.debug("ui", "Hiding all edge types");
-		Object.keys(RELATION_TYPE_CONFIG).forEach(edgeTypeKey => {
-			const parsedType = safeParseRelationType(edgeTypeKey);
-			const edgeType = edgeTypeKey as RelationType;
-			if (parsedType && visibleEdgeTypes[edgeType]) {
-				toggleEdgeTypeVisibility(edgeType);
-			}
-		});
-	};
+  const handleHideAll = () => {
+    logger.debug("ui", "Hiding all edge types");
+    Object.keys(RELATION_TYPE_CONFIG).forEach((edgeTypeKey) => {
+      const parsedType = safeParseRelationType(edgeTypeKey);
+      const edgeType = edgeTypeKey as RelationType;
+      if (parsedType && visibleEdgeTypes[edgeType]) {
+        toggleEdgeTypeVisibility(edgeType);
+      }
+    });
+  };
 
-	const handleToggleEdgeType = (edgeType: RelationType) => {
-		logger.debug("ui", `Toggling edge type ${edgeType}`, {
-			edgeType,
-			currentlyVisible: visibleEdgeTypes[edgeType]
-		});
-		toggleEdgeTypeVisibility(edgeType);
-	};
+  const handleToggleEdgeType = (edgeType: RelationType) => {
+    logger.debug("ui", `Toggling edge type ${edgeType}`, {
+      edgeType,
+      currentlyVisible: visibleEdgeTypes[edgeType],
+    });
+    toggleEdgeTypeVisibility(edgeType);
+  };
 
-	return (
-		<div className={className} style={{ padding: "16px" }}>
-			<div style={{
-				fontSize: "14px",
-				fontWeight: 600,
-				marginBottom: "12px",
-				color: colors.text.primary,
-				display: "flex",
-				alignItems: "center",
-				gap: "8px"
-			}}>
-				<IconLink size={16} />
-				Edge Types & Visibility
-			</div>
+  return (
+    <div className={className} style={{ padding: "16px" }}>
+      <div
+        style={{
+          fontSize: "14px",
+          fontWeight: 600,
+          marginBottom: "12px",
+          color: colors.text.primary,
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+        }}
+      >
+        <IconLink size={16} />
+        Edge Types & Visibility
+      </div>
 
-			{/* Summary Stats */}
-			<div style={{
-				padding: "12px",
-				backgroundColor: colors.background.secondary,
-				borderRadius: "8px",
-				marginBottom: "16px"
-			}}>
-				<div style={{
-					display: "flex",
-					justifyContent: "space-between",
-					alignItems: "center",
-					marginBottom: "8px"
-				}}>
-					<span style={{ fontSize: "12px", color: colors.text.secondary }}>
-						Visible Connections
-					</span>
-					<Badge size="sm" variant="light" color="blue">
-						{totalVisibleEdges.toLocaleString()} / {totalEdges.toLocaleString()}
-					</Badge>
-				</div>
-				<div style={{
-					display: "flex",
-					justifyContent: "space-between",
-					alignItems: "center"
-				}}>
-					<span style={{ fontSize: "12px", color: colors.text.secondary }}>
-						Active Types
-					</span>
-					<Badge size="sm" variant="light" color="green">
-						{visibleTypesCount} / {totalTypesCount}
-					</Badge>
-				</div>
-			</div>
+      {/* Summary Stats */}
+      <div
+        style={{
+          padding: "12px",
+          backgroundColor: colors.background.secondary,
+          borderRadius: "8px",
+          marginBottom: "16px",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: FLEX_JUSTIFY_SPACE_BETWEEN,
+            alignItems: "center",
+            marginBottom: "8px",
+          }}
+        >
+          <span style={{ fontSize: "12px", color: colors.text.secondary }}>
+            Visible Connections
+          </span>
+          <Badge size="sm" variant="light" color="blue">
+            {totalVisibleEdges.toLocaleString()} / {totalEdges.toLocaleString()}
+          </Badge>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: FLEX_JUSTIFY_SPACE_BETWEEN,
+            alignItems: "center",
+          }}
+        >
+          <span style={{ fontSize: "12px", color: colors.text.secondary }}>
+            Active Types
+          </span>
+          <Badge size="sm" variant="light" color="green">
+            {visibleTypesCount} / {totalTypesCount}
+          </Badge>
+        </div>
+      </div>
 
-			{/* Bulk Actions */}
-			<Group gap="xs" style={{ marginBottom: "16px" }}>
-				<Button
-					size="xs"
-					variant="light"
-					leftSection={<IconEye size={12} />}
-					onClick={handleShowAll}
-					disabled={visibleTypesCount === totalTypesCount}
-				>
-					Show All
-				</Button>
-				<Button
-					size="xs"
-					variant="light"
-					leftSection={<IconEyeOff size={12} />}
-					onClick={handleHideAll}
-					disabled={visibleTypesCount === 0}
-				>
-					Hide All
-				</Button>
-			</Group>
+      {/* Bulk Actions */}
+      <Group gap="xs" style={{ marginBottom: "16px" }}>
+        <Button
+          size="xs"
+          variant="light"
+          leftSection={<IconEye size={12} />}
+          onClick={handleShowAll}
+          disabled={visibleTypesCount === totalTypesCount}
+        >
+          Show All
+        </Button>
+        <Button
+          size="xs"
+          variant="light"
+          leftSection={<IconEyeOff size={12} />}
+          onClick={handleHideAll}
+          disabled={visibleTypesCount === 0}
+        >
+          Hide All
+        </Button>
+      </Group>
 
-			{/* Edge Type Filters */}
-			<CollapsibleSection
-				title="Connection Types"
-				icon={<IconLink size={14} />}
-				defaultExpanded={true}
-				storageKey="edge-filters-types"
-			>
-				<Stack gap="xs" style={{ marginTop: "8px" }}>
-					{Object.entries(RELATION_TYPE_CONFIG).map(([edgeTypeKey, config]) => {
-						const parsedType = safeParseRelationType(edgeTypeKey);
-						if (!parsedType) return null;
-						const edgeType = edgeTypeKey as RelationType;
-						const visibleCount = edgeTypeStats[edgeType] || 0; // Use the individual type count
-						const totalCount = edgeTypeStats[edgeType] || 0; // Use the individual type count
-						const isVisible = visibleEdgeTypes[edgeType] || false;
+      {/* Edge Type Filters */}
+      <CollapsibleSection
+        title="Connection Types"
+        icon={<IconLink size={14} />}
+        defaultExpanded={true}
+        storageKey="edge-filters-types"
+      >
+        <Stack gap="xs" style={{ marginTop: "8px" }}>
+          {Object.entries(RELATION_TYPE_CONFIG).map(([edgeTypeKey, config]) => {
+            const parsedType = safeParseRelationType(edgeTypeKey);
+            if (!parsedType) return null;
+            const edgeType = edgeTypeKey as RelationType;
+            const visibleCount = edgeTypeStats[edgeType] || 0; // Use the individual type count
+            const totalCount = edgeTypeStats[edgeType] || 0; // Use the individual type count
+            const isVisible = visibleEdgeTypes[edgeType] || false;
 
-						return (
-							<div
-								key={edgeType}
-								style={{
-									display: "flex",
-									alignItems: "center",
-									justifyContent: "space-between",
-									padding: "8px 12px",
-									backgroundColor: isVisible ? colors.background.tertiary : colors.background.secondary,
-									borderRadius: "6px",
-									border: `1px solid ${isVisible ? colors.primary : colors.border.secondary}`,
-									transition: "all 0.2s ease"
-								}}
-							>
-								<div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1 }}>
-									<Checkbox
-										checked={isVisible}
-										onChange={() => { handleToggleEdgeType(edgeType); }}
-										size="sm"
-									/>
-									<div style={{ flex: 1 }}>
-										<div style={{
-											fontSize: "13px",
-											fontWeight: 500,
-											color: colors.text.primary,
-											textTransform: "capitalize"
-										}}>
-											{config.label || edgeType.replace("_", " ")}
-										</div>
-										{config.description && (
-											<div style={{
-												fontSize: "11px",
-												color: colors.text.secondary,
-												marginTop: "2px"
-											}}>
-												{config.description}
-											</div>
-										)}
-									</div>
-								</div>
+            return (
+              <div
+                key={edgeType}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: FLEX_JUSTIFY_SPACE_BETWEEN,
+                  padding: "8px 12px",
+                  backgroundColor: isVisible
+                    ? colors.background.tertiary
+                    : colors.background.secondary,
+                  borderRadius: "6px",
+                  border: `1px solid ${isVisible ? colors.primary : colors.border.secondary}`,
+                  transition: "all 0.2s ease",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    flex: 1,
+                  }}
+                >
+                  <Checkbox
+                    checked={isVisible}
+                    onChange={() => {
+                      handleToggleEdgeType(edgeType);
+                    }}
+                    size="sm"
+                  />
+                  <div style={{ flex: 1 }}>
+                    <div
+                      style={{
+                        fontSize: "13px",
+                        fontWeight: 500,
+                        color: colors.text.primary,
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {config.label || edgeType.replace("_", " ")}
+                    </div>
+                    {config.description && (
+                      <div
+                        style={{
+                          fontSize: "11px",
+                          color: colors.text.secondary,
+                          marginTop: "2px",
+                        }}
+                      >
+                        {config.description}
+                      </div>
+                    )}
+                  </div>
+                </div>
 
-								<div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-									{totalCount > 0 && (
-										<>
-											<Badge
-												size="xs"
-												variant={isVisible ? "filled" : "light"}
-												color={isVisible ? "blue" : "gray"}
-											>
-												{isVisible ? visibleCount.toLocaleString() : "Hidden"}
-											</Badge>
-											{visibleCount !== totalCount && (
-												<Badge size="xs" variant="light" color="gray">
-													{totalCount.toLocaleString()} total
-												</Badge>
-											)}
-										</>
-									)}
-									{totalCount === 0 && (
-										<Badge size="xs" variant="light" color="gray">
-											None
-										</Badge>
-									)}
-								</div>
-							</div>
-						);
-					})}
-				</Stack>
-			</CollapsibleSection>
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                >
+                  {totalCount > 0 && (
+                    <>
+                      <Badge
+                        size="xs"
+                        variant={isVisible ? "filled" : "light"}
+                        color={isVisible ? "blue" : "gray"}
+                      >
+                        {isVisible ? visibleCount.toLocaleString() : "Hidden"}
+                      </Badge>
+                      {visibleCount !== totalCount && (
+                        <Badge size="xs" variant="light" color="gray">
+                          {totalCount.toLocaleString()} total
+                        </Badge>
+                      )}
+                    </>
+                  )}
+                  {totalCount === 0 && (
+                    <Badge size="xs" variant="light" color="gray">
+                      None
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </Stack>
+      </CollapsibleSection>
 
-			{/* Edge Direction Filters - Future Enhancement */}
-			<CollapsibleSection
-				title="Direction & Weight"
-				icon={<IconLink size={14} />}
-				defaultExpanded={false}
-				storageKey="edge-filters-direction"
-			>
-				<div style={{
-					padding: "16px",
-					textAlign: "center",
-					color: colors.text.secondary,
-					fontSize: "12px"
-				}}>
-					<div style={{ marginBottom: "8px" }}>Direction and weight filtering</div>
-					<div style={{ fontSize: "11px", opacity: 0.7 }}>
-						Coming soon: Filter by edge direction (incoming/outgoing) and connection strength
-					</div>
-				</div>
-			</CollapsibleSection>
-		</div>
-	);
+      {/* Edge Direction Filters - Future Enhancement */}
+      <CollapsibleSection
+        title="Direction & Weight"
+        icon={<IconLink size={14} />}
+        defaultExpanded={false}
+        storageKey="edge-filters-direction"
+      >
+        <div
+          style={{
+            padding: "16px",
+            textAlign: "center",
+            color: colors.text.secondary,
+            fontSize: "12px",
+          }}
+        >
+          <div style={{ marginBottom: "8px" }}>
+            Direction and weight filtering
+          </div>
+          <div style={{ fontSize: "11px", opacity: 0.7 }}>
+            Coming soon: Filter by edge direction (incoming/outgoing) and
+            connection strength
+          </div>
+        </div>
+      </CollapsibleSection>
+    </div>
+  );
 };

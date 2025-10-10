@@ -27,6 +27,7 @@ import {
   IconSortDescending,
 } from "@tabler/icons-react";
 import { logger } from "@academic-explorer/utils";
+import { BORDER_GRAY_LIGHT } from "@/constants/styles";
 
 interface BaseTableProps<T> {
   data: T[];
@@ -236,7 +237,7 @@ export function BaseTable<T>({
     width: "100%",
     height: `${virtualRow.size}px`,
     transform: `translateY(${virtualRow.start}px)`,
-    borderBottom: "1px solid var(--mantine-color-gray-3)",
+    borderBottom: BORDER_GRAY_LIGHT,
     backgroundColor:
       virtualRow.index % 2 === 0
         ? "var(--mantine-color-gray-0)"
@@ -251,10 +252,7 @@ export function BaseTable<T>({
   const getCellStyle = (cellIndex: number, totalCells: number) => ({
     flex: cellIndex === 1 ? "1" : "0 0 auto",
     padding: "0 8px",
-    borderRight:
-      cellIndex < totalCells - 1
-        ? "1px solid var(--mantine-color-gray-3)"
-        : "none",
+    borderRight: cellIndex < totalCells - 1 ? BORDER_GRAY_LIGHT : "none",
     minWidth: getMinWidthForCell(cellIndex),
   });
 
@@ -340,7 +338,7 @@ export function BaseTable<T>({
         style={{
           height: `${maxHeight}px`,
           overflow: "auto",
-          border: "1px solid var(--mantine-color-gray-3)",
+          border: BORDER_GRAY_LIGHT,
           borderTop: "none",
         }}
       >

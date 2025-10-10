@@ -264,12 +264,13 @@ describe("useEntityInteraction", () => {
     });
 
     it("should initialize hook without center function", () => {
-      const { result } = renderHook(() => useEntityInteraction());
+      const { result } = renderHook(() => useEntityInteraction(undefined));
 
       expect(result.current).toHaveProperty("interactWithEntity");
       expect(result.current).toHaveProperty("handleGraphNodeClick");
       expect(result.current).toHaveProperty("handleGraphNodeDoubleClick");
       expect(result.current).toHaveProperty("handleSidebarEntityClick");
+      expect(result.current).toHaveProperty("INTERACTION_PRESETS");
     });
   });
 
@@ -434,7 +435,7 @@ describe("useEntityInteraction", () => {
     });
 
     it("should skip centering when no center function provided", async () => {
-      const { result } = renderHook(() => useEntityInteraction());
+      const { result } = renderHook(() => useEntityInteraction(undefined));
       const existingNode = createMockNode("node1", testEntityId);
 
       await act(async () => {

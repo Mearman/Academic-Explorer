@@ -3,8 +3,8 @@
  * Advanced charts and visualizations for thesis-ready presentation
  */
 
-import React, { useMemo } from "react";
 import type { ComparisonResults } from "@academic-explorer/utils";
+import { useMemo } from "react";
 
 // Common color constants
 const COLOR_GRAY_500 = "#6b7280";
@@ -15,10 +15,6 @@ const COLOR_GREEN_500 = "#10b981";
 const COLOR_RED_500 = "#ef4444";
 const COLOR_AMBER_500 = "#f59e0b";
 const COLOR_VIOLET_500 = "#8b5cf6";
-
-// Common style constants
-const BORDER_STYLE = "BORDER_STYLE";
-const TABLE_HEADER_BORDER = "2px solid #e5e7eb";
 
 interface MetaAnalysisChartsProps {
   comparisonResults: ComparisonResults[];

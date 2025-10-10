@@ -19,6 +19,9 @@ import type {
 } from "@academic-explorer/simulation";
 import type { GraphNode, GraphEdge } from "@academic-explorer/graph";
 
+// Constants
+const EXECUTION_MODE_MAIN_THREAD = "main-thread";
+
 // Type guards for safe event handling
 function isEventWithPayload(
   event: unknown,
@@ -208,14 +211,14 @@ export function useUnifiedExecutionWorker(
     () => ({
       submitTask: () => Promise.resolve("stub-task-id"),
       cancelTask: async () => {},
-      getExecutionMode: () => "main-thread",
+      getExecutionMode: () => EXECUTION_MODE_MAIN_THREAD,
       getStats: () =>
         Promise.resolve({
           queueLength: 0,
           activeTasks: 0,
           processing: false,
           maxConcurrency,
-          strategyMode: "main-thread",
+          strategyMode: EXECUTION_MODE_MAIN_THREAD,
           supportsWorkers: false,
           initialized: true,
         }),
@@ -925,7 +928,7 @@ export function useUnifiedExecutionWorker(
     activeTasks: 0,
     processing: false,
     maxConcurrency,
-    strategyMode: "main-thread",
+    strategyMode: EXECUTION_MODE_MAIN_THREAD,
     supportsWorkers: false,
     initialized: false,
   });

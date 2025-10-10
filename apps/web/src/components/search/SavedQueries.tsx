@@ -31,6 +31,10 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { logger } from "@academic-explorer/utils";
 
+// Constants
+const STORAGE_LOGGER_NAME = "storage";
+const FAILED_TO_LOAD_SAVED_QUERIES_MESSAGE = "Failed to load saved queries";
+
 // TypeScript interfaces for saved query structure
 export interface SavedQuery {
   id: string;
@@ -91,9 +95,11 @@ const useSavedQueriesStorage = () => {
         const query = item as Record<string, unknown>;
 
         // Type guards and validation
-        if (typeof query.id !== "string" ||
-            typeof query.name !== "string" ||
-            typeof query.query !== "string") {
+        if (
+          typeof query.id !== "string" ||
+          typeof query.name !== "string" ||
+          typeof query.query !== "string"
+        ) {
           throw new Error("Missing required fields");
         }
 
@@ -101,17 +107,26 @@ const useSavedQueriesStorage = () => {
           id: query.id,
           name: query.name,
           query: query.query,
-          startDate: query.startDate ? new Date(query.startDate as string) : null,
+          startDate: query.startDate
+            ? new Date(query.startDate as string)
+            : null,
           endDate: query.endDate ? new Date(query.endDate as string) : null,
           createdAt: new Date(query.createdAt as string),
           lastModified: new Date(query.lastModified as string),
           isFavorite: Boolean(query.isFavorite),
-          description: typeof query.description === "string" ? query.description : undefined,
-          tags: Array.isArray(query.tags) ? query.tags.filter((tag): tag is string => typeof tag === "string") : undefined,
+          description:
+            typeof query.description === "string"
+              ? query.description
+              : undefined,
+          tags: Array.isArray(query.tags)
+            ? query.tags.filter((tag): tag is string => typeof tag === "string")
+            : undefined,
         };
       });
     } catch (error) {
-      logger.error("storage", "Failed to load saved queries", { error });
+      logger.error(STORAGE_LOGGER_NAME, FAILED_TO_LOAD_SAVED_QUERIES_MESSAGE, {
+        error,
+      });
       return [];
     }
   }, []);
@@ -120,9 +135,11 @@ const useSavedQueriesStorage = () => {
     try {
       const serialized = JSON.stringify(queries);
       localStorage.setItem(STORAGE_KEY, serialized);
-      logger.debug("storage", "Saved queries updated", { count: queries.length });
+      logger.debug(STORAGE_LOGGER_NAME, "Saved queries updated", {
+        count: queries.length,
+      });
     } catch (error) {
-      logger.error("storage", "Failed to save queries", { error });
+      logger.error(STORAGE_LOGGER_NAME, "Failed to save queries", { error });
       throw error;
     }
   }, []);
@@ -133,11 +150,15 @@ const useSavedQueriesStorage = () => {
 export function SavedQueries({
   onLoadQuery,
   currentQuery,
-  className
+  className,
 }: SavedQueriesProps) {
   const [queries, setQueries] = useState<SavedQuery[]>([]);
-  const [saveModalOpened, { open: openSaveModal, close: closeSaveModal }] = useDisclosure(false);
-  const [renameModalOpened, { open: openRenameModal, close: closeRenameModal }] = useDisclosure(false);
+  const [saveModalOpened, { open: openSaveModal, close: closeSaveModal }] =
+    useDisclosure(false);
+  const [
+    renameModalOpened,
+    { open: openRenameModal, close: closeRenameModal },
+  ] = useDisclosure(false);
   const [selectedQuery, setSelectedQuery] = useState<SavedQuery | null>(null);
   const [saveForm, setSaveForm] = useState({
     name: "",
@@ -157,10 +178,12 @@ export function SavedQueries({
     try {
       const loadedQueries = loadQueries();
       setQueries(loadedQueries);
-      logger.debug("search", "Loaded saved queries", { count: loadedQueries.length });
+      logger.debug("search", "Loaded saved queries", {
+        count: loadedQueries.length,
+      });
     } catch (error) {
-      logger.error("search", "Failed to load saved queries", { error });
-      setError("Failed to load saved queries");
+      logger.error("search", FAILED_TO_LOAD_SAVED_QUERIES_MESSAGE, { error });
+      setError(FAILED_TO_LOAD_SAVED_QUERIES_MESSAGE);
     }
   }, [loadQueries]);
 
@@ -188,7 +211,10 @@ export function SavedQueries({
         isFavorite: false,
         description: saveForm.description.trim() || undefined,
         tags: saveForm.tags.trim()
-          ? saveForm.tags.split(",").map(tag => tag.trim()).filter(Boolean)
+          ? saveForm.tags
+              .split(",")
+              .map((tag) => tag.trim())
+              .filter(Boolean)
           : undefined,
       };
 
@@ -203,54 +229,76 @@ export function SavedQueries({
 
       logger.debug("search", "Query saved successfully", {
         queryId: newQuery.id,
-        name: newQuery.name
+        name: newQuery.name,
       });
     } catch (error) {
       logger.error("search", "Failed to save query", { error });
       setError("Failed to save query");
     }
-  }, [currentQuery, saveForm, queries, generateId, saveQueries, closeSaveModal]);
+  }, [
+    currentQuery,
+    saveForm,
+    queries,
+    generateId,
+    saveQueries,
+    closeSaveModal,
+  ]);
 
   // Load a saved query
-  const handleLoadQuery = useCallback((query: SavedQuery) => {
-    try {
-      onLoadQuery?.(query);
-      logger.debug("search", "Query loaded", { queryId: query.id, name: query.name });
-    } catch (error) {
-      logger.error("search", "Failed to load query", { error, queryId: query.id });
-      setError("Failed to load query");
-    }
-  }, [onLoadQuery]);
+  const handleLoadQuery = useCallback(
+    (query: SavedQuery) => {
+      try {
+        onLoadQuery?.(query);
+        logger.debug("search", "Query loaded", {
+          queryId: query.id,
+          name: query.name,
+        });
+      } catch (error) {
+        logger.error("search", "Failed to load query", {
+          error,
+          queryId: query.id,
+        });
+        setError("Failed to load query");
+      }
+    },
+    [onLoadQuery],
+  );
 
   // Delete a query
-  const handleDeleteQuery = useCallback((queryId: string) => {
-    try {
-      const updatedQueries = queries.filter(q => q.id !== queryId);
-      setQueries(updatedQueries);
-      saveQueries(updatedQueries);
-      logger.debug("search", "Query deleted", { queryId });
-    } catch (error) {
-      logger.error("search", "Failed to delete query", { error, queryId });
-      setError("Failed to delete query");
-    }
-  }, [queries, saveQueries]);
+  const handleDeleteQuery = useCallback(
+    (queryId: string) => {
+      try {
+        const updatedQueries = queries.filter((q) => q.id !== queryId);
+        setQueries(updatedQueries);
+        saveQueries(updatedQueries);
+        logger.debug("search", "Query deleted", { queryId });
+      } catch (error) {
+        logger.error("search", "Failed to delete query", { error, queryId });
+        setError("Failed to delete query");
+      }
+    },
+    [queries, saveQueries],
+  );
 
   // Toggle favorite status
-  const handleToggleFavorite = useCallback((queryId: string) => {
-    try {
-      const updatedQueries = queries.map(q =>
-        q.id === queryId
-          ? { ...q, isFavorite: !q.isFavorite, lastModified: new Date() }
-          : q
-      );
-      setQueries(updatedQueries);
-      saveQueries(updatedQueries);
-      logger.debug("search", "Query favorite toggled", { queryId });
-    } catch (error) {
-      logger.error("search", "Failed to toggle favorite", { error, queryId });
-      setError("Failed to update query");
-    }
-  }, [queries, saveQueries]);
+  const handleToggleFavorite = useCallback(
+    (queryId: string) => {
+      try {
+        const updatedQueries = queries.map((q) =>
+          q.id === queryId
+            ? { ...q, isFavorite: !q.isFavorite, lastModified: new Date() }
+            : q,
+        );
+        setQueries(updatedQueries);
+        saveQueries(updatedQueries);
+        logger.debug("search", "Query favorite toggled", { queryId });
+      } catch (error) {
+        logger.error("search", "Failed to toggle favorite", { error, queryId });
+        setError("Failed to update query");
+      }
+    },
+    [queries, saveQueries],
+  );
 
   // Rename a query
   const handleRenameQuery = useCallback(() => {
@@ -260,15 +308,15 @@ export function SavedQueries({
     }
 
     try {
-      const updatedQueries = queries.map(q =>
+      const updatedQueries = queries.map((q) =>
         q.id === selectedQuery.id
           ? {
               ...q,
               name: renameForm.name.trim(),
               description: renameForm.description.trim() || undefined,
-              lastModified: new Date()
+              lastModified: new Date(),
             }
-          : q
+          : q,
       );
       setQueries(updatedQueries);
       saveQueries(updatedQueries);
@@ -281,23 +329,29 @@ export function SavedQueries({
 
       logger.debug("search", "Query renamed", {
         queryId: selectedQuery.id,
-        newName: renameForm.name
+        newName: renameForm.name,
       });
     } catch (error) {
-      logger.error("search", "Failed to rename query", { error, queryId: selectedQuery?.id });
+      logger.error("search", "Failed to rename query", {
+        error,
+        queryId: selectedQuery?.id,
+      });
       setError("Failed to rename query");
     }
   }, [selectedQuery, renameForm, queries, saveQueries, closeRenameModal]);
 
   // Open rename modal with selected query data
-  const openRenameModalForQuery = useCallback((query: SavedQuery) => {
-    setSelectedQuery(query);
-    setRenameForm({
-      name: query.name,
-      description: query.description || "",
-    });
-    openRenameModal();
-  }, [openRenameModal]);
+  const openRenameModalForQuery = useCallback(
+    (query: SavedQuery) => {
+      setSelectedQuery(query);
+      setRenameForm({
+        name: query.name,
+        description: query.description || "",
+      });
+      openRenameModal();
+    },
+    [openRenameModal],
+  );
 
   // Sort queries: favorites first, then by last modified
   const sortedQueries = [...queries].sort((a, b) => {
@@ -307,10 +361,10 @@ export function SavedQueries({
   });
 
   const formatDateOnly = (date: Date): string => {
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
+    return new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     }).format(date);
   };
 
@@ -341,7 +395,9 @@ export function SavedQueries({
             icon={<IconInfoCircle size={16} />}
             color="red"
             variant="light"
-            onClose={() => { setError(null); }}
+            onClose={() => {
+              setError(null);
+            }}
             withCloseButton
           >
             {error}
@@ -363,8 +419,14 @@ export function SavedQueries({
                         <ActionIcon
                           variant="subtle"
                           size="sm"
-                          onClick={() => { handleToggleFavorite(query.id); }}
-                          aria-label={query.isFavorite ? "Remove from favorites" : "Add to favorites"}
+                          onClick={() => {
+                            handleToggleFavorite(query.id);
+                          }}
+                          aria-label={
+                            query.isFavorite
+                              ? "Remove from favorites"
+                              : "Add to favorites"
+                          }
                         >
                           {query.isFavorite ? (
                             <IconStarFilled size={14} color="gold" />
@@ -385,8 +447,13 @@ export function SavedQueries({
                       {(query.startDate || query.endDate) && (
                         <Text size="xs" c="dimmed" mb="xs">
                           <IconCalendar size={12} style={{ marginRight: 4 }} />
-                          {query.startDate ? formatDateOnly(query.startDate) : "No start"} - {" "}
-                          {query.endDate ? formatDateOnly(query.endDate) : "No end"}
+                          {query.startDate
+                            ? formatDateOnly(query.startDate)
+                            : "No start"}{" "}
+                          -{" "}
+                          {query.endDate
+                            ? formatDateOnly(query.endDate)
+                            : "No end"}
                         </Text>
                       )}
 
@@ -408,7 +475,8 @@ export function SavedQueries({
 
                       <Text size="xs" c="dimmed">
                         Created: {formatDateOnly(query.createdAt)}
-                        {query.lastModified.getTime() !== query.createdAt.getTime() && (
+                        {query.lastModified.getTime() !==
+                          query.createdAt.getTime() && (
                           <> • Modified: {formatDateOnly(query.lastModified)}</>
                         )}
                       </Text>
@@ -420,7 +488,9 @@ export function SavedQueries({
                           variant="light"
                           color="blue"
                           size="sm"
-                          onClick={() => { handleLoadQuery(query); }}
+                          onClick={() => {
+                            handleLoadQuery(query);
+                          }}
                           aria-label="Load query"
                         >
                           <IconLoader size={14} />
@@ -429,28 +499,46 @@ export function SavedQueries({
 
                       <Menu position="bottom-end">
                         <Menu.Target>
-                          <ActionIcon variant="subtle" size="sm" aria-label="Query menu">
+                          <ActionIcon
+                            variant="subtle"
+                            size="sm"
+                            aria-label="Query menu"
+                          >
                             <IconDotsVertical size={14} />
                           </ActionIcon>
                         </Menu.Target>
                         <Menu.Dropdown>
                           <Menu.Item
                             leftSection={<IconEdit size={14} />}
-                            onClick={() => { openRenameModalForQuery(query); }}
+                            onClick={() => {
+                              openRenameModalForQuery(query);
+                            }}
                           >
                             Rename
                           </Menu.Item>
                           <Menu.Item
-                            leftSection={query.isFavorite ? <IconStar size={14} /> : <IconStarFilled size={14} />}
-                            onClick={() => { handleToggleFavorite(query.id); }}
+                            leftSection={
+                              query.isFavorite ? (
+                                <IconStar size={14} />
+                              ) : (
+                                <IconStarFilled size={14} />
+                              )
+                            }
+                            onClick={() => {
+                              handleToggleFavorite(query.id);
+                            }}
                           >
-                            {query.isFavorite ? "Remove from favorites" : "Add to favorites"}
+                            {query.isFavorite
+                              ? "Remove from favorites"
+                              : "Add to favorites"}
                           </Menu.Item>
                           <Menu.Divider />
                           <Menu.Item
                             leftSection={<IconTrash size={14} />}
                             color="red"
-                            onClick={() => { handleDeleteQuery(query.id); }}
+                            onClick={() => {
+                              handleDeleteQuery(query.id);
+                            }}
                           >
                             Delete
                           </Menu.Item>
@@ -488,26 +576,38 @@ export function SavedQueries({
             label="Description"
             placeholder="Optional description"
             value={saveForm.description}
-            onChange={(e) => { setSaveForm({ ...saveForm, description: e.target.value }); }}
+            onChange={(e) => {
+              setSaveForm({ ...saveForm, description: e.target.value });
+            }}
           />
 
           <TextInput
             label="Tags"
             placeholder="Comma-separated tags (optional)"
             value={saveForm.tags}
-            onChange={(e) => { setSaveForm({ ...saveForm, tags: e.target.value }); }}
+            onChange={(e) => {
+              setSaveForm({ ...saveForm, tags: e.target.value });
+            }}
           />
 
           {currentQuery && (
             <Paper p="sm" bg="gray.0">
-              <Text size="sm" fw={500} mb="xs">Current Query Preview:</Text>
+              <Text size="sm" fw={500} mb="xs">
+                Current Query Preview:
+              </Text>
               <Text size="xs" c="dimmed">
                 Query: {currentQuery.query || "Empty"}
               </Text>
               {(currentQuery.startDate || currentQuery.endDate) && (
                 <Text size="xs" c="dimmed">
-                  Date Range: {currentQuery.startDate ? formatDateOnly(currentQuery.startDate) : "No start"} - {" "}
-                  {currentQuery.endDate ? formatDateOnly(currentQuery.endDate) : "No end"}
+                  Date Range:{" "}
+                  {currentQuery.startDate
+                    ? formatDateOnly(currentQuery.startDate)
+                    : "No start"}{" "}
+                  -{" "}
+                  {currentQuery.endDate
+                    ? formatDateOnly(currentQuery.endDate)
+                    : "No end"}
                 </Text>
               )}
             </Paper>
@@ -547,14 +647,19 @@ export function SavedQueries({
             label="Description"
             placeholder="Optional description"
             value={renameForm.description}
-            onChange={(e) => { setRenameForm({ ...renameForm, description: e.target.value }); }}
+            onChange={(e) => {
+              setRenameForm({ ...renameForm, description: e.target.value });
+            }}
           />
 
           <Group justify="flex-end">
             <Button variant="subtle" onClick={closeRenameModal}>
               Cancel
             </Button>
-            <Button onClick={handleRenameQuery} disabled={!renameForm.name.trim()}>
+            <Button
+              onClick={handleRenameQuery}
+              disabled={!renameForm.name.trim()}
+            >
               Save Changes
             </Button>
           </Group>

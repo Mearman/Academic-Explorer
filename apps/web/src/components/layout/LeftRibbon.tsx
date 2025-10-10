@@ -3,22 +3,24 @@
  * Shows icon-only navigation with tool groups using VSCode-style groups
  */
 
-import React, { useMemo } from "react";
-import { ActionIcon, Tooltip } from "@mantine/core";
+import { GroupRibbonButton } from "@/components/layout/GroupRibbonButton";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
-import { useLayoutStore } from "@/stores/layout-store";
 import {
-  getGroupDefinition,
-  createNewGroup,
-  updateGroupDefinition,
-  getRegistryVersion,
-  type ToolGroupDefinition,
+    createNewGroup,
+    getGroupDefinition,
+    getRegistryVersion,
+    updateGroupDefinition,
+    type ToolGroupDefinition,
 } from "@/stores/group-registry";
+import { useLayoutStore } from "@/stores/layout-store";
 import { getSectionById } from "@/stores/section-registry";
-import { GroupRibbonButton } from "@/components/layout/GroupRibbonButton";
 import { logger } from "@academic-explorer/utils/logger";
+import { ActionIcon, Tooltip } from "@mantine/core";
 import { IconTrash } from "@tabler/icons-react";
+import React, { useMemo } from "react";
+
+const GROUP_REORDER_DRAG_TYPE = "application/group-reorder";
 
 type ThemeColors = ReturnType<typeof useThemeColors>["colors"];
 
@@ -201,7 +203,7 @@ export const LeftRibbon: React.FC = () => {
 
   // Helper function to check if drag is a group reorder
   const isGroupReorderDrag = (dataTransfer: DataTransfer): boolean => {
-    return dataTransfer.types.includes("application/group-reorder");
+    return dataTransfer.types.includes(GROUP_REORDER_DRAG_TYPE);
   };
 
   // Helper function to determine if drop zone should be shown
@@ -235,10 +237,9 @@ export const LeftRibbon: React.FC = () => {
     e: React.DragEvent,
     index: number,
     groupDefinitions: ToolGroupDefinition[],
-    draggedGroupId: string | null,
   ) => {
     const groupReorderData = e.dataTransfer.getData(
-      "application/group-reorder",
+      GROUP_REORDER_DRAG_TYPE,
     );
     if (!groupReorderData) return;
 
@@ -393,7 +394,7 @@ export const LeftRibbon: React.FC = () => {
               draggedGroupId,
             },
           );
-          handleDropLogic(e, index, groupDefinitions, draggedGroupId);
+          handleDropLogic(e, index, groupDefinitions);
         }}
       />
     );
@@ -469,7 +470,7 @@ export const LeftRibbon: React.FC = () => {
 
     // Check if this is a group reorder drag - if so, ignore it
     const isGroupReorder = event.dataTransfer.types.includes(
-      "application/group-reorder",
+      GROUP_REORDER_DRAG_TYPE,
     );
     if (isGroupReorder) {
       logger.debug("ui", "Ignoring group reorder drag in empty area", {

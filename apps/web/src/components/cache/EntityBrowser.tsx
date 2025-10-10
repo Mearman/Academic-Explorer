@@ -1,37 +1,39 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { BaseTable } from '@/components/tables/BaseTable';
 import {
-  Group,
-  Text,
-  Badge,
-  TextInput,
-  MultiSelect,
-  Select,
-  Stack,
-  Alert,
-  ActionIcon,
-  Tooltip,
-  Container,
-  Paper,
+    cacheBrowserService,
+    logger,
+    type CacheBrowserEntityType,
+    type CacheBrowserFilters,
+    type CacheBrowserOptions,
+    type CacheBrowserStats,
+    type CachedEntityMetadata
+} from '@academic-explorer/utils';
+import {
+    ActionIcon,
+    Alert,
+    Badge,
+    Container,
+    Group,
+    MultiSelect,
+    Paper,
+    Select,
+    Stack,
+    Text,
+    TextInput,
+    Tooltip,
 } from '@mantine/core';
 import {
-  IconSearch,
-  IconRefresh,
-  IconInfoCircle,
-  IconExternalLink,
-  IconFilter
+    IconExternalLink,
+    IconFilter,
+    IconInfoCircle,
+    IconRefresh,
+    IconSearch
 } from '@tabler/icons-react';
-import { type ColumnDef } from '@tanstack/react-table';
 import { useNavigate } from '@tanstack/react-router';
-import { 
-  cacheBrowserService, 
-  type CachedEntityMetadata, 
-  type CacheBrowserStats,
-  type CacheBrowserFilters,
-  type CacheBrowserOptions,
-  type CacheBrowserEntityType
-} from '@academic-explorer/utils';
-import { logger } from '@academic-explorer/utils';
-import { BaseTable } from '@/components/tables/BaseTable';
+import { type ColumnDef } from '@tanstack/react-table';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+const LOGGER_CATEGORY = 'entity-browser';
 
 interface EntityBrowserState {
   entities: CachedEntityMetadata[];
@@ -113,12 +115,12 @@ export function EntityBrowser({ className }: EntityBrowserProps) {
 
   const loadEntities = useCallback(async () => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
-    
+
     try {
-      logger.debug('entity-browser', 'Loading entities', { filters, options });
-      
+      logger.debug(LOGGER_CATEGORY, 'Loading entities', { filters, options });
+
       const result = await cacheBrowserService.browse(filters, options);
-      
+
       setState(prev => ({
         ...prev,
         entities: result.entities,
@@ -128,13 +130,13 @@ export function EntityBrowser({ className }: EntityBrowserProps) {
         isLoading: false,
       }));
 
-      logger.debug('entity-browser', 'Loaded entities', {
+      logger.debug(LOGGER_CATEGORY, 'Loaded entities', {
         count: result.entities.length,
         total: result.totalMatching,
       });
 
     } catch (error) {
-      logger.error('entity-browser', 'Failed to load entities', { error });
+      logger.error(LOGGER_CATEGORY, 'Failed to load entities', { error });
       setState(prev => ({
         ...prev,
         isLoading: false,
@@ -185,7 +187,7 @@ export function EntityBrowser({ className }: EntityBrowserProps) {
     } else if (entity.type === 'topics' && entity.id.startsWith('T')) {
       void navigate({ to: `/topics/${entity.id}` });
     } else {
-      logger.debug('entity-browser', 'No route defined for entity', { entity });
+      logger.debug(LOGGER_CATEGORY, 'No route defined for entity', { entity });
     }
   };
 
@@ -194,8 +196,8 @@ export function EntityBrowser({ className }: EntityBrowserProps) {
       accessorKey: 'type',
       header: 'Type',
       cell: ({ getValue }) => (
-        <Badge 
-          variant="light" 
+        <Badge
+          variant="light"
           size="sm"
           color={getEntityTypeColor(String(getValue()))}
         >
@@ -252,7 +254,7 @@ export function EntityBrowser({ className }: EntityBrowserProps) {
       cell: ({ row }) => {
         const info = row.original.basicInfo;
         if (!info) return null;
-        
+
         return (
           <Stack gap={1}>
             {info.citationCount !== undefined && (
@@ -281,7 +283,7 @@ export function EntityBrowser({ className }: EntityBrowserProps) {
               <Text size="xl" fw={600}>Browse Entities</Text>
               <Text size="sm" c="dimmed">Explore your cached OpenAlex entities</Text>
             </div>
-            
+
             <Group gap="xs">
               <Tooltip label="Refresh entities">
                 <ActionIcon onClick={() => { void loadEntities(); }} loading={state.isLoading}>
@@ -298,12 +300,12 @@ export function EntityBrowser({ className }: EntityBrowserProps) {
                 <Text size="lg" fw={600}>{state.stats.totalEntities.toLocaleString()}</Text>
                 <Text size="xs" c="dimmed">Total Entities</Text>
               </div>
-              
+
               <div>
                 <Text size="lg" fw={600}>{state.totalMatching.toLocaleString()}</Text>
                 <Text size="xs" c="dimmed">Matching Filters</Text>
               </div>
-              
+
               <div>
                 <Text size="lg" fw={600}>{Object.keys(state.stats.entitiesByType).length}</Text>
                 <Text size="xs" c="dimmed">Entity Types</Text>
@@ -329,7 +331,7 @@ export function EntityBrowser({ className }: EntityBrowserProps) {
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); }}
               />
-              
+
               <MultiSelect
                 placeholder="Entity types"
                 data={ENTITY_TYPE_OPTIONS}
@@ -347,7 +349,7 @@ export function EntityBrowser({ className }: EntityBrowserProps) {
                 onChange={(value) => { setSortBy(value as CacheBrowserOptions['sortBy']); }}
                 w={180}
               />
-              
+
               <Select
                 label="Direction"
                 data={[
@@ -358,7 +360,7 @@ export function EntityBrowser({ className }: EntityBrowserProps) {
                 onChange={(value) => { setSortDirection(value as 'asc' | 'desc'); }}
                 w={140}
               />
-              
+
               <Select
                 label="Show"
                 data={[
@@ -401,7 +403,7 @@ export function EntityBrowser({ className }: EntityBrowserProps) {
             estimateSize={60} // Row height for EntityBrowser rows
             maxHeight={700} // Reasonable height for entity browser
           />
-          
+
           {state.hasMore && (
             <Group justify="center" mt="md">
               <Text size="sm" c="dimmed">

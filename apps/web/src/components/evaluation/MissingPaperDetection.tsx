@@ -12,9 +12,42 @@ import type {
 } from "@academic-explorer/utils";
 import type { STARDataset, WorkReference } from "@academic-explorer/utils";
 import { logger } from "@academic-explorer/utils/logger";
-
-// Common style constants
-const BORDER_STYLE = "1px solid #e5e7eb";
+import {
+  BORDER_DEFAULT,
+  FONT_SIZE_12,
+  FONT_SIZE_14,
+  FONT_SIZE_16,
+  FONT_SIZE_18,
+  FONT_SIZE_32,
+  FONT_WEIGHT_MEDIUM,
+  FONT_WEIGHT_SEMIBOLD,
+  FONT_WEIGHT_BOLD,
+  COLOR_TEXT_PRIMARY,
+  COLOR_TEXT_SECONDARY,
+  COLOR_GRAY_700,
+  COLOR_BLUE_500,
+  COLOR_GREEN_500,
+  COLOR_RED_500,
+  COLOR_YELLOW_500,
+  COLOR_AMBER_700,
+  COLOR_PURPLE_500,
+  BORDER_RADIUS_LG,
+  BORDER_RADIUS_MD,
+  BORDER_RADIUS_SM,
+  PADDING_16,
+  PADDING_20,
+  PADDING_24,
+  MARGIN_0,
+  MARGIN_BOTTOM_24,
+  BG_WHITE,
+  BG_GRAY_50,
+  BG_RED_50,
+  BG_YELLOW_50,
+  BORDER_ERROR,
+  BORDER_WARNING,
+  BORDER_INPUT,
+  FLEX_JUSTIFY_SPACE_BETWEEN,
+} from "@/constants/styles";
 
 interface MissingPaperDetectionProps {
   dataset: STARDataset;
@@ -117,25 +150,31 @@ export function MissingPaperDetection({
   return (
     <div
       style={{
-        backgroundColor: "white",
-        borderRadius: "12px",
-        border: BORDER_STYLE,
-        padding: "24px",
+        backgroundColor: BG_WHITE,
+        borderRadius: BORDER_RADIUS_LG,
+        border: BORDER_DEFAULT,
+        padding: PADDING_24,
       }}
     >
       {/* Header */}
-      <div style={{ marginBottom: "24px" }}>
+      <div style={MARGIN_BOTTOM_24}>
         <h3
           style={{
-            fontSize: "18px",
-            fontWeight: "600",
-            color: "#1f2937",
+            fontSize: FONT_SIZE_18,
+            fontWeight: FONT_WEIGHT_SEMIBOLD,
+            color: COLOR_TEXT_PRIMARY,
             marginBottom: "8px",
           }}
         >
           Missing Paper Detection
         </h3>
-        <p style={{ fontSize: "14px", color: "#6b7280", margin: 0 }}>
+        <p
+          style={{
+            fontSize: FONT_SIZE_14,
+            color: COLOR_TEXT_SECONDARY,
+            ...MARGIN_0,
+          }}
+        >
           Identify potentially relevant papers that may have been missed by the
           systematic review
         </p>
@@ -144,19 +183,19 @@ export function MissingPaperDetection({
       {/* Configuration Panel */}
       <div
         style={{
-          backgroundColor: "#f9fafb",
-          borderRadius: "8px",
-          border: BORDER_STYLE,
-          padding: "20px",
-          marginBottom: "24px",
+          backgroundColor: BG_GRAY_50,
+          borderRadius: BORDER_RADIUS_MD,
+          border: BORDER_DEFAULT,
+          padding: PADDING_20,
+          marginBottom: PADDING_24,
         }}
       >
         <h4
           style={{
-            fontSize: "16px",
-            fontWeight: "500",
-            color: "#1f2937",
-            marginBottom: "16px",
+            fontSize: FONT_SIZE_16,
+            fontWeight: FONT_WEIGHT_MEDIUM,
+            color: COLOR_TEXT_PRIMARY,
+            marginBottom: PADDING_16,
           }}
         >
           Detection Configuration
@@ -174,9 +213,9 @@ export function MissingPaperDetection({
             <label
               htmlFor="max-papers-input"
               style={{
-                fontSize: "14px",
-                fontWeight: "500",
-                color: "#374151",
+                fontSize: FONT_SIZE_14,
+                fontWeight: FONT_WEIGHT_MEDIUM,
+                color: COLOR_GRAY_700,
                 display: "block",
                 marginBottom: "4px",
               }}
@@ -196,9 +235,9 @@ export function MissingPaperDetection({
               style={{
                 width: "100%",
                 padding: "8px 12px",
-                borderRadius: "6px",
-                border: "1px solid #d1d5db",
-                fontSize: "14px",
+                borderRadius: BORDER_RADIUS_SM,
+                border: BORDER_INPUT,
+                fontSize: FONT_SIZE_14,
               }}
               min="10"
               max="200"
@@ -209,9 +248,9 @@ export function MissingPaperDetection({
             <label
               htmlFor="min-citation-input"
               style={{
-                fontSize: "14px",
-                fontWeight: "500",
-                color: "#374151",
+                fontSize: FONT_SIZE_14,
+                fontWeight: FONT_WEIGHT_MEDIUM,
+                color: COLOR_GRAY_700,
                 display: "block",
                 marginBottom: "4px",
               }}
@@ -231,9 +270,9 @@ export function MissingPaperDetection({
               style={{
                 width: "100%",
                 padding: "8px 12px",
-                borderRadius: "6px",
-                border: "1px solid #d1d5db",
-                fontSize: "14px",
+                borderRadius: BORDER_RADIUS_SM,
+                border: BORDER_INPUT,
+                fontSize: FONT_SIZE_14,
               }}
               min="0"
               max="50"
@@ -244,9 +283,9 @@ export function MissingPaperDetection({
             <label
               htmlFor="temporal-window-input"
               style={{
-                fontSize: "14px",
-                fontWeight: "500",
-                color: "#374151",
+                fontSize: FONT_SIZE_14,
+                fontWeight: FONT_WEIGHT_MEDIUM,
+                color: COLOR_GRAY_700,
                 display: "block",
                 marginBottom: "4px",
               }}
@@ -266,9 +305,9 @@ export function MissingPaperDetection({
               style={{
                 width: "100%",
                 padding: "8px 12px",
-                borderRadius: "6px",
-                border: "1px solid #d1d5db",
-                fontSize: "14px",
+                borderRadius: BORDER_RADIUS_SM,
+                border: BORDER_INPUT,
+                fontSize: FONT_SIZE_14,
               }}
               min="0"
               max="10"
@@ -295,8 +334,8 @@ export function MissingPaperDetection({
               style={{
                 display: "flex",
                 alignItems: "center",
-                fontSize: "14px",
-                color: "#374151",
+                fontSize: FONT_SIZE_14,
+                color: COLOR_GRAY_700,
               }}
             >
               <input
@@ -338,12 +377,12 @@ export function MissingPaperDetection({
           style={{
             padding: "12px 24px",
             backgroundColor:
-              currentJob?.status === "running" ? "#9ca3af" : "#3b82f6",
+              currentJob?.status === "running" ? "#9ca3af" : COLOR_BLUE_500,
             color: "white",
             border: "none",
-            borderRadius: "8px",
-            fontSize: "16px",
-            fontWeight: "600",
+            borderRadius: BORDER_RADIUS_MD,
+            fontSize: FONT_SIZE_16,
+            fontWeight: FONT_WEIGHT_SEMIBOLD,
             cursor:
               currentJob?.status === "running" ? "not-allowed" : "pointer",
             marginRight: "12px",
@@ -369,12 +408,12 @@ export function MissingPaperDetection({
             }}
             style={{
               padding: "12px 24px",
-              backgroundColor: "#10b981",
+              backgroundColor: COLOR_GREEN_500,
               color: "white",
               border: "none",
-              borderRadius: "8px",
-              fontSize: "16px",
-              fontWeight: "600",
+              borderRadius: BORDER_RADIUS_MD,
+              fontSize: FONT_SIZE_16,
+              fontWeight: FONT_WEIGHT_SEMIBOLD,
               cursor: "pointer",
             }}
           >
@@ -387,28 +426,36 @@ export function MissingPaperDetection({
       {currentJob?.progress && (
         <div
           style={{
-            backgroundColor: "#fef3c7",
-            borderRadius: "8px",
-            border: "1px solid #fbbf24",
-            padding: "16px",
-            marginBottom: "24px",
+            backgroundColor: BG_YELLOW_50,
+            borderRadius: BORDER_RADIUS_MD,
+            border: BORDER_WARNING,
+            padding: PADDING_16,
+            marginBottom: PADDING_24,
           }}
         >
           <div
             style={{
               display: "flex",
-              justifyContent: "space-between",
+              justifyContent: FLEX_JUSTIFY_SPACE_BETWEEN,
               alignItems: "center",
               marginBottom: "8px",
             }}
           >
             <span
-              style={{ fontSize: "14px", fontWeight: "500", color: "#92400e" }}
+              style={{
+                fontSize: FONT_SIZE_14,
+                fontWeight: FONT_WEIGHT_MEDIUM,
+                color: COLOR_AMBER_700,
+              }}
             >
               {currentJob.progress.currentMethod}
             </span>
             <span
-              style={{ fontSize: "14px", fontWeight: "500", color: "#92400e" }}
+              style={{
+                fontSize: FONT_SIZE_14,
+                fontWeight: FONT_WEIGHT_MEDIUM,
+                color: COLOR_AMBER_700,
+              }}
             >
               {currentJob.progress.progress}%
             </span>
@@ -425,13 +472,13 @@ export function MissingPaperDetection({
             <div
               style={{
                 width: `${String(currentJob.progress.progress)}%`,
-                backgroundColor: "#f59e0b",
+                backgroundColor: COLOR_YELLOW_500,
                 borderRadius: "4px",
                 height: "100%",
               }}
             />
           </div>
-          <p style={{ fontSize: "12px", color: "#78350f", margin: 0 }}>
+          <p style={{ fontSize: FONT_SIZE_12, color: "#78350f", ...MARGIN_0 }}>
             {currentJob.progress.message} • {currentJob.progress.papersFound}{" "}
             papers found
           </p>
@@ -450,23 +497,23 @@ export function MissingPaperDetection({
       {currentJob?.status === "failed" && (
         <div
           style={{
-            backgroundColor: "#fef2f2",
-            borderRadius: "8px",
-            border: "1px solid #fca5a5",
-            padding: "16px",
+            backgroundColor: BG_RED_50,
+            borderRadius: BORDER_RADIUS_MD,
+            border: BORDER_ERROR,
+            padding: PADDING_16,
           }}
         >
           <h4
             style={{
-              fontSize: "16px",
-              fontWeight: "500",
-              color: "#dc2626",
+              fontSize: FONT_SIZE_16,
+              fontWeight: FONT_WEIGHT_MEDIUM,
+              color: COLOR_RED_500,
               marginBottom: "8px",
             }}
           >
             Detection Failed
           </h4>
-          <p style={{ fontSize: "14px", color: "#7f1d1d", margin: 0 }}>
+          <p style={{ fontSize: FONT_SIZE_14, color: "#7f1d1d", ...MARGIN_0 }}>
             {currentJob.error}
           </p>
         </div>
@@ -493,7 +540,7 @@ function MissingPaperResults({
   return (
     <div
       style={{
-        border: BORDER_STYLE,
+        border: BORDER_DEFAULT,
         borderRadius: "8px",
         overflow: "hidden",
       }}
@@ -502,8 +549,8 @@ function MissingPaperResults({
       <div
         style={{
           display: "flex",
-          borderBottom: "1px solid #e5e7eb",
-          backgroundColor: "#f9fafb",
+          borderBottom: BORDER_DEFAULT,
+          backgroundColor: BG_GRAY_50,
         }}
       >
         {[
@@ -531,13 +578,14 @@ function MissingPaperResults({
             style={{
               padding: "12px 20px",
               border: "none",
-              backgroundColor: activeTab === tab.key ? "white" : "transparent",
-              color: activeTab === tab.key ? "#3b82f6" : "#6b7280",
-              fontWeight: activeTab === tab.key ? "600" : "400",
-              fontSize: "14px",
+              backgroundColor: activeTab === tab.key ? BG_WHITE : "transparent",
+              color:
+                activeTab === tab.key ? COLOR_BLUE_500 : COLOR_TEXT_SECONDARY,
+              fontWeight: activeTab === tab.key ? FONT_WEIGHT_SEMIBOLD : "400",
+              fontSize: FONT_SIZE_14,
               cursor: "pointer",
               borderBottom:
-                activeTab === tab.key ? "2px solid #3b82f6" : "none",
+                activeTab === tab.key ? `2px solid ${COLOR_BLUE_500}` : "none",
             }}
           >
             {tab.label}
@@ -551,10 +599,10 @@ function MissingPaperResults({
           <div>
             <h4
               style={{
-                fontSize: "16px",
-                fontWeight: "600",
-                color: "#1f2937",
-                marginBottom: "16px",
+                fontSize: FONT_SIZE_16,
+                fontWeight: FONT_WEIGHT_SEMIBOLD,
+                color: COLOR_TEXT_PRIMARY,
+                marginBottom: PADDING_16,
               }}
             >
               Detection Summary
@@ -571,15 +619,20 @@ function MissingPaperResults({
               <div style={{ textAlign: "center" }}>
                 <div
                   style={{
-                    fontSize: "32px",
-                    fontWeight: "bold",
-                    color: "#3b82f6",
+                    fontSize: FONT_SIZE_32,
+                    fontWeight: FONT_WEIGHT_BOLD,
+                    color: COLOR_BLUE_500,
                     marginBottom: "8px",
                   }}
                 >
                   {results.detectionStatistics.totalCandidates}
                 </div>
-                <div style={{ fontSize: "14px", color: "#6b7280" }}>
+                <div
+                  style={{
+                    fontSize: FONT_SIZE_14,
+                    color: COLOR_TEXT_SECONDARY,
+                  }}
+                >
                   Total Candidates
                 </div>
               </div>
@@ -587,15 +640,20 @@ function MissingPaperResults({
               <div style={{ textAlign: "center" }}>
                 <div
                   style={{
-                    fontSize: "32px",
-                    fontWeight: "bold",
-                    color: "#10b981",
+                    fontSize: FONT_SIZE_32,
+                    fontWeight: FONT_WEIGHT_BOLD,
+                    color: COLOR_GREEN_500,
                     marginBottom: "8px",
                   }}
                 >
                   {results.detectionStatistics.highConfidenceCandidates}
                 </div>
-                <div style={{ fontSize: "14px", color: "#6b7280" }}>
+                <div
+                  style={{
+                    fontSize: FONT_SIZE_14,
+                    color: COLOR_TEXT_SECONDARY,
+                  }}
+                >
                   High Confidence
                 </div>
               </div>
@@ -603,15 +661,20 @@ function MissingPaperResults({
               <div style={{ textAlign: "center" }}>
                 <div
                   style={{
-                    fontSize: "32px",
-                    fontWeight: "bold",
-                    color: "#8b5cf6",
+                    fontSize: FONT_SIZE_32,
+                    fontWeight: FONT_WEIGHT_BOLD,
+                    color: COLOR_PURPLE_500,
                     marginBottom: "8px",
                   }}
                 >
                   {results.detectionStatistics.averageCitationCount.toFixed(1)}
                 </div>
-                <div style={{ fontSize: "14px", color: "#6b7280" }}>
+                <div
+                  style={{
+                    fontSize: FONT_SIZE_14,
+                    color: COLOR_TEXT_SECONDARY,
+                  }}
+                >
                   Avg Citations
                 </div>
               </div>
@@ -619,15 +682,20 @@ function MissingPaperResults({
               <div style={{ textAlign: "center" }}>
                 <div
                   style={{
-                    fontSize: "32px",
-                    fontWeight: "bold",
-                    color: "#f59e0b",
+                    fontSize: FONT_SIZE_32,
+                    fontWeight: FONT_WEIGHT_BOLD,
+                    color: COLOR_YELLOW_500,
                     marginBottom: "8px",
                   }}
                 >
                   {formatPercent(results.validationMetrics.confidenceScore)}
                 </div>
-                <div style={{ fontSize: "14px", color: "#6b7280" }}>
+                <div
+                  style={{
+                    fontSize: FONT_SIZE_14,
+                    color: COLOR_TEXT_SECONDARY,
+                  }}
+                >
                   Confidence
                 </div>
               </div>
@@ -636,21 +704,27 @@ function MissingPaperResults({
             <div
               style={{
                 backgroundColor: "#f3f4f6",
-                borderRadius: "8px",
-                padding: "16px",
+                borderRadius: BORDER_RADIUS_MD,
+                padding: PADDING_16,
               }}
             >
               <h5
                 style={{
-                  fontSize: "14px",
-                  fontWeight: "600",
-                  color: "#374151",
+                  fontSize: FONT_SIZE_14,
+                  fontWeight: FONT_WEIGHT_SEMIBOLD,
+                  color: COLOR_GRAY_700,
                   marginBottom: "8px",
                 }}
               >
                 Execution Details
               </h5>
-              <p style={{ fontSize: "12px", color: "#6b7280", margin: 0 }}>
+              <p
+                style={{
+                  fontSize: FONT_SIZE_12,
+                  color: COLOR_TEXT_SECONDARY,
+                  ...MARGIN_0,
+                }}
+              >
                 Dataset: {results.dataset.name} • Execution Time:{" "}
                 {executionTime} • Methods:{" "}
                 {
@@ -668,10 +742,10 @@ function MissingPaperResults({
           <div>
             <h4
               style={{
-                fontSize: "16px",
-                fontWeight: "600",
-                color: "#1f2937",
-                marginBottom: "16px",
+                fontSize: FONT_SIZE_16,
+                fontWeight: FONT_WEIGHT_SEMIBOLD,
+                color: COLOR_TEXT_PRIMARY,
+                marginBottom: PADDING_16,
               }}
             >
               Candidate Missing Papers
@@ -682,14 +756,20 @@ function MissingPaperResults({
                 style={{
                   textAlign: "center",
                   padding: "48px 24px",
-                  backgroundColor: "#f9fafb",
-                  borderRadius: "8px",
+                  backgroundColor: BG_GRAY_50,
+                  borderRadius: BORDER_RADIUS_MD,
                 }}
               >
-                <div style={{ marginBottom: "16px", opacity: 0.3 }}>
+                <div style={{ marginBottom: PADDING_16, opacity: 0.3 }}>
                   <IconClipboard size={48} />
                 </div>
-                <p style={{ fontSize: "16px", color: "#6b7280", margin: 0 }}>
+                <p
+                  style={{
+                    fontSize: FONT_SIZE_16,
+                    color: COLOR_TEXT_SECONDARY,
+                    ...MARGIN_0,
+                  }}
+                >
                   No potential missing papers detected
                 </p>
               </div>
@@ -709,13 +789,17 @@ function MissingPaperResults({
                   <div
                     style={{
                       textAlign: "center",
-                      padding: "16px",
-                      backgroundColor: "#f9fafb",
-                      borderRadius: "8px",
+                      padding: PADDING_16,
+                      backgroundColor: BG_GRAY_50,
+                      borderRadius: BORDER_RADIUS_MD,
                     }}
                   >
                     <p
-                      style={{ fontSize: "14px", color: "#6b7280", margin: 0 }}
+                      style={{
+                        fontSize: FONT_SIZE_14,
+                        color: COLOR_TEXT_SECONDARY,
+                        ...MARGIN_0,
+                      }}
                     >
                       Showing top 20 of {results.candidateMissingPapers.length}{" "}
                       candidates
@@ -731,16 +815,16 @@ function MissingPaperResults({
           <div>
             <h4
               style={{
-                fontSize: "16px",
-                fontWeight: "600",
-                color: "#1f2937",
-                marginBottom: "16px",
+                fontSize: FONT_SIZE_16,
+                fontWeight: FONT_WEIGHT_SEMIBOLD,
+                color: COLOR_TEXT_PRIMARY,
+                marginBottom: PADDING_16,
               }}
             >
               Detection Methods Breakdown
             </h4>
 
-            <div style={{ display: "grid", gap: "16px" }}>
+            <div style={{ display: "grid", gap: PADDING_16 }}>
               {Object.entries(
                 results.detectionStatistics.methodContributions,
               ).map(([method, count]) => (
@@ -748,19 +832,19 @@ function MissingPaperResults({
                   key={method}
                   style={{
                     display: "flex",
-                    justifyContent: "space-between",
+                    justifyContent: FLEX_JUSTIFY_SPACE_BETWEEN,
                     alignItems: "center",
-                    padding: "16px",
-                    backgroundColor: "#f9fafb",
-                    borderRadius: "8px",
+                    padding: PADDING_16,
+                    backgroundColor: BG_GRAY_50,
+                    borderRadius: BORDER_RADIUS_MD,
                   }}
                 >
                   <div>
                     <h5
                       style={{
-                        fontSize: "14px",
-                        fontWeight: "500",
-                        color: "#1f2937",
+                        fontSize: FONT_SIZE_14,
+                        fontWeight: FONT_WEIGHT_MEDIUM,
+                        color: COLOR_TEXT_PRIMARY,
                         marginBottom: "4px",
                       }}
                     >
@@ -769,7 +853,11 @@ function MissingPaperResults({
                         .replace(/^./, (str) => str.toUpperCase())}
                     </h5>
                     <p
-                      style={{ fontSize: "12px", color: "#6b7280", margin: 0 }}
+                      style={{
+                        fontSize: FONT_SIZE_12,
+                        color: COLOR_TEXT_SECONDARY,
+                        ...MARGIN_0,
+                      }}
                     >
                       {getMethodDescription(method)}
                     </p>
@@ -777,11 +865,11 @@ function MissingPaperResults({
                   <div
                     style={{
                       padding: "8px 16px",
-                      backgroundColor: count > 0 ? "#10b981" : "#9ca3af",
+                      backgroundColor: count > 0 ? COLOR_GREEN_500 : "#9ca3af",
                       color: "white",
                       borderRadius: "20px",
-                      fontSize: "14px",
-                      fontWeight: "600",
+                      fontSize: FONT_SIZE_14,
+                      fontWeight: FONT_WEIGHT_SEMIBOLD,
                     }}
                   >
                     {count}
@@ -796,32 +884,32 @@ function MissingPaperResults({
           <div>
             <h4
               style={{
-                fontSize: "16px",
-                fontWeight: "600",
-                color: "#1f2937",
-                marginBottom: "16px",
+                fontSize: FONT_SIZE_16,
+                fontWeight: FONT_WEIGHT_SEMIBOLD,
+                color: COLOR_TEXT_PRIMARY,
+                marginBottom: PADDING_16,
               }}
             >
               Validation Metrics
             </h4>
 
-            <div style={{ marginBottom: "24px" }}>
+            <div style={MARGIN_BOTTOM_24}>
               <div
                 style={{
                   display: "flex",
-                  justifyContent: "space-between",
+                  justifyContent: FLEX_JUSTIFY_SPACE_BETWEEN,
                   alignItems: "center",
                   marginBottom: "8px",
                 }}
               >
-                <span style={{ fontSize: "14px", color: "#374151" }}>
+                <span style={{ fontSize: FONT_SIZE_14, color: COLOR_GRAY_700 }}>
                   Algorithm Confidence
                 </span>
                 <span
                   style={{
-                    fontSize: "14px",
-                    fontWeight: "600",
-                    color: "#1f2937",
+                    fontSize: FONT_SIZE_14,
+                    fontWeight: FONT_WEIGHT_SEMIBOLD,
+                    color: COLOR_TEXT_PRIMARY,
                   }}
                 >
                   {formatPercent(results.validationMetrics.confidenceScore)}
@@ -838,7 +926,7 @@ function MissingPaperResults({
                 <div
                   style={{
                     width: `${String(results.validationMetrics.confidenceScore * 100)}%`,
-                    backgroundColor: "#3b82f6",
+                    backgroundColor: COLOR_BLUE_500,
                     borderRadius: "4px",
                     height: "100%",
                   }}
@@ -850,9 +938,9 @@ function MissingPaperResults({
               <div>
                 <h5
                   style={{
-                    fontSize: "14px",
-                    fontWeight: "600",
-                    color: "#dc2626",
+                    fontSize: FONT_SIZE_14,
+                    fontWeight: FONT_WEIGHT_SEMIBOLD,
+                    color: COLOR_RED_500,
                     marginBottom: "12px",
                   }}
                 >
@@ -865,16 +953,16 @@ function MissingPaperResults({
                         key={`bias-${String(index)}-${bias.substring(0, 10)}`}
                         style={{
                           padding: "12px",
-                          backgroundColor: "#fef2f2",
-                          border: "1px solid #fca5a5",
-                          borderRadius: "6px",
+                          backgroundColor: BG_RED_50,
+                          border: BORDER_ERROR,
+                          borderRadius: BORDER_RADIUS_SM,
                         }}
                       >
                         <div
                           style={{
-                            fontSize: "12px",
+                            fontSize: FONT_SIZE_12,
                             color: "#7f1d1d",
-                            margin: 0,
+                            ...MARGIN_0,
                             display: "flex",
                             alignItems: "center",
                             gap: "4px",
@@ -905,16 +993,16 @@ function PaperCard({ paper, rank }: PaperCardProps) {
   return (
     <div
       style={{
-        padding: "16px",
-        border: BORDER_STYLE,
-        borderRadius: "8px",
-        backgroundColor: "white",
+        padding: PADDING_16,
+        border: BORDER_DEFAULT,
+        borderRadius: BORDER_RADIUS_MD,
+        backgroundColor: BG_WHITE,
       }}
     >
       <div
         style={{
           display: "flex",
-          justifyContent: "space-between",
+          justifyContent: FLEX_JUSTIFY_SPACE_BETWEEN,
           alignItems: "flex-start",
           marginBottom: "12px",
         }}
@@ -929,12 +1017,12 @@ function PaperCard({ paper, rank }: PaperCardProps) {
           >
             <span
               style={{
-                backgroundColor: "#3b82f6",
+                backgroundColor: COLOR_BLUE_500,
                 color: "white",
                 padding: "4px 8px",
                 borderRadius: "12px",
-                fontSize: "12px",
-                fontWeight: "600",
+                fontSize: FONT_SIZE_12,
+                fontWeight: FONT_WEIGHT_SEMIBOLD,
                 marginRight: "12px",
               }}
             >
@@ -942,10 +1030,10 @@ function PaperCard({ paper, rank }: PaperCardProps) {
             </span>
             <h5
               style={{
-                fontSize: "14px",
-                fontWeight: "600",
-                color: "#1f2937",
-                margin: 0,
+                fontSize: FONT_SIZE_14,
+                fontWeight: FONT_WEIGHT_SEMIBOLD,
+                color: COLOR_TEXT_PRIMARY,
+                ...MARGIN_0,
                 lineHeight: "1.4",
               }}
             >
@@ -954,7 +1042,11 @@ function PaperCard({ paper, rank }: PaperCardProps) {
           </div>
 
           <p
-            style={{ fontSize: "12px", color: "#6b7280", marginBottom: "8px" }}
+            style={{
+              fontSize: FONT_SIZE_12,
+              color: COLOR_TEXT_SECONDARY,
+              marginBottom: "8px",
+            }}
           >
             {paper.authors.slice(0, 3).join(", ")}
             {paper.authors.length > 3
@@ -970,18 +1062,20 @@ function PaperCard({ paper, rank }: PaperCardProps) {
               alignItems: "center",
             }}
           >
-            <span style={{ fontSize: "12px", color: "#6b7280" }}>
+            <span
+              style={{ fontSize: FONT_SIZE_12, color: COLOR_TEXT_SECONDARY }}
+            >
               {paper.publicationYear} • {paper.source}
             </span>
             {paper.citedByCount !== undefined && (
               <span
                 style={{
                   backgroundColor: "#f3f4f6",
-                  color: "#374151",
+                  color: COLOR_GRAY_700,
                   padding: "2px 6px",
                   borderRadius: "4px",
                   fontSize: "11px",
-                  fontWeight: "500",
+                  fontWeight: FONT_WEIGHT_MEDIUM,
                 }}
               >
                 {paper.citedByCount} citations
@@ -994,11 +1088,11 @@ function PaperCard({ paper, rank }: PaperCardProps) {
                 rel="noopener noreferrer"
                 style={{
                   backgroundColor: "#dbeafe",
-                  color: "#3b82f6",
+                  color: COLOR_BLUE_500,
                   padding: "2px 6px",
                   borderRadius: "4px",
                   fontSize: "11px",
-                  fontWeight: "500",
+                  fontWeight: FONT_WEIGHT_MEDIUM,
                   textDecoration: "none",
                 }}
               >

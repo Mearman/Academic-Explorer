@@ -163,37 +163,29 @@ export function useWebWorker(
       workerRef.current = worker;
       setIsWorkerReady(true);
 
-      // Setup message handler
-      const messageHandler = (event: MessageEvent<WorkerResponse>) => {
-        const { data } = event;
-
-        setStats((prev) => ({
-          ...prev,
-          messagesReceived: prev.messagesReceived + 1,
-          lastActivity: Date.now(),
-        }));
-
-        // Calculate response time if requestId is present
+      // Helper functions to reduce cognitive complexity
+      const updateResponseTimeStats = (data: WorkerResponse) => {
         if (data.requestId && pendingRequests.current.has(data.requestId)) {
           const startTime = pendingRequests.current.get(data.requestId);
           if (startTime !== undefined) {
             const responseTime = Date.now() - startTime;
             responseTimes.current.push(responseTime);
             pendingRequests.current.delete(data.requestId);
-          }
 
-          // Keep only last 100 response times for average calculation
-          if (responseTimes.current.length > 100) {
-            responseTimes.current = responseTimes.current.slice(-100);
-          }
+            // Keep only last 100 response times for average calculation
+            if (responseTimes.current.length > 100) {
+              responseTimes.current = responseTimes.current.slice(-100);
+            }
 
-          const averageResponseTime =
-            responseTimes.current.reduce((sum, time) => sum + time, 0) /
-            responseTimes.current.length;
-          setStats((prev) => ({ ...prev, averageResponseTime }));
+            const averageResponseTime =
+              responseTimes.current.reduce((sum, time) => sum + time, 0) /
+              responseTimes.current.length;
+            setStats((prev) => ({ ...prev, averageResponseTime }));
+          }
         }
+      };
 
-        // Handle different response types
+      const handleWorkerResponse = (data: WorkerResponse) => {
         switch (data.type) {
           case "PROGRESS":
             if (typeof data.progress === "number") {
@@ -226,6 +218,20 @@ export function useWebWorker(
             }
             break;
         }
+      };
+
+      // Setup message handler
+      const messageHandler = (event: MessageEvent<WorkerResponse>) => {
+        const { data } = event;
+
+        setStats((prev) => ({
+          ...prev,
+          messagesReceived: prev.messagesReceived + 1,
+          lastActivity: Date.now(),
+        }));
+
+        updateResponseTimeStats(data);
+        handleWorkerResponse(data);
 
         // Call general message handler
         onMessage?.(data);

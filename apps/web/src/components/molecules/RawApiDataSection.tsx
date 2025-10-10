@@ -9,6 +9,9 @@ import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { logger } from "@academic-explorer/utils/logger";
 
+// Constants
+const UNKNOWN_ERROR_MESSAGE = "Unknown error";
+
 interface RawApiDataSectionProps {
   entityId?: string | null;
   className?: string;
@@ -369,7 +372,7 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
         "Failed to download raw API data",
         {
           entityId,
-          error: error instanceof Error ? error.message : "Unknown error",
+          error: error instanceof Error ? error.message : UNKNOWN_ERROR_MESSAGE,
         },
         "RawApiDataSection",
       );
@@ -398,7 +401,7 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
         "Failed to copy raw API data to clipboard",
         {
           entityId,
-          error: error instanceof Error ? error.message : "Unknown error",
+          error: error instanceof Error ? error.message : UNKNOWN_ERROR_MESSAGE,
         },
         "RawApiDataSection",
       );
@@ -442,7 +445,7 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
           }}
         >
           Failed to load raw API data:{" "}
-          {error instanceof Error ? error.message : "Unknown error"}
+          {error instanceof Error ? error.message : UNKNOWN_ERROR_MESSAGE}
         </div>
       )}
 

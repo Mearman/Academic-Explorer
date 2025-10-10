@@ -1,50 +1,47 @@
-import React, { useState, useCallback } from "react";
+import type { EntityType } from "@academic-explorer/client";
+import { logger } from "@academic-explorer/utils";
+import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import {
-  Box,
-  Paper,
-  Title,
-  Group,
-  Stack,
-  Button,
-  Badge,
-  Text,
-  ActionIcon,
-  Chip,
-  Divider,
-  Alert,
-} from "@mantine/core";
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
+    closestCenter,
+    DndContext,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
 } from "@dnd-kit/core";
 import {
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    useSortable,
+    verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
-  IconPlus,
-  IconX,
-  IconGripVertical,
-  IconFilter,
-  IconSearch,
-  IconCalendar,
-  IconUser,
-  IconTags,
-  IconInfoCircle,
+    ActionIcon,
+    Alert,
+    Badge,
+    Box,
+    Button,
+    Chip,
+    Divider,
+    Group,
+    Paper,
+    Stack,
+    Text,
+    Title,
+} from "@mantine/core";
+import {
+    IconCalendar,
+    IconFilter,
+    IconGripVertical,
+    IconInfoCircle,
+    IconPlus,
+    IconSearch,
+    IconTags,
+    IconUser,
+    IconX,
 } from "@tabler/icons-react";
-import { logger } from "@academic-explorer/utils";
-import type { EntityType } from "@academic-explorer/client";
-import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
-
-// Common constants
-const QUERY_BUILDER_LOGGER_NAME = "query-builder";
+import React, { useCallback, useState } from "react";
 
 // Query builder types
 export interface QueryFilterChip {

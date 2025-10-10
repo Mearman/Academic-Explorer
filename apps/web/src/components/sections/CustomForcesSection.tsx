@@ -3,49 +3,49 @@
  * Sidebar tool for managing and configuring custom forces in the graph layout
  */
 
-import React, { useState, useCallback } from "react";
-import {
-  Stack,
-  Text,
-  Button,
-  ActionIcon,
-  Group,
-  Select,
-  NumberInput,
-  Switch,
-  Slider,
-  Divider,
-  Card,
-  Badge,
-  Tooltip,
-  Alert,
-  Modal,
-  Collapse,
-  JsonInput,
-  TextInput,
-} from "@mantine/core";
-import {
-  IconWaveSquare,
-  IconPlus,
-  IconTrash,
-  IconChevronDown,
-  IconInfoCircle,
-  IconTemplate,
-} from "@tabler/icons-react";
-import { useDisclosure } from "@mantine/hooks";
-import { logger } from "@academic-explorer/utils/logger";
-import { customForceManager } from "@academic-explorer/graph";
 import type {
-  CustomForce,
-  CustomForceType,
-  CustomForceConfig,
-  RadialForceConfig,
-  PropertyForceConfig,
-  ClusterForceConfig,
-  RepulsionForceConfig,
-  AttractionForceConfig,
-  OrbitForceConfig,
+    AttractionForceConfig,
+    ClusterForceConfig,
+    CustomForce,
+    CustomForceConfig,
+    CustomForceType,
+    OrbitForceConfig,
+    PropertyForceConfig,
+    RadialForceConfig,
+    RepulsionForceConfig,
 } from "@academic-explorer/graph";
+import { customForceManager } from "@academic-explorer/graph";
+import { logger } from "@academic-explorer/utils/logger";
+import {
+    ActionIcon,
+    Alert,
+    Badge,
+    Button,
+    Card,
+    Collapse,
+    Divider,
+    Group,
+    JsonInput,
+    Modal,
+    NumberInput,
+    Select,
+    Slider,
+    Stack,
+    Switch,
+    Text,
+    TextInput,
+    Tooltip,
+} from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import {
+    IconChevronDown,
+    IconInfoCircle,
+    IconPlus,
+    IconTemplate,
+    IconTrash,
+    IconWaveSquare,
+} from "@tabler/icons-react";
+import React, { useCallback, useState } from "react";
 
 // Common constants and utilities
 const NUMBER_VALUE_FALLBACK = (value: unknown, fallback: number): number =>
@@ -331,8 +331,8 @@ const ForceConfigForm: React.FC<ForceConfigFormProps> = ({
   switch (config["type"]) {
     case "radial":
       return <RadialConfigForm config={config} onChange={onChange} />;
-    case "property-x":
-    case "property-y":
+    case FORCE_TYPE_PROPERTY_X:
+    case FORCE_TYPE_PROPERTY_Y:
       return <PropertyConfigForm config={config} onChange={onChange} />;
     case "cluster":
       return <ClusterConfigForm config={config} onChange={onChange} />;
@@ -515,18 +515,18 @@ export const CustomForcesSection: React.FC = () => {
             evenDistribution: true,
           } satisfies RadialForceConfig;
           break;
-        case "property-x":
+        case FORCE_TYPE_PROPERTY_X:
           defaultConfig = {
-            type: "property-x",
+            type: FORCE_TYPE_PROPERTY_X,
             propertyName: "publication_year",
             minValue: -400,
             maxValue: 400,
             scaleType: "linear",
           } satisfies PropertyForceConfig;
           break;
-        case "property-y":
+        case FORCE_TYPE_PROPERTY_Y:
           defaultConfig = {
-            type: "property-y",
+            type: FORCE_TYPE_PROPERTY_Y,
             propertyName: "cited_by_count",
             minValue: -300,
             maxValue: 300,
@@ -637,12 +637,12 @@ export const CustomForcesSection: React.FC = () => {
           case "year-citation":
             force = {
               name: "Year Citation Force",
-              type: "property-x",
+              type: FORCE_TYPE_PROPERTY_X,
               enabled: true,
               strength: 0.1,
               priority: 1,
               config: {
-                type: "property-x",
+                type: FORCE_TYPE_PROPERTY_X,
                 propertyName: "publication_year",
                 scaleType: "linear",
               },
@@ -821,8 +821,8 @@ export const CustomForcesSection: React.FC = () => {
             onChange={(value) => {
               const validForceTypes: CustomForceType[] = [
                 "radial",
-                "property-x",
-                "property-y",
+                FORCE_TYPE_PROPERTY_X,
+                FORCE_TYPE_PROPERTY_Y,
                 "cluster",
                 "repulsion",
                 "attraction",
@@ -839,8 +839,8 @@ export const CustomForcesSection: React.FC = () => {
             }}
             data={[
               { value: "radial", label: "Radial Layout" },
-              { value: "property-x", label: "Property-based X Position" },
-              { value: "property-y", label: "Property-based Y Position" },
+              { value: FORCE_TYPE_PROPERTY_X, label: "Property-based X Position" },
+              { value: FORCE_TYPE_PROPERTY_Y, label: "Property-based Y Position" },
               { value: "cluster", label: "Cluster by Property" },
               { value: "repulsion", label: "Custom Repulsion" },
               { value: "attraction", label: "Custom Attraction" },

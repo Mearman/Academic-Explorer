@@ -338,8 +338,8 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 
       // Only respond to bulk expansion events, not individual node/position changes
       if (
-        eventType === "graph:bulk-nodes-added" ||
-        eventType === "graph:bulk-edges-added"
+        eventType === EVENT_BULK_NODES_ADDED ||
+        eventType === EVENT_BULK_EDGES_ADDED
       ) {
         logger.debug(
           GRAPH_LOGGER_NAME,
@@ -375,30 +375,30 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
     // Listen directly for bulk graph events
     const bulkNodesHandler = (event: { payload?: unknown }) => {
       handleExpansionEvent({
-        entityType: "graph:bulk-nodes-added",
+        entityType: EVENT_BULK_NODES_ADDED,
         payload: event.payload,
       });
     };
 
     const bulkEdgesHandler = (event: { payload?: unknown }) => {
       handleExpansionEvent({
-        entityType: "graph:bulk-edges-added",
+        entityType: EVENT_BULK_EDGES_ADDED,
         payload: event.payload,
       });
     };
 
     const _bulkNodesListenerId = eventBus.on(
-      "graph:bulk-nodes-added",
+      EVENT_BULK_NODES_ADDED,
       bulkNodesHandler,
     );
     const _bulkEdgesListenerId = eventBus.on(
-      "graph:bulk-edges-added",
+      EVENT_BULK_EDGES_ADDED,
       bulkEdgesHandler,
     );
 
     return () => {
-      eventBus.off("graph:bulk-nodes-added", bulkNodesHandler);
-      eventBus.off("graph:bulk-edges-added", bulkEdgesHandler);
+      eventBus.off(EVENT_BULK_NODES_ADDED, bulkNodesHandler);
+      eventBus.off(EVENT_BULK_EDGES_ADDED, bulkEdgesHandler);
     };
   }, [
     enabled,
