@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /**
  * OpenAlex CLI Client Class
  * Separated for better testability
@@ -6,72 +5,16 @@
 
 import { logError, logger } from "@academic-explorer/utils/logger";
 import {
-  getStaticDataCachePath, readIndexAsUnified,
-  type UnifiedIndex as UtilsUnifiedIndex,
-  type UnifiedIndexEntry as UtilsUnifiedIndexEntry
+  getStaticDataCachePath,
+  readIndexAsUnified,
+  type UnifiedIndexEntry as UtilsUnifiedIndexEntry,
+  type UnifiedIndex,
 } from "@academic-explorer/utils/static-data/cache-utilities";
 import { existsSync, readFileSync } from "fs";
 import { access, mkdir, readdir, readFile, stat, writeFile } from "fs/promises";
 import { dirname, join, resolve } from "path";
 import { fileURLToPath } from "url";
 import { z } from "zod";
-
-// Timeout wrapper for async file operations to prevent hanging
-async function withTimeout<T>(
-  operation: Promise<T>,
-  timeoutMs: number,
-  operationName: string,
-): Promise<T> {
-  const timeoutPromise = new Promise<never>((_, reject) => {
-    setTimeout(() => {
-      reject(new Error(`${operationName} timed out after ${timeoutMs}ms`));
-    }, timeoutMs);
-  });
-
-  return Promise.race([operation, timeoutPromise]);
-}
-
-// Safe file operations with timeout protection
-async function safeReadFile(
-  filePath: string,
-  options?: { encoding?: BufferEncoding; flag?: string },
-): Promise<string> {
-  return withTimeout(
-    readFile(filePath, options),
-    5000,
-    `readFile(${filePath})`,
-  ).then((result) => {
-    if (Buffer.isBuffer(result)) {
-      return result.toString();
-    }
-    return result;
-  });
-}
-
-async function safeWriteFile(filePath: string, data: string): Promise<void> {
-  return withTimeout(writeFile(filePath, data), 5000, `writeFile(${filePath})`);
-}
-
-async function safeReaddir(dirPath: string): Promise<string[]> {
-  return withTimeout(readdir(dirPath), 5000, `readdir(${dirPath})`);
-}
-
-async function safeStat(filePath: string): Promise<import("fs").Stats> {
-  return withTimeout(stat(filePath), 5000, `stat(${filePath})`);
-}
-
-async function safeAccess(filePath: string): Promise<void> {
-  return withTimeout(access(filePath), 5000, `access(${filePath})`);
-}
-
-async function safeMkdir(
-  dirPath: string,
-  options?: { recursive?: boolean },
-): Promise<void> {
-  return withTimeout(mkdir(dirPath, options), 5000, `mkdir(${dirPath})`).then(
-    () => undefined,
-  );
-}
 // TODO: Re-enable when openalex-client package build issues are resolved
 // import {
 //   CachedOpenAlexClient,
@@ -104,7 +47,6 @@ const EntityIndexEntrySchema = z.object({
 
 // Type aliases to use the utilities package types
 type UnifiedIndexEntry = UtilsUnifiedIndexEntry;
-type UnifiedIndex = UtilsUnifiedIndex;
 
 // Cache statistics type definition
 interface CacheStats {
@@ -234,13 +176,77 @@ const SUPPORTED_ENTITIES: readonly StaticEntityType[] = [
   "funders",
 ] as const;
 
+// Constants for repeated strings
+const LOG_CONTEXT_GENERAL = "general";
+const LOG_CONTEXT_STATIC_CACHE = "static-cache";
+const INDEX_FILENAME = "index.json";
+const OPENALEX_API_BASE_URL = "https://api.openalex.org/";
+const API_REQUEST_FAILED = "API request failed";
+const CACHE_HIT_MESSAGE = "Cache hit for";
+const CACHE_ONLY_MODE_MESSAGE = "Cache-only mode: entity";
+const CACHE_ONLY_QUERY_MESSAGE =
+  "Cache-only mode: no matching query found in cache";
+const NO_CACHED_QUERY_MESSAGE = "No cached query found matching parameters";
+const QUERY_CACHE_HIT_MESSAGE = "Query cache hit for parameters";
+const FAILED_TO_FETCH_MESSAGE = "Failed to fetch";
+const FAILED_TO_SAVE_MESSAGE = "Failed to save entity to cache";
+const FAILED_TO_SAVE_QUERY_MESSAGE = "Failed to save query to cache";
+const FAILED_TO_LOAD_MESSAGE = "Failed to load entity";
+const FAILED_TO_LOAD_QUERY_MESSAGE = "Failed to load query";
+const INVALID_ENTITY_FORMAT_MESSAGE = "Invalid entity format for";
+const MISSING_REQUIRED_PROPERTIES_MESSAGE = "missing required properties";
+const QUERY_DIRECTORY_NOT_FOUND_MESSAGE = "Query directory not found";
+const FAILED_TO_DECODE_FILENAME_MESSAGE = "Failed to decode filename";
+const FAILED_TO_READ_CACHED_QUERY_MESSAGE = "Failed to read cached query";
+const FAILED_TO_LOAD_INDEX_MESSAGE = "Failed to load query index for";
+const INVALID_QUERY_INDEX_STRUCTURE_MESSAGE =
+  "Invalid query index structure in";
+const FAILED_TO_SAVE_INDEX_MESSAGE = "Failed to save query index for";
+const UPDATED_INDEX_MESSAGE = "Updated unified index for";
+const FAILED_TO_SAVE_UNIFIED_INDEX_MESSAGE = "Failed to save unified index for";
+const FAILED_TO_LOAD_UNIFIED_INDEX_MESSAGE = "Failed to load unified index for";
+const INVALID_INDEX_FORMAT_MESSAGE = "Invalid index format for";
+const UPDATED_QUERY_INDEX_MESSAGE = "Updated query index for";
+const SAVED_QUERY_MESSAGE = "Saved query";
+const SKIPPED_QUERY_MESSAGE = "Skipped query";
+const SAVED_ENTITY_MESSAGE = "Saved";
+const SKIPPED_ENTITY_MESSAGE = "Skipped";
+const CONTENT_CHANGED_MESSAGE = "to cache (content changed)";
+const NO_CONTENT_CHANGES_MESSAGE = "- no content changes";
+const QUERY_INDEX_UPDATE_NOT_IMPLEMENTED_MESSAGE =
+  "Query index update not implemented for unified format yet";
+const FAILED_TO_GET_CACHE_STATS_MESSAGE = "Failed to get cache stats";
+const CACHE_STATS_NOT_AVAILABLE_MESSAGE =
+  "Cache stats not available - client disabled";
+const FIELD_COVERAGE_ANALYSIS_NOT_AVAILABLE_MESSAGE =
+  "Field coverage analysis not available in CLI mode";
+const WELL_POPULATED_ENTITIES_ANALYSIS_NOT_AVAILABLE_MESSAGE =
+  "Well-populated entities analysis not available - synthetic cache disabled";
+const POPULAR_COLLECTIONS_ANALYSIS_NOT_AVAILABLE_MESSAGE =
+  "Popular collections analysis not available - synthetic cache disabled";
+const SYNTHETIC_CACHE_CLEAR_NOT_AVAILABLE_MESSAGE =
+  "Synthetic cache clear not available - client disabled";
+const FAILED_TO_GET_WELL_POPULATED_ENTITIES_MESSAGE =
+  "Failed to get well-populated entities";
+const FAILED_TO_GET_POPULAR_COLLECTIONS_MESSAGE =
+  "Failed to get popular collections";
+const FAILED_TO_ANALYZE_STATIC_DATA_USAGE_MESSAGE =
+  "Failed to analyze static data usage";
+const GENERATION_FAILED_MESSAGE = "Generation failed";
+const FAILED_TO_PROCESS_ENTITY_TYPE_MESSAGE = "Failed to process entity type";
+const FAILED_TO_PROCESS_ENTITY_MESSAGE = "Failed to process entity";
+const FAILED_TO_PROCESS_COLLECTION_MESSAGE = "Failed to process collection";
+const FAILED_TO_LIST_CACHED_QUERIES_MESSAGE = "Failed to list cached queries";
+const FAILED_TO_CLEAR_SYNTHETIC_CACHE_MESSAGE =
+  "Failed to clear synthetic cache";
+
 // Helper functions for canonical URL handling
 function generateCanonicalEntityUrl(
   entityType: StaticEntityType,
   entityId: string,
 ): string {
   const cleanId = entityId.replace("https://openalex.org/", "");
-  return `https://api.openalex.org/${entityType}/${cleanId}`;
+  return `${OPENALEX_API_BASE_URL}${entityType}/${cleanId}`;
 }
 
 // function _extractEntityIdFromCanonicalUrl(canonicalUrl: string): string | null {
@@ -351,7 +357,7 @@ export class OpenAlexCLI {
     const url = this.buildQueryUrl(entityType, options);
 
     try {
-      console.error(`Fetching from API: ${url}`);
+      logger.debug(LOG_CONTEXT_GENERAL, `Fetching from API: ${url}`);
       const response = await fetch(url);
 
       if (!response.ok) {
@@ -362,7 +368,7 @@ export class OpenAlexCLI {
 
       return await response.json();
     } catch (error) {
-      console.error(`API request failed:`, error);
+      logError(logger, API_REQUEST_FAILED, error, LOG_CONTEXT_GENERAL);
       throw error;
     }
   }
@@ -383,12 +389,18 @@ export class OpenAlexCLI {
     if (cacheOptions.useCache || cacheOptions.cacheOnly) {
       const cached = await this.loadEntity(entityType, entityId);
       if (cached) {
-        console.error(`Cache hit for ${entityType}/${entityId}`);
+        logger.debug(
+          LOG_CONTEXT_GENERAL,
+          `${CACHE_HIT_MESSAGE} ${entityType}/${entityId}`,
+        );
         return cached;
       }
 
       if (cacheOptions.cacheOnly) {
-        console.error(`Cache-only mode: entity ${entityId} not found in cache`);
+        logger.warn(
+          LOG_CONTEXT_GENERAL,
+          `${CACHE_ONLY_MODE_MESSAGE} ${entityId} not found in cache`,
+        );
         return null;
       }
     }
@@ -424,9 +436,11 @@ export class OpenAlexCLI {
         }
       }
     } catch (error) {
-      console.error(
-        `Failed to fetch ${entityType}/${entityId} from API:`,
+      logError(
+        logger,
+        `${FAILED_TO_FETCH_MESSAGE} ${entityType}/${entityId} from API`,
         error,
+        LOG_CONTEXT_GENERAL,
       );
     }
 
@@ -469,8 +483,9 @@ export class OpenAlexCLI {
 
       if (contentChanged) {
         await writeFile(entityPath, newContent);
-        console.error(
-          `Saved ${entityType}/${filename} to cache (content changed)`,
+        logger.debug(
+          LOG_CONTEXT_STATIC_CACHE,
+          `${SAVED_ENTITY_MESSAGE} ${entityType}/${filename} ${CONTENT_CHANGED_MESSAGE}`,
         );
 
         // Update unified index with new lastModified timestamp
@@ -482,7 +497,10 @@ export class OpenAlexCLI {
 
         await this.updateUnifiedIndex(entityType, canonicalUrl, indexEntry);
       } else {
-        console.error(`Skipped ${entityType}/${filename} - no content changes`);
+        logger.debug(
+          LOG_CONTEXT_STATIC_CACHE,
+          `${SKIPPED_ENTITY_MESSAGE} ${entityType}/${filename} ${NO_CONTENT_CHANGES_MESSAGE}`,
+        );
 
         // Content hasn't changed, but ensure index entry exists with preserved lastModified
         if (existingLastModified) {
@@ -495,7 +513,7 @@ export class OpenAlexCLI {
         }
       }
     } catch (error) {
-      console.error(`Failed to save entity to cache:`, error);
+      logError(logger, FAILED_TO_SAVE_MESSAGE, error, LOG_CONTEXT_STATIC_CACHE);
     }
   }
 
@@ -514,12 +532,12 @@ export class OpenAlexCLI {
     if (cacheOptions.useCache || cacheOptions.cacheOnly) {
       const cached = await this.loadQuery(entityType, url);
       if (cached) {
-        console.error(`Query cache hit for parameters`);
+        logger.debug(LOG_CONTEXT_GENERAL, QUERY_CACHE_HIT_MESSAGE);
         return cached;
       }
 
       if (cacheOptions.cacheOnly) {
-        console.error(`Cache-only mode: no matching query found in cache`);
+        logger.warn(LOG_CONTEXT_GENERAL, CACHE_ONLY_QUERY_MESSAGE);
         return null;
       }
     }
@@ -535,10 +553,9 @@ export class OpenAlexCLI {
 
       return apiResult;
     } catch (error) {
-      console.error(`Failed to execute query:`, error);
+      logError(logger, "Failed to execute query", error, LOG_CONTEXT_GENERAL);
       throw error;
     }
-
   }
 
   /**
@@ -565,7 +582,7 @@ export class OpenAlexCLI {
       let existingLastModified: string | null = null;
 
       try {
-        const queryIndexPath = join(queryDir, "index.json");
+        const queryIndexPath = join(queryDir, INDEX_FILENAME);
         const { readFile } = await import("fs/promises");
         const queryIndexContent = await readFile(queryIndexPath, "utf-8");
         const queryIndexRaw: unknown = JSON.parse(queryIndexContent);
@@ -591,7 +608,10 @@ export class OpenAlexCLI {
 
       if (contentChanged) {
         await writeFile(queryPath, newContent);
-        console.error(`Saved query ${filename} to cache (content changed)`);
+        logger.debug(
+          LOG_CONTEXT_GENERAL,
+          `${SAVED_QUERY_MESSAGE} ${filename} ${CONTENT_CHANGED_MESSAGE}`,
+        );
 
         // Create query definition with URL only (params parsing removed)
         const queryDef: QueryDefinition = { url };
@@ -602,7 +622,10 @@ export class OpenAlexCLI {
           contentHash: newContentHash,
         });
       } else {
-        console.error(`Skipped query ${filename} - no content changes`);
+        logger.debug(
+          LOG_CONTEXT_GENERAL,
+          `${SKIPPED_QUERY_MESSAGE} ${filename} ${NO_CONTENT_CHANGES_MESSAGE}`,
+        );
 
         // Content hasn't changed, but ensure index entry exists with preserved lastModified
         if (existingLastModified) {
@@ -615,7 +638,12 @@ export class OpenAlexCLI {
         }
       }
     } catch (error) {
-      console.error(`Failed to save query to cache:`, error);
+      logError(
+        logger,
+        FAILED_TO_SAVE_QUERY_MESSAGE,
+        error,
+        LOG_CONTEXT_GENERAL,
+      );
     }
   }
 
@@ -730,16 +758,20 @@ export class OpenAlexCLI {
         return validationResult.data;
       }
 
-      logger.error("general", `Invalid index format for ${entityType}`, {
-        error: validationResult.error.issues,
-      });
+      logger.error(
+        LOG_CONTEXT_GENERAL,
+        `${INVALID_INDEX_FORMAT_MESSAGE} ${entityType}`,
+        {
+          error: validationResult.error.issues,
+        },
+      );
       return null;
     } catch (error) {
       logError(
         logger,
-        `Failed to load unified index for ${entityType}`,
+        `${FAILED_TO_LOAD_UNIFIED_INDEX_MESSAGE} ${entityType}`,
         error,
-        "general",
+        LOG_CONTEXT_GENERAL,
       );
       return null;
     }
@@ -758,11 +790,17 @@ export class OpenAlexCLI {
       const indexPath = join(entityDir, "index.json");
       const content = JSON.stringify(index, null, 2);
       await writeFile(indexPath, content);
-      console.error(
-        `Updated unified index for ${entityType} with ${Object.keys(index).length.toString()} entries`,
+      logger.debug(
+        LOG_CONTEXT_STATIC_CACHE,
+        `${UPDATED_INDEX_MESSAGE} ${entityType} with ${Object.keys(index).length.toString()} entries`,
       );
     } catch (error) {
-      console.error(`Failed to save unified index for ${entityType}:`, error);
+      logError(
+        logger,
+        `${FAILED_TO_SAVE_UNIFIED_INDEX_MESSAGE} ${entityType}`,
+        error,
+        LOG_CONTEXT_STATIC_CACHE,
+      );
     }
   }
 
@@ -793,115 +831,167 @@ export class OpenAlexCLI {
     [key: string]: unknown;
   } | null> {
     try {
-      // Load index first to find the actual file path
-      const indexPath = join(this.dataPath, entityType, "index.json");
-      const indexContent = await readFile(indexPath, "utf-8");
-      const parsedIndex: unknown = JSON.parse(indexContent);
-
-      // Use adapter to convert any format to UnifiedIndex
-      const unifiedIndex = readIndexAsUnified(parsedIndex);
+      const unifiedIndex = await this.loadUnifiedIndexForEntity(
+        entityType,
+        entityId,
+      );
       if (!unifiedIndex) {
-        logger.error("general", `Failed to read index for ${entityType}`, {
-          entityId,
-        });
         return null;
       }
 
-      // Find the entity entry in the index
-      let entityEntry: {
-        $ref: string;
-        lastModified: string;
-        contentHash: string;
-      } | null = null;
-      const canonicalUrl = generateCanonicalEntityUrl(entityType, entityId);
-
-      // Check if the canonical URL exists directly in the index
-      if (canonicalUrl in unifiedIndex) {
-        const validationResult = EntityIndexEntrySchema.safeParse(
-          unifiedIndex[canonicalUrl],
-        );
-        if (
-          validationResult.success &&
-          validationResult.data.$ref &&
-          validationResult.data.lastModified &&
-          validationResult.data.contentHash
-        ) {
-          entityEntry = validationResult.data as {
-            $ref: string;
-            lastModified: string;
-            contentHash: string;
-          };
-        }
-      } else {
-        // Search for entity ID in all keys (may be in different URL formats)
-        for (const key in unifiedIndex) {
-          if (Object.prototype.hasOwnProperty.call(unifiedIndex, key)) {
-            const data = unifiedIndex[key];
-            // Extract entity ID from the key and compare
-            const match = key.match(/[WASITCPFKG]\d{8,10}/);
-            if (match && match[0] === entityId) {
-              // Validate data structure with Zod
-              const validationResult = EntityIndexEntrySchema.safeParse(data);
-              if (
-                validationResult.success &&
-                validationResult.data.$ref &&
-                validationResult.data.lastModified &&
-                validationResult.data.contentHash
-              ) {
-                entityEntry = validationResult.data as {
-                  $ref: string;
-                  lastModified: string;
-                  contentHash: string;
-                };
-                break;
-              }
-            }
-          }
-        }
-      }
-
+      const entityEntry = this.findEntityEntry(
+        unifiedIndex,
+        entityType,
+        entityId,
+      );
       if (!entityEntry?.$ref) {
         return null;
       }
 
-      // Construct actual file path from $ref
-      const entityPath = join(
-        this.dataPath,
-        entityType,
-        entityEntry.$ref.startsWith("./")
-          ? entityEntry.$ref.substring(2)
-          : entityEntry.$ref,
-      );
-      const entityContent = await readFile(entityPath, "utf-8");
-      const parsed: unknown = JSON.parse(entityContent);
-
-      // Validate using Zod schema
-      const validatedEntity = OpenAlexEntitySchema.safeParse(parsed);
-      if (
-        validatedEntity.success &&
-        validatedEntity.data.id &&
-        validatedEntity.data.display_name
-      ) {
-        return validatedEntity.data as {
-          id: string;
-          display_name: string;
-          [key: string]: unknown;
-        };
-      }
-
-      console.error(
-        `Invalid entity format for ${entityId}: missing required properties`,
-      );
-      return null;
+      return await this.loadEntityFromFile(entityType, entityEntry, entityId);
     } catch (error: unknown) {
-      const nodeError = NodeErrorSchema.safeParse(error);
-      if (nodeError.success && nodeError.data.code === "ENOENT") {
-        // File not found is expected, don't log as error
-        return null;
+      return this.handleEntityLoadError(error, entityId);
+    }
+  }
+
+  /**
+   * Load unified index for entity loading
+   */
+  private async loadUnifiedIndexForEntity(
+    entityType: StaticEntityType,
+    entityId: string,
+  ): Promise<UnifiedIndex | null> {
+    const indexPath = join(this.dataPath, entityType, "index.json");
+    const indexContent = await readFile(indexPath, "utf-8");
+    const parsedIndex: unknown = JSON.parse(indexContent);
+
+    const unifiedIndex = readIndexAsUnified(parsedIndex);
+    if (!unifiedIndex) {
+      logger.error("general", `Failed to read index for ${entityType}`, {
+        entityId,
+      });
+    }
+    return unifiedIndex;
+  }
+
+  /**
+   * Find entity entry in unified index
+   */
+  private findEntityEntry(
+    unifiedIndex: UnifiedIndex,
+    entityType: StaticEntityType,
+    entityId: string,
+  ): UnifiedIndexEntry | null | undefined {
+    const canonicalUrl = generateCanonicalEntityUrl(entityType, entityId);
+
+    // Check if the canonical URL exists directly in the index
+    if (canonicalUrl in unifiedIndex) {
+      const validationResult = EntityIndexEntrySchema.safeParse(
+        unifiedIndex[canonicalUrl],
+      );
+      if (this.isValidEntityEntry(validationResult)) {
+        return validationResult.data;
       }
-      console.error(`Failed to load entity ${entityId}:`, error);
+    }
+
+    // Search for entity ID in all keys (may be in different URL formats)
+    return this.searchEntityById(unifiedIndex, entityId);
+  }
+
+  /**
+   * Check if entity entry is valid
+   */
+  private isValidEntityEntry(
+    validationResult: ReturnType<typeof EntityIndexEntrySchema.safeParse>,
+  ): boolean {
+    return Boolean(
+      validationResult.success &&
+        validationResult.data.$ref &&
+        validationResult.data.lastModified &&
+        validationResult.data.contentHash,
+    );
+  }
+
+  /**
+   * Search for entity by ID in index keys
+   */
+  private searchEntityById(
+    unifiedIndex: UnifiedIndex,
+    entityId: string,
+  ): UnifiedIndexEntry | null | undefined {
+    for (const key in unifiedIndex) {
+      if (Object.prototype.hasOwnProperty.call(unifiedIndex, key)) {
+        const data = unifiedIndex[key];
+        const match = key.match(/[WASITCPFKG]\d{8,10}/);
+        if (match && match[0] === entityId) {
+          const validationResult = EntityIndexEntrySchema.safeParse(data);
+          if (this.isValidEntityEntry(validationResult)) {
+            return validationResult.data;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Load entity data from file
+   */
+  private async loadEntityFromFile(
+    entityType: StaticEntityType,
+    entityEntry: UnifiedIndexEntry,
+    entityId: string,
+  ): Promise<{
+    id: string;
+    display_name: string;
+    [key: string]: unknown;
+  } | null> {
+    const entityPath = join(
+      this.dataPath,
+      entityType,
+      entityEntry.$ref.startsWith("./")
+        ? entityEntry.$ref.substring(2)
+        : entityEntry.$ref,
+    );
+    const entityContent = await readFile(entityPath, "utf-8");
+    const parsed: unknown = JSON.parse(entityContent);
+
+    const validatedEntity = OpenAlexEntitySchema.safeParse(parsed);
+    if (
+      validatedEntity.success &&
+      validatedEntity.data.id &&
+      validatedEntity.data.display_name
+    ) {
+      return validatedEntity.data as {
+        id: string;
+        display_name: string;
+        [key: string]: unknown;
+      };
+    }
+
+    logger.warn(
+      LOG_CONTEXT_GENERAL,
+      `${INVALID_ENTITY_FORMAT_MESSAGE} ${entityId}: ${MISSING_REQUIRED_PROPERTIES_MESSAGE}`,
+    );
+    return null;
+  }
+
+  /**
+   * Handle entity load errors
+   */
+  private handleEntityLoadError(error: unknown, entityId: string): null {
+    const nodeError = NodeErrorSchema.safeParse(error);
+    if (nodeError.success && nodeError.data.code === "ENOENT") {
+      // File not found is expected, don't log as error
       return null;
     }
+    logError(
+      logger,
+      `${FAILED_TO_LOAD_MESSAGE} ${entityId}`,
+      error,
+      LOG_CONTEXT_GENERAL,
+    );
+    return null;
   }
 
   /**
@@ -912,87 +1002,146 @@ export class OpenAlexCLI {
     queryUrl: string,
   ): Promise<unknown> {
     try {
-      // Extract target query parameters
       const targetParams = this.normalizeQueryParams(queryUrl);
 
       // Try query index for faster lookup first
-      const queryIndex = await this.loadQueryIndex(entityType);
-      if (queryIndex) {
-        for (const queryEntry of queryIndex.queries) {
-          if (this.queryMatches(queryUrl, queryEntry.query)) {
-            // Generate filename from the query definition
-            const filename = this.generateFilenameFromQuery(queryEntry.query);
-            if (filename) {
-              const queryPath = join(
-                this.dataPath,
-                entityType,
-                "queries",
-                filename,
-              );
-              try {
-                const queryContent = await readFile(queryPath, "utf-8");
-                console.error(`Found query via index: ${filename}`);
-                return JSON.parse(queryContent);
-              } catch (error) {
-                console.error(
-                  `Index pointed to missing file: ${filename}`,
-                  error,
-                );
-                continue; // Try next match
-              }
-            }
-          }
-        }
-      }
+      const result = await this.tryLoadFromQueryIndex(entityType, queryUrl);
+      if (result) return result;
 
-      // Fallback: scan directory for matching files (both formats)
-      const queryDir = join(this.dataPath, entityType, "queries");
-      try {
-        const { readdir } = await import("fs/promises");
-        const files = await readdir(queryDir);
-        const queryFiles = files.filter(
-          (f) => f.endsWith(".json") && f !== "index.json",
-        );
-
-        for (const filename of queryFiles) {
-          try {
-            // Decode URL-encoded filename (remove .json extension first)
-            const filenameWithoutExt = filename.replace(/\.json$/, "");
-            const decodedUrl = decodeURIComponent(filenameWithoutExt);
-            const decodedParams = this.normalizeQueryParams(decodedUrl);
-
-            if (this.paramsMatch(targetParams, decodedParams)) {
-              const queryPath = join(queryDir, filename);
-              try {
-                const queryContent = await readFile(queryPath, "utf-8");
-                console.error(`Found query via filename scan: ${filename}`);
-                return JSON.parse(queryContent);
-              } catch (error) {
-                console.error(
-                  `Failed to read cached query ${filename}:`,
-                  error,
-                );
-                continue;
-              }
-            }
-          } catch (error) {
-            // Failed to decode filename, skip this file
-            console.error(`Failed to decode filename ${filename}:`, error);
-            continue;
-          }
-        }
-      } catch {
-        // Query directory doesn't exist
-        console.error(`Query directory not found: ${queryDir}`);
-        return null;
-      }
-
-      console.error(`No cached query found matching parameters`);
-      return null;
+      // Fallback: scan directory for matching files
+      return await this.scanDirectoryForQuery(entityType, targetParams);
     } catch (error) {
-      console.error(`Failed to load query:`, error);
+      logError(
+        logger,
+        FAILED_TO_LOAD_QUERY_MESSAGE,
+        error,
+        LOG_CONTEXT_GENERAL,
+      );
       return null;
     }
+  }
+
+  /**
+   * Try to load query from index
+   */
+  private async tryLoadFromQueryIndex(
+    entityType: StaticEntityType,
+    queryUrl: string,
+  ): Promise<unknown | null> {
+    const queryIndex = await this.loadQueryIndex(entityType);
+    if (!queryIndex) return null;
+
+    for (const queryEntry of queryIndex.queries) {
+      if (this.queryMatches(queryUrl, queryEntry.query)) {
+        const filename = this.generateFilenameFromQuery(queryEntry.query);
+        if (filename) {
+          return await this.loadQueryFile(entityType, filename, "index");
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Scan directory for matching query files
+   */
+  private async scanDirectoryForQuery(
+    entityType: StaticEntityType,
+    targetParams: Record<string, unknown>,
+  ): Promise<unknown | null> {
+    const queryDir = join(this.dataPath, entityType, "queries");
+    try {
+      const { readdir } = await import("fs/promises");
+      const files = await readdir(queryDir);
+      const queryFiles = files.filter(
+        (f) => f.endsWith(".json") && f !== "index.json",
+      );
+
+      for (const filename of queryFiles) {
+        const result = await this.tryMatchQueryFile(
+          queryDir,
+          filename,
+          targetParams,
+        );
+        if (result) return result;
+      }
+    } catch {
+      logger.warn(
+        LOG_CONTEXT_GENERAL,
+        `${QUERY_DIRECTORY_NOT_FOUND_MESSAGE}: ${queryDir}`,
+      );
+    }
+
+    logger.debug(LOG_CONTEXT_GENERAL, NO_CACHED_QUERY_MESSAGE);
+    return null;
+  }
+
+  /**
+   * Try to match and load a query file
+   */
+  private async tryMatchQueryFile(
+    queryDir: string,
+    filename: string,
+    targetParams: Record<string, unknown>,
+  ): Promise<unknown | null> {
+    try {
+      const filenameWithoutExt = filename.replace(/\.json$/, "");
+      const decodedUrl = decodeURIComponent(filenameWithoutExt);
+      const decodedParams = this.normalizeQueryParams(decodedUrl);
+
+      if (this.paramsMatch(targetParams, decodedParams)) {
+        return await this.loadQueryFileFromPath(
+          join(queryDir, filename),
+          filename,
+          "scan",
+        );
+      }
+    } catch (error) {
+      logError(
+        logger,
+        `${FAILED_TO_DECODE_FILENAME_MESSAGE} ${filename}`,
+        error,
+        LOG_CONTEXT_GENERAL,
+      );
+    }
+    return null;
+  }
+
+  /**
+   * Load query file from path
+   */
+  private async loadQueryFile(
+    entityType: StaticEntityType,
+    filename: string,
+    source: string,
+  ): Promise<unknown | null> {
+    const queryPath = join(this.dataPath, entityType, "queries", filename);
+    return await this.loadQueryFileFromPath(queryPath, filename, source);
+  }
+
+  /**
+   * Load query file from specific path
+   */
+  private async loadQueryFileFromPath(
+    queryPath: string,
+    filename: string,
+    source: string,
+  ): Promise<unknown | null> {
+    try {
+      const queryContent = await readFile(queryPath, "utf-8");
+      logger.debug(
+        LOG_CONTEXT_GENERAL,
+        `Found query via ${source}: ${filename}`,
+      );
+      return JSON.parse(queryContent);
+    } catch (error) {
+      const errorMessage =
+        source === "index"
+          ? `Index pointed to missing file: ${filename}`
+          : `${FAILED_TO_READ_CACHED_QUERY_MESSAGE} ${filename}`;
+      logError(logger, errorMessage, error, LOG_CONTEXT_GENERAL);
+    }
+    return null;
   }
 
   /**
@@ -1210,10 +1359,18 @@ export class OpenAlexCLI {
         };
       }
 
-      console.warn(`Invalid query index structure in ${queryIndexPath}`);
+      logger.warn(
+        LOG_CONTEXT_GENERAL,
+        `${INVALID_QUERY_INDEX_STRUCTURE_MESSAGE} ${queryIndexPath}`,
+      );
       return null;
     } catch (error) {
-      console.error(`Failed to load query index for ${entityType}:`, error);
+      logError(
+        logger,
+        `${FAILED_TO_LOAD_INDEX_MESSAGE} ${entityType}`,
+        error,
+        LOG_CONTEXT_GENERAL,
+      );
       return null;
     }
   }
@@ -1231,11 +1388,17 @@ export class OpenAlexCLI {
       const queryIndexPath = join(queryDir, "index.json");
       const content = JSON.stringify(queryIndex, null, 2);
       await writeFile(queryIndexPath, content);
-      console.error(
-        `Updated query index for ${entityType} with ${queryIndex.queries.length.toString()} queries`,
+      logger.debug(
+        LOG_CONTEXT_GENERAL,
+        `${UPDATED_QUERY_INDEX_MESSAGE} ${entityType} with ${queryIndex.queries.length.toString()} queries`,
       );
     } catch (error) {
-      console.error(`Failed to save query index for ${entityType}:`, error);
+      logError(
+        logger,
+        `${FAILED_TO_SAVE_INDEX_MESSAGE} ${entityType}`,
+        error,
+        LOG_CONTEXT_GENERAL,
+      );
     }
   }
 
@@ -1253,7 +1416,10 @@ export class OpenAlexCLI {
     // Note: Query indexes are handled separately from unified indexes
     // This method maintains the existing query index format for backward compatibility
     // You may want to consider migrating query indexes to the unified format as well
-    console.error(`Query index update not implemented for unified format yet`);
+    logger.warn(
+      LOG_CONTEXT_GENERAL,
+      QUERY_INDEX_UPDATE_NOT_IMPLEMENTED_MESSAGE,
+    );
   }
 
   /**
@@ -1263,49 +1429,84 @@ export class OpenAlexCLI {
     def1: QueryDefinition,
     def2: QueryDefinition,
   ): boolean {
-    // If both have params, compare params
+    // Direct format matching
+    if (this.directFormatMatch(def1, def2)) {
+      return true;
+    }
+
+    // Cross-format matching
+    return this.crossFormatMatch(def1, def2);
+  }
+
+  /**
+   * Check for direct format matches (same format type)
+   */
+  private directFormatMatch(
+    def1: QueryDefinition,
+    def2: QueryDefinition,
+  ): boolean {
     if (def1.params && def2.params) {
       return this.paramsMatch(def1.params, def2.params);
     }
 
-    // If both have encoded, compare encoded
     if (def1.encoded && def2.encoded) {
       return def1.encoded === def2.encoded;
     }
 
-    // If both have URL, compare URLs
     if (def1.url && def2.url) {
       return def1.url === def2.url;
     }
 
-    // Try cross-format matching
+    return false;
+  }
+
+  /**
+   * Check for cross-format matches (different format types)
+   */
+  private crossFormatMatch(
+    def1: QueryDefinition,
+    def2: QueryDefinition,
+  ): boolean {
     if (def1.params && def2.encoded) {
-      const decoded = this.decodeQueryString(def2.encoded);
-      const validatedParams = this.validateQueryParams(decoded);
-      return validatedParams
-        ? this.paramsMatch(def1.params, validatedParams)
-        : false;
+      return this.matchParamsWithEncoded(def1.params, def2.encoded);
     }
 
     if (def1.encoded && def2.params) {
-      const decoded = this.decodeQueryString(def1.encoded);
-      const validatedParams = this.validateQueryParams(decoded);
-      return validatedParams
-        ? this.paramsMatch(validatedParams, def2.params)
-        : false;
+      return this.matchParamsWithEncoded(def2.params, def1.encoded);
     }
 
     if (def1.params && def2.url) {
-      const urlParams = this.normalizeQueryParams(def2.url);
-      return this.paramsMatch(def1.params, urlParams);
+      return this.matchParamsWithUrl(def1.params, def2.url);
     }
 
     if (def1.url && def2.params) {
-      const urlParams = this.normalizeQueryParams(def1.url);
-      return this.paramsMatch(urlParams, def2.params);
+      return this.matchParamsWithUrl(def2.params, def1.url);
     }
 
     return false;
+  }
+
+  /**
+   * Match params with encoded string
+   */
+  private matchParamsWithEncoded(
+    params: Record<string, unknown>,
+    encoded: string,
+  ): boolean {
+    const decoded = this.decodeQueryString(encoded);
+    const validatedParams = this.validateQueryParams(decoded);
+    return validatedParams ? this.paramsMatch(params, validatedParams) : false;
+  }
+
+  /**
+   * Match params with URL
+   */
+  private matchParamsWithUrl(
+    params: Record<string, unknown>,
+    url: string,
+  ): boolean {
+    const urlParams = this.normalizeQueryParams(url);
+    return this.paramsMatch(params, urlParams);
   }
 
   /**
@@ -1319,70 +1520,124 @@ export class OpenAlexCLI {
     }>
   > {
     try {
-      // Use query index for comprehensive information
       const queryIndex = await this.loadQueryIndex(entityType);
       if (queryIndex) {
-        return await Promise.resolve(
-          queryIndex.queries.map((entry) => {
-            const filename = this.generateFilenameFromQuery(entry.query);
-            let decoded: Record<string, unknown> | null = null;
-
-            // Extract parameters from query definition
-            if (entry.query.params) {
-              decoded = entry.query.params;
-            } else if (entry.query.encoded) {
-              const decodedResult = this.decodeQueryString(entry.query.encoded);
-              decoded = this.validateQueryParams(decodedResult);
-            } else if (entry.query.url) {
-              decoded = this.normalizeQueryParams(entry.query.url);
-            }
-
-            return {
-              filename: filename ?? "unknown",
-              decoded,
-              ...(entry.contentHash !== undefined && {
-                contentHash: entry.contentHash,
-              }),
-            };
-          }),
-        );
+        return this.processQueryIndexEntries(queryIndex.queries);
       }
 
-      // Fallback to file system scan if no index
-      const queryDir = join(this.dataPath, entityType, "queries");
-      const { readdir } = await import("fs/promises");
-      const files = await readdir(queryDir);
-
-      const results: Array<{
-        filename: string;
-        decoded: Record<string, unknown> | null;
-        contentHash?: string;
-      }> = [];
-
-      for (const file of files) {
-        if (file.endsWith(".json") && file !== "index.json") {
-          try {
-            // Decode URL-encoded filename (remove .json extension first)
-            const filenameWithoutExt = file.replace(/\.json$/, "");
-            const decodedUrl = decodeURIComponent(filenameWithoutExt);
-            const decodedParams = this.normalizeQueryParams(decodedUrl);
-
-            results.push({
-              filename: file,
-              decoded: decodedParams,
-              // No contentHash property when undefined - omit entirely for exactOptionalPropertyTypes
-            });
-          } catch (error) {
-            // Failed to decode filename, skip this file
-            console.error(`Failed to decode filename ${file}:`, error);
-          }
-        }
-      }
-
-      return results;
+      return await this.scanQueryFilesFromFilesystem(entityType);
     } catch (error) {
-      console.error(`Failed to list cached queries:`, error);
+      logError(
+        logger,
+        FAILED_TO_LIST_CACHED_QUERIES_MESSAGE,
+        error,
+        LOG_CONTEXT_GENERAL,
+      );
       return [];
+    }
+  }
+
+  /**
+   * Process query index entries
+   */
+  private processQueryIndexEntries(queries: QueryIndexEntry[]): Array<{
+    filename: string;
+    decoded: Record<string, unknown> | null;
+    contentHash?: string;
+  }> {
+    return queries.map((entry) => {
+      const filename = this.generateFilenameFromQuery(entry.query);
+      const decoded = this.extractQueryParams(entry.query);
+
+      return {
+        filename: filename ?? "unknown",
+        decoded,
+        ...(entry.contentHash !== undefined && {
+          contentHash: entry.contentHash,
+        }),
+      };
+    });
+  }
+
+  /**
+   * Extract query parameters from query definition
+   */
+  private extractQueryParams(
+    queryDef: QueryDefinition,
+  ): Record<string, unknown> | null {
+    if (queryDef.params) {
+      return queryDef.params;
+    }
+    if (queryDef.encoded) {
+      const decodedResult = this.decodeQueryString(queryDef.encoded);
+      return this.validateQueryParams(decodedResult);
+    }
+    if (queryDef.url) {
+      return this.normalizeQueryParams(queryDef.url);
+    }
+    return null;
+  }
+
+  /**
+   * Scan query files from filesystem
+   */
+  private async scanQueryFilesFromFilesystem(
+    entityType: StaticEntityType,
+  ): Promise<
+    Array<{
+      filename: string;
+      decoded: Record<string, unknown> | null;
+      contentHash?: string;
+    }>
+  > {
+    const queryDir = join(this.dataPath, entityType, "queries");
+    const { readdir } = await import("fs/promises");
+    const files = await readdir(queryDir);
+
+    const results: Array<{
+      filename: string;
+      decoded: Record<string, unknown> | null;
+      contentHash?: string;
+    }> = [];
+
+    for (const file of files) {
+      if (file.endsWith(".json") && file !== "index.json") {
+        const result = await this.processQueryFile(queryDir, file);
+        if (result) results.push(result);
+      }
+    }
+
+    return results;
+  }
+
+  /**
+   * Process individual query file
+   */
+  private async processQueryFile(
+    queryDir: string,
+    file: string,
+  ): Promise<{
+    filename: string;
+    decoded: Record<string, unknown> | null;
+    contentHash?: string;
+  } | null> {
+    try {
+      const filenameWithoutExt = file.replace(/\.json$/, "");
+      const decodedUrl = decodeURIComponent(filenameWithoutExt);
+      const decodedParams = this.normalizeQueryParams(decodedUrl);
+
+      return {
+        filename: file,
+        decoded: decodedParams,
+      };
+    } catch (error) {
+      logError(
+        logger,
+        `${FAILED_TO_DECODE_FILENAME_MESSAGE} ${file}`,
+        error,
+        LOG_CONTEXT_GENERAL,
+      );
+      return null;
     }
   }
 
@@ -1520,10 +1775,15 @@ export class OpenAlexCLI {
       // TODO: Re-enable when openalex-client package is fixed
       // const stats = await this.cachedClient.getCacheStats();
 
-      logger.warn("general", "Cache stats not available - client disabled");
+      logger.warn(LOG_CONTEXT_GENERAL, CACHE_STATS_NOT_AVAILABLE_MESSAGE);
       return Promise.resolve({ enabled: false });
     } catch (error) {
-      logError(logger, "Failed to get cache stats", error, "general");
+      logError(
+        logger,
+        FAILED_TO_GET_CACHE_STATS_MESSAGE,
+        error,
+        LOG_CONTEXT_GENERAL,
+      );
       return Promise.resolve({ enabled: false });
     }
   }
@@ -1538,7 +1798,10 @@ export class OpenAlexCLI {
     void _entityType; // Acknowledge unused parameters
     void _entityId;
     // Simplified implementation for CLI - just return basic structure
-    logger.warn("general", "Field coverage analysis not available in CLI mode");
+    logger.warn(
+      LOG_CONTEXT_GENERAL,
+      FIELD_COVERAGE_ANALYSIS_NOT_AVAILABLE_MESSAGE,
+    );
     return Promise.resolve({
       memory: [],
       localStorage: [],
@@ -1566,16 +1829,16 @@ export class OpenAlexCLI {
     try {
       // TODO: Re-enable when synthetic cache is available
       logger.warn(
-        "general",
-        "Well-populated entities analysis not available - synthetic cache disabled",
+        LOG_CONTEXT_GENERAL,
+        WELL_POPULATED_ENTITIES_ANALYSIS_NOT_AVAILABLE_MESSAGE,
       );
       return Promise.resolve([]);
     } catch (error) {
       logError(
         logger,
-        "Failed to get well-populated entities",
+        FAILED_TO_GET_WELL_POPULATED_ENTITIES_MESSAGE,
         error,
-        "general",
+        LOG_CONTEXT_GENERAL,
       );
       return Promise.resolve([]);
     }
@@ -1595,12 +1858,17 @@ export class OpenAlexCLI {
     try {
       // TODO: Re-enable when synthetic cache is available
       logger.warn(
-        "general",
-        "Popular collections analysis not available - synthetic cache disabled",
+        LOG_CONTEXT_GENERAL,
+        POPULAR_COLLECTIONS_ANALYSIS_NOT_AVAILABLE_MESSAGE,
       );
       return Promise.resolve([]);
     } catch (error) {
-      logError(logger, "Failed to get popular collections", error, "general");
+      logError(
+        logger,
+        FAILED_TO_GET_POPULAR_COLLECTIONS_MESSAGE,
+        error,
+        LOG_CONTEXT_GENERAL,
+      );
       return Promise.resolve([]);
     }
   }
@@ -1613,12 +1881,17 @@ export class OpenAlexCLI {
       // TODO: Re-enable when openalex-client package is fixed
       // await this.cachedClient.clearCache();
       logger.warn(
-        "general",
-        "Synthetic cache clear not available - client disabled",
+        LOG_CONTEXT_GENERAL,
+        SYNTHETIC_CACHE_CLEAR_NOT_AVAILABLE_MESSAGE,
       );
       return Promise.resolve();
     } catch (error) {
-      logError(logger, "Failed to clear synthetic cache", error, "general");
+      logError(
+        logger,
+        FAILED_TO_CLEAR_SYNTHETIC_CACHE_MESSAGE,
+        error,
+        LOG_CONTEXT_GENERAL,
+      );
       return Promise.reject(
         error instanceof Error ? error : new Error(String(error)),
       );
@@ -1678,7 +1951,12 @@ export class OpenAlexCLI {
         gaps,
       };
     } catch (error) {
-      logError(logger, "Failed to analyze static data usage", error, "general");
+      logError(
+        logger,
+        FAILED_TO_ANALYZE_STATIC_DATA_USAGE_MESSAGE,
+        error,
+        LOG_CONTEXT_GENERAL,
+      );
       return {
         entityDistribution: {},
         totalEntities: 0,
@@ -1701,128 +1979,223 @@ export class OpenAlexCLI {
     queriesCached: number;
     errors: string[];
   }> {
-    const result: {
-      filesProcessed: number;
-      entitiesCached: number;
-      queriesCached: number;
-      errors: string[];
-    } = {
-      filesProcessed: 0,
-      entitiesCached: 0,
-      queriesCached: 0,
-      errors: [],
-    };
+    const result = this.initializeGenerationResult();
 
     try {
       const entityTypes = entityType ? [entityType] : SUPPORTED_ENTITIES;
 
       for (const type of entityTypes) {
-        try {
-          // Get well-populated entities from synthetic cache
-          const wellPopulated = await this.getWellPopulatedEntities(type, 50);
-
-          for (const entityData of wellPopulated) {
-            try {
-              if (!options.dryRun) {
-                // Check if entity exists in static cache already
-                const existing = await this.loadEntity(
-                  type,
-                  entityData.entityId,
-                );
-                if (existing && !options.force) {
-                  continue; // Skip if exists and not forcing
-                }
-
-                // TODO: Re-enable when openalex-client package is fixed
-                // Fetch entity from cached client (will use synthetic cache)
-                // const entity = await this.cachedClient.getById(
-                //   type, // endpoint
-                //   entityData.entityId,
-                //   { select: entityData.fields } // only fetch fields we know about
-                // );
-                const entity: unknown = null; // Placeholder until client is fixed
-
-                if (
-                  entity &&
-                  typeof entity === "object" &&
-                  "id" in entity &&
-                  "display_name" in entity &&
-                  typeof (entity as Record<string, unknown>)["id"] ===
-                    "string" &&
-                  typeof (entity as Record<string, unknown>)["display_name"] ===
-                    "string"
-                ) {
-                  // Type guard ensures entity has required structure
-                  const typedEntity = entity as {
-                    id: string;
-                    display_name: string;
-                    [key: string]: unknown;
-                  };
-                  const validEntity: {
-                    id: string;
-                    display_name: string;
-                    [key: string]: unknown;
-                  } = {
-                    id: typedEntity.id,
-                    display_name: typedEntity.display_name,
-                    ...Object.fromEntries(
-                      Object.entries(typedEntity).filter(
-                        ([key]) => key !== "id" && key !== "display_name",
-                      ),
-                    ),
-                  };
-                  await this.saveEntityToCache(type, validEntity);
-                  result.entitiesCached++;
-                }
-              } else {
-                result.entitiesCached++; // Dry run counting
-              }
-
-              result.filesProcessed++;
-            } catch (error) {
-              result.errors.push(
-                `Failed to process entity ${entityData.entityId}: ${String(error)}`,
-              );
-            }
-          }
-
-          // Generate popular collections
-          const popularCollections = await this.getPopularCollections(10);
-          for (const collection of popularCollections) {
-            try {
-              if (!options.dryRun) {
-                // Extract entity type and query params from collection query key
-                const entityTypeMatch = collection.queryKey.match(/^(\w+)\|/);
-                if (entityTypeMatch && entityTypeMatch[1] === type) {
-                  // This is a collection for the current entity type
-                  // We could regenerate the query, but for now just count it
-                  result.queriesCached++;
-                }
-              } else {
-                result.queriesCached++; // Dry run counting
-              }
-            } catch (error) {
-              result.errors.push(
-                `Failed to process collection ${collection.queryKey}: ${String(error)}`,
-              );
-            }
-          }
-        } catch (error) {
-          result.errors.push(
-            `Failed to process entity type ${type}: ${String(error)}`,
-          );
-        }
+        await this.processEntityTypeForGeneration(type, options, result);
       }
     } catch (error) {
-      result.errors.push(`Generation failed: ${String(error)}`);
+      result.errors.push(`${GENERATION_FAILED_MESSAGE}: ${String(error)}`);
     }
 
     return result;
   }
+
+  /**
+   * Initialize generation result object
+   */
+  private initializeGenerationResult(): {
+    filesProcessed: number;
+    entitiesCached: number;
+    queriesCached: number;
+    errors: string[];
+  } {
+    return {
+      filesProcessed: 0,
+      entitiesCached: 0,
+      queriesCached: 0,
+      errors: [],
+    };
+  }
+
+  /**
+   * Process entity type for generation
+   */
+  private async processEntityTypeForGeneration(
+    type: StaticEntityType,
+    options: { dryRun?: boolean; force?: boolean },
+    result: {
+      filesProcessed: number;
+      entitiesCached: number;
+      queriesCached: number;
+      errors: string[];
+    },
+  ): Promise<void> {
+    try {
+      await this.processWellPopulatedEntities(type, options, result);
+      await this.processPopularCollections(type, options, result);
+    } catch (error) {
+      result.errors.push(
+        `${FAILED_TO_PROCESS_ENTITY_TYPE_MESSAGE} ${type}: ${String(error)}`,
+      );
+    }
+  }
+
+  /**
+   * Process well-populated entities
+   */
+  private async processWellPopulatedEntities(
+    type: StaticEntityType,
+    options: { dryRun?: boolean; force?: boolean },
+    result: {
+      filesProcessed: number;
+      entitiesCached: number;
+      queriesCached: number;
+      errors: string[];
+    },
+  ): Promise<void> {
+    const wellPopulated = await this.getWellPopulatedEntities(type, 50);
+
+    for (const entityData of wellPopulated) {
+      try {
+        await this.processEntityForCaching(type, entityData, options, result);
+        result.filesProcessed++;
+      } catch (error) {
+        result.errors.push(
+          `${FAILED_TO_PROCESS_ENTITY_MESSAGE} ${entityData.entityId}: ${String(error)}`,
+        );
+      }
+    }
+  }
+
+  /**
+   * Process entity for caching
+   */
+  private async processEntityForCaching(
+    type: StaticEntityType,
+    entityData: { entityId: string; fieldCount: number; fields: string[] },
+    options: { dryRun?: boolean; force?: boolean },
+    result: {
+      filesProcessed: number;
+      entitiesCached: number;
+      queriesCached: number;
+      errors: string[];
+    },
+  ): Promise<void> {
+    if (options.dryRun) {
+      result.entitiesCached++;
+      return;
+    }
+
+    const existing = await this.loadEntity(type, entityData.entityId);
+    if (existing && !options.force) {
+      return; // Skip if exists and not forcing
+    }
+
+    const entity = await this.fetchEntityForCaching(type, entityData);
+    if (entity) {
+      await this.saveEntityToCache(type, entity);
+      result.entitiesCached++;
+    }
+  }
+
+  /**
+   * Fetch entity for caching (placeholder until client is fixed)
+   */
+  private async fetchEntityForCaching(
+    _type: StaticEntityType,
+    _entityData: { entityId: string; fieldCount: number; fields: string[] },
+  ): Promise<{
+    id: string;
+    display_name: string;
+    [key: string]: unknown;
+  } | null> {
+    // TODO: Re-enable when openalex-client package is fixed
+    const entity: unknown = null; // Placeholder until client is fixed
+
+    if (this.isValidEntityForCaching(entity)) {
+      return this.normalizeEntityForCaching(entity);
+    }
+    return null;
+  }
+
+  /**
+   * Check if entity is valid for caching
+   */
+  private isValidEntityForCaching(entity: unknown): entity is {
+    id: string;
+    display_name: string;
+    [key: string]: unknown;
+  } {
+    return Boolean(
+      entity &&
+        typeof entity === "object" &&
+        "id" in entity &&
+        "display_name" in entity &&
+        typeof (entity as Record<string, unknown>)["id"] === "string" &&
+        typeof (entity as Record<string, unknown>)["display_name"] === "string",
+    );
+  }
+
+  /**
+   * Normalize entity for caching
+   */
+  private normalizeEntityForCaching(entity: {
+    id: string;
+    display_name: string;
+    [key: string]: unknown;
+  }): {
+    id: string;
+    display_name: string;
+    [key: string]: unknown;
+  } {
+    return {
+      id: entity.id,
+      display_name: entity.display_name,
+      ...Object.fromEntries(
+        Object.entries(entity).filter(
+          ([key]) => key !== "id" && key !== "display_name",
+        ),
+      ),
+    };
+  }
+
+  /**
+   * Process popular collections
+   */
+  private async processPopularCollections(
+    type: StaticEntityType,
+    options: { dryRun?: boolean; force?: boolean },
+    result: {
+      filesProcessed: number;
+      entitiesCached: number;
+      queriesCached: number;
+      errors: string[];
+    },
+  ): Promise<void> {
+    const popularCollections = await this.getPopularCollections(10);
+
+    for (const collection of popularCollections) {
+      try {
+        if (
+          options.dryRun ||
+          this.isCollectionForEntityType(collection, type)
+        ) {
+          result.queriesCached++;
+        }
+      } catch (error) {
+        result.errors.push(
+          `${FAILED_TO_PROCESS_COLLECTION_MESSAGE} ${collection.queryKey}: ${String(error)}`,
+        );
+      }
+    }
+  }
+
+  /**
+   * Check if collection is for the specified entity type
+   */
+  private isCollectionForEntityType(
+    collection: { queryKey: string; entityCount: number; pageCount: number },
+    type: StaticEntityType,
+  ): boolean {
+    const entityTypeMatch = collection.queryKey.match(/^(\w+)\|/);
+    return entityTypeMatch ? entityTypeMatch[1] === type : false;
+  }
 }
-/* eslint-enable no-console */
 
 // Export types for testing
 export { SUPPORTED_ENTITIES };
 export type { CacheOptions, IndexEntry, QueryOptions, UnifiedIndex };
-

@@ -4,7 +4,15 @@
  */
 
 import { logError, logger } from "@academic-explorer/utils/logger";
-import { access, mkdir, readdir, readFile, rmdir, stat, writeFile } from "fs/promises";
+import {
+  access,
+  mkdir,
+  readdir,
+  readFile,
+  rmdir,
+  stat,
+  writeFile,
+} from "fs/promises";
 import { dirname, join, resolve } from "path";
 import { fileURLToPath } from "url";
 import { z } from "zod";
@@ -46,7 +54,6 @@ interface CacheGenerationOptions {
   dryRun?: boolean;
 }
 
-
 // Zod schemas for validation
 const EntityIndexEntrySchema = z.object({
   $ref: z.string(),
@@ -57,7 +64,22 @@ const EntityIndexEntrySchema = z.object({
 const UnifiedIndexSchema = z.record(z.string(), EntityIndexEntrySchema);
 
 const STATIC_DATA_PATH = "apps/web/public/data/openalex";
-const SUPPORTED_ENTITIES: readonly StaticEntityType[] = ["authors", "works", "institutions", "topics", "publishers", "funders"] as const;
+const SUPPORTED_ENTITIES: readonly StaticEntityType[] = [
+  "authors",
+  "works",
+  "institutions",
+  "topics",
+  "publishers",
+  "funders",
+] as const;
+
+// Constants for repeated strings
+const LOG_CONTEXT = "static-cache";
+const INDEX_FILENAME = "index.json";
+const PRODUCTION_MODE_ERROR = "Cannot generate static cache in production mode";
+const PRODUCTION_CLEAR_ERROR = "Cannot clear static cache in production mode";
+const VALIDATION_FAILED_MESSAGE = "Cache validation failed";
+const STATISTICS_FAILED_MESSAGE = "Failed to get cache statistics";
 
 export class StaticCacheManager {
   private config: StaticCacheConfig;
@@ -75,14 +97,20 @@ export class StaticCacheManager {
     this.config = {
       mode,
       basePath: config?.basePath ?? join(this.projectRoot, STATIC_DATA_PATH),
-      githubPagesUrl: config?.githubPagesUrl ?? "https://your-username.github.io/academic-explorer/data/openalex",
+      githubPagesUrl:
+        config?.githubPagesUrl ??
+        "https://your-username.github.io/academic-explorer/data/openalex",
       ...config,
     };
 
-    logger.debug("static-cache", `Initialized StaticCacheManager in ${mode} mode`, {
-      basePath: this.config.basePath,
-      githubPagesUrl: this.config.githubPagesUrl,
-    });
+    logger.debug(
+      LOG_CONTEXT,
+      `Initialized StaticCacheManager in ${mode} mode`,
+      {
+        basePath: this.config.basePath,
+        githubPagesUrl: this.config.githubPagesUrl,
+      },
+    );
   }
 
   /**
@@ -132,11 +160,12 @@ export class StaticCacheManager {
       const validation = await this.validateCache();
       stats.isHealthy = validation.isValid;
       stats.healthIssues = [...validation.errors, ...validation.warnings];
-
     } catch (error) {
       stats.isHealthy = false;
-      stats.healthIssues.push(`Failed to collect statistics: ${error instanceof Error ? error.message : String(error)}`);
-      logError(logger, "Failed to get cache statistics", error, "static-cache");
+      stats.healthIssues.push(
+        `Failed to collect statistics: ${error instanceof Error ? error.message : String(error)}`,
+      );
+      logError(logger, STATISTICS_FAILED_MESSAGE, error, LOG_CONTEXT);
     }
 
     return stats;
@@ -161,11 +190,12 @@ export class StaticCacheManager {
       }
 
       result.isValid = result.errors.length === 0;
-
     } catch (error) {
       result.isValid = false;
-      result.errors.push(`Validation failed: ${error instanceof Error ? error.message : String(error)}`);
-      logError(logger, "Cache validation failed", error, "static-cache");
+      result.errors.push(
+        `Validation failed: ${error instanceof Error ? error.message : String(error)}`,
+      );
+      logError(logger, VALIDATION_FAILED_MESSAGE, error, LOG_CONTEXT);
     }
 
     return result;
@@ -174,10 +204,15 @@ export class StaticCacheManager {
   /**
    * Validate a specific entity type
    */
-  private async validateEntityType(entityType: StaticEntityType, result: CacheValidationResult): Promise<void> {
+  private async validateEntityType(
+    entityType: StaticEntityType,
+    result: CacheValidationResult,
+  ): Promise<void> {
     if (this.config.mode === "production") {
       // In production mode, we can't validate local files
-      result.warnings.push(`Skipping file validation in production mode for ${entityType}`);
+      result.warnings.push(
+        `Skipping file validation in production mode for ${entityType}`,
+      );
       result.entityCounts[entityType] = 0;
       return;
     }
@@ -193,7 +228,7 @@ export class StaticCacheManager {
     }
 
     // Check for index.json
-    const indexPath = join(entityDir, "index.json");
+    const indexPath = join(entityDir, INDEX_FILENAME);
     try {
       await access(indexPath);
 
@@ -203,24 +238,32 @@ export class StaticCacheManager {
       const validation = UnifiedIndexSchema.safeParse(index);
 
       if (!validation.success) {
-        result.errors.push(`Invalid index format for ${entityType}: ${validation.error.message}`);
+        result.errors.push(
+          `Invalid index format for ${entityType}: ${validation.error.message}`,
+        );
       } else {
         result.entityCounts[entityType] = Object.keys(validation.data).length;
 
         // Check for referenced files
         for (const [entityId, entry] of Object.entries(validation.data)) {
-          const filePath = join(entityDir, entry.$ref.startsWith("./") ? entry.$ref.substring(2) : entry.$ref);
+          const filePath = join(
+            entityDir,
+            entry.$ref.startsWith("./") ? entry.$ref.substring(2) : entry.$ref,
+          );
           try {
             await access(filePath);
           } catch {
-            result.corruptedFiles.push(`${entityType}/${entry.$ref} (referenced by ${entityId})`);
+            result.corruptedFiles.push(
+              `${entityType}/${entry.$ref} (referenced by ${entityId})`,
+            );
           }
         }
       }
-
     } catch (error) {
       result.missingIndexes.push(entityType);
-      result.errors.push(`Missing or corrupted index for ${entityType}: ${error instanceof Error ? error.message : String(error)}`);
+      result.errors.push(
+        `Missing or corrupted index for ${entityType}: ${error instanceof Error ? error.message : String(error)}`,
+      );
       result.entityCounts[entityType] = 0;
     }
   }
@@ -228,12 +271,14 @@ export class StaticCacheManager {
   /**
    * Generate static cache from current data patterns
    */
-  async generateStaticCache(options: CacheGenerationOptions = {}): Promise<void> {
+  async generateStaticCache(
+    options: CacheGenerationOptions = {},
+  ): Promise<void> {
     if (this.config.mode === "production") {
-      throw new Error("Cannot generate static cache in production mode");
+      throw new Error(PRODUCTION_MODE_ERROR);
     }
 
-    logger.debug("static-cache", "Starting static cache generation", options);
+    logger.debug(LOG_CONTEXT, "Starting static cache generation", options);
 
     const entityTypes = options.entityTypes ?? SUPPORTED_ENTITIES;
     const totalSteps = entityTypes.length;
@@ -241,25 +286,36 @@ export class StaticCacheManager {
 
     for (const entityType of entityTypes) {
       currentStep++;
-      logger.debug("static-cache", `Generating cache for ${entityType} (${currentStep.toString()}/${totalSteps.toString()})`);
+      logger.debug(
+        LOG_CONTEXT,
+        `Generating cache for ${entityType} (${currentStep.toString()}/${totalSteps.toString()})`,
+      );
 
       try {
         await this.generateEntityTypeCache(entityType, options);
       } catch (error) {
-        logError(logger, `Failed to generate cache for ${entityType}`, error, "static-cache");
+        logError(
+          logger,
+          `Failed to generate cache for ${entityType}`,
+          error,
+          LOG_CONTEXT,
+        );
         if (!options.force) {
           throw error;
         }
       }
     }
 
-    logger.debug("static-cache", "Static cache generation completed");
+    logger.debug(LOG_CONTEXT, "Static cache generation completed");
   }
 
   /**
    * Generate cache for a specific entity type
    */
-  private async generateEntityTypeCache(entityType: StaticEntityType, options: CacheGenerationOptions): Promise<void> {
+  private async generateEntityTypeCache(
+    entityType: StaticEntityType,
+    options: CacheGenerationOptions,
+  ): Promise<void> {
     // This is a placeholder - in a real implementation, this would:
     // 1. Analyze usage patterns from synthetic cache
     // 2. Fetch popular/well-populated entities
@@ -267,7 +323,10 @@ export class StaticCacheManager {
     // 4. Update indexes
 
     if (options.dryRun) {
-      logger.debug("static-cache", `DRY RUN: Would generate cache for ${entityType}`);
+      logger.debug(
+        LOG_CONTEXT,
+        `DRY RUN: Would generate cache for ${entityType}`,
+      );
       return;
     }
 
@@ -276,12 +335,12 @@ export class StaticCacheManager {
     await mkdir(entityDir, { recursive: true });
 
     // Create empty index if none exists
-    const indexPath = join(entityDir, "index.json");
+    const indexPath = join(entityDir, INDEX_FILENAME);
     try {
       await access(indexPath);
     } catch {
       await writeFile(indexPath, JSON.stringify({}, null, 2));
-      logger.debug("static-cache", `Created empty index for ${entityType}`);
+      logger.debug(LOG_CONTEXT, `Created empty index for ${entityType}`);
     }
   }
 
@@ -290,7 +349,7 @@ export class StaticCacheManager {
    */
   async clearStaticCache(entityTypes?: StaticEntityType[]): Promise<void> {
     if (this.config.mode === "production") {
-      throw new Error("Cannot clear static cache in production mode");
+      throw new Error(PRODUCTION_CLEAR_ERROR);
     }
 
     const typesToClear = entityTypes ?? SUPPORTED_ENTITIES;
@@ -299,17 +358,28 @@ export class StaticCacheManager {
       try {
         const entityDir = join(this.config.basePath, entityType);
         await rmdir(entityDir, { recursive: true });
-        logger.debug("static-cache", `Cleared cache for ${entityType}`);
+        logger.debug(LOG_CONTEXT, `Cleared cache for ${entityType}`);
       } catch (error) {
-        if (error instanceof Error && 'code' in error && error.code === "ENOENT") {
+        if (
+          error instanceof Error &&
+          "code" in error &&
+          error.code === "ENOENT"
+        ) {
           // Directory doesn't exist, which is fine
           continue;
         }
-        logError(logger, `Failed to clear cache for ${entityType}`, error, "static-cache");
+        logError(
+          logger,
+          `Failed to clear cache for ${entityType}`,
+          error,
+          LOG_CONTEXT,
+        );
       }
     }
 
-    logger.debug("static-cache", "Static cache cleared", { entityTypes: typesToClear });
+    logger.debug(LOG_CONTEXT, "Static cache cleared", {
+      entityTypes: typesToClear,
+    });
   }
 
   /**
@@ -322,7 +392,7 @@ export class StaticCacheManager {
     }
 
     try {
-      const indexPath = join(this.config.basePath, entityType, "index.json");
+      const indexPath = join(this.config.basePath, entityType, INDEX_FILENAME);
       const indexContent = await readFile(indexPath, "utf-8");
       const index = JSON.parse(indexContent);
       return Object.keys(index).length;
@@ -393,6 +463,6 @@ export class StaticCacheManager {
    */
   updateConfig(newConfig: Partial<StaticCacheConfig>): void {
     this.config = { ...this.config, ...newConfig };
-    logger.debug("static-cache", "Cache configuration updated", this.config);
+    logger.debug(LOG_CONTEXT, "Cache configuration updated", this.config);
   }
 }

@@ -9,6 +9,11 @@ import { detectEntityType, toStaticEntityType } from "./entity-detection.js";
 // Mock fetch to prevent actual API calls
 global.fetch = vi.fn();
 
+// Constants for repeated strings
+const SKIP_NO_STATIC_DATA =
+  "Skipping test: No static data available. Run 'pnpm cli static:generate' to generate static data.";
+const SKIP_NO_AUTHOR_DATA = "Skipping test: No static author data available.";
+
 describe("OpenAlexCLI Integration Tests", () => {
   let cli: OpenAlexCLI;
 
@@ -25,9 +30,7 @@ describe("OpenAlexCLI Integration Tests", () => {
 
       // If no static data is available, skip the test
       if (!hasAuthors && !hasWorks && !hasInstitutions) {
-        console.log(
-          "Skipping test: No static data available. Run 'pnpm cli static:generate' to generate static data.",
-        );
+        console.log(SKIP_NO_STATIC_DATA);
         return;
       }
 
@@ -41,7 +44,7 @@ describe("OpenAlexCLI Integration Tests", () => {
     it("should load author index successfully", async () => {
       const hasAuthors = await cli.hasStaticData("authors");
       if (!hasAuthors) {
-        console.log("Skipping test: No static author data available.");
+        console.log(SKIP_NO_AUTHOR_DATA);
         return;
       }
 
@@ -57,7 +60,7 @@ describe("OpenAlexCLI Integration Tests", () => {
     it("should load specific author entity", async () => {
       const hasAuthors = await cli.hasStaticData("authors");
       if (!hasAuthors) {
-        console.log("Skipping test: No static author data available.");
+        console.log(SKIP_NO_AUTHOR_DATA);
         return;
       }
 
@@ -78,7 +81,7 @@ describe("OpenAlexCLI Integration Tests", () => {
     it("should search authors by name", async () => {
       const hasAuthors = await cli.hasStaticData("authors");
       if (!hasAuthors) {
-        console.log("Skipping test: No static author data available.");
+        console.log(SKIP_NO_AUTHOR_DATA);
         return;
       }
 
