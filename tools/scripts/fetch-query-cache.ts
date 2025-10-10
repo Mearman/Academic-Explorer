@@ -7,7 +7,8 @@ import { join } from "path";
 // TODO: Fix imports once files exist
 // import { fetchAndCacheQueries } from "../../apps/academic-explorer/src/lib/utils/query-cache-builder.ts";
 // import { generateAllIndexes } from "../../apps/academic-explorer/src/lib/utils/static-data-index-generator.ts";
-const fetchAndCacheQueries = (..._args: unknown[]) => Promise.resolve({ success: 0, failed: 0, errors: [] });
+const fetchAndCacheQueries = (..._args: unknown[]) =>
+  Promise.resolve({ success: 0, failed: 0, errors: [] });
 const generateAllIndexes = (..._args: unknown[]) => Promise.resolve();
 
 /**
@@ -16,24 +17,24 @@ const generateAllIndexes = (..._args: unknown[]) => Promise.resolve();
 const QUERIES_TO_CACHE = [
   {
     url: "https://api.openalex.org/works?filter=author.id:A5017898742&select=id",
-    entityType: "works"
+    entityType: "works",
   },
   {
     url: "https://api.openalex.org/works?filter=author.id:A5017898742&select=id,display_name",
-    entityType: "works"
+    entityType: "works",
   },
   {
     url: "https://api.openalex.org/works?filter=author.id:A5017898742&select=id,display_name,publication_year",
-    entityType: "works"
+    entityType: "works",
   },
   {
     url: "https://api.openalex.org/works?filter=author.id:A5017898742&per_page=50",
-    entityType: "works"
+    entityType: "works",
   },
   {
     url: "https://api.openalex.org/authors?filter=last_known_institution.id:I27837315&select=id,display_name",
-    entityType: "authors"
-  }
+    entityType: "authors",
+  },
 ];
 
 async function main() {
@@ -45,7 +46,10 @@ async function main() {
     console.log(`🔗 Queries to cache: ${QUERIES_TO_CACHE.length}`);
 
     // Fetch and cache all queries
-    const { success, failed, errors } = await fetchAndCacheQueries(QUERIES_TO_CACHE, staticDataDir);
+    const { success, failed, errors } = await fetchAndCacheQueries(
+      QUERIES_TO_CACHE,
+      staticDataDir,
+    );
 
     console.log(`✅ Successfully cached: ${success} queries`);
     if (failed > 0) {
@@ -61,31 +65,43 @@ async function main() {
     await generateAllIndexes(staticDataDir);
 
     console.log("🎉 Query cache generation completed successfully!");
-
   } catch (error) {
     console.error("❌ Error in query cache generation:", error);
     process.exit(1);
   }
 }
 
+function determineEntityType(url: string): string {
+  const entityPatterns = [
+    { pattern: "/works", type: "works" },
+    { pattern: "/authors", type: "authors" },
+    { pattern: "/institutions", type: "institutions" },
+    { pattern: "/sources", type: "sources" },
+    { pattern: "/topics", type: "topics" },
+    { pattern: "/publishers", type: "publishers" },
+    { pattern: "/funders", type: "funders" },
+  ];
+
+  for (const { pattern, type } of entityPatterns) {
+    if (url.includes(pattern)) {
+      return type;
+    }
+  }
+
+  return "works"; // default
+}
+
 // Add specific queries if provided as command line arguments
 if (process.argv.length > 2) {
-  const additionalQueries = process.argv.slice(2).map(url => {
-    // Determine entity type from URL
-    const entityType = url.includes("/works") ? "works"
-                    : url.includes("/authors") ? "authors"
-                    : url.includes("/institutions") ? "institutions"
-                    : url.includes("/sources") ? "sources"
-                    : url.includes("/topics") ? "topics"
-                    : url.includes("/publishers") ? "publishers"
-                    : url.includes("/funders") ? "funders"
-                    : "works"; // default
-
+  const additionalQueries = process.argv.slice(2).map((url) => {
+    const entityType = determineEntityType(url);
     return { url, entityType };
   });
 
   QUERIES_TO_CACHE.push(...additionalQueries);
-  console.log(`📎 Added ${additionalQueries.length} additional queries from command line`);
+  console.log(
+    `📎 Added ${additionalQueries.length} additional queries from command line`,
+  );
 }
 
 main().catch(console.error);

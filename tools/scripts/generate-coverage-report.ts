@@ -4,9 +4,9 @@
  * Reads coverage-summary.json and outputs formatted report
  */
 
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,6 +17,9 @@ const THRESHOLDS = {
   branches: 75,
   statements: 80,
 } as const;
+
+const TABLE_HEADER = "| Metric | Coverage | Status |";
+const TABLE_SEPARATOR = "|--------|----------|--------|";
 
 interface CoverageMetric {
   pct: number;
@@ -38,66 +41,94 @@ interface Metric {
   threshold: number;
 }
 
-type ReportFormat = 'summary' | 'pr-comment';
+type ReportFormat = "summary" | "pr-comment";
 
 function getStatusIcon(actual: number, threshold: number): string {
-  return actual >= threshold ? '✅' : '❌';
+  return actual >= threshold ? "✅" : "❌";
 }
 
 function getStatusText(actual: number, threshold: number): string {
-  return actual >= threshold ? 'Pass' : 'Fail';
+  return actual >= threshold ? "Pass" : "Fail";
 }
 
-function generateReport(coverageData: CoverageData, format: ReportFormat = 'summary'): void {
+function generateReport(
+  coverageData: CoverageData,
+  format: ReportFormat = "summary",
+): void {
   const { total } = coverageData;
 
   const metrics: Metric[] = [
-    { name: 'Lines', key: 'lines', actual: total.lines.pct, threshold: THRESHOLDS.lines },
-    { name: 'Functions', key: 'functions', actual: total.functions.pct, threshold: THRESHOLDS.functions },
-    { name: 'Branches', key: 'branches', actual: total.branches.pct, threshold: THRESHOLDS.branches },
-    { name: 'Statements', key: 'statements', actual: total.statements.pct, threshold: THRESHOLDS.statements },
+    {
+      name: "Lines",
+      key: "lines",
+      actual: total.lines.pct,
+      threshold: THRESHOLDS.lines,
+    },
+    {
+      name: "Functions",
+      key: "functions",
+      actual: total.functions.pct,
+      threshold: THRESHOLDS.functions,
+    },
+    {
+      name: "Branches",
+      key: "branches",
+      actual: total.branches.pct,
+      threshold: THRESHOLDS.branches,
+    },
+    {
+      name: "Statements",
+      key: "statements",
+      actual: total.statements.pct,
+      threshold: THRESHOLDS.statements,
+    },
   ];
 
-  if (format === 'summary') {
-    console.log('| Metric | Coverage | Status |');
-    console.log('|--------|----------|--------|');
+  if (format === "summary") {
+    console.log(TABLE_HEADER);
+    console.log(TABLE_SEPARATOR);
 
-    metrics.forEach(metric => {
+    metrics.forEach((metric) => {
       const icon = getStatusIcon(metric.actual, metric.threshold);
       console.log(`| ${metric.name} | ${metric.actual}% | ${icon} |`);
     });
-  } else if (format === 'pr-comment') {
-    console.log('## Coverage Report\n');
-    console.log('| Metric | Coverage | Status |');
-    console.log('|--------|----------|--------|');
+  } else if (format === "pr-comment") {
+    console.log("## Coverage Report\n");
+    console.log(TABLE_HEADER);
+    console.log(TABLE_SEPARATOR);
 
-    metrics.forEach(metric => {
+    metrics.forEach((metric) => {
       const status = `${getStatusIcon(metric.actual, metric.threshold)} ${getStatusText(metric.actual, metric.threshold)}`;
       console.log(`| ${metric.name} | ${metric.actual}% | ${status} |`);
     });
 
-    console.log(`\n**Thresholds:** Lines ≥${THRESHOLDS.lines}%, Functions ≥${THRESHOLDS.functions}%, Branches ≥${THRESHOLDS.branches}%, Statements ≥${THRESHOLDS.statements}%`);
+    console.log(
+      `\n**Thresholds:** Lines ≥${THRESHOLDS.lines}%, Functions ≥${THRESHOLDS.functions}%, Branches ≥${THRESHOLDS.branches}%, Statements ≥${THRESHOLDS.statements}%`,
+    );
   }
 }
 
 function main(): void {
-  const format = (process.argv[2] || 'summary') as ReportFormat;
-  const coverageFile = process.argv[3] || 'coverage-reports/coverage-summary.json';
+  const format = (process.argv[2] || "summary") as ReportFormat;
+  const coverageFile =
+    process.argv[3] || "coverage-reports/coverage-summary.json";
 
   if (!fs.existsSync(coverageFile)) {
     console.error(`Coverage file not found: ${coverageFile}`);
-    if (format === 'summary') {
-      console.log('| Metric | Coverage | Status |');
-      console.log('|--------|----------|--------|');
-      console.log('| No coverage data | - | ❌ |');
+    if (format === "summary") {
+      console.log(TABLE_HEADER);
+      console.log(TABLE_SEPARATOR);
+      console.log("| No coverage data | - | ❌ |");
     } else {
-      console.log('## Coverage Report\n\n❌ No coverage data found');
+      console.log("## Coverage Report\n\n❌ No coverage data found");
     }
     process.exit(1);
   }
 
   try {
-    const coverageData: CoverageData = JSON.parse(fs.readFileSync(coverageFile, 'utf8'));
+    const coverageData: CoverageData = JSON.parse(
+      fs.readFileSync(coverageFile, "utf8"),
+    );
     generateReport(coverageData, format);
   } catch (error) {
     console.error(`Error reading coverage file: ${(error as Error).message}`);
