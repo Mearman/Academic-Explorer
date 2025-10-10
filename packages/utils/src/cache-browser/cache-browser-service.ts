@@ -3,7 +3,7 @@
  * Scans storage systems and provides metadata about cached OpenAlex entities
  */
 
-import { openDB, IDBPDatabase } from "idb";
+import Dexie from "dexie";
 import type { GenericLogger } from "../logger.js";
 import type {
   CachedEntityMetadata,
@@ -64,7 +64,7 @@ const ENTITY_TYPE_PATTERNS: Record<EntityType, RegExp[]> = {
 export class CacheBrowserService {
   private config: CacheBrowserConfig;
   private logger?: GenericLogger;
-  private dbCache?: IDBPDatabase;
+  private dbCache?: Dexie;
 
   constructor(
     config: Partial<CacheBrowserConfig> = {},
@@ -234,24 +234,26 @@ export class CacheBrowserService {
       const db = await this.getDB();
       const entities: CachedEntityMetadata[] = [];
 
-      // Scan all object stores that might contain entities
-      const storeNames = Array.from(db.objectStoreNames);
+      // Get all table names from the Dexie database
+      const tableNames = db.tables.map((table) => table.name);
 
-      for (const storeName of storeNames) {
+      for (const tableName of tableNames) {
         try {
-          const tx = db.transaction(storeName, "readonly");
-          const store = tx.objectStore(storeName);
-          let cursor = await store.openCursor();
+          const table = db.table(tableName);
+          await table.each((item: unknown, cursor) => {
+            if (entities.length >= this.config.maxScanItems) {
+              return false; // Stop iteration
+            }
 
-          while (cursor && entities.length < this.config.maxScanItems) {
-            const key = cursor.key as string;
-            const value = cursor.value as unknown;
+            // Dexie stores objects with keys, so we need to extract key and value
+            const key = cursor.primaryKey as string;
+            const value = item;
 
             const entityMetadata = this.extractEntityMetadata(
               key,
               value,
               "indexeddb",
-              storeName,
+              tableName,
             );
 
             if (
@@ -260,15 +262,11 @@ export class CacheBrowserService {
             ) {
               entities.push(entityMetadata);
             }
-
-            cursor = await cursor.continue();
-          }
-
-          await tx.done;
+          });
         } catch (error) {
           this.logger?.warn(
             CACHE_BROWSER_LOG_CONTEXT,
-            `Failed to scan store ${storeName}`,
+            `Failed to scan table ${tableName}`,
             { error },
           );
         }
@@ -682,9 +680,13 @@ export class CacheBrowserService {
     return cleared;
   }
 
-  private async getDB(): Promise<IDBPDatabase> {
+  private async getDB(): Promise<Dexie> {
     if (!this.dbCache) {
-      this.dbCache = await openDB(this.config.dbName, this.config.version);
+      // Create a Dexie instance for the database
+      // We'll use dynamic table access since we need to scan arbitrary stores
+      this.dbCache = new Dexie(this.config.dbName);
+      // Open the database without schema definition to allow dynamic access
+      await this.dbCache.open();
     }
     return this.dbCache;
   }

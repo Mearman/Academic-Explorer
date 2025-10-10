@@ -86,7 +86,7 @@
     "dev": "tsc -b --watch"
   },
   "dependencies": {
-    "idb": "^8.0.3",
+    "dexie": "^4.2.1",
     "lodash-es": "^4.17.21"
   },
   "devDependencies": {

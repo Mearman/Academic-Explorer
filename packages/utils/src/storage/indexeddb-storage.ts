@@ -3,7 +3,7 @@
  * This is a generified version that can be used across packages without domain dependencies
  */
 
-import { openDB, IDBPDatabase } from "idb";
+import Dexie, { type Table } from "dexie";
 import { GenericLogger } from "../logger.js";
 
 // Generic storage interface compatible with various state management libraries
@@ -23,8 +23,21 @@ export interface StorageConfig {
   version: number;
 }
 
+// Dexie database class for key-value storage
+class KeyValueDB extends Dexie {
+  keyValueStore!: Table<{ key: string; value: string }>;
+
+  constructor(dbName: string, storeName: string, version: number) {
+    super(dbName);
+    this.version(version).stores({
+      [storeName]: "key,value",
+    });
+    this.keyValueStore = this.table(storeName);
+  }
+}
+
 // Cache the database connection per configuration
-const dbCache = new Map<string, Promise<IDBPDatabase>>();
+const dbCache = new Map<string, Promise<KeyValueDB>>();
 
 // In-memory fallback for test environments
 const memoryStorage = new Map<string, string>();
@@ -37,17 +50,13 @@ const isIndexedDBAvailable = (): boolean => {
   }
 };
 
-const getDB = (config: StorageConfig): Promise<IDBPDatabase> => {
+const getDB = (config: StorageConfig): Promise<KeyValueDB> => {
   const cacheKey = `${config.dbName}-${config.version}`;
 
   if (!dbCache.has(cacheKey)) {
-    const dbPromise = openDB(config.dbName, config.version, {
-      upgrade(db) {
-        if (!db.objectStoreNames.contains(config.storeName)) {
-          db.createObjectStore(config.storeName);
-        }
-      },
-    });
+    const dbPromise = Promise.resolve(
+      new KeyValueDB(config.dbName, config.storeName, config.version),
+    );
     dbCache.set(cacheKey, dbPromise);
   }
 
@@ -73,7 +82,7 @@ const isLocalStorageAvailable = (): boolean => {
  */
 export const createHybridStorage = (
   config: StorageConfig,
-  logger?: GenericLogger
+  logger?: GenericLogger,
 ): StateStorage => {
   const useIndexedDB = isIndexedDBAvailable();
   const useLocalStorage = isLocalStorageAvailable();
@@ -86,7 +95,10 @@ export const createHybridStorage = (
   let indexedDBErrors = 0;
 
   if (!useIndexedDB && !useLocalStorage) {
-    logger?.debug("storage", "Neither IndexedDB nor localStorage available, using memory storage fallback");
+    logger?.debug(
+      "storage",
+      "Neither IndexedDB nor localStorage available, using memory storage fallback",
+    );
   }
 
   return {
@@ -95,17 +107,22 @@ export const createHybridStorage = (
       if (useIndexedDB) {
         try {
           const db = await getDB(config);
-          const value = await db.get(config.storeName, name) as string | null;
+          const item = await db.keyValueStore.get({ key: name });
+          const value = item?.value ?? null;
           if (value) {
             logger?.debug("storage", "Retrieved item from IndexedDB", {
               name,
               hasValue: true,
-              source: "indexeddb"
+              source: "indexeddb",
             });
             return value;
           }
         } catch (error) {
-          logger?.warn("storage", "IndexedDB read failed, falling back to localStorage", { name, error });
+          logger?.warn(
+            "storage",
+            "IndexedDB read failed, falling back to localStorage",
+            { name, error },
+          );
           indexedDBErrors++;
         }
       }
@@ -118,7 +135,7 @@ export const createHybridStorage = (
             logger?.debug("storage", "Retrieved item from localStorage", {
               name,
               hasValue: true,
-              source: "localstorage"
+              source: "localstorage",
             });
             return value;
           }
@@ -134,7 +151,7 @@ export const createHybridStorage = (
         logger?.debug("storage", "Retrieved item from memory storage", {
           name,
           hasValue: true,
-          source: "memory"
+          source: "memory",
         });
       }
       return value;
@@ -149,23 +166,27 @@ export const createHybridStorage = (
           logger?.debug("storage", "Stored item in localStorage", {
             name,
             valueSize: value.length,
-            totalWrites: localStorageWrites
+            totalWrites: localStorageWrites,
           });
         } catch (error) {
           localStorageErrors++;
-          logger?.warn("storage", "localStorage write failed (quota exceeded?)", {
-            name,
-            error,
-            valueSize: value.length,
-            totalErrors: localStorageErrors
-          });
+          logger?.warn(
+            "storage",
+            "localStorage write failed (quota exceeded?)",
+            {
+              name,
+              error,
+              valueSize: value.length,
+              totalErrors: localStorageErrors,
+            },
+          );
         }
       } else {
         // Fallback to memory storage if localStorage unavailable
         memoryStorage.set(name, value);
         logger?.debug("storage", "Stored item in memory storage", {
           name,
-          valueSize: value.length
+          valueSize: value.length,
         });
       }
 
@@ -177,13 +198,13 @@ export const createHybridStorage = (
           void (async () => {
             try {
               const db = await getDB(config);
-              await db.put(config.storeName, value, name);
+              await db.keyValueStore.put({ key: name, value });
               indexedDBWrites++;
               logger?.debug("storage", "Background IndexedDB write completed", {
                 name,
                 valueSize: value.length,
                 totalWrites: indexedDBWrites,
-                queueSize: writeQueue.size
+                queueSize: writeQueue.size,
               });
             } catch (error) {
               indexedDBErrors++;
@@ -193,34 +214,53 @@ export const createHybridStorage = (
                 const errorName = String(error.name);
 
                 if (errorName === "QuotaExceededError") {
-                  logger?.warn("storage", "IndexedDB quota exceeded, data may not persist", {
-                    name,
-                    valueSize: value.length,
-                    totalErrors: indexedDBErrors
-                  });
+                  logger?.warn(
+                    "storage",
+                    "IndexedDB quota exceeded, data may not persist",
+                    {
+                      name,
+                      valueSize: value.length,
+                      totalErrors: indexedDBErrors,
+                    },
+                  );
                 } else if (errorName === "VersionError") {
-                  logger?.warn("storage", "IndexedDB version conflict, database may need refresh", {
-                    name,
-                    totalErrors: indexedDBErrors
-                  });
+                  logger?.warn(
+                    "storage",
+                    "IndexedDB version conflict, database may need refresh",
+                    {
+                      name,
+                      totalErrors: indexedDBErrors,
+                    },
+                  );
                 } else if (errorName === "InvalidStateError") {
-                  logger?.warn("storage", "IndexedDB invalid state, database may be corrupted", {
-                    name,
-                    totalErrors: indexedDBErrors
-                  });
+                  logger?.warn(
+                    "storage",
+                    "IndexedDB invalid state, database may be corrupted",
+                    {
+                      name,
+                      totalErrors: indexedDBErrors,
+                    },
+                  );
                 } else {
-                  logger?.error("storage", "IndexedDB background write failed", {
-                    name,
-                    error: errorName,
-                    message: "message" in error ? String((error as {message: unknown}).message) : "Unknown error",
-                    totalErrors: indexedDBErrors
-                  });
+                  logger?.error(
+                    "storage",
+                    "IndexedDB background write failed",
+                    {
+                      name,
+                      error: errorName,
+                      message:
+                        "message" in error
+                          ? String((error as { message: unknown }).message)
+                          : "Unknown error",
+                      totalErrors: indexedDBErrors,
+                    },
+                  );
                 }
               } else {
                 logger?.error("storage", "IndexedDB background write failed", {
                   name,
                   error: String(error),
-                  totalErrors: indexedDBErrors
+                  totalErrors: indexedDBErrors,
                 });
               }
             } finally {
@@ -239,7 +279,10 @@ export const createHybridStorage = (
           logger?.debug("storage", "Removed item from localStorage", { name });
         } catch (error) {
           localStorageErrors++;
-          logger?.warn("storage", "localStorage remove failed", { name, error });
+          logger?.warn("storage", "localStorage remove failed", {
+            name,
+            error,
+          });
         }
       } else {
         // Fallback to memory storage
@@ -253,16 +296,23 @@ export const createHybridStorage = (
           void (async () => {
             try {
               const db = await getDB(config);
-              await db.delete(config.storeName, name);
-              logger?.debug("storage", "Background IndexedDB delete completed", { name });
+              await db.keyValueStore.delete(name);
+              logger?.debug(
+                "storage",
+                "Background IndexedDB delete completed",
+                { name },
+              );
             } catch (error) {
               indexedDBErrors++;
-              logger?.error("storage", "IndexedDB background delete failed", { name, error });
+              logger?.error("storage", "IndexedDB background delete failed", {
+                name,
+                error,
+              });
             }
           })();
         });
       }
-    }
+    },
   };
 };
 
@@ -272,12 +322,15 @@ export const createHybridStorage = (
  */
 export const createIndexedDBStorage = (
   config: StorageConfig,
-  logger?: GenericLogger
+  logger?: GenericLogger,
 ): StateStorage => {
   const useIndexedDB = isIndexedDBAvailable();
 
   if (!useIndexedDB) {
-    logger?.debug("storage", "IndexedDB not available, using memory storage fallback");
+    logger?.debug(
+      "storage",
+      "IndexedDB not available, using memory storage fallback",
+    );
   }
 
   return {
@@ -286,21 +339,25 @@ export const createIndexedDBStorage = (
         const value = memoryStorage.get(name) ?? null;
         logger?.debug("storage", "Retrieved item from memory storage", {
           name,
-          hasValue: value !== null
+          hasValue: value !== null,
         });
         return value;
       }
 
       try {
         const db = await getDB(config);
-        const value = await db.get(config.storeName, name) as string | null;
+        const item = await db.keyValueStore.get({ key: name });
+        const value = item?.value ?? null;
         logger?.debug("storage", "Retrieved item from IndexedDB", {
           name,
-          hasValue: value !== null
+          hasValue: value !== null,
         });
-        return value ?? null;
+        return value;
       } catch (error) {
-        logger?.error("storage", "Failed to get item from IndexedDB", { name, error });
+        logger?.error("storage", "Failed to get item from IndexedDB", {
+          name,
+          error,
+        });
         return null;
       }
     },
@@ -310,20 +367,23 @@ export const createIndexedDBStorage = (
         memoryStorage.set(name, value);
         logger?.debug("storage", "Stored item in memory storage", {
           name,
-          valueSize: value.length
+          valueSize: value.length,
         });
         return;
       }
 
       try {
         const db = await getDB(config);
-        await db.put(config.storeName, value, name);
+        await db.keyValueStore.put({ key: name, value });
         logger?.debug("storage", "Stored item in IndexedDB", {
           name,
-          valueSize: value.length
+          valueSize: value.length,
         });
       } catch (error) {
-        logger?.error("storage", "Failed to set item in IndexedDB", { name, error });
+        logger?.error("storage", "Failed to set item in IndexedDB", {
+          name,
+          error,
+        });
         throw error; // Re-throw to trigger Zustand error handling
       }
     },
@@ -337,13 +397,16 @@ export const createIndexedDBStorage = (
 
       try {
         const db = await getDB(config);
-        await db.delete(config.storeName, name);
+        await db.keyValueStore.delete(name);
         logger?.debug("storage", "Removed item from IndexedDB", { name });
       } catch (error) {
-        logger?.error("storage", "Failed to remove item from IndexedDB", { name, error });
+        logger?.error("storage", "Failed to remove item from IndexedDB", {
+          name,
+          error,
+        });
         throw error;
       }
-    }
+    },
   };
 };
 
@@ -351,5 +414,5 @@ export const createIndexedDBStorage = (
 export const defaultStorageConfig: StorageConfig = {
   dbName: "app-storage",
   storeName: "app-storage",
-  version: 1
+  version: 1,
 };
