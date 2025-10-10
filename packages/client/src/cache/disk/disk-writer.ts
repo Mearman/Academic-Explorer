@@ -21,6 +21,11 @@ let fs: typeof import("fs/promises") | undefined;
 let path: typeof import("path") | undefined;
 let crypto: typeof import("crypto") | undefined;
 
+// Constants for error messages and file names
+const ERROR_MESSAGE_FS_NOT_INITIALIZED = "Node.js fs module not initialized";
+const ERROR_MESSAGE_ENTITY_EXTRACTION_FAILED = "Entity info extraction failed";
+const INDEX_FILE_NAME = "index.json";
+
 /**
  * For testing: allow injecting mock Node.js modules
  */
@@ -239,7 +244,10 @@ export class DiskCacheWriter {
       // Generate file paths
       filePaths = this.generateFilePaths(entityInfo);
 
-      const indexPath = pathModule.join(filePaths.directoryPath, "index.json");
+      const indexPath = pathModule.join(
+        filePaths.directoryPath,
+        INDEX_FILE_NAME,
+      );
 
       // Acquire exclusive locks for concurrent writes
       indexLockId = await this.acquireFileLock(indexPath);
@@ -306,7 +314,7 @@ export class DiskCacheWriter {
       if (indexLockId && filePaths) {
         await this.releaseFileLock(
           indexLockId,
-          pathModule.join(filePaths.directoryPath, "index.json"),
+          pathModule.join(filePaths.directoryPath, INDEX_FILE_NAME),
         );
       }
       if (dataLockId && filePaths) {
@@ -365,7 +373,7 @@ export class DiskCacheWriter {
     } catch (error) {
       logError(logger, "Failed to extract entity info", error);
       throw new Error(
-        `Entity info extraction failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `ERROR_MESSAGE_ENTITY_EXTRACTION_FAILED: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     }
   }
@@ -595,7 +603,7 @@ export class DiskCacheWriter {
   private async ensureDirectoryStructure(dirPath: string): Promise<void> {
     try {
       if (!fs) {
-        throw new Error("Node.js fs module not initialized");
+        throw new Error(ERROR_MESSAGE_FS_NOT_INITIALIZED);
       }
       await fs.mkdir(dirPath, { recursive: true });
     } catch (error) {
@@ -617,7 +625,7 @@ export class DiskCacheWriter {
       throw new Error("Node.js crypto module not initialized");
     }
     if (!fs) {
-      throw new Error("Node.js fs module not initialized");
+      throw new Error(ERROR_MESSAGE_FS_NOT_INITIALIZED);
     }
     const tempPath = `${filePath}.tmp.${crypto.randomUUID()}`;
 
@@ -727,7 +735,7 @@ export class DiskCacheWriter {
   private async ensureSufficientDiskSpace(): Promise<void> {
     try {
       if (!fs) {
-        throw new Error("Node.js fs module not initialized");
+        throw new Error(ERROR_MESSAGE_FS_NOT_INITIALIZED);
       }
       const stats = await fs.statfs(this.config.basePath);
       const availableBytes = stats.bavail * stats.bsize;
@@ -891,7 +899,7 @@ export class DiskCacheWriter {
       throw new Error("Node.js modules not initialized");
     }
 
-    const indexPath = path.join(directoryPath, "index.json");
+    const indexPath = path.join(directoryPath, INDEX_FILE_NAME);
     const basePath = path.resolve(this.config.basePath);
     const relativePath = path
       .relative(basePath, directoryPath)
