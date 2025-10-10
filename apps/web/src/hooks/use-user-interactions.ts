@@ -7,33 +7,40 @@ import { useLocation } from "@tanstack/react-router";
 import {
   userInteractionsService,
   type BookmarkRecord,
-  type VisitRecord,
+  type PageVisitRecord,
 } from "@academic-explorer/utils/storage/user-interactions-db";
 import { logger } from "@academic-explorer/utils/logger";
 
 export interface UseUserInteractionsOptions {
   entityId?: string;
   entityType?: string;
+  searchQuery?: string;
+  filters?: Record<string, any>;
+  url?: string;
   autoTrackVisits?: boolean;
   sessionId?: string;
 }
 
 export interface UseUserInteractionsReturn {
-  // Visit tracking
-  recordVisit: (
-    entityId: string,
-    entityType: string,
+  // Page visit tracking
+  recordPageVisit: (
     url: string,
-    queryParams?: Record<string, string>,
+    metadata?: {
+      searchQuery?: string;
+      filters?: Record<string, any>;
+      entityId?: string;
+      entityType?: string;
+      resultCount?: number;
+    },
   ) => Promise<void>;
-  recentVisits: VisitRecord[];
-  entityVisits: VisitRecord[];
-  visitStats: {
+  recentPageVisits: PageVisitRecord[];
+  pageVisitsForUrl: (normalizedUrl: string) => PageVisitRecord[];
+  pageVisitStats: {
     totalVisits: number;
-    uniqueEntities: number;
-    mostVisitedEntity: {
-      entityId: string;
-      entityType: string;
+    uniqueUrls: number;
+    byType: Record<string, number>;
+    mostVisitedUrl: {
+      normalizedUrl: string;
       count: number;
     } | null;
   };
@@ -46,26 +53,48 @@ export interface UseUserInteractionsReturn {
     notes?: string,
     tags?: string[],
   ) => Promise<void>;
+  bookmarkSearch: (
+    title: string,
+    searchQuery: string,
+    filters?: Record<string, any>,
+    notes?: string,
+    tags?: string[],
+  ) => Promise<void>;
+  bookmarkList: (
+    title: string,
+    url: string,
+    notes?: string,
+    tags?: string[],
+  ) => Promise<void>;
   unbookmarkEntity: () => Promise<void>;
+  unbookmarkSearch: () => Promise<void>;
+  unbookmarkList: () => Promise<void>;
   updateBookmark: (
     updates: Partial<Pick<BookmarkRecord, "title" | "notes" | "tags">>,
   ) => Promise<void>;
   searchBookmarks: (query: string) => Promise<BookmarkRecord[]>;
 
   // Loading states
-  isLoadingVisits: boolean;
+  isLoadingPageVisits: boolean;
   isLoadingBookmarks: boolean;
   isLoadingStats: boolean;
 
   // Actions
   refreshData: () => Promise<void>;
-  clearOldVisits: (olderThanDays?: number) => Promise<void>;
 }
 
 export function useUserInteractions(
   options: UseUserInteractionsOptions = {},
 ): UseUserInteractionsReturn {
-  const { entityId, entityType, autoTrackVisits = true, sessionId } = options;
+  const {
+    entityId,
+    entityType,
+    searchQuery,
+    filters,
+    url,
+    autoTrackVisits = true,
+    sessionId,
+  } = options;
   const location = useLocation();
 
   // Helper to parse search params
@@ -79,46 +108,51 @@ export function useUserInteractions(
   }, [location.search]);
 
   // State
-  const [recentVisits, setRecentVisits] = useState<VisitRecord[]>([]);
-  const [entityVisits, setEntityVisits] = useState<VisitRecord[]>([]);
+  const [recentPageVisits, setRecentPageVisits] = useState<PageVisitRecord[]>(
+    [],
+  );
   const [bookmarks, setBookmarks] = useState<BookmarkRecord[]>([]);
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const [visitStats, setVisitStats] = useState({
+  const [pageVisitStats, setPageVisitStats] = useState({
     totalVisits: 0,
-    uniqueEntities: 0,
-    mostVisitedEntity: null as {
-      entityId: string;
-      entityType: string;
+    uniqueUrls: 0,
+    byType: {} as Record<string, number>,
+    mostVisitedUrl: null as {
+      normalizedUrl: string;
       count: number;
     } | null,
   });
 
   // Loading states
-  const [isLoadingVisits, setIsLoadingVisits] = useState(false);
+  const [isLoadingPageVisits, setIsLoadingPageVisits] = useState(false);
   const [isLoadingBookmarks, setIsLoadingBookmarks] = useState(false);
   const [isLoadingStats, setIsLoadingStats] = useState(false);
 
   const refreshData = useCallback(async () => {
-    setIsLoadingVisits(true);
+    setIsLoadingPageVisits(true);
     setIsLoadingBookmarks(true);
     setIsLoadingStats(true);
 
     try {
-      // Load recent visits
-      const visits = await userInteractionsService.getRecentVisits(20);
-      setRecentVisits(visits);
+      // Load recent page visits
+      const pageVisits = await userInteractionsService.getRecentPageVisits(20);
+      setRecentPageVisits(pageVisits);
 
-      // Load entity-specific visits if entity is provided
+      // Check bookmark status based on content type
       if (entityId && entityType) {
-        const entityVisitRecords =
-          await userInteractionsService.getEntityVisits(entityId, entityType);
-        setEntityVisits(entityVisitRecords);
-
-        // Check if entity is bookmarked
         const bookmarked = await userInteractionsService.isEntityBookmarked(
           entityId,
           entityType,
         );
+        setIsBookmarked(bookmarked);
+      } else if (searchQuery) {
+        const bookmarked = await userInteractionsService.isSearchBookmarked(
+          searchQuery,
+          filters,
+        );
+        setIsBookmarked(bookmarked);
+      } else if (url) {
+        const bookmarked = await userInteractionsService.isListBookmarked(url);
         setIsBookmarked(bookmarked);
       }
 
@@ -126,9 +160,9 @@ export function useUserInteractions(
       const allBookmarks = await userInteractionsService.getAllBookmarks();
       setBookmarks(allBookmarks);
 
-      // Load visit stats
-      const stats = await userInteractionsService.getVisitStats();
-      setVisitStats(stats);
+      // Load page visit stats
+      const pageStats = await userInteractionsService.getPageVisitStats();
+      setPageVisitStats(pageStats);
     } catch (error) {
       logger.error(
         "user-interactions",
@@ -136,30 +170,27 @@ export function useUserInteractions(
         { error },
       );
     } finally {
-      setIsLoadingVisits(false);
+      setIsLoadingPageVisits(false);
       setIsLoadingBookmarks(false);
       setIsLoadingStats(false);
     }
-  }, [entityId, entityType]);
+  }, [entityId, entityType, searchQuery, filters, url]);
 
-  // Auto-track visits when entityId and entityType are provided
+  // Auto-track page visits when enabled
   useEffect(() => {
-    if (autoTrackVisits && entityId && entityType) {
-      const trackVisit = async () => {
+    if (autoTrackVisits) {
+      const trackPageVisit = async () => {
         try {
           const url = location.pathname + location.search;
-          const queryParams = getSearchParams();
 
-          await userInteractionsService.recordVisit(
-            entityId,
-            entityType,
+          await userInteractionsService.recordPageVisit(
             url,
-            Object.keys(queryParams).length > 0 ? queryParams : undefined,
-            document.referrer || undefined,
+            entityId && entityType ? { entityId, entityType } : undefined,
             sessionId,
+            document.referrer || undefined,
           );
         } catch (error) {
-          logger.error("user-interactions", "Failed to auto-track visit", {
+          logger.error("user-interactions", "Failed to auto-track page visit", {
             entityId,
             entityType,
             error,
@@ -167,7 +198,7 @@ export function useUserInteractions(
         }
       };
 
-      void trackVisit();
+      void trackPageVisit();
     }
   }, [
     entityId,
@@ -175,7 +206,6 @@ export function useUserInteractions(
     autoTrackVisits,
     location.pathname,
     location.search,
-    getSearchParams,
     sessionId,
   ]);
 
@@ -184,35 +214,46 @@ export function useUserInteractions(
     void refreshData();
   }, [entityId, entityType, refreshData]);
 
-  const recordVisit = useCallback(
+  const recordPageVisit = useCallback(
     async (
-      visitEntityId: string,
-      visitEntityType: string,
       url: string,
-      queryParams?: Record<string, string>,
+      metadata?: {
+        searchQuery?: string;
+        filters?: Record<string, any>;
+        entityId?: string;
+        entityType?: string;
+        resultCount?: number;
+      },
     ) => {
       try {
-        await userInteractionsService.recordVisit(
-          visitEntityId,
-          visitEntityType,
+        await userInteractionsService.recordPageVisit(
           url,
-          queryParams,
-          document.referrer || undefined,
+          metadata,
           sessionId,
+          document.referrer || undefined,
         );
 
         // Refresh data to update UI
         await refreshData();
       } catch (error) {
-        logger.error("user-interactions", "Failed to record visit", {
-          entityId: visitEntityId,
-          entityType: visitEntityType,
+        logger.error("user-interactions", "Failed to record page visit", {
+          url,
           error,
         });
         throw error;
       }
     },
     [sessionId, refreshData],
+  );
+
+  const pageVisitsForUrl = useCallback(
+    (normalizedUrl: string): PageVisitRecord[] => {
+      // This is a simple filter - in a real app you might want to cache this
+      return recentPageVisits.filter(
+        (visit) => visit.normalizedUrl === normalizedUrl,
+      );
+    },
+    [recentPageVisits],
   );
 
   const bookmarkEntity = useCallback(
@@ -225,7 +266,7 @@ export function useUserInteractions(
         const url = location.pathname + location.search;
         const queryParams = getSearchParams();
 
-        await userInteractionsService.addBookmark(
+        await userInteractionsService.addEntityBookmark(
           entityId,
           entityType,
           title,
@@ -281,6 +322,118 @@ export function useUserInteractions(
     }
   }, [entityId, entityType, refreshData]);
 
+  const bookmarkSearch = useCallback(
+    async (
+      title: string,
+      searchQuery: string,
+      filters?: Record<string, any>,
+      notes?: string,
+      tags?: string[],
+    ) => {
+      try {
+        const url = location.pathname + location.search;
+        const queryParams = getSearchParams();
+
+        await userInteractionsService.addBookmark({
+          bookmarkType: "search",
+          searchQuery,
+          filters,
+          title,
+          url,
+          queryParams:
+            Object.keys(queryParams).length > 0 ? queryParams : undefined,
+          notes,
+          tags,
+        });
+
+        setIsBookmarked(true);
+        await refreshData();
+      } catch (error) {
+        logger.error("user-interactions", "Failed to bookmark search", {
+          searchQuery,
+          filters,
+          error,
+        });
+        throw error;
+      }
+    },
+    [location.pathname, location.search, getSearchParams, refreshData],
+  );
+
+  const bookmarkList = useCallback(
+    async (title: string, url: string, notes?: string, tags?: string[]) => {
+      try {
+        const queryParams = getSearchParams();
+
+        await userInteractionsService.addBookmark({
+          bookmarkType: "list",
+          title,
+          url,
+          queryParams:
+            Object.keys(queryParams).length > 0 ? queryParams : undefined,
+          notes,
+          tags,
+        });
+
+        setIsBookmarked(true);
+        await refreshData();
+      } catch (error) {
+        logger.error("user-interactions", "Failed to bookmark list", {
+          url,
+          error,
+        });
+        throw error;
+      }
+    },
+    [getSearchParams, refreshData],
+  );
+
+  const unbookmarkSearch = useCallback(async () => {
+    if (!searchQuery) {
+      throw new Error("Search query is required to unbookmark");
+    }
+
+    try {
+      const bookmark = await userInteractionsService.getSearchBookmark(
+        searchQuery,
+        filters,
+      );
+      if (bookmark?.id) {
+        await userInteractionsService.removeBookmark(bookmark.id);
+        setIsBookmarked(false);
+        await refreshData();
+      }
+    } catch (error) {
+      logger.error("user-interactions", "Failed to unbookmark search", {
+        searchQuery,
+        filters,
+        error,
+      });
+      throw error;
+    }
+  }, [searchQuery, filters, refreshData]);
+
+  const unbookmarkList = useCallback(async () => {
+    if (!url) {
+      throw new Error("URL is required to unbookmark list");
+    }
+
+    try {
+      const bookmark = await userInteractionsService.getListBookmark(url);
+      if (bookmark?.id) {
+        await userInteractionsService.removeBookmark(bookmark.id);
+        setIsBookmarked(false);
+        await refreshData();
+      }
+    } catch (error) {
+      logger.error("user-interactions", "Failed to unbookmark list", {
+        url,
+        error,
+      });
+      throw error;
+    }
+  }, [url, refreshData]);
+
   const updateBookmark = useCallback(
     async (
       updates: Partial<Pick<BookmarkRecord, "title" | "notes" | "tags">>,
@@ -326,44 +479,31 @@ export function useUserInteractions(
     [],
   );
 
-  const clearOldVisits = useCallback(
-    async (olderThanDays = 30) => {
-      try {
-        await userInteractionsService.clearOldVisits(olderThanDays);
-        await refreshData();
-      } catch (error) {
-        logger.error("user-interactions", "Failed to clear old visits", {
-          olderThanDays,
-          error,
-        });
-        throw error;
-      }
-    },
-    [refreshData],
-  );
-
   return {
-    // Visit tracking
-    recordVisit,
-    recentVisits,
-    entityVisits,
-    visitStats,
+    // Page visit tracking
+    recordPageVisit,
+    recentPageVisits,
+    pageVisitsForUrl,
+    pageVisitStats,
 
     // Bookmark management
     bookmarks,
     isBookmarked,
     bookmarkEntity,
+    bookmarkSearch,
+    bookmarkList,
     unbookmarkEntity,
+    unbookmarkSearch,
+    unbookmarkList,
     updateBookmark,
     searchBookmarks,
 
     // Loading states
-    isLoadingVisits,
+    isLoadingPageVisits,
     isLoadingBookmarks,
     isLoadingStats,
 
     // Actions
     refreshData,
-    clearOldVisits,
   };
 }
