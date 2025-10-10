@@ -379,7 +379,23 @@ export class OpenAlexBaseClient {
         try {
           // Clone the response to read the data without consuming the original stream
           const responseClone = response.clone();
-          const responseData = await responseClone.json();
+          let responseData: unknown;
+
+          try {
+            responseData = await responseClone.json();
+          } catch (jsonError) {
+            // If JSON parsing fails, skip interception but log the issue
+            logger.debug(
+              "client",
+              "Failed to parse response as JSON for interception",
+              {
+                error: jsonError,
+                contentType: response.headers.get("content-type"),
+                status: response.status,
+              },
+            );
+            return response; // Skip interception and return response
+          }
 
           // Intercept the response
           const interceptedCall = apiInterceptor.interceptResponse(
@@ -467,6 +483,17 @@ export class OpenAlexBaseClient {
   public async get<T>(endpoint: string, params: QueryParams = {}): Promise<T> {
     const url = this.buildUrl(endpoint, params);
     const response = await this.makeRequest(url);
+
+    // Validate content-type before parsing JSON
+    const contentType = response.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      const text = await response.text();
+      throw new OpenAlexApiError(
+        `Expected JSON response but got ${contentType || "unknown content-type"}. Response: ${text.substring(0, 200)}...`,
+        response.status,
+      );
+    }
+
     const data: unknown = await response.json();
     const validatedData = validateApiResponse(data);
     return trustApiContract(validatedData) as T;
