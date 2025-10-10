@@ -12,6 +12,13 @@ import {
 } from "./matchers/index";
 import { formatFieldName, groupFields } from "./field-detection";
 
+// Constants for repeated strings
+const NOT_AVAILABLE_TEXT = "Not available";
+const YES_TEXT = "Yes";
+const NO_TEXT = "No";
+const ADDITIONAL_INFORMATION_TITLE = "Additional Information";
+const TECHNICAL_DETAILS_TITLE = "Technical Details";
+
 interface FieldRendererProps {
   fieldName: string;
   value: unknown;
@@ -151,50 +158,72 @@ export const ValueRenderer: React.FC<{ value: unknown }> = ({ value }) => {
 export const DefaultValueRenderer: React.FC<{ value: unknown }> = ({
   value,
 }) => {
+  // Handle null/undefined
   if (value === null || value === undefined) {
     return (
       <Text size="sm" c="dimmed">
-        Not available
+        {NOT_AVAILABLE_TEXT}
       </Text>
     );
   }
 
+  // Handle boolean values
   if (typeof value === "boolean") {
     return (
       <Text size="sm" c={value ? "green" : "red"}>
-        {value ? "Yes" : "No"}
+        {value ? YES_TEXT : NO_TEXT}
       </Text>
     );
   }
 
+  // Handle numbers
   if (typeof value === "number") {
     return <Text size="sm">{value.toLocaleString()}</Text>;
   }
 
+  // Handle strings with length-based formatting
   if (typeof value === "string") {
-    // Check if it's a long string (likely abstract or description)
-    if (value.length > 200) {
-      return (
-        <Text size="sm" style={{ lineHeight: 1.6 }}>
-          {value.length > 500 ? `${value.substring(0, 500)}...` : value}
-        </Text>
-      );
-    }
-    return <Text size="sm">{value}</Text>;
+    return renderStringValue(value);
   }
 
+  // Handle arrays
   if (Array.isArray(value)) {
     return <ArrayRenderer array={value} fieldName="" />;
   }
 
-  if (typeof value === "object" && value !== null) {
+  // Handle objects
+  if (typeof value === "object") {
     return (
       <ObjectRenderer obj={value as Record<string, unknown>} fieldName="" />
     );
   }
 
+  // Fallback for other types
   return <Text size="sm">{String(value)}</Text>;
 };
+
+/**
+ * Renders string values with appropriate formatting based on length
+ */
+function renderStringValue(value: string): React.ReactElement {
+  const MAX_SHORT_LENGTH = 200;
+  const MAX_DISPLAY_LENGTH = 500;
+
+  if (value.length > MAX_SHORT_LENGTH) {
+    const truncated =
+      value.length > MAX_DISPLAY_LENGTH
+        ? `${value.substring(0, MAX_DISPLAY_LENGTH)}...`
+        : value;
+
+    return (
+      <Text size="sm" style={{ lineHeight: 1.6 }}>
+        {truncated}
+      </Text>
+    );
+  }
+
+  return <Text size="sm">{value}</Text>;
+}
 
 /**
  * Renders all fields of an entity using intelligent grouping and prioritization
@@ -221,7 +250,7 @@ export const EntityFieldRenderer: React.FC<{
       {groupedFields.medium.length > 0 && (
         <>
           <Divider />
-          <Title order={4}>Additional Information</Title>
+          <Title order={4}>{ADDITIONAL_INFORMATION_TITLE}</Title>
           {groupedFields.medium.map(([fieldName, value]) => (
             <FieldRenderer
               key={fieldName}
@@ -237,7 +266,7 @@ export const EntityFieldRenderer: React.FC<{
       {groupedFields.low.length > 0 && (
         <>
           <Divider />
-          <Title order={5}>Technical Details</Title>
+          <Title order={5}>{TECHNICAL_DETAILS_TITLE}</Title>
           <Stack gap="xs">
             {groupedFields.low.map(([fieldName, value]) => (
               <FieldRenderer

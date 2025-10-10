@@ -1,36 +1,25 @@
-
 /**
  * URL conversion utilities for OpenAlex links using existing canonical route logic
  */
+
+// Hostname constants
+const API_OPENALEX_HOST = "api.openalex.org";
+const OPENALEX_HOST = "openalex.org";
+const ROR_HOST = "ror.org";
+
 export function convertToRelativeUrl(url: string): string | null {
   try {
     const urlObj = new URL(url);
 
-    // Convert OpenAlex API URLs to entity routes
-    if (urlObj.hostname === "api.openalex.org") {
-      // Extract entity type from path (e.g., /works, /authors, etc.)
-      const pathParts = urlObj.pathname.split("/").filter(Boolean);
-      if (pathParts.length > 0) {
-        const entityType = pathParts[0]; // e.g., "works", "authors"
-        const queryString = urlObj.search; // e.g., "?filter=author.id:A5017898742"
-        return `#/${entityType}${queryString}`;
-      }
-      return null;
+    if (urlObj.hostname === API_OPENALEX_HOST) {
+      return convertApiUrl(urlObj);
     }
 
-    // Convert OpenAlex entity URLs to hash routes
-    if (urlObj.hostname === "openalex.org") {
-      const pathParts = urlObj.pathname.split("/").filter(Boolean);
-      if (pathParts.length === 1) {
-        const fullPath = pathParts[0];
-        const route = determineCanonicalRoute(fullPath);
-        return route ? `#${route}` : null;
-      }
+    if (urlObj.hostname === OPENALEX_HOST) {
+      return convertEntityUrl(urlObj);
     }
 
-    // For ROR URLs, we need special handling - they should link to institutions
-    // But we can't resolve ROR to OpenAlex ID here, so we'll handle this in the matcher
-    if (urlObj.hostname === "ror.org") {
+    if (urlObj.hostname === ROR_HOST) {
       return null; // Will be handled specially in the matcher
     }
 
@@ -40,13 +29,37 @@ export function convertToRelativeUrl(url: string): string | null {
   }
 }
 
+/**
+ * Converts OpenAlex API URLs to entity routes
+ */
+function convertApiUrl(urlObj: URL): string | null {
+  const pathParts = urlObj.pathname.split("/").filter(Boolean);
+  if (pathParts.length > 0) {
+    const entityType = pathParts[0]; // e.g., "works", "authors"
+    const queryString = urlObj.search; // e.g., "?filter=author.id:A5017898742"
+    return `#/${entityType}${queryString}`;
+  }
+  return null;
+}
+
+/**
+ * Converts OpenAlex entity URLs to hash routes
+ */
+function convertEntityUrl(urlObj: URL): string | null {
+  const pathParts = urlObj.pathname.split("/").filter(Boolean);
+  if (pathParts.length === 1) {
+    const fullPath = pathParts[0];
+    const route = determineCanonicalRoute(fullPath);
+    return route ? `#${route}` : null;
+  }
+  return null;
+}
+
 export function isOpenAlexUrl(url: string): boolean {
   try {
     const urlObj = new URL(url);
-    return (
-      urlObj.hostname === "api.openalex.org" ||
-      urlObj.hostname === "openalex.org" ||
-      urlObj.hostname === "ror.org"
+    return [API_OPENALEX_HOST, OPENALEX_HOST, ROR_HOST].includes(
+      urlObj.hostname,
     );
   } catch {
     return false;
@@ -62,7 +75,7 @@ export function isOpenAlexUrl(url: string): boolean {
 export function extractEntityId(url: string): string | null {
   try {
     const urlObj = new URL(url);
-    if (urlObj.hostname === "openalex.org") {
+    if (urlObj.hostname === OPENALEX_HOST) {
       const pathParts = urlObj.pathname.split("/").filter(Boolean);
       if (pathParts.length === 1) {
         return pathParts[0];
@@ -74,6 +87,9 @@ export function extractEntityId(url: string): string | null {
   }
 }
 
+// Entity type prefixes for ID detection
+const ENTITY_TYPE_PREFIXES = new Set(["w", "a", "i", "s", "t", "p", "f"]);
+
 export function determineCanonicalRoute(path: string): string {
   // Handle paths that start with entity type (e.g., "works?filter=...")
   if (path.includes("?")) {
@@ -81,33 +97,45 @@ export function determineCanonicalRoute(path: string): string {
     return `/${entityType}`;
   }
 
-  // Handle entity paths (e.g., "W123456789", "works/W123456789")
   const pathSegments = path.split("/");
   if (pathSegments.length === 1) {
-    // Single segment - check if it's an entity type or entity ID
-    const segment = pathSegments[0];
-    const firstChar = segment.charAt(0).toLowerCase();
+    return handleSingleSegmentPath(pathSegments[0]);
+  }
 
-    // If it starts with a letter that indicates an entity type, treat as entity type
-    if (
-      ["w", "a", "i", "s", "t", "p", "f"].includes(firstChar) &&
-      segment.length > 1 &&
-      /^[a-z]+$/.test(segment)
-    ) {
-      return `/${segment}`;
-    }
-
-    // Otherwise treat as entity ID
-    const entityType = getEntityTypeFromId(segment);
-    return `/${entityType}/${segment}`;
-  } else if (pathSegments.length >= 2) {
-    // Multi-segment path like "works/W123456789"
-    const entityType = pathSegments[0];
-    const entityId = pathSegments[1].split("?")[0]; // Remove query params for entity routes
-    return `/${entityType}/${entityId}`;
+  if (pathSegments.length >= 2) {
+    return handleMultiSegmentPath(pathSegments);
   }
 
   return `/${path}`;
+}
+
+/**
+ * Handles single segment paths (entity type or entity ID)
+ */
+function handleSingleSegmentPath(segment: string): string {
+  const firstChar = segment.charAt(0).toLowerCase();
+
+  // If it starts with a letter that indicates an entity type, treat as entity type
+  if (
+    ENTITY_TYPE_PREFIXES.has(firstChar) &&
+    segment.length > 1 &&
+    /^[a-z]+$/.test(segment)
+  ) {
+    return `/${segment}`;
+  }
+
+  // Otherwise treat as entity ID
+  const entityType = getEntityTypeFromId(segment);
+  return `/${entityType}/${segment}`;
+}
+
+/**
+ * Handles multi-segment paths like "works/W123456789"
+ */
+function handleMultiSegmentPath(pathSegments: string[]): string {
+  const entityType = pathSegments[0];
+  const entityId = pathSegments[1].split("?")[0]; // Remove query params for entity routes
+  return `/${entityType}/${entityId}`;
 }
 
 /**

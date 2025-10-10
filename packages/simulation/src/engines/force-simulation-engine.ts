@@ -13,28 +13,40 @@ import type {
   SimulationLink,
   ForceSimulationConfig,
   NodePosition,
-} from '../types/index.js';
-import { DEFAULT_FORCE_PARAMS } from '../types/index.js';
+} from "../types/index.js";
+import { DEFAULT_FORCE_PARAMS } from "../types/index.js";
 import type {
   D3SimulationNode,
   D3SimulationLink,
-} from '../utils/d3-force-utils.js';
+} from "../utils/d3-force-utils.js";
 import {
   setForceStrength,
   setForceDistance,
   setForceRadius,
   sanitizePosition,
-} from '../utils/d3-force-utils.js';
-import { SimulationEventEmitter } from '../events/index.js';
+} from "../utils/d3-force-utils.js";
+import { SimulationEventEmitter } from "../events/index.js";
 
 // Re-export default params from types
-export { DEFAULT_FORCE_PARAMS } from '../types/index.js';
+export { DEFAULT_FORCE_PARAMS } from "../types/index.js";
 
 // Logger interface for dependency injection
 export interface Logger {
-  debug(category: string, message: string, context?: Record<string, unknown>): void;
-  warn(category: string, message: string, context?: Record<string, unknown>): void;
-  error(category: string, message: string, context?: Record<string, unknown>): void;
+  debug(
+    category: string,
+    message: string,
+    context?: Record<string, unknown>,
+  ): void;
+  warn(
+    category: string,
+    message: string,
+    context?: Record<string, unknown>,
+  ): void;
+  error(
+    category: string,
+    message: string,
+    context?: Record<string, unknown>,
+  ): void;
 }
 
 // No-op logger as default
@@ -65,7 +77,10 @@ export interface ForceSimulationEngineOptions {
  * Provides framework-agnostic APIs for force-directed graph layout
  */
 export class ForceSimulationEngine extends SimulationEventEmitter {
-  private currentSimulation: Simulation<D3SimulationNode, D3SimulationLink> | null = null;
+  private currentSimulation: Simulation<
+    D3SimulationNode,
+    D3SimulationLink
+  > | null = null;
   private simulationNodes: D3SimulationNode[] = [];
   private simulationLinks: D3SimulationLink[] = [];
   private pendingLinks: SimulationLink[] = [];
@@ -121,7 +136,12 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
     config?: ForceSimulationConfig;
     pinnedNodes?: string[];
   }) {
-    const { nodes, links, config = DEFAULT_FORCE_PARAMS, pinnedNodes = [] } = params;
+    const {
+      nodes,
+      links,
+      config = DEFAULT_FORCE_PARAMS,
+      pinnedNodes = [],
+    } = params;
 
     if (this.currentSimulation) {
       this.currentSimulation.stop();
@@ -131,7 +151,12 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
 
     const mergedNodes = this.mergePendingNodes(nodes);
 
-    this.currentSimulation = this.createSimulation(mergedNodes, links, this.simulationConfig, pinnedNodes);
+    this.currentSimulation = this.createSimulation(
+      mergedNodes,
+      links,
+      this.simulationConfig,
+      pinnedNodes,
+    );
     this.isRunning = true;
     this.isPaused = false;
     this.iterationCount = 0;
@@ -141,7 +166,11 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
     this.frameCount = 0;
 
     if (this.pendingLinks.length > 0) {
-      this.applyLinksImmediately(this.pendingLinks, this.simulationConfig, pinnedNodes);
+      this.applyLinksImmediately(
+        this.pendingLinks,
+        this.simulationConfig,
+        pinnedNodes,
+      );
       this.pendingLinks = [];
     }
 
@@ -167,7 +196,7 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
         reason: "stopped",
         positions: this.collectPositions(),
         totalIterations: this.iterationCount,
-        finalAlpha: this.currentSimulation.alpha()
+        finalAlpha: this.currentSimulation.alpha(),
       });
     }
   }
@@ -210,7 +239,29 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
 
     this.simulationConfig = { ...this.simulationConfig, ...config };
 
-    if (config.linkDistance !== undefined || config.linkStrength !== undefined) {
+    this.updateLinkForce(config);
+    this.updateChargeForce(config);
+    this.updateCenterForce(config);
+    this.updateCollisionForce(config);
+    this.updateSimulationParameters(config);
+
+    this.emitProgress({
+      messageType: "parameters_updated",
+      positions: this.collectPositions(),
+      alpha: this.currentSimulation.alpha(),
+      iteration: this.iterationCount,
+      nodeCount: this.simulationNodes.length,
+      linkCount: this.simulationLinks.length,
+    });
+  }
+
+  private updateLinkForce(config: Partial<ForceSimulationConfig>) {
+    if (!this.currentSimulation) return;
+
+    if (
+      config.linkDistance !== undefined ||
+      config.linkStrength !== undefined
+    ) {
       const linkForce = this.currentSimulation.force("link");
       if (linkForce) {
         if (config.linkDistance !== undefined) {
@@ -221,32 +272,63 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
         }
       }
     }
+  }
+
+  private updateChargeForce(config: Partial<ForceSimulationConfig>) {
+    if (!this.currentSimulation) return;
 
     if (config.chargeStrength !== undefined) {
       const chargeForce = this.currentSimulation.force("charge");
       if (chargeForce) {
-        setForceStrength({ force: chargeForce, strength: config.chargeStrength });
+        setForceStrength({
+          force: chargeForce,
+          strength: config.chargeStrength,
+        });
       }
     }
+  }
+
+  private updateCenterForce(config: Partial<ForceSimulationConfig>) {
+    if (!this.currentSimulation) return;
 
     if (config.centerStrength !== undefined) {
       const centerForce = this.currentSimulation.force("center");
       if (centerForce) {
-        setForceStrength({ force: centerForce, strength: config.centerStrength });
+        setForceStrength({
+          force: centerForce,
+          strength: config.centerStrength,
+        });
       }
     }
+  }
 
-    if (config.collisionRadius !== undefined || config.collisionStrength !== undefined) {
+  private updateCollisionForce(config: Partial<ForceSimulationConfig>) {
+    if (!this.currentSimulation) return;
+
+    if (
+      config.collisionRadius !== undefined ||
+      config.collisionStrength !== undefined
+    ) {
       const collisionForce = this.currentSimulation.force("collision");
       if (collisionForce) {
         if (config.collisionRadius !== undefined) {
-          setForceRadius({ force: collisionForce, radius: config.collisionRadius });
+          setForceRadius({
+            force: collisionForce,
+            radius: config.collisionRadius,
+          });
         }
         if (config.collisionStrength !== undefined) {
-          setForceStrength({ force: collisionForce, strength: config.collisionStrength });
+          setForceStrength({
+            force: collisionForce,
+            strength: config.collisionStrength,
+          });
         }
       }
     }
+  }
+
+  private updateSimulationParameters(config: Partial<ForceSimulationConfig>) {
+    if (!this.currentSimulation) return;
 
     if (config.alphaDecay !== undefined) {
       this.currentSimulation.alphaDecay(config.alphaDecay);
@@ -255,15 +337,6 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
     if (config.velocityDecay !== undefined) {
       this.currentSimulation.velocityDecay(config.velocityDecay);
     }
-
-    this.emitProgress({
-      messageType: "parameters_updated",
-      positions: this.collectPositions(),
-      alpha: this.currentSimulation.alpha(),
-      iteration: this.iterationCount,
-      nodeCount: this.simulationNodes.length,
-      linkCount: this.simulationLinks.length,
-    });
   }
 
   /** Reheat simulation with new data */
@@ -288,7 +361,7 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
     this.simulationLinks = d3Links;
 
     const linkForce = forceLink<D3SimulationNode, D3SimulationLink>(d3Links)
-      .id(d => d.id)
+      .id((d) => d.id)
       .distance(config.linkDistance ?? DEFAULT_FORCE_PARAMS.linkDistance)
       .strength(config.linkStrength ?? DEFAULT_FORCE_PARAMS.linkStrength);
 
@@ -297,7 +370,10 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
     if (config.chargeStrength !== undefined) {
       const chargeForce = this.currentSimulation.force("charge");
       if (chargeForce) {
-        setForceStrength({ force: chargeForce, strength: config.chargeStrength });
+        setForceStrength({
+          force: chargeForce,
+          strength: config.chargeStrength,
+        });
       }
     }
 
@@ -311,15 +387,15 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
     }
 
     if (!this.currentSimulation) {
-      this.pendingLinks = links.map(link => ({ ...link }));
+      this.pendingLinks = links.map((link) => ({ ...link }));
       return;
     }
 
     this.queuePendingUpdate({
       type: "links",
-      links: links.map(link => ({ ...link })),
+      links: links.map((link) => ({ ...link })),
       alpha,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     const applied = this.applyPendingUpdates();
@@ -329,24 +405,30 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
   }
 
   /** Update nodes in the simulation */
-  updateNodes(nodes: SimulationNode[], pinnedNodes: Set<string> | string[] = [], alpha = 1.0) {
+  updateNodes(
+    nodes: SimulationNode[],
+    pinnedNodes: Set<string> | string[] = [],
+    alpha = 1.0,
+  ) {
     if (nodes.length === 0) {
       return;
     }
 
-    const pinnedArray = Array.isArray(pinnedNodes) ? pinnedNodes : Array.from(pinnedNodes);
+    const pinnedArray = Array.isArray(pinnedNodes)
+      ? pinnedNodes
+      : Array.from(pinnedNodes);
 
     if (!this.currentSimulation) {
-      this.pendingNodes = nodes.map(node => ({ ...node }));
+      this.pendingNodes = nodes.map((node) => ({ ...node }));
       return;
     }
 
     this.queuePendingUpdate({
       type: "nodes",
-      nodes: nodes.map(node => ({ ...node })),
+      nodes: nodes.map((node) => ({ ...node })),
       pinnedNodes: [...pinnedArray],
       alpha,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     const applied = this.applyPendingUpdates();
@@ -374,7 +456,7 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
   }
 
   private collectPositions(): NodePosition[] {
-    return this.simulationNodes.map(node => ({
+    return this.simulationNodes.map((node) => ({
       id: node.id,
       x: sanitizePosition(node.x, 0),
       y: sanitizePosition(node.y, 0),
@@ -386,7 +468,7 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
       return nodes;
     }
 
-    const nodeMap = new Map(nodes.map(node => [node.id, node]));
+    const nodeMap = new Map(nodes.map((node) => [node.id, node]));
     for (const pending of this.pendingNodes) {
       nodeMap.set(pending.id, pending);
     }
@@ -402,7 +484,7 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
     this.logger.debug("simulation", "Applying pending updates", {
       hasSimulation: !!this.currentSimulation,
       pendingUpdatesCount: this.pendingUpdates.length,
-      pendingUpdateTypes: this.pendingUpdates.map(u => u.type)
+      pendingUpdateTypes: this.pendingUpdates.map((u) => u.type),
     });
 
     if (!this.currentSimulation || this.pendingUpdates.length === 0) {
@@ -417,7 +499,11 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
         this.currentSimulation.alpha(update.alpha).restart();
         applied = true;
       } else if (update.type === "nodes" && update.nodes) {
-        this.applyNodesImmediately(update.nodes, update.pinnedNodes ?? [], update.alpha);
+        this.applyNodesImmediately(
+          update.nodes,
+          update.pinnedNodes ?? [],
+          update.alpha,
+        );
         applied = true;
       }
     }
@@ -429,10 +515,13 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
   private applyLinksImmediately(
     links: SimulationLink[],
     config: ForceSimulationConfig,
-    pinnedNodes: string[] = []
+    pinnedNodes: string[] = [],
   ) {
     if (!this.currentSimulation) {
-      this.logger.warn("simulation", "Cannot apply links - no current simulation");
+      this.logger.warn(
+        "simulation",
+        "Cannot apply links - no current simulation",
+      );
       return;
     }
 
@@ -440,7 +529,7 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
     this.simulationLinks = d3Links;
 
     const linkForce = forceLink<D3SimulationNode, D3SimulationLink>(d3Links)
-      .id(d => d.id)
+      .id((d) => d.id)
       .distance(config.linkDistance ?? DEFAULT_FORCE_PARAMS.linkDistance)
       .strength(config.linkStrength ?? DEFAULT_FORCE_PARAMS.linkStrength);
 
@@ -448,7 +537,7 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
 
     if (pinnedNodes.length > 0) {
       const pinnedSet = new Set(pinnedNodes);
-      this.simulationNodes.forEach(node => {
+      this.simulationNodes.forEach((node) => {
         if (pinnedSet.has(node.id)) {
           node.fx = node.x ?? 0;
           node.fy = node.y ?? 0;
@@ -457,15 +546,19 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
     }
   }
 
-  private applyNodesImmediately(nodes: SimulationNode[], pinnedNodes: string[], alpha: number) {
+  private applyNodesImmediately(
+    nodes: SimulationNode[],
+    pinnedNodes: string[],
+    alpha: number,
+  ) {
     if (!this.currentSimulation) {
       return;
     }
 
     const pinnedSet = new Set(pinnedNodes);
-    const nodeMap = new Map(nodes.map(node => [node.id, node]));
+    const nodeMap = new Map(nodes.map((node) => [node.id, node]));
 
-    const updated = this.simulationNodes.map(existing => {
+    const updated = this.simulationNodes.map((existing) => {
       const incoming = nodeMap.get(existing.id);
       if (incoming) {
         if (typeof incoming.x === "number") existing.x = incoming.x;
@@ -498,14 +591,14 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
 
     // Add new nodes
     for (const node of nodeMap.values()) {
-      const fallbackX = node.x ?? (Math.random() * 800 - 400);
-      const fallbackY = node.y ?? (Math.random() * 600 - 300);
+      const fallbackX = node.x ?? Math.random() * 800 - 400;
+      const fallbackY = node.y ?? Math.random() * 600 - 300;
       const newNode: D3SimulationNode = {
         id: node.id,
         x: fallbackX,
         y: fallbackY,
         fx: pinnedSet.has(node.id) ? (node.fx ?? fallbackX) : null,
-        fy: pinnedSet.has(node.id) ? (node.fy ?? fallbackY) : null
+        fy: pinnedSet.has(node.id) ? (node.fy ?? fallbackY) : null,
       };
 
       if (node.type !== undefined) {
@@ -527,10 +620,13 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
     this.currentSimulation.alpha(alpha).restart();
   }
 
-  private mergeNodesIntoSimulation(nodes: SimulationNode[], pinnedNodes: string[]) {
+  private mergeNodesIntoSimulation(
+    nodes: SimulationNode[],
+    pinnedNodes: string[],
+  ) {
     const pinnedSet = new Set(pinnedNodes);
 
-    this.simulationNodes = nodes.map(node => {
+    this.simulationNodes = nodes.map((node) => {
       const isPinned = pinnedSet.has(node.id);
       const x = node.x ?? Math.random() * 800 - 400;
       const y = node.y ?? Math.random() * 600 - 300;
@@ -540,7 +636,7 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
         x,
         y,
         fx: isPinned ? (node.fx ?? x) : null,
-        fy: isPinned ? (node.fy ?? y) : null
+        fy: isPinned ? (node.fy ?? y) : null,
       };
 
       if (node.type !== undefined) {
@@ -555,17 +651,15 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
 
   private mapLinksToSimulation(
     links: SimulationLink[],
-    nodes: D3SimulationNode[]
+    nodes: D3SimulationNode[],
   ): D3SimulationLink[] {
-    const nodeById = new Map(nodes.map(node => [node.id, node]));
+    const nodeById = new Map(nodes.map((node) => [node.id, node]));
 
-    return links.map(link => {
-      const sourceId = typeof link.source === "string"
-        ? link.source
-        : link.source.id;
-      const targetId = typeof link.target === "string"
-        ? link.target
-        : link.target.id;
+    return links.map((link) => {
+      const sourceId =
+        typeof link.source === "string" ? link.source : link.source.id;
+      const targetId =
+        typeof link.target === "string" ? link.target : link.target.id;
 
       const sourceNode = nodeById.get(sourceId);
       const targetNode = nodeById.get(targetId);
@@ -573,7 +667,7 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
       return {
         id: link.id,
         source: sourceNode ?? sourceId,
-        target: targetNode ?? targetId
+        target: targetNode ?? targetId,
       };
     });
   }
@@ -596,7 +690,7 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
     nodes: SimulationNode[],
     links: SimulationLink[],
     config: ForceSimulationConfig,
-    pinnedNodes: string[]
+    pinnedNodes: string[],
   ) {
     try {
       const d3Nodes = this.mergeNodesIntoSimulation(nodes, pinnedNodes);
@@ -607,31 +701,41 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
       const seed = config.seed ?? DEFAULT_FORCE_PARAMS.seed;
       const rng = randomLcg(seed);
 
-      const simulation = forceSimulation<D3SimulationNode, D3SimulationLink>(d3Nodes)
+      const simulation = forceSimulation<D3SimulationNode, D3SimulationLink>(
+        d3Nodes,
+      )
         .randomSource(rng)
         .alphaDecay(config.alphaDecay ?? DEFAULT_FORCE_PARAMS.alphaDecay)
-        .velocityDecay(config.velocityDecay ?? DEFAULT_FORCE_PARAMS.velocityDecay);
+        .velocityDecay(
+          config.velocityDecay ?? DEFAULT_FORCE_PARAMS.velocityDecay,
+        );
 
       const linkForce = forceLink<D3SimulationNode, D3SimulationLink>(d3Links)
-        .id(d => d.id)
+        .id((d) => d.id)
         .distance(config.linkDistance ?? DEFAULT_FORCE_PARAMS.linkDistance)
         .strength(config.linkStrength ?? DEFAULT_FORCE_PARAMS.linkStrength);
       simulation.force("link", linkForce);
 
-      const chargeForce = forceManyBody()
-        .strength(config.chargeStrength ?? DEFAULT_FORCE_PARAMS.chargeStrength);
+      const chargeForce = forceManyBody().strength(
+        config.chargeStrength ?? DEFAULT_FORCE_PARAMS.chargeStrength,
+      );
       simulation.force("charge", chargeForce);
 
-      const centerForce = forceCenter(0, 0)
-        .strength(config.centerStrength ?? DEFAULT_FORCE_PARAMS.centerStrength);
+      const centerForce = forceCenter(0, 0).strength(
+        config.centerStrength ?? DEFAULT_FORCE_PARAMS.centerStrength,
+      );
       simulation.force("center", centerForce);
 
       const collisionForce = forceCollide()
         .radius(config.collisionRadius ?? DEFAULT_FORCE_PARAMS.collisionRadius)
-        .strength(config.collisionStrength ?? DEFAULT_FORCE_PARAMS.collisionStrength);
+        .strength(
+          config.collisionStrength ?? DEFAULT_FORCE_PARAMS.collisionStrength,
+        );
       simulation.force("collision", collisionForce);
 
-      simulation.on("tick", () => { this.handleTick(config); });
+      simulation.on("tick", () => {
+        this.handleTick(config);
+      });
       simulation.on("end", () => {
         if (this.isRunning && !this.isPaused) {
           this.emitComplete({
@@ -646,7 +750,9 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
       return simulation;
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      this.logger.error("simulation", "Failed to create D3 simulation", { error: message });
+      this.logger.error("simulation", "Failed to create D3 simulation", {
+        error: message,
+      });
       this.emitError("Failed to create D3 simulation", { error: message });
       throw error;
     }
@@ -662,7 +768,8 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
     this.iterationCount += 1;
 
     const now = Date.now();
-    const shouldEmitProgress = (now - this.lastProgressTime) >= this.progressThrottleMs;
+    const shouldEmitProgress =
+      now - this.lastProgressTime >= this.progressThrottleMs;
 
     if (shouldEmitProgress) {
       this.lastProgressTime = now;
@@ -702,7 +809,8 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
     }
 
     const alpha = this.currentSimulation.alpha();
-    const maxIterations = config.maxIterations ?? DEFAULT_FORCE_PARAMS.maxIterations;
+    const maxIterations =
+      config.maxIterations ?? DEFAULT_FORCE_PARAMS.maxIterations;
 
     if (alpha < 0.001) {
       this.currentSimulation.stop();

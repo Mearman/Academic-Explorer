@@ -5,6 +5,9 @@ import { validateExternalId } from "@academic-explorer/client";
 import type { ObjectMatcher } from "../types";
 import { convertToRelativeUrl, getIdColor } from "../utils";
 
+// Constants for ID types
+const SPECIAL_ID_TYPES = new Set(["orcid", "doi", "ror"]);
+
 export const idObjectMatcher: ObjectMatcher = {
   name: "id-object",
   priority: 10,
@@ -30,87 +33,118 @@ export const idObjectMatcher: ObjectMatcher = {
     const idObj = obj as Record<string, string>;
     return (
       <Group gap="xs" wrap="wrap">
-        {Object.entries(idObj).map(([key, value]) => {
-          if (!value) return null;
-
-          const displayKey = key.toUpperCase();
-          const isSpecialId = key === "orcid" || key === "doi" || key === "ror";
-
-          // Check if this is an OpenAlex ID that should be linked
-          const validation = validateExternalId(value);
-          let relativeUrl: string | null = null;
-
-          if (validation.isValid && validation.type === "openalex") {
-            relativeUrl = convertToRelativeUrl(`https://openalex.org/${value}`);
-            // ROR IDs in ID objects are not linked (handled specially)
-          }
-
-          return (
-            <Group key={key} gap="xs" wrap="nowrap">
-              {relativeUrl && onNavigate ? (
-                <Anchor
-                  href={relativeUrl}
-                  style={{ textDecoration: "none" }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    const routePath = relativeUrl.startsWith("#/")
-                      ? relativeUrl.slice(1)
-                      : relativeUrl;
-                    onNavigate(routePath);
-                  }}
-                >
-                  <Badge
-                    variant={isSpecialId ? "filled" : "light"}
-                    size="sm"
-                    color={getIdColor(key)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    {displayKey}: {value}
-                  </Badge>
-                </Anchor>
-              ) : relativeUrl ? (
-                <Anchor
-                  href={relativeUrl}
-                  target={relativeUrl.startsWith("http") ? "_blank" : undefined}
-                  rel={
-                    relativeUrl.startsWith("http")
-                      ? "noopener noreferrer"
-                      : undefined
-                  }
-                  style={{ textDecoration: "none" }}
-                  aria-label={`Navigate to ${key} ${value}`}
-                >
-                  <Badge
-                    variant={isSpecialId ? "filled" : "light"}
-                    size="sm"
-                    color={getIdColor(key)}
-                  >
-                    {displayKey}: {value}
-                  </Badge>
-                </Anchor>
-              ) : (
-                <Badge
-                  variant={isSpecialId ? "filled" : "light"}
-                  size="sm"
-                  color={getIdColor(key)}
-                >
-                  {displayKey}: {value}
-                </Badge>
-              )}
-              <Tooltip label="Copy to clipboard">
-                <ActionIcon
-                  size="sm"
-                  variant="subtle"
-                  onClick={() => navigator.clipboard.writeText(value)}
-                  aria-label={`Copy ${key} ${value} to clipboard`}
-                >
-                  <IconCopy size={14} />
-                </ActionIcon>
-              </Tooltip>
-            </Group>
-          );
-        })}
+        {Object.entries(idObj).map(([key, value]) =>
+          value ? renderIdBadge(key, value, onNavigate) : null,
+        )}
       </Group>
     );
   },
 };
+
+/**
+ * Renders a single ID badge with appropriate linking and copy functionality
+ */
+function renderIdBadge(
+  key: string,
+  value: string,
+  onNavigate?: (path: string) => void,
+): React.ReactNode {
+  const displayKey = key.toUpperCase();
+  const isSpecialId = SPECIAL_ID_TYPES.has(key);
+  const relativeUrl = getRelativeUrlForId(key, value);
+
+  return (
+    <Group key={key} gap="xs" wrap="nowrap">
+      {renderBadgeLink(
+        displayKey,
+        value,
+        key,
+        relativeUrl,
+        onNavigate,
+        isSpecialId,
+      )}
+      <Tooltip label="Copy to clipboard">
+        <ActionIcon
+          size="sm"
+          variant="subtle"
+          onClick={() => navigator.clipboard.writeText(value)}
+          aria-label={`Copy ${key} ${value} to clipboard`}
+        >
+          <IconCopy size={14} />
+        </ActionIcon>
+      </Tooltip>
+    </Group>
+  );
+}
+
+/**
+ * Gets the relative URL for an ID if it should be linked
+ */
+function getRelativeUrlForId(key: string, value: string): string | null {
+  // Check if this is an OpenAlex ID that should be linked
+  const validation = validateExternalId(value);
+  if (validation.isValid && validation.type === "openalex") {
+    return convertToRelativeUrl(`https://openalex.org/${value}`);
+  }
+  return null;
+}
+
+/**
+ * Renders the appropriate badge link based on URL and navigation availability
+ */
+function renderBadgeLink(
+  displayKey: string,
+  value: string,
+  key: string,
+  relativeUrl: string | null,
+  onNavigate?: (path: string) => void,
+  isSpecialId?: boolean,
+): React.ReactNode {
+  const badgeProps = {
+    variant: isSpecialId ? "filled" : ("light" as const),
+    size: "sm" as const,
+    color: getIdColor(key),
+  };
+
+  if (relativeUrl && onNavigate) {
+    return (
+      <Anchor
+        href={relativeUrl}
+        style={{ textDecoration: "none" }}
+        onClick={(e) => {
+          e.preventDefault();
+          const routePath = relativeUrl.startsWith("#/")
+            ? relativeUrl.slice(1)
+            : relativeUrl;
+          onNavigate(routePath);
+        }}
+      >
+        <Badge {...badgeProps} style={{ cursor: "pointer" }}>
+          {displayKey}: {value}
+        </Badge>
+      </Anchor>
+    );
+  }
+
+  if (relativeUrl) {
+    return (
+      <Anchor
+        href={relativeUrl}
+        target={relativeUrl.startsWith("http") ? "_blank" : undefined}
+        rel={relativeUrl.startsWith("http") ? "noopener noreferrer" : undefined}
+        style={{ textDecoration: "none" }}
+        aria-label={`Navigate to ${key} ${value}`}
+      >
+        <Badge {...badgeProps}>
+          {displayKey}: {value}
+        </Badge>
+      </Anchor>
+    );
+  }
+
+  return (
+    <Badge {...badgeProps}>
+      {displayKey}: {value}
+    </Badge>
+  );
+}

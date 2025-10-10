@@ -6,6 +6,15 @@
 import Dexie, { type Table } from "dexie";
 import { GenericLogger } from "../logger.js";
 
+// Constants for logging and database operations
+const EXAMPLE_URL_PREFIX = "https://api.openalex.org";
+const LOG_CATEGORY = "user-interactions";
+const DB_NAME = "user-interactions";
+const SEARCH_ENDPOINT = "/search";
+
+// Database schema version constants
+const DB_VERSION_UNIFIED_REQUEST_SCHEMA = 3;
+
 // Database schema interfaces
 
 export interface BookmarkRecord {
@@ -61,7 +70,7 @@ class UserInteractionsDB extends Dexie {
   pageVisits!: Table<PageVisitRecord>;
 
   constructor() {
-    super("user-interactions");
+    super(DB_NAME);
 
     // V2: Legacy schema (entity/search/list based)
     this.version(2).stores({
@@ -71,10 +80,11 @@ class UserInteractionsDB extends Dexie {
     });
 
     // V3: Unified request-based schema
-    this.version(3).stores({
+    this.version(DB_VERSION_UNIFIED_REQUEST_SCHEMA).stores({
       bookmarks:
         "++id, request.cacheKey, request.hash, request.endpoint, timestamp, *tags",
-      pageVisits: "++id, request.cacheKey, request.hash, request.endpoint, timestamp, cached",
+      pageVisits:
+        "++id, request.cacheKey, request.hash, request.endpoint, timestamp, cached",
     });
   }
 }
@@ -138,13 +148,13 @@ export class UserInteractionsService {
 
       await this.db.pageVisits.add(pageVisit);
 
-      this.logger?.debug("user-interactions", "Page visit recorded", {
+      this.logger?.debug(LOG_CATEGORY, "Page visit recorded", {
         cacheKey: request.cacheKey,
         cached: pageVisit.cached,
         duration: pageVisit.duration,
       });
     } catch (error) {
-      this.logger?.error("user-interactions", "Failed to record page visit", {
+      this.logger?.error(LOG_CATEGORY, "Failed to record page visit", {
         cacheKey: request.cacheKey,
         error,
       });
@@ -162,13 +172,9 @@ export class UserInteractionsService {
         .limit(limit)
         .toArray();
     } catch (error) {
-      this.logger?.error(
-        "user-interactions",
-        "Failed to get recent page visits",
-        {
-          error,
-        },
-      );
+      this.logger?.error(LOG_CATEGORY, "Failed to get recent page visits", {
+        error,
+      });
       return [];
     }
   }
@@ -186,14 +192,10 @@ export class UserInteractionsService {
 
       return count > 0;
     } catch (error) {
-      this.logger?.error(
-        "user-interactions",
-        "Failed to check bookmark status",
-        {
-          cacheKey,
-          error,
-        },
-      );
+      this.logger?.error(LOG_CATEGORY, "Failed to check bookmark status", {
+        cacheKey,
+        error,
+      });
       return false;
     }
   }
@@ -212,7 +214,7 @@ export class UserInteractionsService {
       return count > 0;
     } catch (error) {
       this.logger?.error(
-        "user-interactions",
+        LOG_CATEGORY,
         "Failed to check bookmark status by hash",
         {
           hash,
@@ -235,9 +237,9 @@ export class UserInteractionsService {
 
       return bookmark ?? null;
     } catch (error) {
-      this.logger?.error("user-interactions", "Failed to get bookmark", {
+      this.logger?.error(LOG_CATEGORY, "Failed to get bookmark by cache key", {
         cacheKey,
-        error,
+        error: error as Error,
       });
       return null;
     }
@@ -255,7 +257,7 @@ export class UserInteractionsService {
 
       return bookmark ?? null;
     } catch (error) {
-      this.logger?.error("user-interactions", "Failed to get bookmark by hash", {
+      this.logger?.error(LOG_CATEGORY, "Failed to get bookmark by hash", {
         hash,
         error,
       });
@@ -293,7 +295,7 @@ export class UserInteractionsService {
 
       const id = (await this.db.bookmarks.add(bookmark)) as number;
 
-      this.logger?.debug("user-interactions", "Bookmark added", {
+      this.logger?.debug(LOG_CATEGORY, "Bookmark added", {
         id,
         cacheKey: request.cacheKey,
         title,
@@ -301,7 +303,7 @@ export class UserInteractionsService {
 
       return id;
     } catch (error) {
-      this.logger?.error("user-interactions", "Failed to add bookmark", {
+      this.logger?.error(LOG_CATEGORY, "Failed to add bookmark", {
         cacheKey: request.cacheKey,
         title,
         error,
@@ -310,8 +312,6 @@ export class UserInteractionsService {
     }
   }
 
-
-
   /**
    * Get all bookmarks
    */
@@ -319,7 +319,7 @@ export class UserInteractionsService {
     try {
       return await this.db.bookmarks.orderBy("timestamp").reverse().toArray();
     } catch (error) {
-      this.logger?.error("user-interactions", "Failed to get all bookmarks", {
+      this.logger?.error(LOG_CATEGORY, "Failed to get all bookmarks", {
         error,
       });
       return [];
@@ -333,11 +333,11 @@ export class UserInteractionsService {
     try {
       await this.db.bookmarks.delete(bookmarkId);
 
-      this.logger?.debug("user-interactions", "Bookmark removed", {
+      this.logger?.debug(LOG_CATEGORY, "Bookmark removed", {
         bookmarkId,
       });
     } catch (error) {
-      this.logger?.error("user-interactions", "Failed to remove bookmark", {
+      this.logger?.error(LOG_CATEGORY, "Failed to remove bookmark", {
         bookmarkId,
         error,
       });
@@ -355,12 +355,12 @@ export class UserInteractionsService {
     try {
       await this.db.bookmarks.update(bookmarkId, updates);
 
-      this.logger?.debug("user-interactions", "Bookmark updated", {
+      this.logger?.debug(LOG_CATEGORY, "Bookmark updated", {
         bookmarkId,
         updates,
       });
     } catch (error) {
-      this.logger?.error("user-interactions", "Failed to update bookmark", {
+      this.logger?.error(LOG_CATEGORY, "Failed to update bookmark", {
         bookmarkId,
         updates,
         error,
@@ -387,7 +387,7 @@ export class UserInteractionsService {
           ),
       );
     } catch (error) {
-      this.logger?.error("user-interactions", "Failed to search bookmarks", {
+      this.logger?.error(LOG_CATEGORY, "Failed to search bookmarks", {
         query,
         error,
       });
@@ -454,13 +454,9 @@ export class UserInteractionsService {
         cacheHitRate,
       };
     } catch (error) {
-      this.logger?.error(
-        "user-interactions",
-        "Failed to get page visit stats",
-        {
-          error,
-        },
-      );
+      this.logger?.error(LOG_CATEGORY, "Failed to get page visit stats", {
+        error,
+      });
       return {
         totalVisits: 0,
         uniqueRequests: 0,
@@ -489,7 +485,7 @@ export class UserInteractionsService {
         .slice(0, limit);
     } catch (error) {
       this.logger?.error(
-        "user-interactions",
+        LOG_CATEGORY,
         "Failed to get page visits by endpoint",
         {
           endpointPattern,
@@ -529,13 +525,9 @@ export class UserInteractionsService {
         .sort((a, b) => b.count - a.count)
         .slice(0, limit);
     } catch (error) {
-      this.logger?.error(
-        "user-interactions",
-        "Failed to get popular requests",
-        {
-          error,
-        },
-      );
+      this.logger?.error(LOG_CATEGORY, "Failed to get popular requests", {
+        error,
+      });
       return [];
     }
   }
@@ -560,9 +552,9 @@ export class UserInteractionsService {
   ): Promise<void> {
     // Convert URL to a simple request representation
     const urlObj = new URL(
-      url.startsWith("http") ? url : `https://example.com${url}`,
+      url.startsWith("http") ? url : `${EXAMPLE_URL_PREFIX}${url}`,
     );
-    
+
     const params: Record<string, unknown> = {};
     urlObj.searchParams.forEach((value, key) => {
       params[key] = value;
@@ -645,10 +637,11 @@ export class UserInteractionsService {
     notes?: string,
     tags?: string[],
   ): Promise<number> {
+    const endpoint = `/${entityType}/${entityId}`;
     const request = {
-      cacheKey: `/${entityType}/${entityId}`,
+      cacheKey: endpoint,
       hash: `${entityType}-${entityId}`.slice(0, 16),
-      endpoint: `/${entityType}/${entityId}`,
+      endpoint,
       params: {},
     };
 
@@ -673,9 +666,9 @@ export class UserInteractionsService {
     }
 
     const request = {
-      cacheKey: `/search?q=${searchQuery}`,
+      cacheKey: `${SEARCH_ENDPOINT}?q=${searchQuery}`,
       hash: `search-${searchQuery}`.slice(0, 16),
-      endpoint: "/search",
+      endpoint: SEARCH_ENDPOINT,
       params,
     };
 
@@ -693,7 +686,7 @@ export class UserInteractionsService {
     tags?: string[],
   ): Promise<number> {
     const urlObj = new URL(
-      url.startsWith("http") ? url : `https://example.com${url}`,
+      url.startsWith("http") ? url : `${EXAMPLE_URL_PREFIX}${url}`,
     );
 
     const request = {
@@ -734,7 +727,9 @@ export class UserInteractionsService {
   ): Promise<BookmarkRecord | null> {
     try {
       const bookmarks = await this.db.bookmarks.toArray();
-      return bookmarks.find((b) => b.request.endpoint.includes("/search")) ?? null;
+      return (
+        bookmarks.find((b) => b.request.endpoint.includes("/search")) ?? null
+      );
     } catch {
       return null;
     }
@@ -772,7 +767,7 @@ export class UserInteractionsService {
     } | null;
   }> {
     const stats = await this.getPageVisitStats();
-    
+
     // Convert endpoint-based stats to legacy "type" format
     const byType: Record<string, number> = {};
     for (const [endpoint, count] of Object.entries(stats.byEndpoint)) {
