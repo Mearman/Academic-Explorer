@@ -447,7 +447,9 @@ describe("OpenAlexBaseClient", () => {
       };
 
       mockFetch.mockResolvedValueOnce(
-        new Response(JSON.stringify(responseData)),
+        new Response(JSON.stringify(responseData), {
+          headers: { "content-type": "application/json" },
+        }),
       );
 
       const result = await client.getResponse("works");
@@ -456,7 +458,11 @@ describe("OpenAlexBaseClient", () => {
 
     it("should make GET requests with getById method", async () => {
       const workData = { id: "W123", display_name: "Test Work" };
-      mockFetch.mockResolvedValueOnce(new Response(JSON.stringify(workData)));
+      mockFetch.mockResolvedValueOnce(
+        new Response(JSON.stringify(workData), {
+          headers: { "content-type": "application/json" },
+        }),
+      );
 
       const result = await client.getById("works", "W123", {
         select: ["id", "display_name"],
@@ -473,7 +479,11 @@ describe("OpenAlexBaseClient", () => {
     });
 
     it("should properly encode IDs in getById method", async () => {
-      mockFetch.mockResolvedValueOnce(new Response(JSON.stringify({})));
+      mockFetch.mockResolvedValueOnce(
+        new Response(JSON.stringify({}), {
+          headers: { "content-type": "application/json" },
+        }),
+      );
 
       await client.getById("works", "W123/special-chars", {});
 
@@ -490,7 +500,11 @@ describe("OpenAlexBaseClient", () => {
       };
 
       // Since extractCursorFromResponse returns undefined, streaming will only fetch one batch
-      mockFetch.mockResolvedValueOnce(new Response(JSON.stringify(batch1)));
+      mockFetch.mockResolvedValueOnce(
+        new Response(JSON.stringify(batch1), {
+          headers: { "content-type": "application/json" },
+        }),
+      );
 
       const results: { id: string }[][] = [];
       for await (const batch of client.stream<{ id: string }>("works", {}, 2)) {
@@ -511,7 +525,11 @@ describe("OpenAlexBaseClient", () => {
 
       // Since streaming stops after first batch (cursor extraction not implemented),
       // getAll will only get the first batch results
-      mockFetch.mockResolvedValueOnce(new Response(JSON.stringify(batch1)));
+      mockFetch.mockResolvedValueOnce(
+        new Response(JSON.stringify(batch1), {
+          headers: { "content-type": "application/json" },
+        }),
+      );
 
       const results = await client.getAll("works", {}, 3);
 
@@ -527,7 +545,11 @@ describe("OpenAlexBaseClient", () => {
       };
 
       // Since streaming stops after first batch (cursor extraction not implemented)
-      mockFetch.mockResolvedValueOnce(new Response(JSON.stringify(batch1)));
+      mockFetch.mockResolvedValueOnce(
+        new Response(JSON.stringify(batch1), {
+          headers: { "content-type": "application/json" },
+        }),
+      );
 
       const results = await client.getAll("works");
 
@@ -580,15 +602,23 @@ describe("OpenAlexBaseClient", () => {
   });
 
   describe("Edge Cases and Error Conditions", () => {
-    it("should handle responses with no content-type header", async () => {
+    it("should reject responses with no content-type header", async () => {
+      mockFetch.mockReset();
       const responseWithoutContentType = new Response(
         JSON.stringify({ results: [], meta: { count: 0 } }),
         { status: 200 },
       );
+      const responseWithoutContentType2 = new Response(
+        JSON.stringify({ results: [], meta: { count: 0 } }),
+        { status: 200 },
+      );
       mockFetch.mockResolvedValueOnce(responseWithoutContentType);
+      mockFetch.mockResolvedValueOnce(responseWithoutContentType2);
 
-      const result = await client.get("works");
-      expect(result).toEqual({ results: [], meta: { count: 0 } });
+      await expect(client.get("works")).rejects.toThrow(OpenAlexApiError);
+      await expect(client.get("works")).rejects.toThrow(
+        "Expected JSON response but got text/plain",
+      );
     });
 
     it("should handle requests with empty endpoint", async () => {
