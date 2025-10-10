@@ -1,10 +1,13 @@
 import { useEntityDocumentTitle } from "@/hooks/use-document-title";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
+import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { useGraphStore } from "@/stores/graph-store";
+import { EntityDetectionService } from "@academic-explorer/graph";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
+import { IconBookmark, IconBookmarkOff } from "@tabler/icons-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
@@ -27,53 +30,15 @@ function TopicRoute() {
   });
   const topic = rawEntityData.data;
 
-  // Check if ID contains a full URL and redirect to clean ID
-  useEffect(() => {
-    if (!topicId) return;
-
-    // Check if topicId contains a full OpenAlex URL
-    if (
-      topicId.includes("https://openalex.org/") ||
-      topicId.includes("http://openalex.org/")
-    ) {
-      try {
-        const url = new URL(
-          topicId.startsWith("http")
-            ? topicId
-            : `https://openalex.org/${topicId}`,
-        );
-        const pathParts = url.pathname.split("/").filter(Boolean);
-        if (pathParts.length === 1) {
-          const cleanId = pathParts[0];
-          logger.debug(
-            "routing",
-            "Redirecting from malformed topic URL to clean ID",
-            {
-              originalId: topicId,
-              cleanId,
-            },
-            "TopicRoute",
-          );
-          void navigate({
-            to: "/topics/$topicId",
-            params: { topicId: cleanId },
-            replace: true,
-          });
-        }
-      } catch (error) {
-        logError(
-          logger,
-          "Failed to parse topic URL for redirect",
-          error,
-          "TopicRoute",
-          "routing",
-        );
-      }
-    }
-  }, [topicId, navigate]);
-
   // Update document title with topic name
   useEntityDocumentTitle(topic);
+
+  // Track user interactions (visits and bookmarks)
+  const userInteractions = useUserInteractions({
+    entityId: topicId,
+    entityType: "topic",
+    autoTrackVisits: true,
+  });
 
   useEffect(() => {
     const loadTopic = async () => {
@@ -146,11 +111,41 @@ function TopicRoute() {
   // Show content based on view mode
   return (
     <div className="p-4 max-w-full overflow-auto">
-      <ViewToggle
-        viewMode={viewMode}
-        onToggle={setViewMode}
-        entityType={entityType}
-      />
+      <div className="flex items-center justify-between mb-4">
+        <ViewToggle
+          viewMode={viewMode}
+          onToggle={setViewMode}
+          entityType={entityType}
+        />
+
+        <button
+          onClick={async () => {
+            if (userInteractions.isBookmarked) {
+              await userInteractions.unbookmarkEntity();
+            } else {
+              const title = topic?.display_name || `Topic ${topicId}`;
+              await userInteractions.bookmarkEntity(title);
+            }
+          }}
+          className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+            userInteractions.isBookmarked
+              ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
+              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+          }`}
+          title={
+            userInteractions.isBookmarked
+              ? "Remove bookmark"
+              : "Bookmark this topic"
+          }
+        >
+          {userInteractions.isBookmarked ? (
+            <IconBookmark size={16} fill="currentColor" />
+          ) : (
+            <IconBookmarkOff size={16} />
+          )}
+          {userInteractions.isBookmarked ? "Bookmarked" : "Bookmark"}
+        </button>
+      </div>
 
       {viewMode === "raw" ? (
         <pre className="json-view p-4 bg-gray-100 overflow-auto mt-4">
