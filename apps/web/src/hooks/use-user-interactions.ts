@@ -11,6 +11,8 @@ import {
 } from "@academic-explorer/utils/storage/user-interactions-db";
 import { logger } from "@academic-explorer/utils/logger";
 
+const USER_INTERACTIONS_LOGGER_CONTEXT = "user-interactions";
+
 export interface UseUserInteractionsOptions {
   entityId?: string;
   entityType?: string;
@@ -27,7 +29,7 @@ export interface UseUserInteractionsReturn {
     url: string,
     metadata?: {
       searchQuery?: string;
-      filters?: Record<string, any>;
+      filters?: Record<string, unknown>;
       entityId?: string;
       entityType?: string;
       resultCount?: number;
@@ -56,7 +58,7 @@ export interface UseUserInteractionsReturn {
   bookmarkSearch: (
     title: string,
     searchQuery: string,
-    filters?: Record<string, any>,
+    filters?: Record<string, unknown>,
     notes?: string,
     tags?: string[],
   ) => Promise<void>;
@@ -165,7 +167,7 @@ export function useUserInteractions(
       setPageVisitStats(pageStats);
     } catch (error) {
       logger.error(
-        "user-interactions",
+        USER_INTERACTIONS_LOGGER_CONTEXT,
         "Failed to refresh user interaction data",
         { error },
       );
@@ -190,11 +192,15 @@ export function useUserInteractions(
             document.referrer || undefined,
           );
         } catch (error) {
-          logger.error("user-interactions", "Failed to auto-track page visit", {
-            entityId,
-            entityType,
-            error,
-          });
+          logger.error(
+            USER_INTERACTIONS_LOGGER_CONTEXT,
+            "Failed to auto-track page visit",
+            {
+              entityId,
+              entityType,
+              error,
+            },
+          );
         }
       };
 
@@ -236,10 +242,14 @@ export function useUserInteractions(
         // Refresh data to update UI
         await refreshData();
       } catch (error) {
-        logger.error("user-interactions", "Failed to record page visit", {
-          url,
-          error,
-        });
+        logger.error(
+          USER_INTERACTIONS_LOGGER_CONTEXT,
+          "Failed to record page visit",
+          {
+            url,
+            error,
+          },
+        );
         throw error;
       }
     },
@@ -279,11 +289,15 @@ export function useUserInteractions(
         setIsBookmarked(true);
         await refreshData();
       } catch (error) {
-        logger.error("user-interactions", "Failed to bookmark entity", {
-          entityId,
-          entityType,
-          error,
-        });
+        logger.error(
+          USER_INTERACTIONS_LOGGER_CONTEXT,
+          "Failed to bookmark entity",
+          {
+            entityId,
+            entityType,
+            error,
+          },
+        );
         throw error;
       }
     },
@@ -313,11 +327,15 @@ export function useUserInteractions(
         await refreshData();
       }
     } catch (error) {
-      logger.error("user-interactions", "Failed to unbookmark entity", {
-        entityId,
-        entityType,
-        error,
-      });
+      logger.error(
+        USER_INTERACTIONS_LOGGER_CONTEXT,
+        "Failed to unbookmark entity",
+        {
+          entityId,
+          entityType,
+          error,
+        },
+      );
       throw error;
     }
   }, [entityId, entityType, refreshData]);
@@ -347,11 +365,15 @@ export function useUserInteractions(
         setIsBookmarked(true);
         await refreshData();
       } catch (error) {
-        logger.error("user-interactions", "Failed to bookmark search", {
-          searchQuery,
-          filters,
-          error,
-        });
+        logger.error(
+          USER_INTERACTIONS_LOGGER_CONTEXT,
+          "Failed to bookmark search",
+          {
+            searchQuery,
+            filters,
+            error,
+          },
+        );
         throw error;
       }
     },
@@ -374,10 +396,14 @@ export function useUserInteractions(
         setIsBookmarked(true);
         await refreshData();
       } catch (error) {
-        logger.error("user-interactions", "Failed to bookmark list", {
-          url,
-          error,
-        });
+        logger.error(
+          USER_INTERACTIONS_LOGGER_CONTEXT,
+          "Failed to bookmark list",
+          {
+            url,
+            error,
+          },
+        );
         throw error;
       }
     },
@@ -400,11 +426,15 @@ export function useUserInteractions(
         await refreshData();
       }
     } catch (error) {
-      logger.error("user-interactions", "Failed to unbookmark search", {
-        searchQuery,
-        filters,
-        error,
-      });
+      logger.error(
+        USER_INTERACTIONS_LOGGER_CONTEXT,
+        "Failed to unbookmark search",
+        {
+          searchQuery,
+          filters,
+          error,
+        },
+      );
       throw error;
     }
   }, [searchQuery, filters, refreshData]);
@@ -422,10 +452,14 @@ export function useUserInteractions(
         await refreshData();
       }
     } catch (error) {
-      logger.error("user-interactions", "Failed to unbookmark list", {
-        url,
-        error,
-      });
+      logger.error(
+        USER_INTERACTIONS_LOGGER_CONTEXT,
+        "Failed to unbookmark list",
+        {
+          url,
+          error,
+        },
+      );
       throw error;
     }
   }, [url, refreshData]);
@@ -448,12 +482,16 @@ export function useUserInteractions(
           await refreshData();
         }
       } catch (error) {
-        logger.error("user-interactions", "Failed to update bookmark", {
-          entityId,
-          entityType,
-          updates,
-          error,
-        });
+        logger.error(
+          USER_INTERACTIONS_LOGGER_CONTEXT,
+          "Failed to update bookmark",
+          {
+            entityId,
+            entityType,
+            updates,
+            error,
+          },
+        );
         throw error;
       }
     },
@@ -465,10 +503,14 @@ export function useUserInteractions(
       try {
         return await userInteractionsService.searchBookmarks(query);
       } catch (error) {
-        logger.error("user-interactions", "Failed to search bookmarks", {
-          query,
-          error,
-        });
+        logger.error(
+          USER_INTERACTIONS_LOGGER_CONTEXT,
+          "Failed to search bookmarks",
+          {
+            query,
+            error,
+          },
+        );
         return [];
       }
     },
