@@ -6,6 +6,10 @@ Academic Explorer is a TypeScript-based research platform that provides intuitiv
 
 **[View Live Application](https://mearman.github.io/Academic-Explorer/#/authors/A5017898742)**
 
+## CI/CD Status
+
+[![CI Pipeline](https://github.com/Mearman/Academic-Explorer/actions/workflows/ci.yml/badge.svg)](https://github.com/Mearman/Academic-Explorer/actions/workflows/ci.yml)
+
 ## Monorepo Structure
 
 This repository is organized as an Nx-managed monorepo with shared packages and focused applications:
@@ -246,4 +250,5 @@ pnpm cli --help
 ---
 
 _PhD Research • Bangor University • Cultural Heritage + Computational Methods_
+
 # Test commit
