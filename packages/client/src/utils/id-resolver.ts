@@ -8,20 +8,20 @@
  * validation functions and enhanced normalization capabilities.
  */
 
-import { isNonEmptyString, isString } from '@academic-explorer/utils';
+import { isNonEmptyString, isString } from "@academic-explorer/utils";
 
 /**
  * Supported external identifier types
  */
 export type ExternalIdType =
-  | 'doi'
-  | 'orcid'
-  | 'ror'
-  | 'issn'
-  | 'pmid'
-  | 'wikidata'
-  | 'openalex'
-  | 'unknown';
+  | "doi"
+  | "orcid"
+  | "ror"
+  | "issn"
+  | "pmid"
+  | "wikidata"
+  | "openalex"
+  | "unknown";
 
 /**
  * Validation result for external identifiers
@@ -93,19 +93,22 @@ export class IdResolver {
   private static readonly patterns: IdPattern[] = [
     // DOI - Digital Object Identifier
     {
-      name: 'DOI',
-      type: 'doi',
+      name: "DOI",
+      type: "doi",
       patterns: [
         /^doi:(10\.\d+\/[^\s]+)$/i,
         /^(10\.\d+\/[^\s]+)$/,
         /^https?:\/\/doi\.org\/(10\.\d+\/[^\s]+)$/i,
         /^https?:\/\/dx\.doi\.org\/(10\.\d+\/[^\s]+)$/i,
       ],
-      normalize: (match: string, config?: IdValidationConfig): string | null => {
+      normalize: (
+        match: string,
+        config?: IdValidationConfig,
+      ): string | null => {
         let doi = match.trim();
 
         // Remove doi: prefix
-        if (doi.toLowerCase().startsWith('doi:')) {
+        if (doi.toLowerCase().startsWith("doi:")) {
           doi = doi.substring(4);
         }
 
@@ -124,23 +127,26 @@ export class IdResolver {
         return config?.preferUrls ? `https://doi.org/${doi}` : doi;
       },
       examples: [
-        '10.1038/nature12373',
-        'doi:10.1038/nature12373',
-        'https://doi.org/10.1038/nature12373'
+        "10.1038/nature12373",
+        "doi:10.1038/nature12373",
+        "https://doi.org/10.1038/nature12373",
       ],
-      description: 'Digital Object Identifier for academic works'
+      description: "Digital Object Identifier for academic works",
     },
 
     // ORCID - Open Researcher and Contributor ID
     {
-      name: 'ORCID',
-      type: 'orcid',
+      name: "ORCID",
+      type: "orcid",
       patterns: [
         /^(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/i,
         /^https?:\/\/orcid\.org\/(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/i,
         /orcid\.org\/(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])/i,
       ],
-      normalize: (match: string, _config?: IdValidationConfig): string | null => {
+      normalize: (
+        match: string,
+        _config?: IdValidationConfig,
+      ): string | null => {
         const orcidMatch = match.match(/(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])/i);
         if (!orcidMatch) return null;
 
@@ -155,25 +161,28 @@ export class IdResolver {
         return `https://orcid.org/${orcid}`;
       },
       validate: (normalized: string): boolean => {
-        const orcid = normalized.replace('https://orcid.org/', '');
+        const orcid = normalized.replace("https://orcid.org/", "");
         return IdResolver.validateOrcidChecksum(orcid);
       },
       examples: [
-        '0000-0002-1825-0097',
-        'https://orcid.org/0000-0002-1825-0097'
+        "0000-0002-1825-0097",
+        "https://orcid.org/0000-0002-1825-0097",
       ],
-      description: 'ORCID identifier for researchers and contributors'
+      description: "ORCID identifier for researchers and contributors",
     },
 
     // OpenAlex IDs - Check BEFORE ROR to avoid conflicts (I prefix)
     {
-      name: 'OpenAlex',
-      type: 'openalex',
+      name: "OpenAlex",
+      type: "openalex",
       patterns: [
         /^https?:\/\/openalex\.org\/([WASIPCFKQT]\d+)$/i,
         /^([WASIPCFKQT]\d+)$/i,
       ],
-      normalize: (match: string, config?: IdValidationConfig): string | null => {
+      normalize: (
+        match: string,
+        config?: IdValidationConfig,
+      ): string | null => {
         let openalexId = match.trim();
 
         // Extract from URL
@@ -191,28 +200,29 @@ export class IdResolver {
         const prefix = openalexId[0].toUpperCase();
         const digits = openalexId.slice(1);
 
-        if ((prefix === 'T' && digits.length < 4) || (prefix !== 'T' && digits.length < 6)) {
+        if (
+          (prefix === "T" && digits.length < 4) ||
+          (prefix !== "T" && digits.length < 6)
+        ) {
           return null; // Topics need at least 4 digits, others need at least 6
         }
 
         openalexId = openalexId.toUpperCase();
 
         // Return URL format if preferred, otherwise bare ID
-        return config?.preferUrls ?
-          `https://openalex.org/${openalexId}` :
-          openalexId;
+        return config?.preferUrls
+          ? `https://openalex.org/${openalexId}`
+          : openalexId;
       },
-      examples: [
-        'W2741809807',
-        'https://openalex.org/W2741809807'
-      ],
-      description: 'OpenAlex identifier (W=works, A=authors, S=sources, I=institutions, etc.)'
+      examples: ["W2741809807", "https://openalex.org/W2741809807"],
+      description:
+        "OpenAlex identifier (W=works, A=authors, S=sources, I=institutions, etc.)",
     },
 
     // ROR - Research Organization Registry (check AFTER OpenAlex to avoid I prefix conflicts)
     {
-      name: 'ROR',
-      type: 'ror',
+      name: "ROR",
+      type: "ror",
       patterns: [
         /^https?:\/\/ror\.org\/([a-z0-9]{9})$/i,
         /^ror\.org\/([a-z0-9]{9})$/i,
@@ -241,17 +251,14 @@ export class IdResolver {
         // Always return URL format for ROR
         return `https://ror.org/${rorId.toLowerCase()}`;
       },
-      examples: [
-        '05dxps055',
-        'https://ror.org/05dxps055'
-      ],
-      description: 'Research Organization Registry identifier'
+      examples: ["05dxps055", "https://ror.org/05dxps055"],
+      description: "Research Organization Registry identifier",
     },
 
     // ISSN - International Standard Serial Number
     {
-      name: 'ISSN',
-      type: 'issn',
+      name: "ISSN",
+      type: "issn",
       patterns: [
         /^(\d{4}-\d{3}[0-9X])$/i,
         /^ISSN\s*:?\s*(\d{4}-\d{3}[0-9X])$/i,
@@ -272,27 +279,27 @@ export class IdResolver {
       validate: (normalized: string): boolean => {
         return IdResolver.validateIssnChecksum(normalized);
       },
-      examples: [
-        '2049-3630',
-        'ISSN: 2049-3630'
-      ],
-      description: 'International Standard Serial Number for periodicals'
+      examples: ["2049-3630", "ISSN: 2049-3630"],
+      description: "International Standard Serial Number for periodicals",
     },
 
     // PMID - PubMed Identifier
     {
-      name: 'PMID',
-      type: 'pmid',
+      name: "PMID",
+      type: "pmid",
       patterns: [
         /^PMID\s*:?\s*(\d+)$/i,
-        /^(\d{7,8})$/,  // PMIDs are typically 7-8 digits
+        /^(\d{7,8})$/, // PMIDs are typically 7-8 digits
         /^https?:\/\/pubmed\.ncbi\.nlm\.nih\.gov\/(\d+)\/?$/i,
       ],
-      normalize: (match: string, config?: IdValidationConfig): string | null => {
+      normalize: (
+        match: string,
+        config?: IdValidationConfig,
+      ): string | null => {
         let pmid = match.trim();
 
         // Remove PMID: prefix
-        if (pmid.toLowerCase().startsWith('pmid')) {
+        if (pmid.toLowerCase().startsWith("pmid")) {
           const pmidMatch = pmid.match(/pmid\s*:?\s*(\d+)$/i);
           if (pmidMatch) {
             pmid = pmidMatch[1];
@@ -317,32 +324,37 @@ export class IdResolver {
         }
 
         // Return URL format if preferred, otherwise just the number
-        return config?.preferUrls ?
-          `https://pubmed.ncbi.nlm.nih.gov/${pmidNum}/` :
-          pmidNum.toString();
+        return config?.preferUrls
+          ? `https://pubmed.ncbi.nlm.nih.gov/${pmidNum}/`
+          : pmidNum.toString();
       },
       examples: [
-        'PMID: 12345678',
-        '12345678',
-        'https://pubmed.ncbi.nlm.nih.gov/12345678/'
+        "PMID: 12345678",
+        "12345678",
+        "https://pubmed.ncbi.nlm.nih.gov/12345678/",
       ],
-      description: 'PubMed identifier for biomedical literature'
+      description: "PubMed identifier for biomedical literature",
     },
 
     // Wikidata - Wikidata entity identifiers
     {
-      name: 'Wikidata',
-      type: 'wikidata',
+      name: "Wikidata",
+      type: "wikidata",
       patterns: [
         /^Q(\d+)$/,
         /^https?:\/\/www\.wikidata\.org\/wiki\/Q(\d+)$/i,
         /^https?:\/\/www\.wikidata\.org\/entity\/Q(\d+)$/i,
       ],
-      normalize: (match: string, config?: IdValidationConfig): string | null => {
+      normalize: (
+        match: string,
+        config?: IdValidationConfig,
+      ): string | null => {
         let wikidataId = match.trim();
 
         // Extract Q number from URL
-        const urlMatch = wikidataId.match(/wikidata\.org\/(?:wiki|entity)\/Q(\d+)$/i);
+        const urlMatch = wikidataId.match(
+          /wikidata\.org\/(?:wiki|entity)\/Q(\d+)$/i,
+        );
         if (urlMatch) {
           wikidataId = `Q${urlMatch[1]}`;
         }
@@ -353,23 +365,20 @@ export class IdResolver {
         }
 
         // Return URL format if preferred, otherwise Q notation
-        return config?.preferUrls ?
-          `https://www.wikidata.org/wiki/${wikidataId}` :
-          wikidataId;
+        return config?.preferUrls
+          ? `https://www.wikidata.org/wiki/${wikidataId}`
+          : wikidataId;
       },
-      examples: [
-        'Q42',
-        'https://www.wikidata.org/wiki/Q42'
-      ],
-      description: 'Wikidata entity identifier'
-    }
+      examples: ["Q42", "https://www.wikidata.org/wiki/Q42"],
+      description: "Wikidata entity identifier",
+    },
   ];
 
   constructor(config: Partial<IdValidationConfig> = {}) {
     this.config = {
       validateChecksums: true,
       preferUrls: false,
-      ...config
+      ...config,
     };
   }
 
@@ -379,83 +388,134 @@ export class IdResolver {
   validateId(id: unknown): IdValidationResult {
     // Basic type validation
     if (!isString(id) || !isNonEmptyString(id)) {
-      return {
-        isValid: false,
-        type: 'unknown',
-        normalized: null,
-        original: String(id),
-        error: 'Identifier must be a non-empty string'
-      };
+      return this.createInvalidResult(
+        String(id),
+        "Identifier must be a non-empty string",
+      );
     }
 
     const trimmedId = id.trim();
+    return this.validateTrimmedId(trimmedId);
+  }
 
+  /**
+   * Validate a trimmed identifier string
+   */
+  private validateTrimmedId(trimmedId: string): IdValidationResult {
     // Try each pattern
     for (const pattern of IdResolver.patterns) {
-      for (const regex of pattern.patterns) {
-        if (regex.test(trimmedId)) {
-          try {
-            const normalized = pattern.normalize(trimmedId, this.config);
+      const result = this.tryPattern(trimmedId, pattern);
+      if (result) return result;
+    }
 
-            if (normalized === null) {
-              continue; // Pattern matched but normalization failed
-            }
+    return this.createInvalidResult(
+      trimmedId,
+      "Unrecognized identifier format",
+    );
+  }
 
-            // Perform checksum validation if available and enabled
-            let checksumValid: boolean | undefined;
-            if (this.config.validateChecksums && pattern.validate) {
-              checksumValid = pattern.validate(normalized);
-              if (!checksumValid) {
-                return {
-                  isValid: false,
-                  type: pattern.type,
-                  normalized: null,
-                  original: trimmedId,
-                  error: `Invalid ${pattern.name} checksum`,
-                  metadata: { checksumValid: false }
-                };
-              }
-            }
+  /**
+   * Try to validate an ID against a specific pattern
+   */
+  private tryPattern(
+    trimmedId: string,
+    pattern: IdPattern,
+  ): IdValidationResult | null {
+    for (const regex of pattern.patterns) {
+      if (regex.test(trimmedId)) {
+        return this.processPatternMatch(trimmedId, pattern);
+      }
+    }
+    return null;
+  }
 
-            // Determine URL format
-            const url = this.getUrlFormat(normalized, pattern.type);
+  /**
+   * Process a successful pattern match
+   */
+  private processPatternMatch(
+    trimmedId: string,
+    pattern: IdPattern,
+  ): IdValidationResult | null {
+    try {
+      const normalized = pattern.normalize(trimmedId, this.config);
+      if (normalized === null) return null;
 
-            // Determine additional metadata
-            const metadata: IdValidationResult['metadata'] = {
-              url,
-              checksumValid
-            };
+      const checksumValid = this.validateChecksumIfNeeded(pattern, normalized);
+      if (checksumValid === false) {
+        return {
+          isValid: false,
+          type: pattern.type,
+          normalized: null,
+          original: trimmedId,
+          error: `Invalid ${pattern.name} checksum`,
+          metadata: { checksumValid: false },
+        };
+      }
 
-            // Add entity type for OpenAlex IDs
-            if (pattern.type === 'openalex') {
-              const entityType = this.getOpenAlexEntityType(normalized);
-              if (entityType) {
-                metadata.entityType = entityType;
-              }
-            }
+      const metadata = this.buildMetadata(
+        normalized,
+        pattern.type,
+        checksumValid,
+      );
+      return {
+        isValid: true,
+        type: pattern.type,
+        normalized,
+        original: trimmedId,
+        metadata,
+      };
+    } catch {
+      return null;
+    }
+  }
 
-            return {
-              isValid: true,
-              type: pattern.type,
-              normalized,
-              original: trimmedId,
-              metadata
-            };
+  /**
+   * Validate checksum if needed
+   */
+  private validateChecksumIfNeeded(
+    pattern: IdPattern,
+    normalized: string,
+  ): boolean | undefined {
+    if (this.config.validateChecksums && pattern.validate) {
+      return pattern.validate(normalized);
+    }
+    return undefined;
+  }
 
-          } catch {
-            // Continue to next pattern on normalization error
-            continue;
-          }
-        }
+  /**
+   * Build metadata for valid identifier
+   */
+  private buildMetadata(
+    normalized: string,
+    type: ExternalIdType,
+    checksumValid?: boolean,
+  ): IdValidationResult["metadata"] {
+    const url = this.getUrlFormat(normalized, type);
+    const metadata: IdValidationResult["metadata"] = { url, checksumValid };
+
+    if (type === "openalex") {
+      const entityType = this.getOpenAlexEntityType(normalized);
+      if (entityType) {
+        metadata.entityType = entityType;
       }
     }
 
+    return metadata;
+  }
+
+  /**
+   * Create an invalid validation result
+   */
+  private createInvalidResult(
+    original: string,
+    error: string,
+  ): IdValidationResult {
     return {
       isValid: false,
-      type: 'unknown',
+      type: "unknown",
       normalized: null,
-      original: trimmedId,
-      error: 'Unrecognized identifier format'
+      original,
+      error,
     };
   }
 
@@ -463,7 +523,7 @@ export class IdResolver {
    * Batch validate multiple identifiers
    */
   validateIds(ids: unknown[]): IdValidationResult[] {
-    return ids.map(id => this.validateId(id));
+    return ids.map((id) => this.validateId(id));
   }
 
   /**
@@ -477,21 +537,36 @@ export class IdResolver {
   /**
    * Get the URL format for an identifier
    */
-  private getUrlFormat(normalized: string, type: ExternalIdType): string | undefined {
+  private getUrlFormat(
+    normalized: string,
+    type: ExternalIdType,
+  ): string | undefined {
     switch (type) {
-      case 'doi':
-        return normalized.startsWith('https://') ? normalized : `https://doi.org/${normalized}`;
-      case 'orcid':
-        return normalized.startsWith('https://') ? normalized : `https://orcid.org/${normalized}`;
-      case 'ror':
-        return normalized.startsWith('https://') ? normalized : `https://ror.org/${normalized}`;
-      case 'pmid':
-        return normalized.startsWith('https://') ? normalized : `https://pubmed.ncbi.nlm.nih.gov/${normalized}/`;
-      case 'wikidata':
-        return normalized.startsWith('https://') ? normalized : `https://www.wikidata.org/wiki/${normalized}`;
-      case 'openalex':
-        return normalized.startsWith('https://') ? normalized : `https://openalex.org/${normalized}`;
-      case 'issn':
+      case "doi":
+        return normalized.startsWith("https://")
+          ? normalized
+          : `https://doi.org/${normalized}`;
+      case "orcid":
+        return normalized.startsWith("https://")
+          ? normalized
+          : `https://orcid.org/${normalized}`;
+      case "ror":
+        return normalized.startsWith("https://")
+          ? normalized
+          : `https://ror.org/${normalized}`;
+      case "pmid":
+        return normalized.startsWith("https://")
+          ? normalized
+          : `https://pubmed.ncbi.nlm.nih.gov/${normalized}/`;
+      case "wikidata":
+        return normalized.startsWith("https://")
+          ? normalized
+          : `https://www.wikidata.org/wiki/${normalized}`;
+      case "openalex":
+        return normalized.startsWith("https://")
+          ? normalized
+          : `https://openalex.org/${normalized}`;
+      case "issn":
         // ISSN doesn't have a standard URL format
         return undefined;
       default:
@@ -507,16 +582,16 @@ export class IdResolver {
     if (!prefixMatch) return undefined;
 
     const prefixMap: Record<string, string> = {
-      'W': 'works',
-      'A': 'authors',
-      'S': 'sources',
-      'I': 'institutions',
-      'P': 'publishers',
-      'C': 'concepts',
-      'F': 'funders',
-      'T': 'topics',
-      'K': 'keywords',
-      'Q': 'keywords'
+      W: "works",
+      A: "authors",
+      S: "sources",
+      I: "institutions",
+      P: "publishers",
+      C: "concepts",
+      F: "funders",
+      T: "topics",
+      K: "keywords",
+      Q: "keywords",
     };
 
     return prefixMap[prefixMatch[1].toUpperCase()];
@@ -528,49 +603,49 @@ export class IdResolver {
    * Validate DOI identifier
    */
   isValidDOI(id: string): boolean {
-    return this.isValidType(id, 'doi');
+    return this.isValidType(id, "doi");
   }
 
   /**
    * Validate ORCID identifier
    */
   isValidORCID(id: string): boolean {
-    return this.isValidType(id, 'orcid');
+    return this.isValidType(id, "orcid");
   }
 
   /**
    * Validate ROR identifier
    */
   isValidROR(id: string): boolean {
-    return this.isValidType(id, 'ror');
+    return this.isValidType(id, "ror");
   }
 
   /**
    * Validate ISSN identifier
    */
   isValidISSN(id: string): boolean {
-    return this.isValidType(id, 'issn');
+    return this.isValidType(id, "issn");
   }
 
   /**
    * Validate PMID identifier
    */
   isValidPMID(id: string): boolean {
-    return this.isValidType(id, 'pmid');
+    return this.isValidType(id, "pmid");
   }
 
   /**
    * Validate Wikidata identifier
    */
   isValidWikidata(id: string): boolean {
-    return this.isValidType(id, 'wikidata');
+    return this.isValidType(id, "wikidata");
   }
 
   /**
    * Validate OpenAlex identifier
    */
   isValidOpenAlex(id: string): boolean {
-    return this.isValidType(id, 'openalex');
+    return this.isValidType(id, "openalex");
   }
 
   // Normalization functions
@@ -581,7 +656,7 @@ export class IdResolver {
   normalizeId(id: string, type?: ExternalIdType): string | null {
     if (type) {
       // If type is specified, only check patterns for that type
-      const patterns = IdResolver.patterns.filter(p => p.type === type);
+      const patterns = IdResolver.patterns.filter((p) => p.type === type);
       for (const pattern of patterns) {
         for (const regex of pattern.patterns) {
           if (regex.test(id)) {
@@ -614,11 +689,11 @@ export class IdResolver {
     description: string;
     examples: string[];
   }> {
-    return IdResolver.patterns.map(pattern => ({
+    return IdResolver.patterns.map((pattern) => ({
       type: pattern.type,
       name: pattern.name,
       description: pattern.description,
-      examples: pattern.examples
+      examples: pattern.examples,
     }));
   }
 
@@ -629,7 +704,7 @@ export class IdResolver {
    */
   private static validateOrcidChecksum(orcid: string): boolean {
     // Remove hyphens for calculation
-    const digits = orcid.replace(/-/g, '');
+    const digits = orcid.replace(/-/g, "");
 
     // Extract check digit (last character)
     const checkDigit = digits.slice(-1);
@@ -643,7 +718,7 @@ export class IdResolver {
 
     const remainder = total % 11;
     const result = (12 - remainder) % 11;
-    const expectedCheckDigit = result === 10 ? 'X' : result.toString();
+    const expectedCheckDigit = result === 10 ? "X" : result.toString();
 
     return checkDigit === expectedCheckDigit;
   }
@@ -653,7 +728,7 @@ export class IdResolver {
    */
   private static validateIssnChecksum(issn: string): boolean {
     // Remove hyphen for calculation
-    const digits = issn.replace(/-/g, '');
+    const digits = issn.replace(/-/g, "");
 
     // Extract check digit (last character)
     const checkDigit = digits.slice(-1);
@@ -667,28 +742,42 @@ export class IdResolver {
 
     const remainder = total % 11;
     const result = remainder === 0 ? 0 : 11 - remainder;
-    const expectedCheckDigit = result === 10 ? 'X' : result.toString();
+    const expectedCheckDigit = result === 10 ? "X" : result.toString();
 
     return checkDigit === expectedCheckDigit;
   }
 }
 
 // Convenience functions for direct usage
-export function createIdResolver(config?: Partial<IdValidationConfig>): IdResolver {
+export function createIdResolver(
+  config?: Partial<IdValidationConfig>,
+): IdResolver {
   return new IdResolver(config);
 }
 
 // Export individual validation functions as standalone utilities
 const defaultResolver = new IdResolver();
 
-export const isValidDOI = (id: string): boolean => defaultResolver.isValidDOI(id);
-export const isValidORCID = (id: string): boolean => defaultResolver.isValidORCID(id);
-export const isValidROR = (id: string): boolean => defaultResolver.isValidROR(id);
-export const isValidISSN = (id: string): boolean => defaultResolver.isValidISSN(id);
-export const isValidPMID = (id: string): boolean => defaultResolver.isValidPMID(id);
-export const isValidWikidata = (id: string): boolean => defaultResolver.isValidWikidata(id);
-export const isValidOpenAlex = (id: string): boolean => defaultResolver.isValidOpenAlex(id);
+export const isValidDOI = (id: string): boolean =>
+  defaultResolver.isValidDOI(id);
+export const isValidORCID = (id: string): boolean =>
+  defaultResolver.isValidORCID(id);
+export const isValidROR = (id: string): boolean =>
+  defaultResolver.isValidROR(id);
+export const isValidISSN = (id: string): boolean =>
+  defaultResolver.isValidISSN(id);
+export const isValidPMID = (id: string): boolean =>
+  defaultResolver.isValidPMID(id);
+export const isValidWikidata = (id: string): boolean =>
+  defaultResolver.isValidWikidata(id);
+export const isValidOpenAlex = (id: string): boolean =>
+  defaultResolver.isValidOpenAlex(id);
 
-export const validateExternalId = (id: unknown): IdValidationResult => defaultResolver.validateId(id);
-export const normalizeExternalId = (id: string, type?: ExternalIdType): string | null => defaultResolver.normalizeId(id, type);
-export const normalizeToUrl = (id: string): string | null => defaultResolver.normalizeToUrl(id);
+export const validateExternalId = (id: unknown): IdValidationResult =>
+  defaultResolver.validateId(id);
+export const normalizeExternalId = (
+  id: string,
+  type?: ExternalIdType,
+): string | null => defaultResolver.normalizeId(id, type);
+export const normalizeToUrl = (id: string): string | null =>
+  defaultResolver.normalizeToUrl(id);
