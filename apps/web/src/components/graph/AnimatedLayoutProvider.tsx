@@ -16,6 +16,12 @@ import { useReactFlow } from "@xyflow/react";
 import { useEventBus } from "@/hooks/use-unified-event-system";
 import { useUnifiedExecutionWorker } from "@/hooks/use-unified-execution-worker";
 
+// Common constants
+const GRAPH_LOGGER_NAME = "graph";
+const EVENT_BULK_NODES_ADDED = "graph:bulk-nodes-added";
+const EVENT_BULK_EDGES_ADDED = "graph:bulk-edges-added";
+const EVENT_NODE_ADDED = "graph:node-added";
+
 interface AnimatedLayoutProviderProps {
   children: React.ReactNode;
   enabled?: boolean;
@@ -91,7 +97,7 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
   // Create layout management functions with mock implementations
   // These functions expect different parameters than the unified worker provides
   const applyLayout = useCallback(() => {
-    logger.debug("graph", "Apply layout called but not implemented");
+    logger.debug(GRAPH_LOGGER_NAME, "Apply layout called but not implemented");
   }, []);
 
   const stopLayout = useCallback(() => {
@@ -107,15 +113,18 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
   }, [resumeAnimation]);
 
   const reheatLayout = useCallback(() => {
-    logger.debug("graph", "Reheat layout called but not implemented");
+    logger.debug(GRAPH_LOGGER_NAME, "Reheat layout called but not implemented");
   }, []);
 
   const updateParameters = useCallback((params: unknown) => {
-    logger.debug("graph", "Update parameters called", { params });
+    logger.debug(GRAPH_LOGGER_NAME, "Update parameters called", { params });
   }, []);
 
   const restartLayout = useCallback(() => {
-    logger.debug("graph", "Restart layout called but not implemented");
+    logger.debug(
+      GRAPH_LOGGER_NAME,
+      "Restart layout called but not implemented",
+    );
   }, []);
   const canRestart = isIdle;
 
@@ -134,23 +143,31 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
       const nodeChange = currentNodeCount - prevNodeCountRef.current;
       const edgeChange = currentEdgeCount - prevEdgeCountRef.current;
 
-      logger.debug("graph", "Auto-trigger: checking node/edge changes", {
-        prevNodeCount: prevNodeCountRef.current,
-        currentNodeCount,
-        nodeChange,
-        prevEdgeCount: prevEdgeCountRef.current,
-        currentEdgeCount,
-        edgeChange,
-        isRunning,
-      });
+      logger.debug(
+        GRAPH_LOGGER_NAME,
+        "Auto-trigger: checking node/edge changes",
+        {
+          prevNodeCount: prevNodeCountRef.current,
+          currentNodeCount,
+          nodeChange,
+          prevEdgeCount: prevEdgeCountRef.current,
+          currentEdgeCount,
+          edgeChange,
+          isRunning,
+        },
+      );
 
       // Trigger if any node/edge changes occurred (including removals)
       if (nodeChange !== 0 || edgeChange !== 0) {
-        logger.debug("graph", "Auto-trigger: node/edge changes detected", {
-          nodeChange,
-          edgeChange,
-          action: isRunning ? "reheat" : "start",
-        });
+        logger.debug(
+          GRAPH_LOGGER_NAME,
+          "Auto-trigger: node/edge changes detected",
+          {
+            nodeChange,
+            edgeChange,
+            action: isRunning ? "reheat" : "start",
+          },
+        );
 
         if (isRunning) {
           // If simulation is already running, reheat it (reset alpha)
@@ -238,11 +255,11 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 
       // Only trigger on significant node/edge addition events
       if (
-        eventType === "graph:bulk-nodes-added" ||
-        eventType === "graph:bulk-edges-added" ||
-        (eventType === "graph:node-added" && Math.random() < 0.1) // Throttle single node additions
+        eventType === EVENT_BULK_NODES_ADDED ||
+        eventType === EVENT_BULK_EDGES_ADDED ||
+        (eventType === EVENT_NODE_ADDED && Math.random() < 0.1) // Throttle single node additions
       ) {
-        logger.debug("graph", "Auto-trigger: graph event received", {
+        logger.debug(GRAPH_LOGGER_NAME, "Auto-trigger: graph event received", {
           eventType,
           action: isRunning ? "reheat" : "start",
         });
@@ -324,21 +341,31 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
         eventType === "graph:bulk-nodes-added" ||
         eventType === "graph:bulk-edges-added"
       ) {
-        logger.debug("graph", "Bulk expansion detected during simulation", {
-          eventType,
-          isRunning,
-          action: isRunning ? "reheat" : "start",
-        });
+        logger.debug(
+          GRAPH_LOGGER_NAME,
+          "Bulk expansion detected during simulation",
+          {
+            eventType,
+            isRunning,
+            action: isRunning ? "reheat" : "start",
+          },
+        );
 
         // Small delay to allow ReactFlow to update
         setTimeout(() => {
           if (isRunning) {
             // During simulation: reheat alpha to apply new edge forces
-            logger.debug("graph", "Reheating simulation for new edges");
+            logger.debug(
+              GRAPH_LOGGER_NAME,
+              "Reheating simulation for new edges",
+            );
             reheatLayout();
           } else {
             // Not running: start new simulation with expanded graph
-            logger.debug("graph", "Starting simulation with expanded graph");
+            logger.debug(
+              GRAPH_LOGGER_NAME,
+              "Starting simulation with expanded graph",
+            );
             applyLayout();
           }
         }, 100);
@@ -444,7 +471,7 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
     ],
   );
 
-  logger.debug("graph", "AnimatedLayoutProvider render", {
+  logger.debug(GRAPH_LOGGER_NAME, "AnimatedLayoutProvider render", {
     enabled,
     useAnimation,
     isWorkerReady,

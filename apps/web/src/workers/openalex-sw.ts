@@ -37,9 +37,12 @@ function isValidOpenAlexQueryResult(data: unknown): boolean {
 /**
  * Parse OpenAlex URL into structured information
  */
-function parseOpenAlexUrl(
-  url: string,
-): { isQuery: boolean; entityId?: string } | null {
+interface ParsedOpenAlexUrl {
+  isQuery: boolean;
+  entityId?: string;
+}
+
+function parseOpenAlexUrl(url: string): ParsedOpenAlexUrl | null {
   try {
     const urlObj = new URL(url);
     if (urlObj.hostname !== "api.openalex.org") {
@@ -62,7 +65,7 @@ function parseOpenAlexUrl(
 }
 
 // Cast self for service worker functionality
-const sw = self as unknown as {
+interface ServiceWorkerGlobalScope {
   addEventListener: (
     type: string,
     listener: (event: ExtendableEvent | FetchEvent) => void,
@@ -72,12 +75,13 @@ const sw = self as unknown as {
   location: { hostname: string; port: string };
   // Workbox injection point
   __WB_MANIFEST: unknown[];
-};
+}
+
+const sw = self as unknown as ServiceWorkerGlobalScope;
 
 // Workbox precache manifest injection point (required by injectManifest but not used)
 // This must be exactly "self.__WB_MANIFEST" for Workbox to find and replace it
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-(self as any).__WB_MANIFEST = [];
+sw.__WB_MANIFEST = [];
 
 // Service worker event types
 interface ExtendableEvent extends Event {
@@ -114,6 +118,118 @@ sw.addEventListener("fetch", (event) => {
 });
 
 /**
+ * Check if we're in development environment
+ */
+function isDevelopmentEnvironment(): boolean {
+  return (
+    sw.location.hostname === "localhost" ||
+    sw.location.hostname === "127.0.0.1" ||
+    sw.location.port === "5173"
+  );
+}
+
+/**
+ * Handle development proxy requests
+ */
+async function handleDevelopmentRequest(
+  request: Request,
+  url: URL,
+): Promise<Response> {
+  const proxyUrl = `/api/openalex${url.pathname}${url.search}`;
+  console.log("[OpenAlex SW] Proxying to:", proxyUrl);
+
+  const proxyRequest = new Request(proxyUrl, {
+    method: request.method,
+    headers: request.headers,
+    body: request.body,
+  });
+
+  return fetch(proxyRequest);
+}
+
+/**
+ * Try to serve static data file
+ */
+async function tryStaticFile(url: URL): Promise<Response | null> {
+  const staticPath = `/data/openalex${url.pathname}.json`;
+  try {
+    console.log("[OpenAlex SW] Trying static file:", staticPath);
+    const staticResponse = await fetch(staticPath);
+    if (staticResponse.ok) {
+      console.log("[OpenAlex SW] Static file hit:", staticPath);
+      return staticResponse;
+    }
+  } catch (error) {
+    console.log("[OpenAlex SW] Static file miss:", staticPath, error);
+  }
+  return null;
+}
+
+/**
+ * Try to get cached response
+ */
+async function tryCache(request: Request, url: URL): Promise<Response | null> {
+  const cache = await caches.open(CACHE_NAME);
+  const cachedResponse = await cache.match(request);
+  if (cachedResponse) {
+    console.log("[OpenAlex SW] Cache hit for:", url.pathname);
+    return cachedResponse;
+  }
+  return null;
+}
+
+/**
+ * Validate and cache response if valid
+ */
+async function validateAndCacheResponse(
+  request: Request,
+  response: Response,
+  url: URL,
+): Promise<Response> {
+  if (!response.ok) return response;
+
+  try {
+    const responseClone = response.clone();
+    const data = await responseClone.json();
+
+    const parsedUrl = parseOpenAlexUrl(request.url);
+    if (parsedUrl && !isValidOpenAlexResponse(data, parsedUrl)) {
+      console.warn("[OpenAlex SW] Invalid response structure, not caching:", {
+        url: request.url,
+        expectedFormat: parsedUrl.entityId ? "entity" : "query result",
+        isEntity: !!parsedUrl.entityId,
+      });
+      return response;
+    }
+
+    // Cache valid response
+    const cache = await caches.open(CACHE_NAME);
+    await cache.put(request, response.clone());
+    console.log("[OpenAlex SW] Cached validated response for:", url.pathname);
+  } catch (error) {
+    console.warn(
+      "[OpenAlex SW] Failed to validate response, not caching:",
+      error,
+    );
+  }
+
+  return response;
+}
+
+/**
+ * Validate OpenAlex response structure
+ */
+function isValidOpenAlexResponse(
+  data: unknown,
+  parsedUrl: ParsedOpenAlexUrl,
+): boolean {
+  const isEntity = !!parsedUrl.entityId;
+  return isEntity
+    ? isValidOpenAlexEntity(data)
+    : isValidOpenAlexQueryResult(data);
+}
+
+/**
  * Handle OpenAlex API requests with caching
  */
 async function handleOpenAlexRequest(request: Request): Promise<Response> {
@@ -124,97 +240,23 @@ async function handleOpenAlexRequest(request: Request): Promise<Response> {
       url.pathname + url.search,
     );
 
-    // Check if we're in development (localhost)
-    const isDevelopment =
-      sw.location.hostname === "localhost" ||
-      sw.location.hostname === "127.0.0.1" ||
-      sw.location.port === "5173";
-
-    if (isDevelopment) {
-      // In development, proxy through our Vite middleware
-      const proxyUrl = `/api/openalex${url.pathname}${url.search}`;
-      console.log("[OpenAlex SW] Proxying to:", proxyUrl);
-
-      const proxyRequest = new Request(proxyUrl, {
-        method: request.method,
-        headers: request.headers,
-        body: request.body,
-      });
-
-      return fetch(proxyRequest);
+    if (isDevelopmentEnvironment()) {
+      return handleDevelopmentRequest(request, url);
     }
 
-    // In production, try static data first
-    const staticPath = `/data/openalex${url.pathname}.json`;
-    try {
-      console.log("[OpenAlex SW] Trying static file:", staticPath);
-      const staticResponse = await fetch(staticPath);
-      if (staticResponse.ok) {
-        console.log("[OpenAlex SW] Static file hit:", staticPath);
-        return staticResponse;
-      }
-    } catch (error) {
-      console.log("[OpenAlex SW] Static file miss:", staticPath, error);
-    }
+    // Try static file first
+    const staticResponse = await tryStaticFile(url);
+    if (staticResponse) return staticResponse;
 
-    // Fallback to Cache API for basic caching
-    const cache = await caches.open(CACHE_NAME);
+    // Try cache
+    const cachedResponse = await tryCache(request, url);
+    if (cachedResponse) return cachedResponse;
 
-    // Try cache next
-    const cachedResponse = await cache.match(request);
-    if (cachedResponse) {
-      console.log("[OpenAlex SW] Cache hit for:", url.pathname);
-      return cachedResponse;
-    }
-
-    // Cache miss - fetch from API
+    // Fetch from API
     console.log("[OpenAlex SW] Cache miss, fetching from API:", url.pathname);
     const response = await fetch(request);
 
-    // Cache successful responses with validation
-    if (response.ok) {
-      try {
-        // Clone the response for validation
-        const responseClone = response.clone();
-        const data = await responseClone.json();
-
-        // Validate OpenAlex response structure
-        const parsedUrl = parseOpenAlexUrl(request.url);
-        if (parsedUrl) {
-          const isEntity = !!parsedUrl.entityId;
-          const isValid = isEntity
-            ? isValidOpenAlexEntity(data)
-            : isValidOpenAlexQueryResult(data);
-
-          if (!isValid) {
-            console.warn(
-              "[OpenAlex SW] Invalid OpenAlex response structure detected, not caching:",
-              {
-                url: request.url,
-                expectedFormat: isEntity ? "entity" : "query result",
-                isEntity,
-              },
-            );
-            return response; // Return response without caching
-          }
-        }
-
-        // Validation passed, cache the response
-        await cache.put(request, response.clone());
-        console.log(
-          "[OpenAlex SW] Cached validated response for:",
-          url.pathname,
-        );
-      } catch (error) {
-        console.warn(
-          "[OpenAlex SW] Failed to validate response, not caching:",
-          error,
-        );
-        // Return response without caching if validation fails
-      }
-    }
-
-    return response;
+    return validateAndCacheResponse(request, response, url);
   } catch (error) {
     console.error("[OpenAlex SW] Error handling request:", error);
     // Fallback to normal fetch

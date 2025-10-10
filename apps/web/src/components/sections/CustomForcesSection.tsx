@@ -47,6 +47,17 @@ import type {
   OrbitForceConfig,
 } from "@academic-explorer/graph";
 
+// Common constants and utilities
+const NUMBER_VALUE_FALLBACK = (value: unknown, fallback: number): number =>
+  typeof value === "number" ? value : fallback;
+
+const STRING_VALUE_FALLBACK = (value: unknown): string =>
+  typeof value === "string" ? value : "";
+
+// Force type constants
+const FORCE_TYPE_PROPERTY_X = "property-x";
+const FORCE_TYPE_PROPERTY_Y = "property-y";
+
 /**
  * Force type configuration forms
  */
@@ -55,8 +66,12 @@ interface ForceConfigFormProps {
   onChange: (config: CustomForceConfig) => void;
 }
 
-const RadialConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }) => {
-  const isRadialConfig = (cfg: CustomForceConfig): cfg is RadialForceConfig => cfg['type'] === "radial";
+const RadialConfigForm: React.FC<ForceConfigFormProps> = ({
+  config,
+  onChange,
+}) => {
+  const isRadialConfig = (cfg: CustomForceConfig): cfg is RadialForceConfig =>
+    cfg["type"] === "radial";
   if (!isRadialConfig(config)) return null;
   const radialConfig = config;
 
@@ -66,7 +81,12 @@ const RadialConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }) 
         label="Radius"
         description="Target radius for radial layout"
         value={radialConfig.radius ?? 200}
-        onChange={(value) => { onChange({ ...radialConfig, radius: typeof value === "number" ? value : 200 }); }}
+        onChange={(value) => {
+          onChange({
+            ...radialConfig,
+            radius: NUMBER_VALUE_FALLBACK(value, 200),
+          });
+        }}
         min={50}
         max={500}
         step={10}
@@ -74,22 +94,37 @@ const RadialConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }) 
       <Group grow>
         <NumberInput
           label="Center X"
-          value={(radialConfig['centerX']) ?? 0}
-          onChange={(value) => { onChange({ ...radialConfig, centerX: typeof value === "number" ? value : 0 }); }}
+          value={radialConfig["centerX"] ?? 0}
+          onChange={(value) => {
+            onChange({
+              ...radialConfig,
+              centerX: NUMBER_VALUE_FALLBACK(value, 0),
+            });
+          }}
           step={10}
         />
         <NumberInput
           label="Center Y"
-          value={(radialConfig['centerY']) ?? 0}
-          onChange={(value) => { onChange({ ...radialConfig, centerY: typeof value === "number" ? value : 0 }); }}
+          value={radialConfig["centerY"] ?? 0}
+          onChange={(value) => {
+            onChange({
+              ...radialConfig,
+              centerY: NUMBER_VALUE_FALLBACK(value, 0),
+            });
+          }}
           step={10}
         />
       </Group>
       <NumberInput
         label="Inner Radius (optional)"
         description="For annular layouts"
-        value={(radialConfig['innerRadius']) ?? 0}
-        onChange={(value) => { onChange({ ...radialConfig, innerRadius: typeof value === "number" ? value : 0 }); }}
+        value={radialConfig["innerRadius"] ?? 0}
+        onChange={(value) => {
+          onChange({
+            ...radialConfig,
+            innerRadius: NUMBER_VALUE_FALLBACK(value, 0),
+          });
+        }}
         min={0}
         max={400}
         step={10}
@@ -97,16 +132,27 @@ const RadialConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }) 
       <Switch
         label="Even Distribution"
         description="Distribute nodes evenly around circle"
-        checked={(radialConfig['evenDistribution']) ?? false}
-        onChange={(event) => { onChange({ ...radialConfig, evenDistribution: event.currentTarget.checked }); }}
+        checked={radialConfig["evenDistribution"] ?? false}
+        onChange={(event) => {
+          onChange({
+            ...radialConfig,
+            evenDistribution: event.currentTarget.checked,
+          });
+        }}
       />
     </Stack>
   );
 };
 
-const PropertyConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }) => {
-  const isPropertyConfig = (cfg: CustomForceConfig): cfg is PropertyForceConfig =>
-    cfg['type'] === "property-x" || cfg['type'] === "property-y";
+const PropertyConfigForm: React.FC<ForceConfigFormProps> = ({
+  config,
+  onChange,
+}) => {
+  const isPropertyConfig = (
+    cfg: CustomForceConfig,
+  ): cfg is PropertyForceConfig =>
+    cfg["type"] === FORCE_TYPE_PROPERTY_X ||
+    cfg["type"] === FORCE_TYPE_PROPERTY_Y;
   if (!isPropertyConfig(config)) return null;
   const propertyConfig = config;
 
@@ -115,8 +161,13 @@ const PropertyConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }
       <Select
         label="Property Name"
         description="Node property to use for positioning"
-        value={(propertyConfig['propertyName']) ?? ""}
-        onChange={(value) => { onChange({ ...propertyConfig, propertyName: value ?? "" }); }}
+        value={propertyConfig["propertyName"] ?? ""}
+        onChange={(value) => {
+          onChange({
+            ...propertyConfig,
+            propertyName: STRING_VALUE_FALLBACK(value),
+          });
+        }}
         data={[
           { value: "publication_year", label: "Publication Year" },
           { value: "cited_by_count", label: "Citation Count" },
@@ -131,26 +182,38 @@ const PropertyConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }
         <NumberInput
           label="Min Value"
           description="Minimum coordinate"
-          value={(propertyConfig['minValue']) ?? -400}
-          onChange={(value) => { onChange({ ...propertyConfig, minValue: typeof value === "number" ? value : -400 }); }}
+          value={propertyConfig["minValue"] ?? -400}
+          onChange={(value) => {
+            onChange({
+              ...propertyConfig,
+              minValue: NUMBER_VALUE_FALLBACK(value, -400),
+            });
+          }}
           step={10}
         />
         <NumberInput
           label="Max Value"
           description="Maximum coordinate"
-          value={(propertyConfig['maxValue']) ?? 400}
-          onChange={(value) => { onChange({ ...propertyConfig, maxValue: typeof value === "number" ? value : 400 }); }}
+          value={propertyConfig["maxValue"] ?? 400}
+          onChange={(value) => {
+            onChange({
+              ...propertyConfig,
+              maxValue: NUMBER_VALUE_FALLBACK(value, 400),
+            });
+          }}
           step={10}
         />
       </Group>
       <Select
         label="Scale Type"
-        value={(propertyConfig['scaleType'] as string | undefined) ?? "linear"}
+        value={(propertyConfig["scaleType"] as string | undefined) ?? "linear"}
         onChange={(value) => {
           const validScaleTypes = ["linear", "log", "sqrt", "pow"] as const;
-          const isValidScaleType = (val: string | null): val is typeof validScaleTypes[number] => {
+          const isValidScaleType = (
+            val: string | null,
+          ): val is (typeof validScaleTypes)[number] => {
             if (val === null) return false;
-            return validScaleTypes.some(type => type === val);
+            return validScaleTypes.some((type) => type === val);
           };
           const scaleType = isValidScaleType(value) ? value : "linear";
           onChange({ ...propertyConfig, scaleType });
@@ -162,11 +225,16 @@ const PropertyConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }
           { value: "pow", label: "Power" },
         ]}
       />
-      {propertyConfig['scaleType'] === "pow" && (
+      {propertyConfig["scaleType"] === "pow" && (
         <NumberInput
           label="Scale Exponent"
-          value={(propertyConfig['scaleExponent']) ?? 2}
-          onChange={(value) => { onChange({ ...propertyConfig, scaleExponent: typeof value === "number" ? value : 2 }); }}
+          value={propertyConfig["scaleExponent"] ?? 2}
+          onChange={(value) => {
+            onChange({
+              ...propertyConfig,
+              scaleExponent: NUMBER_VALUE_FALLBACK(value, 2),
+            });
+          }}
           min={0.1}
           max={5}
           step={0.1}
@@ -175,15 +243,21 @@ const PropertyConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }
       )}
       <Switch
         label="Reverse Scale"
-        checked={(propertyConfig['reverse']) ?? false}
-        onChange={(event) => { onChange({ ...propertyConfig, reverse: event.currentTarget.checked }); }}
+        checked={propertyConfig["reverse"] ?? false}
+        onChange={(event) => {
+          onChange({ ...propertyConfig, reverse: event.currentTarget.checked });
+        }}
       />
     </Stack>
   );
 };
 
-const ClusterConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }) => {
-  const isClusterConfig = (cfg: CustomForceConfig): cfg is ClusterForceConfig => cfg['type'] === "cluster";
+const ClusterConfigForm: React.FC<ForceConfigFormProps> = ({
+  config,
+  onChange,
+}) => {
+  const isClusterConfig = (cfg: CustomForceConfig): cfg is ClusterForceConfig =>
+    cfg["type"] === "cluster";
   if (!isClusterConfig(config)) return null;
   const clusterConfig = config;
 
@@ -192,8 +266,13 @@ const ClusterConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange })
       <Select
         label="Property Name"
         description="Property to group nodes by"
-        value={(clusterConfig['propertyName']) ?? ""}
-        onChange={(value) => { onChange({ ...clusterConfig, propertyName: value ?? "" }); }}
+        value={clusterConfig["propertyName"] ?? ""}
+        onChange={(value) => {
+          onChange({
+            ...clusterConfig,
+            propertyName: STRING_VALUE_FALLBACK(value),
+          });
+        }}
         data={[
           { value: "type", label: "Entity Type" },
           { value: "institution_id", label: "Institution" },
@@ -205,20 +284,29 @@ const ClusterConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange })
       <NumberInput
         label="Cluster Spacing"
         description="Distance between cluster centers"
-        value={(clusterConfig['spacing']) ?? 150}
-        onChange={(value) => { onChange({ ...clusterConfig, spacing: typeof value === "number" ? value : 150 }); }}
+        value={clusterConfig["spacing"] ?? 150}
+        onChange={(value) => {
+          onChange({
+            ...clusterConfig,
+            spacing: NUMBER_VALUE_FALLBACK(value, 150),
+          });
+        }}
         min={50}
         max={500}
         step={10}
       />
       <Select
         label="Arrangement"
-        value={(clusterConfig['arrangement'] as string | undefined) ?? "circular"}
+        value={
+          (clusterConfig["arrangement"] as string | undefined) ?? "circular"
+        }
         onChange={(value) => {
           const validArrangements = ["grid", "circular", "random"] as const;
-          const isValidArrangement = (val: string | null): val is typeof validArrangements[number] => {
+          const isValidArrangement = (
+            val: string | null,
+          ): val is (typeof validArrangements)[number] => {
             if (val === null) return false;
-            return validArrangements.some(arrangement => arrangement === val);
+            return validArrangements.some((arrangement) => arrangement === val);
           };
           const arrangement = isValidArrangement(value) ? value : "circular";
           onChange({ ...clusterConfig, arrangement });
@@ -236,8 +324,11 @@ const ClusterConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange })
 /**
  * Force configuration form component
  */
-const ForceConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }) => {
-  switch (config['type']) {
+const ForceConfigForm: React.FC<ForceConfigFormProps> = ({
+  config,
+  onChange,
+}) => {
+  switch (config["type"]) {
     case "radial":
       return <RadialConfigForm config={config} onChange={onChange} />;
     case "property-x":
@@ -284,9 +375,12 @@ interface ForceItemProps {
 const ForceItem: React.FC<ForceItemProps> = ({ force, onUpdate, onRemove }) => {
   const [opened, { toggle }] = useDisclosure(false);
 
-  const handleConfigChange = useCallback((config: CustomForceConfig) => {
-    onUpdate({ config });
-  }, [onUpdate]);
+  const handleConfigChange = useCallback(
+    (config: CustomForceConfig) => {
+      onUpdate({ config });
+    },
+    [onUpdate],
+  );
 
   return (
     <Card withBorder>
@@ -296,20 +390,22 @@ const ForceItem: React.FC<ForceItemProps> = ({ force, onUpdate, onRemove }) => {
           <Group gap="sm">
             <Switch
               checked={force.enabled}
-              onChange={(event) => { onUpdate({ enabled: event.currentTarget.checked }); }}
+              onChange={(event) => {
+                onUpdate({ enabled: event.currentTarget.checked });
+              }}
               size="sm"
             />
             <div>
-              <Text size="sm" fw={500}>{force.name}</Text>
-              <Badge size="xs" variant="light">{force.type}</Badge>
+              <Text size="sm" fw={500}>
+                {force.name}
+              </Text>
+              <Badge size="xs" variant="light">
+                {force.type}
+              </Badge>
             </div>
           </Group>
           <Group gap="xs">
-            <ActionIcon
-              variant="subtle"
-              size="sm"
-              onClick={toggle}
-            >
+            <ActionIcon variant="subtle" size="sm" onClick={toggle}>
               <IconChevronDown
                 size={14}
                 style={{
@@ -331,10 +427,14 @@ const ForceItem: React.FC<ForceItemProps> = ({ force, onUpdate, onRemove }) => {
 
         {/* Force Strength Slider */}
         <div>
-          <Text size="xs" mb={4}>Strength: {force.strength.toFixed(2)}</Text>
+          <Text size="xs" mb={4}>
+            Strength: {force.strength.toFixed(2)}
+          </Text>
           <Slider
             value={force.strength}
-            onChange={(value) => { onUpdate({ strength: value }); }}
+            onChange={(value) => {
+              onUpdate({ strength: value });
+            }}
             min={0}
             max={1}
             step={0.01}
@@ -350,7 +450,9 @@ const ForceItem: React.FC<ForceItemProps> = ({ force, onUpdate, onRemove }) => {
               label="Priority"
               description="Force application order (higher = later)"
               value={force.priority}
-              onChange={(value) => { onUpdate({ priority: typeof value === "number" ? value : 0 }); }}
+              onChange={(value) => {
+                onUpdate({ priority: NUMBER_VALUE_FALLBACK(value, 0) });
+              }}
               min={0}
               max={100}
               step={1}
@@ -372,8 +474,12 @@ const ForceItem: React.FC<ForceItemProps> = ({ force, onUpdate, onRemove }) => {
  */
 export const CustomForcesSection: React.FC = () => {
   const [forces, setForces] = useState<CustomForce[]>([]);
-  const [addModalOpened, { open: openAddModal, close: closeAddModal }] = useDisclosure(false);
-  const [presetModalOpened, { open: openPresetModal, close: closePresetModal }] = useDisclosure(false);
+  const [addModalOpened, { open: openAddModal, close: closeAddModal }] =
+    useDisclosure(false);
+  const [
+    presetModalOpened,
+    { open: openPresetModal, close: closePresetModal },
+  ] = useDisclosure(false);
   const [newForceType, setNewForceType] = useState<CustomForceType>("radial");
   const [newForceName, setNewForceName] = useState("");
 
@@ -387,7 +493,9 @@ export const CustomForcesSection: React.FC = () => {
 
     // Set up periodic refresh (since we don't have events from the manager)
     const interval = setInterval(loadForces, 1000);
-    return () => { clearInterval(interval); };
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   const handleAddForce = useCallback(() => {
@@ -478,7 +586,11 @@ export const CustomForcesSection: React.FC = () => {
         config: defaultConfig,
       });
 
-      logger.debug("graph", "Custom force added via UI", { forceId, entityType: newForceType, name: newForceName });
+      logger.debug("graph", "Custom force added via UI", {
+        forceId,
+        entityType: newForceType,
+        name: newForceName,
+      });
 
       setNewForceName("");
       setNewForceType("radial");
@@ -489,21 +601,27 @@ export const CustomForcesSection: React.FC = () => {
     }
   }, [newForceName, newForceType, forces.length, closeAddModal]);
 
-  const handleUpdateForce = useCallback((forceId: string, updates: Partial<CustomForce>) => {
-    customForceManager.updateForce(forceId, updates);
-    setForces([]); // Fallback since getAllForces() not available
-  }, []);
+  const handleUpdateForce = useCallback(
+    (forceId: string, updates: Partial<CustomForce>) => {
+      customForceManager.updateForce(forceId, updates);
+      setForces([]); // Fallback since getAllForces() not available
+    },
+    [],
+  );
 
   const handleRemoveForce = useCallback((forceId: string) => {
     customForceManager.removeForce(forceId);
     setForces([]); // Fallback since getAllForces() not available
   }, []);
 
-  const handleLoadPreset = useCallback((presetId: string) => {
-    // Fallback implementation - customForceManager.getBuiltInPresets() not available
-    logger.debug("graph", "Preset loading not implemented", { presetId });
-    closePresetModal();
-  }, [closePresetModal]);
+  const handleLoadPreset = useCallback(
+    (presetId: string) => {
+      // Fallback implementation - customForceManager.getBuiltInPresets() not available
+      logger.debug("graph", "Preset loading not implemented", { presetId });
+      closePresetModal();
+    },
+    [closePresetModal],
+  );
 
   const handleClearAll = useCallback(() => {
     customForceManager.clearAllForces();
@@ -511,59 +629,65 @@ export const CustomForcesSection: React.FC = () => {
     logger.debug("graph", "All custom forces cleared");
   }, []);
 
-  const handleAddQuickForce = useCallback((entityType: "year-citation" | "radial" | "institution") => {
-    try {
-      let force: CustomForce;
-      switch (entityType) {
-        case "year-citation":
-          force = {
-            name: "Year Citation Force",
-            type: "property-x",
-            enabled: true,
-            strength: 0.1,
-            priority: 1,
-            config: {
+  const handleAddQuickForce = useCallback(
+    (entityType: "year-citation" | "radial" | "institution") => {
+      try {
+        let force: CustomForce;
+        switch (entityType) {
+          case "year-citation":
+            force = {
+              name: "Year Citation Force",
               type: "property-x",
-              propertyName: "publication_year",
-              scaleType: "linear"
-            }
-          };
-          break;
-        case "radial":
-          force = {
-            name: "Radial Force",
-            type: "radial",
-            enabled: true,
-            strength: 0.1,
-            priority: 1,
-            config: {
+              enabled: true,
+              strength: 0.1,
+              priority: 1,
+              config: {
+                type: "property-x",
+                propertyName: "publication_year",
+                scaleType: "linear",
+              },
+            };
+            break;
+          case "radial":
+            force = {
+              name: "Radial Force",
               type: "radial",
-              radius: 100
-            }
-          };
-          break;
-        case "institution":
-          force = {
-            name: "Institution Cluster Force",
-            type: "cluster",
-            enabled: true,
-            strength: 0.1,
-            priority: 1,
-            config: {
+              enabled: true,
+              strength: 0.1,
+              priority: 1,
+              config: {
+                type: "radial",
+                radius: 100,
+              },
+            };
+            break;
+          case "institution":
+            force = {
+              name: "Institution Cluster Force",
               type: "cluster",
-              propertyName: "institution",
-              arrangement: "circular"
-            }
-          };
-          break;
+              enabled: true,
+              strength: 0.1,
+              priority: 1,
+              config: {
+                type: "cluster",
+                propertyName: "institution",
+                arrangement: "circular",
+              },
+            };
+            break;
+        }
+        customForceManager.addForce(force);
+        setForces([]); // Fallback since getAllForces() not available
+        logger.debug("graph", "Quick force added", { entityType });
+      } catch (error) {
+        logger.error("graph", "Failed to add quick force", {
+          error,
+          entityType,
+        });
       }
-      customForceManager.addForce(force);
-      setForces([]); // Fallback since getAllForces() not available
-      logger.debug("graph", "Quick force added", { entityType });
-    } catch (error) {
-      logger.error("graph", "Failed to add quick force", { error, entityType });
-    }
-  }, []);
+    },
+    [],
+  );
 
   const stats = { enabledForces: 0, totalForces: 0 }; // Fallback since getStats() not available
 
@@ -572,7 +696,9 @@ export const CustomForcesSection: React.FC = () => {
       {/* Header */}
       <Group justify="space-between">
         <div>
-          <Text size="sm" fw={500}>Custom Forces</Text>
+          <Text size="sm" fw={500}>
+            Custom Forces
+          </Text>
           <Text size="xs" c="dimmed">
             {stats.enabledForces}/{stats.totalForces} active
           </Text>
@@ -604,19 +730,25 @@ export const CustomForcesSection: React.FC = () => {
 
       {/* Quick Force Buttons */}
       <Stack gap="xs">
-        <Text size="xs" fw={500} c="dimmed">QUICK FORCES</Text>
+        <Text size="xs" fw={500} c="dimmed">
+          QUICK FORCES
+        </Text>
         <Group grow>
           <Button
             variant="default"
             size="xs"
-            onClick={() => { handleAddQuickForce("year-citation"); }}
+            onClick={() => {
+              handleAddQuickForce("year-citation");
+            }}
           >
             Year/Citation
           </Button>
           <Button
             variant="default"
             size="xs"
-            onClick={() => { handleAddQuickForce("radial"); }}
+            onClick={() => {
+              handleAddQuickForce("radial");
+            }}
           >
             Radial
           </Button>
@@ -625,7 +757,9 @@ export const CustomForcesSection: React.FC = () => {
           variant="default"
           size="xs"
           fullWidth
-          onClick={() => { handleAddQuickForce("institution"); }}
+          onClick={() => {
+            handleAddQuickForce("institution");
+          }}
         >
           Institution Clusters
         </Button>
@@ -644,8 +778,12 @@ export const CustomForcesSection: React.FC = () => {
             <ForceItem
               key={force.id}
               force={force}
-              onUpdate={(updates) => { if (force.id) handleUpdateForce(force.id, updates); }}
-              onRemove={() => { if (force.id) handleRemoveForce(force.id); }}
+              onUpdate={(updates) => {
+                if (force.id) handleUpdateForce(force.id, updates);
+              }}
+              onRemove={() => {
+                if (force.id) handleRemoveForce(force.id);
+              }}
             />
           ))}
         </Stack>
@@ -681,10 +819,20 @@ export const CustomForcesSection: React.FC = () => {
             label="Force Type"
             value={newForceType}
             onChange={(value) => {
-              const validForceTypes: CustomForceType[] = ["radial", "property-x", "property-y", "cluster", "repulsion", "attraction", "orbit"];
-              const isValidForceType = (val: string | null): val is CustomForceType => {
+              const validForceTypes: CustomForceType[] = [
+                "radial",
+                "property-x",
+                "property-y",
+                "cluster",
+                "repulsion",
+                "attraction",
+                "orbit",
+              ];
+              const isValidForceType = (
+                val: string | null,
+              ): val is CustomForceType => {
                 if (val === null) return false;
-                return validForceTypes.some(type => type === val);
+                return validForceTypes.some((type) => type === val);
               };
               const forceType = isValidForceType(value) ? value : "radial";
               setNewForceType(forceType);
@@ -703,7 +851,9 @@ export const CustomForcesSection: React.FC = () => {
             label="Force Name"
             placeholder="Enter a descriptive name"
             value={newForceName}
-            onChange={(event) => { setNewForceName(event.currentTarget.value); }}
+            onChange={(event) => {
+              setNewForceName(event.currentTarget.value);
+            }}
           />
           <Group justify="flex-end">
             <Button variant="default" onClick={closeAddModal}>
@@ -724,24 +874,41 @@ export const CustomForcesSection: React.FC = () => {
         size="md"
       >
         <Stack gap="md">
-          {Object.entries({} as Record<string, { name: string; description: string; forces: CustomForce[] }>).map(([id, preset]) => ( // Fallback since getBuiltInPresets() not available
-            <Card key={id} withBorder p="md">
-              <Stack gap="sm">
-                <div>
-                  <Text size="sm" fw={500}>{preset.name}</Text>
-                  <Text size="xs" c="dimmed">{preset.description}</Text>
-                  <Badge size="xs" mt={4}>{preset.forces.length} forces</Badge>
-                </div>
-                <Button
-                  variant="light"
-                  size="xs"
-                  onClick={() => { handleLoadPreset(id); }}
-                >
-                  Load Preset
-                </Button>
-              </Stack>
-            </Card>
-          ))}
+          {Object.entries(
+            {} as Record<
+              string,
+              { name: string; description: string; forces: CustomForce[] }
+            >,
+          ).map(
+            (
+              [id, preset], // Fallback since getBuiltInPresets() not available
+            ) => (
+              <Card key={id} withBorder p="md">
+                <Stack gap="sm">
+                  <div>
+                    <Text size="sm" fw={500}>
+                      {preset.name}
+                    </Text>
+                    <Text size="xs" c="dimmed">
+                      {preset.description}
+                    </Text>
+                    <Badge size="xs" mt={4}>
+                      {preset.forces.length} forces
+                    </Badge>
+                  </div>
+                  <Button
+                    variant="light"
+                    size="xs"
+                    onClick={() => {
+                      handleLoadPreset(id);
+                    }}
+                  >
+                    Load Preset
+                  </Button>
+                </Stack>
+              </Card>
+            ),
+          )}
         </Stack>
       </Modal>
     </Stack>

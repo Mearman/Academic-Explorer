@@ -13,8 +13,19 @@ import {
   Divider,
   Alert,
 } from "@mantine/core";
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
-import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
@@ -31,6 +42,9 @@ import {
 import { logger } from "@academic-explorer/utils";
 import type { EntityType } from "@academic-explorer/client";
 import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
+
+// Common constants
+const QUERY_BUILDER_LOGGER_NAME = "query-builder";
 
 // Query builder types
 export interface QueryFilterChip {
@@ -62,10 +76,29 @@ export interface VisualQuery {
   description?: string;
 }
 
-export type FilterOperator = "equals" | "not_equals" | "contains" | "greater_than" | "less_than" | "between" | "exists";
+export type FilterOperator =
+  | "equals"
+  | "not_equals"
+  | "contains"
+  | "greater_than"
+  | "less_than"
+  | "between"
+  | "exists";
 export type LogicalOperator = "AND" | "OR" | "NOT";
-export type QueryChipCategory = "general" | "temporal" | "entity" | "text" | "numeric" | "boolean";
-export type QueryDataType = "string" | "number" | "date" | "boolean" | "entity" | "array";
+export type QueryChipCategory =
+  | "general"
+  | "temporal"
+  | "entity"
+  | "text"
+  | "numeric"
+  | "boolean";
+export type QueryDataType =
+  | "string"
+  | "number"
+  | "date"
+  | "boolean"
+  | "entity"
+  | "array";
 
 interface VisualQueryBuilderProps {
   entityType: EntityType;
@@ -83,7 +116,11 @@ interface SortableChipProps {
   disabled?: boolean;
 }
 
-const SortableChip: React.FC<SortableChipProps> = ({ chip, onRemove, disabled = false }) => {
+const SortableChip: React.FC<SortableChipProps> = ({
+  chip,
+  onRemove,
+  disabled = false,
+}) => {
   const {
     attributes,
     listeners,
@@ -104,23 +141,35 @@ const SortableChip: React.FC<SortableChipProps> = ({ chip, onRemove, disabled = 
 
   const getChipColor = (category: QueryChipCategory): string => {
     switch (category) {
-      case "temporal": return "blue";
-      case "entity": return "green";
-      case "text": return "violet";
-      case "numeric": return "orange";
-      case "boolean": return "cyan";
-      default: return "gray";
+      case "temporal":
+        return "blue";
+      case "entity":
+        return "green";
+      case "text":
+        return "violet";
+      case "numeric":
+        return "orange";
+      case "boolean":
+        return "cyan";
+      default:
+        return "gray";
     }
   };
 
   const getIcon = (category: QueryChipCategory) => {
     switch (category) {
-      case "temporal": return <IconCalendar size={14} />;
-      case "entity": return <IconUser size={14} />;
-      case "text": return <IconSearch size={14} />;
-      case "numeric": return <IconTags size={14} />;
-      case "boolean": return <IconFilter size={14} />;
-      default: return <IconInfoCircle size={14} />;
+      case "temporal":
+        return <IconCalendar size={14} />;
+      case "entity":
+        return <IconUser size={14} />;
+      case "text":
+        return <IconSearch size={14} />;
+      case "numeric":
+        return <IconTags size={14} />;
+      case "boolean":
+        return <IconFilter size={14} />;
+      default:
+        return <IconInfoCircle size={14} />;
     }
   };
 
@@ -174,7 +223,13 @@ interface DropZoneProps {
   isEmpty?: boolean;
 }
 
-const DropZone: React.FC<DropZoneProps> = ({ id, children, title, description, isEmpty = false }) => {
+const DropZone: React.FC<DropZoneProps> = ({
+  id,
+  children,
+  title,
+  description,
+  isEmpty = false,
+}) => {
   return (
     <Paper
       withBorder
@@ -309,7 +364,7 @@ const getAvailableChips = (entityType: EntityType): QueryFilterChip[] => {
         category: "entity",
         dataType: "array",
         enabled: true,
-      }
+      },
     );
   } else if (entityType === "authors") {
     baseChips.push(
@@ -330,7 +385,7 @@ const getAvailableChips = (entityType: EntityType): QueryFilterChip[] => {
         category: "numeric",
         dataType: "number",
         enabled: true,
-      }
+      },
     );
   }
 
@@ -364,7 +419,9 @@ export function VisualQueryBuilder({
     };
   });
 
-  const [availableChips] = useState<QueryFilterChip[]>(() => getAvailableChips(entityType));
+  const [availableChips] = useState<QueryFilterChip[]>(() =>
+    getAvailableChips(entityType),
+  );
   const [_draggedChip, setDraggedChip] = useState<QueryFilterChip | null>(null);
 
   // DnD sensors
@@ -372,79 +429,96 @@ export function VisualQueryBuilder({
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
-  const handleDragStart = useCallback((event: DragStartEvent) => {
-    const { active } = event;
-    const chip = availableChips.find(c => c.id === active.id);
-    if (chip) {
-      setDraggedChip(chip);
-      logger.debug("query-builder", "Drag started", { chipId: chip.id, chipLabel: chip.label });
-    }
-  }, [availableChips]);
+  const handleDragStart = useCallback(
+    (event: DragStartEvent) => {
+      const { active } = event;
+      const chip = availableChips.find((c) => c.id === active.id);
+      if (chip) {
+        setDraggedChip(chip);
+        logger.debug("QUERY_BUILDER_LOGGER_NAME", "Drag started", {
+          chipId: chip.id,
+          chipLabel: chip.label,
+        });
+      }
+    },
+    [availableChips],
+  );
 
-  const handleDragEnd = useCallback((event: DragEndEvent) => {
-    const { active, over } = event;
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
 
-    setDraggedChip(null);
+      setDraggedChip(null);
 
-    if (!over) {
-      logger.debug("query-builder", "Drag cancelled - no drop target");
-      return;
-    }
+      if (!over) {
+        logger.debug(
+          "QUERY_BUILDER_LOGGER_NAME",
+          "Drag cancelled - no drop target",
+        );
+        return;
+      }
 
-    const sourceChip = availableChips.find(c => c.id === active.id);
-    if (!sourceChip) {
-      logger.warn("query-builder", "Source chip not found", { activeId: active.id });
-      return;
-    }
+      const sourceChip = availableChips.find((c) => c.id === active.id);
+      if (!sourceChip) {
+        logger.warn("QUERY_BUILDER_LOGGER_NAME", "Source chip not found", {
+          activeId: active.id,
+        });
+        return;
+      }
 
-    // Handle dropping onto a group
-    const targetGroupId = over.id;
-    const targetGroup = query.groups.find(g => g.id === targetGroupId);
+      // Handle dropping onto a group
+      const targetGroupId = over.id;
+      const targetGroup = query.groups.find((g) => g.id === targetGroupId);
 
-    if (targetGroup) {
-      // Create a copy of the chip with a new ID for the query
-      const newChip: QueryFilterChip = {
-        ...sourceChip,
-        id: `${sourceChip.id}-${Date.now()}`,
-      };
+      if (targetGroup) {
+        // Create a copy of the chip with a new ID for the query
+        const newChip: QueryFilterChip = {
+          ...sourceChip,
+          id: `${sourceChip.id}-${Date.now()}`,
+        };
 
+        const updatedQuery: VisualQuery = {
+          ...query,
+          groups: query.groups.map((group) =>
+            group.id === targetGroupId
+              ? { ...group, chips: [...group.chips, newChip] }
+              : group,
+          ),
+        };
+
+        setQuery(updatedQuery);
+        onQueryChange?.(updatedQuery);
+
+        logger.debug("QUERY_BUILDER_LOGGER_NAME", "Chip added to group", {
+          chipId: newChip.id,
+          groupId: targetGroupId,
+          chipLabel: newChip.label,
+        });
+      }
+    },
+    [availableChips, query, onQueryChange],
+  );
+
+  const handleRemoveChip = useCallback(
+    (chipId: string) => {
       const updatedQuery: VisualQuery = {
         ...query,
-        groups: query.groups.map(group =>
-          group.id === targetGroupId
-            ? { ...group, chips: [...group.chips, newChip] }
-            : group
-        ),
+        groups: query.groups.map((group) => ({
+          ...group,
+          chips: group.chips.filter((chip) => chip.id !== chipId),
+        })),
       };
 
       setQuery(updatedQuery);
       onQueryChange?.(updatedQuery);
 
-      logger.debug("query-builder", "Chip added to group", {
-        chipId: newChip.id,
-        groupId: targetGroupId,
-        chipLabel: newChip.label
-      });
-    }
-  }, [availableChips, query, onQueryChange]);
-
-  const handleRemoveChip = useCallback((chipId: string) => {
-    const updatedQuery: VisualQuery = {
-      ...query,
-      groups: query.groups.map(group => ({
-        ...group,
-        chips: group.chips.filter(chip => chip.id !== chipId),
-      })),
-    };
-
-    setQuery(updatedQuery);
-    onQueryChange?.(updatedQuery);
-
-    logger.debug("query-builder", "Chip removed", { chipId });
-  }, [query, onQueryChange]);
+      logger.debug("QUERY_BUILDER_LOGGER_NAME", "Chip removed", { chipId });
+    },
+    [query, onQueryChange],
+  );
 
   const handleAddGroup = useCallback(() => {
     const newGroup: QueryGroup = {
@@ -462,15 +536,17 @@ export function VisualQueryBuilder({
     setQuery(updatedQuery);
     onQueryChange?.(updatedQuery);
 
-    logger.debug("query-builder", "Group added", { groupId: newGroup.id });
+    logger.debug("QUERY_BUILDER_LOGGER_NAME", "Group added", {
+      groupId: newGroup.id,
+    });
   }, [query, onQueryChange]);
 
   const handleApply = useCallback(() => {
     if (onApply) {
       onApply(query);
-      logger.debug("query-builder", "Query applied", {
+      logger.debug("QUERY_BUILDER_LOGGER_NAME", "Query applied", {
         groupCount: query.groups.length,
-        totalChips: query.groups.reduce((sum, g) => sum + g.chips.length, 0)
+        totalChips: query.groups.reduce((sum, g) => sum + g.chips.length, 0),
       });
     }
   }, [query, onApply]);
@@ -491,10 +567,10 @@ export function VisualQueryBuilder({
     setQuery(clearedQuery);
     onQueryChange?.(clearedQuery);
 
-    logger.debug("query-builder", "Query cleared");
+    logger.debug("QUERY_BUILDER_LOGGER_NAME", "Query cleared");
   }, [query, onQueryChange]);
 
-  const hasAnyChips = query.groups.some(group => group.chips.length > 0);
+  const hasAnyChips = query.groups.some((group) => group.chips.length > 0);
 
   return (
     <DndContext
@@ -535,8 +611,9 @@ export function VisualQueryBuilder({
           {/* Instructions */}
           <Alert color="blue" variant="light">
             <Text size="sm">
-              Drag filter chips from the palette below into query groups to build your search.
-              Combine multiple groups with AND/OR logic to create complex queries.
+              Drag filter chips from the palette below into query groups to
+              build your search. Combine multiple groups with AND/OR logic to
+              create complex queries.
             </Text>
           </Alert>
 
@@ -551,11 +628,14 @@ export function VisualQueryBuilder({
                     </Chip>
                   </Group>
                 )}
-                <SortableContext items={group.chips} strategy={verticalListSortingStrategy}>
+                <SortableContext
+                  items={group.chips}
+                  strategy={verticalListSortingStrategy}
+                >
                   <DropZone
                     id={group.id}
                     title={`Query Group ${index + 1}`}
-                    description={`${group.chips.length} filter${group.chips.length === 1 ? '' : 's'}`}
+                    description={`${group.chips.length} filter${group.chips.length === 1 ? "" : "s"}`}
                     isEmpty={group.chips.length === 0}
                   >
                     {group.chips.map((chip) => (
@@ -597,12 +677,15 @@ export function VisualQueryBuilder({
 
             {/* Group available chips by category */}
             {Object.entries(
-              availableChips.reduce((acc, chip) => {
-                const { category } = chip;
-                if (!acc[category]) acc[category] = [];
-                acc[category].push(chip);
-                return acc;
-              }, {} as Record<QueryChipCategory, QueryFilterChip[]>)
+              availableChips.reduce(
+                (acc, chip) => {
+                  const { category } = chip;
+                  if (!acc[category]) acc[category] = [];
+                  acc[category].push(chip);
+                  return acc;
+                },
+                {} as Record<QueryChipCategory, QueryFilterChip[]>,
+              ),
             ).map(([category, chips]) => (
               <Box key={category}>
                 <Text size="xs" fw={500} c="dimmed" mb={4} tt="capitalize">

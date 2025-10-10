@@ -8,458 +8,634 @@ import { ActionIcon, Tooltip } from "@mantine/core";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useLayoutStore } from "@/stores/layout-store";
-import { getGroupDefinition, createNewGroup, updateGroupDefinition, getRegistryVersion } from "@/stores/group-registry";
+import {
+  getGroupDefinition,
+  createNewGroup,
+  updateGroupDefinition,
+  getRegistryVersion,
+  type ToolGroupDefinition,
+} from "@/stores/group-registry";
 import { getSectionById } from "@/stores/section-registry";
 import { GroupRibbonButton } from "@/components/layout/GroupRibbonButton";
 import { logger } from "@academic-explorer/utils/logger";
 import { IconTrash } from "@tabler/icons-react";
 
+type ThemeColors = ReturnType<typeof useThemeColors>["colors"];
+
 export const LeftRibbon: React.FC = () => {
-	const graphData = useGraphData();
-	const {clearGraph} = graphData;
-	const themeColors = useThemeColors();
-	const {colors} = themeColors;
-	const layoutStore = useLayoutStore();
-	// const expandSidebarToSection = layoutStore.expandSidebarToSection; // Not used in group-based layout
-	const {getToolGroupsForSidebar} = layoutStore;
-	const {getActiveGroup} = layoutStore;
-	const {setActiveGroup} = layoutStore;
-	const {addSectionToGroup} = layoutStore;
+  const graphData = useGraphData();
+  const { clearGraph } = graphData;
+  const themeColors = useThemeColors();
+  const { colors } = themeColors;
+  const layoutStore = useLayoutStore();
+  // const expandSidebarToSection = layoutStore.expandSidebarToSection; // Not used in group-based layout
+  const { getToolGroupsForSidebar } = layoutStore;
+  const { getActiveGroup } = layoutStore;
+  const { setActiveGroup } = layoutStore;
+  const { addSectionToGroup } = layoutStore;
 
-	// State for drag and drop visual feedback
-	const [isDragging, setIsDragging] = React.useState(false);
-	const [draggedGroupId, setDraggedGroupId] = React.useState<string | null>(null);
-	const [dropInsertionIndex, setDropInsertionIndex] = React.useState<number | null>(null);
+  // State for drag and drop visual feedback
+  const [isDragging, setIsDragging] = React.useState(false);
+  const [draggedGroupId, setDraggedGroupId] = React.useState<string | null>(
+    null,
+  );
+  const [dropInsertionIndex, setDropInsertionIndex] = React.useState<
+    number | null
+  >(null);
 
-	// Get tool groups for left sidebar
-	const toolGroups = getToolGroupsForSidebar("left");
-	const activeGroupId = getActiveGroup("left");
-	const registryVersion = getRegistryVersion();
-	const groupDefinitions = useMemo(() => {
-		const definitions = Object.keys(toolGroups)
-			.map(groupId => getGroupDefinition(groupId))
-			.filter((def): def is NonNullable<typeof def> => def !== undefined)
-			.sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
+  // Get tool groups for left sidebar
+  const toolGroups = getToolGroupsForSidebar("left");
+  const activeGroupId = getActiveGroup("left");
+  const registryVersion = getRegistryVersion();
+  const groupDefinitions = useMemo(() => {
+    const definitions = Object.keys(toolGroups)
+      .map((groupId) => getGroupDefinition(groupId))
+      .filter((def): def is NonNullable<typeof def> => def !== undefined)
+      .sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
 
-		logger.debug("ui", "Left ribbon group definitions", {
-			toolGroups,
-			groupKeys: Object.keys(toolGroups),
-			definitions: definitions.map(d => ({ id: d.id, title: d.title, order: d.order })),
-			activeGroupId,
-			registryVersion
-		});
+    logger.debug("ui", "Left ribbon group definitions", {
+      toolGroups,
+      groupKeys: Object.keys(toolGroups),
+      definitions: definitions.map((d) => ({
+        id: d.id,
+        title: d.title,
+        order: d.order,
+      })),
+      activeGroupId,
+      registryVersion,
+    });
 
-		return definitions;
-	}, [toolGroups, activeGroupId, registryVersion]);
+    return definitions;
+  }, [toolGroups, activeGroupId, registryVersion]);
 
-	const handleClearGraph = () => {
-		logger.debug("ui", "Clear graph clicked from left ribbon");
-		clearGraph();
-	};
+  const handleClearGraph = () => {
+    logger.debug("ui", "Clear graph clicked from left ribbon");
+    clearGraph();
+  };
 
-	const handleGroupActivate = (groupId: string) => {
-		logger.debug("ui", `Activating group ${groupId} for left sidebar`, { groupId });
+  const handleGroupActivate = (groupId: string) => {
+    logger.debug("ui", `Activating group ${groupId} for left sidebar`, {
+      groupId,
+    });
 
-		// Check if group exists before activating
-		const currentToolGroups = getToolGroupsForSidebar("left");
-		const groupExists = Boolean(currentToolGroups[groupId]);
+    // Check if group exists before activating
+    const currentToolGroups = getToolGroupsForSidebar("left");
+    const groupExists = Boolean(currentToolGroups[groupId]);
 
-		logger.debug("ui", `Group ${groupId} exists: ${groupExists ? "true" : "false"}`, {
-			groupId,
-			groupExists,
-			currentGroups: Object.keys(currentToolGroups)
-		});
+    logger.debug(
+      "ui",
+      `Group ${groupId} exists: ${groupExists ? "true" : "false"}`,
+      {
+        groupId,
+        groupExists,
+        currentGroups: Object.keys(currentToolGroups),
+      },
+    );
 
-		if (!groupExists) {
-			logger.warn("ui", `Cannot activate group ${groupId} - it does not exist`, {
-				groupId,
-				availableGroups: Object.keys(currentToolGroups)
-			});
-			return;
-		}
+    if (!groupExists) {
+      logger.warn(
+        "ui",
+        `Cannot activate group ${groupId} - it does not exist`,
+        {
+          groupId,
+          availableGroups: Object.keys(currentToolGroups),
+        },
+      );
+      return;
+    }
 
-		// Check if this group is already active and sidebar is open - if so, toggle sidebar
-		const isCurrentlyActive = activeGroupId === groupId;
-		const isCurrentlyOpen = layoutStore.leftSidebarOpen;
+    // Check if this group is already active and sidebar is open - if so, toggle sidebar
+    const isCurrentlyActive = activeGroupId === groupId;
+    const isCurrentlyOpen = layoutStore.leftSidebarOpen;
 
-		if (isCurrentlyActive && isCurrentlyOpen) {
-			logger.debug("ui", `Toggling sidebar closed for active group ${groupId}`);
-			layoutStore.setLeftSidebarOpen(false);
-			return;
-		}
+    if (isCurrentlyActive && isCurrentlyOpen) {
+      logger.debug("ui", `Toggling sidebar closed for active group ${groupId}`);
+      layoutStore.setLeftSidebarOpen(false);
+      return;
+    }
 
-		// Activate the group and expand sidebar
-		setActiveGroup("left", groupId);
-		layoutStore.setLeftSidebarOpen(true);
+    // Activate the group and expand sidebar
+    setActiveGroup("left", groupId);
+    layoutStore.setLeftSidebarOpen(true);
 
-		logger.debug("ui", `Sidebar should now be open for group ${groupId}`);
+    logger.debug("ui", `Sidebar should now be open for group ${groupId}`);
 
-		// Scroll to top after a brief delay to allow sidebar to expand
-		setTimeout(() => {
-			// Find the left sidebar container and scroll to top
-			const sidebarContainer = document.querySelector('[data-mantine-component="AppShell"] > nav');
-			if (sidebarContainer) {
-				const scrollableElement = sidebarContainer.querySelector('[style*="overflow: auto"]') ?? sidebarContainer;
-				if (scrollableElement instanceof HTMLElement) {
-					scrollableElement.scrollTop = 0;
-				}
-			}
-		}, 150); // Small delay to allow expansion animation
-	};
+    // Scroll to top after a brief delay to allow sidebar to expand
+    setTimeout(() => {
+      // Find the left sidebar container and scroll to top
+      const sidebarContainer = document.querySelector(
+        '[data-mantine-component="AppShell"] > nav',
+      );
+      if (sidebarContainer) {
+        const scrollableElement =
+          sidebarContainer.querySelector('[style*="overflow: auto"]') ??
+          sidebarContainer;
+        if (scrollableElement instanceof HTMLElement) {
+          scrollableElement.scrollTop = 0;
+        }
+      }
+    }, 150); // Small delay to allow expansion animation
+  };
 
-	const handleGroupReorder = (sourceGroupId: string, targetGroupId: string, insertBefore: boolean, _event: React.DragEvent) => {
-		logger.debug("ui", `LeftRibbon: Reordering group ${sourceGroupId} relative to ${targetGroupId}`, {
-			sourceGroupId,
-			targetGroupId,
-			insertBefore,
-			side: "left",
-			currentOrder: groupDefinitions.map(g => ({ id: g.id, order: g.order }))
-		});
+  const handleGroupReorder = (
+    sourceGroupId: string,
+    targetGroupId: string,
+    insertBefore: boolean,
+    _event: React.DragEvent,
+  ) => {
+    logger.debug(
+      "ui",
+      `LeftRibbon: Reordering group ${sourceGroupId} relative to ${targetGroupId}`,
+      {
+        sourceGroupId,
+        targetGroupId,
+        insertBefore,
+        side: "left",
+        currentOrder: groupDefinitions.map((g) => ({
+          id: g.id,
+          order: g.order,
+        })),
+      },
+    );
 
-		layoutStore.reorderGroups("left", sourceGroupId, targetGroupId, insertBefore);
+    layoutStore.reorderGroups(
+      "left",
+      sourceGroupId,
+      targetGroupId,
+      insertBefore,
+    );
 
-		// Reset drag state
-		setIsDragging(false);
-		setDraggedGroupId(null);
-		setDropInsertionIndex(null);
-	};
+    // Reset drag state
+    setIsDragging(false);
+    setDraggedGroupId(null);
+    setDropInsertionIndex(null);
+  };
 
-	const handleGroupDragStart = (groupId: string) => {
-		setIsDragging(true);
-		setDraggedGroupId(groupId);
-		logger.debug("ui", `Starting group drag for ${groupId}`, { groupId, side: "left" });
-	};
+  const handleGroupDragStart = (groupId: string) => {
+    setIsDragging(true);
+    setDraggedGroupId(groupId);
+    logger.debug("ui", `Starting group drag for ${groupId}`, {
+      groupId,
+      side: "left",
+    });
+  };
 
-	const handleGroupDragEnd = () => {
-		setIsDragging(false);
-		setDraggedGroupId(null);
-		setDropInsertionIndex(null);
-	};
+  const handleGroupDragEnd = () => {
+    setIsDragging(false);
+    setDraggedGroupId(null);
+    setDropInsertionIndex(null);
+  };
 
-	const handleDropZoneHover = (insertionIndex: number, hasGroupDrag: boolean = false) => {
-		if (isDragging || hasGroupDrag) {
-			setDropInsertionIndex(insertionIndex);
-		}
-	};
+  const handleDropZoneHover = (
+    insertionIndex: number,
+    hasGroupDrag: boolean = false,
+  ) => {
+    if (isDragging || hasGroupDrag) {
+      setDropInsertionIndex(insertionIndex);
+    }
+  };
 
-	const handleDropZoneLeave = () => {
-		setDropInsertionIndex(null);
-	};
+  const handleDropZoneLeave = () => {
+    setDropInsertionIndex(null);
+  };
 
-	// DropZone component for insertion indicators
-	const DropZone: React.FC<{ index: number; isActive: boolean }> = ({ index, isActive }) => {
-		const [hasGroupDrag, setHasGroupDrag] = React.useState(false);
+  // Helper function to check if drag is a group reorder
+  const isGroupReorderDrag = (dataTransfer: DataTransfer): boolean => {
+    return dataTransfer.types.includes("application/group-reorder");
+  };
 
-		const handleDragOver = (e: React.DragEvent) => {
-			e.preventDefault();
+  // Helper function to determine if drop zone should be shown
+  const shouldShowDropZone = (
+    isDragging: boolean,
+    hasGroupDrag: boolean,
+    isActive: boolean,
+  ): boolean => {
+    return (isDragging || hasGroupDrag) && isActive;
+  };
 
-			// Check if this is a group reorder drag
-			const isGroupReorder = e.dataTransfer.types.includes("application/group-reorder");
+  // Helper function to get drop zone style
+  const getDropZoneStyle = (shouldShow: boolean, colors: ThemeColors) => ({
+    height: shouldShow ? "40px" : "0px",
+    width: shouldShow ? "40px" : "40px",
+    backgroundColor: shouldShow ? colors.primary : "transparent",
+    transition: "all 0.2s ease",
+    borderRadius: "8px",
+    margin: shouldShow ? "2px 0" : "0px",
+    opacity: shouldShow ? 1 : 0,
+    border: shouldShow ? `2px solid ${colors.primary}` : "none",
+    pointerEvents: "auto" as const,
+    overflow: "hidden",
+    padding: shouldShow ? "0" : "10px 0",
+    marginTop: shouldShow ? "2px" : "-10px",
+    marginBottom: shouldShow ? "2px" : "-10px",
+  });
 
-			if (isGroupReorder) {
-				setHasGroupDrag(true);
-				logger.debug("ui", `LeftRibbon DropZone ${String(index)} detected group drag`, {
-					index,
-					hasGroupDrag,
-					isDragging
-				});
-			}
+  // Helper function to handle drop logic
+  const handleDropLogic = (
+    e: React.DragEvent,
+    index: number,
+    groupDefinitions: ToolGroupDefinition[],
+    draggedGroupId: string | null,
+  ) => {
+    const groupReorderData = e.dataTransfer.getData(
+      "application/group-reorder",
+    );
+    if (!groupReorderData) return;
 
-			handleDropZoneHover(index, isGroupReorder);
-		};
+    logger.debug("ui", `Drop zone ${String(index)} processing reorder/move`, {
+      sourceGroupId: groupReorderData,
+      insertionIndex: index,
+      totalGroups: groupDefinitions.length,
+      targetSidebar: "left",
+    });
 
-		const handleDragLeave = () => {
-			// Only reset if we're actually leaving the drop zone
-			setHasGroupDrag(false);
-			handleDropZoneLeave();
-		};
+    const leftGroups = getToolGroupsForSidebar("left");
+    const isFromSameSidebar = Boolean(leftGroups[groupReorderData]);
 
-		// Show drop zone if there's a local drag OR if this drop zone detects a group drag AND it's active
-		const shouldShowDropZone = (isDragging || hasGroupDrag) && isActive;
+    if (index === 0) {
+      handleDropAtBeginning(
+        groupReorderData,
+        groupDefinitions,
+        isFromSameSidebar,
+        e,
+      );
+    } else if (index === groupDefinitions.length) {
+      handleDropAtEnd(groupReorderData, groupDefinitions, isFromSameSidebar, e);
+    } else {
+      handleDropBetweenGroups(
+        groupReorderData,
+        index,
+        groupDefinitions,
+        isFromSameSidebar,
+        e,
+      );
+    }
+  };
 
-		return (
-			<div
-				role="button"
-				tabIndex={0}
-				aria-label={`Drop zone ${index} - Drop group here to reorder`}
-				style={{
-					height: shouldShowDropZone ? "40px" : "0px",
-					width: shouldShowDropZone ? "40px" : "40px",
-					backgroundColor: shouldShowDropZone ? colors.primary : "transparent",
-					transition: "all 0.2s ease",
-					borderRadius: "8px",
-					margin: shouldShowDropZone ? "2px 0" : "0px",
-					opacity: shouldShowDropZone ? 1 : 0,
-					border: shouldShowDropZone ? `2px solid ${colors.primary}` : "none",
-					pointerEvents: "auto",
-					overflow: "hidden",
-					// Add invisible padding for hit area when collapsed, offset by negative margin
-					padding: shouldShowDropZone ? "0" : "10px 0",
-					marginTop: shouldShowDropZone ? "2px" : "-10px",
-					marginBottom: shouldShowDropZone ? "2px" : "-10px",
-				}}
-				onDragOver={handleDragOver}
-				onDragLeave={handleDragLeave}
-				onDrop={(e) => {
-					e.preventDefault();
-					logger.debug("ui", `LeftRibbon drop zone ${String(index)} received drop`, {
-						index,
-						types: Array.from(e.dataTransfer.types),
-						isDragging,
-						draggedGroupId
-					});
-					const groupReorderData = e.dataTransfer.getData("application/group-reorder");
-					if (groupReorderData) {
-						logger.debug("ui", `Drop zone ${String(index)} processing reorder/move`, {
-							sourceGroupId: groupReorderData,
-							insertionIndex: index,
-							totalGroups: groupDefinitions.length,
-							targetSidebar: "left"
-						});
+  // Helper functions for different drop positions
+  const handleDropAtBeginning = (
+    groupReorderData: string,
+    groupDefinitions: ToolGroupDefinition[],
+    isFromSameSidebar: boolean,
+    e: React.DragEvent,
+  ) => {
+    const firstGroup = groupDefinitions[0];
+    if (firstGroup.id !== groupReorderData) {
+      if (isFromSameSidebar) {
+        handleGroupReorder(groupReorderData, firstGroup.id, true, e);
+      } else {
+        layoutStore.moveGroupToSidebar(
+          groupReorderData,
+          "left",
+          firstGroup.id,
+          true,
+        );
+      }
+    }
+  };
 
-						// Check if this group is from the same sidebar (reorder) or different sidebar (move)
-						const leftGroups = getToolGroupsForSidebar("left");
-						const isFromSameSidebar = Boolean(leftGroups[groupReorderData]);
+  const handleDropAtEnd = (
+    groupReorderData: string,
+    groupDefinitions: ToolGroupDefinition[],
+    isFromSameSidebar: boolean,
+    e: React.DragEvent,
+  ) => {
+    const lastGroup = groupDefinitions[groupDefinitions.length - 1];
+    if (lastGroup.id !== groupReorderData) {
+      if (isFromSameSidebar) {
+        handleGroupReorder(groupReorderData, lastGroup.id, false, e);
+      } else {
+        layoutStore.moveGroupToSidebar(
+          groupReorderData,
+          "left",
+          lastGroup.id,
+          false,
+        );
+      }
+    } else if (!isFromSameSidebar) {
+      layoutStore.moveGroupToSidebar(groupReorderData, "left");
+    }
+  };
 
-						if (index === 0) {
-						// Dropping at the beginning
-							const firstGroup = groupDefinitions[0];
-							if (firstGroup.id !== groupReorderData) {
-								if (isFromSameSidebar) {
-									handleGroupReorder(groupReorderData, firstGroup.id, true, e);
-								} else {
-									layoutStore.moveGroupToSidebar(groupReorderData, "left", firstGroup.id, true);
-								}
-							}
-						} else if (index === groupDefinitions.length) {
-						// Dropping at the end
-							const lastGroup = groupDefinitions[groupDefinitions.length - 1];
-							if (lastGroup.id !== groupReorderData) {
-								if (isFromSameSidebar) {
-									handleGroupReorder(groupReorderData, lastGroup.id, false, e);
-								} else {
-									layoutStore.moveGroupToSidebar(groupReorderData, "left", lastGroup.id, false);
-								}
-							} else if (!isFromSameSidebar) {
-							// Moving from other sidebar to end when no target group
-								layoutStore.moveGroupToSidebar(groupReorderData, "left");
-							}
-						} else {
-						// Dropping between groups
-							const targetGroup = groupDefinitions[index - 1];
-							if (targetGroup.id !== groupReorderData) {
-								if (isFromSameSidebar) {
-									handleGroupReorder(groupReorderData, targetGroup.id, false, e);
-								} else {
-									layoutStore.moveGroupToSidebar(groupReorderData, "left", targetGroup.id, false);
-								}
-							}
-						}
-					}
-				}}
-			/>
-		);
-	};
+  const handleDropBetweenGroups = (
+    groupReorderData: string,
+    index: number,
+    groupDefinitions: ToolGroupDefinition[],
+    isFromSameSidebar: boolean,
+    e: React.DragEvent,
+  ) => {
+    const targetGroup = groupDefinitions[index - 1];
+    if (targetGroup.id !== groupReorderData) {
+      if (isFromSameSidebar) {
+        handleGroupReorder(groupReorderData, targetGroup.id, false, e);
+      } else {
+        layoutStore.moveGroupToSidebar(
+          groupReorderData,
+          "left",
+          targetGroup.id,
+          false,
+        );
+      }
+    }
+  };
 
-	const handleDrop = (draggedSectionId: string, targetGroupId: string, _event: React.DragEvent) => {
-		logger.debug("ui", `LeftRibbon handleDrop: Moving section ${draggedSectionId} to group ${targetGroupId}`, {
-			draggedSectionId,
-			targetGroupId,
-			side: "left"
-		});
+  // DropZone component for insertion indicators
+  const DropZone: React.FC<{ index: number; isActive: boolean }> = ({
+    index,
+    isActive,
+  }) => {
+    const [hasGroupDrag, setHasGroupDrag] = React.useState(false);
 
-		// First, remove the section from all existing groups on both sides
-		const leftGroups = getToolGroupsForSidebar("left");
-		const rightGroups = getToolGroupsForSidebar("right");
+    const handleDragOver = (e: React.DragEvent) => {
+      e.preventDefault();
 
-		logger.debug("ui", `Current groups before removal`, {
-			leftGroups: Object.keys(leftGroups),
-			rightGroups: Object.keys(rightGroups),
-			targetGroupExists: targetGroupId in leftGroups,
-			targetGroupSections: leftGroups[targetGroupId].sections
-		});
+      const isGroupReorder = isGroupReorderDrag(e.dataTransfer);
+      if (isGroupReorder) {
+        setHasGroupDrag(true);
+        logger.debug(
+          "ui",
+          `LeftRibbon DropZone ${String(index)} detected group drag`,
+          {
+            index,
+            hasGroupDrag,
+            isDragging,
+          },
+        );
+      }
 
-		// Remove from left sidebar groups
-		Object.entries(leftGroups).forEach(([groupId, group]) => {
-			if (group.sections.includes(draggedSectionId)) {
-				logger.debug("ui", `Removing ${draggedSectionId} from left group ${groupId}`);
-				layoutStore.removeSectionFromGroup("left", groupId, draggedSectionId);
-			}
-		});
+      handleDropZoneHover(index, isGroupReorder);
+    };
 
-		// Remove from right sidebar groups
-		Object.entries(rightGroups).forEach(([groupId, group]) => {
-			if (group.sections.includes(draggedSectionId)) {
-				logger.debug("ui", `Removing ${draggedSectionId} from right group ${groupId}`);
-				layoutStore.removeSectionFromGroup("right", groupId, draggedSectionId);
-			}
-		});
+    const handleDragLeave = () => {
+      setHasGroupDrag(false);
+      handleDropZoneLeave();
+    };
 
-		// Check if target group exists after removals
-		const updatedLeftGroups = getToolGroupsForSidebar("left");
-		logger.debug("ui", `Groups after removal, before addition`, {
-			leftGroups: Object.keys(updatedLeftGroups),
-			targetGroupExists: Boolean(updatedLeftGroups[targetGroupId]),
-			targetGroupId
-		});
+    const showDropZone = shouldShowDropZone(isDragging, hasGroupDrag, isActive);
 
-		// Then add to the target group
-		addSectionToGroup("left", targetGroupId, draggedSectionId);
-	};
+    return (
+      <div
+        role="button"
+        tabIndex={0}
+        aria-label={`Drop zone ${index} - Drop group here to reorder`}
+        style={getDropZoneStyle(showDropZone, colors)}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={(e) => {
+          e.preventDefault();
+          logger.debug(
+            "ui",
+            `LeftRibbon drop zone ${String(index)} received drop`,
+            {
+              index,
+              types: Array.from(e.dataTransfer.types),
+              isDragging,
+              draggedGroupId,
+            },
+          );
+          handleDropLogic(e, index, groupDefinitions, draggedGroupId);
+        }}
+      />
+    );
+  };
 
-	const handleDragOver = (event: React.DragEvent) => {
-		event.preventDefault();
-	};
+  const handleDrop = (
+    draggedSectionId: string,
+    targetGroupId: string,
+    _event: React.DragEvent,
+  ) => {
+    logger.debug(
+      "ui",
+      `LeftRibbon handleDrop: Moving section ${draggedSectionId} to group ${targetGroupId}`,
+      {
+        draggedSectionId,
+        targetGroupId,
+        side: "left",
+      },
+    );
 
-	const handleEmptyAreaDrop = (event: React.DragEvent) => {
-		event.preventDefault();
-		event.stopPropagation();
+    // First, remove the section from all existing groups on both sides
+    const leftGroups = getToolGroupsForSidebar("left");
+    const rightGroups = getToolGroupsForSidebar("right");
 
-		// Check if this is a group reorder drag - if so, ignore it
-		const isGroupReorder = event.dataTransfer.types.includes("application/group-reorder");
-		if (isGroupReorder) {
-			logger.debug("ui", "Ignoring group reorder drag in empty area", {
-				types: Array.from(event.dataTransfer.types)
-			});
-			return;
-		}
+    logger.debug("ui", `Current groups before removal`, {
+      leftGroups: Object.keys(leftGroups),
+      rightGroups: Object.keys(rightGroups),
+      targetGroupExists: targetGroupId in leftGroups,
+      targetGroupSections: leftGroups[targetGroupId].sections,
+    });
 
-		const draggedSectionId = event.dataTransfer.getData("text/plain");
-		if (!draggedSectionId) {
-			logger.warn("ui", "No dragged section ID found in dataTransfer");
-			return;
-		}
+    // Remove from left sidebar groups
+    Object.entries(leftGroups).forEach(([groupId, group]) => {
+      if (group.sections.includes(draggedSectionId)) {
+        logger.debug(
+          "ui",
+          `Removing ${draggedSectionId} from left group ${groupId}`,
+        );
+        layoutStore.removeSectionFromGroup("left", groupId, draggedSectionId);
+      }
+    });
 
-		// Get the tool's category - this will be the group type
-		const section = getSectionById(draggedSectionId);
-		if (!section?.category) {
-			logger.warn("ui", `Cannot create group for section ${draggedSectionId} - no category`, {
-				draggedSectionId,
-				section
-			});
-			return;
-		}
+    // Remove from right sidebar groups
+    Object.entries(rightGroups).forEach(([groupId, group]) => {
+      if (group.sections.includes(draggedSectionId)) {
+        logger.debug(
+          "ui",
+          `Removing ${draggedSectionId} from right group ${groupId}`,
+        );
+        layoutStore.removeSectionFromGroup("right", groupId, draggedSectionId);
+      }
+    });
 
-		// Create a new group with unique ID
-		const newGroup = createNewGroup(draggedSectionId);
-		const groupId = newGroup.id;
+    // Check if target group exists after removals
+    const updatedLeftGroups = getToolGroupsForSidebar("left");
+    logger.debug("ui", `Groups after removal, before addition`, {
+      leftGroups: Object.keys(updatedLeftGroups),
+      targetGroupExists: Boolean(updatedLeftGroups[targetGroupId]),
+      targetGroupId,
+    });
 
-		logger.debug("ui", `Creating new group ${groupId} for section ${draggedSectionId} on left ribbon`, {
-			draggedSectionId,
-			groupId,
-			category: section.category,
-			groupTitle: newGroup.title
-		});
+    // Then add to the target group
+    addSectionToGroup("left", targetGroupId, draggedSectionId);
+  };
 
-		// First, remove the section from all existing groups
-		const leftGroups = getToolGroupsForSidebar("left");
-		const rightGroups = getToolGroupsForSidebar("right");
+  const handleDragOver = (event: React.DragEvent) => {
+    event.preventDefault();
+  };
 
-		Object.entries(leftGroups).forEach(([existingGroupId, group]) => {
-			if (group.sections.includes(draggedSectionId)) {
-				layoutStore.removeSectionFromGroup("left", existingGroupId, draggedSectionId);
-			}
-		});
+  const handleEmptyAreaDrop = (event: React.DragEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
 
-		Object.entries(rightGroups).forEach(([existingGroupId, group]) => {
-			if (group.sections.includes(draggedSectionId)) {
-				layoutStore.removeSectionFromGroup("right", existingGroupId, draggedSectionId);
-			}
-		});
+    // Check if this is a group reorder drag - if so, ignore it
+    const isGroupReorder = event.dataTransfer.types.includes(
+      "application/group-reorder",
+    );
+    if (isGroupReorder) {
+      logger.debug("ui", "Ignoring group reorder drag in empty area", {
+        types: Array.from(event.dataTransfer.types),
+      });
+      return;
+    }
 
-		// Add to the new group (will create the group since it's guaranteed to not exist)
-		addSectionToGroup("left", groupId, draggedSectionId);
-		setActiveGroup("left", groupId);
+    const draggedSectionId = event.dataTransfer.getData("text/plain");
+    if (!draggedSectionId) {
+      logger.warn("ui", "No dragged section ID found in dataTransfer");
+      return;
+    }
 
-		// Immediately update the group definition with the section
-		updateGroupDefinition(groupId, [draggedSectionId], getSectionById);
-	};
+    // Get the tool's category - this will be the group type
+    const section = getSectionById(draggedSectionId);
+    if (!section?.category) {
+      logger.warn(
+        "ui",
+        `Cannot create group for section ${draggedSectionId} - no category`,
+        {
+          draggedSectionId,
+          section,
+        },
+      );
+      return;
+    }
 
-	const ribbonButtonStyle = {
-		width: "40px",
-		height: "40px",
-		borderRadius: "8px",
-		backgroundColor: "transparent",
-		border: `1px solid ${colors.border.primary}`,
-		transition: "all 0.2s ease",
-	};
+    // Create a new group with unique ID
+    const newGroup = createNewGroup(draggedSectionId);
+    const groupId = newGroup.id;
 
+    logger.debug(
+      "ui",
+      `Creating new group ${groupId} for section ${draggedSectionId} on left ribbon`,
+      {
+        draggedSectionId,
+        groupId,
+        category: section.category,
+        groupTitle: newGroup.title,
+      },
+    );
 
-	return (
-		<div
-			role="region"
-			aria-label="Left sidebar - Drop tools here to create new groups"
-			onDrop={handleEmptyAreaDrop}
-			onDragOver={handleDragOver}
-			style={{
-				display: "flex",
-				flexDirection: "column",
-				height: "100%",
-				alignItems: "center",
-				padding: "16px 8px",
-				gap: "12px",
-				borderRight: `1px solid ${colors.border.primary}`,
-			}}
-		>
-			{/* Dynamic tool groups */}
-			<div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4px" }}>
-				{groupDefinitions.map((group, index) => (
-					<React.Fragment key={group.id}>
-						{/* Drop zone before first item or between items */}
-						<DropZone index={index} isActive={dropInsertionIndex === index} />
+    // First, remove the section from all existing groups
+    const leftGroups = getToolGroupsForSidebar("left");
+    const rightGroups = getToolGroupsForSidebar("right");
 
-						<GroupRibbonButton
-							group={group}
-							isActive={activeGroupId === group.id}
-							onActivate={handleGroupActivate}
-							onDrop={handleDrop}
-							onDragOver={handleDragOver}
-							onGroupReorder={handleGroupReorder}
-							onDragStart={handleGroupDragStart}
-							onDragEnd={handleGroupDragEnd}
-							side="left"
-						/>
-					</React.Fragment>
-				))}
+    Object.entries(leftGroups).forEach(([existingGroupId, group]) => {
+      if (group.sections.includes(draggedSectionId)) {
+        layoutStore.removeSectionFromGroup(
+          "left",
+          existingGroupId,
+          draggedSectionId,
+        );
+      }
+    });
 
-				{/* Drop zone after last item */}
-				<DropZone
-					index={groupDefinitions.length}
-					isActive={dropInsertionIndex === groupDefinitions.length}
-				/>
-			</div>
+    Object.entries(rightGroups).forEach(([existingGroupId, group]) => {
+      if (group.sections.includes(draggedSectionId)) {
+        layoutStore.removeSectionFromGroup(
+          "right",
+          existingGroupId,
+          draggedSectionId,
+        );
+      }
+    });
 
-			<div style={{ flex: 1 }} />
+    // Add to the new group (will create the group since it's guaranteed to not exist)
+    addSectionToGroup("left", groupId, draggedSectionId);
+    setActiveGroup("left", groupId);
 
-			{/* Clear graph at bottom */}
-			<Tooltip label="Clear entire graph" position="right" withArrow>
-				<ActionIcon
-					variant="subtle"
-					size="lg"
-					style={{
-						...ribbonButtonStyle,
-						borderColor: colors.error,
-					}}
-					onClick={handleClearGraph}
-					aria-label="Clear entire graph"
-					onMouseEnter={(e) => {
-						Object.assign(e.currentTarget.style, {
-							backgroundColor: colors.error,
-							borderColor: colors.error,
-							color: colors.text.inverse,
-						});
-					}}
-					onMouseLeave={(e) => {
-						Object.assign(e.currentTarget.style, {
-							...ribbonButtonStyle,
-							borderColor: colors.error,
-							color: "inherit",
-						});
-					}}
-				>
-					<IconTrash size={20} />
-				</ActionIcon>
-			</Tooltip>
-		</div>
-	);
+    // Immediately update the group definition with the section
+    updateGroupDefinition(groupId, [draggedSectionId], getSectionById);
+  };
+
+  const ribbonButtonStyle = {
+    width: "40px",
+    height: "40px",
+    borderRadius: "8px",
+    backgroundColor: "transparent",
+    border: `1px solid ${colors.border.primary}`,
+    transition: "all 0.2s ease",
+  };
+
+  return (
+    <div
+      role="region"
+      aria-label="Left sidebar - Drop tools here to create new groups"
+      onDrop={handleEmptyAreaDrop}
+      onDragOver={handleDragOver}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        alignItems: "center",
+        padding: "16px 8px",
+        gap: "12px",
+        borderRight: `1px solid ${colors.border.primary}`,
+      }}
+    >
+      {/* Dynamic tool groups */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "4px",
+        }}
+      >
+        {groupDefinitions.map((group, index) => (
+          <React.Fragment key={group.id}>
+            {/* Drop zone before first item or between items */}
+            <DropZone index={index} isActive={dropInsertionIndex === index} />
+
+            <GroupRibbonButton
+              group={group}
+              isActive={activeGroupId === group.id}
+              onActivate={handleGroupActivate}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onGroupReorder={handleGroupReorder}
+              onDragStart={handleGroupDragStart}
+              onDragEnd={handleGroupDragEnd}
+              side="left"
+            />
+          </React.Fragment>
+        ))}
+
+        {/* Drop zone after last item */}
+        <DropZone
+          index={groupDefinitions.length}
+          isActive={dropInsertionIndex === groupDefinitions.length}
+        />
+      </div>
+
+      <div style={{ flex: 1 }} />
+
+      {/* Clear graph at bottom */}
+      <Tooltip label="Clear entire graph" position="right" withArrow>
+        <ActionIcon
+          variant="subtle"
+          size="lg"
+          style={{
+            ...ribbonButtonStyle,
+            borderColor: colors.error,
+          }}
+          onClick={handleClearGraph}
+          aria-label="Clear entire graph"
+          onMouseEnter={(e) => {
+            Object.assign(e.currentTarget.style, {
+              backgroundColor: colors.error,
+              borderColor: colors.error,
+              color: colors.text.inverse,
+            });
+          }}
+          onMouseLeave={(e) => {
+            Object.assign(e.currentTarget.style, {
+              ...ribbonButtonStyle,
+              borderColor: colors.error,
+              color: "inherit",
+            });
+          }}
+        >
+          <IconTrash size={20} />
+        </ActionIcon>
+      </Tooltip>
+    </div>
+  );
 };

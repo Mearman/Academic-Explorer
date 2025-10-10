@@ -41,6 +41,8 @@ import {
 import { logger } from "@academic-explorer/utils";
 import { BaseTable } from "@/components/tables/BaseTable";
 
+const CACHE_BROWSER_LOGGER_NAME = "cache-browser";
+
 interface CacheBrowserState {
   entities: CachedEntityMetadata[];
   stats: CacheBrowserStats | null;
@@ -167,7 +169,7 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      logger.debug("cache-browser", "Loading cached entities", {
+      logger.debug("CACHE_BROWSER_LOGGER_NAME", "Loading cached entities", {
         filters,
         options,
       });
@@ -175,10 +177,14 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
       const result = await cacheBrowserService.browse(filters, options);
 
       if (!result) {
-        logger.error("cache-browser", "No result returned from browse", {
-          filters,
-          options,
-        });
+        logger.error(
+          "CACHE_BROWSER_LOGGER_NAME",
+          "No result returned from browse",
+          {
+            filters,
+            options,
+          },
+        );
         setState((prev) => ({
           ...prev,
           isLoading: false,
@@ -196,14 +202,18 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
         isLoading: false,
       }));
 
-      logger.debug("cache-browser", "Loaded cached entities", {
+      logger.debug("CACHE_BROWSER_LOGGER_NAME", "Loaded cached entities", {
         count: result.entities.length,
         total: result.totalMatching,
       });
     } catch (error) {
-      logger.error("cache-browser", "Failed to load cached entities", {
-        error,
-      });
+      logger.error(
+        "CACHE_BROWSER_LOGGER_NAME",
+        "Failed to load cached entities",
+        {
+          error,
+        },
+      );
       setState((prev) => ({
         ...prev,
         isLoading: false,
@@ -214,16 +224,22 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
 
   const clearCache = async () => {
     try {
-      logger.debug("cache-browser", "Clearing cache with filters", { filters });
+      logger.debug("CACHE_BROWSER_LOGGER_NAME", "Clearing cache with filters", {
+        filters,
+      });
 
       const clearedCount = await cacheBrowserService.clearCache(filters);
 
-      logger.debug("cache-browser", "Cache cleared", { clearedCount });
+      logger.debug("CACHE_BROWSER_LOGGER_NAME", "Cache cleared", {
+        clearedCount,
+      });
 
       // Reload entities after clearing
       await loadCachedEntities();
     } catch (error) {
-      logger.error("cache-browser", "Failed to clear cache", { error });
+      logger.error("CACHE_BROWSER_LOGGER_NAME", "Failed to clear cache", {
+        error,
+      });
       setState((prev) => ({
         ...prev,
         error: `Failed to clear cache: ${String(error)}`,
@@ -234,7 +250,7 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
   const exportToJSON = async () => {
     setIsExporting(true);
     try {
-      logger.debug("cache-browser", "Exporting cache data to JSON");
+      logger.debug("CACHE_BROWSER_LOGGER_NAME", "Exporting cache data to JSON");
 
       // Get all entities without pagination for export
       const exportOptions = { ...options, limit: undefined, offset: undefined };
@@ -261,11 +277,13 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      logger.debug("cache-browser", "JSON export completed", {
+      logger.debug("CACHE_BROWSER_LOGGER_NAME", "JSON export completed", {
         count: result.entities.length,
       });
     } catch (error) {
-      logger.error("cache-browser", "Failed to export to JSON", { error });
+      logger.error("CACHE_BROWSER_LOGGER_NAME", "Failed to export to JSON", {
+        error,
+      });
       setState((prev) => ({
         ...prev,
         error: `Failed to export to JSON: ${String(error)}`,
@@ -278,7 +296,7 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
   const exportToCSV = async () => {
     setIsExporting(true);
     try {
-      logger.debug("cache-browser", "Exporting cache data to CSV");
+      logger.debug("CACHE_BROWSER_LOGGER_NAME", "Exporting cache data to CSV");
 
       // Get all entities without pagination for export
       const exportOptions = { ...options, limit: undefined, offset: undefined };
@@ -339,11 +357,13 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      logger.debug("cache-browser", "CSV export completed", {
+      logger.debug("CACHE_BROWSER_LOGGER_NAME", "CSV export completed", {
         count: result.entities.length,
       });
     } catch (error) {
-      logger.error("cache-browser", "Failed to export to CSV", { error });
+      logger.error("CACHE_BROWSER_LOGGER_NAME", "Failed to export to CSV", {
+        error,
+      });
       setState((prev) => ({
         ...prev,
         error: `Failed to export to CSV: ${String(error)}`,
@@ -358,7 +378,7 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
 
     setIsImporting(true);
     try {
-      logger.debug("cache-browser", "Importing cache data", {
+      logger.debug("CACHE_BROWSER_LOGGER_NAME", "Importing cache data", {
         fileName: importFile.name,
       });
 
@@ -378,19 +398,19 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
         try {
           // Here we would need a method to add entities back to cache
           // For now, we'll log this as the cacheBrowserService might not have an import method
-          logger.debug("cache-browser", "Would import entity", {
+          logger.debug("CACHE_BROWSER_LOGGER_NAME", "Would import entity", {
             entity: entity.id,
           });
           importedCount++;
         } catch (error) {
-          logger.warn("cache-browser", "Failed to import entity", {
+          logger.warn("CACHE_BROWSER_LOGGER_NAME", "Failed to import entity", {
             entity: entity.id,
             error,
           });
         }
       }
 
-      logger.debug("cache-browser", "Import completed", {
+      logger.debug("CACHE_BROWSER_LOGGER_NAME", "Import completed", {
         total: importData.entities.length,
         imported: importedCount,
       });
@@ -409,7 +429,9 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
       // Reload entities
       await loadCachedEntities();
     } catch (error) {
-      logger.error("cache-browser", "Failed to import cache data", { error });
+      logger.error("CACHE_BROWSER_LOGGER_NAME", "Failed to import cache data", {
+        error,
+      });
       setState((prev) => ({
         ...prev,
         error: `Failed to import cache data: ${String(error)}`,
@@ -454,7 +476,9 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
     } else if (entity.type === "topics" && entity.id.startsWith("T")) {
       void navigate({ to: `/topics/${entity.id}` });
     } else {
-      logger.debug("cache-browser", "No route defined for entity", { entity });
+      logger.debug("CACHE_BROWSER_LOGGER_NAME", "No route defined for entity", {
+        entity,
+      });
     }
   };
 
