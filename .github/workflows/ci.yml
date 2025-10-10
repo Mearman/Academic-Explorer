@@ -338,10 +338,10 @@ jobs:
         env:
           NODE_OPTIONS: "--max-old-space-size=8192"
 
-  # Release automation (main branch only)
+  # Release automation (main branch only) - TEMPORARILY DISABLED
   release:
     needs: [ci, workspace-quality]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && success()
+    if: false  # Temporarily disabled to test CI
     runs-on: ubuntu-latest
     outputs:
       workspace_released: ${{ steps.check-workspace-release.outputs.released }}
