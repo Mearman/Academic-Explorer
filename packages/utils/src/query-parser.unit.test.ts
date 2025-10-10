@@ -15,28 +15,39 @@ const UNQUOTED_TERM = { isWildcard: false, isQuoted: false };
 const QUOTED_TERM = { isWildcard: false, isQuoted: true };
 const WILDCARD_TERM = { isWildcard: true, isQuoted: false };
 
+// Test constants for common test strings
+const MACHINE_LEARNING = "machine learning";
+const DEEP_NEURAL_NETWORKS = "deep neural networks";
+const NEURAL_NETWORKS = "neural networks";
+const DEEP_LEARNING = "deep learning";
+const AI = "AI";
+const JOHN_SMITH = "John Smith";
+const SMITH = "smith";
+const NATURE = "nature";
+const NATURE_REVIEWS = "Nature Reviews";
+
 describe("parseSearchQuery", () => {
   describe("basic functionality", () => {
     it("parses simple terms", () => {
-      const result = parseSearchQuery("machine learning AI");
+      const result = parseSearchQuery(`${MACHINE_LEARNING} ${AI}`);
 
       expect(result.fieldQueries).toEqual([]);
       expect(result.generalTerms).toEqual([
         { value: "machine", ...UNQUOTED_TERM },
         { value: "learning", ...UNQUOTED_TERM },
-        { value: "AI", ...UNQUOTED_TERM },
+        { value: AI, ...UNQUOTED_TERM },
       ]);
     });
 
     it("parses quoted phrases", () => {
       const result = parseSearchQuery(
-        '"machine learning" AI "deep neural networks"',
+        `"${MACHINE_LEARNING}" ${AI} "${DEEP_NEURAL_NETWORKS}"`,
       );
 
       expect(result.generalTerms).toEqual([
-        { value: "machine learning", ...QUOTED_TERM },
-        { value: "AI", ...UNQUOTED_TERM },
-        { value: "deep neural networks", ...QUOTED_TERM },
+        { value: MACHINE_LEARNING, ...QUOTED_TERM },
+        { value: AI, ...UNQUOTED_TERM },
+        { value: DEEP_NEURAL_NETWORKS, ...QUOTED_TERM },
       ]);
     });
 
@@ -64,7 +75,7 @@ describe("parseSearchQuery", () => {
   describe("field queries", () => {
     it("parses field queries without spaces", () => {
       const result = parseSearchQuery(
-        "title:machine author:smith journal:nature",
+        `title:machine author:${SMITH} journal:${NATURE}`,
       );
 
       expect(result.fieldQueries).toEqual([
@@ -74,10 +85,10 @@ describe("parseSearchQuery", () => {
           isWildcard: false,
           isQuoted: false,
         },
-        { field: "author", value: "smith", ...UNQUOTED_TERM },
+        { field: "author", value: SMITH, ...UNQUOTED_TERM },
         {
           field: "journal",
-          value: "nature",
+          value: NATURE,
           isWildcard: false,
           isQuoted: false,
         },
@@ -87,19 +98,19 @@ describe("parseSearchQuery", () => {
 
     it("parses field queries with quoted values", () => {
       const result = parseSearchQuery(
-        'title:"machine learning" author:"John Smith"',
+        `title:"${MACHINE_LEARNING}" author:"${JOHN_SMITH}"`,
       );
 
       expect(result.fieldQueries).toEqual([
         {
           field: "title",
-          value: "machine learning",
+          value: MACHINE_LEARNING,
           isWildcard: false,
           isQuoted: true,
         },
         {
           field: "author",
-          value: "John Smith",
+          value: JOHN_SMITH,
           isWildcard: false,
           isQuoted: true,
         },
@@ -108,20 +119,20 @@ describe("parseSearchQuery", () => {
 
     it("parses field queries with space after colon", () => {
       const result = parseSearchQuery(
-        'title: "machine learning" author: smith journal: "Nature Reviews"',
+        `title: "${MACHINE_LEARNING}" author: ${SMITH} journal: "${NATURE_REVIEWS}"`,
       );
 
       expect(result.fieldQueries).toEqual([
         {
           field: "title",
-          value: "machine learning",
+          value: MACHINE_LEARNING,
           isWildcard: false,
           isQuoted: true,
         },
-        { field: "author", value: "smith", ...UNQUOTED_TERM },
+        { field: "author", value: SMITH, ...UNQUOTED_TERM },
         {
           field: "journal",
-          value: "Nature Reviews",
+          value: NATURE_REVIEWS,
           isWildcard: false,
           isQuoted: true,
         },
@@ -211,35 +222,35 @@ describe("parseSearchQuery", () => {
   describe("mixed queries", () => {
     it("parses complex mixed query", () => {
       const result = parseSearchQuery(
-        'title:"neural networks" author:smith *AI* "deep learning" year:2023',
+        `title:"${NEURAL_NETWORKS}" author:${SMITH} *${AI}* "${DEEP_LEARNING}" year:2023`,
       );
 
       expect(result.fieldQueries).toEqual([
         {
           field: "title",
-          value: "neural networks",
+          value: NEURAL_NETWORKS,
           isWildcard: false,
           isQuoted: true,
         },
-        { field: "author", value: "smith", ...UNQUOTED_TERM },
+        { field: "author", value: SMITH, ...UNQUOTED_TERM },
         { field: "year", value: "2023", ...UNQUOTED_TERM },
       ]);
       expect(result.generalTerms).toEqual([
-        { value: "*AI*", ...WILDCARD_TERM },
-        { value: "deep learning", ...QUOTED_TERM },
+        { value: `*${AI}*`, ...WILDCARD_TERM },
+        { value: DEEP_LEARNING, ...QUOTED_TERM },
       ]);
     });
 
     it("handles field queries mixed with general terms", () => {
       const result = parseSearchQuery(
-        'machine learning title:AI author:"John Smith" neural networks',
+        `${MACHINE_LEARNING} title:${AI} author:"${JOHN_SMITH}" ${NEURAL_NETWORKS}`,
       );
 
       expect(result.fieldQueries).toEqual([
-        { field: "title", value: "AI", ...UNQUOTED_TERM },
+        { field: "title", value: AI, ...UNQUOTED_TERM },
         {
           field: "author",
-          value: "John Smith",
+          value: JOHN_SMITH,
           isWildcard: false,
           isQuoted: true,
         },
@@ -296,7 +307,9 @@ describe("parseSearchQuery", () => {
     });
 
     it("handles unmatched quotes", () => {
-      const result = parseSearchQuery('title:"unclosed quote machine learning');
+      const result = parseSearchQuery(
+        `title:"unclosed quote ${MACHINE_LEARNING}`,
+      );
 
       // Parser handles malformed input by treating unclosed quotes as partial field queries
       expect(result.fieldQueries).toEqual([
@@ -343,7 +356,9 @@ describe("parseSearchQuery", () => {
     });
 
     it("preserves multiple spaces in quoted strings", () => {
-      const result = parseSearchQuery('"machine    learning"');
+      const result = parseSearchQuery(
+        `"${MACHINE_LEARNING.replace(" ", "    ")}"`,
+      );
 
       expect(result.generalTerms).toEqual([
         { value: "machine    learning", ...QUOTED_TERM },

@@ -13,34 +13,107 @@ import {
   createIndexGenerator,
   type IndexGenerationConfig,
   type EntityType,
-} from './index.js';
-import { logger } from '../logger.js';
+  type IndexValidationResult,
+} from "./index.js";
+import { logger } from "../logger.js";
+
+// Constants for example usage
+const LOG_CATEGORY = "static-data";
+
+/**
+ * Log validation summary information
+ */
+function logValidationSummary(
+  validation: IndexValidationResult,
+  indexPath: string,
+): void {
+  logger.info(LOG_CATEGORY, `Index validation results for ${indexPath}:`);
+  logger.info(
+    LOG_CATEGORY,
+    `   Valid: ${validation.isValid ? "Valid" : "Invalid"}`,
+  );
+  logger.info(
+    LOG_CATEGORY,
+    `   Entities validated: ${validation.entitiesValidated}`,
+  );
+  logger.info(LOG_CATEGORY, `   Errors found: ${validation.errors.length}`);
+  logger.info(LOG_CATEGORY, `   Warnings found: ${validation.warnings.length}`);
+  logger.info(
+    LOG_CATEGORY,
+    `   Duration: ${validation.performance.durationMs}ms`,
+  );
+}
+
+/**
+ * Log validation errors
+ */
+function logValidationErrors(validation: IndexValidationResult): void {
+  if (validation.errors.length > 0) {
+    logger.warn(LOG_CATEGORY, "Errors found:");
+    for (const error of validation.errors) {
+      logger.warn(LOG_CATEGORY, `   - ${error.type}: ${error.message}`);
+      if (error.canAutoRepair) {
+        logger.warn(LOG_CATEGORY, "     Can be auto-repaired");
+      }
+    }
+  }
+}
+
+/**
+ * Log validation warnings
+ */
+function logValidationWarnings(validation: IndexValidationResult): void {
+  if (validation.warnings.length > 0) {
+    logger.warn(LOG_CATEGORY, "Warnings found:");
+    for (const warning of validation.warnings) {
+      logger.warn(
+        LOG_CATEGORY,
+        `   - ${warning.type}: ${warning.message} (${warning.severity})`,
+      );
+    }
+  }
+}
 
 /**
  * Example: Generate indexes for all entity types
  */
-export async function exampleGenerateAllIndexes(rootPath: string): Promise<void> {
+export async function exampleGenerateAllIndexes(
+  rootPath: string,
+): Promise<void> {
   try {
     const config: Partial<IndexGenerationConfig> = {
       rootPath,
       extractBasicInfo: true,
       computeStats: true,
-      concurrency: 2,
       createBackups: true,
     };
 
     const result = await generateAllIndexes(rootPath, config);
-    
+
     if (result.success) {
-      logger.info('static-data', 'All indexes generated successfully');
-      logger.info('static-data', `Total entities indexed: ${result.stats.entitiesIndexed}`);
-      logger.info('static-data', `Total duration: ${result.stats.totalDurationMs}ms`);
-      logger.info('static-data', 'Generated indexes:', Object.keys(result.generatedIndexes));
+      logger.info(LOG_CATEGORY, "All indexes generated successfully");
+      logger.info(
+        LOG_CATEGORY,
+        `Total entities indexed: ${result.stats.entitiesIndexed}`,
+      );
+      logger.info(
+        LOG_CATEGORY,
+        `Total duration: ${result.stats.totalDurationMs}ms`,
+      );
+      logger.info(
+        LOG_CATEGORY,
+        "Generated indexes:",
+        Object.keys(result.generatedIndexes),
+      );
     } else {
-      logger.error('static-data', 'Index generation failed:', result.error?.message);
+      logger.error(
+        LOG_CATEGORY,
+        "Index generation failed:",
+        result.error?.message,
+      );
     }
   } catch (error) {
-    logger.error('static-data', 'Unexpected error:', error);
+    logger.error(LOG_CATEGORY, "Unexpected error:", error);
   }
 }
 
@@ -48,8 +121,8 @@ export async function exampleGenerateAllIndexes(rootPath: string): Promise<void>
  * Example: Generate index for a specific entity type
  */
 export async function exampleGenerateEntityTypeIndex(
-  rootPath: string, 
-  entityType: EntityType
+  rootPath: string,
+  entityType: EntityType,
 ): Promise<void> {
   try {
     const config: Partial<IndexGenerationConfig> = {
@@ -58,71 +131,67 @@ export async function exampleGenerateEntityTypeIndex(
       computeStats: true,
     };
 
-    const indexPath = await generateIndexForEntityType(rootPath, entityType, config);
-    logger.info('static-data', `Index generated for ${entityType}: ${indexPath}`);
+    const indexPath = await generateIndexForEntityType(
+      rootPath,
+      entityType,
+      config,
+    );
+    logger.info(
+      LOG_CATEGORY,
+      `Index generated for ${entityType}: ${indexPath}`,
+    );
   } catch (error) {
-    logger.error('static-data', `Failed to generate index for ${entityType}:`, error);
+    logger.error(
+      LOG_CATEGORY,
+      `Failed to generate index for ${entityType}:`,
+      error,
+    );
   }
 }
 
 /**
  * Example: Validate and repair an existing index
  */
-export async function exampleValidateAndRepairIndex(indexPath: string): Promise<void> {
+export async function exampleValidateAndRepairIndex(
+  indexPath: string,
+): Promise<void> {
   try {
     // Validate the index
     const validation = await validateIndex(indexPath);
-    
-    logger.info('static-data', `Index validation results for ${indexPath}:`);
-    logger.info('static-data', `   Valid: ${validation.isValid ? 'Valid' : 'Invalid'}`);
-    logger.info('static-data', `   Entities validated: ${validation.entitiesValidated}`);
-    logger.info('static-data', `   Errors found: ${validation.errors.length}`);
-    logger.info('static-data', `   Warnings found: ${validation.warnings.length}`);
-    logger.info('static-data', `   Duration: ${validation.performance.durationMs}ms`);
 
-    // Show errors if any
-    if (validation.errors.length > 0) {
-      logger.warn('static-data', 'Errors found:');
-      for (const error of validation.errors) {
-        logger.warn('static-data', `   - ${error.type}: ${error.message}`);
-        if (error.canAutoRepair) {
-          logger.warn('static-data', '     Can be auto-repaired');
-        }
-      }
-    }
-
-    // Show warnings if any
-    if (validation.warnings.length > 0) {
-      logger.warn('static-data', 'Warnings found:');
-      for (const warning of validation.warnings) {
-        logger.warn('static-data', `   - ${warning.type}: ${warning.message} (${warning.severity})`);
-      }
-    }
+    logValidationSummary(validation, indexPath);
+    logValidationErrors(validation);
+    logValidationWarnings(validation);
 
     // Attempt repair if needed
     if (!validation.isValid && validation.repairActions.length > 0) {
-      logger.info('static-data', 'Attempting to repair index...');
+      logger.info(LOG_CATEGORY, "Attempting to repair index...");
       const repaired = await repairIndex(validation);
 
       if (repaired) {
-        logger.info('static-data', 'Index repair completed successfully');
+        logger.info(LOG_CATEGORY, "Index repair completed successfully");
 
         // Re-validate to confirm repair
         const revalidation = await validateIndex(indexPath);
-        logger.info('static-data', `   Re-validation: ${revalidation.isValid ? 'Valid' : 'Still invalid'}`);
+        logger.info(
+          LOG_CATEGORY,
+          `   Re-validation: ${revalidation.isValid ? "Valid" : "Still invalid"}`,
+        );
       } else {
-        logger.error('static-data', 'Index repair failed');
+        logger.error(LOG_CATEGORY, "Index repair failed");
       }
     }
   } catch (error) {
-    logger.error('static-data', 'Validation/repair failed:', error);
+    logger.error(LOG_CATEGORY, "Validation/repair failed:", error);
   }
 }
 
 /**
  * Example: Use custom index generator with progress tracking
  */
-export async function exampleCustomGeneratorWithProgress(rootPath: string): Promise<void> {
+export async function exampleCustomGeneratorWithProgress(
+  rootPath: string,
+): Promise<void> {
   try {
     const config: Partial<IndexGenerationConfig> = {
       rootPath,
@@ -137,16 +206,18 @@ export async function exampleCustomGeneratorWithProgress(rootPath: string): Prom
     // Set up progress tracking
     generator.onProgress((progress) => {
       const percent = Math.round(progress.progressPercent);
-      const operation = progress.operation.charAt(0).toUpperCase() + progress.operation.slice(1);
+      const operation =
+        progress.operation.charAt(0).toUpperCase() +
+        progress.operation.slice(1);
       const speed = Math.round(progress.processingSpeed);
 
       logger.debug(
-        'static-data',
-        `${operation}: ${percent}% (${progress.filesProcessed}/${progress.totalFiles}) - ${speed} files/sec - ${progress.currentEntityType}`
+        LOG_CATEGORY,
+        `${operation}: ${percent}% (${progress.filesProcessed}/${progress.totalFiles}) - ${speed} files/sec - ${progress.currentEntityType}`,
       );
 
       if (progress.currentFile) {
-        logger.debug('static-data', `   Current: ${progress.currentFile}`);
+        logger.debug(LOG_CATEGORY, `   Current: ${progress.currentFile}`);
       }
     });
 
@@ -154,100 +225,64 @@ export async function exampleCustomGeneratorWithProgress(rootPath: string): Prom
     const result = await generator.generateAllIndexes();
 
     if (result.success) {
-      logger.info('static-data', 'Index generation completed with progress tracking!');
+      logger.info(
+        LOG_CATEGORY,
+        "Index generation completed with progress tracking!",
+      );
     } else {
-      logger.error('static-data', 'Index generation failed:', result.error?.message);
+      logger.error(
+        LOG_CATEGORY,
+        "Index generation failed:",
+        result.error?.message,
+      );
     }
   } catch (error) {
-    logger.error('static-data', 'Custom generator failed:', error);
+    logger.error(LOG_CATEGORY, "Custom generator failed:", error);
   }
 }
 
 /**
  * Example: Batch validation of multiple indexes
  */
-export async function exampleBatchValidation(indexPaths: string[]): Promise<void> {
-  logger.info('static-data', `Validating ${indexPaths.length} indexes...`);
+export async function exampleBatchValidation(
+  indexPaths: string[],
+): Promise<void> {
+  logger.info(LOG_CATEGORY, `Validating ${indexPaths.length} indexes...`);
 
   const results = await Promise.allSettled(
     indexPaths.map(async (indexPath) => {
       const validation = await validateIndex(indexPath);
       return { indexPath, validation };
-    })
+    }),
   );
 
   let validCount = 0;
   let invalidCount = 0;
 
   for (const result of results) {
-    if (result.status === 'fulfilled') {
+    if (result.status === "fulfilled") {
       const { indexPath, validation } = result.value;
       if (validation.isValid) {
         validCount++;
-        logger.info('static-data', `${indexPath}: Valid (${validation.entitiesValidated} entities)`);
+        logger.info(
+          LOG_CATEGORY,
+          `${indexPath}: Valid (${validation.entitiesValidated} entities)`,
+        );
       } else {
         invalidCount++;
-        logger.warn('static-data', `${indexPath}: Invalid (${validation.errors.length} errors)`);
+        logger.warn(
+          LOG_CATEGORY,
+          `${indexPath}: Invalid (${validation.errors.length} errors)`,
+        );
       }
     } else {
       invalidCount++;
-      logger.error('static-data', `Validation failed: ${result.reason}`);
+      logger.error(LOG_CATEGORY, `Validation failed: ${result.reason}`);
     }
   }
 
-  logger.info('static-data', `Validation summary: ${validCount} valid, ${invalidCount} invalid`);
-}
-
-/**
- * Example error handling and best practices
- */
-export async function exampleErrorHandling(rootPath: string): Promise<void> {
-  try {
-    // Check if root path exists before starting
-    const fs = await import('fs/promises');
-    try {
-      await fs.access(rootPath);
-    } catch {
-      throw new Error(`Root path does not exist: ${rootPath}`);
-    }
-
-    // Use appropriate configuration for your use case
-    const config: IndexGenerationConfig = {
-      rootPath,
-      extractBasicInfo: true,        // Extract entity metadata
-      computeStats: true,            // Compute detailed statistics
-      maxFileSize: 50 * 1024 * 1024, // 50MB file size limit
-      fileProcessingTimeoutMs: 30000, // 30 second timeout per file
-      concurrency: 2,                // Process 2 files concurrently
-      createBackups: true,           // Create backups before overwriting
-      schemaVersion: '1.0.0',        // Schema version for compatibility
-      entityTypes: ['works', 'authors'], // Only process specific types
-    };
-
-    const result = await generateAllIndexes(rootPath, config);
-
-    if (!result.success) {
-      throw new Error(`Index generation failed: ${result.error?.message}`);
-    }
-
-    // Validate all generated indexes
-    for (const [entityType, indexPath] of Object.entries(result.generatedIndexes)) {
-      const validation = await validateIndex(indexPath);
-      if (!validation.isValid) {
-        logger.warn('static-data', `Generated index for ${entityType} has validation issues`);
-      }
-    }
-
-    logger.info('static-data', 'Index generation and validation completed successfully');
-
-  } catch (error) {
-    if (error instanceof Error) {
-      logger.error('static-data', `Error: ${error.message}`);
-    } else {
-      logger.error('static-data', 'Unknown error occurred');
-    }
-
-    // Re-throw for calling code to handle
-    throw error;
-  }
+  logger.info(
+    LOG_CATEGORY,
+    `Validation summary: ${validCount} valid, ${invalidCount} invalid`,
+  );
 }

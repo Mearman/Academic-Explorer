@@ -447,7 +447,12 @@ export function getCacheFilePath(
 
   try {
     if (isQuery) {
-      return generateQueryFilePath(pathSegments, queryString, staticDataRoot, url);
+      return generateQueryFilePath(
+        pathSegments,
+        queryString,
+        staticDataRoot,
+        url,
+      );
     }
     return generateEntityFilePath(pathSegments, staticDataRoot);
   } catch (error) {
@@ -460,7 +465,7 @@ function generateQueryFilePath(
   pathSegments: string[],
   queryString: string,
   staticDataRoot: string,
-  url: string
+  url: string,
 ): string | null {
   // Normalize query string to remove sensitive information before caching
   const normalizedQuery = normalizeQueryForCaching(queryString.slice(1)); // Remove leading '?'
@@ -490,7 +495,10 @@ function generateQueryFilePath(
   return `${staticDataRoot}/${baseDir}/queries/${queryFilename}.json`;
 }
 
-function generateEntityFilePath(pathSegments: string[], staticDataRoot: string): string | null {
+function generateEntityFilePath(
+  pathSegments: string[],
+  staticDataRoot: string,
+): string | null {
   if (pathSegments.length === 1) {
     // For root collections: /authors → authors.json (at top level)
     return `${staticDataRoot}/${pathSegments[0]}.json`;
@@ -512,7 +520,10 @@ function generateEntityFilePath(pathSegments: string[], staticDataRoot: string):
   return null;
 }
 
-function generateBaseCollectionPath(pathSegments: string[], staticDataRoot: string): string {
+function generateBaseCollectionPath(
+  pathSegments: string[],
+  staticDataRoot: string,
+): string {
   if (pathSegments.length === 1) {
     return `${staticDataRoot}/${pathSegments[0]}.json`;
   }
@@ -818,20 +829,14 @@ export function isMultiUrlFileEntry(entry: unknown): entry is FileEntry & {
 }
 
 /**
- * Merge a new colliding URL into an existing FileEntry
- * Updates equivalentUrls, timestamps, and collision statistics
- * @param currentTime Optional current timestamp; defaults to now
+ * Add new URL to equivalent URLs if not already present
  */
-export function mergeCollision(
-  existingEntry: FileEntry,
+function addNewUrlToEntry(
+  entry: FileEntry,
   newUrl: string,
-  currentTime: string = new Date().toISOString(),
-): FileEntry {
-  const entry = migrateToMultiUrl(existingEntry);
-
+  currentTime: string,
+): void {
   if (entry.equivalentUrls && !entry.equivalentUrls.includes(newUrl)) {
-    // Append the literal URL string if not already present. Tests expect
-    // exact literal URLs to be preserved in equivalentUrls.
     entry.equivalentUrls.push(newUrl);
     if (entry.urlTimestamps) {
       entry.urlTimestamps[newUrl] = currentTime;
@@ -847,8 +852,12 @@ export function mergeCollision(
       }
     }
   }
+}
 
-  // Keep equivalentUrls ordered by recency (most recent first) when we have timestamps.
+/**
+ * Sort equivalent URLs by recency (most recent first)
+ */
+function sortUrlsByRecency(entry: FileEntry): void {
   try {
     if (entry.urlTimestamps && Array.isArray(entry.equivalentUrls)) {
       entry.equivalentUrls.sort((a, b) => {
@@ -871,51 +880,73 @@ export function mergeCollision(
     // Non-fatal: if sorting fails, keep existing order and log a warning.
     logger.warn("cache", "Failed to sort equivalentUrls by recency");
   }
-  // For normalized collisions, keep at most two non-primary literal URLs (the
-  // most recent ones), and always keep the primary entry.url (if present)
-  // as the last element. This matches test expectations around recency and
-  // limits growth of equivalentUrls for repeated merges.
+}
+
+/**
+ * Normalize URL for collision detection
+ */
+function normalizeUrlForCollision(url: string): string {
+  try {
+    const u = new URL(url);
+    const sanitized = sanitizeUrlForCaching(u.search);
+    const normalizedQuery = normalizeQueryForFilename(sanitized);
+    return `${u.pathname}${normalizedQuery}`;
+  } catch {
+    return url;
+  }
+}
+
+/**
+ * Group URLs by their normalized collision key
+ */
+function groupUrlsByCollisionKey(urls: string[]): Map<string, string[]> {
+  const groups = new Map<string, string[]>();
+  for (const url of urls) {
+    const key = normalizeUrlForCollision(url);
+    const arr = groups.get(key) || [];
+    arr.push(url);
+    groups.set(key, arr);
+  }
+  return groups;
+}
+
+/**
+ * Select up to 2 non-primary URLs from a group, keeping recency order
+ */
+function selectNonPrimaryUrls(urls: string[], primary: string): string[] {
+  const selected: string[] = [];
+  let count = 0;
+  for (const url of urls) {
+    if (url === primary) continue;
+    if (count < 2) {
+      selected.push(url);
+      count += 1;
+    }
+  }
+  return selected;
+}
+
+/**
+ * Deduplicate equivalent URLs, keeping at most two non-primary URLs
+ */
+function deduplicateUrls(entry: FileEntry): void {
   try {
     if (
       Array.isArray(entry.equivalentUrls) &&
       entry.equivalentUrls.length > 1
     ) {
-      const normalizeForCollision = (url: string): string => {
-        try {
-          const u = new URL(url);
-          const sanitized = sanitizeUrlForCaching(u.search);
-          const normalizedQuery = normalizeQueryForFilename(sanitized);
-          return `${u.pathname}${normalizedQuery}`;
-        } catch {
-          return url;
-        }
-      };
-
       const primary = entry.url;
-      const groups = new Map<string, string[]>();
-      for (const u of entry.equivalentUrls) {
-        const key = normalizeForCollision(u);
-        const arr = groups.get(key) || [];
-        arr.push(u);
-        groups.set(key, arr);
-      }
+      const groups = groupUrlsByCollisionKey(entry.equivalentUrls);
 
       const rebuilt: string[] = [];
       // For determinism, iterate groups in insertion order of keys
       for (const urls of groups.values()) {
-        // urls are already in recency order due to earlier sort
-        // Collect up to two non-primary URLs
-        let count = 0;
-        for (const u of urls) {
-          if (u === primary) continue;
-          if (count < 2) {
-            rebuilt.push(u);
-            count += 1;
-          }
-        }
+        // Collect up to two non-primary URLs from each group
+        const nonPrimaryUrls = selectNonPrimaryUrls(urls, primary);
+        rebuilt.push(...nonPrimaryUrls);
       }
 
-      // Finally, always append the primary url if present
+      // Always append the primary url if present
       if (entry.equivalentUrls.includes(primary)) {
         rebuilt.push(primary);
       }
@@ -925,6 +956,23 @@ export function mergeCollision(
   } catch {
     // ignore dedupe errors
   }
+}
+
+/**
+ * Merge a new colliding URL into an existing FileEntry
+ * Updates equivalentUrls, timestamps, and collision statistics
+ * @param currentTime Optional current timestamp; defaults to now
+ */
+export function mergeCollision(
+  existingEntry: FileEntry,
+  newUrl: string,
+  currentTime: string = new Date().toISOString(),
+): FileEntry {
+  const entry = migrateToMultiUrl(existingEntry);
+
+  addNewUrlToEntry(entry, newUrl, currentTime);
+  sortUrlsByRecency(entry);
+  deduplicateUrls(entry);
 
   return entry;
 }
