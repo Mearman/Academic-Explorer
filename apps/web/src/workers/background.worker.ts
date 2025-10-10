@@ -518,6 +518,36 @@ function isExecuteTaskMessage(
 const WORKER_ID = "background-worker";
 const WORKER_TYPE = "force-animation" as const;
 const ERROR_TYPE = "ERROR" as const;
+const NO_STACK_TRACE_MESSAGE = "No stack trace";
+
+// Helper function to handle message processing errors
+function handleMessageError(error: unknown, data: unknown): void {
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  const errorStack =
+    error instanceof Error ? error.stack : NO_STACK_TRACE_MESSAGE;
+  const errorContext = {
+    messageData: JSON.stringify(data).substring(0, 200) + "...",
+    messageType:
+      typeof data === "object" && data && "type" in data
+        ? String(data.type)
+        : "unknown",
+    errorStack,
+    workerState: {
+      hasSimulationEngine: !!simulationEngine,
+    },
+  };
+
+  logger.error("worker", "Error handling worker message", {
+    error: errorMessage,
+    stack: errorStack,
+    data,
+    context: errorContext,
+  });
+  self.postMessage({
+    type: ERROR_TYPE,
+    payload: `Message handling error: ${errorMessage}. Context: ${JSON.stringify(errorContext)}`,
+  });
+}
 
 // Helper to create validated nodes from raw data
 function createValidatedNodes(
@@ -790,30 +820,7 @@ self.onmessage = (e: MessageEvent) => {
       logger.warn("worker", "Unknown message type", { data });
     }
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    const errorStack = error instanceof Error ? error.stack : "No stack trace";
-    const errorContext = {
-      messageData: JSON.stringify(data).substring(0, 200) + "...",
-      messageType:
-        typeof data === "object" && data && "type" in data
-          ? String(data.type)
-          : "unknown",
-      errorStack,
-      workerState: {
-        hasSimulationEngine: !!simulationEngine,
-      },
-    };
-
-    logger.error("worker", "Error handling worker message", {
-      error: errorMessage,
-      stack: errorStack,
-      data,
-      context: errorContext,
-    });
-    self.postMessage({
-      type: ERROR_TYPE,
-      payload: `Message handling error: ${errorMessage}. Context: ${JSON.stringify(errorContext)}`,
-    });
+    handleMessageError(error, data);
   }
 };
 
@@ -953,8 +960,8 @@ function initializeWorker() {
     const readyEvent = {
       type: WorkerEventType.WORKER_READY,
       payload: {
-        workerId: "background-worker",
-        workerType: "force-animation",
+        workerId: WORKER_ID,
+        workerType: WORKER_TYPE,
         timestamp: Date.now(),
       },
     };
@@ -971,7 +978,8 @@ function initializeWorker() {
     );
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    const errorStack = error instanceof Error ? error.stack : "No stack trace";
+    const errorStack =
+      error instanceof Error ? error.stack : NO_STACK_TRACE_MESSAGE;
     const errorContext = {
       initializationPhase: "worker_setup",
       errorStack,
@@ -989,8 +997,8 @@ function initializeWorker() {
     const errorEvent = {
       type: WorkerEventType.WORKER_ERROR,
       payload: {
-        workerId: "background-worker",
-        workerType: "force-animation",
+        workerId: WORKER_ID,
+        workerType: WORKER_TYPE,
         error: `Worker initialization failed: ${errorMessage}`,
         context: errorContext,
         timestamp: Date.now(),

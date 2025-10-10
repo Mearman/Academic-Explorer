@@ -24,31 +24,47 @@ export const createPlugins = (_command: string, _mode: string) => [
     routeFileIgnorePrefix: "-",
   }),
 
-  // PWA Plugin for service worker support
+  // React plugin
+  react(),
+
+  // PWA Plugin with custom service worker
   VitePWA({
-    strategies: "generateSW",
+    strategies: "injectManifest",
+    srcDir: "src/workers",
+    filename: "openalex-sw.ts",
     registerType: "autoUpdate",
-    workbox: {
-      globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
-      runtimeCaching: [
+    injectRegister: "auto",
+    devOptions: {
+      enabled: true,
+      type: "module",
+    },
+    injectManifest: {
+      globPatterns: ["**/*.{js,css,html,svg,png,woff2}"],
+      globIgnores: ["**/node_modules/**/*"],
+      injectionPoint: "self.__WB_MANIFEST",
+    },
+    // PWA manifest configuration
+    manifest: {
+      name: "Academic Explorer",
+      short_name: "Academic Explorer",
+      description: "Explore academic research and scholarly data",
+      theme_color: "#1e40af",
+      background_color: "#ffffff",
+      display: "standalone",
+      icons: [
         {
-          urlPattern: /^https:\/\/api\.openalex\.org\/.*/i,
-          handler: "NetworkFirst",
-          options: {
-            cacheName: "openalex-api-cache",
-            expiration: {
-              maxEntries: 100,
-              maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
-            },
-          },
+          src: "pwa-192x192.svg",
+          sizes: "192x192",
+          type: "image/svg+xml",
+        },
+        {
+          src: "pwa-512x512.svg",
+          sizes: "512x512",
+          type: "image/svg+xml",
         },
       ],
     },
-    injectRegister: null, // Manual registration in main.tsx
   }),
-
-  // React plugin
-  react(),
 
   // Vanilla Extract for CSS-in-JS
   vanillaExtractPlugin(),

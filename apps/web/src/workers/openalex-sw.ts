@@ -73,15 +73,21 @@ interface ServiceWorkerGlobalScope {
   skipWaiting: () => void;
   clients: { claim: () => Promise<void> };
   location: { hostname: string; port: string };
-  // Workbox injection point
-  __WB_MANIFEST: unknown[];
 }
 
-const sw = self as unknown as ServiceWorkerGlobalScope;
+// Extend global self with Workbox manifest placeholder
+declare const self: ServiceWorkerGlobalScope & {
+  __WB_MANIFEST: Array<{ url: string; revision: string | null }>;
+};
 
-// Workbox precache manifest injection point (required by injectManifest but not used)
-// This must be exactly "self.__WB_MANIFEST" for Workbox to find and replace it
-sw.__WB_MANIFEST = [];
+// Workbox precache manifest injection point
+// Workbox will replace this array with the actual precache manifest
+const precacheManifest = self.__WB_MANIFEST;
+
+const sw = self;
+
+// Log precache manifest for debugging
+console.log("[OpenAlex SW] Precache manifest entries:", precacheManifest.length);
 
 // Service worker event types
 interface ExtendableEvent extends Event {

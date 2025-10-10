@@ -19,16 +19,10 @@ export const buildConfig = {
       input: {
         // Main HTML entry point
         main: path.resolve(__dirname, "../index.html"),
-        // Service worker entry point (handled separately from main bundle)
-        sw: path.resolve(__dirname, "../src/workers/openalex-sw.ts"),
+        // Service worker is now handled by VitePWA injectManifest
       },
       output: {
-        entryFileNames: (chunkInfo: { name?: string }) => {
-          // Service worker gets a predictable name for registration
-          return chunkInfo.name === "sw"
-            ? "openalex-sw.js"
-            : "assets/[name]-[hash].js";
-        },
+        entryFileNames: "assets/[name]-[hash].js",
         manualChunks: {
           // Core React and routing - loaded first for fast initial render
           "vendor-react": ["react", "react-dom"],
