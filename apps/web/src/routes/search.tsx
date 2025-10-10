@@ -6,17 +6,23 @@ import {
 } from "@academic-explorer/client";
 import { convertToRelativeUrl } from "@academic-explorer/ui/components/entity-views/matchers/index";
 import { formatLargeNumber, logger } from "@academic-explorer/utils";
+import { useUserInteractions } from "@/hooks/use-user-interactions";
 import {
   Alert,
   Anchor,
   Badge,
   Card,
   Container,
+  Group,
   Stack,
   Text,
   Title,
 } from "@mantine/core";
-import { IconInfoCircle } from "@tabler/icons-react";
+import {
+  IconInfoCircle,
+  IconBookmark,
+  IconBookmarkOff,
+} from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -93,6 +99,16 @@ function SearchPage() {
     query: "",
     startDate: null,
     endDate: null,
+  });
+
+  // Track page visits and bookmarks
+  const userInteractions = useUserInteractions({
+    searchQuery: searchFilters.query,
+    filters: {
+      startDate: searchFilters.startDate,
+      endDate: searchFilters.endDate,
+    },
+    autoTrackVisits: true,
   });
 
   const {
@@ -270,8 +286,20 @@ function SearchPage() {
     },
   ];
 
-  const handleSearch = (filters: SearchFilters) => {
+  const handleSearch = async (filters: SearchFilters) => {
     setSearchFilters(filters);
+
+    // Record search page visit with metadata
+    if (filters.query.trim()) {
+      await userInteractions.recordPageVisit(window.location.href, {
+        searchQuery: filters.query,
+        filters: {
+          startDate: filters.startDate?.toISOString(),
+          endDate: filters.endDate?.toISOString(),
+        },
+        resultCount: searchResults?.length,
+      });
+    }
   };
 
   const hasResults = searchResults && searchResults.length > 0;
@@ -316,13 +344,57 @@ function SearchPage() {
               </Alert>
             ) : hasResults ? (
               <Stack>
-                <Text size="sm" c="dimmed">
-                  Found {searchResults.length} results for &quot;
-                  {searchFilters.query}&quot;
-                  {searchFilters.startDate || searchFilters.endDate ? (
-                    <span> with date filters applied</span>
-                  ) : null}
-                </Text>
+                <Group justify="space-between" align="center">
+                  <Text size="sm" c="dimmed">
+                    Found {searchResults.length} results for &quot;
+                    {searchFilters.query}&quot;
+                    {searchFilters.startDate || searchFilters.endDate ? (
+                      <span> with date filters applied</span>
+                    ) : null}
+                  </Text>
+
+                  {hasQuery && (
+                    <button
+                      onClick={async () => {
+                        if (userInteractions.isBookmarked) {
+                          await userInteractions.unbookmarkSearch();
+                        } else {
+                          const title =
+                            searchFilters.startDate || searchFilters.endDate
+                              ? `${searchFilters.query} (${searchFilters.startDate?.getFullYear() || ""}-${searchFilters.endDate?.getFullYear() || ""})`
+                              : searchFilters.query;
+                          await userInteractions.bookmarkSearch(
+                            title,
+                            searchFilters.query,
+                            {
+                              startDate: searchFilters.startDate?.toISOString(),
+                              endDate: searchFilters.endDate?.toISOString(),
+                            },
+                          );
+                        }
+                      }}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                        userInteractions.isBookmarked
+                          ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      }`}
+                      title={
+                        userInteractions.isBookmarked
+                          ? "Remove search bookmark"
+                          : "Bookmark this search"
+                      }
+                    >
+                      {userInteractions.isBookmarked ? (
+                        <IconBookmark size={16} fill="currentColor" />
+                      ) : (
+                        <IconBookmarkOff size={16} />
+                      )}
+                      {userInteractions.isBookmarked
+                        ? "Bookmarked"
+                        : "Bookmark Search"}
+                    </button>
+                  )}
+                </Group>
 
                 <BaseTable
                   data={searchResults}
