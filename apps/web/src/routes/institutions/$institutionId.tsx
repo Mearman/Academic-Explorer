@@ -4,10 +4,12 @@ import { useGraphData } from "@/hooks/use-graph-data";
 import { useGraphStore } from "@/stores/graph-store";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useEntityDocumentTitle } from "@/hooks/use-document-title";
+import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { EntityDetectionService } from "@academic-explorer/graph";
+import { IconBookmark, IconBookmarkOff } from "@tabler/icons-react";
 
 function InstitutionRoute() {
   const { institutionId } = Route.useParams();
@@ -104,6 +106,13 @@ function InstitutionRoute() {
   // Update document title with institution name
   useEntityDocumentTitle(institution);
 
+  // Track user interactions (visits and bookmarks)
+  const userInteractions = useUserInteractions({
+    entityId: institutionId,
+    entityType: "institution",
+    autoTrackVisits: true,
+  });
+
   useEffect(() => {
     const loadInstitution = async () => {
       try {
@@ -175,11 +184,43 @@ function InstitutionRoute() {
   // Show content based on view mode
   return (
     <div className="p-4 max-w-full overflow-auto">
-      <ViewToggle
-        viewMode={viewMode}
-        onToggle={setViewMode}
-        entityType={entityType}
-      />
+      <div className="flex items-center justify-between mb-4">
+        <ViewToggle
+          viewMode={viewMode}
+          onToggle={setViewMode}
+          entityType={entityType}
+        />
+
+        <button
+          onClick={async () => {
+            if (userInteractions.isBookmarked) {
+              await userInteractions.unbookmarkEntity();
+            } else {
+              const title =
+                (institution as any)?.display_name ||
+                `Institution ${institutionId}`;
+              await userInteractions.bookmarkEntity(title);
+            }
+          }}
+          className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+            userInteractions.isBookmarked
+              ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
+              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+          }`}
+          title={
+            userInteractions.isBookmarked
+              ? "Remove bookmark"
+              : "Bookmark this institution"
+          }
+        >
+          {userInteractions.isBookmarked ? (
+            <IconBookmark size={16} fill="currentColor" />
+          ) : (
+            <IconBookmarkOff size={16} />
+          )}
+          {userInteractions.isBookmarked ? "Bookmarked" : "Bookmark"}
+        </button>
+      </div>
 
       {viewMode === "raw" ? (
         <pre className="json-view p-4 bg-gray-100 overflow-auto mt-4">
