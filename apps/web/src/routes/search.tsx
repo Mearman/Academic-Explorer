@@ -1,23 +1,20 @@
 import {
-    cachedOpenAlex,
-    createWorksQuery,
-    type Work,
-    type WorksFilters,
+  cachedOpenAlex,
+  createWorksQuery,
+  type Work,
+  type WorksFilters,
 } from "@academic-explorer/client";
-import { convertToRelativeUrl } from "@academic-explorer/ui/components/entity-views/matchers";
+import { convertToRelativeUrl } from "@academic-explorer/ui/components/entity-views/matchers/index";
+import { formatLargeNumber, logger } from "@academic-explorer/utils";
 import {
-    formatLargeNumber,
-    logger,
-} from "@academic-explorer/utils";
-import {
-    Alert,
-    Anchor,
-    Badge,
-    Card,
-    Container,
-    Stack,
-    Text,
-    Title,
+  Alert,
+  Anchor,
+  Badge,
+  Card,
+  Container,
+  Stack,
+  Text,
+  Title,
 } from "@mantine/core";
 import { IconInfoCircle } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";

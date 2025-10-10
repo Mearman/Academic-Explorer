@@ -1,0 +1,22 @@
+{
+  "lastUpdated": "2025-10-10T00:24:19.978Z",
+  "files": {
+    "T10232": {
+      "url": "https://api.openalex.org/topics/T10232",
+      "$ref": "./T10232.json",
+      "lastRetrieved": "2025-10-10T00:24:19.864Z",
+      "contentHash": "fe95d01f22a52fb3",
+      "equivalentUrls": [
+        "https://api.openalex.org/topics/T10232"
+      ],
+      "urlTimestamps": {
+        "https://api.openalex.org/topics/T10232": "2025-10-10T00:24:19.864Z"
+      },
+      "collisionInfo": {
+        "mergedCount": 0,
+        "totalUrls": 1
+      }
+    }
+  },
+  "directories": {}
+}

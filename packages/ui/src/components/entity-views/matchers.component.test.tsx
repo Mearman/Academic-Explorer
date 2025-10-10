@@ -38,13 +38,13 @@ import { MantineProvider } from "@mantine/core";
 import { fireEvent, render } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import {
-    arrayMatchers,
-    convertToRelativeUrl,
-    determineCanonicalRoute,
-    isOpenAlexUrl,
-    objectMatchers,
-    valueMatchers,
-} from "./matchers";
+  arrayMatchers,
+  convertToRelativeUrl,
+  determineCanonicalRoute,
+  isOpenAlexUrl,
+  objectMatchers,
+  valueMatchers,
+} from "./matchers/index";
 
 describe("URL Conversion Functions", () => {
   describe("convertToRelativeUrl", () => {
@@ -168,7 +168,9 @@ describe("URL Matcher", () => {
 
     const link = container.querySelector("a");
     expect(link).toBeTruthy();
-    expect(link?.getAttribute("href")).toBe("#/works?filter=author.id:A5025875274");
+    expect(link?.getAttribute("href")).toBe(
+      "#/works?filter=author.id:A5025875274",
+    );
     expect(link?.textContent).toBe(openAlexUrl);
   });
 
@@ -228,7 +230,9 @@ describe("ID Object Matcher", () => {
     );
 
     // Check OpenAlex ID link (hash-based routing)
-    const openAlexLink = container.querySelector('a[href="#/works/W123456789"]');
+    const openAlexLink = container.querySelector(
+      'a[href="#/works/W123456789"]',
+    );
     expect(openAlexLink).toBeTruthy();
     expect(openAlexLink?.textContent).toContain("OPENALEX: W123456789");
 
@@ -380,7 +384,7 @@ describe("Array Matchers", () => {
       const { container } = render(<MantineProvider>{result}</MantineProvider>);
 
       // Should have an anchor element with the institution name
-      const institutionLink = container.querySelector('a');
+      const institutionLink = container.querySelector("a");
       expect(institutionLink).toBeTruthy();
       expect(institutionLink?.textContent).toBe("Test University");
 

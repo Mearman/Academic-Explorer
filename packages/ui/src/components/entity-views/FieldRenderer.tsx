@@ -9,7 +9,7 @@ import {
   findArrayMatcher,
   findObjectMatcher,
   findValueMatcher,
-} from "./matchers";
+} from "./matchers/index";
 import { formatFieldName, groupFields } from "./field-detection";
 
 interface FieldRendererProps {

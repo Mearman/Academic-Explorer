@@ -1,0 +1,504 @@
+{
+  "id": "https://openalex.org/T10232",
+  "display_name": "Optical Network Technologies",
+  "description": "This cluster of papers covers advances in optical fiber communication technologies, including topics such as coherent detection, digital signal processing, nonlinear effects, space-division multiplexing, high-capacity networks, modulation formats, fiber amplifiers, dispersion compensation, and optical performance monitoring.",
+  "keywords": [
+    "Optical Fiber",
+    "Coherent Detection",
+    "Digital Signal Processing",
+    "Nonlinear Effects",
+    "Space-Division Multiplexing",
+    "High-Capacity Networks",
+    "Modulation Formats",
+    "Fiber Amplifiers",
+    "Dispersion Compensation",
+    "Optical Performance Monitoring"
+  ],
+  "ids": {
+    "openalex": "https://openalex.org/T10232",
+    "wikipedia": "https://en.wikipedia.org/wiki/Optical_fiber_communication"
+  },
+  "subfield": {
+    "id": "https://openalex.org/subfields/2208",
+    "display_name": "Electrical and Electronic Engineering"
+  },
+  "field": {
+    "id": "https://openalex.org/fields/22",
+    "display_name": "Engineering"
+  },
+  "domain": {
+    "id": "https://openalex.org/domains/3",
+    "display_name": "Physical Sciences"
+  },
+  "siblings": [
+    {
+      "id": "https://openalex.org/T11527",
+      "display_name": "3D IC and TSV technologies"
+    },
+    {
+      "id": "https://openalex.org/T10281",
+      "display_name": "Advanced Battery Materials and Technologies"
+    },
+    {
+      "id": "https://openalex.org/T11690",
+      "display_name": "Advanced battery technologies research"
+    },
+    {
+      "id": "https://openalex.org/T13918",
+      "display_name": "Advanced Data and IoT Technologies"
+    },
+    {
+      "id": "https://openalex.org/T10175",
+      "display_name": "Advanced DC-DC Converters"
+    },
+    {
+      "id": "https://openalex.org/T12300",
+      "display_name": "Advanced Electrical Measurement Techniques"
+    },
+    {
+      "id": "https://openalex.org/T10205",
+      "display_name": "Advanced Fiber Optic Sensors"
+    },
+    {
+      "id": "https://openalex.org/T11451",
+      "display_name": "Advanced Machining and Optimization Techniques"
+    },
+    {
+      "id": "https://openalex.org/T14257",
+      "display_name": "Advanced Measurement and Detection Methods"
+    },
+    {
+      "id": "https://openalex.org/T10502",
+      "display_name": "Advanced Memory and Neural Computing"
+    },
+    {
+      "id": "https://openalex.org/T10369",
+      "display_name": "Advanced MEMS and NEMS Technologies"
+    },
+    {
+      "id": "https://openalex.org/T10148",
+      "display_name": "Advanced MIMO Systems Optimization"
+    },
+    {
+      "id": "https://openalex.org/T10847",
+      "display_name": "Advanced Optical Network Technologies"
+    },
+    {
+      "id": "https://openalex.org/T10767",
+      "display_name": "Advanced Photonic Communication Systems"
+    },
+    {
+      "id": "https://openalex.org/T11248",
+      "display_name": "Advanced Power Amplifier Design"
+    },
+    {
+      "id": "https://openalex.org/T13856",
+      "display_name": "Advanced Power Generation Technologies"
+    },
+    {
+      "id": "https://openalex.org/T11637",
+      "display_name": "Advanced Semiconductor Detectors and Materials"
+    },
+    {
+      "id": "https://openalex.org/T13816",
+      "display_name": "Advanced Signal Processing Techniques"
+    },
+    {
+      "id": "https://openalex.org/T10125",
+      "display_name": "Advanced Wireless Communication Techniques"
+    },
+    {
+      "id": "https://openalex.org/T11458",
+      "display_name": "Advanced Wireless Communication Technologies"
+    },
+    {
+      "id": "https://openalex.org/T11409",
+      "display_name": "Advanced Wireless Network Optimization"
+    },
+    {
+      "id": "https://openalex.org/T10018",
+      "display_name": "Advancements in Battery Materials"
+    },
+    {
+      "id": "https://openalex.org/T11338",
+      "display_name": "Advancements in Photolithography Techniques"
+    },
+    {
+      "id": "https://openalex.org/T11417",
+      "display_name": "Advancements in PLL and VCO Technologies"
+    },
+    {
+      "id": "https://openalex.org/T10558",
+      "display_name": "Advancements in Semiconductor Devices and Circuit Design"
+    },
+    {
+      "id": "https://openalex.org/T12163",
+      "display_name": "Aerosol Filtration and Electrostatic Precipitation"
+    },
+    {
+      "id": "https://openalex.org/T13420",
+      "display_name": "Arduino and IoT Applications"
+    },
+    {
+      "id": "https://openalex.org/T11992",
+      "display_name": "CCD and CMOS Imaging Sensors"
+    },
+    {
+      "id": "https://openalex.org/T10590",
+      "display_name": "Chalcogenide Semiconductor Thin Films"
+    },
+    {
+      "id": "https://openalex.org/T10278",
+      "display_name": "Electric Motor Design and Analysis"
+    },
+    {
+      "id": "https://openalex.org/T10424",
+      "display_name": "Electric Power System Optimization"
+    },
+    {
+      "id": "https://openalex.org/T13093",
+      "display_name": "Electric Power Systems and Control"
+    },
+    {
+      "id": "https://openalex.org/T10768",
+      "display_name": "Electric Vehicles and Infrastructure"
+    },
+    {
+      "id": "https://openalex.org/T11778",
+      "display_name": "Electrical and Bioimpedance Tomography"
+    },
+    {
+      "id": "https://openalex.org/T13251",
+      "display_name": "Electrical and Thermal Properties of Materials"
+    },
+    {
+      "id": "https://openalex.org/T12737",
+      "display_name": "Electrical Fault Detection and Protection"
+    },
+    {
+      "id": "https://openalex.org/T13429",
+      "display_name": "Electricity Theft Detection Techniques"
+    },
+    {
+      "id": "https://openalex.org/T10212",
+      "display_name": "Electrochemical sensors and biosensors"
+    },
+    {
+      "id": "https://openalex.org/T11200",
+      "display_name": "Electrodeposition and Electroless Coatings"
+    },
+    {
+      "id": "https://openalex.org/T12776",
+      "display_name": "Electrohydrodynamics and Fluid Dynamics"
+    },
+    {
+      "id": "https://openalex.org/T13046",
+      "display_name": "Electrokinetic Soil Remediation Techniques"
+    },
+    {
+      "id": "https://openalex.org/T11851",
+      "display_name": "Electromagnetic Compatibility and Measurements"
+    },
+    {
+      "id": "https://openalex.org/T11444",
+      "display_name": "Electromagnetic Compatibility and Noise Suppression"
+    },
+    {
+      "id": "https://openalex.org/T13440",
+      "display_name": "Electromagnetic Effects on Materials"
+    },
+    {
+      "id": "https://openalex.org/T11263",
+      "display_name": "Electromagnetic Simulation and Numerical Methods"
+    },
+    {
+      "id": "https://openalex.org/T10460",
+      "display_name": "Electronic Packaging and Soldering Technologies"
+    },
+    {
+      "id": "https://openalex.org/T14382",
+      "display_name": "Electrophoretic Deposition in Materials Science"
+    },
+    {
+      "id": "https://openalex.org/T12495",
+      "display_name": "Electrostatic Discharge in Electronics"
+    },
+    {
+      "id": "https://openalex.org/T12452",
+      "display_name": "Electrowetting and Microfluidic Technologies"
+    },
+    {
+      "id": "https://openalex.org/T13292",
+      "display_name": "Embedded Systems and FPGA Applications"
+    },
+    {
+      "id": "https://openalex.org/T11392",
+      "display_name": "Energy Harvesting in Wireless Networks"
+    },
+    {
+      "id": "https://openalex.org/T11052",
+      "display_name": "Energy Load and Power Forecasting"
+    },
+    {
+      "id": "https://openalex.org/T12899",
+      "display_name": "Engineering and Technology Innovations"
+    },
+    {
+      "id": "https://openalex.org/T12808",
+      "display_name": "Ferroelectric and Negative Capacitance Devices"
+    },
+    {
+      "id": "https://openalex.org/T12277",
+      "display_name": "Frequency Control in Power Systems"
+    },
+    {
+      "id": "https://openalex.org/T10409",
+      "display_name": "Fuel Cells and Related Materials"
+    },
+    {
+      "id": "https://openalex.org/T12791",
+      "display_name": "Full-Duplex Wireless Communications"
+    },
+    {
+      "id": "https://openalex.org/T10461",
+      "display_name": "Gas Sensing Nanomaterials and Sensors"
+    },
+    {
+      "id": "https://openalex.org/T11797",
+      "display_name": "graph theory and CDMA systems"
+    },
+    {
+      "id": "https://openalex.org/T12238",
+      "display_name": "Green IT and Sustainability"
+    },
+    {
+      "id": "https://openalex.org/T14502",
+      "display_name": "High-Voltage Power Transmission Systems"
+    },
+    {
+      "id": "https://openalex.org/T11102",
+      "display_name": "HVDC Systems and Fault Protection"
+    },
+    {
+      "id": "https://openalex.org/T10326",
+      "display_name": "Indoor and Outdoor Localization Technologies"
+    },
+    {
+      "id": "https://openalex.org/T14117",
+      "display_name": "Integrated Circuits and Semiconductor Failure Analysis"
+    },
+    {
+      "id": "https://openalex.org/T11185",
+      "display_name": "Integrated Energy Systems Optimization"
+    },
+    {
+      "id": "https://openalex.org/T12079",
+      "display_name": "IoT Networks and Protocols"
+    },
+    {
+      "id": "https://openalex.org/T12222",
+      "display_name": "IoT-based Smart Home Systems"
+    },
+    {
+      "id": "https://openalex.org/T10651",
+      "display_name": "IPv6, Mobility, Handover, Networks, Security"
+    },
+    {
+      "id": "https://openalex.org/T13183",
+      "display_name": "Islanding Detection in Power Systems"
+    },
+    {
+      "id": "https://openalex.org/T12760",
+      "display_name": "Laser Design and Applications"
+    },
+    {
+      "id": "https://openalex.org/T10363",
+      "display_name": "Low-power high-performance VLSI design"
+    },
+    {
+      "id": "https://openalex.org/T12692",
+      "display_name": "Magnetic Field Sensors Techniques"
+    },
+    {
+      "id": "https://openalex.org/T12510",
+      "display_name": "Magneto-Optical Properties and Applications"
+    },
+    {
+      "id": "https://openalex.org/T11607",
+      "display_name": "Microwave and Dielectric Measurement Techniques"
+    },
+    {
+      "id": "https://openalex.org/T12155",
+      "display_name": "Microwave Dielectric Ceramics Synthesis"
+    },
+    {
+      "id": "https://openalex.org/T10262",
+      "display_name": "Microwave Engineering and Waveguides"
+    },
+    {
+      "id": "https://openalex.org/T10936",
+      "display_name": "Millimeter-Wave Propagation and Modeling"
+    },
+    {
+      "id": "https://openalex.org/T10913",
+      "display_name": "Molecular Junctions and Nanostructures"
+    },
+    {
+      "id": "https://openalex.org/T10228",
+      "display_name": "Multilevel Inverters and Converters"
+    },
+    {
+      "id": "https://openalex.org/T11523",
+      "display_name": "Nanomaterials and Printing Technologies"
+    },
+    {
+      "id": "https://openalex.org/T14158",
+      "display_name": "Optical Systems and Laser Technology"
+    },
+    {
+      "id": "https://openalex.org/T10851",
+      "display_name": "Optical Wireless Communication Technologies"
+    },
+    {
+      "id": "https://openalex.org/T10454",
+      "display_name": "Optimal Power Flow Distribution"
+    },
+    {
+      "id": "https://openalex.org/T10045",
+      "display_name": "Organic Electronics and Photovoltaics"
+    },
+    {
+      "id": "https://openalex.org/T10611",
+      "display_name": "Organic Light-Emitting Diodes Research"
+    },
+    {
+      "id": "https://openalex.org/T11873",
+      "display_name": "PAPR reduction in OFDM"
+    },
+    {
+      "id": "https://openalex.org/T10559",
+      "display_name": "Particle Accelerators and Free-Electron Lasers"
+    },
+    {
+      "id": "https://openalex.org/T10247",
+      "display_name": "Perovskite Materials and Applications"
+    },
+    {
+      "id": "https://openalex.org/T10299",
+      "display_name": "Photonic and Optical Devices"
+    },
+    {
+      "id": "https://openalex.org/T10846",
+      "display_name": "Photonic Crystal and Fiber Optics"
+    },
+    {
+      "id": "https://openalex.org/T10781",
+      "display_name": "Plasma Diagnostics and Applications"
+    },
+    {
+      "id": "https://openalex.org/T12146",
+      "display_name": "Power Line Communications and Noise"
+    },
+    {
+      "id": "https://openalex.org/T10573",
+      "display_name": "Power Quality and Harmonics"
+    },
+    {
+      "id": "https://openalex.org/T10305",
+      "display_name": "Power System Optimization and Stability"
+    },
+    {
+      "id": "https://openalex.org/T14276",
+      "display_name": "Power Systems and Technologies"
+    },
+    {
+      "id": "https://openalex.org/T11343",
+      "display_name": "Power Transformer Diagnostics and Insulation"
+    },
+    {
+      "id": "https://openalex.org/T11005",
+      "display_name": "Radiation Effects in Electronics"
+    },
+    {
+      "id": "https://openalex.org/T10187",
+      "display_name": "Radio Frequency Integrated Circuit Design"
+    },
+    {
+      "id": "https://openalex.org/T11429",
+      "display_name": "Semiconductor Lasers and Optical Devices"
+    },
+    {
+      "id": "https://openalex.org/T10472",
+      "display_name": "Semiconductor materials and devices"
+    },
+    {
+      "id": "https://openalex.org/T10504",
+      "display_name": "Sensorless Control of Electric Motors"
+    },
+    {
+      "id": "https://openalex.org/T10624",
+      "display_name": "Silicon and Solar Cell Technologies"
+    },
+    {
+      "id": "https://openalex.org/T10361",
+      "display_name": "Silicon Carbide Semiconductor Technologies"
+    },
+    {
+      "id": "https://openalex.org/T12451",
+      "display_name": "Smart Grid and Power Systems"
+    },
+    {
+      "id": "https://openalex.org/T10603",
+      "display_name": "Smart Grid Energy Management"
+    },
+    {
+      "id": "https://openalex.org/T12309",
+      "display_name": "solar cell performance optimization"
+    },
+    {
+      "id": "https://openalex.org/T11127",
+      "display_name": "Solid State Laser Technologies"
+    },
+    {
+      "id": "https://openalex.org/T13436",
+      "display_name": "Space Technology and Applications"
+    },
+    {
+      "id": "https://openalex.org/T10752",
+      "display_name": "Terahertz technology and applications"
+    },
+    {
+      "id": "https://openalex.org/T10623",
+      "display_name": "Thin-Film Transistor Technologies"
+    },
+    {
+      "id": "https://openalex.org/T12024",
+      "display_name": "Ultra-Wideband Communications Technology"
+    },
+    {
+      "id": "https://openalex.org/T10761",
+      "display_name": "Vehicular Ad Hoc Networks (VANETs)"
+    },
+    {
+      "id": "https://openalex.org/T11522",
+      "display_name": "VLSI and FPGA Design Techniques"
+    },
+    {
+      "id": "https://openalex.org/T10740",
+      "display_name": "Wind Turbine Control Systems"
+    },
+    {
+      "id": "https://openalex.org/T10964",
+      "display_name": "Wireless Communication Security Techniques"
+    },
+    {
+      "id": "https://openalex.org/T11249",
+      "display_name": "Wireless Power Transfer Systems"
+    }
+  ],
+  "works_count": 93411,
+  "cited_by_count": 862346,
+  "works_api_url": "https://api.openalex.org/works?filter=topics.id:T10232",
+  "updated_date": "2025-10-06T05:19:10.303619",
+  "created_date": "2024-01-23"
+}

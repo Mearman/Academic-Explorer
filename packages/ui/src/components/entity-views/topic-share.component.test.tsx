@@ -14,7 +14,7 @@ Object.defineProperty(window, "matchMedia", {
 });
 
 import { describe, it, expect, vi } from "vitest";
-import { arrayMatchers } from "./matchers";
+import { arrayMatchers } from "./matchers/index";
 import { render } from "@testing-library/react";
 import { MantineProvider } from "@mantine/core";
 
