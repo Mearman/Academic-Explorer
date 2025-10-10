@@ -15,6 +15,7 @@ import { Route as EvaluationRouteImport } from './routes/evaluation'
 import { Route as ErrorTestRouteImport } from './routes/error-test'
 import { Route as CacheRouteImport } from './routes/cache'
 import { Route as BrowseRouteImport } from './routes/browse'
+import { Route as BookmarksRouteImport } from './routes/bookmarks'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as ExternalIdRouteImport } from './routes/$externalId'
 import { Route as IndexRouteImport } from './routes/index'
@@ -71,6 +72,11 @@ const CacheRoute = CacheRouteImport.update({
 const BrowseRoute = BrowseRouteImport.update({
   id: '/browse',
   path: '/browse',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookmarksRoute = BookmarksRouteImport.update({
+  id: '/bookmarks',
+  path: '/bookmarks',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -215,6 +221,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$externalId': typeof ExternalIdRoute
   '/about': typeof AboutRoute
+  '/bookmarks': typeof BookmarksRoute
   '/browse': typeof BrowseRoute
   '/cache': typeof CacheRoute
   '/error-test': typeof ErrorTestRoute
@@ -250,6 +257,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$externalId': typeof ExternalIdRoute
   '/about': typeof AboutRoute
+  '/bookmarks': typeof BookmarksRoute
   '/browse': typeof BrowseRoute
   '/cache': typeof CacheRoute
   '/error-test': typeof ErrorTestRoute
@@ -286,6 +294,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/$externalId': typeof ExternalIdRoute
   '/about': typeof AboutRoute
+  '/bookmarks': typeof BookmarksRoute
   '/browse': typeof BrowseRoute
   '/cache': typeof CacheRoute
   '/error-test': typeof ErrorTestRoute
@@ -323,6 +332,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$externalId'
     | '/about'
+    | '/bookmarks'
     | '/browse'
     | '/cache'
     | '/error-test'
@@ -358,6 +368,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$externalId'
     | '/about'
+    | '/bookmarks'
     | '/browse'
     | '/cache'
     | '/error-test'
@@ -393,6 +404,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$externalId'
     | '/about'
+    | '/bookmarks'
     | '/browse'
     | '/cache'
     | '/error-test'
@@ -429,6 +441,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ExternalIdRoute: typeof ExternalIdRoute
   AboutRoute: typeof AboutRoute
+  BookmarksRoute: typeof BookmarksRoute
   BrowseRoute: typeof BrowseRoute
   CacheRoute: typeof CacheRoute
   ErrorTestRoute: typeof ErrorTestRoute
@@ -500,6 +513,13 @@ declare module '@tanstack/react-router' {
       path: '/browse'
       fullPath: '/browse'
       preLoaderRoute: typeof BrowseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bookmarks': {
+      id: '/bookmarks'
+      path: '/bookmarks'
+      fullPath: '/bookmarks'
+      preLoaderRoute: typeof BookmarksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -723,6 +743,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ExternalIdRoute: ExternalIdRoute,
   AboutRoute: AboutRoute,
+  BookmarksRoute: BookmarksRoute,
   BrowseRoute: BrowseRoute,
   CacheRoute: CacheRoute,
   ErrorTestRoute: ErrorTestRoute,
