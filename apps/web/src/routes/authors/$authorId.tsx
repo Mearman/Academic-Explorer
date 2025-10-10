@@ -1,18 +1,20 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
-import { useGraphData } from "@/hooks/use-graph-data";
-import { useGraphStore } from "@/stores/graph-store";
-import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useEntityDocumentTitle } from "@/hooks/use-document-title";
+import { useGraphData } from "@/hooks/use-graph-data";
+import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
+import { useGraphStore } from "@/stores/graph-store";
+import type { Author } from "@academic-explorer/client";
+import { EntityDetectionService } from "@academic-explorer/graph";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
-import { EntityDetectionService } from "@academic-explorer/graph";
 import { IconBookmark, IconBookmarkOff } from "@tabler/icons-react";
-import type { Author } from "@academic-explorer/client";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 
-export const Route = createFileRoute("/authors/$authorId")({
+const AUTHOR_ROUTE_PATH = "/authors/$authorId";
+
+export const Route = createFileRoute(AUTHOR_ROUTE_PATH)({
   component: AuthorRoute,
 });
 
@@ -72,7 +74,7 @@ function AuthorRoute() {
             "AuthorRoute",
           );
           void navigate({
-            to: "/authors/$authorId",
+            to: AUTHOR_ROUTE_PATH,
             params: { authorId: cleanId },
             replace: true,
           });
@@ -116,7 +118,7 @@ function AuthorRoute() {
 
       // Replace current URL with normalized version, preserving query params
       void navigate({
-        to: "/authors/$authorId",
+        to: AUTHOR_ROUTE_PATH,
         params: { authorId: detection.normalizedId },
         search: (prev) => prev, // Preserve existing search params
         replace: true,

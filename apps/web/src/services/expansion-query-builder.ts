@@ -227,16 +227,8 @@ function formatValue(value: unknown): string {
   return "";
 }
 
-/**
- * Validate expansion settings for OpenAlex compatibility
- */
-function validateSettings(settings: ExpansionSettings): {
-  valid: boolean;
-  errors: string[];
-} {
-  const errors: string[] = [];
-
-  // Validate limit
+// Helper functions to reduce cognitive complexity
+function validateLimit(settings: ExpansionSettings, errors: string[]): void {
   if (settings.limit !== undefined) {
     if (settings.limit < 0) {
       errors.push("Limit must be 0 (unlimited) or greater");
@@ -245,8 +237,9 @@ function validateSettings(settings: ExpansionSettings): {
       errors.push("Limit cannot exceed 10000 for performance reasons");
     }
   }
+}
 
-  // Validate sorts
+function validateSorts(settings: ExpansionSettings, errors: string[]): void {
   for (const sort of settings.sorts ?? []) {
     if (!sort.property) {
       errors.push("Sort criteria must have a property");
@@ -266,8 +259,9 @@ function validateSettings(settings: ExpansionSettings): {
   if (sortProperties.length !== uniqueSortProperties.size) {
     errors.push("Duplicate sort properties are not allowed");
   }
+}
 
-  // Validate filters
+function validateFilters(settings: ExpansionSettings, errors: string[]): void {
   for (const filter of settings.filters ?? []) {
     if (!filter.property) {
       errors.push("Filter criteria must have a property");
@@ -293,6 +287,20 @@ function validateSettings(settings: ExpansionSettings): {
       );
     }
   }
+}
+
+/**
+ * Validate expansion settings for OpenAlex compatibility
+ */
+function validateSettings(settings: ExpansionSettings): {
+  valid: boolean;
+  errors: string[];
+} {
+  const errors: string[] = [];
+
+  validateLimit(settings, errors);
+  validateSorts(settings, errors);
+  validateFilters(settings, errors);
 
   return {
     valid: errors.length === 0,

@@ -6,8 +6,13 @@
 import { useGraphStore } from "@/stores/graph-store";
 import type { OpenAlexEntity } from "@academic-explorer/client";
 import {
-  ADVANCED_FIELD_SELECTIONS, cachedOpenAlex, isAuthor, isInstitution,
-  isNonNull, isSource, isWork
+  ADVANCED_FIELD_SELECTIONS,
+  cachedOpenAlex,
+  isAuthor,
+  isInstitution,
+  isNonNull,
+  isSource,
+  isWork,
 } from "@academic-explorer/client";
 import type {
   EntityType,
@@ -468,7 +473,7 @@ export class RelationshipDetectionService {
    */
   private async fetchReferencedWorksForWork(
     workId: string,
-  ): Promise<string[] | null> {
+  ): Promise<string[] | undefined> {
     try {
       logger.debug(
         "graph",
@@ -494,7 +499,100 @@ export class RelationshipDetectionService {
         },
         "RelationshipDetectionService",
       );
-      return null;
+      return undefined;
+    }
+  }
+
+  // Helper functions to reduce cognitive complexity
+  private analyzeAuthorRelationshipsForWork(
+    workData: MinimalEntityData,
+    existingNodes: GraphNode[],
+    relationships: DetectedRelationship[],
+  ): void {
+    if (workData.authorships) {
+      for (const authorship of workData.authorships) {
+        const authorNode = existingNodes.find(
+          (node) =>
+            node.entityId === authorship.author.id ||
+            node.id === authorship.author.id,
+        );
+        if (authorNode) {
+          relationships.push({
+            sourceNodeId: authorship.author.id,
+            targetNodeId: workData.id,
+            relationType: RelationType.AUTHORED,
+            label: "authored",
+            weight: 1.0,
+          });
+        }
+      }
+    }
+  }
+
+  private analyzeSourceRelationshipsForWork(
+    workData: MinimalEntityData,
+    existingNodes: GraphNode[],
+    relationships: DetectedRelationship[],
+  ): void {
+    if (workData.primary_location?.source) {
+      const sourceId = workData.primary_location.source.id;
+      const sourceNode = existingNodes.find(
+        (node) => node.entityId === sourceId || node.id === sourceId,
+      );
+      if (sourceNode) {
+        relationships.push({
+          sourceNodeId: workData.id,
+          targetNodeId: sourceId,
+          relationType: RelationType.PUBLISHED_IN,
+          label: "published in",
+        });
+      }
+    }
+  }
+
+  private async analyzeCitationRelationshipsForWork(
+    workData: MinimalEntityData,
+    existingNodes: GraphNode[],
+    relationships: DetectedRelationship[],
+  ): Promise<void> {
+    let referencedWorks = workData.referenced_works;
+
+    // Get referenced_works from the graph node data if not present
+    if (!referencedWorks) {
+      const store = useGraphStore.getState();
+      const graphNode = Object.values(store.nodes).find(
+        (node) => node.entityId === workData.id,
+      );
+      const referencedWorksFromNode =
+        graphNode?.entityData &&
+        (graphNode.entityData as { referenced_works?: string[] })
+          ?.referenced_works;
+      if (referencedWorksFromNode && referencedWorksFromNode.length > 0) {
+        referencedWorks = referencedWorksFromNode;
+      }
+    }
+
+    // Fetch referenced_works if still not present
+    if (!referencedWorks) {
+      referencedWorks = await this.fetchReferencedWorksForWork(workData.id);
+    }
+
+    if (referencedWorks && referencedWorks.length > 0) {
+      for (const referencedWorkId of referencedWorks) {
+        const referencedNode = existingNodes.find(
+          (node) =>
+            node.entityId === referencedWorkId || node.id === referencedWorkId,
+        );
+
+        if (referencedNode) {
+          relationships.push({
+            sourceNodeId: workData.id,
+            targetNodeId: referencedWorkId,
+            relationType: RelationType.REFERENCES,
+            label: "references",
+          });
+        }
+      }
     }
   }
 
@@ -516,140 +614,21 @@ export class RelationshipDetectionService {
       "RelationshipDetectionService",
     );
 
-    // Get referenced_works from the graph node data
-    const store = useGraphStore.getState();
-    const graphNode = Object.values(store.nodes).find(
-      (node) => node.entityId === workData.id,
+    this.analyzeAuthorRelationshipsForWork(
+      workData,
+      existingNodes,
+      relationships,
     );
-    const referencedWorksFromNode = graphNode?.entityData && (graphNode.entityData as { referenced_works?: string[] })?.referenced_works;
-    if (referencedWorksFromNode && referencedWorksFromNode.length > 0) {
-      workData.referenced_works = referencedWorksFromNode;
-    }
-
-    // Check for author relationships
-    if (workData.authorships) {
-      for (const authorship of workData.authorships) {
-        const authorNode = existingNodes.find(
-          (node) =>
-            node.entityId === authorship.author.id ||
-            node.id === authorship.author.id,
-        );
-        if (authorNode) {
-          relationships.push({
-            sourceNodeId: authorship.author.id,
-            targetNodeId: workData.id,
-            relationType: RelationType.AUTHORED,
-            label: "authored",
-            weight: 1.0,
-          });
-        }
-      }
-    }
-
-    // Check for source/journal relationships
-    if (workData.primary_location?.source) {
-      const sourceId = workData.primary_location.source.id;
-      const sourceNode = existingNodes.find(
-        (node) => node.entityId === sourceId || node.id === sourceId,
-      );
-      if (sourceNode) {
-        relationships.push({
-          sourceNodeId: workData.id,
-          targetNodeId: sourceId,
-          relationType: RelationType.PUBLISHED_IN,
-          label: "published in",
-        });
-      }
-    }
-
-    // Check for citation relationships - fetch referenced_works if not present
-    let referencedWorks = workData.referenced_works;
-    logger.debug(
-      "graph",
-      "Checking referenced_works",
-      {
-        workId: workData.id,
-        hasReferencedWorks: !!referencedWorks,
-        referencedWorksLength: referencedWorks?.length ?? 0,
-      },
-      "RelationshipDetectionService",
+    this.analyzeSourceRelationshipsForWork(
+      workData,
+      existingNodes,
+      relationships,
     );
-
-    if (!referencedWorks) {
-      logger.debug(
-        "graph",
-        "Work entity missing referenced_works, fetching from API",
-        {
-          workId: workData.id,
-        },
-        "RelationshipDetectionService",
-      );
-
-      const fetchedReferencedWorks = await this.fetchReferencedWorksForWork(
-        workData.id,
-      );
-      if (fetchedReferencedWorks) {
-        referencedWorks = fetchedReferencedWorks;
-        logger.debug(
-          "graph",
-          "Successfully fetched referenced_works for work",
-          {
-            workId: workData.id,
-            referencedWorksCount: referencedWorks.length,
-          },
-          "RelationshipDetectionService",
-        );
-      } else {
-        logger.debug(
-          "graph",
-          "Failed to fetch referenced_works",
-          {
-            workId: workData.id,
-          },
-          "RelationshipDetectionService",
-        );
-      }
-    }
-
-    if (referencedWorks && referencedWorks.length > 0) {
-      logger.debug(
-        "graph",
-        "Analyzing citation relationships",
-        {
-          workId: workData.id,
-          referencedWorksCount: referencedWorks.length,
-        },
-        "RelationshipDetectionService",
-      );
-
-      for (const referencedWorkId of referencedWorks) {
-        // Both referenced_works and node IDs use full URL format, so direct comparison should work
-        const referencedNode = existingNodes.find(
-          (node) =>
-            node.entityId === referencedWorkId || node.id === referencedWorkId,
-        );
-
-        if (referencedNode) {
-          logger.debug(
-            "graph",
-            "Found citation relationship",
-            {
-              sourceWork: workData.id,
-              targetWork: referencedWorkId,
-              relationshipType: RelationType.REFERENCES,
-            },
-            "RelationshipDetectionService",
-          );
-
-          relationships.push({
-            sourceNodeId: workData.id,
-            targetNodeId: referencedWorkId, // Use the entity ID to match the expected pattern
-            relationType: RelationType.REFERENCES,
-            label: "references",
-          });
-        }
-      }
-    }
+    await this.analyzeCitationRelationshipsForWork(
+      workData,
+      existingNodes,
+      relationships,
+    );
 
     return relationships;
   }

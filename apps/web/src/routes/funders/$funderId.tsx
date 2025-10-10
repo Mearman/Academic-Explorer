@@ -9,6 +9,8 @@ import { logError, logger } from "@academic-explorer/utils/logger";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
+export const FUNDER_ROUTE_PATH = "/funders/$funderId";
+
 function FunderRoute() {
   const { funderId } = Route.useParams();
   const navigate = useNavigate();
@@ -51,7 +53,7 @@ function FunderRoute() {
 
       // Replace current URL with normalized version, preserving query params
       void navigate({
-        to: "/funders/$funderId",
+        to: FUNDER_ROUTE_PATH,
         params: { funderId: detection.normalizedId },
         search: (prev) => prev, // Preserve existing search params
         replace: true,
@@ -87,7 +89,7 @@ function FunderRoute() {
             "FunderRoute",
           );
           void navigate({
-            to: "/funders/$funderId",
+            to: FUNDER_ROUTE_PATH,
             params: { funderId: cleanId },
             replace: true,
           });
@@ -198,6 +200,6 @@ function FunderRoute() {
   );
 }
 
-export const Route = createFileRoute("/funders/$funderId")({
+export const Route = createFileRoute(FUNDER_ROUTE_PATH)({
   component: FunderRoute,
 });

@@ -11,6 +11,7 @@ import { logError, logger } from "@academic-explorer/utils/logger";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { IconBookmark, IconBookmarkOff } from "@tabler/icons-react";
 import type { InstitutionEntity } from "@academic-explorer/client";
+const INSTITUTION_ROUTE_PATH = "/institutions/$institutionId";
 
 function InstitutionRoute() {
   const { institutionId } = Route.useParams();
@@ -44,7 +45,7 @@ function InstitutionRoute() {
 
       // Replace current URL with normalized version, preserving query params
       void navigate({
-        to: "/institutions/$institutionId",
+        to: INSTITUTION_ROUTE_PATH,
         params: { institutionId: detection.normalizedId },
         search: (prev) => prev, // Preserve existing search params
         replace: true,
@@ -80,7 +81,7 @@ function InstitutionRoute() {
             "InstitutionRoute",
           );
           void navigate({
-            to: "/institutions/$institutionId",
+            to: INSTITUTION_ROUTE_PATH,
             params: { institutionId: cleanId },
             replace: true,
           });
@@ -239,7 +240,7 @@ function InstitutionRoute() {
   );
 }
 
-export const Route = createFileRoute("/institutions/$institutionId")({
+export const Route = createFileRoute(INSTITUTION_ROUTE_PATH)({
   component: InstitutionRoute,
 });
 

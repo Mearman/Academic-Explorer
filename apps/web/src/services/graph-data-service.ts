@@ -4,27 +4,44 @@
  * Now integrated with TanStack Query for persistent caching
  */
 
-import { QueryClient } from "@tanstack/react-query";
-import { cachedOpenAlex } from "@academic-explorer/client";
-import { EntityDetectionService } from "@academic-explorer/graph";
+import { useExpansionSettingsStore } from "@/stores/expansion-settings-store";
 import { useGraphStore } from "@/stores/graph-store";
 import { useRepositoryStore } from "@/stores/repository-store";
-import { useExpansionSettingsStore } from "@/stores/expansion-settings-store";
+import type {
+    Author,
+    InstitutionEntity,
+    OpenAlexEntity,
+    Source,
+    Work,
+} from "@academic-explorer/client";
+import { cachedOpenAlex, isAuthor, isInstitution, isSource, isWork } from "@academic-explorer/client";
+import type {
+    EntityType,
+    ExternalIdentifier,
+    GraphCache,
+    GraphEdge,
+    GraphNode,
+    SearchOptions,
+} from "@academic-explorer/graph";
+import { EntityDetectionService, RelationType } from "@academic-explorer/graph";
 import { logError, logger } from "@academic-explorer/utils/logger";
+import { QueryClient } from "@tanstack/react-query";
 import {
-  RequestDeduplicationService,
-  createRequestDeduplicationService,
-} from "./request-deduplication-service";
-import {
-  RelationshipDetectionService,
-  createRelationshipDetectionService,
+    RelationshipDetectionService,
+    createRelationshipDetectionService,
 } from "./relationship-detection-service";
 import {
-  isWork,
-  isAuthor,
-  isSource,
-  isInstitution,
-} from "@academic-explorer/client";
+    RequestDeduplicationService,
+    createRequestDeduplicationService,
+} from "./request-deduplication-service";
+
+// Detection method constants
+const DETECTION_METHOD_OPENALEX_ID = "OpenAlex ID";
+const DETECTION_METHOD_OPENALEX_URL = "OpenAlex URL";
+const ENTITY_TYPE_CITED_BY_API_URL = "cited_by_api_url";
+const ERROR_MESSAGE_UNKNOWN = "Unknown error";
+const LOGGER_CATEGORY_GRAPH_DATA = "graph-data";
+const OPENALEX_URL_PREFIX = "https://openalex.org/";
 
 interface ExpansionOptions {
   depth?: number;
@@ -93,22 +110,6 @@ const EntityFactory = {
     };
   },
 } as const;
-import type {
-  GraphNode,
-  GraphEdge,
-  EntityType,
-  ExternalIdentifier,
-  SearchOptions,
-  GraphCache,
-} from "@academic-explorer/graph";
-import { RelationType } from "@academic-explorer/graph";
-import type {
-  Work,
-  Author,
-  Source,
-  InstitutionEntity,
-  OpenAlexEntity,
-} from "@academic-explorer/client";
 
 export class GraphDataService {
   private cache: GraphCache;
@@ -154,8 +155,8 @@ export class GraphDataService {
       // Fetch entity with deduplication service and cache-first strategy
       // For OpenAlex IDs, construct the full URL
       const apiEntityId =
-        detection.detectionMethod === "OpenAlex ID" ||
-        detection.detectionMethod === "OpenAlex URL"
+        detection.detectionMethod === DETECTION_METHOD_OPENALEX_ID ||
+        detection.detectionMethod === DETECTION_METHOD_OPENALEX_URL
           ? `https://openalex.org/${detection.normalizedId}`
           : detection.normalizedId;
 
@@ -257,7 +258,7 @@ export class GraphDataService {
       // No need for explicit layout application here
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
+        error instanceof Error ? error.message : ERROR_MESSAGE_UNKNOWN;
       store.setError(errorMessage);
       logError(
         logger,
@@ -354,8 +355,8 @@ export class GraphDataService {
       // Fetch entity with deduplication service and cache-first strategy
       // For OpenAlex IDs, construct the full URL
       const apiEntityId =
-        detection.detectionMethod === "OpenAlex ID" ||
-        detection.detectionMethod === "OpenAlex URL"
+        detection.detectionMethod === DETECTION_METHOD_OPENALEX_ID ||
+        detection.detectionMethod === DETECTION_METHOD_OPENALEX_URL
           ? `https://openalex.org/${detection.normalizedId}`
           : detection.normalizedId;
 
@@ -481,7 +482,7 @@ export class GraphDataService {
       }
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
+        error instanceof Error ? error.message : ERROR_MESSAGE_UNKNOWN;
       store.setError(errorMessage);
       logError(
         logger,
@@ -510,8 +511,8 @@ export class GraphDataService {
 
       // For OpenAlex IDs, construct the full URL
       const apiEntityId =
-        detection.detectionMethod === "OpenAlex ID" ||
-        detection.detectionMethod === "OpenAlex URL"
+        detection.detectionMethod === DETECTION_METHOD_OPENALEX_ID ||
+        detection.detectionMethod === DETECTION_METHOD_OPENALEX_URL
           ? `https://openalex.org/${detection.normalizedId}`
           : detection.normalizedId;
 
@@ -840,7 +841,7 @@ export class GraphDataService {
               "Failed to detect relationships for node in batch",
               {
                 nodeId: node.id,
-                error: error instanceof Error ? error.message : "Unknown error",
+                error: error instanceof Error ? error.message : ERROR_MESSAGE_UNKNOWN,
               },
               "GraphDataService",
             );
@@ -994,7 +995,7 @@ export class GraphDataService {
           "Failed to hydrate minimal node, continuing with next",
           {
             nodeId: node.id,
-            error: error instanceof Error ? error.message : "Unknown error",
+            error: error instanceof Error ? error.message : ERROR_MESSAGE_UNKNOWN,
           },
           "GraphDataService",
         );
@@ -1053,7 +1054,7 @@ export class GraphDataService {
             nodeId: node.id,
             entityType: node.entityType,
             label: node.label,
-            error: error instanceof Error ? error.message : "Unknown error",
+            error: error instanceof Error ? error.message : ERROR_MESSAGE_UNKNOWN,
           },
           "GraphDataService",
         );
@@ -1092,7 +1093,7 @@ export class GraphDataService {
   ): Promise<void> {
     const { force = false } = options;
 
-    logger.debug("graph-data", "expandNode function START", { nodeId, force });
+    logger.debug(LOGGER_CATEGORY_GRAPH_DATA, "expandNode function START", { nodeId, force });
     logger.error(
       "graph",
       "DEBUG: expandNode called with",
@@ -1451,7 +1452,7 @@ export class GraphDataService {
           { force, nodeId },
           "GraphDataService",
         );
-        logger.debug("graph-data", "FORCE BRANCH EXECUTING", { nodeId });
+        logger.debug(LOGGER_CATEGORY_GRAPH_DATA, "FORCE BRANCH EXECUTING", { nodeId });
         const allNodeIds = Object.keys(store.nodes);
         logger.error(
           "graph",
@@ -1555,7 +1556,7 @@ export class GraphDataService {
 
       // Layout is automatically handled by the provider when nodes/edges are added
 
-      logger.debug("graph-data", "About to reach force check", {
+      logger.debug(LOGGER_CATEGORY_GRAPH_DATA, "About to reach force check", {
         nodeId,
         force,
       });
@@ -1563,7 +1564,7 @@ export class GraphDataService {
       // Mark the node as error if expansion failed
       store.markNodeAsError(nodeId);
 
-      logger.debug("graph-data", "expandNode function ERROR", {
+      logger.debug(LOGGER_CATEGORY_GRAPH_DATA, "expandNode function ERROR", {
         nodeId,
         error: error instanceof Error ? error.message : String(error),
       });
@@ -1575,7 +1576,7 @@ export class GraphDataService {
         "graph",
       );
     } finally {
-      logger.debug("graph-data", "expandNode function END", { nodeId, force });
+      logger.debug(LOGGER_CATEGORY_GRAPH_DATA, "expandNode function END", { nodeId, force });
     }
   }
 
@@ -1883,7 +1884,7 @@ export class GraphDataService {
         {
           entityId,
           entityType,
-          error: error instanceof Error ? error.message : "Unknown error",
+          error: error instanceof Error ? error.message : ERROR_MESSAGE_UNKNOWN,
         },
         "GraphDataService",
       );
@@ -2071,7 +2072,7 @@ export class GraphDataService {
                 {
                   entityId,
                   error:
-                    error instanceof Error ? error.message : "Unknown error",
+                    error instanceof Error ? error.message : ERROR_MESSAGE_UNKNOWN,
                 },
                 "GraphDataService",
               );
@@ -2083,7 +2084,7 @@ export class GraphDataService {
             `Failed to process node ${node.id}`,
             {
               nodeId: node.id,
-              error: error instanceof Error ? error.message : "Unknown error",
+              error: error instanceof Error ? error.message : ERROR_MESSAGE_UNKNOWN,
             },
             "GraphDataService",
           );
@@ -2135,7 +2136,7 @@ export class GraphDataService {
         errorMessage,
         {
           entityType,
-          error: error instanceof Error ? error.message : "Unknown error",
+          error: error instanceof Error ? error.message : ERROR_MESSAGE_UNKNOWN,
         },
         "GraphDataService",
       );
@@ -2193,7 +2194,7 @@ export class GraphDataService {
         for (const item of fieldValue) {
           if (
             typeof item === "string" &&
-            item.startsWith("https://openalex.org/")
+            item.startsWith(OPENALEX_URL_PREFIX)
           ) {
             entityIds.push(item);
           } else if (
@@ -2202,7 +2203,7 @@ export class GraphDataService {
             !Array.isArray(item) &&
             isRecord(item) &&
             typeof item["id"] === "string" &&
-            item["id"].startsWith("https://openalex.org/")
+            item["id"].startsWith(OPENALEX_URL_PREFIX)
           ) {
             entityIds.push(item["id"]);
           }
@@ -2213,7 +2214,7 @@ export class GraphDataService {
         !Array.isArray(fieldValue) &&
         isRecord(fieldValue) &&
         typeof fieldValue["id"] === "string" &&
-        fieldValue["id"].startsWith("https://openalex.org/")
+        fieldValue["id"].startsWith(OPENALEX_URL_PREFIX)
       ) {
         entityIds.push(fieldValue["id"]);
       }

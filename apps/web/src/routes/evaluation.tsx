@@ -3,10 +3,14 @@
  * Provides PhD thesis evaluation capabilities using systematic literature reviews
  */
 
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import React from "react"
-import { IconChartBar, IconSearch, IconTrendingUp, IconBulb } from "@tabler/icons-react"
 import { logger } from "@academic-explorer/utils/logger";
+import { IconBulb, IconChartBar, IconSearch, IconTrendingUp } from "@tabler/icons-react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+
+// Style constants
+const BORDER_COLOR_GRAY = "#e5e7eb";
+const BORDER_STYLE = `1px solid ${BORDER_COLOR_GRAY}`;
+const BOX_SHADOW = "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)";
 
 export const Route = createFileRoute("/evaluation")({
 	component: EvaluationDashboard,
@@ -50,9 +54,9 @@ function EvaluationDashboard() {
 				<div style={{
 					backgroundColor: "white",
 					borderRadius: "12px",
-					border: "1px solid #e5e7eb",
+					border: BORDER_STYLE,
 					padding: "24px",
-					boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)"
+					boxShadow: BOX_SHADOW
 				}}>
 					<div style={{ display: "flex", alignItems: "center", marginBottom: "16px" }}>
 						<div style={{
@@ -101,9 +105,9 @@ function EvaluationDashboard() {
 				<div style={{
 					backgroundColor: "white",
 					borderRadius: "12px",
-					border: "1px solid #e5e7eb",
+					border: BORDER_STYLE,
 					padding: "24px",
-					boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)"
+					boxShadow: BOX_SHADOW
 				}}>
 					<div style={{ display: "flex", alignItems: "center", marginBottom: "16px" }}>
 						<div style={{
@@ -145,9 +149,9 @@ function EvaluationDashboard() {
 				<div style={{
 					backgroundColor: "white",
 					borderRadius: "12px",
-					border: "1px solid #e5e7eb",
+					border: BORDER_STYLE,
 					padding: "24px",
-					boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)"
+					boxShadow: BOX_SHADOW
 				}}>
 					<div style={{ display: "flex", alignItems: "center", marginBottom: "16px" }}>
 						<div style={{
@@ -190,7 +194,7 @@ function EvaluationDashboard() {
 			<div style={{
 				backgroundColor: "#f9fafb",
 				borderRadius: "12px",
-				border: "1px solid #e5e7eb",
+				border: BORDER_STYLE,
 				padding: "24px"
 			}}>
 				<h2 style={{
@@ -249,7 +253,7 @@ function EvaluationDashboard() {
 					padding: "16px",
 					backgroundColor: "white",
 					borderRadius: "8px",
-					border: "1px solid #e5e7eb"
+					border: BORDER_STYLE
 				}}>
 					<p style={{
 						fontSize: "13px",
