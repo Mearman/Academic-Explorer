@@ -24,24 +24,27 @@ export const createPlugins = (_command: string, _mode: string) => [
     routeFileIgnorePrefix: "-",
   }),
 
-  // PWA Plugin for TypeScript service worker support
+  // PWA Plugin for service worker support
   VitePWA({
-    strategies: "injectManifest",
-    srcDir: "src/workers",
-    filename: "openalex-sw.ts",
-    injectManifest: {
-      swSrc: "src/workers/openalex-sw.ts",
-      swDest: "dist/openalex-sw.js",
-      injectionPoint: "self.__WB_MANIFEST", // Use default injection point
-    },
-    devOptions: {
-      enabled: true,
-      type: "module",
+    strategies: "generateSW",
+    registerType: "autoUpdate",
+    workbox: {
+      globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+      runtimeCaching: [
+        {
+          urlPattern: /^https:\/\/api\.openalex\.org\/.*/i,
+          handler: "NetworkFirst",
+          options: {
+            cacheName: "openalex-api-cache",
+            expiration: {
+              maxEntries: 100,
+              maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
+            },
+          },
+        },
+      ],
     },
     injectRegister: null, // Manual registration in main.tsx
-    workbox: {
-      globPatterns: [], // Disable default precaching since we have custom logic
-    },
   }),
 
   // React plugin
