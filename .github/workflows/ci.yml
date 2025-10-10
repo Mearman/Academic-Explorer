@@ -457,38 +457,15 @@ jobs:
             echo "✅ Forcing workspace release: academic-explorer-monorepo@${{ steps.dry-run.outputs.next_version || '10.0.1' }}"
           fi
 
-      - name: Update workspace version and create follow-up commit
-        if: steps.check-workspace-release.outputs.released == 'true'
-        run: |
-          echo "📝 Checking if package.json needs version update..."
-
-          # Check if semantic-release already updated the version
-          CURRENT_VERSION=$(node -p "require('./package.json').version")
-          TARGET_VERSION="${{ steps.check-workspace-release.outputs.version }}"
-
-          if [ "$CURRENT_VERSION" != "$TARGET_VERSION" ]; then
-            echo "📝 Updating package.json version from $CURRENT_VERSION to $TARGET_VERSION"
-            npm version $TARGET_VERSION --no-git-tag-version
-          else
-            echo "✅ Package.json version is already correct: $CURRENT_VERSION"
-          fi
-
-          # Check if there are any changes to commit
-          if git diff --quiet package.json CHANGELOG.md; then
-            echo "✅ No changes to commit - semantic-release already updated files"
-          else
-            echo "📝 Committing version updates..."
-            git add package.json CHANGELOG.md
-            git commit -m "chore(release): workspace $TARGET_VERSION [skip ci]
-
-            Automated version bump for workspace release ${{ steps.check-workspace-release.outputs.tag }}"
-
-            # Push the follow-up commit
-            echo "📤 Pushing version bump commit..."
-            git push origin main
-          fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+       - name: Confirm release completion
+         if: steps.check-workspace-release.outputs.released == 'true'
+         run: |
+           echo "✅ Workspace release completed successfully"
+           echo "📦 Release: ${{ steps.check-workspace-release.outputs.tag }}"
+           echo "🏷️  Version: ${{ steps.check-workspace-release.outputs.version }}"
+           echo ""
+           echo "📝 Note: Semantic-release manages versioning through Git tags,"
+           echo "   not package.json updates in monorepo setups."
 
   # Deploy to GitHub Pages (main branch only)
   deploy:
