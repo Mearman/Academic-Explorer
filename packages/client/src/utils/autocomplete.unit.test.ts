@@ -3,10 +3,10 @@
  * Tests debouncing, caching, entity-specific searches, and cross-entity functionality
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi, type MockedFunction } from "vitest";
-import { AutocompleteApi } from "./autocomplete";
+import { afterEach, beforeEach, describe, expect, it, vi, type MockedFunction } from "vitest";
 import { OpenAlexBaseClient } from "../client";
 import type { AutocompleteResult, EntityType } from "../types";
+import { AutocompleteApi } from "./autocomplete";
 
 // Mock the logger
 vi.mock("@academic-explorer/shared-utils/logger", () => ({
@@ -57,6 +57,48 @@ describe("AutocompleteApi", () => {
 			const result = await autocompleteApi.autocomplete("   ");
 			expect(result).toEqual([]);
 			expect(mockGet).not.toHaveBeenCalled();
+		});
+
+		it("should support general autocomplete endpoint (single API call)", async () => {
+			mockGet.mockResolvedValueOnce({
+				results: [mockAutocompleteResult, mockAuthorResult],
+			});
+
+			const result = await autocompleteApi.autocompleteGeneral("hello world");
+
+			expect(result).toEqual([
+				mockAuthorResult, // Higher citation count (500) comes first
+				mockAutocompleteResult, // Lower citation count (100) comes second
+			]);
+			expect(mockGet).toHaveBeenCalledWith("autocomplete", {
+				q: "hello world",
+				format: "json",
+				per_page: 25,
+			});
+			expect(mockGet).toHaveBeenCalledTimes(1);
+		});
+
+		it("should return empty array for empty query in general autocomplete", async () => {
+			const result = await autocompleteApi.autocompleteGeneral("");
+			expect(result).toEqual([]);
+			expect(mockGet).not.toHaveBeenCalled();
+		});
+
+		it("should support per_page option in general autocomplete", async () => {
+			mockGet.mockResolvedValueOnce({
+				results: [mockAutocompleteResult],
+			});
+
+			const result = await autocompleteApi.autocompleteGeneral("test query", {
+				per_page: 10,
+			});
+
+			expect(mockGet).toHaveBeenCalledWith("autocomplete", {
+				q: "test query",
+				format: "json",
+				per_page: 10,
+			});
+			expect(result).toEqual([mockAutocompleteResult]);
 		});
 
 		it("should perform autocomplete for valid query", async () => {

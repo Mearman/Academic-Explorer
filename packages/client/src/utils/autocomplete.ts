@@ -169,6 +169,27 @@ export class BaseAutocompleteApi {
 	}
 
 	/**
+   * Perform general autocomplete request without entity type specification
+   * Calls the /autocomplete endpoint which returns results across all entity types
+   */
+	protected async performGeneralAutocomplete(query: string): Promise<AutocompleteResult[]> {
+		try {
+			const endpoint = 'autocomplete';
+			const options: AutocompleteOptions = {
+				q: query.trim(),
+			};
+
+			const response = await this.makeAutocompleteRequest(endpoint, options);
+
+			return response.results;
+		} catch (error: unknown) {
+			const errorDetails = this.formatErrorForLogging(error);
+			logger.warn(`[AutocompleteApi] General autocomplete failed for query "${query}"`, { query, error: errorDetails });
+			return [];
+		}
+	}
+
+	/**
    * Perform autocomplete request for a specific entity type
    */
 	protected async performAutocomplete(query: string, entityType: EntityType): Promise<AutocompleteResult[]> {
@@ -328,10 +349,60 @@ export class BaseAutocompleteApi {
  */
 export class CompleteAutocompleteApi extends BaseAutocompleteApi {
 	/**
+	 * General autocomplete using the /autocomplete endpoint (single API call)
+	 * This is faster than searching multiple entity types separately
+	 * @param query - Search query string
+	 * @param options - Optional autocomplete options
+	 * @returns Promise resolving to array of autocomplete results across all entity types
+	 *
+	 * @example
+	 * ```typescript
+	 * // Fast general autocomplete (single API call)
+	 * const results = await api.autocompleteGeneral("hello world");
+	 *
+	 * // With options
+	 * const results = await api.autocompleteGeneral("machine learning", { per_page: 10 });
+	 * ```
+	 */
+	async autocompleteGeneral(query: string, options: Omit<AutocompleteOptions, 'q'> = {}): Promise<AutocompleteResult[]> {
+		if (!query.trim()) {
+			return [];
+		}
+
+		const cacheKey = `autocomplete_general_${query.trim().toLowerCase()}`;
+
+		return this.executeWithDebounce(cacheKey, async () => {
+			try {
+				const endpoint = 'autocomplete';
+				const requestOptions: AutocompleteOptions = {
+					q: query.trim(),
+					...options,
+				};
+
+				const response = await this.makeAutocompleteRequest(endpoint, requestOptions);
+				return this.sortAutocompleteResults(response.results);
+			} catch (error: unknown) {
+				const errorDetails = this.formatErrorForLogging(error);
+				logger.warn(`[AutocompleteApi] General autocomplete failed for query "${query}"`, { query, error: errorDetails });
+				return [];
+			}
+		});
+	}
+
+	/**
 	 * General autocomplete across entity types with debouncing
 	 * @param query - Search query string
 	 * @param entityType - Optional specific entity type to search
 	 * @returns Promise resolving to array of autocomplete results
+	 *
+	 * @example
+	 * ```typescript
+	 * // Search all entity types (makes 5 API calls)
+	 * const results = await api.autocomplete("hello world");
+	 *
+	 * // Search specific entity type (makes 1 API call)
+	 * const authorResults = await api.autocomplete("john doe", "authors");
+	 * ```
 	 */
 	async autocomplete(query: string, entityType?: EntityType): Promise<AutocompleteResult[]> {
 		if (!query.trim()) {

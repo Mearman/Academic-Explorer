@@ -5,7 +5,6 @@ export const Route = createFileRoute("/works/")({
 });
 
 function WorksListRoute() {
-  console.log("WorksListRoute: Rendering");
   return (
     <div>
       <h1>Works</h1>

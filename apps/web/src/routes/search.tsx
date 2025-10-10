@@ -94,7 +94,6 @@ const searchWorks = async (filters: SearchFilters): Promise<Work[]> => {
 };
 
 function SearchPage() {
-  console.log("SearchPage: Rendering");
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
     query: "",
     startDate: null,
