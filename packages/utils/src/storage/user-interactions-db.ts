@@ -18,7 +18,7 @@ export interface BookmarkRecord {
   entityType?: string;
   // Search/list bookmarks
   searchQuery?: string;
-  filters?: Record<string, any>;
+  filters?: Record<string, unknown>;
   resultCount?: number;
   // Common fields
   timestamp: Date;
@@ -39,7 +39,7 @@ export interface PageVisitRecord {
   referrer?: string;
   // Additional metadata based on page type
   searchQuery?: string;
-  filters?: Record<string, any>;
+  filters?: Record<string, unknown>;
   entityId?: string;
   entityType?: string;
   resultCount?: number;
@@ -51,13 +51,12 @@ export function detectPageType(url: string): {
   entityId?: string;
   entityType?: string;
   searchQuery?: string;
-  filters?: Record<string, any>;
+  filters?: Record<string, unknown>;
 } {
   const urlObj = new URL(
     url.startsWith("http") ? url : `https://example.com${url}`,
   );
-  const pathname = urlObj.pathname;
-  const searchParams = urlObj.searchParams;
+  const { pathname, searchParams } = urlObj;
 
   // Entity pages: /works/:id, /authors/:id, /institutions/:id, /topics/:id, /funders/:id, /sources/:id
   const entityMatch = pathname.match(
@@ -75,7 +74,7 @@ export function detectPageType(url: string): {
   // Search page: /search
   if (pathname === "/search") {
     const query = searchParams.get("q") || "";
-    const filters: Record<string, any> = {};
+    const filters: Record<string, unknown> = {};
 
     // Extract common filter parameters
     for (const [key, value] of searchParams.entries()) {
@@ -97,7 +96,7 @@ export function detectPageType(url: string): {
   );
   if (listMatch) {
     const [, entityType] = listMatch;
-    const filters: Record<string, any> = {};
+    const filters: Record<string, unknown> = {};
 
     // Extract filter parameters
     for (const [key, value] of searchParams.entries()) {
@@ -160,7 +159,7 @@ export class UserInteractionsService {
     url: string,
     metadata?: {
       searchQuery?: string;
-      filters?: Record<string, any>;
+      filters?: Record<string, unknown>;
       entityId?: string;
       entityType?: string;
       resultCount?: number;
@@ -260,7 +259,7 @@ export class UserInteractionsService {
    */
   async isSearchBookmarked(
     searchQuery: string,
-    filters?: Record<string, any>,
+    filters?: Record<string, unknown>,
   ): Promise<boolean> {
     try {
       let query = this.db.bookmarks
@@ -345,7 +344,7 @@ export class UserInteractionsService {
    */
   async getSearchBookmark(
     searchQuery: string,
-    filters?: Record<string, any>,
+    filters?: Record<string, unknown>,
   ): Promise<BookmarkRecord | null> {
     try {
       let query = this.db.bookmarks
@@ -480,7 +479,7 @@ export class UserInteractionsService {
    */
   async addSearchBookmark(
     searchQuery: string,
-    filters: Record<string, any> | undefined,
+    filters: Record<string, unknown> | undefined,
     title: string,
     url: string,
     queryParams?: Record<string, string>,
