@@ -127,34 +127,55 @@ export class ApiInterceptor {
   }
 
   /**
-   * Check if running in development mode
+   * Check NODE_ENV for development mode
    */
-  private isDevelopmentMode(): boolean {
-    // Check NODE_ENV first (most reliable)
-    if (typeof globalThis.process !== 'undefined' && globalThis.process.env?.NODE_ENV) {
+  private checkNodeEnv(): boolean | null {
+    if (
+      typeof globalThis.process !== "undefined" &&
+      globalThis.process.env?.NODE_ENV
+    ) {
       const nodeEnv = globalThis.process.env.NODE_ENV.toLowerCase();
-      if (nodeEnv === 'development' || nodeEnv === 'dev') return true;
-      if (nodeEnv === 'production') return false;
+      if (nodeEnv === "development" || nodeEnv === "dev") return true;
+      if (nodeEnv === "production") return false;
     }
+    return null;
+  }
 
-    // Check Vite's __DEV__ flag
-    if (typeof globalThis !== 'undefined' && '__DEV__' in globalThis) {
+  /**
+   * Check Vite's __DEV__ flag
+   */
+  private checkViteDevFlag(): boolean | null {
+    if (typeof globalThis !== "undefined" && "__DEV__" in globalThis) {
       try {
-        const devFlag = (globalThis as unknown as { __DEV__?: boolean }).__DEV__;
+        const devFlag = (globalThis as unknown as { __DEV__?: boolean })
+          .__DEV__;
         return devFlag === true;
       } catch {
         // Ignore errors if __DEV__ is not accessible
       }
     }
+    return null;
+  }
 
-    // Check browser-based indicators
+  /**
+   * Check browser-based development indicators
+   */
+  private checkBrowserDevIndicators(): boolean | null {
     try {
-      if (typeof globalThis !== 'undefined' && 'window' in globalThis) {
-        const win = (globalThis as unknown as { window?: { location?: { hostname?: string } } }).window;
+      if (typeof globalThis !== "undefined" && "window" in globalThis) {
+        const win = (
+          globalThis as unknown as {
+            window?: { location?: { hostname?: string } };
+          }
+        ).window;
         if (win && win.location && win.location.hostname) {
-          const {hostname} = win.location;
+          const { hostname } = win.location;
           // Local development indicators
-          if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.endsWith('.local')) {
+          if (
+            hostname === "localhost" ||
+            hostname === "127.0.0.1" ||
+            hostname.endsWith(".local")
+          ) {
             return true;
           }
         }
@@ -162,6 +183,24 @@ export class ApiInterceptor {
     } catch {
       // Ignore errors in browser detection
     }
+    return null;
+  }
+
+  /**
+   * Check if running in development mode
+   */
+  private isDevelopmentMode(): boolean {
+    // Check NODE_ENV first (most reliable)
+    const nodeEnvResult = this.checkNodeEnv();
+    if (nodeEnvResult !== null) return nodeEnvResult;
+
+    // Check Vite's __DEV__ flag
+    const viteResult = this.checkViteDevFlag();
+    if (viteResult !== null) return viteResult;
+
+    // Check browser-based indicators
+    const browserResult = this.checkBrowserDevIndicators();
+    if (browserResult !== null) return browserResult;
 
     // Default to development if uncertain (fail-safe for dev mode)
     return true;
@@ -179,12 +218,19 @@ export class ApiInterceptor {
    */
   private extractEntityType(url: string): EntityType | undefined {
     const urlObj = new URL(url);
-    const pathSegments = urlObj.pathname.split('/').filter(Boolean);
+    const pathSegments = urlObj.pathname.split("/").filter(Boolean);
 
     // OpenAlex URLs typically follow pattern: /entity_type/id or /entity_type
     const entityTypes: EntityType[] = [
-      'works', 'authors', 'sources', 'institutions',
-      'topics', 'concepts', 'publishers', 'funders', 'keywords'
+      "works",
+      "authors",
+      "sources",
+      "institutions",
+      "topics",
+      "concepts",
+      "publishers",
+      "funders",
+      "keywords",
     ];
 
     for (const segment of pathSegments) {
@@ -201,7 +247,7 @@ export class ApiInterceptor {
    */
   private extractEntityId(url: string): string | undefined {
     const urlObj = new URL(url);
-    const pathSegments = urlObj.pathname.split('/').filter(Boolean);
+    const pathSegments = urlObj.pathname.split("/").filter(Boolean);
 
     // Look for OpenAlex ID pattern (starts with entity letter + number)
     for (const segment of pathSegments) {
@@ -221,10 +267,15 @@ export class ApiInterceptor {
     const params: QueryParams = {};
 
     urlObj.searchParams.forEach((value, key) => {
-      if (key === 'select' && value) {
+      if (key === "select" && value) {
         // Handle select parameter as array
-        params[key] = value.split(',');
-      } else if (key === 'per_page' || key === 'page' || key === 'sample' || key === 'seed') {
+        params[key] = value.split(",");
+      } else if (
+        key === "per_page" ||
+        key === "page" ||
+        key === "sample" ||
+        key === "seed"
+      ) {
         // Handle numeric parameters
         const numValue = parseInt(value, 10);
         if (!isNaN(numValue)) {
@@ -247,19 +298,22 @@ export class ApiInterceptor {
     // Sort parameters for consistent key generation
     const sortedParams = Object.keys(params)
       .sort()
-      .reduce((result, key) => {
-        result[key] = params[key];
-        return result;
-      }, {} as Record<string, unknown>);
+      .reduce(
+        (result, key) => {
+          result[key] = params[key];
+          return result;
+        },
+        {} as Record<string, unknown>,
+      );
 
     const keyParts = [
       baseUrl,
-      entityType || 'unknown',
-      entityId || 'list',
-      JSON.stringify(sortedParams)
+      entityType || "unknown",
+      entityId || "list",
+      JSON.stringify(sortedParams),
     ];
 
-    return keyParts.join('|');
+    return keyParts.join("|");
   }
 
   /**
@@ -298,7 +352,7 @@ export class ApiInterceptor {
     this.deduplicationMap.set(cacheKey, {
       cacheKey,
       timestamp: now,
-      count: 1
+      count: 1,
     });
   }
 
@@ -325,7 +379,10 @@ export class ApiInterceptor {
   /**
    * Intercept an outgoing request
    */
-  public interceptRequest(url: string, options: RequestInit = {}): InterceptedRequest | null {
+  public interceptRequest(
+    url: string,
+    options: RequestInit = {},
+  ): InterceptedRequest | null {
     if (!this.config.enabled) {
       return null;
     }
@@ -357,20 +414,20 @@ export class ApiInterceptor {
 
       const interceptedRequest: InterceptedRequest = {
         url,
-        method: options.method || 'GET',
+        method: options.method || "GET",
         headers,
         params,
         entityType,
         entityId,
         timestamp,
-        requestId
+        requestId,
       };
 
       logger.debug("Intercepted request", {
         requestId,
         entityType,
         entityId,
-        url: url.substring(0, 100) + (url.length > 100 ? '...' : '')
+        url: url.substring(0, 100) + (url.length > 100 ? "..." : ""),
       });
 
       return interceptedRequest;
@@ -387,7 +444,7 @@ export class ApiInterceptor {
     request: InterceptedRequest,
     response: Response,
     data: unknown,
-    responseTime: number
+    responseTime: number,
   ): InterceptedApiCall | null {
     if (!this.config.enabled || !request) {
       return null;
@@ -398,7 +455,7 @@ export class ApiInterceptor {
       if (response.status < 200 || response.status >= 300) {
         logger.debug("Skipping non-2xx response", {
           requestId: request.requestId,
-          status: response.status
+          status: response.status,
         });
         return null;
       }
@@ -413,15 +470,17 @@ export class ApiInterceptor {
         const finalEntityType = this.extractEntityType(response.url);
         const finalEntityId = this.extractEntityId(response.url);
 
-        if (finalEntityType) (request as InterceptedRequest).entityType = finalEntityType;
-        if (finalEntityId) (request as InterceptedRequest).entityId = finalEntityId;
+        if (finalEntityType)
+          (request as InterceptedRequest).entityType = finalEntityType;
+        if (finalEntityId)
+          (request as InterceptedRequest).entityId = finalEntityId;
 
         logger.debug("Request redirected", {
           requestId: request.requestId,
           originalUrl: request.url,
           finalUrl: response.url,
           originalEntityId: this.extractEntityId(request.url),
-          finalEntityId
+          finalEntityId,
         });
       }
 
@@ -433,7 +492,7 @@ export class ApiInterceptor {
 
       // Calculate response size
       const responseText = JSON.stringify(data);
-      const {size} = new Blob([responseText]);
+      const { size } = new Blob([responseText]);
 
       const interceptedResponse: InterceptedResponse = {
         status: response.status,
@@ -442,7 +501,7 @@ export class ApiInterceptor {
         size,
         responseTime,
         timestamp,
-        requestId: request.requestId
+        requestId: request.requestId,
       };
 
       // Generate cache key - use final URL if redirected, otherwise original URL
@@ -452,7 +511,7 @@ export class ApiInterceptor {
         entityType: request.entityType,
         entityId: request.entityId,
         params: request.params,
-        baseUrl: `${urlObj.protocol}//${urlObj.host}`
+        baseUrl: `${urlObj.protocol}//${urlObj.host}`,
       };
 
       const cacheKey = this.generateCacheKey(cacheKeyComponents);
@@ -461,7 +520,7 @@ export class ApiInterceptor {
       if (this.shouldDeduplicate(cacheKey)) {
         logger.debug("Request deduplicated", {
           requestId: request.requestId,
-          cacheKey: cacheKey.substring(0, 50) + '...'
+          cacheKey: cacheKey.substring(0, 50) + "...",
         });
         return null;
       }
@@ -475,7 +534,7 @@ export class ApiInterceptor {
         request,
         response: interceptedResponse,
         cacheKey,
-        totalTime
+        totalTime,
       };
 
       logger.debug("Intercepted API call", {
@@ -484,7 +543,7 @@ export class ApiInterceptor {
         status: response.status,
         responseTime,
         totalTime,
-        size
+        size,
       });
 
       // Call the configured callback
@@ -494,7 +553,7 @@ export class ApiInterceptor {
     } catch (error: unknown) {
       logger.error("Failed to intercept response", {
         error,
-        requestId: request.requestId
+        requestId: request.requestId,
       });
       return null;
     }
@@ -516,7 +575,7 @@ export class ApiInterceptor {
     return {
       totalEntries: this.deduplicationMap.size,
       totalDeduplicated,
-      windowMs: this.config.deduplicationWindow
+      windowMs: this.config.deduplicationWindow,
     };
   }
 

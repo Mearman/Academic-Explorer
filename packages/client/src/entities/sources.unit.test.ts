@@ -658,7 +658,7 @@ describe("SourcesApi", () => {
 
       expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
         filter: "apc_usd:2000-5000",
-        sort: "apc_usd:desc",
+        sort: "works_count:desc",
       });
     });
 
@@ -679,7 +679,7 @@ describe("SourcesApi", () => {
 
       expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
         filter: "apc_usd:>2000",
-        sort: "apc_usd:desc",
+        sort: "works_count:desc",
       });
     });
 
@@ -700,7 +700,7 @@ describe("SourcesApi", () => {
 
       expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
         filter: "apc_usd:<3000",
-        sort: "apc_usd:desc",
+        sort: "works_count:desc",
       });
     });
 
@@ -720,7 +720,7 @@ describe("SourcesApi", () => {
       await sourcesApi.getSourcesWithAPC();
 
       expect(mockClient.getResponse).toHaveBeenCalledWith("sources", {
-        sort: "apc_usd:desc",
+        sort: "works_count:desc",
       });
     });
   });

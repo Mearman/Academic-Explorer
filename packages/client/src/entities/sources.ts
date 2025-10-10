@@ -69,7 +69,14 @@
  * ```
  */
 
-import type { Source, SourcesFilters, QueryParams, OpenAlexResponse, Work, AutocompleteResult } from "../types";
+import type {
+  Source,
+  SourcesFilters,
+  QueryParams,
+  OpenAlexResponse,
+  Work,
+  AutocompleteResult,
+} from "../types";
 import { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";
 import { logger } from "../internal/logger";
@@ -79,162 +86,182 @@ import { logger } from "../internal/logger";
  */
 export interface SearchSourcesOptions {
   filters?: SourcesFilters;
-  sort?: "relevance_score:desc" | "cited_by_count" | "works_count" | "created_date";
+  sort?:
+    | "relevance_score:desc"
+    | "cited_by_count"
+    | "works_count"
+    | "created_date";
   page?: number;
   per_page?: number;
   select?: string[];
 }
 
 export class SourcesApi {
-	constructor(private client: OpenAlexBaseClient) {}
+  private readonly DEFAULT_SORT = "works_count:desc";
+  private readonly WORKS_COUNT_DESC = this.DEFAULT_SORT;
 
-	/**
-	 * Type guard to check if value is SourcesFilters
-	 */
-	private isSourcesFilters(value: unknown): value is SourcesFilters {
-		return typeof value === "object" && value !== null && !Array.isArray(value);
-	}
+  constructor(private client: OpenAlexBaseClient) {}
 
-	/**
-	 * ISSN Validation and Normalization Utilities
-	 *
-	 * These private methods provide comprehensive ISSN handling capabilities:
-	 * - Format detection and validation
-	 * - Normalization to standard format
-	 * - Checksum verification (optional)
-	 * - Error handling and logging
-	 *
-	 * All methods follow the ISSN standard (ISO 3297) for validation.
-	 */
+  /**
+   * Type guard to check if value is SourcesFilters
+   */
+  private isSourcesFilters(value: unknown): value is SourcesFilters {
+    return typeof value === "object" && value !== null && !Array.isArray(value);
+  }
 
-	/**
-	 * Validates if a string matches a valid ISSN format
-	 * Supports formats: 1234-5678, ISSN 1234-5678, issn:1234-5678, 12345678
-	 * @param issn - The ISSN string to validate
-	 * @returns True if the format is valid (before checksum validation)
-	 */
-	private isValidISSNFormat(issn: string): boolean {
-		if (!issn || typeof issn !== 'string') {
-			return false;
-		}
+  /**
+   * ISSN Validation and Normalization Utilities
+   *
+   * These private methods provide comprehensive ISSN handling capabilities:
+   * - Format detection and validation
+   * - Normalization to standard format
+   * - Checksum verification (optional)
+   * - Error handling and logging
+   *
+   * All methods follow the ISSN standard (ISO 3297) for validation.
+   */
 
-		// Remove common prefixes and normalize - handle various prefix formats
-		const normalized = issn.trim().toLowerCase()
-			.replace(/^(issn[:\s]*|eissn[:\s]*)/i, '')
-			.trim();
+  /**
+   * Validates if a string matches a valid ISSN format
+   * Supports formats: 1234-5678, ISSN 1234-5678, issn:1234-5678, 12345678
+   * @param issn - The ISSN string to validate
+   * @returns True if the format is valid (before checksum validation)
+   */
+  private isValidISSNFormat(issn: string): boolean {
+    if (!issn || typeof issn !== "string") {
+      return false;
+    }
 
-		// Check for standard ISSN format (with hyphen) or bare 8-digit format
-		const standardFormat = /^\d{4}-\d{3}[\dxX]$/.test(normalized);
-		const bareFormat = /^\d{7}[\dxX]$/.test(normalized);
+    // Remove common prefixes and normalize - handle various prefix formats
+    const normalized = issn
+      .trim()
+      .toLowerCase()
+      .replace(/^(issn[:\s]*|eissn[:\s]*)/i, "")
+      .trim();
 
-		return standardFormat || bareFormat;
-	}
+    // Check for standard ISSN format (with hyphen) or bare 8-digit format
+    const standardFormat = /^\d{4}-\d{3}[\dxX]$/.test(normalized);
+    const bareFormat = /^\d{7}[\dxX]$/.test(normalized);
 
-	/**
-	 * Normalizes ISSN to standard format (1234-5678)
-	 * @param issn - The ISSN string to normalize
-	 * @returns Normalized ISSN or null if invalid format
-	 */
-	private normalizeISSN(issn: string): string | null {
-		if (!this.isValidISSNFormat(issn)) {
-			return null;
-		}
+    return standardFormat || bareFormat;
+  }
 
-		// Remove prefixes and normalize case - handle various prefix formats
-		const cleaned = issn.trim().toLowerCase()
-			.replace(/^(issn[:\s]*|eissn[:\s]*)/i, '')
-			.trim()
-			.replace(/[^\d\-x]/gi, '')
-			.toUpperCase();
+  /**
+   * Normalizes ISSN to standard format (1234-5678)
+   * @param issn - The ISSN string to normalize
+   * @returns Normalized ISSN or null if invalid format
+   */
+  private normalizeISSN(issn: string): string | null {
+    if (!this.isValidISSNFormat(issn)) {
+      return null;
+    }
 
-		// Add hyphen if missing (bare 8-digit format)
-		if (/^\d{7}[\dX]$/.test(cleaned)) {
-			return `${cleaned.slice(0, 4)}-${cleaned.slice(4)}`;
-		}
+    // Remove prefixes and normalize case - handle various prefix formats
+    const cleaned = issn
+      .trim()
+      .toLowerCase()
+      .replace(/^(issn[:\s]*|eissn[:\s]*)/i, "")
+      .trim()
+      .replace(/[^\d\-x]/gi, "")
+      .toUpperCase();
 
-		// Already in standard format
-		if (/^\d{4}-\d{3}[\dX]$/.test(cleaned)) {
-			return cleaned;
-		}
+    // Add hyphen if missing (bare 8-digit format)
+    if (/^\d{7}[\dX]$/.test(cleaned)) {
+      return `${cleaned.slice(0, 4)}-${cleaned.slice(4)}`;
+    }
 
-		return null;
-	}
+    // Already in standard format
+    if (/^\d{4}-\d{3}[\dX]$/.test(cleaned)) {
+      return cleaned;
+    }
 
-	/**
-	 * Validates ISSN checksum digit
-	 * @param issn - Normalized ISSN (1234-5678 format)
-	 * @returns True if checksum is valid
-	 */
-	private validateISSNChecksum(issn: string): boolean {
-		const normalized = this.normalizeISSN(issn);
-		if (!normalized) {
-			return false;
-		}
+    return null;
+  }
 
-		// Remove hyphen for calculation
-		const digits = normalized.replace('-', '');
+  /**
+   * Validates ISSN checksum digit
+   * @param issn - Normalized ISSN (1234-5678 format)
+   * @returns True if checksum is valid
+   */
+  private validateISSNChecksum(issn: string): boolean {
+    const normalized = this.normalizeISSN(issn);
+    if (!normalized) {
+      return false;
+    }
 
-		// Calculate checksum for first 7 digits
-		let sum = 0;
-		for (let i = 0; i < 7; i++) {
-			sum += parseInt(digits[i]) * (8 - i);
-		}
+    // Remove hyphen for calculation
+    const digits = normalized.replace("-", "");
 
-		const remainder = sum % 11;
-		const expectedCheckDigit = remainder === 0 ? '0' :
-								 remainder === 1 ? 'X' :
-								 (11 - remainder).toString();
+    // Calculate checksum for first 7 digits
+    let sum = 0;
+    for (let i = 0; i < 7; i++) {
+      sum += parseInt(digits[i]) * (8 - i);
+    }
 
-		const actualCheckDigit = digits[7];
-		return actualCheckDigit === expectedCheckDigit;
-	}
+    const remainder = sum % 11;
+    const expectedCheckDigit =
+      remainder === 0
+        ? "0"
+        : remainder === 1
+          ? "X"
+          : (11 - remainder).toString();
 
-	/**
-	 * Detects if a string is a potential ISSN identifier
-	 * @param id - The identifier to check
-	 * @returns True if it looks like an ISSN
-	 */
-	private isISSNIdentifier(id: string): boolean {
-		if (!id || typeof id !== 'string') {
-			return false;
-		}
+    const actualCheckDigit = digits[7];
+    return actualCheckDigit === expectedCheckDigit;
+  }
 
-		// Check for explicit ISSN prefixes
-		if (/^(issn[:\s]*|eissn[:\s]*)/i.test(id.trim())) {
-			return true;
-		}
+  /**
+   * Detects if a string is a potential ISSN identifier
+   * @param id - The identifier to check
+   * @returns True if it looks like an ISSN
+   */
+  private isISSNIdentifier(id: string): boolean {
+    if (!id || typeof id !== "string") {
+      return false;
+    }
 
-		// Check for ISSN format patterns (but exclude OpenAlex IDs)
-		if (id.startsWith('S') && /^S\d+$/.test(id)) {
-			return false; // OpenAlex source ID
-		}
+    // Check for explicit ISSN prefixes
+    if (/^(issn[:\s]*|eissn[:\s]*)/i.test(id.trim())) {
+      return true;
+    }
 
-		return this.isValidISSNFormat(id);
-	}
+    // Check for ISSN format patterns (but exclude OpenAlex IDs)
+    if (id.startsWith("S") && /^S\d+$/.test(id)) {
+      return false; // OpenAlex source ID
+    }
 
-	/**
-	 * Validates and normalizes an ISSN with full validation
-	 * @param issn - The ISSN to validate
-	 * @param options - Validation options
-	 * @returns Normalized ISSN if valid, null otherwise
-	 */
-	private validateAndNormalizeISSN(issn: string, options: { validateChecksum?: boolean } = {}): string | null {
-		const normalized = this.normalizeISSN(issn);
-		if (!normalized) {
-			logger.warn("issn", `Invalid ISSN format: ${issn}`);
-			return null;
-		}
+    return this.isValidISSNFormat(id);
+  }
 
-		// Optionally validate checksum
-		if (options.validateChecksum && !this.validateISSNChecksum(normalized)) {
-			logger.warn("issn", `Invalid ISSN checksum: ${issn} (normalized: ${normalized})`);
-			return null;
-		}
+  /**
+   * Validates and normalizes an ISSN with full validation
+   * @param issn - The ISSN to validate
+   * @param options - Validation options
+   * @returns Normalized ISSN if valid, null otherwise
+   */
+  private validateAndNormalizeISSN(
+    issn: string,
+    options: { validateChecksum?: boolean } = {},
+  ): string | null {
+    const normalized = this.normalizeISSN(issn);
+    if (!normalized) {
+      logger.warn("issn", `Invalid ISSN format: ${issn}`);
+      return null;
+    }
 
-		return normalized;
-	}
+    // Optionally validate checksum
+    if (options.validateChecksum && !this.validateISSNChecksum(normalized)) {
+      logger.warn(
+        "issn",
+        `Invalid ISSN checksum: ${issn} (normalized: ${normalized})`,
+      );
+      return null;
+    }
 
-	/**
+    return normalized;
+  }
+
+  /**
    * Get a single source/journal by ID or ISSN
    * @param id - The OpenAlex source ID (e.g., 'S123456789'), URL, or ISSN identifier
    * @param params - Additional query parameters (select fields, etc.)
@@ -253,35 +280,37 @@ export class SourcesApi {
    * const sourceByBareISSN = await sourcesApi.getSource('00280836');
    * ```
    */
-	async getSource(id: string, params: QueryParams = {}): Promise<Source> {
-		// Check if the ID is an ISSN identifier
-		if (this.isISSNIdentifier(id)) {
-			// Try to get source by ISSN
-			const normalizedISSN = this.validateAndNormalizeISSN(id, { validateChecksum: false });
-			if (normalizedISSN) {
-				logger.debug("issn", `Resolving ISSN ${id} as ${normalizedISSN}`);
+  async getSource(id: string, params: QueryParams = {}): Promise<Source> {
+    // Check if the ID is an ISSN identifier
+    if (this.isISSNIdentifier(id)) {
+      // Try to get source by ISSN
+      const normalizedISSN = this.validateAndNormalizeISSN(id, {
+        validateChecksum: false,
+      });
+      if (normalizedISSN) {
+        logger.debug("issn", `Resolving ISSN ${id} as ${normalizedISSN}`);
 
-				// Search for source by ISSN
-				const response = await this.getSourcesByISSN(normalizedISSN, {
-					...params,
-					per_page: 1
-				});
+        // Search for source by ISSN
+        const response = await this.getSourcesByISSN(normalizedISSN, {
+          ...params,
+          per_page: 1,
+        });
 
-				if (response.results.length > 0) {
-					return response.results[0];
-				} else {
-					throw new Error(`No source found for ISSN: ${normalizedISSN}`);
-				}
-			} else {
-				throw new Error(`Invalid ISSN format: ${id}`);
-			}
-		}
+        if (response.results.length > 0) {
+          return response.results[0];
+        } else {
+          throw new Error(`No source found for ISSN: ${normalizedISSN}`);
+        }
+      } else {
+        throw new Error(`Invalid ISSN format: ${id}`);
+      }
+    }
 
-		// Use standard ID-based lookup for OpenAlex IDs and URLs
-		return this.client.getById<Source>("sources", id, params);
-	}
+    // Use standard ID-based lookup for OpenAlex IDs and URLs
+    return this.client.getById<Source>("sources", id, params);
+  }
 
-	/**
+  /**
    * Get multiple sources with optional filters
    * @param params - Query parameters including filters, pagination, sorting
    * @returns Promise resolving to sources response with results and metadata
@@ -295,12 +324,14 @@ export class SourcesApi {
    * });
    * ```
    */
-	async getSources(params: Omit<QueryParams, "filter"> & { filter?: SourcesFilters } = {}): Promise<OpenAlexResponse<Source>> {
-		const queryParams = this.buildFilterParams(params);
-		return this.client.getResponse<Source>("sources", queryParams);
-	}
+  async getSources(
+    params: Omit<QueryParams, "filter"> & { filter?: SourcesFilters } = {},
+  ): Promise<OpenAlexResponse<Source>> {
+    const queryParams = this.buildFilterParams(params);
+    return this.client.getResponse<Source>("sources", queryParams);
+  }
 
-	/**
+  /**
    * Search sources by display name and description
    * @param query - Search query string
    * @param filters - Optional additional filters to apply
@@ -315,24 +346,25 @@ export class SourcesApi {
    * });
    * ```
    */
-	async searchSources(
-		query: string,
-		options: SearchSourcesOptions = {}
-	): Promise<OpenAlexResponse<Source>> {
-		const params: QueryParams = {
-			search: query,
-			sort: options.sort ?? (query.trim() ? "relevance_score:desc" : "works_count"),
-		};
+  async searchSources(
+    query: string,
+    options: SearchSourcesOptions = {},
+  ): Promise<OpenAlexResponse<Source>> {
+    const params: QueryParams = {
+      search: query,
+      sort:
+        options.sort ?? (query.trim() ? "relevance_score:desc" : "works_count"),
+    };
 
-		if (options.page !== undefined) params.page = options.page;
-		if (options.per_page !== undefined) params.per_page = options.per_page;
-		if (options.select !== undefined) params.select = options.select;
-		if (options.filters) params.filter = buildFilterString(options.filters);
+    if (options.page !== undefined) params.page = options.page;
+    if (options.per_page !== undefined) params.per_page = options.per_page;
+    if (options.select !== undefined) params.select = options.select;
+    if (options.filters) params.filter = buildFilterString(options.filters);
 
-		return this.client.getResponse<Source>("sources", params);
-	}
+    return this.client.getResponse<Source>("sources", params);
+  }
 
-	/**
+  /**
    * Autocomplete sources by name/title for quick search suggestions
    * @param query - Search query string for autocomplete suggestions
    * @returns Promise resolving to array of source autocomplete results
@@ -348,32 +380,39 @@ export class SourcesApi {
    * });
    * ```
    */
-	async autocomplete(query: string): Promise<AutocompleteResult[]> {
-		if (!query.trim()) {
-			return [];
-		}
+  async autocomplete(query: string): Promise<AutocompleteResult[]> {
+    if (!query.trim()) {
+      return [];
+    }
 
-		try {
-			const endpoint = "autocomplete/sources";
-			const queryParams: QueryParams & { q: string } = {
-				q: query.trim(),
-			};
+    try {
+      const endpoint = "autocomplete/sources";
+      const queryParams: QueryParams & { q: string } = {
+        q: query.trim(),
+      };
 
-			const response = await this.client.getResponse<AutocompleteResult>(endpoint, queryParams);
+      const response = await this.client.getResponse<AutocompleteResult>(
+        endpoint,
+        queryParams,
+      );
 
-			return response.results.map(result => ({
-				...result,
-				entity_type: "source" as const,
-			}));
-		} catch (error: unknown) {
-			// Log error but return empty array for graceful degradation
-			const errorMessage = error instanceof Error ? error.message : "Unknown error";
-			logger.warn(`Autocomplete failed for query "${query}": ${errorMessage}`, { query, error });
-			return [];
-		}
-	}
+      return response.results.map((result) => ({
+        ...result,
+        entity_type: "source" as const,
+      }));
+    } catch (error: unknown) {
+      // Log error but return empty array for graceful degradation
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      logger.warn(`Autocomplete failed for query "${query}": ${errorMessage}`, {
+        query,
+        error,
+      });
+      return [];
+    }
+  }
 
-	/**
+  /**
    * Get sources published by a specific publisher
    * @param publisher - Publisher name or ID to filter by
    * @param params - Additional query parameters
@@ -384,24 +423,24 @@ export class SourcesApi {
    * const springerSources = await sourcesApi.getSourcesByPublisher('Springer');
    * ```
    */
-	async getSourcesByPublisher(
-		publisher: string,
-		params: QueryParams = {}
-	): Promise<OpenAlexResponse<Source>> {
-		const filters: SourcesFilters = {
-			publisher,
-		};
+  async getSourcesByPublisher(
+    publisher: string,
+    params: QueryParams = {},
+  ): Promise<OpenAlexResponse<Source>> {
+    const filters: SourcesFilters = {
+      publisher,
+    };
 
-		const { filter: _, ...paramsWithoutFilter } = params;
-		const queryParams = this.buildFilterParams({
-			...paramsWithoutFilter,
-			filter: filters,
-			sort: params.sort ?? "works_count:desc",
-		});
-		return this.client.getResponse<Source>("sources", queryParams);
-	}
+    const { filter: _, ...paramsWithoutFilter } = params;
+    const queryParams = this.buildFilterParams({
+      ...paramsWithoutFilter,
+      filter: filters,
+      sort: params.sort ?? "works_count:desc",
+    });
+    return this.client.getResponse<Source>("sources", queryParams);
+  }
 
-	/**
+  /**
    * Get only open access sources
    * @param params - Additional query parameters
    * @returns Promise resolving to open access sources
@@ -414,21 +453,23 @@ export class SourcesApi {
    * });
    * ```
    */
-	async getOpenAccessSources(params: QueryParams = {}): Promise<OpenAlexResponse<Source>> {
-		const filters: SourcesFilters = {
-			"is_oa": true,
-		};
+  async getOpenAccessSources(
+    params: QueryParams = {},
+  ): Promise<OpenAlexResponse<Source>> {
+    const filters: SourcesFilters = {
+      is_oa: true,
+    };
 
-		const { filter: _, ...paramsWithoutFilter } = params;
-		const queryParams = this.buildFilterParams({
-			...paramsWithoutFilter,
-			filter: filters,
-			sort: params.sort ?? "works_count:desc",
-		});
-		return this.client.getResponse<Source>("sources", queryParams);
-	}
+    const { filter: _, ...paramsWithoutFilter } = params;
+    const queryParams = this.buildFilterParams({
+      ...paramsWithoutFilter,
+      filter: filters,
+      sort: params.sort ?? this.WORKS_COUNT_DESC,
+    });
+    return this.client.getResponse<Source>("sources", queryParams);
+  }
 
-	/**
+  /**
    * Get sources by country code
    * @param countryCode - Two-letter ISO country code (e.g., 'US', 'GB', 'DE')
    * @param params - Additional query parameters
@@ -442,25 +483,25 @@ export class SourcesApi {
    * });
    * ```
    */
-	async getSourcesByCountry(
-		countryCode: string,
-		params: Omit<QueryParams, "filter"> & { filter?: SourcesFilters } = {}
-	): Promise<OpenAlexResponse<Source>> {
-		const filters: SourcesFilters = {
-			...params.filter,
-			"country_code": countryCode,
-		};
+  async getSourcesByCountry(
+    countryCode: string,
+    params: Omit<QueryParams, "filter"> & { filter?: SourcesFilters } = {},
+  ): Promise<OpenAlexResponse<Source>> {
+    const filters: SourcesFilters = {
+      ...params.filter,
+      country_code: countryCode,
+    };
 
-		const { filter: _, ...paramsWithoutFilter } = params;
-		const queryParams = this.buildFilterParams({
-			...paramsWithoutFilter,
-			filter: filters,
-			sort: params["sort"] ?? "works_count:desc",
-		});
-		return this.client.getResponse<Source>("sources", queryParams);
-	}
+    const { filter: _, ...paramsWithoutFilter } = params;
+    const queryParams = this.buildFilterParams({
+      ...paramsWithoutFilter,
+      filter: filters,
+      sort: params.sort ?? this.WORKS_COUNT_DESC,
+    });
+    return this.client.getResponse<Source>("sources", queryParams);
+  }
 
-	/**
+  /**
    * Get works published in a specific source
    * @param sourceId - The source ID to get works for
    * @param params - Additional query parameters for works filtering
@@ -475,19 +516,19 @@ export class SourcesApi {
    * });
    * ```
    */
-	async getSourceWorks(
-		sourceId: string,
-		params: QueryParams = {}
-	): Promise<OpenAlexResponse<Work>> {
-		const worksParams = {
-			...params,
-			filter: `primary_location.source.id:${sourceId}`,
-		};
+  async getSourceWorks(
+    sourceId: string,
+    params: QueryParams = {},
+  ): Promise<OpenAlexResponse<Work>> {
+    const worksParams = {
+      ...params,
+      filter: `primary_location.source.id:${sourceId}`,
+    };
 
-		return this.client.getResponse<Work>("works", worksParams);
-	}
+    return this.client.getResponse<Work>("works", worksParams);
+  }
 
-	/**
+  /**
    * Get citation statistics for a source
    * @param sourceId - The source ID to get statistics for
    * @param params - Additional parameters (select fields, etc.)
@@ -500,27 +541,30 @@ export class SourcesApi {
    * });
    * ```
    */
-	async getSourceStats(sourceId: string, params: QueryParams = {}): Promise<Source> {
-		const statsParams = {
-			...params,
-			select: params.select ?? [
-				"id",
-				"display_name",
-				"cited_by_count",
-				"works_count",
-				"summary_stats",
-				"counts_by_year",
-				"is_oa",
-				"type",
-				"publisher",
-				"country_code",
-			],
-		};
+  async getSourceStats(
+    sourceId: string,
+    params: QueryParams = {},
+  ): Promise<Source> {
+    const statsParams = {
+      ...params,
+      select: params.select ?? [
+        "id",
+        "display_name",
+        "cited_by_count",
+        "works_count",
+        "summary_stats",
+        "counts_by_year",
+        "is_oa",
+        "type",
+        "publisher",
+        "country_code",
+      ],
+    };
 
-		return this.getSource(sourceId, statsParams);
-	}
+    return this.getSource(sourceId, statsParams);
+  }
 
-	/**
+  /**
    * Get a random sample of sources
    * @param count - Number of random sources to return (max 10,000)
    * @param filters - Optional filters to apply to the random sample
@@ -535,30 +579,30 @@ export class SourcesApi {
    * }, 42);
    * ```
    */
-	async getRandomSources(
-		count: number,
-		filters: SourcesFilters = {},
-		seed?: number
-	): Promise<OpenAlexResponse<Source>> {
-		if (count > 10000) {
-			throw new Error("Random sample size cannot exceed 10,000");
-		}
+  async getRandomSources(
+    count: number,
+    filters: SourcesFilters = {},
+    seed?: number,
+  ): Promise<OpenAlexResponse<Source>> {
+    if (count > 10000) {
+      throw new Error("Random sample size cannot exceed 10,000");
+    }
 
-		const params: Omit<QueryParams, "filter"> & { filter?: SourcesFilters } = {
-			filter: filters,
-			sample: count,
-			per_page: count,
-		};
+    const params: Omit<QueryParams, "filter"> & { filter?: SourcesFilters } = {
+      filter: filters,
+      sample: count,
+      per_page: count,
+    };
 
-		if (seed !== undefined) {
-			params["seed"] = seed;
-		}
+    if (seed !== undefined) {
+      params["seed"] = seed;
+    }
 
-		const queryParams = this.buildFilterParams(params);
-		return this.client.getResponse<Source>("sources", queryParams);
-	}
+    const queryParams = this.buildFilterParams(params);
+    return this.client.getResponse<Source>("sources", queryParams);
+  }
 
-	/**
+  /**
    * Get sources that are indexed in DOAJ (Directory of Open Access Journals)
    * @param params - Additional query parameters
    * @returns Promise resolving to DOAJ-indexed sources
@@ -571,19 +615,21 @@ export class SourcesApi {
    * });
    * ```
    */
-	async getDOAJSources(params: QueryParams = {}): Promise<OpenAlexResponse<Source>> {
-		const filters: SourcesFilters = {
-			"is_in_doaj": true,
-		};
+  async getDOAJSources(
+    params: QueryParams = {},
+  ): Promise<OpenAlexResponse<Source>> {
+    const filters: SourcesFilters = {
+      is_in_doaj: true,
+    };
 
-		return this.getSources({
-			...params,
-			filter: filters,
-			sort: params.sort ?? "works_count:desc",
-		});
-	}
+    return this.getSources({
+      ...params,
+      filter: filters,
+      sort: params.sort ?? this.WORKS_COUNT_DESC,
+    });
+  }
 
-	/**
+  /**
    * Get sources by publication type (journal, conference, repository, etc.)
    * @param type - Source type to filter by
    * @param params - Additional query parameters
@@ -597,22 +643,22 @@ export class SourcesApi {
    * });
    * ```
    */
-	async getSourcesByType(
-		type: string,
-		params: QueryParams = {}
-	): Promise<OpenAlexResponse<Source>> {
-		const filters: SourcesFilters = {
-			type,
-		};
+  async getSourcesByType(
+    type: string,
+    params: QueryParams = {},
+  ): Promise<OpenAlexResponse<Source>> {
+    const filters: SourcesFilters = {
+      type,
+    };
 
-		return this.getSources({
-			...params,
-			filter: filters,
-			sort: params.sort ?? "works_count:desc",
-		});
-	}
+    return this.getSources({
+      ...params,
+      filter: filters,
+      sort: params.sort ?? this.WORKS_COUNT_DESC,
+    });
+  }
 
-	/**
+  /**
    * Get sources with APC (Article Processing Charge) information
    * @param minAPC - Minimum APC price in USD (optional)
    * @param maxAPC - Maximum APC price in USD (optional)
@@ -627,29 +673,29 @@ export class SourcesApi {
    * });
    * ```
    */
-	async getSourcesWithAPC(
-		minAPC?: number,
-		maxAPC?: number,
-		params: QueryParams = {}
-	): Promise<OpenAlexResponse<Source>> {
-		const filters: SourcesFilters = {};
+  async getSourcesWithAPC(
+    minAPC?: number,
+    maxAPC?: number,
+    params: QueryParams = {},
+  ): Promise<OpenAlexResponse<Source>> {
+    const filters: SourcesFilters = {};
 
-		if (minAPC !== undefined && maxAPC !== undefined) {
-			filters["apc_usd"] = `${minAPC.toString()}-${maxAPC.toString()}`;
-		} else if (minAPC !== undefined) {
-			filters["apc_usd"] = `>${minAPC.toString()}`;
-		} else if (maxAPC !== undefined) {
-			filters["apc_usd"] = `<${maxAPC.toString()}`;
-		}
+    if (minAPC !== undefined && maxAPC !== undefined) {
+      filters["apc_usd"] = `${minAPC.toString()}-${maxAPC.toString()}`;
+    } else if (minAPC !== undefined) {
+      filters["apc_usd"] = `>${minAPC.toString()}`;
+    } else if (maxAPC !== undefined) {
+      filters["apc_usd"] = `<${maxAPC.toString()}`;
+    }
 
-		return this.getSources({
-			...params,
-			filter: filters,
-			sort: params.sort ?? "apc_usd:desc",
-		});
-	}
+    return this.getSources({
+      ...params,
+      filter: filters,
+      sort: params.sort ?? this.WORKS_COUNT_DESC,
+    });
+  }
 
-	/**
+  /**
    * Get the most cited sources in a given time period
    * @param year - Publication year to focus on (optional)
    * @param limit - Number of top sources to return
@@ -664,23 +710,23 @@ export class SourcesApi {
    * });
    * ```
    */
-	async getTopCitedSources(
-		year?: number,
-		limit = 25,
-		filters: SourcesFilters = {}
-	): Promise<OpenAlexResponse<Source>> {
-		const combinedFilters = { ...filters };
+  async getTopCitedSources(
+    year?: number,
+    limit = 25,
+    filters: SourcesFilters = {},
+  ): Promise<OpenAlexResponse<Source>> {
+    const combinedFilters = { ...filters };
 
-		const params: Omit<QueryParams, "filter"> & { filter?: SourcesFilters } = {
-			filter: combinedFilters,
-			sort: "cited_by_count:desc",
-			per_page: limit,
-		};
+    const params: Omit<QueryParams, "filter"> & { filter?: SourcesFilters } = {
+      filter: combinedFilters,
+      sort: "cited_by_count:desc",
+      per_page: limit,
+    };
 
-		return this.getSources(params);
-	}
+    return this.getSources(params);
+  }
 
-	/**
+  /**
    * Stream all sources matching the given criteria
    * Use this for large-scale data processing
    * @param filters - Filters to apply
@@ -695,20 +741,20 @@ export class SourcesApi {
    * }
    * ```
    */
-	async *streamSources(
-		filters: SourcesFilters = {},
-		batchSize = 200
-	): AsyncGenerator<Source[], void, unknown> {
-		const queryParams: QueryParams = {};
-		const filterString = buildFilterString(filters);
-		// Only add filter if it's not empty
-		if (filterString) {
-			queryParams.filter = filterString;
-		}
-		yield* this.client.stream<Source>("sources", queryParams, batchSize);
-	}
+  async *streamSources(
+    filters: SourcesFilters = {},
+    batchSize = 200,
+  ): AsyncGenerator<Source[], void, unknown> {
+    const queryParams: QueryParams = {};
+    const filterString = buildFilterString(filters);
+    // Only add filter if it's not empty
+    if (filterString) {
+      queryParams.filter = filterString;
+    }
+    yield* this.client.stream<Source>("sources", queryParams, batchSize);
+  }
 
-	/**
+  /**
    * Get sources by ISSN identifier with comprehensive format support
    * @param issn - ISSN identifier supporting multiple formats:
    *   - Standard: '1234-5678'
@@ -744,187 +790,210 @@ export class SourcesApi {
    * const sources7 = await sourcesApi.getSourcesByISSN('issn 2041-172x');
    * ```
    */
-	async getSourcesByISSN(
-		issn: string,
-		params: QueryParams = {},
-		options: { validateChecksum?: boolean } = {}
-	): Promise<OpenAlexResponse<Source>> {
-		// Validate and normalize the ISSN
-		const normalizedISSN = this.validateAndNormalizeISSN(issn, options);
-		if (!normalizedISSN) {
-			throw new Error(`Invalid ISSN format: ${issn}`);
-		}
+  async getSourcesByISSN(
+    issn: string,
+    params: QueryParams = {},
+    options: { validateChecksum?: boolean } = {},
+  ): Promise<OpenAlexResponse<Source>> {
+    // Validate and normalize the ISSN
+    const normalizedISSN = this.validateAndNormalizeISSN(issn, options);
+    if (!normalizedISSN) {
+      throw new Error(`Invalid ISSN format: ${issn}`);
+    }
 
-		logger.debug("issn", `Searching for sources with ISSN: ${normalizedISSN} (from input: ${issn})`);
+    logger.debug(
+      "issn",
+      `Searching for sources with ISSN: ${normalizedISSN} (from input: ${issn})`,
+    );
 
-		const filters: SourcesFilters = {
-			"ids.issn": normalizedISSN,
-		};
+    const filters: SourcesFilters = {
+      "ids.issn": normalizedISSN,
+    };
 
-		return this.getSources({
-			...params,
-			filter: filters,
-		});
-	}
+    return this.getSources({
+      ...params,
+      filter: filters,
+    });
+  }
 
-	/**
-	 * Validate ISSN format and optionally verify checksum
-	 * @param issn - ISSN to validate
-	 * @param options - Validation options
-	 * @returns Validation result with normalized ISSN if valid
-	 *
-	 * @example
-	 * ```typescript
-	 * // Basic format validation
-	 * const result1 = await sourcesApi.validateISSN('0028-0836');
-	 * logger.debug("api", result1); // { isValid: true, normalized: '0028-0836', format: 'standard' }
-	 *
-	 * // With checksum validation
-	 * const result2 = await sourcesApi.validateISSN('ISSN 2041-172X', { validateChecksum: true });
-	 * logger.debug("api", result2); // { isValid: true, normalized: '2041-172X', format: 'with_prefix', checksumValid: true }
-	 *
-	 * // Invalid format
-	 * const result3 = await sourcesApi.validateISSN('invalid');
-	 * logger.debug("api", result3); // { isValid: false, error: 'Invalid ISSN format' }
-	 * ```
-	 */
-	validateISSN(issn: string, options: { validateChecksum?: boolean } = {}): {
-		isValid: boolean;
-		normalized?: string;
-		format?: 'standard' | 'with_prefix' | 'scheme_notation' | 'bare' | 'unknown';
-		checksumValid?: boolean;
-		error?: string;
-	} {
-		if (!issn || typeof issn !== 'string') {
-			return { isValid: false, error: 'ISSN must be a non-empty string' };
-		}
+  /**
+   * Validate ISSN format and optionally verify checksum
+   * @param issn - ISSN to validate
+   * @param options - Validation options
+   * @returns Validation result with normalized ISSN if valid
+   *
+   * @example
+   * ```typescript
+   * // Basic format validation
+   * const result1 = await sourcesApi.validateISSN('0028-0836');
+   * logger.debug("api", result1); // { isValid: true, normalized: '0028-0836', format: 'standard' }
+   *
+   * // With checksum validation
+   * const result2 = await sourcesApi.validateISSN('ISSN 2041-172X', { validateChecksum: true });
+   * logger.debug("api", result2); // { isValid: true, normalized: '2041-172X', format: 'with_prefix', checksumValid: true }
+   *
+   * // Invalid format
+   * const result3 = await sourcesApi.validateISSN('invalid');
+   * logger.debug("api", result3); // { isValid: false, error: 'Invalid ISSN format' }
+   * ```
+   */
+  validateISSN(
+    issn: string,
+    options: { validateChecksum?: boolean } = {},
+  ): {
+    isValid: boolean;
+    normalized?: string;
+    format?:
+      | "standard"
+      | "with_prefix"
+      | "scheme_notation"
+      | "bare"
+      | "unknown";
+    checksumValid?: boolean;
+    error?: string;
+  } {
+    if (!issn || typeof issn !== "string") {
+      return { isValid: false, error: "ISSN must be a non-empty string" };
+    }
 
-		const trimmed = issn.trim();
+    const trimmed = issn.trim();
 
-		// Determine format type
-		let format: 'standard' | 'with_prefix' | 'scheme_notation' | 'bare' | 'unknown' = 'unknown';
-		if (/^\d{4}-\d{3}[\dxX]$/.test(trimmed)) {
-			format = 'standard';
-		} else if (/^(ISSN|EISSN)[:\s]/i.test(trimmed)) {
-			format = /:/i.test(trimmed) ? 'scheme_notation' : 'with_prefix';
-		} else if (/^\d{7}[\dxX]$/.test(trimmed)) {
-			format = 'bare';
-		}
+    // Determine format type
+    let format:
+      | "standard"
+      | "with_prefix"
+      | "scheme_notation"
+      | "bare"
+      | "unknown" = "unknown";
+    if (/^\d{4}-\d{3}[\dxX]$/.test(trimmed)) {
+      format = "standard";
+    } else if (/^(ISSN|EISSN)[:\s]/i.test(trimmed)) {
+      format = /:/i.test(trimmed) ? "scheme_notation" : "with_prefix";
+    } else if (/^\d{7}[\dxX]$/.test(trimmed)) {
+      format = "bare";
+    }
 
-		// Validate and normalize
-		const normalized = this.validateAndNormalizeISSN(issn, { validateChecksum: false });
-		if (!normalized) {
-			return { isValid: false, error: 'Invalid ISSN format' };
-		}
+    // Validate and normalize
+    const normalized = this.validateAndNormalizeISSN(issn, {
+      validateChecksum: false,
+    });
+    if (!normalized) {
+      return { isValid: false, error: "Invalid ISSN format" };
+    }
 
-		const result = {
-			isValid: true,
-			normalized,
-			format,
-		};
+    const result = {
+      isValid: true,
+      normalized,
+      format,
+    };
 
-		// Optional checksum validation
-		if (options.validateChecksum) {
-			return {
-				...result,
-				checksumValid: this.validateISSNChecksum(normalized),
-			};
-		}
+    // Optional checksum validation
+    if (options.validateChecksum) {
+      return {
+        ...result,
+        checksumValid: this.validateISSNChecksum(normalized),
+      };
+    }
 
-		return result;
-	}
+    return result;
+  }
 
-	/**
-	 * Get sources for multiple ISSNs in a single request
-	 * @param issns - Array of ISSN identifiers (any supported format)
-	 * @param params - Additional query parameters
-	 * @param options - ISSN validation options
-	 * @returns Promise resolving to sources matching any of the ISSNs
-	 *
-	 * @example
-	 * ```typescript
-	 * // Multiple ISSN lookup with different formats
-	 * const sources = await sourcesApi.getSourcesByMultipleISSNs([
-	 *   '0028-0836',           // Nature
-	 *   'ISSN 2041-1723',      // Nature Communications
-	 *   'eissn:1476-4687',     // Nature Biotechnology
-	 *   '2045212X'             // Scientific Reports (bare format)
-	 * ]);
-	 *
-	 * logger.debug("api", `Found ${sources.results.length} sources`);
-	 *
-	 * // With validation options
-	 * const validatedSources = await sourcesApi.getSourcesByMultipleISSNs([
-	 *   '0028-0836',
-	 *   '2041-172X'
-	 * ], {}, { validateChecksum: true });
-	 * ```
-	 */
-	async getSourcesByMultipleISSNs(
-		issns: string[],
-		params: QueryParams = {},
-		options: { validateChecksum?: boolean } = {}
-	): Promise<OpenAlexResponse<Source>> {
-		if (!Array.isArray(issns) || issns.length === 0) {
-			throw new Error("ISSN array must be non-empty");
-		}
+  /**
+   * Get sources for multiple ISSNs in a single request
+   * @param issns - Array of ISSN identifiers (any supported format)
+   * @param params - Additional query parameters
+   * @param options - ISSN validation options
+   * @returns Promise resolving to sources matching any of the ISSNs
+   *
+   * @example
+   * ```typescript
+   * // Multiple ISSN lookup with different formats
+   * const sources = await sourcesApi.getSourcesByMultipleISSNs([
+   *   '0028-0836',           // Nature
+   *   'ISSN 2041-1723',      // Nature Communications
+   *   'eissn:1476-4687',     // Nature Biotechnology
+   *   '2045212X'             // Scientific Reports (bare format)
+   * ]);
+   *
+   * logger.debug("api", `Found ${sources.results.length} sources`);
+   *
+   * // With validation options
+   * const validatedSources = await sourcesApi.getSourcesByMultipleISSNs([
+   *   '0028-0836',
+   *   '2041-172X'
+   * ], {}, { validateChecksum: true });
+   * ```
+   */
+  async getSourcesByMultipleISSNs(
+    issns: string[],
+    params: QueryParams = {},
+    options: { validateChecksum?: boolean } = {},
+  ): Promise<OpenAlexResponse<Source>> {
+    if (!Array.isArray(issns) || issns.length === 0) {
+      throw new Error("ISSN array must be non-empty");
+    }
 
-		// Validate and normalize all ISSNs
-		const normalizedISSNs: string[] = [];
-		const invalidISSNs: string[] = [];
+    // Validate and normalize all ISSNs
+    const normalizedISSNs: string[] = [];
+    const invalidISSNs: string[] = [];
 
-		for (const issn of issns) {
-			const normalized = this.validateAndNormalizeISSN(issn, options);
-			if (normalized) {
-				normalizedISSNs.push(normalized);
-			} else {
-				invalidISSNs.push(issn);
-			}
-		}
+    for (const issn of issns) {
+      const normalized = this.validateAndNormalizeISSN(issn, options);
+      if (normalized) {
+        normalizedISSNs.push(normalized);
+      } else {
+        invalidISSNs.push(issn);
+      }
+    }
 
-		if (invalidISSNs.length > 0) {
-			logger.warn("issn", `Invalid ISSNs found: ${invalidISSNs.join(', ')}`);
-		}
+    if (invalidISSNs.length > 0) {
+      logger.warn("issn", `Invalid ISSNs found: ${invalidISSNs.join(", ")}`);
+    }
 
-		if (normalizedISSNs.length === 0) {
-			throw new Error(`No valid ISSNs found in: ${issns.join(', ')}`);
-		}
+    if (normalizedISSNs.length === 0) {
+      throw new Error(`No valid ISSNs found in: ${issns.join(", ")}`);
+    }
 
-		logger.debug("issn", `Searching for sources with ISSNs: ${normalizedISSNs.join(', ')}`);
+    logger.debug(
+      "issn",
+      `Searching for sources with ISSNs: ${normalizedISSNs.join(", ")}`,
+    );
 
-		// Use OR filter for multiple ISSNs - pass as array for proper handling
-		const filters: SourcesFilters = {
-			"ids.issn": normalizedISSNs,
-		};
+    // Use OR filter for multiple ISSNs - pass as array for proper handling
+    const filters: SourcesFilters = {
+      "ids.issn": normalizedISSNs,
+    };
 
-		return this.getSources({
-			...params,
-			filter: filters,
-		});
-	}
+    return this.getSources({
+      ...params,
+      filter: filters,
+    });
+  }
 
-	/**
+  /**
    * Build filter parameters for API requests
    * Converts SourcesFilters object to query string format using standardized FilterBuilder
    * @private
    */
-	private buildFilterParams(params: Omit<QueryParams, "filter"> & { filter?: SourcesFilters }): QueryParams {
-		const { filter, ...otherParams } = params;
-		const result: QueryParams = { ...otherParams };
+  private buildFilterParams(
+    params: Omit<QueryParams, "filter"> & { filter?: SourcesFilters },
+  ): QueryParams {
+    const { filter, ...otherParams } = params;
+    const result: QueryParams = { ...otherParams };
 
-		// Convert filters object to filter string, if it's not already a string
-		if (filter) {
-			if (typeof filter === "string") {
-				result.filter = filter;
-			} else if (this.isSourcesFilters(filter)) {
-				const filterString = buildFilterString(filter);
-				// Only add filter if it's not empty
-				if (filterString) {
-					result.filter = filterString;
-				}
-			}
-		}
+    // Convert filters object to filter string, if it's not already a string
+    if (filter) {
+      if (typeof filter === "string") {
+        result.filter = filter;
+      } else if (this.isSourcesFilters(filter)) {
+        const filterString = buildFilterString(filter);
+        // Only add filter if it's not empty
+        if (filterString) {
+          result.filter = filterString;
+        }
+      }
+    }
 
-		return result;
-	}
+    return result;
+  }
 }

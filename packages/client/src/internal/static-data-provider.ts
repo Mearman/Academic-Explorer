@@ -72,6 +72,7 @@ class MemoryCacheTier implements CacheTierInterface {
   >();
   private maxSize = 1000;
   private stats = { requests: 0, hits: 0, totalLoadTime: 0 };
+  private readonly LOG_PREFIX = "memory-cache";
 
   private getKey(entityType: StaticEntityType, id: string): string {
     return `${entityType}:${id}`;
@@ -92,7 +93,7 @@ class MemoryCacheTier implements CacheTierInterface {
 
     if (oldestKey) {
       this.cache.delete(oldestKey);
-      logger.debug("static-cache", "Evicted LRU entry from memory cache", {
+      logger.debug(this.LOG_PREFIX, "Evicted LRU entry from memory cache", {
         key: oldestKey,
       });
     }
@@ -170,6 +171,7 @@ class MemoryCacheTier implements CacheTierInterface {
 class LocalDiskCacheTier implements CacheTierInterface {
   private stats = { requests: 0, hits: 0, totalLoadTime: 0 };
   private cacheDir = "./cache/static-data";
+  private readonly LOG_PREFIX = "local-disk-cache";
 
   private getFilePath(entityType: StaticEntityType, id: string): string {
     // Sanitize ID for filesystem
@@ -213,7 +215,7 @@ class LocalDiskCacheTier implements CacheTierInterface {
         loadTime,
       };
     } catch (error: unknown) {
-      logger.debug("static-cache", "Local disk cache miss", {
+      logger.debug(this.LOG_PREFIX, "Local disk cache miss", {
         entityType,
         id,
         error,
@@ -256,7 +258,7 @@ class LocalDiskCacheTier implements CacheTierInterface {
       // Write data
       fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
     } catch (error: unknown) {
-      logger.warn("static-cache", "Failed to write to local disk cache", {
+      logger.warn(this.LOG_PREFIX, "Failed to write to local disk cache", {
         entityType,
         id,
         error,
@@ -276,7 +278,7 @@ class LocalDiskCacheTier implements CacheTierInterface {
       }
       this.stats = { requests: 0, hits: 0, totalLoadTime: 0 };
     } catch (error: unknown) {
-      logger.warn("static-cache", "Failed to clear local disk cache", {
+      logger.warn(this.LOG_PREFIX, "Failed to clear local disk cache", {
         error,
       });
     }
@@ -296,6 +298,7 @@ class LocalDiskCacheTier implements CacheTierInterface {
  */
 class GitHubPagesCacheTier implements CacheTierInterface {
   private stats = { requests: 0, hits: 0, totalLoadTime: 0 };
+  private readonly LOG_PREFIX = "github-pages-cache";
   private baseUrl = "https://username.github.io/academic-explorer-cache/"; // Configure as needed
   // Track recent failures per URL to avoid repeated bursts against remote
   private recentFailures: Map<
@@ -338,7 +341,7 @@ class GitHubPagesCacheTier implements CacheTierInterface {
       Date.now() < failureState.cooldownUntil
     ) {
       logger.debug(
-        "static-cache",
+        this.LOG_PREFIX,
         "Skipping GitHub Pages fetch due to recent failures",
         { url, entityType, id, failureState },
       );
@@ -376,7 +379,7 @@ class GitHubPagesCacheTier implements CacheTierInterface {
           throw typedErr;
         }
 
-        const data = await response.json();
+        const data = (await response.json()) as unknown;
 
         // Success — clear any recorded failures
         this.recentFailures.delete(url);
@@ -394,7 +397,7 @@ class GitHubPagesCacheTier implements CacheTierInterface {
         };
       } catch (error: unknown) {
         // Network error or HTTP 5xx/429
-        logger.debug("static-cache", "GitHub Pages fetch attempt failed", {
+        logger.debug(this.LOG_PREFIX, "GitHub Pages fetch attempt failed", {
           url,
           entityType,
           id,
@@ -450,7 +453,7 @@ class GitHubPagesCacheTier implements CacheTierInterface {
     try {
       return await attemptFetch(1);
     } catch (finalErr) {
-      logger.debug("static-cache", "GitHub Pages fetch final failure", {
+      logger.debug(this.LOG_PREFIX, "GitHub Pages fetch final failure", {
         url,
         entityType,
         id,
@@ -506,6 +509,8 @@ function calculateCacheStats(stats: {
  * Multi-tier static data provider with automatic fallback and environment detection
  */
 class StaticDataProvider {
+  private readonly LOG_PREFIX = "static-cache";
+
   private memoryCacheTier: MemoryCacheTier;
   private localDiskCacheTier: LocalDiskCacheTier;
   private gitHubPagesCacheTier: GitHubPagesCacheTier;
@@ -617,7 +622,7 @@ class StaticDataProvider {
           return result;
         }
       } catch (error: unknown) {
-        logger.debug("static-cache", "Cache tier error", {
+        logger.debug(this.LOG_PREFIX, "Cache tier error", {
           tier: tier.constructor.name,
           error,
         });
@@ -645,7 +650,7 @@ class StaticDataProvider {
         try {
           await tier.set(entityType, id, data);
         } catch (error: unknown) {
-          logger.debug("static-cache", "Failed to promote to higher tier", {
+          logger.debug(this.LOG_PREFIX, "Failed to promote to higher tier", {
             tier: tier.constructor.name,
             error,
           });
@@ -666,7 +671,7 @@ class StaticDataProvider {
           return true;
         }
       } catch (error: unknown) {
-        logger.debug("static-cache", "Cache tier has() error", {
+        logger.debug(this.LOG_PREFIX, "Cache tier has() error", {
           tier: tier.constructor.name,
           error,
         });
@@ -687,7 +692,7 @@ class StaticDataProvider {
         const stats = await tierInterface.getStats();
         this.globalStats.tierStats[tier] = stats;
       } catch (error: unknown) {
-        logger.debug("static-cache", "Failed to get tier stats", {
+        logger.debug(this.LOG_PREFIX, "Failed to get tier stats", {
           tier,
           error,
         });
@@ -705,7 +710,7 @@ class StaticDataProvider {
         try {
           await tier.clear();
         } catch (error: unknown) {
-          logger.warn("static-cache", "Failed to clear cache tier", {
+          logger.warn(this.LOG_PREFIX, "Failed to clear cache tier", {
             tier: tier.constructor.name,
             error,
           });
