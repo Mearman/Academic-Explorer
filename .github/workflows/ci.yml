@@ -460,20 +460,33 @@ jobs:
       - name: Update workspace version and create follow-up commit
         if: steps.check-workspace-release.outputs.released == 'true'
         run: |
-          echo "📝 Updating package.json version to ${{ steps.check-workspace-release.outputs.version }}"
+          echo "📝 Checking if package.json needs version update..."
 
-          # Update root package.json version (semantic-release doesn't do this when npmPublish is false)
-          npm version ${{ steps.check-workspace-release.outputs.version }} --no-git-tag-version
+          # Check if semantic-release already updated the version
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          TARGET_VERSION="${{ steps.check-workspace-release.outputs.version }}"
 
-          # Commit the version bump (CHANGELOG.md was already updated by semantic-release)
-          git add package.json CHANGELOG.md
-          git commit -m "chore(release): workspace ${{ steps.check-workspace-release.outputs.version }} [skip ci]
+          if [ "$CURRENT_VERSION" != "$TARGET_VERSION" ]; then
+            echo "📝 Updating package.json version from $CURRENT_VERSION to $TARGET_VERSION"
+            npm version $TARGET_VERSION --no-git-tag-version
+          else
+            echo "✅ Package.json version is already correct: $CURRENT_VERSION"
+          fi
 
-          Automated version bump for workspace release ${{ steps.check-workspace-release.outputs.tag }}"
+          # Check if there are any changes to commit
+          if git diff --quiet package.json CHANGELOG.md; then
+            echo "✅ No changes to commit - semantic-release already updated files"
+          else
+            echo "📝 Committing version updates..."
+            git add package.json CHANGELOG.md
+            git commit -m "chore(release): workspace $TARGET_VERSION [skip ci]
 
-          # Push the follow-up commit
-          echo "📤 Pushing version bump commit..."
-          git push origin main
+            Automated version bump for workspace release ${{ steps.check-workspace-release.outputs.tag }}"
+
+            # Push the follow-up commit
+            echo "📤 Pushing version bump commit..."
+            git push origin main
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
