@@ -7,7 +7,6 @@
 import type { LogCategory } from "@academic-explorer/utils/logger";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import {
-  DirectoryEntry,
   DirectoryIndex,
   FileEntry,
   generateContentHash,
@@ -23,7 +22,8 @@ let crypto: typeof import("crypto") | undefined;
 
 // Constants for error messages and file names
 const ERROR_MESSAGE_FS_NOT_INITIALIZED = "Node.js fs module not initialized";
-const ERROR_MESSAGE_ENTITY_EXTRACTION_FAILED = "Entity info extraction failed";
+const __ERROR_MESSAGE_ENTITY_EXTRACTION_FAILED =
+  "Entity info extraction failed";
 const INDEX_FILE_NAME = "index.json";
 
 /**
@@ -373,7 +373,7 @@ export class DiskCacheWriter {
     } catch (error) {
       logError(logger, "Failed to extract entity info", error);
       throw new Error(
-        `ERROR_MESSAGE_ENTITY_EXTRACTION_FAILED: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `_ERROR_MESSAGE_ENTITY_EXTRACTION_FAILED: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     }
   }
@@ -933,45 +933,38 @@ export class DiskCacheWriter {
       // Update timestamp
       indexData.lastUpdated = new Date().toISOString();
 
-      // Determine if this is the directory containing our new file
       const isContainingDirectory = directoryPath === filePaths.directoryPath;
 
-      if (isContainingDirectory) {
-        // Add the new file to the appropriate section
+      // Handle containing directory case
+      if (
+        isContainingDirectory &&
+        entityInfo.isQueryResponse &&
+        entityInfo.queryParams
+      ) {
         const filename = path.basename(filePaths.dataFile, ".json");
-        const relativeFilePath = `./${filename}.json`;
-
-        const fileEntry: FileEntry = {
+        if (!indexData.files) indexData.files = {};
+        indexData.files[filename] = {
           url: data.url,
-          $ref: relativeFilePath,
+          $ref: `./${filename}.json`,
           lastRetrieved: new Date().toISOString(),
           contentHash: await generateContentHash(data.responseData),
         };
+        return;
+      }
 
-        // Add to files section for query/filter responses
-        if (entityInfo.isQueryResponse && entityInfo.queryParams) {
-          if (!indexData.files) {
-            indexData.files = {};
-          }
-          indexData.files[filename] = fileEntry;
-        }
-        // For entity files, we don't add them to index (only directories)
-      } else {
-        // This is a parent directory, add directory reference
+      // Handle parent directory case
+      if (!isContainingDirectory) {
         const relativePath = path.relative(
           directoryPath,
           filePaths.directoryPath,
         );
         const childDirName = relativePath.split(path.sep)[0];
         if (childDirName && childDirName !== ".") {
-          if (!indexData.directories) {
-            indexData.directories = {};
-          }
-          const directoryEntry: DirectoryEntry = {
+          if (!indexData.directories) indexData.directories = {};
+          indexData.directories[childDirName] = {
             $ref: `./${childDirName}`,
             lastModified: new Date().toISOString(),
           };
-          indexData.directories[childDirName] = directoryEntry;
         }
       }
 
