@@ -338,10 +338,10 @@ jobs:
         env:
           NODE_OPTIONS: "--max-old-space-size=8192"
 
-  # Release automation (main branch only) - TEMPORARILY DISABLED
+  # Release automation (main branch only)
   release:
     needs: [ci, workspace-quality]
-    if: false  # Temporarily disabled to test CI
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && success()
     runs-on: ubuntu-latest
     outputs:
       workspace_released: ${{ steps.check-workspace-release.outputs.released }}
@@ -425,7 +425,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Skip semantic-release due to existing tag
-        if: steps.tag-check.outputs.tag_exists == 'true'
+        if: steps.dry-run.outputs.next_version != '' && steps.tag-check.outputs.tag_exists == 'true'
         run: |
           echo "⏭️ Skipping semantic-release as tag already exists"
           echo "released=true" >> $GITHUB_OUTPUT
@@ -434,8 +434,22 @@ jobs:
 
       - name: Check if workspace release was created
         id: check-workspace-release
+        if: steps.dry-run.outputs.next_version == '' || steps.semantic-release.outcome == 'success' || steps.tag-check.outputs.tag_exists == 'true'
         run: |
-          echo "🔍 Checking for workspace release..."
+          if [ "${{ steps.dry-run.outputs.no_release }}" = "true" ]; then
+            echo "released=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ No new release needed"
+            exit 0
+          fi
+
+          # If skipped due to existing tag, treat as released
+          if [ "${{ steps.tag-check.outputs.tag_exists }}" = "true" ]; then
+            echo "released=true" >> $GITHUB_OUTPUT
+            echo "version=${{ steps.dry-run.outputs.next_version }}" >> $GITHUB_OUTPUT
+            echo "tag=v${{ steps.dry-run.outputs.next_version }}" >> $GITHUB_OUTPUT
+            echo "✅ Workspace release already exists: v${{ steps.dry-run.outputs.next_version }}"
+            exit 0
+          fi
 
           # Check if semantic-release created a new workspace tag
           LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
@@ -444,29 +458,30 @@ jobs:
             echo "version=${LATEST_TAG#academic-explorer-monorepo@}" >> $GITHUB_OUTPUT
             echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
             echo "✅ Workspace release created: $LATEST_TAG against commit ${{ github.sha }}"
-          elif [ "${{ steps.tag-check.outputs.tag_exists }}" = "true" ]; then
-            echo "released=true" >> $GITHUB_OUTPUT
-            echo "version=${{ steps.dry-run.outputs.next_version }}" >> $GITHUB_OUTPUT
-            echo "tag=academic-explorer-monorepo@${{ steps.dry-run.outputs.next_version }}" >> $GITHUB_OUTPUT
-            echo "✅ Workspace release already exists: academic-explorer-monorepo@${{ steps.dry-run.outputs.next_version }}"
-          elif [ "${{ steps.dry-run.outputs.next_version }}" = "" ]; then
-            echo "released=false" >> $GITHUB_OUTPUT
-            echo "✅ No release needed - no qualifying commits since last release"
           else
             echo "released=false" >> $GITHUB_OUTPUT
-            echo "❌ Release failed or was skipped unexpectedly"
-            exit 1
+            echo "ℹ️ No workspace release created"
           fi
 
-       - name: Confirm release completion
-         if: steps.check-workspace-release.outputs.released == 'true'
-         run: |
-           echo "✅ Workspace release completed successfully"
-           echo "📦 Release: ${{ steps.check-workspace-release.outputs.tag }}"
-           echo "🏷️  Version: ${{ steps.check-workspace-release.outputs.version }}"
-           echo ""
-           echo "📝 Note: Semantic-release manages versioning through Git tags,"
-           echo "   not package.json updates in monorepo setups."
+      - name: Update workspace version and create follow-up commit
+        if: steps.check-workspace-release.outputs.released == 'true'
+        run: |
+          echo "📝 Updating package.json version to ${{ steps.check-workspace-release.outputs.version }}"
+
+          # Update root package.json version (semantic-release doesn't do this when npmPublish is false)
+          npm version ${{ steps.check-workspace-release.outputs.version }} --no-git-tag-version
+
+          # Commit the version bump (CHANGELOG.md was already updated by semantic-release)
+          git add package.json CHANGELOG.md
+          git commit -m "chore(release): workspace ${{ steps.check-workspace-release.outputs.version }} [skip ci]
+
+          Automated version bump for workspace release ${{ steps.check-workspace-release.outputs.tag }}"
+
+          # Push the follow-up commit
+          echo "📤 Pushing version bump commit..."
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # Deploy to GitHub Pages (main branch only)
   deploy:
