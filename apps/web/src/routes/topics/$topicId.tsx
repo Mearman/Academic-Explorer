@@ -3,7 +3,6 @@ import { useGraphData } from "@/hooks/use-graph-data";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { useGraphStore } from "@/stores/graph-store";
-import { EntityDetectionService } from "@academic-explorer/graph";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
