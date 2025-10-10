@@ -10,6 +10,7 @@ import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { IconBookmark, IconBookmarkOff } from "@tabler/icons-react";
+import type { InstitutionEntity } from "@academic-explorer/client";
 
 function InstitutionRoute() {
   const { institutionId } = Route.useParams();
@@ -101,7 +102,7 @@ function InstitutionRoute() {
     entityId: institutionId,
     enabled: !!institutionId,
   });
-  const institution = rawEntityData.data;
+  const institution = rawEntityData.data as InstitutionEntity | undefined;
 
   // Update document title with institution name
   useEntityDocumentTitle(institution);
@@ -197,8 +198,7 @@ function InstitutionRoute() {
               await userInteractions.unbookmarkEntity();
             } else {
               const title =
-                (institution as any)?.display_name ||
-                `Institution ${institutionId}`;
+                institution?.display_name || `Institution ${institutionId}`;
               await userInteractions.bookmarkEntity(title);
             }
           }}

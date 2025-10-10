@@ -10,6 +10,7 @@ import { logError, logger } from "@academic-explorer/utils/logger";
 import { IconBookmark, IconBookmarkOff } from "@tabler/icons-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import type { Work } from "@academic-explorer/client";
 
 function WorkRoute() {
   const { workId } = Route.useParams();
@@ -56,7 +57,7 @@ function WorkRoute() {
     entityId: workId,
     enabled: !!workId,
   });
-  const work = rawEntityData.data;
+  const work = rawEntityData.data as Work | undefined;
 
   // Update document title with work name
   useEntityDocumentTitle(work);
@@ -145,7 +146,7 @@ function WorkRoute() {
             if (userInteractions.isBookmarked) {
               await userInteractions.unbookmarkEntity();
             } else {
-              const title = (work as any)?.title || `Work ${workId}`;
+              const title = work?.title || `Work ${workId}`;
               await userInteractions.bookmarkEntity(title);
             }
           }}

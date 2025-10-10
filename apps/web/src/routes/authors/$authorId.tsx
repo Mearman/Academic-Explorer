@@ -10,6 +10,7 @@ import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { IconBookmark, IconBookmarkOff } from "@tabler/icons-react";
+import type { Author } from "@academic-explorer/client";
 
 export const Route = createFileRoute("/authors/$authorId")({
   component: AuthorRoute,
@@ -31,7 +32,7 @@ function AuthorRoute() {
   const rawEntityData = useRawEntityData({ entityId: authorId });
 
   // Fetch entity data for title
-  const author = rawEntityData.data;
+  const author = rawEntityData.data as Author | undefined;
 
   // Update document title with author name
   useEntityDocumentTitle(author);
@@ -216,8 +217,7 @@ function AuthorRoute() {
             if (userInteractions.isBookmarked) {
               await userInteractions.unbookmarkEntity();
             } else {
-              const title =
-                (author as any)?.display_name || `Author ${authorId}`;
+              const title = author?.display_name || `Author ${authorId}`;
               await userInteractions.bookmarkEntity(title);
             }
           }}
