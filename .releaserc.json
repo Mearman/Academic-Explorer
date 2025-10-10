@@ -6,6 +6,7 @@
     [
       "@semantic-release/commit-analyzer",
       {
+        "preset": "conventionalcommits",
         "releaseRules": [
           { "type": "feat", "release": "minor" },
           { "type": "fix", "release": "patch" },
@@ -18,8 +19,14 @@
           { "type": "ci", "release": "patch" },
           { "type": "chore", "release": "patch" },
           { "type": "chore", "scope": "deps", "release": "patch" },
-          { "type": "chore", "scope": "dependencies", "release": "patch" }
-        ]
+          { "type": "chore", "scope": "dependencies", "release": "patch" },
+          { "breaking": true, "release": "major" },
+          { "revert": true, "release": "patch" },
+          { "type": "*", "release": "patch" }
+        ],
+        "parserOpts": {
+          "noteKeywords": ["BREAKING CHANGE", "BREAKING CHANGES"]
+        }
       }
     ],
     "@semantic-release/release-notes-generator",
