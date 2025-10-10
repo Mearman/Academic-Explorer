@@ -197,3 +197,12 @@ export * from "./types";
 
 // Re-export all utils (including validateExternalId)
 export * from "./utils";
+
+// Request normalization utilities
+export {
+	normalizeRequest,
+	requestsEqual,
+	isDuplicateRequest,
+	type OpenAlexRequest,
+	type NormalizedRequest
+} from "./utils/request-normalizer";

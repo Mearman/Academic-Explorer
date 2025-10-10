@@ -1,116 +1,58 @@
 /**
  * User interactions database using Dexie
- * Unified tracking of page visits and bookmarks with URL normalization
+ * Unified tracking of page visits and bookmarks with normalized OpenAlex requests
  */
 
 import Dexie, { type Table } from "dexie";
 import { GenericLogger } from "../logger.js";
-import { normalizeQueryForCaching } from "../static-data/cache-utilities.js";
 
 // Database schema interfaces
-export type BookmarkType = "entity" | "search" | "list";
 
 export interface BookmarkRecord {
   id?: number;
-  bookmarkType: BookmarkType;
-  // Entity bookmarks
-  entityId?: string;
-  entityType?: string;
-  // Search/list bookmarks
-  searchQuery?: string;
-  filters?: Record<string, unknown>;
-  resultCount?: number;
-  // Common fields
-  timestamp: Date;
+  /** The normalized OpenAlex request that this bookmark represents */
+  request: StoredNormalizedRequest;
+  /** User-provided title for the bookmark */
   title: string;
+  /** Optional user notes */
   notes?: string;
+  /** User-defined tags for organization */
   tags?: string[];
-  url: string;
-  queryParams?: Record<string, string>;
+  /** When the bookmark was created */
+  timestamp: Date;
+}
+
+/**
+ * Normalized OpenAlex request stored with visit
+ * This matches the structure from @academic-explorer/client
+ */
+export interface StoredNormalizedRequest {
+  /** Cache key for lookups */
+  cacheKey: string;
+  /** Request hash for deduplication */
+  hash: string;
+  /** Original endpoint */
+  endpoint: string;
+  /** Normalized params as JSON string (for storage) */
+  params: string;
 }
 
 export interface PageVisitRecord {
   id?: number;
-  normalizedUrl: string; // Normalized URL similar to caching
-  originalUrl: string; // Original URL as visited
-  pageType: "search" | "list" | "entity" | "unknown";
+  /** Normalized OpenAlex request that generated this visit */
+  request: StoredNormalizedRequest;
+  /** Visit timestamp */
   timestamp: Date;
+  /** Session identifier (optional) */
   sessionId?: string;
+  /** Referrer URL (optional) */
   referrer?: string;
-  // Additional metadata based on page type
-  searchQuery?: string;
-  filters?: Record<string, unknown>;
-  entityId?: string;
-  entityType?: string;
-  resultCount?: number;
-}
-
-// Page type detection utilities
-export function detectPageType(url: string): {
-  pageType: PageVisitRecord["pageType"];
-  entityId?: string;
-  entityType?: string;
-  searchQuery?: string;
-  filters?: Record<string, unknown>;
-} {
-  const urlObj = new URL(
-    url.startsWith("http") ? url : `https://example.com${url}`,
-  );
-  const { pathname, searchParams } = urlObj;
-
-  // Entity pages: /works/:id, /authors/:id, /institutions/:id, /topics/:id, /funders/:id, /sources/:id
-  const entityMatch = pathname.match(
-    /^\/(works|authors|institutions|topics|funders|sources)\/([^/?]+)/,
-  );
-  if (entityMatch) {
-    const [, entityType, entityId] = entityMatch;
-    return {
-      pageType: "entity",
-      entityId,
-      entityType,
-    };
-  }
-
-  // Search page: /search
-  if (pathname === "/search") {
-    const query = searchParams.get("q") || "";
-    const filters: Record<string, unknown> = {};
-
-    // Extract common filter parameters
-    for (const [key, value] of searchParams.entries()) {
-      if (key !== "q") {
-        filters[key] = value;
-      }
-    }
-
-    return {
-      pageType: "search",
-      searchQuery: query,
-      filters: Object.keys(filters).length > 0 ? filters : undefined,
-    };
-  }
-
-  // List pages: /works, /authors, /institutions, /topics, /funders, /sources, /publishers (without specific ID)
-  const listMatch = pathname.match(
-    /^\/(works|authors|institutions|topics|funders|sources|publishers)(?:\/)?$/,
-  );
-  if (listMatch) {
-    const [, entityType] = listMatch;
-    const filters: Record<string, unknown> = {};
-
-    // Extract filter parameters
-    for (const [key, value] of searchParams.entries()) {
-      filters[key] = value;
-    }
-
-    return {
-      pageType: "list",
-      entityType,
-      filters: Object.keys(filters).length > 0 ? filters : undefined,
-    };
-  }
-
-  return { pageType: "unknown" };
+  /** Response duration in ms (optional) */
+  duration?: number;
+  /** Whether the response was cached */
+  cached: boolean;
+  /** Bytes saved via caching (optional) */
+  bytesSaved?: number;
 }
 
 // Dexie database class
@@ -121,11 +63,18 @@ class UserInteractionsDB extends Dexie {
   constructor() {
     super("user-interactions");
 
-    // Unified schema with only bookmarks and pageVisits tables
+    // V2: Legacy schema (entity/search/list based)
     this.version(2).stores({
       bookmarks:
         "++id, bookmarkType, entityId, entityType, searchQuery, timestamp, title, url, *tags",
       pageVisits: "++id, normalizedUrl, pageType, timestamp",
+    });
+
+    // V3: Unified request-based schema
+    this.version(3).stores({
+      bookmarks:
+        "++id, request.cacheKey, request.hash, request.endpoint, timestamp, *tags",
+      pageVisits: "++id, request.cacheKey, request.hash, request.endpoint, timestamp, cached",
     });
   }
 }
@@ -153,52 +102,50 @@ export class UserInteractionsService {
   }
 
   /**
-   * Record a page visit with automatic type detection and URL normalization
+   * Record a page visit with normalized OpenAlex request
+   * @param request - The normalized request from @academic-explorer/client
    */
   async recordPageVisit(
-    url: string,
-    metadata?: {
-      searchQuery?: string;
-      filters?: Record<string, unknown>;
-      entityId?: string;
-      entityType?: string;
-      resultCount?: number;
+    request: {
+      cacheKey: string;
+      hash: string;
+      endpoint: string;
+      params: Record<string, unknown>;
     },
-    sessionId?: string,
-    referrer?: string,
+    metadata?: {
+      sessionId?: string;
+      referrer?: string;
+      duration?: number;
+      cached?: boolean;
+      bytesSaved?: number;
+    },
   ): Promise<void> {
     try {
-      // Detect page type and extract metadata
-      const detection = detectPageType(url);
-
-      // Normalize the URL similar to how caching works
-      const urlObj = new URL(
-        url.startsWith("http") ? url : `https://example.com${url}`,
-      );
-      const normalizedQuery = normalizeQueryForCaching(urlObj.search);
-      const normalizedUrl = `${urlObj.pathname}${normalizedQuery}`;
-
       const pageVisit: PageVisitRecord = {
-        normalizedUrl,
-        originalUrl: url,
+        request: {
+          cacheKey: request.cacheKey,
+          hash: request.hash,
+          endpoint: request.endpoint,
+          params: JSON.stringify(request.params),
+        },
         timestamp: new Date(),
-        sessionId,
-        referrer,
-        // Merge detected metadata with provided metadata
-        ...detection,
-        ...metadata,
+        sessionId: metadata?.sessionId,
+        referrer: metadata?.referrer,
+        duration: metadata?.duration,
+        cached: metadata?.cached ?? false,
+        bytesSaved: metadata?.bytesSaved,
       };
 
       await this.db.pageVisits.add(pageVisit);
 
       this.logger?.debug("user-interactions", "Page visit recorded", {
-        normalizedUrl,
-        pageType: detection.pageType,
-        hasMetadata: !!metadata && Object.keys(metadata).length > 0,
+        cacheKey: request.cacheKey,
+        cached: pageVisit.cached,
+        duration: pageVisit.duration,
       });
     } catch (error) {
       this.logger?.error("user-interactions", "Failed to record page visit", {
-        url,
+        cacheKey: request.cacheKey,
         error,
       });
     }
@@ -227,26 +174,23 @@ export class UserInteractionsService {
   }
 
   /**
-   * Check if an entity is bookmarked
+   * Check if a request is bookmarked
+   * @param cacheKey - The cache key from the normalized request
    */
-  async isEntityBookmarked(
-    entityId: string,
-    entityType: string,
-  ): Promise<boolean> {
+  async isRequestBookmarked(cacheKey: string): Promise<boolean> {
     try {
       const count = await this.db.bookmarks
-        .where("[entityId+entityType]")
-        .equals([entityId, entityType])
+        .where("request.cacheKey")
+        .equals(cacheKey)
         .count();
 
       return count > 0;
     } catch (error) {
       this.logger?.error(
         "user-interactions",
-        "Failed to check entity bookmark status",
+        "Failed to check bookmark status",
         {
-          entityId,
-          entityType,
+          cacheKey,
           error,
         },
       );
@@ -255,59 +199,23 @@ export class UserInteractionsService {
   }
 
   /**
-   * Check if a search is bookmarked
+   * Check if a request is bookmarked by hash
+   * @param hash - The hash from the normalized request
    */
-  async isSearchBookmarked(
-    searchQuery: string,
-    filters?: Record<string, unknown>,
-  ): Promise<boolean> {
-    try {
-      let query = this.db.bookmarks
-        .where("bookmarkType")
-        .equals("search")
-        .filter((bookmark) => bookmark.searchQuery === searchQuery);
-
-      if (filters) {
-        query = query.filter((bookmark) => {
-          if (!bookmark.filters) return false;
-          return JSON.stringify(bookmark.filters) === JSON.stringify(filters);
-        });
-      }
-
-      const count = await query.count();
-      return count > 0;
-    } catch (error) {
-      this.logger?.error(
-        "user-interactions",
-        "Failed to check search bookmark status",
-        {
-          searchQuery,
-          filters,
-          error,
-        },
-      );
-      return false;
-    }
-  }
-
-  /**
-   * Check if a list is bookmarked
-   */
-  async isListBookmarked(url: string): Promise<boolean> {
+  async isRequestBookmarkedByHash(hash: string): Promise<boolean> {
     try {
       const count = await this.db.bookmarks
-        .where("bookmarkType")
-        .equals("list")
-        .filter((bookmark) => bookmark.url === url)
+        .where("request.hash")
+        .equals(hash)
         .count();
 
       return count > 0;
     } catch (error) {
       this.logger?.error(
         "user-interactions",
-        "Failed to check list bookmark status",
+        "Failed to check bookmark status by hash",
         {
-          url,
+          hash,
           error,
         },
       );
@@ -316,23 +224,19 @@ export class UserInteractionsService {
   }
 
   /**
-   * Get bookmark for an entity
+   * Get bookmark by cache key
    */
-  async getEntityBookmark(
-    entityId: string,
-    entityType: string,
-  ): Promise<BookmarkRecord | null> {
+  async getBookmark(cacheKey: string): Promise<BookmarkRecord | null> {
     try {
       const bookmark = await this.db.bookmarks
-        .where("[entityId+entityType]")
-        .equals([entityId, entityType])
+        .where("request.cacheKey")
+        .equals(cacheKey)
         .first();
 
       return bookmark ?? null;
     } catch (error) {
-      this.logger?.error("user-interactions", "Failed to get entity bookmark", {
-        entityId,
-        entityType,
+      this.logger?.error("user-interactions", "Failed to get bookmark", {
+        cacheKey,
         error,
       });
       return null;
@@ -340,52 +244,19 @@ export class UserInteractionsService {
   }
 
   /**
-   * Get bookmark for a search
+   * Get bookmark by hash
    */
-  async getSearchBookmark(
-    searchQuery: string,
-    filters?: Record<string, unknown>,
-  ): Promise<BookmarkRecord | null> {
-    try {
-      let query = this.db.bookmarks
-        .where("bookmarkType")
-        .equals("search")
-        .filter((bookmark) => bookmark.searchQuery === searchQuery);
-
-      if (filters) {
-        query = query.filter((bookmark) => {
-          if (!bookmark.filters) return false;
-          return JSON.stringify(bookmark.filters) === JSON.stringify(filters);
-        });
-      }
-
-      const bookmark = await query.first();
-      return bookmark ?? null;
-    } catch (error) {
-      this.logger?.error("user-interactions", "Failed to get search bookmark", {
-        searchQuery,
-        filters,
-        error,
-      });
-      return null;
-    }
-  }
-
-  /**
-   * Get bookmark for a list
-   */
-  async getListBookmark(url: string): Promise<BookmarkRecord | null> {
+  async getBookmarkByHash(hash: string): Promise<BookmarkRecord | null> {
     try {
       const bookmark = await this.db.bookmarks
-        .where("bookmarkType")
-        .equals("list")
-        .filter((bookmark) => bookmark.url === url)
+        .where("request.hash")
+        .equals(hash)
         .first();
 
       return bookmark ?? null;
     } catch (error) {
-      this.logger?.error("user-interactions", "Failed to get list bookmark", {
-        url,
+      this.logger?.error("user-interactions", "Failed to get bookmark by hash", {
+        hash,
         error,
       });
       return null;
@@ -393,80 +264,45 @@ export class UserInteractionsService {
   }
 
   /**
-   * Add a bookmark (entity, search, or list)
+   * Add a bookmark for a normalized request
    */
   async addBookmark(
-    bookmark: Omit<BookmarkRecord, "id" | "timestamp">,
+    request: {
+      cacheKey: string;
+      hash: string;
+      endpoint: string;
+      params: Record<string, unknown>;
+    },
+    title: string,
+    notes?: string,
+    tags?: string[],
   ): Promise<number> {
     try {
-      const bookmarkWithTimestamp: BookmarkRecord = {
-        ...bookmark,
+      const bookmark: BookmarkRecord = {
+        request: {
+          cacheKey: request.cacheKey,
+          hash: request.hash,
+          endpoint: request.endpoint,
+          params: JSON.stringify(request.params),
+        },
+        title,
+        notes,
+        tags,
         timestamp: new Date(),
       };
 
-      const id = await this.db.bookmarks.add(bookmarkWithTimestamp);
+      const id = (await this.db.bookmarks.add(bookmark)) as number;
 
       this.logger?.debug("user-interactions", "Bookmark added", {
         id,
-        bookmarkType: bookmark.bookmarkType,
-        entityId: bookmark.entityId,
-        entityType: bookmark.entityType,
-        searchQuery: bookmark.searchQuery,
-        title: bookmark.title,
+        cacheKey: request.cacheKey,
+        title,
       });
 
       return id;
     } catch (error) {
       this.logger?.error("user-interactions", "Failed to add bookmark", {
-        bookmarkType: bookmark.bookmarkType,
-        entityId: bookmark.entityId,
-        entityType: bookmark.entityType,
-        searchQuery: bookmark.searchQuery,
-        error,
-      });
-      throw error;
-    }
-  }
-
-  /**
-   * Add an entity bookmark
-   */
-  async addEntityBookmark(
-    entityId: string,
-    entityType: string,
-    title: string,
-    url: string,
-    queryParams?: Record<string, string>,
-    notes?: string,
-    tags?: string[],
-  ): Promise<number> {
-    try {
-      const bookmark: BookmarkRecord = {
-        bookmarkType: "entity",
-        entityId,
-        entityType,
-        timestamp: new Date(),
-        title,
-        url,
-        queryParams,
-        notes,
-        tags,
-      };
-
-      const id = await this.db.bookmarks.add(bookmark);
-
-      this.logger?.debug("user-interactions", "Bookmark added", {
-        entityId,
-        entityType,
-        title,
-        bookmarkId: id,
-      });
-
-      return id;
-    } catch (error) {
-      this.logger?.error("user-interactions", "Failed to add bookmark", {
-        entityId,
-        entityType,
+        cacheKey: request.cacheKey,
         title,
         error,
       });
@@ -474,89 +310,7 @@ export class UserInteractionsService {
     }
   }
 
-  /**
-   * Add a search bookmark
-   */
-  async addSearchBookmark(
-    searchQuery: string,
-    filters: Record<string, unknown> | undefined,
-    title: string,
-    url: string,
-    queryParams?: Record<string, string>,
-    notes?: string,
-    tags?: string[],
-  ): Promise<number> {
-    try {
-      const bookmark: BookmarkRecord = {
-        bookmarkType: "search",
-        searchQuery,
-        filters,
-        timestamp: new Date(),
-        title,
-        url,
-        queryParams,
-        notes,
-        tags,
-      };
 
-      const id = await this.db.bookmarks.add(bookmark);
-
-      this.logger?.debug("user-interactions", "Search bookmark added", {
-        searchQuery,
-        title,
-        bookmarkId: id,
-      });
-
-      return id;
-    } catch (error) {
-      this.logger?.error("user-interactions", "Failed to add search bookmark", {
-        searchQuery,
-        title,
-        error,
-      });
-      throw error;
-    }
-  }
-
-  /**
-   * Add a list bookmark
-   */
-  async addListBookmark(
-    title: string,
-    url: string,
-    queryParams?: Record<string, string>,
-    notes?: string,
-    tags?: string[],
-  ): Promise<number> {
-    try {
-      const bookmark: BookmarkRecord = {
-        bookmarkType: "list",
-        timestamp: new Date(),
-        title,
-        url,
-        queryParams,
-        notes,
-        tags,
-      };
-
-      const id = await this.db.bookmarks.add(bookmark);
-
-      this.logger?.debug("user-interactions", "List bookmark added", {
-        title,
-        url,
-        bookmarkId: id,
-      });
-
-      return id;
-    } catch (error) {
-      this.logger?.error("user-interactions", "Failed to add list bookmark", {
-        title,
-        url,
-        error,
-      });
-      throw error;
-    }
-  }
 
   /**
    * Get all bookmarks
@@ -646,47 +400,58 @@ export class UserInteractionsService {
    */
   async getPageVisitStats(): Promise<{
     totalVisits: number;
-    uniqueUrls: number;
-    byType: Record<string, number>;
-    mostVisitedUrl: {
-      normalizedUrl: string;
+    uniqueRequests: number;
+    byEndpoint: Record<string, number>;
+    mostVisitedRequest: {
+      cacheKey: string;
       count: number;
     } | null;
+    cacheHitRate: number;
   }> {
     try {
       const visits = await this.db.pageVisits.toArray();
 
       const totalVisits = visits.length;
 
-      const urlCounts = new Map<string, number>();
-      const typeCounts: Record<string, number> = {};
+      const requestCounts = new Map<string, number>();
+      const endpointCounts: Record<string, number> = {};
+      let cachedCount = 0;
 
       visits.forEach((visit) => {
-        // Count by URL
-        const count = urlCounts.get(visit.normalizedUrl) || 0;
-        urlCounts.set(visit.normalizedUrl, count + 1);
+        // Count by cache key
+        const count = requestCounts.get(visit.request.cacheKey) || 0;
+        requestCounts.set(visit.request.cacheKey, count + 1);
 
-        // Count by type
-        typeCounts[visit.pageType] = (typeCounts[visit.pageType] || 0) + 1;
+        // Count by endpoint
+        const { endpoint } = visit.request;
+        endpointCounts[endpoint] = (endpointCounts[endpoint] || 0) + 1;
+
+        // Count cached visits
+        if (visit.cached) {
+          cachedCount++;
+        }
       });
 
-      const uniqueUrls = urlCounts.size;
+      const uniqueRequests = requestCounts.size;
 
-      let mostVisitedUrl: {
-        normalizedUrl: string;
+      let mostVisitedRequest: {
+        cacheKey: string;
         count: number;
       } | null = null;
-      for (const [url, count] of urlCounts) {
-        if (!mostVisitedUrl || count > mostVisitedUrl.count) {
-          mostVisitedUrl = { normalizedUrl: url, count };
+      for (const [cacheKey, count] of requestCounts) {
+        if (!mostVisitedRequest || count > mostVisitedRequest.count) {
+          mostVisitedRequest = { cacheKey, count };
         }
       }
 
+      const cacheHitRate = totalVisits > 0 ? cachedCount / totalVisits : 0;
+
       return {
         totalVisits,
-        uniqueUrls,
-        byType: typeCounts,
-        mostVisitedUrl,
+        uniqueRequests,
+        byEndpoint: endpointCounts,
+        mostVisitedRequest,
+        cacheHitRate,
       };
     } catch (error) {
       this.logger?.error(
@@ -698,33 +463,36 @@ export class UserInteractionsService {
       );
       return {
         totalVisits: 0,
-        uniqueUrls: 0,
-        byType: {},
-        mostVisitedUrl: null,
+        uniqueRequests: 0,
+        byEndpoint: {},
+        mostVisitedRequest: null,
+        cacheHitRate: 0,
       };
     }
   }
 
   /**
-   * Get page visits by type
+   * Get page visits by endpoint pattern
    */
-  async getPageVisitsByType(
-    pageType: string,
+  async getPageVisitsByEndpoint(
+    endpointPattern: string,
     limit = 20,
   ): Promise<PageVisitRecord[]> {
     try {
-      return await this.db.pageVisits
-        .where("pageType")
-        .equals(pageType)
+      const allVisits = await this.db.pageVisits
+        .orderBy("timestamp")
         .reverse()
-        .sortBy("timestamp")
-        .then((results) => results.slice(0, limit));
+        .toArray();
+
+      return allVisits
+        .filter((visit) => visit.request.endpoint.includes(endpointPattern))
+        .slice(0, limit);
     } catch (error) {
       this.logger?.error(
         "user-interactions",
-        "Failed to get page visits by type",
+        "Failed to get page visits by endpoint",
         {
-          pageType,
+          endpointPattern,
           error,
         },
       );
@@ -733,39 +501,301 @@ export class UserInteractionsService {
   }
 
   /**
-   * Get popular search queries from page visits
+   * Get popular requests from page visits
    */
-  async getPopularSearches(
+  async getPopularRequests(
     limit = 10,
-  ): Promise<{ query: string; count: number }[]> {
+  ): Promise<{ cacheKey: string; endpoint: string; count: number }[]> {
     try {
-      const searchVisits = await this.db.pageVisits
-        .where("pageType")
-        .equals("search")
-        .toArray();
+      const visits = await this.db.pageVisits.toArray();
 
-      const queryCounts = new Map<string, number>();
-      searchVisits.forEach((visit) => {
-        if (visit.searchQuery) {
-          const count = queryCounts.get(visit.searchQuery) || 0;
-          queryCounts.set(visit.searchQuery, count + 1);
+      const requestCounts = new Map<
+        string,
+        { cacheKey: string; endpoint: string; count: number }
+      >();
+
+      visits.forEach((visit) => {
+        const { cacheKey, endpoint } = visit.request;
+        const existing = requestCounts.get(cacheKey);
+
+        if (existing) {
+          existing.count++;
+        } else {
+          requestCounts.set(cacheKey, { cacheKey, endpoint, count: 1 });
         }
       });
 
-      return Array.from(queryCounts.entries())
-        .map(([query, count]) => ({ query, count }))
+      return Array.from(requestCounts.values())
         .sort((a, b) => b.count - a.count)
         .slice(0, limit);
     } catch (error) {
       this.logger?.error(
         "user-interactions",
-        "Failed to get popular searches",
+        "Failed to get popular requests",
         {
           error,
         },
       );
       return [];
     }
+  }
+
+  // ==================== BACKWARD COMPATIBILITY WRAPPERS ====================
+  // These methods provide compatibility with the old API for gradual migration
+
+  /**
+   * @deprecated Use recordPageVisit with normalized request instead
+   */
+  async recordPageVisitLegacy(
+    url: string,
+    metadata?: {
+      searchQuery?: string;
+      filters?: Record<string, unknown>;
+      entityId?: string;
+      entityType?: string;
+      resultCount?: number;
+    },
+    sessionId?: string,
+    referrer?: string,
+  ): Promise<void> {
+    // Convert URL to a simple request representation
+    const urlObj = new URL(
+      url.startsWith("http") ? url : `https://example.com${url}`,
+    );
+    
+    const params: Record<string, unknown> = {};
+    urlObj.searchParams.forEach((value, key) => {
+      params[key] = value;
+    });
+
+    const request = {
+      cacheKey: url,
+      hash: url.slice(0, 16),
+      endpoint: urlObj.pathname,
+      params,
+    };
+
+    await this.recordPageVisit(request, {
+      sessionId,
+      referrer,
+      cached: false,
+    });
+  }
+
+  /**
+   * @deprecated Use isRequestBookmarked with cache key instead
+   */
+  async isEntityBookmarked(
+    entityId: string,
+    entityType: string,
+  ): Promise<boolean> {
+    // Try to find a bookmark with matching endpoint pattern
+    try {
+      const bookmarks = await this.db.bookmarks.toArray();
+      return bookmarks.some(
+        (b) => b.request.endpoint === `/${entityType}/${entityId}`,
+      );
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * @deprecated Use isRequestBookmarked with cache key instead
+   */
+  async isSearchBookmarked(
+    _searchQuery: string,
+    _filters?: Record<string, unknown>,
+  ): Promise<boolean> {
+    // Simplified: check for /search endpoints
+    try {
+      const bookmarks = await this.db.bookmarks.toArray();
+      return bookmarks.some((b) => b.request.endpoint.includes("/search"));
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * @deprecated Use isRequestBookmarked with cache key instead
+   */
+  async isListBookmarked(_url: string): Promise<boolean> {
+    // Simplified: check for list-like endpoints
+    try {
+      const bookmarks = await this.db.bookmarks.toArray();
+      return bookmarks.some(
+        (b) =>
+          !b.request.endpoint.includes("/search") &&
+          !b.request.endpoint.match(/\/[^/]+\/[A-Z0-9]+$/),
+      );
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * @deprecated Use addBookmark with normalized request instead
+   */
+  async addEntityBookmark(
+    entityId: string,
+    entityType: string,
+    title: string,
+    _url: string,
+    _queryParams?: Record<string, string>,
+    notes?: string,
+    tags?: string[],
+  ): Promise<number> {
+    const request = {
+      cacheKey: `/${entityType}/${entityId}`,
+      hash: `${entityType}-${entityId}`.slice(0, 16),
+      endpoint: `/${entityType}/${entityId}`,
+      params: {},
+    };
+
+    return this.addBookmark(request, title, notes, tags);
+  }
+
+  /**
+   * @deprecated Use addBookmark with normalized request instead
+   */
+  async addSearchBookmark(
+    searchQuery: string,
+    filters: Record<string, unknown> | undefined,
+    title: string,
+    _url: string,
+    _queryParams?: Record<string, string>,
+    notes?: string,
+    tags?: string[],
+  ): Promise<number> {
+    const params: Record<string, unknown> = { search: searchQuery };
+    if (filters) {
+      Object.assign(params, filters);
+    }
+
+    const request = {
+      cacheKey: `/search?q=${searchQuery}`,
+      hash: `search-${searchQuery}`.slice(0, 16),
+      endpoint: "/search",
+      params,
+    };
+
+    return this.addBookmark(request, title, notes, tags);
+  }
+
+  /**
+   * @deprecated Use addBookmark with normalized request instead
+   */
+  async addListBookmark(
+    title: string,
+    url: string,
+    _queryParams?: Record<string, string>,
+    notes?: string,
+    tags?: string[],
+  ): Promise<number> {
+    const urlObj = new URL(
+      url.startsWith("http") ? url : `https://example.com${url}`,
+    );
+
+    const request = {
+      cacheKey: url,
+      hash: url.slice(0, 16),
+      endpoint: urlObj.pathname,
+      params: {},
+    };
+
+    return this.addBookmark(request, title, notes, tags);
+  }
+
+  /**
+   * @deprecated Use getBookmark with cache key instead
+   */
+  async getEntityBookmark(
+    entityId: string,
+    entityType: string,
+  ): Promise<BookmarkRecord | null> {
+    try {
+      const bookmarks = await this.db.bookmarks.toArray();
+      return (
+        bookmarks.find(
+          (b) => b.request.endpoint === `/${entityType}/${entityId}`,
+        ) ?? null
+      );
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * @deprecated Use getBookmark with cache key instead
+   */
+  async getSearchBookmark(
+    _searchQuery: string,
+    _filters?: Record<string, unknown>,
+  ): Promise<BookmarkRecord | null> {
+    try {
+      const bookmarks = await this.db.bookmarks.toArray();
+      return bookmarks.find((b) => b.request.endpoint.includes("/search")) ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * @deprecated Use getBookmark with cache key instead
+   */
+  async getListBookmark(_url: string): Promise<BookmarkRecord | null> {
+    try {
+      const bookmarks = await this.db.bookmarks.toArray();
+      return (
+        bookmarks.find(
+          (b) =>
+            !b.request.endpoint.includes("/search") &&
+            !b.request.endpoint.match(/\/[^/]+\/[A-Z0-9]+$/),
+        ) ?? null
+      );
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Helper to get page visit stats in old format
+   * @deprecated Use getPageVisitStats instead
+   */
+  async getPageVisitStatsLegacy(): Promise<{
+    totalVisits: number;
+    uniqueUrls: number;
+    byType: Record<string, number>;
+    mostVisitedUrl: {
+      normalizedUrl: string;
+      count: number;
+    } | null;
+  }> {
+    const stats = await this.getPageVisitStats();
+    
+    // Convert endpoint-based stats to legacy "type" format
+    const byType: Record<string, number> = {};
+    for (const [endpoint, count] of Object.entries(stats.byEndpoint)) {
+      if (endpoint.includes("/search")) {
+        byType.search = (byType.search || 0) + count;
+      } else if (endpoint.match(/\/[^/]+\/[A-Z0-9]+$/)) {
+        byType.entity = (byType.entity || 0) + count;
+      } else {
+        byType.list = (byType.list || 0) + count;
+      }
+    }
+
+    return {
+      totalVisits: stats.totalVisits,
+      uniqueUrls: stats.uniqueRequests,
+      byType,
+      mostVisitedUrl: stats.mostVisitedRequest
+        ? {
+            normalizedUrl: stats.mostVisitedRequest.cacheKey,
+            count: stats.mostVisitedRequest.count,
+          }
+        : null,
+    };
   }
 }
 

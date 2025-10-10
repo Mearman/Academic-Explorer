@@ -15,7 +15,7 @@ export interface UseUserInteractionsOptions {
   entityId?: string;
   entityType?: string;
   searchQuery?: string;
-  filters?: Record<string, any>;
+  filters?: Record<string, unknown>;
   url?: string;
   autoTrackVisits?: boolean;
   sessionId?: string;
@@ -160,8 +160,8 @@ export function useUserInteractions(
       const allBookmarks = await userInteractionsService.getAllBookmarks();
       setBookmarks(allBookmarks);
 
-      // Load page visit stats
-      const pageStats = await userInteractionsService.getPageVisitStats();
+      // Load page visit stats (using legacy format for compatibility)
+      const pageStats = await userInteractionsService.getPageVisitStatsLegacy();
       setPageVisitStats(pageStats);
     } catch (error) {
       logger.error(
@@ -183,7 +183,7 @@ export function useUserInteractions(
         try {
           const url = location.pathname + location.search;
 
-          await userInteractionsService.recordPageVisit(
+          await userInteractionsService.recordPageVisitLegacy(
             url,
             entityId && entityType ? { entityId, entityType } : undefined,
             sessionId,
@@ -219,14 +219,14 @@ export function useUserInteractions(
       url: string,
       metadata?: {
         searchQuery?: string;
-        filters?: Record<string, any>;
+        filters?: Record<string, unknown>;
         entityId?: string;
         entityType?: string;
         resultCount?: number;
       },
     ) => {
       try {
-        await userInteractionsService.recordPageVisit(
+        await userInteractionsService.recordPageVisitLegacy(
           url,
           metadata,
           sessionId,
@@ -250,7 +250,7 @@ export function useUserInteractions(
     (normalizedUrl: string): PageVisitRecord[] => {
       // This is a simple filter - in a real app you might want to cache this
       return recentPageVisits.filter(
-        (visit) => visit.normalizedUrl === normalizedUrl,
+        (visit) => visit.request.cacheKey === normalizedUrl,
       );
     },
     [recentPageVisits],
@@ -326,7 +326,7 @@ export function useUserInteractions(
     async (
       title: string,
       searchQuery: string,
-      filters?: Record<string, any>,
+      filters?: Record<string, unknown>,
       notes?: string,
       tags?: string[],
     ) => {
@@ -334,17 +334,15 @@ export function useUserInteractions(
         const url = location.pathname + location.search;
         const queryParams = getSearchParams();
 
-        await userInteractionsService.addBookmark({
-          bookmarkType: "search",
+        await userInteractionsService.addSearchBookmark(
           searchQuery,
           filters,
           title,
           url,
-          queryParams:
-            Object.keys(queryParams).length > 0 ? queryParams : undefined,
+          Object.keys(queryParams).length > 0 ? queryParams : undefined,
           notes,
           tags,
-        });
+        );
 
         setIsBookmarked(true);
         await refreshData();
@@ -365,15 +363,13 @@ export function useUserInteractions(
       try {
         const queryParams = getSearchParams();
 
-        await userInteractionsService.addBookmark({
-          bookmarkType: "list",
+        await userInteractionsService.addListBookmark(
           title,
           url,
-          queryParams:
-            Object.keys(queryParams).length > 0 ? queryParams : undefined,
+          Object.keys(queryParams).length > 0 ? queryParams : undefined,
           notes,
           tags,
-        });
+        );
 
         setIsBookmarked(true);
         await refreshData();

@@ -18,7 +18,7 @@ interface BookmarkManagerProps {
 }
 
 export function BookmarkManager({ onNavigate }: BookmarkManagerProps) {
-  const { bookmarks, searchBookmarks, unbookmarkEntity, isLoadingBookmarks } =
+  const { bookmarks, unbookmarkEntity, isLoadingBookmarks } =
     useUserInteractions();
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -122,12 +122,16 @@ export function BookmarkManager({ onNavigate }: BookmarkManagerProps) {
               </div>
 
               <div className="text-sm text-gray-600 mb-2">
-                <span className="capitalize">{bookmark.entityType}</span>
-                {bookmark.queryParams &&
-                  Object.keys(bookmark.queryParams).length > 0 && (
+                <span className="capitalize">{bookmark.request.endpoint}</span>
+                {bookmark.request.params &&
+                  JSON.parse(bookmark.request.params) &&
+                  Object.keys(JSON.parse(bookmark.request.params)).length >
+                    0 && (
                     <span className="ml-2 text-xs bg-gray-100 px-2 py-1 rounded">
-                      {Object.keys(bookmark.queryParams).length} filter
-                      {Object.keys(bookmark.queryParams).length !== 1
+                      {Object.keys(JSON.parse(bookmark.request.params)).length}{" "}
+                      param
+                      {Object.keys(JSON.parse(bookmark.request.params))
+                        .length !== 1
                         ? "s"
                         : ""}
                     </span>
@@ -156,7 +160,7 @@ export function BookmarkManager({ onNavigate }: BookmarkManagerProps) {
               <div className="flex items-center justify-between text-xs text-gray-500">
                 <span>{new Date(bookmark.timestamp).toLocaleDateString()}</span>
                 <button
-                  onClick={() => handleNavigate(bookmark.url)}
+                  onClick={() => handleNavigate(bookmark.request.cacheKey)}
                   className="flex items-center gap-1 text-blue-600 hover:text-blue-800 hover:underline"
                   title="Open bookmark"
                 >
