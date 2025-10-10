@@ -44,6 +44,11 @@ const _TEST_BASE_URL_WITH_CURSOR_VALUE = `${TEST_BASE_URL}?${TEST_DOI_FILTER}&${
 const TEST_CURRENT_TIME = "2023-01-02T00:00:00Z";
 const TEST_AUTHOR_REF = "./filter=author:A123.json";
 const TEST_WORKS_URL_WITH_API_KEY = `${TEST_WORKS_URL}&${TEST_API_KEY_PARAM}`;
+const TEST_FIRST_COLLISION_TIME = "2023-01-01T00:00:00Z";
+const TEST_MOCK_CACHE_PATH = "/mock/cache/path";
+const TEST_LATER_TIME = "2023-01-03T00:00:00Z";
+const TEST_DOI_REF = "./filter=doi:10.1234/test.json";
+const TEST_ALT_CONTENT_HASH = "ALT_CONTENT_HASH";
 
 // const mockGetCacheFilePath = getCacheFilePath as unknown as ReturnType<
 //   typeof vi.fn
