@@ -417,26 +417,6 @@ jobs:
             echo "ℹ️ No workspace release tag found or created"
           fi
 
-      - name: Update workspace version and create follow-up commit
-        if: steps.check-workspace-release.outputs.released == 'true'
-        run: |
-          echo "📝 Updating package.json version to ${{ steps.check-workspace-release.outputs.version }}"
-
-          # Update root package.json version (semantic-release doesn't do this when npmPublish is false)
-          npm version ${{ steps.check-workspace-release.outputs.version }} --no-git-tag-version
-
-          # Commit the version bump (CHANGELOG.md was already updated by semantic-release)
-          git add package.json CHANGELOG.md
-          git commit -m "chore(release): workspace ${{ steps.check-workspace-release.outputs.version }} [skip ci]
-
-          Automated version bump for workspace release ${{ steps.check-workspace-release.outputs.tag }}"
-
-          # Push the follow-up commit
-          echo "📤 Pushing version bump commit..."
-          git push origin main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   # Deploy to GitHub Pages (main branch only)
   deploy:
     needs: [ci, workspace-quality, release]
