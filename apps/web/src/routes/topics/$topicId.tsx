@@ -5,11 +5,12 @@ import { useGraphStore } from "@/stores/graph-store";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 function TopicRoute() {
   const { topicId } = Route.useParams();
+  const navigate = useNavigate();
 
   const entityType = "topic" as const;
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
@@ -25,6 +26,51 @@ function TopicRoute() {
     enabled: !!topicId,
   });
   const topic = rawEntityData.data;
+
+  // Check if ID contains a full URL and redirect to clean ID
+  useEffect(() => {
+    if (!topicId) return;
+
+    // Check if topicId contains a full OpenAlex URL
+    if (
+      topicId.includes("https://openalex.org/") ||
+      topicId.includes("http://openalex.org/")
+    ) {
+      try {
+        const url = new URL(
+          topicId.startsWith("http")
+            ? topicId
+            : `https://openalex.org/${topicId}`,
+        );
+        const pathParts = url.pathname.split("/").filter(Boolean);
+        if (pathParts.length === 1) {
+          const cleanId = pathParts[0];
+          logger.debug(
+            "routing",
+            "Redirecting from malformed topic URL to clean ID",
+            {
+              originalId: topicId,
+              cleanId,
+            },
+            "TopicRoute",
+          );
+          void navigate({
+            to: "/topics/$topicId",
+            params: { topicId: cleanId },
+            replace: true,
+          });
+        }
+      } catch (error) {
+        logError(
+          logger,
+          "Failed to parse topic URL for redirect",
+          error,
+          "TopicRoute",
+          "routing",
+        );
+      }
+    }
+  }, [topicId, navigate]);
 
   // Update document title with topic name
   useEntityDocumentTitle(topic);
@@ -115,8 +161,7 @@ function TopicRoute() {
           entity={rawEntityData.data}
           entityType={entityType}
           onNavigate={(path: string) => {
-            // Handle paths with query parameters for hash-based routing
-            window.location.hash = path;
+            void navigate({ to: path });
           }}
         />
       )}

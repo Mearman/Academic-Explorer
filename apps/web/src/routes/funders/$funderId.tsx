@@ -59,6 +59,51 @@ function FunderRoute() {
     }
   }, [funderId, navigate]);
 
+  // Check if ID contains a full URL and redirect to clean ID
+  useEffect(() => {
+    if (!funderId) return;
+
+    // Check if funderId contains a full OpenAlex URL
+    if (
+      funderId.includes("https://openalex.org/") ||
+      funderId.includes("http://openalex.org/")
+    ) {
+      try {
+        const url = new URL(
+          funderId.startsWith("http")
+            ? funderId
+            : `https://openalex.org/${funderId}`,
+        );
+        const pathParts = url.pathname.split("/").filter(Boolean);
+        if (pathParts.length === 1) {
+          const cleanId = pathParts[0];
+          logger.debug(
+            "routing",
+            "Redirecting from malformed funder URL to clean ID",
+            {
+              originalId: funderId,
+              cleanId,
+            },
+            "FunderRoute",
+          );
+          void navigate({
+            to: "/funders/$funderId",
+            params: { funderId: cleanId },
+            replace: true,
+          });
+        }
+      } catch (error) {
+        logError(
+          logger,
+          "Failed to parse funder URL for redirect",
+          error,
+          "FunderRoute",
+          "routing",
+        );
+      }
+    }
+  }, [funderId, navigate]);
+
   useEffect(() => {
     const loadFunder = async () => {
       try {
@@ -145,8 +190,7 @@ function FunderRoute() {
           entity={rawEntityData.data}
           entityType={entityType}
           onNavigate={(path: string) => {
-            // Handle paths with query parameters for hash-based routing
-            window.location.hash = path;
+            void navigate({ to: path });
           }}
         />
       )}

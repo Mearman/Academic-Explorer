@@ -5,11 +5,12 @@ import { useGraphStore } from "@/stores/graph-store";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 function SourceRoute() {
   const { sourceId } = Route.useParams();
+  const navigate = useNavigate();
 
   const entityType = "source" as const;
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
@@ -25,6 +26,51 @@ function SourceRoute() {
     enabled: !!sourceId,
   });
   const source = rawEntityData.data;
+
+  // Check if ID contains a full URL and redirect to clean ID
+  useEffect(() => {
+    if (!sourceId) return;
+
+    // Check if sourceId contains a full OpenAlex URL
+    if (
+      sourceId.includes("https://openalex.org/") ||
+      sourceId.includes("http://openalex.org/")
+    ) {
+      try {
+        const url = new URL(
+          sourceId.startsWith("http")
+            ? sourceId
+            : `https://openalex.org/${sourceId}`,
+        );
+        const pathParts = url.pathname.split("/").filter(Boolean);
+        if (pathParts.length === 1) {
+          const cleanId = pathParts[0];
+          logger.debug(
+            "routing",
+            "Redirecting from malformed source URL to clean ID",
+            {
+              originalId: sourceId,
+              cleanId,
+            },
+            "SourceRoute",
+          );
+          void navigate({
+            to: "/sources/$sourceId",
+            params: { sourceId: cleanId },
+            replace: true,
+          });
+        }
+      } catch (error) {
+        logError(
+          logger,
+          "Failed to parse source URL for redirect",
+          error,
+          "SourceRoute",
+          "routing",
+        );
+      }
+    }
+  }, [sourceId, navigate]);
 
   // Update document title with source name
   useEntityDocumentTitle(source);
@@ -115,8 +161,7 @@ function SourceRoute() {
           entity={rawEntityData.data}
           entityType={entityType}
           onNavigate={(path: string) => {
-            // Handle paths with query parameters for hash-based routing
-            window.location.hash = path;
+            void navigate({ to: path });
           }}
         />
       )}

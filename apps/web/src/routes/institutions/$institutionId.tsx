@@ -49,6 +49,51 @@ function InstitutionRoute() {
     }
   }, [institutionId, navigate]);
 
+  // Check if ID contains a full URL and redirect to clean ID
+  useEffect(() => {
+    if (!institutionId) return;
+
+    // Check if institutionId contains a full OpenAlex URL
+    if (
+      institutionId.includes("https://openalex.org/") ||
+      institutionId.includes("http://openalex.org/")
+    ) {
+      try {
+        const url = new URL(
+          institutionId.startsWith("http")
+            ? institutionId
+            : `https://openalex.org/${institutionId}`,
+        );
+        const pathParts = url.pathname.split("/").filter(Boolean);
+        if (pathParts.length === 1) {
+          const cleanId = pathParts[0];
+          logger.debug(
+            "routing",
+            "Redirecting from malformed institution URL to clean ID",
+            {
+              originalId: institutionId,
+              cleanId,
+            },
+            "InstitutionRoute",
+          );
+          void navigate({
+            to: "/institutions/$institutionId",
+            params: { institutionId: cleanId },
+            replace: true,
+          });
+        }
+      } catch (error) {
+        logError(
+          logger,
+          "Failed to parse institution URL for redirect",
+          error,
+          "InstitutionRoute",
+          "routing",
+        );
+      }
+    }
+  }, [institutionId, navigate]);
+
   // Fetch entity data for title
   const rawEntityData = useRawEntityData({
     entityId: institutionId,
@@ -145,8 +190,7 @@ function InstitutionRoute() {
           entity={rawEntityData.data}
           entityType={entityType}
           onNavigate={(path: string) => {
-            // Handle paths with query parameters for hash-based routing
-            window.location.hash = path;
+            void navigate({ to: path });
           }}
         />
       )}

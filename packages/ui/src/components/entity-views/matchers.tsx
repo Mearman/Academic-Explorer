@@ -4,17 +4,17 @@
 
 import { validateExternalId } from "@academic-explorer/client";
 import {
-    ActionIcon,
-    Anchor,
-    Badge,
-    Card,
-    Group,
-    Stack,
-    Table,
-    Text,
-    Tooltip,
+  ActionIcon,
+  Anchor,
+  Badge,
+  Group,
+  Stack,
+  Table,
+  Text,
+  Tooltip,
 } from "@mantine/core";
 import { IconCopy, IconExternalLink } from "@tabler/icons-react";
+import { EntityCard } from "../cards/EntityCard";
 import React from "react";
 
 interface TopicShareItem {
@@ -128,8 +128,9 @@ const authorMatcher: ArrayMatcher = {
     onNavigate?: (path: string) => void,
   ): React.ReactNode => {
     const authorArray = array as AuthorItem[];
+
     return (
-      <Group gap="xs" wrap="wrap">
+      <Stack gap="sm">
         {authorArray.map((authorship, index) => {
           const { author } = authorship;
           const position = authorship.author_position;
@@ -140,24 +141,19 @@ const authorMatcher: ArrayMatcher = {
                 ? " (Last)"
                 : "";
 
+          const entityId = extractEntityId(author.id) || author.id;
           return (
-            <Badge
+            <EntityCard
               key={index}
-              variant="outline"
-              size="sm"
-              style={{ cursor: "pointer" }}
-              onClick={() => {
-                if (onNavigate && author.id && author.id.startsWith("A")) {
-                  onNavigate(`/authors/${author.id}`);
-                }
-              }}
-            >
-              {author.display_name}
-              {positionLabel}
-            </Badge>
+              id={entityId}
+              displayName={author.display_name + positionLabel}
+              entityType="authors"
+              onNavigate={onNavigate}
+              href={entityId ? `#/authors/${entityId}` : undefined}
+            />
           );
         })}
-      </Group>
+      </Stack>
     );
   },
 };
@@ -182,34 +178,33 @@ const institutionMatcher: ArrayMatcher = {
     onNavigate?: (path: string) => void,
   ): React.ReactNode => {
     const institutionArray = array as InstitutionItem[];
+
     return (
-      <Stack gap="xs">
-        {institutionArray.map((institution, index) => (
-          <Group key={index} justify="space-between" wrap="nowrap">
-            {onNavigate && institution.id && institution.id.startsWith("I") ? (
-              <Anchor
-                href={`#/institutions/${institution.id}`}
-                size="sm"
-                style={{ flex: 1 }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  onNavigate(`/institutions/${institution.id}`);
-                }}
-              >
-                {institution.display_name}
-              </Anchor>
-            ) : (
-              <Text size="sm" style={{ flex: 1 }}>
-                {institution.display_name}
-              </Text>
-            )}
-            {institution.country_code && (
-              <Badge size="sm" variant="outline">
-                {institution.country_code.toUpperCase()}
-              </Badge>
-            )}
-          </Group>
-        ))}
+      <Stack gap="sm">
+        {institutionArray.map((institution, index) => {
+          const entityId = institution.id
+            ? extractEntityId(institution.id) || institution.id
+            : `institution-${institution.display_name}`;
+          return (
+            <EntityCard
+              key={index}
+              id={entityId}
+              displayName={institution.display_name}
+              entityType="institutions"
+              description={
+                institution.country_code
+                  ? institution.country_code.toUpperCase()
+                  : undefined
+              }
+              onNavigate={onNavigate}
+              href={
+                institution.id
+                  ? `#/institutions/${extractEntityId(institution.id) || institution.id}`
+                  : undefined
+              }
+            />
+          );
+        })}
       </Stack>
     );
   },
@@ -235,40 +230,30 @@ const topicMatcher: ArrayMatcher = {
     onNavigate?: (path: string) => void,
   ): React.ReactNode => {
     const topicArray = array as TopicItem[];
+
     return (
-      <Group gap="xs" wrap="wrap">
-        {topicArray.map((topic, index) =>
-          onNavigate && topic.id && topic.id.startsWith("T") ? (
-            <Anchor
+      <Stack gap="sm">
+        {topicArray.map((topic, index) => {
+          const entityId = topic.id
+            ? extractEntityId(topic.id) || topic.id
+            : `topic-${topic.display_name}`;
+          return (
+            <EntityCard
               key={index}
-              href={`#/topics/${topic.id}`}
-              style={{ textDecoration: "none" }}
-              onClick={(e) => {
-                e.preventDefault();
-                onNavigate(`/topics/${topic.id}`);
-              }}
-            >
-              <Badge
-                variant="dot"
-                size="sm"
-                color={getTopicColor(topic)}
-                style={{ cursor: "pointer" }}
-              >
-                {topic.display_name} ({topic.count})
-              </Badge>
-            </Anchor>
-          ) : (
-            <Badge
-              key={index}
-              variant="dot"
-              size="sm"
-              color={getTopicColor(topic)}
-            >
-              {topic.display_name} ({topic.count})
-            </Badge>
-          ),
-        )}
-      </Group>
+              id={entityId}
+              displayName={topic.display_name}
+              entityType="topics"
+              worksCount={topic.count}
+              onNavigate={onNavigate}
+              href={
+                topic.id
+                  ? `#/topics/${extractEntityId(topic.id) || topic.id}`
+                  : undefined
+              }
+            />
+          );
+        })}
+      </Stack>
     );
   },
 };
@@ -530,55 +515,32 @@ const affiliationMatcher: ArrayMatcher = {
     onNavigate?: (path: string) => void,
   ): React.ReactNode => {
     const affiliationArray = array as AffiliationItem[];
-    return (
-      <Stack gap="xs">
-        {affiliationArray.map((affiliation, index) => (
-          <Card key={index} padding="xs" radius="sm" withBorder>
-            <Group justify="space-between" wrap="nowrap">
-              {(() => {
-                const institutionId = affiliation.institution?.id;
-                const relativeUrl = institutionId
-                  ? convertToRelativeUrl(institutionId)
-                  : null;
 
-                if (onNavigate && relativeUrl) {
-                  // Strip the hash prefix for router navigation
-                  const routePath = relativeUrl.startsWith("#/")
-                    ? relativeUrl.slice(1)
-                    : relativeUrl;
-                  return (
-                    <Anchor
-                      href={relativeUrl}
-                      size="sm"
-                      style={{ flex: 1 }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        onNavigate(routePath);
-                      }}
-                    >
-                      {affiliation.institution?.display_name}
-                    </Anchor>
-                  );
-                } else if (relativeUrl) {
-                  return (
-                    <Anchor href={relativeUrl} size="sm" style={{ flex: 1 }}>
-                      {affiliation.institution?.display_name}
-                    </Anchor>
-                  );
-                } else {
-                  return (
-                    <Text size="sm" style={{ flex: 1 }}>
-                      {affiliation.institution?.display_name}
-                    </Text>
-                  );
-                }
-              })()}
-              <Badge size="sm" variant="outline">
-                {affiliation.years?.join("-") || "Unknown"}
-              </Badge>
-            </Group>
-          </Card>
-        ))}
+    return (
+      <Stack gap="sm">
+        {affiliationArray.map((affiliation, index) => {
+          const institutionId = affiliation.institution?.id;
+          const entityId = institutionId
+            ? extractEntityId(institutionId) || institutionId
+            : `institution-${affiliation.institution?.display_name}`;
+          return (
+            <EntityCard
+              key={index}
+              id={entityId}
+              displayName={
+                affiliation.institution?.display_name || "Unknown Institution"
+              }
+              entityType="institutions"
+              description={affiliation.years?.join("-") || undefined}
+              onNavigate={onNavigate}
+              href={
+                institutionId
+                  ? `/institutions/${extractEntityId(institutionId) || institutionId}`
+                  : undefined
+              }
+            />
+          );
+        })}
       </Stack>
     );
   },
@@ -1174,6 +1136,24 @@ export function isOpenAlexUrl(url: string): boolean {
 /**
  * Determine the canonical relative route for a given path (adapted from redirect-test-utils)
  */
+/**
+ * Extract entity ID from an OpenAlex URL
+ */
+export function extractEntityId(url: string): string | null {
+  try {
+    const urlObj = new URL(url);
+    if (urlObj.hostname === "openalex.org") {
+      const pathParts = urlObj.pathname.split("/").filter(Boolean);
+      if (pathParts.length === 1) {
+        return pathParts[0];
+      }
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export function determineCanonicalRoute(path: string): string {
   // Handle paths that start with entity type (e.g., "works?filter=...")
   if (path.includes("?")) {

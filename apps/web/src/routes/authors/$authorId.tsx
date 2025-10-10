@@ -28,6 +28,51 @@ function AuthorRoute() {
   // Step 2: Re-enable useRawEntityData (entity data fetching)
   const rawEntityData = useRawEntityData({ entityId: authorId });
 
+  // Check if ID contains a full URL and redirect to clean ID
+  useEffect(() => {
+    if (!authorId) return;
+
+    // Check if authorId contains a full OpenAlex URL
+    if (
+      authorId.includes("https://openalex.org/") ||
+      authorId.includes("http://openalex.org/")
+    ) {
+      try {
+        const url = new URL(
+          authorId.startsWith("http")
+            ? authorId
+            : `https://openalex.org/${authorId}`,
+        );
+        const pathParts = url.pathname.split("/").filter(Boolean);
+        if (pathParts.length === 1) {
+          const cleanId = pathParts[0];
+          logger.debug(
+            "routing",
+            "Redirecting from malformed author URL to clean ID",
+            {
+              originalId: authorId,
+              cleanId,
+            },
+            "AuthorRoute",
+          );
+          void navigate({
+            to: "/authors/$authorId",
+            params: { authorId: cleanId },
+            replace: true,
+          });
+        }
+      } catch (error) {
+        logError(
+          logger,
+          "Failed to parse author URL for redirect",
+          error,
+          "AuthorRoute",
+          "routing",
+        );
+      }
+    }
+  }, [authorId, navigate]);
+
   // Step 3: Testing useEntityDocumentTitle hook
   useEntityDocumentTitle(rawEntityData.data);
 
@@ -159,8 +204,7 @@ function AuthorRoute() {
           entity={rawEntityData.data}
           entityType={entityType}
           onNavigate={(path: string) => {
-            // Handle paths with query parameters for hash-based routing
-            window.location.hash = path;
+            void navigate({ to: path });
           }}
         />
       )}
