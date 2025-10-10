@@ -385,82 +385,36 @@ jobs:
             @semantic-release/npm \
             @semantic-release/github
 
-      - name: Determine next release version (dry-run)
-        id: dry-run
-        run: |
-          echo "🔍 Determining next release version..."
-          DRY_RUN_OUTPUT=$(npx semantic-release --dry-run 2>&1)
-          if echo "$DRY_RUN_OUTPUT" | grep -q "The next version is"; then
-            NEXT_VERSION=$(echo "$DRY_RUN_OUTPUT" | grep "The next version is" | head -1 | awk '{print $5}' | sed 's/://' | tr -d '[:space:]')
-            echo "next_version=$NEXT_VERSION" >> $GITHUB_OUTPUT
-            echo "Found next version: $NEXT_VERSION"
-          else
-            echo "no_release=true" >> $GITHUB_OUTPUT
-            echo "No new release needed"
-          fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Check if release tag already exists
-        id: tag-check
-        if: steps.dry-run.outputs.next_version != ''
-        run: |
-          TAG="academic-explorer-monorepo@${{ steps.dry-run.outputs.next_version }}"
-          echo "🔍 Checking if tag '$TAG' exists..."
-          if git tag -l "$TAG" | grep -q "^$TAG$"; then
-            echo "tag_exists=true" >> $GITHUB_OUTPUT
-            echo "Tag '$TAG' already exists - skipping semantic-release to avoid conflict"
-          else
-            echo "tag_exists=false" >> $GITHUB_OUTPUT
-            echo "Tag '$TAG' does not exist - proceeding with release"
-          fi
-
       - name: Run semantic-release for workspace
         id: semantic-release
-        if: steps.dry-run.outputs.next_version != '' && steps.tag-check.outputs.tag_exists != 'true'
         run: |
-          echo "🚀 Creating workspace release with semantic-release..."
+          echo "� Running semantic-release to create workspace release if needed..."
           npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Skip semantic-release due to existing tag
-        if: steps.dry-run.outputs.next_version != '' && steps.tag-check.outputs.tag_exists == 'true'
-        run: |
-          echo "⏭️ Skipping semantic-release as tag already exists"
-          echo "released=true" >> $GITHUB_OUTPUT
-          echo "version=${{ steps.dry-run.outputs.next_version }}" >> $GITHUB_OUTPUT
-          echo "tag=academic-explorer-monorepo@${{ steps.dry-run.outputs.next_version }}" >> $GITHUB_OUTPUT
-
       - name: Check if workspace release was created
         id: check-workspace-release
-        if: steps.dry-run.outputs.next_version == '' || steps.semantic-release.outcome == 'success' || steps.tag-check.outputs.tag_exists == 'true'
+        if: always()
         run: |
-          if [ "${{ steps.dry-run.outputs.no_release }}" = "true" ]; then
-            echo "released=false" >> $GITHUB_OUTPUT
-            echo "ℹ️ No new release needed"
-            exit 0
-          fi
-
-          # If skipped due to existing tag, treat as released
-          if [ "${{ steps.tag-check.outputs.tag_exists }}" = "true" ]; then
-            echo "released=true" >> $GITHUB_OUTPUT
-            echo "version=${{ steps.dry-run.outputs.next_version }}" >> $GITHUB_OUTPUT
-            echo "tag=v${{ steps.dry-run.outputs.next_version }}" >> $GITHUB_OUTPUT
-            echo "✅ Workspace release already exists: v${{ steps.dry-run.outputs.next_version }}"
-            exit 0
-          fi
-
-          # Check if semantic-release created a new workspace tag
+          # Check if semantic-release created a new workspace tag on this commit
           LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          if [ -n "$LATEST_TAG" ] && [[ "$LATEST_TAG" =~ ^academic-explorer-monorepo@[0-9]+\.[0-9]+\.[0-9]+$ ]] && git tag --points-at ${{ github.sha }} | grep -q "$LATEST_TAG"; then
-            echo "released=true" >> $GITHUB_OUTPUT
-            echo "version=${LATEST_TAG#academic-explorer-monorepo@}" >> $GITHUB_OUTPUT
-            echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
-            echo "✅ Workspace release created: $LATEST_TAG against commit ${{ github.sha }}"
+          echo "Latest tag: $LATEST_TAG"
+
+          if [ -n "$LATEST_TAG" ] && [[ "$LATEST_TAG" =~ ^academic-explorer-monorepo@[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            # Check if this tag points to the current commit
+            if git tag --points-at ${{ github.sha }} | grep -q "$LATEST_TAG"; then
+              echo "released=true" >> $GITHUB_OUTPUT
+              echo "version=${LATEST_TAG#academic-explorer-monorepo@}" >> $GITHUB_OUTPUT
+              echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+              echo "✅ Workspace release created: $LATEST_TAG against commit ${{ github.sha }}"
+            else
+              echo "released=false" >> $GITHUB_OUTPUT
+              echo "ℹ️ Tag $LATEST_TAG exists but does not point to current commit"
+            fi
           else
             echo "released=false" >> $GITHUB_OUTPUT
-            echo "ℹ️ No workspace release created"
+            echo "ℹ️ No workspace release tag found or created"
           fi
 
       - name: Update workspace version and create follow-up commit
