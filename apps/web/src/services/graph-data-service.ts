@@ -38,7 +38,7 @@ import {
 // Detection method constants
 const DETECTION_METHOD_OPENALEX_ID = "OpenAlex ID";
 const DETECTION_METHOD_OPENALEX_URL = "OpenAlex URL";
-const ENTITY_TYPE_CITED_BY_API_URL = "cited_by_api_url";
+const _ENTITY_TYPE_CITED_BY_API_URL = "cited_by_api_url";
 const ERROR_MESSAGE_UNKNOWN = "Unknown error";
 const LOGGER_CATEGORY_GRAPH_DATA = "graph-data";
 const OPENALEX_URL_PREFIX = "https://openalex.org/";
