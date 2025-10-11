@@ -201,7 +201,7 @@ function FunderRoute() {
     void navigate({
       to: FUNDER_ROUTE_PATH,
       params: { funderId },
-      search: fields.length > 0 ? { select: fields.join(",") } : {},
+      search: { select: fields.length > 0 ? fields.join(",") : undefined },
       replace: true,
     });
   };

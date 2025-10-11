@@ -172,7 +172,7 @@ function SourceRoute() {
     void navigate({
       to: SOURCE_ROUTE_PATH,
       params: { sourceId },
-      search: fields.length > 0 ? { select: fields.join(",") } : {},
+      search: { select: fields.length > 0 ? fields.join(",") : undefined },
       replace: true,
     });
   };

@@ -90,7 +90,7 @@ function TopicRoute() {
     void navigate({
       to: TOPIC_ROUTE_PATH,
       params: { topicId },
-      search: fields.length > 0 ? { select: fields.join(",") } : {},
+      search: { select: fields.length > 0 ? fields.join(",") : undefined },
       replace: true,
     });
   };

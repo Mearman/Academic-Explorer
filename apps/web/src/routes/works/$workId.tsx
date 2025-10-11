@@ -162,7 +162,7 @@ function WorkRoute() {
     void navigate({
       to: WORK_ROUTE_PATH,
       params: { workId: cleanWorkId },
-      search: fields.length > 0 ? { select: fields.join(",") } : {},
+      search: { select: fields.length > 0 ? fields.join(",") : undefined },
       replace: true,
     });
   };
