@@ -6,6 +6,7 @@ import { useEffect, useRef } from "react";
 import { useLocation } from "@tanstack/react-router";
 import { useAppActivityStore } from "@/stores/app-activity-store";
 import { EntityDetectionService } from "@academic-explorer/graph";
+import { historyDB } from "@/lib/history-db";
 
 export function NavigationTracker() {
   const location = useLocation();
@@ -24,10 +25,6 @@ export function NavigationTracker() {
   }, [addEvent]);
 
   useEffect(() => {
-    console.log("NavigationTracker: useEffect running", {
-      pathname: location.pathname,
-      search: location.search,
-    });
     const currentLocation =
       location.pathname +
       (Object.keys(location.search).length > 0
@@ -37,6 +34,16 @@ export function NavigationTracker() {
           ).toString()
         : "");
 
+    // Add visit to history database (normalized routes)
+    const searchString =
+      Object.keys(location.search).length > 0
+        ? "?" +
+          new URLSearchParams(
+            location.search as Record<string, string>,
+          ).toString()
+        : "";
+    historyDB.addVisit(location.pathname, searchString, location.hash);
+
     // Always log page visits with detailed metadata
     const pageInfo = extractPageInfo(
       location.pathname,
@@ -44,7 +51,6 @@ export function NavigationTracker() {
     );
 
     if (pageInfo) {
-      
       // Log the page visit
       addEvent({
         type: "navigation",
@@ -66,11 +72,6 @@ export function NavigationTracker() {
       previousLocationRef.current &&
       previousLocationRef.current !== currentLocation
     ) {
-      console.log("NavigationTracker: Location changed", {
-        from: previousLocationRef.current,
-        to: currentLocation,
-      });
-
       logNavigation(previousLocationRef.current, currentLocation, {
         searchParams:
           Object.keys(location.search).length > 0 ? location.search : undefined,

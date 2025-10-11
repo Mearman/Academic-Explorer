@@ -2,25 +2,22 @@
  * History manager component for displaying navigation history
  */
 
-import { useAppActivityStore } from "@/stores/app-activity-store";
+import { historyDB } from "@/lib/history-db";
 import {
   IconHistory,
   IconSearch,
   IconExternalLink,
-  IconFilter,
+  IconTrash,
 } from "@tabler/icons-react";
 import { useState, useEffect } from "react";
 import {
   TextInput,
-  Select,
   Button,
   Card,
   Text,
   Group,
   Stack,
-  Badge,
   ActionIcon,
-  Collapse,
 } from "@mantine/core";
 
 interface HistoryManagerProps {
@@ -28,34 +25,43 @@ interface HistoryManagerProps {
 }
 
 export function HistoryManager({ onNavigate }: HistoryManagerProps) {
-  const {
-    filteredEvents,
-    setTypeFilter,
-    setCategoryFilter,
-    setSearchTerm,
-    clearFilters,
-    loadEvents,
-  } = useAppActivityStore();
-
-  // Load events from IndexedDB on mount
-  useEffect(() => {
-    loadEvents();
-  }, [loadEvents]);
+  const [historyEntries, setHistoryEntries] = useState<
+    Array<{ route: string; visitedAt: number }>
+  >([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [showFilters, setShowFilters] = useState(false);
 
-  // Filter navigation and search events
-  const navigationEvents = filteredEvents.filter(
-    (event) =>
-      event.type === "navigation" ||
-      (event.category === "ui" &&
-        (event.event === "entity_page_visit" ||
-          event.event === "search_page_visit")),
+  // Load history from Dexie on mount
+  useEffect(() => {
+    const loadHistory = async () => {
+      try {
+        const entries = await historyDB.getAll();
+        setHistoryEntries(entries);
+      } catch (error) {
+        console.error("Failed to load history:", error);
+      }
+    };
+    loadHistory();
+  }, []);
+
+  // Filter history entries based on search query
+  const filteredEntries = historyEntries.filter(
+    (entry) =>
+      searchQuery === "" ||
+      entry.route.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);
-    setSearchTerm(query);
+  };
+
+  const handleClearHistory = async () => {
+    try {
+      await historyDB.clear();
+      setHistoryEntries([]);
+      setSearchQuery("");
+    } catch (error) {
+      console.error("Failed to clear history:", error);
+    }
   };
 
   const handleNavigate = (url: string) => {
@@ -64,11 +70,6 @@ export function HistoryManager({ onNavigate }: HistoryManagerProps) {
     } else {
       window.location.href = `/#${url}`;
     }
-  };
-
-  const handleClearFilters = () => {
-    setSearchQuery("");
-    clearFilters();
   };
 
   return (
@@ -80,9 +81,17 @@ export function HistoryManager({ onNavigate }: HistoryManagerProps) {
             Navigation History
           </Text>
         </Group>
+        <Button
+          variant="light"
+          color="red"
+          leftSection={<IconTrash size={16} />}
+          onClick={handleClearHistory}
+        >
+          Clear History
+        </Button>
       </Group>
 
-      {/* Search and Filters */}
+      {/* Search */}
       <Group mb="md">
         <TextInput
           placeholder="Search history..."
@@ -91,53 +100,14 @@ export function HistoryManager({ onNavigate }: HistoryManagerProps) {
           leftSection={<IconSearch size={16} />}
           style={{ flex: 1 }}
         />
-        <Button
-          variant="outline"
-          leftSection={<IconFilter size={16} />}
-          onClick={() => setShowFilters(!showFilters)}
-        >
-          Filters
-        </Button>
-        <Button variant="light" onClick={handleClearFilters}>
-          Clear
-        </Button>
+        {searchQuery && (
+          <Button variant="light" onClick={() => setSearchQuery("")}>
+            Clear
+          </Button>
+        )}
       </Group>
 
-      {/* Filter Options */}
-      <Collapse in={showFilters}>
-        <Card withBorder mb="md">
-          <Group grow>
-            <Select
-              label="Type"
-              placeholder="All Types"
-              data={[
-                { value: "navigation", label: "Navigation" },
-                { value: "user", label: "User" },
-                { value: "component", label: "Component" },
-                { value: "performance", label: "Performance" },
-                { value: "error", label: "Error" },
-              ]}
-              onChange={(value) => setTypeFilter(value ? [value] : [])}
-              clearable
-            />
-            <Select
-              label="Category"
-              placeholder="All Categories"
-              data={[
-                { value: "ui", label: "UI" },
-                { value: "interaction", label: "Interaction" },
-                { value: "lifecycle", label: "Lifecycle" },
-                { value: "data", label: "Data" },
-                { value: "background", label: "Background" },
-              ]}
-              onChange={(value) => setCategoryFilter(value ? [value] : [])}
-              clearable
-            />
-          </Group>
-        </Card>
-      </Collapse>
-
-      {navigationEvents.length === 0 ? (
+      {filteredEntries.length === 0 ? (
         <Card withBorder p="xl">
           <Stack align="center" gap="md">
             <IconHistory
@@ -149,105 +119,46 @@ export function HistoryManager({ onNavigate }: HistoryManagerProps) {
             </Text>
             <Text size="sm" c="dimmed">
               {searchQuery
-                ? "Try adjusting your search terms or filters"
+                ? "Try adjusting your search terms"
                 : "Your navigation history will appear here"}
             </Text>
           </Stack>
         </Card>
       ) : (
         <Stack gap="sm">
-          {navigationEvents.map((event) => (
-            <Card key={event.id} withBorder padding="md">
+          {filteredEntries.map((entry, index) => (
+            <Card
+              key={`${entry.route}-${entry.visitedAt}`}
+              withBorder
+              padding="md"
+            >
               <Group justify="space-between" align="flex-start">
                 <Stack gap="xs" style={{ flex: 1 }}>
-                  <Group gap="xs">
-                    <Text size="sm" fw={500}>
-                      {event.description}
-                    </Text>
-                    <Badge
-                      size="xs"
-                      color={
-                        event.severity === "error"
-                          ? "red"
-                          : event.severity === "warning"
-                            ? "yellow"
-                            : "blue"
-                      }
-                    >
-                      {event.severity}
-                    </Badge>
-                  </Group>
-
-                  <Text size="xs" c="dimmed">
-                    {new Date(event.timestamp).toLocaleString()}
-                    {event.metadata?.component && (
-                      <span> • {event.metadata.component}</span>
-                    )}
+                  <Text size="sm" fw={500}>
+                    {entry.route}
                   </Text>
-
-                  {event.metadata?.entityType && event.metadata?.entityId ? (
-                    <Text size="sm" c="blue">
-                      {event.metadata.entityType}: {event.metadata.entityId}
-                    </Text>
-                  ) : event.metadata?.searchQuery ? (
-                    <div>
-                      <Text size="sm" c="blue">
-                        Search: &ldquo;{event.metadata.searchQuery}&rdquo;
-                      </Text>
-                      {event.metadata.filters &&
-                        typeof event.metadata.filters === "string" && (
-                          <Text size="xs" c="dimmed">
-                            Filters: {event.metadata.filters}
-                          </Text>
-                        )}
-                      {event.metadata.searchParams &&
-                        typeof event.metadata.searchParams === "object" && (
-                          <Text size="xs" c="dimmed">
-                            Parameters:{" "}
-                            {new URLSearchParams(
-                              event.metadata.searchParams as Record<
-                                string,
-                                string
-                              >,
-                            ).toString()}
-                          </Text>
-                        )}
-                      {event.metadata.searchParams &&
-                        typeof event.metadata.searchParams === "string" && (
-                          <Text size="xs" c="dimmed">
-                            Parameters: {event.metadata.searchParams}
-                          </Text>
-                        )}
-                    </div>
-                  ) : event.metadata?.route ? (
-                    <Text size="sm" c="blue">
-                      Route: {event.metadata.route}
-                    </Text>
-                  ) : null}
+                  <Text size="xs" c="dimmed">
+                    {new Date(entry.visitedAt).toLocaleString()}
+                  </Text>
                 </Stack>
-
-                {event.metadata?.route && (
-                  <ActionIcon
-                    variant="light"
-                    color="blue"
-                    onClick={() =>
-                      event.metadata?.route &&
-                      handleNavigate(event.metadata.route)
-                    }
-                    title="Navigate to this route"
-                  >
-                    <IconExternalLink size={16} />
-                  </ActionIcon>
-                )}
+                <ActionIcon
+                  variant="light"
+                  color="blue"
+                  onClick={() => handleNavigate(entry.route)}
+                  title="Navigate to this route"
+                >
+                  <IconExternalLink size={16} />
+                </ActionIcon>
               </Group>
             </Card>
           ))}
         </Stack>
       )}
 
-      {navigationEvents.length > 0 && (
+      {filteredEntries.length > 0 && (
         <Text size="sm" c="dimmed" ta="center" mt="md">
-          {navigationEvents.length} navigation events
+          {filteredEntries.length} history{" "}
+          {filteredEntries.length === 1 ? "entry" : "entries"}
         </Text>
       )}
     </Stack>
