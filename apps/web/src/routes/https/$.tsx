@@ -172,7 +172,7 @@ function HttpsRoute() {
         // Fallback to search
         void navigate({
           to: "/search",
-          search: { q: _splat },
+          search: { q: _splat as string, filter: undefined, search: undefined },
           replace: true,
         });
       }
