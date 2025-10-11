@@ -18,7 +18,15 @@ export type FilterValue = string | number | boolean | string[] | number[];
 /**
  * Filter operator types for comparison operations
  */
-export type FilterOperator = "=" | "!=" | ">" | ">=" | "<" | "<=" | "contains" | "starts_with";
+export type FilterOperator =
+  | "="
+  | "!="
+  | ">"
+  | ">="
+  | "<"
+  | "<="
+  | "contains"
+  | "starts_with";
 
 /**
  * Logical operators for combining multiple filters
@@ -116,7 +124,7 @@ export class FilterBuilder {
       defaultOperator: options.defaultOperator ?? "AND",
       urlEncode: options.urlEncode ?? false,
       validateFields: options.validateFields ?? true,
-      customValidator: options.customValidator ?? (() => true)
+      customValidator: options.customValidator ?? (() => true),
     };
   }
 
@@ -139,7 +147,12 @@ export class FilterBuilder {
    * // Result: "publication_year:2023,is_oa:true,authorships.author.id:A1234|A5678"
    * ```
    */
-  buildFromObject(_filters: EntityFilters | Partial<EntityFilters> | Record<string, FilterValue>): string {
+  buildFromObject(
+    _filters:
+      | EntityFilters
+      | Partial<EntityFilters>
+      | Record<string, FilterValue>,
+  ): string {
     // Implementation will be added in separate task
     throw new Error("FilterBuilder.buildFromObject not yet implemented");
   }
@@ -218,7 +231,9 @@ export class FilterBuilder {
    * }
    * ```
    */
-  validateFilters(_filters: Record<string, FilterValue>): FilterValidationResult {
+  validateFilters(
+    _filters: Record<string, FilterValue>,
+  ): FilterValidationResult {
     // Implementation will be added in separate task
     throw new Error("FilterBuilder.validateFilters not yet implemented");
   }
@@ -272,9 +287,49 @@ export class FilterBuilder {
    * // Result: { 'publication_year': '2023', 'is_oa': 'true' }
    * ```
    */
-  parseFilterString(_filterString: string): Record<string, FilterValue> {
-    // Implementation will be added in separate task
-    throw new Error("FilterBuilder.parseFilterString not yet implemented");
+  parseFilterString(filterString: string): Record<string, FilterValue> {
+    if (!filterString || typeof filterString !== "string") {
+      return {};
+    }
+
+    const filters: Record<string, FilterValue> = {};
+
+    // Split by comma to get individual filter conditions
+    const filterParts = filterString.split(",");
+
+    for (const part of filterParts) {
+      const trimmedPart = part.trim();
+      if (!trimmedPart) continue;
+
+      // Split by colon to get field and value
+      const colonIndex = trimmedPart.indexOf(":");
+      if (colonIndex === -1) continue;
+
+      const field = trimmedPart.substring(0, colonIndex).trim();
+      const value = trimmedPart.substring(colonIndex + 1).trim();
+
+      if (!field || !value) continue;
+
+      // Handle array values (pipe-separated)
+      if (value.includes("|")) {
+        filters[field] = value.split("|").map((v) => v.trim());
+      } else {
+        // Try to parse as boolean or number, otherwise keep as string
+        if (value === "true") {
+          filters[field] = true;
+        } else if (value === "false") {
+          filters[field] = false;
+        } else if (/^\d+$/.test(value)) {
+          filters[field] = parseInt(value, 10);
+        } else if (/^\d*\.\d+$/.test(value)) {
+          filters[field] = parseFloat(value);
+        } else {
+          filters[field] = value;
+        }
+      }
+    }
+
+    return filters;
   }
 
   /**
@@ -288,7 +343,7 @@ export class FilterBuilder {
   updateOptions(newOptions: Partial<FilterBuilderOptions>): this {
     this.options = {
       ...this.options,
-      ...newOptions
+      ...newOptions,
     };
     return this;
   }
@@ -312,7 +367,7 @@ export class FilterBuilder {
       defaultOperator: "AND",
       urlEncode: false,
       validateFields: true,
-      customValidator: () => true
+      customValidator: () => true,
     };
     return this;
   }
@@ -332,7 +387,9 @@ export class FilterBuilder {
  * const filterString = builder.buildFromObject({ 'publication_year': 2023 });
  * ```
  */
-export function createFilterBuilder(options?: FilterBuilderOptions): FilterBuilder {
+export function createFilterBuilder(
+  options?: FilterBuilderOptions,
+): FilterBuilder {
   return new FilterBuilder(options);
 }
 
@@ -355,7 +412,7 @@ export function createFilterBuilder(options?: FilterBuilderOptions): FilterBuild
  */
 export function buildFilterString(
   filters: EntityFilters | Partial<EntityFilters> | Record<string, FilterValue>,
-  options?: FilterBuilderOptions
+  options?: FilterBuilderOptions,
 ): string {
   const builder = new FilterBuilder(options);
   return builder.buildFromObject(filters);

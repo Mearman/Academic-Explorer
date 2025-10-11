@@ -9,10 +9,10 @@
 
 // Base client and configuration
 export {
-	OpenAlexBaseClient,
-	type OpenAlexClientConfig,
-	OpenAlexApiError,
-	OpenAlexRateLimitError
+  OpenAlexBaseClient,
+  type OpenAlexClientConfig,
+  OpenAlexApiError,
+  OpenAlexRateLimitError,
 } from "./client";
 
 // Entity APIs
@@ -28,168 +28,177 @@ export { TextAnalysisApi } from "./entities/text-analysis";
 export { ConceptsApi } from "./entities/concepts";
 
 // Utilities
-export {
-	AutocompleteApi
-} from "./utils/autocomplete";
+export { AutocompleteApi } from "./utils/autocomplete";
 
 // Type guards
 export {
-	isWork,
-	isAuthor,
-	isInstitution,
-	isSource,
-	isTopic,
-	isConcept,
-	isPublisher,
-	isFunder,
-	isKeyword,
-	getEntityType,
-	hasProperty,
-	isNonNull,
-	isOpenAlexEntity
+  isWork,
+  isAuthor,
+  isInstitution,
+  isSource,
+  isTopic,
+  isConcept,
+  isPublisher,
+  isFunder,
+  isKeyword,
+  getEntityType,
+  hasProperty,
+  isNonNull,
+  isOpenAlexEntity,
 } from "./type-guards";
 
 // Client configuration utilities
 export {
-	updateOpenAlexEmail,
-	cachedOpenAlex,
-	CachedOpenAlexClient,
-	createCachedOpenAlexClient,
-	getCachePerformanceMetrics,
-	type ClientApis,
-	type CachedClientConfig
+  updateOpenAlexEmail,
+  cachedOpenAlex,
+  CachedOpenAlexClient,
+  createCachedOpenAlexClient,
+  getCachePerformanceMetrics,
+  type ClientApis,
+  type CachedClientConfig,
 } from "./cached-client";
 
 // Static data caching
 export {
-	staticDataProvider,
-	CacheTier,
-	Environment,
-	type StaticDataResult,
-	type CacheStatistics
+  staticDataProvider,
+  CacheTier,
+  Environment,
+  type StaticDataResult,
+  type CacheStatistics,
 } from "./internal/static-data-provider";
 
 export { logger } from "./internal/logger";
 
 export {
-	toStaticEntityType,
-	cleanOpenAlexId,
-	type StaticEntityType
+  toStaticEntityType,
+  cleanOpenAlexId,
+  type StaticEntityType,
 } from "./internal/static-data-utils";
 
 // Advanced field selection utilities
 export {
-	ADVANCED_FIELD_SELECTIONS,
-	createAdvancedFieldSelection
+  ADVANCED_FIELD_SELECTIONS,
+  createAdvancedFieldSelection,
 } from "./advanced-field-selection";
 
-export type {
-	AdvancedEntityFieldSelections
-} from "./advanced-field-selection";
+export type { AdvancedEntityFieldSelections } from "./advanced-field-selection";
 
 export {
-	QueryBuilder,
-	createWorksQuery,
-	createAuthorsQuery,
-	createSourcesQuery,
-	createInstitutionsQuery,
-	createTopicsQuery,
-	createPublishersQuery,
-	createFundersQuery,
-	buildFilterString,
-	buildSortString,
-	buildSelectString,
-	validateDateRange,
-	escapeFilterValue,
-	SORT_FIELDS,
-	SELECT_PRESETS
+  QueryBuilder,
+  createWorksQuery,
+  createAuthorsQuery,
+  createSourcesQuery,
+  createInstitutionsQuery,
+  createTopicsQuery,
+  createPublishersQuery,
+  createFundersQuery,
+  buildFilterString,
+  buildSortString,
+  buildSelectString,
+  validateDateRange,
+  escapeFilterValue,
+  SORT_FIELDS,
+  SELECT_PRESETS,
 } from "./utils/query-builder";
+
+export {
+  FilterBuilder,
+  createFilterBuilder,
+  buildFilterString as buildFilterStringFromBuilder,
+  type FilterValue,
+  type FilterOperator,
+  type FilterLogicalOperator,
+  type FilterCondition,
+  type FilterExpression,
+  type FilterBuilderOptions,
+  type FilterValidationResult,
+} from "./utils/filter-builder";
 
 // Type exports - All the TypeScript types for OpenAlex entities
 export type {
-	// Core entities
-	Work,
-	Author,
-	Source,
-	InstitutionEntity,
-	Topic,
-	Concept,
-	Publisher,
-	Funder,
+  // Core entities
+  Work,
+  Author,
+  Source,
+  InstitutionEntity,
+  Topic,
+  Concept,
+  Publisher,
+  Funder,
 
-	// Common types
-	OpenAlexId,
-	DOI,
-	ORCID,
-	RORId,
-	ISSNId,
-	WikidataId,
-	OpenAlexResponse,
-	OpenAlexError,
-	Location,
-	CountsByYear,
-	Institution,
-	Authorship,
-	AutocompleteResult,
-	NGram,
+  // Common types
+  OpenAlexId,
+  DOI,
+  ORCID,
+  RORId,
+  ISSNId,
+  WikidataId,
+  OpenAlexResponse,
+  OpenAlexError,
+  Location,
+  CountsByYear,
+  Institution,
+  Authorship,
+  AutocompleteResult,
+  NGram,
 
-	// Filter types
-	WorksFilters,
-	AuthorsFilters,
-	SourcesFilters,
-	InstitutionsFilters,
-	TopicsFilters,
-	PublishersFilters,
-	FundersFilters,
-	EntityFilters,
+  // Filter types
+  WorksFilters,
+  AuthorsFilters,
+  SourcesFilters,
+  InstitutionsFilters,
+  TopicsFilters,
+  PublishersFilters,
+  FundersFilters,
+  EntityFilters,
 
-	// Utility types
-	QueryParams,
-	EntityType,
-	OpenAlexEntity
+  // Utility types
+  QueryParams,
+  EntityType,
+  OpenAlexEntity,
 } from "./types";
 
 // Text Analysis API types
 export type {
-	TextAnalysisOptions,
-	TextAnalysisEntity,
-	TextAnalysisKeyword,
-	TextAnalysisTopic,
-	TextAnalysisConcept,
-	TextAnalysisResponse,
-	KeywordsResponse,
-	TopicsResponse,
-	ConceptsResponse
+  TextAnalysisOptions,
+  TextAnalysisEntity,
+  TextAnalysisKeyword,
+  TextAnalysisTopic,
+  TextAnalysisConcept,
+  TextAnalysisResponse,
+  KeywordsResponse,
+  TopicsResponse,
+  ConceptsResponse,
 } from "./entities/text-analysis";
 
 // Concepts API types
 export type {
-	StrictConceptsQueryParams,
-	ConceptsQueryParams,
-	ConceptSortOption,
-	ConceptSelectField,
-	SearchConceptsOptions,
-	AutocompleteOptions
+  StrictConceptsQueryParams,
+  ConceptsQueryParams,
+  ConceptSortOption,
+  ConceptSelectField,
+  SearchConceptsOptions,
+  AutocompleteOptions,
 } from "./entities/concepts";
 
 // Static cache exports
 export {
-	GitHubPagesReader,
-	GitHubPagesReaderError,
-	createGitHubPagesReader,
-	defaultGitHubPagesConfig,
-	type GitHubPagesReaderConfig
+  GitHubPagesReader,
+  GitHubPagesReaderError,
+  createGitHubPagesReader,
+  defaultGitHubPagesConfig,
+  type GitHubPagesReaderConfig,
 } from "./cache/static";
 
 // API Interceptor exports (development mode only)
 export {
-	ApiInterceptor,
-	apiInterceptor,
-	type InterceptedRequest,
-	type InterceptedResponse,
-	type InterceptedApiCall,
-	type CacheKeyComponents,
-	type ApiInterceptorConfig
+  ApiInterceptor,
+  apiInterceptor,
+  type InterceptedRequest,
+  type InterceptedResponse,
+  type InterceptedApiCall,
+  type CacheKeyComponents,
+  type ApiInterceptorConfig,
 } from "./interceptors";
 
 // Re-export everything from types for convenience
@@ -200,9 +209,9 @@ export * from "./utils";
 
 // Request normalization utilities
 export {
-	normalizeRequest,
-	requestsEqual,
-	isDuplicateRequest,
-	type OpenAlexRequest,
-	type NormalizedRequest
+  normalizeRequest,
+  requestsEqual,
+  isDuplicateRequest,
+  type OpenAlexRequest,
+  type NormalizedRequest,
 } from "./utils/request-normalizer";
