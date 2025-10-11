@@ -16,6 +16,9 @@ function WorkRoute() {
   const { workId } = Route.useParams();
   const navigate = useNavigate();
 
+  // Strip query parameters from workId if present (defensive programming)
+  const cleanWorkId = workId.split("?")[0];
+
   const entityType = "work" as const;
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
 

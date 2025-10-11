@@ -22,6 +22,9 @@ function AuthorRoute() {
   const { authorId } = Route.useParams();
   const navigate = useNavigate();
 
+  // Strip query parameters from authorId if present (defensive programming)
+  const cleanAuthorId = authorId.split("?")[0];
+
   const entityType = "author" as const;
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
 
@@ -31,7 +34,7 @@ function AuthorRoute() {
   const nodeCount = useGraphStore((state) => state.totalNodeCount);
 
   // Step 2: Re-enable useRawEntityData (entity data fetching)
-  const rawEntityData = useRawEntityData({ entityId: authorId });
+  const rawEntityData = useRawEntityData({ entityId: cleanAuthorId });
 
   // Fetch entity data for title
   const author = rawEntityData.data as Author | undefined;
@@ -41,14 +44,14 @@ function AuthorRoute() {
 
   // Track user interactions (visits and bookmarks)
   const userInteractions = useUserInteractions({
-    entityId: authorId,
+    entityId: cleanAuthorId,
     entityType: "author",
     autoTrackVisits: true,
   });
 
   // Check if ID contains a full URL and redirect to clean ID
   useEffect(() => {
-    if (!authorId) return;
+    if (!cleanAuthorId) return;
 
     // Check if authorId contains a full OpenAlex URL
     if (
@@ -100,12 +103,12 @@ function AuthorRoute() {
 
   // Normalization and redirect
   useEffect(() => {
-    if (!authorId) return;
+    if (!cleanAuthorId) return;
 
-    const detection = EntityDetectionService.detectEntity(authorId);
+    const detection = EntityDetectionService.detectEntity(cleanAuthorId);
 
     // If ID was normalized and is different from input, redirect
-    if (detection?.normalizedId && detection.normalizedId !== authorId) {
+    if (detection?.normalizedId && detection.normalizedId !== cleanAuthorId) {
       logger.debug(
         "routing",
         "Redirecting to normalized author ID",
@@ -133,10 +136,10 @@ function AuthorRoute() {
         // If graph already has nodes, use incremental loading to preserve existing entities
         // This prevents clearing the graph when clicking on nodes or navigating
         if (nodeCount > 0) {
-          await loadEntityIntoGraph(authorId);
+          await loadEntityIntoGraph(cleanAuthorId);
         } else {
           // If graph is empty, use full loading (clears graph for initial load)
-          await loadEntity(authorId);
+          await loadEntity(cleanAuthorId);
         }
       } catch (error) {
         logError(
@@ -150,10 +153,10 @@ function AuthorRoute() {
     };
 
     void loadAuthor();
-  }, [authorId, loadEntity, loadEntityIntoGraph, nodeCount]);
+  }, [cleanAuthorId, loadEntity, loadEntityIntoGraph, nodeCount]);
 
   logger.debug("route", "Author route loading with raw data display", {
-    authorId,
+    authorId: cleanAuthorId,
     hasEntityData: !!rawEntityData.data,
     isLoading: rawEntityData.isLoading,
     error: rawEntityData.error,
@@ -166,7 +169,7 @@ function AuthorRoute() {
     return (
       <div className="p-4 text-center">
         <h2>Loading Author...</h2>
-        <p>Author ID: {authorId}</p>
+        <p>Author ID: {cleanAuthorId}</p>
       </div>
     );
   }

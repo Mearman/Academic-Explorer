@@ -112,7 +112,7 @@ function ApiOpenAlexRoute() {
           "ApiOpenAlexRoute",
         );
 
-        // First check if it's an OpenAlex query URL (with parameters)
+        // First check if it's an OpenAlex query URL (list with parameters)
         const queryUrlParse = parseOpenAlexQueryUrl(fullUrl);
         logger.debug(
           "routing",
@@ -121,25 +121,32 @@ function ApiOpenAlexRoute() {
           "ApiOpenAlexRoute",
         );
         if (queryUrlParse && queryUrlParse.queryParams.toString()) {
-          // This is an OpenAlex query URL, redirect to list route with query params
-          const searchObj: Record<string, string> = {};
-          queryUrlParse.queryParams.forEach((value, key) => {
-            searchObj[key] = value;
-          });
+          // Check if this is actually a list query (single path segment) or entity with params
+          const urlObj = new URL(fullUrl);
+          const pathParts = urlObj.pathname.split("/").filter(Boolean);
 
-          const listRoute = `/${queryUrlParse.entityType}/`;
-          logger.debug(
-            "routing",
-            `ApiOpenAlexRoute: Navigating to ${listRoute} with search ${JSON.stringify(searchObj)}`,
-            { listRoute, searchObj },
-            "ApiOpenAlexRoute",
-          );
-          void navigate({
-            to: listRoute,
-            search: searchObj,
-            replace: true,
-          });
-          return;
+          if (pathParts.length === 1) {
+            // This is a list query like /authors?filter=...
+            const searchObj: Record<string, string> = {};
+            queryUrlParse.queryParams.forEach((value, key) => {
+              searchObj[key] = value;
+            });
+
+            const listRoute = `/${queryUrlParse.entityType}/`;
+            logger.debug(
+              "routing",
+              `ApiOpenAlexRoute: Navigating to ${listRoute} with search ${JSON.stringify(searchObj)}`,
+              { listRoute, searchObj },
+              "ApiOpenAlexRoute",
+            );
+            void navigate({
+              to: listRoute,
+              search: searchObj,
+              replace: true,
+            });
+            return;
+          }
+          // If pathParts.length > 1, it's an entity URL with params, continue to entity detection
         }
 
         const detection = EntityDetectionService.detectEntity(fullUrl);
@@ -149,13 +156,17 @@ function ApiOpenAlexRoute() {
           detection.detectionMethod.includes("OpenAlex")
         ) {
           const entityRoute = `/${detection.entityType}/${detection.normalizedId}`;
+
+          // Check if the original URL had query parameters and preserve them
+          const urlObj = new URL(fullUrl);
+          const searchObj: Record<string, string> = {};
+          urlObj.searchParams.forEach((value, key) => {
+            searchObj[key] = value;
+          });
+
           void navigate({
             to: entityRoute,
-            replace: true,
-          });
-        } else {
-          void navigate({
-            to: `/${encodeURIComponent(fullUrl)}`,
+            search: Object.keys(searchObj).length > 0 ? searchObj : undefined,
             replace: true,
           });
         }

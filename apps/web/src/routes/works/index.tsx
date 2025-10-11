@@ -33,8 +33,9 @@ const worksColumns: ColumnConfig[] = [
   {
     key: "authorships",
     header: "Authors",
-    render: (value: unknown) => {
-      const authorships = value as Work["authorships"];
+    render: (_value: unknown, row: unknown) => {
+      const work = row as Work;
+      const { authorships } = work;
       if (!authorships || authorships.length === 0) return "Unknown";
 
       return (
