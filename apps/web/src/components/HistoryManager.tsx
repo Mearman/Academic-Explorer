@@ -9,7 +9,7 @@ import {
   IconExternalLink,
   IconFilter,
 } from "@tabler/icons-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   TextInput,
   Select,
@@ -34,13 +34,23 @@ export function HistoryManager({ onNavigate }: HistoryManagerProps) {
     setCategoryFilter,
     setSearchTerm,
     clearFilters,
+    loadEvents,
   } = useAppActivityStore();
+
+  // Load events from IndexedDB on mount
+  useEffect(() => {
+    loadEvents();
+  }, [loadEvents]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
 
-  // Filter navigation events
+  // Filter navigation and search events
   const navigationEvents = filteredEvents.filter(
-    (event) => event.type === "navigation",
+    (event) =>
+      event.type === "navigation" ||
+      (event.category === "ui" &&
+        (event.event === "entity_page_visit" ||
+          event.event === "search_page_visit")),
   );
 
   const handleSearchChange = (query: string) => {
@@ -182,13 +192,32 @@ export function HistoryManager({ onNavigate }: HistoryManagerProps) {
                   ) : event.metadata?.searchQuery ? (
                     <div>
                       <Text size="sm" c="blue">
-                        Search: &ldquo;{event.metadata.searchQuery}&rdquo;
+                        Search: &ldquo;event.metadata.searchQuery&rdquo;
                       </Text>
-                      {event.metadata.filters && (
-                        <Text size="xs" c="dimmed">
-                          Filters: {JSON.stringify(event.metadata.filters)}
-                        </Text>
-                      )}
+                      {event.metadata.filters &&
+                        typeof event.metadata.filters === "string" && (
+                          <Text size="xs" c="dimmed">
+                            Filters: {event.metadata.filters}
+                          </Text>
+                        )}
+                      {event.metadata.searchParams &&
+                        typeof event.metadata.searchParams === "object" && (
+                          <Text size="xs" c="dimmed">
+                            Parameters:{" "}
+                            {new URLSearchParams(
+                              event.metadata.searchParams as Record<
+                                string,
+                                string
+                              >,
+                            ).toString()}
+                          </Text>
+                        )}
+                      {event.metadata.searchParams &&
+                        typeof event.metadata.searchParams === "string" && (
+                          <Text size="xs" c="dimmed">
+                            Parameters: {event.metadata.searchParams}
+                          </Text>
+                        )}
                     </div>
                   ) : event.metadata?.route ? (
                     <Text size="sm" c="blue">
