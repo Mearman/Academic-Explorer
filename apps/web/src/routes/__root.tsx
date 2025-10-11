@@ -72,8 +72,16 @@ export const Route = createRootRoute({
         const [pathAndQuery] = match[1].split("#");
         const [path, queryString] = (pathAndQuery ?? "").split("?");
         
-        const cleanPath = `/${path}`;
-        const searchParams = queryString ? Object.fromEntries(new URLSearchParams(queryString)) : undefined;
+        // Decode the path to ensure it's human-readable
+        const cleanPath = `/${decodeURIComponent(path)}`;
+        
+        // Parse and decode query parameters
+        const searchParams = queryString ? Object.fromEntries(
+          Array.from(new URLSearchParams(queryString).entries()).map(([key, value]) => [
+            decodeURIComponent(key),
+            decodeURIComponent(value),
+          ])
+        ) : undefined;
         
         logger.debug("routing", "Redirecting to extracted path", {
           cleanPath,
