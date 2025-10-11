@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-10-11T06:09:41.991Z",
+  "lastUpdated": "2025-10-11T06:29:16.823Z",
   "files": {
     "authors": {
       "url": "https://api.openalex.org/authors",
@@ -23,7 +23,7 @@
   "directories": {
     "authors": {
       "$ref": "./authors",
-      "lastModified": "2025-10-11T06:05:54.529Z"
+      "lastModified": "2025-10-11T06:20:36.401Z"
     },
     "funders": {
       "$ref": "./funders",
@@ -31,11 +31,11 @@
     },
     "institutions": {
       "$ref": "./institutions",
-      "lastModified": "2025-10-11T06:05:54.803Z"
+      "lastModified": "2025-10-11T06:20:36.402Z"
     },
     "sources": {
       "$ref": "./sources",
-      "lastModified": "2025-10-11T06:05:54.775Z"
+      "lastModified": "2025-10-11T06:29:16.710Z"
     },
     "topics": {
       "$ref": "./topics",
@@ -43,7 +43,7 @@
     },
     "works": {
       "$ref": "./works",
-      "lastModified": "2025-10-10T17:10:58.847Z"
+      "lastModified": "2025-10-11T06:20:36.402Z"
     }
   }
 }

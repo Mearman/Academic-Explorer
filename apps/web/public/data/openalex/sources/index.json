@@ -1,6 +1,23 @@
 {
-  "lastUpdated": "2025-10-11T06:05:59.558Z",
-  "files": {},
+  "lastUpdated": "2025-10-11T06:29:16.813Z",
+  "files": {
+    "S4306400194": {
+      "url": "https://api.openalex.org/sources/S4306400194",
+      "$ref": "./S4306400194.json",
+      "lastRetrieved": "2025-10-11T06:29:16.709Z",
+      "contentHash": "60845b0e4fdfc607",
+      "equivalentUrls": [
+        "https://api.openalex.org/sources/S4306400194"
+      ],
+      "urlTimestamps": {
+        "https://api.openalex.org/sources/S4306400194": "2025-10-11T06:29:16.709Z"
+      },
+      "collisionInfo": {
+        "mergedCount": 0,
+        "totalUrls": 1
+      }
+    }
+  },
   "directories": {
     "queries": {
       "$ref": "./queries",

@@ -20,10 +20,13 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as ExternalIdRouteImport } from './routes/$externalId'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WorksIndexRouteImport } from './routes/works/index'
+import { Route as TopicsIndexRouteImport } from './routes/topics/index'
 import { Route as SourcesIndexRouteImport } from './routes/sources/index'
 import { Route as PublishersIndexRouteImport } from './routes/publishers/index'
+import { Route as KeywordsIndexRouteImport } from './routes/keywords/index'
 import { Route as InstitutionsIndexRouteImport } from './routes/institutions/index'
 import { Route as FundersIndexRouteImport } from './routes/funders/index'
+import { Route as ConceptsIndexRouteImport } from './routes/concepts/index'
 import { Route as AuthorsIndexRouteImport } from './routes/authors/index'
 import { Route as WorksWorkIdRouteImport } from './routes/works/$workId'
 import { Route as TopicsTopicIdRouteImport } from './routes/topics/$topicId'
@@ -99,6 +102,11 @@ const WorksIndexRoute = WorksIndexRouteImport.update({
   path: '/works/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TopicsIndexRoute = TopicsIndexRouteImport.update({
+  id: '/topics/',
+  path: '/topics/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SourcesIndexRoute = SourcesIndexRouteImport.update({
   id: '/sources/',
   path: '/sources/',
@@ -109,6 +117,11 @@ const PublishersIndexRoute = PublishersIndexRouteImport.update({
   path: '/publishers/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const KeywordsIndexRoute = KeywordsIndexRouteImport.update({
+  id: '/keywords/',
+  path: '/keywords/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InstitutionsIndexRoute = InstitutionsIndexRouteImport.update({
   id: '/institutions/',
   path: '/institutions/',
@@ -117,6 +130,11 @@ const InstitutionsIndexRoute = InstitutionsIndexRouteImport.update({
 const FundersIndexRoute = FundersIndexRouteImport.update({
   id: '/funders/',
   path: '/funders/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConceptsIndexRoute = ConceptsIndexRouteImport.update({
+  id: '/concepts/',
+  path: '/concepts/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthorsIndexRoute = AuthorsIndexRouteImport.update({
@@ -241,10 +259,13 @@ export interface FileRoutesByFullPath {
   '/topics/$topicId': typeof TopicsTopicIdRoute
   '/works/$workId': typeof WorksWorkIdRoute
   '/authors': typeof AuthorsIndexRoute
+  '/concepts': typeof ConceptsIndexRoute
   '/funders': typeof FundersIndexRoute
   '/institutions': typeof InstitutionsIndexRoute
+  '/keywords': typeof KeywordsIndexRoute
   '/publishers': typeof PublishersIndexRoute
   '/sources': typeof SourcesIndexRoute
+  '/topics': typeof TopicsIndexRoute
   '/works': typeof WorksIndexRoute
   '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
   '/institutions/ror/$ror': typeof InstitutionsRorRorRoute
@@ -277,10 +298,13 @@ export interface FileRoutesByTo {
   '/topics/$topicId': typeof TopicsTopicIdRoute
   '/works/$workId': typeof WorksWorkIdRoute
   '/authors': typeof AuthorsIndexRoute
+  '/concepts': typeof ConceptsIndexRoute
   '/funders': typeof FundersIndexRoute
   '/institutions': typeof InstitutionsIndexRoute
+  '/keywords': typeof KeywordsIndexRoute
   '/publishers': typeof PublishersIndexRoute
   '/sources': typeof SourcesIndexRoute
+  '/topics': typeof TopicsIndexRoute
   '/works': typeof WorksIndexRoute
   '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
   '/institutions/ror/$ror': typeof InstitutionsRorRorRoute
@@ -314,10 +338,13 @@ export interface FileRoutesById {
   '/topics/$topicId': typeof TopicsTopicIdRoute
   '/works/$workId': typeof WorksWorkIdRoute
   '/authors/': typeof AuthorsIndexRoute
+  '/concepts/': typeof ConceptsIndexRoute
   '/funders/': typeof FundersIndexRoute
   '/institutions/': typeof InstitutionsIndexRoute
+  '/keywords/': typeof KeywordsIndexRoute
   '/publishers/': typeof PublishersIndexRoute
   '/sources/': typeof SourcesIndexRoute
+  '/topics/': typeof TopicsIndexRoute
   '/works/': typeof WorksIndexRoute
   '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
   '/institutions/ror/$ror': typeof InstitutionsRorRorRoute
@@ -352,10 +379,13 @@ export interface FileRouteTypes {
     | '/topics/$topicId'
     | '/works/$workId'
     | '/authors'
+    | '/concepts'
     | '/funders'
     | '/institutions'
+    | '/keywords'
     | '/publishers'
     | '/sources'
+    | '/topics'
     | '/works'
     | '/authors/orcid/$orcid'
     | '/institutions/ror/$ror'
@@ -388,10 +418,13 @@ export interface FileRouteTypes {
     | '/topics/$topicId'
     | '/works/$workId'
     | '/authors'
+    | '/concepts'
     | '/funders'
     | '/institutions'
+    | '/keywords'
     | '/publishers'
     | '/sources'
+    | '/topics'
     | '/works'
     | '/authors/orcid/$orcid'
     | '/institutions/ror/$ror'
@@ -424,10 +457,13 @@ export interface FileRouteTypes {
     | '/topics/$topicId'
     | '/works/$workId'
     | '/authors/'
+    | '/concepts/'
     | '/funders/'
     | '/institutions/'
+    | '/keywords/'
     | '/publishers/'
     | '/sources/'
+    | '/topics/'
     | '/works/'
     | '/authors/orcid/$orcid'
     | '/institutions/ror/$ror'
@@ -458,10 +494,13 @@ export interface RootRouteChildren {
   TopicsTopicIdRoute: typeof TopicsTopicIdRoute
   WorksWorkIdRoute: typeof WorksWorkIdRoute
   AuthorsIndexRoute: typeof AuthorsIndexRoute
+  ConceptsIndexRoute: typeof ConceptsIndexRoute
   FundersIndexRoute: typeof FundersIndexRoute
   InstitutionsIndexRoute: typeof InstitutionsIndexRoute
+  KeywordsIndexRoute: typeof KeywordsIndexRoute
   PublishersIndexRoute: typeof PublishersIndexRoute
   SourcesIndexRoute: typeof SourcesIndexRoute
+  TopicsIndexRoute: typeof TopicsIndexRoute
   WorksIndexRoute: typeof WorksIndexRoute
   AuthorsOrcidOrcidRoute: typeof AuthorsOrcidOrcidRoute
   InstitutionsRorRorRoute: typeof InstitutionsRorRorRoute
@@ -550,6 +589,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorksIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/topics/': {
+      id: '/topics/'
+      path: '/topics'
+      fullPath: '/topics'
+      preLoaderRoute: typeof TopicsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sources/': {
       id: '/sources/'
       path: '/sources'
@@ -564,6 +610,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublishersIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/keywords/': {
+      id: '/keywords/'
+      path: '/keywords'
+      fullPath: '/keywords'
+      preLoaderRoute: typeof KeywordsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/institutions/': {
       id: '/institutions/'
       path: '/institutions'
@@ -576,6 +629,13 @@ declare module '@tanstack/react-router' {
       path: '/funders'
       fullPath: '/funders'
       preLoaderRoute: typeof FundersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/concepts/': {
+      id: '/concepts/'
+      path: '/concepts'
+      fullPath: '/concepts'
+      preLoaderRoute: typeof ConceptsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/authors/': {
@@ -760,10 +820,13 @@ const rootRouteChildren: RootRouteChildren = {
   TopicsTopicIdRoute: TopicsTopicIdRoute,
   WorksWorkIdRoute: WorksWorkIdRoute,
   AuthorsIndexRoute: AuthorsIndexRoute,
+  ConceptsIndexRoute: ConceptsIndexRoute,
   FundersIndexRoute: FundersIndexRoute,
   InstitutionsIndexRoute: InstitutionsIndexRoute,
+  KeywordsIndexRoute: KeywordsIndexRoute,
   PublishersIndexRoute: PublishersIndexRoute,
   SourcesIndexRoute: SourcesIndexRoute,
+  TopicsIndexRoute: TopicsIndexRoute,
   WorksIndexRoute: WorksIndexRoute,
   AuthorsOrcidOrcidRoute: AuthorsOrcidOrcidRoute,
   InstitutionsRorRorRoute: InstitutionsRorRorRoute,

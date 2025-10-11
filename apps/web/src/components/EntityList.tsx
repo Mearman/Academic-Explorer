@@ -4,6 +4,7 @@ import type {
   Concept,
   Funder,
   InstitutionEntity,
+  InstitutionsFilters,
   OpenAlexResponse,
   Publisher,
   Source,
@@ -69,7 +70,8 @@ export function EntityList({
         ? (info) => col.render?.(info.getValue(), info.row.original)
         : (info) => String(info.getValue() ?? ""),
     }));
-  }, [columns]);  useEffect(() => {
+  }, [columns]);
+  useEffect(() => {
     async function fetchData() {
       try {
         setLoading(true);
@@ -96,31 +98,29 @@ export function EntityList({
               page: currentPage,
             });
             break;
-          case "works":
+          case "works": {
             const worksFilter = urlFilters
-              ? buildFilterString(urlFilters as any)
+              ? buildFilterString(urlFilters)
               : undefined;
-            console.log("EntityList - works filter:", worksFilter);
             response = await openAlex.client.works.getWorks({
               per_page: perPage,
               page: currentPage,
               filter: worksFilter,
             });
             break;
+          }
           case "authors":
             response = await openAlex.client.authors.getAuthors({
               per_page: perPage,
               page: currentPage,
-              filter: urlFilters
-                ? buildFilterString(urlFilters as any)
-                : undefined,
+              filter: urlFilters ? buildFilterString(urlFilters) : undefined,
             });
             break;
           case "institutions":
             response = await openAlex.client.institutions.getInstitutions({
               per_page: perPage,
               page: currentPage,
-              filters: urlFilters as any,
+              filters: urlFilters as InstitutionsFilters | undefined,
             });
             break;
           default:

@@ -1,34 +1,67 @@
 import { EntityList, type ColumnConfig } from "@/components/EntityList";
-import type {
-  Author,
-  Funder,
-  InstitutionEntity,
-  Publisher,
-  Source,
-  Work,
-} from "@academic-explorer/client";
+import type { Work } from "@academic-explorer/client";
 import { createFilterBuilder } from "@academic-explorer/client";
+import { convertToRelativeUrl } from "@academic-explorer/ui/components/entity-views/matchers/index";
+import { Anchor } from "@mantine/core";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-
-type Entity = Funder | Publisher | Source | Work | Author | InstitutionEntity;
 
 export const Route = createFileRoute("/works/")({
   component: WorksListRoute,
 });
 
 const worksColumns: ColumnConfig[] = [
-  { key: "display_name", header: "Title" },
+  {
+    key: "display_name",
+    header: "Title",
+    render: (_value: unknown, row: unknown) => {
+      const work = row as Work;
+      const workUrl = convertToRelativeUrl(work.id);
+      if (workUrl) {
+        return (
+          <Anchor
+            href={workUrl}
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
+            {work.display_name}
+          </Anchor>
+        );
+      }
+      return work.display_name;
+    },
+  },
   {
     key: "authorships",
     header: "Authors",
     render: (value: unknown) => {
       const authorships = value as Work["authorships"];
       if (!authorships || authorships.length === 0) return "Unknown";
-      const authorNames = authorships.map(
-        (authorship) => authorship.author.display_name,
+
+      return (
+        <>
+          {authorships.map((authorship, index) => {
+            const { author } = authorship;
+            const authorUrl = convertToRelativeUrl(author.id);
+
+            return (
+              <span key={author.id}>
+                {authorUrl ? (
+                  <Anchor
+                    href={authorUrl}
+                    size="sm"
+                    style={{ textDecoration: "none" }}
+                  >
+                    {author.display_name}
+                  </Anchor>
+                ) : (
+                  author.display_name
+                )}
+                {index < authorships.length - 1 && ", "}
+              </span>
+            );
+          })}
+        </>
       );
-      return authorNames.join(", ");
     },
   },
   { key: "publication_year", header: "Year" },
@@ -38,7 +71,18 @@ const worksColumns: ColumnConfig[] = [
     header: "Source",
     render: (_value: unknown, row: unknown) => {
       const work = row as Work;
-      return work.primary_location?.source?.display_name || "Unknown";
+      const source = work.primary_location?.source;
+      if (!source) return "Unknown";
+
+      const sourceUrl = convertToRelativeUrl(source.id);
+      if (sourceUrl) {
+        return (
+          <Anchor href={sourceUrl} size="sm" style={{ textDecoration: "none" }}>
+            {source.display_name}
+          </Anchor>
+        );
+      }
+      return source.display_name;
     },
   },
 ];
