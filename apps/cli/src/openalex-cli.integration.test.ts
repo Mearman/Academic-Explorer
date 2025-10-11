@@ -2,9 +2,9 @@
  * Integration tests for OpenAlex CLI using real static data
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { OpenAlexCLI } from "./openalex-cli-class.js";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { detectEntityType, toStaticEntityType } from "./entity-detection.js";
+import { OpenAlexCLI } from "./openalex-cli-class.js";
 
 // Mock fetch to prevent actual API calls
 global.fetch = vi.fn();
@@ -166,7 +166,7 @@ describe("OpenAlexCLI Integration Tests", () => {
       const authorId = entities[0];
 
       const consoleSpy = vi
-        .spyOn(console, "error")
+        .spyOn(console, "debug")
         .mockImplementation(() => {});
 
       const result = await cli.getEntityWithCache("authors", authorId, {
@@ -177,15 +177,16 @@ describe("OpenAlexCLI Integration Tests", () => {
 
       expect(result).toBeTruthy();
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining(`Cache hit for authors/${authorId}`),
+        expect.stringContaining("[general] Cache hit for authors/" + authorId),
+        "",
       );
 
       consoleSpy.mockRestore();
     });
 
-    it("should handle cache-only mode for non-existent entity", async () => {
+    it("should handle cache-only mode for non-existing entity", async () => {
       const consoleSpy = vi
-        .spyOn(console, "error")
+        .spyOn(console, "warn")
         .mockImplementation(() => {});
 
       const result = await cli.getEntityWithCache("authors", "A9999999999", {
@@ -196,7 +197,8 @@ describe("OpenAlexCLI Integration Tests", () => {
 
       expect(result).toBeNull();
       expect(consoleSpy).toHaveBeenCalledWith(
-        "Cache-only mode: entity A9999999999 not found in cache",
+        "[general] Cache-only mode: entity A9999999999 not found in cache",
+        "",
       );
 
       consoleSpy.mockRestore();
@@ -216,7 +218,7 @@ describe("OpenAlexCLI Integration Tests", () => {
       vi.mocked(fetch).mockResolvedValue({
         ok: true,
         json: () => Promise.resolve({ results: [mockEntity] }),
-      } as Response);
+      } as unknown as Response);
 
       const consoleSpy = vi
         .spyOn(console, "error")
@@ -230,7 +232,7 @@ describe("OpenAlexCLI Integration Tests", () => {
 
       expect(result).toEqual(mockEntity);
       expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining(`filter=id%3A${authorId}`),
+        expect.stringContaining("filter=id%3A" + authorId),
       );
 
       consoleSpy.mockRestore();

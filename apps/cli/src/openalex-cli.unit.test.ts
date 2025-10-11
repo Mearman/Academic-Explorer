@@ -345,20 +345,39 @@ describe("OpenAlexCLI", () => {
     });
 
     it("should log error and return null for other file read errors", async () => {
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      // Clear the existing readFile mock and set up a new one that throws for entity files
+      vi.mocked(readFile).mockImplementation(async (path) => {
+        const pathStr = path.toString();
 
-      // Mock readFile to throw a non-ENOENT error (e.g., permission error)
-      vi.mocked(readFile).mockRejectedValueOnce(new Error("EACCES: permission denied"));
+        // Return index data
+        if (pathStr.includes("authors/index.json")) {
+          return JSON.stringify({
+            "https://api.openalex.org/authors/A5017898742": {
+              "$ref": "./A5017898742.json",
+              "lastModified": "2025-09-19T16:29:25.658Z",
+              "contentHash": "5829e4f7cb7a1382"
+            }
+          });
+        }
+
+        // Throw error for entity file
+        const error = new Error("EACCES: permission denied");
+        (error as any).code = "EACCES";
+        (error as any).errno = -13;
+        (error as any).syscall = "open";
+        (error as any).path = pathStr;
+        throw error;
+      });
 
       const result = await cli.loadEntity("authors", "A5017898742");
 
       expect(result).toBeNull();
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "Failed to load entity A5017898742:",
-        expect.any(Error)
+      expect(logError).toHaveBeenCalledWith(
+        logger,
+        "Failed to load entity A5017898742",
+        expect.any(Object),
+        "general"
       );
-
-      consoleSpy.mockRestore();
     });
   });
 
@@ -521,8 +540,6 @@ describe("OpenAlexCLI", () => {
     });
 
     it("should return null in cache-only mode when entity not found", async () => {
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-
       // Use a non-existent entity ID in cache-only mode
       const result = await cli.getEntityWithCache("authors", "A999999999", {
         useCache: true,
@@ -531,11 +548,10 @@ describe("OpenAlexCLI", () => {
       });
 
       expect(result).toBeNull();
-      expect(consoleSpy).toHaveBeenCalledWith(
+      expect(logger.warn).toHaveBeenCalledWith(
+        "general",
         "Cache-only mode: entity A999999999 not found in cache"
       );
-
-      consoleSpy.mockRestore();
     });
 
     it("should fetch from API when cache miss and not cache-only", async () => {
