@@ -64,7 +64,18 @@ export function EntityList({
   const tableColumns = useMemo<ColumnDef<Entity>[]>(() => {
     return columns.map((col) => ({
       id: col.key,
-      accessorKey: col.key,
+      accessorKey: col.render ? undefined : col.key,
+      accessorFn: col.render
+        ? (row) => row
+        : (row) => {
+            // Handle nested keys like "primary_location.source.display_name"
+            const keys = col.key.split(".");
+            let value: unknown = row;
+            for (const key of keys) {
+              value = value?.[key as keyof typeof value];
+            }
+            return value;
+          },
       header: col.header,
       cell: col.render
         ? (info) => col.render?.(info.getValue(), info.row.original)
