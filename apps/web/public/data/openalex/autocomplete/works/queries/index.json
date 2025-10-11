@@ -1,0 +1,12 @@
+{
+  "lastUpdated": "2025-10-11T15:48:32.835Z",
+  "files": {
+    "q__3D__greenhou": {
+      "url": "https://api.openalex.org/works?q=greenhou",
+      "$ref": "./q__3D__greenhou.json",
+      "lastRetrieved": "2025-10-11T15:48:32.728Z",
+      "contentHash": "dd796f6d32a769cc"
+    }
+  },
+  "directories": {}
+}
