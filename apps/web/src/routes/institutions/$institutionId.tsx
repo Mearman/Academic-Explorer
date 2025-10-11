@@ -1,17 +1,17 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect, useRef } from "react";
-import { useGraphData } from "@/hooks/use-graph-data";
-import { useGraphStore } from "@/stores/graph-store";
-import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useEntityDocumentTitle } from "@/hooks/use-document-title";
+import { useGraphData } from "@/hooks/use-graph-data";
+import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
+import { useGraphStore } from "@/stores/graph-store";
 import { decodeUrlQueryParams } from "@/utils/url-helpers";
+import type { InstitutionEntity } from "@academic-explorer/client";
+import { EntityDetectionService } from "@academic-explorer/graph";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
-import { EntityDetectionService } from "@academic-explorer/graph";
 import { IconBookmark, IconBookmarkOff } from "@tabler/icons-react";
-import type { InstitutionEntity } from "@academic-explorer/client";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
 const INSTITUTION_ROUTE_PATH = "/institutions/$institutionId";
 
 function InstitutionRoute() {

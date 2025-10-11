@@ -167,11 +167,17 @@ export class OpenAlexBaseClient {
       url.searchParams.set("mailto", this.config.userEmail);
     }
 
-    // Add query parameters
-    Object.entries(params).forEach(([key, value]) => {
+    // Build URL string first, then manually append select parameter to avoid encoding commas
+    // OpenAlex API requires actual commas, not %2C encoded commas in select parameter
+    const selectValue = params.select;
+    const otherParams = { ...params };
+    delete otherParams.select;
+
+    // Add other query parameters (these can be URL-encoded normally)
+    Object.entries(otherParams).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         if (Array.isArray(value)) {
-          // Handle arrays (like select fields)
+          // Handle arrays
           url.searchParams.set(key, value.join(","));
         } else if (
           typeof value === "string" ||
@@ -184,7 +190,24 @@ export class OpenAlexBaseClient {
       }
     });
 
-    return url.toString();
+    // Get the base URL string
+    let finalUrl = url.toString();
+
+    // Manually append select parameter with unencoded commas if present
+    if (selectValue !== undefined && selectValue !== null) {
+      const selectString = Array.isArray(selectValue)
+        ? selectValue.join(",")
+        : String(selectValue);
+      const separator = finalUrl.includes("?") ? "&" : "?";
+      finalUrl = `${finalUrl}${separator}select=${selectString}`;
+    }
+
+    logger.debug("client", "Built API URL", {
+      endpoint,
+      params,
+      finalUrl,
+    });
+    return finalUrl;
   }
 
   /**

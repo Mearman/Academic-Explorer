@@ -4,6 +4,7 @@ import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { useGraphStore } from "@/stores/graph-store";
 import { decodeUrlQueryParams } from "@/utils/url-helpers";
+import type { Work } from "@academic-explorer/client";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
@@ -11,7 +12,6 @@ import { logError, logger } from "@academic-explorer/utils/logger";
 import { IconBookmark, IconBookmarkOff } from "@tabler/icons-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import type { Work } from "@academic-explorer/client";
 
 function WorkRoute() {
   const { workId } = Route.useParams();

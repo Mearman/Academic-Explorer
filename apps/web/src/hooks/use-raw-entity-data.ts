@@ -3,17 +3,18 @@
  * Uses the proper cache system with Memory → IndexedDB → localStorage → API hierarchy
  */
 
-import { useQuery } from "@tanstack/react-query";
-import { EntityDetectionService } from "@academic-explorer/graph";
-import type { OpenAlexEntity } from "@academic-explorer/client";
+import type { OpenAlexEntity, QueryParams } from "@academic-explorer/client";
 import { cachedOpenAlex } from "@academic-explorer/client";
+import { EntityDetectionService } from "@academic-explorer/graph";
+import { logger } from "@academic-explorer/utils";
+import { useQuery } from "@tanstack/react-query";
 import type { EntityType } from "../config/cache";
 import { ENTITY_CACHE_TIMES } from "../config/cache";
-import { logger } from "@academic-explorer/utils";
 
 interface UseRawEntityDataOptions {
   entityId?: string | null;
   enabled?: boolean;
+  queryParams?: QueryParams;
 }
 
 
@@ -25,7 +26,7 @@ function isValidEntityData(entityId: string | null | undefined, entityType: Enti
 }
 
 export const useRawEntityData = (options: UseRawEntityDataOptions) => {
-	const { entityId, enabled = true } = options;
+	const { entityId, enabled = true, queryParams = {} } = options;
 
 	// Detect entity type from ID to use proper cache configuration
 	let entityType: EntityType | null = null;
@@ -57,8 +58,11 @@ export const useRawEntityData = (options: UseRawEntityDataOptions) => {
 	// Always call the hook, but conditionally enable it
 	const shouldFetch = enabled && isValidEntityData(detectedEntityId, entityType);
 
+	// Serialize queryParams for use in queryKey to ensure proper cache invalidation
+	const queryParamsKey = JSON.stringify(queryParams);
+
 	const query = useQuery({
-		queryKey: ["raw-entity", entityType, detectedEntityId],
+		queryKey: ["raw-entity", entityType, detectedEntityId, queryParamsKey],
 		queryFn: async () => {
 			if (!entityType || !detectedEntityId) {
 				throw new Error("Entity type and ID required for fetching");
@@ -66,34 +70,35 @@ export const useRawEntityData = (options: UseRawEntityDataOptions) => {
 
 			logger.debug("api", "Fetching raw entity data", {
 				entityType,
-				entityId: detectedEntityId
+				entityId: detectedEntityId,
+				queryParams
 			}, "useRawEntityData");
 
 			try {
 				let result: OpenAlexEntity;
 
-				// Call appropriate API method based on entity type
+				// Call appropriate API method based on entity type, passing queryParams
 				switch (entityType) {
 					case "works":
-						result = await cachedOpenAlex.client.works.getWork(detectedEntityId);
+						result = await cachedOpenAlex.client.works.getWork(detectedEntityId, queryParams);
 						break;
 					case "authors":
-						result = await cachedOpenAlex.client.authors.getAuthor(detectedEntityId);
+						result = await cachedOpenAlex.client.authors.getAuthor(detectedEntityId, queryParams);
 						break;
 					case "sources":
-						result = await cachedOpenAlex.client.sources.getSource(detectedEntityId);
+						result = await cachedOpenAlex.client.sources.getSource(detectedEntityId, queryParams);
 						break;
 					case "institutions":
-						result = await cachedOpenAlex.client.institutions.getInstitution(detectedEntityId);
+						result = await cachedOpenAlex.client.institutions.getInstitution(detectedEntityId, queryParams);
 						break;
 					case "topics":
-						result = await cachedOpenAlex.client.topics.get(detectedEntityId);
+						result = await cachedOpenAlex.client.topics.get(detectedEntityId, queryParams);
 						break;
 					case "publishers":
-						result = await cachedOpenAlex.client.publishers.get(detectedEntityId);
+						result = await cachedOpenAlex.client.publishers.get(detectedEntityId, queryParams);
 						break;
 					case "funders":
-						result = await cachedOpenAlex.client.funders.get(detectedEntityId);
+						result = await cachedOpenAlex.client.funders.get(detectedEntityId, queryParams);
 						break;
 					default:
 						throw new Error(`Unsupported entity entityType: ${entityType}`);

@@ -21,6 +21,7 @@ export const Route = createFileRoute(AUTHOR_ROUTE_PATH)({
 
 function AuthorRoute() {
   const { authorId } = Route.useParams();
+  const routeSearch = Route.useSearch();
   const navigate = useNavigate();
 
   // Strip query parameters from authorId if present (defensive programming)
@@ -38,13 +39,38 @@ function AuthorRoute() {
     decodeUrlQueryParams();
   }, []);
 
+  // Extract query parameters from URL search params
+  const queryParams: Record<string, string | string[]> = {};
+  if (routeSearch && typeof routeSearch === "object") {
+    Object.entries(routeSearch).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        if (Array.isArray(value)) {
+          queryParams[key] = value as string[];
+        } else if (typeof value === "string") {
+          // Split 'select' parameter into array for OpenAlex API
+          if (key === "select") {
+            queryParams[key] = value.split(",").map((field) => field.trim());
+          } else {
+            queryParams[key] = value;
+          }
+        } else {
+          queryParams[key] = String(value);
+        }
+      }
+    });
+  }
+
   // DEBUGGING: Systematically re-enable hooks one by one
   // Step 1: ✅ useGraphStore works fine
   const { setProvider } = useGraphStore();
   const nodeCount = useGraphStore((state) => state.totalNodeCount);
 
   // Step 2: Re-enable useRawEntityData (entity data fetching)
-  const rawEntityData = useRawEntityData({ entityId: cleanAuthorId });
+  // Pass queryParams to honor URL parameters like `select`
+  const rawEntityData = useRawEntityData({
+    entityId: cleanAuthorId,
+    queryParams
+  });
 
   // Fetch entity data for title
   const author = rawEntityData.data as Author | undefined;
