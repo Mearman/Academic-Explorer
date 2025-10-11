@@ -1,7 +1,7 @@
 import { RouterErrorComponent } from "@/components/error/RouterErrorComponent";
 import { MainLayout } from "@/components/layout/MainLayout";
-import { createRootRoute, Outlet, redirect } from "@tanstack/react-router";
 import { logger } from "@academic-explorer/utils/logger";
+import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { themeClass } from "../styles/theme.css";
 
 function RootLayout() {
@@ -28,71 +28,40 @@ export const Route = createRootRoute({
   errorComponent: RouterErrorComponent,
   beforeLoad: ({ location }) => {
     // Handle URLs like /#/https://api.openalex.org/path -> /#/path
-    const { pathname, search, href } = location;
-    
+    const { pathname, href } = location;
+
     logger.debug("routing", "Root beforeLoad", {
       pathname,
-      search,
       href,
     });
-    
-    // Match patterns like /https://api.openalex.org/ or /http://api.openalex.org/
-    const openAlexPattern = /^\/(https?):\/\/api\.openalex\.org\//;
-    
+
+    // Check if pathname starts with /https:// or /http:// followed by api.openalex.org
+    // Need to match /https://api.openalex.org/ or /http://api.openalex.org/
+    const openAlexPattern = /^\/(https?:\/\/api\.openalex\.org)\//;
+
     if (openAlexPattern.test(pathname)) {
+      // Strip the protocol and api.openalex.org from the pathname
+      const cleanPath = pathname.replace(openAlexPattern, "/");
+
+      // Extract the raw query string from href (which doesn't include the # symbol)
+      const queryIndex = href.indexOf("?");
+      const rawQueryString = queryIndex !== -1 ? href.substring(queryIndex + 1) : "";
+
+      const newUrl = rawQueryString ? `${cleanPath}?${rawQueryString}` : cleanPath;
+
       logger.debug("routing", "Detected OpenAlex URL in pathname, redirecting", {
         originalPath: pathname,
-        search,
-      });
-      
-      // Extract the path after api.openalex.org/ - replace everything up to and including api.openalex.org/
-      const cleanPath = pathname.replace(openAlexPattern, "/");
-      
-      logger.debug("routing", "Redirecting to cleaned path", {
         cleanPath,
-        search,
-      });
-      
-      throw redirect({
-        to: cleanPath,
-        search,
-        replace: true,
-      });
-    }
-    
-    // Also check if the entire href contains the pattern (for cases where router parses it oddly)
-    if (href.includes("://api.openalex.org/")) {
-      logger.debug("routing", "Detected OpenAlex URL in href, attempting to extract", {
+        rawQueryString,
+        newUrl,
         href,
       });
-      
-      // Try to extract the full URL from href
-      const match = href.match(/https?:\/\/api\.openalex\.org\/([^#]*)/);
-      if (match?.[1]) {
-        const [pathAndQuery] = match[1].split("#");
-        const [path, queryString] = (pathAndQuery ?? "").split("?");
-        
-        // Decode the path to ensure it's human-readable
-        const cleanPath = `/${decodeURIComponent(path)}`;
-        
-        // Parse and decode query parameters
-        const searchParams = queryString ? Object.fromEntries(
-          Array.from(new URLSearchParams(queryString).entries()).map(([key, value]) => [
-            decodeURIComponent(key),
-            decodeURIComponent(value),
-          ])
-        ) : undefined;
-        
-        logger.debug("routing", "Redirecting to extracted path", {
-          cleanPath,
-          searchParams,
-        });
-        
-        throw redirect({
-          to: cleanPath,
-          search: searchParams,
-          replace: true,
-        });
+
+      // Use window.location to preserve exact query string encoding
+      if (typeof window !== "undefined") {
+        window.location.replace(`#${newUrl}`);
+        // Throw to stop route processing
+        throw new Error("Redirecting");
       }
     }
   },

@@ -35,6 +35,31 @@ function ExternalIdRoute() {
           );
         }
 
+        // Check if this is a full OpenAlex API URL that should be redirected
+        // e.g., https://api.openalex.org/autocomplete/works?filter=...
+        const openAlexApiPattern = /^https?:\/\/api\.openalex\.org\/(.+)$/i;
+        const apiMatch = decodedId.match(openAlexApiPattern);
+        if (apiMatch) {
+          const cleanPath = apiMatch[1];
+          logger.debug(
+            "routing",
+            "Detected OpenAlex API URL in catch-all, redirecting",
+            { original: decodedId, cleanPath },
+            "ExternalIdRoute",
+          );
+          
+          // Preserve query params from routeSearch
+          const queryParams = routeSearch && typeof routeSearch === "object" 
+            ? Object.entries(routeSearch)
+                .map(([key, value]) => `${key}=${value}`)
+                .join("&")
+            : "";
+          
+          const newUrl = queryParams ? `/${cleanPath}?${queryParams}` : `/${cleanPath}`;
+          window.location.replace(`#${newUrl}`);
+          return;
+        }
+
         // Skip known route prefixes that should be handled by other routes
         const knownRoutePrefixes = [
           "openalex-url",
@@ -56,7 +81,10 @@ function ExternalIdRoute() {
           "explore",
           "search",
         ];
-        if (knownRoutePrefixes.includes(decodedId)) {
+        // Also check if the decodedId starts with any of these prefixes followed by a slash
+        const isKnownRoute = knownRoutePrefixes.includes(decodedId) || 
+          knownRoutePrefixes.some(prefix => decodedId.startsWith(`${prefix}/`));
+        if (isKnownRoute) {
           // This is a known route prefix, let other routes handle it
           return;
         }
@@ -188,7 +216,7 @@ function ExternalIdRoute() {
         // Fallback to search
         void navigate({
           to: "/search",
-          search: { q: externalId },
+          search: { q: externalId, filter: undefined, search: undefined },
           replace: true,
         });
       }

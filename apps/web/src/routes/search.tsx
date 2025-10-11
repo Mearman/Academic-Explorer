@@ -1,3 +1,4 @@
+import { useUserInteractions } from "@/hooks/use-user-interactions";
 import {
   cachedOpenAlex,
   createWorksQuery,
@@ -6,7 +7,6 @@ import {
 } from "@academic-explorer/client";
 import { convertToRelativeUrl } from "@academic-explorer/ui/components/entity-views/matchers/index";
 import { formatLargeNumber, logger } from "@academic-explorer/utils";
-import { useUserInteractions } from "@/hooks/use-user-interactions";
 import {
   Alert,
   Anchor,
@@ -19,14 +19,14 @@ import {
   Title,
 } from "@mantine/core";
 import {
-  IconInfoCircle,
   IconBookmark,
   IconBookmarkOff,
+  IconInfoCircle,
 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SearchInterface } from "../components/search/SearchInterface";
 import { BaseTable } from "../components/tables/BaseTable";
 import { pageDescription, pageTitle } from "../styles/layout.css";
@@ -327,7 +327,7 @@ function SearchPage() {
   // Handle URL parameters on mount
   useEffect(() => {
     const qParam = searchParams.q;
-    
+
     if (qParam && typeof qParam === "string") {
       setSearchFilters((prev) => ({ ...prev, query: qParam }));
     }

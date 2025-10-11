@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { z } from "zod";
 
 const autocompleteWorksSearchSchema = z.object({
@@ -14,6 +15,19 @@ export const Route = createFileRoute("/autocomplete/works/")({
 
 function AutocompleteWorksRoute() {
   const search = Route.useSearch();
+
+  useEffect(() => {
+    // Prettify the URL by decoding encoded characters
+    if (typeof window !== "undefined") {
+      const currentHash = window.location.hash;
+      const decodedHash = decodeURIComponent(currentHash);
+      
+      // Only update if the URL actually changed after decoding
+      if (currentHash !== decodedHash) {
+        window.history.replaceState(null, "", decodedHash);
+      }
+    }
+  }, []);
 
   return (
     <div>
