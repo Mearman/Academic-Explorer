@@ -4,7 +4,7 @@ import { useGraphData } from "@/hooks/use-graph-data";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useGraphStore } from "@/stores/graph-store";
 import { decodeUrlQueryParams } from "@/utils/url-helpers";
-import { FUNDER_FIELDS } from "@academic-explorer/client";
+import { FUNDER_FIELDS, cachedOpenAlex } from "@academic-explorer/client";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
@@ -23,6 +23,7 @@ function FunderRoute() {
   const entityType = "funder" as const;
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
   const hasDecodedUrlRef = useRef(false);
+  const [isLoadingRandom, setIsLoadingRandom] = useState(false);
 
   // Decode URL-encoded query parameters on mount
   useEffect(() => {
@@ -30,6 +31,48 @@ function FunderRoute() {
     hasDecodedUrlRef.current = true;
     decodeUrlQueryParams();
   }, []);
+
+  // Handle "random" keyword - fetch a random funder and redirect
+  useEffect(() => {
+    if (funderId?.toLowerCase() !== "random" || isLoadingRandom) return;
+
+    const loadRandomFunder = async () => {
+      setIsLoadingRandom(true);
+      try {
+        logger.debug("routing", "Fetching random funder", undefined, "FunderRoute");
+
+        const response = await cachedOpenAlex.client.funders.randomSample(1);
+
+        if (response.results.length > 0) {
+          const randomFunder = response.results[0];
+          const cleanId = randomFunder.id.replace("https://openalex.org/", "");
+
+          logger.debug("routing", "Redirecting to random funder", {
+            funderId: cleanId,
+            name: randomFunder.display_name,
+          }, "FunderRoute");
+
+          void navigate({
+            to: FUNDER_ROUTE_PATH,
+            params: { funderId: cleanId },
+            search: (prev) => prev,
+            replace: true,
+          });
+        }
+      } catch (error) {
+        logError(
+          logger,
+          "Failed to fetch random funder",
+          error,
+          "FunderRoute",
+          "routing",
+        );
+        setIsLoadingRandom(false);
+      }
+    };
+
+    void loadRandomFunder();
+  }, [funderId, navigate, isLoadingRandom]);
 
   const graphData = useGraphData();
   const { loadEntity } = graphData;
@@ -141,7 +184,10 @@ function FunderRoute() {
       }
     };
 
-    void loadFunder();
+    // Don't try to load if we're resolving "random"
+    if (funderId?.toLowerCase() !== "random") {
+      void loadFunder();
+    }
   }, [funderId, loadEntity, loadEntityIntoGraph, nodeCount]);
 
   // Parse selected fields from URL
@@ -161,10 +207,10 @@ function FunderRoute() {
   };
 
   // Show loading state
-  if (rawEntityData.isLoading) {
+  if (rawEntityData.isLoading || isLoadingRandom) {
     return (
       <div className="p-4 text-center">
-        <h2>Loading Funder...</h2>
+        <h2>{isLoadingRandom ? "Finding Random Funder..." : "Loading Funder..."}</h2>
         <p>Funder ID: {funderId}</p>
       </div>
     );

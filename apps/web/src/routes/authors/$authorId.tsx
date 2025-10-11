@@ -5,7 +5,7 @@ import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { useGraphStore } from "@/stores/graph-store";
 import { decodeUrlQueryParams } from "@/utils/url-helpers";
-import { AUTHOR_FIELDS, type Author } from "@academic-explorer/client";
+import { AUTHOR_FIELDS, cachedOpenAlex, type Author } from "@academic-explorer/client";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
@@ -35,6 +35,7 @@ function AuthorRoute() {
   const entityType = "author" as const;
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
   const hasDecodedUrlRef = useRef(false);
+  const [isLoadingRandom, setIsLoadingRandom] = useState(false);
 
   // Decode URL-encoded query parameters on mount
   useEffect(() => {
@@ -43,6 +44,48 @@ function AuthorRoute() {
     hasDecodedUrlRef.current = true;
     decodeUrlQueryParams();
   }, []);
+
+  // Handle "random" keyword - fetch a random author and redirect
+  useEffect(() => {
+    if (cleanAuthorId?.toLowerCase() !== "random" || isLoadingRandom) return;
+
+    const loadRandomAuthor = async () => {
+      setIsLoadingRandom(true);
+      try {
+        logger.debug("routing", "Fetching random author", undefined, "AuthorRoute");
+
+        const response = await cachedOpenAlex.client.authors.getRandomAuthors(1);
+
+        if (response.results.length > 0) {
+          const randomAuthor = response.results[0];
+          const cleanId = randomAuthor.id.replace("https://openalex.org/", "");
+
+          logger.debug("routing", "Redirecting to random author", {
+            authorId: cleanId,
+            name: randomAuthor.display_name,
+          }, "AuthorRoute");
+
+          void navigate({
+            to: AUTHOR_ROUTE_PATH,
+            params: { authorId: cleanId },
+            search: (prev) => prev,
+            replace: true,
+          });
+        }
+      } catch (error) {
+        logError(
+          logger,
+          "Failed to fetch random author",
+          error,
+          "AuthorRoute",
+          "routing",
+        );
+        setIsLoadingRandom(false);
+      }
+    };
+
+    void loadRandomAuthor();
+  }, [cleanAuthorId, navigate, isLoadingRandom]);
 
   // Extract query parameters from URL search params
   const queryParams: Record<string, string | string[]> = {};
@@ -193,7 +236,10 @@ function AuthorRoute() {
       }
     };
 
-    void loadAuthor();
+    // Don't try to load if we're resolving "random"
+    if (cleanAuthorId?.toLowerCase() !== "random") {
+      void loadAuthor();
+    }
   }, [cleanAuthorId, loadEntity, loadEntityIntoGraph, nodeCount]);
 
   logger.debug("route", "Author route loading with raw data display", {
@@ -206,10 +252,10 @@ function AuthorRoute() {
   });
 
   // Show loading state
-  if (rawEntityData.isLoading) {
+  if (rawEntityData.isLoading || isLoadingRandom) {
     return (
       <div className="p-4 text-center">
-        <h2>Loading Author...</h2>
+        <h2>{isLoadingRandom ? "Finding Random Author..." : "Loading Author..."}</h2>
         <p>Author ID: {cleanAuthorId}</p>
       </div>
     );

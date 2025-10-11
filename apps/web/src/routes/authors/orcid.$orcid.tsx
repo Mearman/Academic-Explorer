@@ -49,7 +49,7 @@ function ORCIDAuthorRoute() {
 				// Navigate to search with the ORCID as query
 				void navigate({
 					to: "/search",
-					search: { q: orcid },
+					search: { q: orcid, filter: undefined, search: undefined },
 					replace: true,
 				})
 			}

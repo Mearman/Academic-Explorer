@@ -45,7 +45,7 @@ function DOIWorkRoute() {
 				// Navigate to search with the DOI as query
 				void navigate({
 					to: "/search",
-					search: { q: doi },
+					search: { q: doi, filter: undefined, search: undefined },
 					replace: true,
 				})
 			}

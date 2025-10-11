@@ -5,7 +5,7 @@ import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { useGraphStore } from "@/stores/graph-store";
 import { decodeUrlQueryParams } from "@/utils/url-helpers";
-import { INSTITUTION_FIELDS, type InstitutionEntity } from "@academic-explorer/client";
+import { cachedOpenAlex, INSTITUTION_FIELDS, type InstitutionEntity } from "@academic-explorer/client";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
@@ -25,6 +25,7 @@ function InstitutionRoute() {
   const entityType = "institution" as const;
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
   const hasDecodedUrlRef = useRef(false);
+  const [isLoadingRandom, setIsLoadingRandom] = useState(false);
 
   // Decode URL-encoded query parameters on mount
   useEffect(() => {
@@ -38,9 +39,51 @@ function InstitutionRoute() {
   const { loadEntityIntoGraph } = graphData;
   const nodeCount = useGraphStore((state) => state.totalNodeCount);
 
+  // Handle "random" keyword - fetch a random institution and redirect
+  useEffect(() => {
+    if (institutionId?.toLowerCase() !== "random" || isLoadingRandom) return;
+
+    const loadRandomInstitution = async () => {
+      setIsLoadingRandom(true);
+      try {
+        logger.debug("routing", "Fetching random institution", undefined, "InstitutionRoute");
+
+        const response = await cachedOpenAlex.client.institutions.getRandomInstitutions(1);
+
+        if (response.results.length > 0) {
+          const randomInstitution = response.results[0];
+          const cleanId = randomInstitution.id.replace("https://openalex.org/", "");
+
+          logger.debug("routing", "Redirecting to random institution", {
+            institutionId: cleanId,
+            name: randomInstitution.display_name,
+          }, "InstitutionRoute");
+
+          void navigate({
+            to: INSTITUTION_ROUTE_PATH,
+            params: { institutionId: cleanId },
+            search: (prev) => prev,
+            replace: true,
+          });
+        }
+      } catch (error) {
+        logError(
+          logger,
+          "Failed to fetch random institution",
+          error,
+          "InstitutionRoute",
+          "routing",
+        );
+        setIsLoadingRandom(false);
+      }
+    };
+
+    void loadRandomInstitution();
+  }, [institutionId, navigate, isLoadingRandom]);
+
   // Check if ID needs normalization and redirect if necessary
   useEffect(() => {
-    if (!institutionId) return;
+    if (!institutionId || institutionId.toLowerCase() === "random") return;
 
     const detection = EntityDetectionService.detectEntity(institutionId);
 
@@ -150,7 +193,10 @@ function InstitutionRoute() {
       }
     };
 
-    void loadInstitution();
+    // Don't try to load if we're resolving "random"
+    if (institutionId?.toLowerCase() !== "random") {
+      void loadInstitution();
+    }
   }, [institutionId, loadEntity, loadEntityIntoGraph, nodeCount]);
 
   // Parse selected fields from URL
@@ -170,10 +216,10 @@ function InstitutionRoute() {
   };
 
   // Show loading state
-  if (rawEntityData.isLoading) {
+  if (rawEntityData.isLoading || isLoadingRandom) {
     return (
       <div className="p-4 text-center">
-        <h2>Loading Institution...</h2>
+        <h2>{isLoadingRandom ? "Finding Random Institution..." : "Loading Institution..."}</h2>
         <p>Institution ID: {institutionId}</p>
       </div>
     );

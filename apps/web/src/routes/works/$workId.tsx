@@ -5,7 +5,7 @@ import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { useGraphStore } from "@/stores/graph-store";
 import { decodeUrlQueryParams } from "@/utils/url-helpers";
-import { WORK_FIELDS, type Work } from "@academic-explorer/client";
+import { WORK_FIELDS, cachedOpenAlex, type Work } from "@academic-explorer/client";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
@@ -28,6 +28,7 @@ function WorkRoute() {
   const entityType = "work" as const;
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
   const hasDecodedUrlRef = useRef(false);
+  const [isLoadingRandom, setIsLoadingRandom] = useState(false);
 
   // Decode URL-encoded query parameters on mount
   useEffect(() => {
@@ -35,6 +36,48 @@ function WorkRoute() {
     hasDecodedUrlRef.current = true;
     decodeUrlQueryParams();
   }, []);
+
+  // Handle "random" keyword - fetch a random work and redirect
+  useEffect(() => {
+    if (cleanWorkId?.toLowerCase() !== "random" || isLoadingRandom) return;
+
+    const loadRandomWork = async () => {
+      setIsLoadingRandom(true);
+      try {
+        logger.debug("routing", "Fetching random work", undefined, "WorkRoute");
+
+        const response = await cachedOpenAlex.client.works.getRandomWorks(1);
+
+        if (response.length > 0) {
+          const randomWork = response[0];
+          const cleanId = randomWork.id.replace("https://openalex.org/", "");
+
+          logger.debug("routing", "Redirecting to random work", {
+            workId: cleanId,
+            title: randomWork.title,
+          }, "WorkRoute");
+
+          void navigate({
+            to: WORK_ROUTE_PATH,
+            params: { workId: cleanId },
+            search: (prev) => prev,
+            replace: true,
+          });
+        }
+      } catch (error) {
+        logError(
+          logger,
+          "Failed to fetch random work",
+          error,
+          "WorkRoute",
+          "routing",
+        );
+        setIsLoadingRandom(false);
+      }
+    };
+
+    void loadRandomWork();
+  }, [cleanWorkId, navigate, isLoadingRandom]);
 
   const graphData = useGraphData();
   const { loadEntity } = graphData;
@@ -102,8 +145,11 @@ function WorkRoute() {
       }
     };
 
-    void loadWork();
-  }, [workId, loadEntity, loadEntityIntoGraph, nodeCount]);
+    // Don't try to load if we're resolving "random"
+    if (cleanWorkId?.toLowerCase() !== "random") {
+      void loadWork();
+    }
+  }, [workId, loadEntity, loadEntityIntoGraph, nodeCount, cleanWorkId]);
 
   // Parse selected fields from URL
   const selectedFields =
@@ -122,10 +168,10 @@ function WorkRoute() {
   };
 
   // Show loading state
-  if (rawEntityData.isLoading) {
+  if (rawEntityData.isLoading || isLoadingRandom) {
     return (
       <div className="p-4 text-center">
-        <h2>Loading Work...</h2>
+        <h2>{isLoadingRandom ? "Finding Random Work..." : "Loading Work..."}</h2>
         <p>Work ID: {workId}</p>
       </div>
     );

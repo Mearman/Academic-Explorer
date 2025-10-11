@@ -4,7 +4,7 @@ import { useGraphData } from "@/hooks/use-graph-data";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useGraphStore } from "@/stores/graph-store";
 import { decodeUrlQueryParams } from "@/utils/url-helpers";
-import { SOURCE_FIELDS } from "@academic-explorer/client";
+import { SOURCE_FIELDS, cachedOpenAlex } from "@academic-explorer/client";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
@@ -22,6 +22,7 @@ function SourceRoute() {
   const entityType = "source" as const;
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
   const hasDecodedUrlRef = useRef(false);
+  const [isLoadingRandom, setIsLoadingRandom] = useState(false);
 
   // Decode URL-encoded query parameters on mount
   useEffect(() => {
@@ -29,6 +30,48 @@ function SourceRoute() {
     hasDecodedUrlRef.current = true;
     decodeUrlQueryParams();
   }, []);
+
+  // Handle "random" keyword - fetch a random source and redirect
+  useEffect(() => {
+    if (sourceId?.toLowerCase() !== "random" || isLoadingRandom) return;
+
+    const loadRandomSource = async () => {
+      setIsLoadingRandom(true);
+      try {
+        logger.debug("routing", "Fetching random source", undefined, "SourceRoute");
+
+        const response = await cachedOpenAlex.client.sources.getRandomSources(1);
+
+        if (response.results.length > 0) {
+          const randomSource = response.results[0];
+          const cleanId = randomSource.id.replace("https://openalex.org/", "");
+
+          logger.debug("routing", "Redirecting to random source", {
+            sourceId: cleanId,
+            name: randomSource.display_name,
+          }, "SourceRoute");
+
+          void navigate({
+            to: SOURCE_ROUTE_PATH,
+            params: { sourceId: cleanId },
+            search: (prev) => prev,
+            replace: true,
+          });
+        }
+      } catch (error) {
+        logError(
+          logger,
+          "Failed to fetch random source",
+          error,
+          "SourceRoute",
+          "routing",
+        );
+        setIsLoadingRandom(false);
+      }
+    };
+
+    void loadRandomSource();
+  }, [sourceId, navigate, isLoadingRandom]);
 
   const graphData = useGraphData();
   const { loadEntity } = graphData;
@@ -112,7 +155,10 @@ function SourceRoute() {
       }
     };
 
-    void loadSource();
+    // Don't try to load if we're resolving "random"
+    if (sourceId?.toLowerCase() !== "random") {
+      void loadSource();
+    }
   }, [sourceId, loadEntity, loadEntityIntoGraph, nodeCount]);
 
   // Parse selected fields from URL
@@ -132,10 +178,10 @@ function SourceRoute() {
   };
 
   // Show loading state
-  if (rawEntityData.isLoading) {
+  if (rawEntityData.isLoading || isLoadingRandom) {
     return (
       <div className="p-4 text-center">
-        <h2>Loading Source...</h2>
+        <h2>{isLoadingRandom ? "Finding Random Source..." : "Loading Source..."}</h2>
         <p>Source ID: {sourceId}</p>
       </div>
     );

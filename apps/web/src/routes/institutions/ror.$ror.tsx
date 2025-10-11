@@ -45,7 +45,7 @@ function RORInstitutionRoute() {
 				// Navigate to search with the ROR ID as query
 				void navigate({
 					to: "/search",
-					search: { q: ror },
+					search: { q: ror, filter: undefined, search: undefined },
 					replace: true,
 				})
 			}

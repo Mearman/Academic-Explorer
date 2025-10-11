@@ -45,7 +45,7 @@ function ISSNSourceRoute() {
 				// Navigate to search with the ISSN as query
 				void navigate({
 					to: "/search",
-					search: { q: issn },
+					search: { q: issn, filter: undefined, search: undefined },
 					replace: true,
 				})
 			}
