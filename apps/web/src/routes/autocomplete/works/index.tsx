@@ -141,13 +141,28 @@ function AutocompleteWorksRoute() {
         {error && (
           <Alert
             icon={<IconInfoCircle />}
-            title="Error"
+            title="API Error"
             color="red"
             variant="light"
           >
-            <Text size="sm">
-              Failed to fetch suggestions: {String(error)}
-            </Text>
+            <Stack gap="xs">
+              <Text size="sm">
+                {(() => {
+                  // Handle Error instances with message property
+                  if (error instanceof Error) {
+                    // Extract OpenAlex error message if wrapped
+                    const match = error.message.match(/Works autocomplete failed: (.+)/);
+                    if (match) {
+                      return match[1];
+                    }
+                    return error.message;
+                  }
+                  
+                  // Fallback for non-Error objects
+                  return String(error);
+                })()}
+              </Text>
+            </Stack>
           </Alert>
         )}
 
