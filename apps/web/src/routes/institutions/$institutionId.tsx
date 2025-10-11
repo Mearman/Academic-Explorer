@@ -1,10 +1,11 @@
+import { FieldSelector } from "@/components/FieldSelector";
 import { useEntityDocumentTitle } from "@/hooks/use-document-title";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { useGraphStore } from "@/stores/graph-store";
 import { decodeUrlQueryParams } from "@/utils/url-helpers";
-import type { InstitutionEntity } from "@academic-explorer/client";
+import { INSTITUTION_FIELDS, type InstitutionEntity } from "@academic-explorer/client";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
@@ -12,10 +13,13 @@ import { logError, logger } from "@academic-explorer/utils/logger";
 import { IconBookmark, IconBookmarkOff } from "@tabler/icons-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { z } from "zod";
+
 const INSTITUTION_ROUTE_PATH = "/institutions/$institutionId";
 
 function InstitutionRoute() {
   const { institutionId } = Route.useParams();
+  const routeSearch = Route.useSearch();
   const navigate = useNavigate();
 
   const entityType = "institution" as const;
@@ -149,6 +153,22 @@ function InstitutionRoute() {
     void loadInstitution();
   }, [institutionId, loadEntity, loadEntityIntoGraph, nodeCount]);
 
+  // Parse selected fields from URL
+  const selectedFields =
+    typeof routeSearch?.select === "string"
+      ? routeSearch.select.split(",").map((f) => f.trim())
+      : [];
+
+  // Handler for field selection changes
+  const handleFieldsChange = (fields: readonly string[]) => {
+    void navigate({
+      to: INSTITUTION_ROUTE_PATH,
+      params: { institutionId },
+      search: fields.length > 0 ? { select: fields.join(",") } : {},
+      replace: true,
+    });
+  };
+
   // Show loading state
   if (rawEntityData.isLoading) {
     return (
@@ -232,6 +252,15 @@ function InstitutionRoute() {
         </button>
       </div>
 
+      {/* Field Selector */}
+      <div className="mb-4">
+        <FieldSelector
+          availableFields={INSTITUTION_FIELDS}
+          selectedFields={selectedFields}
+          onFieldsChange={handleFieldsChange}
+        />
+      </div>
+
       {viewMode === "raw" ? (
         <pre className="json-view p-4 bg-gray-100 overflow-auto mt-4">
           {JSON.stringify(rawEntityData.data, null, 2)}
@@ -251,6 +280,9 @@ function InstitutionRoute() {
 
 export const Route = createFileRoute(INSTITUTION_ROUTE_PATH)({
   component: InstitutionRoute,
+  validateSearch: z.object({
+    select: z.string().optional(),
+  }),
 });
 
 export default InstitutionRoute;
