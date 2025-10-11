@@ -16,7 +16,7 @@ export {
   setupGlobalErrorHandling,
   type LogLevel,
   type LogCategory,
-  type LogEntry
+  type LogEntry,
 } from "./logger.js";
 
 // Validation and type guards
@@ -50,7 +50,7 @@ export {
   safeParseRelationType,
   safeParseExpansionTarget,
   type RelationType,
-  type ExpansionTarget
+  type ExpansionTarget,
 } from "./validation.js";
 
 // Data manipulation utilities
@@ -86,7 +86,7 @@ export {
   sumBy,
   averageBy,
   safeGet,
-  throttle
+  throttle,
 } from "./data.js";
 
 // Date helpers
@@ -120,7 +120,7 @@ export {
   getDaysInMonth,
   isLeapYear,
   getWeekNumber,
-  formatPublicationYear
+  formatPublicationYear,
 } from "./date-helpers.js";
 
 // Storage utilities
@@ -148,7 +148,7 @@ export {
   getCommitUrl,
   getReleaseUrl,
   getRelativeBuildTime,
-  type BuildInfo
+  type BuildInfo,
 } from "./build-info.js";
 
 // Data evaluation utilities
@@ -170,7 +170,7 @@ export {
   type ComparisonProgress,
   type MissingPaperDetectionConfig,
   type DetectionProgress,
-  type MissingPaperDetectionResults
+  type MissingPaperDetectionResults,
 } from "./data-evaluation.js";
 
 // Service utilities
@@ -179,7 +179,7 @@ export {
   getGraphDataService,
   useOpenAlexEntity,
   type RelationshipDetectionService,
-  type GraphDataService
+  type GraphDataService,
 } from "./services.js";
 
 // Environment detection and configuration
@@ -229,7 +229,7 @@ export {
   type CacheConfig as EnvironmentCacheConfig,
   type CacheStrategyConfig,
   type ModeOptions,
-  type RuntimeEnvironmentConfig
+  type RuntimeEnvironmentConfig,
 } from "./environment/index.js";
 
 // Static data index generator utilities
@@ -254,3 +254,6 @@ export {
   type IndexGenerationProgress,
   type IndexGenerationResult,
 } from "./static-data/index.js";
+
+// Route normalization utilities
+export { normalizeRoute } from "./normalize-route.js";

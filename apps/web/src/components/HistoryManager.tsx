@@ -192,7 +192,7 @@ export function HistoryManager({ onNavigate }: HistoryManagerProps) {
                   ) : event.metadata?.searchQuery ? (
                     <div>
                       <Text size="sm" c="blue">
-                        Search: &ldquo;event.metadata.searchQuery&rdquo;
+                        Search: &ldquo;{event.metadata.searchQuery}&rdquo;
                       </Text>
                       {event.metadata.filters &&
                         typeof event.metadata.filters === "string" && (

@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-10-11T19:03:46.659Z",
+  "lastUpdated": "2025-10-11T21:01:51.472Z",
   "files": {
     "A123456789": {
       "url": "https://api.openalex.org/authors/A123456789",
@@ -68,13 +68,13 @@
     "A5110127684": {
       "url": "https://api.openalex.org/authors/A5110127684",
       "$ref": "./A5110127684.json",
-      "lastRetrieved": "2025-10-11T19:03:46.554Z",
+      "lastRetrieved": "2025-10-11T20:23:54.875Z",
       "contentHash": "0f71d705aa0a3519",
       "equivalentUrls": [
         "https://api.openalex.org/authors/A5110127684"
       ],
       "urlTimestamps": {
-        "https://api.openalex.org/authors/A5110127684": "2025-10-11T19:03:46.554Z"
+        "https://api.openalex.org/authors/A5110127684": "2025-10-11T20:23:54.875Z"
       },
       "collisionInfo": {
         "mergedCount": 0,
@@ -85,7 +85,7 @@
   "directories": {
     "queries": {
       "$ref": "./queries",
-      "lastModified": "2025-10-11T06:05:58.880Z"
+      "lastModified": "2025-10-11T21:01:51.366Z"
     }
   }
 }

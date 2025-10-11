@@ -1,10 +1,22 @@
 {
-  "lastUpdated": "2025-10-11T06:05:54.906Z",
+  "lastUpdated": "2025-10-11T21:03:21.066Z",
   "files": {
+    "filter__3D__country_code__3A__US__26__page__3D__1__26__per_page__3D__50": {
+      "url": "https://api.openalex.org/institutions?filter=country_code:US&page=1&per_page=50",
+      "$ref": "./filter__3D__country_code__3A__US__26__page__3D__1__26__per_page__3D__50.json",
+      "lastRetrieved": "2025-10-11T21:01:46.048Z",
+      "contentHash": "ac5b58ddaedb1aea"
+    },
+    "filter__3D__country_code__3A__US__2C__type__3A__education__26__page__3D__1__26__per_page__3D__50": {
+      "url": "https://api.openalex.org/institutions?filter=country_code:US,type:education&page=1&per_page=50",
+      "$ref": "./filter__3D__country_code__3A__US__2C__type__3A__education__26__page__3D__1__26__per_page__3D__50.json",
+      "lastRetrieved": "2025-10-11T21:03:20.948Z",
+      "contentHash": "ac5b58ddaedb1aea"
+    },
     "per_page__3D__20__26__search__3D__mearman": {
       "url": "https://api.openalex.org/institutions?per_page=20&search=mearman",
       "$ref": "./per_page__3D__20__26__search__3D__mearman.json",
-      "lastRetrieved": "2025-10-11T06:05:54.802Z",
+      "lastRetrieved": "2025-10-11T06:05:54.804Z",
       "contentHash": "3b069018d22594e5"
     }
   },
