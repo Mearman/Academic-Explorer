@@ -18,6 +18,7 @@ import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as BookmarksRouteImport } from './routes/bookmarks'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as ExternalIdRouteImport } from './routes/$externalId'
+import { Route as SplatRouteImport } from './routes/$_'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WorksIndexRouteImport } from './routes/works/index'
 import { Route as TopicsIndexRouteImport } from './routes/topics/index'
@@ -90,6 +91,11 @@ const AboutRoute = AboutRouteImport.update({
 const ExternalIdRoute = ExternalIdRouteImport.update({
   id: '/$externalId',
   path: '/$externalId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SplatRoute = SplatRouteImport.update({
+  id: '/$_',
+  path: '/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -237,6 +243,7 @@ const AuthorsOrcidOrcidRoute = AuthorsOrcidOrcidRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$': typeof SplatRoute
   '/$externalId': typeof ExternalIdRoute
   '/about': typeof AboutRoute
   '/bookmarks': typeof BookmarksRoute
@@ -276,6 +283,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/$': typeof SplatRoute
   '/$externalId': typeof ExternalIdRoute
   '/about': typeof AboutRoute
   '/bookmarks': typeof BookmarksRoute
@@ -316,6 +324,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/$_': typeof SplatRoute
   '/$externalId': typeof ExternalIdRoute
   '/about': typeof AboutRoute
   '/bookmarks': typeof BookmarksRoute
@@ -357,6 +366,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/$'
     | '/$externalId'
     | '/about'
     | '/bookmarks'
@@ -396,6 +406,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/$'
     | '/$externalId'
     | '/about'
     | '/bookmarks'
@@ -435,6 +446,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/$_'
     | '/$externalId'
     | '/about'
     | '/bookmarks'
@@ -475,6 +487,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SplatRoute: typeof SplatRoute
   ExternalIdRoute: typeof ExternalIdRoute
   AboutRoute: typeof AboutRoute
   BookmarksRoute: typeof BookmarksRoute
@@ -573,6 +586,13 @@ declare module '@tanstack/react-router' {
       path: '/$externalId'
       fullPath: '/$externalId'
       preLoaderRoute: typeof ExternalIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$_': {
+      id: '/$_'
+      path: '/$'
+      fullPath: '/$'
+      preLoaderRoute: typeof SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -801,6 +821,7 @@ const ExploreRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SplatRoute: SplatRoute,
   ExternalIdRoute: ExternalIdRoute,
   AboutRoute: AboutRoute,
   BookmarksRoute: BookmarksRoute,
