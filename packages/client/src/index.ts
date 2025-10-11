@@ -83,8 +83,26 @@ export type {
 } from "./types";
 
 // Entity field constants for select parameter
-export { AuthorField as AUTHOR_FIELDS, BaseEntityField as BASE_ENTITY_FIELDS, EntityWithWorksField as ENTITY_WITH_WORKS_FIELDS } from "./types/entities";
-export type { AuthorField, BaseEntityField, EntityWithWorksField } from "./types/entities";
+export {
+  AUTHOR_FIELDS,
+  BASE_ENTITY_FIELDS,
+  ENTITY_WITH_WORKS_FIELDS,
+  FUNDER_FIELDS,
+  INSTITUTION_FIELDS,
+  SOURCE_FIELDS,
+  TOPIC_FIELDS,
+  WORK_FIELDS
+} from "./types/entities";
+export type {
+  AuthorField,
+  BaseEntityField,
+  EntityWithWorksField,
+  FunderField,
+  InstitutionField,
+  SourceField,
+  TopicField,
+  WorkField
+} from "./types/entities";
 
 // Text Analysis API types
 export type {

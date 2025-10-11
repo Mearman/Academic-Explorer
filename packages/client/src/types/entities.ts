@@ -433,7 +433,7 @@ export const keysOf = <T>() => <const K extends readonly (keyof T)[]>(keys: K) =
  * Fields that can be selected for BaseEntity.
  * These are the core fields present on all OpenAlex entities.
  */
-export const BaseEntityField = keysOf<BaseEntity>()([
+export const BASE_ENTITY_FIELDS = keysOf<BaseEntity>()([
   "id",
   "display_name",
   "cited_by_count",
@@ -442,26 +442,26 @@ export const BaseEntityField = keysOf<BaseEntity>()([
   "created_date",
 ]);
 
-export type BaseEntityField = (typeof BaseEntityField)[number];
+export type BaseEntityField = (typeof BASE_ENTITY_FIELDS)[number];
 
 /**
  * Fields that can be selected for EntityWithWorks.
  * These are the fields present on entities that have associated works collections.
  */
-export const EntityWithWorksField = keysOf<EntityWithWorks>()([
-  ...BaseEntityField,
+export const ENTITY_WITH_WORKS_FIELDS = keysOf<EntityWithWorks>()([
+  ...BASE_ENTITY_FIELDS,
   "works_count",
   "works_api_url",
 ]);
 
-export type EntityWithWorksField = (typeof EntityWithWorksField)[number];
+export type EntityWithWorksField = (typeof ENTITY_WITH_WORKS_FIELDS)[number];
 
 /**
  * Fields that can be selected for Author entities.
  * Use with the select parameter to request specific fields.
  */
-export const AuthorField = keysOf<Author>()([
-  ...EntityWithWorksField,
+export const AUTHOR_FIELDS = keysOf<Author>()([
+  ...ENTITY_WITH_WORKS_FIELDS,
   "orcid",
   "display_name_alternatives",
   "ids",
@@ -472,4 +472,142 @@ export const AuthorField = keysOf<Author>()([
   "topics",
 ]);
 
-export type AuthorField = (typeof AuthorField)[number];
+export type AuthorField = (typeof AUTHOR_FIELDS)[number];
+
+/**
+ * Fields that can be selected for Work entities.
+ */
+export const WORK_FIELDS = keysOf<Work>()([
+  ...BASE_ENTITY_FIELDS,
+  "doi",
+  "title",
+  "publication_year",
+  "publication_date",
+  "ids",
+  "primary_location",
+  "best_oa_location",
+  "locations",
+  "locations_count",
+  "authorships",
+  "countries_distinct_count",
+  "institutions_distinct_count",
+  "corresponding_author_ids",
+  "corresponding_institution_ids",
+  "apc_list",
+  "apc_paid",
+  "fwci",
+  "has_fulltext",
+  "fulltext_origin",
+  "cited_by_api_url",
+  "type",
+  "type_crossref",
+  "indexed_in",
+  "open_access",
+  "authorships_count",
+  "cited_by_percentile_year",
+  "concepts",
+  "mesh",
+  "alternate_host_venues",
+  "referenced_works",
+  "referenced_works_count",
+  "related_works",
+  "sustainable_development_goals",
+  "grants",
+  "datasets",
+  "versions",
+  "is_retracted",
+  "is_paratext",
+  "abstract_inverted_index",
+  "biblio",
+  "language",
+  "topics",
+  "keywords",
+]);
+
+export type WorkField = (typeof WORK_FIELDS)[number];
+
+/**
+ * Fields that can be selected for Source entities.
+ */
+export const SOURCE_FIELDS = keysOf<Source>()([
+  ...ENTITY_WITH_WORKS_FIELDS,
+  "issn_l",
+  "issn",
+  "publisher",
+  "is_oa",
+  "is_in_doaj",
+  "ids",
+  "homepage_url",
+  "apc_prices",
+  "apc_usd",
+  "country_code",
+  "societies",
+  "alternate_titles",
+  "abbreviated_title",
+  "type",
+  "x_concepts",
+  "summary_stats",
+  "topics",
+]);
+
+export type SourceField = (typeof SOURCE_FIELDS)[number];
+
+/**
+ * Fields that can be selected for Institution entities.
+ */
+export const INSTITUTION_FIELDS = keysOf<InstitutionEntity>()([
+  ...ENTITY_WITH_WORKS_FIELDS,
+  "ror",
+  "country_code",
+  "type",
+  "homepage_url",
+  "image_url",
+  "image_thumbnail_url",
+  "display_name_acronyms",
+  "display_name_alternatives",
+  "ids",
+  "geo",
+  "international",
+  "associated_institutions",
+  "x_concepts",
+  "topics",
+  "lineage",
+]);
+
+export type InstitutionField = (typeof INSTITUTION_FIELDS)[number];
+
+/**
+ * Fields that can be selected for Topic entities.
+ */
+export const TOPIC_FIELDS = keysOf<Topic>()([
+  ...ENTITY_WITH_WORKS_FIELDS,
+  "description",
+  "keywords",
+  "ids",
+  "subfield",
+  "field",
+  "domain",
+  "siblings",
+]);
+
+export type TopicField = (typeof TOPIC_FIELDS)[number];
+
+/**
+ * Fields that can be selected for Funder entities.
+ */
+export const FUNDER_FIELDS = keysOf<Funder>()([
+  ...ENTITY_WITH_WORKS_FIELDS,
+  "alternate_titles",
+  "country_code",
+  "description",
+  "homepage_url",
+  "image_url",
+  "image_thumbnail_url",
+  "grants_count",
+  "ids",
+  "roles",
+  "summary_stats",
+  "topics",
+]);
+
+export type FunderField = (typeof FUNDER_FIELDS)[number];
