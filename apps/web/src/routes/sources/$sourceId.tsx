@@ -1,16 +1,22 @@
+import { FieldSelector } from "@/components/FieldSelector";
 import { useEntityDocumentTitle } from "@/hooks/use-document-title";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useGraphStore } from "@/stores/graph-store";
 import { decodeUrlQueryParams } from "@/utils/url-helpers";
+import { SOURCE_FIELDS } from "@academic-explorer/client";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { z } from "zod";
+
+const SOURCE_ROUTE_PATH = "/sources/$sourceId";
 
 function SourceRoute() {
   const { sourceId } = Route.useParams();
+  const routeSearch = Route.useSearch();
   const navigate = useNavigate();
 
   const entityType = "source" as const;
@@ -109,6 +115,22 @@ function SourceRoute() {
     void loadSource();
   }, [sourceId, loadEntity, loadEntityIntoGraph, nodeCount]);
 
+  // Parse selected fields from URL
+  const selectedFields =
+    typeof routeSearch?.select === "string"
+      ? routeSearch.select.split(",").map((f) => f.trim())
+      : [];
+
+  // Handler for field selection changes
+  const handleFieldsChange = (fields: readonly string[]) => {
+    void navigate({
+      to: SOURCE_ROUTE_PATH,
+      params: { sourceId },
+      search: fields.length > 0 ? { select: fields.join(",") } : {},
+      replace: true,
+    });
+  };
+
   // Show loading state
   if (rawEntityData.isLoading) {
     return (
@@ -161,6 +183,15 @@ function SourceRoute() {
         entityType={entityType}
       />
 
+      {/* Field Selector */}
+      <div className="mb-4 mt-4">
+        <FieldSelector
+          availableFields={SOURCE_FIELDS}
+          selectedFields={selectedFields}
+          onFieldsChange={handleFieldsChange}
+        />
+      </div>
+
       {viewMode === "raw" ? (
         <pre className="json-view p-4 bg-gray-100 overflow-auto mt-4">
           {JSON.stringify(rawEntityData.data, null, 2)}
@@ -178,8 +209,11 @@ function SourceRoute() {
   );
 }
 
-export const Route = createFileRoute("/sources/$sourceId")({
+export const Route = createFileRoute(SOURCE_ROUTE_PATH)({
   component: SourceRoute,
+  validateSearch: z.object({
+    select: z.string().optional(),
+  }),
 });
 
 export default SourceRoute;
