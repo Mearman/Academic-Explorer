@@ -136,16 +136,19 @@ function ExternalIdRoute() {
               );
           }
 
-          // Use the previously extracted query parameters
-          const searchObj =
-            Object.keys(preservedSearchParams).length > 0
-              ? preservedSearchParams
-              : undefined;
-
+          // Navigate to the route first
           void navigate({
             to: specificRoute,
-            search: searchObj,
             replace: true,
+          }).then(() => {
+            // After navigation completes, update the URL with unencoded query parameters
+            if (Object.keys(preservedSearchParams).length > 0) {
+              const queryString = Object.entries(preservedSearchParams)
+                .map(([key, value]) => `${key}=${value}`)
+                .join("&");
+              const fullUrl = `${window.location.pathname}${window.location.hash.split("?")[0]}?${queryString}`;
+              window.history.replaceState(null, "", fullUrl);
+            }
           });
         } else if (
           detection?.entityType &&
@@ -156,16 +159,19 @@ function ExternalIdRoute() {
           const { entityType } = detection;
           const entityRoute = `/${entityType}/${detection.normalizedId}`;
 
-          // Use the previously extracted query parameters
-          const searchObj =
-            Object.keys(preservedSearchParams).length > 0
-              ? preservedSearchParams
-              : undefined;
-
+          // Navigate to the route first
           void navigate({
             to: entityRoute,
-            search: searchObj,
             replace: true,
+          }).then(() => {
+            // After navigation completes, update the URL with unencoded query parameters
+            if (Object.keys(preservedSearchParams).length > 0) {
+              const queryString = Object.entries(preservedSearchParams)
+                .map(([key, value]) => `${key}=${value}`)
+                .join("&");
+              const fullUrl = `${window.location.pathname}${window.location.hash.split("?")[0]}?${queryString}`;
+              window.history.replaceState(null, "", fullUrl);
+            }
           });
         } else {
           throw new Error(`Unable to detect entity type for: ${decodedId}`);
