@@ -5,7 +5,7 @@ import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { useGraphStore } from "@/stores/graph-store";
 import { decodeUrlQueryParams } from "@/utils/url-helpers";
-import type { Author } from "@academic-explorer/client";
+import { AUTHOR_FIELDS, type Author } from "@academic-explorer/client";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
@@ -16,26 +16,6 @@ import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 
 const AUTHOR_ROUTE_PATH = "/authors/$authorId";
-
-// Available fields for authors based on OpenAlex API
-const AUTHOR_FIELDS = [
-  "id",
-  "display_name",
-  "display_name_alternatives",
-  "orcid",
-  "ids",
-  "works_count",
-  "cited_by_count",
-  "last_known_institutions",
-  "affiliations",
-  "summary_stats",
-  "topics",
-  "x_concepts",
-  "counts_by_year",
-  "works_api_url",
-  "updated_date",
-  "created_date",
-];
 
 export const Route = createFileRoute(AUTHOR_ROUTE_PATH)({
   component: AuthorRoute,
@@ -275,7 +255,7 @@ function AuthorRoute() {
       : [];
 
   // Handler for field selection changes
-  const handleFieldsChange = (fields: string[]) => {
+  const handleFieldsChange = (fields: readonly string[]) => {
     void navigate({
       to: AUTHOR_ROUTE_PATH,
       params: { authorId: cleanAuthorId },

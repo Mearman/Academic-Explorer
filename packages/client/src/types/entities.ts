@@ -3,26 +3,26 @@
  */
 
 import type {
-  OpenAlexId,
-  DOI,
-  ORCID,
-  RORId,
-  WikidataId,
-  WorkIds,
-  AuthorIds,
-  SourceIds,
-  InstitutionIds,
-  ConceptIds,
-  TopicIds,
-  PublisherIds,
-  FunderIds,
-  KeywordIds,
-  ConceptItem,
-  TopicItem,
-  SummaryStats,
   APCInfo,
   APCPrice,
+  AuthorIds,
+  ConceptIds,
+  ConceptItem,
+  DOI,
+  FunderIds,
+  InstitutionIds,
+  KeywordIds,
+  OpenAlexId,
+  ORCID,
   PartialExceptId,
+  PublisherIds,
+  RORId,
+  SourceIds,
+  SummaryStats,
+  TopicIds,
+  TopicItem,
+  WikidataId,
+  WorkIds,
 } from "./base";
 
 /**
@@ -420,3 +420,58 @@ export type EntityTypeMap = {
   funders: Funder;
   keywords: Keyword;
 };
+
+// Field arrays for use with select parameter
+
+/**
+ * Helper to create a validated array of keys for an entity type.
+ * This ensures all elements in the array are valid keys of T.
+ */
+function keysOf<T>() {
+  return <const K extends readonly (keyof T)[]>(keys: K) => keys;
+}
+
+/**
+ * Fields that can be selected for BaseEntity.
+ * These are the core fields present on all OpenAlex entities.
+ */
+export const BaseEntityField = keysOf<BaseEntity>()([
+  "id",
+  "display_name",
+  "cited_by_count",
+  "counts_by_year",
+  "updated_date",
+  "created_date",
+]);
+
+export type BaseEntityField = (typeof BaseEntityField)[number];
+
+/**
+ * Fields that can be selected for EntityWithWorks.
+ * These are the fields present on entities that have associated works collections.
+ */
+export const EntityWithWorksField = keysOf<EntityWithWorks>()([
+  ...BaseEntityField,
+  "works_count",
+  "works_api_url",
+]);
+
+export type EntityWithWorksField = (typeof EntityWithWorksField)[number];
+
+/**
+ * Fields that can be selected for Author entities.
+ * Use with the select parameter to request specific fields.
+ */
+export const AuthorField = keysOf<Author>()([
+  ...EntityWithWorksField,
+  "orcid",
+  "display_name_alternatives",
+  "ids",
+  "last_known_institutions",
+  "affiliations",
+  "summary_stats",
+  "x_concepts",
+  "topics",
+]);
+
+export type AuthorField = (typeof AuthorField)[number];
