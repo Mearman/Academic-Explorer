@@ -52,7 +52,7 @@ export function HistoryManager({ onNavigate }: HistoryManagerProps) {
     if (onNavigate) {
       onNavigate(url);
     } else {
-      window.location.href = url;
+      window.location.href = `/#${url}`;
     }
   };
 
@@ -175,17 +175,26 @@ export function HistoryManager({ onNavigate }: HistoryManagerProps) {
                     )}
                   </Text>
 
-                  {event.metadata?.route && (
+                  {event.metadata?.entityType && event.metadata?.entityId ? (
+                    <Text size="sm" c="blue">
+                      {event.metadata.entityType}: {event.metadata.entityId}
+                    </Text>
+                  ) : event.metadata?.searchQuery ? (
+                    <div>
+                      <Text size="sm" c="blue">
+                        Search: &ldquo;{event.metadata.searchQuery}&rdquo;
+                      </Text>
+                      {event.metadata.filters && (
+                        <Text size="xs" c="dimmed">
+                          Filters: {JSON.stringify(event.metadata.filters)}
+                        </Text>
+                      )}
+                    </div>
+                  ) : event.metadata?.route ? (
                     <Text size="sm" c="blue">
                       Route: {event.metadata.route}
                     </Text>
-                  )}
-
-                  {event.metadata?.previousRoute && (
-                    <Text size="sm" c="dimmed">
-                      From: {event.metadata.previousRoute}
-                    </Text>
-                  )}
+                  ) : null}
                 </Stack>
 
                 {event.metadata?.route && (

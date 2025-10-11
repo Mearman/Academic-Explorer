@@ -30,7 +30,14 @@ export function NavigationTracker() {
         severity: "info",
         metadata: {
           ...pageInfo.metadata,
-          route: location.pathname,
+          route:
+            location.pathname +
+            (Object.keys(location.search).length > 0
+              ? "?" +
+                new URLSearchParams(
+                  location.search as Record<string, string>,
+                ).toString()
+              : ""),
         },
       });
     }

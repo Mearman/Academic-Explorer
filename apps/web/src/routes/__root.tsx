@@ -1,5 +1,6 @@
 import { RouterErrorComponent } from "@/components/error/RouterErrorComponent";
 import { MainLayout } from "@/components/layout/MainLayout";
+import { NavigationTracker } from "@/components/NavigationTracker";
 import { logger } from "@academic-explorer/utils/logger";
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { themeClass } from "../styles/theme.css";
@@ -16,6 +17,7 @@ function RootLayout() {
         overflow: "hidden",
       }}
     >
+      <NavigationTracker />
       <MainLayout>
         <Outlet />
       </MainLayout>

@@ -149,6 +149,12 @@ declare module "@tanstack/react-router" {
   }
 }
 
+// Navigation tracking is now handled by NavigationTracker component in MainLayout
+
+// Load persisted app activity events on app start
+import { useAppActivityStore } from "@/stores/app-activity-store";
+useAppActivityStore.getState().loadEvents();
+
 // Service worker registration handled by VitePWA plugin
 // registerOpenAlexServiceWorker().then((registered) => {
 //   if (registered) {

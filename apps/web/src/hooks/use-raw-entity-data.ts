@@ -17,132 +17,168 @@ interface UseRawEntityDataOptions {
   queryParams?: QueryParams;
 }
 
-
 /**
  * Type guard to check if we have a valid entity type for the query
  */
-function isValidEntityData(entityId: string | null | undefined, entityType: EntityType | null): entityType is EntityType {
-	return !!entityId && !!entityType;
+function isValidEntityData(
+  entityId: string | null | undefined,
+  entityType: EntityType | null,
+): entityType is EntityType {
+  return !!entityId && !!entityType;
 }
 
 export const useRawEntityData = (options: UseRawEntityDataOptions) => {
-	const { entityId, enabled = true, queryParams = {} } = options;
+  const { entityId, enabled = true, queryParams = {} } = options;
 
-	// Detect entity type from ID to use proper cache configuration
-	let entityType: EntityType | null = null;
-	let detectedEntityId: string | null = null;
+  // Detect entity type from ID to use proper cache configuration
+  let entityType: EntityType | null = null;
+  let detectedEntityId: string | null = null;
 
-	if (entityId) {
-		const detection = EntityDetectionService.detectEntity(entityId);
+  if (entityId) {
+    const detection = EntityDetectionService.detectEntity(entityId);
 
-		if (!detection?.entityType) {
-			throw new Error(`Unable to detect entity type for: ${entityId}`);
-		}
+    if (!detection?.entityType) {
+      throw new Error(`Unable to detect entity type for: ${entityId}`);
+    }
 
-		// Since cache configuration now uses plural forms that match OpenAlex API endpoints,
-		// we can use the detected entity type directly if it's a valid cache entity type
-		const { entityType: detectedType } = detection;
-		if (detectedType in ENTITY_CACHE_TIMES) {
-			entityType = detectedType;
-		} else {
-			throw new Error(`Detected entity type "${detection.entityType}" is not a valid cache entity type`);
-		}
-		detectedEntityId = detection.normalizedId;
-		logger.debug("cache", "Detected entity type for raw data cache", {
-			entityId,
-			detectedType: detection.entityType,
-			cacheType: entityType
-		}, "useRawEntityData");
-	}
+    // Since cache configuration now uses plural forms that match OpenAlex API endpoints,
+    // we can use the detected entity type directly if it's a valid cache entity type
+    const { entityType: detectedType } = detection;
+    if (detectedType in ENTITY_CACHE_TIMES) {
+      entityType = detectedType;
+    } else {
+      throw new Error(
+        `Detected entity type "${detection.entityType}" is not a valid cache entity type`,
+      );
+    }
+    detectedEntityId = detection.normalizedId;
+    logger.debug(
+      "cache",
+      "Detected entity type for raw data cache",
+      {
+        entityId,
+        detectedType: detection.entityType,
+        cacheType: entityType,
+      },
+      "useRawEntityData",
+    );
+  }
 
-	// Always call the hook, but conditionally enable it
-	const shouldFetch = enabled && isValidEntityData(detectedEntityId, entityType);
+  // Always call the hook, but conditionally enable it
+  const shouldFetch =
+    enabled && isValidEntityData(detectedEntityId, entityType);
 
-	// Serialize queryParams for use in queryKey to ensure proper cache invalidation
-	const queryParamsKey = JSON.stringify(queryParams);
+  // Serialize queryParams for use in queryKey to ensure proper cache invalidation
+  const queryParamsKey = JSON.stringify(queryParams);
 
-	const query = useQuery({
-		queryKey: ["raw-entity", entityType, detectedEntityId, queryParamsKey],
-		queryFn: async () => {
-			if (!entityType || !detectedEntityId) {
-				throw new Error("Entity type and ID required for fetching");
-			}
+  const query = useQuery({
+    queryKey: ["raw-entity", entityType, detectedEntityId, queryParamsKey],
+    queryFn: async () => {
+      if (!entityType || !detectedEntityId) {
+        throw new Error("Entity type and ID required for fetching");
+      }
 
-			logger.debug("api", "Fetching raw entity data", {
-				entityType,
-				entityId: detectedEntityId,
-				queryParams
-			}, "useRawEntityData");
+      logger.debug(
+        "api",
+        "Fetching raw entity data",
+        {
+          entityType,
+          entityId: detectedEntityId,
+          queryParams,
+        },
+        "useRawEntityData",
+      );
 
-			try {
-				let result: OpenAlexEntity;
+      try {
+        let result: OpenAlexEntity;
 
-				// Call appropriate API method based on entity type, passing queryParams
-				switch (entityType) {
-					case "works":
-						result = await cachedOpenAlex.client.works.getWork(detectedEntityId, queryParams);
-						break;
-					case "authors":
-						result = await cachedOpenAlex.client.authors.getAuthor(detectedEntityId, queryParams);
-						break;
-					case "sources":
-						result = await cachedOpenAlex.client.sources.getSource(detectedEntityId, queryParams);
-						break;
-					case "institutions":
-						result = await cachedOpenAlex.client.institutions.getInstitution(detectedEntityId, queryParams);
-						break;
-					case "topics":
-						result = await cachedOpenAlex.client.topics.get(detectedEntityId, queryParams);
-						break;
-					case "publishers":
-						result = await cachedOpenAlex.client.publishers.get(detectedEntityId, queryParams);
-						break;
-					case "funders":
-						result = await cachedOpenAlex.client.funders.get(detectedEntityId, queryParams);
-						break;
-					default:
-						throw new Error(`Unsupported entity entityType: ${entityType}`);
-				}
+        // Call appropriate API method based on entity type, passing queryParams
+        switch (entityType) {
+          case "works":
+            result = await cachedOpenAlex.client.works.getWork(
+              detectedEntityId,
+              queryParams,
+            );
+            break;
+          case "authors":
+            result = await cachedOpenAlex.client.authors.getAuthor(
+              detectedEntityId,
+              queryParams,
+            );
+            break;
+          case "sources":
+            result = await cachedOpenAlex.client.sources.getSource(
+              detectedEntityId,
+              queryParams,
+            );
+            break;
+          case "institutions":
+            result = await cachedOpenAlex.client.institutions.getInstitution(
+              detectedEntityId,
+              queryParams,
+            );
+            break;
+          case "topics":
+            result = await cachedOpenAlex.client.topics.get(
+              detectedEntityId,
+              queryParams,
+            );
+            break;
+          case "publishers":
+            result = await cachedOpenAlex.client.publishers.get(
+              detectedEntityId,
+              queryParams,
+            );
+            break;
+          case "funders":
+            result = await cachedOpenAlex.client.funders.get(
+              detectedEntityId,
+              queryParams,
+            );
+            break;
+          default:
+            throw new Error(`Unsupported entity entityType: ${entityType}`);
+        }
 
-				logger.debug("api", "Successfully fetched raw entity data", {
-					entityType,
-					entityId: detectedEntityId,
-					hasData: !!result
-				}, "useRawEntityData");
+        logger.debug(
+          "api",
+          "Successfully fetched raw entity data",
+          {
+            entityType,
+            entityId: detectedEntityId,
+            hasData: !!result,
+          },
+          "useRawEntityData",
+        );
 
-				return result;
-			} catch (error) {
-				logger.error("api", "Failed to fetch raw entity data from OpenAlex", {
-					entityType,
-					entityId: detectedEntityId,
-					error: error instanceof Error ? error.message : "Unknown error"
-				}, "useRawEntityData");
-				throw error;
-			}
-		},
-		enabled: shouldFetch,
-		staleTime: entityType ? ENTITY_CACHE_TIMES[entityType].stale : ENTITY_CACHE_TIMES.works.stale,
-		gcTime: entityType ? ENTITY_CACHE_TIMES[entityType].gc : ENTITY_CACHE_TIMES.works.gc,
-	});
+        return result;
+      } catch (error) {
+        logger.error(
+          "api",
+          "Failed to fetch raw entity data from OpenAlex",
+          {
+            entityType,
+            entityId: detectedEntityId,
+            error: error instanceof Error ? error.message : "Unknown error",
+          },
+          "useRawEntityData",
+        );
+        throw error;
+      }
+    },
+    enabled: shouldFetch,
+    staleTime: entityType
+      ? ENTITY_CACHE_TIMES[entityType].stale
+      : ENTITY_CACHE_TIMES.works.stale,
+    gcTime: entityType
+      ? ENTITY_CACHE_TIMES[entityType].gc
+      : ENTITY_CACHE_TIMES.works.gc,
+  });
 
-	// Enhanced logging for cache behavior tracking
-	if (query.data) {
-		logger.debug("cache", "Raw entity data loaded from cache system", {
-			entityId,
-			entityType,
-			fromCache: !query.isFetching,
-			cacheStatus: query.status,
-			dataAge: Date.now() - query.dataUpdatedAt
-		}, "useRawEntityData");
-	}
-
-	if (query.error) {
-		logger.error("cache", "Failed to fetch raw entity data", {
-			entityId,
-			entityType,
-			error: query.error instanceof Error ? query.error.message : "Unknown error"
-		}, "useRawEntityData");
-	}
-
-	return query;
+  return {
+    ...query,
+    // Add convenience properties
+    entityType,
+    entityId: detectedEntityId,
+  };
 };

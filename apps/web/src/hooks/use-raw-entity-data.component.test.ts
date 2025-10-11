@@ -40,7 +40,7 @@ vi.mock("@academic-explorer/graph", () => ({
 
 // We'll partially mock @tanstack/react-query so useQuery returns a stable
 // test object while keeping the rest of the module intact (QueryClient, etc.).
-const mockUseOpenAlexEntity = {
+const mockUseQueryResult = {
   data: null,
   isLoading: false,
   isFetching: false,
@@ -67,6 +67,13 @@ const mockUseOpenAlexEntity = {
   refetch: vi.fn(),
 };
 
+// Mock the complete hook return value including additional properties
+const mockUseRawEntityDataResult = {
+  ...mockUseQueryResult,
+  entityType: "works",
+  entityId: "W123456789",
+};
+
 // We'll grab the real logger import in tests so both implementation and
 // tests share the same mocked functions.
 
@@ -77,7 +84,7 @@ vi.mock("@tanstack/react-query", async () => {
   );
   return {
     ...actual,
-    useQuery: vi.fn(() => mockUseOpenAlexEntity as any),
+    useQuery: vi.fn(() => mockUseQueryResult as any),
   } as any;
 });
 
@@ -95,7 +102,7 @@ describe("useRawEntityData", () => {
     );
 
     // Setup default mock implementations
-    vi.mocked(useOpenAlexEntity).mockReturnValue(mockUseOpenAlexEntity);
+    vi.mocked(useOpenAlexEntity).mockReturnValue(mockUseQueryResult);
     vi.mocked(EntityDetectionService.detectEntity).mockReturnValue({
       entityType: "works",
       normalizedId: "W123456789",
@@ -122,13 +129,21 @@ describe("useRawEntityData", () => {
         useRawEntityData({ entityId: "W123456789" }),
       );
 
-      expect(result.current).toEqual(mockUseOpenAlexEntity);
+      expect(result.current).toMatchObject({
+        ...mockUseQueryResult,
+        entityType: "works",
+        entityId: "W123456789",
+      });
     });
 
     it("should handle missing entityId", () => {
       const { result } = renderHookWithQueryClient(() => useRawEntityData({}));
 
-      expect(result.current).toEqual(mockUseOpenAlexEntity);
+      expect(result.current).toMatchObject({
+        ...mockUseQueryResult,
+        entityType: null,
+        entityId: null,
+      });
     });
 
     it("should handle enabled=false", () => {
@@ -136,7 +151,11 @@ describe("useRawEntityData", () => {
         useRawEntityData({ entityId: "W123456789", enabled: false }),
       );
 
-      expect(result.current).toEqual(mockUseOpenAlexEntity);
+      expect(result.current).toMatchObject({
+        ...mockUseQueryResult,
+        entityType: "works",
+        entityId: "W123456789",
+      });
     });
   });
 
@@ -339,7 +358,7 @@ describe("useRawEntityData", () => {
       } as OpenAlexEntity;
 
       (reactQuery.useQuery as any).mockReturnValue({
-        ...mockUseOpenAlexEntity,
+        ...mockUseQueryResult,
         data: mockEntityData,
         status: "success",
         dataUpdatedAt: Date.now() - 5000,
@@ -366,7 +385,7 @@ describe("useRawEntityData", () => {
     it("should log errors", async () => {
       const mockError = new Error("Network error");
       (reactQuery.useQuery as unknown as any).mockReturnValue({
-        ...mockUseOpenAlexEntity,
+        ...mockUseQueryResult,
         error: mockError,
         status: "error",
       } as any);
@@ -389,7 +408,7 @@ describe("useRawEntityData", () => {
 
     it("should handle non-Error exceptions in logging", async () => {
       (reactQuery.useQuery as unknown as any).mockReturnValue({
-        ...mockUseOpenAlexEntity,
+        ...mockUseQueryResult,
         error: "String error" as any,
         status: "error",
       } as any);
@@ -431,7 +450,7 @@ describe("useRawEntityData", () => {
       } as OpenAlexEntity;
 
       (reactQuery.useQuery as unknown as any).mockReturnValue({
-        ...mockUseOpenAlexEntity,
+        ...mockUseQueryResult,
         data: mockEntityData,
         isFetching: false,
         dataUpdatedAt: fixedNow - 10000,
@@ -471,7 +490,7 @@ describe("useRawEntityData", () => {
       } as OpenAlexEntity;
 
       (reactQuery.useQuery as unknown as any).mockReturnValue({
-        ...mockUseOpenAlexEntity,
+        ...mockUseQueryResult,
         data: mockEntityData,
         dataUpdatedAt: 0,
       } as any);
@@ -499,7 +518,7 @@ describe("useRawEntityData", () => {
       } as OpenAlexEntity;
 
       (reactQuery.useQuery as unknown as any).mockReturnValue({
-        ...mockUseOpenAlexEntity,
+        ...mockUseQueryResult,
         data: mockEntityData,
         isFetching: true,
       } as any);
@@ -525,7 +544,7 @@ describe("useRawEntityData", () => {
         useRawEntityData({} as any),
       );
 
-      expect(result.current).toEqual(mockUseOpenAlexEntity);
+      expect(result.current).toEqual(mockUseQueryResult);
     });
 
     it("should default enabled to true", async () => {
