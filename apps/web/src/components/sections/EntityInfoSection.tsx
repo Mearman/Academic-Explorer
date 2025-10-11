@@ -4,15 +4,15 @@
  * Now also detects current entity from route when no graph selection is available
  */
 
-import React from "react";
-import { IconInfoCircle } from "@tabler/icons-react";
 import { RichEntityDisplay } from "@/components/molecules/RichEntityDisplay";
-import { useLayoutStore } from "@/stores/layout-store";
-import { useGraphStore } from "@/stores/graph-store";
-import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
-import { logger } from "@academic-explorer/utils/logger";
+import { useThemeColors } from "@/hooks/use-theme-colors";
+import { useGraphStore } from "@/stores/graph-store";
+import { useLayoutStore } from "@/stores/layout-store";
 import type { GraphNode } from "@academic-explorer/graph";
+import { logger } from "@academic-explorer/utils/logger";
+import { IconInfoCircle } from "@tabler/icons-react";
+import React from "react";
 
 interface ThemeColors {
   text: {
@@ -56,7 +56,7 @@ interface EntityInfoSectionProps {
 // Helper function to extract entity ID from hash
 const extractEntityIdFromHash = (hash: string): string | null => {
   const entityRouteMatch = hash.match(
-    /\/(?:authors|works|sources|institutions|topics|publishers|funders)\/([^/]+)/,
+    /\/(?:authors|works|sources|institutions|topics|publishers|funders)\/([^/?]+)/,
   );
   return entityRouteMatch ? entityRouteMatch[1] : null;
 };
