@@ -1,3 +1,4 @@
+import { FieldSelector } from "@/components/FieldSelector";
 import { useEntityDocumentTitle } from "@/hooks/use-document-title";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
@@ -12,11 +13,35 @@ import { logError, logger } from "@academic-explorer/utils/logger";
 import { IconBookmark, IconBookmarkOff } from "@tabler/icons-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { z } from "zod";
 
 const AUTHOR_ROUTE_PATH = "/authors/$authorId";
 
+// Available fields for authors based on OpenAlex API
+const AUTHOR_FIELDS = [
+  "id",
+  "display_name",
+  "display_name_alternatives",
+  "orcid",
+  "ids",
+  "works_count",
+  "cited_by_count",
+  "last_known_institutions",
+  "affiliations",
+  "summary_stats",
+  "topics",
+  "x_concepts",
+  "counts_by_year",
+  "works_api_url",
+  "updated_date",
+  "created_date",
+];
+
 export const Route = createFileRoute(AUTHOR_ROUTE_PATH)({
   component: AuthorRoute,
+  validateSearch: z.object({
+    select: z.string().optional(),
+  }),
 });
 
 function AuthorRoute() {
@@ -243,6 +268,22 @@ function AuthorRoute() {
     );
   }
 
+  // Parse selected fields from URL
+  const selectedFields =
+    typeof routeSearch?.select === "string"
+      ? routeSearch.select.split(",").map((f) => f.trim())
+      : [];
+
+  // Handler for field selection changes
+  const handleFieldsChange = (fields: string[]) => {
+    void navigate({
+      to: AUTHOR_ROUTE_PATH,
+      params: { authorId: cleanAuthorId },
+      search: fields.length > 0 ? { select: fields.join(",") } : {},
+      replace: true,
+    });
+  };
+
   // Show content based on view mode
   return (
     <div className="p-4 max-w-full overflow-auto">
@@ -280,6 +321,15 @@ function AuthorRoute() {
           )}
           {userInteractions.isBookmarked ? "Bookmarked" : "Bookmark"}
         </button>
+      </div>
+
+      {/* Field Selector */}
+      <div className="mb-4">
+        <FieldSelector
+          availableFields={AUTHOR_FIELDS}
+          selectedFields={selectedFields}
+          onFieldsChange={handleFieldsChange}
+        />
       </div>
 
       {viewMode === "raw" ? (

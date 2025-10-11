@@ -156,7 +156,7 @@ function AutocompleteAuthorsRoute() {
                     }
                     return error.message;
                   }
-                  
+
                   // Fallback for non-Error objects
                   return String(error);
                 })()}
