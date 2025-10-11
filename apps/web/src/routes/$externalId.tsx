@@ -58,8 +58,27 @@ function ExternalIdRoute() {
           "ExternalIdRoute",
         );
 
+        // Split ID and query parameters - the externalId might contain query params
+        let idForDetection = decodedId;
+        let preservedSearchParams: Record<string, string> = {};
+
+        // Check if the decodedId contains query parameters
+        const queryIndex = decodedId.indexOf("?");
+        if (queryIndex !== -1) {
+          // Split the ID from query parameters
+          idForDetection = decodedId.substring(0, queryIndex);
+          const queryString = decodedId.substring(queryIndex + 1);
+
+          // Parse query parameters
+          preservedSearchParams = {};
+          const params = new URLSearchParams(queryString);
+          params.forEach((value, key) => {
+            preservedSearchParams[key] = value;
+          });
+        }
+
         // Detect entity type and ID type
-        const detection = EntityDetectionService.detectEntity(decodedId);
+        const detection = EntityDetectionService.detectEntity(idForDetection);
 
         if (
           detection?.entityType &&
@@ -88,8 +107,15 @@ function ExternalIdRoute() {
               );
           }
 
+          // Use the previously extracted query parameters
+          const searchObj =
+            Object.keys(preservedSearchParams).length > 0
+              ? preservedSearchParams
+              : undefined;
+
           void navigate({
             to: specificRoute,
+            search: searchObj,
             replace: true,
           });
         } else if (
@@ -101,19 +127,17 @@ function ExternalIdRoute() {
           const { entityType } = detection;
           const entityRoute = `/${entityType}/${detection.normalizedId}`;
 
+          // Use the previously extracted query parameters
+          const searchObj =
+            Object.keys(preservedSearchParams).length > 0
+              ? preservedSearchParams
+              : undefined;
+
           void navigate({
             to: entityRoute,
+            search: searchObj,
             replace: true,
           });
-        } else if (detection?.entityType) {
-          // This is some other external ID, load directly
-          // If graph already has nodes, use incremental loading to preserve existing entities
-          if (nodeCount > 0) {
-            await loadEntityIntoGraph(detection.normalizedId);
-          } else {
-            // If graph is empty, use full loading (clears graph for initial load)
-            await loadEntity(detection.normalizedId);
-          }
         } else {
           throw new Error(`Unable to detect entity type for: ${decodedId}`);
         }
