@@ -427,9 +427,7 @@ export type EntityTypeMap = {
  * Helper to create a validated array of keys for an entity type.
  * This ensures all elements in the array are valid keys of T.
  */
-function keysOf<T>() {
-  return <const K extends readonly (keyof T)[]>(keys: K) => keys;
-}
+export const keysOf = <T>() => <const K extends readonly (keyof T)[]>(keys: K) => keys;
 
 /**
  * Fields that can be selected for BaseEntity.
