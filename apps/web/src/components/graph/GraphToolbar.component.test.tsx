@@ -348,7 +348,7 @@ describe("GraphToolbar", () => {
       expect(vi.mocked(logger.error)).toHaveBeenCalledWith(
         "graph",
         "Trim leaves failed",
-        { error: "Unknown error" },
+        { error: "UNKNOWN_ERROR_MESSAGE" },
       );
     });
   });

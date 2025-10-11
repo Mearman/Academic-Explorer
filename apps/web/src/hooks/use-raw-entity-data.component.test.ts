@@ -161,7 +161,12 @@ describe("useRawEntityData", () => {
       expect(reactQuery.useQuery).toHaveBeenCalled();
       const lastCall = (reactQuery.useQuery as any).mock.calls.at(-1)?.[0];
       expect(lastCall).toBeDefined();
-      expect(lastCall!.queryKey).toEqual(["raw-entity", "works", "W123456789"]);
+      expect(lastCall!.queryKey).toEqual([
+        "raw-entity",
+        "works",
+        "W123456789",
+        "{}",
+      ]);
       expect(lastCall!.enabled).toBe(true);
     });
 
@@ -186,6 +191,7 @@ describe("useRawEntityData", () => {
         "raw-entity",
         "authors",
         "A123456789",
+        "{}",
       ]);
       expect(lastCall!.enabled).toBe(true);
     });
@@ -225,6 +231,7 @@ describe("useRawEntityData", () => {
           "raw-entity",
           testCase.expected,
           "TEST123",
+          "{}",
         ]);
         expect(lastCall!.enabled).toBe(true);
       }
@@ -254,7 +261,12 @@ describe("useRawEntityData", () => {
       expect(reactQuery.useQuery).toHaveBeenCalled();
       const lastCall = (reactQuery.useQuery as any).mock.calls.at(-1)?.[0];
       expect(lastCall).toBeDefined();
-      expect(lastCall!.queryKey).toEqual(["raw-entity", "works", "W123456789"]);
+      expect(lastCall!.queryKey).toEqual([
+        "raw-entity",
+        "works",
+        "W123456789",
+        "{}",
+      ]);
       expect(lastCall!.enabled).toBe(true);
     });
 
@@ -265,7 +277,12 @@ describe("useRawEntityData", () => {
       expect(reactQuery.useQuery).toHaveBeenCalled();
       const lastCall = (reactQuery.useQuery as any).mock.calls.at(-1)?.[0];
       expect(lastCall).toBeDefined();
-      expect(lastCall!.queryKey).toEqual(["raw-entity", "works", "W123456789"]);
+      expect(lastCall!.queryKey).toEqual([
+        "raw-entity",
+        "works",
+        "W123456789",
+        "{}",
+      ]);
       expect(lastCall!.enabled).toBe(false);
     });
 
@@ -274,7 +291,7 @@ describe("useRawEntityData", () => {
       expect(reactQuery.useQuery).toHaveBeenCalled();
       const lastCall = (reactQuery.useQuery as any).mock.calls.at(-1)?.[0];
       expect(lastCall).toBeDefined();
-      expect(lastCall!.queryKey).toEqual(["raw-entity", null, null]);
+      expect(lastCall!.queryKey).toEqual(["raw-entity", null, null, "{}"]);
       expect(lastCall!.enabled).toBe(false);
     });
 
@@ -285,7 +302,7 @@ describe("useRawEntityData", () => {
       expect(reactQuery.useQuery).toHaveBeenCalled();
       const lastCall = (reactQuery.useQuery as any).mock.calls.at(-1)?.[0];
       expect(lastCall).toBeDefined();
-      expect(lastCall!.queryKey).toEqual(["raw-entity", null, null]);
+      expect(lastCall!.queryKey).toEqual(["raw-entity", null, null, "{}"]);
       expect(lastCall!.enabled).toBe(false);
     });
   });
@@ -519,7 +536,12 @@ describe("useRawEntityData", () => {
       expect(reactQuery.useQuery).toHaveBeenCalled();
       const lastCall = (reactQuery.useQuery as any).mock.calls.at(-1)?.[0];
       expect(lastCall).toBeDefined();
-      expect(lastCall!.queryKey).toEqual(["raw-entity", "works", "W123456789"]);
+      expect(lastCall!.queryKey).toEqual([
+        "raw-entity",
+        "works",
+        "W123456789",
+        "{}",
+      ]);
       expect(lastCall!.enabled).toBe(true);
     });
 
@@ -531,7 +553,12 @@ describe("useRawEntityData", () => {
       expect(reactQuery.useQuery).toHaveBeenCalled();
       const lastCall = (reactQuery.useQuery as any).mock.calls.at(-1)?.[0];
       expect(lastCall).toBeDefined();
-      expect(lastCall!.queryKey).toEqual(["raw-entity", "works", "W123456789"]);
+      expect(lastCall!.queryKey).toEqual([
+        "raw-entity",
+        "works",
+        "W123456789",
+        "{}",
+      ]);
       expect(lastCall!.enabled).toBe(true);
     });
   });
@@ -543,7 +570,7 @@ describe("useRawEntityData", () => {
       expect(reactQuery.useQuery).toHaveBeenCalled();
       const lastCall = (reactQuery.useQuery as any).mock.calls.at(-1)?.[0];
       expect(lastCall).toBeDefined();
-      expect(lastCall!.queryKey).toEqual(["raw-entity", null, null]);
+      expect(lastCall!.queryKey).toEqual(["raw-entity", null, null, "{}"]);
       expect(lastCall!.enabled).toBe(false);
     });
 
@@ -553,7 +580,7 @@ describe("useRawEntityData", () => {
       expect(reactQuery.useQuery).toHaveBeenCalled();
       const lastCall = (reactQuery.useQuery as any).mock.calls.at(-1)?.[0];
       expect(lastCall).toBeDefined();
-      expect(lastCall!.queryKey).toEqual(["raw-entity", null, null]);
+      expect(lastCall!.queryKey).toEqual(["raw-entity", null, null, "{}"]);
       expect(lastCall!.enabled).toBe(false);
     });
   });
