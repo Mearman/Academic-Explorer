@@ -251,6 +251,12 @@ describe("EntityList", () => {
       expect(within(container).getByText("Test Funders")).toBeInTheDocument();
     });
 
+    // Check that API was called with page parameter
+    expect(mockFundersGetMultiple).toHaveBeenCalledWith({
+      per_page: 50,
+      page: 1,
+    });
+
     // Check for table data within the rendered component only
     const table = within(container).getByRole("table");
     expect(within(table).getAllByRole("row")).toHaveLength(3); // header + 2 rows
