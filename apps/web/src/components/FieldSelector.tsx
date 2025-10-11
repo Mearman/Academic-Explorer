@@ -113,7 +113,7 @@ export function FieldSelector<T extends readonly string[] = readonly string[]>({
         <Combobox
           store={combobox}
           onOptionSubmit={handleValueSelect}
-          withinPortal={false}
+          withinPortal={true}
         >
           <Combobox.DropdownTarget>
             <PillsInput
