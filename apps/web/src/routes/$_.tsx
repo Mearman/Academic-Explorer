@@ -47,14 +47,14 @@ function ExternalIdRoute() {
             { original: decodedId, cleanPath },
             "ExternalIdRoute",
           );
-          
+
           // Preserve query params from routeSearch
-          const queryParams = routeSearch && typeof routeSearch === "object" 
+          const queryParams = routeSearch && typeof routeSearch === "object"
             ? Object.entries(routeSearch)
                 .map(([key, value]) => `${key}=${value}`)
                 .join("&")
             : "";
-          
+
           const newUrl = queryParams ? `/${cleanPath}?${queryParams}` : `/${cleanPath}`;
           window.location.replace(`#${newUrl}`);
           return;
@@ -82,7 +82,7 @@ function ExternalIdRoute() {
           "search",
         ];
         // Also check if the decodedId starts with any of these prefixes followed by a slash
-        const isKnownRoute = knownRoutePrefixes.includes(decodedId) || 
+        const isKnownRoute = knownRoutePrefixes.includes(decodedId) ||
           knownRoutePrefixes.some(prefix => decodedId.startsWith(`${prefix}/`));
         if (isKnownRoute) {
           // This is a known route prefix, let other routes handle it
