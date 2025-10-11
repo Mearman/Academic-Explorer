@@ -1,19 +1,23 @@
+import { FieldSelector } from "@/components/FieldSelector";
 import { useEntityDocumentTitle } from "@/hooks/use-document-title";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useGraphStore } from "@/stores/graph-store";
 import { decodeUrlQueryParams } from "@/utils/url-helpers";
+import { FUNDER_FIELDS } from "@academic-explorer/client";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { z } from "zod";
 
 export const FUNDER_ROUTE_PATH = "/funders/$funderId";
 
 function FunderRoute() {
   const { funderId } = Route.useParams();
+  const routeSearch = Route.useSearch();
   const navigate = useNavigate();
 
   const entityType = "funder" as const;
@@ -140,6 +144,22 @@ function FunderRoute() {
     void loadFunder();
   }, [funderId, loadEntity, loadEntityIntoGraph, nodeCount]);
 
+  // Parse selected fields from URL
+  const selectedFields =
+    typeof routeSearch?.select === "string"
+      ? routeSearch.select.split(",").map((f) => f.trim())
+      : [];
+
+  // Handler for field selection changes
+  const handleFieldsChange = (fields: readonly string[]) => {
+    void navigate({
+      to: FUNDER_ROUTE_PATH,
+      params: { funderId },
+      search: fields.length > 0 ? { select: fields.join(",") } : {},
+      replace: true,
+    });
+  };
+
   // Show loading state
   if (rawEntityData.isLoading) {
     return (
@@ -192,6 +212,15 @@ function FunderRoute() {
         entityType={entityType}
       />
 
+      {/* Field Selector */}
+      <div className="mb-4 mt-4">
+        <FieldSelector
+          availableFields={FUNDER_FIELDS}
+          selectedFields={selectedFields}
+          onFieldsChange={handleFieldsChange}
+        />
+      </div>
+
       {viewMode === "raw" ? (
         <pre className="json-view p-4 bg-gray-100 overflow-auto mt-4">
           {JSON.stringify(rawEntityData.data, null, 2)}
@@ -211,4 +240,7 @@ function FunderRoute() {
 
 export const Route = createFileRoute(FUNDER_ROUTE_PATH)({
   component: FunderRoute,
+  validateSearch: z.object({
+    select: z.string().optional(),
+  }),
 });
