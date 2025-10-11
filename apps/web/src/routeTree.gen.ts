@@ -41,6 +41,7 @@ import { Route as EvaluationResultsRouteImport } from './routes/evaluation/resul
 import { Route as EvaluationDatasetsRouteImport } from './routes/evaluation/datasets'
 import { Route as AuthorsAuthorIdRouteImport } from './routes/authors/$authorId'
 import { Route as ApiOpenalexOrgSplatRouteImport } from './routes/api-openalex-org/$'
+import { Route as AutocompleteWorksIndexRouteImport } from './routes/autocomplete/works/index'
 import { Route as AutocompleteAuthorsIndexRouteImport } from './routes/autocomplete/authors/index'
 import { Route as WorksDoiDoiRouteImport } from './routes/works/doi.$doi'
 import { Route as SourcesIssnIssnRouteImport } from './routes/sources/issn.$issn'
@@ -209,6 +210,11 @@ const ApiOpenalexOrgSplatRoute = ApiOpenalexOrgSplatRouteImport.update({
   path: '/api-openalex-org/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AutocompleteWorksIndexRoute = AutocompleteWorksIndexRouteImport.update({
+  id: '/autocomplete/works/',
+  path: '/autocomplete/works/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AutocompleteAuthorsIndexRoute =
   AutocompleteAuthorsIndexRouteImport.update({
     id: '/autocomplete/authors/',
@@ -280,6 +286,7 @@ export interface FileRoutesByFullPath {
   '/sources/issn/$issn': typeof SourcesIssnIssnRoute
   '/works/doi/$doi': typeof WorksDoiDoiRoute
   '/autocomplete/authors': typeof AutocompleteAuthorsIndexRoute
+  '/autocomplete/works': typeof AutocompleteWorksIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -320,6 +327,7 @@ export interface FileRoutesByTo {
   '/sources/issn/$issn': typeof SourcesIssnIssnRoute
   '/works/doi/$doi': typeof WorksDoiDoiRoute
   '/autocomplete/authors': typeof AutocompleteAuthorsIndexRoute
+  '/autocomplete/works': typeof AutocompleteWorksIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -361,6 +369,7 @@ export interface FileRoutesById {
   '/sources/issn/$issn': typeof SourcesIssnIssnRoute
   '/works/doi/$doi': typeof WorksDoiDoiRoute
   '/autocomplete/authors/': typeof AutocompleteAuthorsIndexRoute
+  '/autocomplete/works/': typeof AutocompleteWorksIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -403,6 +412,7 @@ export interface FileRouteTypes {
     | '/sources/issn/$issn'
     | '/works/doi/$doi'
     | '/autocomplete/authors'
+    | '/autocomplete/works'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -443,6 +453,7 @@ export interface FileRouteTypes {
     | '/sources/issn/$issn'
     | '/works/doi/$doi'
     | '/autocomplete/authors'
+    | '/autocomplete/works'
   id:
     | '__root__'
     | '/'
@@ -483,6 +494,7 @@ export interface FileRouteTypes {
     | '/sources/issn/$issn'
     | '/works/doi/$doi'
     | '/autocomplete/authors/'
+    | '/autocomplete/works/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -521,6 +533,7 @@ export interface RootRouteChildren {
   SourcesIssnIssnRoute: typeof SourcesIssnIssnRoute
   WorksDoiDoiRoute: typeof WorksDoiDoiRoute
   AutocompleteAuthorsIndexRoute: typeof AutocompleteAuthorsIndexRoute
+  AutocompleteWorksIndexRoute: typeof AutocompleteWorksIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -749,6 +762,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiOpenalexOrgSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/autocomplete/works/': {
+      id: '/autocomplete/works/'
+      path: '/autocomplete/works'
+      fullPath: '/autocomplete/works'
+      preLoaderRoute: typeof AutocompleteWorksIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/autocomplete/authors/': {
       id: '/autocomplete/authors/'
       path: '/autocomplete/authors'
@@ -855,6 +875,7 @@ const rootRouteChildren: RootRouteChildren = {
   SourcesIssnIssnRoute: SourcesIssnIssnRoute,
   WorksDoiDoiRoute: WorksDoiDoiRoute,
   AutocompleteAuthorsIndexRoute: AutocompleteAuthorsIndexRoute,
+  AutocompleteWorksIndexRoute: AutocompleteWorksIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
