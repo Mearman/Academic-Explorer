@@ -1,0 +1,155 @@
+{
+  "id": "https://openalex.org/W3209445140",
+  "doi": "https://doi.org/10.5281/zenodo.2673030",
+  "title": "greenhouselab/Veta: VETA_v1.0-alpha",
+  "display_name": "greenhouselab/Veta: VETA_v1.0-alpha",
+  "publication_year": 2019,
+  "publication_date": "2019-05-07",
+  "ids": {
+    "openalex": "https://openalex.org/W3209445140",
+    "doi": "https://doi.org/10.5281/zenodo.2673030",
+    "mag": "3209445140"
+  },
+  "language": "et",
+  "primary_location": {
+    "is_oa": false,
+    "landing_page_url": "https://zenodo.org/record/2673030",
+    "pdf_url": null,
+    "source": null,
+    "license": null,
+    "license_id": null,
+    "version": null,
+    "is_accepted": false,
+    "is_published": false
+  },
+  "type": "article",
+  "type_crossref": "journal-article",
+  "indexed_in": [],
+  "open_access": {
+    "is_oa": false,
+    "oa_status": "closed",
+    "oa_url": null,
+    "any_repository_has_fulltext": false
+  },
+  "authorships": [
+    {
+      "author_position": "first",
+      "author": {
+        "id": "https://openalex.org/A5070511344",
+        "display_name": "Greenhouse Lab",
+        "orcid": null
+      },
+      "institutions": [],
+      "countries": [],
+      "is_corresponding": false,
+      "raw_author_name": "Greenhouse Lab",
+      "raw_affiliation_strings": [],
+      "affiliations": []
+    },
+    {
+      "author_position": "last",
+      "author": {
+        "id": "https://openalex.org/A5048647558",
+        "display_name": "jacksonnick",
+        "orcid": null
+      },
+      "institutions": [],
+      "countries": [],
+      "is_corresponding": false,
+      "raw_author_name": "jacksonnick",
+      "raw_affiliation_strings": [],
+      "affiliations": []
+    }
+  ],
+  "institution_assertions": [],
+  "countries_distinct_count": 0,
+  "institutions_distinct_count": 0,
+  "corresponding_author_ids": [],
+  "corresponding_institution_ids": [],
+  "apc_list": null,
+  "apc_paid": null,
+  "fwci": null,
+  "has_fulltext": false,
+  "cited_by_count": 0,
+  "citation_normalized_percentile": null,
+  "cited_by_percentile_year": {
+    "min": 0,
+    "max": 61
+  },
+  "biblio": {
+    "volume": null,
+    "issue": null,
+    "first_page": null,
+    "last_page": null
+  },
+  "is_retracted": false,
+  "is_paratext": false,
+  "primary_topic": null,
+  "topics": [],
+  "keywords": [],
+  "concepts": [
+    {
+      "id": "https://openalex.org/C64943373",
+      "wikidata": "https://www.wikidata.org/wiki/Q2651003",
+      "display_name": "Alpha (finance)",
+      "level": 4,
+      "score": 0.39236253
+    },
+    {
+      "id": "https://openalex.org/C15744967",
+      "wikidata": "https://www.wikidata.org/wiki/Q9418",
+      "display_name": "Psychology",
+      "level": 0,
+      "score": 0.18982172
+    },
+    {
+      "id": "https://openalex.org/C70410870",
+      "wikidata": "https://www.wikidata.org/wiki/Q199906",
+      "display_name": "Clinical psychology",
+      "level": 1,
+      "score": 0
+    },
+    {
+      "id": "https://openalex.org/C49453240",
+      "wikidata": "https://www.wikidata.org/wiki/Q1592163",
+      "display_name": "Construct validity",
+      "level": 3,
+      "score": 0
+    },
+    {
+      "id": "https://openalex.org/C171606756",
+      "wikidata": "https://www.wikidata.org/wiki/Q506132",
+      "display_name": "Psychometrics",
+      "level": 2,
+      "score": 0
+    }
+  ],
+  "mesh": [],
+  "locations_count": 1,
+  "locations": [
+    {
+      "is_oa": false,
+      "landing_page_url": "https://zenodo.org/record/2673030",
+      "pdf_url": null,
+      "source": null,
+      "license": null,
+      "license_id": null,
+      "version": null,
+      "is_accepted": false,
+      "is_published": false
+    }
+  ],
+  "best_oa_location": null,
+  "sustainable_development_goals": [],
+  "grants": [],
+  "datasets": [],
+  "versions": [],
+  "referenced_works_count": 0,
+  "referenced_works": [],
+  "related_works": [],
+  "abstract_inverted_index": null,
+  "cited_by_api_url": "https://api.openalex.org/works?filter=cites:W3209445140",
+  "counts_by_year": [],
+  "updated_date": "2024-12-12T09:42:44.205662",
+  "created_date": "2021-11-08"
+}

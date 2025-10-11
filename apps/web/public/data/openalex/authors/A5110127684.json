@@ -1,0 +1,413 @@
+{
+  "id": "https://openalex.org/A5110127684",
+  "orcid": null,
+  "display_name": "OliverH. Lowry",
+  "display_name_alternatives": [
+    "OliverH. Lowry"
+  ],
+  "works_count": 2,
+  "cited_by_count": 321382,
+  "summary_stats": {
+    "2yr_mean_citedness": 0,
+    "h_index": 2,
+    "i10_index": 2
+  },
+  "ids": {
+    "openalex": "https://openalex.org/A5110127684"
+  },
+  "affiliations": [
+    {
+      "institution": {
+        "id": "https://openalex.org/I204465549",
+        "ror": "https://ror.org/01yc7t268",
+        "display_name": "Washington University in St. Louis",
+        "country_code": "US",
+        "type": "funder",
+        "lineage": [
+          "https://openalex.org/I204465549"
+        ]
+      },
+      "years": [
+        1980,
+        1951
+      ]
+    }
+  ],
+  "last_known_institutions": [
+    {
+      "id": "https://openalex.org/I204465549",
+      "ror": "https://ror.org/01yc7t268",
+      "display_name": "Washington University in St. Louis",
+      "country_code": "US",
+      "type": "funder",
+      "lineage": [
+        "https://openalex.org/I204465549"
+      ]
+    }
+  ],
+  "topics": [
+    {
+      "id": "https://openalex.org/T14135",
+      "display_name": "Cancer and biochemical research",
+      "count": 1,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1312",
+        "display_name": "Molecular Biology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10602",
+      "display_name": "Glycosylation and Glycoproteins Research",
+      "count": 1,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1312",
+        "display_name": "Molecular Biology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11399",
+      "display_name": "Muscle metabolism and nutrition",
+      "count": 1,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1307",
+        "display_name": "Cell Biology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    }
+  ],
+  "topic_share": [
+    {
+      "id": "https://openalex.org/T14135",
+      "display_name": "Cancer and biochemical research",
+      "value": 0.0000545,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1312",
+        "display_name": "Molecular Biology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11399",
+      "display_name": "Muscle metabolism and nutrition",
+      "value": 0.0000048,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1307",
+        "display_name": "Cell Biology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10602",
+      "display_name": "Glycosylation and Glycoproteins Research",
+      "value": 0.0000027,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1312",
+        "display_name": "Molecular Biology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    }
+  ],
+  "x_concepts": [
+    {
+      "id": "https://openalex.org/C178790620",
+      "wikidata": "https://www.wikidata.org/wiki/Q11351",
+      "display_name": "Organic chemistry",
+      "level": 1,
+      "score": 100
+    },
+    {
+      "id": "https://openalex.org/C185592680",
+      "wikidata": "https://www.wikidata.org/wiki/Q2329",
+      "display_name": "Chemistry",
+      "level": 0,
+      "score": 100
+    },
+    {
+      "id": "https://openalex.org/C21200559",
+      "wikidata": "https://www.wikidata.org/wiki/Q7451068",
+      "display_name": "Sensitivity (control systems)",
+      "level": 2,
+      "score": 50
+    },
+    {
+      "id": "https://openalex.org/C24326235",
+      "wikidata": "https://www.wikidata.org/wiki/Q126095",
+      "display_name": "Electronic engineering",
+      "level": 1,
+      "score": 50
+    },
+    {
+      "id": "https://openalex.org/C40875361",
+      "wikidata": "https://www.wikidata.org/wiki/Q2356542",
+      "display_name": "Reagent",
+      "level": 2,
+      "score": 50
+    },
+    {
+      "id": "https://openalex.org/C43617362",
+      "wikidata": "https://www.wikidata.org/wiki/Q170050",
+      "display_name": "Chromatography",
+      "level": 1,
+      "score": 50
+    },
+    {
+      "id": "https://openalex.org/C46141821",
+      "wikidata": "https://www.wikidata.org/wiki/Q209402",
+      "display_name": "Nuclear magnetic resonance",
+      "level": 1,
+      "score": 50
+    },
+    {
+      "id": "https://openalex.org/C55493867",
+      "wikidata": "https://www.wikidata.org/wiki/Q7094",
+      "display_name": "Biochemistry",
+      "level": 1,
+      "score": 50
+    },
+    {
+      "id": "https://openalex.org/C75520062",
+      "wikidata": "https://www.wikidata.org/wiki/Q15321392",
+      "display_name": "NAD+ kinase",
+      "level": 3,
+      "score": 50
+    },
+    {
+      "id": "https://openalex.org/C86803240",
+      "wikidata": "https://www.wikidata.org/wiki/Q420",
+      "display_name": "Biology",
+      "level": 0,
+      "score": 50
+    },
+    {
+      "id": "https://openalex.org/C95457728",
+      "wikidata": "https://www.wikidata.org/wiki/Q309",
+      "display_name": "History",
+      "level": 0,
+      "score": 50
+    },
+    {
+      "id": "https://openalex.org/C97137747",
+      "wikidata": "https://www.wikidata.org/wiki/Q38112",
+      "display_name": "Forestry",
+      "level": 1,
+      "score": 50
+    },
+    {
+      "id": "https://openalex.org/C97355855",
+      "wikidata": "https://www.wikidata.org/wiki/Q11473",
+      "display_name": "Thermodynamics",
+      "level": 1,
+      "score": 50
+    },
+    {
+      "id": "https://openalex.org/C121332964",
+      "wikidata": "https://www.wikidata.org/wiki/Q413",
+      "display_name": "Physics",
+      "level": 0,
+      "score": 50
+    },
+    {
+      "id": "https://openalex.org/C127413603",
+      "wikidata": "https://www.wikidata.org/wiki/Q11023",
+      "display_name": "Engineering",
+      "level": 0,
+      "score": 50
+    },
+    {
+      "id": "https://openalex.org/C147789679",
+      "wikidata": "https://www.wikidata.org/wiki/Q11372",
+      "display_name": "Physical chemistry",
+      "level": 1,
+      "score": 50
+    },
+    {
+      "id": "https://openalex.org/C153294291",
+      "wikidata": "https://www.wikidata.org/wiki/Q25261",
+      "display_name": "Meteorology",
+      "level": 1,
+      "score": 50
+    },
+    {
+      "id": "https://openalex.org/C166957645",
+      "wikidata": "https://www.wikidata.org/wiki/Q23498",
+      "display_name": "Archaeology",
+      "level": 1,
+      "score": 50
+    },
+    {
+      "id": "https://openalex.org/C177564732",
+      "wikidata": "https://www.wikidata.org/wiki/Q7698333",
+      "display_name": "Temperature cycling",
+      "level": 3,
+      "score": 50
+    },
+    {
+      "id": "https://openalex.org/C181199279",
+      "wikidata": "https://www.wikidata.org/wiki/Q8047",
+      "display_name": "Enzyme",
+      "level": 2,
+      "score": 50
+    },
+    {
+      "id": "https://openalex.org/C204530211",
+      "wikidata": "https://www.wikidata.org/wiki/Q752823",
+      "display_name": "Thermal",
+      "level": 2,
+      "score": 50
+    },
+    {
+      "id": "https://openalex.org/C205649164",
+      "wikidata": "https://www.wikidata.org/wiki/Q1071",
+      "display_name": "Geography",
+      "level": 0,
+      "score": 50
+    },
+    {
+      "id": "https://openalex.org/C541528975",
+      "wikidata": "https://www.wikidata.org/wiki/Q53121",
+      "display_name": "Cycling",
+      "level": 2,
+      "score": 50
+    },
+    {
+      "id": "https://openalex.org/C2777702071",
+      "wikidata": "https://www.wikidata.org/wiki/Q130336",
+      "display_name": "Phenol",
+      "level": 2,
+      "score": 50
+    }
+  ],
+  "counts_by_year": [
+    {
+      "year": 2025,
+      "works_count": 0,
+      "oa_works_count": 0,
+      "cited_by_count": 1810
+    },
+    {
+      "year": 2024,
+      "works_count": 0,
+      "oa_works_count": 0,
+      "cited_by_count": 2905
+    },
+    {
+      "year": 2023,
+      "works_count": 0,
+      "oa_works_count": 0,
+      "cited_by_count": 3295
+    },
+    {
+      "year": 2022,
+      "works_count": 0,
+      "oa_works_count": 0,
+      "cited_by_count": 3518
+    },
+    {
+      "year": 2021,
+      "works_count": 0,
+      "oa_works_count": 0,
+      "cited_by_count": 3700
+    },
+    {
+      "year": 2020,
+      "works_count": 0,
+      "oa_works_count": 0,
+      "cited_by_count": 3752
+    },
+    {
+      "year": 2019,
+      "works_count": 0,
+      "oa_works_count": 0,
+      "cited_by_count": 3515
+    },
+    {
+      "year": 2018,
+      "works_count": 0,
+      "oa_works_count": 0,
+      "cited_by_count": 3468
+    },
+    {
+      "year": 2017,
+      "works_count": 0,
+      "oa_works_count": 0,
+      "cited_by_count": 3643
+    },
+    {
+      "year": 2016,
+      "works_count": 0,
+      "oa_works_count": 0,
+      "cited_by_count": 3937
+    },
+    {
+      "year": 2015,
+      "works_count": 0,
+      "oa_works_count": 0,
+      "cited_by_count": 4522
+    },
+    {
+      "year": 2014,
+      "works_count": 0,
+      "oa_works_count": 0,
+      "cited_by_count": 5023
+    },
+    {
+      "year": 2013,
+      "works_count": 0,
+      "oa_works_count": 0,
+      "cited_by_count": 4941
+    },
+    {
+      "year": 2012,
+      "works_count": 0,
+      "oa_works_count": 0,
+      "cited_by_count": 4968
+    }
+  ],
+  "works_api_url": "https://api.openalex.org/works?filter=author.id:A5110127684",
+  "updated_date": "2025-10-04T17:30:49.061450",
+  "created_date": "2024-10-14"
+}

@@ -1,16 +1,16 @@
 {
-  "lastUpdated": "2025-10-11T10:38:28.729Z",
+  "lastUpdated": "2025-10-11T18:33:57.813Z",
   "files": {
     "W123%2Fspecial-chars": {
       "url": "https://api.openalex.org/works/W123%2Fspecial-chars",
       "$ref": "./W123%2Fspecial-chars.json",
-      "lastRetrieved": "2025-10-10T16:57:28.480Z",
+      "lastRetrieved": "2025-10-11T18:30:06.083Z",
       "contentHash": "44136fa355b3678a",
       "equivalentUrls": [
         "https://api.openalex.org/works/W123%2Fspecial-chars"
       ],
       "urlTimestamps": {
-        "https://api.openalex.org/works/W123%2Fspecial-chars": "2025-10-10T16:57:28.480Z"
+        "https://api.openalex.org/works/W123%2Fspecial-chars": "2025-10-11T18:30:06.083Z"
       },
       "collisionInfo": {
         "mergedCount": 0,
@@ -36,13 +36,29 @@
     "W2741809807": {
       "url": "https://api.openalex.org/works/W2741809807",
       "$ref": "./W2741809807.json",
-      "lastRetrieved": "2025-10-11T10:38:28.623Z",
+      "lastRetrieved": "2025-10-11T10:38:28.625Z",
       "contentHash": "892c890aa8b4185e",
       "equivalentUrls": [
         "https://api.openalex.org/works/W2741809807"
       ],
       "urlTimestamps": {
-        "https://api.openalex.org/works/W2741809807": "2025-10-11T10:38:28.623Z"
+        "https://api.openalex.org/works/W2741809807": "2025-10-11T10:38:28.625Z"
+      },
+      "collisionInfo": {
+        "mergedCount": 0,
+        "totalUrls": 1
+      }
+    },
+    "W3209445140": {
+      "url": "https://api.openalex.org/works/W3209445140",
+      "$ref": "./W3209445140.json",
+      "lastRetrieved": "2025-10-11T18:24:06.360Z",
+      "contentHash": "6b3d9f06a3f096d7",
+      "equivalentUrls": [
+        "https://api.openalex.org/works/W3209445140"
+      ],
+      "urlTimestamps": {
+        "https://api.openalex.org/works/W3209445140": "2025-10-11T18:24:06.360Z"
       },
       "collisionInfo": {
         "mergedCount": 0,
@@ -52,13 +68,13 @@
     "unknown_75b0e39e": {
       "url": "https://api.openalex.org/works/unknown_75b0e39e",
       "$ref": "./unknown_75b0e39e.json",
-      "lastRetrieved": "2025-10-10T16:57:28.489Z",
+      "lastRetrieved": "2025-10-11T18:30:06.091Z",
       "contentHash": "5021e624e752b001",
       "equivalentUrls": [
         "https://api.openalex.org/works/unknown_75b0e39e"
       ],
       "urlTimestamps": {
-        "https://api.openalex.org/works/unknown_75b0e39e": "2025-10-10T16:57:28.489Z"
+        "https://api.openalex.org/works/unknown_75b0e39e": "2025-10-11T18:30:06.091Z"
       },
       "collisionInfo": {
         "mergedCount": 0,
@@ -69,7 +85,7 @@
   "directories": {
     "queries": {
       "$ref": "./queries",
-      "lastModified": "2025-10-11T09:04:46.316Z"
+      "lastModified": "2025-10-11T18:33:57.576Z"
     }
   }
 }

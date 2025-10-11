@@ -1,0 +1,1251 @@
+{
+  "id": "https://openalex.org/I204465549",
+  "ror": "https://ror.org/01yc7t268",
+  "display_name": "Washington University in St. Louis",
+  "country_code": "US",
+  "type": "funder",
+  "type_id": "https://openalex.org/institution-types/funder",
+  "lineage": [
+    "https://openalex.org/I204465549"
+  ],
+  "homepage_url": "http://wustl.edu/",
+  "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Olin%20Library%20-%20Danforth%20Campus%20at%20Washington%20University%20in%20St.%20Louis.jpg",
+  "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Olin%20Library%20-%20Danforth%20Campus%20at%20Washington%20University%20in%20St.%20Louis.jpg&width=300",
+  "display_name_acronyms": [
+    "WUSTL"
+  ],
+  "display_name_alternatives": [
+    "Université Washington à Saint-louis",
+    "Universidad Washington en San Luis"
+  ],
+  "repositories": [
+    {
+      "id": "https://openalex.org/S4306400764",
+      "display_name": "Digital Commons@Becker (Washington University School of Medicine)",
+      "host_organization": "https://openalex.org/I204465549",
+      "host_organization_name": "Washington University in St. Louis",
+      "host_organization_lineage": [
+        "https://openalex.org/I204465549"
+      ]
+    },
+    {
+      "id": "https://openalex.org/S4377196400",
+      "display_name": "Open Scholarship Institutional Repository (Washington University in St. Louis)",
+      "host_organization": "https://openalex.org/I204465549",
+      "host_organization_name": "Washington University in St. Louis",
+      "host_organization_lineage": [
+        "https://openalex.org/I204465549"
+      ]
+    },
+    {
+      "id": "https://openalex.org/S4377196288",
+      "display_name": "Digital Commons - Becker  (Washington University in St. Louis)",
+      "host_organization": "https://openalex.org/I204465549",
+      "host_organization_name": "Washington University in St. Louis",
+      "host_organization_lineage": [
+        "https://openalex.org/I204465549"
+      ]
+    }
+  ],
+  "works_count": 224668,
+  "cited_by_count": 11734091,
+  "summary_stats": {
+    "2yr_mean_citedness": 4.426908811868525,
+    "h_index": 1018,
+    "i10_index": 111366
+  },
+  "ids": {
+    "openalex": "https://openalex.org/I204465549",
+    "ror": "https://ror.org/01yc7t268",
+    "mag": "204465549",
+    "grid": "grid.4367.6",
+    "wikipedia": "https://en.wikipedia.org/wiki/Washington%20University%20in%20St.%20Louis",
+    "wikidata": "https://www.wikidata.org/wiki/Q777403"
+  },
+  "geo": {
+    "city": "St Louis",
+    "geonames_city_id": "4407066",
+    "region": null,
+    "country_code": "US",
+    "country": "United States",
+    "latitude": 38.62727,
+    "longitude": -90.19789
+  },
+  "international": {
+    "display_name": {
+      "alt": "Сент-Луисте Вашингтонныҥ университеди",
+      "ar": "جامعة واشنطن في سانت لويس",
+      "arz": "جامعة واشنطن فى سانت لويس",
+      "ast": "Universidá Washington en Saint Louis",
+      "az": "Sent-Luis Vaşinqton Universiteti",
+      "azb": "واشینقتون در سن‌لوئیس بیلیم‌یوردو",
+      "be": "Універсітэт Вашынгтона ў Сент-Луісе",
+      "be-tarask": "Вашынгтонскі ўнівэрсытэт (Сэнт-Луіс)",
+      "bn": "ওয়াশিংটন ইউনিভার্সিটি ইন সেন্ট লুইস",
+      "ca": "Universitat Washington a Saint Louis",
+      "cs": "Washingtonova univerzita",
+      "cy": "Prifysgol Washington yn St. Louis",
+      "da": "Washington University i St. Louis",
+      "de": "Washington University in St. Louis",
+      "el": "Πανεπιστήμιο της Ουάσινγκτον στο Σαίντ Λίουις",
+      "en": "Washington University in St. Louis",
+      "eo": "Vaŝingtona Universitato ĉe Sankt-Luizo",
+      "es": "Universidad Washington en San Luis",
+      "eu": "Washingtongo Unibertsitatea Saint Louisen",
+      "fa": "دانشگاه واشینگتن در سن‌لوئیس",
+      "fi": "Washington University in St. Louis",
+      "fr": "université Washington de Saint-Louis",
+      "ga": "Ollscoil Washington in St. Louis",
+      "gd": "Oilthigh Washington ann an St. Louis",
+      "he": "אוניברסיטת וושינגטון בסנט לואיס",
+      "hi": "वाशिंगटन विश्वविद्यालय",
+      "hu": "Washington University in St. Louis",
+      "hy": "Վաշինգտոնի համալսարան Սենտ Լուիսում",
+      "id": "Universitas Washington di St. Louis",
+      "is": "Washington-háskóli í St. Louis",
+      "it": "Università Washington a Saint Louis",
+      "ja": "ワシントン大学",
+      "ka": "სენტ-ლუისის ვაშინგტონის უნივერსიტეტი",
+      "ko": "워싱턴 대학교 세인트루이스",
+      "ky": "Вашингтон университети",
+      "lb": "Washington University in St. Louis",
+      "lv": "Vašingtona universitāte Sentluisā",
+      "mk": "Вашингтонов универзитет во Сент Луис",
+      "nb": "Washington University in St. Louis",
+      "nl": "Washington University in St. Louis",
+      "pl": "Washington University in St. Louis",
+      "pnb": "واشنگٹن یونیورسٹی",
+      "pt": "Universidade Washington em St. Louis",
+      "ro": "Universitatea Washington din St. Louis",
+      "ru": "Университет Вашингтона в Сент-Луисе",
+      "sl": "Washingtonova univerza v St. Louisu",
+      "sr": "Универзитет Вашингтон у Сент Луису",
+      "sv": "Washington University in St. Louis",
+      "ta": "புனித லூயிஸிலுள்ள வாஷிங்டன் பல்கலைக்கழகம்",
+      "th": "มหาวิทยาลัยวอชิงตัน เซนต์หลุยส์",
+      "tl": "Washington University in St. Louis",
+      "tr": "Washington Üniversitesi",
+      "tt": "Сент-Луистагы Вашиңтон университеты",
+      "uk": "Вашингтонський університет в Сент-Луїсі",
+      "ur": "جامعہ واشنگٹن، سینٹ لوئس",
+      "uz": "Sent-Luisdagi Vashington universiteti",
+      "vi": "Đại học Washington tại St. Louis",
+      "zh": "圣路易斯华盛顿大学",
+      "zh-hant": "聖路易華盛頓大學",
+      "zh-tw": "聖路易華盛頓大學"
+    }
+  },
+  "associated_institutions": [
+    {
+      "id": "https://openalex.org/I4210122064",
+      "ror": "https://ror.org/02swjdp46",
+      "display_name": "Children’s Discovery Institute",
+      "country_code": "US",
+      "type": "funder",
+      "relationship": "child"
+    },
+    {
+      "id": "https://openalex.org/I4392738227",
+      "ror": "https://ror.org/03x3g5467",
+      "display_name": "Taylor Family Institute for Innovative Psychiatric Research",
+      "country_code": null,
+      "type": "funder",
+      "relationship": "child"
+    },
+    {
+      "id": "https://openalex.org/I4387155636",
+      "ror": "https://ror.org/03qn8ky51",
+      "display_name": "Washington University Physicians",
+      "country_code": null,
+      "type": "healthcare",
+      "relationship": "child"
+    },
+    {
+      "id": "https://openalex.org/I1299725459",
+      "ror": "https://ror.org/04wyvkr12",
+      "display_name": "Barnes-Jewish Hospital",
+      "country_code": "US",
+      "type": "healthcare",
+      "relationship": "related"
+    },
+    {
+      "id": "https://openalex.org/I2802002475",
+      "ror": "https://ror.org/04ymee833",
+      "display_name": "Central Institute for the Deaf",
+      "country_code": "US",
+      "type": "education",
+      "relationship": "related"
+    },
+    {
+      "id": "https://openalex.org/I1324021844",
+      "ror": "https://ror.org/00qw1qw03",
+      "display_name": "St. Louis Children's Hospital",
+      "country_code": "US",
+      "type": "healthcare",
+      "relationship": "related"
+    },
+    {
+      "id": "https://openalex.org/I4402554118",
+      "ror": "https://ror.org/0573j3j10",
+      "display_name": "Taylor Geospatial Institute",
+      "country_code": null,
+      "type": "facility",
+      "relationship": "related"
+    },
+    {
+      "id": "https://openalex.org/I4210135078",
+      "ror": "https://ror.org/036c27j91",
+      "display_name": "Washington University Medical Center",
+      "country_code": "US",
+      "type": "healthcare",
+      "relationship": "related"
+    }
+  ],
+  "counts_by_year": [
+    {
+      "year": 2025,
+      "works_count": 6273,
+      "oa_works_count": 1807,
+      "cited_by_count": 504639
+    },
+    {
+      "year": 2024,
+      "works_count": 9717,
+      "oa_works_count": 4471,
+      "cited_by_count": 733029
+    },
+    {
+      "year": 2023,
+      "works_count": 11820,
+      "oa_works_count": 6976,
+      "cited_by_count": 743098
+    },
+    {
+      "year": 2022,
+      "works_count": 11671,
+      "oa_works_count": 6704,
+      "cited_by_count": 728543
+    },
+    {
+      "year": 2021,
+      "works_count": 10968,
+      "oa_works_count": 7136,
+      "cited_by_count": 753926
+    },
+    {
+      "year": 2020,
+      "works_count": 11178,
+      "oa_works_count": 6558,
+      "cited_by_count": 687733
+    },
+    {
+      "year": 2019,
+      "works_count": 9401,
+      "oa_works_count": 5451,
+      "cited_by_count": 577332
+    },
+    {
+      "year": 2018,
+      "works_count": 8435,
+      "oa_works_count": 5072,
+      "cited_by_count": 519462
+    },
+    {
+      "year": 2017,
+      "works_count": 7737,
+      "oa_works_count": 4599,
+      "cited_by_count": 489168
+    },
+    {
+      "year": 2016,
+      "works_count": 7428,
+      "oa_works_count": 4210,
+      "cited_by_count": 460100
+    },
+    {
+      "year": 2015,
+      "works_count": 7246,
+      "oa_works_count": 3969,
+      "cited_by_count": 446290
+    },
+    {
+      "year": 2014,
+      "works_count": 7039,
+      "oa_works_count": 3669,
+      "cited_by_count": 427968
+    },
+    {
+      "year": 2013,
+      "works_count": 6988,
+      "oa_works_count": 3590,
+      "cited_by_count": 403313
+    },
+    {
+      "year": 2012,
+      "works_count": 6749,
+      "oa_works_count": 3283,
+      "cited_by_count": 371748
+    }
+  ],
+  "roles": [
+    {
+      "role": "funder",
+      "id": "https://openalex.org/F4320309650",
+      "works_count": 768
+    },
+    {
+      "role": "institution",
+      "id": "https://openalex.org/I204465549",
+      "works_count": 224668
+    },
+    {
+      "role": "publisher",
+      "id": "https://openalex.org/P4310316093",
+      "works_count": 4938
+    }
+  ],
+  "topics": [
+    {
+      "id": "https://openalex.org/T10077",
+      "display_name": "Neuroscience and Neuropharmacology Research",
+      "count": 2950,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2804",
+        "display_name": "Cellular and Molecular Neuroscience"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/28",
+        "display_name": "Neuroscience"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11020",
+      "display_name": "Immune Cell Function and Interaction",
+      "count": 2803,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2403",
+        "display_name": "Immunology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/24",
+        "display_name": "Immunology and Microbiology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10995",
+      "display_name": "Methane Hydrates and Related Phenomena",
+      "count": 2728,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2304",
+        "display_name": "Environmental Chemistry"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/23",
+        "display_name": "Environmental Science"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10241",
+      "display_name": "Functional Brain Connectivity Studies",
+      "count": 2406,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2805",
+        "display_name": "Cognitive Neuroscience"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/28",
+        "display_name": "Neuroscience"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10086",
+      "display_name": "Alzheimer's disease research and treatments",
+      "count": 2289,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2737",
+        "display_name": "Physiology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10521",
+      "display_name": "RNA and protein synthesis mechanisms",
+      "count": 2081,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1312",
+        "display_name": "Molecular Biology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10493",
+      "display_name": "Ion channel regulation and function",
+      "count": 2021,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1312",
+        "display_name": "Molecular Biology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10839",
+      "display_name": "Pancreatic function and diabetes",
+      "count": 2007,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2746",
+        "display_name": "Surgery"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10581",
+      "display_name": "Neural dynamics and brain function",
+      "count": 1998,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2805",
+        "display_name": "Cognitive Neuroscience"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/28",
+        "display_name": "Neuroscience"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10009",
+      "display_name": "Dementia and Cognitive Impairment Research",
+      "count": 1990,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2738",
+        "display_name": "Psychiatry and Mental health"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10031",
+      "display_name": "T-cell and B-cell Immunology",
+      "count": 1987,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2403",
+        "display_name": "Immunology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/24",
+        "display_name": "Immunology and Microbiology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10522",
+      "display_name": "Medical Imaging Techniques and Applications",
+      "count": 1968,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2741",
+        "display_name": "Radiology, Nuclear Medicine and Imaging"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11287",
+      "display_name": "Cancer Genomics and Diagnostics",
+      "count": 1965,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1306",
+        "display_name": "Cancer Research"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10358",
+      "display_name": "Advanced Radiotherapy Techniques",
+      "count": 1935,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3108",
+        "display_name": "Radiation"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/31",
+        "display_name": "Physics and Astronomy"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10580",
+      "display_name": "Immunotherapy and Immune Responses",
+      "count": 1925,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2403",
+        "display_name": "Immunology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/24",
+        "display_name": "Immunology and Microbiology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10378",
+      "display_name": "Advanced MRI Techniques and Applications",
+      "count": 1894,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2741",
+        "display_name": "Radiology, Nuclear Medicine and Imaging"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11757",
+      "display_name": "Seismic Waves and Analysis",
+      "count": 1801,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1908",
+        "display_name": "Geophysics"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/19",
+        "display_name": "Earth and Planetary Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10159",
+      "display_name": "Ionosphere and magnetosphere dynamics",
+      "count": 1784,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3103",
+        "display_name": "Astronomy and Astrophysics"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/31",
+        "display_name": "Physics and Astronomy"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11016",
+      "display_name": "Monoclonal and Polyclonal Antibodies Research",
+      "count": 1723,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2741",
+        "display_name": "Radiology, Nuclear Medicine and Imaging"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10261",
+      "display_name": "Genetic Associations and Epidemiology",
+      "count": 1709,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1311",
+        "display_name": "Genetics"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10185",
+      "display_name": "Lymphoma Diagnosis and Treatment",
+      "count": 1630,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2734",
+        "display_name": "Pathology and Forensic Medicine"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10269",
+      "display_name": "Epigenetics and DNA Methylation",
+      "count": 1608,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1312",
+        "display_name": "Molecular Biology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11482",
+      "display_name": "RNA modifications and cancer",
+      "count": 1598,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1312",
+        "display_name": "Molecular Biology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10604",
+      "display_name": "RNA Research and Splicing",
+      "count": 1598,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1312",
+        "display_name": "Molecular Biology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10217",
+      "display_name": "Cardiac electrophysiology and arrhythmias",
+      "count": 1569,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2705",
+        "display_name": "Cardiology and Cardiovascular Medicine"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    }
+  ],
+  "topic_share": [
+    {
+      "id": "https://openalex.org/T10261",
+      "display_name": "Genetic Associations and Epidemiology",
+      "value": 0.0198566,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1311",
+        "display_name": "Genetics"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11030",
+      "display_name": "Scoliosis diagnosis and treatment",
+      "value": 0.0148306,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2746",
+        "display_name": "Surgery"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10086",
+      "display_name": "Alzheimer's disease research and treatments",
+      "value": 0.0121707,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2737",
+        "display_name": "Physiology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10009",
+      "display_name": "Dementia and Cognitive Impairment Research",
+      "value": 0.0111796,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2738",
+        "display_name": "Psychiatry and Mental health"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10918",
+      "display_name": "Memory Processes and Influences",
+      "value": 0.0108844,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2805",
+        "display_name": "Cognitive Neuroscience"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/28",
+        "display_name": "Neuroscience"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11189",
+      "display_name": "Transplantation: Methods and Outcomes",
+      "value": 0.0106771,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2746",
+        "display_name": "Surgery"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10241",
+      "display_name": "Functional Brain Connectivity Studies",
+      "value": 0.010272,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2805",
+        "display_name": "Cognitive Neuroscience"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/28",
+        "display_name": "Neuroscience"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11304",
+      "display_name": "Advanced Neuroimaging Techniques and Applications",
+      "value": 0.0091226,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2741",
+        "display_name": "Radiology, Nuclear Medicine and Imaging"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10483",
+      "display_name": "Nerve injury and regeneration",
+      "value": 0.0089413,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2804",
+        "display_name": "Cellular and Molecular Neuroscience"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/28",
+        "display_name": "Neuroscience"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10993",
+      "display_name": "Complement system in diseases",
+      "value": 0.008824,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2403",
+        "display_name": "Immunology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/24",
+        "display_name": "Immunology and Microbiology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T14165",
+      "display_name": "Inflammation biomarkers and pathways",
+      "value": 0.0087683,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2403",
+        "display_name": "Immunology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/24",
+        "display_name": "Immunology and Microbiology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10629",
+      "display_name": "Health Policy Implementation Science",
+      "value": 0.0085555,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3600",
+        "display_name": "General Health Professions"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/36",
+        "display_name": "Health Professions"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12015",
+      "display_name": "Photoacoustic and Ultrasonic Imaging",
+      "value": 0.0084825,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2204",
+        "display_name": "Biomedical Engineering"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/22",
+        "display_name": "Engineering"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10358",
+      "display_name": "Advanced Radiotherapy Techniques",
+      "value": 0.008448,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3108",
+        "display_name": "Radiation"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/31",
+        "display_name": "Physics and Astronomy"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10977",
+      "display_name": "Optical Imaging and Spectroscopy Techniques",
+      "value": 0.0082053,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2741",
+        "display_name": "Radiology, Nuclear Medicine and Imaging"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10649",
+      "display_name": "Multiple Myeloma Research and Treatments",
+      "value": 0.0081955,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2720",
+        "display_name": "Hematology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11289",
+      "display_name": "Single-cell and spatial transcriptomics",
+      "value": 0.0081655,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1312",
+        "display_name": "Molecular Biology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10617",
+      "display_name": "Cellular transport and secretion",
+      "value": 0.0081266,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1307",
+        "display_name": "Cell Biology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12528",
+      "display_name": "IL-33, ST2, and ILC Pathways",
+      "value": 0.0081249,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2403",
+        "display_name": "Immunology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/24",
+        "display_name": "Immunology and Microbiology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11491",
+      "display_name": "CAR-T cell therapy research",
+      "value": 0.0080723,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2730",
+        "display_name": "Oncology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12315",
+      "display_name": "Older Adults Driving Studies",
+      "value": 0.0075297,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3612",
+        "display_name": "Physical Therapy, Sports Therapy and Rehabilitation"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/36",
+        "display_name": "Health Professions"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10945",
+      "display_name": "Lysosomal Storage Disorders Research",
+      "value": 0.0073904,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2737",
+        "display_name": "Physiology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10334",
+      "display_name": "Hearing, Cochlea, Tinnitus, Genetics",
+      "value": 0.0073786,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2809",
+        "display_name": "Sensory Systems"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/28",
+        "display_name": "Neuroscience"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10309",
+      "display_name": "Acute Myeloid Leukemia Research",
+      "value": 0.007319,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2720",
+        "display_name": "Hematology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11642",
+      "display_name": "Genomics and Rare Diseases",
+      "value": 0.007319,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1311",
+        "display_name": "Genetics"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    }
+  ],
+  "x_concepts": [
+    {
+      "id": "https://openalex.org/C86803240",
+      "wikidata": "https://www.wikidata.org/wiki/Q420",
+      "display_name": "Biology",
+      "level": 0,
+      "score": 72.4
+    },
+    {
+      "id": "https://openalex.org/C71924100",
+      "wikidata": "https://www.wikidata.org/wiki/Q11190",
+      "display_name": "Medicine",
+      "level": 0,
+      "score": 71.2
+    },
+    {
+      "id": "https://openalex.org/C126322002",
+      "wikidata": "https://www.wikidata.org/wiki/Q11180",
+      "display_name": "Internal medicine",
+      "level": 1,
+      "score": 50.4
+    },
+    {
+      "id": "https://openalex.org/C185592680",
+      "wikidata": "https://www.wikidata.org/wiki/Q2329",
+      "display_name": "Chemistry",
+      "level": 0,
+      "score": 45.4
+    },
+    {
+      "id": "https://openalex.org/C54355233",
+      "wikidata": "https://www.wikidata.org/wiki/Q7162",
+      "display_name": "Genetics",
+      "level": 1,
+      "score": 45.2
+    },
+    {
+      "id": "https://openalex.org/C55493867",
+      "wikidata": "https://www.wikidata.org/wiki/Q7094",
+      "display_name": "Biochemistry",
+      "level": 1,
+      "score": 37.3
+    },
+    {
+      "id": "https://openalex.org/C15744967",
+      "wikidata": "https://www.wikidata.org/wiki/Q9418",
+      "display_name": "Psychology",
+      "level": 0,
+      "score": 34.3
+    },
+    {
+      "id": "https://openalex.org/C121332964",
+      "wikidata": "https://www.wikidata.org/wiki/Q413",
+      "display_name": "Physics",
+      "level": 0,
+      "score": 32.3
+    },
+    {
+      "id": "https://openalex.org/C142724271",
+      "wikidata": "https://www.wikidata.org/wiki/Q7208",
+      "display_name": "Pathology",
+      "level": 1,
+      "score": 31.2
+    },
+    {
+      "id": "https://openalex.org/C41008148",
+      "wikidata": "https://www.wikidata.org/wiki/Q21198",
+      "display_name": "Computer science",
+      "level": 0,
+      "score": 27.7
+    },
+    {
+      "id": "https://openalex.org/C33923547",
+      "wikidata": "https://www.wikidata.org/wiki/Q395",
+      "display_name": "Mathematics",
+      "level": 0,
+      "score": 22.9
+    },
+    {
+      "id": "https://openalex.org/C141071460",
+      "wikidata": "https://www.wikidata.org/wiki/Q40821",
+      "display_name": "Surgery",
+      "level": 1,
+      "score": 22.8
+    }
+  ],
+  "is_super_system": false,
+  "works_api_url": "https://api.openalex.org/works?filter=institutions.id:I204465549",
+  "updated_date": "2025-10-10T02:07:17.525130",
+  "created_date": "2016-06-24"
+}
