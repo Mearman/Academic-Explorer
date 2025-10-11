@@ -50,6 +50,7 @@
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.12",
     "@xyflow/react": "^12.8.5",
+    "dexie": "^4.2.1",
     "immer": "^10.1.3",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
