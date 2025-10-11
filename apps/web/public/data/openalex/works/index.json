@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-10-11T09:04:46.368Z",
+  "lastUpdated": "2025-10-11T10:38:28.729Z",
   "files": {
     "W123%2Fspecial-chars": {
       "url": "https://api.openalex.org/works/W123%2Fspecial-chars",
@@ -27,6 +27,22 @@
       ],
       "urlTimestamps": {
         "https://api.openalex.org/works/W123456789": "2025-10-08T14:04:37.054Z"
+      },
+      "collisionInfo": {
+        "mergedCount": 0,
+        "totalUrls": 1
+      }
+    },
+    "W2741809807": {
+      "url": "https://api.openalex.org/works/W2741809807",
+      "$ref": "./W2741809807.json",
+      "lastRetrieved": "2025-10-11T10:38:28.623Z",
+      "contentHash": "892c890aa8b4185e",
+      "equivalentUrls": [
+        "https://api.openalex.org/works/W2741809807"
+      ],
+      "urlTimestamps": {
+        "https://api.openalex.org/works/W2741809807": "2025-10-11T10:38:28.623Z"
       },
       "collisionInfo": {
         "mergedCount": 0,

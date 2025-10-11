@@ -1,0 +1,1331 @@
+{
+  "id": "https://openalex.org/I114027177",
+  "ror": "https://ror.org/0130frc33",
+  "display_name": "University of North Carolina at Chapel Hill",
+  "country_code": "US",
+  "type": "funder",
+  "type_id": "https://openalex.org/institution-types/funder",
+  "lineage": [
+    "https://openalex.org/I114027177"
+  ],
+  "homepage_url": "https://www.unc.edu",
+  "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/UNC%20Seal.JPG",
+  "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/UNC%20Seal.JPG&width=300",
+  "display_name_acronyms": [
+    "UNC"
+  ],
+  "display_name_alternatives": [
+    "Universidad de Carolina del Norte en Chapel Hill",
+    "UNC-Chapel Hill",
+    "Université de la Caroline du Nord à Chapel Hill"
+  ],
+  "repositories": [
+    {
+      "id": "https://openalex.org/S4306402268",
+      "display_name": "Boloka Institutional Repository (North-west University)",
+      "host_organization": "https://openalex.org/I114027177",
+      "host_organization_name": "University of North Carolina at Chapel Hill",
+      "host_organization_lineage": [
+        "https://openalex.org/I114027177"
+      ]
+    },
+    {
+      "id": "https://openalex.org/S4306401075",
+      "display_name": "Carolina Digital Repository (University of North Carolina at Chapel Hill)",
+      "host_organization": "https://openalex.org/I114027177",
+      "host_organization_name": "University of North Carolina at Chapel Hill",
+      "host_organization_lineage": [
+        "https://openalex.org/I114027177"
+      ]
+    },
+    {
+      "id": "https://openalex.org/S4306402012",
+      "display_name": "University North Digital Repository (University North)",
+      "host_organization": "https://openalex.org/I114027177",
+      "host_organization_name": "University of North Carolina at Chapel Hill",
+      "host_organization_lineage": [
+        "https://openalex.org/I114027177"
+      ]
+    },
+    {
+      "id": "https://openalex.org/S4306401847",
+      "display_name": "The University of North Carolina at Chapel Hill Digital Collections (The University of North Carolina at Chapel Hill)",
+      "host_organization": "https://openalex.org/I114027177",
+      "host_organization_name": "University of North Carolina at Chapel Hill",
+      "host_organization_lineage": [
+        "https://openalex.org/I114027177"
+      ]
+    }
+  ],
+  "works_count": 264693,
+  "cited_by_count": 12617693,
+  "summary_stats": {
+    "2yr_mean_citedness": 4.249598580241697,
+    "h_index": 994,
+    "i10_index": 134572
+  },
+  "ids": {
+    "openalex": "https://openalex.org/I114027177",
+    "ror": "https://ror.org/0130frc33",
+    "mag": "114027177",
+    "grid": "grid.10698.36",
+    "wikipedia": "https://en.wikipedia.org/wiki/University%20of%20North%20Carolina%20at%20Chapel%20Hill",
+    "wikidata": "https://www.wikidata.org/wiki/Q192334"
+  },
+  "geo": {
+    "city": "Chapel Hill",
+    "geonames_city_id": "4460162",
+    "region": null,
+    "country_code": "US",
+    "country": "United States",
+    "latitude": 35.9132,
+    "longitude": -79.05584
+  },
+  "international": {
+    "display_name": {
+      "ar": "جامعة كارولينا الشمالية في تشابل هيل",
+      "arz": "جامعة نورث كارولاينا فى تشابل هيل",
+      "ast": "Universidá de Carolina del Norte en Chapel Hill",
+      "az": "Çapel-Hill Şimali Karolina Universiteti",
+      "azb": "قوزئی کارولینا چپل هیل بیلیم‌یوردو",
+      "ba": "Чапел-Хиллдағы Төньяҡ Каролина университеты",
+      "be": "Універсітэт Паўночнай Караліны ў Чапел-Хіл",
+      "be-tarask": "Унівэрсытэт Паўночнай Караліны ў Чапэл-Гіл",
+      "bg": "Севернокаролински университет в Чапъл Хил",
+      "bn": "ইউনিভার্সিটি অব নর্থ ক্যারোলাইনা অ্যাট চ্যাপেল হিল",
+      "bs": "Univerzitet u Sjevernoj Karolini u Chapel Hillu",
+      "ca": "Universitat de Carolina del Nord a Chapel Hill",
+      "cs": "Severokarolínská univerzita v Chapel Hill",
+      "cy": "Prifysgol Gogledd Carolina yn Chapel Hill",
+      "da": "University of North Carolina at Chapel Hill",
+      "de": "University of North Carolina at Chapel Hill",
+      "el": "Πανεπιστήμιο της Βόρειας Καρολίνας στο Τσάπελ Χιλ",
+      "en": "University of North Carolina at Chapel Hill",
+      "eo": "Universitato de Norda Karolino en Chapel Hill",
+      "es": "Universidad de Carolina del Norte en Chapel Hill",
+      "et": "Põhja-Carolina Ülikool Chapel Hillis",
+      "eu": "Ipar Carolinako Chapel Hilleko Unibertsitatea",
+      "fa": "دانشگاه کارولینای شمالی در چپل هیل",
+      "fi": "Pohjois-Carolinan yliopisto Chapel Hillissä",
+      "fr": "université de Caroline du Nord à Chapel Hill",
+      "ga": "Ollscoil Carolina Thuaidh, Chapel Hill",
+      "gd": "Oilthigh Carolina a Tuath aig Chapel Hill",
+      "gl": "Universidade de Carolina do Norte en Chapel Hill",
+      "he": "אוניברסיטת קרוליינה הצפונית בצ'אפל היל",
+      "hi": "नॉर्थ कैरोलिना विश्वविद्यालय",
+      "hu": "Észak-karolinai Egyetem",
+      "hy": "Հյուսիսային Կառոլինայի համալսարան Չապել Հիլում",
+      "id": "Universitas Carolina Utara, Chapel Hill",
+      "is": "Norður-Karólínuháskóli í Chapel Hill",
+      "it": "Università della Carolina del Nord a Chapel Hill",
+      "ja": "ノースカロライナ大学チャペルヒル校",
+      "ka": "ჩაპელ-ჰილის ჩრდილოეთ კაროლინის უნივერისტეტი",
+      "ko": "노스캐롤라이나 대학교 채플힐",
+      "ky": "Түндүк Каролина университети",
+      "la": "Universitas Carolinae Septentrionalis in Monte Capellae",
+      "lb": "University of North Carolina",
+      "lt": "Šiaurės Karolinos universitetas Čapel Hilyje",
+      "lv": "Ziemeļkarolīnas universitāte Čapelhilā",
+      "ml": "യൂണിവേഴ്സിറ്റി ഓഫ് നോർത്ത് കരോലിന, ചാപ്പൽ ഹിൽ",
+      "ms": "Universiti Carolina Utara di Chapel Hill",
+      "nb": "University of North Carolina at Chapel Hill",
+      "nds": "University of North Carolina at Chapel Hill",
+      "nl": "Universiteit van North Carolina te Chapel Hill",
+      "pa": "ਚੈਪਲ ਪਹਾੜੀ ਤੇ ਉੱਤਰੀ ਕੈਰੋਲੀਨਾ ਯੂਨੀਵਰਸਿਟੀ",
+      "pl": "University of North Carolina at Chapel Hill",
+      "pnb": "یونیورسٹی آف نارتھ کیرولائنا ایٹ چیپل ہل",
+      "pt": "Universidade da Carolina do Norte em Chapel Hill",
+      "ro": "Universitatea Carolinei de Nord din Chapel Hill",
+      "ru": "Университет Северной Каролины в Чапел-Хилле",
+      "sco": "Varsity o North Carolina at Chapel Hill",
+      "sh": "Univerzitet u Sjevernoj Karolini u Chapel Hillu",
+      "sl": "Univerza Severne Karoline v Chapel Hillu",
+      "sr": "Univerzitet Severne Karoline u Čapel Hilu",
+      "sv": "University of North Carolina at Chapel Hill",
+      "ta": "வட கரொலைனா பல்கலைக்கழகம்",
+      "th": "มหาวิทยาลัยนอร์ทแคโรไลนา แชเปิลฮิลล์",
+      "tl": "Pamantasan ng Hilagang Karolina sa Chapel Hill",
+      "tr": "Chapel Hill Kuzey Karolina Üniversitesi",
+      "tt": "Чәпел-Һиллдәге Төньяк Каролина университеты",
+      "uk": "Університет Північної Кароліни в Чапел-Гілл",
+      "ur": "یونیورسٹی آف شمالی کیرولائنا ایٹ چیپل ہل",
+      "vi": "Đại học North Carolina tại Chapel Hill",
+      "war": "Unibersidad han North Carolina ha Chapel Hill",
+      "wuu": "北卡罗莱纳大学教堂山分校",
+      "yue": "北卡羅萊納大學教堂山分校",
+      "zh": "北卡羅來納大學教堂山校區",
+      "zh-cn": "北卡罗来纳大学查珀尔希尔校区",
+      "zh-hans": "北卡罗来纳大学查珀尔希尔校区",
+      "zh-hant": "北卡羅來納大學教堂山分校",
+      "zh-hk": "北卡羅萊納大學教堂山分校",
+      "zh-sg": "北卡罗来纳大学教堂山分校",
+      "zh-tw": "北卡羅來納大學教堂山分校"
+    }
+  },
+  "associated_institutions": [
+    {
+      "id": "https://openalex.org/I4210157879",
+      "ror": "https://ror.org/04q5n7269",
+      "display_name": "Carolina Institute for NanoMedicine",
+      "country_code": "US",
+      "type": "funder",
+      "relationship": "child"
+    },
+    {
+      "id": "https://openalex.org/I4387153507",
+      "ror": "https://ror.org/02yjqwr70",
+      "display_name": "Triangle Center for Evolutionary Medicine",
+      "country_code": null,
+      "type": "funder",
+      "relationship": "child"
+    },
+    {
+      "id": "https://openalex.org/I4390039329",
+      "ror": "https://ror.org/043ehm030",
+      "display_name": "UNC Lineberger Comprehensive Cancer Center",
+      "country_code": null,
+      "type": "healthcare",
+      "relationship": "child"
+    },
+    {
+      "id": "https://openalex.org/I4210131205",
+      "ror": "https://ror.org/03hakdk41",
+      "display_name": "UNC/NCSU Joint Department of Biomedical Engineering",
+      "country_code": "US",
+      "type": "education",
+      "relationship": "child"
+    },
+    {
+      "id": "https://openalex.org/I4210158053",
+      "ror": "https://ror.org/0566a8c54",
+      "display_name": "University of North Carolina System",
+      "country_code": "US",
+      "type": "education",
+      "relationship": "parent"
+    },
+    {
+      "id": "https://openalex.org/I2802101240",
+      "ror": "https://ror.org/0483mr804",
+      "display_name": "Carolinas Medical Center",
+      "country_code": "US",
+      "type": "healthcare",
+      "relationship": "related"
+    },
+    {
+      "id": "https://openalex.org/I4210139568",
+      "ror": "https://ror.org/034adnw64",
+      "display_name": "Durham VA Medical Center",
+      "country_code": "US",
+      "type": "healthcare",
+      "relationship": "related"
+    },
+    {
+      "id": "https://openalex.org/I69048370",
+      "ror": "https://ror.org/01s91ey96",
+      "display_name": "Renaissance Computing Institute",
+      "country_code": "US",
+      "type": "education",
+      "relationship": "related"
+    },
+    {
+      "id": "https://openalex.org/I2801729525",
+      "ror": "https://ror.org/03teaad16",
+      "display_name": "Rex Hospital",
+      "country_code": "US",
+      "type": "healthcare",
+      "relationship": "related"
+    },
+    {
+      "id": "https://openalex.org/I1333535994",
+      "ror": "https://ror.org/00qz24g20",
+      "display_name": "University of North Carolina Health Care",
+      "country_code": "US",
+      "type": "healthcare",
+      "relationship": "related"
+    },
+    {
+      "id": "https://openalex.org/I4210123841",
+      "ror": "https://ror.org/0355zfr67",
+      "display_name": "University of North Carolina Hospitals",
+      "country_code": "US",
+      "type": "healthcare",
+      "relationship": "related"
+    },
+    {
+      "id": "https://openalex.org/I4387154482",
+      "ror": "https://ror.org/013zder45",
+      "display_name": "Virginia Coast Reserve Long Term Ecological Research",
+      "country_code": null,
+      "type": "facility",
+      "relationship": "related"
+    }
+  ],
+  "counts_by_year": [
+    {
+      "year": 2025,
+      "works_count": 6890,
+      "oa_works_count": 1933,
+      "cited_by_count": 560256
+    },
+    {
+      "year": 2024,
+      "works_count": 10526,
+      "oa_works_count": 4799,
+      "cited_by_count": 830984
+    },
+    {
+      "year": 2023,
+      "works_count": 11902,
+      "oa_works_count": 7482,
+      "cited_by_count": 858716
+    },
+    {
+      "year": 2022,
+      "works_count": 11798,
+      "oa_works_count": 7955,
+      "cited_by_count": 855915
+    },
+    {
+      "year": 2021,
+      "works_count": 12436,
+      "oa_works_count": 8539,
+      "cited_by_count": 904345
+    },
+    {
+      "year": 2020,
+      "works_count": 12421,
+      "oa_works_count": 8161,
+      "cited_by_count": 830590
+    },
+    {
+      "year": 2019,
+      "works_count": 11208,
+      "oa_works_count": 7052,
+      "cited_by_count": 683461
+    },
+    {
+      "year": 2018,
+      "works_count": 10458,
+      "oa_works_count": 6660,
+      "cited_by_count": 613378
+    },
+    {
+      "year": 2017,
+      "works_count": 10444,
+      "oa_works_count": 6555,
+      "cited_by_count": 575624
+    },
+    {
+      "year": 2016,
+      "works_count": 9916,
+      "oa_works_count": 6181,
+      "cited_by_count": 540793
+    },
+    {
+      "year": 2015,
+      "works_count": 9658,
+      "oa_works_count": 6016,
+      "cited_by_count": 527519
+    },
+    {
+      "year": 2014,
+      "works_count": 9618,
+      "oa_works_count": 5729,
+      "cited_by_count": 503742
+    },
+    {
+      "year": 2013,
+      "works_count": 9139,
+      "oa_works_count": 5391,
+      "cited_by_count": 466201
+    },
+    {
+      "year": 2012,
+      "works_count": 8418,
+      "oa_works_count": 4738,
+      "cited_by_count": 427994
+    }
+  ],
+  "roles": [
+    {
+      "role": "funder",
+      "id": "https://openalex.org/F4320332600",
+      "works_count": 1091
+    },
+    {
+      "role": "publisher",
+      "id": "https://openalex.org/P4310316009",
+      "works_count": 908
+    },
+    {
+      "role": "institution",
+      "id": "https://openalex.org/I114027177",
+      "works_count": 264693
+    }
+  ],
+  "topics": [
+    {
+      "id": "https://openalex.org/T10082",
+      "display_name": "HIV/AIDS Research and Interventions",
+      "count": 4894,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2725",
+        "display_name": "Infectious Diseases"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10010",
+      "display_name": "Obesity, Physical Activity, Diet",
+      "count": 3616,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2739",
+        "display_name": "Public Health, Environmental and Occupational Health"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10182",
+      "display_name": "Child and Adolescent Psychosocial and Emotional Development",
+      "count": 3077,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3203",
+        "display_name": "Clinical Psychology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/32",
+        "display_name": "Psychology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10112",
+      "display_name": "HIV Research and Treatment",
+      "count": 2900,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2406",
+        "display_name": "Virology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/24",
+        "display_name": "Immunology and Microbiology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10804",
+      "display_name": "Health Systems, Economic Evaluations, Quality of Life",
+      "count": 2778,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2002",
+        "display_name": "Economics and Econometrics"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/20",
+        "display_name": "Economics, Econometrics and Finance"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10327",
+      "display_name": "Adolescent Sexual and Reproductive Health",
+      "count": 2537,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3600",
+        "display_name": "General Health Professions"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/36",
+        "display_name": "Health Professions"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10077",
+      "display_name": "Neuroscience and Neuropharmacology Research",
+      "count": 2340,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2804",
+        "display_name": "Cellular and Molecular Neuroscience"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/28",
+        "display_name": "Neuroscience"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10190",
+      "display_name": "Air Quality and Health Impacts",
+      "count": 2329,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2307",
+        "display_name": "Health, Toxicology and Mutagenesis"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/23",
+        "display_name": "Environmental Science"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10269",
+      "display_name": "Epigenetics and DNA Methylation",
+      "count": 2262,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1312",
+        "display_name": "Molecular Biology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10549",
+      "display_name": "Neonatal Respiratory Health Research",
+      "count": 2200,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2740",
+        "display_name": "Pulmonary and Respiratory Medicine"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10391",
+      "display_name": "Healthcare Policy and Management",
+      "count": 2178,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2002",
+        "display_name": "Economics and Econometrics"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/20",
+        "display_name": "Economics, Econometrics and Finance"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10261",
+      "display_name": "Genetic Associations and Epidemiology",
+      "count": 2099,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1311",
+        "display_name": "Genetics"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11178",
+      "display_name": "Receptor Mechanisms and Signaling",
+      "count": 2037,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1312",
+        "display_name": "Molecular Biology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11860",
+      "display_name": "HIV, Drug Use, Sexual Risk",
+      "count": 2007,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2713",
+        "display_name": "Epidemiology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11629",
+      "display_name": "Birth, Development, and Health",
+      "count": 1995,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2735",
+        "display_name": "Pediatrics, Perinatology and Child Health"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10526",
+      "display_name": "HIV/AIDS drug development and treatment",
+      "count": 1966,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2725",
+        "display_name": "Infectious Diseases"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10235",
+      "display_name": "Health disparities and outcomes",
+      "count": 1927,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3306",
+        "display_name": "Health"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10106",
+      "display_name": "Autism Spectrum Disorder Research",
+      "count": 1910,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2805",
+        "display_name": "Cognitive Neuroscience"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/28",
+        "display_name": "Neuroscience"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11482",
+      "display_name": "RNA modifications and cancer",
+      "count": 1905,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1312",
+        "display_name": "Molecular Biology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10209",
+      "display_name": "Global Maternal and Child Health",
+      "count": 1844,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2735",
+        "display_name": "Pediatrics, Perinatology and Child Health"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10521",
+      "display_name": "RNA and protein synthesis mechanisms",
+      "count": 1842,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1312",
+        "display_name": "Molecular Biology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11287",
+      "display_name": "Cancer Genomics and Diagnostics",
+      "count": 1768,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1306",
+        "display_name": "Cancer Research"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10866",
+      "display_name": "Nutritional Studies and Diet",
+      "count": 1742,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2739",
+        "display_name": "Public Health, Environmental and Occupational Health"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11610",
+      "display_name": "Food Security and Health in Diverse Populations",
+      "count": 1740,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3600",
+        "display_name": "General Health Professions"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/36",
+        "display_name": "Health Professions"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11632",
+      "display_name": "Family and Disability Support Research",
+      "count": 1738,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3203",
+        "display_name": "Clinical Psychology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/32",
+        "display_name": "Psychology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    }
+  ],
+  "topic_share": [
+    {
+      "id": "https://openalex.org/T10261",
+      "display_name": "Genetic Associations and Epidemiology",
+      "value": 0.024388,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1311",
+        "display_name": "Genetics"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10082",
+      "display_name": "HIV/AIDS Research and Interventions",
+      "value": 0.0190006,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2725",
+        "display_name": "Infectious Diseases"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10845",
+      "display_name": "Advanced Causal Inference Techniques",
+      "value": 0.0177292,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2613",
+        "display_name": "Statistics and Probability"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/26",
+        "display_name": "Mathematics"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10665",
+      "display_name": "Cystic Fibrosis Research Advances",
+      "value": 0.0161271,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2740",
+        "display_name": "Pulmonary and Respiratory Medicine"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11860",
+      "display_name": "HIV, Drug Use, Sexual Risk",
+      "value": 0.0146336,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2713",
+        "display_name": "Epidemiology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10629",
+      "display_name": "Health Policy Implementation Science",
+      "value": 0.0138316,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3600",
+        "display_name": "General Health Professions"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/36",
+        "display_name": "Health Professions"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11655",
+      "display_name": "HIV-related health complications and treatments",
+      "value": 0.0131217,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2711",
+        "display_name": "Emergency Medicine"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10112",
+      "display_name": "HIV Research and Treatment",
+      "value": 0.0130237,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2406",
+        "display_name": "Virology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/24",
+        "display_name": "Immunology and Microbiology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10327",
+      "display_name": "Adolescent Sexual and Reproductive Health",
+      "value": 0.0127273,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3600",
+        "display_name": "General Health Professions"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/36",
+        "display_name": "Health Professions"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11280",
+      "display_name": "Hemophilia Treatment and Research",
+      "value": 0.0121628,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2720",
+        "display_name": "Hematology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10652",
+      "display_name": "Racial and Ethnic Identity Research",
+      "value": 0.0117615,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3312",
+        "display_name": "Sociology and Political Science"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10243",
+      "display_name": "Statistical Methods and Bayesian Inference",
+      "value": 0.0116286,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2613",
+        "display_name": "Statistics and Probability"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/26",
+        "display_name": "Mathematics"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13598",
+      "display_name": "Political Developments and Conflicts",
+      "value": 0.0114943,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3320",
+        "display_name": "Political Science and International Relations"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13522",
+      "display_name": "Cardiovascular Health and Risk Factors",
+      "value": 0.0114836,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2705",
+        "display_name": "Cardiology and Cardiovascular Medicine"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10010",
+      "display_name": "Obesity, Physical Activity, Diet",
+      "value": 0.0113514,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2739",
+        "display_name": "Public Health, Environmental and Occupational Health"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10556",
+      "display_name": "Global Cancer Incidence and Screening",
+      "value": 0.0109804,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2730",
+        "display_name": "Oncology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11633",
+      "display_name": "Prenatal Substance Exposure Effects",
+      "value": 0.0109426,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2735",
+        "display_name": "Pediatrics, Perinatology and Child Health"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11235",
+      "display_name": "Statistical Methods in Clinical Trials",
+      "value": 0.0108963,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2613",
+        "display_name": "Statistics and Probability"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/26",
+        "display_name": "Mathematics"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10526",
+      "display_name": "HIV/AIDS drug development and treatment",
+      "value": 0.0105862,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2725",
+        "display_name": "Infectious Diseases"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10178",
+      "display_name": "Cancer survivorship and care",
+      "value": 0.0104339,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2730",
+        "display_name": "Oncology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11331",
+      "display_name": "Fecal contamination and water quality",
+      "value": 0.0101696,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2312",
+        "display_name": "Water Science and Technology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/23",
+        "display_name": "Environmental Science"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10060",
+      "display_name": "Smoking Behavior and Cessation",
+      "value": 0.0101546,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2737",
+        "display_name": "Physiology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10169",
+      "display_name": "Protein Kinase Regulation and GTPase Signaling",
+      "value": 0.0101157,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1312",
+        "display_name": "Molecular Biology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10786",
+      "display_name": "Maternal Mental Health During Pregnancy and Postpartum",
+      "value": 0.009906,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2739",
+        "display_name": "Public Health, Environmental and Occupational Health"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12708",
+      "display_name": "Economic and Financial Impacts of Cancer",
+      "value": 0.0097315,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2002",
+        "display_name": "Economics and Econometrics"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/20",
+        "display_name": "Economics, Econometrics and Finance"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    }
+  ],
+  "x_concepts": [
+    {
+      "id": "https://openalex.org/C71924100",
+      "wikidata": "https://www.wikidata.org/wiki/Q11190",
+      "display_name": "Medicine",
+      "level": 0,
+      "score": 70.5
+    },
+    {
+      "id": "https://openalex.org/C86803240",
+      "wikidata": "https://www.wikidata.org/wiki/Q420",
+      "display_name": "Biology",
+      "level": 0,
+      "score": 69
+    },
+    {
+      "id": "https://openalex.org/C126322002",
+      "wikidata": "https://www.wikidata.org/wiki/Q11180",
+      "display_name": "Internal medicine",
+      "level": 1,
+      "score": 45.6
+    },
+    {
+      "id": "https://openalex.org/C185592680",
+      "wikidata": "https://www.wikidata.org/wiki/Q2329",
+      "display_name": "Chemistry",
+      "level": 0,
+      "score": 41.8
+    },
+    {
+      "id": "https://openalex.org/C54355233",
+      "wikidata": "https://www.wikidata.org/wiki/Q7162",
+      "display_name": "Genetics",
+      "level": 1,
+      "score": 39.6
+    },
+    {
+      "id": "https://openalex.org/C15744967",
+      "wikidata": "https://www.wikidata.org/wiki/Q9418",
+      "display_name": "Psychology",
+      "level": 0,
+      "score": 36.8
+    },
+    {
+      "id": "https://openalex.org/C55493867",
+      "wikidata": "https://www.wikidata.org/wiki/Q7094",
+      "display_name": "Biochemistry",
+      "level": 1,
+      "score": 33.5
+    },
+    {
+      "id": "https://openalex.org/C142724271",
+      "wikidata": "https://www.wikidata.org/wiki/Q7208",
+      "display_name": "Pathology",
+      "level": 1,
+      "score": 31.3
+    },
+    {
+      "id": "https://openalex.org/C41008148",
+      "wikidata": "https://www.wikidata.org/wiki/Q21198",
+      "display_name": "Computer science",
+      "level": 0,
+      "score": 31.1
+    },
+    {
+      "id": "https://openalex.org/C121332964",
+      "wikidata": "https://www.wikidata.org/wiki/Q413",
+      "display_name": "Physics",
+      "level": 0,
+      "score": 30.3
+    },
+    {
+      "id": "https://openalex.org/C33923547",
+      "wikidata": "https://www.wikidata.org/wiki/Q395",
+      "display_name": "Mathematics",
+      "level": 0,
+      "score": 27.5
+    },
+    {
+      "id": "https://openalex.org/C17744445",
+      "wikidata": "https://www.wikidata.org/wiki/Q36442",
+      "display_name": "Political science",
+      "level": 0,
+      "score": 22.4
+    },
+    {
+      "id": "https://openalex.org/C144024400",
+      "wikidata": "https://www.wikidata.org/wiki/Q21201",
+      "display_name": "Sociology",
+      "level": 0,
+      "score": 21.9
+    },
+    {
+      "id": "https://openalex.org/C199539241",
+      "wikidata": "https://www.wikidata.org/wiki/Q7748",
+      "display_name": "Law",
+      "level": 1,
+      "score": 21.2
+    },
+    {
+      "id": "https://openalex.org/C118552586",
+      "wikidata": "https://www.wikidata.org/wiki/Q7867",
+      "display_name": "Psychiatry",
+      "level": 1,
+      "score": 20.5
+    }
+  ],
+  "is_super_system": false,
+  "works_api_url": "https://api.openalex.org/works?filter=institutions.id:I114027177",
+  "updated_date": "2025-10-09T18:58:30.670620",
+  "created_date": "2016-06-24"
+}
