@@ -1,23 +1,59 @@
 {
-  "lastUpdated": "2025-10-10T16:57:28.489Z",
+  "lastUpdated": "2025-10-11T06:09:41.981Z",
   "files": {
     "W123%2Fspecial-chars": {
       "url": "https://api.openalex.org/works/W123%2Fspecial-chars",
       "$ref": "./W123%2Fspecial-chars.json",
-      "lastRetrieved": "2025-10-10T16:57:28.479Z",
-      "contentHash": "44136fa355b3678a"
-    },
-    "unknown_75b0e39e": {
-      "url": "https://api.openalex.org/works0",
-      "$ref": "./unknown_75b0e39e.json",
-      "lastRetrieved": "2025-10-10T16:57:28.488Z",
-      "contentHash": "5021e624e752b001"
+      "lastRetrieved": "2025-10-10T16:57:28.480Z",
+      "contentHash": "44136fa355b3678a",
+      "equivalentUrls": [
+        "https://api.openalex.org/works/W123%2Fspecial-chars"
+      ],
+      "urlTimestamps": {
+        "https://api.openalex.org/works/W123%2Fspecial-chars": "2025-10-10T16:57:28.480Z"
+      },
+      "collisionInfo": {
+        "mergedCount": 0,
+        "totalUrls": 1
+      }
     },
     "W123456789": {
       "url": "https://api.openalex.org/works/W123456789",
       "$ref": "./W123456789.json",
-      "lastRetrieved": "2025-10-08T14:04:37.042Z",
-      "contentHash": "b2e976b4abec2ba7"
+      "lastRetrieved": "2025-10-08T14:04:37.054Z",
+      "contentHash": "b2e976b4abec2ba7",
+      "equivalentUrls": [
+        "https://api.openalex.org/works/W123456789"
+      ],
+      "urlTimestamps": {
+        "https://api.openalex.org/works/W123456789": "2025-10-08T14:04:37.054Z"
+      },
+      "collisionInfo": {
+        "mergedCount": 0,
+        "totalUrls": 1
+      }
+    },
+    "unknown_75b0e39e": {
+      "url": "https://api.openalex.org/works/unknown_75b0e39e",
+      "$ref": "./unknown_75b0e39e.json",
+      "lastRetrieved": "2025-10-10T16:57:28.489Z",
+      "contentHash": "5021e624e752b001",
+      "equivalentUrls": [
+        "https://api.openalex.org/works/unknown_75b0e39e"
+      ],
+      "urlTimestamps": {
+        "https://api.openalex.org/works/unknown_75b0e39e": "2025-10-10T16:57:28.489Z"
+      },
+      "collisionInfo": {
+        "mergedCount": 0,
+        "totalUrls": 1
+      }
+    }
+  },
+  "directories": {
+    "queries": {
+      "$ref": "./queries",
+      "lastModified": "2025-10-11T06:09:41.864Z"
     }
   }
 }

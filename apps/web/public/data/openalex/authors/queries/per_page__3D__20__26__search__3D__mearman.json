@@ -1,0 +1,3272 @@
+{
+  "meta": {
+    "count": 8,
+    "db_response_time_ms": 46,
+    "page": 1,
+    "per_page": 20,
+    "groups_count": null
+  },
+  "results": [
+    {
+      "id": "https://openalex.org/A5019952124",
+      "orcid": "https://orcid.org/0000-0003-0601-8060",
+      "display_name": "Andrew Mearman",
+      "display_name_alternatives": [
+        "Andrew Mearman",
+        "A. Mearman"
+      ],
+      "relevance_score": 4644.4907,
+      "works_count": 106,
+      "cited_by_count": 1069,
+      "summary_stats": {
+        "2yr_mean_citedness": 1.8,
+        "h_index": 18,
+        "i10_index": 27
+      },
+      "ids": {
+        "openalex": "https://openalex.org/A5019952124",
+        "orcid": "https://orcid.org/0000-0003-0601-8060"
+      },
+      "affiliations": [
+        {
+          "institution": {
+            "id": "https://openalex.org/I130828816",
+            "ror": "https://ror.org/024mrxd33",
+            "display_name": "University of Leeds",
+            "country_code": "GB",
+            "type": "funder",
+            "lineage": [
+              "https://openalex.org/I130828816"
+            ]
+          },
+          "years": [
+            2025,
+            2023,
+            2021,
+            2020,
+            2019,
+            2018,
+            2017
+          ]
+        },
+        {
+          "institution": {
+            "id": "https://openalex.org/I178535277",
+            "ror": "https://ror.org/02nwg5t34",
+            "display_name": "University of the West of England",
+            "country_code": "GB",
+            "type": "funder",
+            "lineage": [
+              "https://openalex.org/I178535277"
+            ]
+          },
+          "years": [
+            2023,
+            2015,
+            2014,
+            2013,
+            2012,
+            2011,
+            2009,
+            2008,
+            2007,
+            2006
+          ]
+        },
+        {
+          "institution": {
+            "id": "https://openalex.org/I36234482",
+            "ror": "https://ror.org/0524sp257",
+            "display_name": "University of Bristol",
+            "country_code": "GB",
+            "type": "funder",
+            "lineage": [
+              "https://openalex.org/I36234482"
+            ]
+          },
+          "years": [
+            2023
+          ]
+        },
+        {
+          "institution": {
+            "id": "https://openalex.org/I2801520950",
+            "ror": "https://ror.org/039fp5n52",
+            "display_name": "At Bristol",
+            "country_code": "GB",
+            "type": "nonprofit",
+            "lineage": [
+              "https://openalex.org/I2801520950"
+            ]
+          },
+          "years": [
+            2008
+          ]
+        },
+        {
+          "institution": {
+            "id": "https://openalex.org/I46163879",
+            "ror": "https://ror.org/03bvq6y88",
+            "display_name": "Wagner College",
+            "country_code": "US",
+            "type": "education",
+            "lineage": [
+              "https://openalex.org/I46163879"
+            ]
+          },
+          "years": [
+            2005,
+            2003
+          ]
+        },
+        {
+          "institution": {
+            "id": "https://openalex.org/I66809481",
+            "ror": "https://ror.org/001xkv632",
+            "display_name": "Southern Cross University",
+            "country_code": "AU",
+            "type": "funder",
+            "lineage": [
+              "https://openalex.org/I66809481"
+            ]
+          },
+          "years": [
+            2001
+          ]
+        },
+        {
+          "institution": {
+            "id": "https://openalex.org/I51532219",
+            "ror": "https://ror.org/03yeq9x20",
+            "display_name": "University of Lincoln",
+            "country_code": "GB",
+            "type": "education",
+            "lineage": [
+              "https://openalex.org/I51532219"
+            ]
+          },
+          "years": [
+            1999
+          ]
+        }
+      ],
+      "last_known_institutions": [
+        {
+          "id": "https://openalex.org/I130828816",
+          "ror": "https://ror.org/024mrxd33",
+          "display_name": "University of Leeds",
+          "country_code": "GB",
+          "type": "funder",
+          "lineage": [
+            "https://openalex.org/I130828816"
+          ]
+        }
+      ],
+      "topics": [
+        {
+          "id": "https://openalex.org/T10785",
+          "display_name": "Economic Theory and Institutions",
+          "count": 41,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2002",
+            "display_name": "Economics and Econometrics"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/20",
+            "display_name": "Economics, Econometrics and Finance"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12354",
+          "display_name": "Innovations in Educational Methods",
+          "count": 22,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3304",
+            "display_name": "Education"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T11742",
+          "display_name": "Economic Theory and Policy",
+          "count": 15,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2000",
+            "display_name": "General Economics, Econometrics and Finance"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/20",
+            "display_name": "Economics, Econometrics and Finance"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12137",
+          "display_name": "Economic theories and models",
+          "count": 13,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2002",
+            "display_name": "Economics and Econometrics"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/20",
+            "display_name": "Economics, Econometrics and Finance"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T11743",
+          "display_name": "Political Economy and Marxism",
+          "count": 8,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3312",
+            "display_name": "Sociology and Political Science"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12013",
+          "display_name": "Sustainable Development and Environmental Policy",
+          "count": 7,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2308",
+            "display_name": "Management, Monitoring, Policy and Law"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/23",
+            "display_name": "Environmental Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10267",
+          "display_name": "Higher Education Research Studies",
+          "count": 6,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3304",
+            "display_name": "Education"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T11300",
+          "display_name": "Global Educational Policies and Reforms",
+          "count": 3,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3320",
+            "display_name": "Political Science and International Relations"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10546",
+          "display_name": "Higher Education Governance and Development",
+          "count": 3,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3320",
+            "display_name": "Political Science and International Relations"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T13235",
+          "display_name": "Management Theory and Practice",
+          "count": 3,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1407",
+            "display_name": "Organizational Behavior and Human Resource Management"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/14",
+            "display_name": "Business, Management and Accounting"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10471",
+          "display_name": "Climate Change Policy and Economics",
+          "count": 3,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2002",
+            "display_name": "Economics and Econometrics"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/20",
+            "display_name": "Economics, Econometrics and Finance"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T13580",
+          "display_name": "Management and Performance Evaluation",
+          "count": 3,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1407",
+            "display_name": "Organizational Behavior and Human Resource Management"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/14",
+            "display_name": "Business, Management and Accounting"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T11039",
+          "display_name": "Evaluation of Teaching Practices",
+          "count": 3,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3304",
+            "display_name": "Education"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10605",
+          "display_name": "Historical Economic and Social Studies",
+          "count": 2,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2002",
+            "display_name": "Economics and Econometrics"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/20",
+            "display_name": "Economics, Econometrics and Finance"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T14207",
+          "display_name": "Higher Education Practises and Engagement",
+          "count": 2,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3304",
+            "display_name": "Education"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T11715",
+          "display_name": "Education and Critical Thinking Development",
+          "count": 2,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3304",
+            "display_name": "Education"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10898",
+          "display_name": "Environmental Education and Sustainability",
+          "count": 2,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2308",
+            "display_name": "Management, Monitoring, Policy and Law"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/23",
+            "display_name": "Environmental Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T11621",
+          "display_name": "Fiscal Policies and Political Economy",
+          "count": 2,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2002",
+            "display_name": "Economics and Econometrics"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/20",
+            "display_name": "Economics, Econometrics and Finance"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T13275",
+          "display_name": "Medical and Health Sciences Research",
+          "count": 2,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2739",
+            "display_name": "Public Health, Environmental and Occupational Health"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/27",
+            "display_name": "Medicine"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/4",
+            "display_name": "Health Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12786",
+          "display_name": "Innovation and Socioeconomic Development",
+          "count": 2,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1403",
+            "display_name": "Business and International Management"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/14",
+            "display_name": "Business, Management and Accounting"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12378",
+          "display_name": "Accounting Education and Careers",
+          "count": 2,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1402",
+            "display_name": "Accounting"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/14",
+            "display_name": "Business, Management and Accounting"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12671",
+          "display_name": "Management and Marketing Education",
+          "count": 2,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1405",
+            "display_name": "Management of Technology and Innovation"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/14",
+            "display_name": "Business, Management and Accounting"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10942",
+          "display_name": "Sports, Gender, and Society",
+          "count": 2,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3318",
+            "display_name": "Gender Studies"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T13867",
+          "display_name": "Economic Growth and Development",
+          "count": 2,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1710",
+            "display_name": "Information Systems"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T11161",
+          "display_name": "Consumer Market Behavior and Pricing",
+          "count": 2,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1406",
+            "display_name": "Marketing"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/14",
+            "display_name": "Business, Management and Accounting"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        }
+      ],
+      "topic_share": [
+        {
+          "id": "https://openalex.org/T13580",
+          "display_name": "Management and Performance Evaluation",
+          "value": 0.0006069,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1407",
+            "display_name": "Organizational Behavior and Human Resource Management"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/14",
+            "display_name": "Business, Management and Accounting"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12354",
+          "display_name": "Innovations in Educational Methods",
+          "value": 0.0004247,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3304",
+            "display_name": "Education"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10785",
+          "display_name": "Economic Theory and Institutions",
+          "value": 0.0002152,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2002",
+            "display_name": "Economics and Econometrics"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/20",
+            "display_name": "Economics, Econometrics and Finance"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T13235",
+          "display_name": "Management Theory and Practice",
+          "value": 0.0000923,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1407",
+            "display_name": "Organizational Behavior and Human Resource Management"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/14",
+            "display_name": "Business, Management and Accounting"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12643",
+          "display_name": "Sustainability and Ecological Systems Analysis",
+          "value": 0.0000784,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2305",
+            "display_name": "Environmental Engineering"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/23",
+            "display_name": "Environmental Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12953",
+          "display_name": "Critical Realism in Sociology",
+          "value": 0.0000725,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3312",
+            "display_name": "Sociology and Political Science"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T14066",
+          "display_name": "Economic Development and Regional Competitiveness",
+          "value": 0.0000672,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2002",
+            "display_name": "Economics and Econometrics"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/20",
+            "display_name": "Economics, Econometrics and Finance"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12013",
+          "display_name": "Sustainable Development and Environmental Policy",
+          "value": 0.000066,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2308",
+            "display_name": "Management, Monitoring, Policy and Law"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/23",
+            "display_name": "Environmental Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12378",
+          "display_name": "Accounting Education and Careers",
+          "value": 0.000063,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1402",
+            "display_name": "Accounting"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/14",
+            "display_name": "Business, Management and Accounting"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T13051",
+          "display_name": "Qualitative Comparative Analysis Research",
+          "value": 0.0000498,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3312",
+            "display_name": "Sociology and Political Science"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T14207",
+          "display_name": "Higher Education Practises and Engagement",
+          "value": 0.0000458,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3304",
+            "display_name": "Education"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10267",
+          "display_name": "Higher Education Research Studies",
+          "value": 0.0000433,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3304",
+            "display_name": "Education"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12978",
+          "display_name": "Innovative Teaching Methodologies in Social Sciences",
+          "value": 0.0000422,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3304",
+            "display_name": "Education"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12137",
+          "display_name": "Economic theories and models",
+          "value": 0.0000411,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2002",
+            "display_name": "Economics and Econometrics"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/20",
+            "display_name": "Economics, Econometrics and Finance"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T11039",
+          "display_name": "Evaluation of Teaching Practices",
+          "value": 0.000038,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3304",
+            "display_name": "Education"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T11742",
+          "display_name": "Economic Theory and Policy",
+          "value": 0.0000369,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2000",
+            "display_name": "General Economics, Econometrics and Finance"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/20",
+            "display_name": "Economics, Econometrics and Finance"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T11743",
+          "display_name": "Political Economy and Marxism",
+          "value": 0.0000347,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3312",
+            "display_name": "Sociology and Political Science"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T13963",
+          "display_name": "Organizational Management and Leadership",
+          "value": 0.0000346,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1405",
+            "display_name": "Management of Technology and Innovation"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/14",
+            "display_name": "Business, Management and Accounting"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T11300",
+          "display_name": "Global Educational Policies and Reforms",
+          "value": 0.0000323,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3320",
+            "display_name": "Political Science and International Relations"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T11793",
+          "display_name": "Recreation, Leisure, Wilderness Management",
+          "value": 0.0000306,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3207",
+            "display_name": "Social Psychology"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/32",
+            "display_name": "Psychology"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12204",
+          "display_name": "African Education and Politics",
+          "value": 0.0000289,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3304",
+            "display_name": "Education"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12671",
+          "display_name": "Management and Marketing Education",
+          "value": 0.0000271,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1405",
+            "display_name": "Management of Technology and Innovation"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/14",
+            "display_name": "Business, Management and Accounting"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12584",
+          "display_name": "Hospitality and Tourism Education",
+          "value": 0.0000257,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1409",
+            "display_name": "Tourism, Leisure and Hospitality Management"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/14",
+            "display_name": "Business, Management and Accounting"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12133",
+          "display_name": "Pragmatism in Philosophy and Education",
+          "value": 0.0000207,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1211",
+            "display_name": "Philosophy"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/12",
+            "display_name": "Arts and Humanities"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12312",
+          "display_name": "Culture, Economy, and Development Studies",
+          "value": 0.0000199,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3317",
+            "display_name": "Demography"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        }
+      ],
+      "x_concepts": [
+        {
+          "id": "https://openalex.org/C162324750",
+          "wikidata": "https://www.wikidata.org/wiki/Q8134",
+          "display_name": "Economics",
+          "level": 0,
+          "score": 70.8
+        },
+        {
+          "id": "https://openalex.org/C144024400",
+          "wikidata": "https://www.wikidata.org/wiki/Q21201",
+          "display_name": "Sociology",
+          "level": 0,
+          "score": 58.5
+        },
+        {
+          "id": "https://openalex.org/C17744445",
+          "wikidata": "https://www.wikidata.org/wiki/Q36442",
+          "display_name": "Political science",
+          "level": 0,
+          "score": 56.6
+        },
+        {
+          "id": "https://openalex.org/C138885662",
+          "wikidata": "https://www.wikidata.org/wiki/Q5891",
+          "display_name": "Philosophy",
+          "level": 0,
+          "score": 56.6
+        },
+        {
+          "id": "https://openalex.org/C199539241",
+          "wikidata": "https://www.wikidata.org/wiki/Q7748",
+          "display_name": "Law",
+          "level": 1,
+          "score": 52.8
+        },
+        {
+          "id": "https://openalex.org/C111472728",
+          "wikidata": "https://www.wikidata.org/wiki/Q9471",
+          "display_name": "Epistemology",
+          "level": 1,
+          "score": 51.9
+        },
+        {
+          "id": "https://openalex.org/C41008148",
+          "wikidata": "https://www.wikidata.org/wiki/Q21198",
+          "display_name": "Computer science",
+          "level": 0,
+          "score": 42.5
+        },
+        {
+          "id": "https://openalex.org/C15744967",
+          "wikidata": "https://www.wikidata.org/wiki/Q9418",
+          "display_name": "Psychology",
+          "level": 0,
+          "score": 41.5
+        },
+        {
+          "id": "https://openalex.org/C33923547",
+          "wikidata": "https://www.wikidata.org/wiki/Q395",
+          "display_name": "Mathematics",
+          "level": 0,
+          "score": 39.6
+        },
+        {
+          "id": "https://openalex.org/C118084267",
+          "wikidata": "https://www.wikidata.org/wiki/Q26110",
+          "display_name": "Positive economics",
+          "level": 1,
+          "score": 37.7
+        },
+        {
+          "id": "https://openalex.org/C50522688",
+          "wikidata": "https://www.wikidata.org/wiki/Q189833",
+          "display_name": "Economic growth",
+          "level": 1,
+          "score": 30.2
+        },
+        {
+          "id": "https://openalex.org/C133425853",
+          "wikidata": "https://www.wikidata.org/wiki/Q60571",
+          "display_name": "Neoclassical economics",
+          "level": 1,
+          "score": 30.2
+        },
+        {
+          "id": "https://openalex.org/C142362112",
+          "wikidata": "https://www.wikidata.org/wiki/Q735",
+          "display_name": "Art",
+          "level": 0,
+          "score": 29.2
+        },
+        {
+          "id": "https://openalex.org/C19417346",
+          "wikidata": "https://www.wikidata.org/wiki/Q7922",
+          "display_name": "Pedagogy",
+          "level": 1,
+          "score": 26.4
+        },
+        {
+          "id": "https://openalex.org/C95457728",
+          "wikidata": "https://www.wikidata.org/wiki/Q309",
+          "display_name": "History",
+          "level": 0,
+          "score": 25.5
+        },
+        {
+          "id": "https://openalex.org/C205649164",
+          "wikidata": "https://www.wikidata.org/wiki/Q1071",
+          "display_name": "Geography",
+          "level": 0,
+          "score": 25.5
+        },
+        {
+          "id": "https://openalex.org/C86803240",
+          "wikidata": "https://www.wikidata.org/wiki/Q420",
+          "display_name": "Biology",
+          "level": 0,
+          "score": 24.5
+        },
+        {
+          "id": "https://openalex.org/C145420912",
+          "wikidata": "https://www.wikidata.org/wiki/Q853077",
+          "display_name": "Mathematics education",
+          "level": 1,
+          "score": 22.6
+        },
+        {
+          "id": "https://openalex.org/C165556158",
+          "wikidata": "https://www.wikidata.org/wiki/Q83937",
+          "display_name": "Keynesian economics",
+          "level": 1,
+          "score": 22.6
+        },
+        {
+          "id": "https://openalex.org/C36289849",
+          "wikidata": "https://www.wikidata.org/wiki/Q34749",
+          "display_name": "Social science",
+          "level": 1,
+          "score": 20.8
+        },
+        {
+          "id": "https://openalex.org/C124952713",
+          "wikidata": "https://www.wikidata.org/wiki/Q8242",
+          "display_name": "Literature",
+          "level": 1,
+          "score": 20.8
+        }
+      ],
+      "counts_by_year": [
+        {
+          "year": 2025,
+          "works_count": 1,
+          "oa_works_count": 0,
+          "cited_by_count": 31
+        },
+        {
+          "year": 2024,
+          "works_count": 2,
+          "oa_works_count": 1,
+          "cited_by_count": 97
+        },
+        {
+          "year": 2023,
+          "works_count": 5,
+          "oa_works_count": 4,
+          "cited_by_count": 79
+        },
+        {
+          "year": 2022,
+          "works_count": 0,
+          "oa_works_count": 0,
+          "cited_by_count": 68
+        },
+        {
+          "year": 2021,
+          "works_count": 1,
+          "oa_works_count": 0,
+          "cited_by_count": 68
+        },
+        {
+          "year": 2020,
+          "works_count": 3,
+          "oa_works_count": 3,
+          "cited_by_count": 79
+        },
+        {
+          "year": 2019,
+          "works_count": 23,
+          "oa_works_count": 2,
+          "cited_by_count": 77
+        },
+        {
+          "year": 2018,
+          "works_count": 2,
+          "oa_works_count": 2,
+          "cited_by_count": 72
+        },
+        {
+          "year": 2017,
+          "works_count": 4,
+          "oa_works_count": 3,
+          "cited_by_count": 78
+        },
+        {
+          "year": 2016,
+          "works_count": 2,
+          "oa_works_count": 0,
+          "cited_by_count": 47
+        },
+        {
+          "year": 2015,
+          "works_count": 2,
+          "oa_works_count": 0,
+          "cited_by_count": 53
+        },
+        {
+          "year": 2014,
+          "works_count": 2,
+          "oa_works_count": 1,
+          "cited_by_count": 60
+        },
+        {
+          "year": 2013,
+          "works_count": 4,
+          "oa_works_count": 1,
+          "cited_by_count": 62
+        },
+        {
+          "year": 2012,
+          "works_count": 7,
+          "oa_works_count": 1,
+          "cited_by_count": 77
+        }
+      ],
+      "works_api_url": "https://api.openalex.org/works?filter=author.id:A5019952124",
+      "updated_date": "2025-09-23T13:35:53.129633",
+      "created_date": "2023-07-21"
+    },
+    {
+      "id": "https://openalex.org/A5017898742",
+      "orcid": null,
+      "display_name": "Joseph Mearman",
+      "display_name_alternatives": [
+        "Joseph Mearman",
+        "Joseph W. Mearman",
+        "J. W. Mearman"
+      ],
+      "relevance_score": 1056.9517,
+      "works_count": 9,
+      "cited_by_count": 41,
+      "summary_stats": {
+        "2yr_mean_citedness": 0,
+        "h_index": 2,
+        "i10_index": 2
+      },
+      "ids": {
+        "openalex": "https://openalex.org/A5017898742"
+      },
+      "affiliations": [
+        {
+          "institution": {
+            "id": "https://openalex.org/I161548249",
+            "ror": "https://ror.org/006jb1a24",
+            "display_name": "Bangor University",
+            "country_code": "GB",
+            "type": "funder",
+            "lineage": [
+              "https://openalex.org/I161548249"
+            ]
+          },
+          "years": [
+            2021,
+            2016,
+            2015,
+            2014
+          ]
+        }
+      ],
+      "last_known_institutions": [
+        {
+          "id": "https://openalex.org/I161548249",
+          "ror": "https://ror.org/006jb1a24",
+          "display_name": "Bangor University",
+          "country_code": "GB",
+          "type": "funder",
+          "lineage": [
+            "https://openalex.org/I161548249"
+          ]
+        }
+      ],
+      "topics": [
+        {
+          "id": "https://openalex.org/T10888",
+          "display_name": "Augmented Reality Applications",
+          "count": 4,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1707",
+            "display_name": "Computer Vision and Pattern Recognition"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T11211",
+          "display_name": "3D Surveying and Cultural Heritage",
+          "count": 3,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1907",
+            "display_name": "Geology"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/19",
+            "display_name": "Earth and Planetary Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10789",
+          "display_name": "Interactive and Immersive Displays",
+          "count": 3,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1709",
+            "display_name": "Human-Computer Interaction"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12981",
+          "display_name": "Conservation Techniques and Studies",
+          "count": 2,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1206",
+            "display_name": "Conservation"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/12",
+            "display_name": "Arts and Humanities"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10799",
+          "display_name": "Data Visualization and Analytics",
+          "count": 2,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1707",
+            "display_name": "Computer Vision and Pattern Recognition"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12364",
+          "display_name": "Archaeological Research and Protection",
+          "count": 2,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1912",
+            "display_name": "Space and Planetary Science"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/19",
+            "display_name": "Earth and Planetary Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10481",
+          "display_name": "Computer Graphics and Visualization Techniques",
+          "count": 2,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1704",
+            "display_name": "Computer Graphics and Computer-Aided Design"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10648",
+          "display_name": "Virtual Reality Applications and Impacts",
+          "count": 2,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1709",
+            "display_name": "Human-Computer Interaction"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10627",
+          "display_name": "Advanced Image and Video Retrieval Techniques",
+          "count": 1,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1707",
+            "display_name": "Computer Vision and Pattern Recognition"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10191",
+          "display_name": "Robotics and Sensor-Based Localization",
+          "count": 1,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2202",
+            "display_name": "Aerospace Engineering"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/22",
+            "display_name": "Engineering"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T11439",
+          "display_name": "Video Analysis and Summarization",
+          "count": 1,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1707",
+            "display_name": "Computer Vision and Pattern Recognition"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12720",
+          "display_name": "Multimedia Communication and Technology",
+          "count": 1,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3312",
+            "display_name": "Sociology and Political Science"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10444",
+          "display_name": "Context-Aware Activity Recognition Systems",
+          "count": 1,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1707",
+            "display_name": "Computer Vision and Pattern Recognition"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        }
+      ],
+      "topic_share": [
+        {
+          "id": "https://openalex.org/T10789",
+          "display_name": "Interactive and Immersive Displays",
+          "value": 0.0000368,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1709",
+            "display_name": "Human-Computer Interaction"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10888",
+          "display_name": "Augmented Reality Applications",
+          "value": 0.0000307,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1707",
+            "display_name": "Computer Vision and Pattern Recognition"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12981",
+          "display_name": "Conservation Techniques and Studies",
+          "value": 0.0000234,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1206",
+            "display_name": "Conservation"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/12",
+            "display_name": "Arts and Humanities"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10799",
+          "display_name": "Data Visualization and Analytics",
+          "value": 0.0000205,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1707",
+            "display_name": "Computer Vision and Pattern Recognition"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10648",
+          "display_name": "Virtual Reality Applications and Impacts",
+          "value": 0.0000166,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1709",
+            "display_name": "Human-Computer Interaction"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10481",
+          "display_name": "Computer Graphics and Visualization Techniques",
+          "value": 0.0000128,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1704",
+            "display_name": "Computer Graphics and Computer-Aided Design"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12364",
+          "display_name": "Archaeological Research and Protection",
+          "value": 0.0000122,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1912",
+            "display_name": "Space and Planetary Science"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/19",
+            "display_name": "Earth and Planetary Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T11211",
+          "display_name": "3D Surveying and Cultural Heritage",
+          "value": 0.000012,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1907",
+            "display_name": "Geology"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/19",
+            "display_name": "Earth and Planetary Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T11439",
+          "display_name": "Video Analysis and Summarization",
+          "value": 0.0000077,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1707",
+            "display_name": "Computer Vision and Pattern Recognition"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10444",
+          "display_name": "Context-Aware Activity Recognition Systems",
+          "value": 0.0000075,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1707",
+            "display_name": "Computer Vision and Pattern Recognition"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12720",
+          "display_name": "Multimedia Communication and Technology",
+          "value": 0.0000058,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3312",
+            "display_name": "Sociology and Political Science"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10191",
+          "display_name": "Robotics and Sensor-Based Localization",
+          "value": 0.0000044,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2202",
+            "display_name": "Aerospace Engineering"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/22",
+            "display_name": "Engineering"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10627",
+          "display_name": "Advanced Image and Video Retrieval Techniques",
+          "value": 0.0000039,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1707",
+            "display_name": "Computer Vision and Pattern Recognition"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/17",
+            "display_name": "Computer Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        }
+      ],
+      "x_concepts": [
+        {
+          "id": "https://openalex.org/C41008148",
+          "wikidata": "https://www.wikidata.org/wiki/Q21198",
+          "display_name": "Computer science",
+          "level": 0,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C111919701",
+          "wikidata": "https://www.wikidata.org/wiki/Q9135",
+          "display_name": "Operating system",
+          "level": 1,
+          "score": 77.8
+        },
+        {
+          "id": "https://openalex.org/C124101348",
+          "wikidata": "https://www.wikidata.org/wiki/Q172491",
+          "display_name": "Data mining",
+          "level": 1,
+          "score": 66.7
+        },
+        {
+          "id": "https://openalex.org/C78519656",
+          "wikidata": "https://www.wikidata.org/wiki/Q101333",
+          "display_name": "Mechanical engineering",
+          "level": 1,
+          "score": 55.6
+        },
+        {
+          "id": "https://openalex.org/C107457646",
+          "wikidata": "https://www.wikidata.org/wiki/Q207434",
+          "display_name": "Human–computer interaction",
+          "level": 1,
+          "score": 55.6
+        },
+        {
+          "id": "https://openalex.org/C121684516",
+          "wikidata": "https://www.wikidata.org/wiki/Q7600677",
+          "display_name": "Computer graphics (images)",
+          "level": 1,
+          "score": 55.6
+        },
+        {
+          "id": "https://openalex.org/C127413603",
+          "wikidata": "https://www.wikidata.org/wiki/Q11023",
+          "display_name": "Engineering",
+          "level": 0,
+          "score": 55.6
+        },
+        {
+          "id": "https://openalex.org/C154945302",
+          "wikidata": "https://www.wikidata.org/wiki/Q11660",
+          "display_name": "Artificial intelligence",
+          "level": 1,
+          "score": 55.6
+        },
+        {
+          "id": "https://openalex.org/C31972630",
+          "wikidata": "https://www.wikidata.org/wiki/Q844240",
+          "display_name": "Computer vision",
+          "level": 1,
+          "score": 44.4
+        },
+        {
+          "id": "https://openalex.org/C36464697",
+          "wikidata": "https://www.wikidata.org/wiki/Q451553",
+          "display_name": "Visualization",
+          "level": 2,
+          "score": 44.4
+        },
+        {
+          "id": "https://openalex.org/C49774154",
+          "wikidata": "https://www.wikidata.org/wiki/Q131765",
+          "display_name": "Multimedia",
+          "level": 1,
+          "score": 44.4
+        },
+        {
+          "id": "https://openalex.org/C136764020",
+          "wikidata": "https://www.wikidata.org/wiki/Q466",
+          "display_name": "World Wide Web",
+          "level": 1,
+          "score": 44.4
+        },
+        {
+          "id": "https://openalex.org/C2522767166",
+          "wikidata": "https://www.wikidata.org/wiki/Q2374463",
+          "display_name": "Data science",
+          "level": 1,
+          "score": 44.4
+        },
+        {
+          "id": "https://openalex.org/C17744445",
+          "wikidata": "https://www.wikidata.org/wiki/Q36442",
+          "display_name": "Political science",
+          "level": 0,
+          "score": 33.3
+        },
+        {
+          "id": "https://openalex.org/C60671577",
+          "wikidata": "https://www.wikidata.org/wiki/Q210272",
+          "display_name": "Cultural heritage",
+          "level": 2,
+          "score": 33.3
+        },
+        {
+          "id": "https://openalex.org/C95457728",
+          "wikidata": "https://www.wikidata.org/wiki/Q309",
+          "display_name": "History",
+          "level": 0,
+          "score": 33.3
+        },
+        {
+          "id": "https://openalex.org/C153715457",
+          "wikidata": "https://www.wikidata.org/wiki/Q254183",
+          "display_name": "Augmented reality",
+          "level": 2,
+          "score": 33.3
+        },
+        {
+          "id": "https://openalex.org/C166957645",
+          "wikidata": "https://www.wikidata.org/wiki/Q23498",
+          "display_name": "Archaeology",
+          "level": 1,
+          "score": 33.3
+        },
+        {
+          "id": "https://openalex.org/C194969405",
+          "wikidata": "https://www.wikidata.org/wiki/Q170519",
+          "display_name": "Virtual reality",
+          "level": 2,
+          "score": 33.3
+        },
+        {
+          "id": "https://openalex.org/C199539241",
+          "wikidata": "https://www.wikidata.org/wiki/Q7748",
+          "display_name": "Law",
+          "level": 1,
+          "score": 33.3
+        },
+        {
+          "id": "https://openalex.org/C205649164",
+          "wikidata": "https://www.wikidata.org/wiki/Q1071",
+          "display_name": "Geography",
+          "level": 0,
+          "score": 33.3
+        },
+        {
+          "id": "https://openalex.org/C55493867",
+          "wikidata": "https://www.wikidata.org/wiki/Q7094",
+          "display_name": "Biochemistry",
+          "level": 1,
+          "score": 22.2
+        },
+        {
+          "id": "https://openalex.org/C71924100",
+          "wikidata": "https://www.wikidata.org/wiki/Q11190",
+          "display_name": "Medicine",
+          "level": 0,
+          "score": 22.2
+        },
+        {
+          "id": "https://openalex.org/C77088390",
+          "wikidata": "https://www.wikidata.org/wiki/Q8513",
+          "display_name": "Database",
+          "level": 1,
+          "score": 22.2
+        },
+        {
+          "id": "https://openalex.org/C86803240",
+          "wikidata": "https://www.wikidata.org/wiki/Q420",
+          "display_name": "Biology",
+          "level": 0,
+          "score": 22.2
+        }
+      ],
+      "counts_by_year": [
+        {
+          "year": 2025,
+          "works_count": 0,
+          "oa_works_count": 0,
+          "cited_by_count": 2
+        },
+        {
+          "year": 2024,
+          "works_count": 0,
+          "oa_works_count": 0,
+          "cited_by_count": 2
+        },
+        {
+          "year": 2023,
+          "works_count": 0,
+          "oa_works_count": 0,
+          "cited_by_count": 5
+        },
+        {
+          "year": 2022,
+          "works_count": 0,
+          "oa_works_count": 0,
+          "cited_by_count": 2
+        },
+        {
+          "year": 2021,
+          "works_count": 2,
+          "oa_works_count": 1,
+          "cited_by_count": 7
+        },
+        {
+          "year": 2020,
+          "works_count": 0,
+          "oa_works_count": 0,
+          "cited_by_count": 5
+        },
+        {
+          "year": 2019,
+          "works_count": 1,
+          "oa_works_count": 0,
+          "cited_by_count": 5
+        },
+        {
+          "year": 2018,
+          "works_count": 0,
+          "oa_works_count": 0,
+          "cited_by_count": 8
+        },
+        {
+          "year": 2017,
+          "works_count": 1,
+          "oa_works_count": 0,
+          "cited_by_count": 3
+        },
+        {
+          "year": 2016,
+          "works_count": 1,
+          "oa_works_count": 0,
+          "cited_by_count": 2
+        },
+        {
+          "year": 2015,
+          "works_count": 1,
+          "oa_works_count": 1,
+          "cited_by_count": 0
+        },
+        {
+          "year": 2014,
+          "works_count": 3,
+          "oa_works_count": 0,
+          "cited_by_count": 0
+        }
+      ],
+      "works_api_url": "https://api.openalex.org/works?filter=author.id:A5017898742",
+      "updated_date": "2025-09-21T07:40:09.928040",
+      "created_date": "2023-07-21"
+    },
+    {
+      "id": "https://openalex.org/A5042124131",
+      "orcid": null,
+      "display_name": "David H. Mearman",
+      "display_name_alternatives": [
+        "D Mearman",
+        "David H. Mearman"
+      ],
+      "relevance_score": 786.15576,
+      "works_count": 2,
+      "cited_by_count": 28,
+      "summary_stats": {
+        "2yr_mean_citedness": 0,
+        "h_index": 2,
+        "i10_index": 1
+      },
+      "ids": {
+        "openalex": "https://openalex.org/A5042124131"
+      },
+      "affiliations": [
+        {
+          "institution": {
+            "id": "https://openalex.org/I4210108554",
+            "ror": "https://ror.org/015dyrs73",
+            "display_name": "Queen Elizabeth Hospital",
+            "country_code": "GB",
+            "type": "healthcare",
+            "lineage": [
+              "https://openalex.org/I4210103856",
+              "https://openalex.org/I4210108554"
+            ]
+          },
+          "years": [
+            1993
+          ]
+        },
+        {
+          "institution": {
+            "id": "https://openalex.org/I2799307867",
+            "ror": "https://ror.org/048emj907",
+            "display_name": "Queen Elizabeth Hospital Birmingham",
+            "country_code": "GB",
+            "type": "healthcare",
+            "lineage": [
+              "https://openalex.org/I1308923049",
+              "https://openalex.org/I2799307867"
+            ]
+          },
+          "years": [
+            1993
+          ]
+        }
+      ],
+      "last_known_institutions": [
+        {
+          "id": "https://openalex.org/I2799307867",
+          "ror": "https://ror.org/048emj907",
+          "display_name": "Queen Elizabeth Hospital Birmingham",
+          "country_code": "GB",
+          "type": "healthcare",
+          "lineage": [
+            "https://openalex.org/I1308923049",
+            "https://openalex.org/I2799307867"
+          ]
+        }
+      ],
+      "topics": [
+        {
+          "id": "https://openalex.org/T11733",
+          "display_name": "X-ray Spectroscopy and Fluorescence Analysis",
+          "count": 2,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3108",
+            "display_name": "Radiation"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/31",
+            "display_name": "Physics and Astronomy"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12386",
+          "display_name": "Advanced X-ray and CT Imaging",
+          "count": 1,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2204",
+            "display_name": "Biomedical Engineering"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/22",
+            "display_name": "Engineering"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10790",
+          "display_name": "Heavy Metal Exposure and Toxicity",
+          "count": 1,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2307",
+            "display_name": "Health, Toxicology and Mutagenesis"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/23",
+            "display_name": "Environmental Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12299",
+          "display_name": "Radiation Shielding Materials Analysis",
+          "count": 1,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2505",
+            "display_name": "Materials Chemistry"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/25",
+            "display_name": "Materials Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10139",
+          "display_name": "Heavy metals in environment",
+          "count": 1,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2310",
+            "display_name": "Pollution"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/23",
+            "display_name": "Environmental Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        }
+      ],
+      "topic_share": [
+        {
+          "id": "https://openalex.org/T12299",
+          "display_name": "Radiation Shielding Materials Analysis",
+          "value": 0.0000407,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2505",
+            "display_name": "Materials Chemistry"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/25",
+            "display_name": "Materials Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T11733",
+          "display_name": "X-ray Spectroscopy and Fluorescence Analysis",
+          "value": 0.000014,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3108",
+            "display_name": "Radiation"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/31",
+            "display_name": "Physics and Astronomy"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10790",
+          "display_name": "Heavy Metal Exposure and Toxicity",
+          "value": 0.0000074,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2307",
+            "display_name": "Health, Toxicology and Mutagenesis"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/23",
+            "display_name": "Environmental Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10139",
+          "display_name": "Heavy metals in environment",
+          "value": 0.0000047,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2310",
+            "display_name": "Pollution"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/23",
+            "display_name": "Environmental Science"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12386",
+          "display_name": "Advanced X-ray and CT Imaging",
+          "value": 0.0000046,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2204",
+            "display_name": "Biomedical Engineering"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/22",
+            "display_name": "Engineering"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        }
+      ],
+      "x_concepts": [
+        {
+          "id": "https://openalex.org/C62520636",
+          "wikidata": "https://www.wikidata.org/wiki/Q944",
+          "display_name": "Quantum mechanics",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C71924100",
+          "wikidata": "https://www.wikidata.org/wiki/Q11190",
+          "display_name": "Medicine",
+          "level": 0,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C86803240",
+          "wikidata": "https://www.wikidata.org/wiki/Q420",
+          "display_name": "Biology",
+          "level": 0,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C114793014",
+          "wikidata": "https://www.wikidata.org/wiki/Q52109",
+          "display_name": "Geomorphology",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C121332964",
+          "wikidata": "https://www.wikidata.org/wiki/Q413",
+          "display_name": "Physics",
+          "level": 0,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C127313418",
+          "wikidata": "https://www.wikidata.org/wiki/Q1069",
+          "display_name": "Geology",
+          "level": 0,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C151730666",
+          "wikidata": "https://www.wikidata.org/wiki/Q7205",
+          "display_name": "Paleontology",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C178790620",
+          "wikidata": "https://www.wikidata.org/wiki/Q11351",
+          "display_name": "Organic chemistry",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C185592680",
+          "wikidata": "https://www.wikidata.org/wiki/Q2329",
+          "display_name": "Chemistry",
+          "level": 0,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C192562407",
+          "wikidata": "https://www.wikidata.org/wiki/Q228736",
+          "display_name": "Materials science",
+          "level": 0,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C2777093003",
+          "wikidata": "https://www.wikidata.org/wiki/Q6508345",
+          "display_name": "Lead (geology)",
+          "level": 2,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C2989005",
+          "wikidata": "https://www.wikidata.org/wiki/Q214963",
+          "display_name": "Nuclear medicine",
+          "level": 1,
+          "score": 50
+        },
+        {
+          "id": "https://openalex.org/C21200559",
+          "wikidata": "https://www.wikidata.org/wiki/Q7451068",
+          "display_name": "Sensitivity (control systems)",
+          "level": 2,
+          "score": 50
+        },
+        {
+          "id": "https://openalex.org/C22947924",
+          "wikidata": "https://www.wikidata.org/wiki/Q883633",
+          "display_name": "Lead smelting",
+          "level": 3,
+          "score": 50
+        },
+        {
+          "id": "https://openalex.org/C24326235",
+          "wikidata": "https://www.wikidata.org/wiki/Q126095",
+          "display_name": "Electronic engineering",
+          "level": 1,
+          "score": 50
+        },
+        {
+          "id": "https://openalex.org/C33923547",
+          "wikidata": "https://www.wikidata.org/wiki/Q395",
+          "display_name": "Mathematics",
+          "level": 0,
+          "score": 50
+        },
+        {
+          "id": "https://openalex.org/C39432304",
+          "wikidata": "https://www.wikidata.org/wiki/Q188847",
+          "display_name": "Environmental science",
+          "level": 0,
+          "score": 50
+        },
+        {
+          "id": "https://openalex.org/C41008148",
+          "wikidata": "https://www.wikidata.org/wiki/Q21198",
+          "display_name": "Computer science",
+          "level": 0,
+          "score": 50
+        },
+        {
+          "id": "https://openalex.org/C43617362",
+          "wikidata": "https://www.wikidata.org/wiki/Q170050",
+          "display_name": "Chromatography",
+          "level": 1,
+          "score": 50
+        },
+        {
+          "id": "https://openalex.org/C76155785",
+          "wikidata": "https://www.wikidata.org/wiki/Q418",
+          "display_name": "Telecommunications",
+          "level": 1,
+          "score": 50
+        },
+        {
+          "id": "https://openalex.org/C78519656",
+          "wikidata": "https://www.wikidata.org/wiki/Q101333",
+          "display_name": "Mechanical engineering",
+          "level": 1,
+          "score": 50
+        },
+        {
+          "id": "https://openalex.org/C91881484",
+          "wikidata": "https://www.wikidata.org/wiki/Q191807",
+          "display_name": "Fluorescence",
+          "level": 2,
+          "score": 50
+        },
+        {
+          "id": "https://openalex.org/C94915269",
+          "wikidata": "https://www.wikidata.org/wiki/Q1834857",
+          "display_name": "Detector",
+          "level": 2,
+          "score": 50
+        },
+        {
+          "id": "https://openalex.org/C99454951",
+          "wikidata": "https://www.wikidata.org/wiki/Q932068",
+          "display_name": "Environmental health",
+          "level": 1,
+          "score": 50
+        },
+        {
+          "id": "https://openalex.org/C105795698",
+          "wikidata": "https://www.wikidata.org/wiki/Q12483",
+          "display_name": "Statistics",
+          "level": 1,
+          "score": 50
+        }
+      ],
+      "counts_by_year": [
+        {
+          "year": 2017,
+          "works_count": 0,
+          "oa_works_count": 0,
+          "cited_by_count": 1
+        }
+      ],
+      "works_api_url": "https://api.openalex.org/works?filter=author.id:A5042124131",
+      "updated_date": "2025-09-23T23:32:37.613156",
+      "created_date": "2023-07-21"
+    },
+    {
+      "id": "https://openalex.org/A5089224452",
+      "orcid": null,
+      "display_name": "ROBERT C. MEARMAN",
+      "display_name_alternatives": [
+        "ROBERT C. MEARMAN"
+      ],
+      "relevance_score": 487.5173,
+      "works_count": 1,
+      "cited_by_count": 11,
+      "summary_stats": {
+        "2yr_mean_citedness": 0,
+        "h_index": 1,
+        "i10_index": 1
+      },
+      "ids": {
+        "openalex": "https://openalex.org/A5089224452"
+      },
+      "affiliations": [],
+      "last_known_institutions": [],
+      "topics": [
+        {
+          "id": "https://openalex.org/T10835",
+          "display_name": "Carbohydrate Chemistry and Synthesis",
+          "count": 1,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1605",
+            "display_name": "Organic Chemistry"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/16",
+            "display_name": "Chemistry"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        }
+      ],
+      "topic_share": [
+        {
+          "id": "https://openalex.org/T10835",
+          "display_name": "Carbohydrate Chemistry and Synthesis",
+          "value": 0.0000041,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1605",
+            "display_name": "Organic Chemistry"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/16",
+            "display_name": "Chemistry"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        }
+      ],
+      "x_concepts": [
+        {
+          "id": "https://openalex.org/C54355233",
+          "wikidata": "https://www.wikidata.org/wiki/Q7162",
+          "display_name": "Genetics",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C55493867",
+          "wikidata": "https://www.wikidata.org/wiki/Q7094",
+          "display_name": "Biochemistry",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C71240020",
+          "wikidata": "https://www.wikidata.org/wiki/Q186011",
+          "display_name": "Stereochemistry",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C86803240",
+          "wikidata": "https://www.wikidata.org/wiki/Q420",
+          "display_name": "Biology",
+          "level": 0,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C89423630",
+          "wikidata": "https://www.wikidata.org/wiki/Q7193",
+          "display_name": "Microbiology",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C178790620",
+          "wikidata": "https://www.wikidata.org/wiki/Q11351",
+          "display_name": "Organic chemistry",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C185592680",
+          "wikidata": "https://www.wikidata.org/wiki/Q2329",
+          "display_name": "Chemistry",
+          "level": 0,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C501593827",
+          "wikidata": "https://www.wikidata.org/wiki/Q12187",
+          "display_name": "Antibiotics",
+          "level": 2,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C2777907353",
+          "wikidata": "https://www.wikidata.org/wiki/Q903341",
+          "display_name": "Triazole",
+          "level": 2,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C2779454058",
+          "wikidata": "https://www.wikidata.org/wiki/Q415709",
+          "display_name": "Clavulanic acid",
+          "level": 4,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C2779708577",
+          "wikidata": "https://www.wikidata.org/wiki/Q201928",
+          "display_name": "Amoxicillin",
+          "level": 3,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C2780378348",
+          "wikidata": "https://www.wikidata.org/wiki/Q25351438",
+          "display_name": "Ring (chemistry)",
+          "level": 2,
+          "score": 100
+        }
+      ],
+      "counts_by_year": [
+        {
+          "year": 2014,
+          "works_count": 0,
+          "oa_works_count": 0,
+          "cited_by_count": 1
+        },
+        {
+          "year": 2012,
+          "works_count": 0,
+          "oa_works_count": 0,
+          "cited_by_count": 4
+        }
+      ],
+      "works_api_url": "https://api.openalex.org/works?filter=author.id:A5089224452",
+      "updated_date": "2025-06-19T02:11:21.067390",
+      "created_date": "2023-07-21"
+    },
+    {
+      "id": "https://openalex.org/A5071882449",
+      "orcid": null,
+      "display_name": "Kimberly A. Mearman",
+      "display_name_alternatives": [
+        "Kimberly A. Mearman"
+      ],
+      "relevance_score": 228.79002,
+      "works_count": 1,
+      "cited_by_count": 1,
+      "summary_stats": {
+        "2yr_mean_citedness": 0,
+        "h_index": 1,
+        "i10_index": 0
+      },
+      "ids": {
+        "openalex": "https://openalex.org/A5071882449"
+      },
+      "affiliations": [],
+      "last_known_institutions": [],
+      "topics": [
+        {
+          "id": "https://openalex.org/T11514",
+          "display_name": "Disability Education and Employment",
+          "count": 1,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3311",
+            "display_name": "Safety Research"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T13591",
+          "display_name": "Pasture and Agricultural Systems",
+          "count": 1,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1107",
+            "display_name": "Forestry"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/11",
+            "display_name": "Agricultural and Biological Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/1",
+            "display_name": "Life Sciences"
+          }
+        }
+      ],
+      "topic_share": [
+        {
+          "id": "https://openalex.org/T13591",
+          "display_name": "Pasture and Agricultural Systems",
+          "value": 0.0000155,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1107",
+            "display_name": "Forestry"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/11",
+            "display_name": "Agricultural and Biological Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/1",
+            "display_name": "Life Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T11514",
+          "display_name": "Disability Education and Employment",
+          "value": 0.000014,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3311",
+            "display_name": "Safety Research"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        }
+      ],
+      "x_concepts": [
+        {
+          "id": "https://openalex.org/C8010536",
+          "wikidata": "https://www.wikidata.org/wiki/Q160398",
+          "display_name": "Crystallography",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C11413529",
+          "wikidata": "https://www.wikidata.org/wiki/Q8366",
+          "display_name": "Algorithm",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C15744967",
+          "wikidata": "https://www.wikidata.org/wiki/Q9418",
+          "display_name": "Psychology",
+          "level": 0,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C19417346",
+          "wikidata": "https://www.wikidata.org/wiki/Q7922",
+          "display_name": "Pedagogy",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C31258907",
+          "wikidata": "https://www.wikidata.org/wiki/Q1301371",
+          "display_name": "Computer network",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C33923547",
+          "wikidata": "https://www.wikidata.org/wiki/Q395",
+          "display_name": "Mathematics",
+          "level": 0,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C41008148",
+          "wikidata": "https://www.wikidata.org/wiki/Q21198",
+          "display_name": "Computer science",
+          "level": 0,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C43214815",
+          "wikidata": "https://www.wikidata.org/wiki/Q7310987",
+          "display_name": "Reliability (semiconductor)",
+          "level": 3,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C48103436",
+          "wikidata": "https://www.wikidata.org/wiki/Q599031",
+          "display_name": "State (computer science)",
+          "level": 2,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C62520636",
+          "wikidata": "https://www.wikidata.org/wiki/Q944",
+          "display_name": "Quantum mechanics",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C70364389",
+          "wikidata": "https://www.wikidata.org/wiki/Q18757",
+          "display_name": "Validity",
+          "level": 3,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C70410870",
+          "wikidata": "https://www.wikidata.org/wiki/Q199906",
+          "display_name": "Clinical psychology",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C71924100",
+          "wikidata": "https://www.wikidata.org/wiki/Q11190",
+          "display_name": "Medicine",
+          "level": 0,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C94375191",
+          "wikidata": "https://www.wikidata.org/wiki/Q11205",
+          "display_name": "Arithmetic",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C97355855",
+          "wikidata": "https://www.wikidata.org/wiki/Q11473",
+          "display_name": "Thermodynamics",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C105795698",
+          "wikidata": "https://www.wikidata.org/wiki/Q12483",
+          "display_name": "Statistics",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C111472728",
+          "wikidata": "https://www.wikidata.org/wiki/Q9471",
+          "display_name": "Epistemology",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C111640148",
+          "wikidata": "https://www.wikidata.org/wiki/Q847349",
+          "display_name": "Rubric",
+          "level": 2,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C121332964",
+          "wikidata": "https://www.wikidata.org/wiki/Q413",
+          "display_name": "Physics",
+          "level": 0,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C138496976",
+          "wikidata": "https://www.wikidata.org/wiki/Q175002",
+          "display_name": "Developmental psychology",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C138885662",
+          "wikidata": "https://www.wikidata.org/wiki/Q5891",
+          "display_name": "Philosophy",
+          "level": 0,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C144024400",
+          "wikidata": "https://www.wikidata.org/wiki/Q21201",
+          "display_name": "Sociology",
+          "level": 0,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C145420912",
+          "wikidata": "https://www.wikidata.org/wiki/Q853077",
+          "display_name": "Mathematics education",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C163258240",
+          "wikidata": "https://www.wikidata.org/wiki/Q25342",
+          "display_name": "Power (physics)",
+          "level": 2,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C171606756",
+          "wikidata": "https://www.wikidata.org/wiki/Q506132",
+          "display_name": "Psychometrics",
+          "level": 2,
+          "score": 100
+        }
+      ],
+      "counts_by_year": [
+        {
+          "year": 2021,
+          "works_count": 0,
+          "oa_works_count": 0,
+          "cited_by_count": 1
+        },
+        {
+          "year": 2013,
+          "works_count": 1,
+          "oa_works_count": 0,
+          "cited_by_count": 0
+        }
+      ],
+      "works_api_url": "https://api.openalex.org/works?filter=author.id:A5071882449",
+      "updated_date": "2025-09-19T16:31:02.388403",
+      "created_date": "2023-07-21"
+    },
+    {
+      "id": "https://openalex.org/A5022164824",
+      "orcid": null,
+      "display_name": "S. Mearman",
+      "display_name_alternatives": [
+        "S. Mearman"
+      ],
+      "relevance_score": 60.181583,
+      "works_count": 1,
+      "cited_by_count": 0,
+      "summary_stats": {
+        "2yr_mean_citedness": 0,
+        "h_index": 0,
+        "i10_index": 0
+      },
+      "ids": {
+        "openalex": "https://openalex.org/A5022164824"
+      },
+      "affiliations": [],
+      "last_known_institutions": [],
+      "topics": [
+        {
+          "id": "https://openalex.org/T10428",
+          "display_name": "Reproductive tract infections research",
+          "count": 1,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2404",
+            "display_name": "Microbiology"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/24",
+            "display_name": "Immunology and Microbiology"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/1",
+            "display_name": "Life Sciences"
+          }
+        }
+      ],
+      "topic_share": [
+        {
+          "id": "https://openalex.org/T10428",
+          "display_name": "Reproductive tract infections research",
+          "value": 0.0000081,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2404",
+            "display_name": "Microbiology"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/24",
+            "display_name": "Immunology and Microbiology"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/1",
+            "display_name": "Life Sciences"
+          }
+        }
+      ],
+      "x_concepts": [
+        {
+          "id": "https://openalex.org/C71924100",
+          "wikidata": "https://www.wikidata.org/wiki/Q11190",
+          "display_name": "Medicine",
+          "level": 0,
+          "score": 100
+        }
+      ],
+      "counts_by_year": [],
+      "works_api_url": "https://api.openalex.org/works?filter=author.id:A5022164824",
+      "updated_date": "2025-07-16T10:43:33.646403",
+      "created_date": "2023-07-21"
+    },
+    {
+      "id": "https://openalex.org/A5045397970",
+      "orcid": null,
+      "display_name": "R. C. MEARMAN",
+      "display_name_alternatives": [
+        "R. C. MEARMAN"
+      ],
+      "relevance_score": 54.279297,
+      "works_count": 1,
+      "cited_by_count": 0,
+      "summary_stats": {
+        "2yr_mean_citedness": 0,
+        "h_index": 0,
+        "i10_index": 0
+      },
+      "ids": {
+        "openalex": "https://openalex.org/A5045397970"
+      },
+      "affiliations": [],
+      "last_known_institutions": [],
+      "topics": [
+        {
+          "id": "https://openalex.org/T11009",
+          "display_name": "Catalysis for Biomass Conversion",
+          "count": 1,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2204",
+            "display_name": "Biomedical Engineering"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/22",
+            "display_name": "Engineering"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10092",
+          "display_name": "Organometallic Complex Synthesis and Catalysis",
+          "count": 1,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1605",
+            "display_name": "Organic Chemistry"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/16",
+            "display_name": "Chemistry"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T11549",
+          "display_name": "Synthetic Organic Chemistry Methods",
+          "count": 1,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1605",
+            "display_name": "Organic Chemistry"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/16",
+            "display_name": "Chemistry"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        }
+      ],
+      "topic_share": [
+        {
+          "id": "https://openalex.org/T11009",
+          "display_name": "Catalysis for Biomass Conversion",
+          "value": 0.0000099,
+          "subfield": {
+            "id": "https://openalex.org/subfields/2204",
+            "display_name": "Biomedical Engineering"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/22",
+            "display_name": "Engineering"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T10092",
+          "display_name": "Organometallic Complex Synthesis and Catalysis",
+          "value": 0.0000039,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1605",
+            "display_name": "Organic Chemistry"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/16",
+            "display_name": "Chemistry"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T11549",
+          "display_name": "Synthetic Organic Chemistry Methods",
+          "value": 0.0000038,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1605",
+            "display_name": "Organic Chemistry"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/16",
+            "display_name": "Chemistry"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/3",
+            "display_name": "Physical Sciences"
+          }
+        }
+      ],
+      "x_concepts": [
+        {
+          "id": "https://openalex.org/C159985019",
+          "wikidata": "https://www.wikidata.org/wiki/Q181790",
+          "display_name": "Composite material",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C176933379",
+          "wikidata": "https://www.wikidata.org/wiki/Q131877",
+          "display_name": "Natural rubber",
+          "level": 2,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C178790620",
+          "wikidata": "https://www.wikidata.org/wiki/Q11351",
+          "display_name": "Organic chemistry",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C185592680",
+          "wikidata": "https://www.wikidata.org/wiki/Q2329",
+          "display_name": "Chemistry",
+          "level": 0,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C192562407",
+          "wikidata": "https://www.wikidata.org/wiki/Q228736",
+          "display_name": "Materials science",
+          "level": 0,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C2778733088",
+          "wikidata": "https://www.wikidata.org/wiki/Q192678",
+          "display_name": "Diene",
+          "level": 3,
+          "score": 100
+        }
+      ],
+      "counts_by_year": [],
+      "works_api_url": "https://api.openalex.org/works?filter=author.id:A5045397970",
+      "updated_date": "2025-09-20T01:10:33.359745",
+      "created_date": "2023-07-21"
+    },
+    {
+      "id": "https://openalex.org/A5001208659",
+      "orcid": null,
+      "display_name": "Downward and Mearman Tony Lawson",
+      "display_name_alternatives": [
+        "Downward and Mearman Tony Lawson"
+      ],
+      "relevance_score": 51.125404,
+      "works_count": 1,
+      "cited_by_count": 0,
+      "summary_stats": {
+        "2yr_mean_citedness": 0,
+        "h_index": 0,
+        "i10_index": 0
+      },
+      "ids": {
+        "openalex": "https://openalex.org/A5001208659"
+      },
+      "affiliations": [],
+      "last_known_institutions": [],
+      "topics": [
+        {
+          "id": "https://openalex.org/T14201",
+          "display_name": "Data Analysis and Archiving",
+          "count": 1,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3312",
+            "display_name": "Sociology and Political Science"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12098",
+          "display_name": "Rural development and sustainability",
+          "count": 1,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1100",
+            "display_name": "General Agricultural and Biological Sciences"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/11",
+            "display_name": "Agricultural and Biological Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/1",
+            "display_name": "Life Sciences"
+          }
+        }
+      ],
+      "topic_share": [
+        {
+          "id": "https://openalex.org/T14201",
+          "display_name": "Data Analysis and Archiving",
+          "value": 0.0000366,
+          "subfield": {
+            "id": "https://openalex.org/subfields/3312",
+            "display_name": "Sociology and Political Science"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/33",
+            "display_name": "Social Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/2",
+            "display_name": "Social Sciences"
+          }
+        },
+        {
+          "id": "https://openalex.org/T12098",
+          "display_name": "Rural development and sustainability",
+          "value": 0.000008,
+          "subfield": {
+            "id": "https://openalex.org/subfields/1100",
+            "display_name": "General Agricultural and Biological Sciences"
+          },
+          "field": {
+            "id": "https://openalex.org/fields/11",
+            "display_name": "Agricultural and Biological Sciences"
+          },
+          "domain": {
+            "id": "https://openalex.org/domains/1",
+            "display_name": "Life Sciences"
+          }
+        }
+      ],
+      "x_concepts": [
+        {
+          "id": "https://openalex.org/C2524010",
+          "wikidata": "https://www.wikidata.org/wiki/Q8087",
+          "display_name": "Geometry",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C33923547",
+          "wikidata": "https://www.wikidata.org/wiki/Q395",
+          "display_name": "Mathematics",
+          "level": 0,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C58640448",
+          "wikidata": "https://www.wikidata.org/wiki/Q42515",
+          "display_name": "Cartography",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C135981907",
+          "wikidata": "https://www.wikidata.org/wiki/Q188056",
+          "display_name": "Triangulation",
+          "level": 2,
+          "score": 100
+        },
+        {
+          "id": "https://openalex.org/C205649164",
+          "wikidata": "https://www.wikidata.org/wiki/Q1071",
+          "display_name": "Geography",
+          "level": 0,
+          "score": 100
+        }
+      ],
+      "counts_by_year": [],
+      "works_api_url": "https://api.openalex.org/works?filter=author.id:A5001208659",
+      "updated_date": "2025-09-17T02:18:01.860113",
+      "created_date": "2023-07-21"
+    }
+  ],
+  "group_by": []
+}

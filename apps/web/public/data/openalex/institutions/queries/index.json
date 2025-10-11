@@ -1,0 +1,12 @@
+{
+  "lastUpdated": "2025-10-11T06:05:54.906Z",
+  "files": {
+    "per_page__3D__20__26__search__3D__mearman": {
+      "url": "https://api.openalex.org/institutions?per_page=20&search=mearman",
+      "$ref": "./per_page__3D__20__26__search__3D__mearman.json",
+      "lastRetrieved": "2025-10-11T06:05:54.802Z",
+      "contentHash": "3b069018d22594e5"
+    }
+  },
+  "directories": {}
+}

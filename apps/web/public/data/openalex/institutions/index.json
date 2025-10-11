@@ -1,16 +1,16 @@
 {
-  "lastUpdated": "2025-10-09T09:57:37.462Z",
+  "lastUpdated": "2025-10-11T06:05:54.908Z",
   "files": {
     "I161548249": {
       "url": "https://api.openalex.org/institutions/I161548249",
       "$ref": "./I161548249.json",
-      "lastRetrieved": "2025-10-09T09:57:37.356Z",
+      "lastRetrieved": "2025-10-09T09:57:37.358Z",
       "contentHash": "2a47b82d101427e3",
       "equivalentUrls": [
         "https://api.openalex.org/institutions/I161548249"
       ],
       "urlTimestamps": {
-        "https://api.openalex.org/institutions/I161548249": "2025-10-09T09:57:37.356Z"
+        "https://api.openalex.org/institutions/I161548249": "2025-10-09T09:57:37.358Z"
       },
       "collisionInfo": {
         "mergedCount": 0,
@@ -18,5 +18,10 @@
       }
     }
   },
-  "directories": {}
+  "directories": {
+    "queries": {
+      "$ref": "./queries",
+      "lastModified": "2025-10-11T06:05:54.906Z"
+    }
+  }
 }

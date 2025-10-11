@@ -1,10 +1,10 @@
 {
-  "lastUpdated": "2025-10-10T16:57:18.249Z",
+  "lastUpdated": "2025-10-11T06:09:41.991Z",
   "files": {
     "authors": {
       "url": "https://api.openalex.org/authors",
       "$ref": "./authors.json",
-      "lastRetrieved": "2025-10-10T16:57:18.243Z",
+      "lastRetrieved": "2025-10-10T16:57:18.244Z",
       "contentHash": "5021e624e752b001"
     },
     "sources": {
@@ -16,14 +16,14 @@
     "works": {
       "url": "https://api.openalex.org/works",
       "$ref": "./works.json",
-      "lastRetrieved": "2025-10-10T16:57:18.248Z",
+      "lastRetrieved": "2025-10-10T16:57:18.249Z",
       "contentHash": "5021e624e752b001"
     }
   },
   "directories": {
     "authors": {
       "$ref": "./authors",
-      "lastModified": "2025-10-09T10:38:54.044Z"
+      "lastModified": "2025-10-11T06:05:54.529Z"
     },
     "funders": {
       "$ref": "./funders",
@@ -31,15 +31,19 @@
     },
     "institutions": {
       "$ref": "./institutions",
-      "lastModified": "2025-10-09T09:57:37.467Z"
+      "lastModified": "2025-10-11T06:05:54.803Z"
+    },
+    "sources": {
+      "$ref": "./sources",
+      "lastModified": "2025-10-11T06:05:54.775Z"
     },
     "topics": {
       "$ref": "./topics",
-      "lastModified": "2025-10-10T00:24:19.979Z"
+      "lastModified": "2025-10-10T07:56:33.290Z"
     },
     "works": {
       "$ref": "./works",
-      "lastModified": "2025-10-09T19:43:15.481Z"
+      "lastModified": "2025-10-10T17:10:58.847Z"
     }
   }
 }

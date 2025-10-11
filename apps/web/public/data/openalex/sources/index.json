@@ -1,0 +1,10 @@
+{
+  "lastUpdated": "2025-10-11T06:05:59.558Z",
+  "files": {},
+  "directories": {
+    "queries": {
+      "$ref": "./queries",
+      "lastModified": "2025-10-11T06:05:59.455Z"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "lastUpdated": "2025-10-11T06:05:59.557Z",
+  "files": {
+    "per_page__3D__20__26__search__3D__machine__2B__learning": {
+      "url": "https://api.openalex.org/sources?per_page=20&search=machine+learning",
+      "$ref": "./per_page__3D__20__26__search__3D__machine__2B__learning.json",
+      "lastRetrieved": "2025-10-11T06:05:59.452Z",
+      "contentHash": "8c4c13b133aa7424"
+    },
+    "per_page__3D__20__26__search__3D__mearman": {
+      "url": "https://api.openalex.org/sources?per_page=20&search=mearman",
+      "$ref": "./per_page__3D__20__26__search__3D__mearman.json",
+      "lastRetrieved": "2025-10-11T06:05:54.671Z",
+      "contentHash": "3b069018d22594e5"
+    }
+  },
+  "directories": {}
+}
