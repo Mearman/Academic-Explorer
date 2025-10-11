@@ -1,24 +1,51 @@
 /**
- * Entity page tracker component that logs when entity pages are visited
+ * Navigation tracker component that logs route changes and page visits
  */
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useLocation } from "@tanstack/react-router";
 import { useAppActivityStore } from "@/stores/app-activity-store";
 import { EntityDetectionService } from "@academic-explorer/graph";
 
 export function NavigationTracker() {
   const location = useLocation();
-  const { addEvent } = useAppActivityStore();
+  const { logNavigation, addEvent } = useAppActivityStore();
+  const previousLocationRef = useRef<string | null>(null);
+
+  // Log that the tracker is mounted
+  useEffect(() => {
+    console.log("NavigationTracker: Component mounted");
+    addEvent({
+      type: "component",
+      category: "lifecycle",
+      event: "mount",
+      description: "NavigationTracker component mounted",
+      severity: "debug",
+    });
+  }, []);
 
   useEffect(() => {
-    // Check if current location is an entity page or search page
+    console.log("NavigationTracker: useEffect running", {
+      pathname: location.pathname,
+      search: location.search,
+    });
+    const currentLocation =
+      location.pathname +
+      (Object.keys(location.search).length > 0
+        ? "?" +
+          new URLSearchParams(
+            location.search as Record<string, string>,
+          ).toString()
+        : "");
+
+    // Always log page visits with detailed metadata
     const pageInfo = extractPageInfo(
       location.pathname,
       location.search as Record<string, unknown>,
     );
 
     if (pageInfo) {
+      console.log("NavigationTracker: Logging page visit", pageInfo);
       // Log the page visit
       addEvent({
         type: "navigation",
@@ -30,18 +57,31 @@ export function NavigationTracker() {
         severity: "info",
         metadata: {
           ...pageInfo.metadata,
-          route:
-            location.pathname +
-            (Object.keys(location.search).length > 0
-              ? "?" +
-                new URLSearchParams(
-                  location.search as Record<string, string>,
-                ).toString()
-              : ""),
+          route: currentLocation,
         },
       });
     }
-  }, [location.pathname, location.search, addEvent]);
+
+    // Log navigation if there's a previous location
+    if (
+      previousLocationRef.current &&
+      previousLocationRef.current !== currentLocation
+    ) {
+      console.log("NavigationTracker: Location changed", {
+        from: previousLocationRef.current,
+        to: currentLocation,
+      });
+
+      logNavigation(previousLocationRef.current, currentLocation, {
+        searchParams:
+          Object.keys(location.search).length > 0 ? location.search : undefined,
+        ...(pageInfo?.metadata || {}),
+      });
+    }
+
+    // Update previous location
+    previousLocationRef.current = currentLocation;
+  }, [location.pathname, location.search]);
 
   // Helper function to extract page information from pathname and search
   const extractPageInfo = (
@@ -106,7 +146,12 @@ export function NavigationTracker() {
               entityType: pageType,
               searchQuery: query,
               filters: filters || undefined,
-              searchParams: search,
+              searchParams:
+                Object.keys(search).length > 0
+                  ? new URLSearchParams(
+                      search as Record<string, string>,
+                    ).toString()
+                  : undefined,
             },
           };
         }

@@ -14,11 +14,7 @@ function HistoryPage() {
         <HistoryManager
           onNavigate={(url) => {
             // Handle navigation to historical URLs
-            if (url.startsWith("/")) {
-              void navigate({ to: url });
-            } else {
-              window.location.href = url;
-            }
+            window.location.href = `/#${url}`;
           }}
         />
       </div>
