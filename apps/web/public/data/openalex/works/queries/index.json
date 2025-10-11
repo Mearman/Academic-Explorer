@@ -1,0 +1,18 @@
+{
+  "lastUpdated": "2025-10-11T09:04:46.364Z",
+  "files": {
+    "filter__3D__author.id__3A__A5017898742__26__page__3D__1__26__per_page__3D__50": {
+      "url": "https://api.openalex.org/works?filter=author.id:A5017898742&page=1&per_page=50",
+      "$ref": "./filter__3D__author.id__3A__A5017898742__26__page__3D__1__26__per_page__3D__50.json",
+      "lastRetrieved": "2025-10-11T09:04:46.255Z",
+      "contentHash": "3bf7a5aa2508427b"
+    },
+    "page__3D__1__26__per_page__3D__50": {
+      "url": "https://api.openalex.org/works?page=1&per_page=50",
+      "$ref": "./page__3D__1__26__per_page__3D__50.json",
+      "lastRetrieved": "2025-10-11T09:04:46.209Z",
+      "contentHash": "ac5b58ddaedb1aea"
+    }
+  },
+  "directories": {}
+}
