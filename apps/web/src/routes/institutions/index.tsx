@@ -1,14 +1,32 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useSearch } from "@tanstack/react-router";
+import { EntityList, type ColumnConfig } from "@/components/EntityList";
+import { createFilterBuilder } from "@academic-explorer/client";
 
 export const Route = createFileRoute("/institutions/")({
   component: InstitutionsListRoute,
 });
 
+const institutionsColumns: ColumnConfig[] = [
+  { key: "display_name", header: "Name" },
+  { key: "country_code", header: "Country" },
+  { key: "type", header: "Type" },
+  { key: "works_count", header: "Works" },
+  { key: "cited_by_count", header: "Citations" },
+];
+
 function InstitutionsListRoute() {
+  const search = useSearch({ from: "/institutions/" }) as { filter?: string };
+  const filterBuilder = createFilterBuilder();
+  const urlFilters = search.filter
+    ? filterBuilder.parseFilterString(search.filter)
+    : undefined;
+
   return (
-    <div>
-      <h1>Institutions</h1>
-      <div data-testid="table">Institutions table placeholder</div>
-    </div>
+    <EntityList
+      entityType="institutions"
+      columns={institutionsColumns}
+      title="Institutions"
+      urlFilters={urlFilters}
+    />
   );
 }
