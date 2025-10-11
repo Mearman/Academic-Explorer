@@ -1,33 +1,33 @@
 import {
-    Badge,
-    Button,
-    Card,
-    Combobox,
-    Group,
-    Pill,
-    PillsInput,
-    Stack,
-    Text,
-    useCombobox,
+  Badge,
+  Button,
+  Card,
+  Combobox,
+  Group,
+  Pill,
+  PillsInput,
+  Stack,
+  Text,
+  useCombobox,
 } from "@mantine/core";
 import { IconX } from "@tabler/icons-react";
 import { useState } from "react";
 
-export interface FieldSelectorProps {
-  availableFields: string[];
-  selectedFields: string[];
-  onFieldsChange: (fields: string[]) => void;
+export interface FieldSelectorProps<T extends readonly string[] = readonly string[]> {
+  availableFields: T;
+  selectedFields: readonly string[];
+  onFieldsChange: (fields: readonly string[]) => void;
   title?: string;
   description?: string;
 }
 
-export function FieldSelector({
+export function FieldSelector<T extends readonly string[] = readonly string[]>({
   availableFields,
   selectedFields,
   onFieldsChange,
   title = "Select Fields",
   description = "Choose which fields to include in the response",
-}: FieldSelectorProps) {
+}: FieldSelectorProps<T>) {
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
     onDropdownOpen: () => combobox.updateSelectedOptionIndex("active"),
