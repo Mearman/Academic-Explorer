@@ -22,12 +22,14 @@ import { Route as SplatRouteImport } from './routes/$_'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WorksIndexRouteImport } from './routes/works/index'
 import { Route as TopicsIndexRouteImport } from './routes/topics/index'
+import { Route as TextIndexRouteImport } from './routes/text/index'
 import { Route as SourcesIndexRouteImport } from './routes/sources/index'
 import { Route as PublishersIndexRouteImport } from './routes/publishers/index'
 import { Route as KeywordsIndexRouteImport } from './routes/keywords/index'
 import { Route as InstitutionsIndexRouteImport } from './routes/institutions/index'
 import { Route as FundersIndexRouteImport } from './routes/funders/index'
 import { Route as ConceptsIndexRouteImport } from './routes/concepts/index'
+import { Route as AutocompleteIndexRouteImport } from './routes/autocomplete/index'
 import { Route as AuthorsIndexRouteImport } from './routes/authors/index'
 import { Route as WorksWorkIdRouteImport } from './routes/works/$workId'
 import { Route as TopicsTopicIdRouteImport } from './routes/topics/$topicId'
@@ -41,7 +43,15 @@ import { Route as EvaluationResultsRouteImport } from './routes/evaluation/resul
 import { Route as EvaluationDatasetsRouteImport } from './routes/evaluation/datasets'
 import { Route as AuthorsAuthorIdRouteImport } from './routes/authors/$authorId'
 import { Route as ApiOpenalexOrgSplatRouteImport } from './routes/api-openalex-org/$'
+import { Route as TextTopicsIndexRouteImport } from './routes/text/topics/index'
+import { Route as TextKeywordsIndexRouteImport } from './routes/text/keywords/index'
+import { Route as TextConceptsIndexRouteImport } from './routes/text/concepts/index'
 import { Route as AutocompleteWorksIndexRouteImport } from './routes/autocomplete/works/index'
+import { Route as AutocompleteSourcesIndexRouteImport } from './routes/autocomplete/sources/index'
+import { Route as AutocompletePublishersIndexRouteImport } from './routes/autocomplete/publishers/index'
+import { Route as AutocompleteInstitutionsIndexRouteImport } from './routes/autocomplete/institutions/index'
+import { Route as AutocompleteFundersIndexRouteImport } from './routes/autocomplete/funders/index'
+import { Route as AutocompleteConceptsIndexRouteImport } from './routes/autocomplete/concepts/index'
 import { Route as AutocompleteAuthorsIndexRouteImport } from './routes/autocomplete/authors/index'
 import { Route as WorksDoiDoiRouteImport } from './routes/works/doi.$doi'
 import { Route as SourcesIssnIssnRouteImport } from './routes/sources/issn.$issn'
@@ -114,6 +124,11 @@ const TopicsIndexRoute = TopicsIndexRouteImport.update({
   path: '/topics/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TextIndexRoute = TextIndexRouteImport.update({
+  id: '/text/',
+  path: '/text/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SourcesIndexRoute = SourcesIndexRouteImport.update({
   id: '/sources/',
   path: '/sources/',
@@ -142,6 +157,11 @@ const FundersIndexRoute = FundersIndexRouteImport.update({
 const ConceptsIndexRoute = ConceptsIndexRouteImport.update({
   id: '/concepts/',
   path: '/concepts/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AutocompleteIndexRoute = AutocompleteIndexRouteImport.update({
+  id: '/autocomplete/',
+  path: '/autocomplete/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthorsIndexRoute = AuthorsIndexRouteImport.update({
@@ -210,11 +230,56 @@ const ApiOpenalexOrgSplatRoute = ApiOpenalexOrgSplatRouteImport.update({
   path: '/api-openalex-org/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TextTopicsIndexRoute = TextTopicsIndexRouteImport.update({
+  id: '/text/topics/',
+  path: '/text/topics/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TextKeywordsIndexRoute = TextKeywordsIndexRouteImport.update({
+  id: '/text/keywords/',
+  path: '/text/keywords/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TextConceptsIndexRoute = TextConceptsIndexRouteImport.update({
+  id: '/text/concepts/',
+  path: '/text/concepts/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AutocompleteWorksIndexRoute = AutocompleteWorksIndexRouteImport.update({
   id: '/autocomplete/works/',
   path: '/autocomplete/works/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AutocompleteSourcesIndexRoute =
+  AutocompleteSourcesIndexRouteImport.update({
+    id: '/autocomplete/sources/',
+    path: '/autocomplete/sources/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AutocompletePublishersIndexRoute =
+  AutocompletePublishersIndexRouteImport.update({
+    id: '/autocomplete/publishers/',
+    path: '/autocomplete/publishers/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AutocompleteInstitutionsIndexRoute =
+  AutocompleteInstitutionsIndexRouteImport.update({
+    id: '/autocomplete/institutions/',
+    path: '/autocomplete/institutions/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AutocompleteFundersIndexRoute =
+  AutocompleteFundersIndexRouteImport.update({
+    id: '/autocomplete/funders/',
+    path: '/autocomplete/funders/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AutocompleteConceptsIndexRoute =
+  AutocompleteConceptsIndexRouteImport.update({
+    id: '/autocomplete/concepts/',
+    path: '/autocomplete/concepts/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AutocompleteAuthorsIndexRoute =
   AutocompleteAuthorsIndexRouteImport.update({
     id: '/autocomplete/authors/',
@@ -272,12 +337,14 @@ export interface FileRoutesByFullPath {
   '/topics/$topicId': typeof TopicsTopicIdRoute
   '/works/$workId': typeof WorksWorkIdRoute
   '/authors': typeof AuthorsIndexRoute
+  '/autocomplete': typeof AutocompleteIndexRoute
   '/concepts': typeof ConceptsIndexRoute
   '/funders': typeof FundersIndexRoute
   '/institutions': typeof InstitutionsIndexRoute
   '/keywords': typeof KeywordsIndexRoute
   '/publishers': typeof PublishersIndexRoute
   '/sources': typeof SourcesIndexRoute
+  '/text': typeof TextIndexRoute
   '/topics': typeof TopicsIndexRoute
   '/works': typeof WorksIndexRoute
   '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
@@ -286,7 +353,15 @@ export interface FileRoutesByFullPath {
   '/sources/issn/$issn': typeof SourcesIssnIssnRoute
   '/works/doi/$doi': typeof WorksDoiDoiRoute
   '/autocomplete/authors': typeof AutocompleteAuthorsIndexRoute
+  '/autocomplete/concepts': typeof AutocompleteConceptsIndexRoute
+  '/autocomplete/funders': typeof AutocompleteFundersIndexRoute
+  '/autocomplete/institutions': typeof AutocompleteInstitutionsIndexRoute
+  '/autocomplete/publishers': typeof AutocompletePublishersIndexRoute
+  '/autocomplete/sources': typeof AutocompleteSourcesIndexRoute
   '/autocomplete/works': typeof AutocompleteWorksIndexRoute
+  '/text/concepts': typeof TextConceptsIndexRoute
+  '/text/keywords': typeof TextKeywordsIndexRoute
+  '/text/topics': typeof TextTopicsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -313,12 +388,14 @@ export interface FileRoutesByTo {
   '/topics/$topicId': typeof TopicsTopicIdRoute
   '/works/$workId': typeof WorksWorkIdRoute
   '/authors': typeof AuthorsIndexRoute
+  '/autocomplete': typeof AutocompleteIndexRoute
   '/concepts': typeof ConceptsIndexRoute
   '/funders': typeof FundersIndexRoute
   '/institutions': typeof InstitutionsIndexRoute
   '/keywords': typeof KeywordsIndexRoute
   '/publishers': typeof PublishersIndexRoute
   '/sources': typeof SourcesIndexRoute
+  '/text': typeof TextIndexRoute
   '/topics': typeof TopicsIndexRoute
   '/works': typeof WorksIndexRoute
   '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
@@ -327,7 +404,15 @@ export interface FileRoutesByTo {
   '/sources/issn/$issn': typeof SourcesIssnIssnRoute
   '/works/doi/$doi': typeof WorksDoiDoiRoute
   '/autocomplete/authors': typeof AutocompleteAuthorsIndexRoute
+  '/autocomplete/concepts': typeof AutocompleteConceptsIndexRoute
+  '/autocomplete/funders': typeof AutocompleteFundersIndexRoute
+  '/autocomplete/institutions': typeof AutocompleteInstitutionsIndexRoute
+  '/autocomplete/publishers': typeof AutocompletePublishersIndexRoute
+  '/autocomplete/sources': typeof AutocompleteSourcesIndexRoute
   '/autocomplete/works': typeof AutocompleteWorksIndexRoute
+  '/text/concepts': typeof TextConceptsIndexRoute
+  '/text/keywords': typeof TextKeywordsIndexRoute
+  '/text/topics': typeof TextTopicsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -355,12 +440,14 @@ export interface FileRoutesById {
   '/topics/$topicId': typeof TopicsTopicIdRoute
   '/works/$workId': typeof WorksWorkIdRoute
   '/authors/': typeof AuthorsIndexRoute
+  '/autocomplete/': typeof AutocompleteIndexRoute
   '/concepts/': typeof ConceptsIndexRoute
   '/funders/': typeof FundersIndexRoute
   '/institutions/': typeof InstitutionsIndexRoute
   '/keywords/': typeof KeywordsIndexRoute
   '/publishers/': typeof PublishersIndexRoute
   '/sources/': typeof SourcesIndexRoute
+  '/text/': typeof TextIndexRoute
   '/topics/': typeof TopicsIndexRoute
   '/works/': typeof WorksIndexRoute
   '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
@@ -369,7 +456,15 @@ export interface FileRoutesById {
   '/sources/issn/$issn': typeof SourcesIssnIssnRoute
   '/works/doi/$doi': typeof WorksDoiDoiRoute
   '/autocomplete/authors/': typeof AutocompleteAuthorsIndexRoute
+  '/autocomplete/concepts/': typeof AutocompleteConceptsIndexRoute
+  '/autocomplete/funders/': typeof AutocompleteFundersIndexRoute
+  '/autocomplete/institutions/': typeof AutocompleteInstitutionsIndexRoute
+  '/autocomplete/publishers/': typeof AutocompletePublishersIndexRoute
+  '/autocomplete/sources/': typeof AutocompleteSourcesIndexRoute
   '/autocomplete/works/': typeof AutocompleteWorksIndexRoute
+  '/text/concepts/': typeof TextConceptsIndexRoute
+  '/text/keywords/': typeof TextKeywordsIndexRoute
+  '/text/topics/': typeof TextTopicsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -398,12 +493,14 @@ export interface FileRouteTypes {
     | '/topics/$topicId'
     | '/works/$workId'
     | '/authors'
+    | '/autocomplete'
     | '/concepts'
     | '/funders'
     | '/institutions'
     | '/keywords'
     | '/publishers'
     | '/sources'
+    | '/text'
     | '/topics'
     | '/works'
     | '/authors/orcid/$orcid'
@@ -412,7 +509,15 @@ export interface FileRouteTypes {
     | '/sources/issn/$issn'
     | '/works/doi/$doi'
     | '/autocomplete/authors'
+    | '/autocomplete/concepts'
+    | '/autocomplete/funders'
+    | '/autocomplete/institutions'
+    | '/autocomplete/publishers'
+    | '/autocomplete/sources'
     | '/autocomplete/works'
+    | '/text/concepts'
+    | '/text/keywords'
+    | '/text/topics'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -439,12 +544,14 @@ export interface FileRouteTypes {
     | '/topics/$topicId'
     | '/works/$workId'
     | '/authors'
+    | '/autocomplete'
     | '/concepts'
     | '/funders'
     | '/institutions'
     | '/keywords'
     | '/publishers'
     | '/sources'
+    | '/text'
     | '/topics'
     | '/works'
     | '/authors/orcid/$orcid'
@@ -453,7 +560,15 @@ export interface FileRouteTypes {
     | '/sources/issn/$issn'
     | '/works/doi/$doi'
     | '/autocomplete/authors'
+    | '/autocomplete/concepts'
+    | '/autocomplete/funders'
+    | '/autocomplete/institutions'
+    | '/autocomplete/publishers'
+    | '/autocomplete/sources'
     | '/autocomplete/works'
+    | '/text/concepts'
+    | '/text/keywords'
+    | '/text/topics'
   id:
     | '__root__'
     | '/'
@@ -480,12 +595,14 @@ export interface FileRouteTypes {
     | '/topics/$topicId'
     | '/works/$workId'
     | '/authors/'
+    | '/autocomplete/'
     | '/concepts/'
     | '/funders/'
     | '/institutions/'
     | '/keywords/'
     | '/publishers/'
     | '/sources/'
+    | '/text/'
     | '/topics/'
     | '/works/'
     | '/authors/orcid/$orcid'
@@ -494,7 +611,15 @@ export interface FileRouteTypes {
     | '/sources/issn/$issn'
     | '/works/doi/$doi'
     | '/autocomplete/authors/'
+    | '/autocomplete/concepts/'
+    | '/autocomplete/funders/'
+    | '/autocomplete/institutions/'
+    | '/autocomplete/publishers/'
+    | '/autocomplete/sources/'
     | '/autocomplete/works/'
+    | '/text/concepts/'
+    | '/text/keywords/'
+    | '/text/topics/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -519,12 +644,14 @@ export interface RootRouteChildren {
   TopicsTopicIdRoute: typeof TopicsTopicIdRoute
   WorksWorkIdRoute: typeof WorksWorkIdRoute
   AuthorsIndexRoute: typeof AuthorsIndexRoute
+  AutocompleteIndexRoute: typeof AutocompleteIndexRoute
   ConceptsIndexRoute: typeof ConceptsIndexRoute
   FundersIndexRoute: typeof FundersIndexRoute
   InstitutionsIndexRoute: typeof InstitutionsIndexRoute
   KeywordsIndexRoute: typeof KeywordsIndexRoute
   PublishersIndexRoute: typeof PublishersIndexRoute
   SourcesIndexRoute: typeof SourcesIndexRoute
+  TextIndexRoute: typeof TextIndexRoute
   TopicsIndexRoute: typeof TopicsIndexRoute
   WorksIndexRoute: typeof WorksIndexRoute
   AuthorsOrcidOrcidRoute: typeof AuthorsOrcidOrcidRoute
@@ -533,7 +660,15 @@ export interface RootRouteChildren {
   SourcesIssnIssnRoute: typeof SourcesIssnIssnRoute
   WorksDoiDoiRoute: typeof WorksDoiDoiRoute
   AutocompleteAuthorsIndexRoute: typeof AutocompleteAuthorsIndexRoute
+  AutocompleteConceptsIndexRoute: typeof AutocompleteConceptsIndexRoute
+  AutocompleteFundersIndexRoute: typeof AutocompleteFundersIndexRoute
+  AutocompleteInstitutionsIndexRoute: typeof AutocompleteInstitutionsIndexRoute
+  AutocompletePublishersIndexRoute: typeof AutocompletePublishersIndexRoute
+  AutocompleteSourcesIndexRoute: typeof AutocompleteSourcesIndexRoute
   AutocompleteWorksIndexRoute: typeof AutocompleteWorksIndexRoute
+  TextConceptsIndexRoute: typeof TextConceptsIndexRoute
+  TextKeywordsIndexRoute: typeof TextKeywordsIndexRoute
+  TextTopicsIndexRoute: typeof TextTopicsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -629,6 +764,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TopicsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/text/': {
+      id: '/text/'
+      path: '/text'
+      fullPath: '/text'
+      preLoaderRoute: typeof TextIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sources/': {
       id: '/sources/'
       path: '/sources'
@@ -669,6 +811,13 @@ declare module '@tanstack/react-router' {
       path: '/concepts'
       fullPath: '/concepts'
       preLoaderRoute: typeof ConceptsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/autocomplete/': {
+      id: '/autocomplete/'
+      path: '/autocomplete'
+      fullPath: '/autocomplete'
+      preLoaderRoute: typeof AutocompleteIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/authors/': {
@@ -762,11 +911,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiOpenalexOrgSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/text/topics/': {
+      id: '/text/topics/'
+      path: '/text/topics'
+      fullPath: '/text/topics'
+      preLoaderRoute: typeof TextTopicsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/text/keywords/': {
+      id: '/text/keywords/'
+      path: '/text/keywords'
+      fullPath: '/text/keywords'
+      preLoaderRoute: typeof TextKeywordsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/text/concepts/': {
+      id: '/text/concepts/'
+      path: '/text/concepts'
+      fullPath: '/text/concepts'
+      preLoaderRoute: typeof TextConceptsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/autocomplete/works/': {
       id: '/autocomplete/works/'
       path: '/autocomplete/works'
       fullPath: '/autocomplete/works'
       preLoaderRoute: typeof AutocompleteWorksIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/autocomplete/sources/': {
+      id: '/autocomplete/sources/'
+      path: '/autocomplete/sources'
+      fullPath: '/autocomplete/sources'
+      preLoaderRoute: typeof AutocompleteSourcesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/autocomplete/publishers/': {
+      id: '/autocomplete/publishers/'
+      path: '/autocomplete/publishers'
+      fullPath: '/autocomplete/publishers'
+      preLoaderRoute: typeof AutocompletePublishersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/autocomplete/institutions/': {
+      id: '/autocomplete/institutions/'
+      path: '/autocomplete/institutions'
+      fullPath: '/autocomplete/institutions'
+      preLoaderRoute: typeof AutocompleteInstitutionsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/autocomplete/funders/': {
+      id: '/autocomplete/funders/'
+      path: '/autocomplete/funders'
+      fullPath: '/autocomplete/funders'
+      preLoaderRoute: typeof AutocompleteFundersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/autocomplete/concepts/': {
+      id: '/autocomplete/concepts/'
+      path: '/autocomplete/concepts'
+      fullPath: '/autocomplete/concepts'
+      preLoaderRoute: typeof AutocompleteConceptsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/autocomplete/authors/': {
@@ -861,12 +1066,14 @@ const rootRouteChildren: RootRouteChildren = {
   TopicsTopicIdRoute: TopicsTopicIdRoute,
   WorksWorkIdRoute: WorksWorkIdRoute,
   AuthorsIndexRoute: AuthorsIndexRoute,
+  AutocompleteIndexRoute: AutocompleteIndexRoute,
   ConceptsIndexRoute: ConceptsIndexRoute,
   FundersIndexRoute: FundersIndexRoute,
   InstitutionsIndexRoute: InstitutionsIndexRoute,
   KeywordsIndexRoute: KeywordsIndexRoute,
   PublishersIndexRoute: PublishersIndexRoute,
   SourcesIndexRoute: SourcesIndexRoute,
+  TextIndexRoute: TextIndexRoute,
   TopicsIndexRoute: TopicsIndexRoute,
   WorksIndexRoute: WorksIndexRoute,
   AuthorsOrcidOrcidRoute: AuthorsOrcidOrcidRoute,
@@ -875,7 +1082,15 @@ const rootRouteChildren: RootRouteChildren = {
   SourcesIssnIssnRoute: SourcesIssnIssnRoute,
   WorksDoiDoiRoute: WorksDoiDoiRoute,
   AutocompleteAuthorsIndexRoute: AutocompleteAuthorsIndexRoute,
+  AutocompleteConceptsIndexRoute: AutocompleteConceptsIndexRoute,
+  AutocompleteFundersIndexRoute: AutocompleteFundersIndexRoute,
+  AutocompleteInstitutionsIndexRoute: AutocompleteInstitutionsIndexRoute,
+  AutocompletePublishersIndexRoute: AutocompletePublishersIndexRoute,
+  AutocompleteSourcesIndexRoute: AutocompleteSourcesIndexRoute,
   AutocompleteWorksIndexRoute: AutocompleteWorksIndexRoute,
+  TextConceptsIndexRoute: TextConceptsIndexRoute,
+  TextKeywordsIndexRoute: TextKeywordsIndexRoute,
+  TextTopicsIndexRoute: TextTopicsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

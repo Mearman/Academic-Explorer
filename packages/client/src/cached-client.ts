@@ -15,15 +15,16 @@ import { TextAnalysisApi } from "./entities/text-analysis";
 import { TopicsApi } from "./entities/topics";
 import { WorksApi } from "./entities/works";
 import {
-  staticDataProvider,
-  type CacheStatistics,
-  type EnvironmentInfo,
+    staticDataProvider,
+    type CacheStatistics,
+    type EnvironmentInfo,
 } from "./internal/static-data-provider";
 import {
-  cleanOpenAlexId,
-  toStaticEntityType,
+    cleanOpenAlexId,
+    toStaticEntityType,
 } from "./internal/static-data-utils";
 import type { OpenAlexEntity } from "./types";
+import { AutocompleteApi } from "./utils/autocomplete";
 
 export interface ClientApis {
   works: WorksApi;
@@ -36,6 +37,7 @@ export interface ClientApis {
   keywords: KeywordsApi;
   textAnalysis: TextAnalysisApi;
   concepts: ConceptsApi;
+  autocomplete: AutocompleteApi;
   getEntity: (id: string) => Promise<OpenAlexEntity | null>;
 }
 
@@ -80,6 +82,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       keywords: new KeywordsApi(this),
       textAnalysis: new TextAnalysisApi(this),
       concepts: new ConceptsApi(this),
+      autocomplete: new AutocompleteApi(this),
       getEntity: this.getEntityWithStaticCache.bind(this) as (
         id: string,
       ) => Promise<OpenAlexEntity | null>,
