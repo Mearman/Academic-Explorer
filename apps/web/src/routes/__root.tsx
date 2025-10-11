@@ -47,17 +47,24 @@ export const Route = createRootRoute({
 
       // Extract the raw query string from href (which doesn't include the # symbol)
       const queryIndex = href.indexOf("?");
-      const rawQueryString = queryIndex !== -1 ? href.substring(queryIndex + 1) : "";
+      const rawQueryString =
+        queryIndex !== -1 ? href.substring(queryIndex + 1) : "";
 
-      const newUrl = rawQueryString ? `${cleanPath}?${rawQueryString}` : cleanPath;
+      const newUrl = rawQueryString
+        ? `${cleanPath}?${rawQueryString}`
+        : cleanPath;
 
-      logger.debug("routing", "Detected OpenAlex URL in pathname, redirecting", {
-        originalPath: pathname,
-        cleanPath,
-        rawQueryString,
-        newUrl,
-        href,
-      });
+      logger.debug(
+        "routing",
+        "Detected OpenAlex URL in pathname, redirecting",
+        {
+          originalPath: pathname,
+          cleanPath,
+          rawQueryString,
+          newUrl,
+          href,
+        },
+      );
 
       // Use window.location to preserve exact query string encoding
       if (typeof window !== "undefined") {

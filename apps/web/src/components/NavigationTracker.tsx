@@ -14,7 +14,6 @@ export function NavigationTracker() {
 
   // Log that the tracker is mounted
   useEffect(() => {
-    console.log("NavigationTracker: Component mounted");
     addEvent({
       type: "component",
       category: "lifecycle",
@@ -22,7 +21,7 @@ export function NavigationTracker() {
       description: "NavigationTracker component mounted",
       severity: "debug",
     });
-  }, []);
+  }, [addEvent]);
 
   useEffect(() => {
     console.log("NavigationTracker: useEffect running", {
@@ -45,7 +44,7 @@ export function NavigationTracker() {
     );
 
     if (pageInfo) {
-      console.log("NavigationTracker: Logging page visit", pageInfo);
+      
       // Log the page visit
       addEvent({
         type: "navigation",
@@ -81,7 +80,7 @@ export function NavigationTracker() {
 
     // Update previous location
     previousLocationRef.current = currentLocation;
-  }, [location.pathname, location.search]);
+  }, [location.pathname, location.search, addEvent, logNavigation]);
 
   // Helper function to extract page information from pathname and search
   const extractPageInfo = (
