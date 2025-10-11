@@ -3,13 +3,14 @@ import { useGraphData } from "@/hooks/use-graph-data";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { useGraphStore } from "@/stores/graph-store";
+import { decodeUrlQueryParams } from "@/utils/url-helpers";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { IconBookmark, IconBookmarkOff } from "@tabler/icons-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Work } from "@academic-explorer/client";
 
 function WorkRoute() {
@@ -21,6 +22,14 @@ function WorkRoute() {
 
   const entityType = "work" as const;
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+  const hasDecodedUrlRef = useRef(false);
+
+  // Decode URL-encoded query parameters on mount
+  useEffect(() => {
+    if (hasDecodedUrlRef.current) return;
+    hasDecodedUrlRef.current = true;
+    decodeUrlQueryParams();
+  }, []);
 
   const graphData = useGraphData();
   const { loadEntity } = graphData;

@@ -3,6 +3,7 @@ import { useGraphData } from "@/hooks/use-graph-data";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { useGraphStore } from "@/stores/graph-store";
+import { decodeUrlQueryParams } from "@/utils/url-helpers";
 import type { Author } from "@academic-explorer/client";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
@@ -10,7 +11,7 @@ import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { IconBookmark, IconBookmarkOff } from "@tabler/icons-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const AUTHOR_ROUTE_PATH = "/authors/$authorId";
 
@@ -27,6 +28,15 @@ function AuthorRoute() {
 
   const entityType = "author" as const;
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+  const hasDecodedUrlRef = useRef(false);
+
+  // Decode URL-encoded query parameters on mount
+  useEffect(() => {
+    // Only run once
+    if (hasDecodedUrlRef.current) return;
+    hasDecodedUrlRef.current = true;
+    decodeUrlQueryParams();
+  }, []);
 
   // DEBUGGING: Systematically re-enable hooks one by one
   // Step 1: ✅ useGraphStore works fine
@@ -92,7 +102,7 @@ function AuthorRoute() {
         );
       }
     }
-  }, [authorId, navigate]);
+  }, [authorId, cleanAuthorId, navigate]);
 
   // Step 3: Testing useEntityDocumentTitle hook
   useEntityDocumentTitle(rawEntityData.data);
@@ -127,7 +137,7 @@ function AuthorRoute() {
         replace: true,
       });
     }
-  }, [authorId, navigate]);
+  }, [authorId, cleanAuthorId, navigate]);
 
   // Load graph data
   useEffect(() => {

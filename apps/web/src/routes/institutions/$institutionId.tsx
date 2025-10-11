@@ -1,10 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useGraphStore } from "@/stores/graph-store";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useEntityDocumentTitle } from "@/hooks/use-document-title";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
+import { decodeUrlQueryParams } from "@/utils/url-helpers";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
@@ -19,6 +20,14 @@ function InstitutionRoute() {
 
   const entityType = "institution" as const;
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+  const hasDecodedUrlRef = useRef(false);
+
+  // Decode URL-encoded query parameters on mount
+  useEffect(() => {
+    if (hasDecodedUrlRef.current) return;
+    hasDecodedUrlRef.current = true;
+    decodeUrlQueryParams();
+  }, []);
 
   const graphData = useGraphData();
   const { loadEntity } = graphData;
