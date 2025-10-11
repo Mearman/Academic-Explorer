@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SearchRouteImport } from './routes/search'
+import { Route as HistoryRouteImport } from './routes/history'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as EvaluationRouteImport } from './routes/evaluation'
 import { Route as ErrorTestRouteImport } from './routes/error-test'
@@ -62,6 +63,11 @@ import { Route as AuthorsOrcidOrcidRouteImport } from './routes/authors/orcid.$o
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HistoryRoute = HistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExploreRoute = ExploreRouteImport.update({
@@ -323,6 +329,7 @@ export interface FileRoutesByFullPath {
   '/error-test': typeof ErrorTestRoute
   '/evaluation': typeof EvaluationRouteWithChildren
   '/explore': typeof ExploreRouteWithChildren
+  '/history': typeof HistoryRoute
   '/search': typeof SearchRoute
   '/api-openalex-org/$': typeof ApiOpenalexOrgSplatRoute
   '/authors/$authorId': typeof AuthorsAuthorIdRoute
@@ -374,6 +381,7 @@ export interface FileRoutesByTo {
   '/error-test': typeof ErrorTestRoute
   '/evaluation': typeof EvaluationRouteWithChildren
   '/explore': typeof ExploreRouteWithChildren
+  '/history': typeof HistoryRoute
   '/search': typeof SearchRoute
   '/api-openalex-org/$': typeof ApiOpenalexOrgSplatRoute
   '/authors/$authorId': typeof AuthorsAuthorIdRoute
@@ -426,6 +434,7 @@ export interface FileRoutesById {
   '/error-test': typeof ErrorTestRoute
   '/evaluation': typeof EvaluationRouteWithChildren
   '/explore': typeof ExploreRouteWithChildren
+  '/history': typeof HistoryRoute
   '/search': typeof SearchRoute
   '/api-openalex-org/$': typeof ApiOpenalexOrgSplatRoute
   '/authors/$authorId': typeof AuthorsAuthorIdRoute
@@ -479,6 +488,7 @@ export interface FileRouteTypes {
     | '/error-test'
     | '/evaluation'
     | '/explore'
+    | '/history'
     | '/search'
     | '/api-openalex-org/$'
     | '/authors/$authorId'
@@ -530,6 +540,7 @@ export interface FileRouteTypes {
     | '/error-test'
     | '/evaluation'
     | '/explore'
+    | '/history'
     | '/search'
     | '/api-openalex-org/$'
     | '/authors/$authorId'
@@ -581,6 +592,7 @@ export interface FileRouteTypes {
     | '/error-test'
     | '/evaluation'
     | '/explore'
+    | '/history'
     | '/search'
     | '/api-openalex-org/$'
     | '/authors/$authorId'
@@ -633,6 +645,7 @@ export interface RootRouteChildren {
   ErrorTestRoute: typeof ErrorTestRoute
   EvaluationRoute: typeof EvaluationRouteWithChildren
   ExploreRoute: typeof ExploreRouteWithChildren
+  HistoryRoute: typeof HistoryRoute
   SearchRoute: typeof SearchRoute
   ApiOpenalexOrgSplatRoute: typeof ApiOpenalexOrgSplatRoute
   AuthorsAuthorIdRoute: typeof AuthorsAuthorIdRoute
@@ -678,6 +691,13 @@ declare module '@tanstack/react-router' {
       path: '/search'
       fullPath: '/search'
       preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/history': {
+      id: '/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof HistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/explore': {
@@ -1055,6 +1075,7 @@ const rootRouteChildren: RootRouteChildren = {
   ErrorTestRoute: ErrorTestRoute,
   EvaluationRoute: EvaluationRouteWithChildren,
   ExploreRoute: ExploreRouteWithChildren,
+  HistoryRoute: HistoryRoute,
   SearchRoute: SearchRoute,
   ApiOpenalexOrgSplatRoute: ApiOpenalexOrgSplatRoute,
   AuthorsAuthorIdRoute: AuthorsAuthorIdRoute,

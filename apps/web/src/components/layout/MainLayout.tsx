@@ -230,6 +230,32 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               >
                 About
               </Link>
+              <Link
+                to="/history"
+                style={{
+                  color: colors.text.primary,
+                  textDecoration: "none",
+                  padding: "0.5rem 0.75rem",
+                  borderRadius: "6px",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                }}
+              >
+                History
+              </Link>
+              <Link
+                to="/bookmarks"
+                style={{
+                  color: colors.text.primary,
+                  textDecoration: "none",
+                  padding: "0.5rem 0.75rem",
+                  borderRadius: "6px",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                }}
+              >
+                Bookmarks
+              </Link>
             </nav>
 
             <ActionIcon
