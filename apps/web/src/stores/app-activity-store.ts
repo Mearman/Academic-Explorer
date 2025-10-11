@@ -6,10 +6,44 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { logger } from "@academic-explorer/utils/logger";
+import Dexie, { type Table } from "dexie";
+
+// Dexie database for persistent app activity storage
+interface StoredAppActivityEvent extends Omit<AppActivityEvent, "id"> {
+  id?: number;
+}
+
+class AppActivityDB extends Dexie {
+  appActivityEvents!: Table<StoredAppActivityEvent, number>;
+
+  constructor() {
+    super("app-activity");
+
+    this.version(1).stores({
+      appActivityEvents: "++id, type, category, event, timestamp, severity",
+    });
+  }
+}
+
+// Singleton database instance
+let dbInstance: AppActivityDB | null = null;
+const getDB = (): AppActivityDB => {
+  if (!dbInstance) {
+    dbInstance = new AppActivityDB();
+  }
+  return dbInstance;
+};
 
 export interface AppActivityEvent {
   id: string;
-  type: "user" | "system" | "navigation" | "component" | "performance" | "error";
+  type:
+    | "user"
+    | "system"
+    | "navigation"
+    | "component"
+    | "performance"
+    | "error"
+    | "api";
   category: "interaction" | "lifecycle" | "data" | "ui" | "background";
   event: string;
   description: string;
@@ -23,6 +57,12 @@ export interface AppActivityEvent {
     entityType?: string;
     entityId?: string;
     userId?: string;
+    queryParams?: Record<string, unknown>;
+    searchQuery?: string;
+    filters?: string;
+    search?: string;
+    pageType?: string;
+    searchParams?: Record<string, unknown>;
     performance?: {
       memory?: number;
       timing?: number;
@@ -41,6 +81,7 @@ export interface AppActivityStats {
   userInteractions: number;
   componentLifecycleEvents: number;
   navigationEvents: number;
+  apiCallEvents: number;
   averageEventFrequency: number;
   memoryUsage?: number;
   performanceScore?: number;
@@ -71,15 +112,47 @@ interface AppActivityState {
   removeEvent: (id: string) => void;
   clearOldEvents: () => void;
   clearAllEvents: () => void;
+  loadEvents: () => Promise<void>;
 
   // Convenience methods for common event types
-  logUserInteraction: (action: string, component?: string, metadata?: Record<string, unknown>) => void;
-  logNavigation: (from: string, to: string, metadata?: Record<string, unknown>) => void;
-  logComponentMount: (component: string, metadata?: Record<string, unknown>) => void;
-  logComponentUnmount: (component: string, metadata?: Record<string, unknown>) => void;
-  logPerformanceMetric: (metric: string, value: number, metadata?: Record<string, unknown>) => void;
-  logError: (error: string, component?: string, metadata?: Record<string, unknown>) => void;
-  logWarning: (warning: string, component?: string, metadata?: Record<string, unknown>) => void;
+  logUserInteraction: (
+    action: string,
+    component?: string,
+    metadata?: Record<string, unknown>,
+  ) => void;
+  logNavigation: (
+    from: string,
+    to: string,
+    metadata?: Record<string, unknown>,
+  ) => void;
+  logComponentMount: (
+    component: string,
+    metadata?: Record<string, unknown>,
+  ) => void;
+  logComponentUnmount: (
+    component: string,
+    metadata?: Record<string, unknown>,
+  ) => void;
+  logPerformanceMetric: (
+    metric: string,
+    value: number,
+    metadata?: Record<string, unknown>,
+  ) => void;
+  logError: (
+    error: string,
+    component?: string,
+    metadata?: Record<string, unknown>,
+  ) => void;
+  logWarning: (
+    warning: string,
+    component?: string,
+    metadata?: Record<string, unknown>,
+  ) => void;
+  logApiCall: (
+    entityType: string,
+    entityId?: string,
+    queryParams?: Record<string, unknown>,
+  ) => void;
 
   // Filter actions
   setTypeFilter: (types: string[]) => void;
@@ -96,26 +169,39 @@ interface AppActivityState {
   recomputeAll: () => void;
 }
 
-const generateEventId = () => `evt_${Date.now().toString()}_${Math.random().toString(36).substring(2, 11)}`;
+const generateEventId = () =>
+  `evt_${Date.now().toString()}_${Math.random().toString(36).substring(2, 11)}`;
 
-const computeRecentEvents = (events: Record<string, AppActivityEvent>): AppActivityEvent[] => {
+const computeRecentEvents = (
+  events: Record<string, AppActivityEvent>,
+): AppActivityEvent[] => {
   return Object.values(events)
     .sort((a, b) => b.timestamp - a.timestamp)
     .slice(0, 100); // Show last 100 events
 };
 
-const computeActivityStats = (events: Record<string, AppActivityEvent>): AppActivityStats => {
+const computeActivityStats = (
+  events: Record<string, AppActivityEvent>,
+): AppActivityStats => {
   const eventList = Object.values(events);
   const now = Date.now();
-  const fiveMinutesAgo = now - (5 * 60 * 1000);
-  const oneMinuteAgo = now - (60 * 1000);
+  const fiveMinutesAgo = now - 5 * 60 * 1000;
+  const oneMinuteAgo = now - 60 * 1000;
 
-  const recentEvents = eventList.filter(event => event.timestamp > fiveMinutesAgo);
-  const lastMinuteEvents = eventList.filter(event => event.timestamp > oneMinuteAgo);
+  const recentEvents = eventList.filter(
+    (event) => event.timestamp > fiveMinutesAgo,
+  );
+  const lastMinuteEvents = eventList.filter(
+    (event) => event.timestamp > oneMinuteAgo,
+  );
 
   // Calculate average event frequency (events per minute over last 5 minutes)
-  const timespanMinutes = Math.max(1, (now - Math.min(...eventList.map(e => e.timestamp))) / (60 * 1000));
-  const averageFrequency = eventList.length > 0 ? eventList.length / timespanMinutes : 0;
+  const timespanMinutes = Math.max(
+    1,
+    (now - Math.min(...eventList.map((e) => e.timestamp))) / (60 * 1000),
+  );
+  const averageFrequency =
+    eventList.length > 0 ? eventList.length / timespanMinutes : 0;
 
   const memoryUsage = getMemoryUsage();
   const performanceScore = calculatePerformanceScore(eventList);
@@ -124,11 +210,16 @@ const computeActivityStats = (events: Record<string, AppActivityEvent>): AppActi
     totalEvents: eventList.length,
     eventsLast5Min: recentEvents.length,
     eventsPerMinute: lastMinuteEvents.length,
-    errorCount: eventList.filter(event => event.severity === "error").length,
-    warningCount: eventList.filter(event => event.severity === "warning").length,
-    userInteractions: eventList.filter(event => event.type === "user").length,
-    componentLifecycleEvents: eventList.filter(event => event.type === "component").length,
-    navigationEvents: eventList.filter(event => event.type === "navigation").length,
+    errorCount: eventList.filter((event) => event.severity === "error").length,
+    warningCount: eventList.filter((event) => event.severity === "warning")
+      .length,
+    userInteractions: eventList.filter((event) => event.type === "user").length,
+    componentLifecycleEvents: eventList.filter(
+      (event) => event.type === "component",
+    ).length,
+    navigationEvents: eventList.filter((event) => event.type === "navigation")
+      .length,
+    apiCallEvents: eventList.filter((event) => event.type === "api").length,
     averageEventFrequency: averageFrequency,
     ...(memoryUsage !== undefined && { memoryUsage }),
     ...(performanceScore !== undefined && { performanceScore }),
@@ -141,52 +232,72 @@ const getMemoryUsage = (): number | undefined => {
   return undefined;
 };
 
-const calculatePerformanceScore = (events: AppActivityEvent[]): number | undefined => {
-  const performanceEvents = events.filter(e => e.type === "performance" && e.duration);
+const calculatePerformanceScore = (
+  events: AppActivityEvent[],
+): number | undefined => {
+  const performanceEvents = events.filter(
+    (e) => e.type === "performance" && e.duration,
+  );
   if (performanceEvents.length === 0) return undefined;
 
-  const averageDuration = performanceEvents.reduce((sum, e) => sum + (e.duration ?? 0), 0) / performanceEvents.length;
+  const averageDuration =
+    performanceEvents.reduce((sum, e) => sum + (e.duration ?? 0), 0) /
+    performanceEvents.length;
   // Score from 0-100 where lower duration = higher score
-  return Math.max(0, Math.min(100, 100 - (averageDuration / 10)));
+  return Math.max(0, Math.min(100, 100 - averageDuration / 10));
 };
 
 const computeFilteredEvents = (
   events: Record<string, AppActivityEvent>,
-  filters: AppActivityState["filters"]
+  filters: AppActivityState["filters"],
 ): AppActivityEvent[] => {
   const eventList = Object.values(events);
-  const cutoffTime = Date.now() - (filters.timeRange * 60 * 1000);
+  const cutoffTime = Date.now() - filters.timeRange * 60 * 1000;
 
-  return eventList.filter(event => {
-    // Time range filter
-    if (event.timestamp < cutoffTime) return false;
+  return eventList
+    .filter((event) => {
+      // Time range filter
+      if (event.timestamp < cutoffTime) return false;
 
-    // Type filter
-    if (filters.type.length > 0 && !filters.type.includes(event.type)) return false;
+      // Type filter
+      if (filters.type.length > 0 && !filters.type.includes(event.type))
+        return false;
 
-    // Category filter
-    if (filters.category.length > 0 && !filters.category.includes(event.category)) return false;
+      // Category filter
+      if (
+        filters.category.length > 0 &&
+        !filters.category.includes(event.category)
+      )
+        return false;
 
-    // Severity filter
-    if (filters.severity.length > 0 && !filters.severity.includes(event.severity)) return false;
+      // Severity filter
+      if (
+        filters.severity.length > 0 &&
+        !filters.severity.includes(event.severity)
+      )
+        return false;
 
-    // Search term filter
-    if (filters.searchTerm) {
-      const term = filters.searchTerm.toLowerCase();
-      const searchableText = [
-        event.event,
-        event.description,
-        event.metadata?.component,
-        event.metadata?.route,
-        event.metadata?.entityType,
-        event.metadata?.entityId
-      ].filter(Boolean).join(" ").toLowerCase();
+      // Search term filter
+      if (filters.searchTerm) {
+        const term = filters.searchTerm.toLowerCase();
+        const searchableText = [
+          event.event,
+          event.description,
+          event.metadata?.component,
+          event.metadata?.route,
+          event.metadata?.entityType,
+          event.metadata?.entityId,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
 
-      if (!searchableText.includes(term)) return false;
-    }
+        if (!searchableText.includes(term)) return false;
+      }
 
-    return true;
-  }).sort((a, b) => b.timestamp - a.timestamp);
+      return true;
+    })
+    .sort((a, b) => b.timestamp - a.timestamp);
 };
 
 export const useAppActivityStore = create<AppActivityState>()(
@@ -206,6 +317,7 @@ export const useAppActivityStore = create<AppActivityState>()(
       userInteractions: 0,
       componentLifecycleEvents: 0,
       navigationEvents: 0,
+      apiCallEvents: 0,
       averageEventFrequency: 0,
     },
     filteredEvents: [],
@@ -222,29 +334,51 @@ export const useAppActivityStore = create<AppActivityState>()(
     // Actions
     addEvent: (event) => {
       const id = generateEventId();
+      const fullEvent = {
+        ...event,
+        id,
+        timestamp: Date.now(),
+      };
 
-      set(state => {
-        state.events[id] = {
-          ...event,
-          id,
-          timestamp: Date.now(),
-        };
+      // Save to Dexie for persistence
+      getDB()
+        .appActivityEvents.add({
+          ...fullEvent,
+          id: undefined, // Let Dexie auto-generate numeric ID
+        })
+        .catch((error) => {
+          logger.error(
+            "ui",
+            "Failed to save event to Dexie",
+            { error },
+            "AppActivityStore",
+          );
+        });
+
+      // Update in-memory state
+      set((state) => {
+        state.events[id] = fullEvent;
       });
 
       get().recomputeAll();
 
-      logger.debug("ui", "App activity event added", {
-        id,
-        entityType: event.type,
-        event: event.event,
-        severity: event.severity,
-      }, "AppActivityStore");
+      logger.debug(
+        "ui",
+        "App activity event added",
+        {
+          id,
+          entityType: event.type,
+          event: event.event,
+          severity: event.severity,
+        },
+        "AppActivityStore",
+      );
 
       return id;
     },
 
     updateEvent: (id, updates) => {
-      set(state => {
+      set((state) => {
         const existingEvent = state.events[id];
         Object.assign(existingEvent, updates);
       });
@@ -253,7 +387,7 @@ export const useAppActivityStore = create<AppActivityState>()(
     },
 
     removeEvent: (id) => {
-      set(state => {
+      set((state) => {
         const { [id]: _removed, ...rest } = state.events;
         state.events = rest;
       });
@@ -271,29 +405,39 @@ export const useAppActivityStore = create<AppActivityState>()(
       const sorted = events.sort((a, b) => b.timestamp - a.timestamp);
       const toKeep = sorted.slice(0, maxHistorySize);
 
-      set(state => {
+      set((state) => {
         state.events = {};
-        toKeep.forEach(event => {
+        toKeep.forEach((event) => {
           state.events[event.id] = event;
         });
       });
 
       get().recomputeAll();
 
-      logger.debug("ui", "Cleared old app activity events", {
-        removed: events.length - toKeep.length,
-        kept: toKeep.length
-      }, "AppActivityStore");
+      logger.debug(
+        "ui",
+        "Cleared old app activity events",
+        {
+          removed: events.length - toKeep.length,
+          kept: toKeep.length,
+        },
+        "AppActivityStore",
+      );
     },
 
     clearAllEvents: () => {
-      set(state => {
+      set((state) => {
         state.events = {};
       });
 
       get().recomputeAll();
 
-      logger.debug("ui", "Cleared all app activity events", {}, "AppActivityStore");
+      logger.debug(
+        "ui",
+        "Cleared all app activity events",
+        {},
+        "AppActivityStore",
+      );
     },
 
     // Convenience methods for common event types
@@ -399,44 +543,59 @@ export const useAppActivityStore = create<AppActivityState>()(
       });
     },
 
+    logApiCall: (entityType, entityId, queryParams) => {
+      get().addEvent({
+        type: "api",
+        category: "data",
+        event: "api_call",
+        description: `API call to ${entityType}${entityId ? `/${entityId}` : ""}`,
+        severity: "info",
+        metadata: {
+          entityType,
+          entityId,
+          queryParams,
+        },
+      });
+    },
+
     // Filter actions
     setTypeFilter: (types) => {
-      set(state => {
+      set((state) => {
         state.filters.type = types;
       });
       get().recomputeFilteredEvents();
     },
 
     setCategoryFilter: (categories) => {
-      set(state => {
+      set((state) => {
         state.filters.category = categories;
       });
       get().recomputeFilteredEvents();
     },
 
     setSeverityFilter: (severities) => {
-      set(state => {
+      set((state) => {
         state.filters.severity = severities;
       });
       get().recomputeFilteredEvents();
     },
 
     setSearchTerm: (term) => {
-      set(state => {
+      set((state) => {
         state.filters.searchTerm = term;
       });
       get().recomputeFilteredEvents();
     },
 
     setTimeRange: (minutes) => {
-      set(state => {
+      set((state) => {
         state.filters.timeRange = minutes;
       });
       get().recomputeFilteredEvents();
     },
 
     clearFilters: () => {
-      set(state => {
+      set((state) => {
         state.filters = {
           type: [],
           category: [],
@@ -450,21 +609,57 @@ export const useAppActivityStore = create<AppActivityState>()(
 
     // Recomputation functions (called after mutations)
     recomputeRecentEvents: () => {
-      set(state => {
+      set((state) => {
         state.recentEvents = computeRecentEvents(state.events);
       });
     },
 
     recomputeActivityStats: () => {
-      set(state => {
+      set((state) => {
         state.activityStats = computeActivityStats(state.events);
       });
     },
 
     recomputeFilteredEvents: () => {
-      set(state => {
-        state.filteredEvents = computeFilteredEvents(state.events, state.filters);
+      set((state) => {
+        state.filteredEvents = computeFilteredEvents(
+          state.events,
+          state.filters,
+        );
       });
+    },
+
+    loadEvents: async () => {
+      try {
+        const dbEvents = await getDB()
+          .appActivityEvents.orderBy("timestamp")
+          .reverse()
+          .limit(1000)
+          .toArray();
+
+        const events: Record<string, AppActivityEvent> = {};
+        dbEvents.forEach((event) => {
+          if (event.id !== undefined) {
+            const id = event.id.toString();
+            events[id] = {
+              ...event,
+              id,
+            };
+          }
+        });
+
+        set((state) => {
+          state.events = events;
+        });
+        get().recomputeAll();
+      } catch (error) {
+        logger.error(
+          "ui",
+          "Failed to load events from Dexie",
+          { error },
+          "AppActivityStore",
+        );
+      }
     },
 
     recomputeAll: () => {
@@ -478,5 +673,5 @@ export const useAppActivityStore = create<AppActivityState>()(
         state.clearOldEvents();
       }
     },
-  }))
+  })),
 );
