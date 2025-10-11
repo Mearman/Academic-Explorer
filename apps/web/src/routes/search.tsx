@@ -26,7 +26,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SearchInterface } from "../components/search/SearchInterface";
 import { BaseTable } from "../components/tables/BaseTable";
 import { pageDescription, pageTitle } from "../styles/layout.css";
@@ -316,11 +316,22 @@ const createSearchColumns = (): ColumnDef<Work>[] => [
 ];
 
 function SearchPage() {
+  const searchParams = Route.useSearch();
+
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
     query: "",
     startDate: null,
     endDate: null,
   });
+
+  // Handle URL parameters on mount
+  useEffect(() => {
+    const qParam = searchParams.q;
+    
+    if (qParam && typeof qParam === "string") {
+      setSearchFilters((prev) => ({ ...prev, query: qParam }));
+    }
+  }, [searchParams.q]);
 
   // Track page visits and bookmarks
   const userInteractions = useUserInteractions({
@@ -462,4 +473,13 @@ function SearchPage() {
 
 export const Route = createFileRoute("/search")({
   component: SearchPage,
+  validateSearch: (search: Record<string, unknown>) => {
+    // Handle the case where q parameter might be a full OpenAlex URL
+    // e.g., ?q=https://api.openalex.org/autocomplete/works?filter=...&search=...
+    return {
+      q: (search.q as string) || "",
+      filter: (search.filter as string) || undefined,
+      search: (search.search as string) || undefined,
+    };
+  },
 });
