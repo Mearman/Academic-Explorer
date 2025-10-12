@@ -35,6 +35,7 @@ import { useThemeColors } from "@/hooks/use-theme-colors";
 import { logger } from "@academic-explorer/utils/logger";
 import type { GraphNode, EntityType } from "@academic-explorer/graph";
 import { useNavigate } from "@tanstack/react-router";
+import { SectionFrame, BulkActionToolbar } from "@academic-explorer/ui";
 
 import {
   IconFile,
@@ -406,177 +407,181 @@ export const AllNodesSection: React.FC = () => {
   );
 
   return (
-    <Stack gap="md" p="md">
-      <div>
-        <Text fw={600} size="lg">
-          All Nodes
-        </Text>
-        <Text size="sm" c="dimmed">
-          {filteredNodes.length} of {nodeArray.length} nodes
-          {selectedNodeIds.size > 0 &&
-            ` (${selectedNodeIds.size.toString()} selected)`}
-        </Text>
-      </div>
-
-      <Stack gap="sm">
-        <TextInput
-          placeholder="Search nodes..."
-          value={searchTerm}
-          onChange={(event) => {
-            setSearchTerm(event.currentTarget.value);
-          }}
-          leftSection={<IconSearch size={16} />}
-          rightSection={
-            searchTerm && (
-              <ActionIcon
-                size="sm"
-                variant="subtle"
+    <SectionFrame title="All Nodes" icon={<IconFile size={16} />}>
+      <BulkActionToolbar
+        totalItems={filteredNodes.length}
+        selectedItems={Array.from(selectedNodeIds)}
+        onSelectAll={handleSelectAll}
+        onClearSelection={() => setSelectedNodeIds(new Set())}
+        additionalActions={
+          selectedNodeIds.size > 0 ? (
+            <Group gap="xs">
+              <Button
+                size="xs"
+                variant="light"
                 onClick={() => {
-                  setSearchTerm("");
+                  handleBatchActions("pin");
                 }}
               >
-                <IconX size={14} />
-              </ActionIcon>
-            )
-          }
-        />
+                Pin
+              </Button>
+              <Button
+                size="xs"
+                variant="light"
+                onClick={() => {
+                  handleBatchActions("unpin");
+                }}
+              >
+                Unpin
+              </Button>
+              <Button
+                size="xs"
+                variant="light"
+                onClick={() => {
+                  handleBatchActions("expand");
+                }}
+              >
+                Expand
+              </Button>
+              <Button
+                size="xs"
+                variant="light"
+                onClick={() => {
+                  handleBatchActions("select");
+                }}
+              >
+                Select in Graph
+              </Button>
+              <Button
+                size="xs"
+                variant="light"
+                color="red"
+                onClick={() => {
+                  handleBatchActions("remove");
+                }}
+              >
+                Remove
+              </Button>
+            </Group>
+          ) : undefined
+        }
+      />
 
-        <Group justify="space-between">
-          <Switch
-            label="Show only visible"
-            checked={showOnlyVisible}
+      <Stack gap="md" p="md">
+        <div>
+          <Text size="sm" c="dimmed">
+            {filteredNodes.length} of {nodeArray.length} nodes
+            {selectedNodeIds.size > 0 &&
+              ` (${selectedNodeIds.size.toString()} selected)`}
+          </Text>
+        </div>
+
+        <Stack gap="sm">
+          <TextInput
+            placeholder="Search nodes..."
+            value={searchTerm}
             onChange={(event) => {
-              setShowOnlyVisible(event.currentTarget.checked);
+              setSearchTerm(event.currentTarget.value);
             }}
-            size="sm"
+            leftSection={<IconSearch size={16} />}
+            rightSection={
+              searchTerm && (
+                <ActionIcon
+                  size="sm"
+                  variant="subtle"
+                  onClick={() => {
+                    setSearchTerm("");
+                  }}
+                >
+                  <IconX size={14} />
+                </ActionIcon>
+              )
+            }
           />
 
-          <Button
-            size="xs"
-            variant="subtle"
-            leftSection={<IconSelectAll size={14} />}
-            onClick={handleSelectAll}
-          >
-            {selectedNodeIds.size === filteredNodes.length
-              ? "Deselect All"
-              : "Select All"}
-          </Button>
-        </Group>
+          <Group justify="space-between">
+            <Switch
+              label="Show only visible"
+              checked={showOnlyVisible}
+              onChange={(event) => {
+                setShowOnlyVisible(event.currentTarget.checked);
+              }}
+              size="sm"
+            />
 
-        {selectedNodeIds.size > 0 && (
-          <Group gap="xs">
-            <Text size="xs" c="dimmed">
-              Batch actions:
-            </Text>
             <Button
               size="xs"
-              variant="light"
-              onClick={() => {
-                handleBatchActions("pin");
-              }}
+              variant="subtle"
+              leftSection={<IconSelectAll size={14} />}
+              onClick={handleSelectAll}
             >
-              Pin
-            </Button>
-            <Button
-              size="xs"
-              variant="light"
-              onClick={() => {
-                handleBatchActions("unpin");
-              }}
-            >
-              Unpin
-            </Button>
-            <Button
-              size="xs"
-              variant="light"
-              onClick={() => {
-                handleBatchActions("expand");
-              }}
-            >
-              Expand
-            </Button>
-            <Button
-              size="xs"
-              variant="light"
-              onClick={() => {
-                handleBatchActions("select");
-              }}
-            >
-              Select in Graph
-            </Button>
-            <Button
-              size="xs"
-              variant="light"
-              color="red"
-              onClick={() => {
-                handleBatchActions("remove");
-              }}
-            >
-              Remove
+              {selectedNodeIds.size === filteredNodes.length
+                ? "Deselect All"
+                : "Select All"}
             </Button>
           </Group>
-        )}
-      </Stack>
-
-      <Divider />
-
-      <ScrollArea style={{ flex: 1, minHeight: 0 }}>
-        <Stack gap="md">
-          {entityTypeOptions.map(({ type, label, icon: IconComponent }) => {
-            const typeNodes = nodesByType[type] ?? [];
-            const totalCount = entityTypeStats[type];
-            const visibleCount = typeNodes.length; // Use actual visible count from filtered nodes
-            const isTypeVisible = visibleEntityTypes[type];
-
-            if (typeNodes.length === 0) return null;
-
-            return (
-              <div key={type}>
-                <Group justify="space-between" mb="xs">
-                  <Group gap="xs">
-                    <IconComponent size={16} />
-                    <Text fw={500} size="sm">
-                      {label}
-                    </Text>
-                    <Badge size="sm" variant="light">
-                      {typeNodes.length}
-                    </Badge>
-                  </Group>
-                  <Group gap="xs">
-                    <Text size="xs" c="dimmed">
-                      {visibleCount}/{totalCount} visible
-                    </Text>
-                    {!isTypeVisible && <IconEyeOff size={14} color="gray" />}
-                  </Group>
-                </Group>
-
-                <Stack gap="xs">
-                  {typeNodes.map((node) => (
-                    <NodeItem
-                      key={node.id}
-                      node={node}
-                      isSelected={selectedNodeIds.has(node.id)}
-                      isVisible={isTypeVisible}
-                      onSelect={handleSelectNode}
-                      onTogglePin={handleTogglePin}
-                      onExpand={(nodeId: string) => {
-                        void handleExpandNode(nodeId);
-                      }}
-                      onRemove={handleRemoveNode}
-                    />
-                  ))}
-                </Stack>
-              </div>
-            );
-          })}
-
-          {filteredNodes.length === 0 && (
-            <Text ta="center" c="dimmed" py="xl">
-              No nodes found
-            </Text>
-          )}
         </Stack>
-      </ScrollArea>
-    </Stack>
+
+        <Divider />
+
+        <ScrollArea style={{ flex: 1, minHeight: 0 }}>
+          <Stack gap="md">
+            {entityTypeOptions.map(({ type, label, icon: IconComponent }) => {
+              const typeNodes = nodesByType[type] ?? [];
+              const totalCount = entityTypeStats[type];
+              const visibleCount = typeNodes.length; // Use actual visible count from filtered nodes
+              const isTypeVisible = visibleEntityTypes[type];
+
+              if (typeNodes.length === 0) return null;
+
+              return (
+                <div key={type}>
+                  <Group justify="space-between" mb="xs">
+                    <Group gap="xs">
+                      <IconComponent size={16} />
+                      <Text fw={500} size="sm">
+                        {label}
+                      </Text>
+                      <Badge size="sm" variant="light">
+                        {typeNodes.length}
+                      </Badge>
+                    </Group>
+                    <Group gap="xs">
+                      <Text size="xs" c="dimmed">
+                        {visibleCount}/{totalCount} visible
+                      </Text>
+                      {!isTypeVisible && <IconEyeOff size={14} color="gray" />}
+                    </Group>
+                  </Group>
+
+                  <Stack gap="xs">
+                    {typeNodes.map((node) => (
+                      <NodeItem
+                        key={node.id}
+                        node={node}
+                        isSelected={selectedNodeIds.has(node.id)}
+                        isVisible={isTypeVisible}
+                        onSelect={handleSelectNode}
+                        onTogglePin={handleTogglePin}
+                        onExpand={(nodeId: string) => {
+                          void handleExpandNode(nodeId);
+                        }}
+                        onRemove={handleRemoveNode}
+                      />
+                    ))}
+                  </Stack>
+                </div>
+              );
+            })}
+
+            {filteredNodes.length === 0 && (
+              <Text ta="center" c="dimmed" py="xl">
+                No nodes found
+              </Text>
+            )}
+          </Stack>
+        </ScrollArea>
+      </Stack>
+    </SectionFrame>
   );
 };

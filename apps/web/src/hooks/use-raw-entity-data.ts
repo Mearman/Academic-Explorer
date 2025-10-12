@@ -10,6 +10,7 @@ import { logger } from "@academic-explorer/utils";
 import { useQuery } from "@tanstack/react-query";
 import type { EntityType } from "../config/cache";
 import { ENTITY_CACHE_TIMES } from "../config/cache";
+import { createRequestPipeline } from "@academic-explorer/client";
 
 interface UseRawEntityDataOptions {
   entityId?: string | null;
@@ -25,6 +26,54 @@ function isValidEntityData(
   entityType: EntityType | null,
 ): entityType is EntityType {
   return !!entityId && !!entityType;
+}
+
+/**
+ * Build OpenAlex API URL similar to the client's buildUrl method
+ */
+function buildOpenAlexUrl(endpoint: string, params: QueryParams = {}): string {
+  const baseUrl = "https://api.openalex.org";
+  const url = new URL(`${baseUrl}/${endpoint}`);
+
+  // Add user email if available from cached client config
+  const {userEmail} = cachedOpenAlex.getConfig();
+  if (userEmail) {
+    url.searchParams.set("mailto", userEmail);
+  }
+
+  // Build URL string first, then manually append select parameter to avoid encoding commas
+  const selectValue = params.select;
+  const otherParams = { ...params };
+  delete otherParams.select;
+
+  // Add other query parameters
+  Object.entries(otherParams).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      if (Array.isArray(value)) {
+        url.searchParams.set(key, value.join(","));
+      } else if (
+        typeof value === "string" ||
+        typeof value === "number" ||
+        typeof value === "boolean"
+      ) {
+        url.searchParams.set(key, String(value));
+      }
+    }
+  });
+
+  // Get the base URL string
+  let finalUrl = url.toString();
+
+  // Manually append select parameter with unencoded commas if present
+  if (selectValue !== undefined && selectValue !== null) {
+    const selectString = Array.isArray(selectValue)
+      ? selectValue.join(",")
+      : String(selectValue);
+    const separator = finalUrl.includes("?") ? "&" : "?";
+    finalUrl = `${finalUrl}${separator}select=${selectString}`;
+  }
+
+  return finalUrl;
 }
 
 export const useRawEntityData = (options: UseRawEntityDataOptions) => {
@@ -80,7 +129,7 @@ export const useRawEntityData = (options: UseRawEntityDataOptions) => {
 
       logger.debug(
         "api",
-        "Fetching raw entity data",
+        "Fetching raw entity data via pipeline",
         {
           entityType,
           entityId: detectedEntityId,
@@ -90,59 +139,30 @@ export const useRawEntityData = (options: UseRawEntityDataOptions) => {
       );
 
       try {
-        let result: OpenAlexEntity;
+        // Create pipeline instance for this request
+        const pipeline = createRequestPipeline();
 
-        // Call appropriate API method based on entity type, passing queryParams
-        switch (entityType) {
-          case "works":
-            result = await cachedOpenAlex.client.works.getWork(
-              detectedEntityId,
-              queryParams,
-            );
-            break;
-          case "authors":
-            result = await cachedOpenAlex.client.authors.getAuthor(
-              detectedEntityId,
-              queryParams,
-            );
-            break;
-          case "sources":
-            result = await cachedOpenAlex.client.sources.getSource(
-              detectedEntityId,
-              queryParams,
-            );
-            break;
-          case "institutions":
-            result = await cachedOpenAlex.client.institutions.getInstitution(
-              detectedEntityId,
-              queryParams,
-            );
-            break;
-          case "topics":
-            result = await cachedOpenAlex.client.topics.get(
-              detectedEntityId,
-              queryParams,
-            );
-            break;
-          case "publishers":
-            result = await cachedOpenAlex.client.publishers.get(
-              detectedEntityId,
-              queryParams,
-            );
-            break;
-          case "funders":
-            result = await cachedOpenAlex.client.funders.get(
-              detectedEntityId,
-              queryParams,
-            );
-            break;
-          default:
-            throw new Error(`Unsupported entity entityType: ${entityType}`);
+        // Build endpoint based on entity type
+        const endpoint = `${entityType}/${encodeURIComponent(detectedEntityId)}`;
+        const url = buildOpenAlexUrl(endpoint, queryParams);
+
+        // Execute request through pipeline
+        const response = await pipeline.execute(url);
+
+        // Validate content-type before parsing JSON
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          const text = await response.text();
+          throw new Error(
+            `Expected JSON response but got ${contentType || "unknown content-type"}. Response: ${text.substring(0, 200)}...`,
+          );
         }
+
+        const result: OpenAlexEntity = await response.json();
 
         logger.debug(
           "api",
-          "Successfully fetched raw entity data",
+          "Successfully fetched raw entity data via pipeline",
           {
             entityType,
             entityId: detectedEntityId,
@@ -155,7 +175,7 @@ export const useRawEntityData = (options: UseRawEntityDataOptions) => {
       } catch (error) {
         logger.error(
           "api",
-          "Failed to fetch raw entity data from OpenAlex",
+          "Failed to fetch raw entity data via pipeline",
           {
             entityType,
             entityId: detectedEntityId,

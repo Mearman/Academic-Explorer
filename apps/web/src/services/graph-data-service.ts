@@ -4,35 +4,43 @@
  * Now integrated with TanStack Query for persistent caching
  */
 
-import { useExpansionSettingsStore } from "@/stores/expansion-settings-store";
+// import { useExpansionSettingsStore } from "@/stores/expansion-settings-store";
 import { useGraphStore } from "@/stores/graph-store";
 import { useRepositoryStore } from "@/stores/repository-store";
 import type {
-    Author,
-    InstitutionEntity,
-    OpenAlexEntity,
-    Source,
-    Work,
+  Author,
+  InstitutionEntity,
+  OpenAlexEntity,
+  Source,
+  Work,
 } from "@academic-explorer/client";
-import { cachedOpenAlex, isAuthor, isInstitution, isSource, isWork } from "@academic-explorer/client";
+import {
+  cachedOpenAlex,
+  isAuthor,
+  isInstitution,
+  isSource,
+  isWork,
+} from "@academic-explorer/client";
+import { createRequestPipeline } from "@academic-explorer/client";
 import type {
-    EntityType,
-    ExternalIdentifier,
-    GraphCache,
-    GraphEdge,
-    GraphNode,
-    SearchOptions,
+  EntityType,
+  ExternalIdentifier,
+  GraphCache,
+  GraphEdge,
+  GraphNode,
+  SearchOptions,
 } from "@academic-explorer/graph";
+import type { QueryParams } from "@academic-explorer/client";
 import { EntityDetectionService, RelationType } from "@academic-explorer/graph";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { QueryClient } from "@tanstack/react-query";
 import {
-    RelationshipDetectionService,
-    createRelationshipDetectionService,
+  RelationshipDetectionService,
+  createRelationshipDetectionService,
 } from "./relationship-detection-service";
 import {
-    RequestDeduplicationService,
-    createRequestDeduplicationService,
+  RequestDeduplicationService,
+  createRequestDeduplicationService,
 } from "./request-deduplication-service";
 
 // Detection method constants
@@ -42,6 +50,80 @@ const _ENTITY_TYPE_CITED_BY_API_URL = "cited_by_api_url";
 const ERROR_MESSAGE_UNKNOWN = "Unknown error";
 const LOGGER_CATEGORY_GRAPH_DATA = "graph-data";
 const OPENALEX_URL_PREFIX = "https://openalex.org/";
+
+/**
+ * Build OpenAlex API URL similar to the client's buildUrl method
+ */
+function buildOpenAlexUrl(endpoint: string, params: QueryParams = {}): string {
+  const baseUrl = "https://api.openalex.org";
+  const url = new URL(`${baseUrl}/${endpoint}`);
+
+  // Add user email if available from cached client config
+  const { userEmail } = cachedOpenAlex.getConfig();
+  if (userEmail) {
+    url.searchParams.set("mailto", userEmail);
+  }
+
+  // Build URL string first, then manually append select parameter to avoid encoding commas
+  const selectValue = params.select;
+  const otherParams = { ...params };
+  delete otherParams.select;
+
+  // Add other query parameters
+  Object.entries(otherParams).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      if (Array.isArray(value)) {
+        url.searchParams.set(key, value.join(","));
+      } else if (
+        typeof value === "string" ||
+        typeof value === "number" ||
+        typeof value === "boolean"
+      ) {
+        url.searchParams.set(key, String(value));
+      }
+    }
+  });
+
+  // Get the base URL string
+  let finalUrl = url.toString();
+
+  // Manually append select parameter with unencoded commas if present
+  if (selectValue !== undefined && selectValue !== null) {
+    const selectString = Array.isArray(selectValue)
+      ? selectValue.join(",")
+      : String(selectValue);
+    const separator = finalUrl.includes("?") ? "&" : "?";
+    finalUrl = `${finalUrl}${separator}select=${selectString}`;
+  }
+
+  return finalUrl;
+}
+
+/**
+ * Fetch entity via pipeline
+ */
+async function fetchEntityViaPipeline(
+  entityType: string,
+  entityId: string,
+  params: QueryParams = {},
+): Promise<OpenAlexEntity> {
+  const pipeline = createRequestPipeline();
+  const endpoint = `${entityType}/${encodeURIComponent(entityId)}`;
+  const url = buildOpenAlexUrl(endpoint, params);
+
+  const response = await pipeline.execute(url);
+
+  // Validate content-type before parsing JSON
+  const contentType = response.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+    const text = await response.text();
+    throw new Error(
+      `Expected JSON response but got ${contentType || "unknown content-type"}. Response: ${text.substring(0, 200)}...`,
+    );
+  }
+
+  return await response.json();
+}
 
 interface ExpansionOptions {
   depth?: number;
@@ -163,7 +245,10 @@ export class GraphDataService {
       const entity = await this.deduplicationService.getEntity(
         apiEntityId,
         async () => {
-          const result = await cachedOpenAlex.client.getEntity(apiEntityId);
+          const result = await fetchEntityViaPipeline(
+            detection.entityType,
+            apiEntityId,
+          );
           if (!result) {
             throw new Error(`Entity not found: ${apiEntityId}`);
           }
@@ -173,7 +258,7 @@ export class GraphDataService {
 
       // Entity successfully fetched
 
-      // Transform to graph data with incremental hydration
+      // Transform to graph data
       const { nodes, edges } = this.transformEntityToGraph(entity);
 
       // Clear existing graph and expansion cache
@@ -308,40 +393,6 @@ export class GraphDataService {
           "GraphDataService",
         );
 
-        // Detect relationships for the existing node
-        this.relationshipDetectionService
-          .detectRelationshipsForNode(existingNode.id)
-          .then((detectedEdges) => {
-            // Add detected relationship edges to the graph
-            if (detectedEdges.length > 0) {
-              logger.debug(
-                "graph",
-                "Adding detected relationship edges for existing node",
-                {
-                  nodeId: existingNode.id,
-                  detectedEdgeCount: detectedEdges.length,
-                },
-                "GraphDataService",
-              );
-
-              const currentStore = useGraphStore.getState();
-              currentStore.addEdges(detectedEdges);
-
-              // Update cached edges
-              const allEdges = Object.values(currentStore.edges);
-              setCachedGraphEdges(this.queryClient, allEdges);
-            }
-          })
-          .catch((error: unknown) => {
-            logError(
-              logger,
-              "Failed to detect relationships for existing node",
-              error,
-              "GraphDataService",
-              "graph",
-            );
-          });
-
         return;
       }
 
@@ -363,7 +414,10 @@ export class GraphDataService {
       const entity = await this.deduplicationService.getEntity(
         apiEntityId,
         async () => {
-          const result = await cachedOpenAlex.client.getEntity(apiEntityId);
+          const result = await fetchEntityViaPipeline(
+            detection.entityType,
+            apiEntityId,
+          );
           if (!result) {
             throw new Error(`Entity not found: ${apiEntityId}`);
           }
@@ -519,7 +573,10 @@ export class GraphDataService {
       const entity = await this.deduplicationService.getEntity(
         apiEntityId,
         async () => {
-          const result = await cachedOpenAlex.client.getEntity(apiEntityId);
+          const result = await fetchEntityViaPipeline(
+            detection.entityType,
+            apiEntityId,
+          );
           if (!result) {
             throw new Error(`Entity not found: ${apiEntityId}`);
           }
@@ -749,7 +806,10 @@ export class GraphDataService {
         const entity = await this.deduplicationService.getEntity(
           node.entityId,
           async () => {
-            const result = await cachedOpenAlex.client.getEntity(node.entityId);
+            const result = await fetchEntityViaPipeline(
+              node.entityType,
+              node.entityId,
+            );
             if (!result) {
               throw new Error(`Entity not found: ${node.entityId}`);
             }
@@ -841,7 +901,10 @@ export class GraphDataService {
               "Failed to detect relationships for node in batch",
               {
                 nodeId: node.id,
-                error: error instanceof Error ? error.message : ERROR_MESSAGE_UNKNOWN,
+                error:
+                  error instanceof Error
+                    ? error.message
+                    : ERROR_MESSAGE_UNKNOWN,
               },
               "GraphDataService",
             );
@@ -995,7 +1058,8 @@ export class GraphDataService {
           "Failed to hydrate minimal node, continuing with next",
           {
             nodeId: node.id,
-            error: error instanceof Error ? error.message : ERROR_MESSAGE_UNKNOWN,
+            error:
+              error instanceof Error ? error.message : ERROR_MESSAGE_UNKNOWN,
           },
           "GraphDataService",
         );
@@ -1054,7 +1118,8 @@ export class GraphDataService {
             nodeId: node.id,
             entityType: node.entityType,
             label: node.label,
-            error: error instanceof Error ? error.message : ERROR_MESSAGE_UNKNOWN,
+            error:
+              error instanceof Error ? error.message : ERROR_MESSAGE_UNKNOWN,
           },
           "GraphDataService",
         );
@@ -1093,7 +1158,10 @@ export class GraphDataService {
   ): Promise<void> {
     const { force = false } = options;
 
-    logger.debug(LOGGER_CATEGORY_GRAPH_DATA, "expandNode function START", { nodeId, force });
+    logger.debug(LOGGER_CATEGORY_GRAPH_DATA, "expandNode function START", {
+      nodeId,
+      force,
+    });
     logger.error(
       "graph",
       "DEBUG: expandNode called with",
@@ -1288,7 +1356,7 @@ export class GraphDataService {
       const entity = EntityFactory.create(node.entityType, cachedOpenAlex);
 
       // Get expansion settings for this entity type
-      const expansionSettingsStore = useExpansionSettingsStore.getState();
+      // const expansionSettingsStore = useExpansionSettingsStore.getState();
       // Safely convert entity type to expansion target with type guard
       if (!isEntityType(node.entityType)) {
         logger.error(
@@ -1452,7 +1520,9 @@ export class GraphDataService {
           { force, nodeId },
           "GraphDataService",
         );
-        logger.debug(LOGGER_CATEGORY_GRAPH_DATA, "FORCE BRANCH EXECUTING", { nodeId });
+        logger.debug(LOGGER_CATEGORY_GRAPH_DATA, "FORCE BRANCH EXECUTING", {
+          nodeId,
+        });
         const allNodeIds = Object.keys(store.nodes);
         logger.error(
           "graph",
@@ -1576,7 +1646,10 @@ export class GraphDataService {
         "graph",
       );
     } finally {
-      logger.debug(LOGGER_CATEGORY_GRAPH_DATA, "expandNode function END", { nodeId, force });
+      logger.debug(LOGGER_CATEGORY_GRAPH_DATA, "expandNode function END", {
+        nodeId,
+        force,
+      });
     }
   }
 
@@ -1726,39 +1799,7 @@ export class GraphDataService {
     fields: string[],
   ): Promise<OpenAlexEntity> {
     const params = { select: fields };
-
-    switch (entityType) {
-      case "works":
-        return await cachedOpenAlex.client.works.getWork(entityId, params);
-      case "authors":
-        return await cachedOpenAlex.client.authors.getAuthor(entityId, params);
-      case "sources":
-        return await cachedOpenAlex.client.sources.getSource(entityId, params);
-      case "institutions":
-        return await cachedOpenAlex.client.institutions.getInstitution(
-          entityId,
-          params,
-        );
-      case "topics":
-        return await cachedOpenAlex.client.topics.get(entityId, params);
-      case "publishers":
-        return await cachedOpenAlex.client.publishers.get(entityId, params);
-      case "funders":
-        return await cachedOpenAlex.client.funders.get(entityId, params);
-      case "keywords":
-        return await cachedOpenAlex.client.keywords.getKeyword(
-          entityId,
-          params,
-        );
-      default: {
-        // Fallback to generic method without field selection
-        const result = await cachedOpenAlex.client.getEntity(entityId);
-        if (!result) {
-          throw new Error(`Entity not found: ${entityId}`);
-        }
-        return result;
-      }
-    }
+    return await fetchEntityViaPipeline(entityType, entityId, params);
   }
 
   /**
@@ -1913,7 +1954,10 @@ export class GraphDataService {
       const fullEntity = await this.deduplicationService.getEntity(
         node.entityId,
         async () => {
-          const result = await cachedOpenAlex.client.getEntity(node.entityId);
+          const result = await fetchEntityViaPipeline(
+            node.entityType,
+            node.entityId,
+          );
           if (!result) {
             throw new Error(`Entity not found: ${node.entityId}`);
           }
@@ -2072,7 +2116,9 @@ export class GraphDataService {
                 {
                   entityId,
                   error:
-                    error instanceof Error ? error.message : ERROR_MESSAGE_UNKNOWN,
+                    error instanceof Error
+                      ? error.message
+                      : ERROR_MESSAGE_UNKNOWN,
                 },
                 "GraphDataService",
               );
@@ -2084,7 +2130,8 @@ export class GraphDataService {
             `Failed to process node ${node.id}`,
             {
               nodeId: node.id,
-              error: error instanceof Error ? error.message : ERROR_MESSAGE_UNKNOWN,
+              error:
+                error instanceof Error ? error.message : ERROR_MESSAGE_UNKNOWN,
             },
             "GraphDataService",
           );

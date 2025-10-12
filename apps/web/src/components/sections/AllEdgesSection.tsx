@@ -33,6 +33,7 @@ import { useThemeColors } from "@/hooks/use-theme-colors";
 import { logger } from "@academic-explorer/utils/logger";
 import type { GraphEdge } from "@academic-explorer/graph";
 import { RelationType } from "@academic-explorer/graph";
+import { SectionFrame, BulkActionToolbar } from "@academic-explorer/ui";
 
 import {
   IconPencil,
@@ -452,155 +453,161 @@ export const AllEdgesSection: React.FC = () => {
   );
 
   return (
-    <Stack gap="md" p="md">
-      <div>
-        <Text fw={600} size="lg">
-          All Edges
-        </Text>
-        <Text size="sm" c="dimmed">
-          {filteredEdges.length} of {edgeArray.length} edges
-          {selectedEdgeIds.size > 0 &&
-            ` (${selectedEdgeIds.size.toString()} selected)`}
-        </Text>
-      </div>
-
-      <Stack gap="sm">
-        <TextInput
-          placeholder="Search edges, nodes, or types..."
-          value={searchTerm}
-          onChange={(event) => {
-            setSearchTerm(event.currentTarget.value);
-          }}
-          leftSection={<IconSearch size={16} />}
-          rightSection={
-            searchTerm && (
-              <ActionIcon
-                size="sm"
-                variant="subtle"
+    <SectionFrame title="All Edges" icon={<IconArrowRight size={16} />}>
+      <BulkActionToolbar
+        totalItems={filteredEdges.length}
+        selectedItems={Array.from(selectedEdgeIds)}
+        onSelectAll={handleSelectAll}
+        onClearSelection={() => setSelectedEdgeIds(new Set())}
+        additionalActions={
+          selectedEdgeIds.size > 0 ? (
+            <Group gap="xs">
+              <Button
+                size="xs"
+                variant="light"
                 onClick={() => {
-                  setSearchTerm("");
+                  handleBatchActions("highlight");
                 }}
               >
-                <IconX size={14} />
-              </ActionIcon>
-            )
-          }
-        />
+                Highlight Endpoints
+              </Button>
+              <Button
+                size="xs"
+                variant="light"
+                color="red"
+                onClick={() => {
+                  handleBatchActions("remove");
+                }}
+              >
+                Remove
+              </Button>
+            </Group>
+          ) : undefined
+        }
+      />
 
-        <Group justify="space-between">
-          <Switch
-            label="Show only visible"
-            checked={showOnlyVisible}
+      <Stack gap="md" p="md">
+        <div>
+          <Text size="sm" c="dimmed">
+            {filteredEdges.length} of {edgeArray.length} edges
+            {selectedEdgeIds.size > 0 &&
+              ` (${selectedEdgeIds.size.toString()} selected)`}
+          </Text>
+        </div>
+
+        <Stack gap="sm">
+          <TextInput
+            placeholder="Search edges, nodes, or types..."
+            value={searchTerm}
             onChange={(event) => {
-              setShowOnlyVisible(event.currentTarget.checked);
+              setSearchTerm(event.currentTarget.value);
             }}
-            size="sm"
+            leftSection={<IconSearch size={16} />}
+            rightSection={
+              searchTerm && (
+                <ActionIcon
+                  size="sm"
+                  variant="subtle"
+                  onClick={() => {
+                    setSearchTerm("");
+                  }}
+                >
+                  <IconX size={14} />
+                </ActionIcon>
+              )
+            }
           />
 
-          <Button
-            size="xs"
-            variant="subtle"
-            leftSection={<IconSelectAll size={14} />}
-            onClick={handleSelectAll}
-          >
-            {selectedEdgeIds.size === filteredEdges.length
-              ? "Deselect All"
-              : "Select All"}
-          </Button>
-        </Group>
+          <Group justify="space-between">
+            <Switch
+              label="Show only visible"
+              checked={showOnlyVisible}
+              onChange={(event) => {
+                setShowOnlyVisible(event.currentTarget.checked);
+              }}
+              size="sm"
+            />
 
-        {selectedEdgeIds.size > 0 && (
-          <Group gap="xs">
-            <Text size="xs" c="dimmed">
-              Batch actions:
-            </Text>
             <Button
               size="xs"
-              variant="light"
-              onClick={() => {
-                handleBatchActions("highlight");
-              }}
+              variant="subtle"
+              leftSection={<IconSelectAll size={14} />}
+              onClick={handleSelectAll}
             >
-              Highlight Endpoints
-            </Button>
-            <Button
-              size="xs"
-              variant="light"
-              color="red"
-              onClick={() => {
-                handleBatchActions("remove");
-              }}
-            >
-              Remove
+              {selectedEdgeIds.size === filteredEdges.length
+                ? "Deselect All"
+                : "Select All"}
             </Button>
           </Group>
-        )}
-      </Stack>
-
-      <Divider />
-
-      <ScrollArea style={{ flex: 1, minHeight: 0 }}>
-        <Stack gap="md">
-          {relationTypeOptions.map(
-            ({ type, label, icon: IconComponent, description }) => {
-              const typeEdges = edgesByType[type] ?? [];
-              const totalCount = edgeTypeStats[type];
-              const visibleCount = typeEdges.length; // Use actual visible count from filtered edges
-              const isTypeVisible = visibleCount > 0;
-
-              if (typeEdges.length === 0) return null;
-
-              return (
-                <div key={type}>
-                  <Group justify="space-between" mb="xs">
-                    <Group gap="xs">
-                      <IconComponent size={16} />
-                      <Text fw={500} size="sm">
-                        {label}
-                      </Text>
-                      <Badge size="sm" variant="light">
-                        {typeEdges.length}
-                      </Badge>
-                    </Group>
-                    <Group gap="xs">
-                      <Text size="xs" c="dimmed">
-                        {visibleCount}/{totalCount} visible
-                      </Text>
-                      {!isTypeVisible && <IconEyeOff size={14} color="gray" />}
-                    </Group>
-                  </Group>
-
-                  <Text size="xs" c="dimmed" mb="xs" fs="italic">
-                    {description}
-                  </Text>
-
-                  <Stack gap="xs">
-                    {typeEdges.map((edge) => (
-                      <EdgeItem
-                        key={edge.id}
-                        edge={edge}
-                        isSelected={selectedEdgeIds.has(edge.id)}
-                        isVisible={isTypeVisible}
-                        sourceNodeLabel={getNodeLabel(edge.source)}
-                        targetNodeLabel={getNodeLabel(edge.target)}
-                        onSelect={handleSelectEdge}
-                        onHighlight={handleHighlightEdge}
-                        onRemove={handleRemoveEdge}
-                      />
-                    ))}
-                  </Stack>
-                </div>
-              );
-            },
-          )}
-
-          {filteredEdges.length === 0 && (
-            <Text ta="center" c="dimmed" py="xl">
-              No edges found
-            </Text>
-          )}
         </Stack>
-      </ScrollArea>
-    </Stack>
+
+        <Divider />
+
+        <ScrollArea style={{ flex: 1, minHeight: 0 }}>
+          <Stack gap="md">
+            {relationTypeOptions.map(
+              ({ type, label, icon: IconComponent, description }) => {
+                const typeEdges = edgesByType[type] ?? [];
+                const totalCount = edgeTypeStats[type];
+                const visibleCount = typeEdges.length; // Use actual visible count from filtered edges
+                const isTypeVisible = visibleCount > 0;
+
+                if (typeEdges.length === 0) return null;
+
+                return (
+                  <div key={type}>
+                    <Group justify="space-between" mb="xs">
+                      <Group gap="xs">
+                        <IconComponent size={16} />
+                        <Text fw={500} size="sm">
+                          {label}
+                        </Text>
+                        <Badge size="sm" variant="light">
+                          {typeEdges.length}
+                        </Badge>
+                      </Group>
+                      <Group gap="xs">
+                        <Text size="xs" c="dimmed">
+                          {visibleCount}/{totalCount} visible
+                        </Text>
+                        {!isTypeVisible && (
+                          <IconEyeOff size={14} color="gray" />
+                        )}
+                      </Group>
+                    </Group>
+
+                    <Text size="xs" c="dimmed" mb="xs" fs="italic">
+                      {description}
+                    </Text>
+
+                    <Stack gap="xs">
+                      {typeEdges.map((edge) => (
+                        <EdgeItem
+                          key={edge.id}
+                          edge={edge}
+                          isSelected={selectedEdgeIds.has(edge.id)}
+                          isVisible={isTypeVisible}
+                          sourceNodeLabel={getNodeLabel(edge.source)}
+                          targetNodeLabel={getNodeLabel(edge.target)}
+                          onSelect={handleSelectEdge}
+                          onHighlight={handleHighlightEdge}
+                          onRemove={handleRemoveEdge}
+                        />
+                      ))}
+                    </Stack>
+                  </div>
+                );
+              },
+            )}
+
+            {filteredEdges.length === 0 && (
+              <Text ta="center" c="dimmed" py="xl">
+                No edges found
+              </Text>
+            )}
+          </Stack>
+        </ScrollArea>
+      </Stack>
+    </SectionFrame>
   );
 };

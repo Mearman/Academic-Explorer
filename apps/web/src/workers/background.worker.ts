@@ -10,7 +10,6 @@ self.addEventListener("message", (e) => {
   logger.debug("worker", "Worker received message", { data: e.data });
 });
 
-import { z } from "zod";
 import { WorkerEventType } from "@academic-explorer/graph";
 import { createLocalEventBus } from "@academic-explorer/graph";
 import { logger } from "@academic-explorer/utils/logger";
@@ -27,6 +26,17 @@ import {
   ForceSimulationEngine,
   DEFAULT_FORCE_PARAMS,
 } from "@academic-explorer/simulation";
+import {
+  type ForceSimulationNode as SchemaForceSimulationNode,
+  type ForceSimulationReheatMessage,
+  type ForceSimulationUpdateLinksMessage,
+  type ForceSimulationUpdateNodesMessage,
+  type ExecuteTaskMessage,
+  type AnyForceSimulationControlMessage,
+  isForceSimulationStartMessage,
+  isForceSimulationControlMessage,
+  isExecuteTaskMessage,
+} from "@academic-explorer/utils/workers/messages";
 
 // Create worker event bus for cross-context communication
 const workerEventBus = createLocalEventBus();
@@ -304,109 +314,7 @@ function createSimulationEngine(): ForceSimulationEngine {
   return engine;
 }
 
-// Zod schemas for type validation
-const forceSimulationNodeSchema = z.object({
-  id: z.string(),
-  entityType: z
-    .enum([
-      "works",
-      "authors",
-      "sources",
-      "institutions",
-      "topics",
-      "concepts",
-      "publishers",
-      "funders",
-      "keywords",
-    ])
-    .optional(),
-  x: z.number().optional(),
-  y: z.number().optional(),
-  fx: z.number().optional(),
-  fy: z.number().optional(),
-});
-
-const forceSimulationLinkSchema = z.object({
-  id: z.string(),
-  source: z.string(),
-  target: z.string(),
-});
-
-const forceSimulationConfigSchema = z.object({
-  linkDistance: z.number().optional(),
-  linkStrength: z.number().optional(),
-  chargeStrength: z.number().optional(),
-  centerStrength: z.number().optional(),
-  collisionRadius: z.number().optional(),
-  collisionStrength: z.number().optional(),
-  velocityDecay: z.number().optional(),
-  alphaDecay: z.number().optional(),
-  maxIterations: z.number().optional(),
-  seed: z.number().optional(),
-});
-
-const forceSimulationStartMessageSchema = z.object({
-  type: z.literal("FORCE_SIMULATION_START"),
-  nodes: z.array(forceSimulationNodeSchema),
-  links: z.array(forceSimulationLinkSchema),
-  config: forceSimulationConfigSchema.optional(),
-  pinnedNodes: z.array(z.string()).optional(),
-});
-
-const forceSimulationControlMessageSchema = z.object({
-  type: z.enum([
-    "FORCE_SIMULATION_STOP",
-    "FORCE_SIMULATION_PAUSE",
-    "FORCE_SIMULATION_RESUME",
-    "FORCE_SIMULATION_UPDATE_PARAMETERS",
-    "FORCE_SIMULATION_REHEAT",
-    "FORCE_SIMULATION_UPDATE_LINKS",
-    "FORCE_SIMULATION_UPDATE_NODES",
-  ]),
-  config: forceSimulationConfigSchema.partial().optional(),
-});
-
-const forceSimulationReheatMessageSchema = z.object({
-  type: z.literal("FORCE_SIMULATION_REHEAT"),
-  nodes: z.array(forceSimulationNodeSchema),
-  links: z.array(forceSimulationLinkSchema),
-  config: forceSimulationConfigSchema.optional(),
-  pinnedNodes: z.array(z.string()).optional(),
-  alpha: z.number().optional().default(1.0),
-});
-
-const forceSimulationUpdateLinksMessageSchema = z.object({
-  type: z.literal("FORCE_SIMULATION_UPDATE_LINKS"),
-  links: z.array(forceSimulationLinkSchema),
-  alpha: z.number().optional().default(1.0), // Full alpha reset to restart current simulation
-});
-
-const forceSimulationUpdateNodesMessageSchema = z.object({
-  type: z.literal("FORCE_SIMULATION_UPDATE_NODES"),
-  nodes: z.array(forceSimulationNodeSchema),
-  pinnedNodes: z.array(z.string()).optional(),
-  alpha: z.number().optional().default(1.0),
-});
-
-type ForceSimulationControlMessage = z.infer<
-  typeof forceSimulationControlMessageSchema
->;
-type ForceSimulationReheatMessage = z.infer<
-  typeof forceSimulationReheatMessageSchema
->;
-type ForceSimulationUpdateLinksMessage = z.infer<
-  typeof forceSimulationUpdateLinksMessageSchema
->;
-type ForceSimulationUpdateNodesMessage = z.infer<
-  typeof forceSimulationUpdateNodesMessageSchema
->;
-
-type AnyForceSimulationControlMessage =
-  | ForceSimulationControlMessage
-  | ForceSimulationReheatMessage
-  | ForceSimulationUpdateLinksMessage
-  | ForceSimulationUpdateNodesMessage;
-
+// Type aliases for clarity
 type ForceSimulationControlAction = AnyForceSimulationControlMessage["type"];
 
 function sendControlAck(
@@ -488,31 +396,7 @@ function createErrorEventPayload(event: SimulationErrorEvent) {
   };
 }
 
-// Schema for worker pool task wrapper
-const executeTaskMessageSchema = z.object({
-  type: z.literal("EXECUTE_TASK"),
-  taskId: z.string(),
-  payload: z.unknown(),
-});
-
-// Type guards using Zod
-function isForceSimulationStartMessage(
-  data: unknown,
-): data is z.infer<typeof forceSimulationStartMessageSchema> {
-  return forceSimulationStartMessageSchema.safeParse(data).success;
-}
-
-function isForceSimulationMessage(
-  data: unknown,
-): data is z.infer<typeof forceSimulationControlMessageSchema> {
-  return forceSimulationControlMessageSchema.safeParse(data).success;
-}
-
-function isExecuteTaskMessage(
-  data: unknown,
-): data is z.infer<typeof executeTaskMessageSchema> {
-  return executeTaskMessageSchema.safeParse(data).success;
-}
+// Note: Type guards are now imported from @academic-explorer/utils/workers/messages
 
 // Constants for repeated strings
 const WORKER_ID = "background-worker";
@@ -551,7 +435,7 @@ function handleMessageError(error: unknown, data: unknown): void {
 
 // Helper to create validated nodes from raw data
 function createValidatedNodes(
-  nodes: z.infer<typeof forceSimulationNodeSchema>[],
+  nodes: SchemaForceSimulationNode[],
 ): ForceSimulationNode[] {
   return nodes.map((node) => ({
     id: node.id,
@@ -564,9 +448,7 @@ function createValidatedNodes(
 }
 
 // Helper to handle EXECUTE_TASK messages
-function handleExecuteTaskMessage(
-  data: z.infer<typeof executeTaskMessageSchema>,
-) {
+function handleExecuteTaskMessage(data: ExecuteTaskMessage) {
   const actualPayload = data.payload;
 
   if (isForceSimulationStartMessage(actualPayload)) {
@@ -577,7 +459,7 @@ function handleExecuteTaskMessage(
       config: createSafeConfig(actualPayload.config),
       pinnedNodes: actualPayload.pinnedNodes ?? [],
     });
-  } else if (isForceSimulationMessage(actualPayload)) {
+  } else if (isForceSimulationControlMessage(actualPayload)) {
     handleForceSimulationControlMessage(actualPayload, data.taskId);
   } else {
     logger.warn("worker", "Unknown task payload format", {
@@ -644,29 +526,19 @@ function handleReheatMessage(
   payload: ForceSimulationReheatMessage,
   taskId?: string,
 ) {
-  if (forceSimulationReheatMessageSchema.safeParse(payload).success) {
-    const reheatData = forceSimulationReheatMessageSchema.parse(payload);
-    const validatedNodes = createValidatedNodes(reheatData.nodes);
-    reheatSimulation({
-      nodes: validatedNodes,
-      links: validateLinks(reheatData.links),
-      config: createSafeConfig(reheatData.config),
-      pinnedNodes: reheatData.pinnedNodes ?? [],
-      alpha: reheatData.alpha,
-    });
-    sendControlAck(taskId, payload.type, {
-      nodeCount: validatedNodes.length,
-      linkCount: reheatData.links.length,
-      alpha: reheatData.alpha,
-    });
-  } else {
-    logger.warn("worker", "Invalid reheat payload in task", { payload });
-    self.postMessage({
-      type: ERROR_TYPE,
-      taskId,
-      payload: "Invalid reheat payload",
-    });
-  }
+  const validatedNodes = createValidatedNodes(payload.nodes);
+  reheatSimulation({
+    nodes: validatedNodes,
+    links: validateLinks(payload.links),
+    config: createSafeConfig(payload.config),
+    pinnedNodes: payload.pinnedNodes ?? [],
+    alpha: payload.alpha,
+  });
+  sendControlAck(taskId, payload.type, {
+    nodeCount: validatedNodes.length,
+    linkCount: payload.links.length,
+    alpha: payload.alpha,
+  });
 }
 
 // Helper to handle update links messages
@@ -674,25 +546,14 @@ function handleUpdateLinksMessage(
   payload: ForceSimulationUpdateLinksMessage,
   taskId?: string,
 ) {
-  if (forceSimulationUpdateLinksMessageSchema.safeParse(payload).success) {
-    const updateLinksPayload =
-      forceSimulationUpdateLinksMessageSchema.parse(payload);
-    updateSimulationLinks({
-      links: validateLinks(updateLinksPayload.links),
-      alpha: updateLinksPayload.alpha,
-    });
-    sendControlAck(taskId, payload.type, {
-      linkCount: updateLinksPayload.links.length,
-      alpha: updateLinksPayload.alpha,
-    });
-  } else {
-    logger.warn("worker", "Invalid link update payload in task", { payload });
-    self.postMessage({
-      type: ERROR_TYPE,
-      taskId,
-      payload: "Invalid link update payload",
-    });
-  }
+  updateSimulationLinks({
+    links: validateLinks(payload.links),
+    alpha: payload.alpha,
+  });
+  sendControlAck(taskId, payload.type, {
+    linkCount: payload.links.length,
+    alpha: payload.alpha,
+  });
 }
 
 // Helper to handle update nodes messages
@@ -700,28 +561,17 @@ function handleUpdateNodesMessage(
   payload: ForceSimulationUpdateNodesMessage,
   taskId?: string,
 ) {
-  if (forceSimulationUpdateNodesMessageSchema.safeParse(payload).success) {
-    const updateNodesPayload =
-      forceSimulationUpdateNodesMessageSchema.parse(payload);
-    const validatedNodes = createValidatedNodes(updateNodesPayload.nodes);
-    updateSimulationNodes({
-      nodes: validatedNodes,
-      pinnedNodes: updateNodesPayload.pinnedNodes ?? [],
-      alpha: updateNodesPayload.alpha,
-    });
-    sendControlAck(taskId, payload.type, {
-      nodeCount: validatedNodes.length,
-      alpha: updateNodesPayload.alpha,
-      pinnedCount: updateNodesPayload.pinnedNodes?.length ?? 0,
-    });
-  } else {
-    logger.warn("worker", "Invalid node update payload in task", { payload });
-    self.postMessage({
-      type: ERROR_TYPE,
-      taskId,
-      payload: "Invalid node update payload",
-    });
-  }
+  const validatedNodes = createValidatedNodes(payload.nodes);
+  updateSimulationNodes({
+    nodes: validatedNodes,
+    pinnedNodes: payload.pinnedNodes ?? [],
+    alpha: payload.alpha,
+  });
+  sendControlAck(taskId, payload.type, {
+    nodeCount: validatedNodes.length,
+    alpha: payload.alpha,
+    pinnedCount: payload.pinnedNodes?.length ?? 0,
+  });
 }
 
 // Simple wrapper functions that delegate to the ForceSimulationEngine
@@ -814,8 +664,10 @@ self.onmessage = (e: MessageEvent) => {
         config: createSafeConfig(data.config),
         pinnedNodes: data.pinnedNodes ?? [],
       });
-    } else if (isForceSimulationMessage(data)) {
-      handleDirectForceSimulationMessage(data);
+    } else if (isForceSimulationControlMessage(data)) {
+      handleDirectForceSimulationMessage(
+        data as AnyForceSimulationControlMessage,
+      );
     } else {
       logger.warn("worker", "Unknown message type", { data });
     }
@@ -863,36 +715,29 @@ function handleDirectForceSimulationMessage(
 // Helper to handle direct reheat messages
 function handleDirectReheatMessage(data: ForceSimulationReheatMessage) {
   logger.debug("worker", "Worker received reheat message", data);
-  if (forceSimulationReheatMessageSchema.safeParse(data).success) {
-    const reheatData = forceSimulationReheatMessageSchema.parse(data);
-    const validatedNodes = createValidatedNodes(reheatData.nodes);
-    logger.debug("worker", "Worker calling reheatSimulation", {
-      nodeCount: validatedNodes.length,
-      linkCount: reheatData.links.length,
-      alpha: reheatData.alpha,
-      linkDetails: reheatData.links.map((link) => ({
-        id: link.id,
-        source: link.source,
-        target: link.target,
-      })),
+  const validatedNodes = createValidatedNodes(data.nodes);
+  logger.debug("worker", "Worker calling reheatSimulation", {
+    nodeCount: validatedNodes.length,
+    linkCount: data.links.length,
+    alpha: data.alpha,
+    linkDetails: data.links.map((link) => ({
+      id: link.id,
+      source: link.source,
+      target: link.target,
+    })),
+  });
+  try {
+    logger.debug("worker", "About to call reheatSimulation");
+    reheatSimulation({
+      nodes: validatedNodes,
+      links: validateLinks(data.links),
+      config: createSafeConfig(data.config),
+      pinnedNodes: data.pinnedNodes ?? [],
+      alpha: data.alpha,
     });
-    try {
-      logger.debug("worker", "About to call reheatSimulation");
-      reheatSimulation({
-        nodes: validatedNodes,
-        links: validateLinks(reheatData.links),
-        config: createSafeConfig(reheatData.config),
-        pinnedNodes: reheatData.pinnedNodes ?? [],
-        alpha: reheatData.alpha,
-      });
-      logger.debug("worker", "ReheatSimulation call completed");
-    } catch (error) {
-      logger.error("worker", "Error calling reheatSimulation", { error });
-    }
-  } else {
-    logger.error("worker", "Worker reheat message validation failed", {
-      error: forceSimulationReheatMessageSchema.safeParse(data).error,
-    });
+    logger.debug("worker", "ReheatSimulation call completed");
+  } catch (error) {
+    logger.error("worker", "Error calling reheatSimulation", { error });
   }
 }
 
@@ -901,31 +746,24 @@ function handleDirectUpdateLinksMessage(
   data: ForceSimulationUpdateLinksMessage,
 ) {
   logger.debug("worker", "Worker received update links message", data);
-  if (forceSimulationUpdateLinksMessageSchema.safeParse(data).success) {
-    const updateData = forceSimulationUpdateLinksMessageSchema.parse(data);
-    logger.debug("worker", "Worker calling updateSimulationLinks", {
-      linkCount: updateData.links.length,
-      alpha: updateData.alpha,
-      linkDetails: updateData.links.slice(0, 3).map((link) => ({
-        id: link.id,
-        source: link.source,
-        target: link.target,
-      })),
+  logger.debug("worker", "Worker calling updateSimulationLinks", {
+    linkCount: data.links.length,
+    alpha: data.alpha,
+    linkDetails: data.links.slice(0, 3).map((link) => ({
+      id: link.id,
+      source: link.source,
+      target: link.target,
+    })),
+  });
+  try {
+    logger.debug("worker", "About to call updateSimulationLinks");
+    updateSimulationLinks({
+      links: validateLinks(data.links),
+      alpha: data.alpha,
     });
-    try {
-      logger.debug("worker", "About to call updateSimulationLinks");
-      updateSimulationLinks({
-        links: validateLinks(updateData.links),
-        alpha: updateData.alpha,
-      });
-      logger.debug("worker", "UpdateSimulationLinks call completed");
-    } catch (error) {
-      logger.error("worker", "Error calling updateSimulationLinks", { error });
-    }
-  } else {
-    logger.error("worker", "Worker update links message validation failed", {
-      error: forceSimulationUpdateLinksMessageSchema.safeParse(data).error,
-    });
+    logger.debug("worker", "UpdateSimulationLinks call completed");
+  } catch (error) {
+    logger.error("worker", "Error calling updateSimulationLinks", { error });
   }
 }
 
@@ -934,22 +772,15 @@ function handleDirectUpdateNodesMessage(
   data: ForceSimulationUpdateNodesMessage,
 ) {
   logger.debug("worker", "Worker received update nodes message", data);
-  if (forceSimulationUpdateNodesMessageSchema.safeParse(data).success) {
-    const updateData = forceSimulationUpdateNodesMessageSchema.parse(data);
-    try {
-      const validatedNodes = createValidatedNodes(updateData.nodes);
-      updateSimulationNodes({
-        nodes: validatedNodes,
-        pinnedNodes: updateData.pinnedNodes ?? [],
-        alpha: updateData.alpha,
-      });
-    } catch (error) {
-      logger.error("worker", "Error calling updateSimulationNodes", { error });
-    }
-  } else {
-    logger.error("worker", "Worker update nodes message validation failed", {
-      error: forceSimulationUpdateNodesMessageSchema.safeParse(data).error,
+  try {
+    const validatedNodes = createValidatedNodes(data.nodes);
+    updateSimulationNodes({
+      nodes: validatedNodes,
+      pinnedNodes: data.pinnedNodes ?? [],
+      alpha: data.alpha,
     });
+  } catch (error) {
+    logger.error("worker", "Error calling updateSimulationNodes", { error });
   }
 }
 
