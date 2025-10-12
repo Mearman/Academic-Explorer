@@ -27,13 +27,7 @@ export const ADVANCED_FIELD_SELECTIONS: AdvancedEntityFieldSelections = {
     ],
   },
   authors: {
-    minimal: [
-      "id",
-      "display_name",
-      "works_count",
-      "last_known_institutions",
-      "affiliations",
-    ],
+    minimal: ["id", "display_name", "works_count", "last_known_institutions", "orcid"],
   },
   sources: {
     minimal: ["id", "display_name", "type", "publisher"],

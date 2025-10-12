@@ -16,49 +16,91 @@ import type {
 export function isWork(entity: unknown): entity is Work {
   if (typeof entity !== "object" || entity === null) return false;
   const obj = entity as Record<string, unknown>;
-  return "id" in obj && typeof obj.id === "string" && obj.id.startsWith("W");
+  if (!("id" in obj) || typeof obj.id !== "string") return false;
+  const id = obj.id;
+  return (
+    id.startsWith("W") ||
+    id.startsWith("w") ||
+    id.startsWith("https://openalex.org/W") ||
+    id.startsWith("https://openalex.org/w")
+  );
 }
 
 export function isAuthor(entity: unknown): entity is Author {
   if (typeof entity !== "object" || entity === null) return false;
   const obj = entity as Record<string, unknown>;
-  return "id" in obj && typeof obj.id === "string" && obj.id.startsWith("A");
+  return (
+    "id" in obj &&
+    typeof obj.id === "string" &&
+    (obj.id.toLowerCase().startsWith("a") ||
+      obj.id.toLowerCase().startsWith("https://openalex.org/a"))
+  );
 }
 
 export function isSource(entity: unknown): entity is Source {
   if (typeof entity !== "object" || entity === null) return false;
   const obj = entity as Record<string, unknown>;
-  return "id" in obj && typeof obj.id === "string" && obj.id.startsWith("S");
+  return (
+    "id" in obj &&
+    typeof obj.id === "string" &&
+    (obj.id.toLowerCase().startsWith("s") ||
+      obj.id.toLowerCase().startsWith("https://openalex.org/s"))
+  );
 }
 
 export function isInstitution(entity: unknown): entity is InstitutionEntity {
   if (typeof entity !== "object" || entity === null) return false;
   const obj = entity as Record<string, unknown>;
-  return "id" in obj && typeof obj.id === "string" && obj.id.startsWith("I");
+  return (
+    "id" in obj &&
+    typeof obj.id === "string" &&
+    (obj.id.toLowerCase().startsWith("i") ||
+      obj.id.toLowerCase().startsWith("https://openalex.org/i"))
+  );
 }
 
 export function isTopic(entity: unknown): entity is Topic {
   if (typeof entity !== "object" || entity === null) return false;
   const obj = entity as Record<string, unknown>;
-  return "id" in obj && typeof obj.id === "string" && obj.id.startsWith("T");
+  return (
+    "id" in obj &&
+    typeof obj.id === "string" &&
+    (obj.id.toLowerCase().startsWith("t") ||
+      obj.id.toLowerCase().startsWith("https://openalex.org/t"))
+  );
 }
 
 export function isConcept(entity: unknown): entity is Topic {
   if (typeof entity !== "object" || entity === null) return false;
   const obj = entity as Record<string, unknown>;
-  return "id" in obj && typeof obj.id === "string" && obj.id.startsWith("C");
+  return (
+    "id" in obj &&
+    typeof obj.id === "string" &&
+    (obj.id.toLowerCase().startsWith("c") ||
+      obj.id.toLowerCase().startsWith("https://openalex.org/c"))
+  );
 }
 
 export function isPublisher(entity: unknown): entity is Publisher {
   if (typeof entity !== "object" || entity === null) return false;
   const obj = entity as Record<string, unknown>;
-  return "id" in obj && typeof obj.id === "string" && obj.id.startsWith("P");
+  return (
+    "id" in obj &&
+    typeof obj.id === "string" &&
+    (obj.id.toLowerCase().startsWith("p") ||
+      obj.id.toLowerCase().startsWith("https://openalex.org/p"))
+  );
 }
 
 export function isFunder(entity: unknown): entity is Funder {
   if (typeof entity !== "object" || entity === null) return false;
   const obj = entity as Record<string, unknown>;
-  return "id" in obj && typeof obj.id === "string" && obj.id.startsWith("F");
+  return (
+    "id" in obj &&
+    typeof obj.id === "string" &&
+    (obj.id.toLowerCase().startsWith("f") ||
+      obj.id.toLowerCase().startsWith("https://openalex.org/f"))
+  );
 }
 
 export function isKeyword(

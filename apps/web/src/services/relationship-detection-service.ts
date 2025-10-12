@@ -353,10 +353,36 @@ export class RelationshipDetectionService {
             break;
           }
 
-          Object.assign(minimalData, {
-            affiliations: entityWithId.affiliations,
-            last_known_institutions: entityWithId.last_known_institutions,
-          });
+          const normalizedAffiliations = Array.isArray(
+            entityWithId.affiliations,
+          )
+            ? entityWithId.affiliations.filter((affiliation) =>
+                Boolean(
+                  affiliation?.institution?.id &&
+                    typeof affiliation.institution.id === "string",
+                ),
+              )
+            : [];
+
+          const normalizedLastKnown = Array.isArray(
+            entityWithId.last_known_institutions,
+          )
+            ? entityWithId.last_known_institutions.filter((institution) =>
+                Boolean(institution?.id && typeof institution.id === "string"),
+              )
+            : [];
+
+          if (normalizedAffiliations.length > 0) {
+            Object.assign(minimalData, {
+              affiliations: normalizedAffiliations,
+            });
+          }
+
+          if (normalizedLastKnown.length > 0) {
+            Object.assign(minimalData, {
+              last_known_institutions: normalizedLastKnown,
+            });
+          }
           break;
         }
         case "sources": {
