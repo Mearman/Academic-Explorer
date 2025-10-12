@@ -1,5 +1,7 @@
 import { FieldSelector } from "@/components/FieldSelector";
+import { EntityMiniGraph } from "@/components/graph/EntityMiniGraph";
 import { useEntityDocumentTitle } from "@/hooks/use-document-title";
+import { useEntityMiniGraphData } from "@/hooks/use-entity-mini-graph-data";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useGraphStore } from "@/stores/graph-store";
@@ -8,7 +10,12 @@ import { SOURCE_FIELDS, cachedOpenAlex } from "@academic-explorer/client";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
-import { useNavigate, useParams, useSearch, createLazyFileRoute } from "@tanstack/react-router";
+import {
+  useNavigate,
+  useParams,
+  useSearch,
+  createLazyFileRoute,
+} from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 
 const SOURCE_ROUTE_PATH = "/sources/$sourceId";
@@ -37,18 +44,29 @@ function SourceRoute() {
     const loadRandomSource = async () => {
       setIsLoadingRandom(true);
       try {
-        logger.debug("routing", "Fetching random source", undefined, "SourceRoute");
+        logger.debug(
+          "routing",
+          "Fetching random source",
+          undefined,
+          "SourceRoute",
+        );
 
-        const response = await cachedOpenAlex.client.sources.getRandomSources(1);
+        const response =
+          await cachedOpenAlex.client.sources.getRandomSources(1);
 
         if (response.results.length > 0) {
           const randomSource = response.results[0];
           const cleanId = randomSource.id.replace("https://openalex.org/", "");
 
-          logger.debug("routing", "Redirecting to random source", {
-            sourceId: cleanId,
-            name: randomSource.display_name,
-          }, "SourceRoute");
+          logger.debug(
+            "routing",
+            "Redirecting to random source",
+            {
+              sourceId: cleanId,
+              name: randomSource.display_name,
+            },
+            "SourceRoute",
+          );
 
           void navigate({
             to: SOURCE_ROUTE_PATH,
@@ -76,6 +94,12 @@ function SourceRoute() {
   const { loadEntity } = graphData;
   const { loadEntityIntoGraph } = graphData;
   const nodeCount = useGraphStore((state) => state.totalNodeCount);
+
+  // Mini graph data for the top of the page
+  const miniGraphData = useEntityMiniGraphData({
+    entityId: sourceId,
+    entityType: "sources",
+  });
 
   // Fetch entity data for title
   const rawEntityData = useRawEntityData({
@@ -180,7 +204,9 @@ function SourceRoute() {
   if (rawEntityData.isLoading || isLoadingRandom) {
     return (
       <div className="p-4 text-center">
-        <h2>{isLoadingRandom ? "Finding Random Source..." : "Loading Source..."}</h2>
+        <h2>
+          {isLoadingRandom ? "Finding Random Source..." : "Loading Source..."}
+        </h2>
         <p>Source ID: {sourceId}</p>
       </div>
     );
@@ -222,6 +248,16 @@ function SourceRoute() {
   // Show content based on view mode
   return (
     <div className="p-4 max-w-full overflow-auto">
+      {/* Mini Graph View */}
+      {miniGraphData.entity && (
+        <div className="mb-6 flex justify-center">
+          <EntityMiniGraph
+            entity={miniGraphData.entity}
+            relatedEntities={miniGraphData.relatedEntities}
+          />
+        </div>
+      )}
+
       <ViewToggle
         viewMode={viewMode}
         onToggle={setViewMode}

@@ -1,5 +1,7 @@
 import { FieldSelector } from "@/components/FieldSelector";
+import { EntityMiniGraph } from "@/components/graph/EntityMiniGraph";
 import { useEntityDocumentTitle } from "@/hooks/use-document-title";
+import { useEntityMiniGraphData } from "@/hooks/use-entity-mini-graph-data";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
@@ -96,6 +98,12 @@ function WorkRoute() {
   const { loadEntity } = graphData;
   const { loadEntityIntoGraph } = graphData;
   const nodeCount = useGraphStore((state) => state.totalNodeCount);
+
+  // Mini graph data for the top of the page
+  const miniGraphData = useEntityMiniGraphData({
+    entityId: cleanWorkId,
+    entityType: "works",
+  });
 
   // Check if ID needs normalization and redirect if necessary
   useEffect(() => {
@@ -228,6 +236,16 @@ function WorkRoute() {
   // Show content based on view mode
   return (
     <div className="p-4 max-w-full overflow-auto">
+      {/* Mini Graph View */}
+      {miniGraphData.entity && (
+        <div className="mb-6 flex justify-center">
+          <EntityMiniGraph
+            entity={miniGraphData.entity}
+            relatedEntities={miniGraphData.relatedEntities}
+          />
+        </div>
+      )}
+
       <div className="flex items-center justify-between mb-4">
         <ViewToggle
           viewMode={viewMode}

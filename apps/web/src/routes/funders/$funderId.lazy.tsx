@@ -1,5 +1,7 @@
 import { FieldSelector } from "@/components/FieldSelector";
+import { EntityMiniGraph } from "@/components/graph/EntityMiniGraph";
 import { useEntityDocumentTitle } from "@/hooks/use-document-title";
+import { useEntityMiniGraphData } from "@/hooks/use-entity-mini-graph-data";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useGraphStore } from "@/stores/graph-store";
@@ -9,7 +11,12 @@ import { EntityDetectionService } from "@academic-explorer/graph";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
-import { useNavigate, useParams, useSearch, createLazyFileRoute } from "@tanstack/react-router";
+import {
+  useNavigate,
+  useParams,
+  useSearch,
+  createLazyFileRoute,
+} from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 
 export const FUNDER_ROUTE_PATH = "/funders/$funderId";
@@ -38,7 +45,12 @@ function FunderRoute() {
     const loadRandomFunder = async () => {
       setIsLoadingRandom(true);
       try {
-        logger.debug("routing", "Fetching random funder", undefined, "FunderRoute");
+        logger.debug(
+          "routing",
+          "Fetching random funder",
+          undefined,
+          "FunderRoute",
+        );
 
         const response = await cachedOpenAlex.client.funders.randomSample(1);
 
@@ -46,10 +58,15 @@ function FunderRoute() {
           const randomFunder = response.results[0];
           const cleanId = randomFunder.id.replace("https://openalex.org/", "");
 
-          logger.debug("routing", "Redirecting to random funder", {
-            funderId: cleanId,
-            name: randomFunder.display_name,
-          }, "FunderRoute");
+          logger.debug(
+            "routing",
+            "Redirecting to random funder",
+            {
+              funderId: cleanId,
+              name: randomFunder.display_name,
+            },
+            "FunderRoute",
+          );
 
           void navigate({
             to: FUNDER_ROUTE_PATH,
@@ -77,6 +94,12 @@ function FunderRoute() {
   const { loadEntity } = graphData;
   const { loadEntityIntoGraph } = graphData;
   const nodeCount = useGraphStore((state) => state.totalNodeCount);
+
+  // Mini graph data for the top of the page
+  const miniGraphData = useEntityMiniGraphData({
+    entityId: funderId,
+    entityType: "funders",
+  });
 
   // Fetch entity data for title
   const rawEntityData = useRawEntityData({
@@ -209,7 +232,9 @@ function FunderRoute() {
   if (rawEntityData.isLoading || isLoadingRandom) {
     return (
       <div className="p-4 text-center">
-        <h2>{isLoadingRandom ? "Finding Random Funder..." : "Loading Funder..."}</h2>
+        <h2>
+          {isLoadingRandom ? "Finding Random Funder..." : "Loading Funder..."}
+        </h2>
         <p>Funder ID: {funderId}</p>
       </div>
     );
@@ -251,6 +276,16 @@ function FunderRoute() {
   // Show content based on view mode
   return (
     <div className="p-4 max-w-full overflow-auto">
+      {/* Mini Graph View */}
+      {miniGraphData.entity && (
+        <div className="mb-6 flex justify-center">
+          <EntityMiniGraph
+            entity={miniGraphData.entity}
+            relatedEntities={miniGraphData.relatedEntities}
+          />
+        </div>
+      )}
+
       <ViewToggle
         viewMode={viewMode}
         onToggle={setViewMode}
