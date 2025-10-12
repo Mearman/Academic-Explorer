@@ -257,3 +257,32 @@ export {
 
 // Route normalization utilities
 export { normalizeRoute } from "./normalize-route.js";
+
+// State management utilities
+export {
+  createTrackedStore,
+  generateSequentialId,
+  createFilterManager,
+  computePagedItems,
+  createLoadingState,
+  createAsyncAction,
+  type FilterManager,
+  type PaginationState,
+  type PagedResult,
+  type TrackedStoreConfig,
+  type TrackedStoreResult,
+  type LoadingState,
+} from "./state/createTrackedStore.js";
+
+// Dexie integration
+export {
+  createReactiveTable,
+  createDexieSync,
+  createDexieStore,
+  type ReactiveTable,
+  type DexieSyncOptions,
+  type DexieStoreOptions,
+} from "./state/dexieStore.js";
+
+// Worker message schemas and types
+export * from "./workers/messages.js";

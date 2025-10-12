@@ -116,5 +116,5 @@
       "cache": false
     }
   },
-  "tags": ["type:library", "scope:shared", "layer:utils"]
+  "tags": ["type:library", "scope:shared", "type:util"]
 }

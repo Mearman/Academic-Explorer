@@ -12,14 +12,39 @@ Shared utilities and helpers for Academic Explorer monorepo packages. Provides g
 - **Cache**: Multi-tier caching with memory, localStorage, and IndexedDB
 - **Build Info**: Build metadata and versioning utilities
 - **Services**: Graph data services and OpenAlex entity hooks
+- **State Management**: DRY Zustand store abstractions:
+  - `createTrackedStore` - Standardized store factory with Immer, DevTools, and persistence
+  - `createFilterManager` - Reusable filter state management
+  - `createLoadingState` - Common loading/error state patterns
+  - `generateSequentialId` - ID generation utilities
 
 ## Usage
 
 ```typescript
-import { logger, isRecord, formatDateToHuman, debouncedSearch } from '@academic-explorer/utils';
-import { createMemoryCache } from '@academic-explorer/utils/cache';
-import { createStorageManager } from '@academic-explorer/utils/storage';
+import {
+  logger,
+  isRecord,
+  formatDateToHuman,
+  debouncedSearch,
+} from "@academic-explorer/utils";
+import { createMemoryCache } from "@academic-explorer/utils/cache";
+import { createStorageManager } from "@academic-explorer/utils/storage";
+import { createTrackedStore } from "@academic-explorer/utils/state";
 
-logger.debug('api', 'Processing request', { data });
+logger.debug("api", "Processing request", { data });
 const cache = createMemoryCache<string>(1000);
+
+// DRY store creation with shared abstractions
+const { useStore } = createTrackedStore<State, Actions>(
+  {
+    name: "my-store",
+    initialState: {
+      /* ... */
+    },
+    persist: { enabled: true, storage: "hybrid" },
+  },
+  (set, get) => ({
+    /* actions */
+  }),
+);
 ```

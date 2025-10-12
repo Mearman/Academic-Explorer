@@ -88,21 +88,14 @@
   "dependencies": {
     "dexie": "^4.2.1",
     "lodash-es": "^4.17.21",
-    "qs": "^6.14.0"
+    "qs": "^6.14.0",
+    "zustand": "^5.0.0"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.12",
     "eslint": "^9.36.0",
     "typescript": "~5.9.2",
     "vitest": "^3.2.4"
-  },
-  "peerDependencies": {
-    "zustand": "^5.0.0"
-  },
-  "peerDependenciesMeta": {
-    "zustand": {
-      "optional": true
-    }
   },
   "publishConfig": {
     "access": "public"
