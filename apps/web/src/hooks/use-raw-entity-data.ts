@@ -140,7 +140,12 @@ export const useRawEntityData = (options: UseRawEntityDataOptions) => {
 
       try {
         // Create pipeline instance for this request
-        const pipeline = createRequestPipeline();
+        const pipeline = createRequestPipeline({
+          // Disable pipeline-level deduplication because higher-level request
+          // services already handle it and returning synthetic dedupe responses
+          // breaks consumers expecting actual entity payloads.
+          enableDedupe: false,
+        });
 
         // Build endpoint based on entity type
         const endpoint = `${entityType}/${encodeURIComponent(detectedEntityId)}`;
