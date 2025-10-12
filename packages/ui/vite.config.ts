@@ -31,7 +31,6 @@ const uiOverrides = defineConfig({
         "@xyflow/react",
         "date-fns",
         "immer",
-        "zustand",
       ],
       output: {
         globals: {
@@ -48,7 +47,6 @@ const uiOverrides = defineConfig({
           "@xyflow/react": "XYFlow",
           "date-fns": "dateFns",
           immer: "immer",
-          zustand: "zustand",
         },
       },
     },
@@ -61,5 +59,8 @@ const uiOverrides = defineConfig({
     },
   },
 });
+
+// Debug logging for external dependencies
+console.log("UI Package externals:", uiOverrides.build.rollupOptions.external);
 
 export default mergeConfig(baseConfig, uiOverrides);
