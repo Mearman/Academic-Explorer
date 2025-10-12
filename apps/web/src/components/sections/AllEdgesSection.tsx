@@ -11,12 +11,10 @@ import {
   Checkbox,
   Group,
   Button,
-  ScrollArea,
   Card,
   Badge,
   ActionIcon,
   Tooltip,
-  Divider,
   Switch,
 } from "@mantine/core";
 import {
@@ -33,7 +31,11 @@ import { useThemeColors } from "@/hooks/use-theme-colors";
 import { logger } from "@academic-explorer/utils/logger";
 import type { GraphEdge } from "@academic-explorer/graph";
 import { RelationType } from "@academic-explorer/graph";
-import { SectionFrame, BulkActionToolbar } from "@academic-explorer/ui";
+import {
+  SectionFrame,
+  BulkActionToolbar,
+  EntityCollectionList,
+} from "@academic-explorer/ui";
 
 import {
   IconPencil,
@@ -297,7 +299,7 @@ export const AllEdgesSection: React.FC = () => {
   );
 
   // Filter and group edges
-  const { filteredEdges, edgesByType } = useMemo(() => {
+  const { filteredEdges, edgeGroups } = useMemo(() => {
     let filtered = edgeArray;
 
     // Apply search filter
@@ -345,9 +347,18 @@ export const AllEdgesSection: React.FC = () => {
       {},
     );
 
+    // Create group items for EntityCollectionList
+    const groups = Object.entries(grouped)
+      .filter(([, edges]) => edges && edges.length > 0)
+      .map(([type, edges]) => ({
+        type: type as RelationType,
+        edges: edges || [],
+        totalCount: edgeTypeStats[type as RelationType] || 0,
+      }));
+
     return {
       filteredEdges: filtered,
-      edgesByType: grouped,
+      edgeGroups: groups,
     };
   }, [edgeArray, searchTerm, showOnlyVisible, edgeTypeStats, getNodeLabel]);
 
@@ -452,6 +463,67 @@ export const AllEdgesSection: React.FC = () => {
     ],
   );
 
+  const renderEdgeGroup = useCallback(
+    (group: { type: RelationType; edges: GraphEdge[]; totalCount: number }) => {
+      const { type, edges, totalCount } = group;
+      const relationTypeOption = relationTypeOptions.find(
+        (opt) => opt.type === type,
+      );
+      const IconComponent = relationTypeOption?.icon ?? IconLink;
+      const visibleCount = edges.length;
+      const isTypeVisible = visibleCount > 0;
+
+      return (
+        <div key={type}>
+          <Group justify="space-between" mb="xs">
+            <Group gap="xs">
+              <IconComponent size={16} />
+              <Text fw={500} size="sm">
+                {relationTypeOption?.label ?? type}
+              </Text>
+              <Badge size="sm" variant="light">
+                {edges.length}
+              </Badge>
+            </Group>
+            <Group gap="xs">
+              <Text size="xs" c="dimmed">
+                {visibleCount}/{totalCount} visible
+              </Text>
+              {!isTypeVisible && <IconEyeOff size={14} color="gray" />}
+            </Group>
+          </Group>
+
+          <Text size="xs" c="dimmed" mb="xs" fs="italic">
+            {relationTypeOption?.description}
+          </Text>
+
+          <Stack gap="xs">
+            {edges.map((edge) => (
+              <EdgeItem
+                key={edge.id}
+                edge={edge}
+                isSelected={selectedEdgeIds.has(edge.id)}
+                isVisible={isTypeVisible}
+                sourceNodeLabel={getNodeLabel(edge.source)}
+                targetNodeLabel={getNodeLabel(edge.target)}
+                onSelect={handleSelectEdge}
+                onHighlight={handleHighlightEdge}
+                onRemove={handleRemoveEdge}
+              />
+            ))}
+          </Stack>
+        </div>
+      );
+    },
+    [
+      selectedEdgeIds,
+      getNodeLabel,
+      handleSelectEdge,
+      handleHighlightEdge,
+      handleRemoveEdge,
+    ],
+  );
+
   return (
     <SectionFrame title="All Edges" icon={<IconArrowRight size={16} />}>
       <BulkActionToolbar
@@ -541,72 +613,15 @@ export const AllEdgesSection: React.FC = () => {
           </Group>
         </Stack>
 
-        <Divider />
-
-        <ScrollArea style={{ flex: 1, minHeight: 0 }}>
-          <Stack gap="md">
-            {relationTypeOptions.map(
-              ({ type, label, icon: IconComponent, description }) => {
-                const typeEdges = edgesByType[type] ?? [];
-                const totalCount = edgeTypeStats[type];
-                const visibleCount = typeEdges.length; // Use actual visible count from filtered edges
-                const isTypeVisible = visibleCount > 0;
-
-                if (typeEdges.length === 0) return null;
-
-                return (
-                  <div key={type}>
-                    <Group justify="space-between" mb="xs">
-                      <Group gap="xs">
-                        <IconComponent size={16} />
-                        <Text fw={500} size="sm">
-                          {label}
-                        </Text>
-                        <Badge size="sm" variant="light">
-                          {typeEdges.length}
-                        </Badge>
-                      </Group>
-                      <Group gap="xs">
-                        <Text size="xs" c="dimmed">
-                          {visibleCount}/{totalCount} visible
-                        </Text>
-                        {!isTypeVisible && (
-                          <IconEyeOff size={14} color="gray" />
-                        )}
-                      </Group>
-                    </Group>
-
-                    <Text size="xs" c="dimmed" mb="xs" fs="italic">
-                      {description}
-                    </Text>
-
-                    <Stack gap="xs">
-                      {typeEdges.map((edge) => (
-                        <EdgeItem
-                          key={edge.id}
-                          edge={edge}
-                          isSelected={selectedEdgeIds.has(edge.id)}
-                          isVisible={isTypeVisible}
-                          sourceNodeLabel={getNodeLabel(edge.source)}
-                          targetNodeLabel={getNodeLabel(edge.target)}
-                          onSelect={handleSelectEdge}
-                          onHighlight={handleHighlightEdge}
-                          onRemove={handleRemoveEdge}
-                        />
-                      ))}
-                    </Stack>
-                  </div>
-                );
-              },
-            )}
-
-            {filteredEdges.length === 0 && (
-              <Text ta="center" c="dimmed" py="xl">
-                No edges found
-              </Text>
-            )}
-          </Stack>
-        </ScrollArea>
+        <EntityCollectionList
+          items={edgeGroups}
+          renderItem={renderEdgeGroup}
+          height="100%"
+          emptyState={{
+            title: "No edges found",
+            description: "Try adjusting your search or filters",
+          }}
+        />
       </Stack>
     </SectionFrame>
   );

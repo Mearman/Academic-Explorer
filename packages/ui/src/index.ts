@@ -35,6 +35,14 @@ export {
 export { FieldRenderer, RichEntityView } from "./components/entity-views";
 export { ViewToggle, type ViewToggleProps } from "./components/ViewToggle";
 
+// Entity Types Configuration
+export {
+  ENTITY_TYPE_CONFIGS,
+  ENTITY_TYPE_OPTIONS,
+  getEntityIconComponent,
+  type EntityTypeConfig,
+} from "./entity-types";
+
 // Entity Card Components
 export {
   AuthorCard,
