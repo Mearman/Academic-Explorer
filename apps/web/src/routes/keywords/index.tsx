@@ -1,5 +1,6 @@
 import { createFileRoute, useSearch } from "@tanstack/react-router";
-import { EntityList, type ColumnConfig } from "@/components/EntityList";
+import { EntityList } from "@/components/EntityList";
+import type { ColumnConfig } from "@/components/types";
 import { createFilterBuilder } from "@academic-explorer/client";
 
 export const Route = createFileRoute("/keywords/")({

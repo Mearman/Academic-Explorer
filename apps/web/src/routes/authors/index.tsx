@@ -1,7 +1,10 @@
 import { createFileRoute, useSearch } from "@tanstack/react-router";
-import { EntityList, type ColumnConfig } from "@/components/EntityList";
+import { EntityList } from "@/components/EntityList";
+import type { ColumnConfig } from "@/components/types";
 import type { Author } from "@academic-explorer/client";
 import { createFilterBuilder } from "@academic-explorer/client";
+import type { ViewMode } from "@/components/ViewModeToggle";
+import { useState } from "react";
 
 export const Route = createFileRoute("/authors/")({
   component: AuthorsListRoute,
@@ -31,6 +34,7 @@ function AuthorsListRoute() {
   const urlFilters = search.filter
     ? filterBuilder.parseFilterString(search.filter)
     : undefined;
+  const [viewMode, setViewMode] = useState<ViewMode>("table");
 
   return (
     <EntityList
@@ -38,6 +42,8 @@ function AuthorsListRoute() {
       columns={authorsColumns}
       title="Authors"
       urlFilters={urlFilters}
+      viewMode={viewMode}
+      onViewModeChange={setViewMode}
     />
   );
 }

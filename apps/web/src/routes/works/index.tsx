@@ -1,10 +1,12 @@
-import { EntityList, type ColumnConfig } from "@/components/EntityList";
+import { EntityList } from "@/components/EntityList";
+import type { ColumnConfig } from "@/components/types";
 import type { Work } from "@academic-explorer/client";
 import { createFilterBuilder } from "@academic-explorer/client";
 import { convertToRelativeUrl } from "@academic-explorer/ui/components/entity-views/matchers/index";
 import { Anchor } from "@mantine/core";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import type { ViewMode } from "@/components/ViewModeToggle";
 
 export const Route = createFileRoute("/works/")({
   component: WorksListRoute,
@@ -92,6 +94,7 @@ function WorksListRoute() {
   const [urlFilters, setUrlFilters] = useState<
     Record<string, unknown> | undefined
   >();
+  const [viewMode, setViewMode] = useState<ViewMode>("table");
 
   useEffect(() => {
     const parseHashFilters = () => {
@@ -130,6 +133,8 @@ function WorksListRoute() {
       columns={worksColumns}
       title="Works"
       urlFilters={urlFilters}
+      viewMode={viewMode}
+      onViewModeChange={setViewMode}
     />
   );
 }
