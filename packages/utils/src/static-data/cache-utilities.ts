@@ -246,8 +246,37 @@ export function parseOpenAlexUrl(url: string): ParsedOpenAlexUrl | null {
 
     // Extract entity ID for single entity URLs
     let entityId: string | undefined;
-    if (pathSegments.length === 2 && !urlObj.search) {
-      entityId = pathSegments[1];
+    if (pathSegments.length >= 2) {
+      const entityIdCandidate = pathSegments[1];
+
+      const decodeSegment = (segment: string): string => {
+        try {
+          return decodeURIComponent(segment);
+        } catch {
+          return segment;
+        }
+      };
+
+      const decodedCandidate = decodeSegment(entityIdCandidate);
+      const isOpenAlexId =
+        /^[A-Z]\d{1,}$/i.test(entityIdCandidate) ||
+        /^[A-Z]\d{1,}$/i.test(decodedCandidate);
+      const isOpenAlexUrl =
+        /^https?:\/\/openalex\.org\/[A-Z]\d{1,}$/i.test(decodedCandidate) ||
+        /^https%3A%2F%2Fopenalex\.org%2F[A-Z]\d{1,}$/i.test(entityIdCandidate);
+      const isOrcidId =
+        /^(\d{4}-){3}\d{3}[0-9X]$/i.test(decodedCandidate) ||
+        /^https?:\/\/orcid\.org\/(\d{4}-){3}\d{3}[0-9X]$/i.test(
+          decodedCandidate,
+        ) ||
+        /^orcid:(\d{4}-){3}\d{3}[0-9X]$/i.test(decodedCandidate) ||
+        /^https%3A%2F%2Forcid\.org%2F(\d{4}-){3}\d{3}[0-9X]$/i.test(
+          entityIdCandidate,
+        );
+
+      if (isOpenAlexId || isOpenAlexUrl || isOrcidId) {
+        entityId = entityIdCandidate;
+      }
     }
 
     return {

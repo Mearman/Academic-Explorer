@@ -1,6 +1,6 @@
 import { existsSync } from "fs";
 import { readFile, writeFile, mkdir } from "fs/promises";
-import { join } from "path";
+import { join, relative } from "path";
 import {
   generateContentHash,
   parseOpenAlexUrl,
@@ -271,12 +271,27 @@ export const updateDirectoryIndexWithAggregation = async (
             // OpenAlex URL. Apply sanitizeUrlForCaching to ensure consistent normalization.
             // This is crucial for populating FileEntry.url and enabling collision detection
             // for existing cache files without requiring new requests.
-            const entityTypeStr = dirPath.split("/").slice(-2, -1)[0];
+            const relativeDirPath = context?.staticDataDir
+              ? relative(context.staticDataDir, dirPath)
+              : dirPath;
+            const pathSegments = relativeDirPath
+              .split(/[\\/]/)
+              .filter((segment) => segment.length > 0);
+            const queriesIndex = pathSegments.lastIndexOf("queries");
+            const resourceSegments =
+              queriesIndex >= 0
+                ? pathSegments.slice(0, queriesIndex)
+                : pathSegments;
+            const entityTypeStr = resourceSegments[0] ?? "";
             const entityType = entityTypeStr as EntityType;
             // Decode filename to get original query params
             const decodedQuery = decodeFilename(baseName);
             const queryParams = filenameToQuery(decodedQuery);
-            const reconstructedUrl = `https://api.openalex.org/${entityTypeStr}${queryParams}`;
+            const resourcePath = resourceSegments.join("/");
+            const reconstructedUrl =
+              resourcePath.length > 0
+                ? `https://api.openalex.org/${resourcePath}${queryParams}`
+                : `https://api.openalex.org${queryParams}`;
             // Apply normalization to ensure consistency with runtime caching
             const normalizedPath = sanitizeUrlForCaching(
               new URL(reconstructedUrl).pathname +
@@ -317,13 +332,15 @@ export const updateDirectoryIndexWithAggregation = async (
             // Non-query: single entity or collection (e.g., /authors/A123.json)
             // Reconstruction is simpler: just prepend entity type and ID to base URL.
             // Apply normalization for consistency even though no query params expected.
-            const pathParts = dirPath
-              .replace(context?.staticDataDir || "", "")
-              .split("/")
-              .filter(Boolean);
-            if (pathParts.length >= 1) {
-              const entityType = pathParts[0];
-              const reconstructedUrl = `https://api.openalex.org/${entityType}/${baseName}`;
+            const relativeDirPath = context?.staticDataDir
+              ? relative(context.staticDataDir, dirPath)
+              : dirPath;
+            const pathSegments = relativeDirPath
+              .split(/[\\/]/)
+              .filter((segment) => segment.length > 0);
+            if (pathSegments.length >= 1) {
+              const resourceSegments = [...pathSegments, baseName];
+              const reconstructedUrl = `https://api.openalex.org/${resourceSegments.join("/")}`;
               // Apply normalization for consistency (will be no-op for paths without query params)
               const normalizedPath = sanitizeUrlForCaching(
                 new URL(reconstructedUrl).pathname +

@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   directoryIndexToUnifiedIndex,
   getCacheFilePath,
+  parseOpenAlexUrl,
   hasCollision,
   isDirectoryIndex,
   isUnifiedIndex,
@@ -839,5 +840,59 @@ describe("Cache Utilities - Collision Handling", () => {
         });
       });
     });
+  });
+});
+
+describe("parseOpenAlexUrl", () => {
+  it("should detect entity id for single entity requests with select parameters", () => {
+    const result = parseOpenAlexUrl(
+      "https://api.openalex.org/authors/A123456789?select=id,display_name",
+    );
+    expect(result).not.toBeNull();
+    expect(result?.entityId).toBe("A123456789");
+    expect(result?.isQuery).toBe(true);
+  });
+
+  it("should detect encoded ORCID identifiers as entity ids", () => {
+    const result = parseOpenAlexUrl(
+      "https://api.openalex.org/authors/https%3A%2F%2Forcid.org%2F0000-0001-2345-6789",
+    );
+    expect(result).not.toBeNull();
+    expect(result?.entityId).toBe(
+      "https%3A%2F%2Forcid.org%2F0000-0001-2345-6789",
+    );
+  });
+
+  it("should not assign entity id for non-entity collection endpoints", () => {
+    const result = parseOpenAlexUrl(
+      "https://api.openalex.org/works/random?per_page=1",
+    );
+    expect(result).not.toBeNull();
+    expect(result?.entityId).toBeUndefined();
+    expect(result?.isQuery).toBe(true);
+  });
+});
+
+describe("getCacheFilePath", () => {
+  const STATIC_ROOT = "/mock/cache";
+
+  it("should map entity select queries into entity-specific query directories", () => {
+    const cachePath = getCacheFilePath(
+      "https://api.openalex.org/authors/A5017898742?select=id,display_name",
+      STATIC_ROOT,
+    );
+    expect(cachePath).not.toBeNull();
+    expect(cachePath).toContain("authors/A5017898742/queries/");
+  });
+
+  it("should preserve encoded ORCID identifiers in cache path", () => {
+    const cachePath = getCacheFilePath(
+      "https://api.openalex.org/authors/https%3A%2F%2Forcid.org%2F0000-0001-2345-6789?select=id",
+      STATIC_ROOT,
+    );
+    expect(cachePath).not.toBeNull();
+    expect(cachePath).toContain(
+      "authors/https%3A%2F%2Forcid.org%2F0000-0001-2345-6789/queries",
+    );
   });
 });
