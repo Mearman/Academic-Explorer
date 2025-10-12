@@ -231,11 +231,13 @@ export function createTrackedStore<
         break;
     }
 
+    // Zustand v5 persist API - curried version
     storeCreator = persist(storeCreator, {
       name: `${name}-state`,
       storage,
-      version: persistConfig.version,
-      partialize: persistConfig.partialize,
+      version: persistConfig.version ?? 1,
+      partialize:
+        persistConfig.partialize || ((state: T & A) => state as Partial<T>),
       migrate: persistConfig.migrate,
     });
   }

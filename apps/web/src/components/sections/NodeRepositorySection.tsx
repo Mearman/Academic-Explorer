@@ -11,22 +11,21 @@ import {
   Checkbox,
   Group,
   Button,
-  ScrollArea,
   Card,
   Badge,
   ActionIcon,
   Tooltip,
 } from "@mantine/core";
-import {
-  IconSearch,
-  IconTrash,
-  IconDragDrop,
-} from "@tabler/icons-react";
+import { IconSearch, IconTrash, IconDragDrop } from "@tabler/icons-react";
 import { useRepositoryStore } from "@/stores/repository-store";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { logger } from "@academic-explorer/utils/logger";
 import type { GraphNode, EntityType } from "@academic-explorer/graph";
-import { SectionFrame, BulkActionToolbar } from "@academic-explorer/ui";
+import {
+  SectionFrame,
+  BulkActionToolbar,
+  EntityCollectionList,
+} from "@academic-explorer/ui";
 import {
   IconFile,
   IconUser,
@@ -330,32 +329,23 @@ export const NodeRepositorySection: React.FC = () => {
         </Group>
 
         {/* Node list */}
-        <ScrollArea style={{ flex: 1 }}>
-          <Stack gap="xs">
-            {filteredNodes.length === 0 ? (
-              <Text
-                size="sm"
-                style={{
-                  color: colors.text.tertiary,
-                  textAlign: "center",
-                  padding: "20px",
-                }}
-              >
-                No nodes in repository. Search for entities to add them here.
-              </Text>
-            ) : (
-              filteredNodes.map((node) => (
-                <NodeRepositoryItem
-                  key={node.id}
-                  node={node}
-                  isSelected={selectedRepositoryNodes[node.id] ?? false}
-                  onSelect={selectRepositoryNode}
-                  onRemove={handleRemoveNode}
-                />
-              ))
-            )}
-          </Stack>
-        </ScrollArea>
+        <EntityCollectionList
+          items={filteredNodes}
+          renderItem={(node) => (
+            <NodeRepositoryItem
+              key={node.id}
+              node={node}
+              isSelected={selectedRepositoryNodes[node.id] ?? false}
+              onSelect={selectRepositoryNode}
+              onRemove={handleRemoveNode}
+            />
+          )}
+          height="100%"
+          emptyState={{
+            title: "No nodes in repository",
+            description: "Search for entities to add them here",
+          }}
+        />
 
         {/* Drag instructions */}
         {filteredNodes.length > 0 && (
