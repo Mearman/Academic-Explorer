@@ -46,37 +46,60 @@
         "production",
         "^production",
         "{workspaceRoot}/vite.config.base.ts",
-        "{workspaceRoot}/config/**/*",
-        "{projectRoot}/vite.config.base.ts",
-        "{projectRoot}/tsconfig.json",
-        "{projectRoot}/package.json"
+        "{workspaceRoot}/config/**/*"
       ],
       "outputs": ["{projectRoot}/dist"]
     },
     "test": {
       "cache": true,
-      "inputs": ["default", "^production", "{workspaceRoot}/config/**/*"],
+      "inputs": [
+        "source",
+        "tests",
+        "configs",
+        "^production",
+        "{workspaceRoot}/config/**/*"
+      ],
       "outputs": ["{projectRoot}/coverage"]
     },
     "test:unit:run": {
       "cache": true,
-      "inputs": ["default", "^production", "{workspaceRoot}/config/**/*"],
+      "inputs": [
+        "source",
+        "tests",
+        "configs",
+        "^production",
+        "{workspaceRoot}/config/**/*"
+      ],
       "outputs": ["{projectRoot}/coverage"]
     },
     "test:component:run": {
       "cache": true,
-      "inputs": ["default", "^production", "{workspaceRoot}/config/**/*"],
+      "inputs": [
+        "source",
+        "tests",
+        "configs",
+        "^production",
+        "{workspaceRoot}/config/**/*"
+      ],
       "outputs": ["{projectRoot}/coverage"]
     },
     "test:integration:run": {
       "cache": true,
-      "inputs": ["default", "^production", "{workspaceRoot}/config/**/*"],
+      "inputs": [
+        "source",
+        "tests",
+        "configs",
+        "^production",
+        "{workspaceRoot}/config/**/*"
+      ],
       "outputs": ["{projectRoot}/coverage"]
     },
     "test:e2e:run": {
       "cache": true,
       "inputs": [
-        "default",
+        "source",
+        "tests",
+        "configs",
         "^production",
         "{workspaceRoot}/config/**/*",
         "{workspaceRoot}/playwright.config.ts"
@@ -95,10 +118,10 @@
     "lint:fix": {
       "cache": true,
       "inputs": [
-        "default",
+        "source",
+        "configs",
         "{workspaceRoot}/eslint.config.ts",
-        "{workspaceRoot}/eslint.config.*.ts",
-        "{projectRoot}/eslint.config.ts"
+        "{workspaceRoot}/eslint.config.*.ts"
       ],
       "outputs": ["{projectRoot}/**/*.{js,jsx,ts,tsx}"],
       "options": {
@@ -111,21 +134,21 @@
       "cache": true,
       "dependsOn": ["lint:fix"],
       "inputs": [
-        "default",
+        "source",
+        "configs",
         "{workspaceRoot}/eslint.config.ts",
-        "{workspaceRoot}/eslint.config.*.ts",
-        "{projectRoot}/eslint.config.ts"
+        "{workspaceRoot}/eslint.config.*.ts"
       ],
       "outputs": ["{workspaceRoot}/.nx/cache/lint-results/{projectName}.json"]
     },
     "typecheck": {
       "cache": true,
       "inputs": [
-        "default",
+        "source",
+        "configs",
         "^production",
         "{workspaceRoot}/tsconfig*.json",
-        "{workspaceRoot}/config/**/*",
-        "{projectRoot}/tsconfig*.json"
+        "{workspaceRoot}/config/**/*"
       ],
       "outputs": ["{projectRoot}/dist/tsc"],
       "options": {
@@ -135,7 +158,8 @@
     "knip": {
       "cache": true,
       "inputs": [
-        "default",
+        "source",
+        "configs",
         "^production",
         "{workspaceRoot}/knip.ts",
         "{workspaceRoot}/tsconfig*.json",
@@ -146,7 +170,8 @@
     "knip:nx": {
       "cache": true,
       "inputs": [
-        "default",
+        "source",
+        "configs",
         "^production",
         "{workspaceRoot}/knip.ts",
         "{workspaceRoot}/tsconfig*.json",
@@ -158,7 +183,8 @@
     "knip:fix": {
       "cache": false,
       "inputs": [
-        "default",
+        "source",
+        "configs",
         "^production",
         "{workspaceRoot}/knip.ts",
         "{workspaceRoot}/tsconfig*.json",
@@ -186,7 +212,7 @@
     },
     "a11y:dev": {
       "cache": false,
-      "inputs": ["default", "{workspaceRoot}/.pa11yci-dev.json"]
+      "inputs": ["source", "configs", "{workspaceRoot}/.pa11yci-dev.json"]
     },
     "a11y:ci": {
       "cache": false,
@@ -195,14 +221,22 @@
     },
     "test:a11y": {
       "cache": true,
-      "inputs": ["default", "^production", "{workspaceRoot}/config/**/*"],
+      "inputs": [
+        "source",
+        "tests",
+        "configs",
+        "^production",
+        "{workspaceRoot}/config/**/*"
+      ],
       "outputs": ["{projectRoot}/coverage"]
     },
     "test:a11y:e2e": {
       "cache": true,
       "dependsOn": ["build"],
       "inputs": [
-        "default",
+        "source",
+        "tests",
+        "configs",
         "^production",
         "{workspaceRoot}/config/**/*",
         "{workspaceRoot}/playwright.config.ts"
@@ -227,8 +261,26 @@
   },
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "source": ["{projectRoot}/src/**/*", "sharedGlobals"],
+    "tests": [
+      "{projectRoot}/**/*.{spec,test}.{js,jsx,ts,tsx}",
+      "{projectRoot}/**/*.snap",
+      "{projectRoot}/vitest.config.{js,ts}",
+      "{projectRoot}/playwright.config.{js,ts}",
+      "{projectRoot}/tsconfig.spec.json",
+      "{projectRoot}/src/test-setup.{js,ts}",
+      "{projectRoot}/test-setup.{js,ts}",
+      "sharedGlobals"
+    ],
+    "configs": [
+      "{projectRoot}/tsconfig*.json",
+      "{projectRoot}/package.json",
+      "{projectRoot}/eslint.config.{js,ts}",
+      "{projectRoot}/vite.config.{js,ts}",
+      "sharedGlobals"
+    ],
     "production": [
-      "default",
+      "source",
       "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
       "!{projectRoot}/tsconfig.spec.json",
       "!{projectRoot}/jest.config.[jt]s",
@@ -306,7 +358,7 @@
   "cli": {
     "packageManager": "pnpm"
   },
-  "parallel": 1,
+  "parallel": 3,
   "cacheDirectory": ".nx/cache",
   "maxCacheSize": "10GB",
   "compression": true

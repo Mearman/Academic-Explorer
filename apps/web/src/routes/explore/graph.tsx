@@ -4,12 +4,15 @@
  */
 
 import { createFileRoute } from "@tanstack/react-router";
-import { MainLayout } from "@/components/layout/MainLayout";
+import { lazy } from "react";
+import { LazyRoute } from "@/components/routing/LazyRoute";
+
+const GraphExplorer = lazy(() => import("./graph.lazy"));
 
 export const Route = createFileRoute("/explore/graph")({
-	component: GraphExplorer,
+  component: () => (
+    <LazyRoute>
+      <GraphExplorer />
+    </LazyRoute>
+  ),
 });
-
-function GraphExplorer() {
-	return <MainLayout />;
-}
