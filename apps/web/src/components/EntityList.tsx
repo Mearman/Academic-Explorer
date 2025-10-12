@@ -1,15 +1,13 @@
-import type { EntityType } from "@/config/cache";
 import type {
   Author,
-  Concept,
-  Funder,
+  Concept, EntityType, Funder,
   InstitutionEntity,
   InstitutionsFilters,
   OpenAlexResponse,
   Publisher,
   Source,
   Topic,
-  Work,
+  Work
 } from "@academic-explorer/client";
 import {
   buildFilterString,
@@ -19,8 +17,10 @@ import { logger } from "@academic-explorer/utils";
 import { Group, Pagination, Text } from "@mantine/core";
 import type { ColumnDef } from "@tanstack/react-table";
 import React, { useEffect, useMemo, useState } from "react";
+import { EntityGrid, type EntityGridItem } from "./EntityGrid";
+import { EntityListView, type EntityListItem } from "./EntityListView";
 import { BaseTable } from "./tables/BaseTable";
-export type { EntityType } from "@academic-explorer/client";
+import { ViewModeToggle, type ViewMode } from "./ViewModeToggle";
 
 type Entity =
   | Funder
@@ -32,11 +32,11 @@ type Entity =
   | Topic
   | Concept;
 
-export interface ColumnConfig {
+export type ColumnConfig = {
   key: string;
   header: string;
   render?: (value: unknown, row: Entity) => React.ReactNode;
-}
+};
 
 export interface EntityListProps {
   entityType: EntityType;
@@ -44,9 +44,113 @@ export interface EntityListProps {
   perPage?: number;
   title?: string;
   urlFilters?: unknown;
+  viewMode?: ViewMode;
+  onViewModeChange?: (viewMode: ViewMode) => void;
+}
+
+function transformEntityToGridItem(
+  entity: Entity,
+  entityType: EntityType,
+): EntityGridItem {
+  const baseItem = {
+    id: entity.id.replace("https://openalex.org/", ""),
+    entityType,
+  };
+
+  switch (entityType) {
+    case "works": {
+      const work = entity as Work;
+      return {
+        ...baseItem,
+        displayName: work.display_name,
+        citedByCount: work.cited_by_count,
+        description: work.abstract_inverted_index
+          ? "Abstract available"
+          : undefined,
+      };
+    }
+    case "authors": {
+      const author = entity as Author;
+      return {
+        ...baseItem,
+        displayName: author.display_name,
+        worksCount: author.works_count,
+        citedByCount: author.cited_by_count,
+        description: author.orcid ? `ORCID: ${author.orcid}` : undefined,
+      };
+    }
+    case "institutions": {
+      const institution = entity as InstitutionEntity;
+      return {
+        ...baseItem,
+        displayName: institution.display_name,
+        worksCount: institution.works_count,
+        citedByCount: institution.cited_by_count,
+      };
+    }
+    case "sources": {
+      const source = entity as Source;
+      return {
+        ...baseItem,
+        displayName: source.display_name,
+        worksCount: source.works_count,
+        citedByCount: source.cited_by_count,
+      };
+    }
+    case "publishers": {
+      const publisher = entity as Publisher;
+      return {
+        ...baseItem,
+        displayName: publisher.display_name,
+        worksCount: publisher.works_count,
+        citedByCount: publisher.cited_by_count,
+      };
+    }
+    case "funders": {
+      const funder = entity as Funder;
+      return {
+        ...baseItem,
+        displayName: funder.display_name,
+        worksCount: funder.works_count,
+        citedByCount: funder.cited_by_count,
+      };
+    }
+    case "topics": {
+      const topic = entity as Topic;
+      return {
+        ...baseItem,
+        displayName: topic.display_name,
+        worksCount: topic.works_count,
+        citedByCount: topic.cited_by_count,
+      };
+    }
+    case "concepts": {
+      const concept = entity as Concept;
+      return {
+        ...baseItem,
+        displayName: concept.display_name,
+        worksCount: concept.works_count,
+        citedByCount: concept.cited_by_count,
+      };
+    }
+    default:
+      return {
+        ...baseItem,
+        displayName: "Unknown",
+      };
+  }
+}
+
+function transformEntityToListItem(
+  entity: Entity,
+  entityType: EntityType,
+): EntityListItem {
+  return transformEntityToGridItem(entity, entityType);
 }
 
 export function EntityList({
+  viewMode = "table",
+  onViewModeChange,
   entityType,
   columns,
   perPage = 50,
@@ -82,6 +186,7 @@ export function EntityList({
         : (info) => String(info.getValue() ?? ""),
     }));
   }, [columns]);
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -173,16 +278,30 @@ export function EntityList({
     id: item.id.replace("https://openalex.org/", ""),
   }));
 
+  const gridItems = data.map((item) => transformEntityToGridItem(item, entityType));
+  const listItems = data.map((item) => transformEntityToListItem(item, entityType));
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
+  const handleViewModeChange = (newViewMode: ViewMode) => {
+    onViewModeChange?.(newViewMode);
+  };
+
   return (
     <div>
-      <h1>
-        {title || entityType.charAt(0).toUpperCase() + entityType.slice(1)}
-      </h1>
-      <BaseTable data={tableData} columns={tableColumns} />
+      <Group justify="space-between" mb="md">
+        <h1>
+          {title || entityType.charAt(0).toUpperCase() + entityType.slice(1)}
+        </h1>
+        {onViewModeChange && (
+          <ViewModeToggle value={viewMode} onChange={handleViewModeChange} />
+        )}
+      </Group>
+      {viewMode === "table" && <BaseTable data={tableData} columns={tableColumns} />}
+      {viewMode === "list" && <EntityListView items={listItems} />}
+      {viewMode === "grid" && <EntityGrid items={gridItems} />}
       {totalPages > 1 && (
         <Group justify="space-between" mt="md">
           <Text size="sm" c="dimmed">
