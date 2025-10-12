@@ -66,6 +66,10 @@
       "import": "./dist/services.js",
       "types": "./dist/services.d.ts"
     },
+    "./state": {
+      "import": "./dist/state/index.js",
+      "types": "./dist/state/index.d.ts"
+    },
     "./environment": {
       "import": "./dist/environment/index.js",
       "types": "./dist/environment/index.d.ts"
