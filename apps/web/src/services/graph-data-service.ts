@@ -235,12 +235,7 @@ export class GraphDataService {
       }
 
       // Fetch entity with deduplication service and cache-first strategy
-      // For OpenAlex IDs, construct the full URL
-      const apiEntityId =
-        detection.detectionMethod === DETECTION_METHOD_OPENALEX_ID ||
-        detection.detectionMethod === DETECTION_METHOD_OPENALEX_URL
-          ? `https://openalex.org/${detection.normalizedId}`
-          : detection.normalizedId;
+      const apiEntityId = detection.normalizedId;
 
       const entity = await this.deduplicationService.getEntity(
         apiEntityId,
@@ -259,7 +254,7 @@ export class GraphDataService {
       // Entity successfully fetched
 
       // Transform to graph data
-      const { nodes, edges } = this.transformEntityToGraph(entity);
+      const { nodes, edges } = this.transformEntityToGraph(entity, apiEntityId);
 
       // Clear existing graph and expansion cache
       store.clear();
@@ -404,12 +399,7 @@ export class GraphDataService {
       }
 
       // Fetch entity with deduplication service and cache-first strategy
-      // For OpenAlex IDs, construct the full URL
-      const apiEntityId =
-        detection.detectionMethod === DETECTION_METHOD_OPENALEX_ID ||
-        detection.detectionMethod === DETECTION_METHOD_OPENALEX_URL
-          ? `https://openalex.org/${detection.normalizedId}`
-          : detection.normalizedId;
+      const apiEntityId = detection.normalizedId;
 
       const entity = await this.deduplicationService.getEntity(
         apiEntityId,
@@ -428,7 +418,7 @@ export class GraphDataService {
       // Entity successfully fetched
 
       // Transform to graph data
-      const { nodes, edges } = this.transformEntityToGraph(entity);
+      const { nodes, edges } = this.transformEntityToGraph(entity, apiEntityId);
 
       // Add new data to existing graph (do NOT clear)
       store.addNodes(nodes);
@@ -563,12 +553,8 @@ export class GraphDataService {
         throw new Error(`Unable to detect entity type for: ${entityId}`);
       }
 
-      // For OpenAlex IDs, construct the full URL
-      const apiEntityId =
-        detection.detectionMethod === DETECTION_METHOD_OPENALEX_ID ||
-        detection.detectionMethod === DETECTION_METHOD_OPENALEX_URL
-          ? `https://openalex.org/${detection.normalizedId}`
-          : detection.normalizedId;
+      // Fetch entity with deduplication service and cache-first strategy
+      const apiEntityId = detection.normalizedId;
 
       const entity = await this.deduplicationService.getEntity(
         apiEntityId,
@@ -587,7 +573,7 @@ export class GraphDataService {
       // Entity successfully fetched
 
       // Transform to graph data
-      const { nodes, edges } = this.transformEntityToGraph(entity);
+      const { nodes, edges } = this.transformEntityToGraph(entity, apiEntityId);
 
       // Add to repository instead of main graph
       repositoryStore.addToRepository(nodes, edges);
@@ -651,7 +637,23 @@ export class GraphDataService {
 
       for (const entity of cachedEntities) {
         try {
-          const { nodes, edges } = this.transformEntityToGraph(entity);
+          const entityIdentifier =
+            typeof entity.id === "string" && entity.id.length > 0
+              ? entity.id
+              : undefined;
+          if (!entityIdentifier) {
+            logger.warn(
+              "graph",
+              "Skipping cached entity with missing identifier",
+              { entityKeys: Object.keys(entity) },
+              "GraphDataService",
+            );
+            continue;
+          }
+          const { nodes, edges } = this.transformEntityToGraph(
+            entity,
+            entityIdentifier,
+          );
           allNodes.push(...nodes);
           allEdges.push(...edges);
         } catch (error) {
@@ -775,7 +777,11 @@ export class GraphDataService {
         );
 
         // Extract metadata-level data from the entity
-        const fullNodeData = this.createNodeFromEntity(entity, node.entityType);
+        const fullNodeData = this.createNodeFromEntity(
+          entity,
+          node.entityType,
+          node.entityId,
+        );
 
         // Update the node with full metadata
         store.markNodeAsLoaded(nodeId);
@@ -818,7 +824,11 @@ export class GraphDataService {
         );
 
         // Extract full data from the entity
-        const fullNodeData = this.createNodeFromEntity(entity, node.entityType);
+        const fullNodeData = this.createNodeFromEntity(
+          entity,
+          node.entityType,
+          node.entityId,
+        );
 
         // Update the node with full data
         store.markNodeAsLoaded(nodeId);
@@ -1970,6 +1980,7 @@ export class GraphDataService {
       const fullNodeData = this.createNodeFromEntity(
         fullEntity,
         node.entityType,
+        node.entityId,
       );
 
       // Update node with full data
@@ -2301,7 +2312,10 @@ export class GraphDataService {
   /**
    * Transform OpenAlex entity to graph nodes and edges
    */
-  private transformEntityToGraph(entity: OpenAlexEntity): {
+  private transformEntityToGraph(
+    entity: OpenAlexEntity,
+    entityId: string,
+  ): {
     nodes: GraphNode[];
     edges: GraphEdge[];
   } {
@@ -2309,79 +2323,98 @@ export class GraphDataService {
     const edges: GraphEdge[] = [];
 
     // Determine entity type
-    const detection = EntityDetectionService.detectEntity(entity.id);
+    const entityIdToUse = entity.id || entityId;
+    const detection = EntityDetectionService.detectEntity(entityIdToUse);
     if (!detection?.entityType || !isEntityType(detection.entityType)) {
       throw new Error(
-        `Unable to determine valid entity type for: ${entity.id}`,
+        `Unable to determine valid entity type for: ${entityIdToUse}`,
       );
     }
     const { entityType } = detection;
 
+    const normalizedEntity: OpenAlexEntity =
+      typeof entity.id === "string" && entity.id.length > 0
+        ? entity
+        : { ...entity, id: entityIdToUse };
+
     // Create main entity node
-    const mainNode = this.createNodeFromEntity(entity, entityType);
+    const mainNode = this.createNodeFromEntity(
+      normalizedEntity,
+      entityType,
+      entityIdToUse,
+    );
     nodes.push(mainNode);
 
     // Transform based on entity type
     switch (entityType) {
       case "works": {
-        if (!isWork(entity)) {
+        if (!isWork(normalizedEntity)) {
           logger.error(
             "graph",
             "Entity is not a valid Work",
-            { entityId: entity.id },
+            { entityId: normalizedEntity.id },
             "GraphDataService",
           );
           break;
         }
-        const workData = this.transformWork(entity);
+        const workData = this.transformWork(normalizedEntity);
         nodes.push(...workData.nodes);
         edges.push(...workData.edges);
         break;
       }
 
       case "authors": {
-        if (!isAuthor(entity)) {
+        if (!isAuthor(normalizedEntity)) {
           logger.error(
             "graph",
-            "Entity is not a valid Author",
-            { entityId: entity.id },
+            "Entity is not a valid Author Object",
+            {
+              entityId: normalizedEntity.id,
+              entity: normalizedEntity,
+              entityKeys: Object.keys(normalizedEntity),
+              startsWithA:
+                normalizedEntity.id?.startsWith("A") ||
+                normalizedEntity.id?.startsWith("https://openalex.org/A") ||
+                normalizedEntity.id?.startsWith("a") ||
+                normalizedEntity.id?.startsWith("https://openalex.org/a"),
+            },
             "GraphDataService",
           );
           break;
         }
-        const authorData = this.transformAuthor(entity);
+        const authorData = this.transformAuthor(normalizedEntity);
         nodes.push(...authorData.nodes);
         edges.push(...authorData.edges);
         break;
       }
 
       case "sources": {
-        if (!isSource(entity)) {
+        if (!isSource(normalizedEntity)) {
           logger.error(
             "graph",
             "Entity is not a valid Source",
-            { entityId: entity.id },
+            { entityId: normalizedEntity.id },
             "GraphDataService",
           );
           break;
         }
-        const sourceData = this.transformSource(entity);
+        const sourceData = this.transformSource(normalizedEntity);
         nodes.push(...sourceData.nodes);
         edges.push(...sourceData.edges);
         break;
       }
 
       case "institutions": {
-        if (!isInstitution(entity)) {
+        if (!isInstitution(normalizedEntity)) {
           logger.error(
             "graph",
             "Entity is not a valid Institution",
-            { entityId: entity.id },
+            { entityId: normalizedEntity.id },
             "GraphDataService",
           );
           break;
         }
-        const institutionData = this.transformInstitution(entity);
+        const institutionData = this.transformInstitution(normalizedEntity);
         nodes.push(...institutionData.nodes);
         edges.push(...institutionData.edges);
         break;
@@ -2404,12 +2437,13 @@ export class GraphDataService {
 
     // Only create edges to authors that already exist in the graph
     // Do NOT automatically create author nodes - they should only be created during explicit expansion
-    work.authorships.forEach((authorship) => {
-      const existingAuthorNode = store.getNode(authorship.author.id);
+    if (Array.isArray(work.authorships)) {
+      work.authorships.forEach((authorship) => {
+        const existingAuthorNode = store.getNode(authorship.author.id);
 
-      // Only create edge if the author node already exists in the graph
-      if (existingAuthorNode) {
-        edges.push({
+        // Only create edge if the author node already exists in the graph
+        if (existingAuthorNode) {
+          edges.push({
           id: `${authorship.author.id}-authored-${work.id}`,
           source: authorship.author.id,
           target: work.id,
@@ -2421,7 +2455,8 @@ export class GraphDataService {
           weight: authorship.author_position === "first" ? 1.0 : 0.5,
         });
       }
-    });
+      });
+    }
 
     // Only create edges to sources that already exist in the graph
     // Do NOT automatically create source nodes - they should only be created during explicit expansion
@@ -2442,20 +2477,22 @@ export class GraphDataService {
 
     // Only create edges to referenced works that already exist in the graph
     // Do NOT automatically create referenced work nodes - they should only be created during explicit expansion
-    work.referenced_works.forEach((citedWorkId) => {
-      const existingCitedNode = store.getNode(citedWorkId);
+    if (Array.isArray(work.referenced_works)) {
+      work.referenced_works.forEach((citedWorkId) => {
+        const existingCitedNode = store.getNode(citedWorkId);
 
-      // Only create edge if the referenced work node already exists in the graph
-      if (existingCitedNode) {
-        edges.push({
-          id: `${work.id}-cites-${citedWorkId}`,
-          source: work.id,
-          target: citedWorkId,
-          type: RelationType.REFERENCES,
-          label: "references",
-        });
-      }
-    });
+        // Only create edge if the referenced work node already exists in the graph
+        if (existingCitedNode) {
+          edges.push({
+            id: `${work.id}-cites-${citedWorkId}`,
+            source: work.id,
+            target: citedWorkId,
+            type: RelationType.REFERENCES,
+            label: "references",
+          });
+        }
+      });
+    }
 
     return { nodes, edges };
   }
@@ -2474,20 +2511,22 @@ export class GraphDataService {
 
     // Only create edges to institutions that already exist in the graph
     // Do NOT automatically create institution nodes - they should only be created during explicit expansion
-    author.affiliations.forEach((affiliation) => {
-      const existingInstitutionNode = store.getNode(affiliation.institution.id);
+    if (Array.isArray(author.affiliations)) {
+      author.affiliations.forEach((affiliation) => {
+        const existingInstitutionNode = store.getNode(affiliation.institution.id);
 
-      // Only create edge if the institution node already exists in the graph
-      if (existingInstitutionNode) {
-        edges.push({
-          id: `${author.id}-affiliated-${affiliation.institution.id}`,
-          source: author.id,
-          target: affiliation.institution.id,
-          type: RelationType.AFFILIATED,
-          label: "affiliated with",
-        });
-      }
-    });
+        // Only create edge if the institution node already exists in the graph
+        if (existingInstitutionNode) {
+          edges.push({
+            id: `${author.id}-affiliated-${affiliation.institution.id}`,
+            source: author.id,
+            target: affiliation.institution.id,
+            type: RelationType.AFFILIATED,
+            label: "affiliated with",
+          });
+        }
+      });
+    }
 
     return { nodes, edges };
   }
@@ -2562,18 +2601,33 @@ export class GraphDataService {
   private createNodeFromEntity(
     entity: OpenAlexEntity,
     entityType: EntityType,
+    fallbackId?: string,
   ): GraphNode {
-    const externalIds = this.extractExternalIds(entity, entityType);
+    const resolvedId =
+      typeof entity.id === "string" && entity.id.length > 0
+        ? entity.id
+        : fallbackId;
+
+    if (!resolvedId) {
+      throw new Error(
+        `Unable to determine identifier for entity type ${entityType}`,
+      );
+    }
+
+    const entityWithId: OpenAlexEntity =
+      resolvedId === entity.id ? entity : { ...entity, id: resolvedId };
+
+    const externalIds = this.extractExternalIds(entityWithId, entityType);
 
     return {
-      id: entity.id,
+      id: resolvedId,
       entityType,
-      label: entity.display_name || "Unknown Entity",
-      entityId: entity.id,
+      label: entityWithId.display_name || "Unknown Entity",
+      entityId: resolvedId,
       x: 0,
       y: 0, // Will be updated by layout
       externalIds,
-      entityData: this.getEntityData(entity),
+      entityData: this.getEntityData(entityWithId),
     };
   }
 
@@ -2683,10 +2737,28 @@ export class GraphDataService {
     const edges: GraphEdge[] = [];
 
     results.forEach((entity, index) => {
-      const detection = EntityDetectionService.detectEntity(entity.id);
+      const entityIdToUse =
+        typeof entity.id === "string" && entity.id.length > 0
+          ? entity.id
+          : undefined;
+      if (!entityIdToUse) {
+        logger.warn(
+          "graph",
+          "Skipping search result with missing identifier",
+          { entityKeys: Object.keys(entity) },
+          "GraphDataService",
+        );
+        return;
+      }
+
+      const detection = EntityDetectionService.detectEntity(entityIdToUse);
 
       if (detection?.entityType) {
-        const node = this.createNodeFromEntity(entity, detection.entityType);
+        const node = this.createNodeFromEntity(
+          entity,
+          detection.entityType,
+          entityIdToUse,
+        );
         // Position nodes in a grid layout for search results
         const cols = Math.ceil(Math.sqrt(results.length));
         const row = Math.floor(index / cols);
