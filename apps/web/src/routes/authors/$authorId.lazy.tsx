@@ -145,7 +145,7 @@ function AuthorRoute() {
   // Track user interactions (visits and bookmarks)
   const userInteractions = useUserInteractions({
     entityId: cleanAuthorId,
-    entityType: "author",
+    entityType: "authors",
     autoTrackVisits: true,
   });
 

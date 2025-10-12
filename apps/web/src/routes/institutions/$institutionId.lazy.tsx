@@ -5,13 +5,22 @@ import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { useGraphStore } from "@/stores/graph-store";
 import { decodeUrlQueryParams } from "@/utils/url-helpers";
-import { cachedOpenAlex, INSTITUTION_FIELDS, type InstitutionEntity } from "@academic-explorer/client";
+import {
+  cachedOpenAlex,
+  INSTITUTION_FIELDS,
+  type InstitutionEntity,
+} from "@academic-explorer/client";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { IconBookmark, IconBookmarkOff } from "@tabler/icons-react";
-import { useNavigate, useParams, useSearch, createLazyFileRoute } from "@tanstack/react-router";
+import {
+  useNavigate,
+  useParams,
+  useSearch,
+  createLazyFileRoute,
+} from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 
 const INSTITUTION_ROUTE_PATH = "/institutions/$institutionId";
@@ -45,18 +54,32 @@ function InstitutionRoute() {
     const loadRandomInstitution = async () => {
       setIsLoadingRandom(true);
       try {
-        logger.debug("routing", "Fetching random institution", undefined, "InstitutionRoute");
+        logger.debug(
+          "routing",
+          "Fetching random institution",
+          undefined,
+          "InstitutionRoute",
+        );
 
-        const response = await cachedOpenAlex.client.institutions.getRandomInstitutions(1);
+        const response =
+          await cachedOpenAlex.client.institutions.getRandomInstitutions(1);
 
         if (response.results.length > 0) {
           const randomInstitution = response.results[0];
-          const cleanId = randomInstitution.id.replace("https://openalex.org/", "");
+          const cleanId = randomInstitution.id.replace(
+            "https://openalex.org/",
+            "",
+          );
 
-          logger.debug("routing", "Redirecting to random institution", {
-            institutionId: cleanId,
-            name: randomInstitution.display_name,
-          }, "InstitutionRoute");
+          logger.debug(
+            "routing",
+            "Redirecting to random institution",
+            {
+              institutionId: cleanId,
+              name: randomInstitution.display_name,
+            },
+            "InstitutionRoute",
+          );
 
           void navigate({
             to: INSTITUTION_ROUTE_PATH,
@@ -166,7 +189,7 @@ function InstitutionRoute() {
   // Track user interactions (visits and bookmarks)
   const userInteractions = useUserInteractions({
     entityId: institutionId,
-    entityType: "institution",
+    entityType: "institutions",
     autoTrackVisits: true,
   });
 
@@ -218,7 +241,11 @@ function InstitutionRoute() {
   if (rawEntityData.isLoading || isLoadingRandom) {
     return (
       <div className="p-4 text-center">
-        <h2>{isLoadingRandom ? "Finding Random Institution..." : "Loading Institution..."}</h2>
+        <h2>
+          {isLoadingRandom
+            ? "Finding Random Institution..."
+            : "Loading Institution..."}
+        </h2>
         <p>Institution ID: {institutionId}</p>
       </div>
     );

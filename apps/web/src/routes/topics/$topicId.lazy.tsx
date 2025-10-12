@@ -10,7 +10,12 @@ import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { IconBookmark, IconBookmarkOff } from "@tabler/icons-react";
-import { useNavigate, useParams, useSearch, createLazyFileRoute } from "@tanstack/react-router";
+import {
+  useNavigate,
+  useParams,
+  useSearch,
+  createLazyFileRoute,
+} from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 
 const TOPIC_ROUTE_PATH = "/topics/$topicId";
@@ -49,7 +54,7 @@ function TopicRoute() {
   // Track user interactions (visits and bookmarks)
   const userInteractions = useUserInteractions({
     entityId: topicId,
-    entityType: "topic",
+    entityType: "topics",
     autoTrackVisits: true,
   });
 

@@ -5,13 +5,22 @@ import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { useGraphStore } from "@/stores/graph-store";
 import { decodeUrlQueryParams } from "@/utils/url-helpers";
-import { WORK_FIELDS, cachedOpenAlex, type Work } from "@academic-explorer/client";
+import {
+  WORK_FIELDS,
+  cachedOpenAlex,
+  type Work,
+} from "@academic-explorer/client";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { IconBookmark, IconBookmarkOff } from "@tabler/icons-react";
-import { useNavigate, useParams, useSearch, createLazyFileRoute } from "@tanstack/react-router";
+import {
+  useNavigate,
+  useParams,
+  useSearch,
+  createLazyFileRoute,
+} from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 
 const WORK_ROUTE_PATH = "/works/$workId";
@@ -51,10 +60,15 @@ function WorkRoute() {
           const randomWork = response[0];
           const cleanId = randomWork.id.replace("https://openalex.org/", "");
 
-          logger.debug("routing", "Redirecting to random work", {
-            workId: cleanId,
-            title: randomWork.title,
-          }, "WorkRoute");
+          logger.debug(
+            "routing",
+            "Redirecting to random work",
+            {
+              workId: cleanId,
+              title: randomWork.title,
+            },
+            "WorkRoute",
+          );
 
           void navigate({
             to: WORK_ROUTE_PATH,
@@ -124,7 +138,7 @@ function WorkRoute() {
   // Track user interactions (visits and bookmarks)
   const userInteractions = useUserInteractions({
     entityId: workId,
-    entityType: "work",
+    entityType: "works",
     autoTrackVisits: true,
   });
 
@@ -170,7 +184,9 @@ function WorkRoute() {
   if (rawEntityData.isLoading || isLoadingRandom) {
     return (
       <div className="p-4 text-center">
-        <h2>{isLoadingRandom ? "Finding Random Work..." : "Loading Work..."}</h2>
+        <h2>
+          {isLoadingRandom ? "Finding Random Work..." : "Loading Work..."}
+        </h2>
         <p>Work ID: {workId}</p>
       </div>
     );
