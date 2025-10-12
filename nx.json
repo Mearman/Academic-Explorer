@@ -260,7 +260,8 @@
       },
       "library": {
         "bundler": "vite",
-        "unitTestRunner": "vitest"
+        "unitTestRunner": "vitest",
+        "linter": "eslint"
       }
     }
   },

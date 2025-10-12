@@ -220,6 +220,20 @@ export {
   type InterceptedResponse,
 } from "./interceptors";
 
+// Data Pipeline exports
+export {
+  RequestPipeline,
+  createRequestPipeline,
+  defaultPipeline,
+  classifyError,
+  type ErrorClassification,
+  type ErrorType,
+  type PipelineMiddleware,
+  type PipelineOptions,
+  type RequestContext,
+  type ResponseContext,
+} from "./data-pipeline";
+
 // Re-export everything from types for convenience
 export * from "./types";
 

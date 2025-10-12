@@ -10,6 +10,7 @@ import tseslint from "typescript-eslint";
 import { fileURLToPath } from "url";
 import noEmojiPlugin from "./eslint-rules/no-emoji.ts";
 import testFileNamingPlugin from "./eslint-rules/test-file-naming.ts";
+import zustandStoreDryPlugin from "./eslint-rules/zustand-store-dry.ts";
 
 /**
  * Base ESLint configuration for Academic Explorer monorepo
@@ -95,6 +96,7 @@ export default tseslint.config([
       "@nx": nxPlugin,
       "no-emoji-plugin": noEmojiPlugin,
       "test-file-naming-plugin": testFileNamingPlugin,
+      "zustand-store-dry-plugin": zustandStoreDryPlugin,
     },
     rules: {
       // TypeScript-specific rules
@@ -157,6 +159,9 @@ export default tseslint.config([
 
       // Emoji detection
       "no-emoji-plugin/no-emoji": "error",
+
+      // Zustand store DRY patterns
+      "zustand-store-dry-plugin/zustand-store-dry": "error",
     },
   },
   {

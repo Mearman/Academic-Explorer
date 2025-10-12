@@ -5,6 +5,21 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
+
+vi.mock("./cache/disk", () => {
+  const writeStub = vi.fn(async () => {});
+
+  class MockDiskCacheWriter {
+    writeToCache = writeStub;
+  }
+
+  return {
+    __esModule: true,
+    defaultDiskWriter: new MockDiskCacheWriter(),
+    DiskCacheWriter: MockDiskCacheWriter,
+    writeToDiskCache: writeStub,
+  };
+});
 import {
   OpenAlexBaseClient,
   OpenAlexApiError,
@@ -589,7 +604,23 @@ describe("OpenAlexBaseClient", () => {
         (_, i) => `field${String(i)}`,
       );
 
-      await client.get("works", { select: largeSelect });
+      mockFetch.mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            error: "Invalid select parameter",
+            message: "Too many fields in select parameter",
+          }),
+          {
+            status: 400,
+            statusText: "Bad Request",
+            headers: new Headers({ "content-type": "application/json" }),
+          },
+        ),
+      );
+
+      await expect(client.get("works", { select: largeSelect })).rejects.toThrow(
+        OpenAlexApiError,
+      );
 
       const callUrl = mockFetch.mock.calls[0][0] as string;
       const url = new URL(callUrl);

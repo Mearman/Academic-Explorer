@@ -35,6 +35,9 @@ export {
 // Graph constants and configuration
 export * from "./constants";
 
+// Taxonomy definitions
+export * from "./taxonomy/entity-taxa";
+
 // Pure utility functions
 export {
   calculateClosestAttachment,

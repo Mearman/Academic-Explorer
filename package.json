@@ -52,6 +52,7 @@
     "licenses:generate": "monorepo-license-checker --markdown --exclude-private-packages",
     "licenses:check": "tsx tools/scripts/check-licenses.ts",
     "licenses:summary": "monorepo-license-checker --exclude-private-packages",
+    "generate:tokens": "tsx scripts/generate-tokens.ts",
     "monitor-ci": "tsx scripts/monitor-ci.ts",
     "ci:status": "tsx scripts/monitor-ci.ts status",
     "ci:watch": "tsx scripts/monitor-ci.ts watch",

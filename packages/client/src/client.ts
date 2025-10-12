@@ -623,6 +623,13 @@ export class OpenAlexBaseClient {
   }
 
   /**
+   * Get current client configuration (read-only)
+   */
+  public getConfig(): Readonly<Required<FullyConfiguredClient>> {
+    return this.config;
+  }
+
+  /**
    * Get current rate limit status
    */
   public getRateLimitStatus(): {
