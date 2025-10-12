@@ -1,0 +1,1114 @@
+{
+  "id": "https://openalex.org/A5032230089",
+  "orcid": "https://orcid.org/0000-0002-2414-9796",
+  "display_name": "Joel Roberts",
+  "display_name_alternatives": [
+    "Joel Roberts",
+    "Joel Collin Roberts",
+    "J. Roberts",
+    "J.C. Roberts"
+  ],
+  "works_count": 166,
+  "cited_by_count": 58,
+  "summary_stats": {
+    "2yr_mean_citedness": 0.5,
+    "h_index": 3,
+    "i10_index": 2
+  },
+  "ids": {
+    "openalex": "https://openalex.org/A5032230089",
+    "orcid": "https://orcid.org/0000-0002-2414-9796"
+  },
+  "affiliations": [
+    {
+      "institution": {
+        "id": "https://openalex.org/I94658018",
+        "ror": "https://ror.org/01cq23130",
+        "display_name": "University of Memphis",
+        "country_code": "US",
+        "type": "funder",
+        "lineage": [
+          "https://openalex.org/I94658018"
+        ]
+      },
+      "years": [
+        2025,
+        2023,
+        2022,
+        2021,
+        2019
+      ]
+    },
+    {
+      "institution": {
+        "id": "https://openalex.org/I71637028",
+        "ror": "https://ror.org/04kp2b655",
+        "display_name": "University of Brighton",
+        "country_code": "GB",
+        "type": "funder",
+        "lineage": [
+          "https://openalex.org/I71637028"
+        ]
+      },
+      "years": [
+        2017
+      ]
+    }
+  ],
+  "last_known_institutions": [
+    {
+      "id": "https://openalex.org/I94658018",
+      "ror": "https://ror.org/01cq23130",
+      "display_name": "University of Memphis",
+      "country_code": "US",
+      "type": "funder",
+      "lineage": [
+        "https://openalex.org/I94658018"
+      ]
+    }
+  ],
+  "topics": [
+    {
+      "id": "https://openalex.org/T13996",
+      "display_name": "Diverse Musicological Studies",
+      "count": 49,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1210",
+        "display_name": "Music"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11113",
+      "display_name": "Music History and Culture",
+      "count": 45,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1210",
+        "display_name": "Music"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11349",
+      "display_name": "Music Technology and Sound Studies",
+      "count": 32,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1707",
+        "display_name": "Computer Vision and Pattern Recognition"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/17",
+        "display_name": "Computer Science"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10941",
+      "display_name": "Musicology and Musical Analysis",
+      "count": 23,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1210",
+        "display_name": "Music"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11425",
+      "display_name": "Diverse Music Education Insights",
+      "count": 11,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1210",
+        "display_name": "Music"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11410",
+      "display_name": "Cultural Industries and Urban Development",
+      "count": 8,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3322",
+        "display_name": "Urban Studies"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12765",
+      "display_name": "Race, History, and American Society",
+      "count": 6,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3312",
+        "display_name": "Sociology and Political Science"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11309",
+      "display_name": "Music and Audio Processing",
+      "count": 6,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1711",
+        "display_name": "Signal Processing"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/17",
+        "display_name": "Computer Science"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13330",
+      "display_name": "Theater, Performance, and Music History",
+      "count": 4,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1210",
+        "display_name": "Music"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12130",
+      "display_name": "Contemporary Literature and Criticism",
+      "count": 3,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1208",
+        "display_name": "Literature and Literary Theory"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12398",
+      "display_name": "Poetry Analysis and Criticism",
+      "count": 2,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1208",
+        "display_name": "Literature and Literary Theory"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11813",
+      "display_name": "Library Collection Development and Digital Resources",
+      "count": 2,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1710",
+        "display_name": "Information Systems"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/17",
+        "display_name": "Computer Science"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12974",
+      "display_name": "Modernist Literature and Criticism",
+      "count": 2,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1208",
+        "display_name": "Literature and Literary Theory"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11370",
+      "display_name": "Mobile Learning in Education",
+      "count": 2,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1710",
+        "display_name": "Information Systems"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/17",
+        "display_name": "Computer Science"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11756",
+      "display_name": "Mentoring and Academic Development",
+      "count": 1,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3207",
+        "display_name": "Social Psychology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/32",
+        "display_name": "Psychology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13321",
+      "display_name": "Radio, Podcasts, and Digital Media",
+      "count": 1,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3315",
+        "display_name": "Communication"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13433",
+      "display_name": "Short Stories in Global Literature",
+      "count": 1,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1208",
+        "display_name": "Literature and Literary Theory"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11769",
+      "display_name": "Copyright and Intellectual Property",
+      "count": 1,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1406",
+        "display_name": "Marketing"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/14",
+        "display_name": "Business, Management and Accounting"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13174",
+      "display_name": "American and British Literature Analysis",
+      "count": 1,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1208",
+        "display_name": "Literature and Literary Theory"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13270",
+      "display_name": "QR Code Applications and Technologies",
+      "count": 1,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1710",
+        "display_name": "Information Systems"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/17",
+        "display_name": "Computer Science"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12461",
+      "display_name": "Narrative Theory and Analysis",
+      "count": 1,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1208",
+        "display_name": "Literature and Literary Theory"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11462",
+      "display_name": "Museums and Cultural Heritage",
+      "count": 1,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1209",
+        "display_name": "Museology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12179",
+      "display_name": "Art Education and Development",
+      "count": 1,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1213",
+        "display_name": "Visual Arts and Performing Arts"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13417",
+      "display_name": "Biomedical Ethics and Regulation",
+      "count": 1,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2737",
+        "display_name": "Physiology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11211",
+      "display_name": "3D Surveying and Cultural Heritage",
+      "count": 1,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1907",
+        "display_name": "Geology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/19",
+        "display_name": "Earth and Planetary Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    }
+  ],
+  "topic_share": [
+    {
+      "id": "https://openalex.org/T11113",
+      "display_name": "Music History and Culture",
+      "value": 0.0002747,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1210",
+        "display_name": "Music"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13996",
+      "display_name": "Diverse Musicological Studies",
+      "value": 0.0002174,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1210",
+        "display_name": "Music"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13696",
+      "display_name": "Technology's Impact on Media",
+      "value": 0.0001767,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1802",
+        "display_name": "Information Systems and Management"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/18",
+        "display_name": "Decision Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11349",
+      "display_name": "Music Technology and Sound Studies",
+      "value": 0.0001489,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1707",
+        "display_name": "Computer Vision and Pattern Recognition"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/17",
+        "display_name": "Computer Science"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11425",
+      "display_name": "Diverse Music Education Insights",
+      "value": 0.0000853,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1210",
+        "display_name": "Music"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10941",
+      "display_name": "Musicology and Musical Analysis",
+      "value": 0.0000725,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1210",
+        "display_name": "Music"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12974",
+      "display_name": "Modernist Literature and Criticism",
+      "value": 0.0000487,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1208",
+        "display_name": "Literature and Literary Theory"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13270",
+      "display_name": "QR Code Applications and Technologies",
+      "value": 0.0000484,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1710",
+        "display_name": "Information Systems"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/17",
+        "display_name": "Computer Science"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13330",
+      "display_name": "Theater, Performance, and Music History",
+      "value": 0.0000395,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1210",
+        "display_name": "Music"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11309",
+      "display_name": "Music and Audio Processing",
+      "value": 0.0000347,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1711",
+        "display_name": "Signal Processing"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/17",
+        "display_name": "Computer Science"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12130",
+      "display_name": "Contemporary Literature and Criticism",
+      "value": 0.0000313,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1208",
+        "display_name": "Literature and Literary Theory"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11410",
+      "display_name": "Cultural Industries and Urban Development",
+      "value": 0.0000292,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3322",
+        "display_name": "Urban Studies"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13433",
+      "display_name": "Short Stories in Global Literature",
+      "value": 0.0000278,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1208",
+        "display_name": "Literature and Literary Theory"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11756",
+      "display_name": "Mentoring and Academic Development",
+      "value": 0.0000228,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3207",
+        "display_name": "Social Psychology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/32",
+        "display_name": "Psychology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12398",
+      "display_name": "Poetry Analysis and Criticism",
+      "value": 0.0000178,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1208",
+        "display_name": "Literature and Literary Theory"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12258",
+      "display_name": "Perfectionism, Procrastination, Anxiety Studies",
+      "value": 0.0000176,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3203",
+        "display_name": "Clinical Psychology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/32",
+        "display_name": "Psychology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12765",
+      "display_name": "Race, History, and American Society",
+      "value": 0.000017,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3312",
+        "display_name": "Sociology and Political Science"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11813",
+      "display_name": "Library Collection Development and Digital Resources",
+      "value": 0.0000167,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1710",
+        "display_name": "Information Systems"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/17",
+        "display_name": "Computer Science"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13321",
+      "display_name": "Radio, Podcasts, and Digital Media",
+      "value": 0.0000157,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3315",
+        "display_name": "Communication"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11370",
+      "display_name": "Mobile Learning in Education",
+      "value": 0.0000156,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1710",
+        "display_name": "Information Systems"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/17",
+        "display_name": "Computer Science"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11769",
+      "display_name": "Copyright and Intellectual Property",
+      "value": 0.0000147,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1406",
+        "display_name": "Marketing"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/14",
+        "display_name": "Business, Management and Accounting"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12390",
+      "display_name": "Comics and Graphic Narratives",
+      "value": 0.0000133,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1213",
+        "display_name": "Visual Arts and Performing Arts"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13842",
+      "display_name": "Intellectual Property Law",
+      "value": 0.0000133,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3308",
+        "display_name": "Law"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12461",
+      "display_name": "Narrative Theory and Analysis",
+      "value": 0.0000123,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1208",
+        "display_name": "Literature and Literary Theory"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12981",
+      "display_name": "Conservation Techniques and Studies",
+      "value": 0.0000117,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1206",
+        "display_name": "Conservation"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    }
+  ],
+  "x_concepts": [
+    {
+      "id": "https://openalex.org/C142362112",
+      "wikidata": "https://www.wikidata.org/wiki/Q735",
+      "display_name": "Art",
+      "level": 0,
+      "score": 83.7
+    },
+    {
+      "id": "https://openalex.org/C153349607",
+      "wikidata": "https://www.wikidata.org/wiki/Q36649",
+      "display_name": "Visual arts",
+      "level": 1,
+      "score": 59
+    },
+    {
+      "id": "https://openalex.org/C41008148",
+      "wikidata": "https://www.wikidata.org/wiki/Q21198",
+      "display_name": "Computer science",
+      "level": 0,
+      "score": 41
+    },
+    {
+      "id": "https://openalex.org/C124952713",
+      "wikidata": "https://www.wikidata.org/wiki/Q8242",
+      "display_name": "Literature",
+      "level": 1,
+      "score": 36.1
+    },
+    {
+      "id": "https://openalex.org/C144024400",
+      "wikidata": "https://www.wikidata.org/wiki/Q21201",
+      "display_name": "Sociology",
+      "level": 0,
+      "score": 34.3
+    },
+    {
+      "id": "https://openalex.org/C127313418",
+      "wikidata": "https://www.wikidata.org/wiki/Q1069",
+      "display_name": "Geology",
+      "level": 0,
+      "score": 31.3
+    },
+    {
+      "id": "https://openalex.org/C15744967",
+      "wikidata": "https://www.wikidata.org/wiki/Q9418",
+      "display_name": "Psychology",
+      "level": 0,
+      "score": 30.1
+    },
+    {
+      "id": "https://openalex.org/C86803240",
+      "wikidata": "https://www.wikidata.org/wiki/Q420",
+      "display_name": "Biology",
+      "level": 0,
+      "score": 30.1
+    },
+    {
+      "id": "https://openalex.org/C121332964",
+      "wikidata": "https://www.wikidata.org/wiki/Q413",
+      "display_name": "Physics",
+      "level": 0,
+      "score": 30.1
+    },
+    {
+      "id": "https://openalex.org/C151730666",
+      "wikidata": "https://www.wikidata.org/wiki/Q7205",
+      "display_name": "Paleontology",
+      "level": 1,
+      "score": 28.3
+    },
+    {
+      "id": "https://openalex.org/C59822182",
+      "wikidata": "https://www.wikidata.org/wiki/Q441",
+      "display_name": "Botany",
+      "level": 1,
+      "score": 26.5
+    },
+    {
+      "id": "https://openalex.org/C2778987988",
+      "wikidata": "https://www.wikidata.org/wiki/Q2708101",
+      "display_name": "Memphis",
+      "level": 2,
+      "score": 26.5
+    },
+    {
+      "id": "https://openalex.org/C19417346",
+      "wikidata": "https://www.wikidata.org/wiki/Q7922",
+      "display_name": "Pedagogy",
+      "level": 1,
+      "score": 25.9
+    },
+    {
+      "id": "https://openalex.org/C24890656",
+      "wikidata": "https://www.wikidata.org/wiki/Q82811",
+      "display_name": "Acoustics",
+      "level": 1,
+      "score": 25.9
+    },
+    {
+      "id": "https://openalex.org/C95457728",
+      "wikidata": "https://www.wikidata.org/wiki/Q309",
+      "display_name": "History",
+      "level": 0,
+      "score": 24.7
+    }
+  ],
+  "counts_by_year": [
+    {
+      "year": 2025,
+      "works_count": 1,
+      "oa_works_count": 0,
+      "cited_by_count": 32
+    },
+    {
+      "year": 2024,
+      "works_count": 1,
+      "oa_works_count": 0,
+      "cited_by_count": 5
+    },
+    {
+      "year": 2023,
+      "works_count": 1,
+      "oa_works_count": 0,
+      "cited_by_count": 13
+    },
+    {
+      "year": 2022,
+      "works_count": 5,
+      "oa_works_count": 1,
+      "cited_by_count": 0
+    },
+    {
+      "year": 2021,
+      "works_count": 1,
+      "oa_works_count": 0,
+      "cited_by_count": 1
+    },
+    {
+      "year": 2020,
+      "works_count": 2,
+      "oa_works_count": 1,
+      "cited_by_count": 2
+    },
+    {
+      "year": 2019,
+      "works_count": 7,
+      "oa_works_count": 1,
+      "cited_by_count": 1
+    },
+    {
+      "year": 2018,
+      "works_count": 2,
+      "oa_works_count": 0,
+      "cited_by_count": 2
+    },
+    {
+      "year": 2017,
+      "works_count": 1,
+      "oa_works_count": 1,
+      "cited_by_count": 2
+    },
+    {
+      "year": 2016,
+      "works_count": 3,
+      "oa_works_count": 0,
+      "cited_by_count": 0
+    },
+    {
+      "year": 2014,
+      "works_count": 43,
+      "oa_works_count": 0,
+      "cited_by_count": 0
+    },
+    {
+      "year": 2013,
+      "works_count": 32,
+      "oa_works_count": 0,
+      "cited_by_count": 0
+    },
+    {
+      "year": 2012,
+      "works_count": 36,
+      "oa_works_count": 0,
+      "cited_by_count": 0
+    }
+  ],
+  "works_api_url": "https://api.openalex.org/works?filter=author.id:A5032230089",
+  "updated_date": "2025-09-16T19:25:26.905927",
+  "created_date": "2023-07-21"
+}

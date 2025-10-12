@@ -1,0 +1,1217 @@
+{
+  "id": "https://openalex.org/A5103202491",
+  "orcid": "https://orcid.org/0000-0002-9704-2332",
+  "display_name": "Andrew Wilson",
+  "display_name_alternatives": [
+    "Andrew Charles Bruce Wilson",
+    "A. C. Wilson",
+    "Andrew Charles Wilson",
+    "A. Wilson",
+    "Andrew C. Wilson",
+    "Andrew Wilson",
+    "Andrew. C. Wilson"
+  ],
+  "works_count": 396,
+  "cited_by_count": 1885,
+  "summary_stats": {
+    "2yr_mean_citedness": 0,
+    "h_index": 23,
+    "i10_index": 37
+  },
+  "ids": {
+    "openalex": "https://openalex.org/A5103202491",
+    "orcid": "https://orcid.org/0000-0002-9704-2332"
+  },
+  "affiliations": [
+    {
+      "institution": {
+        "id": "https://openalex.org/I1283521677",
+        "ror": "https://ror.org/054vpsz16",
+        "display_name": "Mott MacDonald (United Kingdom)",
+        "country_code": "GB",
+        "type": "company",
+        "lineage": [
+          "https://openalex.org/I1283521677"
+        ]
+      },
+      "years": [
+        2024
+      ]
+    },
+    {
+      "institution": {
+        "id": "https://openalex.org/I154130895",
+        "ror": "https://ror.org/03b94tp07",
+        "display_name": "University of Auckland",
+        "country_code": "NZ",
+        "type": "funder",
+        "lineage": [
+          "https://openalex.org/I154130895"
+        ]
+      },
+      "years": [
+        2023
+      ]
+    },
+    {
+      "institution": {
+        "id": "https://openalex.org/I165143802",
+        "ror": "https://ror.org/00rqy9422",
+        "display_name": "The University of Queensland",
+        "country_code": "AU",
+        "type": "funder",
+        "lineage": [
+          "https://openalex.org/I165143802"
+        ]
+      },
+      "years": [
+        2023,
+        2021
+      ]
+    },
+    {
+      "institution": {
+        "id": "https://openalex.org/I150468666",
+        "ror": "https://ror.org/03czfpz43",
+        "display_name": "Emory University",
+        "country_code": "US",
+        "type": "funder",
+        "lineage": [
+          "https://openalex.org/I150468666"
+        ]
+      },
+      "years": [
+        2021,
+        2020,
+        2019,
+        2018
+      ]
+    },
+    {
+      "institution": {
+        "id": "https://openalex.org/I131249849",
+        "ror": "https://ror.org/00ysfqy60",
+        "display_name": "Oregon State University",
+        "country_code": "US",
+        "type": "funder",
+        "lineage": [
+          "https://openalex.org/I131249849"
+        ]
+      },
+      "years": [
+        2021
+      ]
+    },
+    {
+      "institution": {
+        "id": "https://openalex.org/I114395901",
+        "ror": "https://ror.org/043mer456",
+        "display_name": "University of Nebraska–Lincoln",
+        "country_code": "US",
+        "type": "funder",
+        "lineage": [
+          "https://openalex.org/I114395901"
+        ]
+      },
+      "years": [
+        2021
+      ]
+    },
+    {
+      "institution": {
+        "id": "https://openalex.org/I40120149",
+        "ror": "https://ror.org/052gg0110",
+        "display_name": "University of Oxford",
+        "country_code": "GB",
+        "type": "funder",
+        "lineage": [
+          "https://openalex.org/I40120149"
+        ]
+      },
+      "years": [
+        2021
+      ]
+    },
+    {
+      "institution": {
+        "id": "https://openalex.org/I1118541",
+        "ror": "https://ror.org/026k5mg93",
+        "display_name": "University of East Anglia",
+        "country_code": "GB",
+        "type": "funder",
+        "lineage": [
+          "https://openalex.org/I1118541"
+        ]
+      },
+      "years": [
+        2020,
+        2018
+      ]
+    },
+    {
+      "institution": {
+        "id": "https://openalex.org/I169635715",
+        "ror": "https://ror.org/03kchyj69",
+        "display_name": "The Welding Institute",
+        "country_code": "GB",
+        "type": "facility",
+        "lineage": [
+          "https://openalex.org/I169635715"
+        ]
+      },
+      "years": [
+        2020
+      ]
+    },
+    {
+      "institution": {
+        "id": "https://openalex.org/I139894009",
+        "ror": "https://ror.org/00vs8d940",
+        "display_name": "University of Bradford",
+        "country_code": "GB",
+        "type": "funder",
+        "lineage": [
+          "https://openalex.org/I139894009"
+        ]
+      },
+      "years": [
+        2019,
+        2016
+      ]
+    }
+  ],
+  "last_known_institutions": [
+    {
+      "id": "https://openalex.org/I1283521677",
+      "ror": "https://ror.org/054vpsz16",
+      "display_name": "Mott MacDonald (United Kingdom)",
+      "country_code": "GB",
+      "type": "company",
+      "lineage": [
+        "https://openalex.org/I1283521677"
+      ]
+    }
+  ],
+  "topics": [
+    {
+      "id": "https://openalex.org/T11846",
+      "display_name": "Cultural Heritage Management and Preservation",
+      "count": 20,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1204",
+        "display_name": "Archeology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T14005",
+      "display_name": "Eastern European Communism and Reforms",
+      "count": 16,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3312",
+        "display_name": "Sociology and Political Science"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T14302",
+      "display_name": "European Politics and Security",
+      "count": 13,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3320",
+        "display_name": "Political Science and International Relations"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13372",
+      "display_name": "Archaeology and Historical Studies",
+      "count": 11,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1204",
+        "display_name": "Archeology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13068",
+      "display_name": "Ancient Mediterranean Archaeology and History",
+      "count": 11,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1204",
+        "display_name": "Archeology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T14357",
+      "display_name": "Architecture, Design, and Social History",
+      "count": 11,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1206",
+        "display_name": "Conservation"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12289",
+      "display_name": "Library Science and Administration",
+      "count": 10,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3309",
+        "display_name": "Library and Information Sciences"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11657",
+      "display_name": "Digital and Traditional Archives Management",
+      "count": 10,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1206",
+        "display_name": "Conservation"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12525",
+      "display_name": "Australian History and Society",
+      "count": 8,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3312",
+        "display_name": "Sociology and Political Science"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11070",
+      "display_name": "Soviet and Russian History",
+      "count": 7,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3320",
+        "display_name": "Political Science and International Relations"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13186",
+      "display_name": "Russia and Soviet political economy",
+      "count": 7,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3320",
+        "display_name": "Political Science and International Relations"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10165",
+      "display_name": "Classical Antiquity Studies",
+      "count": 7,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3314",
+        "display_name": "Anthropology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12364",
+      "display_name": "Archaeological Research and Protection",
+      "count": 6,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1912",
+        "display_name": "Space and Planetary Science"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/19",
+        "display_name": "Earth and Planetary Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12188",
+      "display_name": "Architecture, Modernity, and Design",
+      "count": 6,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2216",
+        "display_name": "Architecture"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/22",
+        "display_name": "Engineering"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10893",
+      "display_name": "Chinese history and philosophy",
+      "count": 6,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3312",
+        "display_name": "Sociology and Political Science"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13086",
+      "display_name": "Post-Soviet Geopolitical Dynamics",
+      "count": 5,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3320",
+        "display_name": "Political Science and International Relations"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12502",
+      "display_name": "Urbanization and City Planning",
+      "count": 5,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3322",
+        "display_name": "Urban Studies"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10043",
+      "display_name": "Substance Abuse Treatment and Outcomes",
+      "count": 5,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2713",
+        "display_name": "Epidemiology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/27",
+        "display_name": "Medicine"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/4",
+        "display_name": "Health Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11410",
+      "display_name": "Cultural Industries and Urban Development",
+      "count": 5,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3322",
+        "display_name": "Urban Studies"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10833",
+      "display_name": "Vaccine Coverage and Hesitancy",
+      "count": 5,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3306",
+        "display_name": "Health"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11499",
+      "display_name": "ICT Impact and Policies",
+      "count": 4,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2214",
+        "display_name": "Media Technology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/22",
+        "display_name": "Engineering"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T14210",
+      "display_name": "Historical and Linguistic Studies",
+      "count": 4,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3312",
+        "display_name": "Sociology and Political Science"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10478",
+      "display_name": "Diamond and Carbon-based Materials Research",
+      "count": 4,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2505",
+        "display_name": "Materials Chemistry"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/25",
+        "display_name": "Materials Science"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10377",
+      "display_name": "Metal and Thin Film Mechanics",
+      "count": 4,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2211",
+        "display_name": "Mechanics of Materials"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/22",
+        "display_name": "Engineering"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13912",
+      "display_name": "Language, Linguistics, Cultural Analysis",
+      "count": 4,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1203",
+        "display_name": "Language and Linguistics"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    }
+  ],
+  "topic_share": [
+    {
+      "id": "https://openalex.org/T14273",
+      "display_name": "Cultural, Psychoanalytic, and Sociopolitical Reflections",
+      "value": 0.0006124,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3316",
+        "display_name": "Cultural Studies"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13339",
+      "display_name": "Landscape and Cultural Studies",
+      "value": 0.000194,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1204",
+        "display_name": "Archeology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13611",
+      "display_name": "Education, Management, Technology, Human Resources",
+      "value": 0.0001383,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1802",
+        "display_name": "Information Systems and Management"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/18",
+        "display_name": "Decision Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T14302",
+      "display_name": "European Politics and Security",
+      "value": 0.0001332,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3320",
+        "display_name": "Political Science and International Relations"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T14357",
+      "display_name": "Architecture, Design, and Social History",
+      "value": 0.000127,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1206",
+        "display_name": "Conservation"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11657",
+      "display_name": "Digital and Traditional Archives Management",
+      "value": 0.0001189,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1206",
+        "display_name": "Conservation"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12188",
+      "display_name": "Architecture, Modernity, and Design",
+      "value": 0.0001138,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2216",
+        "display_name": "Architecture"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/22",
+        "display_name": "Engineering"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11846",
+      "display_name": "Cultural Heritage Management and Preservation",
+      "value": 0.0001051,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1204",
+        "display_name": "Archeology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T14005",
+      "display_name": "Eastern European Communism and Reforms",
+      "value": 0.0000831,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3312",
+        "display_name": "Sociology and Political Science"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11070",
+      "display_name": "Soviet and Russian History",
+      "value": 0.0000709,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3320",
+        "display_name": "Political Science and International Relations"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13654",
+      "display_name": "Urban Planning and Landscape Design",
+      "value": 0.0000653,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2308",
+        "display_name": "Management, Monitoring, Policy and Law"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/23",
+        "display_name": "Environmental Science"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12853",
+      "display_name": "Historical Geography and Geographical Thought",
+      "value": 0.0000626,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3305",
+        "display_name": "Geography, Planning and Development"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13086",
+      "display_name": "Post-Soviet Geopolitical Dynamics",
+      "value": 0.0000537,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3320",
+        "display_name": "Political Science and International Relations"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T14231",
+      "display_name": "New Zealand Economic and Social Studies",
+      "value": 0.0000524,
+      "subfield": {
+        "id": "https://openalex.org/subfields/2002",
+        "display_name": "Economics and Econometrics"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/20",
+        "display_name": "Economics, Econometrics and Finance"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12289",
+      "display_name": "Library Science and Administration",
+      "value": 0.0000483,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3309",
+        "display_name": "Library and Information Sciences"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11717",
+      "display_name": "Postcolonial and Cultural Literary Studies",
+      "value": 0.0000482,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1208",
+        "display_name": "Literature and Literary Theory"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13186",
+      "display_name": "Russia and Soviet political economy",
+      "value": 0.0000478,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3320",
+        "display_name": "Political Science and International Relations"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12679",
+      "display_name": "Focus Groups and Qualitative Methods",
+      "value": 0.0000472,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3312",
+        "display_name": "Sociology and Political Science"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13369",
+      "display_name": "European and Russian Geopolitical Military Strategies",
+      "value": 0.000046,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3320",
+        "display_name": "Political Science and International Relations"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12256",
+      "display_name": "Facilities and Workplace Management",
+      "value": 0.0000435,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3207",
+        "display_name": "Social Psychology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/32",
+        "display_name": "Psychology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13599",
+      "display_name": "Architecture and Cultural Influences",
+      "value": 0.0000434,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1204",
+        "display_name": "Archeology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T11937",
+      "display_name": "Research Data Management Practices",
+      "value": 0.0000432,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1710",
+        "display_name": "Information Systems"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/17",
+        "display_name": "Computer Science"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T13728",
+      "display_name": "Crime, Deviance, and Social Control",
+      "value": 0.0000431,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3312",
+        "display_name": "Sociology and Political Science"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/33",
+        "display_name": "Social Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10803",
+      "display_name": "Innovative Human-Technology Interaction",
+      "value": 0.0000412,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1709",
+        "display_name": "Human-Computer Interaction"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/17",
+        "display_name": "Computer Science"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T14314",
+      "display_name": "Violence, Religion, and Philosophy",
+      "value": 0.0000399,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1211",
+        "display_name": "Philosophy"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    }
+  ],
+  "x_concepts": [
+    {
+      "id": "https://openalex.org/C41008148",
+      "wikidata": "https://www.wikidata.org/wiki/Q21198",
+      "display_name": "Computer science",
+      "level": 0,
+      "score": 54
+    },
+    {
+      "id": "https://openalex.org/C95457728",
+      "wikidata": "https://www.wikidata.org/wiki/Q309",
+      "display_name": "History",
+      "level": 0,
+      "score": 39.1
+    },
+    {
+      "id": "https://openalex.org/C136764020",
+      "wikidata": "https://www.wikidata.org/wiki/Q466",
+      "display_name": "World Wide Web",
+      "level": 1,
+      "score": 33.3
+    },
+    {
+      "id": "https://openalex.org/C17744445",
+      "wikidata": "https://www.wikidata.org/wiki/Q36442",
+      "display_name": "Political science",
+      "level": 0,
+      "score": 33.1
+    },
+    {
+      "id": "https://openalex.org/C205649164",
+      "wikidata": "https://www.wikidata.org/wiki/Q1071",
+      "display_name": "Geography",
+      "level": 0,
+      "score": 30.3
+    },
+    {
+      "id": "https://openalex.org/C199539241",
+      "wikidata": "https://www.wikidata.org/wiki/Q7748",
+      "display_name": "Law",
+      "level": 1,
+      "score": 27.5
+    },
+    {
+      "id": "https://openalex.org/C86803240",
+      "wikidata": "https://www.wikidata.org/wiki/Q420",
+      "display_name": "Biology",
+      "level": 0,
+      "score": 25
+    },
+    {
+      "id": "https://openalex.org/C142362112",
+      "wikidata": "https://www.wikidata.org/wiki/Q735",
+      "display_name": "Art",
+      "level": 0,
+      "score": 21.7
+    },
+    {
+      "id": "https://openalex.org/C166957645",
+      "wikidata": "https://www.wikidata.org/wiki/Q23498",
+      "display_name": "Archaeology",
+      "level": 1,
+      "score": 20.7
+    },
+    {
+      "id": "https://openalex.org/C138885662",
+      "wikidata": "https://www.wikidata.org/wiki/Q5891",
+      "display_name": "Philosophy",
+      "level": 0,
+      "score": 20.2
+    },
+    {
+      "id": "https://openalex.org/C162324750",
+      "wikidata": "https://www.wikidata.org/wiki/Q8134",
+      "display_name": "Economics",
+      "level": 0,
+      "score": 20.2
+    }
+  ],
+  "counts_by_year": [
+    {
+      "year": 2025,
+      "works_count": 1,
+      "oa_works_count": 0,
+      "cited_by_count": 35
+    },
+    {
+      "year": 2024,
+      "works_count": 7,
+      "oa_works_count": 1,
+      "cited_by_count": 64
+    },
+    {
+      "year": 2023,
+      "works_count": 3,
+      "oa_works_count": 2,
+      "cited_by_count": 121
+    },
+    {
+      "year": 2022,
+      "works_count": 8,
+      "oa_works_count": 0,
+      "cited_by_count": 135
+    },
+    {
+      "year": 2021,
+      "works_count": 12,
+      "oa_works_count": 4,
+      "cited_by_count": 123
+    },
+    {
+      "year": 2020,
+      "works_count": 7,
+      "oa_works_count": 3,
+      "cited_by_count": 111
+    },
+    {
+      "year": 2019,
+      "works_count": 57,
+      "oa_works_count": 2,
+      "cited_by_count": 67
+    },
+    {
+      "year": 2018,
+      "works_count": 8,
+      "oa_works_count": 1,
+      "cited_by_count": 53
+    },
+    {
+      "year": 2017,
+      "works_count": 10,
+      "oa_works_count": 1,
+      "cited_by_count": 65
+    },
+    {
+      "year": 2016,
+      "works_count": 16,
+      "oa_works_count": 1,
+      "cited_by_count": 70
+    },
+    {
+      "year": 2015,
+      "works_count": 9,
+      "oa_works_count": 0,
+      "cited_by_count": 61
+    },
+    {
+      "year": 2014,
+      "works_count": 7,
+      "oa_works_count": 0,
+      "cited_by_count": 82
+    },
+    {
+      "year": 2013,
+      "works_count": 10,
+      "oa_works_count": 0,
+      "cited_by_count": 73
+    },
+    {
+      "year": 2012,
+      "works_count": 88,
+      "oa_works_count": 0,
+      "cited_by_count": 73
+    }
+  ],
+  "works_api_url": "https://api.openalex.org/works?filter=author.id:A5103202491",
+  "updated_date": "2025-10-06T11:52:51.159801",
+  "created_date": "2024-07-12"
+}
