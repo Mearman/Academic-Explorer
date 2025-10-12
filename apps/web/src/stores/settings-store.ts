@@ -58,7 +58,7 @@ const { useStore: useSettingsStore } = createTrackedStore<
       });
     },
 
-    isValidEmail: (email: string) => EMAIL_REGEX.test(email),
+    isValidEmail: (email: string) => EMAIL_REGEX.test(email.trim()),
   }),
 );
 
