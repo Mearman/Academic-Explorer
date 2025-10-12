@@ -1,9 +1,14 @@
 {
-  "extends": "../../tsconfig.react.json",
+  "extends": "../../tsconfig.library.json",
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-    "tsBuildInfoFile": "./dist/.tsbuildinfo"
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
+    "baseUrl": ".",
+    "paths": {
+      "@/ui/section-kit": ["./src/components/section-kit"]
+    }
   },
+  "include": ["src/**/*"],
   "references": [{ "path": "../client" }, { "path": "../utils" }]
 }

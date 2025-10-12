@@ -47,6 +47,10 @@
     "./layout": {
       "import": "./dist/layout/index.js",
       "types": "./dist/layout/index.d.ts"
+    },
+    "./theme": {
+      "import": "./dist/theme/index.js",
+      "types": "./dist/theme/index.d.ts"
     }
   },
   "scripts": {

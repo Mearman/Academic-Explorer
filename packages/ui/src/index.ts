@@ -1,19 +1,34 @@
 // Data Display Components
 export {
   BaseTable,
-  type BaseTableProps
+  type BaseTableProps,
 } from "./components/data-display/BaseTable";
 
 // Layout Components
 export {
   CollapsibleSection,
-  type CollapsibleSectionProps
+  type CollapsibleSectionProps,
 } from "./components/layout/CollapsibleSection";
+
+// Section Kit Components
+export {
+  SectionKit,
+  SectionFrame,
+  EntityCollectionList,
+  BulkActionToolbar,
+} from "./components/section-kit";
+export type {
+  SectionKitProps,
+  SectionFrameProps,
+  EntityCollectionListProps,
+  BulkActionToolbarProps,
+  FilterChip,
+} from "./components/section-kit";
 
 // Feedback Components
 export {
   ErrorBoundary,
-  type ErrorBoundaryProps
+  type ErrorBoundaryProps,
 } from "./components/feedback/ErrorBoundary";
 
 // Entity View Components
@@ -22,7 +37,24 @@ export { ViewToggle, type ViewToggleProps } from "./components/ViewToggle";
 
 // Entity Card Components
 export {
-  AuthorCard, EntityCard, EntityCardGrid, FunderCard, InstitutionCard, PublisherCard, SourceCard, TopicCard, WorkCard, type AuthorCardProps, type EntityCardGridProps, type EntityCardProps, type FunderCardProps, type InstitutionCardProps, type PublisherCardProps, type SourceCardProps, type TopicCardProps, type WorkCardProps
+  AuthorCard,
+  EntityCard,
+  EntityCardGrid,
+  FunderCard,
+  InstitutionCard,
+  PublisherCard,
+  SourceCard,
+  TopicCard,
+  WorkCard,
+  type AuthorCardProps,
+  type EntityCardGridProps,
+  type EntityCardProps,
+  type FunderCardProps,
+  type InstitutionCardProps,
+  type PublisherCardProps,
+  type SourceCardProps,
+  type TopicCardProps,
+  type WorkCardProps,
 } from "./components/cards";
 
 // Types
@@ -34,3 +66,5 @@ export * as DataDisplay from "./components/data-display";
 export * as Feedback from "./components/feedback";
 export * as Layout from "./components/layout";
 
+// Theme exports
+export * from "./theme/tokens";

@@ -105,5 +105,5 @@
       "cache": true
     }
   },
-  "tags": ["type:library", "scope:ui", "layer:components"]
+  "tags": ["type:library", "scope:ui", "layer:ui"]
 }
