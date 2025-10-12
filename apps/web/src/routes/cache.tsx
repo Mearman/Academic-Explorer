@@ -1,10 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { CacheBrowser } from '@/components/cache'
+import { lazy } from "react";
+import { LazyRoute } from "@/components/routing/LazyRoute";
+
+const CacheBrowserPage = lazy(() => import("./cache.lazy"));
 
 export const Route = createFileRoute('/cache')({
-  component: CacheBrowserPage,
+  component: () => (
+    <LazyRoute>
+      <CacheBrowserPage />
+    </LazyRoute>
+  ),
 })
-
-function CacheBrowserPage() {
-  return <CacheBrowser />
-}

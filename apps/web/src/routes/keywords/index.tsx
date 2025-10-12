@@ -1,35 +1,16 @@
-import { createFileRoute, useSearch } from "@tanstack/react-router";
-import { EntityList } from "@/components/EntityList";
-import type { ColumnConfig } from "@/components/types";
-import { createFilterBuilder } from "@academic-explorer/client";
+import { createFileRoute } from "@tanstack/react-router";
+import { lazy } from "react";
+import { LazyRoute } from "@/components/routing/LazyRoute";
+
+const KeywordsListRoute = lazy(() => import("./index.lazy"));
 
 export const Route = createFileRoute("/keywords/")({
-  component: KeywordsListRoute,
+  component: () => (
+    <LazyRoute>
+      <KeywordsListRoute />
+    </LazyRoute>
+  ),
   validateSearch: (search: Record<string, unknown>) => ({
     filter: typeof search.filter === "string" ? search.filter : undefined,
   }),
 });
-
-const keywordsColumns: ColumnConfig[] = [
-  { key: "display_name", header: "Name" },
-  { key: "description", header: "Description" },
-  { key: "works_count", header: "Works" },
-  { key: "cited_by_count", header: "Citations" },
-];
-
-function KeywordsListRoute() {
-  const search = useSearch({ from: "/keywords/" }) as { filter?: string };
-  const filterBuilder = createFilterBuilder();
-  const urlFilters = search.filter
-    ? filterBuilder.parseFilterString(search.filter)
-    : undefined;
-
-  return (
-    <EntityList
-      entityType="keywords"
-      columns={keywordsColumns}
-      title="Keywords"
-      urlFilters={urlFilters}
-    />
-  );
-}

@@ -1,37 +1,16 @@
-import { createFileRoute, useSearch } from "@tanstack/react-router";
-import { EntityList } from "@/components/EntityList";
-import type { ColumnConfig } from "@/components/types";
+import { createFileRoute } from "@tanstack/react-router";
+import { lazy } from "react";
+import { LazyRoute } from "@/components/routing/LazyRoute";
 
-import { createFilterBuilder } from "@academic-explorer/client";
+const ConceptsListRoute = lazy(() => import("./index.lazy"));
 
 export const Route = createFileRoute("/concepts/")({
-  component: ConceptsListRoute,
+  component: () => (
+    <LazyRoute>
+      <ConceptsListRoute />
+    </LazyRoute>
+  ),
   validateSearch: (search: Record<string, unknown>) => ({
     filter: typeof search.filter === "string" ? search.filter : undefined,
   }),
 });
-
-const conceptsColumns: ColumnConfig[] = [
-  { key: "display_name", header: "Name" },
-  { key: "description", header: "Description" },
-  { key: "works_count", header: "Works" },
-  { key: "cited_by_count", header: "Citations" },
-  { key: "level", header: "Level" },
-];
-
-function ConceptsListRoute() {
-  const search = useSearch({ from: "/concepts/" }) as { filter?: string };
-  const filterBuilder = createFilterBuilder();
-  const urlFilters = search.filter
-    ? filterBuilder.parseFilterString(search.filter)
-    : undefined;
-
-  return (
-    <EntityList
-      entityType="concepts"
-      columns={conceptsColumns}
-      title="Concepts"
-      urlFilters={urlFilters}
-    />
-  );
-}

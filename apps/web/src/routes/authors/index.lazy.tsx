@@ -1,9 +1,14 @@
+import { createLazyFileRoute } from "@tanstack/react-router";
 import { useSearch } from "@tanstack/react-router";
 import { EntityList } from "@/components/EntityList";
 import type { ColumnConfig } from "@/components/types";
 import type { Author } from "@academic-explorer/client";
 import { createFilterBuilder } from "@academic-explorer/client";
 import type { ViewMode } from "@/components/ViewModeToggle";
+export const Route = createLazyFileRoute("/authors/")({
+  component: AuthorsListRoute,
+});
+
 import { useState } from "react";
 
 const authorsColumns: ColumnConfig[] = [

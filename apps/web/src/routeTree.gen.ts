@@ -64,22 +64,22 @@ const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/search.lazy').then((d) => d.Route))
 const HistoryRoute = HistoryRouteImport.update({
   id: '/history',
   path: '/history',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/history.lazy').then((d) => d.Route))
 const ExploreRoute = ExploreRouteImport.update({
   id: '/explore',
   path: '/explore',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/explore.lazy').then((d) => d.Route))
 const EvaluationRoute = EvaluationRouteImport.update({
   id: '/evaluation',
   path: '/evaluation',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/evaluation.lazy').then((d) => d.Route))
 const ErrorTestRoute = ErrorTestRouteImport.update({
   id: '/error-test',
   path: '/error-test',
@@ -89,133 +89,153 @@ const CacheRoute = CacheRouteImport.update({
   id: '/cache',
   path: '/cache',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/cache.lazy').then((d) => d.Route))
 const BrowseRoute = BrowseRouteImport.update({
   id: '/browse',
   path: '/browse',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/browse.lazy').then((d) => d.Route))
 const BookmarksRoute = BookmarksRouteImport.update({
   id: '/bookmarks',
   path: '/bookmarks',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/bookmarks.lazy').then((d) => d.Route))
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
 const ExternalIdRoute = ExternalIdRouteImport.update({
   id: '/$externalId',
   path: '/$externalId',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/$externalId.lazy').then((d) => d.Route))
 const SplatRoute = SplatRouteImport.update({
   id: '/$_',
   path: '/$',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/$_.lazy').then((d) => d.Route))
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
 const WorksIndexRoute = WorksIndexRouteImport.update({
   id: '/works/',
   path: '/works/',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/works/index.lazy').then((d) => d.Route))
 const TopicsIndexRoute = TopicsIndexRouteImport.update({
   id: '/topics/',
   path: '/topics/',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/topics/index.lazy').then((d) => d.Route))
 const TextIndexRoute = TextIndexRouteImport.update({
   id: '/text/',
   path: '/text/',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/text/index.lazy').then((d) => d.Route))
 const SourcesIndexRoute = SourcesIndexRouteImport.update({
   id: '/sources/',
   path: '/sources/',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/sources/index.lazy').then((d) => d.Route))
 const PublishersIndexRoute = PublishersIndexRouteImport.update({
   id: '/publishers/',
   path: '/publishers/',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() =>
+  import('./routes/publishers/index.lazy').then((d) => d.Route),
+)
 const KeywordsIndexRoute = KeywordsIndexRouteImport.update({
   id: '/keywords/',
   path: '/keywords/',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() =>
+  import('./routes/keywords/index.lazy').then((d) => d.Route),
+)
 const InstitutionsIndexRoute = InstitutionsIndexRouteImport.update({
   id: '/institutions/',
   path: '/institutions/',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() =>
+  import('./routes/institutions/index.lazy').then((d) => d.Route),
+)
 const FundersIndexRoute = FundersIndexRouteImport.update({
   id: '/funders/',
   path: '/funders/',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/funders/index.lazy').then((d) => d.Route))
 const ConceptsIndexRoute = ConceptsIndexRouteImport.update({
   id: '/concepts/',
   path: '/concepts/',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() =>
+  import('./routes/concepts/index.lazy').then((d) => d.Route),
+)
 const AutocompleteIndexRoute = AutocompleteIndexRouteImport.update({
   id: '/autocomplete/',
   path: '/autocomplete/',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() =>
+  import('./routes/autocomplete/index.lazy').then((d) => d.Route),
+)
 const AuthorsIndexRoute = AuthorsIndexRouteImport.update({
   id: '/authors/',
   path: '/authors/',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/authors/index.lazy').then((d) => d.Route))
 const WorksWorkIdRoute = WorksWorkIdRouteImport.update({
   id: '/works/$workId',
   path: '/works/$workId',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/works/$workId.lazy').then((d) => d.Route))
 const TopicsTopicIdRoute = TopicsTopicIdRouteImport.update({
   id: '/topics/$topicId',
   path: '/topics/$topicId',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() =>
+  import('./routes/topics/$topicId.lazy').then((d) => d.Route),
+)
 const SourcesSourceIdRoute = SourcesSourceIdRouteImport.update({
   id: '/sources/$sourceId',
   path: '/sources/$sourceId',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() =>
+  import('./routes/sources/$sourceId.lazy').then((d) => d.Route),
+)
 const OpenalexUrlSplatRoute = OpenalexUrlSplatRouteImport.update({
   id: '/openalex-url/$',
   path: '/openalex-url/$',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() =>
+  import('./routes/openalex-url/$.lazy').then((d) => d.Route),
+)
 const InstitutionsInstitutionIdRoute =
   InstitutionsInstitutionIdRouteImport.update({
     id: '/institutions/$institutionId',
     path: '/institutions/$institutionId',
     getParentRoute: () => rootRouteImport,
-  } as any)
+  } as any).lazy(() =>
+    import('./routes/institutions/$institutionId.lazy').then((d) => d.Route),
+  )
 const HttpsSplatRoute = HttpsSplatRouteImport.update({
   id: '/https/$',
   path: '/https/$',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/https/$.lazy').then((d) => d.Route))
 const FundersFunderIdRoute = FundersFunderIdRouteImport.update({
   id: '/funders/$funderId',
   path: '/funders/$funderId',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() =>
+  import('./routes/funders/$funderId.lazy').then((d) => d.Route),
+)
 const ExploreGraphRoute = ExploreGraphRouteImport.update({
   id: '/graph',
   path: '/graph',
   getParentRoute: () => ExploreRoute,
-} as any)
+} as any).lazy(() => import('./routes/explore/graph.lazy').then((d) => d.Route))
 const EvaluationResultsRoute = EvaluationResultsRouteImport.update({
   id: '/results',
   path: '/results',
@@ -230,12 +250,16 @@ const AuthorsAuthorIdRoute = AuthorsAuthorIdRouteImport.update({
   id: '/authors/$authorId',
   path: '/authors/$authorId',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() =>
+  import('./routes/authors/$authorId.lazy').then((d) => d.Route),
+)
 const ApiOpenalexOrgSplatRoute = ApiOpenalexOrgSplatRouteImport.update({
   id: '/api-openalex-org/$',
   path: '/api-openalex-org/$',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() =>
+  import('./routes/api-openalex-org/$.lazy').then((d) => d.Route),
+)
 const TextTopicsIndexRoute = TextTopicsIndexRouteImport.update({
   id: '/text/topics/',
   path: '/text/topics/',
@@ -296,27 +320,37 @@ const WorksDoiDoiRoute = WorksDoiDoiRouteImport.update({
   id: '/works/doi/$doi',
   path: '/works/doi/$doi',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() =>
+  import('./routes/works/doi.$doi.lazy').then((d) => d.Route),
+)
 const SourcesIssnIssnRoute = SourcesIssnIssnRouteImport.update({
   id: '/sources/issn/$issn',
   path: '/sources/issn/$issn',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() =>
+  import('./routes/sources/issn.$issn.lazy').then((d) => d.Route),
+)
 const OpenalexOrgSplatRoute = OpenalexOrgSplatRouteImport.update({
   id: '/openalex/org/$',
   path: '/openalex/org/$',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() =>
+  import('./routes/openalex.org/$.lazy').then((d) => d.Route),
+)
 const InstitutionsRorRorRoute = InstitutionsRorRorRouteImport.update({
   id: '/institutions/ror/$ror',
   path: '/institutions/ror/$ror',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() =>
+  import('./routes/institutions/ror.$ror.lazy').then((d) => d.Route),
+)
 const AuthorsOrcidOrcidRoute = AuthorsOrcidOrcidRouteImport.update({
   id: '/authors/orcid/$orcid',
   path: '/authors/orcid/$orcid',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() =>
+  import('./routes/authors/orcid.$orcid.lazy').then((d) => d.Route),
+)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute

@@ -8,7 +8,6 @@ import {
   IconBookmark,
   IconBookmarkOff,
   IconSearch,
-  IconTrash,
   IconExternalLink,
 } from "@tabler/icons-react";
 import { useState } from "react";
@@ -20,7 +19,6 @@ import {
   Group,
   Stack,
   Badge,
-  ActionIcon,
   Loader,
   SimpleGrid,
 } from "@mantine/core";
@@ -121,23 +119,37 @@ export function BookmarkManager({ onNavigate }: BookmarkManagerProps) {
           {filteredBookmarks.map((bookmark) => (
             <Card key={bookmark.id} withBorder padding="md">
               <Group justify="space-between" mb="xs">
-                <Text fw={500} style={{ flex: 1 }}>
-                  {bookmark.title}
-                </Text>
-                <ActionIcon
-                  color="red"
-                  variant="subtle"
-                  onClick={() => bookmark.id && handleUnbookmark(bookmark.id)}
-                  title="Remove bookmark"
+                <a
+                  href={`#${bookmark.request.cacheKey.replace(
+                    /^\/(author|work|institution|source|funder|topic|concept)\//,
+                    (match, type) => {
+                      const pluralMap: Record<string, string> = {
+                        author: "authors",
+                        work: "works",
+                        institution: "institutions",
+                        source: "sources",
+                        funder: "funders",
+                        topic: "topics",
+                        concept: "concepts",
+                      };
+                      return `/${pluralMap[type] || type}/`;
+                    },
+                  )}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavigate(bookmark.request.cacheKey);
+                  }}
+                  style={{
+                    flex: 1,
+                    fontWeight: 500,
+                    textDecoration: "none",
+                    color: "inherit",
+                    cursor: "pointer",
+                  }}
+                  className="hover:text-blue-600 transition-colors"
                 >
-                  <IconTrash size={16} />
-                </ActionIcon>
-              </Group>
-
-              <Group gap="xs" mb="xs">
-                <Text size="sm" c="dimmed" tt="capitalize">
-                  {bookmark.request.endpoint}
-                </Text>
+                  {bookmark.title}
+                </a>
                 {bookmark.request.params &&
                   JSON.parse(bookmark.request.params) &&
                   Object.keys(JSON.parse(bookmark.request.params)).length >

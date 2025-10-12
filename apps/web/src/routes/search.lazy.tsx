@@ -1,3 +1,4 @@
+import { createLazyFileRoute } from "@tanstack/react-router";
 import { useSearch } from "@tanstack/react-router";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 import {
@@ -26,6 +27,10 @@ import {
 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
+export const Route = createLazyFileRoute("/search")({
+  component: SearchPage,
+});
+
 import { useEffect, useState } from "react";
 import { SearchInterface } from "../components/search/SearchInterface";
 import { BaseTable } from "../components/tables/BaseTable";
@@ -313,6 +318,7 @@ const createSearchColumns = (): ColumnDef<Work>[] => [
       );
     },
   },
+
 ];
 
 function SearchPage() {

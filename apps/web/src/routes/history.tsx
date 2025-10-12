@@ -1,23 +1,13 @@
-import { HistoryManager } from "@/components/HistoryManager";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { lazy } from "react";
+import { LazyRoute } from "@/components/routing/LazyRoute";
+
+const HistoryPage = lazy(() => import("./history.lazy"));
 
 export const Route = createFileRoute("/history")({
-  component: HistoryPage,
+  component: () => (
+    <LazyRoute>
+      <HistoryPage />
+    </LazyRoute>
+  ),
 });
-
-function HistoryPage() {
-  const navigate = useNavigate();
-
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto py-8">
-        <HistoryManager
-          onNavigate={(url) => {
-            // Handle navigation to historical URLs
-            window.location.href = `/#${url}`;
-          }}
-        />
-      </div>
-    </div>
-  );
-}

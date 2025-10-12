@@ -1,16 +1,13 @@
-import { EntityList, type ColumnConfig } from '@/components/EntityList';
 import { createFileRoute } from '@tanstack/react-router';
+import { lazy } from "react";
+import { LazyRoute } from "@/components/routing/LazyRoute";
+
+const PublishersRoute = lazy(() => import("./index.lazy"));
 
 export const Route = createFileRoute('/publishers/')({
-  component: PublishersRoute,
+  component: () => (
+    <LazyRoute>
+      <PublishersRoute />
+    </LazyRoute>
+  ),
 });
-
-const publishersColumns: ColumnConfig[] = [
-  { key: 'id', header: 'ID' },
-  { key: 'display_name', header: 'Name' },
-  { key: 'international_standard_identifier', header: 'International Standard Identifier' },
-];
-
-function PublishersRoute() {
-  return <EntityList entityType="publishers" columns={publishersColumns} title="Publishers" />;
-}
