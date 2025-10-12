@@ -407,7 +407,7 @@ export const AllNodesSection: React.FC = () => {
   );
 
   return (
-    <SectionFrame title="All Nodes" icon={<IconFile size={16} />}>
+    <SectionFrame>
       <BulkActionToolbar
         totalItems={filteredNodes.length}
         selectedItems={Array.from(selectedNodeIds)}
