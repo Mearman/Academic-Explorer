@@ -14,6 +14,7 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: [path.resolve(__dirname, "src/test/setup.ts")],
     globals: true,
+    watch: false,
     exclude: [
       "node_modules",
       "**/*.e2e.test.ts", // Exclude E2E tests from Vitest
