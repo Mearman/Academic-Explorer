@@ -475,7 +475,7 @@ describe("OpenAlexBaseClient", () => {
       );
 
       const callUrl = mockFetch.mock.calls[0][0] as string;
-      expect(callUrl).toContain("select=id%2Cdisplay_name");
+      expect(callUrl).toContain("select=id,display_name");
     });
 
     it("should properly encode IDs in getById method", async () => {

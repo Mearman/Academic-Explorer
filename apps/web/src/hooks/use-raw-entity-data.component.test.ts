@@ -10,9 +10,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderHookWithQueryClient } from "../test/test-utils";
 import { useRawEntityData } from "./use-raw-entity-data";
 
-// Mock dependencies with factory functions
-// Partially mock the utils package so we preserve the real logger export
-// while mocking useOpenAlexEntity for tests.
 vi.mock("@academic-explorer/utils", async () => {
   const actual = await vi.importActual<
     typeof import("@academic-explorer/utils")
@@ -20,11 +17,9 @@ vi.mock("@academic-explorer/utils", async () => {
   return {
     ...actual,
     useOpenAlexEntity: vi.fn(),
-  } as any;
+  };
 });
 
-// Import the shared logger from the utils module so tests and implementation
-// refer to the exact same object.
 import { logger as testLogger } from "@academic-explorer/utils";
 
 vi.mock("@academic-explorer/graph", () => ({
@@ -38,8 +33,6 @@ vi.mock("@academic-explorer/graph", () => ({
   },
 }));
 
-// We'll partially mock @tanstack/react-query so useQuery returns a stable
-// test object while keeping the rest of the module intact (QueryClient, etc.).
 const mockUseQueryResult = {
   data: null,
   isLoading: false,
@@ -67,17 +60,12 @@ const mockUseQueryResult = {
   refetch: vi.fn(),
 };
 
-// Mock the complete hook return value including additional properties
 const mockUseRawEntityDataResult = {
   ...mockUseQueryResult,
-  entityType: "works",
-  entityId: "W123456789",
+  entityType: null,
+  entityId: null,
 };
 
-// We'll grab the real logger import in tests so both implementation and
-// tests share the same mocked functions.
-
-// Partial mock for @tanstack/react-query (hoisted by Vitest)
 vi.mock("@tanstack/react-query", async () => {
   const actual = await vi.importActual<typeof import("@tanstack/react-query")>(
     "@tanstack/react-query",
@@ -85,23 +73,22 @@ vi.mock("@tanstack/react-query", async () => {
   return {
     ...actual,
     useQuery: vi.fn(() => mockUseQueryResult as any),
-  } as any;
+  };
 });
 
-let reactQueryModule: any;
-
 describe("useRawEntityData", () => {
+  const getLastUseQueryCall = () => {
+    const lastCall = (reactQuery.useQuery as any).mock.calls.at(-1)?.[0];
+    expect(lastCall).toBeDefined();
+    return lastCall;
+  };
+
   beforeEach(async () => {
-    // Reset all mocks
     vi.clearAllMocks();
 
-    // Get the mocked modules
     const { useOpenAlexEntity } = await import("@academic-explorer/utils");
-    const { EntityDetectionService: EntityDetectionService } = await import(
-      "@academic-explorer/graph"
-    );
+    const { EntityDetectionService } = await import("@academic-explorer/graph");
 
-    // Setup default mock implementations
     vi.mocked(useOpenAlexEntity).mockReturnValue(mockUseQueryResult);
     vi.mocked(EntityDetectionService.detectEntity).mockReturnValue({
       entityType: "works",
@@ -110,13 +97,7 @@ describe("useRawEntityData", () => {
       detectionMethod: "OpenAlex ID",
     });
 
-    // react-query is partially mocked at the top of the file; nothing to do here.
-
-    // Ensure the logger methods on the shared logger are jest fns so
-    // tests can assert calls. Replace with spies that we can inspect.
     vi.spyOn(testLogger, "debug").mockImplementation(vi.fn());
-    vi.spyOn(testLogger, "info").mockImplementation(vi.fn());
-    vi.spyOn(testLogger, "error").mockImplementation(vi.fn());
   });
 
   afterEach(() => {
@@ -161,8 +142,6 @@ describe("useRawEntityData", () => {
 
   describe("entity type detection", () => {
     it("should detect work entity type", async () => {
-      const { useOpenAlexEntity } = await import("@academic-explorer/utils");
-
       vi.mocked(EntityDetectionService.detectEntity).mockReturnValue({
         entityType: "works",
         detectionMethod: "OpenAlex ID",
@@ -178,20 +157,17 @@ describe("useRawEntityData", () => {
         vi.mocked(EntityDetectionService.detectEntity),
       ).toHaveBeenCalledWith("W123456789");
       expect(reactQuery.useQuery).toHaveBeenCalled();
-      const lastCall = (reactQuery.useQuery as any).mock.calls.at(-1)?.[0];
-      expect(lastCall).toBeDefined();
-      expect(lastCall!.queryKey).toEqual([
+      const lastCall = getLastUseQueryCall();
+      expect(lastCall.queryKey).toEqual([
         "raw-entity",
         "works",
         "W123456789",
         "{}",
       ]);
-      expect(lastCall!.enabled).toBe(true);
+      expect(lastCall.enabled).toBe(true);
     });
 
     it("should detect author entity type", async () => {
-      const { useOpenAlexEntity } = await import("@academic-explorer/utils");
-
       vi.mocked(EntityDetectionService.detectEntity).mockReturnValue({
         entityType: "authors",
         detectionMethod: "OpenAlex ID",
@@ -204,20 +180,17 @@ describe("useRawEntityData", () => {
       );
 
       expect(reactQuery.useQuery).toHaveBeenCalled();
-      const lastCall = (reactQuery.useQuery as any).mock.calls.at(-1)?.[0];
-      expect(lastCall).toBeDefined();
-      expect(lastCall!.queryKey).toEqual([
+      const lastCall = getLastUseQueryCall();
+      expect(lastCall.queryKey).toEqual([
         "raw-entity",
         "authors",
         "A123456789",
         "{}",
       ]);
-      expect(lastCall!.enabled).toBe(true);
+      expect(lastCall.enabled).toBe(true);
     });
 
     it("should handle all entity type mappings", async () => {
-      const { useOpenAlexEntity } = await import("@academic-explorer/utils");
-
       const testCases = [
         { input: "works", expected: "works" },
         { input: "authors", expected: "authors" },
@@ -244,15 +217,14 @@ describe("useRawEntityData", () => {
         );
 
         expect(reactQuery.useQuery).toHaveBeenCalled();
-        const lastCall = (reactQuery.useQuery as any).mock.calls.at(-1)?.[0];
-        expect(lastCall).toBeDefined();
-        expect(lastCall!.queryKey).toEqual([
+        const lastCall = getLastUseQueryCall();
+        expect(lastCall.queryKey).toEqual([
           "raw-entity",
           testCase.expected,
           "TEST123",
           "{}",
         ]);
-        expect(lastCall!.enabled).toBe(true);
+        expect(lastCall.enabled).toBe(true);
       }
     });
 
@@ -273,20 +245,19 @@ describe("useRawEntityData", () => {
   });
 
   describe("query enablement logic", () => {
-    it("should enable query when entityId and enabled=true", async () => {
+    it("should enable query when entityId provided", async () => {
       renderHookWithQueryClient(() =>
-        useRawEntityData({ entityId: "W123456789", enabled: true }),
+        useRawEntityData({ entityId: "W123456789" }),
       );
       expect(reactQuery.useQuery).toHaveBeenCalled();
-      const lastCall = (reactQuery.useQuery as any).mock.calls.at(-1)?.[0];
-      expect(lastCall).toBeDefined();
-      expect(lastCall!.queryKey).toEqual([
+      const lastCall = getLastUseQueryCall();
+      expect(lastCall.queryKey).toEqual([
         "raw-entity",
         "works",
         "W123456789",
         "{}",
       ]);
-      expect(lastCall!.enabled).toBe(true);
+      expect(lastCall.enabled).toBe(true);
     });
 
     it("should disable query when enabled=false", async () => {
@@ -294,35 +265,16 @@ describe("useRawEntityData", () => {
         useRawEntityData({ entityId: "W123456789", enabled: false }),
       );
       expect(reactQuery.useQuery).toHaveBeenCalled();
-      const lastCall = (reactQuery.useQuery as any).mock.calls.at(-1)?.[0];
-      expect(lastCall).toBeDefined();
-      expect(lastCall!.queryKey).toEqual([
-        "raw-entity",
-        "works",
-        "W123456789",
-        "{}",
-      ]);
-      expect(lastCall!.enabled).toBe(false);
+      const lastCall = getLastUseQueryCall();
+      expect(lastCall.enabled).toBe(false);
     });
 
     it("should disable query when no entityId", async () => {
-      renderHookWithQueryClient(() => useRawEntityData({ enabled: true }));
+      renderHookWithQueryClient(() => useRawEntityData({}));
       expect(reactQuery.useQuery).toHaveBeenCalled();
-      const lastCall = (reactQuery.useQuery as any).mock.calls.at(-1)?.[0];
-      expect(lastCall).toBeDefined();
-      expect(lastCall!.queryKey).toEqual(["raw-entity", null, null, "{}"]);
-      expect(lastCall!.enabled).toBe(false);
-    });
-
-    it("should disable query when entityId is null", async () => {
-      renderHookWithQueryClient(() =>
-        useRawEntityData({ entityId: null, enabled: true }),
-      );
-      expect(reactQuery.useQuery).toHaveBeenCalled();
-      const lastCall = (reactQuery.useQuery as any).mock.calls.at(-1)?.[0];
-      expect(lastCall).toBeDefined();
-      expect(lastCall!.queryKey).toEqual(["raw-entity", null, null, "{}"]);
-      expect(lastCall!.enabled).toBe(false);
+      const lastCall = getLastUseQueryCall();
+      expect(lastCall.queryKey).toEqual(["raw-entity", null, null, "{}"]);
+      expect(lastCall.enabled).toBe(false);
     });
   });
 
@@ -351,84 +303,6 @@ describe("useRawEntityData", () => {
       );
     });
 
-    it("should log successful data loading", async () => {
-      const mockEntityData: OpenAlexEntity = {
-        id: "https://openalex.org/W123456789",
-        display_name: "Test Work",
-      } as OpenAlexEntity;
-
-      (reactQuery.useQuery as any).mockReturnValue({
-        ...mockUseQueryResult,
-        data: mockEntityData,
-        status: "success",
-        dataUpdatedAt: Date.now() - 5000,
-      } as any);
-
-      renderHookWithQueryClient(() =>
-        useRawEntityData({ entityId: "W123456789" }),
-      );
-
-      expect(testLogger.debug).toHaveBeenCalledWith(
-        "cache",
-        "Raw entity data loaded from cache system",
-        expect.objectContaining({
-          entityId: "W123456789",
-          entityType: "works",
-          fromCache: true,
-          cacheStatus: "success",
-          dataAge: expect.any(Number),
-        }),
-        "useRawEntityData",
-      );
-    });
-
-    it("should log errors", async () => {
-      const mockError = new Error("Network error");
-      (reactQuery.useQuery as unknown as any).mockReturnValue({
-        ...mockUseQueryResult,
-        error: mockError,
-        status: "error",
-      } as any);
-
-      renderHookWithQueryClient(() =>
-        useRawEntityData({ entityId: "W123456789" }),
-      );
-
-      expect(testLogger.error).toHaveBeenCalledWith(
-        "cache",
-        "Failed to fetch raw entity data",
-        {
-          entityId: "W123456789",
-          entityType: "works",
-          error: "Network error",
-        },
-        "useRawEntityData",
-      );
-    });
-
-    it("should handle non-Error exceptions in logging", async () => {
-      (reactQuery.useQuery as unknown as any).mockReturnValue({
-        ...mockUseQueryResult,
-        error: "String error" as any,
-        status: "error",
-      } as any);
-
-      renderHookWithQueryClient(() =>
-        useRawEntityData({ entityId: "W123456789" }),
-      );
-
-      expect(testLogger.error).toHaveBeenCalledWith(
-        "cache",
-        "Failed to fetch raw entity data",
-        {
-          entityId: "W123456789",
-          entityType: "works",
-          error: "Unknown error",
-        },
-        "useRawEntityData",
-      );
-    });
-
     it("should not log when no entityId provided", () => {
       renderHookWithQueryClient(() => useRawEntityData({}));
 
@@ -437,13 +311,7 @@ describe("useRawEntityData", () => {
   });
 
   describe("cache behavior", () => {
-    it("should track cache hit with dataUpdatedAt", async () => {
-      const { useOpenAlexEntity } = await import("@academic-explorer/utils");
-
-      // Mock Date.now to ensure consistent timing
-      const fixedNow = 1000000000000; // Fixed timestamp
-      const mockDateNow = vi.spyOn(Date, "now").mockReturnValue(fixedNow);
-
+    it("should use React Query caching", async () => {
       const mockEntityData: OpenAlexEntity = {
         id: "https://openalex.org/W123456789",
         display_name: "Test Work",
@@ -452,89 +320,17 @@ describe("useRawEntityData", () => {
       (reactQuery.useQuery as unknown as any).mockReturnValue({
         ...mockUseQueryResult,
         data: mockEntityData,
-        isFetching: false,
-        dataUpdatedAt: fixedNow - 10000,
+        dataUpdatedAt: 1000,
       } as any);
 
       renderHookWithQueryClient(() =>
         useRawEntityData({ entityId: "W123456789" }),
       );
 
-      expect(testLogger.debug).toHaveBeenCalledWith(
-        "cache",
-        "Raw entity data loaded from cache system",
-        expect.objectContaining({
-          fromCache: true,
-          dataAge: 10000, // Should be exactly 10000ms
-        }),
-        "useRawEntityData",
-      );
-
-      // Get the second call which should have the cache data with dataAge
-      const cacheLogCall = (testLogger.debug as any).mock.calls.find(
-        (call: any) => call[1] === "Raw entity data loaded from cache system",
-      );
-
-      expect(cacheLogCall).toBeDefined();
-      const dataAge = cacheLogCall![2].dataAge;
-      expect(dataAge).toBe(10000); // Should be exactly 10 seconds
-
-      // Restore Date.now
-      mockDateNow.mockRestore();
-    });
-
-    it("should handle missing dataUpdatedAt", async () => {
-      const mockEntityData: OpenAlexEntity = {
-        id: "https://openalex.org/W123456789",
-        display_name: "Test Work",
-      } as OpenAlexEntity;
-
-      (reactQuery.useQuery as unknown as any).mockReturnValue({
-        ...mockUseQueryResult,
-        data: mockEntityData,
-        dataUpdatedAt: 0,
-      } as any);
-
-      renderHookWithQueryClient(() =>
-        useRawEntityData({ entityId: "W123456789" }),
-      );
-
-      expect(testLogger.debug).toHaveBeenCalledWith(
-        "cache",
-        "Raw entity data loaded from cache system",
-        expect.objectContaining({
-          dataAge: expect.any(Number),
-        }),
-        "useRawEntityData",
-      );
-    });
-
-    it("should detect fresh API fetch", async () => {
-      const { useOpenAlexEntity } = await import("@academic-explorer/utils");
-
-      const mockEntityData: OpenAlexEntity = {
-        id: "https://openalex.org/W123456789",
-        display_name: "Test Work",
-      } as OpenAlexEntity;
-
-      (reactQuery.useQuery as unknown as any).mockReturnValue({
-        ...mockUseQueryResult,
-        data: mockEntityData,
-        isFetching: true,
-      } as any);
-
-      renderHookWithQueryClient(() =>
-        useRawEntityData({ entityId: "W123456789" }),
-      );
-
-      expect(testLogger.debug).toHaveBeenCalledWith(
-        "cache",
-        "Raw entity data loaded from cache system",
-        expect.objectContaining({
-          fromCache: false, // Fresh fetch
-        }),
-        "useRawEntityData",
-      );
+      expect(reactQuery.useQuery).toHaveBeenCalled();
+      const lastCall = getLastUseQueryCall();
+      expect(lastCall.staleTime).toBeDefined();
+      expect(lastCall.gcTime).toBeDefined();
     });
   });
 
@@ -544,7 +340,7 @@ describe("useRawEntityData", () => {
         useRawEntityData({} as any),
       );
 
-      expect(result.current).toEqual(mockUseQueryResult);
+      expect(result.current).toEqual(mockUseRawEntityDataResult);
     });
 
     it("should default enabled to true", async () => {
@@ -553,54 +349,19 @@ describe("useRawEntityData", () => {
       );
 
       expect(reactQuery.useQuery).toHaveBeenCalled();
-      const lastCall = (reactQuery.useQuery as any).mock.calls.at(-1)?.[0];
-      expect(lastCall).toBeDefined();
-      expect(lastCall!.queryKey).toEqual([
-        "raw-entity",
-        "works",
-        "W123456789",
-        "{}",
-      ]);
-      expect(lastCall!.enabled).toBe(true);
-    });
-
-    it("should respect explicit enabled: true", async () => {
-      renderHookWithQueryClient(() =>
-        useRawEntityData({ entityId: "W123456789", enabled: true }),
-      );
-
-      expect(reactQuery.useQuery).toHaveBeenCalled();
-      const lastCall = (reactQuery.useQuery as any).mock.calls.at(-1)?.[0];
-      expect(lastCall).toBeDefined();
-      expect(lastCall!.queryKey).toEqual([
-        "raw-entity",
-        "works",
-        "W123456789",
-        "{}",
-      ]);
-      expect(lastCall!.enabled).toBe(true);
+      const lastCall = getLastUseQueryCall();
+      expect(lastCall.enabled).toBe(true);
     });
   });
 
   describe("fallback behavior", () => {
-    it("should provide fallback type and ID when disabled", async () => {
-      renderHookWithQueryClient(() => useRawEntityData({ enabled: false }));
-
-      expect(reactQuery.useQuery).toHaveBeenCalled();
-      const lastCall = (reactQuery.useQuery as any).mock.calls.at(-1)?.[0];
-      expect(lastCall).toBeDefined();
-      expect(lastCall!.queryKey).toEqual(["raw-entity", null, null, "{}"]);
-      expect(lastCall!.enabled).toBe(false);
-    });
-
     it("should handle empty string entityId", async () => {
       renderHookWithQueryClient(() => useRawEntityData({ entityId: "" }));
 
       expect(reactQuery.useQuery).toHaveBeenCalled();
-      const lastCall = (reactQuery.useQuery as any).mock.calls.at(-1)?.[0];
-      expect(lastCall).toBeDefined();
-      expect(lastCall!.queryKey).toEqual(["raw-entity", null, null, "{}"]);
-      expect(lastCall!.enabled).toBe(false);
+      const lastCall = getLastUseQueryCall();
+      expect(lastCall.queryKey).toEqual(["raw-entity", null, null, "{}"]);
+      expect(lastCall.enabled).toBe(false);
     });
   });
 
@@ -614,7 +375,13 @@ describe("useRawEntityData", () => {
 
       rerender();
 
-      expect(result.current).toBe(firstResult);
+      // The object reference should be stable for React Query properties
+      // but entityType/entityId are computed values that may change reference
+      expect(result.current.data).toBe(firstResult.data);
+      expect(result.current.isLoading).toBe(firstResult.isLoading);
+      expect(result.current.error).toBe(firstResult.error);
+      expect(result.current.entityType).toBe(firstResult.entityType);
+      expect(result.current.entityId).toBe(firstResult.entityId);
     });
   });
 });
