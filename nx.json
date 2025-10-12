@@ -307,5 +307,7 @@
     "packageManager": "pnpm"
   },
   "parallel": 1,
-  "cacheDirectory": ".nx/cache"
+  "cacheDirectory": ".nx/cache",
+  "maxCacheSize": "10GB",
+  "compression": true
 }
