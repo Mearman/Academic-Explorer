@@ -284,5 +284,8 @@ export {
   type DexieStoreOptions,
 } from "./state/dexieStore.js";
 
+// State module re-export
+export * from "./state/index.js";
+
 // Worker message schemas and types
 export * from "./workers/messages.js";
