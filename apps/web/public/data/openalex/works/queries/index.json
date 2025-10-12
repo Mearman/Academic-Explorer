@@ -1,42 +1,6 @@
 {
-  "lastUpdated": "2025-10-12T08:36:33.949Z",
+  "lastUpdated": "2025-10-12T09:23:19.357Z",
   "files": {
-    "filter=page=1&select=id": {
-      "url": "https://api.openalex.org/works?page=1&select=id",
-      "$ref": "./filter=page=1&select=id.json",
-      "lastRetrieved": "2025-10-12T08:36:23.484Z",
-      "contentHash": "5021e624e752b001"
-    },
-    "filter=page=2&per_page=50&filter=is_oa%3Atrue&sample=100&seed=42&select=id,display_name,publication_year": {
-      "url": "https://api.openalex.org/works?page=2&per_page=50&filter=is_oa%3Atrue&sample=100&seed=42&select=id,display_name,publication_year",
-      "$ref": "./filter=page=2&per_page=50&filter=is_oa%3Atrue&sample=100&seed=42&select=id,display_name,publication_year.json",
-      "lastRetrieved": "2025-10-12T08:36:23.482Z",
-      "contentHash": "5021e624e752b001"
-    },
-    "filter=per_page=2": {
-      "url": "https://api.openalex.org/works?per_page=2",
-      "$ref": "./filter=per_page=2.json",
-      "lastRetrieved": "2025-10-12T08:36:33.838Z",
-      "contentHash": "a695960dbd857a99"
-    },
-    "filter=per_page=200": {
-      "url": "https://api.openalex.org/works?per_page=200",
-      "$ref": "./filter=per_page=200.json",
-      "lastRetrieved": "2025-10-12T08:36:33.840Z",
-      "contentHash": "a695960dbd857a99"
-    },
-    "filter=search=machine+learning+%26+AI&filter=title.search%3A%22deep+learning%22": {
-      "url": "https://api.openalex.org/works?search=machine+learning+%26+AI&filter=title.search%3A%22deep+learning%22",
-      "$ref": "./filter=search=machine+learning+%26+AI&filter=title.search%3A%22deep+learning%22.json",
-      "lastRetrieved": "2025-10-12T08:36:23.486Z",
-      "contentHash": "5021e624e752b001"
-    },
-    "filter=select=id,display_name": {
-      "url": "https://api.openalex.org/works/W123?select=id,display_name",
-      "$ref": "./filter=select=id,display_name.json",
-      "lastRetrieved": "2025-10-12T08:36:33.833Z",
-      "contentHash": "fb6d08e8002b7d8e"
-    },
     "filter__3D__author.id__3A__A5017898742__26__page__3D__1__26__per_page__3D__50": {
       "url": "https://api.openalex.org/works?filter=author.id:A5017898742&page=1&per_page=50",
       "$ref": "./filter__3D__author.id__3A__A5017898742__26__page__3D__1__26__per_page__3D__50.json",
@@ -66,12 +30,6 @@
       "$ref": "./page__3D__1__26__per_page__3D__50.json",
       "lastRetrieved": "2025-10-11T09:04:46.209Z",
       "contentHash": "ac5b58ddaedb1aea"
-    },
-    "filter=select=field0,field1,field2,field3,field4,field5,field6,field7,field8,field9,field10,field11,field12,field13,field14,field15,field16,field17,field18,field19,field20,field21,field22,field23,fiel": {
-      "url": "https://api.openalex.org/works?select=field0,field1,field2,field3,field4,field5,field6,field7,field8,field9,field10,field11,field12,field13,field14,field15,field16,field17,field18,field19,field20,field21,field22,field23,field24,field25,field26,field27,field28,field29,field30,field31,field32,field33,field34,field35,field36,field37,field38,field39,field40,field41,field42,field43,field44,field45,field46,field47,field48,field49,field50,field51,field52,field53,field54,field55,field56,field57,field58,field59,field60,field61,field62,field63,field64,field65,field66,field67,field68,field69,field70,field71,field72,field73,field74,field75,field76,field77,field78,field79,field80,field81,field82,field83,field84,field85,field86,field87,field88,field89,field90,field91,field92,field93,field94,field95,field96,field97,field98,field99",
-      "$ref": "./filter=select=field0,field1,field2,field3,field4,field5,field6,field7,field8,field9,field10,field11,field12,field13,field14,field15,field16,field17,field18,field19,field20,field21,field22,field23,fiel.json",
-      "lastRetrieved": "2025-10-12T08:36:33.948Z",
-      "contentHash": "5021e624e752b001"
     }
   },
   "directories": {}

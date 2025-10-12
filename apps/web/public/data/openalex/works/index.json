@@ -1,12 +1,6 @@
 {
-  "lastUpdated": "2025-10-12T08:36:33.845Z",
+  "lastUpdated": "2025-10-12T09:23:19.361Z",
   "files": {
-    "W123%2Fspecial-chars": {
-      "url": "https://api.openalex.org/works/W123%2Fspecial-chars",
-      "$ref": "./W123%2Fspecial-chars.json",
-      "lastRetrieved": "2025-10-12T08:36:33.836Z",
-      "contentHash": "44136fa355b3678a"
-    },
     "W123456789": {
       "url": "https://api.openalex.org/works/W123456789",
       "$ref": "./W123456789.json",
@@ -54,12 +48,6 @@
         "mergedCount": 0,
         "totalUrls": 1
       }
-    },
-    "unknown_75b0e39e": {
-      "url": "https://api.openalex.org/works0",
-      "$ref": "./unknown_75b0e39e.json",
-      "lastRetrieved": "2025-10-12T08:36:33.844Z",
-      "contentHash": "5021e624e752b001"
     }
   },
   "directories": {
