@@ -373,7 +373,7 @@ describe("GraphDataService", () => {
         "W123456789",
       );
       expect(mockDeduplicationService.getEntity).toHaveBeenCalledWith(
-        "https://openalex.org/W123456789",
+        "W123456789",
         expect.any(Function),
       );
       expect(mockStore.clear).toHaveBeenCalled();
@@ -424,7 +424,7 @@ describe("GraphDataService", () => {
         id: "node-1",
         entityId: "A123456789",
         entityData: {
-          id: "https://openalex.org/A123456789",
+          id: "A123456789",
           display_name: "Test Entity",
         },
       };
@@ -446,7 +446,7 @@ describe("GraphDataService", () => {
         "A123456789",
       );
       expect(mockDeduplicationService.getEntity).toHaveBeenCalledWith(
-        "https://openalex.org/A123456789",
+        "A123456789",
         expect.any(Function),
       );
       expect(mockStore.addNodes).toHaveBeenCalled();
