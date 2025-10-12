@@ -226,9 +226,9 @@ describe("LayoutControls", () => {
     });
     mockUseGraphStore.mockImplementation((selector) => {
       if (selector) {
-        return selector(mockState);
+        return selector(mockState as any);
       }
-      return mockState;
+      return mockState as any;
     });
 
     render(
@@ -252,9 +252,9 @@ describe("LayoutControls", () => {
     });
     mockUseGraphStore.mockImplementation((selector) => {
       if (selector) {
-        return selector(mockState);
+        return selector(mockState as any);
       }
-      return mockState;
+      return mockState as any;
     });
 
     render(
@@ -284,9 +284,9 @@ describe("LayoutControls", () => {
     });
     mockUseGraphStore.mockImplementation((selector) => {
       if (selector) {
-        return selector(mockState);
+        return selector(mockState as any);
       }
-      return mockState;
+      return mockState as any;
     });
 
     render(
@@ -320,9 +320,9 @@ describe("LayoutControls", () => {
     });
     mockUseGraphStore.mockImplementation((selector) => {
       if (selector) {
-        return selector(mockState);
+        return selector(mockState as any);
       }
-      return mockState;
+      return mockState as any;
     });
     const { rerender } = render(
       <TestWrapper>
@@ -352,16 +352,22 @@ describe("LayoutControls", () => {
   it("renders with default icon when current layout is not found", () => {
     const mockState = createMockGraphState({
       currentLayout: {
-        type: "unknown-layout" as any,
+        type: "unknown" as any,
         options: {},
       },
       setLayout: mockSetLayout,
     });
     mockUseGraphStore.mockImplementation((selector) => {
       if (selector) {
-        return selector(mockState);
+        return selector(mockState as any);
       }
-      return mockState;
+      return mockState as any;
+    });
+    mockUseGraphStore.mockImplementation((selector) => {
+      if (selector) {
+        return selector(mockState as any);
+      }
+      return mockState as any;
     });
 
     render(

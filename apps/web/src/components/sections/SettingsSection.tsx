@@ -159,9 +159,9 @@ export const SettingsSection: React.FC = () => {
       // Clear Zustand persisted stores
       // This will reset layout store, expansion settings, graph store, etc.
       const storeKeys = [
-        "academic-explorer-layout-store",
-        "academic-explorer-expansion-settings",
-        "academic-explorer-graph-store",
+        "layout-state",
+        "expansion-settings-state",
+        "graph-store-state",
       ];
 
       for (const key of storeKeys) {
@@ -184,7 +184,7 @@ export const SettingsSection: React.FC = () => {
       }
 
       // Reset layout store to defaults
-      useLayoutStore.persist.clearStorage();
+      (useLayoutStore as any).persist.clearStorage();
 
       // Clear app metadata
       await clearAppMetadata();

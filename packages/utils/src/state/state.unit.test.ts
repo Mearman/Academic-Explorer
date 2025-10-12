@@ -135,6 +135,7 @@ describe("State Utilities", () => {
     interface TestActions {
       increment: () => void;
       addItem: (item: string) => void;
+      [key: string]: any;
     }
 
     it("should create a store factory", () => {

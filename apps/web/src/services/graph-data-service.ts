@@ -4,7 +4,7 @@
  * Now integrated with TanStack Query for persistent caching
  */
 
-// import { useExpansionSettingsStore } from "@/stores/expansion-settings-store";
+import { useExpansionSettingsStore } from "@/stores/expansion-settings-store";
 import { useGraphStore } from "@/stores/graph-store";
 import { useRepositoryStore } from "@/stores/repository-store";
 import type {
@@ -1356,7 +1356,7 @@ export class GraphDataService {
       const entity = EntityFactory.create(node.entityType, cachedOpenAlex);
 
       // Get expansion settings for this entity type
-      // const expansionSettingsStore = useExpansionSettingsStore.getState();
+      const expansionSettingsStore = useExpansionSettingsStore.getState();
       // Safely convert entity type to expansion target with type guard
       if (!isEntityType(node.entityType)) {
         logger.error(

@@ -237,6 +237,16 @@ const { useStore: useLayoutStore } = createTrackedStore<
         storeName: "layout-store",
         version: 1,
       },
+      partialize: (state) => ({
+        leftSidebarPinned: state.leftSidebarPinned,
+        rightSidebarPinned: state.rightSidebarPinned,
+        collapsedSections: state.collapsedSections,
+        sectionPlacements: state.sectionPlacements,
+        activeGroups: state.activeGroups,
+        toolGroups: state.toolGroups,
+        graphProvider: state.graphProvider,
+        autoPinOnLayoutStabilization: state.autoPinOnLayoutStabilization,
+      }),
     },
   },
   (set, get) => ({
@@ -250,23 +260,29 @@ const { useStore: useLayoutStore } = createTrackedStore<
         rightSidebarOpen: !state.rightSidebarOpen,
       })),
 
-    setLeftSidebarOpen: (open) => set({ leftSidebarOpen: open }),
+    setLeftSidebarOpen: (open) =>
+      set((state) => ({ ...state, leftSidebarOpen: open })),
 
-    setRightSidebarOpen: (open) => set({ rightSidebarOpen: open }),
+    setRightSidebarOpen: (open) =>
+      set((state) => ({ ...state, rightSidebarOpen: open })),
 
-    pinLeftSidebar: (pinned) => set({ leftSidebarPinned: pinned }),
+    pinLeftSidebar: (pinned) =>
+      set((state) => ({ ...state, leftSidebarPinned: pinned })),
 
-    pinRightSidebar: (pinned) => set({ rightSidebarPinned: pinned }),
+    pinRightSidebar: (pinned) =>
+      set((state) => ({ ...state, rightSidebarPinned: pinned })),
 
     setLeftSidebarAutoHidden: (autoHidden) =>
-      set({ leftSidebarAutoHidden: autoHidden }),
+      set((state) => ({ ...state, leftSidebarAutoHidden: autoHidden })),
 
     setRightSidebarAutoHidden: (autoHidden) =>
-      set({ rightSidebarAutoHidden: autoHidden }),
+      set((state) => ({ ...state, rightSidebarAutoHidden: autoHidden })),
 
-    setLeftSidebarHovered: (hovered) => set({ leftSidebarHovered: hovered }),
+    setLeftSidebarHovered: (hovered) =>
+      set((state) => ({ ...state, leftSidebarHovered: hovered })),
 
-    setRightSidebarHovered: (hovered) => set({ rightSidebarHovered: hovered }),
+    setRightSidebarHovered: (hovered) =>
+      set((state) => ({ ...state, rightSidebarHovered: hovered })),
 
     setSectionCollapsed: (sectionKey, collapsed) =>
       set((state) => ({
@@ -511,11 +527,12 @@ const { useStore: useLayoutStore } = createTrackedStore<
       })),
 
     resetSectionPlacements: () =>
-      set({
+      set((state) => ({
+        ...state,
         sectionPlacements: getDefaultSectionPlacements(),
         activeGroups: { left: null, right: null },
         toolGroups: createDefaultToolGroups(),
-      }),
+      })),
 
     getSectionsForSidebar: (sidebar) => {
       const state = get();
@@ -726,39 +743,19 @@ const { useStore: useLayoutStore } = createTrackedStore<
       logger.debug("ui", `Move to ${targetSidebar} sidebar complete`);
     },
 
-    setGraphProvider: (provider) => set({ graphProvider: provider }),
+    setGraphProvider: (provider) =>
+      set((state) => ({ ...state, graphProvider: provider })),
 
     setPreviewEntity: (entityId) => {
       const currentState = get();
       if (currentState.previewEntityId !== entityId) {
-        set({ previewEntityId: entityId });
+        set((state) => ({ ...state, previewEntityId: entityId }));
       }
     },
 
     setAutoPinOnLayoutStabilization: (enabled) =>
-      set({ autoPinOnLayoutStabilization: enabled }),
+      set((state) => ({ ...state, autoPinOnLayoutStabilization: enabled })),
   }),
-  {
-    name: "academic-explorer-layout",
-    storage: createJSONStorage(() =>
-      createHybridStorage({
-        dbName: "academic-explorer",
-        storeName: "layout-store",
-        version: 1,
-      }),
-    ),
-    // Only persist certain values
-    partialize: (state) => ({
-      leftSidebarPinned: state.leftSidebarPinned,
-      rightSidebarPinned: state.rightSidebarPinned,
-      collapsedSections: state.collapsedSections,
-      sectionPlacements: state.sectionPlacements,
-      activeGroups: state.activeGroups,
-      toolGroups: state.toolGroups,
-      graphProvider: state.graphProvider,
-      autoPinOnLayoutStabilization: state.autoPinOnLayoutStabilization,
-    }),
-  },
 );
 
 export { useLayoutStore };

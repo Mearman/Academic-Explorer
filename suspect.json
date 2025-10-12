@@ -1,0 +1,12 @@
+[
+  "apps/web/public/data/openalex/authors.json",
+  "apps/web/public/data/openalex/works.json",
+  "apps/web/public/data/openalex/works/unknown_75b0e39e.json",
+  "apps/web/public/data/openalex/works/W123%2Fspecial-chars.json",
+  "apps/web/public/data/openalex/works/queries/filter=page=1&select=id.json",
+  "apps/web/public/data/openalex/works/queries/filter=page=2&per_page=50&filter=is_oa%3Atrue&sample=100&seed=42&select=id,display_name,publication_year.json",
+  "apps/web/public/data/openalex/works/queries/filter=per_page=2.json",
+  "apps/web/public/data/openalex/works/queries/filter=per_page=200.json",
+  "apps/web/public/data/openalex/works/queries/filter=search=machine+learning+%26+AI&filter=title.search%3A%22deep+learning%22.json",
+  "apps/web/public/data/openalex/works/queries/filter=select=id,display_name.json"
+]

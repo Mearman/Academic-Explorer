@@ -36,7 +36,7 @@ export function generateSequentialId(prefix = "id"): () => string {
  */
 export interface FilterManager<T> {
   filters: Partial<Record<keyof T, unknown>>;
-  setFilter: <K extends keyof T>(key: K, value: T[K] | undefined) => void;
+  setFilter: <K extends keyof T>(key: K, value: unknown) => void;
   clearFilter: <K extends keyof T>(key: K) => void;
   clearAllFilters: () => void;
   hasActiveFilters: () => boolean;
@@ -53,7 +53,7 @@ export function createFilterManager<T extends Record<string, unknown>>(
       return { ...currentFilters };
     },
 
-    setFilter: (key: keyof T, value: T[keyof T] | undefined) => {
+    setFilter: (key: keyof T, value: unknown) => {
       if (value === undefined) {
         delete currentFilters[key];
       } else {
@@ -149,10 +149,7 @@ export function computePagedItems<T>(
 // STORE FACTORY
 // ============================================================================
 
-export interface TrackedStoreConfig<
-  T,
-  A = Record<string, (...args: never[]) => unknown>,
-> {
+export interface TrackedStoreConfig<T, A = Record<string, any>> {
   name: string;
   initialState: T;
   persist?: {
@@ -169,6 +166,7 @@ export interface TrackedStoreConfig<
 
 export interface TrackedStoreResult<T, A> {
   useStore: UseBoundStore<StoreApi<T & A>>; // Zustand hook
+  store: StoreApi<T & A>; // Zustand store API
   selectors: Record<string, (state: T) => unknown>;
   actions: A;
 }
@@ -178,11 +176,11 @@ export interface TrackedStoreResult<T, A> {
  */
 export function createTrackedStore<
   T extends object,
-  A extends Record<string, (...args: never[]) => unknown>,
+  A extends Record<string, any>,
 >(
   config: TrackedStoreConfig<T, A>,
   actionsFactory: (
-    set: (fn: (state: T & A) => void) => void,
+    set: (update: ((state: T & A) => void) | Partial<T & A>) => void,
     get: () => T & A,
   ) => A,
   selectorsFactory?: (state: T) => Record<string, (state: T) => unknown>,
@@ -252,6 +250,7 @@ export function createTrackedStore<
 
   // Create the store
   const useStore = create<T & A>(storeCreator);
+  const store = useStore; // The store API is the same as the hook in Zustand
 
   // Create selectors
   const selectors = selectorsFactory ? selectorsFactory(initialState as T) : {};
@@ -261,6 +260,7 @@ export function createTrackedStore<
 
   return {
     useStore,
+    store,
     selectors,
     actions,
   };
