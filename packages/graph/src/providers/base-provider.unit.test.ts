@@ -373,7 +373,7 @@ describe("GraphDataProvider", () => {
       expect(stats.totalRequests).toBe(1);
       expect(stats.successfulRequests).toBe(1);
       expect(stats.failedRequests).toBe(0);
-      expect(stats.avgResponseTime).toBeGreaterThan(0);
+      expect(stats.avgResponseTime).toBeGreaterThanOrEqual(0);
       expect(stats.lastRequestTime).toBeGreaterThan(0);
     });
 

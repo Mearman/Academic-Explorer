@@ -89,7 +89,13 @@ interface DeduplicationEntry {
   cacheKey: string;
   timestamp: number;
   count: number;
+  lastRequestId: string;
 }
+
+type MiddlewareFn = (
+  context: RequestContext,
+  next: () => Promise<ResponseContext>,
+) => Promise<ResponseContext>;
 
 /**
  * Pipeline configuration options
@@ -171,79 +177,34 @@ export class RequestPipeline {
       metadata: {},
     };
 
-    // Execute middleware chain sequentially
-    let result: ResponseContext | undefined;
+    const middlewares: MiddlewareFn[] = [];
 
-    // Start with execution middleware
-    result = await this.executionMiddleware(context);
-
-    // Apply middlewares in reverse order (innermost first)
+    if (this.options.enableLogging) {
+      middlewares.push(this.loggingMiddleware.bind(this));
+    }
+    if (this.options.enableCache) {
+      middlewares.push(this.cacheMiddleware.bind(this));
+    }
+    if (this.options.enableDedupe) {
+      middlewares.push(this.dedupeMiddleware.bind(this));
+    }
+    if (this.options.enableRetry) {
+      middlewares.push(this.retryMiddleware.bind(this));
+    }
     if (this.options.enableErrorClassification) {
-      result = await this.errorClassificationMiddleware(
-        context,
-        async () => result ?? (await this.executionMiddleware(context)),
-      );
+      middlewares.push(this.errorClassificationMiddleware.bind(this));
     }
 
-    if (this.options.enableRetry) {
-      result = await this.retryMiddleware(
-        context,
-        async () => result ?? (await this.executionMiddleware(context)),
-      );
-    }
+    const dispatch = (index: number): Promise<ResponseContext> => {
+      if (index === middlewares.length) {
+        return this.executionMiddleware(context);
+      }
 
-    if (this.options.enableCache) {
-      result = await this.cacheMiddleware(
-        context,
-        async () => result ?? (await this.executionMiddleware(context)),
-      );
-    }
+      const middleware = middlewares[index];
+      return middleware(context, () => dispatch(index + 1));
+    };
 
-    if (this.options.enableDedupe) {
-      result = await this.dedupeMiddleware(
-        context,
-        async () => result ?? (await this.executionMiddleware(context)),
-      );
-    }
-
-    if (this.options.enableLogging) {
-      result = await this.loggingMiddleware(
-        context,
-        async () => result ?? (await this.executionMiddleware(context)),
-      );
-    }
-
-    if (this.options.enableRetry) {
-      result = await this.retryMiddleware(
-        context,
-        async () => result ?? (await this.executionMiddleware(context)),
-      );
-    }
-
-    if (this.options.enableCache) {
-      result = await this.cacheMiddleware(
-        context,
-        async () => result ?? (await this.executionMiddleware(context)),
-      );
-    }
-
-    if (this.options.enableDedupe) {
-      result = await this.dedupeMiddleware(
-        context,
-        async () => result ?? (await this.executionMiddleware(context)),
-      );
-    }
-
-    if (this.options.enableLogging) {
-      result = await this.loggingMiddleware(
-        context,
-        async () => result ?? (await this.executionMiddleware(context)),
-      );
-    }
-
-    if (!result) {
-      throw new Error("Pipeline execution failed - no result returned");
-    }
+    const result = await dispatch(0);
 
     if (result.error) {
       throw result.error;
@@ -338,7 +299,11 @@ export class RequestPipeline {
     const now = Date.now();
     const entry = this.dedupeMap.get(cacheKey);
 
-    if (entry && now - entry.timestamp < this.options.dedupeWindow) {
+    if (
+      entry &&
+      entry.lastRequestId !== context.requestId &&
+      now - entry.timestamp < this.options.dedupeWindow
+    ) {
       entry.count++;
       logger.debug("pipeline", "Request deduplicated", {
         requestId: context.requestId,
@@ -371,6 +336,7 @@ export class RequestPipeline {
       cacheKey,
       timestamp: now,
       count: 1,
+      lastRequestId: context.requestId,
     });
 
     // Limit deduplication map size
@@ -378,7 +344,15 @@ export class RequestPipeline {
       this.cleanupExpiredDedupeEntries();
     }
 
-    return await next();
+    const result = await next();
+
+    const storedEntry = this.dedupeMap.get(cacheKey);
+    if (storedEntry) {
+      storedEntry.timestamp = Date.now();
+      storedEntry.lastRequestId = context.requestId;
+    }
+
+    return result;
   }
 
   /**
@@ -394,6 +368,10 @@ export class RequestPipeline {
     while (attempt <= this.options.maxRetries) {
       try {
         const result = await next();
+
+        if (result.error) {
+          throw result.error;
+        }
 
         // If we get here, the request succeeded
         if (attempt > 0) {
@@ -497,6 +475,7 @@ export class RequestPipeline {
 
       const response = await fetch(context.url, {
         ...context.options,
+        method: context.method,
         signal: controller.signal,
       });
 

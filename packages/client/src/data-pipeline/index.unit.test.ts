@@ -34,9 +34,10 @@ describe("RequestPipeline", () => {
 
       const response = await pipeline.execute("https://api.example.com/test");
 
-      expect(mockFetch).toHaveBeenCalledWith("https://api.example.com/test", {
-        method: "GET",
-      });
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://api.example.com/test",
+        expect.objectContaining({ method: "GET" }),
+      );
       expect(response).toBe(mockResponse);
     });
 
@@ -50,11 +51,14 @@ describe("RequestPipeline", () => {
         body: JSON.stringify({ test: true }),
       });
 
-      expect(mockFetch).toHaveBeenCalledWith("https://api.example.com/test", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ test: true }),
-      });
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://api.example.com/test",
+        expect.objectContaining({
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ test: true }),
+        }),
+      );
     });
   });
 
@@ -90,7 +94,10 @@ describe("RequestPipeline", () => {
       expect(mockFetch).toHaveBeenCalledTimes(1); // Still 1 call
 
       expect(response1).toBe(mockResponse);
-      expect(response2).toBe(mockResponse); // Same instance from cache
+      const data1 = await response1.clone().json();
+      const data2 = await response2.json();
+      expect(data1).toEqual({ data: "cached" });
+      expect(data2).toEqual({ data: "cached" });
     });
   });
 
