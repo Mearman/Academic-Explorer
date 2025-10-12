@@ -2,11 +2,11 @@
  * Navigation tracker component that logs route changes and page visits
  */
 
-import { useEffect, useRef } from "react";
-import { useLocation } from "@tanstack/react-router";
+import { historyDB } from "@/lib/history-db";
 import { useAppActivityStore } from "@/stores/app-activity-store";
 import { EntityDetectionService } from "@academic-explorer/graph";
-import { historyDB } from "@/lib/history-db";
+import { useLocation } from "@tanstack/react-router";
+import { useEffect, useRef } from "react";
 
 export function NavigationTracker() {
   const location = useLocation();
