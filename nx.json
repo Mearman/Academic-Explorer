@@ -7,10 +7,11 @@
   "useDaemonProcess": true,
   "daemon": {
     "options": {
-      "shutdownTimeoutMs": 5000,
-      "heartbeatIntervalMs": 30000,
-      "processExitTimeoutMs": 10000,
-      "cleanupOnProcessExit": true
+      "shutdownTimeoutMs": 10000,
+      "heartbeatIntervalMs": 60000,
+      "processExitTimeoutMs": 15000,
+      "cleanupOnProcessExit": true,
+      "maxMemoryUsage": "512MB"
     }
   },
   "workspaceLayout": {
