@@ -1,10 +1,28 @@
 {
-  "lastUpdated": "2025-10-12T09:23:19.357Z",
+  "lastUpdated": "2025-10-12T20:04:33.757Z",
   "files": {
     "filter__3D__author.id__3A__A5017898742__26__page__3D__1__26__per_page__3D__50": {
       "url": "https://api.openalex.org/works?filter=author.id:A5017898742&page=1&per_page=50",
       "$ref": "./filter__3D__author.id__3A__A5017898742__26__page__3D__1__26__per_page__3D__50.json",
       "lastRetrieved": "2025-10-11T09:04:46.256Z",
+      "contentHash": "3bf7a5aa2508427b"
+    },
+    "filter__3D__authorships.author.id__3A__A5017898742__26__per_page__3D__10": {
+      "url": "https://api.openalex.org/works?filter=authorships.author.id:A5017898742&per_page=10",
+      "$ref": "./filter__3D__authorships.author.id__3A__A5017898742__26__per_page__3D__10.json",
+      "lastRetrieved": "2025-10-12T20:04:33.601Z",
+      "contentHash": "3bf7a5aa2508427b"
+    },
+    "filter__3D__authorships.author.id__3A__A5017898742__26__per_page__3D__5": {
+      "url": "https://api.openalex.org/works?filter=authorships.author.id:A5017898742&per_page=5",
+      "$ref": "./filter__3D__authorships.author.id__3A__A5017898742__26__per_page__3D__5.json",
+      "lastRetrieved": "2025-10-12T19:34:29.497Z",
+      "contentHash": "bb3b04d00f10459e"
+    },
+    "filter__3D__authorships.author.id__3A__A5017898742__26__per_page__3D__50": {
+      "url": "https://api.openalex.org/works?filter=authorships.author.id:A5017898742&per_page=50",
+      "$ref": "./filter__3D__authorships.author.id__3A__A5017898742__26__per_page__3D__50.json",
+      "lastRetrieved": "2025-10-12T19:43:56.360Z",
       "contentHash": "3bf7a5aa2508427b"
     },
     "filter__3D__cites__3A__W3209445140__26__page__3D__1__26__per_page__3D__50": {
@@ -16,7 +34,7 @@
     "filter__3D__from_publication_date__3A__2020-01-01__2C__to_publication_date__3A__2023-12-31__26__page__3D__1__26__per_page__3D__50": {
       "url": "https://api.openalex.org/works?filter=from_publication_date:2020-01-01,to_publication_date:2023-12-31&page=1&per_page=50",
       "$ref": "./filter__3D__from_publication_date__3A__2020-01-01__2C__to_publication_date__3A__2023-12-31__26__page__3D__1__26__per_page__3D__50.json",
-      "lastRetrieved": "2025-10-11T21:02:06.935Z",
+      "lastRetrieved": "2025-10-11T21:02:06.945Z",
       "contentHash": "ac5b58ddaedb1aea"
     },
     "filter__3D__from_publication_date__3A__2023-01-01__26__page__3D__1__26__per_page__3D__50": {
