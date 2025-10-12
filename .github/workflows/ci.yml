@@ -37,6 +37,16 @@ jobs:
       - name: Setup Node.js and dependencies
         uses: ./.github/actions/setup-node-pnpm
 
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ env.NODE_VERSION }}-${{ env.PNPM_VERSION }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-${{ env.NODE_VERSION }}-${{ env.PNPM_VERSION }}-
+            ${{ runner.os }}-node-modules-${{ env.NODE_VERSION }}-
+            ${{ runner.os }}-node-modules-
+
       - name: Setup Nx SHAs
         uses: nrwl/nx-set-shas@v4
         with:
@@ -57,9 +67,11 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .nx/cache
-          key: ${{ runner.os }}-nx-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-nx-${{ env.NODE_VERSION }}-${{ env.PNPM_VERSION }}-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
           restore-keys: |
-            ${{ runner.os }}-nx-${{ hashFiles('nx.json', '**/project.json') }}-
+            ${{ runner.os }}-nx-${{ env.NODE_VERSION }}-${{ env.PNPM_VERSION }}-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml') }}-
+            ${{ runner.os }}-nx-${{ env.NODE_VERSION }}-${{ env.PNPM_VERSION }}-${{ hashFiles('nx.json', '**/project.json') }}-
+            ${{ runner.os }}-nx-${{ env.NODE_VERSION }}-${{ env.PNPM_VERSION }}-
             ${{ runner.os }}-nx-
 
       # Build affected projects using Nx orchestration
