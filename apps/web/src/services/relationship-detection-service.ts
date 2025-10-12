@@ -711,22 +711,36 @@ export class RelationshipDetectionService {
     existingNodes: GraphNode[],
   ): DetectedRelationship[] {
     const relationships: DetectedRelationship[] = [];
+    const institutionIds = new Set<string>();
 
-    // Check for institutional affiliations
+    if (authorData.affiliations) {
+      for (const affiliation of authorData.affiliations) {
+        const institutionId = affiliation?.institution?.id;
+        if (institutionId) {
+          institutionIds.add(institutionId);
+        }
+      }
+    }
+
     if (authorData.last_known_institutions) {
       for (const institution of authorData.last_known_institutions) {
-        const institutionNode = existingNodes.find(
-          (node) =>
-            node.entityId === institution.id || node.id === institution.id,
-        );
-        if (institutionNode) {
-          relationships.push({
-            sourceNodeId: authorData.id,
-            targetNodeId: institution.id,
-            relationType: RelationType.AFFILIATED,
-            label: "affiliated with",
-          });
+        if (institution?.id) {
+          institutionIds.add(institution.id);
         }
+      }
+    }
+
+    for (const institutionId of institutionIds) {
+      const institutionNode = existingNodes.find(
+        (node) => node.entityId === institutionId || node.id === institutionId,
+      );
+      if (institutionNode) {
+        relationships.push({
+          sourceNodeId: authorData.id,
+          targetNodeId: institutionId,
+          relationType: RelationType.AFFILIATED,
+          label: "affiliated with",
+        });
       }
     }
 
