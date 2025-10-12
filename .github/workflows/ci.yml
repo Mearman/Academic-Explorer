@@ -49,32 +49,36 @@ jobs:
             ${{ runner.os }}-nx-${{ hashFiles('nx.json', '**/project.json') }}-
             ${{ runner.os }}-nx-
 
-      # Build packages manually to avoid Nx hanging issues
+      # Build affected projects using Nx orchestration
       - name: Build affected projects
         run: |
-          echo "🔨 Building packages manually to avoid Nx hanging..."
+          echo "🔨 Building affected projects with Nx orchestration..."
 
-          # Build packages in dependency order
-          echo "📦 Building utils package..."
-          pnpm --filter @academic-explorer/utils build
+          # Use Nx affected to build only changed projects with proper caching
+          if ! pnpm nx affected -t build --parallel=3 --maxParallel=3; then
+            echo "❌ Nx build failed, falling back to manual builds..."
+            # Fallback to manual builds if Nx fails
+            echo "📦 Building utils package..."
+            pnpm --filter @academic-explorer/utils build
 
-          echo "📦 Building client package..."
-          pnpm --filter @academic-explorer/client build
+            echo "📦 Building client package..."
+            pnpm --filter @academic-explorer/client build
 
-          echo "📦 Building graph package..."
-          pnpm --filter @academic-explorer/graph build
+            echo "📦 Building graph package..."
+            pnpm --filter @academic-explorer/graph build
 
-          echo "📦 Building simulation package..."
-          pnpm --filter @academic-explorer/simulation build
+            echo "📦 Building simulation package..."
+            pnpm --filter @academic-explorer/simulation build
 
-          echo "📦 Building ui package..."
-          pnpm --filter @academic-explorer/ui build
+            echo "📦 Building ui package..."
+            pnpm --filter @academic-explorer/ui build
 
-          echo "🌐 Building web app with Vite directly..."
-          cd apps/web && pnpm vite build && cd ../..
+            echo "🌐 Building web app with Vite directly..."
+            cd apps/web && pnpm vite build && cd ../..
 
-          echo "🛠️ Building CLI..."
-          pnpm --filter @academic-explorer/cli build
+            echo "🛠️ Building CLI..."
+            pnpm --filter @academic-explorer/cli build
+          fi
 
           echo "✅ All builds completed successfully"
         env:
@@ -82,103 +86,114 @@ jobs:
 
       - name: Lint affected projects
         run: |
-          # Get affected projects safely
-          echo "🔍 Checking for affected projects..."
-          affected_output=$(pnpm nx show projects --affected --json 2>/dev/null | tail -n 1 || echo '[]')
-          affected_projects=$(echo "$affected_output" | jq -r '.[]' 2>/dev/null || echo "")
-          echo "📋 Affected projects: $affected_projects"
+          echo "🔧 Linting affected projects with Nx orchestration..."
 
-          # Initialize success tracking
-          lint_success=true
+          # Use Nx affected linting with proper caching
+          if ! pnpm nx affected -t lint --parallel=3 --maxParallel=3; then
+            echo "❌ Nx lint failed, falling back to manual linting..."
 
-          # Lint web app with zero warnings tolerance
-          if echo "$affected_projects" | grep -q "web" 2>/dev/null; then
-            echo "🔧 Linting web app (allow up to 15 warnings)..."
-            cd apps/web
-            if ! timeout 4m pnpm eslint . --max-warnings=15; then
-              echo "❌ Web app lint failed with warnings/errors"
-              lint_success=false
-            else
-              echo "✅ Web app lint passed with acceptable warnings"
-            fi
-            cd ../..
-          fi
+            # Get affected projects safely
+            affected_output=$(pnpm nx show projects --affected --json 2>/dev/null | tail -n 1 || echo '[]')
+            affected_projects=$(echo "$affected_output" | jq -r '.[]' 2>/dev/null || echo "")
+            echo "📋 Affected projects: $affected_projects"
 
-          # Lint packages with selective warnings tolerance
-          for project in client utils graph simulation ui; do
-            if echo "$affected_projects" | grep -q "$project" 2>/dev/null && [ -d "packages/$project" ]; then
-              # Client package gets higher tolerance temporarily due to legacy TypeScript any types
-              if [ "$project" = "client" ]; then
-                echo "🔧 Linting package: $project (allow up to 100 warnings)..."
-                cd "packages/$project"
-                if ! timeout 2m pnpm eslint . --max-warnings=100; then
-                  echo "❌ Package $project lint failed with warnings/errors"
-                  lint_success=false
-                else
-                  echo "✅ Package $project lint passed with acceptable warnings"
-                fi
+            # Initialize success tracking
+            lint_success=true
+
+            # Lint web app with zero warnings tolerance
+            if echo "$affected_projects" | grep -q "web" 2>/dev/null; then
+              echo "🔧 Linting web app (allow up to 15 warnings)..."
+              cd apps/web
+              if ! timeout 4m pnpm eslint . --max-warnings=15; then
+                echo "❌ Web app lint failed with warnings/errors"
+                lint_success=false
               else
-                echo "🔧 Linting package: $project (zero warnings tolerance)..."
-                cd "packages/$project"
-                if ! timeout 2m pnpm eslint . --max-warnings=0; then
-                  echo "❌ Package $project lint failed with warnings/errors"
-                  lint_success=false
-                else
-                  echo "✅ Package $project lint passed with zero warnings"
-                fi
+                echo "✅ Web app lint passed with acceptable warnings"
               fi
               cd ../..
             fi
-          done
 
-          # Always lint critical packages regardless of affected status
-          if ! echo "$affected_projects" | grep -E "(client|utils)" > /dev/null 2>&1; then
-            echo "🛡️ Linting critical packages (client, utils) regardless of affected status..."
-            for project in client utils; do
-              if [ -d "packages/$project" ]; then
+            # Lint packages with selective warnings tolerance
+            for project in client utils graph simulation ui; do
+              if echo "$affected_projects" | grep -q "$project" 2>/dev/null && [ -d "packages/$project" ]; then
                 # Client package gets higher tolerance temporarily due to legacy TypeScript any types
                 if [ "$project" = "client" ]; then
-                  echo "🔧 Linting critical package: $project (allow up to 100 warnings)..."
+                  echo "🔧 Linting package: $project (allow up to 100 warnings)..."
                   cd "packages/$project"
                   if ! timeout 2m pnpm eslint . --max-warnings=100; then
-                    echo "❌ Critical package $project lint failed"
+                    echo "❌ Package $project lint failed with warnings/errors"
                     lint_success=false
                   else
-                    echo "✅ Critical package $project lint passed with acceptable warnings"
+                    echo "✅ Package $project lint passed with acceptable warnings"
                   fi
                 else
-                  echo "🔧 Linting critical package: $project (zero warnings tolerance)..."
+                  echo "🔧 Linting package: $project (zero warnings tolerance)..."
                   cd "packages/$project"
                   if ! timeout 2m pnpm eslint . --max-warnings=0; then
-                    echo "❌ Critical package $project lint failed"
+                    echo "❌ Package $project lint failed with warnings/errors"
                     lint_success=false
                   else
-                    echo "✅ Critical package $project lint passed with zero warnings"
+                    echo "✅ Package $project lint passed with zero warnings"
                   fi
                 fi
                 cd ../..
               fi
             done
-          fi
 
-          # Check final result and exit appropriately
-          if [ "$lint_success" = true ]; then
-            echo "🎉 All linting passed with zero warnings!"
-          else
-            echo "💥 Linting failed - fix all warnings and errors before proceeding"
-            exit 1
+            # Always lint critical packages regardless of affected status
+            if ! echo "$affected_projects" | grep -E "(client|utils)" > /dev/null 2>&1; then
+              echo "🛡️ Linting critical packages (client, utils) regardless of affected status..."
+              for project in client utils; do
+                if [ -d "packages/$project" ]; then
+                  # Client package gets higher tolerance temporarily due to legacy TypeScript any types
+                  if [ "$project" = "client" ]; then
+                    echo "🔧 Linting critical package: $project (allow up to 100 warnings)..."
+                    cd "packages/$project"
+                    if ! timeout 2m pnpm eslint . --max-warnings=100; then
+                      echo "❌ Critical package $project lint failed"
+                      lint_success=false
+                    else
+                      echo "✅ Critical package $project lint passed with acceptable warnings"
+                    fi
+                  else
+                    echo "🔧 Linting critical package: $project (zero warnings tolerance)..."
+                    cd "packages/$project"
+                    if ! timeout 2m pnpm eslint . --max-warnings=0; then
+                      echo "❌ Critical package $project lint failed"
+                      lint_success=false
+                    else
+                      echo "✅ Critical package $project lint passed with zero warnings"
+                    fi
+                  fi
+                  cd ../..
+                fi
+              done
+            fi
+
+            # Check final result and exit appropriately
+            if [ "$lint_success" = true ]; then
+              echo "🎉 All linting passed with zero warnings!"
+            else
+              echo "💥 Linting failed - fix all warnings and errors before proceeding"
+              exit 1
+            fi
           fi
         env:
           NODE_OPTIONS: "--max-old-space-size=8192"
 
       - name: Type check affected projects
         run: |
-          echo "🔍 Running TypeScript type checking with direct command..."
+          echo "🔍 Running TypeScript type checking with Nx orchestration..."
 
-          # Use direct typecheck command to avoid nx hanging issues
-          if ! pnpm typecheck; then
-            echo "❌ TypeScript type checking failed"
-            exit 1
+          # Use Nx affected typecheck with proper caching
+          if ! pnpm nx affected -t typecheck --parallel=3 --maxParallel=3; then
+            echo "❌ Nx typecheck failed, falling back to direct typecheck..."
+
+            # Fallback to direct typecheck command
+            if ! pnpm typecheck; then
+              echo "❌ TypeScript type checking failed"
+              exit 1
+            fi
           fi
 
           echo "✅ TypeScript type checking passed with zero errors"
@@ -190,73 +205,77 @@ jobs:
           # Create cache directory to prevent ENOENT errors in disk cache writer
           echo "📁 Creating cache directories for tests..."
           mkdir -p apps/web/public/data/openalex
-          mkdir -p apps/web/public/data/openalex
 
-          # Run package tests with enhanced error reporting
-          echo "🧪 Running critical package tests with enhanced validation..."
+          echo "🧪 Running affected project tests with Nx orchestration..."
 
-          test_success=true
-          total_tests=0
-          passed_tests=0
+          # Use Nx affected testing with proper caching
+          if ! pnpm nx affected -t test --parallel=2 --maxParallel=2; then
+            echo "❌ Nx test failed, falling back to manual testing..."
 
-          # Test client package
-          if [ -d "packages/client" ]; then
-            echo "🔬 Testing client package..."
-            if timeout 5m pnpm --filter=client test; then
-              echo "✅ Client package tests passed"
-              passed_tests=$((passed_tests + 1))
-            else
-              echo "❌ Client package tests failed"
-              test_success=false
-            fi
-            total_tests=$((total_tests + 1))
-          fi
+            # Fallback to manual testing
+            test_success=true
+            total_tests=0
+            passed_tests=0
 
-          # Test utils package
-          if [ -d "packages/utils" ]; then
-            echo "🔬 Testing utils package..."
-            if timeout 2m pnpm --filter=utils test; then
-              echo "✅ Utils package tests passed"
-              passed_tests=$((passed_tests + 1))
-            else
-              echo "❌ Utils package tests failed"
-              test_success=false
-            fi
-            total_tests=$((total_tests + 1))
-          fi
-
-          # Test other affected packages if they exist
-          affected_output=$(pnpm nx show projects --affected --json 2>/dev/null | tail -n 1 || echo '[]')
-          affected_projects=$(echo "$affected_output" | jq -r '.[]' 2>/dev/null || echo "")
-
-          for project in graph simulation ui; do
-            if echo "$affected_projects" | grep -q "$project" 2>/dev/null && [ -d "packages/$project" ] && [ -f "packages/$project/package.json" ]; then
-              if grep -q '"test"' "packages/$project/package.json" 2>/dev/null; then
-                echo "🔬 Testing affected package: $project..."
-                if timeout 3m pnpm --filter="$project" test; then
-                  echo "✅ Package $project tests passed"
-                  passed_tests=$((passed_tests + 1))
-                else
-                  echo "❌ Package $project tests failed"
-                  test_success=false
-                fi
-                total_tests=$((total_tests + 1))
+            # Test client package
+            if [ -d "packages/client" ]; then
+              echo "🔬 Testing client package..."
+              if timeout 5m pnpm --filter=client test; then
+                echo "✅ Client package tests passed"
+                passed_tests=$((passed_tests + 1))
+              else
+                echo "❌ Client package tests failed"
+                test_success=false
               fi
+              total_tests=$((total_tests + 1))
             fi
-          done
 
-          # Report results
-          echo ""
-          echo "📊 Test Summary:"
-          echo "   Total packages tested: $total_tests"
-          echo "   Packages passed: $passed_tests"
-          echo "   Packages failed: $((total_tests - passed_tests))"
+            # Test utils package
+            if [ -d "packages/utils" ]; then
+              echo "🔬 Testing utils package..."
+              if timeout 2m pnpm --filter=utils test; then
+                echo "✅ Utils package tests passed"
+                passed_tests=$((passed_tests + 1))
+              else
+                echo "❌ Utils package tests failed"
+                test_success=false
+              fi
+              total_tests=$((total_tests + 1))
+            fi
 
-          if [ "$test_success" = true ]; then
-            echo "🎉 All tests passed successfully!"
-          else
-            echo "💥 Some tests failed - fix failing tests before proceeding"
-            exit 1
+            # Test other affected packages if they exist
+            affected_output=$(pnpm nx show projects --affected --json 2>/dev/null | tail -n 1 || echo '[]')
+            affected_projects=$(echo "$affected_output" | jq -r '.[]' 2>/dev/null || echo "")
+
+            for project in graph simulation ui; do
+              if echo "$affected_projects" | grep -q "$project" 2>/dev/null && [ -d "packages/$project" ] && [ -f "packages/$project/package.json" ]; then
+                if grep -q '"test"' "packages/$project/package.json" 2>/dev/null; then
+                  echo "🔬 Testing affected package: $project..."
+                  if timeout 3m pnpm --filter="$project" test; then
+                    echo "✅ Package $project tests passed"
+                    passed_tests=$((passed_tests + 1))
+                  else
+                    echo "❌ Package $project tests failed"
+                    test_success=false
+                  fi
+                  total_tests=$((total_tests + 1))
+                fi
+              fi
+            done
+
+            # Report results
+            echo ""
+            echo "📊 Test Summary:"
+            echo "   Total packages tested: $total_tests"
+            echo "   Packages passed: $passed_tests"
+            echo "   Packages failed: $((total_tests - passed_tests))"
+
+            if [ "$test_success" = true ]; then
+              echo "🎉 All tests passed successfully!"
+            else
+              echo "💥 Some tests failed - fix failing tests before proceeding"
+              exit 1
+            fi
           fi
         env:
           NODE_OPTIONS: "--max-old-space-size=8192"
@@ -441,17 +460,22 @@ jobs:
 
       - name: Build production app
         run: |
-          echo "🔨 Building production app manually to avoid Nx hanging..."
+          echo "🔨 Building production app with Nx orchestration..."
 
-          # Build dependencies first
-          pnpm --filter @academic-explorer/utils build
-          pnpm --filter @academic-explorer/client build
-          pnpm --filter @academic-explorer/graph build
-          pnpm --filter @academic-explorer/simulation build
-          pnpm --filter @academic-explorer/ui build
+          # Use Nx to build all projects with proper dependency management
+          if ! pnpm nx run-many -t build --parallel=3 --maxParallel=3; then
+            echo "❌ Nx build failed, falling back to manual builds..."
 
-          # Build web app with Vite directly
-          cd apps/web && pnpm vite build && cd ../..
+            # Fallback to manual builds
+            pnpm --filter @academic-explorer/utils build
+            pnpm --filter @academic-explorer/client build
+            pnpm --filter @academic-explorer/graph build
+            pnpm --filter @academic-explorer/simulation build
+            pnpm --filter @academic-explorer/ui build
+
+            # Build web app with Vite directly
+            cd apps/web && pnpm vite build && cd ../..
+          fi
 
           echo "✅ Production build completed"
         env:
