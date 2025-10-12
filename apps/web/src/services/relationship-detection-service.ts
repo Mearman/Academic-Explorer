@@ -39,6 +39,7 @@ interface MinimalEntityData {
   primary_location?: { source?: { id: string; display_name: string } };
   referenced_works?: string[];
   affiliations?: Array<{ institution: { id: string; display_name: string } }>;
+  last_known_institutions?: Array<{ id: string; display_name: string }>;
   lineage?: string[];
   publisher?: string;
 }
@@ -272,9 +273,33 @@ export class RelationshipDetectionService {
         "RelationshipDetectionService",
       );
 
+      const resolvedId =
+        typeof entity.id === "string" && entity.id.length > 0
+          ? entity.id
+          : entityId;
+
+      if (resolvedId !== entity.id) {
+        logger.warn(
+          "relationship-detection",
+          "Fetched entity is missing a valid id, using fallback",
+          {
+            requestedEntityId: entityId,
+            resolvedId,
+            entityType,
+            receivedKeys: Object.keys(entity),
+          },
+          "RelationshipDetectionService",
+        );
+      }
+
+      const entityWithId =
+        typeof entity.id === "string" && entity.id.length > 0
+          ? entity
+          : { ...entity, id: resolvedId };
+
       // Transform to minimal data format
       const minimalData: MinimalEntityData = {
-        id: entity.id,
+        id: resolvedId,
         entityType,
         display_name: entity.display_name,
       };
@@ -298,37 +323,56 @@ export class RelationshipDetectionService {
       // Add type-specific fields
       switch (entityType) {
         case "works": {
-          if (isWork(entity)) {
+          if (isWork(entityWithId)) {
             Object.assign(minimalData, {
-              authorships: entity.authorships,
-              ...(entity.primary_location && {
-                primary_location: entity.primary_location,
+              authorships: entityWithId.authorships,
+              ...(entityWithId.primary_location && {
+                primary_location: entityWithId.primary_location,
               }),
-              referenced_works: entity.referenced_works,
+              referenced_works: entityWithId.referenced_works,
             });
           }
           break;
         }
         case "authors": {
-          if (isAuthor(entity)) {
-            Object.assign(minimalData, {
-              affiliations: entity.affiliations,
-            });
+          if (!isAuthor(entityWithId)) {
+            logger.error(
+              "relationship-detection",
+              "Entity failed author validation in minimal data fetching",
+              {
+                entityId: resolvedId,
+                entityKeys: Object.keys(entityWithId),
+                startsWithA:
+                  resolvedId.startsWith("A") ||
+                  resolvedId.startsWith("https://openalex.org/A") ||
+                  resolvedId.startsWith("a") ||
+                  resolvedId.startsWith("https://openalex.org/a"),
+              },
+              "RelationshipDetectionService",
+            );
+            break;
           }
+
+          Object.assign(minimalData, {
+            affiliations: entityWithId.affiliations,
+            last_known_institutions: entityWithId.last_known_institutions,
+          });
           break;
         }
         case "sources": {
-          if (isSource(entity)) {
+          if (isSource(entityWithId)) {
             Object.assign(minimalData, {
-              ...(entity.publisher && { publisher: entity.publisher }),
+              ...(entityWithId.publisher && {
+                publisher: entityWithId.publisher,
+              }),
             });
           }
           break;
         }
         case "institutions": {
-          if (isInstitution(entity)) {
+          if (isInstitution(entityWithId)) {
             Object.assign(minimalData, {
-              ...(entity.lineage && { lineage: entity.lineage }),
+              ...(entityWithId.lineage && { lineage: entityWithId.lineage }),
             });
           }
           break;
@@ -643,17 +687,16 @@ export class RelationshipDetectionService {
     const relationships: DetectedRelationship[] = [];
 
     // Check for institutional affiliations
-    if (authorData.affiliations) {
-      for (const affiliation of authorData.affiliations) {
+    if (authorData.last_known_institutions) {
+      for (const institution of authorData.last_known_institutions) {
         const institutionNode = existingNodes.find(
           (node) =>
-            node.entityId === affiliation.institution.id ||
-            node.id === affiliation.institution.id,
+            node.entityId === institution.id || node.id === institution.id,
         );
         if (institutionNode) {
           relationships.push({
             sourceNodeId: authorData.id,
-            targetNodeId: affiliation.institution.id,
+            targetNodeId: institution.id,
             relationType: RelationType.AFFILIATED,
             label: "affiliated with",
           });
