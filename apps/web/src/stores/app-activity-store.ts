@@ -3,8 +3,7 @@
  * Monitors user interactions, component lifecycle, performance metrics, and system state
  */
 
-import { create } from "zustand";
-import { immer } from "zustand/middleware/immer";
+import { createTrackedStore } from "@academic-explorer/utils/state";
 import { logger } from "@academic-explorer/utils/logger";
 import Dexie, { type Table } from "dexie";
 
@@ -105,7 +104,9 @@ interface AppActivityState {
     searchTerm: string;
     timeRange: number; // minutes
   };
+}
 
+interface AppActivityActions {
   // Actions
   addEvent: (event: Omit<AppActivityEvent, "id" | "timestamp">) => string;
   updateEvent: (id: string, updates: Partial<AppActivityEvent>) => void;
@@ -300,37 +301,44 @@ const computeFilteredEvents = (
     .sort((a, b) => b.timestamp - a.timestamp);
 };
 
-export const useAppActivityStore = create<AppActivityState>()(
-  immer((set, get) => ({
-    // State
-    events: {},
-    maxHistorySize: 1000,
+const { useStore: useAppActivityStore } = createTrackedStore<
+  AppActivityState,
+  AppActivityActions
+>(
+  {
+    name: "app-activity",
+    initialState: {
+      // State
+      events: {},
+      maxHistorySize: 1000,
 
-    // Cached computed state (stable references)
-    recentEvents: [],
-    activityStats: {
-      totalEvents: 0,
-      eventsLast5Min: 0,
-      eventsPerMinute: 0,
-      errorCount: 0,
-      warningCount: 0,
-      userInteractions: 0,
-      componentLifecycleEvents: 0,
-      navigationEvents: 0,
-      apiCallEvents: 0,
-      averageEventFrequency: 0,
+      // Cached computed state (stable references)
+      recentEvents: [],
+      activityStats: {
+        totalEvents: 0,
+        eventsLast5Min: 0,
+        eventsPerMinute: 0,
+        errorCount: 0,
+        warningCount: 0,
+        userInteractions: 0,
+        componentLifecycleEvents: 0,
+        navigationEvents: 0,
+        apiCallEvents: 0,
+        averageEventFrequency: 0,
+      },
+      filteredEvents: [],
+
+      // Filters
+      filters: {
+        type: [],
+        category: [],
+        severity: [],
+        searchTerm: "",
+        timeRange: 30, // 30 minutes default
+      },
     },
-    filteredEvents: [],
-
-    // Filters
-    filters: {
-      type: [],
-      category: [],
-      severity: [],
-      searchTerm: "",
-      timeRange: 30, // 30 minutes default
-    },
-
+  },
+  (set, get) => ({
     // Actions
     addEvent: (event) => {
       const id = generateEventId();
@@ -350,12 +358,11 @@ export const useAppActivityStore = create<AppActivityState>()(
           logger.error(
             "ui",
             "Failed to save event to Dexie",
-            { error },
+            { error, eventId: id },
             "AppActivityStore",
           );
         });
 
-      // Update in-memory state
       set((state) => {
         state.events[id] = fullEvent;
       });
@@ -367,9 +374,9 @@ export const useAppActivityStore = create<AppActivityState>()(
         "App activity event added",
         {
           id,
-          entityType: event.type,
+          type: event.type,
+          category: event.category,
           event: event.event,
-          severity: event.severity,
         },
         "AppActivityStore",
       );
@@ -379,11 +386,11 @@ export const useAppActivityStore = create<AppActivityState>()(
 
     updateEvent: (id, updates) => {
       set((state) => {
-        const existingEvent = state.events[id];
-        Object.assign(existingEvent, updates);
+        const event = state.events[id];
+        if (event) {
+          Object.assign(event, updates);
+        }
       });
-
-      get().recomputeAll();
     },
 
     removeEvent: (id) => {
@@ -397,13 +404,32 @@ export const useAppActivityStore = create<AppActivityState>()(
 
     clearOldEvents: () => {
       const { maxHistorySize } = get();
-      const events = Object.values(get().events);
+      const events = Object.values(get().events) as AppActivityEvent[];
 
       if (events.length <= maxHistorySize) return;
 
       // Keep most recent events
       const sorted = events.sort((a, b) => b.timestamp - a.timestamp);
       const toKeep = sorted.slice(0, maxHistorySize);
+      const toRemove = sorted.slice(maxHistorySize);
+
+      // Remove from Dexie
+      const idsToRemove = toRemove
+        .map((event) => parseInt(event.id.split("_")[2] || "0"))
+        .filter((id) => !isNaN(id));
+
+      if (idsToRemove.length > 0) {
+        getDB()
+          .appActivityEvents.bulkDelete(idsToRemove)
+          .catch((error) => {
+            logger.error(
+              "ui",
+              "Failed to delete old events from Dexie",
+              { error, count: idsToRemove.length },
+              "AppActivityStore",
+            );
+          });
+      }
 
       set((state) => {
         state.events = {};
@@ -418,7 +444,7 @@ export const useAppActivityStore = create<AppActivityState>()(
         "ui",
         "Cleared old app activity events",
         {
-          removed: events.length - toKeep.length,
+          removed: toRemove.length,
           kept: toKeep.length,
         },
         "AppActivityStore",
@@ -426,6 +452,18 @@ export const useAppActivityStore = create<AppActivityState>()(
     },
 
     clearAllEvents: () => {
+      // Clear Dexie
+      getDB()
+        .appActivityEvents.clear()
+        .catch((error) => {
+          logger.error(
+            "ui",
+            "Failed to clear events from Dexie",
+            { error },
+            "AppActivityStore",
+          );
+        });
+
       set((state) => {
         state.events = {};
       });
@@ -447,9 +485,9 @@ export const useAppActivityStore = create<AppActivityState>()(
         category: "interaction",
         event: action,
         description: `User ${action}${component ? ` in ${component}` : ""}`,
-        severity: "debug",
+        severity: "info",
         metadata: {
-          ...(component && { component }),
+          component,
           ...metadata,
         },
       });
@@ -458,9 +496,9 @@ export const useAppActivityStore = create<AppActivityState>()(
     logNavigation: (from, to, metadata) => {
       get().addEvent({
         type: "navigation",
-        category: "ui",
-        event: "route_change",
-        description: `Navigated from ${from} to ${to}`,
+        category: "interaction",
+        event: "navigate",
+        description: `Navigation from ${from} to ${to}`,
         severity: "info",
         metadata: {
           route: to,
@@ -501,14 +539,13 @@ export const useAppActivityStore = create<AppActivityState>()(
     logPerformanceMetric: (metric, value, metadata) => {
       get().addEvent({
         type: "performance",
-        category: "background",
+        category: "data",
         event: metric,
-        description: `Performance metric: ${metric} = ${value.toString()}`,
-        severity: value > 1000 ? "warning" : "info", // Warn if metric is high
-        duration: value,
+        description: `Performance metric: ${metric} = ${value}`,
+        severity: "info",
         metadata: {
           performance: {
-            timing: value,
+            [metric]: value,
           },
           ...metadata,
         },
@@ -518,12 +555,12 @@ export const useAppActivityStore = create<AppActivityState>()(
     logError: (error, component, metadata) => {
       get().addEvent({
         type: "error",
-        category: "ui",
+        category: "data",
         event: "error",
         description: error,
         severity: "error",
         metadata: {
-          ...(component && { component }),
+          component,
           ...metadata,
         },
       });
@@ -532,12 +569,12 @@ export const useAppActivityStore = create<AppActivityState>()(
     logWarning: (warning, component, metadata) => {
       get().addEvent({
         type: "system",
-        category: "ui",
+        category: "data",
         event: "warning",
         description: warning,
         severity: "warning",
         metadata: {
-          ...(component && { component }),
+          component,
           ...metadata,
         },
       });
@@ -547,8 +584,8 @@ export const useAppActivityStore = create<AppActivityState>()(
       get().addEvent({
         type: "api",
         category: "data",
-        event: "api_call",
-        description: `API call to ${entityType}${entityId ? `/${entityId}` : ""}`,
+        event: "call",
+        description: `API call for ${entityType}${entityId ? ` (${entityId})` : ""}`,
         severity: "info",
         metadata: {
           entityType,
@@ -673,5 +710,7 @@ export const useAppActivityStore = create<AppActivityState>()(
         state.clearOldEvents();
       }
     },
-  })),
+  }),
 );
+
+export { useAppActivityStore };

@@ -1,10 +1,13 @@
 /**
  * Store for tracking network activity and API requests
  * Monitors all HTTP requests with real-time status updates
+ * Uses shared createTrackedStore abstraction for DRY compliance
  */
 
-import { create } from "zustand";
-import { immer } from "zustand/middleware/immer";
+import {
+  generateSequentialId,
+  createTrackedStore,
+} from "@academic-explorer/utils/state";
 import { logger } from "@academic-explorer/utils/logger";
 
 export interface NetworkRequest {
@@ -48,12 +51,6 @@ interface NetworkActivityState {
   requests: Record<string, NetworkRequest>;
   maxHistorySize: number;
 
-  // Cached computed state for stable references
-  activeRequests: NetworkRequest[];
-  recentRequests: NetworkRequest[];
-  networkStats: NetworkStats;
-  filteredRequests: NetworkRequest[];
-
   // Filters
   filters: {
     status: string[];
@@ -62,7 +59,9 @@ interface NetworkActivityState {
     searchTerm: string;
     timeRange: number; // hours
   };
+}
 
+interface NetworkActivityActions {
   // Actions
   addRequest: (request: Omit<NetworkRequest, "id" | "startTime">) => string;
   updateRequest: (id: string, updates: Partial<NetworkRequest>) => void;
@@ -79,322 +78,300 @@ interface NetworkActivityState {
   setSearchTerm: (term: string) => void;
   setTimeRange: (hours: number) => void;
   clearFilters: () => void;
-
-  // Recomputation functions (called after mutations)
-  recomputeActiveRequests: () => void;
-  recomputeRecentRequests: () => void;
-  recomputeNetworkStats: () => void;
-  recomputeFilteredRequests: () => void;
-  recomputeAll: () => void;
 }
 
-const generateRequestId = () => `req_${Date.now().toString()}_${Math.random().toString(36).substring(2, 11)}`;
+// ID generator for requests
+const generateRequestId = generateSequentialId("req");
 
-const computeActiveRequests = (requests: Record<string, NetworkRequest>): NetworkRequest[] => {
-	return Object.values(requests).filter(req => req.status === "pending");
-};
+const { useStore: useNetworkActivityStore } = createTrackedStore<
+  NetworkActivityState,
+  NetworkActivityActions
+>(
+  {
+    name: "network-activity",
+    initialState: {
+      // State
+      requests: {},
+      maxHistorySize: 500,
 
-const computeRecentRequests = (requests: Record<string, NetworkRequest>): NetworkRequest[] => {
-	return Object.values(requests)
-		.sort((a, b) => b.startTime - a.startTime)
-		.slice(0, 50); // Show last 50 requests
-};
+      // Filters
+      filters: {
+        status: [],
+        entityType: [],
+        category: [],
+        searchTerm: "",
+        timeRange: 24, // 24 hours default
+      },
+    },
+  },
+  (set, get) => ({
+    // Actions
+    addRequest: (request) => {
+      const id = generateRequestId();
 
-const computeNetworkStats = (requests: Record<string, NetworkRequest>): NetworkStats => {
-	const requestList = Object.values(requests);
-	const now = Date.now();
-	const oneSecondAgo = now - 1000;
+      set((state) => {
+        state.requests[id] = {
+          ...request,
+          id,
+          startTime: Date.now(),
+        };
+      });
 
-	const recentRequests = requestList.filter(req => req.startTime > oneSecondAgo);
-	const completedRequests = requestList.filter(req => req.endTime !== undefined);
-	const totalDuration = completedRequests.reduce((sum, req) => sum + (req.duration ?? 0), 0);
+      logger.debug(
+        "api",
+        "Network request added",
+        {
+          id,
+          url: request.url,
+          entityType: request.entityType,
+          category: request.category,
+        },
+        "NetworkActivityStore",
+      );
 
-	return {
-		totalRequests: requestList.length,
-		activeRequests: requestList.filter(req => req.status === "pending").length,
-		successCount: requestList.filter(req => req.status === "success").length,
-		errorCount: requestList.filter(req => req.status === "error").length,
-		cacheHits: requestList.filter(req => req.status === "cached").length,
-		deduplicatedCount: requestList.filter(req => req.status === "deduplicated").length,
-		averageResponseTime: completedRequests.length > 0 ? totalDuration / completedRequests.length : 0,
-		requestsPerSecond: recentRequests.length,
-		totalDataTransferred: requestList.reduce((sum, req) => sum + (req.size ?? 0), 0),
-	};
-};
+      return id;
+    },
 
-const computeFilteredRequests = (
-	requests: Record<string, NetworkRequest>,
-	filters: NetworkActivityState["filters"]
-): NetworkRequest[] => {
-	const requestList = Object.values(requests);
-	const cutoffTime = Date.now() - (filters.timeRange * 60 * 60 * 1000);
+    updateRequest: (id, updates) => {
+      set((state) => {
+        const request = state.requests[id] as NetworkRequest | undefined;
+        if (request) {
+          Object.assign(request, updates);
+        }
+      });
+    },
 
-	return requestList.filter(req => {
-		// Time range filter
-		if (req.startTime < cutoffTime) return false;
+    completeRequest: (id, statusCode, size) => {
+      const endTime = Date.now();
 
-		// Status filter
-		if (filters.status.length > 0 && !filters.status.includes(req.status)) return false;
+      set((state) => {
+        const request = state.requests[id] as NetworkRequest | undefined;
+        if (request) {
+          request.status = "success";
+          request.endTime = endTime;
+          request.duration = endTime - request.startTime;
+          if (statusCode !== undefined) request.statusCode = statusCode;
+          if (size !== undefined) request.size = size;
+        }
+      });
+    },
 
-		// Type filter
-		if (filters.entityType.length > 0 && !filters.entityType.includes(req.entityType)) return false;
+    failRequest: (id, error, statusCode) => {
+      const endTime = Date.now();
 
-		// Category filter
-		if (filters.category.length > 0 && !filters.category.includes(req.category)) return false;
+      set((state) => {
+        const request = state.requests[id] as NetworkRequest | undefined;
+        if (request) {
+          request.status = "error";
+          request.endTime = endTime;
+          request.duration = endTime - request.startTime;
+          request.error = error;
+          if (statusCode !== undefined) request.statusCode = statusCode;
+        }
+      });
 
-		// Search term filter
-		if (filters.searchTerm) {
-			const term = filters.searchTerm.toLowerCase();
-			const searchableText = [
-				req.url,
-				req.method,
-				req.metadata?.entityType,
-				req.metadata?.entityId,
-				req.error
-			].filter(Boolean).join(" ").toLowerCase();
+      logger.warn(
+        "api",
+        "Network request failed",
+        {
+          id,
+          error,
+          statusCode,
+        },
+        "NetworkActivityStore",
+      );
+    },
 
-			if (!searchableText.includes(term)) return false;
-		}
+    removeRequest: (id) => {
+      set((state) => {
+        const { [id]: _removed, ...rest } = state.requests;
+        state.requests = rest;
+      });
+    },
 
-		return true;
-	}).sort((a, b) => b.startTime - a.startTime);
-};
+    clearOldRequests: () => {
+      const { maxHistorySize } = get();
+      const requests = Object.values(get().requests);
 
-export const useNetworkActivityStore = create<NetworkActivityState>()(
-	immer((set, get) => ({
-		// State
-		requests: {},
-		maxHistorySize: 500,
+      if (requests.length <= maxHistorySize) return;
 
-		// Cached computed state (stable references)
-		activeRequests: [],
-		recentRequests: [],
-		networkStats: {
-			totalRequests: 0,
-			activeRequests: 0,
-			successCount: 0,
-			errorCount: 0,
-			cacheHits: 0,
-			deduplicatedCount: 0,
-			averageResponseTime: 0,
-			requestsPerSecond: 0,
-			totalDataTransferred: 0,
-		},
-		filteredRequests: [],
+      // Keep most recent requests
+      const sorted = requests.sort((a, b) => b.startTime - a.startTime);
+      const toKeep = sorted.slice(0, maxHistorySize);
 
-		// Filters
-		filters: {
-			status: [],
-			entityType: [],
-			category: [],
-			searchTerm: "",
-			timeRange: 24, // 24 hours default
-		},
+      set((state) => {
+        state.requests = {};
+        toKeep.forEach((req) => {
+          state.requests[req.id] = req;
+        });
+      });
 
-		// Actions
-		addRequest: (request) => {
-			const id = generateRequestId();
+      logger.debug(
+        "api",
+        "Cleared old network requests",
+        {
+          removed: requests.length - toKeep.length,
+          kept: toKeep.length,
+        },
+        "NetworkActivityStore",
+      );
+    },
 
-			set(state => {
-				state.requests[id] = {
-					...request,
-					id,
-					startTime: Date.now(),
-				};
-			});
+    clearAllRequests: () => {
+      set((state) => {
+        state.requests = {};
+      });
 
-			get().recomputeAll();
+      logger.debug(
+        "api",
+        "Cleared all network requests",
+        {},
+        "NetworkActivityStore",
+      );
+    },
 
-			logger.debug("api", "Network request added", {
-				id,
-				url: request.url,
-				entityType: request.entityType,
-				category: request.category
-			}, "NetworkActivityStore");
+    // Filter actions
+    setStatusFilter: (statuses) => {
+      set((state) => {
+        state.filters.status = statuses;
+      });
+    },
 
-			return id;
-		},
+    setTypeFilter: (types) => {
+      set((state) => {
+        state.filters.entityType = types;
+      });
+    },
 
-		updateRequest: (id, updates) => {
-			set(state => {
-				const request = state.requests[id] as NetworkRequest | undefined;
-				if (request) {
-					Object.assign(request, updates);
-				}
-			});
+    setCategoryFilter: (categories) => {
+      set((state) => {
+        state.filters.category = categories;
+      });
+    },
 
-			get().recomputeAll();
-		},
+    setSearchTerm: (term) => {
+      set((state) => {
+        state.filters.searchTerm = term;
+      });
+    },
 
-		completeRequest: (id, statusCode, size) => {
-			const endTime = Date.now();
+    setTimeRange: (hours) => {
+      set((state) => {
+        state.filters.timeRange = hours;
+      });
+    },
 
-			set(state => {
-				const request = state.requests[id] as NetworkRequest | undefined;
-				if (request) {
-					request.status = "success";
-					request.endTime = endTime;
-					request.duration = endTime - request.startTime;
-					if (statusCode !== undefined) request.statusCode = statusCode;
-					if (size !== undefined) request.size = size;
-				}
-			});
-
-			get().recomputeAll();
-		},
-
-		failRequest: (id, error, statusCode) => {
-			const endTime = Date.now();
-
-			set(state => {
-				const request = state.requests[id] as NetworkRequest | undefined;
-				if (request) {
-					request.status = "error";
-					request.endTime = endTime;
-					request.duration = endTime - request.startTime;
-					request.error = error;
-					if (statusCode !== undefined) request.statusCode = statusCode;
-				}
-			});
-
-			get().recomputeAll();
-
-			logger.warn("api", "Network request failed", {
-				id,
-				error,
-				statusCode
-			}, "NetworkActivityStore");
-		},
-
-		removeRequest: (id) => {
-			set(state => {
-				const { [id]: _removed, ...rest } = state.requests;
-				state.requests = rest;
-			});
-
-			get().recomputeAll();
-		},
-
-		clearOldRequests: () => {
-			const { maxHistorySize } = get();
-			const requests = Object.values(get().requests);
-
-			if (requests.length <= maxHistorySize) return;
-
-			// Keep most recent requests
-			const sorted = requests.sort((a, b) => b.startTime - a.startTime);
-			const toKeep = sorted.slice(0, maxHistorySize);
-
-			set(state => {
-				state.requests = {};
-				toKeep.forEach(req => {
-					state.requests[req.id] = req;
-				});
-			});
-
-			get().recomputeAll();
-
-			logger.debug("api", "Cleared old network requests", {
-				removed: requests.length - toKeep.length,
-				kept: toKeep.length
-			}, "NetworkActivityStore");
-		},
-
-		clearAllRequests: () => {
-			set(state => {
-				state.requests = {};
-			});
-
-			get().recomputeAll();
-
-			logger.debug("api", "Cleared all network requests", {}, "NetworkActivityStore");
-		},
-
-		// Filter actions
-		setStatusFilter: (statuses) => {
-			set(state => {
-				state.filters.status = statuses;
-			});
-			get().recomputeFilteredRequests();
-		},
-
-		setTypeFilter: (types) => {
-			set(state => {
-				state.filters.entityType = types;
-			});
-			get().recomputeFilteredRequests();
-		},
-
-		setCategoryFilter: (categories) => {
-			set(state => {
-				state.filters.category = categories;
-			});
-			get().recomputeFilteredRequests();
-		},
-
-		setSearchTerm: (term) => {
-			set(state => {
-				state.filters.searchTerm = term;
-			});
-			get().recomputeFilteredRequests();
-		},
-
-		setTimeRange: (hours) => {
-			set(state => {
-				state.filters.timeRange = hours;
-			});
-			get().recomputeFilteredRequests();
-		},
-
-		clearFilters: () => {
-			set(state => {
-				state.filters = {
-					status: [],
-					entityType: [],
-					category: [],
-					searchTerm: "",
-					timeRange: 24,
-				};
-			});
-			get().recomputeFilteredRequests();
-		},
-
-		// Recomputation functions (called after mutations)
-		recomputeActiveRequests: () => {
-			set(state => {
-				state.activeRequests = computeActiveRequests(state.requests);
-			});
-		},
-
-		recomputeRecentRequests: () => {
-			set(state => {
-				state.recentRequests = computeRecentRequests(state.requests);
-			});
-		},
-
-		recomputeNetworkStats: () => {
-			set(state => {
-				state.networkStats = computeNetworkStats(state.requests);
-			});
-		},
-
-		recomputeFilteredRequests: () => {
-			set(state => {
-				state.filteredRequests = computeFilteredRequests(state.requests, state.filters);
-			});
-		},
-
-		recomputeAll: () => {
-			const state = get();
-			state.recomputeActiveRequests();
-			state.recomputeRecentRequests();
-			state.recomputeNetworkStats();
-			state.recomputeFilteredRequests();
-
-			// Auto-cleanup old requests
-			if (Object.keys(state.requests).length > state.maxHistorySize) {
-				state.clearOldRequests();
-			}
-		},
-	}))
+    clearFilters: () => {
+      set((state) => {
+        state.filters = {
+          status: [],
+          entityType: [],
+          category: [],
+          searchTerm: "",
+          timeRange: 24,
+        };
+      });
+    },
+  }),
 );
+
+export { useNetworkActivityStore };
+
+// Selectors for computed state
+export const selectActiveRequests = (state: NetworkActivityState) =>
+  Object.values(state.requests).filter((req) => req.status === "pending");
+
+export const selectRecentRequests = (state: NetworkActivityState) =>
+  Object.values(state.requests)
+    .sort((a, b) => b.startTime - a.startTime)
+    .slice(0, 50);
+
+export const selectNetworkStats = (state: NetworkActivityState) => {
+  const requestList = Object.values(state.requests);
+  const now = Date.now();
+  const oneSecondAgo = now - 1000;
+
+  const recentRequests = requestList.filter(
+    (req) => req.startTime > oneSecondAgo,
+  );
+  const completedRequests = requestList.filter(
+    (req) => req.endTime !== undefined,
+  );
+  const totalDuration = completedRequests.reduce(
+    (sum, req) => sum + (req.duration ?? 0),
+    0,
+  );
+
+  return {
+    totalRequests: requestList.length,
+    activeRequests: requestList.filter((req) => req.status === "pending")
+      .length,
+    successCount: requestList.filter((req) => req.status === "success").length,
+    errorCount: requestList.filter((req) => req.status === "error").length,
+    cacheHits: requestList.filter((req) => req.status === "cached").length,
+    deduplicatedCount: requestList.filter(
+      (req) => req.status === "deduplicated",
+    ).length,
+    averageResponseTime:
+      completedRequests.length > 0
+        ? totalDuration / completedRequests.length
+        : 0,
+    requestsPerSecond: recentRequests.length,
+    totalDataTransferred: requestList.reduce(
+      (sum, req) => sum + (req.size ?? 0),
+      0,
+    ),
+  };
+};
+
+export const selectFilteredRequests = (state: NetworkActivityState) => {
+  const requestList = Object.values(state.requests);
+  const cutoffTime = Date.now() - state.filters.timeRange * 60 * 60 * 1000;
+
+  return requestList
+    .filter((req) => {
+      // Time range filter
+      if (req.startTime < cutoffTime) return false;
+
+      // Status filter
+      if (
+        state.filters.status.length > 0 &&
+        !state.filters.status.includes(req.status)
+      )
+        return false;
+
+      // Type filter
+      if (
+        state.filters.entityType.length > 0 &&
+        !state.filters.entityType.includes(req.entityType)
+      )
+        return false;
+
+      // Category filter
+      if (
+        state.filters.category.length > 0 &&
+        !state.filters.category.includes(req.category)
+      )
+        return false;
+
+      // Search term filter
+      if (state.filters.searchTerm) {
+        const term = state.filters.searchTerm.toLowerCase();
+        const searchableText = [
+          req.url,
+          req.method,
+          req.metadata?.entityType,
+          req.metadata?.entityId,
+          req.error,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+        if (!searchableText.includes(term)) return false;
+      }
+
+      return true;
+    })
+    .sort((a, b) => b.startTime - a.startTime);
+};

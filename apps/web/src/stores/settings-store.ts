@@ -1,20 +1,18 @@
 /**
  * Settings store for application configuration
  * Manages user settings with localStorage persistence
- * Uses Zustand with Immer for state management
+ * Uses shared createTrackedStore abstraction for DRY compliance
  */
 
-import { create } from "zustand";
-import { immer } from "zustand/middleware/immer";
-import { persist, createJSONStorage } from "zustand/middleware";
-import { updateOpenAlexEmail } from "@academic-explorer/client";
-import { createHybridStorage } from "@academic-explorer/utils/storage";
+import { createTrackedStore } from "@academic-explorer/utils/state";
 import { logger } from "@academic-explorer/utils/logger";
 
 interface SettingsState {
   /** Email for OpenAlex polite pool */
   politePoolEmail: string;
+}
 
+interface SettingsActions {
   /** Actions */
   setPolitePoolEmail: (email: string) => void;
   resetSettings: () => void;
@@ -28,56 +26,43 @@ const DEFAULT_EMAIL = "";
 // Email validation regex
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export const useSettingsStore = create<SettingsState>()(
-  persist(
-    immer((set, get) => ({
+const { useStore: useSettingsStore } = createTrackedStore<
+  SettingsState,
+  SettingsActions
+>(
+  {
+    name: "settings",
+    initialState: {
       politePoolEmail: DEFAULT_EMAIL,
+    },
+    persist: {
+      enabled: true,
+      storage: "localstorage",
+    },
+  },
+  (set, get) => ({
+    setPolitePoolEmail: (email: string) => {
+      set((state) => {
+        state.politePoolEmail = email;
+      });
 
-      setPolitePoolEmail: (email: string) => {
-        set((state) => {
-          state.politePoolEmail = email;
-        });
+      logger.debug("settings", "Updated polite pool email", {
+        hasEmail: email.length > 0,
+        isValid: get().isValidEmail(email),
+      });
+    },
 
-        logger.debug("settings", "Updated polite pool email", {
-          hasEmail: email.length > 0,
-          isValid: get().isValidEmail(email)
-        });
-      },
+    resetSettings: () => {
+      set((state) => {
+        state.politePoolEmail = DEFAULT_EMAIL;
+      });
+    },
 
-      resetSettings: () => {
-        set((state) => {
-          state.politePoolEmail = DEFAULT_EMAIL;
-        });
-
-        logger.debug("settings", "Reset all settings");
-      },
-
-      isValidEmail: (email: string): boolean => {
-        if (!email || email.trim() === "") return false;
-        return EMAIL_REGEX.test(email.trim());
-      }
-    })),
-    {
-      name: "academic-explorer-settings",
-      storage: createJSONStorage(() => createHybridStorage({
-        dbName: "academic-explorer",
-        storeName: "settings-store",
-        version: 1
-      })),
-      onRehydrateStorage: () => (state) => {
-        if (state) {
-          // Initialize OpenAlex client with stored email after hydration
-          updateOpenAlexEmail(state.politePoolEmail);
-
-          logger.debug("settings", "Rehydrated settings from localStorage", {
-            hasEmail: state.politePoolEmail.length > 0,
-            isValidEmail: state.isValidEmail(state.politePoolEmail)
-          });
-        }
-      }
-    }
-  )
+    isValidEmail: (email: string) => EMAIL_REGEX.test(email),
+  }),
 );
+
+export { useSettingsStore };
 
 // Export a hook for getting the current email
 export const usePolitePoolEmail = () => {
@@ -86,7 +71,5 @@ export const usePolitePoolEmail = () => {
 
 // Export a hook for checking if email is configured
 export const useHasValidEmail = () => {
-  return useSettingsStore((state) =>
-    state.isValidEmail(state.politePoolEmail)
-  );
+  return useSettingsStore((state) => state.isValidEmail(state.politePoolEmail));
 };
