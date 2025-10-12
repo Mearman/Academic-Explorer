@@ -1,0 +1,18 @@
+{
+  "id": "https://openalex.org/A5017898742",
+  "display_name": "Joseph Mearman",
+  "works_count": 9,
+  "last_known_institutions": [
+    {
+      "id": "https://openalex.org/I161548249",
+      "ror": "https://ror.org/006jb1a24",
+      "display_name": "Bangor University",
+      "country_code": "GB",
+      "type": "funder",
+      "lineage": [
+        "https://openalex.org/I161548249"
+      ]
+    }
+  ],
+  "orcid": null
+}

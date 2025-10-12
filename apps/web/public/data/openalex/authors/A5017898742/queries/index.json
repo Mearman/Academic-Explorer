@@ -1,0 +1,12 @@
+{
+  "lastUpdated": "2025-10-12T19:45:00.235Z",
+  "files": {
+    "select__3D__id__2C__display_name__2C__works_count__2C__last_known_institutions__2C__orcid": {
+      "url": "https://api.openalex.org/authors/A5017898742?select=id,display_name,works_count,last_known_institutions,orcid",
+      "$ref": "./select__3D__id__2C__display_name__2C__works_count__2C__last_known_institutions__2C__orcid.json",
+      "lastRetrieved": "2025-10-12T19:45:00.131Z",
+      "contentHash": "bc6c645c108075f5"
+    }
+  },
+  "directories": {}
+}

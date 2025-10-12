@@ -68,10 +68,65 @@ export class OpenAlexBaseClient {
   private config: Required<FullyConfiguredClient>;
   private rateLimitState: RateLimitState;
 
+  /**
+   * Detect if running in development mode
+   */
+  private isDevelopmentMode(): boolean {
+    // Check NODE_ENV first (most reliable)
+    if (
+      typeof globalThis.process !== "undefined" &&
+      globalThis.process.env?.NODE_ENV
+    ) {
+      const nodeEnv = globalThis.process.env.NODE_ENV.toLowerCase();
+      if (nodeEnv === "development" || nodeEnv === "dev") return true;
+      if (nodeEnv === "production") return false;
+    }
+
+    // Check Vite's __DEV__ flag
+    if (typeof globalThis !== "undefined" && "__DEV__" in globalThis) {
+      try {
+        const devFlag = (globalThis as unknown as { __DEV__?: boolean })
+          .__DEV__;
+        return devFlag === true;
+      } catch {
+        // Ignore errors if __DEV__ is not accessible
+      }
+    }
+
+    // Check browser-based development indicators
+    try {
+      if (typeof globalThis !== "undefined" && "window" in globalThis) {
+        const win = (
+          globalThis as unknown as {
+            window?: { location?: { hostname?: string } };
+          }
+        ).window;
+        if (win && win.location && win.location.hostname) {
+          const { hostname } = win.location;
+          // Local development indicators
+          if (
+            hostname === "localhost" ||
+            hostname === "127.0.0.1" ||
+            hostname.endsWith(".local")
+          ) {
+            return true;
+          }
+        }
+      }
+    } catch {
+      // Ignore errors in browser detection
+    }
+
+    // Default to development if uncertain (fail-safe for dev mode)
+    return true;
+  }
+
   constructor(config: OpenAlexClientConfig = {}) {
     // Create a fully-specified config with all required properties
     const defaultConfig: Required<FullyConfiguredClient> = {
-      baseUrl: "https://api.openalex.org",
+      baseUrl: this.isDevelopmentMode()
+        ? "/api/openalex"
+        : "https://api.openalex.org",
       userEmail: "",
       rateLimit: {
         requestsPerSecond: 10, // Conservative default
@@ -156,11 +211,76 @@ export class OpenAlexBaseClient {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
+  private isAbsoluteUrl(url: string): boolean {
+    try {
+      const parsedUrl = new URL(url);
+      return Boolean(parsedUrl.protocol);
+    } catch {
+      return false;
+    }
+  }
+
+  private getEnvironmentOrigin(): string | null {
+    if (typeof window !== "undefined" && window.location?.origin) {
+      return window.location.origin;
+    }
+
+    if (typeof globalThis !== "undefined") {
+      const globalLocation = (globalThis as { location?: { origin?: string } }).location;
+      if (globalLocation?.origin) {
+        return globalLocation.origin;
+      }
+    }
+
+    if (
+      typeof process !== "undefined" &&
+      typeof process.env?.VITE_ORIGIN === "string" &&
+      process.env.VITE_ORIGIN.length > 0
+    ) {
+      return process.env.VITE_ORIGIN;
+    }
+
+    return null;
+  }
+
+  private resolveBaseUrl(baseUrl: string): string {
+    if (this.isAbsoluteUrl(baseUrl)) {
+      return baseUrl.replace(/\/+$/, "");
+    }
+
+    const origin = this.getEnvironmentOrigin();
+    if (origin) {
+      const resolvedUrl = new URL(baseUrl, origin);
+      return resolvedUrl.toString().replace(/\/+$/, "");
+    }
+
+    const fallbackOrigin = "https://api.openalex.org";
+    const sanitizedBase = baseUrl.trim();
+
+    if (
+      sanitizedBase.startsWith("/") ||
+      sanitizedBase.startsWith("./") ||
+      sanitizedBase.startsWith("../")
+    ) {
+      return fallbackOrigin;
+    }
+
+    const resolvedUrl = new URL(sanitizedBase, `${fallbackOrigin}/`);
+    return resolvedUrl.toString().replace(/\/+$/, "");
+  }
+
   /**
    * Build URL with query parameters
    */
   private buildUrl(endpoint: string, params: QueryParams = {}): string {
-    const url = new URL(`${this.config.baseUrl}/${endpoint}`);
+    const normalizedEndpoint = endpoint.startsWith("/")
+      ? endpoint.slice(1)
+      : endpoint;
+    const resolvedBaseUrl = this.resolveBaseUrl(this.config.baseUrl);
+    const baseWithSlash = resolvedBaseUrl.endsWith("/")
+      ? resolvedBaseUrl
+      : `${resolvedBaseUrl}/`;
+    const url = new URL(normalizedEndpoint, baseWithSlash);
 
     // Add user email if provided (recommended by OpenAlex)
     if (this.config.userEmail) {
