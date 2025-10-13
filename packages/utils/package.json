@@ -97,8 +97,8 @@
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.12",
-    "eslint": "^9.36.0",
-    "typescript": "~5.9.2",
+    "eslint": "^9.37.0",
+    "typescript": "~5.9.3",
     "vitest": "^3.2.4"
   },
   "publishConfig": {
