@@ -10,7 +10,7 @@ export interface GraphNode {
   z?: number;
   color?: string;
   size?: number;
-  entityType?: string;
+  entityType?: string | null;
 }
 
 export interface GraphLink {
@@ -30,41 +30,25 @@ export interface ThemeColors {
     text: {
       primary: string;
       secondary: string;
-      tertiary: string;
-      inverse: string;
     };
     background: {
       primary: string;
       secondary: string;
-      tertiary: string;
       overlay: string;
-      blur: string;
+      tertiary: string;
     };
     border: {
       primary: string;
       secondary: string;
     };
     primary: string;
-    success: string;
-    warning: string;
-    error: string;
-    info: string;
-    entity: {
-      work: string;
-      author: string;
-      source: string;
-      institution: string;
-      concept: string;
-      topic: string;
-      publisher: string;
-      funder: string;
-    };
   };
   getColor: (color: string, shade?: number) => string;
-  getEntityColor: (entityType: string) => string;
-  getEntityColorShade: (entityType: string, shade?: number) => string;
-  isDark: boolean;
-  theme: MantineTheme;
+  getEntityColor: (entityType: string | null | undefined) => string;
+  getEntityColorShade: (
+    entityType: string | null | undefined,
+    shade?: number,
+  ) => string;
 }
 
 export interface GraphAdapterConfig {

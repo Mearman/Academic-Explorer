@@ -213,22 +213,23 @@ export function ReactFlowAdapterComponent({
         position: { x, y },
         data: { label: node.label },
         style: {
-          background:
-            node.color === "primary"
-              ? config.themeColors.getEntityColor(node.entityType || "work")
-              : config.themeColors.getEntityColor(node.entityType || "work"),
+          background: config.themeColors.getEntityColor(node.entityType),
           color:
             node.color === "primary"
               ? "white"
               : config.themeColors.colors.text.primary,
           border:
             node.color === "primary"
-              ? `2px solid ${config.themeColors.getColor("blue", 7)}`
-              : `1px solid ${config.themeColors.colors.border.secondary}`,
+              ? `3px solid ${config.themeColors.getEntityColorShade(node.entityType, 8)}`
+              : `2px solid ${config.themeColors.getEntityColorShade(node.entityType, 4)}`,
           borderRadius: node.color === "primary" ? "8px" : "6px",
           padding: node.color === "primary" ? "8px" : "6px",
           fontSize: node.color === "primary" ? "12px" : "10px",
           fontWeight: node.color === "primary" ? "bold" : "normal",
+          boxShadow:
+            node.color === "primary"
+              ? `0 2px 8px ${config.themeColors.getEntityColorShade(node.entityType, 3)}40`
+              : "none",
         },
       });
     });

@@ -9,6 +9,8 @@ import type {
   GraphLink,
 } from "./GraphAdapter";
 import type { ReactForceGraph2DConfig } from "../configs";
+import { detectEntityType } from "@academic-explorer/graph";
+import type { OpenAlexEntity } from "@academic-explorer/client";
 
 interface ForceGraph2DMethods {
   zoomToFit: (duration?: number) => void;
@@ -100,9 +102,7 @@ export function ReactForceGraph2DAdapterComponent({
   // Convert GraphData to react-force-graph format
   const graphData = useMemo(() => {
     const convertedNodes = data.nodes.map((node) => {
-      const convertedColor = config.themeColors.getEntityColor(
-        node.entityType || "work",
-      );
+      const convertedColor = config.themeColors.getEntityColor(node.entityType);
 
       return {
         id: node.id,
@@ -315,19 +315,23 @@ export class ReactForceGraph2DAdapter implements GraphAdapter {
     const links: GraphLink[] = [];
 
     // Add main entity node
+    const mainEntityType = detectEntityType(mainEntity.id);
     const mainNode: GraphNode = {
       id: mainEntity.id,
       label: mainEntity.display_name || mainEntity.id,
       color: "primary", // Will be resolved by theme
+      entityType: mainEntityType,
     };
     nodes.push(mainNode);
 
     // Add related entity nodes
     relatedEntities.forEach((relatedEntity) => {
+      const entityType = detectEntityType(relatedEntity.id);
       const relatedNode: GraphNode = {
         id: relatedEntity.id,
         label: relatedEntity.display_name || relatedEntity.id,
         color: "secondary", // Will be resolved by theme
+        entityType,
       };
       nodes.push(relatedNode);
 

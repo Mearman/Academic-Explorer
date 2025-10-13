@@ -101,6 +101,15 @@ export function useThemeColors() {
         "topic",
         "publisher",
         "funder",
+        // Also support plural forms
+        "works",
+        "authors",
+        "sources",
+        "institutions",
+        "concepts",
+        "topics",
+        "publishers",
+        "funders",
       ];
       return validKeys.includes(key);
     },
@@ -109,9 +118,21 @@ export function useThemeColors() {
 
   // Entity color utilities - memoized to prevent React 19 infinite loops
   const getEntityColor = useCallback(
-    (entityType: string): string => {
+    (entityType: string | null | undefined): string => {
+      // Handle undefined or null entity type
+      if (!entityType) {
+        return colors.primary;
+      }
+
+      // If entityType is already a detected entity type (like "works", "authors", etc.),
+      // use it directly for color mapping
+      const normalizedType = entityType.toLowerCase();
+      if (isValidEntityColorKey(normalizedType)) {
+        return colors.entity[normalizedType];
+      }
+
+      // If it's not a direct match, try to detect it as an OpenAlex ID
       try {
-        // First try to detect the entity type from the string
         const detectedType = detectEntityType(entityType);
         if (detectedType) {
           // Convert plural taxonomy key to singular color key
@@ -124,21 +145,30 @@ export function useThemeColors() {
         // Ignore detection errors
       }
 
-      // Fall back to direct mapping if detection fails
-      const normalizedType = entityType.toLowerCase();
-      if (isValidEntityColorKey(normalizedType)) {
-        return colors.entity[normalizedType];
-      }
-
       return colors.primary;
     },
     [colors, isValidEntityColorKey],
   );
-
   const getEntityColorShade = useCallback(
-    (entityType: string, shade: number = 5): string => {
+    (entityType: string | null | undefined, shade: number = 5): string => {
+      // Handle undefined or null entity type
+      if (!entityType) {
+        return getColor(colors.primary, shade);
+      }
+
+      // If entityType is already a detected entity type, use it directly
+      const normalizedType = entityType.toLowerCase();
+      if (isValidEntityColorKey(normalizedType)) {
+        // Convert plural to singular for color lookup
+        const singularType = normalizedType.replace(
+          /s$/,
+          "",
+        ) as keyof typeof colors.entity;
+        return getColor(colors.entity[singularType], shade);
+      }
+
+      // Fall back to detection if it's an OpenAlex ID
       try {
-        // Detect the entity type and get its taxonomy color name
         const detectedType = detectEntityType(entityType);
         if (detectedType) {
           const taxonomyColorName = getTaxonomyColorName(detectedType);
@@ -149,39 +179,9 @@ export function useThemeColors() {
         // Ignore detection errors
       }
 
-      // Fall back to direct mapping if detection fails
-      const normalizedType = entityType.toLowerCase();
-      if (normalizedType === "author" || normalizedType === "authors") {
-        return getColor("green", shade);
-      }
-      if (normalizedType === "source" || normalizedType === "sources") {
-        return getColor("purple", shade);
-      }
-      if (
-        normalizedType === "institution" ||
-        normalizedType === "institutions"
-      ) {
-        return getColor("orange", shade);
-      }
-      if (normalizedType === "concept" || normalizedType === "concepts") {
-        return getColor("pink", shade);
-      }
-      if (normalizedType === "topic" || normalizedType === "topics") {
-        return getColor("red", shade);
-      }
-      if (normalizedType === "publisher" || normalizedType === "publishers") {
-        return getColor("teal", shade);
-      }
-      if (normalizedType === "funder" || normalizedType === "funders") {
-        return getColor("cyan", shade);
-      }
-      if (normalizedType === "work" || normalizedType === "works") {
-        return getColor("blue", shade);
-      }
-
-      return getColor("blue", shade);
+      return getColor(colors.primary, shade);
     },
-    [getColor],
+    [colors, getColor, isValidEntityColorKey],
   );
 
   return {

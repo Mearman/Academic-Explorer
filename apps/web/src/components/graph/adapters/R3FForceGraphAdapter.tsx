@@ -17,6 +17,7 @@ import type {
   GraphLink,
 } from "./GraphAdapter";
 import type { R3FForceGraphConfig } from "../configs";
+import { detectEntityType } from "@academic-explorer/graph";
 
 // Fit View Button Component
 function FitViewButton({ onFitView }: { onFitView: () => void }) {
@@ -284,7 +285,7 @@ function R3FForceGraphScene({
     const convertedNodes = data.nodes.map((node) => ({
       id: node.id,
       name: node.label,
-      color: config.themeColors.getEntityColor(node.entityType || "work"),
+      color: config.themeColors.getEntityColor(node.entityType),
       val: node.size || 4,
     }));
 
@@ -451,21 +452,25 @@ export class R3FForceGraphAdapter implements GraphAdapter {
     const links: GraphLink[] = [];
 
     // Add main entity node
+    const mainEntityType = detectEntityType(mainEntity.id);
     const mainNode = {
       id: mainEntity.id,
       label: mainEntity.display_name || mainEntity.id,
       color: "primary",
       size: 6,
+      entityType: mainEntityType,
     };
     nodes.push(mainNode);
 
     // Add related entity nodes
     relatedEntities.forEach((relatedEntity) => {
+      const entityType = detectEntityType(relatedEntity.id);
       const relatedNode = {
         id: relatedEntity.id,
         label: relatedEntity.display_name || relatedEntity.id,
         color: "secondary",
         size: 4,
+        entityType,
       };
       nodes.push(relatedNode);
 

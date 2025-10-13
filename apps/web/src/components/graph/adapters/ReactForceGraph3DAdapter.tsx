@@ -11,6 +11,7 @@ import type {
 } from "./GraphAdapter";
 import type { OpenAlexEntity } from "@academic-explorer/client";
 import type { ReactForceGraph3DConfig } from "../configs";
+import { detectEntityType } from "@academic-explorer/graph";
 
 // Type for ForceGraph3D ref with camera controls
 interface ForceGraph3DRef {
@@ -118,9 +119,7 @@ export function ReactForceGraph3DAdapterComponent({
     });
 
     const convertedNodes = data.nodes.map((node) => {
-      const convertedColor = config.themeColors.getEntityColor(
-        node.entityType || "work",
-      );
+      const convertedColor = config.themeColors.getEntityColor(node.entityType);
 
       console.log(`[ReactForceGraph3D] Node ${node.id} (${node.label}):`, {
         entityType: node.entityType,
@@ -369,20 +368,24 @@ export class ReactForceGraph3DAdapter implements GraphAdapter {
     const links: GraphLink[] = [];
 
     // Add main entity node
+    const mainEntityType = detectEntityType(mainEntity.id);
     const mainNode = {
       id: mainEntity.id,
       label: mainEntity.display_name || mainEntity.id,
       color: "primary", // Will be resolved by theme
+      entityType: mainEntityType,
     };
     console.log("[ReactForceGraph3D] Adding main entity node:", mainNode);
     nodes.push(mainNode);
 
     // Add related entity nodes
     relatedEntities.forEach((relatedEntity, index) => {
+      const entityType = detectEntityType(relatedEntity.id);
       const relatedNode = {
         id: relatedEntity.id,
         label: relatedEntity.display_name || relatedEntity.id,
         color: "secondary", // Will be resolved by theme
+        entityType,
       };
       console.log(
         `[ReactForceGraph3D] Adding related entity node ${index + 1}:`,
