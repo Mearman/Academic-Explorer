@@ -125,8 +125,7 @@ export class CacheBrowserService {
       }
 
       if (this.config.includeRepositoryStore) {
-        const repositoryEntities =
-          await this.scanRepositoryStore(mergedFilters);
+        const repositoryEntities = await this.scanRepositoryStore();
         allEntities.push(...repositoryEntities);
       }
 
@@ -334,9 +333,7 @@ export class CacheBrowserService {
     }
   }
 
-  private async scanRepositoryStore(
-    _filters: CacheBrowserFilters,
-  ): Promise<CachedEntityMetadata[]> {
+  private async scanRepositoryStore(): Promise<CachedEntityMetadata[]> {
     // This would integrate with the repository store if available
     // For now, return empty array as repository store scanning would need
     // to be integrated at the application level
