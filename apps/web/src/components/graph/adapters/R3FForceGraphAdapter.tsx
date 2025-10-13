@@ -52,7 +52,7 @@ function R3FForceGraphScene({
   }, [data, config.themeColors]);
 
   const nodeColor = useCallback(
-    (node: { color?: string }) => {
+    (node: { [key: string]: any; color?: string }) => {
       return node.color || config.themeColors.colors.background.tertiary;
     },
     [config.themeColors],
@@ -78,7 +78,7 @@ function R3FForceGraphScene({
         ref={fgRef}
         graphData={graphData}
         nodeColor={nodeColor}
-        nodeVal={(node: { val: number }) => node.val}
+        nodeVal={(node: { [key: string]: any; val?: number }) => node.val || 4}
         linkColor={linkColor}
         linkWidth={2}
         linkDirectionalArrowLength={3}
