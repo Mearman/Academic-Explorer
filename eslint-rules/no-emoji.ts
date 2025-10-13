@@ -2,39 +2,39 @@
  * ESLint rule to prevent emoji usage and suggest Mantine icons
  */
 
-import { ESLintUtils } from '@typescript-eslint/utils';
+import { ESLintUtils } from "@typescript-eslint/utils";
 
 // Unicode ranges for modern emoji detection
 // Focus on newer emoji blocks while allowing traditional symbols
 const EMOJI_RANGES: [number, number][] = [
   // Core modern emoji blocks (post-2010)
-  [0x1F600, 0x1F64F], // Emoticons (😀-🙏)
-  [0x1F300, 0x1F5FF], // Miscellaneous Symbols and Pictographs (🌀-🗿)
-  [0x1F680, 0x1F6FF], // Transport and Map Symbols (🚀-🛿)
-  [0x1F1E0, 0x1F1FF], // Regional Indicator Symbols (🇠-🇿)
+  [0x1f600, 0x1f64f], // Emoticons (😀-🙏)
+  [0x1f300, 0x1f5ff], // Miscellaneous Symbols and Pictographs (🌀-🗿)
+  [0x1f680, 0x1f6ff], // Transport and Map Symbols (🚀-🛿)
+  [0x1f1e0, 0x1f1ff], // Regional Indicator Symbols (🇠-🇿)
 
   // Extended emoji blocks (post-2015)
-  [0x1F900, 0x1F9FF], // Supplemental Symbols and Pictographs (🤀-🧿)
-  [0x1F780, 0x1F7FF], // Geometric Shapes Extended (🞀-🟿)
-  [0x1F100, 0x1F1FF], // Enclosed Alphanumeric Supplement (🄀-🇿)
-  [0x1F200, 0x1F2FF], // Enclosed Ideographic Supplement (🈀-🋿)
-  [0x1F000, 0x1F02F], // Mahjong Tiles (🀀-🀯)
-  [0x1F0A0, 0x1F0FF], // Playing Cards (🂠-🃿)
+  [0x1f900, 0x1f9ff], // Supplemental Symbols and Pictographs (🤀-🧿)
+  [0x1f780, 0x1f7ff], // Geometric Shapes Extended (🞀-🟿)
+  [0x1f100, 0x1f1ff], // Enclosed Alphanumeric Supplement (🄀-🇿)
+  [0x1f200, 0x1f2ff], // Enclosed Ideographic Supplement (🈀-🋿)
+  [0x1f000, 0x1f02f], // Mahjong Tiles (🀀-🀯)
+  [0x1f0a0, 0x1f0ff], // Playing Cards (🂠-🃿)
 
   // Emoji modifiers
-  [0x1F3FB, 0x1F3FF], // Skin tone modifiers (🏻-🏿)
+  [0x1f3fb, 0x1f3ff], // Skin tone modifiers (🏻-🏿)
 
   // Specific modern emoji symbols (commonly problematic)
-  [0x2B50, 0x2B50],   // Star ⭐
-  [0x2B55, 0x2B55],   // Circle ⭕
-  [0x2B05, 0x2B07],   // Arrows (⬅-⬇)
-  [0x2B1B, 0x2B1C],   // Squares (⬛-⬜)
+  [0x2b50, 0x2b50], // Star ⭐
+  [0x2b55, 0x2b55], // Circle ⭕
+  [0x2b05, 0x2b07], // Arrows (⬅-⬇)
+  [0x2b1b, 0x2b1c], // Squares (⬛-⬜)
 
   // Media control symbols that are commonly used as emoji
-  [0x23E9, 0x23F3],   // Media symbols (⏩-⏳)
-  [0x23F8, 0x23FA],   // Media symbols (⏸-⏺)
-  [0x25B6, 0x25B6],   // Play button ▶
-  [0x25C0, 0x25C0],   // Reverse button ◀
+  [0x23e9, 0x23f3], // Media symbols (⏩-⏳)
+  [0x23f8, 0x23fa], // Media symbols (⏸-⏺)
+  [0x25b6, 0x25b6], // Play button ▶
+  [0x25c0, 0x25c0], // Reverse button ◀
 ];
 
 // Generate regex pattern from ranges
@@ -46,63 +46,66 @@ function createEmojiRegex(): RegExp {
     return `\\u{${start.toString(16).toUpperCase()}}-\\u{${end.toString(16).toUpperCase()}}`;
   });
 
-  return new RegExp(`[${rangePatterns.join('')}]`, 'gu');
+  return new RegExp(`[${rangePatterns.join("")}]`, "gu");
 }
 
 const EMOJI_REGEX = createEmojiRegex();
 
 const COMMON_ICON_SUGGESTIONS: Record<string, string> = {
-  '✅': 'IconCheck',
-  '❌': 'IconX',
-  '⚠️': 'IconAlertTriangle',
-  '📄': 'IconFile',
-  '📁': 'IconFolder',
-  '📊': 'IconChartBar',
-  '📈': 'IconTrendingUp',
-  '📉': 'IconTrendingDown',
-  '🔍': 'IconSearch',
-  '⭐': 'IconStar',
-  '💾': 'IconDeviceFloppy',
-  '🗑️': 'IconTrash',
-  '📝': 'IconEdit',
-  '🔗': 'IconLink',
-  '📋': 'IconClipboard',
-  '🏠': 'IconHome',
-  '⚙️': 'IconSettings',
-  '👤': 'IconUser',
-  '📧': 'IconMail',
-  '🔔': 'IconBell',
-  '🚀': 'IconRocket',
-  '💡': 'IconBulb',
-  '🎯': 'IconTarget',
-  '📍': 'IconMapPin',
-  '🔒': 'IconLock',
-  '🔓': 'IconLockOpen',
-  '📅': 'IconCalendar',
-  '⏰': 'IconClock',
-  '🖥️': 'IconDeviceDesktop',
-  '📱': 'IconDeviceMobile',
-  '💻': 'IconDeviceLaptop',
+  "✅": "IconCheck",
+  "❌": "IconX",
+  "⚠️": "IconAlertTriangle",
+  "📄": "IconFile",
+  "📁": "IconFolder",
+  "📊": "IconChartBar",
+  "📈": "IconTrendingUp",
+  "📉": "IconTrendingDown",
+  "🔍": "IconSearch",
+  "⭐": "IconStar",
+  "💾": "IconDeviceFloppy",
+  "🗑️": "IconTrash",
+  "📝": "IconEdit",
+  "🔗": "IconLink",
+  "📋": "IconClipboard",
+  "🏠": "IconHome",
+  "⚙️": "IconSettings",
+  "👤": "IconUser",
+  "📧": "IconMail",
+  "🔔": "IconBell",
+  "🚀": "IconRocket",
+  "💡": "IconBulb",
+  "🎯": "IconTarget",
+  "📍": "IconMapPin",
+  "🔒": "IconLock",
+  "🔓": "IconLockOpen",
+  "📅": "IconCalendar",
+  "⏰": "IconClock",
+  "🖥️": "IconDeviceDesktop",
+  "📱": "IconDeviceMobile",
+  "💻": "IconDeviceLaptop",
 };
 
-type MessageIds = 'noEmoji' | 'noEmojiGeneric';
+type MessageIds = "noEmoji" | "noEmojiGeneric";
 
 const createRule = ESLintUtils.RuleCreator(
-  name => `https://github.com/Mearman/Academic-Explorer/blob/main/eslint-rules/${name}.ts`
+  (name) =>
+    `https://github.com/Mearman/Academic-Explorer/blob/main/eslint-rules/${name}.ts`,
 );
 
 export const noEmojiRule = createRule<[], MessageIds>({
-  name: 'no-emoji',
+  name: "no-emoji",
   meta: {
-    type: 'problem',
+    type: "problem",
     docs: {
-      description: 'disallow emoji usage, suggest Mantine icons instead',
+      description: "disallow emoji usage, suggest Mantine icons instead",
     },
-    fixable: null,
+    fixable: "code",
     schema: [],
     messages: {
-      noEmoji: 'Avoid using emojis ({{emoji}}). Use Mantine icons instead: {{suggestion}}',
-      noEmojiGeneric: 'Avoid using emojis ({{emoji}}). Use appropriate Mantine icons from @tabler/icons-react instead.',
+      noEmoji:
+        "Avoid using emojis ({{emoji}}). Use Mantine icons instead: {{suggestion}}",
+      noEmojiGeneric:
+        "Avoid using emojis ({{emoji}}). Use appropriate Mantine icons from @tabler/icons-react instead.",
     },
   },
   defaultOptions: [],
@@ -118,10 +121,12 @@ export const noEmojiRule = createRule<[], MessageIds>({
 
         context.report({
           node,
-          messageId: suggestion ? 'noEmoji' : 'noEmojiGeneric',
+          messageId: suggestion ? "noEmoji" : "noEmojiGeneric",
           data: {
             emoji,
-            suggestion: suggestion || 'appropriate Mantine icons from @tabler/icons-react',
+            suggestion:
+              suggestion ||
+              "appropriate Mantine icons from @tabler/icons-react",
           },
         });
       }
@@ -129,7 +134,7 @@ export const noEmojiRule = createRule<[], MessageIds>({
 
     return {
       Literal(node) {
-        if (typeof node.value === 'string') {
+        if (typeof node.value === "string") {
           checkForEmojis(node, node.value);
         }
       },
@@ -145,7 +150,11 @@ export const noEmojiRule = createRule<[], MessageIds>({
       },
 
       JSXAttribute(node) {
-        if (node.value && node.value.type === 'Literal' && typeof node.value.value === 'string') {
+        if (
+          node.value &&
+          node.value.type === "Literal" &&
+          typeof node.value.value === "string"
+        ) {
           checkForEmojis(node.value, node.value.value);
         }
       },
@@ -157,7 +166,12 @@ export const noEmojiRule = createRule<[], MessageIds>({
         const text = sourceCode.getText();
 
         // Only check if this looks like markdown content (not a code block)
-        if (text && !text.includes('function') && !text.includes('const ') && !text.includes('import ')) {
+        if (
+          text &&
+          !text.includes("function") &&
+          !text.includes("const ") &&
+          !text.includes("import ")
+        ) {
           const matches = Array.from(text.matchAll(EMOJI_REGEX));
           for (const match of matches) {
             if (match.index !== undefined) {
@@ -166,15 +180,17 @@ export const noEmojiRule = createRule<[], MessageIds>({
 
               context.report({
                 node,
-                messageId: suggestion ? 'noEmoji' : 'noEmojiGeneric',
+                messageId: suggestion ? "noEmoji" : "noEmojiGeneric",
                 data: {
                   emoji,
-                  suggestion: suggestion || 'appropriate Mantine icons from @tabler/icons-react',
+                  suggestion:
+                    suggestion ||
+                    "appropriate Mantine icons from @tabler/icons-react",
                 },
                 loc: {
                   start: sourceCode.getLocFromIndex(match.index),
-                  end: sourceCode.getLocFromIndex(match.index + emoji.length)
-                }
+                  end: sourceCode.getLocFromIndex(match.index + emoji.length),
+                },
               });
             }
           }
@@ -186,6 +202,6 @@ export const noEmojiRule = createRule<[], MessageIds>({
 
 export default {
   rules: {
-    'no-emoji': noEmojiRule,
+    "no-emoji": noEmojiRule,
   },
 };

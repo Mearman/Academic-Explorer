@@ -60,53 +60,53 @@ function getBuildInfo() {
 
 // App-specific overrides: merge the workspace base config with app overrides
 export default defineConfig(({ mode, command }) =>
-  mergeConfig(baseConfig, {
-  // Path resolution aliases for monorepo packages
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "src"),
-      "@/ui": path.resolve(workspaceRoot, "packages/ui/src"),
-      "@academic-explorer/utils": path.resolve(
-        workspaceRoot,
-        "packages/utils/src",
-      ),
-      "@academic-explorer/client": path.resolve(
-        workspaceRoot,
-        "packages/client/src",
-      ),
-      "@academic-explorer/ui": path.resolve(workspaceRoot, "packages/ui/src"),
-      "@academic-explorer/graph": path.resolve(
-        workspaceRoot,
-        "packages/graph/src",
-      ),
-      "@academic-explorer/simulation": path.resolve(
-        workspaceRoot,
-        "packages/simulation/src",
-      ),
+  mergeConfig(baseConfig as any, {
+    // Path resolution aliases for monorepo packages
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "src"),
+        "@/ui": path.resolve(workspaceRoot, "packages/ui/src"),
+        "@academic-explorer/utils": path.resolve(
+          workspaceRoot,
+          "packages/utils/src",
+        ),
+        "@academic-explorer/client": path.resolve(
+          workspaceRoot,
+          "packages/client/src",
+        ),
+        "@academic-explorer/ui": path.resolve(workspaceRoot, "packages/ui/src"),
+        "@academic-explorer/graph": path.resolve(
+          workspaceRoot,
+          "packages/graph/src",
+        ),
+        "@academic-explorer/simulation": path.resolve(
+          workspaceRoot,
+          "packages/simulation/src",
+        ),
+      },
     },
-  },
 
-  // Modular plugin configuration
-  plugins: createPlugins(command, mode),
+    // Modular plugin configuration
+    plugins: createPlugins(command, mode),
 
-  // Server configuration
-  server: serverConfig,
+    // Server configuration
+    server: serverConfig,
 
-  // Preview server configuration
-  preview: previewConfig,
+    // Preview server configuration
+    preview: previewConfig,
 
-  // Global constants available in the app
-  define: {
-    __DEV__: JSON.stringify(true),
-    __BUILD_INFO__: JSON.stringify(getBuildInfo()),
-  },
+    // Global constants available in the app
+    define: {
+      __DEV__: JSON.stringify(true),
+      __BUILD_INFO__: JSON.stringify(getBuildInfo()),
+    },
 
-  // Web worker configuration
-  worker: {
-    format: "es", // Enable ES module format for workers
-  },
+    // Web worker configuration
+    worker: {
+      format: "es", // Enable ES module format for workers
+    },
 
-  // Build configuration (rollup options, chunk splitting, etc.)
-  ...buildConfig,
-  })
+    // Build configuration (rollup options, chunk splitting, etc.)
+    ...buildConfig,
+  }),
 );
