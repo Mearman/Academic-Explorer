@@ -9,7 +9,6 @@ import { IconUpload, IconChartBar } from "@tabler/icons-react";
 import {
   parseSTARFile,
   createSTARDatasetFromParseResult,
-  DEFAULT_COLUMN_MAPPINGS,
 } from "@academic-explorer/utils";
 import type { STARDataset } from "@academic-explorer/utils";
 import { logError, logger } from "@academic-explorer/utils/logger";
