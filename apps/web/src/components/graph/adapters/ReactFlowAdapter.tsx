@@ -9,7 +9,12 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
-import type { GraphData, GraphAdapterConfig, GraphAdapter } from "./GraphAdapter";
+import type {
+  GraphData,
+  GraphAdapterConfig,
+  GraphAdapter,
+} from "./GraphAdapter";
+import { detectEntityType } from "@academic-explorer/graph";
 
 // Hierarchical left-to-right layout algorithm for better node positioning
 function applyHierarchicalLayout(
@@ -154,8 +159,8 @@ export function ReactFlowAdapterComponent({
         style: {
           background:
             node.color === "primary"
-              ? config.themeColors.colors.primary
-              : config.themeColors.colors.background.tertiary,
+              ? config.themeColors.getEntityColor(node.entityType || "work")
+              : config.themeColors.getEntityColor(node.entityType || "work"),
           color:
             node.color === "primary"
               ? "white"
@@ -255,18 +260,22 @@ export class ReactFlowAdapter implements GraphAdapter {
     const links: any[] = [];
 
     // Add main entity node
+    const mainEntityType = detectEntityType(mainEntity.id) || "work";
     nodes.push({
       id: mainEntity.id,
       label: mainEntity.display_name || mainEntity.id,
       color: "primary", // Will be resolved by theme
+      entityType: mainEntityType,
     });
 
     // Add related entity nodes
     relatedEntities.forEach((relatedEntity) => {
+      const entityType = detectEntityType(relatedEntity.id) || "work";
       nodes.push({
         id: relatedEntity.id,
         label: relatedEntity.display_name || relatedEntity.id,
         color: "secondary", // Will be resolved by theme
+        entityType,
       });
 
       // Add edge from main entity to related entity

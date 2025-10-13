@@ -2,7 +2,11 @@ import React, { useMemo, useRef, useEffect, useCallback } from "react";
 import ForceGraph3D from "react-force-graph-3d";
 import * as THREE from "three";
 
-import type { GraphData, GraphAdapterConfig, GraphAdapter } from "./GraphAdapter";
+import type {
+  GraphData,
+  GraphAdapterConfig,
+  GraphAdapter,
+} from "./GraphAdapter";
 
 export function ReactForceGraph3DAdapterComponent({
   data,
@@ -70,27 +74,33 @@ export function ReactForceGraph3DAdapterComponent({
   const fitView = useCallback(() => {
     if (fgRef.current) {
       // Center the camera on the graph
-      fgRef.current.cameraPosition({ x: 0, y: 0, z: 100 }, { x: 0, y: 0, z: 0 }, 1000);
+      fgRef.current.cameraPosition(
+        { x: 0, y: 0, z: 100 },
+        { x: 0, y: 0, z: 0 },
+        1000,
+      );
     }
   }, []);
 
   // Convert GraphData to react-force-graph-3d format
   const graphData = useMemo(() => {
-    console.log("[ReactForceGraph3D] Converting graph data, input nodes:", data.nodes);
+    console.log(
+      "[ReactForceGraph3D] Converting graph data, input nodes:",
+      data.nodes,
+    );
     console.log("[ReactForceGraph3D] Theme colors available:", {
       primary: config.themeColors.colors.primary,
       backgroundTertiary: config.themeColors.colors.background.tertiary,
     });
 
     const convertedNodes = data.nodes.map((node) => {
-      const convertedColor = node.color === "primary"
-           ? config.themeColors.colors.primary
-           : config.themeColors.colors.background.tertiary;
+      const convertedColor = config.themeColors.getEntityColor(
+        node.entityType || "work",
+      );
 
       console.log(`[ReactForceGraph3D] Node ${node.id} (${node.label}):`, {
-        originalColor: node.color,
+        entityType: node.entityType,
         convertedColor,
-        isPrimaryColor: node.color === "primary",
       });
 
       return {
@@ -128,50 +138,53 @@ export function ReactForceGraph3DAdapterComponent({
   const nodeColor = useCallback((node: any) => {
     // Node colors are already converted from theme in graphData useMemo
     // react-force-graph-3d expects CSS color strings, not THREE.Color objects
-    if (typeof node.color === 'string' && node.color.startsWith('#')) {
+    if (typeof node.color === "string" && node.color.startsWith("#")) {
       return node.color;
     }
 
     if (!node.color) {
-      return '#cccccc'; // fallback as CSS color string
+      return "#cccccc"; // fallback as CSS color string
     }
 
     return node.color;
   }, []);
 
-  const createTextTexture = useCallback((text: string): HTMLCanvasElement => {
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    if (!context) throw new Error('Failed to get 2D context');
-    const fontSize = 12;
+  const createTextTexture = useCallback(
+    (text: string): HTMLCanvasElement => {
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+      if (!context) throw new Error("Failed to get 2D context");
+      const fontSize = 12;
 
-    context.font = `${fontSize}px Arial`;
-    const textWidth = context.measureText(text).width;
+      context.font = `${fontSize}px Arial`;
+      const textWidth = context.measureText(text).width;
 
-    canvas.width = textWidth + 20;
-    canvas.height = fontSize + 10;
+      canvas.width = textWidth + 20;
+      canvas.height = fontSize + 10;
 
-    // Clear with transparent background
-    context.clearRect(0, 0, canvas.width, canvas.height);
+      // Clear with transparent background
+      context.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw background
-    context.fillStyle = config.themeColors.colors.background.overlay;
-    context.fillRect(0, 0, canvas.width, canvas.height);
+      // Draw background
+      context.fillStyle = config.themeColors.colors.background.overlay;
+      context.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw border
-    context.strokeStyle = config.themeColors.colors.border.secondary;
-    context.lineWidth = 1;
-    context.strokeRect(0, 0, canvas.width, canvas.height);
+      // Draw border
+      context.strokeStyle = config.themeColors.colors.border.secondary;
+      context.lineWidth = 1;
+      context.strokeRect(0, 0, canvas.width, canvas.height);
 
-    // Draw text
-    context.fillStyle = config.themeColors.colors.text.primary;
-    context.font = `${fontSize}px Arial`;
-    context.textAlign = 'center';
-    context.textBaseline = 'middle';
-    context.fillText(text, canvas.width / 2, canvas.height / 2);
+      // Draw text
+      context.fillStyle = config.themeColors.colors.text.primary;
+      context.font = `${fontSize}px Arial`;
+      context.textAlign = "center";
+      context.textBaseline = "middle";
+      context.fillText(text, canvas.width / 2, canvas.height / 2);
 
-    return canvas;
-  }, [config.themeColors]);
+      return canvas;
+    },
+    [config.themeColors],
+  );
 
   return (
     <div
@@ -208,48 +221,52 @@ export function ReactForceGraph3DAdapterComponent({
               height={config.height}
               backgroundColor={graphBackgroundColor}
               nodeColor={nodeColor}
-               nodeLabel={(node: any) => node.name}
-               nodeVal={(node: any) => node.val}
-               linkColor={() => config.themeColors.colors.border.secondary}
-               linkWidth={2}
-               linkDirectionalArrowLength={3}
-               linkDirectionalArrowRelPos={1}
-               enableNodeDrag={config.interactive ?? false}
-               enableNavigationControls={config.interactive ?? false}
-               showNavInfo={false}
-               onNodeClick={(node: any) => {
-                 // Focus on clicked node
-                 if (fgRef.current) {
-                   fgRef.current.cameraPosition(
-                     { x: node.x * 2, y: node.y * 2, z: node.z * 2 },
-                     node,
-                     1000
-                   );
-                 }
-               }}
-               // Custom node rendering for better text visibility
-               nodeThreeObject={(node: any) => {
-                 const sprite = new THREE.Sprite(
-                   new THREE.SpriteMaterial({
-                     map: new THREE.CanvasTexture(createTextTexture(node.name)),
-                     transparent: true,
-                   })
-                 );
-                 sprite.scale.set(16, 8, 1);
-                 return sprite;
-               }}
-               nodeThreeObjectExtend={true}
-             />
-           );
-         } catch (error) {
-           console.error("[ReactForceGraph3D] ERROR rendering ForceGraph3D component:", error);
-           return (
-             <div style={{ color: 'red', padding: '20px' }}>
-               Error rendering graph: {error instanceof Error ? error.message : 'Unknown error'}
-             </div>
-           );
-         }
-       })()}
+              nodeLabel={(node: any) => node.name}
+              nodeVal={(node: any) => node.val}
+              linkColor={() => config.themeColors.colors.border.secondary}
+              linkWidth={2}
+              linkDirectionalArrowLength={3}
+              linkDirectionalArrowRelPos={1}
+              enableNodeDrag={config.interactive ?? false}
+              enableNavigationControls={config.interactive ?? false}
+              showNavInfo={false}
+              onNodeClick={(node: any) => {
+                // Focus on clicked node
+                if (fgRef.current) {
+                  fgRef.current.cameraPosition(
+                    { x: node.x * 2, y: node.y * 2, z: node.z * 2 },
+                    node,
+                    1000,
+                  );
+                }
+              }}
+              // Custom node rendering for better text visibility
+              nodeThreeObject={(node: any) => {
+                const sprite = new THREE.Sprite(
+                  new THREE.SpriteMaterial({
+                    map: new THREE.CanvasTexture(createTextTexture(node.name)),
+                    transparent: true,
+                  }),
+                );
+                sprite.scale.set(16, 8, 1);
+                return sprite;
+              }}
+              nodeThreeObjectExtend={true}
+            />
+          );
+        } catch (error) {
+          console.error(
+            "[ReactForceGraph3D] ERROR rendering ForceGraph3D component:",
+            error,
+          );
+          return (
+            <div style={{ color: "red", padding: "20px" }}>
+              Error rendering graph:{" "}
+              {error instanceof Error ? error.message : "Unknown error"}
+            </div>
+          );
+        }
+      })()}
       {/* Fit view button */}
       <button
         onClick={fitView}
@@ -307,7 +324,10 @@ export class ReactForceGraph3DAdapter implements GraphAdapter {
         label: relatedEntity.display_name || relatedEntity.id,
         color: "secondary", // Will be resolved by theme
       };
-      console.log(`[ReactForceGraph3D] Adding related entity node ${index + 1}:`, relatedNode);
+      console.log(
+        `[ReactForceGraph3D] Adding related entity node ${index + 1}:`,
+        relatedNode,
+      );
       nodes.push(relatedNode);
 
       // Add edge from main entity to related entity
@@ -320,7 +340,10 @@ export class ReactForceGraph3DAdapter implements GraphAdapter {
     });
 
     const result = { nodes, links };
-    console.log("[ReactForceGraph3D] convertEntitiesToGraphData result:", result);
+    console.log(
+      "[ReactForceGraph3D] convertEntitiesToGraphData result:",
+      result,
+    );
     return result;
   }
 

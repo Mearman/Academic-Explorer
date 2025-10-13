@@ -32,10 +32,7 @@ function R3FForceGraphScene({
     const convertedNodes = data.nodes.map((node) => ({
       id: node.id,
       name: node.label,
-      color:
-        node.color === "primary"
-          ? config.themeColors.colors.primary
-          : config.themeColors.colors.background.tertiary,
+      color: config.themeColors.getEntityColor(node.entityType || "work"),
       val: node.size || 4,
     }));
 

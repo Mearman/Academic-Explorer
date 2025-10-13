@@ -8,6 +8,7 @@ export interface GraphNode {
   z?: number;
   color?: string;
   size?: number;
+  entityType?: string;
 }
 
 export interface GraphLink {
