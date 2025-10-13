@@ -486,7 +486,7 @@ export class CacheBrowserService {
 
     for (const field of idFields) {
       if (typeof obj[field] === "string") {
-        externalIds[field] = obj[field] as string;
+        externalIds[field] = obj[field];
       }
     }
 

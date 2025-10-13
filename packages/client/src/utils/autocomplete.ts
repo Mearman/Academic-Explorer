@@ -253,7 +253,7 @@ export class BaseAutocompleteApi {
    * Validate autocomplete options
    */
 	protected validateAutocompleteOptions(options: AutocompleteOptions): void {
-		if (!options.q || !options.q.trim()) {
+		if (!options.q?.trim()) {
 			throw new Error('Query string is required and cannot be empty');
 		}
 

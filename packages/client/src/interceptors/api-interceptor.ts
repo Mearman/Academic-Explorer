@@ -131,8 +131,7 @@ export class ApiInterceptor {
    */
   private checkNodeEnv(): boolean | null {
     if (
-      typeof globalThis.process !== "undefined" &&
-      globalThis.process.env?.NODE_ENV
+      globalThis.process?.env?.NODE_ENV
     ) {
       const nodeEnv = globalThis.process.env.NODE_ENV.toLowerCase();
       if (nodeEnv === "development" || nodeEnv === "dev") return true;
@@ -168,7 +167,7 @@ export class ApiInterceptor {
             window?: { location?: { hostname?: string } };
           }
         ).window;
-        if (win && win.location && win.location.hostname) {
+        if (win?.location?.hostname) {
           const { hostname } = win.location;
           // Local development indicators
           if (
@@ -464,16 +463,16 @@ export class ApiInterceptor {
 
       // Capture final URL after redirects
       if (response.url && response.url !== request.url) {
-        (request as InterceptedRequest).finalUrl = response.url;
+        (request).finalUrl = response.url;
 
         // Re-extract entity info from final URL for correct cache key generation
         const finalEntityType = this.extractEntityType(response.url);
         const finalEntityId = this.extractEntityId(response.url);
 
         if (finalEntityType)
-          (request as InterceptedRequest).entityType = finalEntityType;
+          (request).entityType = finalEntityType;
         if (finalEntityId)
-          (request as InterceptedRequest).entityId = finalEntityId;
+          (request).entityId = finalEntityId;
 
         logger.debug("Request redirected", {
           requestId: request.requestId,
