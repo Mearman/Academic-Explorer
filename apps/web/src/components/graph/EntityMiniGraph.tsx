@@ -79,8 +79,8 @@ export function EntityMiniGraph({
           setAdapter(newAdapter);
           setIsLoading(false);
         }
-      } catch (error) {
-        console.error("Failed to load graph adapter:", error);
+      } catch {
+        // Error loading graph adapter - silently fail and stop loading
         if (isMounted) {
           setIsLoading(false);
         }
@@ -115,6 +115,7 @@ export function EntityMiniGraph({
   const adapterOptions = [
     { value: "reactflow-hierarchical", label: "2D Hierarchical" },
     { value: "react-force-graph-3d", label: "3D Force-Directed" },
+    { value: "r3f-forcegraph", label: "3D R3F Force Graph" },
   ];
 
   return (
