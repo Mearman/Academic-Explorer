@@ -130,9 +130,7 @@ export class ApiInterceptor {
    * Check NODE_ENV for development mode
    */
   private checkNodeEnv(): boolean | null {
-    if (
-      globalThis.process?.env?.NODE_ENV
-    ) {
+    if (globalThis.process?.env?.NODE_ENV) {
       const nodeEnv = globalThis.process.env.NODE_ENV.toLowerCase();
       if (nodeEnv === "development" || nodeEnv === "dev") return true;
       if (nodeEnv === "production") return false;
@@ -146,8 +144,10 @@ export class ApiInterceptor {
   private checkViteDevFlag(): boolean | null {
     if (typeof globalThis !== "undefined" && "__DEV__" in globalThis) {
       try {
-        const devFlag = (globalThis as unknown as { __DEV__?: boolean })
-          .__DEV__;
+        const devFlag =
+          "__DEV__" in globalThis && typeof globalThis.__DEV__ === "boolean"
+            ? globalThis.__DEV__
+            : undefined;
         return devFlag === true;
       } catch {
         // Ignore errors if __DEV__ is not accessible
@@ -162,11 +162,12 @@ export class ApiInterceptor {
   private checkBrowserDevIndicators(): boolean | null {
     try {
       if (typeof globalThis !== "undefined" && "window" in globalThis) {
-        const win = (
-          globalThis as unknown as {
-            window?: { location?: { hostname?: string } };
-          }
-        ).window;
+        const win =
+          "window" in globalThis &&
+          globalThis.window &&
+          "location" in globalThis.window
+            ? globalThis.window
+            : undefined;
         if (win?.location?.hostname) {
           const { hostname } = win.location;
           // Local development indicators
@@ -233,8 +234,9 @@ export class ApiInterceptor {
     ];
 
     for (const segment of pathSegments) {
-      if (entityTypes.includes(segment as EntityType)) {
-        return segment as EntityType;
+      const matchedType = entityTypes.find((type) => type === segment);
+      if (matchedType) {
+        return matchedType;
       }
     }
 
@@ -297,18 +299,15 @@ export class ApiInterceptor {
     // Sort parameters for consistent key generation
     const sortedParams = Object.keys(params)
       .sort()
-      .reduce(
-        (result, key) => {
-          result[key] = params[key];
-          return result;
-        },
-        {} as Record<string, unknown>,
-      );
+      .reduce((result, key) => {
+        result[key] = params[key];
+        return result;
+      }, {});
 
     const keyParts = [
       baseUrl,
-      entityType || "unknown",
-      entityId || "list",
+      entityType ?? "unknown",
+      entityId ?? "list",
       JSON.stringify(sortedParams),
     ];
 
@@ -413,7 +412,7 @@ export class ApiInterceptor {
 
       const interceptedRequest: InterceptedRequest = {
         url,
-        method: options.method || "GET",
+        method: options.method ?? "GET",
         headers,
         params,
         entityType,
@@ -463,16 +462,14 @@ export class ApiInterceptor {
 
       // Capture final URL after redirects
       if (response.url && response.url !== request.url) {
-        (request).finalUrl = response.url;
+        request.finalUrl = response.url;
 
         // Re-extract entity info from final URL for correct cache key generation
         const finalEntityType = this.extractEntityType(response.url);
         const finalEntityId = this.extractEntityId(response.url);
 
-        if (finalEntityType)
-          (request).entityType = finalEntityType;
-        if (finalEntityId)
-          (request).entityId = finalEntityId;
+        if (finalEntityType) request.entityType = finalEntityType;
+        if (finalEntityId) request.entityId = finalEntityId;
 
         logger.debug("Request redirected", {
           requestId: request.requestId,
@@ -504,7 +501,7 @@ export class ApiInterceptor {
       };
 
       // Generate cache key - use final URL if redirected, otherwise original URL
-      const effectiveUrl = request.finalUrl || request.url;
+      const effectiveUrl = request.finalUrl ?? request.url;
       const urlObj = new URL(effectiveUrl);
       const cacheKeyComponents: CacheKeyComponents = {
         entityType: request.entityType,

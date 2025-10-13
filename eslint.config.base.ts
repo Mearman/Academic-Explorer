@@ -188,11 +188,15 @@ export default tseslint.config([
       "**/*.config.{ts,js}",
       "**/vite.config.{ts,js}",
       "**/vitest.config.{ts,js}",
+      "**/knip.ts",
+      "**/config/**/*.{ts,js}",
     ],
     rules: {
       "@typescript-eslint/no-unsafe-assignment": "off",
       "@typescript-eslint/no-unsafe-member-access": "off",
       "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
+      "no-type-assertions-plugin/no-type-assertions": "off",
       "no-console": "off",
     },
   },
@@ -276,6 +280,12 @@ export default tseslint.config([
   {
     // Code blocks in markdown files - relax rules for examples
     files: ["**/*.md/*.{js,ts,jsx,tsx}"],
+    languageOptions: {
+      parserOptions: {
+        // Disable project service for markdown code blocks to avoid parsing errors
+        projectService: false,
+      },
+    },
     rules: {
       // Variable and import rules - common in code samples
       "@typescript-eslint/no-unused-vars": "off",

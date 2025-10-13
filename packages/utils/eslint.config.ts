@@ -34,26 +34,17 @@ export default tseslint.config([
     },
   },
   {
-    // Test files - use base config without type-aware rules
-    files: ["src/**/*.{test,spec}.{ts,tsx}"],
-    languageOptions: {
-      parserOptions: {
-        project: false, // Disable type-aware linting for test files
-      },
-    },
-    rules: {
-      "@typescript-eslint/no-explicit-any": "off",
-      "@typescript-eslint/no-non-null-assertion": "off",
-      "@typescript-eslint/no-unsafe-assignment": "off",
-      "@typescript-eslint/no-unsafe-member-access": "off",
-      "no-console": "off",
-    },
-  },
-  {
     // Logger file specifically should be allowed to use console
     files: ["src/logger.ts"],
     rules: {
       "no-console": "off",
+    },
+  },
+  {
+    // Test files - allow type assertions for mocks
+    files: ["src/**/*.{test,spec}.{ts,tsx}"],
+    rules: {
+      "no-type-assertions-plugin/no-type-assertions": "off",
     },
   },
 ]);

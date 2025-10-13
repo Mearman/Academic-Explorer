@@ -5,6 +5,6 @@
     "outDir": "./dist",
     "tsBuildInfoFile": "./dist/.tsbuildinfo"
   },
-  "include": ["src/**/*"],
-  "exclude": ["**/*.test.*", "**/*.spec.*", "dist", "node_modules"]
+  "include": ["src/**/*", "eslint.config.ts"],
+  "exclude": ["dist", "node_modules"]
 }

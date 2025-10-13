@@ -20,8 +20,8 @@
     "assumeChangesOnlyAffectDirectDependencies": true,
     "composite": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["dist", "node_modules", "**/*.test.ts"],
+  "include": ["src/**/*", "eslint.config.ts"],
+  "exclude": ["dist", "node_modules"],
   "references": [
     { "path": "../../packages/client" },
     { "path": "../../packages/utils" }

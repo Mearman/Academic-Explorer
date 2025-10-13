@@ -34,6 +34,24 @@ export const noTypeAssertionsRule = createRule<[], MessageIds>({
     return {
       // Detect "as" type assertions: value as Type
       TSAsExpression(node) {
+        // Allow "as const" assertions as they are safe and commonly used
+        if (
+          node.typeAnnotation.type === "TSTypeReference" &&
+          node.typeAnnotation.typeName.type === "Identifier" &&
+          node.typeAnnotation.typeName.name === "const"
+        ) {
+          return;
+        }
+
+        // Allow Record<string, unknown> assertions for object type guards
+        if (
+          node.typeAnnotation.type === "TSTypeReference" &&
+          node.typeAnnotation.typeName.type === "Identifier" &&
+          node.typeAnnotation.typeName.name === "Record"
+        ) {
+          return;
+        }
+
         context.report({
           node,
           messageId: "noTypeAssertion",

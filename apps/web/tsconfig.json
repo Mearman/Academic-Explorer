@@ -3,7 +3,16 @@
   "compilerOptions": {
     "baseUrl": "."
   },
-  "include": ["src"],
+  "include": [
+    "src",
+    "*.config.ts",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "eslint.config.ts",
+    "knip.ts",
+    "playwright.config.ts",
+    "config/**/*"
+  ],
   "exclude": [
     "src/**/*.test.ts",
     "src/**/*.test.tsx",
