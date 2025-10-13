@@ -9,6 +9,7 @@ import path from "path";
 import tseslint from "typescript-eslint";
 import { fileURLToPath } from "url";
 import noEmojiPlugin from "./eslint-rules/no-emoji.ts";
+import noTypeAssertionsPlugin from "./eslint-rules/no-type-assertions.ts";
 import testFileNamingPlugin from "./eslint-rules/test-file-naming.ts";
 import zustandStoreDryPlugin from "./eslint-rules/zustand-store-dry.ts";
 
@@ -82,8 +83,8 @@ export default tseslint.config([
         ...globals.es2020,
       },
       parserOptions: {
-        // Disable type-aware linting for performance - use specific projects only
-        project: false,
+        // Enable type-aware linting using project service for automatic tsconfig detection
+        projectService: true,
         ecmaVersion: 2020,
         sourceType: "module",
         tsconfigRootDir: path.dirname(fileURLToPath(import.meta.url)),
@@ -95,6 +96,7 @@ export default tseslint.config([
       sonarjs,
       "@nx": nxPlugin,
       "no-emoji-plugin": noEmojiPlugin,
+      "no-type-assertions-plugin": noTypeAssertionsPlugin,
       "test-file-naming-plugin": testFileNamingPlugin,
       "zustand-store-dry-plugin": zustandStoreDryPlugin,
     },
@@ -110,46 +112,21 @@ export default tseslint.config([
           "ts-ignore": false,
         },
       ],
-      // Disable type-aware rules that require project config for performance
-      "@typescript-eslint/prefer-nullish-coalescing": "off",
-      "@typescript-eslint/prefer-optional-chain": "off", // Type-aware rule - disable for performance
-      "@typescript-eslint/no-unnecessary-type-assertion": "off",
-      "@typescript-eslint/no-floating-promises": "off",
-      "@typescript-eslint/await-thenable": "off",
+      // Type-aware rules for better type safety
+      "@typescript-eslint/prefer-nullish-coalescing": "error",
+      "@typescript-eslint/prefer-optional-chain": "error",
+      "@typescript-eslint/no-floating-promises": "error",
+      "@typescript-eslint/await-thenable": "error",
 
-      // Import rules
-      "unused-imports/no-unused-imports": "error",
-      "unused-imports/no-unused-vars": [
-        "error",
-        {
-          vars: "all",
-          args: "after-used",
-        },
-      ],
+      // Strict type safety rules to prevent type coercion
+      "@typescript-eslint/no-unsafe-assignment": "error",
+      "@typescript-eslint/no-unsafe-member-access": "error",
+      "@typescript-eslint/no-unsafe-call": "error",
+      "@typescript-eslint/no-unsafe-return": "error",
+      "@typescript-eslint/no-unsafe-argument": "error",
 
-      // Comment rules
-      "eslint-comments/disable-enable-pair": "error",
-      "eslint-comments/no-unused-disable": "error",
-      "eslint-comments/no-unlimited-disable": "error",
-      "eslint-comments/no-restricted-disable": [
-        "error",
-        "unused-imports/no-unused-vars",
-      ],
-
-      // General rules
-      "no-console": "warn",
-      "prefer-const": "error",
-      "no-var": "error",
-      "object-shorthand": "error",
-      "prefer-destructuring": ["error", { object: true, array: false }],
-
-      // Disable rules that are too strict for some cases
+      // Keep some rules relaxed for practical reasons
       "@typescript-eslint/restrict-template-expressions": "off",
-      "@typescript-eslint/no-unsafe-assignment": "off",
-      "@typescript-eslint/no-unsafe-member-access": "off",
-      "@typescript-eslint/no-unsafe-call": "off",
-      "@typescript-eslint/no-unsafe-return": "off",
-      "@typescript-eslint/no-unsafe-argument": "off",
 
       // Code duplication and quality rules
       "sonarjs/no-duplicate-string": "warn",
@@ -168,6 +145,9 @@ export default tseslint.config([
 
       // Emoji detection
       "no-emoji-plugin/no-emoji": "error",
+
+      // Forbid all type assertions - use type guards instead
+      "no-type-assertions-plugin/no-type-assertions": "error",
 
       // Zustand store DRY patterns
       "zustand-store-dry-plugin/zustand-store-dry": "error",
@@ -278,6 +258,12 @@ export default tseslint.config([
   {
     // Markdown files - process with markdown plugin and apply no-emoji rule
     files: ["**/*.md"],
+    languageOptions: {
+      parserOptions: {
+        // Disable project service for markdown files to avoid parsing errors
+        projectService: false,
+      },
+    },
     plugins: {
       markdown: markdownPlugin,
       "no-emoji-plugin": noEmojiPlugin,
