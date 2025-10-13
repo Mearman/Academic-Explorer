@@ -176,7 +176,7 @@ export class DiskCacheWriter {
       minDiskSpaceBytes: config.minDiskSpaceBytes ?? 100 * 1024 * 1024, // 100MB
     };
 
-    logger.debug("cache" as LogCategory, "DiskCacheWriter initialized", {
+    logger.debug("cache", "DiskCacheWriter initialized", {
       config: this.config,
     });
   }
@@ -270,7 +270,7 @@ export class DiskCacheWriter {
 
       try {
         const existingContent = await fsModule.readFile(indexPath, "utf8");
-        const existingData = JSON.parse(existingContent) as DirectoryIndex;
+        const existingData = JSON.parse(existingContent);
         indexData = {
           ...existingData,
           lastUpdated: new Date().toISOString(),
@@ -292,9 +292,7 @@ export class DiskCacheWriter {
       await this.writeFileAtomic(filePaths.dataFile, content);
 
       // Update the containing directory index
-      if (!indexData.files) {
-        indexData.files = {};
-      }
+      indexData.files ??= {};
       indexData.files[baseName] = fileEntry;
       indexData.lastUpdated = new Date().toISOString();
       await this.writeFileAtomic(indexPath, JSON.stringify(indexData, null, 2));
@@ -302,7 +300,7 @@ export class DiskCacheWriter {
       // Propagate updates to hierarchical parent indexes (skip containing directory)
       await this.updateHierarchicalIndexes(entityInfo, filePaths, data, true);
 
-      logger.debug("cache" as LogCategory, "Cache write successful", {
+      logger.debug("cache", "Cache write successful", {
         entityType: entityInfo.entityType,
         entityId: entityInfo.entityId,
         baseName,
@@ -411,29 +409,36 @@ export class DiskCacheWriter {
 
       // OpenAlex API URL pattern: /entity_type/entity_id or /entity_type?params
       if (pathParts.length >= 1) {
-        const entityType = pathParts[0] as EntityType;
+        const entityType = pathParts[0];
 
-        if (validEntityTypes.includes(entityType)) {
+        const typedEntityType = validEntityTypes.find(
+          (type) => type === entityType,
+        );
+        if (typedEntityType) {
           // Single entity: /entity_type/entity_id
           if (pathParts.length >= 2 && !queryParams) {
             const entityId = pathParts[1];
-            return { entityType, entityId, isQueryResponse: false };
+            return {
+              entityType: typedEntityType,
+              entityId,
+              isQueryResponse: false,
+            };
           }
           // Query/filter response: /entity_type?params
           else if (queryParams) {
             return {
-              entityType,
+              entityType: typedEntityType,
               queryParams,
               isQueryResponse: true,
-              entityId: entityType, // Use entity type as ID for collections
+              entityId: typedEntityType, // Use entity type as ID for collections
             };
           }
           // Collection without params: /entity_type
           else {
             return {
-              entityType,
+              entityType: typedEntityType,
               isQueryResponse: true,
-              entityId: entityType, // Use entity type as ID for collections
+              entityId: typedEntityType, // Use entity type as ID for collections
             };
           }
         }
@@ -677,7 +682,7 @@ export class DiskCacheWriter {
           filePath,
         });
 
-        logger.debug("disk-writer" as LogCategory, "File lock acquired", {
+        logger.debug("disk-writer", "File lock acquired", {
           filePath,
           lockId,
         });
@@ -689,7 +694,7 @@ export class DiskCacheWriter {
       if (existingLock && Date.now() - existingLock.timestamp > maxWaitTime) {
         // Remove stale lock
         this.activeLocks.delete(filePath);
-        logger.warn("disk-writer" as LogCategory, "Removed stale file lock", {
+        logger.warn("disk-writer", "Removed stale file lock", {
           filePath,
           staleLockId: existingLock.lockId,
         });
@@ -716,13 +721,13 @@ export class DiskCacheWriter {
 
     if (existingLock && existingLock.lockId === lockId) {
       this.activeLocks.delete(filePath);
-      logger.debug("disk-writer" as LogCategory, "File lock released", {
+      logger.debug("disk-writer", "File lock released", {
         filePath,
         lockId,
       });
     } else {
       logger.warn(
-        "disk-writer" as LogCategory,
+        "disk-writer",
         "Attempted to release non-existent or mismatched lock",
         { filePath, lockId },
       );
@@ -747,7 +752,7 @@ export class DiskCacheWriter {
         );
       }
 
-      logger.debug("disk-writer" as LogCategory, "Disk space check passed", {
+      logger.debug("disk-writer", "Disk space check passed", {
         availableBytes,
         requiredBytes: this.config.minDiskSpaceBytes,
       });
@@ -755,7 +760,7 @@ export class DiskCacheWriter {
       // If statfs is not available, skip the check
       if (error instanceof Error && error.message.includes("ENOSYS")) {
         logger.warn(
-          "disk-writer" as LogCategory,
+          "disk-writer",
           "Disk space checking not available on this platform",
         );
         return;
@@ -855,7 +860,7 @@ export class DiskCacheWriter {
       }
       const basePath = path.resolve(this.config.basePath);
 
-      while (currentPath && currentPath.startsWith(basePath)) {
+      while (currentPath?.startsWith(basePath)) {
         await this.updateDirectoryIndex(
           currentPath,
           entityInfo,
@@ -942,7 +947,7 @@ export class DiskCacheWriter {
         entityInfo.queryParams
       ) {
         const filename = path.basename(filePaths.dataFile, ".json");
-        if (!indexData.files) indexData.files = {};
+        indexData.files ??= {};
         indexData.files[filename] = {
           url: data.url,
           $ref: `./${filename}.json`,
@@ -960,7 +965,7 @@ export class DiskCacheWriter {
         );
         const childDirName = relativePath.split(path.sep)[0];
         if (childDirName && childDirName !== ".") {
-          if (!indexData.directories) indexData.directories = {};
+          indexData.directories ??= {};
           indexData.directories[childDirName] = {
             $ref: `./${childDirName}`,
             lastModified: new Date().toISOString(),
@@ -971,12 +976,12 @@ export class DiskCacheWriter {
       // Write updated index
       await this.writeFileAtomic(indexPath, JSON.stringify(indexData, null, 2));
 
-      logger.debug("cache" as LogCategory, "Updated directory index", {
+      logger.debug("cache", "Updated directory index", {
         indexPath,
         relativePath: displayPath,
         isContainingDirectory,
-        hasFiles: Object.keys(indexData.files || {}).length > 0,
-        hasDirectories: Object.keys(indexData.directories || {}).length > 0,
+        hasFiles: Object.keys(indexData.files ?? {}).length > 0,
+        hasDirectories: Object.keys(indexData.directories ?? {}).length > 0,
       });
     } catch (error) {
       logError(logger, "Failed to update directory index", error);
@@ -1020,10 +1025,7 @@ export class DiskCacheWriter {
     // Clear all locks
     this.activeLocks.clear();
 
-    logger.debug(
-      "disk-writer" as LogCategory,
-      "DiskCacheWriter cleanup completed",
-    );
+    logger.debug("disk-writer", "DiskCacheWriter cleanup completed");
   }
 }
 

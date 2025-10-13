@@ -172,7 +172,7 @@ export class GitHubPagesReader {
         },
       );
 
-      return data;
+      return data as T;
     } catch (error) {
       logger.error(
         "static-cache",
@@ -240,80 +240,94 @@ export class GitHubPagesReader {
   /**
    * Fetch data with retry logic and exponential backoff
    */
+  private async attemptFetch<T>(url: string, attempt: number): Promise<T> {
+    logger.debug("static-cache", "Attempting to fetch from GitHub Pages", {
+      url,
+      attempt: attempt + 1,
+      maxRetries: this.retryConfig.maxRetries + 1,
+    });
+
+    const response = await this.fetchWithTimeout(url);
+
+    if (!response.ok) {
+      throw new GitHubPagesReaderError(
+        `HTTP ${response.status}: ${response.statusText}`,
+        response.status,
+        url,
+      );
+    }
+
+    const data = (await response.json()) as T;
+
+    // Validate data if enabled
+    if (this.config.validateData) {
+      const validation = this.validateResponseData(data);
+      if (!validation.isValid) {
+        throw new GitHubPagesReaderError(
+          `Invalid data format: ${validation.errors.join(", ")}`,
+          undefined,
+          url,
+        );
+      }
+    }
+
+    logger.debug(
+      "static-cache",
+      "Successfully fetched data from GitHub Pages",
+      {
+        url,
+        attempt: attempt + 1,
+        dataSize: JSON.stringify(data).length,
+      },
+    );
+
+    return data;
+  }
+
+  private async handleFetchError(
+    error: unknown,
+    url: string,
+    attempt: number,
+  ): Promise<void> {
+    const lastError = error instanceof Error ? error : new Error(String(error));
+
+    logger.warn("static-cache", "GitHub Pages fetch attempt failed", {
+      url,
+      attempt: attempt + 1,
+      error: lastError.message,
+    });
+
+    // Don't retry on the last attempt
+    if (attempt === this.retryConfig.maxRetries) {
+      throw new GitHubPagesReaderError(
+        `Failed to fetch after ${this.retryConfig.maxRetries + 1} attempts: ${lastError.message}`,
+        undefined,
+        url,
+        lastError,
+      );
+    }
+
+    // Calculate delay with exponential backoff
+    const delay = this.calculateRetryDelay(attempt);
+
+    logger.debug("static-cache", "Retrying GitHub Pages fetch after delay", {
+      url,
+      attempt: attempt + 1,
+      delay,
+    });
+
+    await this.sleep(delay);
+  }
+
   private async fetchWithRetry<T>(url: string): Promise<T> {
     let lastError: Error | null = null;
 
     for (let attempt = 0; attempt <= this.retryConfig.maxRetries; attempt++) {
       try {
-        logger.debug("static-cache", "Attempting to fetch from GitHub Pages", {
-          url,
-          attempt: attempt + 1,
-          maxRetries: this.retryConfig.maxRetries + 1,
-        });
-
-        const response = await this.fetchWithTimeout(url);
-
-        if (!response.ok) {
-          throw new GitHubPagesReaderError(
-            `HTTP ${response.status}: ${response.statusText}`,
-            response.status,
-            url,
-          );
-        }
-
-        const data = await response.json();
-
-        // Validate data if enabled
-        if (this.config.validateData) {
-          const validation = this.validateResponseData(data);
-          if (!validation.isValid) {
-            throw new GitHubPagesReaderError(
-              `Invalid data format: ${validation.errors.join(", ")}`,
-              undefined,
-              url,
-            );
-          }
-        }
-
-        logger.debug(
-          "static-cache",
-          "Successfully fetched data from GitHub Pages",
-          {
-            url,
-            attempt: attempt + 1,
-            dataSize: JSON.stringify(data).length,
-          },
-        );
-
-        return data as T;
+        return await this.attemptFetch<T>(url, attempt);
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
-
-        logger.warn("static-cache", "GitHub Pages fetch attempt failed", {
-          url,
-          attempt: attempt + 1,
-          error: lastError.message,
-        });
-
-        // Don't retry on the last attempt
-        if (attempt === this.retryConfig.maxRetries) {
-          break;
-        }
-
-        // Calculate delay with exponential backoff
-        const delay = this.calculateRetryDelay(attempt);
-
-        logger.debug(
-          "static-cache",
-          "Retrying GitHub Pages fetch after delay",
-          {
-            url,
-            attempt: attempt + 1,
-            delay,
-          },
-        );
-
-        await this.sleep(delay);
+        await this.handleFetchError(error, url, attempt);
       }
     }
 
@@ -322,7 +336,7 @@ export class GitHubPagesReader {
       `Failed to fetch after ${this.retryConfig.maxRetries + 1} attempts: ${lastError?.message}`,
       undefined,
       url,
-      lastError || undefined,
+      lastError ?? undefined,
     );
   }
 
@@ -431,10 +445,12 @@ export class GitHubPagesReader {
     // Check various indicators of production environment
     if (typeof globalThis !== "undefined" && "location" in globalThis) {
       // Browser environment
-      const { location } = globalThis as unknown as {
-        location: { hostname?: string };
-      };
-      const hostname = location?.hostname;
+      const hostname =
+        "location" in globalThis &&
+        globalThis.location &&
+        "hostname" in globalThis.location
+          ? globalThis.location.hostname
+          : undefined;
 
       if (hostname) {
         // Consider it production if:

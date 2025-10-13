@@ -287,6 +287,44 @@ export class FilterBuilder {
    * // Result: { 'publication_year': '2023', 'is_oa': 'true' }
    * ```
    */
+  private parseFilterValue(value: string): FilterValue {
+    // Handle array values (pipe-separated)
+    if (value.includes("|")) {
+      return value.split("|").map((v) => v.trim());
+    }
+
+    // Try to parse as boolean or number, otherwise keep as string
+    if (value === "true") {
+      return true;
+    } else if (value === "false") {
+      return false;
+    } else if (/^\d+$/.test(value)) {
+      return parseInt(value, 10);
+    } else if (/^\d*\.\d+$/.test(value)) {
+      return parseFloat(value);
+    } else {
+      return value;
+    }
+  }
+
+  private parseFilterPart(
+    part: string,
+  ): { field: string; value: FilterValue } | null {
+    const trimmedPart = part.trim();
+    if (!trimmedPart) return null;
+
+    // Split by colon to get field and value
+    const colonIndex = trimmedPart.indexOf(":");
+    if (colonIndex === -1) return null;
+
+    const field = trimmedPart.substring(0, colonIndex).trim();
+    const value = trimmedPart.substring(colonIndex + 1).trim();
+
+    if (!field || !value) return null;
+
+    return { field, value: this.parseFilterValue(value) };
+  }
+
   parseFilterString(filterString: string): Record<string, FilterValue> {
     if (!filterString || typeof filterString !== "string") {
       return {};
@@ -298,34 +336,9 @@ export class FilterBuilder {
     const filterParts = filterString.split(",");
 
     for (const part of filterParts) {
-      const trimmedPart = part.trim();
-      if (!trimmedPart) continue;
-
-      // Split by colon to get field and value
-      const colonIndex = trimmedPart.indexOf(":");
-      if (colonIndex === -1) continue;
-
-      const field = trimmedPart.substring(0, colonIndex).trim();
-      const value = trimmedPart.substring(colonIndex + 1).trim();
-
-      if (!field || !value) continue;
-
-      // Handle array values (pipe-separated)
-      if (value.includes("|")) {
-        filters[field] = value.split("|").map((v) => v.trim());
-      } else {
-        // Try to parse as boolean or number, otherwise keep as string
-        if (value === "true") {
-          filters[field] = true;
-        } else if (value === "false") {
-          filters[field] = false;
-        } else if (/^\d+$/.test(value)) {
-          filters[field] = parseInt(value, 10);
-        } else if (/^\d*\.\d+$/.test(value)) {
-          filters[field] = parseFloat(value);
-        } else {
-          filters[field] = value;
-        }
+      const parsed = this.parseFilterPart(part);
+      if (parsed) {
+        filters[parsed.field] = parsed.value;
       }
     }
 

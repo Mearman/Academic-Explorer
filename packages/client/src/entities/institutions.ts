@@ -183,7 +183,7 @@ export class InstitutionsApi {
       // Return results with entity_type set to institution
       return response.results.map((result) => ({
         ...result,
-        entity_type: "institution" as const,
+        entity_type: "institution",
       }));
     } catch (error: unknown) {
       // Format error for logging using type guards
@@ -769,7 +769,7 @@ export class InstitutionsApi {
 
     // Handle filters using standardized FilterBuilder utility
     // Support both 'filters' (plural) and 'filter' (singular) for test compatibility
-    const filtersToProcess = filters || filter;
+    const filtersToProcess = filters ?? filter;
     if (
       filtersToProcess &&
       typeof filtersToProcess === "object" &&
@@ -809,20 +809,26 @@ export class InstitutionsApi {
 
     if (typeof error === "object" && error !== null) {
       // Safely extract properties from object-like errors
-      const errorObj = error as Record<string, unknown>;
+      const errorObj = error;
       return {
         message:
-          typeof errorObj.message === "string"
+          "message" in errorObj && typeof errorObj.message === "string"
             ? errorObj.message
             : "Unknown error",
         name:
-          typeof errorObj.name === "string" ? errorObj.name : "UnknownError",
+          "name" in errorObj && typeof errorObj.name === "string"
+            ? errorObj.name
+            : "UnknownError",
         code:
-          typeof errorObj.code === "string" || typeof errorObj.code === "number"
+          "code" in errorObj &&
+          (typeof errorObj.code === "string" ||
+            typeof errorObj.code === "number")
             ? errorObj.code
             : undefined,
         status:
-          typeof errorObj.status === "number" ? errorObj.status : undefined,
+          "status" in errorObj && typeof errorObj.status === "number"
+            ? errorObj.status
+            : undefined,
       };
     }
 

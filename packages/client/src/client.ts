@@ -4,7 +4,7 @@
  */
 
 import { logger } from "@academic-explorer/utils";
-import { apiInterceptor } from "./interceptors";
+import { apiInterceptor, type InterceptedRequest } from "./interceptors";
 import { RETRY_CONFIG, calculateRetryDelay } from "./internal/rate-limit";
 import { trustApiContract, validateApiResponse } from "./internal/type-helpers";
 import type { OpenAlexError, OpenAlexResponse, QueryParams } from "./types";
@@ -75,7 +75,7 @@ export class OpenAlexBaseClient {
     // Check NODE_ENV first (most reliable)
     if (
       typeof globalThis.process !== "undefined" &&
-      globalThis.process.env?.NODE_ENV
+      globalThis.process?.env?.NODE_ENV
     ) {
       const nodeEnv = globalThis.process.env.NODE_ENV.toLowerCase();
       if (nodeEnv === "development" || nodeEnv === "dev") return true;
@@ -85,8 +85,11 @@ export class OpenAlexBaseClient {
     // Check Vite's __DEV__ flag
     if (typeof globalThis !== "undefined" && "__DEV__" in globalThis) {
       try {
-        const devFlag = (globalThis as unknown as { __DEV__?: boolean })
-          .__DEV__;
+        const devFlag =
+          "__DEV__" in globalThis &&
+          typeof (globalThis as { __DEV__?: boolean }).__DEV__ === "boolean"
+            ? (globalThis as { __DEV__?: boolean }).__DEV__
+            : undefined;
         return devFlag === true;
       } catch {
         // Ignore errors if __DEV__ is not accessible
@@ -96,12 +99,13 @@ export class OpenAlexBaseClient {
     // Check browser-based development indicators
     try {
       if (typeof globalThis !== "undefined" && "window" in globalThis) {
-        const win = (
-          globalThis as unknown as {
-            window?: { location?: { hostname?: string } };
-          }
-        ).window;
-        if (win && win.location && win.location.hostname) {
+        const win =
+          "window" in globalThis &&
+          globalThis.window &&
+          "location" in globalThis.window
+            ? globalThis.window
+            : undefined;
+        if (win?.location?.hostname) {
           const { hostname } = win.location;
           // Local development indicators
           if (
@@ -226,7 +230,8 @@ export class OpenAlexBaseClient {
     }
 
     if (typeof globalThis !== "undefined") {
-      const globalLocation = (globalThis as { location?: { origin?: string } }).location;
+      const globalLocation =
+        "location" in globalThis ? globalThis.location : undefined;
       if (globalLocation?.origin) {
         return globalLocation.origin;
       }
@@ -373,12 +378,11 @@ export class OpenAlexBaseClient {
   /**
    * Make a request with retries and error handling
    */
-  private async makeRequest(
+  private logRealApiCall(
     url: string,
-    options: RequestInit = {},
-    retryCount = 0,
-  ): Promise<Response> {
-    // Log real API calls for debugging
+    options: RequestInit,
+    retryCount: number,
+  ): void {
     if (
       url.includes("api.openalex.org") &&
       !url.includes("test") &&
@@ -389,55 +393,203 @@ export class OpenAlexBaseClient {
         "Making real OpenAlex API call in test environment",
         {
           url: url.substring(0, 100), // Truncate for readability
-          method: options.method || "GET",
+          method: options.method ?? "GET",
           retryCount,
         },
       );
     }
+  }
 
-    // Determine max attempts: use config.retries if explicitly set (including 0), otherwise use RETRY_CONFIG
-    const maxServerRetries =
-      this.config.retries !== 3
-        ? this.config.retries
-        : RETRY_CONFIG.server.maxAttempts; // 3 is default
-    const maxNetworkRetries =
-      this.config.retries !== 3
-        ? this.config.retries
-        : RETRY_CONFIG.network.maxAttempts; // 3 is default
+  private getMaxRetries(): { server: number; network: number } {
+    return {
+      server:
+        this.config.retries !== 3
+          ? this.config.retries
+          : RETRY_CONFIG.server.maxAttempts,
+      network:
+        this.config.retries !== 3
+          ? this.config.retries
+          : RETRY_CONFIG.network.maxAttempts,
+    };
+  }
+
+  private async checkHostCooldown(url: string): Promise<void> {
+    try {
+      const host = new URL(url).hostname;
+      const cooldownUntil = hostCooldowns.get(host);
+      if (cooldownUntil && Date.now() < cooldownUntil) {
+        throw new OpenAlexRateLimitError(
+          `Host ${host} is in cooldown until ${new Date(cooldownUntil).toISOString()}`,
+          cooldownUntil - Date.now(),
+        );
+      }
+    } catch {
+      // If URL parsing fails or no cooldown, continue with normal flow
+    }
+  }
+
+  private buildRequestOptions(options: RequestInit): RequestInit {
+    return {
+      ...options,
+      headers: {
+        Accept: "application/json",
+        "User-Agent": "OpenAlex-TypeScript-Client/1.0",
+        ...this.config.headers,
+        ...(options.headers &&
+        typeof options.headers === "object" &&
+        !Array.isArray(options.headers) &&
+        !(options.headers instanceof Headers)
+          ? options.headers
+          : {}),
+      },
+    };
+  }
+
+  private async handleRateLimitResponse(
+    response: Response,
+    url: string,
+    options: RequestInit,
+    retryCount: number,
+  ): Promise<Response> {
+    const retryAfter = response.headers.get("Retry-After");
+    const retryAfterMs = retryAfter
+      ? parseRetryAfterToMs(retryAfter)
+      : undefined;
+
+    const maxRateLimitAttempts = RETRY_CONFIG.rateLimited.maxAttempts;
+    if (retryCount < maxRateLimitAttempts) {
+      const waitTime = calculateRetryDelay(
+        retryCount,
+        RETRY_CONFIG.rateLimited,
+        retryAfterMs,
+      );
+      await this.sleep(waitTime);
+      return await this.makeRequest(url, options, retryCount + 1);
+    }
+
+    // Set host cooldown and throw error
+    try {
+      const host = new URL(url).hostname;
+      if (retryAfterMs) {
+        hostCooldowns.set(host, Date.now() + retryAfterMs);
+      } else {
+        hostCooldowns.set(host, Date.now() + 10000);
+      }
+    } catch {
+      // ignore URL parsing failures
+    }
+
+    throw new OpenAlexRateLimitError(
+      `Rate limit exceeded (HTTP 429) after ${String(maxRateLimitAttempts)} attempts`,
+      retryAfterMs,
+    );
+  }
+
+  private async handleServerError(
+    response: Response,
+    url: string,
+    options: RequestInit,
+    retryCount: number,
+    maxServerRetries: number,
+  ): Promise<Response> {
+    if (response.status >= 500 && retryCount < maxServerRetries) {
+      const waitTime =
+        this.config.retries !== 3
+          ? this.config.retryDelay * Math.pow(2, retryCount)
+          : calculateRetryDelay(retryCount, RETRY_CONFIG.server);
+      await this.sleep(waitTime);
+      return await this.makeRequest(url, options, retryCount + 1);
+    }
+    throw await this.parseError(response);
+  }
+
+  private async handleResponseInterception(
+    interceptedRequest: InterceptedRequest | null,
+    response: Response,
+    responseTime: number,
+  ): Promise<void> {
+    if (interceptedRequest && response.status >= 200 && response.status < 300) {
+      try {
+        const responseClone = response.clone();
+        let responseData: unknown;
+
+        try {
+          responseData = await responseClone.json();
+        } catch (jsonError) {
+          logger.debug(
+            "client",
+            "Failed to parse response as JSON for interception",
+            {
+              error: jsonError,
+              contentType: response.headers.get("content-type"),
+              status: response.status,
+            },
+          );
+          return;
+        }
+
+        const interceptedCall = apiInterceptor.interceptResponse(
+          interceptedRequest,
+          response,
+          responseData,
+          responseTime,
+        );
+
+        const diskCacheEnabled =
+          globalThis.process?.env?.ACADEMIC_EXPLORER_DISK_CACHE_ENABLED !==
+          "false";
+
+        if (
+          interceptedCall &&
+          typeof globalThis.process !== "undefined" &&
+          globalThis.process?.versions?.node &&
+          diskCacheEnabled
+        ) {
+          try {
+            const { defaultDiskWriter } = await import("./cache/disk");
+            await defaultDiskWriter.writeToCache({
+              url: interceptedCall.request.url,
+              finalUrl: interceptedCall.request.finalUrl,
+              method: interceptedCall.request.method,
+              requestHeaders: interceptedCall.request.headers,
+              responseData: interceptedCall.response.data,
+              statusCode: interceptedCall.response.status,
+              responseHeaders: interceptedCall.response.headers,
+              timestamp: new Date(
+                interceptedCall.response.timestamp,
+              ).toISOString(),
+            });
+          } catch (diskError: unknown) {
+            logger.debug(
+              "client",
+              "Disk caching unavailable (browser environment)",
+              { error: diskError },
+            );
+          }
+        }
+      } catch (interceptError: unknown) {
+        logger.debug("client", "Response interception failed", {
+          error: interceptError,
+        });
+      }
+    }
+  }
+
+  private async makeRequest(
+    url: string,
+    options: RequestInit = {},
+    retryCount = 0,
+  ): Promise<Response> {
+    this.logRealApiCall(url, options, retryCount);
+    const { server: maxServerRetries, network: maxNetworkRetries } =
+      this.getMaxRetries();
 
     try {
-      // Short-circuit if host is under cooldown to avoid additional bursts
-      try {
-        const host = new URL(url).hostname;
-        const cooldownUntil = hostCooldowns.get(host);
-        if (cooldownUntil && Date.now() < cooldownUntil) {
-          throw new OpenAlexRateLimitError(
-            `Host ${host} is in cooldown until ${new Date(cooldownUntil).toISOString()}`,
-            cooldownUntil - Date.now(),
-          );
-        }
-      } catch {
-        // If URL parsing fails or no cooldown, continue with normal flow
-      }
+      await this.checkHostCooldown(url);
       await this.enforceRateLimit();
 
-      // Intercept the request if enabled
       const requestStartTime = Date.now();
-      const requestOptions: RequestInit = {
-        ...options,
-        headers: {
-          Accept: "application/json",
-          "User-Agent": "OpenAlex-TypeScript-Client/1.0",
-          ...this.config.headers,
-          ...(options.headers &&
-          typeof options.headers === "object" &&
-          !Array.isArray(options.headers) &&
-          !(options.headers instanceof Headers)
-            ? options.headers
-            : {}),
-        },
-      };
-
+      const requestOptions = this.buildRequestOptions(options);
       const interceptedRequest = apiInterceptor.interceptRequest(
         url,
         requestOptions,
@@ -456,142 +608,30 @@ export class OpenAlexBaseClient {
       clearTimeout(timeoutId);
       const responseTime = Date.now() - requestStartTime;
 
-      // Handle rate limiting from server (HTTP 429) with retry/backoff
       if (response.status === 429) {
-        const retryAfter = response.headers.get("Retry-After");
-        const retryAfterMs = retryAfter
-          ? parseRetryAfterToMs(retryAfter)
-          : undefined;
-
-        // Use rate-limited retry strategy from internal config
-        const maxRateLimitAttempts = RETRY_CONFIG.rateLimited.maxAttempts;
-        if (retryCount < maxRateLimitAttempts) {
-          const waitTime = calculateRetryDelay(
-            retryCount,
-            RETRY_CONFIG.rateLimited,
-            retryAfterMs,
-          );
-          await this.sleep(waitTime);
-          return await this.makeRequest(url, options, retryCount + 1);
-        }
-
-        // Exhausted retries - set host cooldown (if provided) and surface a rate limit error to callers
-        try {
-          const host = new URL(url).hostname;
-          if (retryAfterMs) {
-            hostCooldowns.set(host, Date.now() + retryAfterMs);
-          } else {
-            // Set a conservative default cooldown
-            hostCooldowns.set(host, Date.now() + 10000);
-          }
-        } catch {
-          // ignore URL parsing failures
-        }
-
-        throw new OpenAlexRateLimitError(
-          `Rate limit exceeded (HTTP 429) after ${String(maxRateLimitAttempts)} attempts`,
-          retryAfterMs,
+        return await this.handleRateLimitResponse(
+          response,
+          url,
+          options,
+          retryCount,
         );
       }
 
-      // Handle server errors (5xx) with enhanced retry logic
-      if (
-        !response.ok &&
-        response.status >= 500 &&
-        retryCount < maxServerRetries
-      ) {
-        const waitTime =
-          this.config.retries !== 3
-            ? this.config.retryDelay * Math.pow(2, retryCount)
-            : calculateRetryDelay(retryCount, RETRY_CONFIG.server);
-        await this.sleep(waitTime);
-        return await this.makeRequest(url, options, retryCount + 1);
-      }
-
-      // Handle other HTTP errors (no retry for 4xx except 429)
       if (!response.ok) {
-        throw await this.parseError(response);
+        return await this.handleServerError(
+          response,
+          url,
+          options,
+          retryCount,
+          maxServerRetries,
+        );
       }
 
-      // Intercept the response if request was intercepted and response is successful
-      if (
-        interceptedRequest &&
-        response.status >= 200 &&
-        response.status < 300
-      ) {
-        try {
-          // Clone the response to read the data without consuming the original stream
-          const responseClone = response.clone();
-          let responseData: unknown;
-
-          try {
-            responseData = await responseClone.json();
-          } catch (jsonError) {
-            // If JSON parsing fails, skip interception but log the issue
-            logger.debug(
-              "client",
-              "Failed to parse response as JSON for interception",
-              {
-                error: jsonError,
-                contentType: response.headers.get("content-type"),
-                status: response.status,
-              },
-            );
-            return response; // Skip interception and return response
-          }
-
-          // Intercept the response
-          const interceptedCall = apiInterceptor.interceptResponse(
-            interceptedRequest,
-            response,
-            responseData,
-            responseTime,
-          );
-
-          // Write to disk cache if intercepted successfully (Node.js only)
-          // Check environment variable to determine if disk caching should be enabled
-          const diskCacheEnabled =
-            globalThis.process?.env?.ACADEMIC_EXPLORER_DISK_CACHE_ENABLED !==
-            "false";
-
-          if (
-            interceptedCall &&
-            typeof globalThis.process !== "undefined" &&
-            globalThis.process.versions?.node &&
-            diskCacheEnabled
-          ) {
-            try {
-              // Dynamic import to avoid bundling Node.js modules in browser
-              const { defaultDiskWriter } = await import("./cache/disk");
-              await defaultDiskWriter.writeToCache({
-                url: interceptedCall.request.url,
-                finalUrl: interceptedCall.request.finalUrl,
-                method: interceptedCall.request.method,
-                requestHeaders: interceptedCall.request.headers,
-                responseData: interceptedCall.response.data,
-                statusCode: interceptedCall.response.status,
-                responseHeaders: interceptedCall.response.headers,
-                timestamp: new Date(
-                  interceptedCall.response.timestamp,
-                ).toISOString(),
-              });
-            } catch (diskError: unknown) {
-              // Silently fail disk caching in browser environments
-              logger.debug(
-                "client",
-                "Disk caching unavailable (browser environment)",
-                { error: diskError },
-              );
-            }
-          }
-        } catch (interceptError: unknown) {
-          // Don't fail the request if interception fails
-          logger.debug("client", "Response interception failed", {
-            error: interceptError,
-          });
-        }
-      }
-
+      await this.handleResponseInterception(
+        interceptedRequest,
+        response,
+        responseTime,
+      );
       return response;
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") {
@@ -604,7 +644,6 @@ export class OpenAlexBaseClient {
         throw error;
       }
 
-      // Handle network errors with enhanced retry logic
       if (retryCount < maxNetworkRetries) {
         const waitTime =
           this.config.retries !== 3
@@ -629,10 +668,10 @@ export class OpenAlexBaseClient {
 
     // Validate content-type before parsing JSON
     const contentType = response.headers.get("content-type");
-    if (!contentType || !contentType.includes("application/json")) {
+    if (!contentType?.includes("application/json")) {
       const text = await response.text();
       throw new OpenAlexApiError(
-        `Expected JSON response but got ${contentType || "unknown content-type"}. Response: ${text.substring(0, 200)}...`,
+        `Expected JSON response but got ${contentType ?? "unknown content-type"}. Response: ${text.substring(0, 200)}...`,
         response.status,
       );
     }

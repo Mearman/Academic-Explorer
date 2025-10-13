@@ -198,7 +198,7 @@ export class AuthorsApi {
 
       return response.results.map((result) => ({
         ...result,
-        entity_type: "author" as const,
+        entity_type: "author",
       }));
     } catch (error: unknown) {
       // Log error but return empty array for graceful degradation
@@ -236,7 +236,7 @@ export class AuthorsApi {
    */
   async getAuthor(id: string, params: QueryParams = {}): Promise<Author> {
     // Normalize ORCID if it's an ORCID identifier
-    const normalizedId = this.normalizeOrcidId(id) || id;
+    const normalizedId = this.normalizeOrcidId(id) ?? id;
     return this.client.getById<Author>("authors", normalizedId, params);
   }
 
@@ -776,7 +776,7 @@ export class AuthorsApi {
 
     const response = await this.client.getResponse<Author>("authors", params);
 
-    return response.group_by || [];
+    return response.group_by ?? [];
   }
 
   /**
@@ -823,7 +823,7 @@ export class AuthorsApi {
     // Transform the response to match GroupedResponse type
     return {
       ...response,
-      group_by: response.group_by || [],
-    } as GroupedResponse<Author>;
+      group_by: response.group_by ?? [],
+    };
   }
 }

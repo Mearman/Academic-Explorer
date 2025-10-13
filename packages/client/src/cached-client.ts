@@ -15,15 +15,16 @@ import { TextAnalysisApi } from "./entities/text-analysis";
 import { TopicsApi } from "./entities/topics";
 import { WorksApi } from "./entities/works";
 import {
-    staticDataProvider,
-    type CacheStatistics,
-    type EnvironmentInfo,
+  staticDataProvider,
+  type CacheStatistics,
+  type EnvironmentInfo,
 } from "./internal/static-data-provider";
 import {
-    cleanOpenAlexId,
-    toStaticEntityType,
+  cleanOpenAlexId,
+  toStaticEntityType,
 } from "./internal/static-data-utils";
 import type { OpenAlexEntity } from "./types";
+import { isOpenAlexEntity } from "./type-guards";
 import { AutocompleteApi } from "./utils/autocomplete";
 
 export interface ClientApis {
@@ -83,15 +84,74 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       textAnalysis: new TextAnalysisApi(this),
       concepts: new ConceptsApi(this),
       autocomplete: new AutocompleteApi(this),
-      getEntity: this.getEntityWithStaticCache.bind(this) as (
-        id: string,
-      ) => Promise<OpenAlexEntity | null>,
+      getEntity: this.getEntityWithStaticCache.bind(this),
     };
   }
 
   /**
    * Enhanced entity getter with static cache integration
    */
+  private async tryStaticCache(
+    cleanId: string,
+    entityType: string,
+  ): Promise<OpenAlexEntity | null> {
+    try {
+      const staticEntityType = toStaticEntityType(entityType);
+      const staticResult = await staticDataProvider.getStaticData(
+        staticEntityType,
+        cleanId,
+      );
+
+      if (
+        staticResult.found &&
+        staticResult.data &&
+        isOpenAlexEntity(staticResult.data)
+      ) {
+        this.requestStats.cacheHits++;
+        logger.debug("client", "Static cache hit for entity", {
+          id: cleanId,
+          entityType,
+          tier: staticResult.tier,
+          loadTime: staticResult.loadTime,
+        });
+        return staticResult.data;
+      }
+    } catch (staticError: unknown) {
+      logger.debug("client", "Static cache error, handling gracefully", {
+        id: cleanId,
+        error: staticError,
+      });
+    }
+    return null;
+  }
+
+  private async tryApiFallback(
+    cleanId: string,
+    entityType: string,
+  ): Promise<OpenAlexEntity | null> {
+    try {
+      const result = await this.getById<OpenAlexEntity>(
+        `${entityType}`,
+        cleanId,
+      );
+
+      if (this.staticCacheEnabled && result) {
+        await this.cacheEntityResult(entityType, cleanId, result);
+      }
+
+      return result;
+    } catch (apiError: unknown) {
+      logger.warn(
+        "client",
+        "API request failed for entity - attempting static cache fallback",
+        { id: cleanId, error: apiError },
+      );
+      this.requestStats.errors++;
+
+      return await this.tryStaticCache(cleanId, entityType);
+    }
+  }
+
   private async getEntityWithStaticCache(
     id: string,
   ): Promise<OpenAlexEntity | null> {
@@ -99,36 +159,20 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
     this.requestStats.totalRequests++;
 
     try {
+      const entityType = this.detectEntityTypeFromId(cleanId);
+
+      if (!entityType) {
+        logger.warn("client", "Could not determine entity type for ID", {
+          id: cleanId,
+        });
+        return null;
+      }
+
+      // Try static cache first if enabled
       if (this.staticCacheEnabled) {
-        // Detect entity type from ID
-        const entityType = this.detectEntityTypeFromId(cleanId);
-
-        if (entityType) {
-          try {
-            const staticEntityType = toStaticEntityType(entityType);
-            const staticResult = await staticDataProvider.getStaticData(
-              staticEntityType,
-              cleanId,
-            );
-
-            if (staticResult.found && staticResult.data) {
-              this.requestStats.cacheHits++;
-              logger.debug("client", "Static cache hit for entity", {
-                id: cleanId,
-                entityType,
-                tier: staticResult.tier,
-                loadTime: staticResult.loadTime,
-              });
-              return staticResult.data as OpenAlexEntity;
-            }
-          } catch (staticError: unknown) {
-            // Handle static cache errors gracefully - return null without API fallback
-            logger.debug("client", "Static cache error, handling gracefully", {
-              id: cleanId,
-              error: staticError,
-            });
-            return null;
-          }
+        const staticResult = await this.tryStaticCache(cleanId, entityType);
+        if (staticResult) {
+          return staticResult;
         }
       }
 
@@ -136,62 +180,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       this.requestStats.apiFallbacks++;
       logger.debug("client", "Falling back to API for entity", { id: cleanId });
 
-      // Try to get from API using appropriate endpoint
-      const entityType = this.detectEntityTypeFromId(cleanId);
-      if (entityType) {
-        try {
-          const result = await this.getById<OpenAlexEntity>(
-            `${entityType}`,
-            cleanId,
-          );
-
-          // Cache the result for future use if static cache is enabled
-          if (this.staticCacheEnabled && result) {
-            await this.cacheEntityResult(entityType, cleanId, result);
-          }
-
-          return result;
-        } catch (apiError: unknown) {
-          // If the API call failed due to rate limiting or network/server issues, try static cache as a graceful fallback
-          logger.warn(
-            "client",
-            "API request failed for entity - attempting static cache fallback",
-            { id: cleanId, error: apiError },
-          );
-          this.requestStats.errors++;
-
-          if (this.staticCacheEnabled) {
-            try {
-              const staticEntityType = toStaticEntityType(entityType);
-              const staticResult = await staticDataProvider.getStaticData(
-                staticEntityType,
-                cleanId,
-              );
-              if (staticResult.found && staticResult.data) {
-                this.requestStats.cacheHits++;
-                logger.debug(
-                  "client",
-                  "Static cache fallback successful after API error",
-                  { id: cleanId, tier: staticResult.tier },
-                );
-                return staticResult.data as OpenAlexEntity;
-              }
-            } catch (staticError: unknown) {
-              logger.debug("client", "Static cache fallback failed", {
-                id: cleanId,
-                error: staticError,
-              });
-            }
-          }
-
-          return null;
-        }
-      }
-
-      logger.warn("client", "Could not determine entity type for ID", {
-        id: cleanId,
-      });
-      return null;
+      return await this.tryApiFallback(cleanId, entityType);
     } catch (error: unknown) {
       this.requestStats.errors++;
       logger.error("client", "Failed to get entity", { id: cleanId, error });

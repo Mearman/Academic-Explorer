@@ -17,6 +17,29 @@ function isString(value: unknown): value is string {
   return typeof value === "string";
 }
 
+function isKeywordSortOption(value: unknown): value is KeywordSortOption {
+  if (!isString(value)) {
+    return false;
+  }
+  const baseFields = [
+    "relevance_score",
+    "cited_by_count",
+    "works_count",
+    "created_date",
+    "updated_date",
+    "display_name",
+    "random",
+  ];
+  const [field, direction] = value.split(":");
+  if (!baseFields.includes(field)) {
+    return false;
+  }
+  if (direction && direction !== "asc" && direction !== "desc") {
+    return false;
+  }
+  return true;
+}
+
 /**
  * Strict query parameters specific to Keywords API
  */
@@ -102,7 +125,19 @@ export type KeywordSortOption =
   | "created_date"
   | "updated_date"
   | "display_name"
-  | "random";
+  | "random"
+  | "relevance_score:asc"
+  | "relevance_score:desc"
+  | "cited_by_count:asc"
+  | "cited_by_count:desc"
+  | "works_count:asc"
+  | "works_count:desc"
+  | "created_date:asc"
+  | "created_date:desc"
+  | "updated_date:asc"
+  | "updated_date:desc"
+  | "display_name:asc"
+  | "display_name:desc";
 
 /**
  * Selectable fields for keywords queries
@@ -194,7 +229,11 @@ export class KeywordsApi {
       throw new Error("Keyword ID must be a non-empty string");
     }
     // If it's already QueryParams (has string sort), pass directly
-    if ("sort" in params && typeof params.sort === "string" && this.isQueryParams(params)) {
+    if (
+      "sort" in params &&
+      typeof params.sort === "string" &&
+      this.isQueryParams(params)
+    ) {
       return this.client.getById<Keyword>("keywords", id, params);
     }
     // Otherwise, convert from StrictKeywordsQueryParams
@@ -228,7 +267,11 @@ export class KeywordsApi {
     params: StrictKeywordsQueryParams | QueryParams = {},
   ): Promise<OpenAlexResponse<Keyword>> {
     // If it's already QueryParams (has string sort), pass directly
-    if ("sort" in params && typeof params.sort === "string" && this.isQueryParams(params)) {
+    if (
+      "sort" in params &&
+      typeof params.sort === "string" &&
+      this.isQueryParams(params)
+    ) {
       return this.client.getResponse<Keyword>("keywords", params);
     }
     // Otherwise, convert from StrictKeywordsQueryParams
@@ -286,7 +329,7 @@ export class KeywordsApi {
     const baseParams = {
       search: query.trim(),
       filter: buildFilterString(filters),
-      sort: sort as KeywordSortOption,
+      sort,
       page,
       per_page,
     };
@@ -372,7 +415,11 @@ export class KeywordsApi {
     params: StrictKeywordsQueryParams | QueryParams = {},
   ): AsyncGenerator<Keyword[], void, unknown> {
     // If it's already QueryParams (has string sort), pass directly
-    if ("sort" in params && typeof params.sort === "string" && this.isQueryParams(params)) {
+    if (
+      "sort" in params &&
+      typeof params.sort === "string" &&
+      this.isQueryParams(params)
+    ) {
       yield* this.client.stream<Keyword>("keywords", params);
       return;
     }

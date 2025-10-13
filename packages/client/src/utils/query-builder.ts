@@ -290,8 +290,10 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
       // OpenAlex API is flexible with filter value types, so this assignment is safe
       // after type guard validation
       const filterKey = String(field);
-      const filtersRecord = this.filters as Record<string, unknown>;
-      filtersRecord[filterKey] = value;
+      const filtersRecord = this.filters;
+      if (typeof filtersRecord === "object" && filtersRecord !== null) {
+        filtersRecord[filterKey] = value;
+      }
     }
   }
 
@@ -305,8 +307,9 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
       this.isFiltersRecord(this.filters)
     ) {
       // Both key and value are validated, safe to assign
-      const filtersRecord = this.filters as Record<string, unknown>;
-      filtersRecord[key] = value;
+      // Type assertion needed due to generic constraints - type guards ensure safety
+       
+      (this.filters as Record<string, unknown>)[key] = value;
     }
   }
 }
@@ -652,7 +655,7 @@ export const SORT_FIELDS = {
   UPDATED_DATE: "updated_date",
   DISPLAY_NAME: "display_name",
   RELEVANCE_SCORE: "relevance_score",
-} as const;
+};
 
 // Common field selection presets
 export const SELECT_PRESETS = {
@@ -678,4 +681,4 @@ export const SELECT_PRESETS = {
     "last_known_institution",
     "affiliations",
   ],
-} as const;
+};

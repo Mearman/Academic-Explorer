@@ -677,7 +677,7 @@ export class IdResolver {
    */
   normalizeToUrl(id: string): string | null {
     const result = this.validateId(id);
-    return result.isValid ? result.metadata?.url || null : null;
+    return result.isValid ? (result.metadata?.url ?? null) : null;
   }
 
   /**

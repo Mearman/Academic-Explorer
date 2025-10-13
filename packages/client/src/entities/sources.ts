@@ -398,7 +398,7 @@ export class SourcesApi {
 
       return response.results.map((result) => ({
         ...result,
-        entity_type: "source" as const,
+        entity_type: "source",
       }));
     } catch (error: unknown) {
       // Log error but return empty array for graceful degradation

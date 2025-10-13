@@ -171,7 +171,7 @@ export class RequestPipeline {
     const context: RequestContext = {
       requestId: `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       url,
-      method: options.method || "GET",
+      method: options.method ?? "GET",
       options,
       startTime: Date.now(),
       metadata: {},
@@ -409,7 +409,7 @@ export class RequestPipeline {
 
         // Calculate retry delay
         const delay =
-          classification.retryDelay ||
+          classification.retryDelay ??
           calculateRetryDelay(attempt, RETRY_CONFIG.network);
 
         logger.debug("pipeline", "Retrying request", {
@@ -424,7 +424,7 @@ export class RequestPipeline {
       }
     }
 
-    throw lastResult?.error || new Error("Retry logic failed");
+    throw lastResult?.error ?? new Error("Retry logic failed");
   }
 
   /**
@@ -592,10 +592,10 @@ export function classifyError(
       type: ErrorType.RATE_LIMIT,
       retryable: true,
       retryDelay:
-        retryDelay || calculateRetryDelay(0, RETRY_CONFIG.rateLimited),
+        retryDelay ?? calculateRetryDelay(0, RETRY_CONFIG.rateLimited),
       userMessage:
         "Too many requests. Please wait a moment before trying again.",
-      internalMessage: `Rate limited (HTTP 429) - retry after ${retryAfter || "unknown"} seconds`,
+      internalMessage: `Rate limited (HTTP 429) - retry after ${retryAfter ?? "unknown"} seconds`,
     };
   }
 

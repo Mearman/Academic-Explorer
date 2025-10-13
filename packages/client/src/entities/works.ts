@@ -818,7 +818,10 @@ export class WorksApi {
       throw new Error(`No grouping data returned for field: ${groupBy}`);
     }
 
-    return response as GroupedResponse<Work>;
+    return {
+      ...response,
+      group_by: response.group_by,
+    };
   }
 
   /**
@@ -865,7 +868,10 @@ export class WorksApi {
       throw new Error(`No grouping data returned for field: ${field}`);
     }
 
-    return response as GroupedResponse<Work>;
+    return {
+      ...response,
+      group_by: response.group_by,
+    };
   }
 
   /**
@@ -955,7 +961,7 @@ export class WorksApi {
       // Map results to ensure consistent entity_type
       return response.results.map((result) => ({
         ...result,
-        entity_type: "work" as const,
+        entity_type: "work",
       }));
     } catch (error: unknown) {
       // Enhanced error handling

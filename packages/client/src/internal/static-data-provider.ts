@@ -201,7 +201,7 @@ class LocalDiskCacheTier implements CacheTierInterface {
         return { found: false };
       }
 
-      const data = JSON.parse(fs.readFileSync(filePath, "utf-8")) as unknown;
+      const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
 
       this.stats.hits++;
       const loadTime = Date.now() - startTime;
@@ -308,7 +308,7 @@ class GitHubPagesCacheTier implements CacheTierInterface {
   // Configurable retry policy for remote tier
   private retryConfig = (() => {
     const isTest = Boolean(
-      globalThis.process?.env?.VITEST ||
+      globalThis.process?.env?.VITEST ??
         globalThis.process?.env?.NODE_ENV === "test",
     );
     return {
@@ -379,7 +379,7 @@ class GitHubPagesCacheTier implements CacheTierInterface {
           throw typedErr;
         }
 
-        const data = (await response.json()) as unknown;
+        const data = await response.json();
 
         // Success — clear any recorded failures
         this.recentFailures.delete(url);
@@ -419,9 +419,12 @@ class GitHubPagesCacheTier implements CacheTierInterface {
         this.recentFailures.set(url, newState);
 
         // If it's a typed error object with a status of 404, don't retry
-        const typed = error as
-          | { status?: number; retryAfter?: string }
-          | undefined;
+        const isErrorWithStatus = (
+          err: unknown,
+        ): err is { status?: number; retryAfter?: string } => {
+          return typeof err === "object" && err !== null && "status" in err;
+        };
+        const typed = isErrorWithStatus(error) ? error : undefined;
         if (typed?.status === 404) {
           return { found: false };
         }
@@ -615,7 +618,7 @@ class StaticDataProvider {
           await this.promoteToHigherTiers(entityType, id, result.data, tier);
 
           this.updateGlobalStats(
-            result.tier || CacheTier.MEMORY,
+            result.tier ?? CacheTier.MEMORY,
             true,
             loadTime,
           );
@@ -683,18 +686,21 @@ class StaticDataProvider {
 
   async getCacheStatistics(): Promise<CacheStatistics> {
     // Update individual tier stats
-    for (const [tier, tierInterface] of [
+    const cacheTiers: Array<[CacheTier, CacheTierInterface]> = [
       [CacheTier.MEMORY, this.memoryCacheTier],
       [CacheTier.LOCAL_DISK, this.localDiskCacheTier],
       [CacheTier.GITHUB_PAGES, this.gitHubPagesCacheTier],
-    ] as const) {
+    ];
+    for (const [tier, tierInterface] of cacheTiers) {
       try {
         const stats = await tierInterface.getStats();
         this.globalStats.tierStats[tier] = stats;
       } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
         logger.debug(this.LOG_PREFIX, "Failed to get tier stats", {
           tier,
-          error,
+          error: errorMessage,
         });
       }
     }
@@ -741,7 +747,7 @@ class StaticDataProvider {
 
   getEnvironmentInfo(): EnvironmentInfo {
     const isTest = Boolean(
-      globalThis.process?.env?.VITEST ||
+      globalThis.process?.env?.VITEST ??
         globalThis.process?.env?.NODE_ENV === "test",
     );
     const isDevelopment = Boolean(

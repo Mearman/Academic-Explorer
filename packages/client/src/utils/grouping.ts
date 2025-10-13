@@ -699,8 +699,8 @@ export class GroupingApi {
    */
   private extractMetricValue(group: unknown, metric: string): number {
     if (group && typeof group === "object") {
-      const groupRecord = group as Record<string, unknown>;
-      const value = groupRecord[metric];
+      const groupRecord = group;
+      const value = metric in groupRecord ? groupRecord[metric] : undefined;
       if (typeof value === "number" && !isNaN(value)) {
         return value;
       }

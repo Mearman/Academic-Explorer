@@ -3,6 +3,8 @@
  * Provides consistent request representation for caching and visit tracking
  */
 
+import { isRecord } from "../internal/type-helpers";
+
 /**
  * Simple synchronous hash function that works in both browser and Node.js
  * Uses FNV-1a hash algorithm (fast, deterministic, collision-resistant for our use case)
@@ -53,26 +55,25 @@ export interface NormalizedRequest {
 /**
  * Normalize an object's keys and values recursively for consistent comparison
  */
-function normalizeObject(obj: Record<string, unknown>): Record<string, unknown> {
+function normalizeObject(
+  obj: Record<string, unknown>,
+): Record<string, unknown> {
   return Object.keys(obj)
     .sort()
-    .reduce(
-      (acc, key) => {
-        const value = obj[key];
+    .reduce((acc, key) => {
+      const value = obj[key];
 
-        if (Array.isArray(value)) {
-          // Sort array elements for consistent ordering
-          acc[key] = value.slice().sort();
-        } else if (value && typeof value === "object") {
-          acc[key] = normalizeObject(value as Record<string, unknown>);
-        } else {
-          acc[key] = value;
-        }
+      if (Array.isArray(value)) {
+        // Sort array elements for consistent ordering
+        acc[key] = value.slice().sort();
+      } else if (isRecord(value)) {
+        acc[key] = normalizeObject(value);
+      } else {
+        acc[key] = value;
+      }
 
-        return acc;
-      },
-      {} as Record<string, unknown>,
-    );
+      return acc;
+    }, {});
 }
 
 /**
@@ -140,7 +141,10 @@ export function normalizeRequest(request: OpenAlexRequest): NormalizedRequest {
 /**
  * Compare two normalized requests for equality
  */
-export function requestsEqual(a: NormalizedRequest, b: NormalizedRequest): boolean {
+export function requestsEqual(
+  a: NormalizedRequest,
+  b: NormalizedRequest,
+): boolean {
   return a.hash === b.hash;
 }
 
