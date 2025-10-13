@@ -60,14 +60,14 @@ vi.mock("@/hooks/use-theme-colors", () => ({
       error: "#fa5252",
       info: "#228be6",
       entity: {
-        work: "#228be6",
-        author: "#40c057",
-        source: "#9775fa",
-        institution: "#fd7e14",
-        concept: "#fa5252",
-        topic: "#fa5252",
-        publisher: "#15aabf",
-        funder: "#e64980",
+        work: "#228be6", // blue
+        author: "#51cf66", // author palette (green)
+        source: "#c084fc", // source palette (purple)
+        institution: "#fb923c", // institution palette (orange)
+        concept: "#f06595", // pink
+        topic: "#fa5252", // red
+        publisher: "#22b8cf", // teal
+        funder: "#3bc9db", // cyan
       },
     },
     getColor: vi.fn(),
