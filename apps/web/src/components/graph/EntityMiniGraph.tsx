@@ -8,6 +8,11 @@ import {
   GraphAdapterFactory,
   type GraphAdapterType,
 } from "./adapters/GraphAdapterFactory";
+import {
+  getConfigsForAdapter,
+  getDefaultConfigForAdapter,
+} from "./configs/registry";
+import type { GraphAdapterConfig, GraphConfigOption } from "./configs";
 
 // Loading fallback component
 function GraphLoadingFallback() {
@@ -36,20 +41,22 @@ interface EntityMiniGraphProps {
   entity: OpenAlexEntity;
   relatedEntities: OpenAlexEntity[];
   adapterType?: GraphAdapterType;
-  showAdapterSelector?: boolean;
+  showSelector?: boolean;
 }
 
 export function EntityMiniGraph({
   entity,
   relatedEntities,
   adapterType: initialAdapterType = GraphAdapterFactory.getDefaultAdapter(),
-  showAdapterSelector = true,
+  showSelector = true,
 }: EntityMiniGraphProps) {
   const themeColors = useThemeColors();
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 400, height: 300 });
-  const [selectedAdapterType, setSelectedAdapterType] =
-    useState<GraphAdapterType>(initialAdapterType);
+  const [selectedOption, setSelectedOption] = useState<{
+    adapterType: GraphAdapterType;
+    config: GraphAdapterConfig;
+  } | null>(null);
   const [adapter, setAdapter] = useState<GraphAdapter | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -66,15 +73,83 @@ export function EntityMiniGraph({
     return () => window.removeEventListener("resize", updateDimensions);
   }, []);
 
-  // Load the graph adapter when the type changes
+  // Create combined options for single dropdown
+  const combinedOptions = useMemo(() => {
+    const options: Array<{
+      value: string;
+      label: string;
+      adapterType: GraphAdapterType;
+      config: GraphAdapterConfig;
+    }> = [];
+
+    // Get all available adapter types
+    const adapterTypes: GraphAdapterType[] = [
+      "reactflow-hierarchical",
+      "react-force-graph-2d",
+      "react-force-graph-3d",
+      "r3f-forcegraph",
+    ];
+
+    // For each adapter type, get its configs and create combined options
+    adapterTypes.forEach((adapterType) => {
+      const configs = getConfigsForAdapter(adapterType);
+      configs.forEach((configOption) => {
+        const adapterLabel = {
+          "reactflow-hierarchical": "React Flow",
+          "react-force-graph-2d": "React Force Graph 2D",
+          "react-force-graph-3d": "React Force Graph 3D",
+          "r3f-forcegraph": "R3F Force Graph",
+        }[adapterType];
+
+        options.push({
+          value: `${adapterType}-${configOption.config.name}`,
+          label: `${adapterLabel}: ${configOption.config.name}`,
+          adapterType,
+          config: configOption.config,
+        });
+      });
+    });
+
+    return options;
+  }, []);
+
+  // Set default option on initial load
   useEffect(() => {
+    if (!selectedOption && combinedOptions.length > 0) {
+      // Find the default option for the initial adapter type
+      const defaultOption =
+        combinedOptions.find(
+          (option) =>
+            option.adapterType === initialAdapterType &&
+            option.config.isDefault,
+        ) ||
+        combinedOptions.find(
+          (option) => option.adapterType === initialAdapterType,
+        ) ||
+        combinedOptions[0];
+
+      if (defaultOption) {
+        setSelectedOption({
+          adapterType: defaultOption.adapterType,
+          config: defaultOption.config,
+        });
+      }
+    }
+  }, [selectedOption, combinedOptions, initialAdapterType]);
+
+  // Load the graph adapter when the selected option changes
+  useEffect(() => {
+    if (!selectedOption) return;
+
     let isMounted = true;
 
     const loadAdapter = async () => {
       setIsLoading(true);
       try {
-        const newAdapter =
-          await GraphAdapterFactory.createAdapter(selectedAdapterType);
+        const newAdapter = await GraphAdapterFactory.createAdapter(
+          selectedOption.adapterType,
+          selectedOption.config,
+        );
         if (isMounted) {
           setAdapter(newAdapter);
           setIsLoading(false);
@@ -92,7 +167,7 @@ export function EntityMiniGraph({
     return () => {
       isMounted = false;
     };
-  }, [selectedAdapterType]);
+  }, [selectedOption]);
 
   // Convert entities to graph data
   const graphData = useMemo(() => {
@@ -112,12 +187,6 @@ export function EntityMiniGraph({
     [dimensions, themeColors],
   );
 
-  const adapterOptions = [
-    { value: "reactflow-hierarchical", label: "2D Hierarchical" },
-    { value: "react-force-graph-3d", label: "3D Force-Directed" },
-    { value: "r3f-forcegraph", label: "3D R3F Force Graph" },
-  ];
-
   return (
     <div
       ref={containerRef}
@@ -126,7 +195,7 @@ export function EntityMiniGraph({
         position: "relative",
       }}
     >
-      {showAdapterSelector && (
+      {showSelector && (
         <div
           style={{
             marginBottom: "8px",
@@ -136,13 +205,30 @@ export function EntityMiniGraph({
         >
           <Select
             size="xs"
-            data={adapterOptions}
-            value={selectedAdapterType}
-            onChange={(value) =>
-              value && setSelectedAdapterType(value as GraphAdapterType)
+            data={combinedOptions.map((option) => ({
+              value: option.value,
+              label: option.label,
+            }))}
+            value={
+              selectedOption
+                ? `${selectedOption.adapterType}-${selectedOption.config.name}`
+                : undefined
             }
-            style={{ width: "160px" }}
-            placeholder="Select graph type"
+            onChange={(value) => {
+              if (value) {
+                const option = combinedOptions.find(
+                  (opt) => opt.value === value,
+                );
+                if (option) {
+                  setSelectedOption({
+                    adapterType: option.adapterType,
+                    config: option.config,
+                  });
+                }
+              }
+            }}
+            style={{ width: "200px" }}
+            placeholder="Select graph provider & config"
             disabled={isLoading}
           />
         </div>
