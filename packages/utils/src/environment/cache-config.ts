@@ -5,7 +5,10 @@
  * Handles differences between local development (public/ directory) and production (GitHub Pages URLs).
  */
 
-import { EnvironmentDetector, type BuildContext } from './environment-detector.js';
+import {
+  EnvironmentDetector,
+  type BuildContext,
+} from "./environment-detector.js";
 
 /**
  * Static data path configuration
@@ -34,7 +37,7 @@ export interface CacheStorageConfig {
   /** Whether to persist cache across sessions */
   persistent: boolean;
   /** Storage mechanism preference */
-  storagePreference: 'indexeddb' | 'localstorage' | 'memory';
+  storagePreference: "indexeddb" | "localstorage" | "memory";
   /** Whether to enable compression */
   compression: boolean;
   /** Debug mode for cache operations */
@@ -80,10 +83,10 @@ export interface CacheConfig {
  * Cache configuration factory
  */
 export class CacheConfigFactory {
-  private static readonly GITHUB_PAGES_DOMAIN = 'academic-explorer.joenash.uk';
-  private static readonly GITHUB_IO_DOMAIN = 'mearman.github.io';
-  private static readonly LOCAL_DATA_PATH = '/data';
-  private static readonly OPENALEX_SUBPATH = '/openalex';
+  private static readonly GITHUB_PAGES_DOMAIN = "academic-explorer.joenash.uk";
+  private static readonly GITHUB_IO_DOMAIN = "mearman.github.io";
+  private static readonly LOCAL_DATA_PATH = "/data";
+  private static readonly OPENALEX_SUBPATH = "/openalex";
 
   /**
    * Create static data paths configuration based on environment
@@ -97,18 +100,19 @@ export class CacheConfigFactory {
         openalexBaseUrl: `${this.LOCAL_DATA_PATH}${this.OPENALEX_SUBPATH}`,
         isAbsolute: false,
         cacheHeaders: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        }
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          Pragma: "no-cache",
+          Expires: "0",
+        },
       };
     }
 
     if (context.isProduction && context.isGitHubPages) {
       // GitHub Pages production deployment
-      const baseUrl = context.hostname === this.GITHUB_PAGES_DOMAIN
-        ? `https://${this.GITHUB_PAGES_DOMAIN}${this.LOCAL_DATA_PATH}`
-        : `https://${this.GITHUB_IO_DOMAIN}/Academic-Explorer${this.LOCAL_DATA_PATH}`;
+      const baseUrl =
+        context.hostname === this.GITHUB_PAGES_DOMAIN
+          ? `https://${this.GITHUB_PAGES_DOMAIN}${this.LOCAL_DATA_PATH}`
+          : `https://${this.GITHUB_IO_DOMAIN}/Academic-Explorer${this.LOCAL_DATA_PATH}`;
 
       return {
         baseUrl,
@@ -116,9 +120,9 @@ export class CacheConfigFactory {
         openalexBaseUrl: `${baseUrl}${this.OPENALEX_SUBPATH}`,
         isAbsolute: true,
         cacheHeaders: {
-          'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400',
-          'Accept-Encoding': 'gzip, deflate, br'
-        }
+          "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400",
+          "Accept-Encoding": "gzip, deflate, br",
+        },
       };
     }
 
@@ -130,8 +134,8 @@ export class CacheConfigFactory {
         openalexBaseUrl: `${this.LOCAL_DATA_PATH}${this.OPENALEX_SUBPATH}`,
         isAbsolute: false,
         cacheHeaders: {
-          'Cache-Control': 'public, max-age=1800',
-        }
+          "Cache-Control": "public, max-age=1800",
+        },
       };
     }
 
@@ -142,8 +146,8 @@ export class CacheConfigFactory {
       openalexBaseUrl: `${this.LOCAL_DATA_PATH}${this.OPENALEX_SUBPATH}`,
       isAbsolute: false,
       cacheHeaders: {
-        'Cache-Control': 'no-cache'
-      }
+        "Cache-Control": "no-cache",
+      },
     };
   }
 
@@ -156,9 +160,9 @@ export class CacheConfigFactory {
         maxSize: 50 * 1024 * 1024, // 50MB for development
         expirationTime: 10 * 60 * 1000, // 10 minutes
         persistent: false, // Don't persist in development for faster iteration
-        storagePreference: 'memory',
+        storagePreference: "memory",
         compression: false, // Faster without compression in dev
-        debug: true
+        debug: true,
       };
     }
 
@@ -167,9 +171,9 @@ export class CacheConfigFactory {
         maxSize: 200 * 1024 * 1024, // 200MB for production
         expirationTime: 24 * 60 * 60 * 1000, // 24 hours
         persistent: true, // Persist for better user experience
-        storagePreference: 'indexeddb',
+        storagePreference: "indexeddb",
         compression: true, // Save space in production
-        debug: false
+        debug: false,
       };
     }
 
@@ -178,9 +182,9 @@ export class CacheConfigFactory {
         maxSize: 10 * 1024 * 1024, // 10MB for tests
         expirationTime: 5 * 60 * 1000, // 5 minutes
         persistent: false, // Don't persist test data
-        storagePreference: 'memory',
+        storagePreference: "memory",
         compression: false,
-        debug: false
+        debug: false,
       };
     }
 
@@ -189,9 +193,9 @@ export class CacheConfigFactory {
       maxSize: 100 * 1024 * 1024, // 100MB default
       expirationTime: 60 * 60 * 1000, // 1 hour
       persistent: true,
-      storagePreference: 'indexeddb',
+      storagePreference: "indexeddb",
       compression: true,
-      debug: false
+      debug: false,
     };
   }
 
@@ -208,8 +212,8 @@ export class CacheConfigFactory {
         backgroundSync: false, // Disable background sync in dev
         rateLimit: {
           requestsPerMinute: 120, // Higher rate limit for development
-          burstLimit: 20
-        }
+          burstLimit: 20,
+        },
       };
     }
 
@@ -222,8 +226,8 @@ export class CacheConfigFactory {
         backgroundSync: true, // Enable background sync for better UX
         rateLimit: {
           requestsPerMinute: 60, // Respect OpenAlex rate limits
-          burstLimit: 10
-        }
+          burstLimit: 10,
+        },
       };
     }
 
@@ -236,8 +240,8 @@ export class CacheConfigFactory {
         backgroundSync: false,
         rateLimit: {
           requestsPerMinute: 300, // High rate limit for tests
-          burstLimit: 50
-        }
+          burstLimit: 50,
+        },
       };
     }
 
@@ -250,8 +254,8 @@ export class CacheConfigFactory {
       backgroundSync: true,
       rateLimit: {
         requestsPerMinute: 60,
-        burstLimit: 10
-      }
+        burstLimit: 10,
+      },
     };
   }
 
@@ -259,13 +263,13 @@ export class CacheConfigFactory {
    * Create complete cache configuration for current environment
    */
   static createCacheConfig(context?: BuildContext): CacheConfig {
-    const envContext = context || EnvironmentDetector.getBuildContext();
+    const envContext = context ?? EnvironmentDetector.getBuildContext();
 
     return {
       paths: this.createStaticDataPaths(envContext),
       storage: this.createCacheStorageConfig(envContext),
       network: this.createNetworkConfig(envContext),
-      environment: envContext
+      environment: envContext,
     };
   }
 
@@ -273,13 +277,13 @@ export class CacheConfigFactory {
    * Get optimized configuration for specific use cases
    */
   static createOptimizedConfig(
-    useCase: 'research' | 'production' | 'testing' | 'development',
-    context?: BuildContext
+    useCase: "research" | "production" | "testing" | "development",
+    context?: BuildContext,
   ): CacheConfig {
     const baseConfig = this.createCacheConfig(context);
 
     switch (useCase) {
-      case 'research':
+      case "research":
         // Optimize for academic research - longer cache times, more storage
         return {
           ...baseConfig,
@@ -288,19 +292,19 @@ export class CacheConfigFactory {
             maxSize: 500 * 1024 * 1024, // 500MB for research datasets
             expirationTime: 7 * 24 * 60 * 60 * 1000, // 7 days
             persistent: true,
-            debug: true // Enable debug for research insights
+            debug: true, // Enable debug for research insights
           },
           network: {
             ...baseConfig.network,
             backgroundSync: true,
             rateLimit: {
               requestsPerMinute: 30, // Conservative for research ethics
-              burstLimit: 5
-            }
-          }
+              burstLimit: 5,
+            },
+          },
         };
 
-      case 'production':
+      case "production":
         // Optimize for production performance
         return {
           ...baseConfig,
@@ -308,16 +312,16 @@ export class CacheConfigFactory {
             ...baseConfig.storage,
             compression: true,
             persistent: true,
-            debug: false
+            debug: false,
           },
           network: {
             ...baseConfig.network,
             backgroundSync: true,
-            timeout: 10000 // Faster timeout for production
-          }
+            timeout: 10000, // Faster timeout for production
+          },
         };
 
-      case 'testing':
+      case "testing":
         // Optimize for testing reliability
         return {
           ...baseConfig,
@@ -326,18 +330,18 @@ export class CacheConfigFactory {
             maxSize: 5 * 1024 * 1024, // 5MB for tests
             persistent: false,
             compression: false,
-            debug: false
+            debug: false,
           },
           network: {
             ...baseConfig.network,
             timeout: 3000,
             retries: 0, // No retries in tests for faster feedback
             backgroundSync: false,
-            deduplication: false
-          }
+            deduplication: false,
+          },
         };
 
-      case 'development':
+      case "development":
         // Optimize for development experience
         return {
           ...baseConfig,
@@ -345,13 +349,13 @@ export class CacheConfigFactory {
             ...baseConfig.storage,
             persistent: false, // Fresh state on each reload
             compression: false, // Faster without compression
-            debug: true
+            debug: true,
           },
           network: {
             ...baseConfig.network,
             timeout: 60000, // Longer timeout for debugging
-            backgroundSync: false
-          }
+            backgroundSync: false,
+          },
         };
 
       default:
@@ -371,7 +375,7 @@ export function getCurrentCacheConfig(): CacheConfig {
  * Convenience function to get optimized cache configuration
  */
 export function getOptimizedCacheConfig(
-  useCase: 'research' | 'production' | 'testing' | 'development'
+  useCase: "research" | "production" | "testing" | "development",
 ): CacheConfig {
   return CacheConfigFactory.createOptimizedConfig(useCase);
 }
@@ -379,12 +383,17 @@ export function getOptimizedCacheConfig(
 /**
  * Get static data URL for a given path
  */
-export function getStaticDataUrl(relativePath: string, config?: CacheConfig): string {
-  const cacheConfig = config || getCurrentCacheConfig();
+export function getStaticDataUrl(
+  relativePath: string,
+  config?: CacheConfig,
+): string {
+  const cacheConfig = config ?? getCurrentCacheConfig();
   const { paths } = cacheConfig;
 
   // Ensure relative path starts with /
-  const normalizedPath = relativePath.startsWith('/') ? relativePath : `/${relativePath}`;
+  const normalizedPath = relativePath.startsWith("/")
+    ? relativePath
+    : `/${relativePath}`;
 
   if (paths.isAbsolute) {
     return `${paths.baseUrl}${normalizedPath}`;
@@ -397,12 +406,17 @@ export function getStaticDataUrl(relativePath: string, config?: CacheConfig): st
 /**
  * Get OpenAlex data URL for a given entity path
  */
-export function getOpenAlexDataUrl(entityPath: string, config?: CacheConfig): string {
-  const cacheConfig = config || getCurrentCacheConfig();
+export function getOpenAlexDataUrl(
+  entityPath: string,
+  config?: CacheConfig,
+): string {
+  const cacheConfig = config ?? getCurrentCacheConfig();
   const { paths } = cacheConfig;
 
   // Ensure entity path starts with /
-  const normalizedPath = entityPath.startsWith('/') ? entityPath : `/${entityPath}`;
+  const normalizedPath = entityPath.startsWith("/")
+    ? entityPath
+    : `/${entityPath}`;
 
   if (paths.isAbsolute) {
     return `${paths.openalexBaseUrl}${normalizedPath}`;

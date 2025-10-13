@@ -51,7 +51,10 @@ export function trustObjectShape(obj: unknown): Record<string, unknown> {
  * Extract a property value from an object with unknown structure
  * Returns unknown type that must be validated by caller
  */
-export function extractProperty(obj: Record<string, unknown>, key: string): unknown {
+export function extractProperty(
+  obj: Record<string, unknown>,
+  key: string,
+): unknown {
   return obj[key];
 }
 
@@ -61,7 +64,11 @@ export function extractProperty(obj: Record<string, unknown>, key: string): unkn
  * @param validValues - Array of valid values
  * @returns True if value is in validValues
  */
-export function isStringInSet<T extends string>(value: string, validValues: readonly T[]): value is T {
+export function isStringInSet<T extends string>(
+  value: string,
+  validValues: readonly T[],
+): value is T {
+  // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
   return validValues.includes(value as T);
 }
 
@@ -71,7 +78,10 @@ export function isStringInSet<T extends string>(value: string, validValues: read
  * @param validValues - Array of valid enum values
  * @returns Enum value if valid, null if invalid
  */
-export function safeParseEnum<T extends string>(value: string, validValues: readonly T[]): T | null {
+export function safeParseEnum<T extends string>(
+  value: string,
+  validValues: readonly T[],
+): T | null {
   return isStringInSet(value, validValues) ? value : null;
 }
 
@@ -79,9 +89,15 @@ export function safeParseEnum<T extends string>(value: string, validValues: read
  * Assert that a value is within a specific set, throwing an error if invalid
  * Use only when you're certain the value should be valid
  */
-export function assertStringInSet<T extends string>(value: string, validValues: readonly T[], typeName: string): asserts value is T {
+export function assertStringInSet<T extends string>(
+  value: string,
+  validValues: readonly T[],
+  typeName: string,
+): asserts value is T {
   if (!isStringInSet(value, validValues)) {
-    throw new Error(`Invalid ${typeName}: ${value}. Valid values: ${validValues.join(", ")}`);
+    throw new Error(
+      `Invalid ${typeName}: ${value}. Valid values: ${validValues.join(", ")}`,
+    );
   }
 }
 
@@ -123,7 +139,9 @@ export function isNonEmptyArray<T>(value: unknown): value is T[] {
 /**
  * Type guard to check if value is a function
  */
-export function isFunction(value: unknown): value is (...args: unknown[]) => unknown {
+export function isFunction(
+  value: unknown,
+): value is (...args: unknown[]) => unknown {
   return typeof value === "function";
 }
 
@@ -189,7 +207,7 @@ export function isValidEmail(value: unknown): value is string {
  */
 export function hasProperty<K extends string>(
   obj: unknown,
-  key: K
+  key: K,
 ): obj is Record<K, unknown> {
   return isRecord(obj) && key in obj;
 }
@@ -200,7 +218,7 @@ export function hasProperty<K extends string>(
 export function hasPropertyOfType<T>(
   obj: unknown,
   key: string,
-  typeGuard: (value: unknown) => value is T
+  typeGuard: (value: unknown) => value is T,
 ): obj is Record<string, unknown> & { [K in typeof key]: T } {
   return hasProperty(obj, key) && typeGuard(obj[key]);
 }
@@ -208,13 +226,14 @@ export function hasPropertyOfType<T>(
 /**
  * Create a type guard for objects matching a specific shape
  */
-export function createShapeValidator<T>(
-  validators: { [K in keyof T]: (value: unknown) => value is T[K] }
-) {
+export function createShapeValidator<T>(validators: {
+  [K in keyof T]: (value: unknown) => value is T[K];
+}) {
   return (obj: unknown): obj is T => {
     if (!isRecord(obj)) return false;
 
     for (const [key, validator] of Object.entries(validators)) {
+      // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
       const typedValidator = validator as (value: unknown) => boolean;
       if (!typedValidator(obj[key])) return false;
     }
@@ -228,7 +247,7 @@ export function createShapeValidator<T>(
  */
 export function isArrayOfType<T>(
   value: unknown,
-  itemGuard: (item: unknown) => item is T
+  itemGuard: (item: unknown) => item is T,
 ): value is T[] {
   return isArray(value) && value.every(itemGuard);
 }
@@ -238,10 +257,11 @@ export function isArrayOfType<T>(
  */
 export function safeJsonParse<T>(
   jsonString: string,
-  validator: (value: unknown) => value is T
+  validator: (value: unknown) => value is T,
 ): T | null {
   try {
-    const parsed = JSON.parse(jsonString) as unknown;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const parsed = JSON.parse(jsonString);
     return validator(parsed) ? parsed : null;
   } catch {
     return null;
@@ -250,17 +270,17 @@ export function safeJsonParse<T>(
 
 // Define valid relation types for graph relationships
 const VALID_RELATION_TYPES = [
-  'cites',
-  'cited_by',
-  'references',
-  'authored_by',
-  'published_in',
-  'affiliated_with',
-  'funded_by',
-  'related_to'
+  "cites",
+  "cited_by",
+  "references",
+  "authored_by",
+  "published_in",
+  "affiliated_with",
+  "funded_by",
+  "related_to",
 ] as const;
 
-export type RelationType = typeof VALID_RELATION_TYPES[number];
+export type RelationType = (typeof VALID_RELATION_TYPES)[number];
 
 /**
  * Safely parse relation type with validation
@@ -271,22 +291,24 @@ export function safeParseRelationType(value: string): RelationType | null {
 
 // Define valid expansion targets for graph expansion
 const VALID_EXPANSION_TARGETS = [
-  'authors',
-  'works',
-  'institutions',
-  'topics',
-  'sources',
-  'publishers',
-  'funders',
-  'citations',
-  'references'
+  "authors",
+  "works",
+  "institutions",
+  "topics",
+  "sources",
+  "publishers",
+  "funders",
+  "citations",
+  "references",
 ] as const;
 
-export type ExpansionTarget = typeof VALID_EXPANSION_TARGETS[number];
+export type ExpansionTarget = (typeof VALID_EXPANSION_TARGETS)[number];
 
 /**
  * Safely parse expansion target with validation
  */
-export function safeParseExpansionTarget(value: string): ExpansionTarget | null {
+export function safeParseExpansionTarget(
+  value: string,
+): ExpansionTarget | null {
   return safeParseEnum(value, VALID_EXPANSION_TARGETS);
 }

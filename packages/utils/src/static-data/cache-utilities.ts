@@ -18,6 +18,21 @@ export type EntityType =
   | "concepts"
   | "autocomplete";
 
+export function isEntityType(value: string): value is EntityType {
+  const validEntityTypes: readonly string[] = [
+    "works",
+    "authors",
+    "sources",
+    "institutions",
+    "topics",
+    "publishers",
+    "funders",
+    "concepts",
+    "autocomplete",
+  ];
+  return validEntityTypes.includes(value);
+}
+
 /**
  * Metadata structure for cached files
  */
@@ -169,14 +184,11 @@ export async function generateContentHash(data: unknown): Promise<string> {
     // Generate stable hash
     const jsonString = JSON.stringify(
       cleanContent,
-      Object.keys((cleanContent as object) || {}).sort(),
+      Object.keys(cleanContent ?? {}).sort(),
     );
 
     // Use dynamic import for crypto to support both Node.js and browser environments
-    if (
-      typeof globalThis.process !== "undefined" &&
-      globalThis.process.versions?.node
-    ) {
+    if (globalThis.process?.versions?.node) {
       // Node.js environment
       const { createHash } = await import("crypto");
       return createHash("sha256").update(jsonString).digest("hex").slice(0, 16);
@@ -226,21 +238,14 @@ export function parseOpenAlexUrl(url: string): ParsedOpenAlexUrl | null {
     }
 
     // Detect entity type from first path segment
-    const entityType = pathSegments[0] as EntityType;
-    const isValidEntityType = [
-      "works",
-      "authors",
-      "sources",
-      "institutions",
-      "topics",
-      "publishers",
-      "funders",
-      "concepts",
-      "autocomplete",
-    ].includes(entityType);
+    const potentialEntityType = pathSegments[0];
+
+    const entityType = isEntityType(potentialEntityType)
+      ? potentialEntityType
+      : undefined;
 
     // Invalid entity types should return null
-    if (!isValidEntityType) {
+    if (!entityType) {
       return null;
     }
 
@@ -446,9 +451,11 @@ export function encodeFilename(filename: string): string {
  * Reverses the encoding done by encodeFilename
  */
 export function decodeFilename(filename: string): string {
-  return filename.replace(/__([0-9A-F]+)__/g, (match, hex) =>
-    String.fromCharCode(parseInt(hex, 16)),
-  );
+  return filename.replace(/__([0-9A-F]+)__/g, (match, hex) => {
+    const hexStr = String(hex);
+    const codePoint = parseInt(hexStr, 16);
+    return String.fromCharCode(codePoint);
+  });
 }
 
 /**
@@ -659,26 +666,25 @@ export function extractEntityType(pathOrUrl: string): EntityType | null {
   // Handle URLs
   if (pathOrUrl.startsWith("http")) {
     const parsed = parseOpenAlexUrl(pathOrUrl);
-    return parsed?.entityType || null;
+    return parsed?.entityType ?? null;
   }
 
   // Handle file paths
   const segments = pathOrUrl.split("/").filter(Boolean);
+  const validEntityTypes: readonly EntityType[] = [
+    "works",
+    "authors",
+    "sources",
+    "institutions",
+    "topics",
+    "publishers",
+    "funders",
+    "concepts",
+  ];
+
   for (const segment of segments) {
-    if (
-      [
-        "works",
-        "authors",
-        "sources",
-        "institutions",
-        "topics",
-        "publishers",
-        "funders",
-        "concepts",
-        "autocomplete",
-      ].includes(segment)
-    ) {
-      return segment as EntityType;
+    if (isEntityType(segment)) {
+      return segment;
     }
   }
 
@@ -876,9 +882,7 @@ function addNewUrlToEntry(
       entry.collisionInfo.totalUrls = entry.equivalentUrls.length;
       entry.collisionInfo.lastMerge = currentTime;
 
-      if (!entry.collisionInfo.firstCollision) {
-        entry.collisionInfo.firstCollision = currentTime;
-      }
+      entry.collisionInfo.firstCollision ??= currentTime;
     }
   }
 }
@@ -932,7 +936,7 @@ function groupUrlsByCollisionKey(urls: string[]): Map<string, string[]> {
   const groups = new Map<string, string[]>();
   for (const url of urls) {
     const key = normalizeUrlForCollision(url);
-    const arr = groups.get(key) || [];
+    const arr = groups.get(key) ?? [];
     arr.push(url);
     groups.set(key, arr);
   }
@@ -1321,6 +1325,6 @@ export const STATIC_DATA_CACHE_PATH = "apps/web/public/data/openalex";
 export function getStaticDataCachePath(projectRoot?: string): string {
   // In Node.js environments, we can try to detect the project root
   // For browser environments, this should be provided
-  const root = projectRoot || process.cwd?.() || "";
+  const root = projectRoot ?? process.cwd?.() ?? "";
   return path.join(root, STATIC_DATA_CACHE_PATH);
 }

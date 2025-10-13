@@ -15,7 +15,7 @@
 // Dynamic imports for Node.js modules to avoid browser bundling issues
 import { logger } from "../logger.js";
 import { isRecord } from "../validation.js";
-import { FileEntry } from "./cache-utilities.js";
+import { FileEntry, isEntityType } from "./cache-utilities.js";
 import type {
   EntityFileMetadata,
   EntityType,
@@ -319,9 +319,10 @@ export class StaticDataIndexGenerator {
 
     try {
       const indexContent = await this.fs.readFile(indexPath, "utf8");
-      const parsedData = JSON.parse(indexContent) as unknown;
-      if (isRecord(parsedData)) {
-        existingIndex = parsedData as unknown as EntityTypeIndex;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const parsedData = JSON.parse(indexContent);
+      if (this.validateIndexStructure(parsedData)) {
+        existingIndex = parsedData;
       }
     } catch {
       // Index doesn't exist or is invalid, will be created
@@ -349,7 +350,7 @@ export class StaticDataIndexGenerator {
       directoryPath: entityDir,
       generatedAt: contentChanged
         ? Date.now()
-        : existingIndex?.generatedAt || Date.now(),
+        : (existingIndex?.generatedAt ?? Date.now()),
       schemaVersion: this.config.schemaVersion,
       totalEntities: newTotalEntities,
       totalSize: newTotalSize,
@@ -403,8 +404,9 @@ export class StaticDataIndexGenerator {
       const indexContent = await this.fs.readFile(indexPath, "utf8");
       let index: EntityTypeIndex;
       try {
-        const parsedData = JSON.parse(indexContent) as unknown;
-        if (!isRecord(parsedData)) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const parsedData = JSON.parse(indexContent);
+        if (!this.validateIndexStructure(parsedData)) {
           errors.push({
             type: "invalid_structure",
             message: "Index file contains invalid JSON structure",
@@ -412,7 +414,7 @@ export class StaticDataIndexGenerator {
           });
           throw new Error("Invalid JSON structure");
         }
-        index = parsedData as unknown as EntityTypeIndex;
+        index = parsedData;
       } catch (parseError) {
         errors.push({
           type: "invalid_structure",
@@ -808,7 +810,8 @@ export class StaticDataIndexGenerator {
     const content = await this.fs.readFile(filePath, "utf8");
     let entity: Record<string, unknown>;
     try {
-      const parsedData = JSON.parse(content) as unknown;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const parsedData = JSON.parse(content);
       if (!isRecord(parsedData)) {
         return undefined;
       }
@@ -892,6 +895,68 @@ export class StaticDataIndexGenerator {
   }
 
   /**
+   * Aggregate statistics from individual entity type indexes
+   */
+  // eslint-disable-next-line sonarjs/cognitive-complexity
+  private async aggregateIndexStats(
+    typeIndexPaths: Record<EntityType, string>,
+    masterIndex: MasterIndex,
+  ): Promise<{
+    withBasicInfo: number;
+    withExternalIds: number;
+    withCitationCounts: number;
+  }> {
+    let totalEntitiesWithBasicInfo = 0;
+    let totalEntitiesWithExternalIds = 0;
+    let totalEntitiesWithCitationCounts = 0;
+
+    for (const [entityType, indexPath] of Object.entries(typeIndexPaths)) {
+      try {
+        const indexContent = await this.fs.readFile(indexPath, "utf8");
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const parsedData = JSON.parse(indexContent);
+        if (!this.validateIndexStructure(parsedData)) {
+          continue; // Skip invalid indexes
+        }
+        const index = parsedData;
+
+        masterIndex.totalEntities += index.totalEntities;
+        masterIndex.totalSize += index.totalSize;
+        masterIndex.entitiesByType[entityType] = index.totalEntities;
+
+        masterIndex.globalStats.lastModified = Math.max(
+          masterIndex.globalStats.lastModified,
+          index.stats.lastModified,
+        );
+        masterIndex.globalStats.oldestModified = Math.min(
+          masterIndex.globalStats.oldestModified,
+          index.stats.oldestModified,
+        );
+
+        // Count entities with various metadata
+        for (const entity of Object.values(index.entities)) {
+          if (entity.basicInfo) totalEntitiesWithBasicInfo++;
+          if (entity.basicInfo?.externalIds) totalEntitiesWithExternalIds++;
+          if (entity.basicInfo?.citationCount)
+            totalEntitiesWithCitationCounts++;
+        }
+      } catch (error) {
+        logger.warn(
+          logCategory,
+          `Failed to read index for master aggregation: ${indexPath}`,
+          { error },
+        );
+      }
+    }
+
+    return {
+      withBasicInfo: totalEntitiesWithBasicInfo,
+      withExternalIds: totalEntitiesWithExternalIds,
+      withCitationCounts: totalEntitiesWithCitationCounts,
+    };
+  }
+
+  /**
    * Generate master index combining all entity type indexes
    */
   private async generateMasterIndex(
@@ -922,53 +987,19 @@ export class StaticDataIndexGenerator {
     };
 
     // Aggregate stats from individual indexes
-    let totalEntitiesWithBasicInfo = 0;
-    let totalEntitiesWithExternalIds = 0;
-    let totalEntitiesWithCitationCounts = 0;
-
-    for (const [entityType, indexPath] of Object.entries(typeIndexPaths)) {
-      try {
-        const indexContent = await this.fs.readFile(indexPath, "utf8");
-        const index = JSON.parse(indexContent) as EntityTypeIndex;
-
-        masterIndex.totalEntities += index.totalEntities;
-        masterIndex.totalSize += index.totalSize;
-        masterIndex.entitiesByType[entityType as EntityType] =
-          index.totalEntities;
-
-        masterIndex.globalStats.lastModified = Math.max(
-          masterIndex.globalStats.lastModified,
-          index.stats.lastModified,
-        );
-        masterIndex.globalStats.oldestModified = Math.min(
-          masterIndex.globalStats.oldestModified,
-          index.stats.oldestModified,
-        );
-
-        // Count entities with various metadata
-        for (const entity of Object.values(index.entities)) {
-          if (entity.basicInfo) totalEntitiesWithBasicInfo++;
-          if (entity.basicInfo?.externalIds) totalEntitiesWithExternalIds++;
-          if (entity.basicInfo?.citationCount)
-            totalEntitiesWithCitationCounts++;
-        }
-      } catch (error) {
-        logger.warn(
-          logCategory,
-          `Failed to read index for master aggregation: ${indexPath}`,
-          { error },
-        );
-      }
-    }
+    const coverageStats = await this.aggregateIndexStats(
+      typeIndexPaths,
+      masterIndex,
+    );
 
     // Calculate coverage percentages
     if (masterIndex.totalEntities > 0) {
       masterIndex.globalStats.coverage.withBasicInfo =
-        (totalEntitiesWithBasicInfo / masterIndex.totalEntities) * 100;
+        (coverageStats.withBasicInfo / masterIndex.totalEntities) * 100;
       masterIndex.globalStats.coverage.withExternalIds =
-        (totalEntitiesWithExternalIds / masterIndex.totalEntities) * 100;
+        (coverageStats.withExternalIds / masterIndex.totalEntities) * 100;
       masterIndex.globalStats.coverage.withCitationCounts =
-        (totalEntitiesWithCitationCounts / masterIndex.totalEntities) * 100;
+        (coverageStats.withCitationCounts / masterIndex.totalEntities) * 100;
     }
 
     await this.fs.writeFile(
@@ -1025,10 +1056,7 @@ export class StaticDataIndexGenerator {
    * Get current memory usage in MB
    */
   private getMemoryUsageMB(): number {
-    if (
-      typeof globalThis.process !== "undefined" &&
-      globalThis.process.memoryUsage
-    ) {
+    if (globalThis.process?.memoryUsage) {
       const usage = globalThis.process.memoryUsage();
       return Math.round(usage.heapUsed / KB / KB);
     }
@@ -1048,12 +1076,9 @@ export class StaticDataIndexGenerator {
       "topics",
       "publishers",
       "funders",
-      "keywords",
       "concepts",
     ];
-    return entityTypes.includes(dirName as EntityType)
-      ? (dirName as EntityType)
-      : null;
+    return isEntityType(dirName) ? (dirName as EntityType) : null;
   }
 
   /**
@@ -1064,7 +1089,12 @@ export class StaticDataIndexGenerator {
     entityIds: string[],
   ): Promise<void> {
     const indexContent = await this.fs.readFile(indexPath, "utf8");
-    const index = JSON.parse(indexContent) as EntityTypeIndex;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const parsedData = JSON.parse(indexContent);
+    if (!this.validateIndexStructure(parsedData)) {
+      throw new Error(`Invalid index structure at ${indexPath}`);
+    }
+    const index = parsedData;
 
     for (const entityId of entityIds) {
       delete index.entities[entityId];
@@ -1084,7 +1114,12 @@ export class StaticDataIndexGenerator {
     entityIds: string[],
   ): Promise<void> {
     const indexContent = await this.fs.readFile(indexPath, "utf8");
-    const index = JSON.parse(indexContent) as EntityTypeIndex;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const parsedData = JSON.parse(indexContent);
+    if (!this.validateIndexStructure(parsedData)) {
+      throw new Error(`Invalid index structure at ${indexPath}`);
+    }
+    const index = parsedData;
 
     for (const entityId of entityIds) {
       const entity = index.entities[entityId];
@@ -1110,7 +1145,12 @@ export class StaticDataIndexGenerator {
     entityIds: string[],
   ): Promise<void> {
     const indexContent = await this.fs.readFile(indexPath, "utf8");
-    const index = JSON.parse(indexContent) as EntityTypeIndex;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const parsedData = JSON.parse(indexContent);
+    if (!this.validateIndexStructure(parsedData)) {
+      throw new Error(`Invalid index structure at ${indexPath}`);
+    }
+    const index = parsedData;
 
     for (const entityId of entityIds) {
       const entity = index.entities[entityId];
@@ -1271,7 +1311,7 @@ export class StaticDataIndexGenerator {
 
       // Add URL for API response files
       const url = this.reconstructApiUrl(relativePath);
-      fileRef.url = url || "";
+      fileRef.url = url ?? "";
 
       return fileRef;
     } catch (error) {
@@ -1289,7 +1329,7 @@ export class StaticDataIndexGenerator {
    */
   private reconstructApiUrl(relativePath: string): string | undefined {
     try {
-      const baseUrl = this.config.baseApiUrl || "https://api.openalex.org";
+      const baseUrl = this.config.baseApiUrl ?? "https://api.openalex.org";
       const pathParts = relativePath.split("/");
 
       // Skip non-API files

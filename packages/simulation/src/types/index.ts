@@ -142,7 +142,7 @@ export const FORCE_PARAM_CONFIG = {
   seed: {
     label: "Random Seed",
     min: 0,
-    max: 0xFFFFFFFF,
+    max: 0xffffffff,
     step: 1,
     description: "Seed for deterministic random number generation",
   },

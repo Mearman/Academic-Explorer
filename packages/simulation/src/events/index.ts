@@ -3,7 +3,7 @@
  * Provides a simple observer pattern for simulation progress and completion events
  */
 
-import type { NodePosition } from '../types/index.js';
+import type { NodePosition } from "../types/index.js";
 
 // Base event interface
 export interface BaseSimulationEvent {
@@ -55,7 +55,9 @@ export type SimulationEvent =
   | SimulationDebugEvent;
 
 // Event handler function type
-export type SimulationEventHandler<T extends SimulationEvent = SimulationEvent> = (event: T) => void;
+export type SimulationEventHandler<
+  T extends SimulationEvent = SimulationEvent,
+> = (event: T) => void;
 
 // Event subscription interface
 export interface EventSubscription {
@@ -65,11 +67,12 @@ export interface EventSubscription {
 // Simple event emitter for simulation events
 export class SimulationEventEmitter {
   private handlers = new Map<string, Set<SimulationEventHandler>>();
+  private globalHandlers = new Set<SimulationEventHandler>();
 
   // Subscribe to events of a specific type
   on<T extends SimulationEvent["type"]>(
     eventType: T,
-    handler: SimulationEventHandler<Extract<SimulationEvent, { type: T }>>
+    handler: SimulationEventHandler<Extract<SimulationEvent, { type: T }>>,
   ): EventSubscription {
     if (!this.handlers.has(eventType)) {
       this.handlers.set(eventType, new Set());
@@ -87,82 +90,72 @@ export class SimulationEventEmitter {
         if (handlers.size === 0) {
           this.handlers.delete(eventType);
         }
-      }
+      },
     };
   }
 
   // Subscribe to all events
   onAny(handler: SimulationEventHandler): EventSubscription {
-    const subscriptions: EventSubscription[] = [];
-
-    // Subscribe to existing event types
-    for (const eventType of this.handlers.keys()) {
-      subscriptions.push(this.on(eventType as SimulationEvent["type"], handler));
-    }
-
-    // Store a reference to add to future event types
-    const globalHandler = handler;
-    const originalOn = this.on.bind(this);
-
-    this.on = <T extends SimulationEvent["type"]>(
-      eventType: T,
-      handler: SimulationEventHandler<Extract<SimulationEvent, { type: T }>>
-    ) => {
-      const subscription = originalOn(eventType, handler);
-
-      // If this is a new event type, also add the global handler
-      const eventHandlers = this.handlers.get(eventType);
-      if (eventHandlers && (!this.handlers.has(eventType) || eventHandlers.size === 1)) {
-        eventHandlers.add(globalHandler);
-      }
-
-      return subscription;
-    };
+    this.globalHandlers.add(handler as SimulationEventHandler);
 
     return {
       unsubscribe: () => {
-        subscriptions.forEach(sub => { sub.unsubscribe(); });
-        // Remove global handler from all event types
-        for (const handlers of this.handlers.values()) {
-          handlers.delete(globalHandler);
-        }
-      }
+        this.globalHandlers.delete(handler as SimulationEventHandler);
+      },
     };
   }
 
   // Emit an event to all subscribers
   emit(event: SimulationEvent): void {
+    // Call specific event type handlers
     const handlers = this.handlers.get(event.type);
     if (handlers) {
-      handlers.forEach(handler => {
+      handlers.forEach((handler) => {
         try {
           handler(event);
         } catch (error) {
           // Emit error event if handler throws
           this.emitError(`Event handler error for ${event.type}`, {
             originalEvent: event,
-            error: error instanceof Error ? error.message : String(error)
+            error: error instanceof Error ? error.message : String(error),
           });
         }
       });
     }
+
+    // Call global handlers
+    this.globalHandlers.forEach((handler) => {
+      try {
+        handler(event);
+      } catch (error) {
+        // Emit error event if handler throws
+        this.emitError(`Global event handler error for ${event.type}`, {
+          originalEvent: event,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    });
   }
 
   // Convenience method to emit progress events
-  emitProgress(payload: Omit<SimulationProgressEvent, 'type' | 'timestamp'>): void {
+  emitProgress(
+    payload: Omit<SimulationProgressEvent, "type" | "timestamp">,
+  ): void {
     this.emit({
       type: "progress",
       timestamp: Date.now(),
-      ...payload
+      ...payload,
     });
   }
 
   // Convenience method to emit completion events
-  emitComplete(payload: Omit<SimulationCompleteEvent, 'type' | 'timestamp'>): void {
+  emitComplete(
+    payload: Omit<SimulationCompleteEvent, "type" | "timestamp">,
+  ): void {
     this.emit({
       type: "complete",
       timestamp: Date.now(),
-      ...payload
+      ...payload,
     });
   }
 
@@ -172,7 +165,7 @@ export class SimulationEventEmitter {
       type: "error",
       timestamp: Date.now(),
       message,
-      ...(context && { context })
+      ...(context && { context }),
     });
   }
 
@@ -182,13 +175,14 @@ export class SimulationEventEmitter {
       type: "debug",
       timestamp: Date.now(),
       message,
-      ...(context && { context })
+      ...(context && { context }),
     });
   }
 
   // Remove all event handlers
   clear(): void {
     this.handlers.clear();
+    this.globalHandlers.clear();
   }
 
   // Get count of handlers for an event type
@@ -203,18 +197,26 @@ export class SimulationEventEmitter {
 }
 
 // Type guards for events
-export function isProgressEvent(event: SimulationEvent): event is SimulationProgressEvent {
+export function isProgressEvent(
+  event: SimulationEvent,
+): event is SimulationProgressEvent {
   return event.type === "progress";
 }
 
-export function isCompleteEvent(event: SimulationEvent): event is SimulationCompleteEvent {
+export function isCompleteEvent(
+  event: SimulationEvent,
+): event is SimulationCompleteEvent {
   return event.type === "complete";
 }
 
-export function isErrorEvent(event: SimulationEvent): event is SimulationErrorEvent {
+export function isErrorEvent(
+  event: SimulationEvent,
+): event is SimulationErrorEvent {
   return event.type === "error";
 }
 
-export function isDebugEvent(event: SimulationEvent): event is SimulationDebugEvent {
+export function isDebugEvent(
+  event: SimulationEvent,
+): event is SimulationDebugEvent {
   return event.type === "debug";
 }

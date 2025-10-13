@@ -77,6 +77,82 @@ const isLocalStorageAvailable = (): boolean => {
 };
 
 /**
+ * Handle IndexedDB write operation with error handling
+ */
+const performIndexedDBWrite = async (
+  config: StorageConfig,
+  name: string,
+  value: string,
+  logger: GenericLogger | undefined,
+  writeQueue: Set<string>,
+  indexedDBWrites: { value: number },
+  indexedDBErrors: { value: number },
+): Promise<void> => {
+  try {
+    const db = await getDB(config);
+    await db.keyValueStore.put({ key: name, value });
+    indexedDBWrites.value++;
+    logger?.debug("storage", "Background IndexedDB write completed", {
+      name,
+      valueSize: value.length,
+      totalWrites: indexedDBWrites.value,
+      queueSize: writeQueue.size,
+    });
+  } catch (error) {
+    indexedDBErrors.value++;
+
+    // Handle specific IndexedDB errors
+    if (error && typeof error === "object" && "name" in error) {
+      const errorName = String(error.name);
+
+      if (errorName === "QuotaExceededError") {
+        logger?.warn(
+          "storage",
+          "IndexedDB quota exceeded, data may not persist",
+          {
+            name,
+            valueSize: value.length,
+            totalErrors: indexedDBErrors.value,
+          },
+        );
+      } else if (errorName === "VersionError") {
+        logger?.warn(
+          "storage",
+          "IndexedDB version conflict, database may need refresh",
+          {
+            name,
+            totalErrors: indexedDBErrors.value,
+          },
+        );
+      } else if (errorName === "InvalidStateError") {
+        logger?.warn(
+          "storage",
+          "IndexedDB invalid state, database may be corrupted",
+          {
+            name,
+            totalErrors: indexedDBErrors.value,
+          },
+        );
+      } else {
+        logger?.warn("storage", "IndexedDB write failed", {
+          name,
+          error,
+          totalErrors: indexedDBErrors.value,
+        });
+      }
+    } else {
+      logger?.warn("storage", "IndexedDB write failed", {
+        name,
+        error,
+        totalErrors: indexedDBErrors.value,
+      });
+    }
+  } finally {
+    writeQueue.delete(name);
+  }
+};
+
+/**
  * Creates a hybrid storage adapter that writes synchronously to localStorage
  * and asynchronously to IndexedDB for best performance and reliability
  */
@@ -90,9 +166,9 @@ export const createHybridStorage = (
 
   // Track storage statistics
   let localStorageWrites = 0;
-  let indexedDBWrites = 0;
+  const indexedDBWrites = { value: 0 };
   let localStorageErrors = 0;
-  let indexedDBErrors = 0;
+  const indexedDBErrors = { value: 0 };
 
   if (!useIndexedDB && !useLocalStorage) {
     logger?.debug(
@@ -123,7 +199,7 @@ export const createHybridStorage = (
             "IndexedDB read failed, falling back to localStorage",
             { name, error },
           );
-          indexedDBErrors++;
+          indexedDBErrors.value++;
         }
       }
 
@@ -193,81 +269,17 @@ export const createHybridStorage = (
       // 2. Queue IndexedDB write (asynchronous, non-blocking)
       if (useIndexedDB && !writeQueue.has(name)) {
         writeQueue.add(name);
-
-        queueMicrotask(() => {
-          void (async () => {
-            try {
-              const db = await getDB(config);
-              await db.keyValueStore.put({ key: name, value });
-              indexedDBWrites++;
-              logger?.debug("storage", "Background IndexedDB write completed", {
-                name,
-                valueSize: value.length,
-                totalWrites: indexedDBWrites,
-                queueSize: writeQueue.size,
-              });
-            } catch (error) {
-              indexedDBErrors++;
-
-              // Handle specific IndexedDB errors
-              if (error && typeof error === "object" && "name" in error) {
-                const errorName = String(error.name);
-
-                if (errorName === "QuotaExceededError") {
-                  logger?.warn(
-                    "storage",
-                    "IndexedDB quota exceeded, data may not persist",
-                    {
-                      name,
-                      valueSize: value.length,
-                      totalErrors: indexedDBErrors,
-                    },
-                  );
-                } else if (errorName === "VersionError") {
-                  logger?.warn(
-                    "storage",
-                    "IndexedDB version conflict, database may need refresh",
-                    {
-                      name,
-                      totalErrors: indexedDBErrors,
-                    },
-                  );
-                } else if (errorName === "InvalidStateError") {
-                  logger?.warn(
-                    "storage",
-                    "IndexedDB invalid state, database may be corrupted",
-                    {
-                      name,
-                      totalErrors: indexedDBErrors,
-                    },
-                  );
-                } else {
-                  logger?.error(
-                    "storage",
-                    "IndexedDB background write failed",
-                    {
-                      name,
-                      error: errorName,
-                      message:
-                        "message" in error
-                          ? String((error as { message: unknown }).message)
-                          : "Unknown error",
-                      totalErrors: indexedDBErrors,
-                    },
-                  );
-                }
-              } else {
-                logger?.error("storage", "IndexedDB background write failed", {
-                  name,
-                  error: String(error),
-                  totalErrors: indexedDBErrors,
-                });
-              }
-            } finally {
-              writeQueue.delete(name);
-            }
-          })();
-        });
+        queueMicrotask(() =>
+          performIndexedDBWrite(
+            config,
+            name,
+            value,
+            logger,
+            writeQueue,
+            indexedDBWrites,
+            indexedDBErrors,
+          ),
+        );
       }
     },
 
@@ -303,7 +315,7 @@ export const createHybridStorage = (
                 { name },
               );
             } catch (error) {
-              indexedDBErrors++;
+              indexedDBErrors.value++;
               logger?.error("storage", "IndexedDB background delete failed", {
                 name,
                 error,

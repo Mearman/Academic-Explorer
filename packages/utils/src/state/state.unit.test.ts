@@ -1,4 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
+import type { Table } from "dexie";
+import type { ReactiveTable } from "./dexieStore.js";
 import {
   generateSequentialId,
   createFilterManager,
@@ -170,13 +172,11 @@ describe("State Utilities", () => {
         delete: vi.fn().mockResolvedValue(undefined),
         clear: vi.fn().mockResolvedValue(undefined),
         toArray: vi.fn().mockResolvedValue([{ id: 1, name: "test" }]),
-        where: vi.fn().mockReturnValue({
-          toArray: vi.fn().mockResolvedValue([{ id: 1, name: "test" }]),
-        }),
+        where: vi.fn().mockResolvedValue([{ id: 1, name: "test" }]),
         count: vi.fn().mockResolvedValue(1),
-      } as any;
+      } as ReactiveTable<{ id?: string | number }>;
 
-      const reactiveTable = createReactiveTable(mockTable);
+      const reactiveTable = createReactiveTable(mockTable as any);
 
       expect(reactiveTable).toHaveProperty("add");
       expect(reactiveTable).toHaveProperty("put");
@@ -216,10 +216,10 @@ describe("State Utilities", () => {
         toArray: vi.fn().mockResolvedValue([]),
         where: vi.fn().mockResolvedValue([]),
         count: vi.fn().mockResolvedValue(0),
-      } as any;
+      } as ReactiveTable<{ id?: string | number }>;
 
       const store = createDexieStore({
-        table: mockTable,
+        table: mockTable as any,
       });
 
       expect(store).toHaveProperty("add");

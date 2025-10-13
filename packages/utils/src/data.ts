@@ -12,15 +12,18 @@ import {
   pick,
   isEmpty,
   isArray,
-  isString
+  isString,
 } from "lodash-es";
 
 /**
  * Debounced search function for user input
  */
-export const debouncedSearch = debounce((searchFn: (query: string) => void, query: string) => {
-  searchFn(query);
-}, 300);
+export const debouncedSearch = debounce(
+  (searchFn: (query: string) => void, query: string) => {
+    searchFn(query);
+  },
+  300,
+);
 
 /**
  * Remove duplicate items from an array by a specific key
@@ -35,7 +38,7 @@ export function removeDuplicatesBy<T>(array: T[], key: keyof T): T[] {
 export function sortByNumericProperty<T>(
   items: T[],
   getProperty: (item: T) => number | null | undefined,
-  ascending = false
+  ascending = false,
 ): T[] {
   const sorted = sortBy(items, (item) => getProperty(item) ?? 0);
   return ascending ? sorted : sorted.reverse();
@@ -47,7 +50,7 @@ export function sortByNumericProperty<T>(
 export function sortByStringProperty<T>(
   items: T[],
   getProperty: (item: T) => string | null | undefined,
-  ascending = true
+  ascending = true,
 ): T[] {
   const sorted = sortBy(items, (item) => getProperty(item) ?? "");
   return ascending ? sorted : sorted.reverse();
@@ -59,7 +62,7 @@ export function sortByStringProperty<T>(
 export function groupByProperty<T>(
   items: T[],
   getGroupKey: (item: T) => string | number,
-  _defaultKey = "Unknown"
+  _defaultKey = "Unknown",
 ): Record<string, T[]> {
   return groupBy(items, (item) => {
     const key = getGroupKey(item);
@@ -70,10 +73,10 @@ export function groupByProperty<T>(
 /**
  * Extract safe properties from an object, omitting undefined/null values
  */
-export function extractSafeProperties<T extends Record<string, unknown>, K extends keyof T>(
-  obj: T,
-  keys: K[]
-): Pick<T, K> {
+export function extractSafeProperties<
+  T extends Record<string, unknown>,
+  K extends keyof T,
+>(obj: T, keys: K[]): Pick<T, K> {
   return pick(obj, keys);
 }
 
@@ -82,7 +85,7 @@ export function extractSafeProperties<T extends Record<string, unknown>, K exten
  */
 export function sanitizeObject<T extends Record<string, unknown>>(
   obj: T,
-  keysToOmit: (keyof T)[]
+  keysToOmit: (keyof T)[],
 ): Omit<T, keyof T> {
   return omit(obj, keysToOmit);
 }
@@ -111,11 +114,14 @@ export function hasValidData<T>(data: unknown): data is T[] {
 /**
  * Get display name with fallback from multiple possible properties
  */
-export function getDisplayName(item: {
-  display_name?: string | null;
-  title?: string | null;
-  name?: string | null;
-}, fallback = "Untitled"): string {
+export function getDisplayName(
+  item: {
+    display_name?: string | null;
+    title?: string | null;
+    name?: string | null;
+  },
+  fallback = "Untitled",
+): string {
   return item.display_name ?? item.title ?? item.name ?? fallback;
 }
 
@@ -184,7 +190,7 @@ export function flatten<T>(arrays: T[][]): T[] {
  */
 export function arrayToMap<T, K>(
   array: T[],
-  getKey: (item: T) => K
+  getKey: (item: T) => K,
 ): Map<K, T> {
   const map = new Map<K, T>();
   for (const item of array) {
@@ -198,7 +204,7 @@ export function arrayToMap<T, K>(
  */
 export function arrayToLookup<T>(
   array: T[],
-  getKey: (item: T) => string | number
+  getKey: (item: T) => string | number,
 ): Record<string, T> {
   const lookup: Record<string, T> = {};
   for (const item of array) {
@@ -220,7 +226,7 @@ export function unique<T>(array: T[]): T[] {
  */
 export function intersection<T>(array1: T[], array2: T[]): T[] {
   const set2 = new Set(array2);
-  return array1.filter(item => set2.has(item));
+  return array1.filter((item) => set2.has(item));
 }
 
 /**
@@ -228,7 +234,7 @@ export function intersection<T>(array1: T[], array2: T[]): T[] {
  */
 export function difference<T>(array1: T[], array2: T[]): T[] {
   const set2 = new Set(array2);
-  return array1.filter(item => !set2.has(item));
+  return array1.filter((item) => !set2.has(item));
 }
 
 /**
@@ -246,6 +252,7 @@ export function sample<T>(array: T[], count: number): T[] {
  * Note: This only works with JSON-serializable data
  */
 export function deepClone<T>(obj: T): T {
+  // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
   return JSON.parse(JSON.stringify(obj)) as T;
 }
 
@@ -261,7 +268,7 @@ export function mergeUnique<T>(...arrays: T[][]): T[] {
  */
 export function partition<T>(
   array: T[],
-  predicate: (item: T) => boolean
+  predicate: (item: T) => boolean,
 ): [T[], T[]] {
   const truthy: T[] = [];
   const falsy: T[] = [];
@@ -282,12 +289,12 @@ export function partition<T>(
  */
 export function maxBy<T>(
   array: T[],
-  selector: (item: T) => number
+  selector: (item: T) => number,
 ): T | undefined {
   if (array.length === 0) return undefined;
 
   return array.reduce((max, current) =>
-    selector(current) > selector(max) ? current : max
+    selector(current) > selector(max) ? current : max,
   );
 }
 
@@ -296,22 +303,19 @@ export function maxBy<T>(
  */
 export function minBy<T>(
   array: T[],
-  selector: (item: T) => number
+  selector: (item: T) => number,
 ): T | undefined {
   if (array.length === 0) return undefined;
 
   return array.reduce((min, current) =>
-    selector(current) < selector(min) ? current : min
+    selector(current) < selector(min) ? current : min,
   );
 }
 
 /**
  * Sum values in an array using a selector function
  */
-export function sumBy<T>(
-  array: T[],
-  selector: (item: T) => number
-): number {
+export function sumBy<T>(array: T[], selector: (item: T) => number): number {
   return array.reduce((sum, item) => sum + selector(item), 0);
 }
 
@@ -320,7 +324,7 @@ export function sumBy<T>(
  */
 export function averageBy<T>(
   array: T[],
-  selector: (item: T) => number
+  selector: (item: T) => number,
 ): number {
   if (array.length === 0) return 0;
   return sumBy(array, selector) / array.length;
@@ -332,19 +336,24 @@ export function averageBy<T>(
 export function safeGet<T>(
   obj: unknown,
   path: string,
-  defaultValue?: T
+  defaultValue?: T,
 ): T | undefined {
-  const keys = path.split('.');
+  const keys = path.split(".");
   let current = obj;
 
   for (const key of keys) {
-    if (current === null || current === undefined || typeof current !== 'object') {
+    if (
+      current === null ||
+      current === undefined ||
+      typeof current !== "object"
+    ) {
       return defaultValue;
     }
     current = (current as Record<string, unknown>)[key];
   }
 
-  return current as T ?? defaultValue;
+  // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
+  return (current as T) ?? defaultValue;
 }
 
 /**
@@ -352,15 +361,15 @@ export function safeGet<T>(
  */
 export function throttle<T extends (...args: unknown[]) => unknown>(
   func: T,
-  delay: number
-): T {
+  delay: number,
+): (...args: Parameters<T>) => ReturnType<T> | undefined {
   let lastCall = 0;
-  return ((...args: unknown[]) => {
+  return (...args: Parameters<T>) => {
     const now = Date.now();
     if (now - lastCall >= delay) {
       lastCall = now;
-      return func(...args);
+      return func(...args) as ReturnType<T>;
     }
     return undefined;
-  }) as T;
+  };
 }

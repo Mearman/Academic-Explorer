@@ -81,7 +81,14 @@ export function createFilterManager<T extends Record<string, unknown>>(
 
           // Handle different filter types
           if (typeof filterValue === "function") {
-            return filterValue(itemValue);
+            try {
+              return Boolean(
+                // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
+                (filterValue as (value: unknown) => unknown)(itemValue),
+              );
+            } catch {
+              return false;
+            }
           }
 
           if (Array.isArray(filterValue)) {
@@ -180,8 +187,7 @@ export function createTrackedStore<
 >(
   config: TrackedStoreConfig<T, A>,
   actionsFactory: (
-    set: (update: ((state: T & A) => void) | Partial<T & A>) => void,
-    get: () => T & A,
+    set: (update: ((state: T & A) => T & A) | Partial<T & A>) => void,
   ) => A,
   selectorsFactory?: (state: T) => Record<string, (state: T) => unknown>,
 ): TrackedStoreResult<T, A> {
@@ -200,13 +206,16 @@ export function createTrackedStore<
   }
 
   // Create the base store creator
-  const baseStoreCreator = (set: any, get: any) => ({
+  const baseStoreCreator = (
+    set: (update: ((state: T & A) => T & A) | Partial<T & A>) => void,
+    get: () => T & A,
+  ) => ({
     ...initialState,
-    ...actionsFactory(set, get),
+    ...actionsFactory(set),
   });
 
   // Build middleware stack
-  let storeCreator: any = immer(baseStoreCreator);
+  let storeCreator: any = immer(baseStoreCreator as any);
 
   // Add persistence if enabled
   if (persistConfig?.enabled) {
@@ -237,7 +246,7 @@ export function createTrackedStore<
       storage,
       version: persistConfig.version ?? 1,
       partialize:
-        persistConfig.partialize || ((state: T & A) => state as Partial<T>),
+        persistConfig.partialize ?? ((state: T & A) => ({ ...state })),
       migrate: persistConfig.migrate,
     });
   }
@@ -257,8 +266,8 @@ export function createTrackedStore<
   // Create selectors
   const selectors = selectorsFactory ? selectorsFactory(initialState) : {};
 
-  // Extract actions from the store
-  const actions = {} as A;
+  // Create actions using the store's set method
+  const actions = actionsFactory((update) => store.setState(update));
 
   return {
     useStore,
@@ -320,7 +329,7 @@ export function createAsyncAction<T>(
       onSuccess?.(result);
       return result;
     } catch (error) {
-      const err = error as Error;
+      const err = error instanceof Error ? error : new Error(String(error));
       set((state) => {
         state.loading = false;
         state.error = err.message;

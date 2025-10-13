@@ -5,7 +5,7 @@
  * Provides type-safe cache strategy selection based on environment detection.
  */
 
-import { EnvironmentMode, type BuildContext } from './environment-detector.js';
+import { EnvironmentMode, type BuildContext } from "./environment-detector.js";
 
 /**
  * Cache strategy enumeration
@@ -13,31 +13,31 @@ import { EnvironmentMode, type BuildContext } from './environment-detector.js';
  */
 export enum CacheStrategy {
   /** Development: Write cache to disk, read from memory first */
-  DEVELOPMENT_DISK_WRITE = 'development_disk_write',
+  DEVELOPMENT_DISK_WRITE = "development_disk_write",
 
   /** Development: Memory-only caching, no persistence */
-  DEVELOPMENT_MEMORY_ONLY = 'development_memory_only',
+  DEVELOPMENT_MEMORY_ONLY = "development_memory_only",
 
   /** Production: Read from GitHub Pages static files */
-  PRODUCTION_GITHUB_READ = 'production_github_read',
+  PRODUCTION_GITHUB_READ = "production_github_read",
 
   /** Production: Hybrid cache with IndexedDB persistence */
-  PRODUCTION_HYBRID_CACHE = 'production_hybrid_cache',
+  PRODUCTION_HYBRID_CACHE = "production_hybrid_cache",
 
   /** Test: Mock responses, no real caching */
-  TEST_MOCK_RESPONSES = 'test_mock_responses',
+  TEST_MOCK_RESPONSES = "test_mock_responses",
 
   /** Test: In-memory cache for testing cache logic */
-  TEST_MEMORY_CACHE = 'test_memory_cache',
+  TEST_MEMORY_CACHE = "test_memory_cache",
 
   /** Research: Long-term persistent cache optimized for academic use */
-  RESEARCH_PERSISTENT = 'research_persistent',
+  RESEARCH_PERSISTENT = "research_persistent",
 
   /** Offline: Use only cached data, no network requests */
-  OFFLINE_CACHE_ONLY = 'offline_cache_only',
+  OFFLINE_CACHE_ONLY = "offline_cache_only",
 
   /** Debug: Verbose logging and cache inspection */
-  DEBUG_VERBOSE = 'debug_verbose'
+  DEBUG_VERBOSE = "debug_verbose",
 }
 
 /**
@@ -45,28 +45,28 @@ export enum CacheStrategy {
  */
 export enum CacheOperation {
   /** Read from cache, fetch if missing */
-  READ_THROUGH = 'read_through',
+  READ_THROUGH = "read_through",
 
   /** Write to cache when data is fetched */
-  WRITE_THROUGH = 'write_through',
+  WRITE_THROUGH = "write_through",
 
   /** Write to cache asynchronously */
-  WRITE_BEHIND = 'write_behind',
+  WRITE_BEHIND = "write_behind",
 
   /** Cache only, never fetch */
-  CACHE_ONLY = 'cache_only',
+  CACHE_ONLY = "cache_only",
 
   /** Network only, never cache */
-  NETWORK_ONLY = 'network_only',
+  NETWORK_ONLY = "network_only",
 
   /** Cache first, fallback to network */
-  CACHE_FIRST = 'cache_first',
+  CACHE_FIRST = "cache_first",
 
   /** Network first, fallback to cache */
-  NETWORK_FIRST = 'network_first',
+  NETWORK_FIRST = "network_first",
 
   /** Invalidate and refresh cache */
-  INVALIDATE_REFRESH = 'invalidate_refresh'
+  INVALIDATE_REFRESH = "invalidate_refresh",
 }
 
 /**
@@ -74,19 +74,19 @@ export enum CacheOperation {
  */
 export enum CachePriority {
   /** Critical data that should never be evicted */
-  CRITICAL = 'critical',
+  CRITICAL = "critical",
 
   /** High priority data */
-  HIGH = 'high',
+  HIGH = "high",
 
   /** Normal priority data */
-  NORMAL = 'normal',
+  NORMAL = "normal",
 
   /** Low priority data, can be evicted */
-  LOW = 'low',
+  LOW = "low",
 
   /** Temporary data, evict first */
-  TEMPORARY = 'temporary'
+  TEMPORARY = "temporary",
 }
 
 /**
@@ -94,22 +94,22 @@ export enum CachePriority {
  */
 export enum CacheStorageType {
   /** In-memory storage (fastest, not persistent) */
-  MEMORY = 'memory',
+  MEMORY = "memory",
 
   /** Local storage (persistent, size limited) */
-  LOCAL_STORAGE = 'local_storage',
+  LOCAL_STORAGE = "local_storage",
 
   /** IndexedDB (persistent, large capacity) */
-  INDEXED_DB = 'indexed_db',
+  INDEXED_DB = "indexed_db",
 
   /** Static file cache (read-only, CDN-friendly) */
-  STATIC_FILE = 'static_file',
+  STATIC_FILE = "static_file",
 
   /** Service Worker cache (offline-capable) */
-  SERVICE_WORKER = 'service_worker',
+  SERVICE_WORKER = "service_worker",
 
   /** Mock storage (for testing) */
-  MOCK = 'mock'
+  MOCK = "mock",
 }
 
 /**
@@ -157,7 +157,6 @@ export interface CacheStrategyConfig {
  * Cache strategy selector based on environment
  */
 export class CacheStrategySelector {
-
   /**
    * Get default cache strategy for environment mode
    */
@@ -188,17 +187,20 @@ export class CacheStrategySelector {
           operations: [
             CacheOperation.READ_THROUGH,
             CacheOperation.WRITE_THROUGH,
-            CacheOperation.INVALIDATE_REFRESH
+            CacheOperation.INVALIDATE_REFRESH,
           ],
           storageType: CacheStorageType.INDEXED_DB,
-          fallbackStorageTypes: [CacheStorageType.LOCAL_STORAGE, CacheStorageType.MEMORY],
+          fallbackStorageTypes: [
+            CacheStorageType.LOCAL_STORAGE,
+            CacheStorageType.MEMORY,
+          ],
           defaultPriority: CachePriority.NORMAL,
           backgroundSync: false,
           compression: false,
           encryption: false,
           ttl: 10 * 60 * 1000, // 10 minutes
           maxSize: 50 * 1024 * 1024, // 50MB
-          debug: true
+          debug: true,
         };
 
       case CacheStrategy.DEVELOPMENT_MEMORY_ONLY:
@@ -206,7 +208,7 @@ export class CacheStrategySelector {
           strategy,
           operations: [
             CacheOperation.READ_THROUGH,
-            CacheOperation.WRITE_THROUGH
+            CacheOperation.WRITE_THROUGH,
           ],
           storageType: CacheStorageType.MEMORY,
           fallbackStorageTypes: [],
@@ -216,25 +218,25 @@ export class CacheStrategySelector {
           encryption: false,
           ttl: 5 * 60 * 1000, // 5 minutes
           maxSize: 25 * 1024 * 1024, // 25MB
-          debug: true
+          debug: true,
         };
 
       case CacheStrategy.PRODUCTION_GITHUB_READ:
         return {
           strategy,
-          operations: [
-            CacheOperation.CACHE_FIRST,
-            CacheOperation.READ_THROUGH
-          ],
+          operations: [CacheOperation.CACHE_FIRST, CacheOperation.READ_THROUGH],
           storageType: CacheStorageType.STATIC_FILE,
-          fallbackStorageTypes: [CacheStorageType.INDEXED_DB, CacheStorageType.LOCAL_STORAGE],
+          fallbackStorageTypes: [
+            CacheStorageType.INDEXED_DB,
+            CacheStorageType.LOCAL_STORAGE,
+          ],
           defaultPriority: CachePriority.HIGH,
           backgroundSync: true,
           compression: true,
           encryption: false,
           ttl: 24 * 60 * 60 * 1000, // 24 hours
           maxSize: 200 * 1024 * 1024, // 200MB
-          debug: false
+          debug: false,
         };
 
       case CacheStrategy.PRODUCTION_HYBRID_CACHE:
@@ -243,25 +245,26 @@ export class CacheStrategySelector {
           operations: [
             CacheOperation.READ_THROUGH,
             CacheOperation.WRITE_BEHIND,
-            CacheOperation.CACHE_FIRST
+            CacheOperation.CACHE_FIRST,
           ],
           storageType: CacheStorageType.INDEXED_DB,
-          fallbackStorageTypes: [CacheStorageType.LOCAL_STORAGE, CacheStorageType.MEMORY],
+          fallbackStorageTypes: [
+            CacheStorageType.LOCAL_STORAGE,
+            CacheStorageType.MEMORY,
+          ],
           defaultPriority: CachePriority.HIGH,
           backgroundSync: true,
           compression: true,
           encryption: false,
           ttl: 24 * 60 * 60 * 1000, // 24 hours
           maxSize: 200 * 1024 * 1024, // 200MB
-          debug: false
+          debug: false,
         };
 
       case CacheStrategy.TEST_MOCK_RESPONSES:
         return {
           strategy,
-          operations: [
-            CacheOperation.CACHE_ONLY
-          ],
+          operations: [CacheOperation.CACHE_ONLY],
           storageType: CacheStorageType.MOCK,
           fallbackStorageTypes: [],
           defaultPriority: CachePriority.NORMAL,
@@ -270,7 +273,7 @@ export class CacheStrategySelector {
           encryption: false,
           ttl: 1000, // 1 second
           maxSize: 1024 * 1024, // 1MB
-          debug: false
+          debug: false,
         };
 
       case CacheStrategy.TEST_MEMORY_CACHE:
@@ -278,7 +281,7 @@ export class CacheStrategySelector {
           strategy,
           operations: [
             CacheOperation.READ_THROUGH,
-            CacheOperation.WRITE_THROUGH
+            CacheOperation.WRITE_THROUGH,
           ],
           storageType: CacheStorageType.MEMORY,
           fallbackStorageTypes: [],
@@ -288,7 +291,7 @@ export class CacheStrategySelector {
           encryption: false,
           ttl: 30 * 1000, // 30 seconds
           maxSize: 5 * 1024 * 1024, // 5MB
-          debug: false
+          debug: false,
         };
 
       case CacheStrategy.RESEARCH_PERSISTENT:
@@ -297,7 +300,7 @@ export class CacheStrategySelector {
           operations: [
             CacheOperation.READ_THROUGH,
             CacheOperation.WRITE_THROUGH,
-            CacheOperation.CACHE_FIRST
+            CacheOperation.CACHE_FIRST,
           ],
           storageType: CacheStorageType.INDEXED_DB,
           fallbackStorageTypes: [CacheStorageType.LOCAL_STORAGE],
@@ -310,25 +313,26 @@ export class CacheStrategySelector {
           debug: true,
           metadata: {
             researchMode: true,
-            ethicalUse: true
-          }
+            ethicalUse: true,
+          },
         };
 
       case CacheStrategy.OFFLINE_CACHE_ONLY:
         return {
           strategy,
-          operations: [
-            CacheOperation.CACHE_ONLY
-          ],
+          operations: [CacheOperation.CACHE_ONLY],
           storageType: CacheStorageType.INDEXED_DB,
-          fallbackStorageTypes: [CacheStorageType.LOCAL_STORAGE, CacheStorageType.MEMORY],
+          fallbackStorageTypes: [
+            CacheStorageType.LOCAL_STORAGE,
+            CacheStorageType.MEMORY,
+          ],
           defaultPriority: CachePriority.CRITICAL,
           backgroundSync: false,
           compression: true,
           encryption: false,
           ttl: Number.MAX_SAFE_INTEGER, // Never expire
           maxSize: 1024 * 1024 * 1024, // 1GB
-          debug: false
+          debug: false,
         };
 
       case CacheStrategy.DEBUG_VERBOSE:
@@ -337,7 +341,7 @@ export class CacheStrategySelector {
           operations: [
             CacheOperation.READ_THROUGH,
             CacheOperation.WRITE_THROUGH,
-            CacheOperation.INVALIDATE_REFRESH
+            CacheOperation.INVALIDATE_REFRESH,
           ],
           storageType: CacheStorageType.MEMORY,
           fallbackStorageTypes: [CacheStorageType.INDEXED_DB],
@@ -350,8 +354,8 @@ export class CacheStrategySelector {
           debug: true,
           metadata: {
             verboseLogging: true,
-            performanceMetrics: true
-          }
+            performanceMetrics: true,
+          },
         };
 
       default:
@@ -367,7 +371,7 @@ export class CacheStrategySelector {
           encryption: false,
           ttl: 5 * 60 * 1000,
           maxSize: 10 * 1024 * 1024,
-          debug: false
+          debug: false,
         };
     }
   }
@@ -378,12 +382,12 @@ export class CacheStrategySelector {
   static selectStrategy(
     context: BuildContext,
     options?: {
-      useCase?: 'research' | 'production' | 'development' | 'testing';
+      useCase?: "research" | "production" | "development" | "testing";
       offline?: boolean;
       debug?: boolean;
-    }
+    },
   ): CacheStrategy {
-    const { useCase, offline, debug } = options || {};
+    const { useCase, offline, debug } = options ?? {};
 
     // Handle special cases
     if (offline) {
@@ -395,11 +399,11 @@ export class CacheStrategySelector {
     }
 
     // Handle use case overrides
-    if (useCase === 'research') {
+    if (useCase === "research") {
       return CacheStrategy.RESEARCH_PERSISTENT;
     }
 
-    if (useCase === 'testing' || context.isTest) {
+    if (useCase === "testing" || context.isTest) {
       return CacheStrategy.TEST_MEMORY_CACHE;
     }
 
@@ -431,20 +435,18 @@ export class CacheStrategySelector {
     // Always available
     strategies.push(
       CacheStrategy.DEVELOPMENT_MEMORY_ONLY,
-      CacheStrategy.DEBUG_VERBOSE
+      CacheStrategy.DEBUG_VERBOSE,
     );
 
     if (context.isDevelopment) {
       strategies.push(
         CacheStrategy.DEVELOPMENT_DISK_WRITE,
-        CacheStrategy.RESEARCH_PERSISTENT
+        CacheStrategy.RESEARCH_PERSISTENT,
       );
     }
 
     if (context.isProduction) {
-      strategies.push(
-        CacheStrategy.PRODUCTION_HYBRID_CACHE
-      );
+      strategies.push(CacheStrategy.PRODUCTION_HYBRID_CACHE);
 
       if (context.isGitHubPages) {
         strategies.push(CacheStrategy.PRODUCTION_GITHUB_READ);
@@ -454,12 +456,12 @@ export class CacheStrategySelector {
     if (context.isTest) {
       strategies.push(
         CacheStrategy.TEST_MEMORY_CACHE,
-        CacheStrategy.TEST_MOCK_RESPONSES
+        CacheStrategy.TEST_MOCK_RESPONSES,
       );
     }
 
     // Offline support (if service worker available)
-    if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+    if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
       strategies.push(CacheStrategy.OFFLINE_CACHE_ONLY);
     }
 
@@ -471,18 +473,22 @@ export class CacheStrategySelector {
  * Convenience function to get cache strategy for current environment
  */
 export function getCurrentCacheStrategy(_options?: {
-  useCase?: 'research' | 'production' | 'development' | 'testing';
+  useCase?: "research" | "production" | "development" | "testing";
   offline?: boolean;
   debug?: boolean;
 }): CacheStrategy {
   // This would import from environment-detector, but we avoid circular imports
   // Implementation should be provided by mode-switcher
-  throw new Error('getCurrentCacheStrategy should be called through mode-switcher');
+  throw new Error(
+    "getCurrentCacheStrategy should be called through mode-switcher",
+  );
 }
 
 /**
  * Convenience function to get cache strategy configuration
  */
-export function getCacheStrategyConfig(strategy: CacheStrategy): CacheStrategyConfig {
+export function getCacheStrategyConfig(
+  strategy: CacheStrategy,
+): CacheStrategyConfig {
   return CacheStrategySelector.getStrategyConfig(strategy);
 }

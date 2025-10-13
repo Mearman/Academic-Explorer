@@ -75,7 +75,7 @@ function tokenizeQuery(query: string): string[] {
   // 2. Standalone quoted strings ("quoted value")
   // 3. Other non-whitespace tokens
   const tokenRegex = /\S+:"[^"]*"|"[^"]*"|\S+/g;
-  return query.match(tokenRegex) || [];
+  return query.match(tokenRegex) ?? [];
 }
 
 function tryParseFieldQueryWithSpace(

@@ -61,6 +61,19 @@ const ENTITY_TYPE_PATTERNS: Record<EntityType, RegExp[]> = {
   concepts: [/^C\d+$/, /\/concepts\/C\d+/, /concepts-.*/, /concept_/],
 };
 
+// All entity types as a constant array for safe iteration
+const ALL_ENTITY_TYPES: readonly EntityType[] = [
+  "works",
+  "authors",
+  "sources",
+  "institutions",
+  "topics",
+  "publishers",
+  "funders",
+  "keywords",
+  "concepts",
+] as const;
+
 export class CacheBrowserService {
   private config: CacheBrowserConfig;
   private logger?: GenericLogger;
@@ -96,7 +109,7 @@ export class CacheBrowserService {
       // Merge with defaults
       const mergedFilters: CacheBrowserFilters = {
         searchQuery: "",
-        entityTypes: new Set(Object.keys(ENTITY_TYPE_PATTERNS) as EntityType[]),
+        entityTypes: new Set(ALL_ENTITY_TYPES),
         storageLocations: new Set(["indexeddb", "localstorage", "repository"]),
         ...filters,
       };
@@ -146,7 +159,7 @@ export class CacheBrowserService {
         entities: paginatedEntities,
         stats,
         hasMore:
-          (mergedOptions.offset || 0) + paginatedEntities.length <
+          (mergedOptions.offset ?? 0) + paginatedEntities.length <
           sortedEntities.length,
         totalMatching: sortedEntities.length,
       };
@@ -193,7 +206,7 @@ export class CacheBrowserService {
     const entities = await this.getAllEntities();
     const filteredEntities = this.applyFilters(entities, {
       searchQuery: "",
-      entityTypes: new Set(Object.keys(ENTITY_TYPE_PATTERNS) as EntityType[]),
+      entityTypes: new Set(ALL_ENTITY_TYPES),
       storageLocations: new Set(["indexeddb", "localstorage"]),
       ...filters,
     });
@@ -245,7 +258,7 @@ export class CacheBrowserService {
             }
 
             // Dexie stores objects with keys, so we need to extract key and value
-            const key = cursor.primaryKey as string;
+            const key = String(cursor.primaryKey);
             const value = item;
 
             const entityMetadata = this.extractEntityMetadata(
@@ -296,7 +309,7 @@ export class CacheBrowserService {
         i++
       ) {
         const key = localStorage.key(i);
-        if (!key) continue;
+        if (key === null) continue;
 
         try {
           const value = localStorage.getItem(key);
@@ -375,9 +388,9 @@ export class CacheBrowserService {
       const entityId = this.extractEntityId(key, parsedValue, entityType);
 
       return {
-        id: entityId || key,
+        id: entityId ?? key,
         type: entityType,
-        label: basicInfo?.displayName || entityId || key,
+        label: basicInfo?.displayName ?? entityId ?? key,
         cacheTimestamp: Date.now(), // We don't have actual cache timestamp, use current time
         storageLocation,
         dataSize,
@@ -398,10 +411,11 @@ export class CacheBrowserService {
   }
 
   private detectEntityType(key: string): EntityType | null {
-    for (const [type, patterns] of Object.entries(ENTITY_TYPE_PATTERNS)) {
+    for (const type of ALL_ENTITY_TYPES) {
+      const patterns = ENTITY_TYPE_PATTERNS[type];
       for (const pattern of patterns) {
         if (pattern.test(key)) {
-          return type as EntityType;
+          return type;
         }
       }
     }
@@ -416,14 +430,16 @@ export class CacheBrowserService {
     // Try to extract from parsed value first
     if (value && typeof value === "object" && value !== null) {
       const obj = value as Record<string, unknown>;
-      if (typeof obj.id === "string") {
-        return obj.id;
+      const id = obj.id;
+      if (typeof id === "string") {
+        return id;
       }
+      const displayName = obj.display_name;
       if (
-        typeof obj.display_name === "string" &&
-        obj.display_name.startsWith(type.charAt(0).toUpperCase())
+        typeof displayName === "string" &&
+        displayName.startsWith(type.charAt(0).toUpperCase())
       ) {
-        return obj.display_name;
+        return displayName;
       }
     }
 
@@ -485,17 +501,19 @@ export class CacheBrowserService {
     ];
 
     for (const field of idFields) {
-      if (typeof obj[field] === "string") {
-        externalIds[field] = obj[field];
+      const fieldValue = obj[field];
+      if (typeof fieldValue === "string") {
+        externalIds[field] = fieldValue;
       }
     }
 
     // Check for ids object
-    if (obj.ids && typeof obj.ids === "object" && obj.ids !== null) {
-      const idsObj = obj.ids as Record<string, unknown>;
-      for (const [key, value] of Object.entries(idsObj)) {
-        if (typeof value === "string") {
-          externalIds[key] = value;
+    const ids = obj.ids;
+    if (ids && typeof ids === "object" && ids !== null) {
+      const idsObj = ids as Record<string, unknown>;
+      for (const [key, val] of Object.entries(idsObj)) {
+        if (typeof val === "string") {
+          externalIds[key] = val;
         }
       }
     }
@@ -584,7 +602,7 @@ export class CacheBrowserService {
           comparison = a.dataSize - b.dataSize;
           break;
         case "lastAccessed":
-          comparison = (a.lastAccessed || 0) - (b.lastAccessed || 0);
+          comparison = (a.lastAccessed ?? 0) - (b.lastAccessed ?? 0);
           break;
         default:
           comparison = a.label.localeCompare(b.label);
@@ -598,8 +616,8 @@ export class CacheBrowserService {
     entities: CachedEntityMetadata[],
     options: CacheBrowserOptions,
   ): CachedEntityMetadata[] {
-    const offset = options.offset || 0;
-    const limit = options.limit || entities.length;
+    const offset = options.offset ?? 0;
+    const limit = options.limit ?? entities.length;
     return entities.slice(offset, offset + limit);
   }
 

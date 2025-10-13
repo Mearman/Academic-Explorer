@@ -5,26 +5,30 @@
  * Provides a unified interface for selecting and configuring cache strategies.
  */
 
-import { EnvironmentDetector, EnvironmentMode, type BuildContext } from './environment-detector.js';
-import { CacheConfigFactory, type CacheConfig } from './cache-config.js';
+import {
+  EnvironmentDetector,
+  EnvironmentMode,
+  type BuildContext,
+} from "./environment-detector.js";
+import { CacheConfigFactory, type CacheConfig } from "./cache-config.js";
 import {
   CacheStrategySelector,
   CacheStrategy,
   CacheOperation,
   CachePriority,
   CacheStorageType,
-  type CacheStrategyConfig
-} from './cache-strategies.js';
-import { logger } from '../logger.js';
+  type CacheStrategyConfig,
+} from "./cache-strategies.js";
+import { logger } from "../logger.js";
 
 /**
  * Runtime mode configuration options
  */
 export interface ModeOptions {
   /** Force specific environment mode */
-  forceMode?: 'development' | 'production' | 'test';
+  forceMode?: "development" | "production" | "test";
   /** Use case optimization */
-  useCase?: 'research' | 'production' | 'development' | 'testing';
+  useCase?: "research" | "production" | "development" | "testing";
   /** Enable offline mode */
   offline?: boolean;
   /** Enable debug mode */
@@ -62,7 +66,8 @@ export interface RuntimeEnvironmentConfig {
  */
 export class ModeSwitcher {
   private static _currentConfig: RuntimeEnvironmentConfig | undefined;
-  private static _listeners: Array<(config: RuntimeEnvironmentConfig) => void> = [];
+  private static _listeners: Array<(config: RuntimeEnvironmentConfig) => void> =
+    [];
 
   /**
    * Initialize mode switcher with optional overrides
@@ -79,7 +84,7 @@ export class ModeSwitcher {
       strategy,
       strategyConfig,
       options,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     this._currentConfig = config;
@@ -109,49 +114,57 @@ export class ModeSwitcher {
    * Switch to specific mode
    */
   static switchToMode(
-    mode: 'development' | 'production' | 'test',
-    additionalOptions: Omit<ModeOptions, 'forceMode'> = {}
+    mode: "development" | "production" | "test",
+    additionalOptions: Omit<ModeOptions, "forceMode"> = {},
   ): RuntimeEnvironmentConfig {
     return this.initialize({
       ...additionalOptions,
-      forceMode: mode
+      forceMode: mode,
     });
   }
 
   /**
    * Switch to research mode
    */
-  static switchToResearchMode(options: Omit<ModeOptions, 'useCase'> = {}): RuntimeEnvironmentConfig {
+  static switchToResearchMode(
+    options: Omit<ModeOptions, "useCase"> = {},
+  ): RuntimeEnvironmentConfig {
     return this.initialize({
       ...options,
-      useCase: 'research'
+      useCase: "research",
     });
   }
 
   /**
    * Switch to offline mode
    */
-  static switchToOfflineMode(options: Omit<ModeOptions, 'offline'> = {}): RuntimeEnvironmentConfig {
+  static switchToOfflineMode(
+    options: Omit<ModeOptions, "offline"> = {},
+  ): RuntimeEnvironmentConfig {
     return this.initialize({
       ...options,
-      offline: true
+      offline: true,
     });
   }
 
   /**
    * Switch to debug mode
    */
-  static switchToDebugMode(options: Omit<ModeOptions, 'debug'> = {}): RuntimeEnvironmentConfig {
+  static switchToDebugMode(
+    options: Omit<ModeOptions, "debug"> = {},
+  ): RuntimeEnvironmentConfig {
     return this.initialize({
       ...options,
-      debug: true
+      debug: true,
     });
   }
 
   /**
    * Add configuration change listener
    */
-  static addConfigListener(listener: (config: RuntimeEnvironmentConfig) => void): () => void {
+  static addConfigListener(
+    listener: (config: RuntimeEnvironmentConfig) => void,
+  ): () => void {
     this._listeners.push(listener);
     return () => {
       const index = this._listeners.indexOf(listener);
@@ -165,8 +178,8 @@ export class ModeSwitcher {
    * Get available modes for current context
    */
   static getAvailableModes(): {
-    environments: Array<'development' | 'production' | 'test'>;
-    useCases: Array<'research' | 'production' | 'development' | 'testing'>;
+    environments: Array<"development" | "production" | "test">;
+    useCases: Array<"research" | "production" | "development" | "testing">;
     strategies: CacheStrategy[];
     storageTypes: CacheStorageType[];
   } {
@@ -174,15 +187,15 @@ export class ModeSwitcher {
     const strategies = CacheStrategySelector.getAvailableStrategies(context);
 
     return {
-      environments: ['development', 'production', 'test'],
-      useCases: ['research', 'production', 'development', 'testing'],
+      environments: ["development", "production", "test"],
+      useCases: ["research", "production", "development", "testing"],
       strategies,
       storageTypes: [
         CacheStorageType.MEMORY,
         CacheStorageType.LOCAL_STORAGE,
         CacheStorageType.INDEXED_DB,
-        CacheStorageType.STATIC_FILE
-      ]
+        CacheStorageType.STATIC_FILE,
+      ],
     };
   }
 
@@ -198,29 +211,32 @@ export class ModeSwitcher {
     const warnings: string[] = [];
 
     // Check for conflicting options
-    if (options.offline && options.useCase === 'development') {
-      warnings.push('Offline mode in development may not work as expected');
+    if (options.offline && options.useCase === "development") {
+      warnings.push("Offline mode in development may not work as expected");
     }
 
     // Check storage type compatibility
-    if (options.storageType === CacheStorageType.STATIC_FILE && !options.offline) {
-      warnings.push('Static file storage works best in offline mode');
+    if (
+      options.storageType === CacheStorageType.STATIC_FILE &&
+      !options.offline
+    ) {
+      warnings.push("Static file storage works best in offline mode");
     }
 
     // Check cache size limits
     if (options.maxCacheSize && options.maxCacheSize > 1024 * 1024 * 1024) {
-      warnings.push('Cache size over 1GB may impact performance');
+      warnings.push("Cache size over 1GB may impact performance");
     }
 
     // Check TTL values
     if (options.ttl && options.ttl < 1000) {
-      warnings.push('TTL under 1 second may cause excessive cache thrashing');
+      warnings.push("TTL under 1 second may cause excessive cache thrashing");
     }
 
     return {
       valid: errors.length === 0,
       errors,
-      warnings
+      warnings,
     };
   }
 
@@ -240,7 +256,7 @@ export class ModeSwitcher {
       // Placeholder for actual metrics - would be implemented by cache implementation
       cacheHitRate: undefined,
       memoryUsage: undefined,
-      storageUsage: undefined
+      storageUsage: undefined,
     };
   }
 
@@ -255,10 +271,15 @@ export class ModeSwitcher {
       const forcedMode = options.forceMode;
       context = {
         ...context,
-        isDevelopment: forcedMode === 'development',
-        isProduction: forcedMode === 'production',
-        isTest: forcedMode === 'test',
-        mode: forcedMode as unknown as EnvironmentMode // Type assertion needed for enum conversion
+        isDevelopment: forcedMode === "development",
+        isProduction: forcedMode === "production",
+        isTest: forcedMode === "test",
+        mode:
+          forcedMode === "development"
+            ? EnvironmentMode.DEVELOPMENT
+            : forcedMode === "production"
+              ? EnvironmentMode.PRODUCTION
+              : EnvironmentMode.TEST,
       };
     }
 
@@ -270,12 +291,15 @@ export class ModeSwitcher {
    */
   private static createCacheConfiguration(
     context: BuildContext,
-    options: ModeOptions
+    options: ModeOptions,
   ): CacheConfig {
     let config: CacheConfig;
 
     if (options.useCase) {
-      config = CacheConfigFactory.createOptimizedConfig(options.useCase, context);
+      config = CacheConfigFactory.createOptimizedConfig(
+        options.useCase,
+        context,
+      );
     } else {
       config = CacheConfigFactory.createCacheConfig(context);
     }
@@ -301,7 +325,7 @@ export class ModeSwitcher {
    */
   private static selectCacheStrategy(
     context: BuildContext,
-    options: ModeOptions
+    options: ModeOptions,
   ): CacheStrategy {
     if (options.cacheStrategy) {
       return options.cacheStrategy;
@@ -310,7 +334,7 @@ export class ModeSwitcher {
     return CacheStrategySelector.selectStrategy(context, {
       useCase: options.useCase,
       offline: options.offline,
-      debug: options.debug
+      debug: options.debug,
     });
   }
 
@@ -319,7 +343,7 @@ export class ModeSwitcher {
    */
   private static createStrategyConfiguration(
     strategy: CacheStrategy,
-    options: ModeOptions
+    options: ModeOptions,
   ): CacheStrategyConfig {
     let config = CacheStrategySelector.getStrategyConfig(strategy);
 
@@ -327,28 +351,28 @@ export class ModeSwitcher {
     if (options.storageType) {
       config = {
         ...config,
-        storageType: options.storageType
+        storageType: options.storageType,
       };
     }
 
     if (options.maxCacheSize) {
       config = {
         ...config,
-        maxSize: options.maxCacheSize
+        maxSize: options.maxCacheSize,
       };
     }
 
     if (options.ttl) {
       config = {
         ...config,
-        ttl: options.ttl
+        ttl: options.ttl,
       };
     }
 
     if (options.debug !== undefined) {
       config = {
         ...config,
-        debug: options.debug
+        debug: options.debug,
       };
     }
 
@@ -363,7 +387,11 @@ export class ModeSwitcher {
       try {
         listener(config);
       } catch (error) {
-        logger.error('mode-switcher', 'Error in mode switcher listener:', error);
+        logger.error(
+          "mode-switcher",
+          "Error in mode switcher listener:",
+          error,
+        );
       }
     }
   }
@@ -386,7 +414,7 @@ export class ModeSwitcher {
  * Get current cache strategy
  */
 export function getCurrentCacheStrategy(options?: {
-  useCase?: 'research' | 'production' | 'development' | 'testing';
+  useCase?: "research" | "production" | "development" | "testing";
   offline?: boolean;
   debug?: boolean;
 }): CacheStrategy {
@@ -450,26 +478,32 @@ export function getEnvironmentDescription(): string {
 /**
  * Initialize environment with research-optimized settings
  */
-export function initializeResearchEnvironment(options: Omit<ModeOptions, 'useCase'> = {}): RuntimeEnvironmentConfig {
+export function initializeResearchEnvironment(
+  options: Omit<ModeOptions, "useCase"> = {},
+): RuntimeEnvironmentConfig {
   return ModeSwitcher.switchToResearchMode(options);
 }
 
 /**
  * Initialize environment with production-optimized settings
  */
-export function initializeProductionEnvironment(options: Omit<ModeOptions, 'useCase'> = {}): RuntimeEnvironmentConfig {
+export function initializeProductionEnvironment(
+  options: Omit<ModeOptions, "useCase"> = {},
+): RuntimeEnvironmentConfig {
   return ModeSwitcher.reconfigure({
     ...options,
-    useCase: 'production'
+    useCase: "production",
   });
 }
 
 /**
  * Initialize environment with development-optimized settings
  */
-export function initializeDevelopmentEnvironment(options: Omit<ModeOptions, 'useCase'> = {}): RuntimeEnvironmentConfig {
+export function initializeDevelopmentEnvironment(
+  options: Omit<ModeOptions, "useCase"> = {},
+): RuntimeEnvironmentConfig {
   return ModeSwitcher.reconfigure({
     ...options,
-    useCase: 'development'
+    useCase: "development",
   });
 }

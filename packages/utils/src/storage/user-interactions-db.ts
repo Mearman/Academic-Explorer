@@ -93,9 +93,7 @@ class UserInteractionsDB extends Dexie {
 let dbInstance: UserInteractionsDB | null = null;
 
 const getDB = (): UserInteractionsDB => {
-  if (!dbInstance) {
-    dbInstance = new UserInteractionsDB();
-  }
+  dbInstance ??= new UserInteractionsDB();
   return dbInstance;
 };
 
@@ -239,7 +237,7 @@ export class UserInteractionsService {
     } catch (error) {
       this.logger?.error(LOG_CATEGORY, "Failed to get bookmark by cache key", {
         cacheKey,
-        error: error as Error,
+        error: error instanceof Error ? error : new Error(String(error)),
       });
       return null;
     }
@@ -293,14 +291,17 @@ export class UserInteractionsService {
         timestamp: new Date(),
       };
 
-      const id = (await this.db.bookmarks.add(bookmark)) as number;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const id = await this.db.bookmarks.add(bookmark);
 
       this.logger?.debug(LOG_CATEGORY, "Bookmark added", {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         id,
         cacheKey: request.cacheKey,
         title,
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return id;
     } catch (error) {
       this.logger?.error(LOG_CATEGORY, "Failed to add bookmark", {
@@ -381,6 +382,7 @@ export class UserInteractionsService {
       return bookmarks.filter(
         (bookmark) =>
           bookmark.title.toLowerCase().includes(lowercaseQuery) ||
+          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
           bookmark.notes?.toLowerCase().includes(lowercaseQuery) ||
           bookmark.tags?.some((tag) =>
             tag.toLowerCase().includes(lowercaseQuery),
@@ -419,12 +421,12 @@ export class UserInteractionsService {
 
       visits.forEach((visit) => {
         // Count by cache key
-        const count = requestCounts.get(visit.request.cacheKey) || 0;
+        const count = requestCounts.get(visit.request.cacheKey) ?? 0;
         requestCounts.set(visit.request.cacheKey, count + 1);
 
         // Count by endpoint
         const { endpoint } = visit.request;
-        endpointCounts[endpoint] = (endpointCounts[endpoint] || 0) + 1;
+        endpointCounts[endpoint] = (endpointCounts[endpoint] ?? 0) + 1;
 
         // Count cached visits
         if (visit.cached) {

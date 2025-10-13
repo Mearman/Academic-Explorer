@@ -77,9 +77,7 @@ export class EnvironmentDetector {
   }
 
   private static getModeFromNodeEnv(): EnvironmentMode | null {
-    if (
-      globalThis.process?.env?.NODE_ENV
-    ) {
+    if (globalThis.process?.env?.NODE_ENV) {
       const nodeEnv = globalThis.process.env.NODE_ENV.toLowerCase();
       switch (nodeEnv) {
         case "production":
@@ -96,8 +94,10 @@ export class EnvironmentDetector {
   private static getModeFromViteEnv(): EnvironmentMode | null {
     if (typeof import.meta !== "undefined") {
       try {
+        // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
         const viteEnv = (import.meta as { env?: Record<string, unknown> }).env;
         if (viteEnv) {
+          // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
           const viteMode = (viteEnv.MODE as string | undefined)?.toLowerCase();
           switch (viteMode) {
             case "production":
@@ -109,8 +109,10 @@ export class EnvironmentDetector {
           }
 
           // Check Vite's DEV flag
+          // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
           if ((viteEnv.DEV as boolean | undefined) === true)
             return EnvironmentMode.DEVELOPMENT;
+          // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
           if ((viteEnv.PROD as boolean | undefined) === true)
             return EnvironmentMode.PRODUCTION;
         }
@@ -124,6 +126,7 @@ export class EnvironmentDetector {
   private static getModeFromDevFlag(): EnvironmentMode | null {
     if (typeof globalThis !== "undefined" && "__DEV__" in globalThis) {
       try {
+        // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
         const devFlag = (globalThis as unknown as { __DEV__?: boolean })
           .__DEV__;
         return devFlag
@@ -177,9 +180,7 @@ export class EnvironmentDetector {
    * Detect if running in Node.js context
    */
   static isNode(): boolean {
-    return (
-      globalThis.process?.versions?.node !== undefined
-    );
+    return globalThis.process?.versions?.node !== undefined;
   }
 
   /**
@@ -236,6 +237,29 @@ export class EnvironmentDetector {
   }
 
   /**
+   * Extract build info from raw build data
+   */
+  private static extractBuildInfo(buildInfo: Record<string, unknown>): {
+    buildTimestamp?: string;
+    commitHash?: string;
+  } {
+    const buildTimestamp = buildInfo.buildTimestamp;
+    const commitHash = buildInfo.commitHash;
+    const shortCommitHash = buildInfo.shortCommitHash;
+
+    return {
+      buildTimestamp:
+        typeof buildTimestamp === "string" ? buildTimestamp : undefined,
+      commitHash:
+        typeof commitHash === "string"
+          ? commitHash
+          : typeof shortCommitHash === "string"
+            ? shortCommitHash
+            : undefined,
+    };
+  }
+
+  /**
    * Get build information from injected metadata
    */
   static getBuildInfo(): { buildTimestamp?: string; commitHash?: string } {
@@ -243,20 +267,17 @@ export class EnvironmentDetector {
       // Check for Vite-injected build info
       if (typeof globalThis !== "undefined" && "__BUILD_INFO__" in globalThis) {
         try {
-          const buildInfo = (
-            globalThis as unknown as {
-              __BUILD_INFO__?: {
-                buildTimestamp?: string;
-                commitHash?: string;
-                shortCommitHash?: string;
-              };
-            }
-          ).__BUILD_INFO__;
-          if (buildInfo && typeof buildInfo === "object") {
-            return {
-              buildTimestamp: buildInfo.buildTimestamp,
-              commitHash: buildInfo.commitHash || buildInfo.shortCommitHash,
-            };
+          const buildInfoRaw = (globalThis as Record<string, unknown>)[
+            "__BUILD_INFO__"
+          ];
+          if (
+            buildInfoRaw &&
+            typeof buildInfoRaw === "object" &&
+            buildInfoRaw !== null
+          ) {
+            return this.extractBuildInfo(
+              buildInfoRaw as Record<string, unknown>,
+            );
           }
         } catch {
           // Ignore errors if __BUILD_INFO__ is not accessible

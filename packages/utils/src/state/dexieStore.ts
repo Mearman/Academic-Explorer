@@ -60,7 +60,7 @@ export function createDexieSync<T>(options: DexieSyncOptions<T>) {
       const items = await table.toArray();
       onSync?.(items);
     } catch (error) {
-      onError?.(error as Error);
+      onError?.(error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -100,7 +100,7 @@ export function createDexieStore<T extends { id?: number | string }>(
     // CRUD operations
     async add(item: T): Promise<T> {
       const id = await table.add(item);
-      return { ...item, id } as T;
+      return { ...item, id };
     },
 
     async update(item: T): Promise<T> {
