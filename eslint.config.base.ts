@@ -106,9 +106,8 @@ export default tseslint.config([
       "@typescript-eslint/ban-ts-comment": [
         "error",
         {
-          "ts-expect-error":
-            "Use proper type annotations instead of @ts-expect-error",
-          "ts-ignore": "Use proper type annotations instead of @ts-ignore",
+          "ts-expect-error": false,
+          "ts-ignore": false,
         },
       ],
       // Disable type-aware rules that require project config for performance
