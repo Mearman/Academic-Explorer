@@ -1,19 +1,20 @@
 import {
-    cachedOpenAlex,
-    type AutocompleteResult,
+  cachedOpenAlex,
+  type AutocompleteResult,
 } from "@academic-explorer/client";
 import { logger } from "@academic-explorer/utils";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 import {
-    Alert,
-    Anchor,
-    Badge,
-    Card,
-    Container,
-    Group,
-    Stack,
-    Text,
-    TextInput,
-    Title,
+  Alert,
+  Anchor,
+  Badge,
+  Card,
+  Container,
+  Group,
+  Stack,
+  Text,
+  TextInput,
+  Title,
 } from "@mantine/core";
 import { IconInfoCircle, IconSearch } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
@@ -34,6 +35,7 @@ export const Route = createLazyFileRoute("/autocomplete/")({
 function AutocompleteGeneralRoute() {
   const urlSearch = useSearch({ from: "/autocomplete/" });
   const [query, setQuery] = useState(urlSearch.q || urlSearch.search || "");
+  const { getEntityColor } = useThemeColors();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -61,9 +63,14 @@ function AutocompleteGeneralRoute() {
     queryFn: async () => {
       if (!query.trim()) return [];
 
-      logger.debug("autocomplete", "Fetching general autocomplete suggestions", { query });
+      logger.debug(
+        "autocomplete",
+        "Fetching general autocomplete suggestions",
+        { query },
+      );
 
-      const response = await cachedOpenAlex.client.autocomplete.autocompleteGeneral(query);
+      const response =
+        await cachedOpenAlex.client.autocomplete.autocompleteGeneral(query);
 
       logger.debug("autocomplete", "General suggestions received", {
         count: response.length,
@@ -84,22 +91,10 @@ function AutocompleteGeneralRoute() {
     if (urlSearch.filter) {
       params.set("filter", urlSearch.filter);
     }
-    const newHash = params.toString() ? `#/autocomplete?${params.toString()}` : "#/autocomplete";
+    const newHash = params.toString()
+      ? `#/autocomplete?${params.toString()}`
+      : "#/autocomplete";
     window.history.replaceState(null, "", newHash);
-  };
-
-  const getEntityColor = (entityType: string | undefined): string => {
-    const colorMap: Record<string, string> = {
-      work: "blue",
-      author: "teal",
-      institution: "cyan",
-      source: "indigo",
-      concept: "blue",
-      topic: "violet",
-      funder: "green",
-      publisher: "orange",
-    };
-    return colorMap[entityType || ""] || "gray";
   };
 
   const getEntityRoute = (result: AutocompleteResult): string => {
@@ -128,7 +123,8 @@ function AutocompleteGeneralRoute() {
         <div>
           <Title order={1}>General Autocomplete</Title>
           <Text c="dimmed" size="sm" mt="xs">
-            Search across all entity types with real-time suggestions from the OpenAlex database
+            Search across all entity types with real-time suggestions from the
+            OpenAlex database
           </Text>
         </div>
 
@@ -153,7 +149,8 @@ function AutocompleteGeneralRoute() {
                 Enter a search term to see suggestions
               </Text>
               <Text size="sm" c="dimmed" ta="center">
-                Start typing to get real-time autocomplete suggestions from all OpenAlex entities
+                Start typing to get real-time autocomplete suggestions from all
+                OpenAlex entities
               </Text>
             </Stack>
           </Card>
@@ -176,7 +173,9 @@ function AutocompleteGeneralRoute() {
               <Text size="sm">
                 {(() => {
                   if (error instanceof Error) {
-                    const match = error.message.match(/autocomplete failed: (.+)/);
+                    const match = error.message.match(
+                      /autocomplete failed: (.+)/,
+                    );
                     if (match) {
                       return match[1];
                     }
@@ -197,7 +196,8 @@ function AutocompleteGeneralRoute() {
             variant="light"
           >
             <Text size="sm">
-              No results found matching &quot;{query}&quot;. Try different search terms.
+              No results found matching &quot;{query}&quot;. Try different
+              search terms.
             </Text>
           </Alert>
         )}
@@ -211,14 +211,14 @@ function AutocompleteGeneralRoute() {
               <Card key={result.id} withBorder padding="md" shadow="sm">
                 <Stack gap="xs">
                   <Group justify="space-between" wrap="nowrap">
-                    <Anchor
-                      href={getEntityRoute(result)}
-                      fw={500}
-                      size="md"
-                    >
+                    <Anchor href={getEntityRoute(result)} fw={500} size="md">
                       {result.display_name}
                     </Anchor>
-                    <Badge size="sm" variant="light" color={getEntityColor(result.entity_type)}>
+                    <Badge
+                      size="sm"
+                      variant="light"
+                      color={getEntityColor(result.entity_type)}
+                    >
                       {result.entity_type || "Unknown"}
                     </Badge>
                   </Group>
@@ -230,19 +230,25 @@ function AutocompleteGeneralRoute() {
                   )}
 
                   <Group gap="md">
-                    {result.cited_by_count !== undefined && result.cited_by_count !== null && (
-                      <Text size="xs" c="dimmed">
-                        Citations: {result.cited_by_count.toLocaleString()}
-                      </Text>
-                    )}
-                    {result.works_count !== undefined && result.works_count !== null && (
-                      <Text size="xs" c="dimmed">
-                        Works: {result.works_count.toLocaleString()}
-                      </Text>
-                    )}
+                    {result.cited_by_count !== undefined &&
+                      result.cited_by_count !== null && (
+                        <Text size="xs" c="dimmed">
+                          Citations: {result.cited_by_count.toLocaleString()}
+                        </Text>
+                      )}
+                    {result.works_count !== undefined &&
+                      result.works_count !== null && (
+                        <Text size="xs" c="dimmed">
+                          Works: {result.works_count.toLocaleString()}
+                        </Text>
+                      )}
                   </Group>
 
-                  <Text size="xs" c="dimmed" style={{ fontFamily: "monospace" }}>
+                  <Text
+                    size="xs"
+                    c="dimmed"
+                    style={{ fontFamily: "monospace" }}
+                  >
                     {result.id}
                   </Text>
                 </Stack>
