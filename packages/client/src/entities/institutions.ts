@@ -712,7 +712,7 @@ export class InstitutionsApi {
    * Validate ROR ID length and throw if invalid
    */
   private validateRorIdLength(rorId: string, errorMessage: string): void {
-    if (!rorId || rorId.length !== 9) {
+    if (rorId?.length !== 9) {
       throw new Error(errorMessage);
     }
   }
