@@ -5,16 +5,15 @@
 
 import type { StateCreator, StoreApi, UseBoundStore } from "zustand";
 import { create } from "zustand";
+import { createJSONStorage, devtools, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import { persist, createJSONStorage } from "zustand/middleware";
-import { devtools } from "zustand/middleware";
+import { isDevelopment, isProduction } from "../environment/index.js";
+import { logger } from "../logger.js";
 import {
   createHybridStorage,
   createIndexedDBStorage,
   type StorageConfig,
 } from "../storage/indexeddb-storage.js";
-import { logger } from "../logger.js";
-import { isDevelopment, isProduction } from "../environment/index.js";
 
 // Re-export Zustand types for convenience
 export type { StateCreator, StoreApi, UseBoundStore };
@@ -267,7 +266,7 @@ export function createTrackedStore<
   // Create selectors
   const selectors = selectorsFactory ? selectorsFactory(initialState) : {};
 
-  // Create actions using the store's set method
+  // Create actions using the Immer-wrapped set method
   const actions = actionsFactory(
     (update) => store.setState(update),
     () => store.getState(),
