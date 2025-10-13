@@ -188,6 +188,7 @@ export function createTrackedStore<
   config: TrackedStoreConfig<T, A>,
   actionsFactory: (
     set: (update: ((state: T & A) => T & A) | Partial<T & A>) => void,
+    get: () => T & A,
   ) => A,
   selectorsFactory?: (state: T) => Record<string, (state: T) => unknown>,
 ): TrackedStoreResult<T, A> {
@@ -211,7 +212,7 @@ export function createTrackedStore<
     get: () => T & A,
   ) => ({
     ...initialState,
-    ...actionsFactory(set),
+    ...actionsFactory(set, get),
   });
 
   // Build middleware stack
