@@ -268,7 +268,10 @@ export function createTrackedStore<
   const selectors = selectorsFactory ? selectorsFactory(initialState) : {};
 
   // Create actions using the store's set method
-  const actions = actionsFactory((update) => store.setState(update));
+  const actions = actionsFactory(
+    (update) => store.setState(update),
+    () => store.getState(),
+  );
 
   return {
     useStore,
