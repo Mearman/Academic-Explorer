@@ -234,3 +234,10 @@ export function getEntityDisplayName(entityType: EntityType): string {
 export function getEntityPlural(entityType: EntityType): string {
   return ENTITY_TAXONOMY[entityType].plural;
 }
+
+/**
+ * Helper function to get the color for a relation type
+ */
+export function getRelationColor(relationType: RelationType): string {
+  return RELATION_TAXONOMY[relationType].color;
+}
