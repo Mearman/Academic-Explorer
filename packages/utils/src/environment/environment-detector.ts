@@ -78,8 +78,7 @@ export class EnvironmentDetector {
 
   private static getModeFromNodeEnv(): EnvironmentMode | null {
     if (
-      typeof globalThis.process !== "undefined" &&
-      globalThis.process.env?.NODE_ENV
+      globalThis.process?.env?.NODE_ENV
     ) {
       const nodeEnv = globalThis.process.env.NODE_ENV.toLowerCase();
       switch (nodeEnv) {
@@ -179,8 +178,7 @@ export class EnvironmentDetector {
    */
   static isNode(): boolean {
     return (
-      typeof globalThis.process !== "undefined" &&
-      globalThis.process.versions?.node !== undefined
+      globalThis.process?.versions?.node !== undefined
     );
   }
 

@@ -2,7 +2,7 @@ import type { EntityType } from "@academic-explorer/client";
 import { ActionIcon, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { IconExternalLink } from "@tabler/icons-react";
 import React from "react";
-import { getEntityColor } from "@academic-explorer/graph";
+import { getEntityColor } from "../entity-views/matchers/utils";
 
 export interface EntityCardProps {
   id: string;

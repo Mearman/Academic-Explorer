@@ -255,7 +255,7 @@ export function createTrackedStore<
   const store = useStore; // The store API is the same as the hook in Zustand
 
   // Create selectors
-  const selectors = selectorsFactory ? selectorsFactory(initialState as T) : {};
+  const selectors = selectorsFactory ? selectorsFactory(initialState) : {};
 
   // Extract actions from the store
   const actions = {} as A;

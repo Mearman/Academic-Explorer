@@ -46,7 +46,7 @@ export function parseSearchQuery(query: string): ParsedQuery {
   const generalTerms: QueryTerm[] = [];
 
   // Early return for empty/whitespace-only queries
-  if (!query || !query.trim()) {
+  if (!query?.trim()) {
     return { fieldQueries, generalTerms };
   }
 

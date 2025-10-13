@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useEffect, useCallback } from "react";
-import ForceGraph3D from "react-force-graph-3d";
+import ForceGraph3D, { ForceGraphMethods } from "react-force-graph-3d";
 import * as THREE from "three";
 
 import type {
@@ -27,7 +27,7 @@ export function ReactForceGraph3DAdapterComponent({
   data: GraphData;
   config: GraphAdapterConfig;
 }) {
-  const fgRef = useRef<ForceGraph3DRef | null>(null);
+  const fgRef = useRef<any>(null);
   const resolveCssVarColor = useCallback(
     (color: string, fallbackColor: string) => {
       if (!color) {
@@ -161,8 +161,8 @@ export function ReactForceGraph3DAdapterComponent({
     return node.color;
   }, []);
 
-  const nodeLabelFn = useCallback((node: Record<string, unknown>) => {
-    return String((node.name as string) || "");
+  const nodeLabelFn = useCallback((node) => {
+    return String(node.name || "");
   }, []);
 
   const createTextTexture = useCallback(
@@ -238,7 +238,7 @@ export function ReactForceGraph3DAdapterComponent({
               backgroundColor={graphBackgroundColor}
               nodeColor={nodeColor}
               nodeLabel={nodeLabelFn as any}
-              nodeVal={(node: Record<string, unknown>) => node.val as number}
+              nodeVal={(node) => Number(node.val || 4) as any}
               linkColor={() => config.themeColors.colors.border.secondary}
               linkWidth={2}
               linkDirectionalArrowLength={3}
@@ -251,11 +251,11 @@ export function ReactForceGraph3DAdapterComponent({
                 if (fgRef.current) {
                   fgRef.current?.cameraPosition(
                     {
-                      x: (node.x as number) * 2,
-                      y: (node.y as number) * 2,
-                      z: (node.z as number) * 2,
+                      x: Number(node.x) * 2,
+                      y: Number(node.y) * 2,
+                      z: Number(node.z) * 2,
                     },
-                    node,
+                    node as any,
                     1000,
                   );
                 }
@@ -265,7 +265,7 @@ export function ReactForceGraph3DAdapterComponent({
                 const sprite = new THREE.Sprite(
                   new THREE.SpriteMaterial({
                     map: new THREE.CanvasTexture(
-                      createTextTexture(node.name as string),
+                      createTextTexture(String(node.name || "")),
                     ),
                     transparent: true,
                   }),

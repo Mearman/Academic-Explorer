@@ -115,7 +115,7 @@ async function fetchEntityViaPipeline(
 
   // Validate content-type before parsing JSON
   const contentType = response.headers.get("content-type");
-  if (!contentType || !contentType.includes("application/json")) {
+  if (!contentType?.includes("application/json")) {
     const text = await response.text();
     throw new Error(
       `Expected JSON response but got ${contentType || "unknown content-type"}. Response: ${text.substring(0, 200)}...`,
