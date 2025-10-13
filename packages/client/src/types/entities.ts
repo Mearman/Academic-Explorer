@@ -26,40 +26,48 @@ import type {
 } from "./base";
 
 /**
- * Base entity interface that all OpenAlex entities extend
- * Contains common properties shared across all entity types
+ * Maps base entity field names to their types.
  */
-export interface BaseEntity {
-  /** Unique OpenAlex identifier */
+type BaseEntityFieldMap = {
   id: OpenAlexId;
-
-  /** Primary display name for the entity */
   display_name: string;
-
-  /** Total number of citations for works associated with this entity */
   cited_by_count: number;
-
-  /** Year-by-year breakdown of works and citations */
   counts_by_year: CountsByYear[];
-
-  /** ISO 8601 timestamp when the entity was last updated */
   updated_date: string;
-
-  /** ISO 8601 timestamp when the entity was first created */
   created_date: string;
-}
+};
 
 /**
- * Extended entity interface for entities that have associated works collections
- * Used by Authors, Sources, Institutions, Topics, Publishers, and Funders
+ * Maps entity-with-works field names to their types (includes base fields).
  */
-export interface EntityWithWorks extends BaseEntity {
-  /** Total number of works associated with this entity */
+type EntityWithWorksFieldMap = BaseEntityFieldMap & {
   works_count: number;
-
-  /** OpenAlex API URL for retrieving works associated with this entity */
   works_api_url: string;
-}
+};
+
+/**
+ * Generic base entity type that picks only the specified fields.
+ *
+ * @template Keys - Union type of allowed field names for this entity
+ *
+ * @example
+ * type AuthorKeys = 'id' | 'display_name' | 'orcid';
+ * interface Author extends BaseEntity<AuthorKeys> {
+ *   orcid?: ORCID;
+ * }
+ */
+export type BaseEntity<Keys extends string = string> = {
+  [K in Keys & keyof BaseEntityFieldMap]: BaseEntityFieldMap[K];
+};
+
+/**
+ * Generic entity-with-works type that picks only the specified fields.
+ *
+ * @template Keys - Union type of allowed field names for this entity
+ */
+export type EntityWithWorks<Keys extends string = string> = {
+  [K in Keys & keyof EntityWithWorksFieldMap]: EntityWithWorksFieldMap[K];
+};
 
 // Common utility types
 export interface CountsByYear {
@@ -201,8 +209,20 @@ export interface Work extends BaseEntity {
 // Partial hydration types - only id is guaranteed, all other fields are optional
 export type PartialWork = PartialExceptId<Work>;
 
-// Author entity
-export interface Author extends EntityWithWorks {
+/**
+ * Author entity - define the complete type first.
+ */
+export interface Author
+  extends EntityWithWorks<
+    | "id"
+    | "display_name"
+    | "cited_by_count"
+    | "counts_by_year"
+    | "updated_date"
+    | "created_date"
+    | "works_count"
+    | "works_api_url"
+  > {
   orcid?: ORCID;
   display_name_alternatives?: string[];
   ids: AuthorIds;
@@ -427,7 +447,10 @@ export type EntityTypeMap = {
  * Helper to create a validated array of keys for an entity type.
  * This ensures all elements in the array are valid keys of T.
  */
-export const keysOf = <T>() => <const K extends readonly (keyof T)[]>(keys: K) => keys;
+export const keysOf =
+  <T>() =>
+  <const K extends readonly (keyof T)[]>(keys: K) =>
+    keys;
 
 /**
  * Fields that can be selected for BaseEntity.
