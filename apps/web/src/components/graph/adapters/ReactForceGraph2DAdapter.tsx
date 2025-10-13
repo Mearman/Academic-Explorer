@@ -20,10 +20,12 @@ export function ReactForceGraph2DAdapterComponent({
   data,
   config,
   adapterConfig,
+  registerFitViewCallback,
 }: {
   data: GraphData;
   config: GraphAdapterConfig;
   adapterConfig?: ReactForceGraph2DConfig;
+  registerFitViewCallback: (callback: () => void) => () => void;
 }) {
   const fgRef = useRef<any>(null);
   const resolveCssVarColor = useCallback(
@@ -87,6 +89,13 @@ export function ReactForceGraph2DAdapterComponent({
       fgInstance.zoomToFit(400);
     }
   }, []);
+
+  // Register the fit view callback with the adapter
+  useEffect(() => {
+    return registerFitViewCallback(() => {
+      fitView();
+    });
+  }, [registerFitViewCallback, fitView]);
 
   // Convert GraphData to react-force-graph format
   const graphData = useMemo(() => {
@@ -269,9 +278,33 @@ export function ReactForceGraph2DAdapterComponent({
 
 export class ReactForceGraph2DAdapter implements GraphAdapter {
   private config?: ReactForceGraph2DConfig;
+  private fitViewCallbacks: Array<() => void> = [];
 
   constructor(config?: ReactForceGraph2DConfig) {
     this.config = config;
+  }
+
+  fitView(): void {
+    // Call all registered callbacks
+    this.fitViewCallbacks.forEach((callback) => callback());
+  }
+
+  render(data: GraphData, config: GraphAdapterConfig): React.ReactElement {
+    return (
+      <ReactForceGraph2DAdapterComponent
+        data={data}
+        config={config}
+        adapterConfig={this.config}
+        registerFitViewCallback={(callback) => {
+          this.fitViewCallbacks.push(callback);
+          return () => {
+            this.fitViewCallbacks = this.fitViewCallbacks.filter(
+              (cb) => cb !== callback,
+            );
+          };
+        }}
+      />
+    );
   }
 
   convertEntitiesToGraphData(
@@ -307,15 +340,5 @@ export class ReactForceGraph2DAdapter implements GraphAdapter {
     });
 
     return { nodes, links };
-  }
-
-  render(data: GraphData, config: GraphAdapterConfig): React.ReactElement {
-    return (
-      <ReactForceGraph2DAdapterComponent
-        data={data}
-        config={config}
-        adapterConfig={this.config}
-      />
-    );
   }
 }

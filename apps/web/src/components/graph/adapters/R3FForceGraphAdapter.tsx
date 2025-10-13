@@ -1,5 +1,11 @@
-import React, { useMemo, useRef, useCallback } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import React, {
+  useMemo,
+  useRef,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import R3fForceGraph, { GraphMethods } from "r3f-forcegraph";
 
@@ -12,16 +18,171 @@ import type {
 } from "./GraphAdapter";
 import type { R3FForceGraphConfig } from "../configs";
 
+// Fit View Button Component
+function FitViewButton({ onFitView }: { onFitView: () => void }) {
+  return (
+    <button
+      onClick={onFitView}
+      style={{
+        position: "absolute",
+        top: "8px",
+        right: "8px",
+        zIndex: 1000,
+        background: "rgba(0, 0, 0, 0.8)",
+        color: "white",
+        border: "1px solid #666",
+        borderRadius: "4px",
+        padding: "6px 12px",
+        fontSize: "12px",
+        fontWeight: "bold",
+        cursor: "pointer",
+        backdropFilter: "blur(4px)",
+      }}
+      title="Fit view to graph"
+    >
+      Fit View
+    </button>
+  );
+}
+
+// Camera Controller Component
+function CameraController({
+  fgRef,
+  controlsRef,
+  cameraDistance,
+  enableControls,
+  nodeCount,
+  linkCount,
+}: {
+  fgRef: React.RefObject<GraphMethods | undefined>;
+  controlsRef: React.RefObject<any>;
+  cameraDistance: number;
+  enableControls: boolean;
+  nodeCount: number;
+  linkCount: number;
+}) {
+  const { camera } = useThree();
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Auto-fit camera when data changes
+  useEffect(() => {
+    if (!isInitialized && nodeCount > 0) {
+      // Wait a bit for the graph to stabilize
+      const timeoutId = setTimeout(() => {
+        try {
+          // Try to get the graph bounding box for better camera positioning
+          let bbox: {
+            x: [number, number];
+            y: [number, number];
+            z: [number, number];
+          } | null = null;
+          if (
+            fgRef.current?.getGraphBbox &&
+            typeof fgRef.current.getGraphBbox === "function"
+          ) {
+            bbox = fgRef.current.getGraphBbox();
+            console.log("Graph bbox:", bbox);
+          }
+
+          let optimalDistance = Math.max(5000, cameraDistance); // Default fallback - much larger
+          let targetPosition = { x: 0, y: 0, z: 0 };
+
+          if (bbox) {
+            // Calculate the center of the bounding box
+            const { x, y, z } = bbox;
+            const centerX = (x[0] + x[1]) / 2;
+            const centerY = (y[0] + y[1]) / 2;
+            const centerZ = (z[0] + z[1]) / 2;
+
+            // Calculate the maximum extent from center
+            const extentX = Math.max(
+              Math.abs(centerX - x[0]),
+              Math.abs(centerX - x[1]),
+            );
+            const extentY = Math.max(
+              Math.abs(centerY - y[0]),
+              Math.abs(centerY - y[1]),
+            );
+            const extentZ = Math.max(
+              Math.abs(centerZ - z[0]),
+              Math.abs(centerZ - z[1]),
+            );
+            const maxExtent = Math.max(extentX, extentY, extentZ);
+
+            // Use a larger multiplier to ensure the graph fits
+            optimalDistance = maxExtent * 4; // Much more conservative
+            targetPosition = { x: centerX, y: centerY, z: centerZ };
+
+            console.log(
+              "Auto-fit calculated optimal distance:",
+              optimalDistance,
+              "from extent:",
+              maxExtent,
+              "center:",
+              targetPosition,
+            );
+          }
+
+          // Position camera to view the entire graph
+          camera.position.set(
+            targetPosition.x,
+            targetPosition.y,
+            targetPosition.z + optimalDistance,
+          );
+          camera.lookAt(targetPosition.x, targetPosition.y, targetPosition.z);
+
+          // Update controls if they exist
+          if (
+            controlsRef.current &&
+            typeof controlsRef.current.update === "function"
+          ) {
+            controlsRef.current.target.set(
+              targetPosition.x,
+              targetPosition.y,
+              targetPosition.z,
+            );
+            controlsRef.current.update();
+          }
+
+          setIsInitialized(true);
+        } catch (error) {
+          console.error("Error in auto-fit:", error);
+          // Fallback positioning
+          camera.position.set(0, 0, cameraDistance || 5000);
+          camera.lookAt(0, 0, 0);
+          setIsInitialized(true);
+        }
+      }, 2000); // Wait 2 seconds for graph to stabilize
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [
+    fgRef,
+    controlsRef,
+    camera,
+    cameraDistance,
+    nodeCount,
+    linkCount,
+    isInitialized,
+  ]);
+
+  return null;
+}
+
 function R3FForceGraphScene({
   data,
   config,
   adapterConfig,
+  fitViewTriggerRef,
 }: {
   data: GraphData;
   config: GraphAdapterConfig;
   adapterConfig?: R3FForceGraphConfig;
+  fitViewTriggerRef: React.RefObject<(() => void) | null>;
 }) {
   const fgRef = useRef<GraphMethods | undefined>(undefined);
+  const controlsRef = useRef<any>(null);
+  const { camera } = useThree();
 
   // Call tickFrame on every frame to update the simulation
   useFrame(() => {
@@ -29,6 +190,94 @@ function R3FForceGraphScene({
       fgRef.current.tickFrame();
     }
   });
+
+  // Fit view handler
+  const handleFitView = useCallback(() => {
+    console.log("Fit view clicked!");
+    try {
+      // Try to get the graph bounding box for better camera positioning
+      let bbox: {
+        x: [number, number];
+        y: [number, number];
+        z: [number, number];
+      } | null = null;
+      if (
+        fgRef.current?.getGraphBbox &&
+        typeof fgRef.current.getGraphBbox === "function"
+      ) {
+        bbox = fgRef.current.getGraphBbox();
+        console.log("Graph bbox:", bbox);
+      }
+
+      let optimalDistance = 5000; // Default fallback - much larger
+      let targetPosition = { x: 0, y: 0, z: 0 };
+
+      if (bbox) {
+        // Calculate the center of the bounding box
+        const { x, y, z } = bbox;
+        const centerX = (x[0] + x[1]) / 2;
+        const centerY = (y[0] + y[1]) / 2;
+        const centerZ = (z[0] + z[1]) / 2;
+
+        // Calculate the maximum extent from center
+        const extentX = Math.max(
+          Math.abs(centerX - x[0]),
+          Math.abs(centerX - x[1]),
+        );
+        const extentY = Math.max(
+          Math.abs(centerY - y[0]),
+          Math.abs(centerY - y[1]),
+        );
+        const extentZ = Math.max(
+          Math.abs(centerZ - z[0]),
+          Math.abs(centerZ - z[1]),
+        );
+        const maxExtent = Math.max(extentX, extentY, extentZ);
+
+        // Use a larger multiplier to ensure the graph fits
+        optimalDistance = maxExtent * 4; // Much more conservative
+        targetPosition = { x: centerX, y: centerY, z: centerZ };
+
+        console.log(
+          "Calculated optimal distance:",
+          optimalDistance,
+          "from extent:",
+          maxExtent,
+          "center:",
+          targetPosition,
+        );
+      }
+
+      // Set camera position and look at the center
+      camera.position.set(
+        targetPosition.x,
+        targetPosition.y,
+        targetPosition.z + optimalDistance,
+      );
+      camera.lookAt(targetPosition.x, targetPosition.y, targetPosition.z);
+
+      // Update controls if they exist
+      if (controlsRef.current) {
+        console.log("Updating controls");
+        controlsRef.current.target.set(
+          targetPosition.x,
+          targetPosition.y,
+          targetPosition.z,
+        );
+        controlsRef.current.update();
+      }
+    } catch (error) {
+      console.error("Error in fit view:", error);
+      // Fallback: reset to default position
+      camera.position.set(0, 0, adapterConfig?.cameraDistance || 5000);
+      camera.lookAt(0, 0, 0);
+    }
+  }, [fgRef, camera, adapterConfig?.cameraDistance]);
+
+  // Set the fit view trigger ref so parent component can call it
+  useEffect(() => {
+    fitViewTriggerRef.current = handleFitView;
+  }, [handleFitView, fitViewTriggerRef]);
 
   // Convert GraphData to r3f-forcegraph format
   const graphData = useMemo(() => {
@@ -62,19 +311,27 @@ function R3FForceGraphScene({
     return config.themeColors.colors.border.secondary;
   }, [config.themeColors]);
 
+  const enableControls =
+    adapterConfig?.enableOrbitControls ?? config.interactive ?? false;
+
   return (
     <>
-      <OrbitControls
-        enablePan={
-          adapterConfig?.enableOrbitControls ?? config.interactive ?? false
-        }
-        enableZoom={
-          adapterConfig?.enableOrbitControls ?? config.interactive ?? false
-        }
-        enableRotate={
-          adapterConfig?.enableOrbitControls ?? config.interactive ?? false
-        }
+      <CameraController
+        fgRef={fgRef}
+        controlsRef={controlsRef}
+        cameraDistance={adapterConfig?.cameraDistance || 5000}
+        enableControls={enableControls}
+        nodeCount={data.nodes.length}
+        linkCount={data.links.length}
       />
+      {enableControls && (
+        <OrbitControls
+          ref={controlsRef}
+          enablePan={true}
+          enableZoom={true}
+          enableRotate={true}
+        />
+      )}
       <ambientLight args={[config.themeColors.colors.text.primary, 0.5]} />
       <directionalLight
         args={[config.themeColors.colors.text.primary, 0.8]}
@@ -104,21 +361,51 @@ function R3FForceGraphComponent({
   data,
   config,
   adapterConfig,
+  registerFitViewCallback,
 }: {
   data: GraphData;
   config: GraphAdapterConfig;
   adapterConfig?: R3FForceGraphConfig;
+  registerFitViewCallback: (callback: () => void) => () => void;
 }) {
+  const fgRef = useRef<GraphMethods | undefined>(undefined);
+  const controlsRef = useRef<any>(null);
+
+  // Create a fit view trigger that will be called from the scene
+  const fitViewTriggerRef = useRef<(() => void) | null>(null);
+
+  const handleFitView = useCallback(() => {
+    // Trigger fit view in the scene component
+    if (fitViewTriggerRef.current) {
+      fitViewTriggerRef.current();
+    }
+  }, []);
+
+  // Register the fit view callback with the adapter
+  useEffect(() => {
+    return registerFitViewCallback(handleFitView);
+  }, [registerFitViewCallback, handleFitView]);
+
+  // Button click handler
+  const handleButtonClick = useCallback(() => {
+    handleFitView();
+  }, [handleFitView]);
+
   return (
-    <div style={{ width: "100%", height: "100%" }}>
+    <div style={{ width: "100%", height: "300px", position: "relative" }}>
+      <FitViewButton onFitView={handleButtonClick} />
       <Canvas
-        camera={{ position: [0, 0, 1000], far: 8000 }}
+        camera={{
+          position: [0, 0, 5000], // Start with a larger default distance
+          far: 20000,
+        }}
         style={{ background: config.themeColors.colors.background.secondary }}
       >
         <R3FForceGraphScene
           data={data}
           config={config}
           adapterConfig={adapterConfig}
+          fitViewTriggerRef={fitViewTriggerRef}
         />
       </Canvas>
     </div>
@@ -127,9 +414,33 @@ function R3FForceGraphComponent({
 
 export class R3FForceGraphAdapter implements GraphAdapter {
   private config?: R3FForceGraphConfig;
+  private fitViewCallbacks: Array<() => void> = [];
 
   constructor(config?: R3FForceGraphConfig) {
     this.config = config;
+  }
+
+  fitView(): void {
+    // Call all registered callbacks
+    this.fitViewCallbacks.forEach((callback) => callback());
+  }
+
+  render(data: GraphData, config: GraphAdapterConfig): React.ReactElement {
+    return (
+      <R3FForceGraphComponent
+        data={data}
+        config={config}
+        adapterConfig={this.config}
+        registerFitViewCallback={(callback) => {
+          this.fitViewCallbacks.push(callback);
+          return () => {
+            this.fitViewCallbacks = this.fitViewCallbacks.filter(
+              (cb) => cb !== callback,
+            );
+          };
+        }}
+      />
+    );
   }
 
   convertEntitiesToGraphData(
@@ -168,15 +479,5 @@ export class R3FForceGraphAdapter implements GraphAdapter {
     });
 
     return { nodes, links };
-  }
-
-  render(data: GraphData, config: GraphAdapterConfig): React.ReactElement {
-    return (
-      <R3FForceGraphComponent
-        data={data}
-        config={config}
-        adapterConfig={this.config}
-      />
-    );
   }
 }

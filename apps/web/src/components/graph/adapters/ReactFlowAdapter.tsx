@@ -167,10 +167,12 @@ export function ReactFlowAdapterComponent({
   data,
   config,
   adapterConfig,
+  registerFitViewCallback,
 }: {
   data: GraphData;
   config: GraphAdapterConfig;
   adapterConfig?: ReactFlowConfig;
+  registerFitViewCallback: (callback: () => void) => () => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({
@@ -271,6 +273,16 @@ export function ReactFlowAdapterComponent({
     }
   }, [nodes]);
 
+  // Register the fit view callback with the adapter
+  useEffect(() => {
+    return registerFitViewCallback(() => {
+      const event = new CustomEvent("fitView", {
+        detail: { padding: 0.2, duration: 300 },
+      });
+      window.dispatchEvent(event);
+    });
+  }, [registerFitViewCallback]);
+
   return (
     <div
       ref={containerRef}
@@ -308,9 +320,33 @@ export function ReactFlowAdapterComponent({
 
 export class ReactFlowAdapter implements GraphAdapter {
   private config?: ReactFlowConfig;
+  private fitViewCallbacks: Array<() => void> = [];
 
   constructor(config?: ReactFlowConfig) {
     this.config = config;
+  }
+
+  fitView(): void {
+    // Call all registered callbacks
+    this.fitViewCallbacks.forEach((callback) => callback());
+  }
+
+  render(data: GraphData, config: GraphAdapterConfig): React.ReactElement {
+    return (
+      <ReactFlowAdapterComponent
+        data={data}
+        config={config}
+        adapterConfig={this.config}
+        registerFitViewCallback={(callback) => {
+          this.fitViewCallbacks.push(callback);
+          return () => {
+            this.fitViewCallbacks = this.fitViewCallbacks.filter(
+              (cb) => cb !== callback,
+            );
+          };
+        }}
+      />
+    );
   }
 
   convertEntitiesToGraphData(
@@ -347,15 +383,5 @@ export class ReactFlowAdapter implements GraphAdapter {
     });
 
     return { nodes, links };
-  }
-
-  render(data: GraphData, config: GraphAdapterConfig): React.ReactElement {
-    return (
-      <ReactFlowAdapterComponent
-        data={data}
-        config={config}
-        adapterConfig={this.config}
-      />
-    );
   }
 }
