@@ -15,7 +15,7 @@ import type {
 
 export function isWork(entity: unknown): entity is Work {
   if (typeof entity !== "object" || entity === null) return false;
-  const obj = entity as Record<string, unknown>;
+  const obj = entity;
   if (!("id" in obj) || typeof obj.id !== "string") return false;
   const id = obj.id;
   return (
@@ -28,7 +28,7 @@ export function isWork(entity: unknown): entity is Work {
 
 export function isAuthor(entity: unknown): entity is Author {
   if (typeof entity !== "object" || entity === null) return false;
-  const obj = entity as Record<string, unknown>;
+  const obj = entity;
   return (
     "id" in obj &&
     typeof obj.id === "string" &&
@@ -39,7 +39,7 @@ export function isAuthor(entity: unknown): entity is Author {
 
 export function isSource(entity: unknown): entity is Source {
   if (typeof entity !== "object" || entity === null) return false;
-  const obj = entity as Record<string, unknown>;
+  const obj = entity;
   return (
     "id" in obj &&
     typeof obj.id === "string" &&
@@ -50,7 +50,7 @@ export function isSource(entity: unknown): entity is Source {
 
 export function isInstitution(entity: unknown): entity is InstitutionEntity {
   if (typeof entity !== "object" || entity === null) return false;
-  const obj = entity as Record<string, unknown>;
+  const obj = entity;
   return (
     "id" in obj &&
     typeof obj.id === "string" &&
@@ -61,7 +61,7 @@ export function isInstitution(entity: unknown): entity is InstitutionEntity {
 
 export function isTopic(entity: unknown): entity is Topic {
   if (typeof entity !== "object" || entity === null) return false;
-  const obj = entity as Record<string, unknown>;
+  const obj = entity;
   return (
     "id" in obj &&
     typeof obj.id === "string" &&
@@ -72,7 +72,7 @@ export function isTopic(entity: unknown): entity is Topic {
 
 export function isConcept(entity: unknown): entity is Topic {
   if (typeof entity !== "object" || entity === null) return false;
-  const obj = entity as Record<string, unknown>;
+  const obj = entity;
   return (
     "id" in obj &&
     typeof obj.id === "string" &&
@@ -83,7 +83,7 @@ export function isConcept(entity: unknown): entity is Topic {
 
 export function isPublisher(entity: unknown): entity is Publisher {
   if (typeof entity !== "object" || entity === null) return false;
-  const obj = entity as Record<string, unknown>;
+  const obj = entity;
   return (
     "id" in obj &&
     typeof obj.id === "string" &&
@@ -94,7 +94,7 @@ export function isPublisher(entity: unknown): entity is Publisher {
 
 export function isFunder(entity: unknown): entity is Funder {
   if (typeof entity !== "object" || entity === null) return false;
-  const obj = entity as Record<string, unknown>;
+  const obj = entity;
   return (
     "id" in obj &&
     typeof obj.id === "string" &&
@@ -135,7 +135,7 @@ export function isNonNull<T>(value: T | null | undefined): value is T {
 
 export function isOpenAlexEntity(entity: unknown): entity is OpenAlexEntity {
   if (typeof entity !== "object" || entity === null) return false;
-  const obj = entity as Record<string, unknown>;
+  const obj = entity;
   return (
     "id" in obj && typeof obj.id === "string" && /^[WASIJTPF]\d+/.test(obj.id)
   );
