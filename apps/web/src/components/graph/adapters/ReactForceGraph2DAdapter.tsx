@@ -9,6 +9,12 @@ import type {
   GraphLink,
 } from "./GraphAdapter";
 
+interface ForceGraph2DMethods {
+  zoomToFit: (duration?: number) => void;
+  centerAt: (x: number, y: number, duration?: number) => void;
+  zoom: (scale: number, duration?: number) => void;
+}
+
 export function ReactForceGraph2DAdapterComponent({
   data,
   config,
@@ -73,18 +79,18 @@ export function ReactForceGraph2DAdapterComponent({
   );
 
   const fitView = useCallback(() => {
-    if (fgRef.current) {
-      fgRef.current.zoomToFit(400);
+    const fgInstance = fgRef.current as ForceGraph2DMethods;
+    if (fgInstance) {
+      fgInstance.zoomToFit(400);
     }
   }, []);
 
   // Convert GraphData to react-force-graph format
   const graphData = useMemo(() => {
     const convertedNodes = data.nodes.map((node) => {
-      const convertedColor =
-        node.color === "primary"
-          ? config.themeColors.colors.primary
-          : config.themeColors.colors.background.tertiary;
+      const convertedColor = config.themeColors.getEntityColor(
+        node.entityType || "work",
+      );
 
       return {
         id: node.id,
@@ -191,16 +197,17 @@ export function ReactForceGraph2DAdapterComponent({
       }}
     >
       <ForceGraph2D
-        ref={fgRef}
+        ref={fgRef as React.MutableRefObject<unknown>}
         graphData={
-          graphData as unknown as { nodes: unknown[]; links: unknown[] }
+          graphData as {
+            nodes: Record<string, unknown>[];
+            links: Record<string, unknown>[];
+          }
         }
         width={config.width}
         height={config.height}
         backgroundColor={graphBackgroundColor}
-        nodeColor={
-          nodeColor as unknown as (node: Record<string, unknown>) => string
-        }
+        nodeColor={nodeColor as (node: Record<string, unknown>) => string}
         nodeLabel={(node: Record<string, unknown> & { name?: string }) =>
           node.name || ""
         }
@@ -213,21 +220,20 @@ export function ReactForceGraph2DAdapterComponent({
         linkDirectionalArrowRelPos={1}
         enableNodeDrag={config.interactive ?? false}
         enableZoomInteraction={config.interactive ?? false}
-        onNodeClick={(
-          node: Record<string, unknown> & { x?: number; y?: number },
-        ) => {
+        onNodeClick={(node) => {
           // Focus on clicked node
-          const fgInstance = fgRef.current as {
-            centerAt?: (x: number, y: number, duration: number) => void;
-            zoom?: (scale: number, duration: number) => void;
-          } | null;
-          if (fgInstance?.centerAt && fgInstance?.zoom) {
-            fgInstance.centerAt(node.x || 0, node.y || 0, 400);
+          const fgInstance = fgRef.current as ForceGraph2DMethods;
+          if (
+            fgInstance &&
+            typeof node.x === "number" &&
+            typeof node.y === "number"
+          ) {
+            fgInstance.centerAt(node.x, node.y, 400);
             fgInstance.zoom(2, 400);
           }
         }}
         nodeCanvasObject={
-          nodeCanvasObject as unknown as (
+          nodeCanvasObject as (
             node: Record<string, unknown>,
             ctx: CanvasRenderingContext2D,
             globalScale: number,
