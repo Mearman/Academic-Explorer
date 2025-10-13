@@ -2,6 +2,7 @@
  * Unit tests for OpenAlex CLI
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 // Mock the fs/promises module with spy functions that prevent real operations
@@ -17,7 +18,7 @@ vi.mock("fs/promises", async (importOriginal) => {
         return JSON.stringify({
           id: "https://openalex.org/A5017898742",
           display_name: "Test Author Two",
-          works_count: 42
+          works_count: 42,
         });
       }
 
@@ -25,27 +26,29 @@ vi.mock("fs/promises", async (importOriginal) => {
         return JSON.stringify({
           id: "https://openalex.org/A5017572309",
           display_name: "Test Author One",
-          works_count: 10
+          works_count: 10,
         });
       }
 
       if (pathStr.includes("index.json")) {
         return JSON.stringify({
           "https://api.openalex.org/authors/A5017572309": {
-            "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5017572309.json",
-            "lastModified": "2025-09-19T16:29:25.530Z",
-            "contentHash": "2fbeeeb9a36bc11f"
+            $ref: "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5017572309.json",
+            lastModified: "2025-09-19T16:29:25.530Z",
+            contentHash: "2fbeeeb9a36bc11f",
           },
           "https://api.openalex.org/authors/A5017898742": {
-            "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5017898742.json",
-            "lastModified": "2025-09-19T16:29:25.658Z",
-            "contentHash": "5829e4f7cb7a1382"
-          }
+            $ref: "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5017898742.json",
+            lastModified: "2025-09-19T16:29:25.658Z",
+            contentHash: "5829e4f7cb7a1382",
+          },
         });
       }
 
       // For any other path, throw ENOENT to simulate file not found
-      const error = new Error(`ENOENT: no such file or directory, open '${pathStr}'`);
+      const error = new Error(
+        `ENOENT: no such file or directory, open '${pathStr}'`,
+      );
       (error as any).code = "ENOENT";
       (error as any).errno = -2;
       (error as any).syscall = "open";
@@ -56,25 +59,33 @@ vi.mock("fs/promises", async (importOriginal) => {
       const pathStr = path;
 
       // Allow access to expected test files
-      if (pathStr.includes("A5017898742.json") ||
-          pathStr.includes("A5017572309.json") ||
-          pathStr.includes("index.json")) {
+      if (
+        pathStr.includes("A5017898742.json") ||
+        pathStr.includes("A5017572309.json") ||
+        pathStr.includes("index.json")
+      ) {
         return undefined; // Success
       }
 
       // For any other path, throw ENOENT
-      const error = new Error(`ENOENT: no such file or directory, access '${pathStr}'`);
+      const error = new Error(
+        `ENOENT: no such file or directory, access '${pathStr}'`,
+      );
       (error as any).code = "ENOENT";
       (error as any).errno = -2;
       (error as any).syscall = "access";
       (error as any).path = pathStr;
       throw error;
     }),
-    writeFile: vi.fn().mockImplementation(async (path: string, data: string | Buffer) => {
-      // Log the write attempt but don't actually write to filesystem
-      console.log(`[MOCK] Would write to: ${path} (${typeof data === "string" ? data.length : data.length} bytes)`);
-      return undefined;
-    }),
+    writeFile: vi
+      .fn()
+      .mockImplementation(async (path: string, data: string | Buffer) => {
+        // Log the write attempt but don't actually write to filesystem
+        console.log(
+          `[MOCK] Would write to: ${path} (${typeof data === "string" ? data.length : data.length} bytes)`,
+        );
+        return undefined;
+      }),
     mkdir: vi.fn().mockImplementation(async (path: string) => {
       // Log the mkdir attempt but don't actually create directories
       console.log(`[MOCK] Would create directory: ${path}`);
@@ -84,20 +95,24 @@ vi.mock("fs/promises", async (importOriginal) => {
       const pathStr = path;
 
       // Allow stat for test files
-      if (pathStr.includes("A5017898742.json") ||
-          pathStr.includes("A5017572309.json") ||
-          pathStr.includes("index.json")) {
+      if (
+        pathStr.includes("A5017898742.json") ||
+        pathStr.includes("A5017572309.json") ||
+        pathStr.includes("index.json")
+      ) {
         return {
           isFile: () => true,
           isDirectory: () => false,
           size: 1000,
           mtime: new Date(),
-          ctime: new Date()
+          ctime: new Date(),
         };
       }
 
       // For other paths, throw ENOENT
-      const error = new Error(`ENOENT: no such file or directory, stat '${pathStr}'`);
+      const error = new Error(
+        `ENOENT: no such file or directory, stat '${pathStr}'`,
+      );
       (error as any).code = "ENOENT";
       (error as any).errno = -2;
       (error as any).syscall = "stat";
@@ -107,7 +122,6 @@ vi.mock("fs/promises", async (importOriginal) => {
     readdir: vi.fn().mockResolvedValue([]),
   };
 });
-
 
 // Mock fetch globally
 global.fetch = vi.fn();
@@ -128,7 +142,7 @@ import { readFile, access, writeFile, mkdir } from "fs/promises";
 import { logger, logError } from "@academic-explorer/utils/logger";
 
 describe("OpenAlexCLI", () => {
-  let cli: any;
+  let cli: OpenAlexCLI;
 
   beforeEach(async () => {
     // Clear all mocks
@@ -155,58 +169,58 @@ describe("OpenAlexCLI", () => {
     // Set up mock data for consistent tests
     const mockAuthorsIndex = {
       "https://api.openalex.org/authors/A5017572309": {
-        "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5017572309.json",
-        "lastModified": "2025-09-19T16:29:25.530Z",
-        "contentHash": "2fbeeeb9a36bc11f"
+        $ref: "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5017572309.json",
+        lastModified: "2025-09-19T16:29:25.530Z",
+        contentHash: "2fbeeeb9a36bc11f",
       },
       "https://api.openalex.org/authors/A5017898742": {
-        "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5017898742.json",
-        "lastModified": "2025-09-19T16:29:25.658Z",
-        "contentHash": "5829e4f7cb7a1382"
+        $ref: "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5017898742.json",
+        lastModified: "2025-09-19T16:29:25.658Z",
+        contentHash: "5829e4f7cb7a1382",
       },
       "https://api.openalex.org/authors/A5025875274": {
-        "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5025875274.json",
-        "lastModified": "2025-09-19T16:29:25.795Z",
-        "contentHash": "5e2bba7760f439db"
+        $ref: "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5025875274.json",
+        lastModified: "2025-09-19T16:29:25.795Z",
+        contentHash: "5e2bba7760f439db",
       },
       "https://api.openalex.org/authors/A5032473237": {
-        "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5032473237.json",
-        "lastModified": "2025-09-19T16:29:25.935Z",
-        "contentHash": "54d6d4fd69e75e42"
+        $ref: "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5032473237.json",
+        lastModified: "2025-09-19T16:29:25.935Z",
+        contentHash: "54d6d4fd69e75e42",
       },
       "https://api.openalex.org/authors/A5039168231": {
-        "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5039168231.json",
-        "lastModified": "2025-09-19T16:29:26.068Z",
-        "contentHash": "8dfaae48c6989a72"
-      }
+        $ref: "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5039168231.json",
+        lastModified: "2025-09-19T16:29:26.068Z",
+        contentHash: "8dfaae48c6989a72",
+      },
     };
 
     const mockWorksIndex = {
       "https://api.openalex.org/works/W2241997964": {
-        "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fworks%2FW2241997964.json",
-        "lastModified": "2025-09-19T16:29:25.530Z",
-        "contentHash": "2fbeeeb9a36bc11f"
+        $ref: "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fworks%2FW2241997964.json",
+        lastModified: "2025-09-19T16:29:25.530Z",
+        contentHash: "2fbeeeb9a36bc11f",
       },
       "https://api.openalex.org/works/W2250748100": {
-        "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fworks%2FW2250748100.json",
-        "lastModified": "2025-09-19T16:29:25.658Z",
-        "contentHash": "5829e4f7cb7a1382"
-      }
+        $ref: "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fworks%2FW2250748100.json",
+        lastModified: "2025-09-19T16:29:25.658Z",
+        contentHash: "5829e4f7cb7a1382",
+      },
     };
 
     const mockAuthor1 = {
       id: "https://openalex.org/A5017572309",
-      display_name: "Test Author One"
+      display_name: "Test Author One",
     };
 
     const mockAuthor2 = {
       id: "https://openalex.org/A5017898742",
-      display_name: "Test Author Two"
+      display_name: "Test Author Two",
     };
 
     const mockAuthor3 = {
       id: "https://openalex.org/A5025875274",
-      display_name: "Another Test Author"
+      display_name: "Another Test Author",
     };
 
     // Mock file reads to return our test data, preventing real filesystem access
@@ -243,12 +257,14 @@ describe("OpenAlexCLI", () => {
       const pathStr = path;
 
       // Allow access to known entity type indexes
-      if (pathStr.includes("authors/index.json") ||
-          pathStr.includes("works/index.json") ||
-          pathStr.includes("institutions/index.json") ||
-          pathStr.includes("topics/index.json") ||
-          pathStr.includes("publishers/index.json") ||
-          pathStr.includes("funders/index.json")) {
+      if (
+        pathStr.includes("authors/index.json") ||
+        pathStr.includes("works/index.json") ||
+        pathStr.includes("institutions/index.json") ||
+        pathStr.includes("topics/index.json") ||
+        pathStr.includes("publishers/index.json") ||
+        pathStr.includes("funders/index.json")
+      ) {
         return undefined; // File exists
       }
 
@@ -278,9 +294,9 @@ describe("OpenAlexCLI", () => {
       // Mock access to reject (file doesn't exist)
       vi.mocked(access).mockRejectedValue(new Error("File not found"));
 
-      const result = await cli.hasStaticData("nonexistent");
+      const result = await cli.hasStaticData("authors");
 
-      // For non-existent entity type, this should return false
+      // For non-existent file, this should return false
       expect(result).toBe(false);
     });
   });
@@ -293,31 +309,34 @@ describe("OpenAlexCLI", () => {
       // Verify it returns a valid index object with URL-encoded entries
       expect(result).toBeTruthy();
       expect(typeof result).toBe("object");
+      expect(result).not.toBeNull();
 
       // Check that it contains expected real entries
-      const keys = Object.keys(result);
+      const keys = Object.keys(result!);
       expect(keys.length).toBeGreaterThan(0);
 
       // Verify entries have the expected structure
-      keys.forEach(key => {
+      keys.forEach((key) => {
         expect(key).toMatch(/^https:\/\/api\.openalex\.org\/authors\/A/);
-        expect(result[key]).toHaveProperty("$ref");
-        expect(result[key]).toHaveProperty("lastModified");
-        expect(result[key]).toHaveProperty("contentHash");
-        expect(result[key].$ref).toMatch(/\.json$/);
+        expect(result![key]).toHaveProperty("$ref");
+        expect(result![key]).toHaveProperty("lastModified");
+        expect(result![key]).toHaveProperty("contentHash");
+        expect(result![key].$ref).toMatch(/\.json$/);
       });
     });
 
     it("should return null and log error when file read fails", async () => {
-      // Use a non-existent entity type to trigger the error
-      const result = await cli.loadIndex("nonexistent-entity-type");
+      // Mock readFile to reject
+      vi.mocked(readFile).mockRejectedValue(new Error("File read failed"));
+
+      const result = await cli.loadIndex("authors");
 
       expect(result).toBeNull();
       expect(logError).toHaveBeenCalledWith(
         logger,
-        "Failed to load unified index for nonexistent-entity-type",
+        "Failed to load unified index for authors",
         expect.any(Error),
-        "general"
+        "general",
       );
     });
   });
@@ -330,11 +349,12 @@ describe("OpenAlexCLI", () => {
       // Verify it returns a valid entity object
       expect(result).toBeTruthy();
       expect(typeof result).toBe("object");
-      expect(result).toHaveProperty("id");
-      expect(result).toHaveProperty("display_name");
+      expect(result).not.toBeNull();
+      expect(result!).toHaveProperty("id");
+      expect(result!).toHaveProperty("display_name");
 
       // Verify the ID format
-      expect(result.id).toMatch(/^https:\/\/openalex\.org\/A\d+$/);
+      expect(result!.id).toMatch(/^https:\/\/openalex\.org\/A\d+$/);
     });
 
     it("should return null when file does not exist (ENOENT)", async () => {
@@ -353,10 +373,10 @@ describe("OpenAlexCLI", () => {
         if (pathStr.includes("authors/index.json")) {
           return JSON.stringify({
             "https://api.openalex.org/authors/A5017898742": {
-              "$ref": "./A5017898742.json",
-              "lastModified": "2025-09-19T16:29:25.658Z",
-              "contentHash": "5829e4f7cb7a1382"
-            }
+              $ref: "./A5017898742.json",
+              lastModified: "2025-09-19T16:29:25.658Z",
+              contentHash: "5829e4f7cb7a1382",
+            },
           });
         }
 
@@ -376,7 +396,7 @@ describe("OpenAlexCLI", () => {
         logger,
         "Failed to load entity A5017898742",
         expect.any(Object),
-        "general"
+        "general",
       );
     });
   });
@@ -394,26 +414,26 @@ describe("OpenAlexCLI", () => {
         select: ["id", "display_name", "works_count"],
         sort: "works_count:desc",
         per_page: 25,
-        page: 2
+        page: 2,
       };
 
       const url = cli.buildQueryUrl("authors", options);
 
       expect(url).toBe(
-        "https://api.openalex.org/authors?filter=works_count%3A%3E10&select=id%2Cdisplay_name%2Cworks_count&sort=works_count%3Adesc&per_page=25&page=2"
+        "https://api.openalex.org/authors?filter=works_count%3A%3E10&select=id%2Cdisplay_name%2Cworks_count&sort=works_count%3Adesc&per_page=25&page=2",
       );
     });
 
     it("should handle partial parameters", () => {
       const options = {
         filter: "works_count:>5",
-        per_page: 10
+        per_page: 10,
       };
 
       const url = cli.buildQueryUrl("works", options);
 
       expect(url).toBe(
-        "https://api.openalex.org/works?filter=works_count%3A%3E5&per_page=10"
+        "https://api.openalex.org/works?filter=works_count%3A%3E5&per_page=10",
       );
     });
   });
@@ -422,21 +442,23 @@ describe("OpenAlexCLI", () => {
     it("should successfully fetch data from API", async () => {
       const mockResponse = {
         results: [{ id: "A5017898742", display_name: "Test Author" }],
-        meta: { count: 1 }
+        meta: { count: 1 },
       };
 
       vi.mocked(fetch).mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve(mockResponse)
+        json: () => Promise.resolve(mockResponse),
       } as Response);
 
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const consoleSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
 
       const result = await cli.fetchFromAPI("authors", { per_page: 1 });
 
       expect(result).toEqual(mockResponse);
       expect(fetch).toHaveBeenCalledWith(
-        "https://api.openalex.org/authors?per_page=1"
+        "https://api.openalex.org/authors?per_page=1",
       );
 
       consoleSpy.mockRestore();
@@ -446,13 +468,15 @@ describe("OpenAlexCLI", () => {
       vi.mocked(fetch).mockResolvedValue({
         ok: false,
         status: 404,
-        statusText: "Not Found"
+        statusText: "Not Found",
       } as Response);
 
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const consoleSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
 
       await expect(cli.fetchFromAPI("authors", {})).rejects.toThrow(
-        "API request failed: 404 Not Found"
+        "API request failed: 404 Not Found",
       );
 
       consoleSpy.mockRestore();
@@ -461,9 +485,13 @@ describe("OpenAlexCLI", () => {
     it("should handle network errors", async () => {
       vi.mocked(fetch).mockRejectedValue(new Error("Network error"));
 
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const consoleSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
 
-      await expect(cli.fetchFromAPI("authors", {})).rejects.toThrow("Network error");
+      await expect(cli.fetchFromAPI("authors", {})).rejects.toThrow(
+        "Network error",
+      );
 
       consoleSpy.mockRestore();
     });
@@ -474,19 +502,27 @@ describe("OpenAlexCLI", () => {
       // Use a unique entity ID that doesn't exist yet
       const mockEntity = {
         id: "https://openalex.org/A999999998",
-        display_name: "New Test Author"
+        display_name: "New Test Author",
       };
 
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const consoleSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
 
       // Mock the CLI method to prevent real file writes
-      const mockSaveEntityToCache = vi.spyOn(cli, "saveEntityToCache").mockImplementation(async () => {
-        console.log("[MOCK] saveEntityToCache called - preventing real file operations");
-        return Promise.resolve();
-      });
+      const mockSaveEntityToCache = vi
+        .spyOn(cli, "saveEntityToCache")
+        .mockImplementation(async () => {
+          console.log(
+            "[MOCK] saveEntityToCache called - preventing real file operations",
+          );
+          return Promise.resolve();
+        });
 
       // This should not throw an error (now mocked)
-      await expect(cli.saveEntityToCache("authors", mockEntity)).resolves.not.toThrow();
+      await expect(
+        cli.saveEntityToCache("authors", mockEntity),
+      ).resolves.not.toThrow();
       expect(mockSaveEntityToCache).toHaveBeenCalledWith("authors", mockEntity);
 
       mockSaveEntityToCache.mockRestore();
@@ -498,18 +534,27 @@ describe("OpenAlexCLI", () => {
       // Test error handling by trying to save to a non-existent entity type
       const mockEntity = {
         id: "https://openalex.org/A999999997",
-        display_name: "Test Author"
+        display_name: "Test Author",
       };
 
       // Mock the CLI method to prevent real file writes
-      const mockSaveEntityToCache = vi.spyOn(cli, "saveEntityToCache").mockImplementation(async () => {
-        console.log("[MOCK] saveEntityToCache called - preventing real file operations");
-        return Promise.resolve();
-      });
+      const mockSaveEntityToCache = vi
+        .spyOn(cli, "saveEntityToCache")
+        .mockImplementation(async () => {
+          console.log(
+            "[MOCK] saveEntityToCache called - preventing real file operations",
+          );
+          return Promise.resolve();
+        });
 
       // This should complete without throwing an error (now mocked)
-      await expect(cli.saveEntityToCache("invalid-entity-type", mockEntity)).resolves.not.toThrow();
-      expect(mockSaveEntityToCache).toHaveBeenCalledWith("invalid-entity-type", mockEntity);
+      await expect(
+        cli.saveEntityToCache("invalid-entity-type" as any, mockEntity),
+      ).resolves.not.toThrow();
+      expect(mockSaveEntityToCache).toHaveBeenCalledWith(
+        "invalid-entity-type",
+        mockEntity,
+      );
 
       mockSaveEntityToCache.mockRestore();
 
@@ -520,21 +565,24 @@ describe("OpenAlexCLI", () => {
 
   describe("getEntityWithCache", () => {
     it("should return cached entity when cache hit and useCache enabled", async () => {
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const consoleSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
 
       // Use a real entity that exists in the filesystem
       const result = await cli.getEntityWithCache("authors", "A5017898742", {
         useCache: true,
         saveToCache: false,
-        cacheOnly: false
+        cacheOnly: false,
       });
 
       // Should return the real cached entity
       expect(result).toBeTruthy();
       expect(typeof result).toBe("object");
-      expect(result).toHaveProperty("id");
-      expect(result).toHaveProperty("display_name");
-      expect(result.id).toMatch(/^https:\/\/openalex\.org\/A\d+$/);
+      expect(result).not.toBeNull();
+      expect(result!).toHaveProperty("id");
+      expect(result!).toHaveProperty("display_name");
+      expect(result!.id).toMatch(/^https:\/\/openalex\.org\/A\d+$/);
 
       consoleSpy.mockRestore();
     });
@@ -544,43 +592,45 @@ describe("OpenAlexCLI", () => {
       const result = await cli.getEntityWithCache("authors", "A999999999", {
         useCache: true,
         saveToCache: false,
-        cacheOnly: true
+        cacheOnly: true,
       });
 
       expect(result).toBeNull();
       expect(logger.warn).toHaveBeenCalledWith(
         "general",
-        "Cache-only mode: entity A999999999 not found in cache"
+        "Cache-only mode: entity A999999999 not found in cache",
       );
     });
 
     it("should fetch from API when cache miss and not cache-only", async () => {
       const mockEntity = {
         id: "https://openalex.org/A999999996",
-        display_name: "API Fetched Author"
+        display_name: "API Fetched Author",
       };
 
       const mockApiResponse = {
-        results: [mockEntity]
+        results: [mockEntity],
       };
 
       // Mock successful API call for non-existent entity
       vi.mocked(fetch).mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve(mockApiResponse)
+        json: () => Promise.resolve(mockApiResponse),
       } as Response);
 
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const consoleSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
 
       const result = await cli.getEntityWithCache("authors", "A999999996", {
         useCache: true,
         saveToCache: false,
-        cacheOnly: false
+        cacheOnly: false,
       });
 
       expect(result).toEqual(mockEntity);
       expect(fetch).toHaveBeenCalledWith(
-        "https://api.openalex.org/authors?filter=id%3AA999999996&per_page=1"
+        "https://api.openalex.org/authors?filter=id%3AA999999996&per_page=1",
       );
 
       consoleSpy.mockRestore();
@@ -589,25 +639,27 @@ describe("OpenAlexCLI", () => {
     it("should save to cache when saveToCache enabled", async () => {
       const mockEntity = {
         id: "https://openalex.org/A999999995",
-        display_name: "Saveable Author"
+        display_name: "Saveable Author",
       };
 
       const mockApiResponse = {
-        results: [mockEntity]
+        results: [mockEntity],
       };
 
       // Mock successful API call
       vi.mocked(fetch).mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve(mockApiResponse)
+        json: () => Promise.resolve(mockApiResponse),
       } as Response);
 
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const consoleSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
 
       const result = await cli.getEntityWithCache("authors", "A999999995", {
         useCache: true,
         saveToCache: false, // Disable cache writes to prevent real file operations
-        cacheOnly: false
+        cacheOnly: false,
       });
 
       expect(result).toEqual(mockEntity);
@@ -626,16 +678,18 @@ describe("OpenAlexCLI", () => {
       expect(result.length).toBeGreaterThan(0);
 
       // All entries should be valid author IDs starting with 'A' followed by numbers
-      result.forEach(id => {
+      result.forEach((id) => {
         expect(id).toMatch(/^A\d+$/);
       });
     });
 
     it("should return empty array when index not found", async () => {
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const consoleSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
 
       // Use a non-existent entity type
-      const result = await cli.listEntities("nonexistent");
+      const result = await cli.listEntities("nonexistent" as any);
 
       expect(result).toEqual([]);
 
@@ -651,7 +705,7 @@ describe("OpenAlexCLI", () => {
       expect(Array.isArray(result)).toBe(true);
       // We can't guarantee specific results since we don't know the exact content
       // but we can test that the function works and returns properly structured data
-      result.forEach(entity => {
+      result.forEach((entity) => {
         expect(entity).toHaveProperty("id");
         expect(entity).toHaveProperty("display_name");
         expect(entity.id).toMatch(/^https:\/\/openalex\.org\/A\d+$/);
@@ -665,7 +719,7 @@ describe("OpenAlexCLI", () => {
 
       expect(Array.isArray(result)).toBe(true);
       // Results should be the same regardless of case
-      result.forEach(entity => {
+      result.forEach((entity) => {
         expect(entity).toHaveProperty("id");
         expect(entity).toHaveProperty("display_name");
         expect(entity.id).toMatch(/^https:\/\/openalex\.org\/A\d+$/);
@@ -701,7 +755,7 @@ describe("OpenAlexCLI", () => {
       expect(typeof result.works.lastModified).toBe("string");
 
       // Check for other entity types that might exist in filesystem
-      Object.keys(result).forEach(entityType => {
+      Object.keys(result).forEach((entityType) => {
         expect(result[entityType]).toHaveProperty("count");
         expect(result[entityType]).toHaveProperty("lastModified");
         expect(typeof result[entityType].count).toBe("number");

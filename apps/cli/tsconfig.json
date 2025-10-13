@@ -20,7 +20,7 @@
     "assumeChangesOnlyAffectDirectDependencies": true,
     "composite": true
   },
-  "include": ["src/**/*", "eslint.config.ts"],
+  "include": ["src/**/*"],
   "exclude": ["dist", "node_modules"],
   "references": [
     { "path": "../../packages/client" },
