@@ -92,7 +92,7 @@ export default tseslint.config([
     plugins: {
       "eslint-comments": eslintComments,
       "unused-imports": unusedImports,
-      sonarjs: sonarjs,
+      sonarjs,
       "@nx": nxPlugin,
       "no-emoji-plugin": noEmojiPlugin,
       "test-file-naming-plugin": testFileNamingPlugin,
@@ -113,7 +113,7 @@ export default tseslint.config([
       // Import rules
       "unused-imports/no-unused-imports": "error",
       "unused-imports/no-unused-vars": [
-        "warn",
+        "error",
         {
           vars: "all",
           varsIgnorePattern: "^_",
