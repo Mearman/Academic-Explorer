@@ -147,7 +147,7 @@ export function ReactForceGraph3DAdapterComponent({
     }
   }, [graphData, fitView]);
 
-  const nodeColor = useCallback((node: Record<string, unknown>) => {
+  const nodeColor = useCallback((node: Record<string, unknown>): string => {
     // Node colors are already converted from theme in graphData useMemo
     // react-force-graph-3d expects CSS color strings, not THREE.Color objects
     if (typeof node.color === "string" && node.color.startsWith("#")) {
@@ -158,7 +158,7 @@ export function ReactForceGraph3DAdapterComponent({
       return "#cccccc"; // fallback as CSS color string
     }
 
-    return node.color;
+    return String(node.color);
   }, []);
 
   const nodeLabelFn = useCallback((node) => {
