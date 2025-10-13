@@ -62,7 +62,7 @@ export interface ThemeColors {
   getEntityColor: (entityType: string) => string;
   getEntityColorShade: (entityType: string, shade?: number) => string;
   isDark: boolean;
-  theme: any;
+  theme: Record<string, unknown>;
 }
 
 export interface GraphAdapterConfig {

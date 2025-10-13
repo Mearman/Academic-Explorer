@@ -22,7 +22,7 @@ export function ReactForceGraph2DAdapterComponent({
   data: GraphData;
   config: GraphAdapterConfig;
 }) {
-  const fgRef = useRef<unknown>(null);
+  const fgRef = useRef<any>(null);
   const resolveCssVarColor = useCallback(
     (color: string, fallbackColor: string) => {
       if (!color) {
@@ -110,11 +110,7 @@ export function ReactForceGraph2DAdapterComponent({
       nodes: convertedNodes,
       links: convertedLinks,
     };
-  }, [
-    data,
-    config.themeColors.colors.primary,
-    config.themeColors.colors.background.tertiary,
-  ]);
+  }, [data, config.themeColors.getEntityColor]);
 
   // Auto-fit view after data changes
   useEffect(() => {
@@ -197,7 +193,7 @@ export function ReactForceGraph2DAdapterComponent({
       }}
     >
       <ForceGraph2D
-        ref={fgRef as React.MutableRefObject<unknown>}
+        ref={fgRef}
         graphData={
           graphData as {
             nodes: Record<string, unknown>[];

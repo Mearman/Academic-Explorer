@@ -13,8 +13,11 @@ import type {
   GraphData,
   GraphAdapterConfig,
   GraphAdapter,
+  GraphNode,
+  GraphLink,
 } from "./GraphAdapter";
 import { detectEntityType } from "@academic-explorer/graph";
+import type { OpenAlexEntity } from "@academic-explorer/client";
 
 // Hierarchical left-to-right layout algorithm for better node positioning
 function applyHierarchicalLayout(
@@ -253,11 +256,11 @@ export function ReactFlowAdapterComponent({
 
 export class ReactFlowAdapter implements GraphAdapter {
   convertEntitiesToGraphData(
-    mainEntity: any,
-    relatedEntities: any[],
+    mainEntity: OpenAlexEntity,
+    relatedEntities: OpenAlexEntity[],
   ): GraphData {
-    const nodes: any[] = [];
-    const links: any[] = [];
+    const nodes: GraphNode[] = [];
+    const links: GraphLink[] = [];
 
     // Add main entity node
     const mainEntityType = detectEntityType(mainEntity.id) || "work";

@@ -6,7 +6,10 @@ import type {
   GraphData,
   GraphAdapterConfig,
   GraphAdapter,
+  GraphNode,
+  GraphLink,
 } from "./GraphAdapter";
+import type { OpenAlexEntity } from "@academic-explorer/client";
 
 export function ReactForceGraph3DAdapterComponent({
   data,
@@ -15,7 +18,7 @@ export function ReactForceGraph3DAdapterComponent({
   data: GraphData;
   config: GraphAdapterConfig;
 }) {
-  const fgRef = useRef<any>(null);
+  const fgRef = useRef<unknown>(null);
   const resolveCssVarColor = useCallback(
     (color: string, fallbackColor: string) => {
       if (!color) {
@@ -135,7 +138,7 @@ export function ReactForceGraph3DAdapterComponent({
     }
   }, [graphData, fitView]);
 
-  const nodeColor = useCallback((node: any) => {
+  const nodeColor = useCallback((node: Record<string, unknown>) => {
     // Node colors are already converted from theme in graphData useMemo
     // react-force-graph-3d expects CSS color strings, not THREE.Color objects
     if (typeof node.color === "string" && node.color.startsWith("#")) {
@@ -221,8 +224,8 @@ export function ReactForceGraph3DAdapterComponent({
               height={config.height}
               backgroundColor={graphBackgroundColor}
               nodeColor={nodeColor}
-              nodeLabel={(node: any) => node.name}
-              nodeVal={(node: any) => node.val}
+              nodeLabel={(node: Record<string, unknown>) => node.name as string}
+              nodeVal={(node: Record<string, unknown>) => node.val as number}
               linkColor={() => config.themeColors.colors.border.secondary}
               linkWidth={2}
               linkDirectionalArrowLength={3}
@@ -230,7 +233,7 @@ export function ReactForceGraph3DAdapterComponent({
               enableNodeDrag={config.interactive ?? false}
               enableNavigationControls={config.interactive ?? false}
               showNavInfo={false}
-              onNodeClick={(node: any) => {
+              onNodeClick={(node: Record<string, unknown>) => {
                 // Focus on clicked node
                 if (fgRef.current) {
                   fgRef.current.cameraPosition(
@@ -241,7 +244,7 @@ export function ReactForceGraph3DAdapterComponent({
                 }
               }}
               // Custom node rendering for better text visibility
-              nodeThreeObject={(node: any) => {
+              nodeThreeObject={(node: Record<string, unknown>) => {
                 const sprite = new THREE.Sprite(
                   new THREE.SpriteMaterial({
                     map: new THREE.CanvasTexture(createTextTexture(node.name)),
@@ -294,19 +297,11 @@ export function ReactForceGraph3DAdapterComponent({
 
 export class ReactForceGraph3DAdapter implements GraphAdapter {
   convertEntitiesToGraphData(
-    mainEntity: any,
-    relatedEntities: any[],
+    mainEntity: OpenAlexEntity,
+    relatedEntities: OpenAlexEntity[],
   ): GraphData {
-    console.log("[ReactForceGraph3D] convertEntitiesToGraphData called:", {
-      mainEntity: {
-        id: mainEntity.id,
-        display_name: mainEntity.display_name,
-      },
-      relatedEntitiesCount: relatedEntities.length,
-    });
-
-    const nodes: any[] = [];
-    const links: any[] = [];
+    const nodes: GraphNode[] = [];
+    const links: GraphLink[] = [];
 
     // Add main entity node
     const mainNode = {
