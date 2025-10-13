@@ -27,6 +27,7 @@ import {
   createTopicsQuery,
   createPublishersQuery,
   createFundersQuery,
+  normalizePaginationParams,
   SORT_FIELDS,
   SELECT_PRESETS,
 } from "./query-builder";
@@ -809,6 +810,248 @@ describe("Constants", () => {
       expect(SELECT_PRESETS.AUTHORS_DETAILED).toContain("id");
       expect(SELECT_PRESETS.AUTHORS_DETAILED).toContain("orcid");
       expect(SELECT_PRESETS.AUTHORS_DETAILED).toContain("works_count");
+    });
+  });
+});
+
+describe("Pagination Parameters", () => {
+  describe("QueryBuilder pagination methods", () => {
+    it("should set page number", () => {
+      const query = new QueryBuilder<WorksFilters>().setPage(2);
+      expect(query.buildQueryParams()).toEqual({ page: 2 });
+    });
+
+    it("should set per_page", () => {
+      const query = new QueryBuilder<WorksFilters>().setPerPage(50);
+      expect(query.buildQueryParams()).toEqual({ per_page: 50 });
+    });
+
+    it("should set cursor", () => {
+      const cursor =
+        "IlsxNjA5MzcyODAwMDAwLCAnaHR0cHM6Ly9vcGVuYWxleC5vcmcvVzI0ODg0OTk3NjQnXSI=";
+      const query = new QueryBuilder<WorksFilters>().setCursor(cursor);
+      expect(query.buildQueryParams()).toEqual({ cursor });
+    });
+
+    it("should set group_by", () => {
+      const query = new QueryBuilder<WorksFilters>().setGroupBy(
+        "publication_year",
+      );
+      expect(query.buildQueryParams()).toEqual({
+        group_by: "publication_year",
+      });
+    });
+
+    it("should chain pagination methods", () => {
+      const cursor = "test-cursor";
+      const query = new QueryBuilder<WorksFilters>()
+        .setPage(3)
+        .setPerPage(100)
+        .setCursor(cursor)
+        .setGroupBy("publication_year");
+
+      expect(query.buildQueryParams()).toEqual({
+        page: 3,
+        per_page: 100,
+        cursor,
+        group_by: "publication_year",
+      });
+    });
+
+    it("should combine filters and pagination", () => {
+      const query = new QueryBuilder<WorksFilters>()
+        .addFilter("publication_year", 2023)
+        .setPage(1)
+        .setPerPage(25);
+
+      expect(query.buildQueryParams()).toEqual({
+        filter: "publication_year:2023",
+        page: 1,
+        per_page: 25,
+      });
+    });
+
+    it("should validate page number", () => {
+      expect(() => new QueryBuilder<WorksFilters>().setPage(0)).toThrow(
+        "Page number must be 1 or greater",
+      );
+      expect(() => new QueryBuilder<WorksFilters>().setPage(-1)).toThrow(
+        "Page number must be 1 or greater",
+      );
+    });
+
+    it("should validate per_page range", () => {
+      expect(() => new QueryBuilder<WorksFilters>().setPerPage(0)).toThrow(
+        "per_page must be between 1 and 200",
+      );
+      expect(() => new QueryBuilder<WorksFilters>().setPerPage(201)).toThrow(
+        "per_page must be between 1 and 200",
+      );
+    });
+
+    it("should validate group_by parameter", () => {
+      expect(() => new QueryBuilder<WorksFilters>().setGroupBy("")).toThrow(
+        "group_by cannot be empty",
+      );
+      expect(() => new QueryBuilder<WorksFilters>().setGroupBy("   ")).toThrow(
+        "group_by cannot be empty",
+      );
+    });
+
+    it("should accept initial pagination parameters", () => {
+      const query = new QueryBuilder<WorksFilters>({}, "AND", {
+        page: 2,
+        per_page: 50,
+      });
+
+      expect(query.buildQueryParams()).toEqual({
+        page: 2,
+        per_page: 50,
+      });
+    });
+
+    it("should set pagination from raw params object", () => {
+      const query = new QueryBuilder<WorksFilters>().setPaginationFromParams({
+        page: 1,
+        "per-page": 75, // Alternative format
+        cursor: "test-cursor",
+        "group-by": "publication_year", // Alternative format
+      });
+
+      expect(query.buildQueryParams()).toEqual({
+        page: 1,
+        per_page: 75,
+        cursor: "test-cursor",
+        group_by: "publication_year",
+      });
+    });
+
+    it("should clone with pagination parameters", () => {
+      const original = new QueryBuilder<WorksFilters>()
+        .addFilter("is_oa", true)
+        .setPage(2)
+        .setPerPage(50);
+
+      const cloned = original.clone();
+
+      expect(cloned.buildQueryParams()).toEqual({
+        filter: "is_oa:true",
+        page: 2,
+        per_page: 50,
+      });
+
+      // Verify they are independent
+      cloned.setPage(3);
+      expect(original.buildQueryParams().page).toBe(2);
+      expect(cloned.buildQueryParams().page).toBe(3);
+    });
+
+    it("should reset pagination parameters", () => {
+      const query = new QueryBuilder<WorksFilters>()
+        .addFilter("publication_year", 2023)
+        .setPage(2)
+        .setPerPage(50)
+        .reset();
+
+      expect(query.build()).toEqual({});
+      expect(query.buildQueryParams()).toEqual({});
+    });
+  });
+
+  describe("normalizePaginationParams", () => {
+    it("should prefer per_page over per-page", () => {
+      const result = normalizePaginationParams({
+        per_page: 50,
+        "per-page": 25,
+        page: 1,
+      });
+
+      expect(result).toEqual({
+        per_page: 50,
+        page: 1,
+      });
+    });
+
+    it("should use per-page when per_page is not present", () => {
+      const result = normalizePaginationParams({
+        "per-page": 75,
+        page: 2,
+      });
+
+      expect(result).toEqual({
+        per_page: 75,
+        page: 2,
+      });
+    });
+
+    it("should handle cursor parameter", () => {
+      const cursor = "test-cursor-value";
+      const result = normalizePaginationParams({
+        cursor,
+        page: 1,
+      });
+
+      expect(result).toEqual({
+        cursor,
+        page: 1,
+      });
+    });
+
+    it("should prefer group_by over group-by", () => {
+      const result = normalizePaginationParams({
+        group_by: "publication_year",
+        "group-by": "cited_by_count",
+        page: 1,
+      });
+
+      expect(result).toEqual({
+        group_by: "publication_year",
+        page: 1,
+      });
+    });
+
+    it("should use group-by when group_by is not present", () => {
+      const result = normalizePaginationParams({
+        "group-by": "cited_by_count",
+        page: 2,
+      });
+
+      expect(result).toEqual({
+        group_by: "cited_by_count",
+        page: 2,
+      });
+    });
+
+    it("should ignore non-pagination parameters", () => {
+      const result = normalizePaginationParams({
+        per_page: 25,
+        filter: "publication_year:2023",
+        select: "id,display_name",
+        unknown_param: "value",
+      });
+
+      expect(result).toEqual({
+        per_page: 25,
+      });
+    });
+
+    it("should handle empty or invalid values", () => {
+      const result = normalizePaginationParams({
+        per_page: null,
+        page: undefined,
+        cursor: "",
+      });
+
+      expect(result).toEqual({});
+    });
+
+    it("should handle non-numeric values for numeric parameters", () => {
+      const result = normalizePaginationParams({
+        per_page: "invalid" as any,
+        page: {} as any,
+      });
+
+      expect(result).toEqual({});
     });
   });
 });
