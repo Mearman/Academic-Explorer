@@ -62,18 +62,31 @@ export interface DateRangeValidation {
 }
 
 /**
+ * Pagination parameters for OpenAlex API queries
+ */
+export interface PaginationParams {
+  page?: number;
+  per_page?: number;
+  cursor?: string;
+  group_by?: string;
+}
+
+/**
  * Main QueryBuilder class for constructing OpenAlex API queries
  */
 export class QueryBuilder<T extends EntityFilters = EntityFilters> {
   private filters: Partial<T>;
   private logicalOperator: LogicalOperator;
+  private pagination: PaginationParams;
 
   constructor(
     initialFilters: Partial<T> = {},
     operator: LogicalOperator = "AND",
+    initialPagination: PaginationParams = {},
   ) {
     this.filters = { ...initialFilters };
     this.logicalOperator = operator;
+    this.pagination = { ...initialPagination };
   }
 
   /**
@@ -230,23 +243,155 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
   }
 
   /**
-   * Reset all filters
+   * Set the page number for pagination
+   *
+   * @param page - The page number to retrieve (1-based)
+   * @returns This QueryBuilder instance for chaining
+   *
+   * @example
+   * ```typescript
+   * const query = new QueryBuilder<WorksFilters>()
+   *   .setPage(2);
+   * ```
+   */
+  setPage(page: number): this {
+    if (page < 1) {
+      throw new Error("Page number must be 1 or greater");
+    }
+    this.pagination.page = page;
+    return this;
+  }
+
+  /**
+   * Set the number of results per page (accepts both per_page and per-page formats)
+   *
+   * @param perPage - Number of results per page (1-200)
+   * @returns This QueryBuilder instance for chaining
+   *
+   * @example
+   * ```typescript
+   * const query = new QueryBuilder<WorksFilters>()
+   *   .setPerPage(50);
+   * ```
+   */
+  setPerPage(perPage: number): this {
+    if (perPage < 1 || perPage > 200) {
+      throw new Error("per_page must be between 1 and 200");
+    }
+    this.pagination.per_page = perPage;
+    return this;
+  }
+
+  /**
+   * Set the cursor for cursor-based pagination
+   *
+   * @param cursor - The cursor value from a previous response
+   * @returns This QueryBuilder instance for chaining
+   *
+   * @example
+   * ```typescript
+   * const query = new QueryBuilder<WorksFilters>()
+   *   .setCursor("IlsxNjA5MzcyODAwMDAwLCAnaHR0cHM6Ly9vcGVuYWxleC5vcmcvVzI0ODg0OTk3NjQnXSI=");
+   * ```
+   */
+  setCursor(cursor: string): this {
+    this.pagination.cursor = cursor;
+    return this;
+  }
+
+  /**
+   * Set the group_by parameter for aggregation queries
+   *
+   * @param groupBy - The field to group results by
+   * @returns This QueryBuilder instance for chaining
+   *
+   * @example
+   * ```typescript
+   * const query = new QueryBuilder<WorksFilters>()
+   *   .setGroupBy("publication_year");
+   * ```
+   */
+  setGroupBy(groupBy: string): this {
+    if (!groupBy || groupBy.trim().length === 0) {
+      throw new Error("group_by cannot be empty");
+    }
+    this.pagination.group_by = groupBy.trim();
+    return this;
+  }
+
+  /**
+   * Set pagination parameters from a raw object, normalizing both per_page and per-page formats
+   *
+   * @param params - Raw parameters object that may contain pagination params in either format
+   * @returns This QueryBuilder instance for chaining
+   *
+   * @example
+   * ```typescript
+   * const query = new QueryBuilder<WorksFilters>()
+   *   .setPaginationFromParams({
+   *     page: 1,
+   *     'per-page': 50, // Alternative format
+   *     cursor: "some-cursor-value"
+   *   });
+   * ```
+   */
+  setPaginationFromParams(params: Record<string, unknown>): this {
+    const normalized = normalizePaginationParams(params);
+    this.pagination = { ...this.pagination, ...normalized };
+    return this;
+  }
+
+  /**
+   * Build the complete query parameters including filters and pagination
+   *
+   * @returns Complete query parameters object
+   *
+   * @example
+   * ```typescript
+   * const query = new QueryBuilder<WorksFilters>()
+   *   .addFilter('publication_year', 2023)
+   *   .setPerPage(50)
+   *   .setPage(1);
+   *
+   * const params = query.buildQueryParams();
+   * // Result: { filter: "publication_year:2023", per_page: 50, page: 1 }
+   * ```
+   */
+  buildQueryParams(): Record<string, unknown> {
+    const params: Record<string, unknown> = { ...this.pagination };
+
+    const filterString = this.buildFilterString();
+    if (filterString) {
+      params.filter = filterString;
+    }
+
+    return params;
+  }
+
+  /**
+   * Reset all filters and pagination parameters
    *
    * @returns This QueryBuilder instance for chaining
    */
   reset(): this {
     this.filters = {};
     this.logicalOperator = "AND";
+    this.pagination = {};
     return this;
   }
 
   /**
-   * Clone this QueryBuilder with the same filters
+   * Clone this QueryBuilder with the same filters and pagination
    *
-   * @returns A new QueryBuilder instance with copied filters
+   * @returns A new QueryBuilder instance with copied filters and pagination
    */
   clone(): QueryBuilder<T> {
-    return new QueryBuilder<T>({ ...this.filters }, this.logicalOperator);
+    const cloned = new QueryBuilder<T>(
+      { ...this.filters },
+      this.logicalOperator,
+    );
+    cloned.pagination = { ...this.pagination };
+    return cloned;
   }
 
   /**
@@ -308,7 +453,7 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
     ) {
       // Both key and value are validated, safe to assign
       // Type assertion needed due to generic constraints - type guards ensure safety
-       
+
       (this.filters as Record<string, unknown>)[key] = value;
     }
   }
@@ -643,6 +788,58 @@ export function createFundersQuery(
   filters?: Partial<FundersFilters>,
 ): QueryBuilder<FundersFilters> {
   return new QueryBuilder<FundersFilters>(filters);
+}
+
+/**
+ * Normalize pagination parameters, handling both per_page and per-page formats
+ *
+ * @param params - Raw parameters object that may contain pagination params
+ * @returns Normalized pagination parameters
+ *
+ * @example
+ * ```typescript
+ * const normalized = normalizePaginationParams({
+ *   'per_page': 50,
+ *   'per-page': 25, // This will be ignored if per_page is present
+ *   page: 1
+ * });
+ * // Result: { per_page: 50, page: 1 }
+ * ```
+ */
+export function normalizePaginationParams(
+  params: Record<string, unknown>,
+): PaginationParams {
+  const normalized: PaginationParams = {};
+
+  // Handle page parameter
+  if (typeof params.page === "number") {
+    normalized.page = params.page;
+  }
+
+  // Handle per_page parameter (preferred format)
+  if (typeof params.per_page === "number") {
+    normalized.per_page = params.per_page;
+  }
+  // Handle per-page parameter (alternative format) - only if per_page not set
+  else if (typeof params["per-page"] === "number") {
+    normalized.per_page = params["per-page"];
+  }
+
+  // Handle cursor parameter
+  if (typeof params.cursor === "string" && params.cursor.trim().length > 0) {
+    normalized.cursor = params.cursor.trim();
+  }
+
+  // Handle group_by parameter (preferred format)
+  if (typeof params.group_by === "string") {
+    normalized.group_by = params.group_by;
+  }
+  // Handle group-by parameter (alternative format) - only if group_by not set
+  else if (typeof params["group-by"] === "string") {
+    normalized.group_by = params["group-by"];
+  }
+
+  return normalized;
 }
 
 // Common sort field constants for convenience

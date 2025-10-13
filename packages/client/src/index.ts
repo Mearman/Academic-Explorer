@@ -95,6 +95,7 @@ export {
   createTopicsQuery,
   createWorksQuery,
   escapeFilterValue,
+  normalizePaginationParams,
   QueryBuilder,
   SELECT_PRESETS,
   SORT_FIELDS,
