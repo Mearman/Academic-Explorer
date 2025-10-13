@@ -1,0 +1,1025 @@
+{
+  "id": "https://openalex.org/C41008148",
+  "wikidata": "https://www.wikidata.org/wiki/Q21198",
+  "display_name": "Computer science",
+  "level": 0,
+  "description": "study of computation",
+  "works_count": 95531115,
+  "cited_by_count": 733355873,
+  "summary_stats": {
+    "2yr_mean_citedness": 1.2278691800711834,
+    "h_index": 4400,
+    "i10_index": 10896469
+  },
+  "ids": {
+    "openalex": "https://openalex.org/C41008148",
+    "wikidata": "https://www.wikidata.org/wiki/Q21198",
+    "mag": "41008148",
+    "wikipedia": "https://en.wikipedia.org/wiki/Computer%20science",
+    "umls_cui": [
+      "C0599726"
+    ]
+  },
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/6/6a/Sorting_quicksort_anim.gif",
+  "image_thumbnail_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Sorting_quicksort_anim.gif/100px-Sorting_quicksort_anim.gif",
+  "international": {
+    "display_name": {
+      "af": "informatika",
+      "am": "የኮምፒውተር፡ጥናት",
+      "an": "Informatica",
+      "ar": "علم الحاسوب",
+      "arz": "علم الكمبيوتر",
+      "as": "কম্পিউটাৰ বিজ্ঞান",
+      "az": "informatika",
+      "azb": "بیلگی‌سایار بیلیمی",
+      "ba": "информатика",
+      "bar": "Informatik",
+      "bcl": "Siyensyang pangkompyuter",
+      "be": "інфарматыка",
+      "be-tarask": "інфарматыка",
+      "bg": "Информатика",
+      "bho": "कंप्यूटर बिज्ञान",
+      "bn": "কম্পিউটার বিজ্ঞান",
+      "br": "stlenneg",
+      "bs": "računarstvo",
+      "ca": "ciències de la computació",
+      "ce": "Категори:Информатика",
+      "ckb": "زانستی کۆمپیوتەر",
+      "co": "informatica",
+      "cs": "počítačová věda",
+      "csb": "Infòrmatika",
+      "cy": "cyfrifiadureg",
+      "da": "datalogi",
+      "de": "Informatik",
+      "de-ch": "Informatik",
+      "diq": "İnformatik",
+      "el": "επιστήμη υπολογιστών",
+      "eml": "Informàtica",
+      "en": "computer science",
+      "en-ca": "Informatics",
+      "en-gb": "computer science",
+      "eo": "komputiko",
+      "es": "ciencias de la computación",
+      "et": "informaatika",
+      "eu": "informatika",
+      "ext": "Enhormática",
+      "fa": "انفورماتیک (رشته دانشگاهی)",
+      "fi": "tietojenkäsittelytiede",
+      "fo": "Teldufrøði",
+      "fr": "informatique",
+      "frr": "informaatik",
+      "fur": "Informatiche",
+      "fy": "ynformatika",
+      "ga": "ríomheolaíocht",
+      "gcr": "Lenfòrmatik",
+      "gd": "saidheans choimpiutairean",
+      "gl": "ciencias da computación",
+      "gsw": "Informatik",
+      "gu": "કમ્પ્યુટર વિજ્ઞાન",
+      "gv": "sheanse co-earrooagh",
+      "hak": "Thien-nó Khô-ho̍k",
+      "he": "מדעי המחשב",
+      "hi": "संगणक विज्ञान",
+      "hr": "informatika",
+      "hsb": "informatika",
+      "ht": "Enfòmatik",
+      "hu": "informatika",
+      "hy": "ինֆորմատիկա",
+      "ia": "Informatica",
+      "iba": "Sains komputer",
+      "id": "ilmu komputer",
+      "ie": "Informatica",
+      "io": "Informatiko",
+      "is": "tölvunarfræði",
+      "it": "informatica",
+      "iu": "ᑐᓴᐅᒪᖃᑦᑕᐅᑎᔾᔪᑎᓂᒃ ᐊᐅᓚᑦᑎᔩᑦ/tusaumaqattautijjutinik aulattijiit",
+      "ja": "計算機科学",
+      "jbo": "samske",
+      "ka": "ინფორმატიკა",
+      "kaa": "Informatika",
+      "kab": "Tasenselkimt",
+      "kk": "Информатика",
+      "kl": "Qarasaasialerinermik ilisimatusarneq",
+      "km": "វិទ្យាសាស្ត្រ​កុំព្យូទ័រ",
+      "kn": "ಗಣಕ ವಿಜ್ಞಾನ",
+      "ko": "컴퓨터 과학",
+      "ks": "کَمپیوٗٹَر زان",
+      "ku": "Informatîk",
+      "kv": "Юӧртӧданбур",
+      "la": "informatica",
+      "lad": "Informatika",
+      "lb": "Informatik",
+      "li": "Informatica",
+      "lij": "Informatica",
+      "lmo": "Informadega",
+      "lt": "informatika",
+      "ltg": "Datorzineiba",
+      "lv": "datorzinātne",
+      "mag": "सङ्गणक विज्ञान",
+      "mdf": "Информатикась",
+      "mg": "Informatika",
+      "mhr": "информатике",
+      "min": "Ilmu komputer",
+      "mk": "информатика",
+      "ml": "കമ്പ്യൂട്ടർ ശാസ്ത്രം",
+      "mn": "Компьютерийн шинжлэх ухаан",
+      "mni": "ꯀꯝꯄꯨꯇꯔ ꯂꯧꯁꯤꯡꯀꯥꯡꯂꯣꯟ",
+      "mr": "संगणक विज्ञान",
+      "ms": "sains komputer",
+      "ms-arab": "ساءين‌س کومڤوتر",
+      "mwl": "Ciéncia de la cumputaçon",
+      "my": "ကွန်ပျူတာသိပ္ပံ",
+      "nan": "Tiān-náu kho-ha̍k",
+      "nap": "Nfurmateca",
+      "nb": "informatikk",
+      "nds": "Informatik",
+      "nds-nl": "infermatika",
+      "ne": "कम्प्युटर विज्ञान",
+      "new": "कम्प्युटर विज्ञान",
+      "nl": "informatica",
+      "nn": "datateknikk",
+      "nov": "informatike",
+      "nqo": "ߕߟߋ߬ߓߊ߰ ߞߊߙߊ߲ ߥߟߊ߫ ߕߟߋ߬ߓߊ߰ ߟߐ߲",
+      "nrm": "Informatique",
+      "oc": "informatica",
+      "om": "Infoormaatiksii",
+      "or": "କମ୍ପ୍ୟୁଟର ବିଜ୍ଞାନ",
+      "os": "информатикæ",
+      "pcd": "Informatike",
+      "pi": "सुशांख्य यन्त्र (कम्प्युटर) विज्ञान",
+      "pl": "informatyka",
+      "pms": "Anformàtica",
+      "ps": "کمپیوټر ساینس",
+      "pt": "ciência de computadores",
+      "pt-br": "ciência da computação",
+      "qu": "Antañiqiq hamut'ay",
+      "rki": "ကွန်ပျူတာသိပ္ပံ",
+      "ro": "informatică",
+      "ru": "информатика",
+      "rue": "інформатіка",
+      "rup": "informaticã",
+      "sa": "सङ्गणक शास्त्रम्",
+      "sah": "Информатика",
+      "sc": "Informàtica",
+      "scn": "nfurmàtica",
+      "sco": "computer science",
+      "sd": "ڪمپيوٽر سائنس",
+      "se": "diehtogieđahallandieđa",
+      "sgs": "Infuormatėka",
+      "sh": "informatika",
+      "shi": "Tasenselkimt",
+      "shn": "ပၢႆးသၢႆႊၶွမ်ႇပိဝ်ႇတႃႇ",
+      "si": "පරිගණක විද්‍යාව",
+      "sk": "veda o počítačoch",
+      "sl": "informatika",
+      "smn": "tiäđuikieđâvuššâmtieđâ",
+      "sq": "shkencë kompjuterike",
+      "sr": "информатика",
+      "sr-ec": "информатика",
+      "sr-el": "informatika",
+      "stq": "Informoatik",
+      "su": "Élmu komputer",
+      "sv": "datavetenskap",
+      "sw": "Sayansi ya tarakilishi",
+      "ta": "கணினியியல்",
+      "te": "కంప్యూటరు శాస్త్రం",
+      "tet": "Definisaun Sistema Informasaun Teknologia",
+      "tg": "илмҳои роёна",
+      "tg-cyrl": "информатика",
+      "th": "วิทยาการคอมพิวเตอร์",
+      "ti": "ኮምፒዩተር ሳይንስ",
+      "tk": "Informatika",
+      "tl": "Impormatika",
+      "tok": "sona pi ilo sona nanpa",
+      "tpi": "Save long komputa",
+      "tr": "bilgisayar bilimi",
+      "tt": "информатика",
+      "tt-cyrl": "компьютер белеме",
+      "ug": "بیلگیسايار مۈھەندیسلیغی",
+      "uk": "інформатика",
+      "ur": "کمپیوٹر سائنس",
+      "uz": "Informatika",
+      "vec": "informàtega",
+      "vi": "khoa học máy tính",
+      "vro": "Informaatiga",
+      "wa": "Infôrmatike",
+      "war": "Siyensya han komputasyon",
+      "wo": "Xam-xamu nosukaay",
+      "wuu": "计算机科学",
+      "xmf": "ინფორმატიკა",
+      "yo": "Ìfitónilétí",
+      "yue": "電腦科學",
+      "zea": "Informaotica",
+      "zh": "計算機科學",
+      "zh-cn": "计算机科学",
+      "zh-hans": "计算机科学",
+      "zh-hant": "電腦科學",
+      "zh-hk": "計算機科學",
+      "zh-mo": "電腦科學",
+      "zh-my": "电脑科学",
+      "zh-sg": "电脑科学",
+      "zh-tw": "電腦科學",
+      "zu": "Inzululwazi yesiCikizi"
+    },
+    "description": {
+      "af": "studie van berekening en inligtingverwerking, asook die implementering daarvan in inligtingstegnologie, in beide hardeware (apparatuur) en sagteware (programmatuur)",
+      "ar": "دراسة العمليات التي تتفاعل مع بيانات والتي يمكن تمثيلها كبيانات في شكل برامج",
+      "az": "elm sahəsi",
+      "bn": "কম্পিউটার নামক যন্ত্রের সাহায্যে তথ্য প্রক্রিয়াজাতকরণ ও গণনার ভিত্তির প্রণালীবদ",
+      "bs": "naučna disciplina koja se bavi svim aspektima razvoja računara",
+      "ca": "estudi teòric de la base formal que permet el processament o el càlcul automatitzat de la informació",
+      "cs": "věda studující principy strojového zpracování informací",
+      "da": "disciplin med rødder i matematisk logik, lingvistik og elektroteknik",
+      "de": "Wissenschaft von der systematischen Verarbeitung von Informationen",
+      "en": "study of computation",
+      "en-gb": "study of the theoretical foundations of information and computation",
+      "eo": "scienco pri teoria fondado de informo kaj komputado",
+      "es": "ciencia dedicada a la computación y al procesado de información",
+      "et": "arvutiteadus",
+      "eu": "informazioaren tratamendu automatikoaren zientzia",
+      "fa": "دانش اطلاعات و پردازش اطلاعات و مهندسی سامانه‌های اطلاعاتی",
+      "fi": "tieteenala, joka tutkii tietotekniikkaan ja sen käyttöön liittyviä ongelmia",
+      "fr": "activité scientifique, technique, et industriel concernant le traitement automatique de l'information numérique",
+      "gl": "ciencia dedicada á computación e ao procesado de información",
+      "gv": "studeyrys y cho-earrooaght",
+      "he": "תחום מחקר של תיאוריות בסיסיות הקשורות במידע ובמחשוב.",
+      "hsb": "wědomosć wo systematiskim předźěłanju informacijow",
+      "id": "kajian dasar teoretis dari informasi dan komputasi",
+      "it": "scienza che studia i fondamenti teorici dell'informazione e della sua computazione",
+      "ja": "情報と計算の理論的基礎、及びそのコンピュータ上への実装と応用に関する研究分野",
+      "kn": "ಮಾಹಿತಿ ಮತ್ತು ಗಣನೆಯ ಸೈದ್ಧಾಂತಿಕ ಅಡಿಪಾಯಗಳ ಅಧ್ಯಯನ",
+      "ko": "전산 이론, 소프트웨어, 하드웨어의 중점을 둔 정보과학의 한 분야",
+      "la": "studium systematum computationalium",
+      "lb": "Wëssenschaft déi sech mat der systematescher Veraarbechtung vun Informatioun befaasst",
+      "mag": "सङ्गणना आउ ओकर प्रयोग दन्ने वैज्ञानिक आउ व्यावहारिक दृष्टिकोण",
+      "nb": "fagfelt med røtter i matematisk logikk, lingvistikk og elektroingeniørfag",
+      "nl": "de studie van informatie en berekening en hun toepassingen in computersystemen",
+      "pl": "nauka o przetwarzaniu informacji",
+      "pt": "estudo dos fundamentos teóricos da informação e da computação",
+      "pt-br": "estudo dos fundamentos teóricos da informação e da computação",
+      "ro": "știință care se ocupă cu prelucrarea sistematică a datelor",
+      "ru": "наука о методах и обработки информации с применением компьютерной техники",
+      "rue": "наука о інформаціях і їх обробцї",
+      "scn": "scienza chi studìa l'elabburazzioni dî nfurmazzioni pi menzu dî calculatura elittrònici",
+      "sco": "scienteefic an practical approach tae computation an its applications",
+      "sl": "veda o računalniški obdelavi podatkov",
+      "sq": "studimi i teknologjise se informacionit dhe kompjutersie",
+      "sw": "utafiti wa hesabu",
+      "th": "วิชาที่ศึกษาเกี่ยวกับทฤษฎีการคำนวณสำหรับคอมพิวเตอร์",
+      "tr": "belirli evren kurallarına dayalı, sistematik çalışan ve elementlerin ya da ağların birbirleriyle olan ilişkisi",
+      "tt": "мәгълүматны автоматлаштырылган эшкәртү яки исәпләү мөмкинлеген бирә торган формаль нигезне теоретик яктан өйрәнү, мәсәлән, санакта яки мәгълүмат тапшыру челтәрендә",
+      "uk": "наукова дисципліна",
+      "vec": "Siensa che ła stùdia i fondaminti teòreghi de l'informasion e de ła so conputasion.",
+      "vi": "ngành học nghiên cứu về cơ sở lý thuyết và ứng dụng tự động xử lý hoặc tính toán thông tin",
+      "wa": "syince ki studeye les copiutreces",
+      "yue": "專為計算同資訊處理而設嘅科學",
+      "zh": "研究信息和計算的理論基礎",
+      "zh-hant": "研究資訊和計算的理論基礎",
+      "zh-tw": "研究資訊和計算的理論基礎",
+      "zu": "isifundo somcikizo"
+    }
+  },
+  "ancestors": [],
+  "related_concepts": [
+    {
+      "id": "https://openalex.org/C33923547",
+      "wikidata": null,
+      "display_name": "Mathematics",
+      "level": 0,
+      "score": 253.91972
+    },
+    {
+      "id": "https://openalex.org/C119599485",
+      "wikidata": null,
+      "display_name": "Electrical engineering",
+      "level": 1,
+      "score": 153.01909
+    },
+    {
+      "id": "https://openalex.org/C121332964",
+      "wikidata": null,
+      "display_name": "Physics",
+      "level": 0,
+      "score": 143.93542
+    },
+    {
+      "id": "https://openalex.org/C127413603",
+      "wikidata": null,
+      "display_name": "Engineering",
+      "level": 0,
+      "score": 134.1664
+    },
+    {
+      "id": "https://openalex.org/C78519656",
+      "wikidata": null,
+      "display_name": "Mechanical engineering",
+      "level": 1,
+      "score": 109.06372
+    },
+    {
+      "id": "https://openalex.org/C154945302",
+      "wikidata": null,
+      "display_name": "Artificial intelligence",
+      "level": 1,
+      "score": 78.66415
+    },
+    {
+      "id": "https://openalex.org/C11413529",
+      "wikidata": null,
+      "display_name": "Algorithm",
+      "level": 1,
+      "score": 77.642456
+    },
+    {
+      "id": "https://openalex.org/C86803240",
+      "wikidata": null,
+      "display_name": "Biology",
+      "level": 0,
+      "score": 72.15612
+    },
+    {
+      "id": "https://openalex.org/C147176958",
+      "wikidata": null,
+      "display_name": "Civil engineering",
+      "level": 1,
+      "score": 69.927315
+    },
+    {
+      "id": "https://openalex.org/C185592680",
+      "wikidata": null,
+      "display_name": "Chemistry",
+      "level": 0,
+      "score": 69.06744
+    },
+    {
+      "id": "https://openalex.org/C162324750",
+      "wikidata": null,
+      "display_name": "Economics",
+      "level": 0,
+      "score": 68.4899
+    },
+    {
+      "id": "https://openalex.org/C15744967",
+      "wikidata": null,
+      "display_name": "Psychology",
+      "level": 0,
+      "score": 67.836555
+    },
+    {
+      "id": "https://openalex.org/C199360897",
+      "wikidata": null,
+      "display_name": "Programming language",
+      "level": 1,
+      "score": 64.66104
+    },
+    {
+      "id": "https://openalex.org/C24326235",
+      "wikidata": null,
+      "display_name": "Electronic engineering",
+      "level": 1,
+      "score": 60.35985
+    },
+    {
+      "id": "https://openalex.org/C113775141",
+      "wikidata": null,
+      "display_name": "Computer engineering",
+      "level": 1,
+      "score": 56.27748
+    },
+    {
+      "id": "https://openalex.org/C115903868",
+      "wikidata": null,
+      "display_name": "Software engineering",
+      "level": 1,
+      "score": 53.30523
+    },
+    {
+      "id": "https://openalex.org/C36289849",
+      "wikidata": null,
+      "display_name": "Social science",
+      "level": 1,
+      "score": 49.330643
+    },
+    {
+      "id": "https://openalex.org/C138885662",
+      "wikidata": null,
+      "display_name": "Philosophy",
+      "level": 0,
+      "score": 49.09181
+    },
+    {
+      "id": "https://openalex.org/C105795698",
+      "wikidata": null,
+      "display_name": "Statistics",
+      "level": 1,
+      "score": 47.862644
+    },
+    {
+      "id": "https://openalex.org/C28826006",
+      "wikidata": null,
+      "display_name": "Applied mathematics",
+      "level": 1,
+      "score": 39.67622
+    },
+    {
+      "id": "https://openalex.org/C80444323",
+      "wikidata": null,
+      "display_name": "Theoretical computer science",
+      "level": 1,
+      "score": 36.255596
+    },
+    {
+      "id": "https://openalex.org/C17744445",
+      "wikidata": null,
+      "display_name": "Political science",
+      "level": 0,
+      "score": 35.794933
+    },
+    {
+      "id": "https://openalex.org/C77088390",
+      "wikidata": null,
+      "display_name": "Database",
+      "level": 1,
+      "score": 34.62841
+    },
+    {
+      "id": "https://openalex.org/C119857082",
+      "wikidata": null,
+      "display_name": "Machine learning",
+      "level": 1,
+      "score": 34.341488
+    },
+    {
+      "id": "https://openalex.org/C187736073",
+      "wikidata": null,
+      "display_name": "Management",
+      "level": 1,
+      "score": 34.01941
+    },
+    {
+      "id": "https://openalex.org/C188147891",
+      "wikidata": null,
+      "display_name": "Cognitive science",
+      "level": 1,
+      "score": 33.328857
+    },
+    {
+      "id": "https://openalex.org/C15708023",
+      "wikidata": null,
+      "display_name": "Humanities",
+      "level": 1,
+      "score": 32.60441
+    },
+    {
+      "id": "https://openalex.org/C42360764",
+      "wikidata": null,
+      "display_name": "Chemical engineering",
+      "level": 1,
+      "score": 31.971958
+    },
+    {
+      "id": "https://openalex.org/C13736549",
+      "wikidata": null,
+      "display_name": "Industrial engineering",
+      "level": 1,
+      "score": 29.506624
+    },
+    {
+      "id": "https://openalex.org/C150903083",
+      "wikidata": null,
+      "display_name": "Biotechnology",
+      "level": 1,
+      "score": 25.505184
+    },
+    {
+      "id": "https://openalex.org/C31258907",
+      "wikidata": null,
+      "display_name": "Computer network",
+      "level": 1,
+      "score": 25.461674
+    },
+    {
+      "id": "https://openalex.org/C120314980",
+      "wikidata": null,
+      "display_name": "Distributed computing",
+      "level": 1,
+      "score": 25.227364
+    },
+    {
+      "id": "https://openalex.org/C121955636",
+      "wikidata": null,
+      "display_name": "Accounting",
+      "level": 1,
+      "score": 24.644474
+    },
+    {
+      "id": "https://openalex.org/C60644358",
+      "wikidata": null,
+      "display_name": "Bioinformatics",
+      "level": 1,
+      "score": 22.637817
+    },
+    {
+      "id": "https://openalex.org/C178550888",
+      "wikidata": null,
+      "display_name": "Business administration",
+      "level": 1,
+      "score": 22.113203
+    },
+    {
+      "id": "https://openalex.org/C173608175",
+      "wikidata": null,
+      "display_name": "Parallel computing",
+      "level": 1,
+      "score": 21.477465
+    },
+    {
+      "id": "https://openalex.org/C107457646",
+      "wikidata": null,
+      "display_name": "Human–computer interaction",
+      "level": 1,
+      "score": 21.443598
+    },
+    {
+      "id": "https://openalex.org/C121684516",
+      "wikidata": null,
+      "display_name": "Computer graphics (images)",
+      "level": 1,
+      "score": 20.948341
+    },
+    {
+      "id": "https://openalex.org/C192562407",
+      "wikidata": null,
+      "display_name": "Materials science",
+      "level": 0,
+      "score": 18.808165
+    },
+    {
+      "id": "https://openalex.org/C39432304",
+      "wikidata": null,
+      "display_name": "Environmental science",
+      "level": 0,
+      "score": 17.922344
+    },
+    {
+      "id": "https://openalex.org/C42475967",
+      "wikidata": null,
+      "display_name": "Operations research",
+      "level": 1,
+      "score": 17.310873
+    },
+    {
+      "id": "https://openalex.org/C46312422",
+      "wikidata": null,
+      "display_name": "Communication",
+      "level": 1,
+      "score": 17.22878
+    },
+    {
+      "id": "https://openalex.org/C10138342",
+      "wikidata": null,
+      "display_name": "Finance",
+      "level": 1,
+      "score": 17.1781
+    },
+    {
+      "id": "https://openalex.org/C201995342",
+      "wikidata": null,
+      "display_name": "Systems engineering",
+      "level": 1,
+      "score": 17.028011
+    },
+    {
+      "id": "https://openalex.org/C38652104",
+      "wikidata": null,
+      "display_name": "Computer security",
+      "level": 1,
+      "score": 16.644386
+    },
+    {
+      "id": "https://openalex.org/C31972630",
+      "wikidata": null,
+      "display_name": "Computer vision",
+      "level": 1,
+      "score": 16.449514
+    },
+    {
+      "id": "https://openalex.org/C136229726",
+      "wikidata": null,
+      "display_name": "Biomedical engineering",
+      "level": 1,
+      "score": 16.431839
+    },
+    {
+      "id": "https://openalex.org/C159110408",
+      "wikidata": null,
+      "display_name": "Nursing",
+      "level": 1,
+      "score": 16.200832
+    },
+    {
+      "id": "https://openalex.org/C114614502",
+      "wikidata": null,
+      "display_name": "Combinatorics",
+      "level": 1,
+      "score": 16.005728
+    },
+    {
+      "id": "https://openalex.org/C118524514",
+      "wikidata": null,
+      "display_name": "Computer architecture",
+      "level": 1,
+      "score": 14.819335
+    },
+    {
+      "id": "https://openalex.org/C70721500",
+      "wikidata": null,
+      "display_name": "Computational biology",
+      "level": 1,
+      "score": 14.150728
+    },
+    {
+      "id": "https://openalex.org/C204321447",
+      "wikidata": null,
+      "display_name": "Natural language processing",
+      "level": 1,
+      "score": 14.116703
+    },
+    {
+      "id": "https://openalex.org/C54750564",
+      "wikidata": null,
+      "display_name": "Commerce",
+      "level": 1,
+      "score": 13.512761
+    },
+    {
+      "id": "https://openalex.org/C124101348",
+      "wikidata": null,
+      "display_name": "Data mining",
+      "level": 1,
+      "score": 13.2522955
+    },
+    {
+      "id": "https://openalex.org/C146978453",
+      "wikidata": null,
+      "display_name": "Aerospace engineering",
+      "level": 1,
+      "score": 12.769067
+    },
+    {
+      "id": "https://openalex.org/C118615104",
+      "wikidata": null,
+      "display_name": "Discrete mathematics",
+      "level": 1,
+      "score": 12.72195
+    },
+    {
+      "id": "https://openalex.org/C459310",
+      "wikidata": null,
+      "display_name": "Computational science",
+      "level": 1,
+      "score": 12.502087
+    },
+    {
+      "id": "https://openalex.org/C87717796",
+      "wikidata": null,
+      "display_name": "Environmental engineering",
+      "level": 1,
+      "score": 12.180937
+    },
+    {
+      "id": "https://openalex.org/C9390403",
+      "wikidata": null,
+      "display_name": "Computer hardware",
+      "level": 1,
+      "score": 11.999481
+    },
+    {
+      "id": "https://openalex.org/C79403827",
+      "wikidata": null,
+      "display_name": "Real-time computing",
+      "level": 1,
+      "score": 11.178692
+    },
+    {
+      "id": "https://openalex.org/C44154836",
+      "wikidata": null,
+      "display_name": "Simulation",
+      "level": 1,
+      "score": 10.924057
+    },
+    {
+      "id": "https://openalex.org/C1965285",
+      "wikidata": null,
+      "display_name": "Earth science",
+      "level": 1,
+      "score": 10.543096
+    },
+    {
+      "id": "https://openalex.org/C3116431",
+      "wikidata": null,
+      "display_name": "Public administration",
+      "level": 1,
+      "score": 10.168686
+    },
+    {
+      "id": "https://openalex.org/C19417346",
+      "wikidata": null,
+      "display_name": "Pedagogy",
+      "level": 1,
+      "score": 9.322876
+    },
+    {
+      "id": "https://openalex.org/C539667460",
+      "wikidata": null,
+      "display_name": "Management science",
+      "level": 1,
+      "score": 8.963628
+    },
+    {
+      "id": "https://openalex.org/C126255220",
+      "wikidata": null,
+      "display_name": "Mathematical optimization",
+      "level": 1,
+      "score": 8.853711
+    },
+    {
+      "id": "https://openalex.org/C12554922",
+      "wikidata": null,
+      "display_name": "Biophysics",
+      "level": 1,
+      "score": 8.452211
+    },
+    {
+      "id": "https://openalex.org/C180747234",
+      "wikidata": null,
+      "display_name": "Cognitive psychology",
+      "level": 1,
+      "score": 8.136938
+    },
+    {
+      "id": "https://openalex.org/C23123220",
+      "wikidata": null,
+      "display_name": "Information retrieval",
+      "level": 1,
+      "score": 8.01752
+    },
+    {
+      "id": "https://openalex.org/C49774154",
+      "wikidata": null,
+      "display_name": "Multimedia",
+      "level": 1,
+      "score": 7.925641
+    },
+    {
+      "id": "https://openalex.org/C61696701",
+      "wikidata": null,
+      "display_name": "Engineering physics",
+      "level": 1,
+      "score": 7.748606
+    },
+    {
+      "id": "https://openalex.org/C171146098",
+      "wikidata": null,
+      "display_name": "Automotive engineering",
+      "level": 1,
+      "score": 7.697784
+    },
+    {
+      "id": "https://openalex.org/C28490314",
+      "wikidata": null,
+      "display_name": "Speech recognition",
+      "level": 1,
+      "score": 6.639613
+    },
+    {
+      "id": "https://openalex.org/C133731056",
+      "wikidata": null,
+      "display_name": "Control engineering",
+      "level": 1,
+      "score": 5.581166
+    },
+    {
+      "id": "https://openalex.org/C56739046",
+      "wikidata": null,
+      "display_name": "Knowledge management",
+      "level": 1,
+      "score": 5.2085514
+    },
+    {
+      "id": "https://openalex.org/C110354214",
+      "wikidata": null,
+      "display_name": "Engineering management",
+      "level": 1,
+      "score": 4.6380467
+    },
+    {
+      "id": "https://openalex.org/C16674752",
+      "wikidata": null,
+      "display_name": "Mining engineering",
+      "level": 1,
+      "score": 4.6359653
+    },
+    {
+      "id": "https://openalex.org/C117671659",
+      "wikidata": null,
+      "display_name": "Manufacturing engineering",
+      "level": 1,
+      "score": 4.466325
+    },
+    {
+      "id": "https://openalex.org/C2522767166",
+      "wikidata": null,
+      "display_name": "Data science",
+      "level": 1,
+      "score": 4.4244723
+    },
+    {
+      "id": "https://openalex.org/C66938386",
+      "wikidata": null,
+      "display_name": "Structural engineering",
+      "level": 1,
+      "score": 4.245082
+    },
+    {
+      "id": "https://openalex.org/C161191863",
+      "wikidata": null,
+      "display_name": "Library science",
+      "level": 1,
+      "score": 4.2409
+    },
+    {
+      "id": "https://openalex.org/C30475298",
+      "wikidata": null,
+      "display_name": "Computational physics",
+      "level": 1,
+      "score": 3.8142443
+    },
+    {
+      "id": "https://openalex.org/C37621935",
+      "wikidata": null,
+      "display_name": "Agricultural science",
+      "level": 1,
+      "score": 3.799917
+    },
+    {
+      "id": "https://openalex.org/C78762247",
+      "wikidata": null,
+      "display_name": "Petroleum engineering",
+      "level": 1,
+      "score": 3.2641659
+    },
+    {
+      "id": "https://openalex.org/C170154142",
+      "wikidata": null,
+      "display_name": "Architectural engineering",
+      "level": 1,
+      "score": 3.2228045
+    },
+    {
+      "id": "https://openalex.org/C162118730",
+      "wikidata": null,
+      "display_name": "Actuarial science",
+      "level": 1,
+      "score": 3.207602
+    },
+    {
+      "id": "https://openalex.org/C145420912",
+      "wikidata": null,
+      "display_name": "Mathematics education",
+      "level": 1,
+      "score": 3.0157754
+    },
+    {
+      "id": "https://openalex.org/C88463610",
+      "wikidata": null,
+      "display_name": "Agricultural engineering",
+      "level": 1,
+      "score": 2.8315964
+    },
+    {
+      "id": "https://openalex.org/C22212356",
+      "wikidata": null,
+      "display_name": "Transport engineering",
+      "level": 1,
+      "score": 1.9614018
+    },
+    {
+      "id": "https://openalex.org/C107053488",
+      "wikidata": null,
+      "display_name": "Construction engineering",
+      "level": 1,
+      "score": 1.6813383
+    },
+    {
+      "id": "https://openalex.org/C21880701",
+      "wikidata": null,
+      "display_name": "Process engineering",
+      "level": 1,
+      "score": 1.5742452
+    },
+    {
+      "id": "https://openalex.org/C199104240",
+      "wikidata": null,
+      "display_name": "Marine engineering",
+      "level": 1,
+      "score": 1.5703129
+    },
+    {
+      "id": "https://openalex.org/C183696295",
+      "wikidata": null,
+      "display_name": "Biochemical engineering",
+      "level": 1,
+      "score": 1.4300684
+    }
+  ],
+  "counts_by_year": [
+    {
+      "year": 2025,
+      "works_count": 2051466,
+      "oa_works_count": 220829,
+      "cited_by_count": 31170662
+    },
+    {
+      "year": 2024,
+      "works_count": 3233178,
+      "oa_works_count": 943968,
+      "cited_by_count": 50636438
+    },
+    {
+      "year": 2023,
+      "works_count": 3666900,
+      "oa_works_count": 1459974,
+      "cited_by_count": 52942597
+    },
+    {
+      "year": 2022,
+      "works_count": 3664495,
+      "oa_works_count": 1696713,
+      "cited_by_count": 48808823
+    },
+    {
+      "year": 2021,
+      "works_count": 3470034,
+      "oa_works_count": 1258572,
+      "cited_by_count": 51297264
+    },
+    {
+      "year": 2020,
+      "works_count": 3940923,
+      "oa_works_count": 1204033,
+      "cited_by_count": 45681087
+    },
+    {
+      "year": 2019,
+      "works_count": 3572337,
+      "oa_works_count": 974358,
+      "cited_by_count": 39428487
+    },
+    {
+      "year": 2018,
+      "works_count": 3406518,
+      "oa_works_count": 825900,
+      "cited_by_count": 33916150
+    },
+    {
+      "year": 2017,
+      "works_count": 3350705,
+      "oa_works_count": 689191,
+      "cited_by_count": 30303592
+    },
+    {
+      "year": 2016,
+      "works_count": 3554168,
+      "oa_works_count": 625699,
+      "cited_by_count": 28536163
+    },
+    {
+      "year": 2015,
+      "works_count": 3544874,
+      "oa_works_count": 537298,
+      "cited_by_count": 27822362
+    },
+    {
+      "year": 2014,
+      "works_count": 3427684,
+      "oa_works_count": 468503,
+      "cited_by_count": 26985869
+    },
+    {
+      "year": 2013,
+      "works_count": 3259074,
+      "oa_works_count": 422707,
+      "cited_by_count": 24720801
+    },
+    {
+      "year": 2012,
+      "works_count": 3139868,
+      "oa_works_count": 367180,
+      "cited_by_count": 22777796
+    }
+  ],
+  "works_api_url": "https://api.openalex.org/works?filter=concepts.id:C41008148",
+  "updated_date": "2025-10-12T15:26:34.188093",
+  "created_date": "2016-06-24"
+}

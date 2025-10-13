@@ -1,0 +1,12 @@
+{
+  "lastUpdated": "2025-10-12T21:10:37.878Z",
+  "files": {
+    "select__3D__id__2C__display_name__2C__country_code__2C__type__2C__lineage": {
+      "url": "https://api.openalex.org/institutions/I161548249?select=id,display_name,country_code,type,lineage",
+      "$ref": "./select__3D__id__2C__display_name__2C__country_code__2C__type__2C__lineage.json",
+      "lastRetrieved": "2025-10-12T21:10:37.773Z",
+      "contentHash": "7f56d108f72af29b"
+    }
+  },
+  "directories": {}
+}

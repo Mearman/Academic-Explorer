@@ -1,0 +1,22 @@
+{
+  "lastUpdated": "2025-10-12T21:29:20.716Z",
+  "files": {
+    "C41008148": {
+      "url": "https://api.openalex.org/concepts/C41008148",
+      "$ref": "./C41008148.json",
+      "lastRetrieved": "2025-10-12T21:29:20.611Z",
+      "contentHash": "9f34bdbe501d5dc9",
+      "equivalentUrls": [
+        "https://api.openalex.org/concepts/C41008148"
+      ],
+      "urlTimestamps": {
+        "https://api.openalex.org/concepts/C41008148": "2025-10-12T21:29:20.611Z"
+      },
+      "collisionInfo": {
+        "mergedCount": 0,
+        "totalUrls": 1
+      }
+    }
+  },
+  "directories": {}
+}
