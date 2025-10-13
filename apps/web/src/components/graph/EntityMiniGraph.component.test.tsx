@@ -228,12 +228,12 @@ describe("EntityMiniGraph", () => {
     expect(select).toBeTruthy();
   });
 
-  it("should hide adapter selector when showAdapterSelector is false", async () => {
+  it("should hide selector when showSelector is false", async () => {
     renderWithMantine(
       <EntityMiniGraph
         entity={mockEntity}
         relatedEntities={mockRelatedEntities}
-        showAdapterSelector={false}
+        showSelector={false}
       />,
     );
 
