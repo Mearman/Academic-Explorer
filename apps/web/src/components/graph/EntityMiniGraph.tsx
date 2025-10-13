@@ -153,6 +153,12 @@ export function EntityMiniGraph({
         if (isMounted) {
           setAdapter(newAdapter);
           setIsLoading(false);
+          // Trigger fit view when a new adapter is loaded
+          setTimeout(() => {
+            if (newAdapter.fitView) {
+              newAdapter.fitView();
+            }
+          }, 500); // Small delay to let the graph render
         }
       } catch {
         // Error loading graph adapter - silently fail and stop loading
@@ -174,6 +180,17 @@ export function EntityMiniGraph({
     if (!adapter) return null;
     return adapter.convertEntitiesToGraphData(entity, relatedEntities);
   }, [adapter, entity, relatedEntities]);
+
+  // Trigger fit view when graph data changes
+  useEffect(() => {
+    if (adapter && graphData && adapter.fitView) {
+      // Small delay to let the graph render with new data
+      const timeoutId = setTimeout(() => {
+        adapter.fitView?.();
+      }, 1000);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [adapter, graphData]);
 
   // Create adapter config
   const config = useMemo(
