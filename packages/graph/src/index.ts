@@ -69,6 +69,17 @@ export {
   type DetectionResult,
 } from "./services/entity-detection-service";
 
+// Taxonomy utilities
+export {
+  getEntityColor,
+  getEntityDisplayName,
+  getEntityIcon,
+  getEntityPlural,
+  ENTITY_TAXONOMY,
+  ENTITY_ICON_MAP,
+  type Taxon,
+} from "./taxonomy/entity-taxa";
+
 // Force system
 export * from "./forces";
 

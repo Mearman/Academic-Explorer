@@ -11,6 +11,15 @@ import type {
 } from "./GraphAdapter";
 import type { OpenAlexEntity } from "@academic-explorer/client";
 
+// Type for ForceGraph3D ref with camera controls
+interface ForceGraph3DRef {
+  cameraPosition: (
+    position: { x: number; y: number; z: number },
+    lookAt: unknown,
+    transitionDuration?: number,
+  ) => void;
+}
+
 export function ReactForceGraph3DAdapterComponent({
   data,
   config,
@@ -18,7 +27,7 @@ export function ReactForceGraph3DAdapterComponent({
   data: GraphData;
   config: GraphAdapterConfig;
 }) {
-  const fgRef = useRef<unknown>(null);
+  const fgRef = useRef<ForceGraph3DRef | null>(null);
   const resolveCssVarColor = useCallback(
     (color: string, fallbackColor: string) => {
       if (!color) {
@@ -77,7 +86,7 @@ export function ReactForceGraph3DAdapterComponent({
   const fitView = useCallback(() => {
     if (fgRef.current) {
       // Center the camera on the graph
-      fgRef.current.cameraPosition(
+      fgRef.current?.cameraPosition(
         { x: 0, y: 0, z: 100 },
         { x: 0, y: 0, z: 0 },
         1000,
@@ -152,6 +161,10 @@ export function ReactForceGraph3DAdapterComponent({
     return node.color;
   }, []);
 
+  const nodeLabelFn = useCallback((node: Record<string, unknown>) => {
+    return String((node.name as string) || "");
+  }, []);
+
   const createTextTexture = useCallback(
     (text: string): HTMLCanvasElement => {
       const canvas = document.createElement("canvas");
@@ -224,7 +237,7 @@ export function ReactForceGraph3DAdapterComponent({
               height={config.height}
               backgroundColor={graphBackgroundColor}
               nodeColor={nodeColor}
-              nodeLabel={(node: Record<string, unknown>) => node.name as string}
+              nodeLabel={nodeLabelFn as any}
               nodeVal={(node: Record<string, unknown>) => node.val as number}
               linkColor={() => config.themeColors.colors.border.secondary}
               linkWidth={2}
@@ -236,8 +249,12 @@ export function ReactForceGraph3DAdapterComponent({
               onNodeClick={(node: Record<string, unknown>) => {
                 // Focus on clicked node
                 if (fgRef.current) {
-                  fgRef.current.cameraPosition(
-                    { x: node.x * 2, y: node.y * 2, z: node.z * 2 },
+                  fgRef.current?.cameraPosition(
+                    {
+                      x: (node.x as number) * 2,
+                      y: (node.y as number) * 2,
+                      z: (node.z as number) * 2,
+                    },
                     node,
                     1000,
                   );
@@ -247,7 +264,9 @@ export function ReactForceGraph3DAdapterComponent({
               nodeThreeObject={(node: Record<string, unknown>) => {
                 const sprite = new THREE.Sprite(
                   new THREE.SpriteMaterial({
-                    map: new THREE.CanvasTexture(createTextTexture(node.name)),
+                    map: new THREE.CanvasTexture(
+                      createTextTexture(node.name as string),
+                    ),
                     transparent: true,
                   }),
                 );

@@ -1,4 +1,5 @@
 import type { OpenAlexEntity } from "@academic-explorer/client";
+import type { MantineTheme } from "@mantine/core";
 
 export interface GraphNode {
   id: string;
@@ -62,7 +63,7 @@ export interface ThemeColors {
   getEntityColor: (entityType: string) => string;
   getEntityColorShade: (entityType: string, shade?: number) => string;
   isDark: boolean;
-  theme: Record<string, unknown>;
+  theme: MantineTheme;
 }
 
 export interface GraphAdapterConfig {
