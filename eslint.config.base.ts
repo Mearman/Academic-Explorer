@@ -124,6 +124,10 @@ export default tseslint.config([
       "eslint-comments/disable-enable-pair": "error",
       "eslint-comments/no-unused-disable": "error",
       "eslint-comments/no-unlimited-disable": "error",
+      "eslint-comments/no-restricted-disable": [
+        "error",
+        "unused-imports/no-unused-vars",
+      ],
 
       // General rules
       "no-console": "warn",
