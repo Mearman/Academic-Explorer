@@ -16,7 +16,7 @@ export function ReactForceGraph2DAdapterComponent({
   data: GraphData;
   config: GraphAdapterConfig;
 }) {
-  const fgRef = useRef<ForceGraph2D | null>(null);
+  const fgRef = useRef<any>(null);
   const resolveCssVarColor = useCallback(
     (color: string, fallbackColor: string) => {
       if (!color) {
@@ -192,27 +192,27 @@ export function ReactForceGraph2DAdapterComponent({
     >
       <ForceGraph2D
         ref={fgRef}
-        graphData={graphData}
+        graphData={graphData as any}
         width={config.width}
         height={config.height}
         backgroundColor={graphBackgroundColor}
-        nodeColor={nodeColor}
-        nodeLabel={(node: { name: string }) => node.name}
-        nodeVal={(node: { val: number }) => node.val}
+        nodeColor={nodeColor as any}
+        nodeLabel={(node: any) => node.name}
+        nodeVal={(node: any) => node.val}
         linkColor={() => config.themeColors.colors.border.secondary}
         linkWidth={2}
         linkDirectionalArrowLength={3}
         linkDirectionalArrowRelPos={1}
         enableNodeDrag={config.interactive ?? false}
         enableZoomInteraction={config.interactive ?? false}
-        onNodeClick={(node: { x: number; y: number }) => {
+        onNodeClick={(node: any) => {
           // Focus on clicked node
           if (fgRef.current) {
             fgRef.current.centerAt(node.x, node.y, 400);
             fgRef.current.zoom(2, 400);
           }
         }}
-        nodeCanvasObject={nodeCanvasObject}
+        nodeCanvasObject={nodeCanvasObject as any}
         nodeCanvasObjectMode={() => "replace"}
       />
       {/* Fit view button */}
