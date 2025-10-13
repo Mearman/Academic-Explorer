@@ -146,7 +146,7 @@ describe("State Utilities", () => {
           name: "test-store",
           initialState: { count: 0, items: [] },
         },
-        (set) => ({
+        (set, get) => ({
           increment: () =>
             set((state) => ({ ...state, count: state.count + 1 })),
           addItem: (item: string) =>
