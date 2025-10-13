@@ -196,6 +196,18 @@ describe("useThemeColors", () => {
           "#3B5BDB",
           "#364FC7",
         ],
+        purple: [
+          "#FAF5FF",
+          "#F3E8FF",
+          "#E9D5FF",
+          "#D8B4FE",
+          "#C084FC",
+          "#A855F7",
+          "#9333EA",
+          "#7C3AED",
+          "#6D28D9",
+          "#581C87",
+        ],
         // Custom entity colors
         author: [
           "#e7fcf0",
@@ -497,18 +509,24 @@ describe("useThemeColors", () => {
       const { result } = renderHook(() => useThemeColors());
 
       expect(result.current.colors.entity.work).toBe(mockTheme.colors!.blue[5]);
-      expect(result.current.colors.entity.author).toBe("#10b981");
-      expect(result.current.colors.entity.source).toBe("#8b5cf6");
-      expect(result.current.colors.entity.institution).toBe("#f59e0b");
+      expect(result.current.colors.entity.author).toBe(
+        mockTheme.colors!.green[5],
+      );
+      expect(result.current.colors.entity.source).toBe(
+        mockTheme.colors!.purple[5],
+      );
+      expect(result.current.colors.entity.institution).toBe(
+        mockTheme.colors!.orange[5],
+      );
       expect(result.current.colors.entity.concept).toBe(
-        mockTheme.colors!.red[5],
+        mockTheme.colors!.pink[5],
       );
       expect(result.current.colors.entity.topic).toBe(mockTheme.colors!.red[5]);
       expect(result.current.colors.entity.publisher).toBe(
-        mockTheme.colors!.cyan[5],
+        mockTheme.colors!.teal[5],
       );
       expect(result.current.colors.entity.funder).toBe(
-        mockTheme.colors!.pink[5],
+        mockTheme.colors!.cyan[5],
       );
     });
 
@@ -529,9 +547,9 @@ describe("useThemeColors", () => {
 
       const { result } = renderHook(() => useThemeColors());
 
-      expect(result.current.colors.entity.author).toBe("#10b981");
-      expect(result.current.colors.entity.source).toBe("#8b5cf6");
-      expect(result.current.colors.entity.institution).toBe("#f59e0b");
+      expect(result.current.colors.entity.author).toBe("#51cf66");
+      expect(result.current.colors.entity.source).toBe("#A855F7");
+      expect(result.current.colors.entity.institution).toBe("#EA580C");
     });
   });
 
@@ -584,20 +602,26 @@ describe("useThemeColors", () => {
       expect(result.current.getEntityColor("work")).toBe(
         mockTheme.colors!.blue[5],
       );
-      expect(result.current.getEntityColor("author")).toBe("#10b981");
-      expect(result.current.getEntityColor("source")).toBe("#8b5cf6");
-      expect(result.current.getEntityColor("institution")).toBe("#f59e0b");
+      expect(result.current.getEntityColor("author")).toBe(
+        mockTheme.colors!.green[5],
+      );
+      expect(result.current.getEntityColor("source")).toBe(
+        mockTheme.colors!.purple[5],
+      );
+      expect(result.current.getEntityColor("institution")).toBe(
+        mockTheme.colors!.orange[5],
+      );
       expect(result.current.getEntityColor("concept")).toBe(
-        mockTheme.colors!.red[5],
+        mockTheme.colors!.pink[5],
       );
       expect(result.current.getEntityColor("topic")).toBe(
         mockTheme.colors!.red[5],
       );
       expect(result.current.getEntityColor("publisher")).toBe(
-        mockTheme.colors!.cyan[5],
+        mockTheme.colors!.teal[5],
       );
       expect(result.current.getEntityColor("funder")).toBe(
-        mockTheme.colors!.pink[5],
+        mockTheme.colors!.cyan[5],
       );
     });
 
@@ -607,8 +631,12 @@ describe("useThemeColors", () => {
       expect(result.current.getEntityColor("WORK")).toBe(
         mockTheme.colors!.blue[5],
       );
-      expect(result.current.getEntityColor("Author")).toBe("#10b981");
-      expect(result.current.getEntityColor("SOURCE")).toBe("#8b5cf6");
+      expect(result.current.getEntityColor("Author")).toBe(
+        mockTheme.colors!.green[5],
+      );
+      expect(result.current.getEntityColor("SOURCE")).toBe(
+        mockTheme.colors!.purple[5],
+      );
     });
 
     it("should fallback to primary color for unknown entity types", () => {
@@ -632,7 +660,7 @@ describe("useThemeColors", () => {
         mockTheme.colors!.blue[5],
       );
       expect(result.current.getEntityColorShade("author")).toBe(
-        mockTheme.colors!.author[5],
+        mockTheme.colors!.green[5],
       );
     });
 
@@ -643,7 +671,7 @@ describe("useThemeColors", () => {
         mockTheme.colors!.blue[3],
       );
       expect(result.current.getEntityColorShade("author", 7)).toBe(
-        mockTheme.colors!.author[7],
+        mockTheme.colors!.green[7],
       );
     });
 
@@ -654,25 +682,25 @@ describe("useThemeColors", () => {
         mockTheme.colors!.blue[5],
       );
       expect(result.current.getEntityColorShade("authors")).toBe(
-        mockTheme.colors!.author[5],
+        mockTheme.colors!.green[5],
       );
       expect(result.current.getEntityColorShade("sources")).toBe(
-        mockTheme.colors!.source[5],
+        mockTheme.colors!.purple[5],
       );
       expect(result.current.getEntityColorShade("institutions")).toBe(
-        mockTheme.colors!.institution[5],
+        mockTheme.colors!.orange[5],
       );
       expect(result.current.getEntityColorShade("concepts")).toBe(
-        mockTheme.colors!.red[5],
+        mockTheme.colors!.pink[5],
       );
       expect(result.current.getEntityColorShade("topics")).toBe(
         mockTheme.colors!.red[5],
       );
       expect(result.current.getEntityColorShade("publishers")).toBe(
-        mockTheme.colors!.cyan[5],
+        mockTheme.colors!.teal[5],
       );
       expect(result.current.getEntityColorShade("funders")).toBe(
-        mockTheme.colors!.pink[5],
+        mockTheme.colors!.cyan[5],
       );
     });
 
@@ -683,7 +711,7 @@ describe("useThemeColors", () => {
         mockTheme.colors!.blue[2],
       );
       expect(result.current.getEntityColorShade("Authors", 4)).toBe(
-        mockTheme.colors!.author[4],
+        mockTheme.colors!.green[4],
       );
     });
 

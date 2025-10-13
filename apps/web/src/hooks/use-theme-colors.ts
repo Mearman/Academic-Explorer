@@ -5,7 +5,10 @@
 
 import { useMantineColorScheme, useMantineTheme } from "@mantine/core";
 import { useMemo, useCallback } from "react";
-import { getEntityColor as getTaxonomyColorName } from "@academic-explorer/graph";
+import {
+  getEntityColor as getTaxonomyColorName,
+  detectEntityType,
+} from "@academic-explorer/graph";
 
 export function useThemeColors() {
   const theme = useMantineTheme();
@@ -74,53 +77,16 @@ export function useThemeColors() {
       // Academic entity colors
       entity: {
         work: theme.colors.blue[5],
-        author: "#10b981",
-        source: "#8b5cf6",
-        institution: "#f59e0b",
-        concept: theme.colors.red[5],
-        topic: theme.colors.red[5],
-        publisher: theme.colors.cyan[5],
-        funder: theme.colors.pink[5],
+        author: theme.colors.green[5] || "#51cf66",
+        source: theme.colors.purple[5] || "#c084fc",
+        institution: theme.colors.orange[5] || "#ea580c",
+        concept: theme.colors.pink[5] || "#f06595",
+        topic: theme.colors.red[5] || "#fa5252",
+        publisher: theme.colors.teal[5] || "#14b8a6",
+        funder: theme.colors.cyan[5] || "#22b8cf",
       },
     }),
     [theme.colors, isDark],
-  );
-
-  // Cached color map to prevent new objects on each render
-  // Maps taxonomy color names to theme color palette names for getEntityColorShade
-  const colorMap = useMemo(
-    () => ({
-      // Taxonomy color name -> Mantine color palette name
-      blue: "blue", // works
-      green: "author", // authors
-      purple: "source", // sources
-      orange: "institution", // institutions
-      teal: "teal", // publishers
-      cyan: "cyan", // funders
-      red: "red", // topics
-      pink: "pink", // concepts
-      gray: "gray", // keywords
-      // Also map entity types directly for convenience (for getEntityColorShade)
-      work: "blue",
-      works: "blue",
-      author: "author",
-      authors: "author",
-      source: "source",
-      sources: "source",
-      institution: "institution",
-      institutions: "institution",
-      concept: "pink",
-      concepts: "pink",
-      topic: "red",
-      topics: "red",
-      publisher: "teal",
-      publishers: "teal",
-      funder: "cyan",
-      funders: "cyan",
-      keyword: "gray",
-      keywords: "gray",
-    }),
-    [],
   );
 
   // Type guard for valid entity color keys
@@ -145,53 +111,77 @@ export function useThemeColors() {
   const getEntityColor = useCallback(
     (entityType: string): string => {
       try {
-        // Get the taxonomy color name for this entity type
-        const taxonomyColorName = getTaxonomyColorName(entityType as any);
-        // Map the taxonomy color name to the actual CSS color
-        const themeColorKey = colorMap[taxonomyColorName];
-        if (themeColorKey && colors.entity[themeColorKey]) {
-          return colors.entity[themeColorKey];
+        // First try to detect the entity type from the string
+        const detectedType = detectEntityType(entityType);
+        if (detectedType) {
+          // Convert plural taxonomy key to singular color key
+          const singularType = detectedType.replace(/s$/, "");
+          if (isValidEntityColorKey(singularType)) {
+            return colors.entity[singularType];
+          }
         }
       } catch {
-        // Fall back to direct mapping if taxonomy lookup fails
-        const normalizedType = entityType.toLowerCase();
-        if (isValidEntityColorKey(normalizedType)) {
-          return colors.entity[normalizedType];
-        }
+        // Ignore detection errors
+      }
+
+      // Fall back to direct mapping if detection fails
+      const normalizedType = entityType.toLowerCase();
+      if (isValidEntityColorKey(normalizedType)) {
+        return colors.entity[normalizedType];
       }
 
       return colors.primary;
     },
-    [colors, isValidEntityColorKey, colorMap],
+    [colors, isValidEntityColorKey],
   );
 
   const getEntityColorShade = useCallback(
     (entityType: string, shade: number = 5): string => {
       try {
-        // Get the taxonomy color name for this entity type
-        const taxonomyColorName = getTaxonomyColorName(entityType as any);
-        // For shades, we need to map taxonomy color names to Mantine palette names
-        const paletteMap: Record<string, string> = {
-          blue: "blue",
-          green: "author", // authors use custom "author" palette
-          purple: "source", // sources use custom "source" palette
-          orange: "institution", // institutions use custom "institution" palette
-          teal: "teal",
-          cyan: "cyan",
-          red: "red",
-          pink: "pink",
-          gray: "gray",
-        };
-        const paletteName = paletteMap[taxonomyColorName] || "blue";
-        return getColor(paletteName, shade);
+        // Detect the entity type and get its taxonomy color name
+        const detectedType = detectEntityType(entityType);
+        if (detectedType) {
+          const taxonomyColorName = getTaxonomyColorName(detectedType);
+          // Taxonomy color names directly map to Mantine palette names
+          return getColor(taxonomyColorName, shade);
+        }
       } catch {
-        // Fall back to direct mapping if taxonomy lookup fails
-        const normalizedType = entityType.toLowerCase();
-        const paletteName = colorMap[normalizedType] || "blue";
-        return getColor(paletteName, shade);
+        // Ignore detection errors
       }
+
+      // Fall back to direct mapping if detection fails
+      const normalizedType = entityType.toLowerCase();
+      if (normalizedType === "author" || normalizedType === "authors") {
+        return getColor("green", shade);
+      }
+      if (normalizedType === "source" || normalizedType === "sources") {
+        return getColor("purple", shade);
+      }
+      if (
+        normalizedType === "institution" ||
+        normalizedType === "institutions"
+      ) {
+        return getColor("orange", shade);
+      }
+      if (normalizedType === "concept" || normalizedType === "concepts") {
+        return getColor("pink", shade);
+      }
+      if (normalizedType === "topic" || normalizedType === "topics") {
+        return getColor("red", shade);
+      }
+      if (normalizedType === "publisher" || normalizedType === "publishers") {
+        return getColor("teal", shade);
+      }
+      if (normalizedType === "funder" || normalizedType === "funders") {
+        return getColor("cyan", shade);
+      }
+      if (normalizedType === "work" || normalizedType === "works") {
+        return getColor("blue", shade);
+      }
+
+      return getColor("blue", shade);
     },
-    [getColor, colorMap],
+    [getColor],
   );
 
   return {
