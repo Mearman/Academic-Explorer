@@ -186,7 +186,7 @@ export function createTrackedStore<
 >(
   config: TrackedStoreConfig<T, A>,
   actionsFactory: (
-    set: (update: ((state: T & A) => T & A) | Partial<T & A>) => void,
+    set: (update: ((state: T & A) => (T & A) | void) | Partial<T & A>) => void,
     get: () => T & A,
   ) => A,
   selectorsFactory?: (state: T) => Record<string, (state: T) => unknown>,
@@ -207,7 +207,7 @@ export function createTrackedStore<
 
   // Create the base store creator
   const baseStoreCreator = (
-    set: (update: ((state: T & A) => T & A) | Partial<T & A>) => void,
+    set: (update: ((state: T & A) => (T & A) | void) | Partial<T & A>) => void,
     get: () => T & A,
   ) => ({
     ...initialState,
@@ -268,7 +268,7 @@ export function createTrackedStore<
 
   // Create actions using the Immer-wrapped set method
   const actions = actionsFactory(
-    (update) => store.setState(update),
+    (update) => store.setState(update as any),
     () => store.getState(),
   );
 
