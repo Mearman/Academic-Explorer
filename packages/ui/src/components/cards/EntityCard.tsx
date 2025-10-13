@@ -2,6 +2,7 @@ import type { EntityType } from "@academic-explorer/client";
 import { ActionIcon, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { IconExternalLink } from "@tabler/icons-react";
 import React from "react";
+import { getEntityColor } from "@academic-explorer/graph";
 
 export interface EntityCardProps {
   id: string;
@@ -16,17 +17,7 @@ export interface EntityCardProps {
   className?: string;
 }
 
-const ENTITY_TYPE_COLORS: Record<EntityType, string> = {
-  works: "blue",
-  authors: "green",
-  sources: "purple",
-  institutions: "orange",
-  publishers: "pink",
-  funders: "cyan",
-  topics: "violet",
-  concepts: "gray",
-  keywords: "teal",
-};
+// Entity colors are now sourced from taxonomy for consistency
 
 const ENTITY_TYPE_LABELS: Record<EntityType, string> = {
   works: "Work",
@@ -97,7 +88,7 @@ export const EntityCard: React.FC<EntityCardProps> = ({
         <Stack gap="sm">
           {/* Header with entity type badge */}
           <Group justify="space-between" wrap="nowrap">
-            <Badge color={ENTITY_TYPE_COLORS[entityType]} variant="light">
+            <Badge color={getEntityColor(entityType)} variant="light">
               {ENTITY_TYPE_LABELS[entityType]}
             </Badge>
             {href && (
@@ -187,7 +178,7 @@ export const EntityCard: React.FC<EntityCardProps> = ({
       <Stack gap="sm">
         {/* Header with entity type badge */}
         <Group justify="space-between" wrap="nowrap">
-          <Badge color={ENTITY_TYPE_COLORS[entityType]} variant="light">
+          <Badge color={getEntityColor(entityType)} variant="light">
             {ENTITY_TYPE_LABELS[entityType]}
           </Badge>
           {href && (
