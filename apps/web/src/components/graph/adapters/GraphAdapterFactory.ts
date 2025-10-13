@@ -1,8 +1,12 @@
 import type { GraphAdapter } from "./GraphAdapter";
 
+const REACTFLOW_HIERARCHICAL = "reactflow-hierarchical" as const;
+
 export type GraphAdapterType =
-  | "reactflow-hierarchical"
-  | "react-force-graph-3d";
+  | typeof REACTFLOW_HIERARCHICAL
+  | "react-force-graph-2d"
+  | "react-force-graph-3d"
+  | "r3f-forcegraph";
 
 export class GraphAdapterFactory {
   private static adapterCache = new Map<GraphAdapterType, GraphAdapter>();
@@ -19,9 +23,16 @@ export class GraphAdapterFactory {
     let adapter: GraphAdapter;
 
     switch (type) {
-      case "reactflow-hierarchical": {
+      case REACTFLOW_HIERARCHICAL: {
         const { ReactFlowAdapter } = await import("./ReactFlowAdapter");
         adapter = new ReactFlowAdapter();
+        break;
+      }
+      case "react-force-graph-2d": {
+        const { ReactForceGraph2DAdapter } = await import(
+          "./ReactForceGraph2DAdapter"
+        );
+        adapter = new ReactForceGraph2DAdapter();
         break;
       }
       case "react-force-graph-3d": {
@@ -29,6 +40,11 @@ export class GraphAdapterFactory {
           "./ReactForceGraph3DAdapter"
         );
         adapter = new ReactForceGraph3DAdapter();
+        break;
+      }
+      case "r3f-forcegraph": {
+        const { R3FForceGraphAdapter } = await import("./R3FForceGraphAdapter");
+        adapter = new R3FForceGraphAdapter();
         break;
       }
       default:
@@ -41,10 +57,15 @@ export class GraphAdapterFactory {
   }
 
   static getAvailableAdapters(): GraphAdapterType[] {
-    return ["reactflow-hierarchical", "react-force-graph-3d"];
+    return [
+      REACTFLOW_HIERARCHICAL,
+      "react-force-graph-2d",
+      "react-force-graph-3d",
+      "r3f-forcegraph",
+    ];
   }
 
   static getDefaultAdapter(): GraphAdapterType {
-    return "reactflow-hierarchical";
+    return REACTFLOW_HIERARCHICAL;
   }
 }
