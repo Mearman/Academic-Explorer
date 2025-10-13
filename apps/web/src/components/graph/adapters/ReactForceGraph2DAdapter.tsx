@@ -8,6 +8,7 @@ import type {
   GraphNode,
   GraphLink,
 } from "./GraphAdapter";
+import type { ReactForceGraph2DConfig } from "../configs";
 
 interface ForceGraph2DMethods {
   zoomToFit: (duration?: number) => void;
@@ -18,9 +19,11 @@ interface ForceGraph2DMethods {
 export function ReactForceGraph2DAdapterComponent({
   data,
   config,
+  adapterConfig,
 }: {
   data: GraphData;
   config: GraphAdapterConfig;
+  adapterConfig?: ReactForceGraph2DConfig;
 }) {
   const fgRef = useRef<any>(null);
   const resolveCssVarColor = useCallback(
@@ -208,14 +211,16 @@ export function ReactForceGraph2DAdapterComponent({
           node.name || ""
         }
         nodeVal={(node: Record<string, unknown> & { val?: number }) =>
-          node.val || 4
+          node.val || adapterConfig?.nodeSize || 4
         }
         linkColor={() => config.themeColors.colors.border.secondary}
-        linkWidth={2}
+        linkWidth={adapterConfig?.linkWidth || 2}
         linkDirectionalArrowLength={3}
         linkDirectionalArrowRelPos={1}
         enableNodeDrag={config.interactive ?? false}
-        enableZoomInteraction={config.interactive ?? false}
+        enableZoomInteraction={
+          adapterConfig?.enableZoom ?? config.interactive ?? false
+        }
         onNodeClick={(node) => {
           // Focus on clicked node
           const fgInstance = fgRef.current as ForceGraph2DMethods;
@@ -263,6 +268,12 @@ export function ReactForceGraph2DAdapterComponent({
 }
 
 export class ReactForceGraph2DAdapter implements GraphAdapter {
+  private config?: ReactForceGraph2DConfig;
+
+  constructor(config?: ReactForceGraph2DConfig) {
+    this.config = config;
+  }
+
   convertEntitiesToGraphData(
     mainEntity: { id: string; display_name?: string },
     relatedEntities: Array<{ id: string; display_name?: string }>,
@@ -299,6 +310,12 @@ export class ReactForceGraph2DAdapter implements GraphAdapter {
   }
 
   render(data: GraphData, config: GraphAdapterConfig): React.ReactElement {
-    return <ReactForceGraph2DAdapterComponent data={data} config={config} />;
+    return (
+      <ReactForceGraph2DAdapterComponent
+        data={data}
+        config={config}
+        adapterConfig={this.config}
+      />
+    );
   }
 }

@@ -10,6 +10,7 @@ import type {
   GraphLink,
 } from "./GraphAdapter";
 import type { OpenAlexEntity } from "@academic-explorer/client";
+import type { ReactForceGraph3DConfig } from "../configs";
 
 // Type for ForceGraph3D ref with camera controls
 interface ForceGraph3DRef {
@@ -23,9 +24,11 @@ interface ForceGraph3DRef {
 export function ReactForceGraph3DAdapterComponent({
   data,
   config,
+  adapterConfig,
 }: {
   data: GraphData;
   config: GraphAdapterConfig;
+  adapterConfig?: ReactForceGraph3DConfig;
 }) {
   const fgRef = useRef<any>(null);
   const resolveCssVarColor = useCallback(
@@ -238,13 +241,17 @@ export function ReactForceGraph3DAdapterComponent({
               backgroundColor={graphBackgroundColor}
               nodeColor={nodeColor}
               nodeLabel={nodeLabelFn as any}
-              nodeVal={(node) => Number(node.val || 4) as any}
+              nodeVal={(node) =>
+                Number(node.val || adapterConfig?.nodeSize || 4) as any
+              }
               linkColor={() => config.themeColors.colors.border.secondary}
-              linkWidth={2}
+              linkWidth={adapterConfig?.linkWidth || 2}
               linkDirectionalArrowLength={3}
               linkDirectionalArrowRelPos={1}
               enableNodeDrag={config.interactive ?? false}
-              enableNavigationControls={config.interactive ?? false}
+              enableNavigationControls={
+                adapterConfig?.enableControls ?? config.interactive ?? false
+              }
               showNavInfo={false}
               onNodeClick={(node: Record<string, unknown>) => {
                 // Focus on clicked node
@@ -315,6 +322,12 @@ export function ReactForceGraph3DAdapterComponent({
 }
 
 export class ReactForceGraph3DAdapter implements GraphAdapter {
+  private config?: ReactForceGraph3DConfig;
+
+  constructor(config?: ReactForceGraph3DConfig) {
+    this.config = config;
+  }
+
   convertEntitiesToGraphData(
     mainEntity: OpenAlexEntity,
     relatedEntities: OpenAlexEntity[],
@@ -362,6 +375,12 @@ export class ReactForceGraph3DAdapter implements GraphAdapter {
   }
 
   render(data: GraphData, config: GraphAdapterConfig): React.ReactElement {
-    return <ReactForceGraph3DAdapterComponent data={data} config={config} />;
+    return (
+      <ReactForceGraph3DAdapterComponent
+        data={data}
+        config={config}
+        adapterConfig={this.config}
+      />
+    );
   }
 }

@@ -16,6 +16,7 @@ import type {
   GraphNode,
   GraphLink,
 } from "./GraphAdapter";
+import type { ReactFlowConfig } from "../configs";
 import { detectEntityType } from "@academic-explorer/graph";
 import type { OpenAlexEntity } from "@academic-explorer/client";
 
@@ -25,32 +26,80 @@ function applyHierarchicalLayout(
   edges: Edge[],
   width: number,
   height: number,
+  config?: ReactFlowConfig,
 ) {
   if (nodes.length === 0) return;
+
+  // Use config defaults if not provided
+  const direction = config?.direction || "LR";
+  const nodeSpacing = config?.nodeSpacing || 60;
+  const levelSpacing = config?.levelSpacing || 120;
+  const alignCenter = config?.alignCenter ?? true;
 
   // Find the main entity node (first node in the array)
   const mainNode = nodes[0];
   const relatedNodes = nodes.slice(1);
 
-  // Place main node on the left side
-  mainNode.position = {
-    x: 40, // Left margin
-    y: height / 2 - 25, // Center vertically with offset for node height
-  };
+  // Place main node based on direction
+  switch (direction) {
+    case "LR": // Left to Right
+      mainNode.position = {
+        x: 40,
+        y: alignCenter ? height / 2 - 25 : height / 2,
+      };
+      break;
+    case "RL": // Right to Left
+      mainNode.position = {
+        x: width - 120,
+        y: alignCenter ? height / 2 - 25 : height / 2,
+      };
+      break;
+    case "TB": // Top to Bottom
+      mainNode.position = {
+        x: alignCenter ? width / 2 - 40 : width / 2,
+        y: 40,
+      };
+      break;
+    case "BT": // Bottom to Top
+      mainNode.position = {
+        x: alignCenter ? width / 2 - 40 : width / 2,
+        y: height - 80,
+      };
+      break;
+  }
 
   if (relatedNodes.length === 0) return;
 
-  // Calculate spacing for related nodes
-  const availableHeight = height - 80; // Account for padding
-  const nodeSpacing = Math.max(
-    60,
-    availableHeight / Math.max(1, relatedNodes.length - 1),
-  );
-
-  // Arrange related nodes vertically on the right side
+  // Arrange related nodes based on direction
   relatedNodes.forEach((node, index) => {
-    const x = width - 120; // Right side with margin for node width
-    const y = 40 + index * nodeSpacing; // Vertical spacing from top
+    let x: number, y: number;
+
+    switch (direction) {
+      case "LR": // Left to Right
+        x = width - levelSpacing;
+        y = alignCenter
+          ? height / 2 + (index - (relatedNodes.length - 1) / 2) * nodeSpacing
+          : 40 + index * nodeSpacing;
+        break;
+      case "RL": // Right to Left
+        x = levelSpacing;
+        y = alignCenter
+          ? height / 2 + (index - (relatedNodes.length - 1) / 2) * nodeSpacing
+          : 40 + index * nodeSpacing;
+        break;
+      case "TB": // Top to Bottom
+        x = alignCenter
+          ? width / 2 + (index - (relatedNodes.length - 1) / 2) * nodeSpacing
+          : 40 + index * nodeSpacing;
+        y = height - levelSpacing;
+        break;
+      case "BT": // Bottom to Top
+        x = alignCenter
+          ? width / 2 + (index - (relatedNodes.length - 1) / 2) * nodeSpacing
+          : 40 + index * nodeSpacing;
+        y = levelSpacing;
+        break;
+    }
 
     node.position = { x, y };
   });
@@ -117,9 +166,11 @@ function FitViewButton() {
 export function ReactFlowAdapterComponent({
   data,
   config,
+  adapterConfig,
 }: {
   data: GraphData;
   config: GraphAdapterConfig;
+  adapterConfig?: ReactFlowConfig;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({
@@ -199,6 +250,7 @@ export function ReactFlowAdapterComponent({
       rfEdges,
       dimensions.width,
       dimensions.height,
+      adapterConfig,
     );
 
     return { nodes: rfNodes, edges: rfEdges };
@@ -255,6 +307,12 @@ export function ReactFlowAdapterComponent({
 }
 
 export class ReactFlowAdapter implements GraphAdapter {
+  private config?: ReactFlowConfig;
+
+  constructor(config?: ReactFlowConfig) {
+    this.config = config;
+  }
+
   convertEntitiesToGraphData(
     mainEntity: OpenAlexEntity,
     relatedEntities: OpenAlexEntity[],
@@ -292,6 +350,12 @@ export class ReactFlowAdapter implements GraphAdapter {
   }
 
   render(data: GraphData, config: GraphAdapterConfig): React.ReactElement {
-    return <ReactFlowAdapterComponent data={data} config={config} />;
+    return (
+      <ReactFlowAdapterComponent
+        data={data}
+        config={config}
+        adapterConfig={this.config}
+      />
+    );
   }
 }

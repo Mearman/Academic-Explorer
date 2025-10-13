@@ -10,13 +10,16 @@ import type {
   GraphNode,
   GraphLink,
 } from "./GraphAdapter";
+import type { R3FForceGraphConfig } from "../configs";
 
 function R3FForceGraphScene({
   data,
   config,
+  adapterConfig,
 }: {
   data: GraphData;
   config: GraphAdapterConfig;
+  adapterConfig?: R3FForceGraphConfig;
 }) {
   const fgRef = useRef<GraphMethods | undefined>(undefined);
 
@@ -62,9 +65,15 @@ function R3FForceGraphScene({
   return (
     <>
       <OrbitControls
-        enablePan={config.interactive ?? false}
-        enableZoom={config.interactive ?? false}
-        enableRotate={config.interactive ?? false}
+        enablePan={
+          adapterConfig?.enableOrbitControls ?? config.interactive ?? false
+        }
+        enableZoom={
+          adapterConfig?.enableOrbitControls ?? config.interactive ?? false
+        }
+        enableRotate={
+          adapterConfig?.enableOrbitControls ?? config.interactive ?? false
+        }
       />
       <ambientLight args={[config.themeColors.colors.text.primary, 0.5]} />
       <directionalLight
@@ -76,10 +85,10 @@ function R3FForceGraphScene({
         graphData={graphData}
         nodeColor={nodeColor}
         nodeVal={(node: Record<string, unknown> & { val?: number }) =>
-          node.val || 4
+          node.val || adapterConfig?.nodeSize || 4
         }
         linkColor={linkColor}
-        linkWidth={2}
+        linkWidth={adapterConfig?.linkWidth || 2}
         linkDirectionalArrowLength={3}
         linkDirectionalArrowRelPos={1}
         nodeOpacity={0.8}
@@ -94,9 +103,11 @@ function R3FForceGraphScene({
 function R3FForceGraphComponent({
   data,
   config,
+  adapterConfig,
 }: {
   data: GraphData;
   config: GraphAdapterConfig;
+  adapterConfig?: R3FForceGraphConfig;
 }) {
   return (
     <div style={{ width: "100%", height: "100%" }}>
@@ -104,13 +115,23 @@ function R3FForceGraphComponent({
         camera={{ position: [0, 0, 1000], far: 8000 }}
         style={{ background: config.themeColors.colors.background.secondary }}
       >
-        <R3FForceGraphScene data={data} config={config} />
+        <R3FForceGraphScene
+          data={data}
+          config={config}
+          adapterConfig={adapterConfig}
+        />
       </Canvas>
     </div>
   );
 }
 
 export class R3FForceGraphAdapter implements GraphAdapter {
+  private config?: R3FForceGraphConfig;
+
+  constructor(config?: R3FForceGraphConfig) {
+    this.config = config;
+  }
+
   convertEntitiesToGraphData(
     mainEntity: { id: string; display_name?: string },
     relatedEntities: Array<{ id: string; display_name?: string }>,
@@ -150,6 +171,12 @@ export class R3FForceGraphAdapter implements GraphAdapter {
   }
 
   render(data: GraphData, config: GraphAdapterConfig): React.ReactElement {
-    return <R3FForceGraphComponent data={data} config={config} />;
+    return (
+      <R3FForceGraphComponent
+        data={data}
+        config={config}
+        adapterConfig={this.config}
+      />
+    );
   }
 }
