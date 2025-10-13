@@ -103,6 +103,14 @@ export default tseslint.config([
       "@typescript-eslint/no-unused-vars": "off", // handled by unused-imports
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/no-non-null-assertion": "error",
+      "@typescript-eslint/ban-ts-comment": [
+        "error",
+        {
+          "ts-expect-error":
+            "Use proper type annotations instead of @ts-expect-error",
+          "ts-ignore": "Use proper type annotations instead of @ts-ignore",
+        },
+      ],
       // Disable type-aware rules that require project config for performance
       "@typescript-eslint/prefer-nullish-coalescing": "off",
       "@typescript-eslint/prefer-optional-chain": "off", // Type-aware rule - disable for performance
