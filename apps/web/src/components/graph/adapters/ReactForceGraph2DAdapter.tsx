@@ -16,7 +16,7 @@ export function ReactForceGraph2DAdapterComponent({
   data: GraphData;
   config: GraphAdapterConfig;
 }) {
-  const fgRef = useRef<any>(null);
+  const fgRef = useRef<unknown>(null);
   const resolveCssVarColor = useCallback(
     (color: string, fallbackColor: string) => {
       if (!color) {
@@ -192,27 +192,47 @@ export function ReactForceGraph2DAdapterComponent({
     >
       <ForceGraph2D
         ref={fgRef}
-        graphData={graphData as any}
+        graphData={
+          graphData as unknown as { nodes: unknown[]; links: unknown[] }
+        }
         width={config.width}
         height={config.height}
         backgroundColor={graphBackgroundColor}
-        nodeColor={nodeColor as any}
-        nodeLabel={(node: any) => node.name}
-        nodeVal={(node: any) => node.val}
+        nodeColor={
+          nodeColor as unknown as (node: Record<string, unknown>) => string
+        }
+        nodeLabel={(node: Record<string, unknown> & { name?: string }) =>
+          node.name || ""
+        }
+        nodeVal={(node: Record<string, unknown> & { val?: number }) =>
+          node.val || 4
+        }
         linkColor={() => config.themeColors.colors.border.secondary}
         linkWidth={2}
         linkDirectionalArrowLength={3}
         linkDirectionalArrowRelPos={1}
         enableNodeDrag={config.interactive ?? false}
         enableZoomInteraction={config.interactive ?? false}
-        onNodeClick={(node: any) => {
+        onNodeClick={(
+          node: Record<string, unknown> & { x?: number; y?: number },
+        ) => {
           // Focus on clicked node
-          if (fgRef.current) {
-            fgRef.current.centerAt(node.x, node.y, 400);
-            fgRef.current.zoom(2, 400);
+          const fgInstance = fgRef.current as {
+            centerAt?: (x: number, y: number, duration: number) => void;
+            zoom?: (scale: number, duration: number) => void;
+          } | null;
+          if (fgInstance?.centerAt && fgInstance?.zoom) {
+            fgInstance.centerAt(node.x || 0, node.y || 0, 400);
+            fgInstance.zoom(2, 400);
           }
         }}
-        nodeCanvasObject={nodeCanvasObject as any}
+        nodeCanvasObject={
+          nodeCanvasObject as unknown as (
+            node: Record<string, unknown>,
+            ctx: CanvasRenderingContext2D,
+            globalScale: number,
+          ) => void
+        }
         nodeCanvasObjectMode={() => "replace"}
       />
       {/* Fit view button */}
