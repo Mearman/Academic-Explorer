@@ -47,10 +47,7 @@ function DatasetsManagement() {
 
       // Parse file using actual file parser
       setUploadProgress(30);
-      const parseResult = await parseSTARFile(
-        uploadFile,
-        DEFAULT_COLUMN_MAPPINGS,
-      );
+      const parseResult = await parseSTARFile();
 
       // Check for parsing errors
       if (parseResult.metadata.errors.length > 0) {

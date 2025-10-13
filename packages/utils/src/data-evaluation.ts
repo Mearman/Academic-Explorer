@@ -160,10 +160,7 @@ export interface MissingPaperDetectionResults {
  * Parse STAR file format
  * Stub implementation - applications should provide their own
  */
-export function parseSTARFile(
-  _file: File,
-  _columnMappings: typeof DEFAULT_COLUMN_MAPPINGS,
-): Promise<ParseResult> {
+export function parseSTARFile(): Promise<ParseResult> {
   logger.warn(
     DATA_EVALUATION_LOG_CONTEXT,
     "parseSTARFile: Using stub implementation",
