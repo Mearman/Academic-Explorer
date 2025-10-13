@@ -116,9 +116,7 @@ export default tseslint.config([
         "error",
         {
           vars: "all",
-          varsIgnorePattern: "^_",
           args: "after-used",
-          argsIgnorePattern: "^_",
         },
       ],
 
