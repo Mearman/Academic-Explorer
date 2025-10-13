@@ -9,6 +9,6 @@
       "@/ui/section-kit": ["./src/components/section-kit"]
     }
   },
-  "include": ["src/**/*", "eslint.config.ts"],
+  "include": ["src/**/*"],
   "references": [{ "path": "../client" }, { "path": "../utils" }]
 }

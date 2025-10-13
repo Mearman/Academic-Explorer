@@ -84,7 +84,9 @@ export default tseslint.config([
       },
       parserOptions: {
         // Enable type-aware linting using project service for automatic tsconfig detection
-        projectService: true,
+        projectService: {
+          allowDefaultProject: ["eslint.config.ts", "eslint.config.js"],
+        },
         ecmaVersion: 2020,
         sourceType: "module",
         tsconfigRootDir: path.dirname(fileURLToPath(import.meta.url)),

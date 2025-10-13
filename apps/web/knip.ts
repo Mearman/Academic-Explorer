@@ -1,6 +1,5 @@
-import KnipConfig from "knip";
-
-const config: typeof KnipConfig = {
+// @ts-nocheck
+export default {
   entry: [
     "src/main.tsx",
     "vite.config.base.ts",
@@ -31,5 +30,3 @@ const config: typeof KnipConfig = {
     },
   },
 };
-
-export default config;
