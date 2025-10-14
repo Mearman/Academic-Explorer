@@ -180,15 +180,20 @@ export interface TrackedStoreResult<T, A> {
 /**
  * Create a tracked Zustand store with Immer, DevTools, and production guards
  */
+type ImmerSetState<T> = {
+  (
+    partial: T | Partial<T> | ((state: T) => T | Partial<T> | void),
+    replace?: false,
+  ): void;
+  (state: T | ((state: T) => T), replace: true): void;
+};
+
 export function createTrackedStore<
   T extends object,
   A extends Record<string, any>,
 >(
   config: TrackedStoreConfig<T, A>,
-  actionsFactory: (
-    set: (update: ((state: T & A) => (T & A) | void) | Partial<T & A>) => void,
-    get: () => T & A,
-  ) => A,
+  actionsFactory: (set: ImmerSetState<T & A>, get: () => T & A) => A,
   selectorsFactory?: (state: T) => Record<string, (state: T) => unknown>,
 ): TrackedStoreResult<T, A> {
   const {
@@ -206,10 +211,7 @@ export function createTrackedStore<
   }
 
   // Create the base store creator
-  const baseStoreCreator = (
-    set: (update: ((state: T & A) => (T & A) | void) | Partial<T & A>) => void,
-    get: () => T & A,
-  ) => ({
+  const baseStoreCreator = (set: ImmerSetState<T & A>, get: () => T & A) => ({
     ...initialState,
     ...actionsFactory(set, get),
   });
@@ -267,9 +269,8 @@ export function createTrackedStore<
   const selectors = selectorsFactory ? selectorsFactory(initialState) : {};
 
   // Create actions using the Immer-wrapped set method
-  const actions = actionsFactory(
-    (update) => store.setState(update as any),
-    () => store.getState(),
+  const actions = actionsFactory(store.setState as ImmerSetState<T & A>, () =>
+    store.getState(),
   );
 
   return {
