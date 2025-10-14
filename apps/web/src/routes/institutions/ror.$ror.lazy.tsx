@@ -27,7 +27,7 @@ function RORInstitutionRoute() {
 				// Detect and normalize the ROR ID
 				const detection = EntityDetectionService.detectEntity(decodedROR)
 
-				if (detection && detection.entityType === "institutions" && detection.detectionMethod.includes("ror")) {
+				if (detection?.entityType === "institutions" && detection.detectionMethod.includes("ror")) {
 					// If graph already has nodes, use incremental loading to preserve existing entities
 					if (nodeCount > 0) {
 						await loadEntityIntoGraph(`ror:${detection.normalizedId}`);

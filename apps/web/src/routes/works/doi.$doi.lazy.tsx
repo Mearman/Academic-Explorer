@@ -27,7 +27,7 @@ function DOIWorkRoute() {
 				// Detect and normalize the DOI
 				const detection = EntityDetectionService.detectEntity(decodedDOI)
 
-				if (detection && detection.entityType === "works" && detection.detectionMethod === "DOI") {
+				if (detection?.entityType === "works" && detection.detectionMethod === "DOI") {
 					// If graph already has nodes, use incremental loading to preserve existing entities
 					if (nodeCount > 0) {
 						await loadEntityIntoGraph(`doi:${detection.normalizedId}`);

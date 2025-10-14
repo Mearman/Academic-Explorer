@@ -27,7 +27,7 @@ function ISSNSourceRoute() {
 				// Detect and normalize the ISSN
 				const detection = EntityDetectionService.detectEntity(decodedISSN)
 
-				if (detection && detection.entityType === "sources") {
+				if (detection?.entityType === "sources") {
 					// If graph already has nodes, use incremental loading to preserve existing entities
 					if (nodeCount > 0) {
 						await loadEntityIntoGraph(`issn:${detection.normalizedId}`);
