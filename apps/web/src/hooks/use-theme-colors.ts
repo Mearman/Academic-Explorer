@@ -137,10 +137,15 @@ export function useThemeColors() {
       }
 
       // If entityType is already a detected entity type (like "works", "authors", etc.),
-      // use it directly for color mapping
+      // convert to singular for color mapping
       const normalizedType = entityType.toLowerCase();
       if (isValidEntityColorKey(normalizedType)) {
-        return colors.entity[normalizedType];
+        // Convert plural to singular for color lookup
+        const singularType = normalizedType.replace(
+          /s$/,
+          "",
+        ) as keyof typeof colors.entity;
+        return colors.entity[singularType];
       }
 
       // If it's not a direct match, try to detect it as an OpenAlex ID
@@ -150,7 +155,7 @@ export function useThemeColors() {
           // Convert plural taxonomy key to singular color key
           const singularType = detectedType.replace(/s$/, "");
           if (isValidEntityColorKey(singularType)) {
-            return colors.entity[singularType];
+            return colors.entity[singularType as keyof typeof colors.entity];
           }
         }
       } catch {
