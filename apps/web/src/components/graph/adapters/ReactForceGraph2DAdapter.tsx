@@ -197,7 +197,7 @@ export function ReactForceGraph2DAdapterComponent({
     <div
       style={{
         width: "100%",
-        height: "300px",
+        height: "100%",
         border: `1px solid ${config.themeColors.colors.border.primary}`,
         borderRadius: "8px",
         position: "relative",
