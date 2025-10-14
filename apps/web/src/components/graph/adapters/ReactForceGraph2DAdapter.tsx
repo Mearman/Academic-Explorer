@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useEffect, useCallback } from "react";
-import { ForceGraph2D } from "react-force-graph";
+import ForceGraph2D from "react-force-graph-2d";
 
 import type {
   GraphData,
