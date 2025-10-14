@@ -313,11 +313,6 @@ function R3FForceGraphScene({
     return config.themeColors.colors.border.secondary;
   }, [config.themeColors]);
 
-  const nodeLabel = useCallback(
-    (node: Record<string, unknown>) => String(node.name || ""),
-    [],
-  );
-
   const enableControls =
     adapterConfig?.enableOrbitControls ?? config.interactive ?? false;
 
@@ -351,7 +346,6 @@ function R3FForceGraphScene({
         nodeVal={(node: Record<string, unknown> & { val?: number }) =>
           node.val || adapterConfig?.nodeSize || 4
         }
-        nodeLabel={nodeLabel}
         linkColor={linkColor}
         linkWidth={adapterConfig?.linkWidth || 2}
         linkDirectionalArrowLength={3}
