@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, Html } from "@react-three/drei";
 import R3fForceGraph, { GraphMethods } from "r3f-forcegraph";
 
 import type {
@@ -44,6 +44,65 @@ function FitViewButton({ onFitView }: { onFitView: () => void }) {
     >
       Fit View
     </button>
+  );
+}
+
+// Node Labels Component
+function NodeLabels({
+  nodes,
+  showLabels = true,
+}: {
+  nodes: Array<{
+    id: string;
+    name?: string;
+    x?: number;
+    y?: number;
+    z?: number;
+  }>;
+  showLabels?: boolean;
+}) {
+  if (!showLabels) return null;
+
+  return (
+    <>
+      {nodes.map((node) => {
+        if (!node.x || !node.y || !node.z) return null;
+
+        const label = node.name || node.id;
+        if (!label) return null;
+
+        return (
+          <Html
+            key={`label-${node.id}`}
+            position={[node.x, node.y, node.z]}
+            distanceFactor={100}
+            occlude
+            style={{
+              pointerEvents: "none",
+              userSelect: "none",
+            }}
+          >
+            <div
+              style={{
+                background: "rgba(0, 0, 0, 0.8)",
+                color: "white",
+                padding: "2px 6px",
+                borderRadius: "3px",
+                fontSize: "12px",
+                fontWeight: "500",
+                whiteSpace: "nowrap",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+                backdropFilter: "blur(4px)",
+                transform: "translate(-50%, -100%)",
+                marginTop: "-8px",
+              }}
+            >
+              {label}
+            </div>
+          </Html>
+        );
+      })}
+    </>
   );
 }
 
