@@ -61,22 +61,32 @@ function NodeLabels({
   }>;
   showLabels?: boolean;
 }) {
-  if (!showLabels) return null;
+  if (!showLabels) {
+    return null;
+  }
+
+  if (nodes.length === 0) {
+    return null;
+  }
 
   return (
     <>
-      {nodes.map((node) => {
-        if (!node.x || !node.y || !node.z) return null;
+      {nodes.map((node, index) => {
+        if (!node.x || !node.y || !node.z) {
+          return null;
+        }
 
         const label = node.name || node.id;
-        if (!label) return null;
+        if (!label) {
+          return null;
+        }
 
         return (
           <Html
-            key={`label-${node.id}`}
+            key={`label-${node.id}-${index}`}
             position={[node.x, node.y, node.z]}
-            distanceFactor={100}
-            occlude
+            distanceFactor={10} // Reduced for closer rendering
+            occlude={false} // Disabled occlusion for testing
             style={{
               pointerEvents: "none",
               userSelect: "none",
@@ -84,17 +94,17 @@ function NodeLabels({
           >
             <div
               style={{
-                background: "rgba(0, 0, 0, 0.8)",
+                background: "rgba(255, 0, 0, 0.9)",
                 color: "white",
-                padding: "2px 6px",
-                borderRadius: "3px",
-                fontSize: "12px",
-                fontWeight: "500",
+                padding: "6px 12px",
+                borderRadius: "6px",
+                fontSize: "16px",
+                fontWeight: "bold",
                 whiteSpace: "nowrap",
-                border: "1px solid rgba(255, 255, 255, 0.2)",
-                backdropFilter: "blur(4px)",
+                border: "3px solid white",
+                boxShadow: "0 0 15px rgba(255, 0, 0, 0.8)",
                 transform: "translate(-50%, -100%)",
-                marginTop: "-8px",
+                marginTop: "-10px",
               }}
             >
               {label}
@@ -265,24 +275,44 @@ function R3FForceGraphScene({
     };
   }, [data, config.themeColors]);
 
+  // State to track node positions for labels
+  const [nodePositions, setNodePositions] = useState<
+    Map<string, { x: number; y: number; z: number }>
+  >(new Map());
+
   // Callback to update node positions for labels
-  const onEngineTick = useCallback(() => {
-    if (fgRef.current && graphData.nodes) {
-      // Try to get positions from the graphData nodes directly
-      // The r3f-forcegraph library updates positions on the input nodes
-      const updatedNodes = graphData.nodes.map((node: any, index: number) => {
-        const originalNode = data.nodes[index];
-        return {
-          id: originalNode?.id || node.id,
-          name: originalNode?.label || node.name,
-          x: node.x,
-          y: node.y,
-          z: node.z,
-        };
-      });
-      setCurrentNodes(updatedNodes);
-    }
-  }, [data.nodes, graphData]);
+  const nodePositionUpdate = useCallback(
+    (
+      nodeObject: unknown,
+      coords: { x: number; y: number; z: number },
+      node: { id?: string | number | undefined },
+    ) => {
+      // Update the position for this specific node
+      if (node.id !== undefined) {
+        setNodePositions((prev) => {
+          const newMap = new Map(prev);
+          newMap.set(String(node.id), coords);
+          return newMap;
+        });
+      }
+    },
+    [],
+  );
+
+  // Update currentNodes whenever nodePositions changes
+  useEffect(() => {
+    const updatedNodes = data.nodes.map((node) => {
+      const pos = nodePositions.get(node.id);
+      return {
+        id: node.id,
+        name: node.label || node.id,
+        x: pos?.x,
+        y: pos?.y,
+        z: pos?.z,
+      };
+    });
+    setCurrentNodes(updatedNodes);
+  }, [data.nodes, nodePositions]);
 
   // Fit view handler
   const handleFitView = useCallback(() => {
@@ -411,7 +441,7 @@ function R3FForceGraphScene({
         linkOpacity={0.3}
         cooldownTicks={100}
         warmupTicks={30}
-        onEngineTick={onEngineTick}
+        nodePositionUpdate={nodePositionUpdate}
       />
       <NodeLabels
         nodes={currentNodes}
