@@ -336,8 +336,7 @@ export class StaticDataIndexGenerator {
     );
 
     const contentChanged =
-      !existingIndex ||
-      existingIndex.entityType !== entityType ||
+      existingIndex?.entityType !== entityType ||
       existingIndex.schemaVersion !== this.config.schemaVersion ||
       existingIndex.totalEntities !== newTotalEntities ||
       existingIndex.totalSize !== newTotalSize ||
