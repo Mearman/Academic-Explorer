@@ -244,6 +244,9 @@ function R3FForceGraphScene({
   const fgRef = useRef<GraphMethods | undefined>(undefined);
   const controlsRef = useRef<any>(null);
   const { camera } = useThree();
+  const [currentNodes, setCurrentNodes] = useState<
+    Array<{ id: string; name?: string; x?: number; y?: number; z?: number }>
+  >([]);
 
   // Call tickFrame on every frame to update the simulation
   useFrame(() => {
@@ -251,6 +254,56 @@ function R3FForceGraphScene({
       fgRef.current.tickFrame();
     }
   });
+
+  // Convert GraphData to r3f-forcegraph format
+  const graphData = useMemo(() => {
+    const convertedNodes = data.nodes.map((node) => ({
+      id: node.id,
+      name: node.label,
+      color: config.themeColors.getEntityColor(node.entityType),
+      val: node.size || 4,
+    }));
+
+    const convertedLinks = data.links.map((link) => ({
+      source: link.source,
+      target: link.target,
+      value: link.value || 1,
+    }));
+
+    return {
+      nodes: convertedNodes,
+      links: convertedLinks,
+    };
+  }, [data, config.themeColors]);
+
+  // Callback to update node positions for labels
+  const onEngineTick = useCallback(() => {
+    if (fgRef.current) {
+      // We need to get the current graph data with positions
+      // Since r3f-forcegraph doesn't expose graphData directly,
+      // we'll use the original data and assume positions are updated
+      const updatedNodes = data.nodes.map((node, index) => {
+        // Try to get position from the force graph's internal state
+        // This is a bit hacky, but necessary since the API doesn't expose positions directly
+        try {
+          const fgNode = (fgRef.current as any)._graphData?.nodes?.[index];
+          return {
+            id: node.id,
+            name: node.label,
+            x: fgNode?.x,
+            y: fgNode?.y,
+            z: fgNode?.z,
+          };
+        } catch {
+          return {
+            id: node.id,
+            name: node.label,
+          };
+        }
+      });
+      setCurrentNodes(updatedNodes);
+    }
+  }, [data.nodes]);
 
   // Fit view handler
   const handleFitView = useCallback(() => {
@@ -340,27 +393,6 @@ function R3FForceGraphScene({
     fitViewTriggerRef.current = handleFitView;
   }, [handleFitView, fitViewTriggerRef]);
 
-  // Convert GraphData to r3f-forcegraph format
-  const graphData = useMemo(() => {
-    const convertedNodes = data.nodes.map((node) => ({
-      id: node.id,
-      name: node.label,
-      color: config.themeColors.getEntityColor(node.entityType),
-      val: node.size || 4,
-    }));
-
-    const convertedLinks = data.links.map((link) => ({
-      source: link.source,
-      target: link.target,
-      value: link.value || 1,
-    }));
-
-    return {
-      nodes: convertedNodes,
-      links: convertedLinks,
-    };
-  }, [data, config.themeColors]);
-
   const nodeColor = useCallback(
     (node: Record<string, unknown> & { color?: string }) => {
       return node.color || config.themeColors.colors.background.tertiary;
@@ -413,6 +445,11 @@ function R3FForceGraphScene({
         linkOpacity={0.3}
         cooldownTicks={100}
         warmupTicks={30}
+        onEngineTick={onEngineTick}
+      />
+      <NodeLabels
+        nodes={currentNodes}
+        showLabels={adapterConfig?.showLabels ?? true}
       />
     </>
   );
