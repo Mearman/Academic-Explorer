@@ -204,7 +204,7 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
    * ```
    */
   addSearch(field: keyof T, query: string): this {
-    if (!query || query.trim().length === 0) {
+    if (query?.trim().length === 0) {
       return this;
     }
 
@@ -312,7 +312,7 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
    * ```
    */
   setGroupBy(groupBy: string): this {
-    if (!groupBy || groupBy.trim().length === 0) {
+    if (groupBy?.trim().length === 0) {
       throw new Error("group_by cannot be empty");
     }
     this.pagination.group_by = groupBy.trim();
