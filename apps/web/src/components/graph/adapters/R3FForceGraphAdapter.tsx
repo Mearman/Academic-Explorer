@@ -8,6 +8,8 @@ import React, {
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Html } from "@react-three/drei";
 import R3fForceGraph, { GraphMethods } from "r3f-forcegraph";
+import SpriteText from "three-spritetext";
+import * as THREE from "three";
 
 import type {
   GraphData,
@@ -44,75 +46,6 @@ function FitViewButton({ onFitView }: { onFitView: () => void }) {
     >
       Fit View
     </button>
-  );
-}
-
-// Node Labels Component
-function NodeLabels({
-  nodes,
-  showLabels = true,
-}: {
-  nodes: Array<{
-    id: string;
-    name?: string;
-    x?: number;
-    y?: number;
-    z?: number;
-  }>;
-  showLabels?: boolean;
-}) {
-  if (!showLabels) {
-    return null;
-  }
-
-  if (nodes.length === 0) {
-    return null;
-  }
-
-  return (
-    <>
-      {nodes.map((node, index) => {
-        if (!node.x || !node.y || !node.z) {
-          return null;
-        }
-
-        const label = node.name || node.id;
-        if (!label) {
-          return null;
-        }
-
-        return (
-          <Html
-            key={`label-${node.id}-${index}`}
-            position={[node.x, node.y, node.z]}
-            distanceFactor={10} // Reduced for closer rendering
-            occlude={false} // Disabled occlusion for testing
-            style={{
-              pointerEvents: "none",
-              userSelect: "none",
-            }}
-          >
-            <div
-              style={{
-                background: "rgba(255, 0, 0, 0.9)",
-                color: "white",
-                padding: "6px 12px",
-                borderRadius: "6px",
-                fontSize: "16px",
-                fontWeight: "bold",
-                whiteSpace: "nowrap",
-                border: "3px solid white",
-                boxShadow: "0 0 15px rgba(255, 0, 0, 0.8)",
-                transform: "translate(-50%, -100%)",
-                marginTop: "-10px",
-              }}
-            >
-              {label}
-            </div>
-          </Html>
-        );
-      })}
-    </>
   );
 }
 
@@ -437,15 +370,47 @@ function R3FForceGraphScene({
         linkWidth={adapterConfig?.linkWidth || 2}
         linkDirectionalArrowLength={3}
         linkDirectionalArrowRelPos={1}
-        nodeOpacity={0.8}
+        nodeOpacity={1.0}
         linkOpacity={0.3}
         cooldownTicks={100}
         warmupTicks={30}
         nodePositionUpdate={nodePositionUpdate}
-      />
-      <NodeLabels
-        nodes={currentNodes}
-        showLabels={adapterConfig?.showLabels ?? true}
+        nodeThreeObject={(node: any) => {
+          // Create a group containing both the node sphere and its label
+          const group = new THREE.Group();
+
+          // Create the node sphere
+          const nodeGeometry = new THREE.SphereGeometry(
+            node.val || adapterConfig?.nodeSize || 4,
+            8,
+            8,
+          );
+          const nodeMaterial = new THREE.MeshLambertMaterial({
+            color:
+              node.color || config.themeColors.getEntityColor(node.entityType),
+            transparent: true,
+            opacity: 1.0,
+          });
+          const nodeMesh = new THREE.Mesh(nodeGeometry, nodeMaterial);
+          group.add(nodeMesh);
+
+          // Create the label as a sprite
+          if (node.name || node.id) {
+            const sprite = new SpriteText(node.name || node.id);
+            sprite.color = "white";
+            sprite.backgroundColor = "rgba(255, 0, 0, 0.9)";
+            sprite.padding = [6, 12];
+            sprite.borderRadius = 6;
+            sprite.fontSize = 16;
+            sprite.fontWeight = "bold";
+            sprite.borderColor = "white";
+            sprite.borderWidth = 3;
+            sprite.position.set(0, 10, 0); // Position above the node
+            group.add(sprite);
+          }
+
+          return group;
+        }}
       />
     </>
   );
