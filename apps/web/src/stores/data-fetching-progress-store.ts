@@ -86,7 +86,7 @@ const { useStore: useDataFetchingProgressStore } = createTrackedStore<
     ) => {
       set((state) => {
         const request = state.requests[nodeId];
-        if (request && request.status === "active") {
+        if (request?.status === "active") {
           request.progress = progress;
         }
       });
