@@ -142,7 +142,6 @@ function CameraController({
             typeof fgRef.current.getGraphBbox === "function"
           ) {
             bbox = fgRef.current.getGraphBbox();
-            console.log("Graph bbox:", bbox);
           }
 
           let optimalDistance = Math.max(5000, cameraDistance); // Default fallback - much larger
@@ -173,15 +172,6 @@ function CameraController({
             // Use a larger multiplier to ensure the graph fits
             optimalDistance = maxExtent * 4; // Much more conservative
             targetPosition = { x: centerX, y: centerY, z: centerZ };
-
-            console.log(
-              "Auto-fit calculated optimal distance:",
-              optimalDistance,
-              "from extent:",
-              maxExtent,
-              "center:",
-              targetPosition,
-            );
           }
 
           // Position camera to view the entire graph
@@ -206,8 +196,7 @@ function CameraController({
           }
 
           setIsInitialized(true);
-        } catch (error) {
-          console.error("Error in auto-fit:", error);
+        } catch {
           // Fallback positioning
           camera.position.set(0, 0, cameraDistance || 5000);
           camera.lookAt(0, 0, 0);
@@ -278,36 +267,25 @@ function R3FForceGraphScene({
 
   // Callback to update node positions for labels
   const onEngineTick = useCallback(() => {
-    if (fgRef.current) {
-      // We need to get the current graph data with positions
-      // Since r3f-forcegraph doesn't expose graphData directly,
-      // we'll use the original data and assume positions are updated
-      const updatedNodes = data.nodes.map((node, index) => {
-        // Try to get position from the force graph's internal state
-        // This is a bit hacky, but necessary since the API doesn't expose positions directly
-        try {
-          const fgNode = (fgRef.current as any)._graphData?.nodes?.[index];
-          return {
-            id: node.id,
-            name: node.label,
-            x: fgNode?.x,
-            y: fgNode?.y,
-            z: fgNode?.z,
-          };
-        } catch {
-          return {
-            id: node.id,
-            name: node.label,
-          };
-        }
+    if (fgRef.current && graphData.nodes) {
+      // Try to get positions from the graphData nodes directly
+      // The r3f-forcegraph library updates positions on the input nodes
+      const updatedNodes = graphData.nodes.map((node: any, index: number) => {
+        const originalNode = data.nodes[index];
+        return {
+          id: originalNode?.id || node.id,
+          name: originalNode?.label || node.name,
+          x: node.x,
+          y: node.y,
+          z: node.z,
+        };
       });
       setCurrentNodes(updatedNodes);
     }
-  }, [data.nodes]);
+  }, [data.nodes, graphData]);
 
   // Fit view handler
   const handleFitView = useCallback(() => {
-    console.log("Fit view clicked!");
     try {
       // Try to get the graph bounding box for better camera positioning
       let bbox: {
@@ -320,7 +298,6 @@ function R3FForceGraphScene({
         typeof fgRef.current.getGraphBbox === "function"
       ) {
         bbox = fgRef.current.getGraphBbox();
-        console.log("Graph bbox:", bbox);
       }
 
       let optimalDistance = 5000; // Default fallback - much larger
@@ -351,15 +328,6 @@ function R3FForceGraphScene({
         // Use a larger multiplier to ensure the graph fits
         optimalDistance = maxExtent * 4; // Much more conservative
         targetPosition = { x: centerX, y: centerY, z: centerZ };
-
-        console.log(
-          "Calculated optimal distance:",
-          optimalDistance,
-          "from extent:",
-          maxExtent,
-          "center:",
-          targetPosition,
-        );
       }
 
       // Set camera position and look at the center
@@ -372,7 +340,6 @@ function R3FForceGraphScene({
 
       // Update controls if they exist
       if (controlsRef.current) {
-        console.log("Updating controls");
         controlsRef.current.target.set(
           targetPosition.x,
           targetPosition.y,
@@ -380,8 +347,7 @@ function R3FForceGraphScene({
         );
         controlsRef.current.update();
       }
-    } catch (error) {
-      console.error("Error in fit view:", error);
+    } catch {
       // Fallback: reset to default position
       camera.position.set(0, 0, adapterConfig?.cameraDistance || 5000);
       camera.lookAt(0, 0, 0);
