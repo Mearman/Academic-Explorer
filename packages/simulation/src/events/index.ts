@@ -66,8 +66,8 @@ export interface EventSubscription {
 
 // Simple event emitter for simulation events
 export class SimulationEventEmitter {
-  private handlers = new Map<string, Set<SimulationEventHandler>>();
-  private globalHandlers = new Set<SimulationEventHandler>();
+  private handlers = new Map<string, Set<SimulationEventHandler<any>>>();
+  private globalHandlers = new Set<SimulationEventHandler<any>>();
 
   // Subscribe to events of a specific type
   on<T extends SimulationEvent["type"]>(
