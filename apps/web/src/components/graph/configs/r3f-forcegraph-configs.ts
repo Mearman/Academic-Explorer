@@ -17,6 +17,7 @@ export const R3F_FORCEGRAPH_CONFIGS: R3FForceGraphConfig[] = [
     linkWidth: 2,
     cameraDistance: 1000,
     enableOrbitControls: true,
+    showLabels: true,
   },
   {
     name: "Compact R3F Sphere",
@@ -30,6 +31,7 @@ export const R3F_FORCEGRAPH_CONFIGS: R3FForceGraphConfig[] = [
     linkWidth: 1,
     cameraDistance: 800,
     enableOrbitControls: true,
+    showLabels: true,
   },
   {
     name: "Explosive R3F",
@@ -43,6 +45,7 @@ export const R3F_FORCEGRAPH_CONFIGS: R3FForceGraphConfig[] = [
     linkWidth: 3,
     cameraDistance: 1500,
     enableOrbitControls: true,
+    showLabels: true,
   },
   {
     name: "Minimal R3F",
@@ -56,5 +59,6 @@ export const R3F_FORCEGRAPH_CONFIGS: R3FForceGraphConfig[] = [
     linkWidth: 1,
     cameraDistance: 600,
     enableOrbitControls: false,
+    showLabels: true,
   },
 ];
