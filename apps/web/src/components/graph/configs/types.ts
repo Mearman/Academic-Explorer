@@ -89,6 +89,8 @@ export interface R3FForceGraphConfig extends BaseGraphAdapterConfig {
   cameraDistance: number;
   /** Whether to enable orbit controls */
   enableOrbitControls: boolean;
+  /** Whether to show node labels */
+  showLabels: boolean;
 }
 
 /**
