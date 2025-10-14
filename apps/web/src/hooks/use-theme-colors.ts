@@ -85,6 +85,18 @@ export function useThemeColors() {
         publisher: theme.colors.teal[5] || "#14b8a6",
         funder: theme.colors.cyan[5] || "#22b8cf",
       },
+
+      // Entity to color name mapping for shade access
+      entityColorNames: {
+        work: "blue",
+        author: "green",
+        source: "purple",
+        institution: "orange",
+        concept: "pink",
+        topic: "red",
+        publisher: "teal",
+        funder: "cyan",
+      },
     }),
     [theme.colors, isDark],
   );
@@ -153,7 +165,7 @@ export function useThemeColors() {
     (entityType: string | null | undefined, shade: number = 5): string => {
       // Handle undefined or null entity type
       if (!entityType) {
-        return getColor(colors.primary, shade);
+        return getColor("blue", shade);
       }
 
       // If entityType is already a detected entity type, use it directly
@@ -163,8 +175,9 @@ export function useThemeColors() {
         const singularType = normalizedType.replace(
           /s$/,
           "",
-        ) as keyof typeof colors.entity;
-        return getColor(colors.entity[singularType], shade);
+        ) as keyof typeof colors.entityColorNames;
+        const colorName = colors.entityColorNames[singularType];
+        return getColor(colorName, shade);
       }
 
       // Fall back to detection if it's an OpenAlex ID
@@ -179,7 +192,7 @@ export function useThemeColors() {
         // Ignore detection errors
       }
 
-      return getColor(colors.primary, shade);
+      return getColor("blue", shade);
     },
     [colors, getColor, isValidEntityColorKey],
   );
