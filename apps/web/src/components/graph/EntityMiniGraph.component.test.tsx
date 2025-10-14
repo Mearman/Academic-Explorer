@@ -32,6 +32,7 @@ import { MantineProvider } from "@mantine/core";
 import { EntityMiniGraph } from "./EntityMiniGraph";
 import type { OpenAlexEntity } from "@academic-explorer/client";
 import type { GraphAdapterType } from "./adapters/GraphAdapterFactory";
+import { GraphAdapterFactory } from "./adapters/GraphAdapterFactory";
 
 // Mock the theme colors hook
 vi.mock("@/hooks/use-theme-colors", () => ({
@@ -97,28 +98,6 @@ vi.mock("./adapters/GraphAdapterFactory", () => ({
       "react-force-graph-3d",
     ]),
   },
-}));
-
-// Mock the adapter factory to avoid actual imports
-vi.mock("./adapters/GraphAdapterFactory", () => ({
-  GraphAdapterFactory: {
-    createAdapter: vi.fn().mockResolvedValue({
-      convertEntitiesToGraphData: vi.fn(() => ({
-        nodes: [
-          { id: "test-entity", label: "Test Entity", color: "primary" },
-          { id: "related-1", label: "Related 1", color: "secondary" },
-        ],
-        links: [{ source: "test-entity", target: "related-1" }],
-      })),
-      render: vi.fn(() => <div data-testid="mock-graph">Mock Graph</div>),
-    }),
-    getDefaultAdapter: vi.fn(() => "reactflow-hierarchical"),
-    getAvailableAdapters: vi.fn(() => [
-      "reactflow-hierarchical",
-      "react-force-graph-3d",
-    ]),
-  },
-  type: "reactflow-hierarchical",
 }));
 
 const renderWithMantine = (component: React.ReactElement) => {
@@ -224,7 +203,7 @@ describe("EntityMiniGraph", () => {
     });
 
     // Check if the select dropdown is present
-    const select = screen.getByRole("combobox");
+    const select = screen.getByRole("textbox");
     expect(select).toBeTruthy();
   });
 
@@ -243,7 +222,7 @@ describe("EntityMiniGraph", () => {
     });
 
     // Check that the select dropdown is not present
-    const select = screen.queryByRole("combobox");
+    const select = screen.queryByRole("textbox");
     expect(select).toBeNull();
   });
 
