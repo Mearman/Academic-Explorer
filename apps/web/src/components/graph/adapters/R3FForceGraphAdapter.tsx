@@ -18,6 +18,7 @@ import type {
 } from "./GraphAdapter";
 import type { R3FForceGraphConfig } from "../configs";
 import { detectEntityType } from "@academic-explorer/graph";
+import type { OpenAlexEntity } from "@academic-explorer/client";
 
 // Fit View Button Component
 function FitViewButton({ onFitView }: { onFitView: () => void }) {
@@ -445,8 +446,8 @@ export class R3FForceGraphAdapter implements GraphAdapter {
   }
 
   convertEntitiesToGraphData(
-    mainEntity: { id: string; display_name?: string },
-    relatedEntities: Array<{ id: string; display_name?: string }>,
+    mainEntity: OpenAlexEntity,
+    relatedEntities: OpenAlexEntity[],
   ): GraphData {
     const nodes: GraphNode[] = [];
     const links: GraphLink[] = [];

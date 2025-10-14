@@ -308,8 +308,8 @@ export class ReactForceGraph2DAdapter implements GraphAdapter {
   }
 
   convertEntitiesToGraphData(
-    mainEntity: { id: string; display_name?: string },
-    relatedEntities: Array<{ id: string; display_name?: string }>,
+    mainEntity: OpenAlexEntity,
+    relatedEntities: OpenAlexEntity[],
   ): GraphData {
     const nodes: GraphNode[] = [];
     const links: GraphLink[] = [];
