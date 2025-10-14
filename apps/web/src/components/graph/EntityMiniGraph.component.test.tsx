@@ -258,4 +258,50 @@ describe("EntityMiniGraph", () => {
     // Should show loading text initially
     expect(screen.getByText("Loading graph...")).toBeTruthy();
   });
+
+  it("passes entity display_names and entity-type colors to graph adapter", async () => {
+    const mockAdapter = {
+      render: vi.fn(() => <div data-testid="mock-graph">Mock Graph</div>),
+      convertEntitiesToGraphData: vi.fn(() => ({ nodes: [], links: [] })),
+      fitView: vi.fn(),
+    };
+
+    // Mock the factory to return our mock adapter
+    vi.mocked(GraphAdapterFactory.createAdapter).mockResolvedValue(mockAdapter);
+    vi.mocked(GraphAdapterFactory.getDefaultAdapter).mockReturnValue(
+      "reactflow-hierarchical",
+    );
+
+    renderWithMantine(
+      <EntityMiniGraph
+        entity={mockEntity}
+        relatedEntities={mockRelatedEntities}
+        adapterType="reactflow-hierarchical"
+      />,
+    );
+
+    // Wait for the adapter to be created and data to be converted
+    await waitFor(() => {
+      expect(GraphAdapterFactory.createAdapter).toHaveBeenCalledWith(
+        "reactflow-hierarchical",
+        expect.any(Object),
+      );
+    });
+
+    // Verify that convertEntitiesToGraphData was called with the correct entities
+    expect(mockAdapter.convertEntitiesToGraphData).toHaveBeenCalledWith(
+      mockEntity, // main entity with display_name
+      mockRelatedEntities, // related entities with display_names
+    );
+
+    // Verify that render was called with theme colors that include getEntityColor
+    expect(mockAdapter.render).toHaveBeenCalledWith(
+      expect.any(Object), // graph data
+      expect.objectContaining({
+        themeColors: expect.objectContaining({
+          getEntityColor: expect.any(Function),
+        }),
+      }),
+    );
+  });
 });
