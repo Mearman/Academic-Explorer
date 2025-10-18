@@ -18,11 +18,15 @@ export const institutionMatcher: ArrayMatcher = {
       "country_code" in first
     );
   },
-  render: (
-    array: unknown[],
-    fieldName: string,
-    onNavigate?: (path: string) => void,
-  ): React.ReactNode => {
+  render: ({
+    array,
+    fieldName,
+    onNavigate,
+  }: {
+    array: unknown[];
+    fieldName: string;
+    onNavigate?: (path: string) => void;
+  }): React.ReactNode => {
     const institutionArray = array as InstitutionItem[];
 
     return (
