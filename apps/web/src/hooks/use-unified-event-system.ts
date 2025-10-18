@@ -106,7 +106,6 @@ export function useEventListener({
       });
     };
     // Disable exhaustive-deps warning for spread element - this is intentional API design
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bus, eventType, ...deps]);
 }
 
@@ -221,10 +220,13 @@ export function useTaskQueue(
  * Hook for managing WorkerPool
  * @internal - Intentionally unused, available for future implementation
  */
-export function useWorkerPool(
-  bus: EventBus,
-  options: WorkerPoolOptions,
-): {
+export function useWorkerPool({
+  bus,
+  options,
+}: {
+  bus: EventBus;
+  options: WorkerPoolOptions;
+}): {
   workerPool: WorkerPool;
   submitTask: (
     taskId: string,
@@ -354,10 +356,13 @@ export function useWorkerPool(
  * Hook for managing QueuedResourceCoordinator
  * @internal - Intentionally unused, available for future implementation
  */
-export function useQueuedResourceCoordinator(
-  bus: EventBus,
-  options: QueueCoordinatorOptions,
-): {
+export function useQueuedResourceCoordinator({
+  bus,
+  options,
+}: {
+  bus: EventBus;
+  options: QueueCoordinatorOptions;
+}): {
   coordinator: QueuedResourceCoordinator;
   submitTask: (task: TaskDescriptor) => Promise<string>;
   cancelTask: (taskId: string) => boolean;

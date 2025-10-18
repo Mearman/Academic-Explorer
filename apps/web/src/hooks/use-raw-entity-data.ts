@@ -20,10 +20,13 @@ interface UseRawEntityDataOptions {
 /**
  * Type guard to check if we have a valid entity type for the query
  */
-function isValidEntityData(
-  entityId: string | null | undefined,
-  entityType: EntityType | null,
-): entityType is EntityType {
+function isValidEntityData({
+  entityId,
+  entityType,
+}: {
+  entityId: string | null | undefined;
+  entityType: EntityType | null;
+}): entityType is EntityType {
   return !!entityId && !!entityType;
 }
 
@@ -70,7 +73,7 @@ export const useRawEntityData = ({
 
   // Always call the hook, but conditionally enable it
   const shouldFetch =
-    enabled && isValidEntityData(detectedEntityId, entityType);
+    enabled && isValidEntityData({ entityId: detectedEntityId, entityType });
 
   // Serialize queryParams for use in queryKey to ensure proper cache invalidation
   const queryParamsKey = JSON.stringify(queryParams);

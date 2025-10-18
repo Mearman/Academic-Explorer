@@ -35,13 +35,13 @@ function isRecord(obj: unknown): obj is Record<string, unknown> {
 }
 
 // Helper function for safe property access
-function hasProperty(obj: unknown, prop: string): boolean {
+function hasProperty({ obj, prop }: { obj: unknown; prop: string }): boolean {
   return isRecord(obj) && Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
 // Helper function for safe property value extraction
-function getProperty(obj: unknown, prop: string): unknown {
-  if (!hasProperty(obj, prop) || !isRecord(obj)) return undefined;
+function getProperty({ obj, prop }: { obj: unknown; prop: string }): unknown {
+  if (!hasProperty({ obj, prop }) || !isRecord(obj)) return undefined;
   return obj[prop];
 }
 
@@ -51,20 +51,20 @@ function isValidGraphSession(obj: unknown): obj is GraphSession {
 
   // Check required properties exist
   if (
-    !hasProperty(obj, "id") ||
-    !hasProperty(obj, "name") ||
-    !hasProperty(obj, "snapshot")
+    !hasProperty({ obj, prop: "id" }) ||
+    !hasProperty({ obj, prop: "name" }) ||
+    !hasProperty({ obj, prop: "snapshot" })
   )
     return false;
 
   // Validate property types
-  const id = getProperty(obj, "id");
-  const name = getProperty(obj, "name");
+  const id = getProperty({ obj, prop: "id" });
+  const name = getProperty({ obj, prop: "name" });
   if (typeof id !== "string" || typeof name !== "string") return false;
 
   // Validate optional date properties
-  const createdAt = getProperty(obj, "createdAt");
-  const lastModified = getProperty(obj, "lastModified");
+  const createdAt = getProperty({ obj, prop: "createdAt" });
+  const lastModified = getProperty({ obj, prop: "lastModified" });
 
   const createdAtValid =
     createdAt === undefined ||
@@ -78,12 +78,12 @@ function isValidGraphSession(obj: unknown): obj is GraphSession {
   if (!createdAtValid || !lastModifiedValid) return false;
 
   // Validate snapshot structure
-  const snapshot = getProperty(obj, "snapshot");
+  const snapshot = getProperty({ obj, prop: "snapshot" });
   if (!snapshot || typeof snapshot !== "object") return false;
 
   // Check snapshot has required array properties
-  const nodes = getProperty(snapshot, "nodes");
-  const edges = getProperty(snapshot, "edges");
+  const nodes = getProperty({ obj: snapshot, prop: "nodes" });
+  const edges = getProperty({ obj: snapshot, prop: "edges" });
 
   return Array.isArray(nodes) && Array.isArray(edges);
 }
@@ -219,17 +219,17 @@ export function useGraphPersistence() {
     viewport: { zoom: number; center: { x: number; y: number } };
   } => {
     if (!snapshot || typeof snapshot !== "object") return false;
-    const viewportProp = getProperty(snapshot, "viewport");
+    const viewportProp = getProperty({ obj: snapshot, prop: "viewport" });
     if (!viewportProp || typeof viewportProp !== "object") return false;
 
-    const zoom = getProperty(viewportProp, "zoom");
-    const center = getProperty(viewportProp, "center");
+    const zoom = getProperty({ obj: viewportProp, prop: "zoom" });
+    const center = getProperty({ obj: viewportProp, prop: "center" });
 
     if (typeof zoom !== "number" || !center || typeof center !== "object")
       return false;
 
-    const x = getProperty(center, "x");
-    const y = getProperty(center, "y");
+    const x = getProperty({ obj: center, prop: "x" });
+    const y = getProperty({ obj: center, prop: "y" });
 
     return typeof x === "number" && typeof y === "number";
   };
