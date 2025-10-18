@@ -6,7 +6,7 @@ import { baseVitestConfig } from "../../vitest.config.base";
 
 export default defineConfig(
   mergeConfig(baseVitestConfig, {
-    plugins: [react()] as any,
+    plugins: [react()],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),

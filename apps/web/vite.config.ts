@@ -2,7 +2,7 @@
 import { execSync } from "child_process";
 import { readFileSync } from "fs";
 import path from "path";
-import { defineConfig, mergeConfig } from "vite";
+import { defineConfig, mergeConfig, type UserConfig } from "vite";
 import { workspaceRoot } from "../../config/shared";
 import baseConfig from "../../vite.config.base";
 import { buildConfig } from "./config/build";
@@ -18,7 +18,19 @@ function getBuildInfo() {
     // Read version from package.json instead of relying on npm_package_version
     const packageJson = JSON.parse(
       readFileSync(path.resolve(__dirname, "package.json"), "utf-8"),
-    ) as { version: string };
+    );
+    function isPackageJson(obj: unknown): obj is { version: string } {
+      return (
+        typeof obj === "object" &&
+        obj !== null &&
+        "version" in obj &&
+        typeof (obj as Record<string, unknown>).version === "string"
+      );
+    }
+    if (!isPackageJson(packageJson)) {
+      throw new Error("Invalid package.json: missing version field");
+    }
+    const version = packageJson.version;
 
     const now = new Date();
     const commitHash = execSync("git rev-parse HEAD", {
@@ -60,7 +72,7 @@ function getBuildInfo() {
 
 // App-specific overrides: merge the workspace base config with app overrides
 export default defineConfig(({ mode, command }) =>
-  mergeConfig(baseConfig as any, {
+  mergeConfig(baseConfig, {
     // Path resolution aliases for monorepo packages
     resolve: {
       alias: {
