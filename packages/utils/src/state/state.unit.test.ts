@@ -149,14 +149,12 @@ describe("State Utilities", () => {
         },
         actionsFactory: ({ set, get }) => ({
           increment: () =>
-            set({ partial: (state) => ({ ...state, count: state.count + 1 }) }),
+            set((state) => ({ ...state, count: state.count + 1 })),
           addItem: (item: string) =>
-            set({
-              partial: (state) => ({
-                ...state,
-                items: [...state.items, item],
-              }),
-            }),
+            set((state) => ({
+              ...state,
+              items: [...state.items, item],
+            })),
         }),
       });
 
@@ -204,9 +202,15 @@ describe("State Utilities", () => {
         bulkGet: vi.fn(),
         openCursor: vi.fn(),
         openKeyCursor: vi.fn(),
+        toCollection: vi.fn(),
+        mapToClass: vi.fn(),
+        upsert: vi.fn(),
+        bulkUpdate: vi.fn(),
       };
 
-      const reactiveTable = createReactiveTable(mockTable as any);
+      const reactiveTable = createReactiveTable(
+        mockTable as Table<{ id?: string | number; name?: string }>,
+      );
 
       expect(reactiveTable).toHaveProperty("add");
       expect(reactiveTable).toHaveProperty("put");
