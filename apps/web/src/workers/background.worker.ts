@@ -208,6 +208,9 @@ function createSimulationEngine(): ForceSimulationEngine {
 
   // Set up event listeners
   engine.on("progress", (event) => {
+    // Type guard to ensure we have a progress event
+    if (event.type !== "progress") return;
+
     const now = Date.now();
 
     if (event.messageType === "tick") {
@@ -277,6 +280,7 @@ function createSimulationEngine(): ForceSimulationEngine {
   });
 
   engine.on("complete", (event) => {
+    if (event.type !== "complete") return;
     const completeEvent = createCompleteEventPayload(event);
 
     workerEventBus.emit(completeEvent);
@@ -294,6 +298,7 @@ function createSimulationEngine(): ForceSimulationEngine {
   });
 
   engine.on("error", (event) => {
+    if (event.type !== "error") return;
     const errorEvent = createErrorEventPayload(event);
 
     logger.error(

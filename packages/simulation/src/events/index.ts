@@ -66,13 +66,16 @@ export interface EventSubscription {
 
 // Simple event emitter for simulation events
 export class SimulationEventEmitter {
-  private handlers = new Map<string, Set<SimulationEventHandler<any>>>();
-  private globalHandlers = new Set<SimulationEventHandler<any>>();
+  private handlers = new Map<
+    string,
+    Set<SimulationEventHandler<SimulationEvent>>
+  >();
+  private globalHandlers = new Set<SimulationEventHandler<SimulationEvent>>();
 
   // Subscribe to events of a specific type
   on<T extends SimulationEvent["type"]>(
     eventType: T,
-    handler: SimulationEventHandler<Extract<SimulationEvent, { type: T }>>,
+    handler: SimulationEventHandler<SimulationEvent>,
   ): EventSubscription {
     if (!this.handlers.has(eventType)) {
       this.handlers.set(eventType, new Set());
@@ -82,11 +85,11 @@ export class SimulationEventEmitter {
     if (!handlers) {
       throw new Error(`No handlers found for event type: ${eventType}`);
     }
-    handlers.add(handler as SimulationEventHandler);
+    handlers.add(handler);
 
     return {
       unsubscribe: () => {
-        handlers.delete(handler as SimulationEventHandler);
+        handlers.delete(handler);
         if (handlers.size === 0) {
           this.handlers.delete(eventType);
         }
@@ -96,11 +99,11 @@ export class SimulationEventEmitter {
 
   // Subscribe to all events
   onAny(handler: SimulationEventHandler): EventSubscription {
-    this.globalHandlers.add(handler as SimulationEventHandler);
+    this.globalHandlers.add(handler);
 
     return {
       unsubscribe: () => {
-        this.globalHandlers.delete(handler as SimulationEventHandler);
+        this.globalHandlers.delete(handler);
       },
     };
   }
