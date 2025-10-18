@@ -177,7 +177,7 @@ describe("State Utilities", () => {
         toArray: vi.fn().mockResolvedValue([{ id: 1, name: "test" }]),
         where: vi.fn().mockResolvedValue([{ id: 1, name: "test" }]),
         count: vi.fn().mockResolvedValue(1),
-      } as any;
+      } as Table<{ id?: string | number; name?: string }>;
 
       const reactiveTable = createReactiveTable(mockTable);
 
