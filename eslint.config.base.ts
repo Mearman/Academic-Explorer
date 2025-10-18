@@ -20,7 +20,9 @@ const jiti = createJiti(import.meta.url, {
 // Helper function to load TypeScript modules using jiti
 function loadTsModule(modulePath: string) {
   try {
-    return jiti(modulePath);
+    const module = jiti(modulePath);
+    // Return the default export which contains the plugin object with rules
+    return module.default || module;
   } catch (error) {
     console.warn(`Failed to load ${modulePath}, skipping...`);
     return {};
@@ -136,7 +138,7 @@ export default tseslint.config([
       "unused-imports": unusedImports,
       sonarjs,
       "@nx": nxPlugin,
-      "no-emoji-plugin": noEmojiPlugin,
+      "no-emoji": noEmojiPlugin,
       "no-type-assertions-plugin": noTypeAssertionsPlugin,
       "test-file-naming-plugin": testFileNamingPlugin,
       "zustand-store-dry-plugin": zustandStoreDryPlugin,
@@ -191,7 +193,7 @@ export default tseslint.config([
       "sonarjs/prefer-while": "error",
 
       // Emoji detection
-      "no-emoji-plugin/no-emoji": "error",
+      "no-emoji/no-emoji": "error",
 
       // Forbid all type assertions - use type guards instead
       "no-type-assertions-plugin/no-type-assertions": "error",
