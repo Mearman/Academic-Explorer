@@ -97,6 +97,7 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
         funders: 0,
         keywords: 0,
         concepts: 0,
+        autocomplete: 0,
       },
       entitiesByStorage: {},
       totalCacheSize: 0,

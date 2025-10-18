@@ -59,6 +59,12 @@ const ENTITY_TYPE_PATTERNS: Record<EntityType, RegExp[]> = {
   funders: [/^F\d+$/, /\/funders\/F\d+/, /funders-.*/, /funder_/],
   keywords: [/keyword/, /\/keywords\//, /keywords-.*/, /keyword_/],
   concepts: [/^C\d+$/, /\/concepts\/C\d+/, /concepts-.*/, /concept_/],
+  autocomplete: [
+    /autocomplete/,
+    /\/autocomplete\//,
+    /autocomplete-.*/,
+    /autocomplete_/,
+  ],
 };
 
 // All entity types as a constant array for safe iteration
@@ -632,6 +638,7 @@ export class CacheBrowserService {
       funders: 0,
       keywords: 0,
       concepts: 0,
+      autocomplete: 0,
     };
 
     const entitiesByStorage: Record<string, number> = {};

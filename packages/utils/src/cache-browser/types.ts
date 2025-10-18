@@ -3,23 +3,24 @@
  * UI-agnostic interfaces for browsing cached entities
  */
 
-export type EntityType = 
-  | 'works' 
-  | 'authors' 
-  | 'sources' 
-  | 'institutions' 
-  | 'topics' 
-  | 'publishers' 
-  | 'funders' 
-  | 'keywords' 
-  | 'concepts';
+export type EntityType =
+  | "works"
+  | "authors"
+  | "sources"
+  | "institutions"
+  | "topics"
+  | "publishers"
+  | "funders"
+  | "keywords"
+  | "concepts"
+  | "autocomplete";
 
 export interface CachedEntityMetadata {
   id: string;
   type: EntityType;
   label: string;
   cacheTimestamp: number;
-  storageLocation: 'indexeddb' | 'localstorage' | 'memory' | 'repository';
+  storageLocation: "indexeddb" | "localstorage" | "memory" | "repository";
   dataSize: number;
   lastAccessed?: number;
   externalIds?: Record<string, string>;
@@ -58,8 +59,8 @@ export interface CacheBrowserFilters {
 export interface CacheBrowserOptions {
   includeRepositoryData: boolean;
   includeBasicInfo: boolean;
-  sortBy: 'timestamp' | 'type' | 'label' | 'size' | 'lastAccessed';
-  sortDirection: 'asc' | 'desc';
+  sortBy: "timestamp" | "type" | "label" | "size" | "lastAccessed";
+  sortDirection: "asc" | "desc";
   limit?: number;
   offset?: number;
 }
