@@ -186,7 +186,7 @@ export class StaticCacheManager {
 
     try {
       for (const entityType of SUPPORTED_ENTITIES) {
-        await this.validateEntityType(entityType, result);
+        await this.validateEntityType({ entityType, result });
       }
 
       result.isValid = result.errors.length === 0;
@@ -204,10 +204,13 @@ export class StaticCacheManager {
   /**
    * Validate a specific entity type
    */
-  private async validateEntityType(
-    entityType: StaticEntityType,
-    result: CacheValidationResult,
-  ): Promise<void> {
+  private async validateEntityType({
+    entityType,
+    result,
+  }: {
+    entityType: StaticEntityType;
+    result: CacheValidationResult;
+  }): Promise<void> {
     if (this.config.mode === "production") {
       // In production mode, we can't validate local files
       result.warnings.push(
@@ -234,6 +237,7 @@ export class StaticCacheManager {
 
       // Validate index content
       const indexContent = await readFile(indexPath, "utf-8");
+       
       const index: Record<string, unknown> = JSON.parse(indexContent);
       const validation = UnifiedIndexSchema.safeParse(index);
 
@@ -292,7 +296,7 @@ export class StaticCacheManager {
       );
 
       try {
-        await this.generateEntityTypeCache(entityType, options);
+        await this.generateEntityTypeCache({ entityType, options });
       } catch (error) {
         logError(
           logger,
@@ -312,10 +316,13 @@ export class StaticCacheManager {
   /**
    * Generate cache for a specific entity type
    */
-  private async generateEntityTypeCache(
-    entityType: StaticEntityType,
-    options: CacheGenerationOptions,
-  ): Promise<void> {
+  private async generateEntityTypeCache({
+    entityType,
+    options,
+  }: {
+    entityType: StaticEntityType;
+    options: CacheGenerationOptions;
+  }): Promise<void> {
     // This is a placeholder - in a real implementation, this would:
     // 1. Analyze usage patterns from synthetic cache
     // 2. Fetch popular/well-populated entities
@@ -394,7 +401,7 @@ export class StaticCacheManager {
     try {
       const indexPath = join(this.config.basePath, entityType, INDEX_FILENAME);
       const indexContent = await readFile(indexPath, "utf-8");
-      const index = JSON.parse(indexContent);
+      const index = JSON.parse(indexContent) as Record<string, unknown>;
       return Object.keys(index).length;
     } catch {
       return 0;

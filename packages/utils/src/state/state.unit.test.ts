@@ -1,4 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
+ 
+
 import type { Table } from "dexie";
 import type { ReactiveTable } from "./dexieStore.js";
 import {
@@ -141,21 +143,23 @@ describe("State Utilities", () => {
     }
 
     it("should create a store factory", () => {
-      const { useStore } = createTrackedStore<TestState, TestActions>(
-        {
+      const { useStore } = createTrackedStore<TestState, TestActions>({
+        config: {
           name: "test-store",
           initialState: { count: 0, items: [] },
         },
-        (set, get) => ({
+        actionsFactory: ({ set, get }) => ({
           increment: () =>
-            set((state) => ({ ...state, count: state.count + 1 })),
+            set({ partial: (state) => ({ ...state, count: state.count + 1 }) }),
           addItem: (item: string) =>
-            set((state) => ({
-              ...state,
-              items: [...state.items, item],
-            })),
+            set({
+              partial: (state) => ({
+                ...state,
+                items: [...state.items, item],
+              }),
+            }),
         }),
-      );
+      });
 
       // Test that the store hook is a function
       expect(typeof useStore).toBe("function");
@@ -174,7 +178,7 @@ describe("State Utilities", () => {
         toArray: vi.fn().mockResolvedValue([{ id: 1, name: "test" }]),
         where: vi.fn().mockResolvedValue([{ id: 1, name: "test" }]),
         count: vi.fn().mockResolvedValue(1),
-      } as any;
+      } as Table<{ id?: number | string; name?: string }>;
 
       const reactiveTable = createReactiveTable(mockTable);
 

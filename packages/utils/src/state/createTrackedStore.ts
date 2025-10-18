@@ -14,6 +14,7 @@ import {
   createHybridStorage,
   createIndexedDBStorage,
   type StorageConfig,
+  type StateStorage,
 } from "../storage/indexeddb-storage.js";
 
 // Re-export Zustand types for convenience
@@ -36,7 +37,7 @@ export function generateSequentialId(prefix = "id"): () => string {
  */
 export interface FilterManager<T> {
   filters: Partial<Record<keyof T, unknown>>;
-  setFilter: <K extends keyof T>(key: K, value: unknown) => void;
+  setFilter: <K extends keyof T>(params: { key: K; value: unknown }) => void;
   clearFilter: <K extends keyof T>(key: K) => void;
   clearAllFilters: () => void;
   hasActiveFilters: () => boolean;
@@ -53,7 +54,7 @@ export function createFilterManager<T extends Record<string, unknown>>(
       return { ...currentFilters };
     },
 
-    setFilter: (key: keyof T, value: unknown) => {
+    setFilter: ({ key, value }: { key: keyof T; value: unknown }) => {
       if (value === undefined) {
         delete currentFilters[key];
       } else {
@@ -129,11 +130,15 @@ export interface PagedResult<T> {
   };
 }
 
-export function computePagedItems<T>(
-  items: T[],
-  page: number,
-  pageSize: number,
-): PagedResult<T> {
+export function computePagedItems<T>({
+  items,
+  page,
+  pageSize,
+}: {
+  items: T[];
+  page: number;
+  pageSize: number;
+}): PagedResult<T> {
   const total = items.length;
   const totalPages = Math.ceil(total / pageSize);
   const startIndex = (page - 1) * pageSize;
@@ -156,7 +161,7 @@ export function computePagedItems<T>(
 // STORE FACTORY
 // ============================================================================
 
-export interface TrackedStoreConfig<T, A = Record<string, any>> {
+export interface TrackedStoreConfig<T, A = Record<string, unknown>> {
   name: string;
   initialState: T;
   persist?: {
@@ -191,18 +196,28 @@ type ImmerSetState<T> = {
 
 export function createTrackedStore<
   T extends object,
-  A extends Record<string, any>,
->(
-  config: TrackedStoreConfig<T, A>,
-  actionsFactory: (
-    set: (
-      partial: Partial<T & A> | ((state: Draft<T & A>) => void),
-      replace?: boolean,
-    ) => void,
-    get: () => T & A,
-  ) => A,
-  selectorsFactory?: (state: T) => Record<string, (state: T) => unknown>,
-): TrackedStoreResult<T, A> {
+  A extends Record<string, unknown>,
+>({
+  config,
+  actionsFactory,
+  selectorsFactory,
+}: {
+  config: TrackedStoreConfig<T, A>;
+  actionsFactory: ({
+    set,
+    get,
+  }: {
+    set: ({
+      partial,
+      replace,
+    }: {
+      partial: Partial<T & A> | ((state: Draft<T & A>) => void);
+      replace?: boolean;
+    }) => void;
+    get: () => T & A;
+  }) => A;
+  selectorsFactory?: (state: T) => Record<string, (state: T) => unknown>;
+}): TrackedStoreResult<T, A> {
   const {
     name,
     initialState,
@@ -223,7 +238,7 @@ export function createTrackedStore<
   });
 
   // Build middleware stack
-  let storeCreator: any = immer(baseStoreCreator);
+  let storeCreator = immer(baseStoreCreator);
 
   // Add persistence if enabled
   if (persistConfig?.enabled) {
@@ -234,7 +249,7 @@ export function createTrackedStore<
       ...persistConfig.config,
     };
 
-    let storage: any;
+    let storage: StateStorage;
     switch (persistConfig.storage) {
       case "indexeddb":
         storage = createIndexedDBStorage(storageConfig, logger);
@@ -265,6 +280,7 @@ export function createTrackedStore<
   }
 
   // Create the store
+   
   const useStore = create<T & A>(storeCreator);
   const store = useStore; // The store API is the same as the hook in Zustand
 
@@ -272,14 +288,16 @@ export function createTrackedStore<
   const selectors = selectorsFactory ? selectorsFactory(initialState) : {};
 
   // Create actions using the Immer-wrapped set method
-   
-  const actions = actionsFactory(
-    store.setState as (
-      partial: Partial<T & A> | ((state: Draft<T & A>) => void),
-      replace?: boolean,
-    ) => void,
-    () => store.getState(),
-  );
+  const actions = actionsFactory({
+    set: ({
+      partial,
+      replace,
+    }: {
+      partial: Partial<T & A> | ((state: Draft<T & A>) => void);
+      replace?: boolean;
+    }) => store.setState(partial, replace),
+    get: () => store.getState(),
+  });
 
   return {
     useStore,
@@ -317,11 +335,15 @@ export function createLoadingState(): LoadingState {
 /**
  * Async operation wrapper for stores
  */
-export function createAsyncAction<T>(
-  action: () => Promise<T>,
-  onSuccess?: (result: T) => void,
-  onError?: (error: Error) => void,
-) {
+export function createAsyncAction<T>({
+  action,
+  onSuccess,
+  onError,
+}: {
+  action: () => Promise<T>;
+  onSuccess?: (result: T) => void;
+  onError?: (error: Error) => void;
+}) {
   return async (
     set: (
       fn: (state: { loading: boolean; error: string | null }) => void,
