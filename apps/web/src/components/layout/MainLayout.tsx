@@ -57,10 +57,13 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     const rightActiveGroup = getActiveGroup("right");
 
     if (!leftActiveGroup && Object.keys(leftGroups).length > 0) {
-      setActiveGroup("left", Object.keys(leftGroups)[0]);
+      setActiveGroup({ sidebar: "left", groupId: Object.keys(leftGroups)[0] });
     }
     if (!rightActiveGroup && Object.keys(rightGroups).length > 0) {
-      setActiveGroup("right", Object.keys(rightGroups)[0]);
+      setActiveGroup({
+        sidebar: "right",
+        groupId: Object.keys(rightGroups)[0],
+      });
     }
   }, [getToolGroupsForSidebar, getActiveGroup, setActiveGroup]);
 

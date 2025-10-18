@@ -67,19 +67,31 @@ export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({
     // Remove from left sidebar groups
     Object.entries(leftGroups).forEach(([groupId, group]) => {
       if (group.sections.includes(draggedSectionId)) {
-        removeSectionFromGroup("left", groupId, draggedSectionId);
+        removeSectionFromGroup({
+          sidebar: "left",
+          groupId,
+          sectionId: draggedSectionId,
+        });
       }
     });
 
     // Remove from right sidebar groups
     Object.entries(rightGroups).forEach(([groupId, group]) => {
       if (group.sections.includes(draggedSectionId)) {
-        removeSectionFromGroup("right", groupId, draggedSectionId);
+        removeSectionFromGroup({
+          sidebar: "right",
+          groupId,
+          sectionId: draggedSectionId,
+        });
       }
     });
 
     // Then add to the target group
-    addSectionToGroup(side, activeGroupId, draggedSectionId);
+    addSectionToGroup({
+      sidebar: side,
+      groupId: activeGroupId,
+      sectionId: draggedSectionId,
+    });
   };
 
   const handleDragOver = (event: React.DragEvent) => {
@@ -124,24 +136,36 @@ export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({
     // Remove from left sidebar groups
     Object.entries(leftGroups).forEach(([groupId, group]) => {
       if (group.sections.includes(draggedSectionId)) {
-        removeSectionFromGroup("left", groupId, draggedSectionId);
+        removeSectionFromGroup({
+          sidebar: "left",
+          groupId,
+          sectionId: draggedSectionId,
+        });
       }
     });
 
     // Remove from right sidebar groups
     Object.entries(rightGroups).forEach(([groupId, group]) => {
       if (group.sections.includes(draggedSectionId)) {
-        removeSectionFromGroup("right", groupId, draggedSectionId);
+        removeSectionFromGroup({
+          sidebar: "right",
+          groupId,
+          sectionId: draggedSectionId,
+        });
       }
     });
 
     // Then add to the target group
-    addSectionToGroup(side, activeGroupId, draggedSectionId);
+    addSectionToGroup({
+      sidebar: side,
+      groupId: activeGroupId,
+      sectionId: draggedSectionId,
+    });
   };
 
   const handleToggleCollapse = (sectionId: string) => {
     const isCollapsed = collapsedSections[sectionId] || false;
-    setSectionCollapsed(sectionId, !isCollapsed);
+    setSectionCollapsed({ sectionKey: sectionId, collapsed: !isCollapsed });
   };
 
   // Use useEffect to handle sidebar collapse when no active group

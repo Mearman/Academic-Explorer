@@ -117,7 +117,7 @@ export const LeftRibbon: React.FC = () => {
     }
 
     // Activate the group and expand sidebar
-    setActiveGroup("left", groupId);
+    setActiveGroup({ sidebar: "left", groupId });
     layoutStore.setLeftSidebarOpen(true);
 
     logger.debug("ui", `Sidebar should now be open for group ${groupId}`);
@@ -165,12 +165,12 @@ export const LeftRibbon: React.FC = () => {
       },
     );
 
-    layoutStore.reorderGroups(
-      "left",
+    layoutStore.reorderGroups({
+      sidebar: "left",
       sourceGroupId,
       targetGroupId,
       insertBefore,
-    );
+    });
 
     // Reset drag state
     setIsDragging(false);
@@ -320,12 +320,12 @@ export const LeftRibbon: React.FC = () => {
           _event: e,
         });
       } else {
-        layoutStore.moveGroupToSidebar(
-          groupReorderData,
-          "left",
-          firstGroup.id,
-          true,
-        );
+        layoutStore.moveGroupToSidebar({
+          sourceGroupId: groupReorderData,
+          targetSidebar: "left",
+          targetGroupId: firstGroup.id,
+          insertBefore: true,
+        });
       }
     }
   };
@@ -351,15 +351,18 @@ export const LeftRibbon: React.FC = () => {
           _event: e,
         });
       } else {
-        layoutStore.moveGroupToSidebar(
-          groupReorderData,
-          "left",
-          lastGroup.id,
-          false,
-        );
+        layoutStore.moveGroupToSidebar({
+          sourceGroupId: groupReorderData,
+          targetSidebar: "left",
+          targetGroupId: lastGroup.id,
+          insertBefore: false,
+        });
       }
     } else if (!isFromSameSidebar) {
-      layoutStore.moveGroupToSidebar(groupReorderData, "left");
+      layoutStore.moveGroupToSidebar({
+        sourceGroupId: groupReorderData,
+        targetSidebar: "left",
+      });
     }
   };
 
@@ -386,12 +389,12 @@ export const LeftRibbon: React.FC = () => {
           _event: e,
         });
       } else {
-        layoutStore.moveGroupToSidebar(
-          groupReorderData,
-          "left",
-          targetGroup.id,
-          false,
-        );
+        layoutStore.moveGroupToSidebar({
+          sourceGroupId: groupReorderData,
+          targetSidebar: "left",
+          targetGroupId: targetGroup.id,
+          insertBefore: false,
+        });
       }
     }
   };
@@ -500,7 +503,11 @@ export const LeftRibbon: React.FC = () => {
           "ui",
           `Removing ${draggedSectionId} from left group ${groupId}`,
         );
-        layoutStore.removeSectionFromGroup("left", groupId, draggedSectionId);
+        layoutStore.removeSectionFromGroup({
+          sidebar: "left",
+          groupId,
+          sectionId: draggedSectionId,
+        });
       }
     });
 
@@ -511,7 +518,11 @@ export const LeftRibbon: React.FC = () => {
           "ui",
           `Removing ${draggedSectionId} from right group ${groupId}`,
         );
-        layoutStore.removeSectionFromGroup("right", groupId, draggedSectionId);
+        layoutStore.removeSectionFromGroup({
+          sidebar: "right",
+          groupId,
+          sectionId: draggedSectionId,
+        });
       }
     });
 
@@ -524,7 +535,11 @@ export const LeftRibbon: React.FC = () => {
     });
 
     // Then add to the target group
-    addSectionToGroup("left", targetGroupId, draggedSectionId);
+    addSectionToGroup({
+      sidebar: "left",
+      groupId: targetGroupId,
+      sectionId: draggedSectionId,
+    });
   };
 
   const handleDragOver = (event: React.DragEvent) => {
@@ -587,27 +602,31 @@ export const LeftRibbon: React.FC = () => {
 
     Object.entries(leftGroups).forEach(([existingGroupId, group]) => {
       if (group.sections.includes(draggedSectionId)) {
-        layoutStore.removeSectionFromGroup(
-          "left",
-          existingGroupId,
-          draggedSectionId,
-        );
+        layoutStore.removeSectionFromGroup({
+          sidebar: "left",
+          groupId: existingGroupId,
+          sectionId: draggedSectionId,
+        });
       }
     });
 
     Object.entries(rightGroups).forEach(([existingGroupId, group]) => {
       if (group.sections.includes(draggedSectionId)) {
-        layoutStore.removeSectionFromGroup(
-          "right",
-          existingGroupId,
-          draggedSectionId,
-        );
+        layoutStore.removeSectionFromGroup({
+          sidebar: "right",
+          groupId: existingGroupId,
+          sectionId: draggedSectionId,
+        });
       }
     });
 
     // Add to the new group (will create the group since it's guaranteed to not exist)
-    addSectionToGroup("left", groupId, draggedSectionId);
-    setActiveGroup("left", groupId);
+    addSectionToGroup({
+      sidebar: "left",
+      groupId,
+      sectionId: draggedSectionId,
+    });
+    setActiveGroup({ sidebar: "left", groupId });
 
     // Immediately update the group definition with the section
     updateGroupDefinition(groupId, [draggedSectionId], getSectionById);
