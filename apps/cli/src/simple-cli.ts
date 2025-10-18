@@ -26,7 +26,9 @@ program
       console.log(`Detected type: ${entityType}`);
       logger.debug("cli", "Entity type detected", { entityId, entityType });
     } catch (error) {
-      console.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
+      console.error(
+        `Error: ${error instanceof Error ? error.message : String(error)}`,
+      );
       logError(logger, "Failed to detect entity type", error, "cli");
       process.exit(1);
     }
@@ -37,7 +39,7 @@ program
   .description("List supported entity types")
   .action(() => {
     console.log("Supported entity types:");
-    SUPPORTED_ENTITIES.forEach(type => {
+    SUPPORTED_ENTITIES.forEach((type) => {
       console.log(`  - ${type}`);
     });
   });
@@ -46,8 +48,8 @@ program
   .command("test")
   .description("Test CLI functionality")
   .action(() => {
-    console.log("✅ CLI is working!");
-    console.log("📦 Using packages:");
+    console.log("[SUCCESS] CLI is working!");
+    console.log("[PACKAGES] Using packages:");
     console.log("  - @academic-explorer/shared-utils (logger)");
     console.log("  - Entity detection utilities");
     logger.debug("cli", "CLI test command executed successfully");
@@ -58,7 +60,7 @@ program.configureOutput({
   writeErr: (str) => {
     logger.error("cli", str);
     process.stderr.write(str);
-  }
+  },
 });
 
 // Parse command line arguments
