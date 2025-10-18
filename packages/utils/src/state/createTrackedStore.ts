@@ -7,6 +7,7 @@ import type { StateCreator, StoreApi, UseBoundStore } from "zustand";
 import { create } from "zustand";
 import { createJSONStorage, devtools, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
+import type { Draft } from "immer";
 import { isDevelopment, isProduction } from "../environment/index.js";
 import { logger } from "../logger.js";
 import {
@@ -195,7 +196,7 @@ export function createTrackedStore<
   config: TrackedStoreConfig<T, A>,
   actionsFactory: (
     set: (
-      partial: Partial<T & A> | ((state: T & A) => Partial<T & A>),
+      partial: Partial<T & A> | ((state: Draft<T & A>) => void),
       replace?: boolean,
     ) => void,
     get: () => T & A,
@@ -272,7 +273,13 @@ export function createTrackedStore<
 
   // Create actions using the Immer-wrapped set method
   // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
-  const actions = actionsFactory(store.setState as any, () => store.getState());
+  const actions = actionsFactory(
+    store.setState as (
+      partial: Partial<T & A> | ((state: Draft<T & A>) => void),
+      replace?: boolean,
+    ) => void,
+    () => store.getState(),
+  );
 
   return {
     useStore,
