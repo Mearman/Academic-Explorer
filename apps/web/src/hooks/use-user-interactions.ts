@@ -25,16 +25,16 @@ export interface UseUserInteractionsOptions {
 
 export interface UseUserInteractionsReturn {
   // Page visit tracking
-  recordPageVisit: (
-    url: string,
+  recordPageVisit: (params: {
+    url: string;
     metadata?: {
       searchQuery?: string;
       filters?: Record<string, unknown>;
       entityId?: string;
       entityType?: string;
       resultCount?: number;
-    },
-  ) => Promise<void>;
+    };
+  }) => Promise<void>;
   recentPageVisits: PageVisitRecord[];
   pageVisitsForUrl: (normalizedUrl: string) => PageVisitRecord[];
   pageVisitStats: {
@@ -50,24 +50,24 @@ export interface UseUserInteractionsReturn {
   // Bookmark management
   bookmarks: BookmarkRecord[];
   isBookmarked: boolean;
-  bookmarkEntity: (
-    title: string,
-    notes?: string,
-    tags?: string[],
-  ) => Promise<void>;
-  bookmarkSearch: (
-    title: string,
-    searchQuery: string,
-    filters?: Record<string, unknown>,
-    notes?: string,
-    tags?: string[],
-  ) => Promise<void>;
-  bookmarkList: (
-    title: string,
-    url: string,
-    notes?: string,
-    tags?: string[],
-  ) => Promise<void>;
+  bookmarkEntity: (params: {
+    title: string;
+    notes?: string;
+    tags?: string[];
+  }) => Promise<void>;
+  bookmarkSearch: (params: {
+    title: string;
+    searchQuery: string;
+    filters?: Record<string, unknown>;
+    notes?: string;
+    tags?: string[];
+  }) => Promise<void>;
+  bookmarkList: (params: {
+    title: string;
+    url: string;
+    notes?: string;
+    tags?: string[];
+  }) => Promise<void>;
   unbookmarkEntity: () => Promise<void>;
   unbookmarkSearch: () => Promise<void>;
   unbookmarkList: () => Promise<void>;
@@ -187,7 +187,12 @@ export function useUserInteractions(
 
           await userInteractionsService.recordPageVisitLegacy(
             url,
-            metadata,
+            {
+              searchQuery,
+              filters,
+              entityId,
+              entityType,
+            },
             sessionId,
             document.referrer || undefined,
           );
@@ -242,11 +247,8 @@ export function useUserInteractions(
           document.referrer || undefined,
         );
 
-      // Refresh data to update UI
-      await refreshData();
-    },
-    [sessionId, refreshData],
-  );
+        // Refresh data to update UI
+        await refreshData();
       } catch (error) {
         logger.error(
           USER_INTERACTIONS_LOGGER_CONTEXT,
@@ -273,7 +275,15 @@ export function useUserInteractions(
   );
 
   const bookmarkEntity = useCallback(
-    async ({ title, notes, tags }: { title: string; notes?: string; tags?: string[] }) => {
+    async ({
+      title,
+      notes,
+      tags,
+    }: {
+      title: string;
+      notes?: string;
+      tags?: string[];
+    }) => {
       if (!entityId || !entityType) {
         throw new Error("Entity ID and type are required to bookmark");
       }
@@ -361,18 +371,19 @@ export function useUserInteractions(
       tags?: string[];
     }) => {
       try {
-        const url = location.pathname + location.search;
-        const queryParams = getSearchParams();
+        const params: Record<string, unknown> = { search: searchQuery };
+        if (filters) {
+          Object.assign(params, filters);
+        }
 
-        await userInteractionsService.addSearchBookmark(
-          searchQuery,
-          filters,
-          title,
-          url,
-          Object.keys(queryParams).length > 0 ? queryParams : undefined,
-          notes,
-          tags,
-        );
+        const request = {
+          cacheKey: `/search?q=${searchQuery}`,
+          hash: `search-${searchQuery}`.slice(0, 16),
+          endpoint: "/search",
+          params,
+        };
+
+        await userInteractionsService.addBookmark(request, title, notes, tags);
 
         setIsBookmarked(true);
         await refreshData();
@@ -393,7 +404,17 @@ export function useUserInteractions(
   );
 
   const bookmarkList = useCallback(
-    async ({ title, url, notes, tags }: { title: string; url: string; notes?: string; tags?: string[] }) => {
+    async ({
+      title,
+      url,
+      notes,
+      tags,
+    }: {
+      title: string;
+      url: string;
+      notes?: string;
+      tags?: string[];
+    }) => {
       try {
         const queryParams = getSearchParams();
 

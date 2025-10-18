@@ -223,13 +223,10 @@ export function createTrackedStore<
     set,
     get,
   }: {
-    set: ({
-      partial,
-      replace,
-    }: {
-      partial: Partial<T & A> | ((state: Draft<T & A>) => void);
-      replace?: boolean;
-    }) => void;
+    set: (
+      partial: Partial<T & A> | ((state: Draft<T & A>) => void),
+      replace?: boolean,
+    ) => void;
     get: () => T & A;
   }) => A;
   selectorsFactory?: (state: T) => Record<string, (state: T) => unknown>;
@@ -254,12 +251,8 @@ export function createTrackedStore<
   });
 
   // Create Zustand store with proper middleware composition
-  // Use union type to handle Zustand v5 middleware type incompatibilities
-  let storeCreator:
-    | StateCreator<T, [], [], T>
-    | StateCreator<T & A, [["zustand/devtools", never]], [], T & A>
-    | StateCreator<T & A, [["zustand/persist", unknown]], [], T & A>
-    | StateCreator<T & A, [], [], T & A> = immer(baseStoreCreator);
+  // Start with immer middleware
+  let storeCreator: any = immer(baseStoreCreator);
 
   // Apply devtools if enabled
   if (enableDevtools && isDevelopment()) {
@@ -310,27 +303,19 @@ export function createTrackedStore<
   // Create actions using the Immer-wrapped set method
   // Use type guards to handle middleware-wrapped store setState signatures
   const actions = actionsFactory({
-    set: ({
-      partial,
-      replace,
-    }: {
-      partial: Partial<T & A> | ((state: Draft<T & A>) => void);
-      replace?: boolean;
-    }) => {
+    set: (
+      partial: Partial<T & A> | ((state: Draft<T & A>) => void),
+      replace?: boolean,
+    ) => {
       if (typeof partial === "function") {
-        // Immer mutation function - use type assertion through function call
-        const immerFn = partial;
-        store.setState((state) => {
-          // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
-          immerFn(state as Draft<T & A>);
-          return state;
-        });
-      } else if (replace) {
-        // Replace entire state
-        store.setState(partial, replace);
+        // Immer mutation function - use type assertion
+        // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
+        (store.setState as any)((state: Draft<T & A>) => {
+          partial(state);
+        }, replace);
       } else {
-        // Partial update
-        store.setState(partial);
+        // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
+        (store.setState as any)(partial, replace);
       }
     },
     get: () => store.getState(),
