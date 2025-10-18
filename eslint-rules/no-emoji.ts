@@ -35,6 +35,8 @@ const EMOJI_RANGES: [number, number][] = [
   [0x23f8, 0x23fa], // Media symbols (⏸-⏺)
   [0x25b6, 0x25b6], // Play button ▶
   [0x25c0, 0x25c0], // Reverse button ◀
+  [0x2705, 0x2705], // Check mark ✅
+  [0x274c, 0x274c], // Cross mark ❌
 ];
 
 // Generate regex pattern from ranges
@@ -156,44 +158,6 @@ export const noEmojiRule = createRule<[], MessageIds>({
           typeof node.value.value === "string"
         ) {
           checkForEmojis(node.value, node.value.value);
-        }
-      },
-
-      // For markdown files - check text content
-      Program(node) {
-        // This will catch markdown text content when processed by @eslint/markdown
-        const sourceCode = context.getSourceCode();
-        const text = sourceCode.getText();
-
-        // Only check if this looks like markdown content (not a code block)
-        if (
-          text &&
-          !text.includes("function") &&
-          !text.includes("const ") &&
-          !text.includes("import ")
-        ) {
-          const matches = Array.from(text.matchAll(EMOJI_REGEX));
-          for (const match of matches) {
-            if (match.index !== undefined) {
-              const emoji = match[0];
-              const suggestion = COMMON_ICON_SUGGESTIONS[emoji];
-
-              context.report({
-                node,
-                messageId: suggestion ? "noEmoji" : "noEmojiGeneric",
-                data: {
-                  emoji,
-                  suggestion:
-                    suggestion ||
-                    "appropriate Mantine icons from @tabler/icons-react",
-                },
-                loc: {
-                  start: sourceCode.getLocFromIndex(match.index),
-                  end: sourceCode.getLocFromIndex(match.index + emoji.length),
-                },
-              });
-            }
-          }
         }
       },
     };
