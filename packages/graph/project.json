@@ -24,6 +24,14 @@
         "command": "tsc --noEmit",
         "cwd": "{projectRoot}"
       },
+      "inputs": [
+        "source",
+        "configs",
+        "^production",
+        "{workspaceRoot}/tsconfig*.json",
+        "{workspaceRoot}/config/**/*"
+      ],
+      "outputs": ["{projectRoot}/dist/tsc"],
       "cache": true
     },
     "typecheck:all": {
@@ -32,6 +40,14 @@
         "command": "tsc --noEmit --project tsconfig.typecheck.json",
         "cwd": "{projectRoot}"
       },
+      "inputs": [
+        "source",
+        "configs",
+        "^production",
+        "{workspaceRoot}/tsconfig*.json",
+        "{workspaceRoot}/config/**/*"
+      ],
+      "outputs": ["{projectRoot}/dist/tsc"],
       "cache": true
     },
     "lint": {
@@ -40,6 +56,13 @@
         "command": "eslint src",
         "cwd": "{projectRoot}"
       },
+      "inputs": [
+        "source",
+        "configs",
+        "{workspaceRoot}/eslint.config.ts",
+        "{workspaceRoot}/eslint.config.*.ts"
+      ],
+      "outputs": ["{workspaceRoot}/.nx/cache/lint-results/{projectName}.json"],
       "cache": true
     },
     "lint:fix": {
@@ -92,7 +115,16 @@
     "validate": {
       "cache": true,
       "dependsOn": ["build", "test", "lint"],
-      "inputs": [],
+      "inputs": [
+        "production",
+        "{projectRoot}/tsconfig.json",
+        "{projectRoot}/package.json",
+        "source",
+        "tests",
+        "configs",
+        "{workspaceRoot}/eslint.config.ts",
+        "{workspaceRoot}/eslint.config.*.ts"
+      ],
       "outputs": []
     }
   },

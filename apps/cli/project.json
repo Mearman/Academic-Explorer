@@ -98,7 +98,17 @@
     "validate": {
       "cache": true,
       "dependsOn": ["build", "test", "lint"],
-      "inputs": [],
+      "inputs": [
+        "production",
+        "^production",
+        "{workspaceRoot}/vite.config.base.ts",
+        "{workspaceRoot}/config/**/*",
+        "source",
+        "tests",
+        "configs",
+        "{workspaceRoot}/eslint.config.ts",
+        "{workspaceRoot}/eslint.config.*.ts"
+      ],
       "outputs": []
     }
   }

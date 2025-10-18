@@ -38,6 +38,14 @@
         "cwd": "{projectRoot}",
         "nodeOptions": ["--max-old-space-size=8192"]
       },
+      "inputs": [
+        "source",
+        "configs",
+        "^production",
+        "{workspaceRoot}/tsconfig*.json",
+        "{workspaceRoot}/config/**/*"
+      ],
+      "outputs": ["{projectRoot}/dist/tsc"],
       "cache": true
     },
     "typecheck:all": {
@@ -47,6 +55,14 @@
         "cwd": "{projectRoot}",
         "nodeOptions": ["--max-old-space-size=8192"]
       },
+      "inputs": [
+        "source",
+        "configs",
+        "^production",
+        "{workspaceRoot}/tsconfig*.json",
+        "{workspaceRoot}/config/**/*"
+      ],
+      "outputs": ["{projectRoot}/dist/tsc"],
       "cache": true
     },
     "lint": {
@@ -55,6 +71,13 @@
         "command": "eslint . --max-warnings=100",
         "cwd": "{projectRoot}"
       },
+      "inputs": [
+        "source",
+        "configs",
+        "{workspaceRoot}/eslint.config.ts",
+        "{workspaceRoot}/eslint.config.*.ts"
+      ],
+      "outputs": ["{workspaceRoot}/.nx/cache/lint-results/{projectName}.json"],
       "cache": true
     },
     "lint:fix": {
@@ -63,6 +86,13 @@
         "command": "eslint . --fix",
         "cwd": "{projectRoot}"
       },
+      "inputs": [
+        "source",
+        "configs",
+        "{workspaceRoot}/eslint.config.ts",
+        "{workspaceRoot}/eslint.config.*.ts"
+      ],
+      "outputs": ["{projectRoot}/**/*.{js,jsx,ts,tsx}"],
       "cache": true
     },
     "test": {
@@ -106,6 +136,14 @@
         "config": "{workspaceRoot}/vite.config.base.ts",
         "include": "src/**/*.component.test.{ts,tsx}"
       },
+      "inputs": [
+        "source",
+        "tests",
+        "configs",
+        "^production",
+        "{workspaceRoot}/config/**/*"
+      ],
+      "outputs": ["{projectRoot}/coverage"],
       "cache": true
     },
 
@@ -118,7 +156,17 @@
         "ci": {
           "ci": true
         }
-      }
+      },
+      "inputs": [
+        "source",
+        "tests",
+        "configs",
+        "^production",
+        "{workspaceRoot}/config/**/*",
+        "{workspaceRoot}/playwright.config.ts"
+      ],
+      "outputs": ["{projectRoot}/coverage"],
+      "cache": true
     },
     "test:watch": {
       "executor": "nx:run-commands",
@@ -134,6 +182,11 @@
         "command": "tsx ../../scripts/with-cleanup.ts vite preview",
         "cwd": "{projectRoot}"
       },
+      "inputs": [
+        "^production",
+        "{workspaceRoot}/vite.config.base.ts",
+        "{workspaceRoot}/config/**/*"
+      ],
       "cache": true
     },
     "verify": {
@@ -149,7 +202,10 @@
         ],
         "parallel": false,
         "cwd": "{projectRoot}"
-      }
+      },
+      "inputs": [],
+      "outputs": [],
+      "cache": true
     },
     "clean": {
       "executor": "nx:run-commands",
@@ -162,7 +218,19 @@
     "validate": {
       "cache": true,
       "dependsOn": ["build", "test", "lint"],
-      "inputs": [],
+      "inputs": [
+        "production",
+        "^production",
+        "{workspaceRoot}/vite.config.base.ts",
+        "{projectRoot}/vite.config.base.ts",
+        "{projectRoot}/index.html",
+        "{projectRoot}/public/**/*",
+        "source",
+        "tests",
+        "configs",
+        "{workspaceRoot}/eslint.config.ts",
+        "{workspaceRoot}/eslint.config.*.ts"
+      ],
       "outputs": []
     }
   },
