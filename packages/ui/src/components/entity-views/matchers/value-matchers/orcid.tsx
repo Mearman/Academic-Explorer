@@ -10,13 +10,7 @@ export const orcidMatcher: ValueMatcher = {
     if (typeof value !== "string") return false;
     return /^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/.test(value);
   },
-  render: ({
-    value,
-    _fieldName,
-  }: {
-    value: unknown;
-    _fieldName: string;
-  }): React.ReactNode => {
+  render: (value: unknown, fieldName: string): React.ReactNode => {
     const orcidValue = value as string;
     return (
       <Group gap="xs" wrap="nowrap">

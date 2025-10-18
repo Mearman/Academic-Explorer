@@ -21,15 +21,11 @@ export const authorMatcher: ArrayMatcher = {
       (first.author as Record<string, unknown>).display_name !== undefined
     );
   },
-  render: ({
-    array,
-    _fieldName,
-    onNavigate,
-  }: {
-    array: unknown[];
-    _fieldName: string;
-    onNavigate?: (path: string) => void;
-  }): React.ReactNode => {
+  render: (
+    array: unknown[],
+    fieldName: string,
+    onNavigate?: (path: string) => void,
+  ): React.ReactNode => {
     const authorArray = array as AuthorItem[];
 
     return (

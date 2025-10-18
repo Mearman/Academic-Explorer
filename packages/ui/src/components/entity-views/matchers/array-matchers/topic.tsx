@@ -18,15 +18,11 @@ export const topicMatcher: ArrayMatcher = {
       "count" in first
     );
   },
-  render: ({
-    array,
-    _fieldName,
-    onNavigate,
-  }: {
-    array: unknown[];
-    _fieldName: string;
-    onNavigate?: (path: string) => void;
-  }): React.ReactNode => {
+  render: (
+    array: unknown[],
+    fieldName: string,
+    onNavigate?: (path: string) => void,
+  ): React.ReactNode => {
     const topicArray = array as TopicItem[];
 
     return (

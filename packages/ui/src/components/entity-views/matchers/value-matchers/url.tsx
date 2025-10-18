@@ -15,15 +15,11 @@ export const urlMatcher: ValueMatcher = {
       return false;
     }
   },
-  render: ({
-    value,
-    _fieldName,
-    onNavigate,
-  }: {
-    value: unknown;
-    _fieldName: string;
-    onNavigate?: (path: string) => void;
-  }): React.ReactNode => {
+  render: (
+    value: unknown,
+    fieldName: string,
+    onNavigate?: (path: string) => void,
+  ): React.ReactNode => {
     const urlValue = value as string;
     const relativeUrl = convertToRelativeUrl(urlValue);
 

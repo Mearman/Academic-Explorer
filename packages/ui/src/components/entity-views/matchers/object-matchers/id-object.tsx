@@ -25,15 +25,11 @@ export const idObjectMatcher: ObjectMatcher = {
         key === "scopus",
     );
   },
-  render: ({
-    obj,
-    _fieldName,
-    onNavigate,
-  }: {
-    obj: unknown;
-    _fieldName: string;
-    onNavigate?: (path: string) => void;
-  }): React.ReactNode => {
+  render: (
+    obj: unknown,
+    fieldName: string,
+    onNavigate?: (path: string) => void,
+  ): React.ReactNode => {
     const idObj = obj as Record<string, string>;
     return (
       <Group gap="xs" wrap="wrap">
