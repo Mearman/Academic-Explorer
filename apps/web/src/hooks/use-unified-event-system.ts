@@ -8,10 +8,29 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { logger } from "@academic-explorer/utils/logger";
-import { EventBus, EventHandler, createLocalEventBus, createCrossTabEventBus } from "@academic-explorer/graph";
-import { TaskQueue, TaskDescriptor, TaskResult, TaskStatus, createTaskQueue } from "@academic-explorer/graph";
-import { WorkerPool, WorkerPoolOptions, createWorkerPool } from "@academic-explorer/graph";
-import { QueuedResourceCoordinator, QueueCoordinatorOptions, createQueuedResourceCoordinator } from "@academic-explorer/graph";
+import {
+  EventBus,
+  EventHandler,
+  createLocalEventBus,
+  createCrossTabEventBus,
+} from "@academic-explorer/graph";
+import {
+  TaskQueue,
+  TaskDescriptor,
+  TaskResult,
+  TaskStatus,
+  createTaskQueue,
+} from "@academic-explorer/graph";
+import {
+  WorkerPool,
+  WorkerPoolOptions,
+  createWorkerPool,
+} from "@academic-explorer/graph";
+import {
+  QueuedResourceCoordinator,
+  QueueCoordinatorOptions,
+  createQueuedResourceCoordinator,
+} from "@academic-explorer/graph";
 
 // Type guard for TaskResult
 function isTaskResult(value: unknown): value is TaskResult {
@@ -52,12 +71,17 @@ export function useEventBus(channelName?: string): EventBus {
 /**
  * Hook for listening to specific event types
  */
-export function useEventListener(
-  bus: EventBus,
-  eventType: string,
-  handler: (payload?: unknown) => void,
-  deps: React.DependencyList = []
-): void {
+export function useEventListener({
+  bus,
+  eventType,
+  handler,
+  deps = [],
+}: {
+  bus: EventBus;
+  eventType: string;
+  handler: (payload?: unknown) => void;
+  deps?: React.DependencyList;
+}): void {
   const handlerRef = useRef(handler);
   handlerRef.current = handler;
 
@@ -71,12 +95,15 @@ export function useEventListener(
     logger.debug("hooks", "Event listener registered", {
       eventType,
       listenerId,
-      isBroadcasting: bus.isBroadcasting()
+      isBroadcasting: bus.isBroadcasting(),
     });
 
     return () => {
       bus.off(eventType, wrappedHandler);
-      logger.debug("hooks", "Event listener removed", { eventType, listenerId });
+      logger.debug("hooks", "Event listener removed", {
+        eventType,
+        listenerId,
+      });
     };
     // Disable exhaustive-deps warning for spread element - this is intentional API design
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -89,7 +116,7 @@ export function useEventListener(
  */
 export function useTaskQueue(
   bus: EventBus,
-  options: { maxConcurrency?: number } = {}
+  options: { maxConcurrency?: number } = {},
 ): {
   taskQueue: TaskQueue;
   submitTask: (task: TaskDescriptor) => Promise<string>;
@@ -99,7 +126,12 @@ export function useTaskQueue(
   stats: ReturnType<TaskQueue["getStats"]>;
 } {
   const taskQueueRef = useRef<TaskQueue | null>(null);
-  const [stats, setStats] = useState({ queueLength: 0, activeTasks: 0, processing: false, maxConcurrency: 1 });
+  const [stats, setStats] = useState({
+    queueLength: 0,
+    activeTasks: 0,
+    processing: false,
+    maxConcurrency: 1,
+  });
 
   taskQueueRef.current ??= createTaskQueue(bus, options);
 
@@ -126,17 +158,26 @@ export function useTaskQueue(
     setStats(taskQueue.getStats());
   });
 
-  const submitTask = useCallback((task: TaskDescriptor) => {
-    return Promise.resolve(taskQueue.enqueue(task));
-  }, [taskQueue]);
+  const submitTask = useCallback(
+    (task: TaskDescriptor) => {
+      return Promise.resolve(taskQueue.enqueue(task));
+    },
+    [taskQueue],
+  );
 
-  const cancelTask = useCallback((taskId: string) => {
-    return taskQueue.cancel(taskId);
-  }, [taskQueue]);
+  const cancelTask = useCallback(
+    (taskId: string) => {
+      return taskQueue.cancel(taskId);
+    },
+    [taskQueue],
+  );
 
-  const getTaskStatus = useCallback((taskId: string) => {
-    return taskQueue.getTaskStatus(taskId);
-  }, [taskQueue]);
+  const getTaskStatus = useCallback(
+    (taskId: string) => {
+      return taskQueue.getTaskStatus(taskId);
+    },
+    [taskQueue],
+  );
 
   const clearQueue = useCallback(() => {
     taskQueue.clear();
@@ -152,7 +193,7 @@ export function useTaskQueue(
     cancelTask,
     getTaskStatus,
     clearQueue,
-    stats
+    stats,
   };
 }
 
@@ -162,10 +203,14 @@ export function useTaskQueue(
  */
 export function useWorkerPool(
   bus: EventBus,
-  options: WorkerPoolOptions
+  options: WorkerPoolOptions,
 ): {
   workerPool: WorkerPool;
-  submitTask: (taskId: string, payload: unknown, timeout?: number) => Promise<unknown>;
+  submitTask: (
+    taskId: string,
+    payload: unknown,
+    timeout?: number,
+  ) => Promise<unknown>;
   stats: ReturnType<WorkerPool["getStats"]>;
   shutdown: () => Promise<void>;
 } {
@@ -177,7 +222,7 @@ export function useWorkerPool(
     errorWorkers: 0,
     queuedTasks: 0,
     totalTasksCompleted: 0,
-    totalErrors: 0
+    totalErrors: 0,
   });
 
   workerPoolRef.current ??= createWorkerPool(bus, options);
@@ -205,9 +250,12 @@ export function useWorkerPool(
     setStats(workerPool.getStats());
   });
 
-  const submitTask = useCallback((taskId: string, payload: unknown, timeout?: number) => {
-    return workerPool.submitTask(taskId, payload, timeout);
-  }, [workerPool]);
+  const submitTask = useCallback(
+    (taskId: string, payload: unknown, timeout?: number) => {
+      return workerPool.submitTask(taskId, payload, timeout);
+    },
+    [workerPool],
+  );
 
   const shutdown = useCallback((): Promise<void> => {
     workerPool.shutdown();
@@ -226,7 +274,7 @@ export function useWorkerPool(
     workerPool,
     submitTask,
     stats,
-    shutdown
+    shutdown,
   };
 }
 
@@ -236,7 +284,7 @@ export function useWorkerPool(
  */
 export function useQueuedResourceCoordinator(
   bus: EventBus,
-  options: QueueCoordinatorOptions
+  options: QueueCoordinatorOptions,
 ): {
   coordinator: QueuedResourceCoordinator;
   submitTask: (task: TaskDescriptor) => Promise<string>;
@@ -248,9 +296,11 @@ export function useQueuedResourceCoordinator(
   release: () => Promise<void>;
 } {
   const coordinatorRef = useRef<QueuedResourceCoordinator | null>(null);
-  const [leaderStatus, setLeaderStatus] = useState<ReturnType<QueuedResourceCoordinator["getStatus"]>>({
+  const [leaderStatus, setLeaderStatus] = useState<
+    ReturnType<QueuedResourceCoordinator["getStatus"]>
+  >({
     isLeader: false,
-    followers: []
+    followers: [],
   });
   const [queueStats, setQueueStats] = useState({
     pendingTasks: 0,
@@ -258,7 +308,7 @@ export function useQueuedResourceCoordinator(
     completedTasks: 0,
     totalTasks: 0,
     isLeader: false,
-    queueCapacity: 0
+    queueCapacity: 0,
   });
 
   coordinatorRef.current ??= createQueuedResourceCoordinator(bus, options);
@@ -303,17 +353,26 @@ export function useQueuedResourceCoordinator(
     setQueueStats(coordinator.getQueueStats());
   });
 
-  const submitTask = useCallback((task: TaskDescriptor) => {
-    return Promise.resolve(coordinator.submitTask(task));
-  }, [coordinator]);
+  const submitTask = useCallback(
+    (task: TaskDescriptor) => {
+      return Promise.resolve(coordinator.submitTask(task));
+    },
+    [coordinator],
+  );
 
-  const cancelTask = useCallback((taskId: string) => {
-    return coordinator.cancelTask(taskId);
-  }, [coordinator]);
+  const cancelTask = useCallback(
+    (taskId: string) => {
+      return coordinator.cancelTask(taskId);
+    },
+    [coordinator],
+  );
 
-  const getTaskStatus = useCallback((taskId: string) => {
-    return coordinator.getTaskStatus(taskId);
-  }, [coordinator]);
+  const getTaskStatus = useCallback(
+    (taskId: string) => {
+      return coordinator.getTaskStatus(taskId);
+    },
+    [coordinator],
+  );
 
   const clearQueue = useCallback(() => {
     coordinator.clearQueue();
@@ -338,7 +397,7 @@ export function useQueuedResourceCoordinator(
     clearQueue,
     leaderStatus,
     queueStats,
-    release
+    release,
   };
 }
 
@@ -346,10 +405,13 @@ export function useQueuedResourceCoordinator(
  * Hook for task progress tracking
  * @internal - Intentionally unused, available for future implementation
  */
-export function useTaskProgress(
-  bus: EventBus,
-  taskId: string
-): {
+export function useTaskProgress({
+  bus,
+  taskId,
+}: {
+  bus: EventBus;
+  taskId: string;
+}): {
   status: TaskStatus | null;
   progress: number;
   message?: string;
@@ -364,26 +426,35 @@ export function useTaskProgress(
     error?: Error;
   }>({
     status: null,
-    progress: 0
+    progress: 0,
   });
 
   useEventListener(bus, "TASK_PROGRESS", (payload?: unknown) => {
-    if (payload && typeof payload === "object" &&
-        "id" in payload && typeof payload.id === "string" && payload.id === taskId &&
-        "progress" in payload && typeof payload.progress === "number") {
+    if (
+      payload &&
+      typeof payload === "object" &&
+      "id" in payload &&
+      typeof payload.id === "string" &&
+      payload.id === taskId &&
+      "progress" in payload &&
+      typeof payload.progress === "number"
+    ) {
       // Safe to access properties since we validated above
-      const message = "message" in payload && typeof payload.message === "string" ? payload.message : undefined;
-      setState(prev => {
+      const message =
+        "message" in payload && typeof payload.message === "string"
+          ? payload.message
+          : undefined;
+      setState((prev) => {
         if ("progress" in payload && typeof payload.progress === "number") {
           const update: Partial<typeof prev> = {
-            progress: payload.progress
+            progress: payload.progress,
           };
           if (message !== undefined) {
             update.message = message;
           }
           return {
             ...prev,
-            ...update
+            ...update,
           };
         }
         return prev;
@@ -392,48 +463,68 @@ export function useTaskProgress(
   });
 
   useEventListener(bus, "TASK_STARTED", (payload?: unknown) => {
-    if (payload && typeof payload === "object" &&
-        "id" in payload && typeof payload.id === "string" && payload.id === taskId) {
-      setState(prev => ({
+    if (
+      payload &&
+      typeof payload === "object" &&
+      "id" in payload &&
+      typeof payload.id === "string" &&
+      payload.id === taskId
+    ) {
+      setState((prev) => ({
         ...prev,
         status: TaskStatus.RUNNING,
-        progress: 0
+        progress: 0,
       }));
     }
   });
 
   useEventListener(bus, "TASK_COMPLETED", (payload?: unknown) => {
-    if (payload && typeof payload === "object" &&
-        "id" in payload && typeof payload.id === "string" && payload.id === taskId &&
-        isTaskResult(payload)) {
-      setState(prev => ({
+    if (
+      payload &&
+      typeof payload === "object" &&
+      "id" in payload &&
+      typeof payload.id === "string" &&
+      payload.id === taskId &&
+      isTaskResult(payload)
+    ) {
+      setState((prev) => ({
         ...prev,
         status: TaskStatus.COMPLETED,
         progress: 100,
-        result: payload
+        result: payload,
       }));
     }
   });
 
   useEventListener(bus, "TASK_FAILED", (payload?: unknown) => {
-    if (payload && typeof payload === "object" &&
-        "id" in payload && typeof payload.id === "string" && payload.id === taskId &&
-        isTaskResult(payload)) {
-      setState(prev => ({
+    if (
+      payload &&
+      typeof payload === "object" &&
+      "id" in payload &&
+      typeof payload.id === "string" &&
+      payload.id === taskId &&
+      isTaskResult(payload)
+    ) {
+      setState((prev) => ({
         ...prev,
         status: TaskStatus.FAILED,
-        error: new Error(payload.error ?? "Task failed")
+        error: new Error(payload.error ?? "Task failed"),
       }));
     }
   });
 
   useEventListener(bus, "TASK_CANCELLED", (payload?: unknown) => {
-    if (payload && typeof payload === "object" &&
-        "id" in payload && typeof payload.id === "string" && payload.id === taskId) {
-      setState(prev => ({
+    if (
+      payload &&
+      typeof payload === "object" &&
+      "id" in payload &&
+      typeof payload.id === "string" &&
+      payload.id === taskId
+    ) {
+      setState((prev) => ({
         ...prev,
         status: TaskStatus.CANCELLED,
-        error: new Error("Task cancelled")
+        error: new Error("Task cancelled"),
       }));
     }
   });
@@ -445,12 +536,17 @@ export function useTaskProgress(
  * Hook for cross-tab event broadcasting
  * @internal - Intentionally unused, available for future implementation
  */
-export function useCrossTabEvent(
-  channelName: string,
-  eventType: string,
-  handler: (payload?: unknown) => void,
-  deps: React.DependencyList = []
-): {
+export function useCrossTabEvent({
+  channelName,
+  eventType,
+  handler,
+  deps = [],
+}: {
+  channelName: string;
+  eventType: string;
+  handler: (payload?: unknown) => void;
+  deps?: React.DependencyList;
+}): {
   broadcast: (payload?: unknown) => void;
   isConnected: boolean;
 } {
@@ -459,9 +555,12 @@ export function useCrossTabEvent(
 
   useEventListener(bus, eventType, handler, deps);
 
-  const broadcast = useCallback((payload?: unknown) => {
-    bus.emit({ type: eventType, payload });
-  }, [bus, eventType]);
+  const broadcast = useCallback(
+    (payload?: unknown) => {
+      bus.emit({ type: eventType, payload });
+    },
+    [bus, eventType],
+  );
 
   useEffect(() => {
     setIsConnected(bus.isBroadcasting());
@@ -469,7 +568,7 @@ export function useCrossTabEvent(
 
   return {
     broadcast,
-    isConnected
+    isConnected,
   };
 }
 
@@ -477,23 +576,28 @@ export function useCrossTabEvent(
  * Hook for managing multiple event subscriptions
  * @internal - Intentionally unused, available for future implementation
  */
-export function useEventSubscriptions(
-  bus: EventBus,
+export function useEventSubscriptions({
+  bus,
+  subscriptions,
+}: {
+  bus: EventBus;
   subscriptions: Array<{
     eventType: string;
     handler: EventHandler;
-  }>
-): void {
+  }>;
+}): void {
   useEffect(() => {
     const unsubscribers: Array<() => void> = [];
 
     for (const { eventType, handler } of subscriptions) {
       const listenerId = bus.on(eventType, handler);
-      unsubscribers.push(() => { bus.off(eventType, handler); });
+      unsubscribers.push(() => {
+        bus.off(eventType, handler);
+      });
 
       logger.debug("hooks", "Event subscription registered", {
         eventType,
-        listenerId
+        listenerId,
       });
     }
 

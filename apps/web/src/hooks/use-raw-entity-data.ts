@@ -27,7 +27,11 @@ function isValidEntityData(
   return !!entityId && !!entityType;
 }
 
-export const useRawEntityData = (options: UseRawEntityDataOptions) => {
+export const useRawEntityData = ({
+  options,
+}: {
+  options: UseRawEntityDataOptions;
+}) => {
   const { entityId, enabled = true, queryParams = {} } = options;
 
   // Detect entity type from ID to use proper cache configuration

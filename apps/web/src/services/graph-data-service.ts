@@ -54,7 +54,13 @@ const OPENALEX_URL_PREFIX = "https://openalex.org/";
 /**
  * Build OpenAlex API URL similar to the client's buildUrl method
  */
-function buildOpenAlexUrl(endpoint: string, params: QueryParams = {}): string {
+function buildOpenAlexUrl({
+  endpoint,
+  params = {},
+}: {
+  endpoint: string;
+  params?: QueryParams;
+}): string {
   const baseUrl = "https://api.openalex.org";
   const url = new URL(`${baseUrl}/${endpoint}`);
 
@@ -102,11 +108,15 @@ function buildOpenAlexUrl(endpoint: string, params: QueryParams = {}): string {
 /**
  * Fetch entity via pipeline
  */
-async function fetchEntityViaPipeline(
-  entityType: string,
-  entityId: string,
-  params: QueryParams = {},
-): Promise<OpenAlexEntity> {
+async function fetchEntityViaPipeline({
+  entityType,
+  entityId,
+  params = {},
+}: {
+  entityType: string;
+  entityId: string;
+  params?: QueryParams;
+}): Promise<OpenAlexEntity> {
   const pipeline = createRequestPipeline();
   const endpoint = `${entityType}/${encodeURIComponent(entityId)}`;
   const url = buildOpenAlexUrl(endpoint, params);
@@ -650,10 +660,26 @@ export class GraphDataService {
             );
             continue;
           }
-          const { nodes, edges } = this.transformEntityToGraph(
+          const { nodes, edges } = this.transformEntityToGraph({
             entity,
-            entityIdentifier,
+            entityId: entityIdentifier,
+          });
+          allNodes.push(...nodes);
+          allEdges.push(...edges);
+        } catch (error) {
+          logError(
+            logger,
+            "Failed to transform cached entity to graph",
+            error,
+            "GraphDataService",
+            "graph",
           );
+        }
+      }
+          const { nodes, edges } = this.transformEntityToGraph({
+            entity,
+            entityId: entityIdentifier,
+          });
           allNodes.push(...nodes);
           allEdges.push(...edges);
         } catch (error) {
@@ -777,11 +803,11 @@ export class GraphDataService {
         );
 
         // Extract metadata-level data from the entity
-        const fullNodeData = this.createNodeFromEntity(
+        const fullNodeData = this.createNodeFromEntity({
           entity,
-          node.entityType,
-          node.entityId,
-        );
+          entityType: node.entityType,
+          entityId: node.entityId,
+        });
 
         // Update the node with full metadata
         store.markNodeAsLoaded(nodeId);
@@ -812,10 +838,10 @@ export class GraphDataService {
         const entity = await this.deduplicationService.getEntity(
           node.entityId,
           async () => {
-            const result = await fetchEntityViaPipeline(
-              node.entityType,
-              node.entityId,
-            );
+            const result = await fetchEntityViaPipeline({
+              entityType: node.entityType,
+              entityId: node.entityId,
+            });
             if (!result) {
               throw new Error(`Entity not found: ${node.entityId}`);
             }
@@ -824,25 +850,11 @@ export class GraphDataService {
         );
 
         // Extract full data from the entity
-        const fullNodeData = this.createNodeFromEntity(
+        const fullNodeData = this.createNodeFromEntity({
           entity,
-          node.entityType,
-          node.entityId,
-        );
-
-        // Update the node with full data
-        store.markNodeAsLoaded(nodeId);
-
-        logger.debug(
-          "graph",
-          "Node hydrated with full entity fetch",
-          {
-            nodeId,
-            newLabel: fullNodeData.label,
-            fieldsLoaded: "all",
-          },
-          "GraphDataService",
-        );
+          entityType: node.entityType,
+          entityId: node.entityId,
+        });
       }
     } catch (error) {
       store.markNodeAsError(nodeId);
@@ -1162,10 +1174,13 @@ export class GraphDataService {
    * Expand a node to show related entities
    * This method performs incremental expansion without setting global loading state
    */
-  async expandNode(
-    nodeId: string,
-    options: ExpansionOptions = {},
-  ): Promise<void> {
+  async expandNode({
+    nodeId,
+    options = {},
+  }: {
+    nodeId: string;
+    options?: ExpansionOptions;
+  }): Promise<void> {
     const { force = false } = options;
 
     logger.debug(LOGGER_CATEGORY_GRAPH_DATA, "expandNode function START", {
@@ -1666,10 +1681,13 @@ export class GraphDataService {
   /**
    * Search and add results to graph
    */
-  async searchAndVisualize(
-    query: string,
-    options: SearchOptions,
-  ): Promise<void> {
+  async searchAndVisualize({
+    query,
+    options,
+  }: {
+    query: string;
+    options: SearchOptions;
+  }): Promise<void> {
     const store = useGraphStore.getState();
     store.setLoading(true);
     store.setError(null);
@@ -1774,7 +1792,8 @@ export class GraphDataService {
         }
       }
 
-      const { nodes, edges } = this.transformSearchResults(flatResults);
+      // Use the collected results
+      const { nodes, edges } = this.transformSearchResults({ results: flatResults });
 
       // Clear existing graph and add search results
       store.clear();
@@ -1803,11 +1822,15 @@ export class GraphDataService {
   /**
    * Fetch entity with specific fields using the appropriate OpenAlex API method
    */
-  private async fetchEntityWithFields(
-    entityId: string,
-    entityType: EntityType,
-    fields: string[],
-  ): Promise<OpenAlexEntity> {
+  private async fetchEntityWithFields({
+    entityId,
+    entityType,
+    fields,
+  }: {
+    entityId: string;
+    entityType: EntityType;
+    fields: string[];
+  }): Promise<OpenAlexEntity> {
     const params = { select: fields };
     return await fetchEntityViaPipeline(entityType, entityId, params);
   }
@@ -1816,10 +1839,13 @@ export class GraphDataService {
    * Create a minimal node with just essential data using selective API field loading
    * Uses incremental hydration with minimal API field loading
    */
-  async createMinimalNode(
-    entityId: string,
-    entityType: EntityType,
-  ): Promise<GraphNode | null> {
+  async createMinimalNode({
+    entityId,
+    entityType,
+  }: {
+    entityId: string;
+    entityType: EntityType;
+  }): Promise<GraphNode | null> {
     try {
       // Define minimal fields needed for basic node display
       const minimalFieldsMap: Partial<Record<EntityType, string[]>> = {
@@ -1864,7 +1890,7 @@ export class GraphDataService {
 
       // Use the specific entity method with field selection for minimal data
       const entity = await this.deduplicationService.getEntity(entityId, () =>
-        this.fetchEntityWithFields(entityId, entityType, fields),
+        this.fetchEntityWithFields({ entityId, entityType, fields }),
       );
 
       // Create node with minimal data using entityData
@@ -1894,10 +1920,13 @@ export class GraphDataService {
    * Load minimal data in background for nodes to get basic display data (non-blocking)
    * Uses selective API field loading for efficiency
    */
-  private async loadMinimalDataInBackground(
-    entityId: string,
-    entityType: EntityType,
-  ): Promise<void> {
+  private async loadMinimalDataInBackground({
+    entityId,
+    entityType,
+  }: {
+    entityId: string;
+    entityType: EntityType;
+  }): Promise<void> {
     const store = useGraphStore.getState();
 
     if (!(entityId in store.nodes)) {
@@ -1907,7 +1936,10 @@ export class GraphDataService {
 
     try {
       // Create minimal node with selective field loading
-      const minimalNode = await this.createMinimalNode(entityId, entityType);
+      const minimalNode = await this.createMinimalNode({
+        entityId,
+        entityType,
+      });
       if (minimalNode) {
         // Update only the label and entityData, preserve position
         store.updateNode(entityId, {
@@ -1977,11 +2009,11 @@ export class GraphDataService {
 
       // Create updated node data WITHOUT creating related entities (hydration only)
       // This prevents automatic expansion of related entities during single-click hydration
-      const fullNodeData = this.createNodeFromEntity(
-        fullEntity,
-        node.entityType,
-        node.entityId,
-      );
+      const fullNodeData = this.createNodeFromEntity({
+        entity: fullEntity,
+        entityType: node.entityType,
+        entityId: node.entityId,
+      });
 
       // Update node with full data
       store.updateNode(nodeId, {
@@ -2444,17 +2476,17 @@ export class GraphDataService {
         // Only create edge if the author node already exists in the graph
         if (existingAuthorNode) {
           edges.push({
-          id: `${authorship.author.id}-authored-${work.id}`,
-          source: authorship.author.id,
-          target: work.id,
-          type: RelationType.AUTHORED,
-          label:
-            authorship.author_position === "first"
-              ? "first author"
-              : "co-author",
-          weight: authorship.author_position === "first" ? 1.0 : 0.5,
-        });
-      }
+            id: `${authorship.author.id}-authored-${work.id}`,
+            source: authorship.author.id,
+            target: work.id,
+            type: RelationType.AUTHORED,
+            label:
+              authorship.author_position === "first"
+                ? "first author"
+                : "co-author",
+            weight: authorship.author_position === "first" ? 1.0 : 0.5,
+          });
+        }
       });
     }
 
@@ -2513,7 +2545,9 @@ export class GraphDataService {
     // Do NOT automatically create institution nodes - they should only be created during explicit expansion
     if (Array.isArray(author.affiliations)) {
       author.affiliations.forEach((affiliation) => {
-        const existingInstitutionNode = store.getNode(affiliation.institution.id);
+        const existingInstitutionNode = store.getNode(
+          affiliation.institution.id,
+        );
 
         // Only create edge if the institution node already exists in the graph
         if (existingInstitutionNode) {

@@ -102,11 +102,15 @@ export const useGraphUtilities = () => {
 
   // Safe method caller for graph utilities service
   const callServiceMethod = useCallback(
-    (
-      methodName: string,
-      args: unknown[],
-      _operationName: string,
-    ): GraphOperationResult | GraphUtilityResult => {
+    ({
+      methodName,
+      args,
+      operationName,
+    }: {
+      methodName: string;
+      args: unknown[];
+      operationName: string;
+    }): GraphOperationResult | GraphUtilityResult => {
       const service = graphUtilitiesService as unknown as Record<
         string,
         unknown
@@ -139,11 +143,11 @@ export const useGraphUtilities = () => {
     setError(null);
 
     try {
-      const result = callServiceMethod(
-        "trimLeafNodes",
-        [nodes, edges],
-        "trimLeafNodes",
-      );
+      const result = callServiceMethod({
+        methodName: "trimLeafNodes",
+        args: [nodes, edges],
+        operationName: "trimLeafNodes",
+      });
       applyUtilityResult(result);
       return result;
     } catch (error) {
@@ -169,11 +173,11 @@ export const useGraphUtilities = () => {
     setError(null);
 
     try {
-      const result = callServiceMethod(
-        "trimRootNodes",
-        [nodes, edges],
-        "trimRootNodes",
-      );
+      const result = callServiceMethod({
+        methodName: "trimRootNodes",
+        args: [nodes, edges],
+        operationName: "trimRootNodes",
+      });
       applyUtilityResult(result);
       return result;
     } catch (error) {
@@ -199,11 +203,11 @@ export const useGraphUtilities = () => {
     setError(null);
 
     try {
-      const result = callServiceMethod(
-        "trimDegree1Nodes",
-        [nodes, edges],
-        "trimDegree1Nodes",
-      );
+      const result = callServiceMethod({
+        methodName: "trimDegree1Nodes",
+        args: [nodes, edges],
+        operationName: "trimDegree1Nodes",
+      });
       applyUtilityResult(result);
       return result;
     } catch (error) {
@@ -231,11 +235,11 @@ export const useGraphUtilities = () => {
     setError(null);
 
     try {
-      const result = callServiceMethod(
-        "removeIsolatedNodes",
-        [nodes, edges],
-        "removeIsolatedNodes",
-      );
+      const result = callServiceMethod({
+        methodName: "removeIsolatedNodes",
+        args: [nodes, edges],
+        operationName: "removeIsolatedNodes",
+      });
       applyUtilityResult(result);
       return result;
     } catch (error) {
@@ -259,16 +263,16 @@ export const useGraphUtilities = () => {
   ]);
 
   const filterByPublicationYear = useCallback(
-    (minYear: number, maxYear: number) => {
+    ({ minYear, maxYear }: { minYear: number; maxYear: number }) => {
       setLoading(true);
       setError(null);
 
       try {
-        const result = callServiceMethod(
-          "filterByPublicationYear",
-          [nodes, edges, minYear, maxYear],
-          "filterByPublicationYear",
-        );
+        const result = callServiceMethod({
+          methodName: "filterByPublicationYear",
+          args: [nodes, edges, minYear, maxYear],
+          operationName: "filterByPublicationYear",
+        });
         applyUtilityResult(result);
         return result;
       } catch (error) {
@@ -289,16 +293,16 @@ export const useGraphUtilities = () => {
   );
 
   const extractEgoNetwork = useCallback(
-    (centerNodeId: string, hops: number = 2) => {
+    ({ centerNodeId, hops = 2 }: { centerNodeId: string; hops?: number }) => {
       setLoading(true);
       setError(null);
 
       try {
-        const result = callServiceMethod(
-          "extractEgoNetwork",
-          [nodes, edges, centerNodeId, hops],
-          "extractEgoNetwork",
-        );
+        const result = callServiceMethod({
+          methodName: "extractEgoNetwork",
+          args: [nodes, edges, centerNodeId, hops],
+          operationName: "extractEgoNetwork",
+        });
         applyUtilityResult(result);
         return result;
       } catch (error) {
@@ -323,11 +327,11 @@ export const useGraphUtilities = () => {
     setError(null);
 
     try {
-      const result = callServiceMethod(
-        "getLargestConnectedComponent",
-        [nodes, edges],
-        "getLargestConnectedComponent",
-      );
+      const result = callServiceMethod({
+        methodName: "getLargestConnectedComponent",
+        args: [nodes, edges],
+        operationName: "getLargestConnectedComponent",
+      });
       applyUtilityResult(result);
       return result;
     } catch (error) {

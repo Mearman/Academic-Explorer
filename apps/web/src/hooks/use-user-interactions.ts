@@ -187,7 +187,7 @@ export function useUserInteractions(
 
           await userInteractionsService.recordPageVisitLegacy(
             url,
-            entityId && entityType ? { entityId, entityType } : undefined,
+            metadata,
             sessionId,
             document.referrer || undefined,
           );
@@ -221,16 +221,19 @@ export function useUserInteractions(
   }, [entityId, entityType, refreshData]);
 
   const recordPageVisit = useCallback(
-    async (
-      url: string,
+    async ({
+      url,
+      metadata,
+    }: {
+      url: string;
       metadata?: {
         searchQuery?: string;
         filters?: Record<string, unknown>;
         entityId?: string;
         entityType?: string;
         resultCount?: number;
-      },
-    ) => {
+      };
+    }) => {
       try {
         await userInteractionsService.recordPageVisitLegacy(
           url,
@@ -239,8 +242,11 @@ export function useUserInteractions(
           document.referrer || undefined,
         );
 
-        // Refresh data to update UI
-        await refreshData();
+      // Refresh data to update UI
+      await refreshData();
+    },
+    [sessionId, refreshData],
+  );
       } catch (error) {
         logger.error(
           USER_INTERACTIONS_LOGGER_CONTEXT,
@@ -267,7 +273,7 @@ export function useUserInteractions(
   );
 
   const bookmarkEntity = useCallback(
-    async (title: string, notes?: string, tags?: string[]) => {
+    async ({ title, notes, tags }: { title: string; notes?: string; tags?: string[] }) => {
       if (!entityId || !entityType) {
         throw new Error("Entity ID and type are required to bookmark");
       }
@@ -341,13 +347,19 @@ export function useUserInteractions(
   }, [entityId, entityType, refreshData]);
 
   const bookmarkSearch = useCallback(
-    async (
-      title: string,
-      searchQuery: string,
-      filters?: Record<string, unknown>,
-      notes?: string,
-      tags?: string[],
-    ) => {
+    async ({
+      title,
+      searchQuery,
+      filters,
+      notes,
+      tags,
+    }: {
+      title: string;
+      searchQuery: string;
+      filters?: Record<string, unknown>;
+      notes?: string;
+      tags?: string[];
+    }) => {
       try {
         const url = location.pathname + location.search;
         const queryParams = getSearchParams();
@@ -381,7 +393,7 @@ export function useUserInteractions(
   );
 
   const bookmarkList = useCallback(
-    async (title: string, url: string, notes?: string, tags?: string[]) => {
+    async ({ title, url, notes, tags }: { title: string; url: string; notes?: string; tags?: string[] }) => {
       try {
         const queryParams = getSearchParams();
 

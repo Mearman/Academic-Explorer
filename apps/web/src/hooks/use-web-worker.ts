@@ -123,10 +123,13 @@ interface _TaskSystem<T = unknown> {
   onExpansionError?: (nodeId: string, error: string) => void;
 }
 
-export function useWebWorker(
-  workerFactory: () => Worker,
-  options: UseWebWorkerOptions = {},
-): WebWorkerTaskSystem {
+export function useWebWorker({
+  workerFactory,
+  options = {},
+}: {
+  workerFactory: () => Worker;
+  options?: UseWebWorkerOptions;
+}): WebWorkerTaskSystem {
   const {
     onMessage,
     onError,

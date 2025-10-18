@@ -42,11 +42,15 @@ export const useEntityInteraction = (
   const { setPreviewEntity, autoPinOnLayoutStabilization } = useLayoutStore();
 
   // Helper functions to reduce cognitive complexity
-  const findOrLoadTargetNode = async (
-    entityId: string,
-    store: ReturnType<typeof useGraphStore.getState>,
-    loadEntityIntoGraph: (entityId: string) => Promise<void>,
-  ): Promise<GraphNode | undefined> => {
+  const findOrLoadTargetNode = async ({
+    entityId,
+    store,
+    loadEntityIntoGraph,
+  }: {
+    entityId: string;
+    store: ReturnType<typeof useGraphStore.getState>;
+    loadEntityIntoGraph: (entityId: string) => Promise<void>;
+  }): Promise<GraphNode | undefined> => {
     // First check if a minimal node already exists
     let targetNode = Object.values(store.nodes).find(
       (node: GraphNode) => node.entityId === entityId,
@@ -65,20 +69,30 @@ export const useEntityInteraction = (
     return targetNode;
   };
 
-  const performNodeInteractions = async (
-    targetNode: GraphNode,
-    entityId: string,
-    entityType: string,
-    options: EntityInteractionOptions,
-    store: ReturnType<typeof useGraphStore.getState>,
-    setPreviewEntity: (entityId: string) => void,
-    expandNode: (nodeId: string) => Promise<void>,
-    autoPinOnLayoutStabilization: boolean,
+  const performNodeInteractions = async ({
+    targetNode,
+    entityId,
+    entityType,
+    options,
+    store,
+    setPreviewEntity,
+    expandNode,
+    autoPinOnLayoutStabilization,
+    centerOnNodeFn,
+  }: {
+    targetNode: GraphNode;
+    entityId: string;
+    entityType: string;
+    options: EntityInteractionOptions;
+    store: ReturnType<typeof useGraphStore.getState>;
+    setPreviewEntity: (entityId: string) => void;
+    expandNode: (nodeId: string) => Promise<void>;
+    autoPinOnLayoutStabilization: boolean;
     centerOnNodeFn?: (
       nodeId: string,
       position: { x: number; y: number },
-    ) => void,
-  ): Promise<void> => {
+    ) => void;
+  }): Promise<void> => {
     // Select the node
     store.selectNode(targetNode.id);
 
@@ -111,12 +125,17 @@ export const useEntityInteraction = (
    * Main entity interaction handler
    */
   const interactWithEntity = useCallback(
-    async (
-      entityId: string,
-      entityType: string,
-      options: EntityInteractionOptions = INTERACTION_PRESETS.GRAPH_NODE_CLICK,
-      existingNode?: GraphNode,
-    ) => {
+    async ({
+      entityId,
+      entityType,
+      options = INTERACTION_PRESETS.GRAPH_NODE_CLICK,
+      existingNode,
+    }: {
+      entityId: string;
+      entityType: string;
+      options?: EntityInteractionOptions;
+      existingNode?: GraphNode;
+    }) => {
       try {
         const store = useGraphStore.getState();
 
@@ -131,11 +150,11 @@ export const useEntityInteraction = (
 
         // If no existing node provided, find or load entity into graph
         if (!targetNode) {
-          targetNode = await findOrLoadTargetNode(
+          targetNode = await findOrLoadTargetNode({
             entityId,
             store,
             loadEntityIntoGraph,
-          );
+          });
         }
 
         if (!targetNode) {
@@ -150,7 +169,7 @@ export const useEntityInteraction = (
           return;
         }
 
-        await performNodeInteractions(
+        await performNodeInteractions({
           targetNode,
           entityId,
           entityType,
@@ -160,7 +179,7 @@ export const useEntityInteraction = (
           expandNode,
           autoPinOnLayoutStabilization,
           centerOnNodeFn,
-        );
+        });
 
         logger.debug("graph", "Entity interaction completed", {
           ...(entityId && { entityId }),
@@ -203,12 +222,12 @@ export const useEntityInteraction = (
         return Promise.resolve();
       }
 
-      return interactWithEntity(
-        node.entityId,
-        node.entityType,
-        INTERACTION_PRESETS.GRAPH_NODE_CLICK,
-        node,
-      );
+      return interactWithEntity({
+        entityId: node.entityId,
+        entityType: node.entityType,
+        options: INTERACTION_PRESETS.GRAPH_NODE_CLICK,
+        existingNode: node,
+      });
     },
     [interactWithEntity],
   );
@@ -227,12 +246,12 @@ export const useEntityInteraction = (
         return Promise.resolve();
       }
 
-      return interactWithEntity(
-        node.entityId,
-        node.entityType,
-        INTERACTION_PRESETS.GRAPH_NODE_DOUBLE_CLICK,
-        node,
-      );
+      return interactWithEntity({
+        entityId: node.entityId,
+        entityType: node.entityType,
+        options: INTERACTION_PRESETS.GRAPH_NODE_DOUBLE_CLICK,
+        existingNode: node,
+      });
     },
     [interactWithEntity],
   );
@@ -241,12 +260,12 @@ export const useEntityInteraction = (
    * Convenience method for sidebar entity clicks (selection only)
    */
   const handleSidebarEntityClick = useCallback(
-    (entityId: string, entityType: string) => {
-      return interactWithEntity(
+    ({ entityId, entityType }: { entityId: string; entityType: string }) => {
+      return interactWithEntity({
         entityId,
         entityType,
-        INTERACTION_PRESETS.GRAPH_NODE_CLICK,
-      );
+        options: INTERACTION_PRESETS.GRAPH_NODE_CLICK,
+      });
     },
     [interactWithEntity],
   );

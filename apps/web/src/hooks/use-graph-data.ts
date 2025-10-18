@@ -79,7 +79,13 @@ export function useGraphData() {
   );
 
   const expandNode = useCallback(
-    async (nodeId: string, options?: Partial<ExpansionOptions>) => {
+    async ({
+      nodeId,
+      options,
+    }: {
+      nodeId: string;
+      options?: Partial<ExpansionOptions>;
+    }) => {
       logger.debug("graph", "useGraphData.expandNode called", {
         nodeId,
         options,
@@ -98,7 +104,7 @@ export function useGraphData() {
         // Direct service call - no worker dependency
         store.setLoading(true);
         try {
-          await service.expandNode(nodeId, options);
+          await service.expandNode({ nodeId, options });
 
           // Recalculate depths after expansion using first pinned node
           const pinnedNodes = Object.keys(store.pinnedNodes);
@@ -152,14 +158,17 @@ export function useGraphData() {
   );
 
   const expandAllNodesOfType = useCallback(
-    async (
-      entityType: EntityType,
+    async ({
+      entityType,
+      options,
+    }: {
+      entityType: EntityType;
       options?: {
         depth?: number;
         limit?: number;
         force?: boolean;
-      },
-    ) => {
+      };
+    }) => {
       const store = useGraphStore.getState();
       store.setLoading(true);
 
@@ -226,7 +235,7 @@ export function useGraphData() {
       };
 
       try {
-        await service.searchAndVisualize(query, searchOptions);
+        await service.searchAndVisualize({ query, options: searchOptions });
       } catch (err) {
         logError(
           logger,

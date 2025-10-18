@@ -27,10 +27,13 @@ function isTwoElementArray(value: unknown): value is [unknown, unknown] {
 /**
  * Build OpenAlex query parameters from expansion settings
  */
-function buildQueryParams(
-  settings: ExpansionSettings,
-  baseSelect?: string[],
-): OpenAlexQueryParams {
+function buildQueryParams({
+  settings,
+  baseSelect,
+}: {
+  settings: ExpansionSettings;
+  baseSelect?: string[];
+}): OpenAlexQueryParams {
   const params: OpenAlexQueryParams = {};
 
   // Always use maximum per_page for efficiency, handle total limit separately
