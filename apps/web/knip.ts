@@ -1,4 +1,3 @@
-// @ts-nocheck
 export default {
   entry: [
     "src/main.tsx",

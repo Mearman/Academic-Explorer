@@ -10,7 +10,13 @@ import { openalexCachePlugin } from "../../../config/vite-plugins/openalex-cache
  * Plugin configuration for the web app
  * Contains all Vite plugins with their configuration
  */
-export const createPlugins = (_command: string, _mode: string) => [
+export const createPlugins = ({
+  command,
+  mode,
+}: {
+  command: string;
+  mode: string;
+}) => [
   // OpenAlex Cache Plugin for development caching with validation
   openalexCachePlugin({
     staticDataPath: STATIC_DATA_CACHE_PATH,
