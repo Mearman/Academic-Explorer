@@ -12,13 +12,15 @@ const STATIC_DATA_DIR = join(__dirname, "..", "public", "data", "openalex");
  */
 async function main(): Promise<void> {
   try {
-    console.log("🔄 Auto-download enabled - will download missing entities");
+    console.log(
+      "[REFRESH] Auto-download enabled - will download missing entities",
+    );
 
     await generateAllIndexes(STATIC_DATA_DIR, { autoDownload: true });
 
-    console.log("✅ Index generation with auto-download completed");
+    console.log("[SUCCESS] Index generation with auto-download completed");
   } catch (error) {
-    console.error("❌ Error generating static data indexes:", error);
+    console.error("[ERROR] Error generating static data indexes:", error);
     process.exit(1);
   }
 }

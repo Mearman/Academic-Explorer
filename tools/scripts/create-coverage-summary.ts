@@ -35,7 +35,13 @@ interface CoverageData {
   [key: string]: FileCoverageData;
 }
 
-function calculatePercentage(covered: number, total: number): number {
+function calculatePercentage({
+  covered,
+  total,
+}: {
+  covered: number;
+  total: number;
+}): number {
   return total > 0 ? Math.round((covered / total) * 100 * 100) / 100 : 0;
 }
 
@@ -231,13 +237,29 @@ function parseCoverageFinal(coverageFinalPath: string): CoverageSummary | null {
 
     return {
       total: {
-        lines: { pct: calculatePercentage(coveredLines, totalLines) },
-        functions: {
-          pct: calculatePercentage(coveredFunctions, totalFunctions),
+        lines: {
+          pct: calculatePercentage({
+            covered: coveredLines,
+            total: totalLines,
+          }),
         },
-        branches: { pct: calculatePercentage(coveredBranches, totalBranches) },
+        functions: {
+          pct: calculatePercentage({
+            covered: coveredFunctions,
+            total: totalFunctions,
+          }),
+        },
+        branches: {
+          pct: calculatePercentage({
+            covered: coveredBranches,
+            total: totalBranches,
+          }),
+        },
         statements: {
-          pct: calculatePercentage(coveredStatements, totalStatements),
+          pct: calculatePercentage({
+            covered: coveredStatements,
+            total: totalStatements,
+          }),
         },
       },
     };

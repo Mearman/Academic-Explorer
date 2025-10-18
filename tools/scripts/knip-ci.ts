@@ -74,7 +74,7 @@ function formatSummary(results: KnipResults): string {
     results.unusedTypes;
 
   if (total === 0) {
-    return "✅ No unused code detected";
+    return "[SUCCESS] No unused code detected";
   }
 
   const parts: string[] = [];
@@ -102,7 +102,7 @@ function assessSeverity(results: KnipResults): "info" | "warning" | "error" {
 }
 
 async function runKnipCI(): Promise<void> {
-  console.log("🔍 Running knip analysis for CI...");
+  console.log("[SEARCH] Running knip analysis for CI...");
 
   try {
     // Run knip and capture output with timeout
@@ -114,7 +114,7 @@ async function runKnipCI(): Promise<void> {
       maxBuffer: 1024 * 1024 * 10, // 10MB buffer
     });
 
-    console.log("✅ No issues detected by knip");
+    console.log("[SUCCESS] No issues detected by knip");
     process.exit(0);
   } catch (error: unknown) {
     // Knip found issues - parse and assess them
@@ -129,10 +129,10 @@ async function runKnipCI(): Promise<void> {
 
     if (severity === "error") {
       console.error(
-        `❌ Critical issues found: ${results.unresolvedImports} unresolved imports`,
+        `[ERROR] Critical issues found: ${results.unresolvedImports} unresolved imports`,
       );
       console.log(
-        "\n❌ Too many critical issues found. Please review unresolved imports.",
+        "\n[ERROR] Too many critical issues found. Please review unresolved imports.",
       );
       console.log(
         "Unresolved imports can indicate missing dependencies or configuration issues.",
@@ -140,10 +140,10 @@ async function runKnipCI(): Promise<void> {
       process.exit(1);
     } else if (severity === "warning") {
       console.warn(
-        `⚠️  Some issues found but within acceptable limits for research project`,
+        `[WARNING] Some issues found but within acceptable limits for research project`,
       );
       console.log(
-        "\n⚠️  Some issues found but within acceptable limits for research project.",
+        "\n[WARNING] Some issues found but within acceptable limits for research project.",
       );
       console.log("Consider reviewing unresolved imports when convenient.");
     } else {
@@ -169,7 +169,7 @@ async function runKnipCI(): Promise<void> {
 // Run the CI check
 if (import.meta.url === `file://${process.argv[1]}`) {
   runKnipCI().catch((error) => {
-    console.error("❌ Failed to run knip CI check:", error);
+    console.error("[ERROR] Failed to run knip CI check:", error);
     process.exit(1);
   });
 }

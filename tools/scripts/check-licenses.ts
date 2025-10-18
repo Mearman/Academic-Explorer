@@ -29,17 +29,17 @@ interface LicenseData {
 
 function checkLicenses(): void {
   try {
-    console.log("🔍 Checking licenses...");
+    console.log("[SEARCH] Checking licenses...");
 
     // Read configuration
     const configPath = join(process.cwd(), ".license-config.json");
     const config: LicenseConfig = JSON.parse(readFileSync(configPath, "utf-8"));
     console.log(
-      `📋 Configuration loaded: ${config.forbidden.length} forbidden licenses`,
+      `[CLIPBOARD] Configuration loaded: ${config.forbidden.length} forbidden licenses`,
     );
 
     // Run monorepo-license-checker synchronously with research-friendly settings
-    console.log("📦 Running monorepo-license-checker...");
+    console.log("[PACKAGE] Running monorepo-license-checker...");
     const stdout = execSync(
       "monorepo-license-checker --json --exclude-private-packages --timeout 20000",
       {
@@ -51,7 +51,7 @@ function checkLicenses(): void {
     );
 
     const licenseData: LicenseData = JSON.parse(stdout);
-    console.log(`📊 Analyzed ${Object.keys(licenseData).length} packages`);
+    console.log(`[CHART] Analyzed ${Object.keys(licenseData).length} packages`);
 
     // Check for forbidden licenses
     const violations: Array<{
@@ -75,7 +75,7 @@ function checkLicenses(): void {
 
     // Report results
     if (violations.length > 0) {
-      console.error("❌ Forbidden licenses found:");
+      console.error("[ERROR] Forbidden licenses found:");
       violations.forEach((violation) => {
         console.error(
           `  - ${violation.name}@${violation.version} (${violation.licenses})`,
@@ -85,17 +85,19 @@ function checkLicenses(): void {
       process.exit(1);
     } else {
       const totalPackages = Object.keys(licenseData).length;
-      console.log(`✅ All ${totalPackages} packages have acceptable licenses`);
-      console.log(`📝 Allowed licenses: ${config.allowed.join(", ")}`);
+      console.log(
+        `[SUCCESS] All ${totalPackages} packages have acceptable licenses`,
+      );
+      console.log(`[NOTE] Allowed licenses: ${config.allowed.join(", ")}`);
     }
   } catch (error: unknown) {
     const nodeError = error as NodeJS.ErrnoException;
     const LICENSE_COMPLIANCE_MESSAGE =
-      "ℹ️  License compliance will be verified during release process";
+      "[INFO] License compliance will be verified during release process";
 
     if (nodeError.code === "ETIMEDOUT") {
       console.warn(
-        "⏰ License check timed out - this is acceptable for large research projects",
+        "[TIMEOUT] License check timed out - this is acceptable for large research projects",
       );
       console.log(LICENSE_COMPLIANCE_MESSAGE);
       process.exit(0); // Don't fail CI for timeouts in research projects
@@ -104,14 +106,14 @@ function checkLicenses(): void {
       (nodeError.signal === "SIGTERM" || nodeError.signal === "SIGKILL")
     ) {
       console.warn(
-        "⚠️  License check was terminated - likely due to system resource limits",
+        "[WARNING] License check was terminated - likely due to system resource limits",
       );
       console.log(LICENSE_COMPLIANCE_MESSAGE);
       process.exit(0); // Don't fail CI for system limits
     } else {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      console.error("❌ Error checking licenses:", errorMessage);
+      console.error("[ERROR] Error checking licenses:", errorMessage);
       console.log(LICENSE_COMPLIANCE_MESSAGE);
       process.exit(1);
     }

@@ -41,9 +41,9 @@ async function main() {
   try {
     const staticDataDir = join(process.cwd(), "public", "data", "openalex");
 
-    console.log("🔄 Fetching and caching OpenAlex queries...");
-    console.log(`📁 Output directory: ${staticDataDir}`);
-    console.log(`🔗 Queries to cache: ${QUERIES_TO_CACHE.length}`);
+    console.log("[REFRESH] Fetching and caching OpenAlex queries...");
+    console.log(`[FOLDER] Output directory: ${staticDataDir}`);
+    console.log(`[LINK] Queries to cache: ${QUERIES_TO_CACHE.length}`);
 
     // Fetch and cache all queries
     const { success, failed, errors } = await fetchAndCacheQueries(
@@ -51,22 +51,22 @@ async function main() {
       staticDataDir,
     );
 
-    console.log(`✅ Successfully cached: ${success} queries`);
+    console.log(`[SUCCESS] Successfully cached: ${success} queries`);
     if (failed > 0) {
-      console.warn(`⚠️  Failed to cache: ${failed} queries`);
-      console.warn(`📋 Error details:`);
+      console.warn(`[WARNING] Failed to cache: ${failed} queries`);
+      console.warn(`[CLIPBOARD] Error details:`);
       errors.forEach(({ url, error }) => {
         console.warn(`   - ${url}: ${error}`);
       });
     }
 
     // Regenerate indexes to include the new queries
-    console.log("🔄 Regenerating static data indexes...");
+    console.log("[REFRESH] Regenerating static data indexes...");
     await generateAllIndexes(staticDataDir);
 
-    console.log("🎉 Query cache generation completed successfully!");
+    console.log("[CELEBRATION] Query cache generation completed successfully!");
   } catch (error) {
-    console.error("❌ Error in query cache generation:", error);
+    console.error("[ERROR] Error in query cache generation:", error);
     process.exit(1);
   }
 }
@@ -100,7 +100,7 @@ if (process.argv.length > 2) {
 
   QUERIES_TO_CACHE.push(...additionalQueries);
   console.log(
-    `📎 Added ${additionalQueries.length} additional queries from command line`,
+    `[ATTACHMENT] Added ${additionalQueries.length} additional queries from command line`,
   );
 }
 
