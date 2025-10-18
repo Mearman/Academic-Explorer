@@ -21,18 +21,18 @@ interface GroupRibbonButtonProps {
     color?: string;
   };
   onActivate: (groupId: string) => void;
-  onDrop?: (
-    draggedSectionId: string,
-    targetGroupId: string,
-    event: React.DragEvent,
-  ) => void;
+  onDrop?: (params: {
+    draggedSectionId: string;
+    targetGroupId: string;
+    event: React.DragEvent;
+  }) => void;
   onDragOver?: (event: React.DragEvent) => void;
-  onGroupReorder?: (
-    sourceGroupId: string,
-    targetGroupId: string,
-    insertBefore: boolean,
-    event: React.DragEvent,
-  ) => void;
+  onGroupReorder?: (params: {
+    sourceGroupId: string;
+    targetGroupId: string;
+    insertBefore: boolean;
+    _event: React.DragEvent;
+  }) => void;
   onDragStart?: (groupId: string) => void;
   onDragEnd?: () => void;
   side: "left" | "right";
@@ -142,7 +142,7 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
         },
       );
 
-      onDrop(draggedSectionId, group.id, event);
+      onDrop({ draggedSectionId, targetGroupId: group.id, event });
     } else {
       logger.warn("ui", `No onDrop handler for ribbon button ${group.id}`);
     }

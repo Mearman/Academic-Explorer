@@ -44,11 +44,15 @@ export function useApiCallTracker() {
   const store = useAppActivityStore.getState();
 
   return {
-    trackApiCall: (
-      entityType: string,
-      entityId?: string,
-      queryParams?: Record<string, unknown>,
-    ) => {
+    trackApiCall: ({
+      entityType,
+      entityId,
+      queryParams,
+    }: {
+      entityType: string;
+      entityId?: string;
+      queryParams?: Record<string, unknown>;
+    }) => {
       store.addEvent({
         type: "api",
         category: "data",

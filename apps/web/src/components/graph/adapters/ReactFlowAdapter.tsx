@@ -21,13 +21,19 @@ import { detectEntityType } from "@academic-explorer/graph";
 import type { OpenAlexEntity } from "@academic-explorer/client";
 
 // Hierarchical left-to-right layout algorithm for better node positioning
-function applyHierarchicalLayout(
-  nodes: Node[],
-  edges: Edge[],
-  width: number,
-  height: number,
-  config?: ReactFlowConfig,
-) {
+function applyHierarchicalLayout({
+  nodes,
+  edges,
+  width,
+  height,
+  config,
+}: {
+  nodes: Node[];
+  edges: Edge[];
+  width: number;
+  height: number;
+  config?: ReactFlowConfig;
+}) {
   if (nodes.length === 0) return;
 
   // Use config defaults if not provided
@@ -248,13 +254,13 @@ export function ReactFlowAdapterComponent({
     });
 
     // Apply hierarchical layout for better node positioning
-    applyHierarchicalLayout(
-      rfNodes,
-      rfEdges,
-      dimensions.width,
-      dimensions.height,
-      adapterConfig,
-    );
+    applyHierarchicalLayout({
+      nodes: rfNodes,
+      edges: rfEdges,
+      width: dimensions.width,
+      height: dimensions.height,
+      config: adapterConfig,
+    });
 
     return { nodes: rfNodes, edges: rfEdges };
   }, [data, dimensions, config.themeColors]);

@@ -4,51 +4,51 @@
  */
 
 import type {
-    AttractionForceConfig,
-    ClusterForceConfig,
-    CustomForce,
-    CustomForceConfig,
-    CustomForceType,
-    OrbitForceConfig,
-    PropertyForceConfig,
-    RadialForceConfig,
-    RepulsionForceConfig,
+  AttractionForceConfig,
+  ClusterForceConfig,
+  CustomForce,
+  CustomForceConfig,
+  CustomForceType,
+  OrbitForceConfig,
+  PropertyForceConfig,
+  RadialForceConfig,
+  RepulsionForceConfig,
 } from "@academic-explorer/graph";
 import { customForceManager } from "@academic-explorer/graph";
 import { logger } from "@academic-explorer/utils/logger";
 import {
-    ActionIcon,
-    Alert,
-    Badge,
-    Button,
-    Card,
-    Collapse,
-    Divider,
-    Group,
-    JsonInput,
-    Modal,
-    NumberInput,
-    Select,
-    Slider,
-    Stack,
-    Switch,
-    Text,
-    TextInput,
-    Tooltip,
+  ActionIcon,
+  Alert,
+  Badge,
+  Button,
+  Card,
+  Collapse,
+  Divider,
+  Group,
+  JsonInput,
+  Modal,
+  NumberInput,
+  Select,
+  Slider,
+  Stack,
+  Switch,
+  Text,
+  TextInput,
+  Tooltip,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
-    IconChevronDown,
-    IconInfoCircle,
-    IconPlus,
-    IconTemplate,
-    IconTrash,
-    IconWaveSquare,
+  IconChevronDown,
+  IconInfoCircle,
+  IconPlus,
+  IconTemplate,
+  IconTrash,
+  IconWaveSquare,
 } from "@tabler/icons-react";
 import React, { useCallback, useState } from "react";
 
 // Common constants and utilities
-const NUMBER_VALUE_FALLBACK = (value: unknown, fallback: number): number =>
+const NUMBER_VALUE_FALLBACK = ({ value, fallback }): number =>
   typeof value === "number" ? value : fallback;
 
 const STRING_VALUE_FALLBACK = (value: unknown): string =>
@@ -84,7 +84,7 @@ const RadialConfigForm: React.FC<ForceConfigFormProps> = ({
         onChange={(value) => {
           onChange({
             ...radialConfig,
-            radius: NUMBER_VALUE_FALLBACK(value, 200),
+            radius: NUMBER_VALUE_FALLBACK({ value, fallback: 200 }),
           });
         }}
         min={50}
@@ -98,7 +98,7 @@ const RadialConfigForm: React.FC<ForceConfigFormProps> = ({
           onChange={(value) => {
             onChange({
               ...radialConfig,
-              centerX: NUMBER_VALUE_FALLBACK(value, 0),
+              centerX: NUMBER_VALUE_FALLBACK({ value, fallback: 0 }),
             });
           }}
           step={10}
@@ -109,7 +109,7 @@ const RadialConfigForm: React.FC<ForceConfigFormProps> = ({
           onChange={(value) => {
             onChange({
               ...radialConfig,
-              centerY: NUMBER_VALUE_FALLBACK(value, 0),
+              centerY: NUMBER_VALUE_FALLBACK({ value, fallback: 0 }),
             });
           }}
           step={10}
@@ -122,7 +122,7 @@ const RadialConfigForm: React.FC<ForceConfigFormProps> = ({
         onChange={(value) => {
           onChange({
             ...radialConfig,
-            innerRadius: NUMBER_VALUE_FALLBACK(value, 0),
+            innerRadius: NUMBER_VALUE_FALLBACK({ value, fallback: 0 }),
           });
         }}
         min={0}
@@ -186,7 +186,7 @@ const PropertyConfigForm: React.FC<ForceConfigFormProps> = ({
           onChange={(value) => {
             onChange({
               ...propertyConfig,
-              minValue: NUMBER_VALUE_FALLBACK(value, -400),
+              minValue: NUMBER_VALUE_FALLBACK({ value, fallback: -400 }),
             });
           }}
           step={10}
@@ -198,7 +198,7 @@ const PropertyConfigForm: React.FC<ForceConfigFormProps> = ({
           onChange={(value) => {
             onChange({
               ...propertyConfig,
-              maxValue: NUMBER_VALUE_FALLBACK(value, 400),
+              maxValue: NUMBER_VALUE_FALLBACK({ value, fallback: 400 }),
             });
           }}
           step={10}
@@ -232,7 +232,7 @@ const PropertyConfigForm: React.FC<ForceConfigFormProps> = ({
           onChange={(value) => {
             onChange({
               ...propertyConfig,
-              scaleExponent: NUMBER_VALUE_FALLBACK(value, 2),
+              scaleExponent: NUMBER_VALUE_FALLBACK({ value, fallback: 2 }),
             });
           }}
           min={0.1}
@@ -288,7 +288,7 @@ const ClusterConfigForm: React.FC<ForceConfigFormProps> = ({
         onChange={(value) => {
           onChange({
             ...clusterConfig,
-            spacing: NUMBER_VALUE_FALLBACK(value, 150),
+            spacing: NUMBER_VALUE_FALLBACK({ value, fallback: 150 }),
           });
         }}
         min={50}
@@ -451,7 +451,9 @@ const ForceItem: React.FC<ForceItemProps> = ({ force, onUpdate, onRemove }) => {
               description="Force application order (higher = later)"
               value={force.priority}
               onChange={(value) => {
-                onUpdate({ priority: NUMBER_VALUE_FALLBACK(value, 0) });
+                onUpdate({
+                  priority: NUMBER_VALUE_FALLBACK({ value, fallback: 0 }),
+                });
               }}
               min={0}
               max={100}
@@ -601,13 +603,10 @@ export const CustomForcesSection: React.FC = () => {
     }
   }, [newForceName, newForceType, forces.length, closeAddModal]);
 
-  const handleUpdateForce = useCallback(
-    (forceId: string, updates: Partial<CustomForce>) => {
-      customForceManager.updateForce(forceId, updates);
-      setForces([]); // Fallback since getAllForces() not available
-    },
-    [],
-  );
+  const handleUpdateForce = useCallback(({ forceId, updates }) => {
+    customForceManager.updateForce(forceId, updates);
+    setForces([]); // Fallback since getAllForces() not available
+  }, []);
 
   const handleRemoveForce = useCallback((forceId: string) => {
     customForceManager.removeForce(forceId);
@@ -779,7 +778,7 @@ export const CustomForcesSection: React.FC = () => {
               key={force.id}
               force={force}
               onUpdate={(updates) => {
-                if (force.id) handleUpdateForce(force.id, updates);
+                if (force.id) handleUpdateForce({ forceId: force.id, updates });
               }}
               onRemove={() => {
                 if (force.id) handleRemoveForce(force.id);
@@ -839,8 +838,14 @@ export const CustomForcesSection: React.FC = () => {
             }}
             data={[
               { value: "radial", label: "Radial Layout" },
-              { value: FORCE_TYPE_PROPERTY_X, label: "Property-based X Position" },
-              { value: FORCE_TYPE_PROPERTY_Y, label: "Property-based Y Position" },
+              {
+                value: FORCE_TYPE_PROPERTY_X,
+                label: "Property-based X Position",
+              },
+              {
+                value: FORCE_TYPE_PROPERTY_Y,
+                label: "Property-based Y Position",
+              },
               { value: "cluster", label: "Cluster by Property" },
               { value: "repulsion", label: "Custom Repulsion" },
               { value: "attraction", label: "Custom Attraction" },

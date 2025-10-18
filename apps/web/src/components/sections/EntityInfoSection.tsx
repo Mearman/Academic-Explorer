@@ -83,21 +83,21 @@ const useRouteEntityId = () => {
 };
 
 // Helper function to determine which entity to display
-const getDisplayEntityId = (
-  hoveredNodeId: string | null,
-  selectedNodeId: string | null,
-  previewEntityId: string | null,
-  routeEntityId: string | null,
-): string | null => {
+const getDisplayEntityId = ({
+  hoveredNodeId,
+  selectedNodeId,
+  previewEntityId,
+  routeEntityId,
+}): string | null => {
   return hoveredNodeId ?? selectedNodeId ?? previewEntityId ?? routeEntityId;
 };
 
 // Helper function to get entity source for logging
-const getEntitySource = (
-  hoveredNodeId: string | null,
-  selectedNodeId: string | null,
-  previewEntityId: string | null,
-): string => {
+const getEntitySource = ({
+  hoveredNodeId,
+  selectedNodeId,
+  previewEntityId,
+}): string => {
   if (hoveredNodeId) return "hover";
   if (selectedNodeId) return "selection";
   if (previewEntityId) return "preview";
@@ -245,12 +245,12 @@ export const EntityInfoSection: React.FC<EntityInfoSectionProps> = ({
   const nodesMap = useGraphStore((state) => state.nodes);
 
   const routeEntityId = useRouteEntityId();
-  const displayEntityId = getDisplayEntityId(
+  const displayEntityId = getDisplayEntityId({
     hoveredNodeId,
     selectedNodeId,
     previewEntityId,
     routeEntityId,
-  );
+  });
   const entityNode = displayEntityId ? nodesMap[displayEntityId] : undefined;
 
   const rawEntityData = useRawEntityData({
@@ -264,7 +264,11 @@ export const EntityInfoSection: React.FC<EntityInfoSectionProps> = ({
 
     const logData = {
       entityId: displayEntityId,
-      source: getEntitySource(hoveredNodeId, selectedNodeId, previewEntityId),
+      source: getEntitySource({
+        hoveredNodeId,
+        selectedNodeId,
+        previewEntityId,
+      }),
       hasNodeData: !!entityNode,
       hasRawData: !!rawEntityData.data,
       routeEntityId,

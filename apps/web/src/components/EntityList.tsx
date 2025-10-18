@@ -1,13 +1,15 @@
 import type {
   Author,
-  Concept, EntityType, Funder,
+  Concept,
+  EntityType,
+  Funder,
   InstitutionEntity,
   InstitutionsFilters,
   OpenAlexResponse,
   Publisher,
   Source,
   Topic,
-  Work
+  Work,
 } from "@academic-explorer/client";
 import {
   buildFilterString,
@@ -48,10 +50,13 @@ export interface EntityListProps {
   onViewModeChange?: (viewMode: ViewMode) => void;
 }
 
-function transformEntityToGridItem(
-  entity: Entity,
-  entityType: EntityType,
-): EntityGridItem {
+function transformEntityToGridItem({
+  entity,
+  entityType,
+}: {
+  entity: Entity;
+  entityType: EntityType;
+}): EntityGridItem {
   const baseItem = {
     id: entity.id.replace("https://openalex.org/", ""),
     entityType,
@@ -141,11 +146,14 @@ function transformEntityToGridItem(
   }
 }
 
-function transformEntityToListItem(
-  entity: Entity,
-  entityType: EntityType,
-): EntityListItem {
-  return transformEntityToGridItem(entity, entityType);
+function transformEntityToListItem({
+  entity,
+  entityType,
+}: {
+  entity: Entity;
+  entityType: EntityType;
+}): EntityListItem {
+  return transformEntityToGridItem({ entity, entityType });
 }
 
 export function EntityList({
@@ -278,8 +286,12 @@ export function EntityList({
     id: item.id.replace("https://openalex.org/", ""),
   }));
 
-  const gridItems = data.map((item) => transformEntityToGridItem(item, entityType));
-  const listItems = data.map((item) => transformEntityToListItem(item, entityType));
+  const gridItems = data.map((item) =>
+    transformEntityToGridItem({ entity: item, entityType }),
+  );
+  const listItems = data.map((item) =>
+    transformEntityToListItem({ entity: item, entityType }),
+  );
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -299,7 +311,9 @@ export function EntityList({
           <ViewModeToggle value={viewMode} onChange={handleViewModeChange} />
         )}
       </Group>
-      {viewMode === "table" && <BaseTable data={tableData} columns={tableColumns} />}
+      {viewMode === "table" && (
+        <BaseTable data={tableData} columns={tableColumns} />
+      )}
       {viewMode === "list" && <EntityListView items={listItems} />}
       {viewMode === "grid" && <EntityGrid items={gridItems} />}
       {totalPages > 1 && (

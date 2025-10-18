@@ -69,7 +69,13 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
   const entityInteraction = useEntityInteraction();
   const { handleSidebarEntityClick } = entityInteraction;
 
-  const getEntityIcon = (entityType: string, size = 20) => {
+  const getEntityIcon = ({
+    entityType,
+    size = 20,
+  }: {
+    entityType: string;
+    size?: number;
+  }) => {
     const iconProps = { size };
     switch (entityType) {
       case "works":
@@ -96,7 +102,13 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
     return num.toLocaleString();
   };
 
-  const handleEntityClick = (entityId: string, entityType: string) => {
+  const handleEntityClick = ({
+    entityId,
+    entityType,
+  }: {
+    entityId: string;
+    entityType: string;
+  }) => {
     // Use shared entity interaction logic for consistent behavior
     void handleSidebarEntityClick(entityId, entityType);
   };
@@ -149,10 +161,10 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                 style={{ cursor: "pointer" }}
                 onClick={() => {
                   if (work.primary_location?.source?.id) {
-                    handleEntityClick(
-                      work.primary_location.source.id,
-                      "source",
-                    );
+                    handleEntityClick({
+                      entityId: work.primary_location.source.id,
+                      entityType: "source",
+                    });
                   }
                 }}
               >
@@ -238,10 +250,13 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                       <Anchor
                         size="xs"
                         c={getEntityColor("authors")}
-                        style={{ flex: 1, cursor: "pointer" }}
+                        style={{ cursor: "pointer" }}
                         onClick={() => {
                           if (authorship.author.id) {
-                            handleEntityClick(authorship.author.id, "author");
+                            handleEntityClick({
+                              entityId: authorship.author.id,
+                              entityType: "author",
+                            });
                           }
                         }}
                       >
@@ -255,10 +270,10 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                           style={{ maxWidth: 150, cursor: "pointer" }}
                           onClick={() => {
                             if (authorship.institutions[0]?.id) {
-                              handleEntityClick(
-                                authorship.institutions[0].id,
-                                "institution",
-                              );
+                              handleEntityClick({
+                                entityId: authorship.institutions[0].id,
+                                entityType: "institution",
+                              });
                             }
                           }}
                         >
@@ -299,7 +314,10 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                   style={{ cursor: "pointer" }}
                   onClick={() => {
                     if (topic.id) {
-                      handleEntityClick(topic.id, "topic");
+                      handleEntityClick({
+                        entityId: topic.id,
+                        entityType: "topic",
+                      });
                     }
                   }}
                 >
@@ -346,10 +364,10 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                     style={{ cursor: "pointer" }}
                     onClick={() => {
                       if (author.last_known_institutions?.[0]?.id) {
-                        handleEntityClick(
-                          author.last_known_institutions[0].id,
-                          "institution",
-                        );
+                        handleEntityClick({
+                          entityId: author.last_known_institutions[0].id,
+                          entityType: "institution",
+                        });
                       }
                     }}
                   >
@@ -441,10 +459,10 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                         style={{ cursor: "pointer" }}
                         onClick={() => {
                           if (affiliation.institution.id) {
-                            handleEntityClick(
-                              affiliation.institution.id,
-                              "institution",
-                            );
+                            handleEntityClick({
+                              entityId: affiliation.institution.id,
+                              entityType: "institution",
+                            });
                           }
                         }}
                       >
@@ -494,7 +512,10 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                     style={{ cursor: "pointer" }}
                     onClick={() => {
                       if (topic.id) {
-                        handleEntityClick(topic.id, "topic");
+                        handleEntityClick({
+                          entityId: topic.id,
+                          entityType: "topic",
+                        });
                       }
                     }}
                   >
@@ -625,7 +646,10 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                     style={{ cursor: "pointer" }}
                     onClick={() => {
                       if (topic.id) {
-                        handleEntityClick(topic.id, "topic");
+                        handleEntityClick({
+                          entityId: topic.id,
+                          entityType: "topic",
+                        });
                       }
                     }}
                   >
@@ -660,7 +684,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
           color={getEntityColor(entity.entityType)}
           variant="light"
         >
-          {getEntityIcon(entity.entityType, 24)}
+          {getEntityIcon({ entityType: entity.entityType, size: 24 })}
         </ThemeIcon>
         <Stack gap="xs" style={{ flex: 1 }}>
           <Group gap="xs" wrap="wrap">

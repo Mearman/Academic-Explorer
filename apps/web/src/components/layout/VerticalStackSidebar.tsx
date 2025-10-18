@@ -86,7 +86,7 @@ export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({
     event.preventDefault();
   };
 
-  const handleToolDragStart = (sectionId: string, event: React.DragEvent) => {
+  const handleToolDragStart = ({ sectionId, event }) => {
     logger.debug("ui", `Starting drag for tool ${sectionId}`, {
       sectionId,
       side,
@@ -95,7 +95,7 @@ export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({
     event.dataTransfer.effectAllowed = "move";
   };
 
-  const handleToolDrop = (targetSectionId: string, event: React.DragEvent) => {
+  const handleToolDrop = ({ targetSectionId, event }) => {
     event.preventDefault();
     event.stopPropagation();
 
@@ -198,10 +198,10 @@ export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({
                 aria-expanded={!isCollapsed}
                 draggable
                 onDragStart={(e) => {
-                  handleToolDragStart(sectionId, e);
+                  handleToolDragStart({ sectionId, event: e });
                 }}
                 onDrop={(e) => {
-                  handleToolDrop(sectionId, e);
+                  handleToolDrop({ targetSectionId: sectionId, event: e });
                 }}
                 onDragOver={handleDragOver}
                 onKeyDown={(e) => {

@@ -7,11 +7,11 @@ import { GroupRibbonButton } from "@/components/layout/GroupRibbonButton";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useGraphStore } from "@/stores/graph-store";
 import {
-    createNewGroup,
-    getGroupDefinition,
-    getRegistryVersion,
-    updateGroupDefinition,
-    type ToolGroupDefinition,
+  createNewGroup,
+  getGroupDefinition,
+  getRegistryVersion,
+  updateGroupDefinition,
+  type ToolGroupDefinition,
 } from "@/stores/group-registry";
 import { useLayoutStore } from "@/stores/layout-store";
 import { getSectionById } from "@/stores/section-registry";
@@ -120,12 +120,17 @@ export const RightRibbon: React.FC = () => {
     }, 150); // Small delay to allow expansion animation
   };
 
-  const handleGroupReorder = (
-    sourceGroupId: string,
-    targetGroupId: string,
-    insertBefore: boolean,
-    _event: React.DragEvent,
-  ) => {
+  const handleGroupReorder = ({
+    sourceGroupId,
+    targetGroupId,
+    insertBefore,
+    _event,
+  }: {
+    sourceGroupId: string;
+    targetGroupId: string;
+    insertBefore: boolean;
+    _event: React.DragEvent;
+  }) => {
     logger.debug(
       "ui",
       `Reordering group ${sourceGroupId} relative to ${targetGroupId}`,
@@ -165,10 +170,7 @@ export const RightRibbon: React.FC = () => {
     setDropInsertionIndex(null);
   };
 
-  const handleDropZoneHover = (
-    insertionIndex: number,
-    hasGroupDrag: boolean = false,
-  ) => {
+  const handleDropZoneHover = ({ insertionIndex, hasGroupDrag = false }) => {
     if (isDragging || hasGroupDrag) {
       setDropInsertionIndex(insertionIndex);
     }
@@ -184,16 +186,16 @@ export const RightRibbon: React.FC = () => {
   };
 
   // Helper function to determine if drop zone should be shown
-  const shouldShowDropZone = (
-    isDragging: boolean,
-    hasGroupDrag: boolean,
-    isActive: boolean,
-  ): boolean => {
+  const shouldShowDropZone = ({
+    isDragging,
+    hasGroupDrag,
+    isActive,
+  }): boolean => {
     return (isDragging || hasGroupDrag) && isActive;
   };
 
   // Helper function to get drop zone style
-  const getDropZoneStyle = (shouldShow: boolean, colors: ThemeColors) => ({
+  const getDropZoneStyle = ({ shouldShow, colors }) => ({
     height: shouldShow ? "40px" : "0px",
     width: shouldShow ? "40px" : "40px",
     backgroundColor: shouldShow ? colors.primary : "transparent",
@@ -210,14 +212,8 @@ export const RightRibbon: React.FC = () => {
   });
 
   // Helper function to handle drop logic
-  const handleDropLogic = (
-    e: React.DragEvent,
-    index: number,
-    groupDefinitions: ToolGroupDefinition[],
-  ) => {
-    const groupReorderData = e.dataTransfer.getData(
-      GROUP_REORDER_DRAG_TYPE,
-    );
+  const handleDropLogic = ({ e, index, groupDefinitions }) => {
+    const groupReorderData = e.dataTransfer.getData(GROUP_REORDER_DRAG_TYPE);
     if (!groupReorderData) return;
 
     logger.debug("ui", `Drop zone ${String(index)} processing reorder/move`, {
@@ -231,36 +227,46 @@ export const RightRibbon: React.FC = () => {
     const isFromSameSidebar = Boolean(rightGroups[groupReorderData]);
 
     if (index === 0) {
-      handleDropAtBeginning(
+      handleDropAtBeginning({
         groupReorderData,
         groupDefinitions,
         isFromSameSidebar,
         e,
-      );
+      });
     } else if (index === groupDefinitions.length) {
-      handleDropAtEnd(groupReorderData, groupDefinitions, isFromSameSidebar, e);
-    } else {
-      handleDropBetweenGroups(
+      handleDropAtEnd({
         groupReorderData,
-        index,
         groupDefinitions,
         isFromSameSidebar,
         e,
-      );
+      });
+    } else {
+      handleDropBetweenGroups({
+        groupReorderData,
+        groupDefinitions,
+        index,
+        isFromSameSidebar,
+        e,
+      });
     }
   };
 
   // Helper functions for different drop positions
-  const handleDropAtBeginning = (
-    groupReorderData: string,
-    groupDefinitions: ToolGroupDefinition[],
-    isFromSameSidebar: boolean,
-    e: React.DragEvent,
-  ) => {
+  const handleDropAtBeginning = ({
+    groupReorderData,
+    groupDefinitions,
+    isFromSameSidebar,
+    e,
+  }) => {
     const firstGroup = groupDefinitions[0];
     if (firstGroup.id !== groupReorderData) {
       if (isFromSameSidebar) {
-        handleGroupReorder(groupReorderData, firstGroup.id, true, e);
+        handleGroupReorder({
+          sourceGroupId: groupReorderData,
+          targetGroupId: firstGroup.id,
+          insertBefore: true,
+          _event: e,
+        });
       } else {
         layoutStore.moveGroupToSidebar(
           groupReorderData,
@@ -272,16 +278,21 @@ export const RightRibbon: React.FC = () => {
     }
   };
 
-  const handleDropAtEnd = (
-    groupReorderData: string,
-    groupDefinitions: ToolGroupDefinition[],
-    isFromSameSidebar: boolean,
-    e: React.DragEvent,
-  ) => {
+  const handleDropAtEnd = ({
+    groupReorderData,
+    groupDefinitions,
+    isFromSameSidebar,
+    e,
+  }) => {
     const lastGroup = groupDefinitions[groupDefinitions.length - 1];
     if (lastGroup.id !== groupReorderData) {
       if (isFromSameSidebar) {
-        handleGroupReorder(groupReorderData, lastGroup.id, false, e);
+        handleGroupReorder({
+          sourceGroupId: groupReorderData,
+          targetGroupId: lastGroup.id,
+          insertBefore: false,
+          _event: e,
+        });
       } else {
         layoutStore.moveGroupToSidebar(
           groupReorderData,
@@ -295,17 +306,22 @@ export const RightRibbon: React.FC = () => {
     }
   };
 
-  const handleDropBetweenGroups = (
-    groupReorderData: string,
-    index: number,
-    groupDefinitions: ToolGroupDefinition[],
-    isFromSameSidebar: boolean,
-    e: React.DragEvent,
-  ) => {
+  const handleDropBetweenGroups = ({
+    groupReorderData,
+    groupDefinitions,
+    index,
+    isFromSameSidebar,
+    e,
+  }) => {
     const targetGroup = groupDefinitions[index - 1];
     if (targetGroup.id !== groupReorderData) {
       if (isFromSameSidebar) {
-        handleGroupReorder(groupReorderData, targetGroup.id, false, e);
+        handleGroupReorder({
+          sourceGroupId: groupReorderData,
+          targetGroupId: targetGroup.id,
+          insertBefore: false,
+          _event: e,
+        });
       } else {
         layoutStore.moveGroupToSidebar(
           groupReorderData,
@@ -341,7 +357,10 @@ export const RightRibbon: React.FC = () => {
         );
       }
 
-      handleDropZoneHover(index, isGroupReorder);
+      handleDropZoneHover({
+        insertionIndex: index,
+        hasGroupDrag: isGroupReorder,
+      });
     };
 
     const handleDragLeave = () => {
@@ -349,14 +368,18 @@ export const RightRibbon: React.FC = () => {
       handleDropZoneLeave();
     };
 
-    const showDropZone = shouldShowDropZone(isDragging, hasGroupDrag, isActive);
+    const showDropZone = shouldShowDropZone({
+      isDragging,
+      hasGroupDrag,
+      isActive,
+    });
 
     return (
       <div
         role="button"
         tabIndex={0}
         aria-label={`Drop zone ${index} - Drop group here to reorder`}
-        style={getDropZoneStyle(showDropZone, colors)}
+        style={getDropZoneStyle({ shouldShow: showDropZone, colors })}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={(e) => {
@@ -371,7 +394,7 @@ export const RightRibbon: React.FC = () => {
               draggedGroupId,
             },
           );
-          handleDropLogic(e, index, groupDefinitions);
+          handleDropLogic({ e, index, groupDefinitions });
         }}
       />
     );

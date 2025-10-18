@@ -12,10 +12,13 @@ export type GraphAdapterType =
 export class GraphAdapterFactory {
   private static adapterCache = new Map<string, GraphAdapter>();
 
-  static async createAdapter(
-    type: GraphAdapterType,
-    config?: GraphAdapterConfig,
-  ): Promise<GraphAdapter> {
+  static async createAdapter({
+    type,
+    config,
+  }: {
+    type: GraphAdapterType;
+    config?: GraphAdapterConfig;
+  }): Promise<GraphAdapter> {
     // Create cache key that includes config to ensure different configs get different instances
     const cacheKey = config ? `${type}-${JSON.stringify(config)}` : type;
 

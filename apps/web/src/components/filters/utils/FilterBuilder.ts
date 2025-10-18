@@ -62,14 +62,17 @@ export class FilterBuilder {
    *   'is_oa': true,
    *   'authorships.author.id': ['A1234', 'A5678']
    * };
-   * const queryString = builder.toQueryString(filters);
+   * const queryString = builder.toQueryString({ filters });
    * // Result: "publication_year:2023,is_oa:true,authorships.author.id:A1234|A5678"
    * ```
    */
-  toQueryString(
-    filters: EntityFilters | Partial<EntityFilters> | null | undefined,
-    entityType?: EntityType,
-  ): string {
+  toQueryString({
+    filters,
+    entityType,
+  }: {
+    filters: EntityFilters | Partial<EntityFilters> | null | undefined;
+    entityType?: EntityType;
+  }): string {
     logger.debug("filters", "Converting filters to query string", {
       filters,
       entityType,
@@ -346,10 +349,13 @@ export class FilterBuilder {
    * @param entityType - Optional entity type for validation
    * @returns Object with query string and validation results
    */
-  convertWithValidation(
-    filters: EntityFilters | Partial<EntityFilters> | null | undefined,
-    entityType?: EntityType,
-  ): {
+  convertWithValidation({
+    filters,
+    entityType,
+  }: {
+    filters: EntityFilters | Partial<EntityFilters> | null | undefined;
+    entityType?: EntityType;
+  }): {
     queryString: string;
     validation?: FilterValidationResult;
   } {
@@ -358,7 +364,7 @@ export class FilterBuilder {
         ? this.validateFilters(filters, entityType)
         : undefined;
 
-    const queryString = this.toQueryString(filters, entityType);
+    const queryString = this.toQueryString({ filters, entityType });
 
     return { queryString, validation };
   }
@@ -418,11 +424,14 @@ export const strictFilterBuilder = FilterBuilder.createStrict();
  * @param entityType - Optional entity type for validation
  * @returns The formatted filter string
  */
-export function filtersToQueryString(
-  filters: EntityFilters | Partial<EntityFilters> | null | undefined,
-  entityType?: EntityType,
-): string {
-  return defaultFilterBuilder.toQueryString(filters, entityType);
+export function filtersToQueryString({
+  filters,
+  entityType,
+}: {
+  filters: EntityFilters | Partial<EntityFilters> | null | undefined;
+  entityType?: EntityType;
+}): string {
+  return defaultFilterBuilder.toQueryString({ filters, entityType });
 }
 
 /**
@@ -432,9 +441,12 @@ export function filtersToQueryString(
  * @param entityType - The entity type to validate against
  * @returns Validation result
  */
-export function validateFilters(
-  filters: EntityFilters | Partial<EntityFilters>,
-  entityType: EntityType,
-): FilterValidationResult {
+export function validateFilters({
+  filters,
+  entityType,
+}: {
+  filters: EntityFilters | Partial<EntityFilters>;
+  entityType: EntityType;
+}): FilterValidationResult {
   return strictFilterBuilder.validateFilters(filters, entityType);
 }

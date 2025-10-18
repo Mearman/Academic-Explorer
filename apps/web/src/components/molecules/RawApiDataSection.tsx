@@ -134,7 +134,13 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
     </span>
   );
 
-  const formatArrayValue = (value: unknown[], depth: number) => {
+  const formatArrayValue = ({
+    value,
+    depth,
+  }: {
+    value: unknown[];
+    depth: number;
+  }) => {
     const indentSize = 16;
     return (
       <div
@@ -182,7 +188,7 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
             >
               [{index}]
             </span>
-            {formatValue(item, depth + 1)}
+            {formatValue({ value: item, depth: depth + 1 })}
           </div>
         ))}
       </div>
@@ -204,7 +210,13 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
     </span>
   );
 
-  const formatObjectValue = (value: Record<string, unknown>, depth: number) => {
+  const formatObjectValue = ({
+    value,
+    depth,
+  }: {
+    value: Record<string, unknown>;
+    depth: number;
+  }) => {
     const entries = Object.entries(value);
     const indentSize = 16;
     return (
@@ -253,7 +265,7 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
             >
               {key}:
             </span>
-            {formatValue(val, depth + 1)}
+            {formatValue({ value: val, depth: depth + 1 })}
           </div>
         ))}
       </div>
@@ -301,7 +313,13 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
     </span>
   );
 
-  const formatValue = (value: unknown, depth = 0): React.ReactNode => {
+  const formatValue = ({
+    value,
+    depth = 0,
+  }: {
+    value: unknown;
+    depth?: number;
+  }): React.ReactNode => {
     if (value === null) return formatNullValue();
     if (value === undefined) return formatUndefinedValue();
     if (typeof value === "boolean") return formatBooleanValue(value);
@@ -316,14 +334,14 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
     if (Array.isArray(value)) {
       return value.length === 0
         ? formatEmptyArray()
-        : formatArrayValue(value, depth);
+        : formatArrayValue({ value, depth });
     }
 
     if (typeof value === "object") {
       const entries = Object.entries(value);
       return entries.length === 0
         ? formatEmptyObject()
-        : formatObjectValue(value as Record<string, unknown>, depth);
+        : formatObjectValue({ value: value as Record<string, unknown>, depth });
     }
 
     // Handle edge cases
@@ -557,7 +575,7 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
                   color: colors.text.primary,
                 }}
               >
-                {formatValue(rawData)}
+                {formatValue({ value: rawData })}
               </div>
             ) : (
               <pre

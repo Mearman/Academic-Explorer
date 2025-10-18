@@ -337,11 +337,7 @@ const NetworkActivitySection: React.FC = () => {
     );
   };
 
-  const renderRequestGroup = (
-    title: string,
-    requests: NetworkRequest[],
-    color: string,
-  ) => {
+  const renderRequestGroup = ({ title, requests, color }) => {
     if (requests.length === 0) return null;
 
     return (
@@ -554,32 +550,32 @@ const NetworkActivitySection: React.FC = () => {
             </Text>
           ) : (
             <>
-              {renderRequestGroup(
-                "Active Requests",
-                requestGroups.pending,
-                "blue",
-              )}
+              {renderRequestGroup({
+                title: "Active Requests",
+                requests: requestGroups.pending,
+                color: "blue",
+              })}
               {requestGroups.pending.length > 0 && <Divider />}
 
-              {renderRequestGroup(
-                "Failed Requests",
-                requestGroups.failed,
-                "red",
-              )}
+              {renderRequestGroup({
+                title: "Failed Requests",
+                requests: requestGroups.failed,
+                color: "red",
+              })}
               {requestGroups.failed.length > 0 && <Divider />}
 
-              {renderRequestGroup(
-                "Cached Requests",
-                requestGroups.cached,
-                "purple",
-              )}
+              {renderRequestGroup({
+                title: "Cached Requests",
+                requests: requestGroups.cached,
+                color: "purple",
+              })}
               {requestGroups.cached.length > 0 && <Divider />}
 
-              {renderRequestGroup(
-                "Completed Requests",
-                requestGroups.completed,
-                "green",
-              )}
+              {renderRequestGroup({
+                title: "Completed Requests",
+                requests: requestGroups.completed,
+                color: "green",
+              })}
             </>
           )}
         </Stack>

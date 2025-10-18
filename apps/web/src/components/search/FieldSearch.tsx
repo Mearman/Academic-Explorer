@@ -1,6 +1,12 @@
 import { useState, useCallback } from "react";
 import { Stack, TextInput, Group, Paper, Title, Button } from "@mantine/core";
-import { IconSearch, IconUser, IconBuilding, IconBook, IconFileText } from "@tabler/icons-react";
+import {
+  IconSearch,
+  IconUser,
+  IconBuilding,
+  IconBook,
+  IconFileText,
+} from "@tabler/icons-react";
 
 /**
  * Structure for field-specific search values
@@ -67,12 +73,12 @@ export function FieldSearch({
    * Handle changes to individual search fields
    */
   const handleFieldChange = useCallback(
-    (field: keyof FieldSearchValues, value: string) => {
+    ({ field, value }) => {
       const newValues = { ...searchValues, [field]: value };
       setSearchValues(newValues);
       onChange?.(newValues);
     },
-    [searchValues, onChange]
+    [searchValues, onChange],
   );
 
   /**
@@ -99,7 +105,9 @@ export function FieldSearch({
   /**
    * Check if any field has a value
    */
-  const hasAnyValue = Object.values(searchValues).some(value => value.trim() !== "");
+  const hasAnyValue = Object.values(searchValues).some(
+    (value) => value.trim() !== "",
+  );
 
   return (
     <Paper p="md" withBorder>
@@ -113,7 +121,9 @@ export function FieldSearch({
             placeholder={finalPlaceholders.title}
             leftSection={<IconBook size={16} />}
             value={searchValues.title}
-            onChange={(e) => handleFieldChange("title", e.target.value)}
+            onChange={(e) =>
+              handleFieldChange({ field: "title", value: e.target.value })
+            }
             disabled={isLoading}
             size="md"
             aria-label="Search by work title"
@@ -125,7 +135,9 @@ export function FieldSearch({
             placeholder={finalPlaceholders.abstract}
             leftSection={<IconFileText size={16} />}
             value={searchValues.abstract}
-            onChange={(e) => handleFieldChange("abstract", e.target.value)}
+            onChange={(e) =>
+              handleFieldChange({ field: "abstract", value: e.target.value })
+            }
             disabled={isLoading}
             size="md"
             aria-label="Search by abstract content"
@@ -137,7 +149,9 @@ export function FieldSearch({
             placeholder={finalPlaceholders.author}
             leftSection={<IconUser size={16} />}
             value={searchValues.author}
-            onChange={(e) => handleFieldChange("author", e.target.value)}
+            onChange={(e) =>
+              handleFieldChange({ field: "author", value: e.target.value })
+            }
             disabled={isLoading}
             size="md"
             aria-label="Search by author name"
@@ -149,7 +163,9 @@ export function FieldSearch({
             placeholder={finalPlaceholders.institution}
             leftSection={<IconBuilding size={16} />}
             value={searchValues.institution}
-            onChange={(e) => handleFieldChange("institution", e.target.value)}
+            onChange={(e) =>
+              handleFieldChange({ field: "institution", value: e.target.value })
+            }
             disabled={isLoading}
             size="md"
             aria-label="Search by institution name"

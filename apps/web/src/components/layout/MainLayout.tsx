@@ -101,7 +101,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   // Drag handling for sidebar resizing
   const handleDragStart = useCallback(
-    (side: "left" | "right", e: React.MouseEvent) => {
+    ({ side, e }: { side: "left" | "right"; e: React.MouseEvent }) => {
       e.preventDefault();
       setIsDragging(side);
       dragStartRef.current = {
@@ -352,7 +352,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   borderRight: `1px solid ${colors.border.primary}`,
                 }}
                 onMouseDown={(e) => {
-                  handleDragStart("left", e);
+                  handleDragStart({ side: "left", e });
                 }}
                 onKeyDown={(e) => {
                   // Handle keyboard resize with arrow keys
@@ -414,7 +414,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   borderLeft: `1px solid ${colors.border.primary}`,
                 }}
                 onMouseDown={(e) => {
-                  handleDragStart("right", e);
+                  handleDragStart({ side: "right", e });
                 }}
                 onKeyDown={(e) => {
                   // Handle keyboard resize with arrow keys

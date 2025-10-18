@@ -256,7 +256,7 @@ export const EdgeRepositorySection: React.FC = () => {
   }, [getSelectedEdges]);
 
   const handleTypeFilterChange = useCallback(
-    (relationType: RelationType, checked: boolean) => {
+    ({ relationType, checked }) => {
       setEdgeTypeFilter(relationType, checked);
     },
     [setEdgeTypeFilter],
@@ -307,10 +307,10 @@ export const EdgeRepositorySection: React.FC = () => {
                   key={option.entityType}
                   checked={isChecked}
                   onChange={(event) => {
-                    handleTypeFilterChange(
-                      option.entityType,
-                      event.currentTarget.checked,
-                    );
+                    handleTypeFilterChange({
+                      relationType: option.entityType,
+                      checked: event.currentTarget.checked,
+                    });
                   }}
                   label={
                     <Group gap="xs">

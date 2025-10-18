@@ -122,7 +122,7 @@ export function BookmarkManager({ onNavigate }: BookmarkManagerProps) {
                 <a
                   href={`#${bookmark.request.cacheKey.replace(
                     /^\/(author|work|institution|source|funder|topic|concept)\//,
-                    (match, type) => {
+                    (_match, type) => {
                       const pluralMap: Record<string, string> = {
                         author: "authors",
                         work: "works",
