@@ -8,6 +8,7 @@ import { createTrackedStore } from "@academic-explorer/utils/state";
 import { useGraphStore } from "./graph-store";
 import type { GraphNode } from "@academic-explorer/graph";
 import { logger } from "@academic-explorer/utils/logger";
+import type { Draft } from "immer";
 
 interface NodePosition {
   id: string;
