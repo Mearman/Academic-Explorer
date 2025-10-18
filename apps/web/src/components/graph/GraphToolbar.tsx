@@ -221,10 +221,13 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
           entityType: node.data["entityType"],
         });
 
-        await expandNode(entityId, {
-          depth: 1, // Expand 1 level
-          limit: 10, // Limit connections per node
-          force: true, // Force fresh expansion with new citation fields
+        await expandNode({
+          nodeId: entityId,
+          options: {
+            depth: 1, // Expand 1 level
+            limit: 10, // Limit connections per node
+            force: true, // Force fresh expansion with new citation fields
+          },
         });
 
         return { nodeId: node.id, entityId, success: true };

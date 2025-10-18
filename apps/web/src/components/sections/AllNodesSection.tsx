@@ -317,10 +317,13 @@ export const AllNodesSection: React.FC = () => {
         logger.debug("graph", "Expanding node from AllNodesSection", {
           nodeId,
         });
-        await expandNode(nodeId, {
-          depth: 1,
-          limit: 10,
-          force: false,
+        await expandNode({
+          nodeId,
+          options: {
+            depth: 1,
+            limit: 10,
+            force: false,
+          },
         });
       } catch (error) {
         logger.error("graph", "Failed to expand node from AllNodesSection", {

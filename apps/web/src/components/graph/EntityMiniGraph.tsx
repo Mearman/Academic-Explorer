@@ -146,10 +146,10 @@ export function EntityMiniGraph({
     const loadAdapter = async () => {
       setIsLoading(true);
       try {
-        const newAdapter = await GraphAdapterFactory.createAdapter(
-          selectedOption.adapterType,
-          selectedOption.config,
-        );
+        const newAdapter = await GraphAdapterFactory.createAdapter({
+          type: selectedOption.adapterType,
+          config: selectedOption.config,
+        });
         if (isMounted) {
           setAdapter(newAdapter);
           setIsLoading(false);

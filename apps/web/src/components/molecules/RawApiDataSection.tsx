@@ -26,8 +26,10 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
   const [viewMode, setViewMode] = useState<"formatted" | "raw">("formatted");
 
   const rawEntityDataResult = useRawEntityData({
-    entityId: entityId ?? null,
-    enabled: !!entityId,
+    options: {
+      entityId: entityId ?? null,
+      enabled: !!entityId,
+    },
   });
   const rawData = rawEntityDataResult.data;
   const { isLoading } = rawEntityDataResult;

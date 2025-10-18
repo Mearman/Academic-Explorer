@@ -42,7 +42,11 @@ export function NavigationTracker() {
             location.search as Record<string, string>,
           ).toString()
         : "";
-    historyDB.addVisit(location.pathname, searchString, location.hash);
+    historyDB.addVisit({
+      path: location.pathname,
+      search: searchString,
+      hash: location.hash,
+    });
 
     // Always log page visits with detailed metadata
     const pageInfo = extractPageInfo(

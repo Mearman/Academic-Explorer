@@ -62,7 +62,9 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
   const themeColors = useThemeColors();
   const { colors } = themeColors;
   const rawEntityData = useRawEntityData({
-    entityId: entity.entityId,
+    options: {
+      entityId: entity.entityId,
+    },
   });
   const rawData = rawEntityData.data;
   const { isLoading } = rawEntityData;
@@ -110,7 +112,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
     entityType: string;
   }) => {
     // Use shared entity interaction logic for consistent behavior
-    void handleSidebarEntityClick(entityId, entityType);
+    void handleSidebarEntityClick({ entityId, entityType });
   };
 
   // Entity-specific rich content components

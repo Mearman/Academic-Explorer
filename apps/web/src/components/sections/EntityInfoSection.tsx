@@ -254,8 +254,10 @@ export const EntityInfoSection: React.FC<EntityInfoSectionProps> = ({
   const entityNode = displayEntityId ? nodesMap[displayEntityId] : undefined;
 
   const rawEntityData = useRawEntityData({
-    entityId: routeEntityId,
-    enabled: !!routeEntityId && !entityNode,
+    options: {
+      entityId: routeEntityId,
+      enabled: !!routeEntityId && !entityNode,
+    },
   });
 
   // Log entity display information
