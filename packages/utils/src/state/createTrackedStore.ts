@@ -238,7 +238,16 @@ export function createTrackedStore<
   });
 
   // Build middleware stack
-  let storeCreator = immer(baseStoreCreator);
+  let storeCreator: StateCreator<T & A, [], [], T & A> =
+    immer(baseStoreCreator);
+
+  // Add devtools if enabled (must be applied before persist in Zustand v5)
+  if (enableDevtools && isDevelopment()) {
+    storeCreator = devtools(storeCreator, {
+      name,
+      enabled: true,
+    });
+  }
 
   // Add persistence if enabled
   if (persistConfig?.enabled) {
@@ -271,16 +280,8 @@ export function createTrackedStore<
     });
   }
 
-  // Add devtools if enabled
-  if (enableDevtools && isDevelopment()) {
-    storeCreator = devtools(storeCreator, {
-      name,
-      enabled: true,
-    });
-  }
-
   // Create the store
-   
+
   const useStore = create<T & A>(storeCreator);
   const store = useStore; // The store API is the same as the hook in Zustand
 
