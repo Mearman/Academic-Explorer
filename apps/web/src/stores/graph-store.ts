@@ -146,7 +146,13 @@ interface GraphActions {
 }
 
 // Helper functions
-function getNeighborsForNode(state: GraphState, nodeId: string): GraphNode[] {
+function getNeighborsForNode({
+  state,
+  nodeId,
+}: {
+  state: GraphState;
+  nodeId: string;
+}): GraphNode[] {
   const neighbors: GraphNode[] = [];
   const edges = Object.values(state.edges);
 
@@ -161,11 +167,15 @@ function getNeighborsForNode(state: GraphState, nodeId: string): GraphNode[] {
   return neighbors;
 }
 
-function findShortestPathBFS(
-  state: GraphState,
-  sourceId: string,
-  targetId: string,
-): string[] {
+function findShortestPathBFS({
+  state,
+  sourceId,
+  targetId,
+}: {
+  state: GraphState;
+  sourceId: string;
+  targetId: string;
+}): string[] {
   if (sourceId === targetId) return [sourceId];
 
   const visited = new Set<string>();
@@ -179,7 +189,7 @@ function findShortestPathBFS(
     const current = queue.shift();
     if (!current) break;
 
-    const nextIds = findNeighborIds(edges, current.id);
+    const nextIds = findNeighborIds({ edges, nodeId: current.id });
     for (const nextId of nextIds) {
       if (!visited.has(nextId)) {
         const newPath = [...current.path, nextId];
@@ -197,7 +207,13 @@ function findShortestPathBFS(
   return []; // No path found
 }
 
-function findNeighborIds(edges: GraphEdge[], nodeId: string): string[] {
+function findNeighborIds({
+  edges,
+  nodeId,
+}: {
+  edges: GraphEdge[];
+  nodeId: string;
+}): string[] {
   const neighbors: string[] = [];
 
   for (const edge of edges) {
@@ -759,11 +775,15 @@ export const useGraphStore = createTrackedStore<GraphState, GraphActions>({
     // Graph algorithm implementations
     getNeighbors: (nodeId) => {
       const state = get() as GraphState;
-      return getNeighborsForNode(state, nodeId);
+      return getNeighborsForNode({ state, nodeId });
     },
 
     findShortestPath: (sourceId, targetId) => {
-      return findShortestPathBFS(get() as GraphState, sourceId, targetId);
+      return findShortestPathBFS({
+        state: get() as GraphState,
+        sourceId,
+        targetId,
+      });
     },
 
     getConnectedEdges: (nodeId) => {
