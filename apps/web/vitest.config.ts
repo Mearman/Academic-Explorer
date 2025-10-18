@@ -15,6 +15,7 @@ export default defineConfig({
     setupFiles: [path.resolve(__dirname, "src/test/setup.ts")],
     globals: true,
     watch: false,
+    seed: 12345,
     exclude: [
       "node_modules",
       "**/*.e2e.test.ts", // Exclude E2E tests from Vitest

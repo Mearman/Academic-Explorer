@@ -5,7 +5,7 @@ import { defineConfig } from "vite";
 
 export default defineConfig(() => ({
   root: __dirname,
-  cacheDir: "../../node_modules/.vite/packages/utils",
+  cacheDir: "../../node_modules/.vite/packages/graph",
   plugins: [nxViteTsPaths(), nxCopyAssetsPlugin(["*.md"])],
   // Uncomment this if you are using workers.
   // worker: {
@@ -19,24 +19,8 @@ export default defineConfig(() => ({
     reporters: ["default"],
     seed: 12345,
     coverage: {
-      reportsDirectory: "../../coverage/packages/utils",
+      reportsDirectory: "../../coverage/packages/graph",
       provider: "v8" as const,
     },
-    projects: [
-      {
-        test: {
-          name: "unit",
-          include: ["src/**/*.unit.test.ts"],
-          environment: "node",
-        },
-      },
-      {
-        test: {
-          name: "integration",
-          include: ["src/**/*.integration.test.ts"],
-          environment: "node",
-        },
-      },
-    ],
   },
 }));

@@ -18,6 +18,7 @@ export default defineConfig(() => ({
     globals: true,
     environment: "jsdom",
     setupFiles: ["src/test/setup.ts"],
+    seed: 12345,
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
