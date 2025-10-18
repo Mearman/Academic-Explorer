@@ -114,22 +114,30 @@ function extractDefinedProperties(
 }
 
 // Helper to safely assign a numeric config value
-function assignNumericConfig(
-  result: Required<ForceSimulationConfig>,
-  config: Record<string, unknown>,
-  key: keyof ForceSimulationConfig,
-) {
+function assignNumericConfig({
+  result,
+  config,
+  key,
+}: {
+  result: Required<ForceSimulationConfig>;
+  config: Record<string, unknown>;
+  key: keyof ForceSimulationConfig;
+}) {
   if (config[key] !== undefined && typeof config[key] === "number") {
     (result as Record<string, unknown>)[key] = config[key];
   }
 }
 
 // Helper to safely assign a boolean config value
-function assignBooleanConfig(
-  result: Required<ForceSimulationConfig>,
-  config: Record<string, unknown>,
-  key: keyof ForceSimulationConfig,
-) {
+function assignBooleanConfig({
+  result,
+  config,
+  key,
+}: {
+  result: Required<ForceSimulationConfig>;
+  config: Record<string, unknown>;
+  key: keyof ForceSimulationConfig;
+}) {
   if (config[key] !== undefined && typeof config[key] === "boolean") {
     (result as Record<string, unknown>)[key] = config[key];
   }
@@ -345,11 +353,15 @@ function sendControlAck(
 }
 
 // Helper to create progress event payload
-function createProgressEventPayload(
-  event: SimulationProgressEvent,
-  fps: number | undefined,
-  progress: number,
-) {
+function createProgressEventPayload({
+  event,
+  fps,
+  progress,
+}: {
+  event: SimulationProgressEvent;
+  fps: number | undefined;
+  progress: number;
+}) {
   return {
     type: WorkerEventType.FORCE_SIMULATION_PROGRESS,
     payload: {
@@ -475,10 +487,13 @@ function handleExecuteTaskMessage(data: ExecuteTaskMessage) {
 }
 
 // Helper to handle force simulation control messages
-function handleForceSimulationControlMessage(
-  payload: AnyForceSimulationControlMessage,
-  taskId?: string,
-) {
+function handleForceSimulationControlMessage({
+  payload,
+  taskId,
+}: {
+  payload: AnyForceSimulationControlMessage;
+  taskId?: string;
+}) {
   switch (payload.type) {
     case "FORCE_SIMULATION_STOP":
       stopSimulation();
@@ -527,10 +542,13 @@ function handleForceSimulationControlMessage(
 }
 
 // Helper to handle reheat messages
-function handleReheatMessage(
-  payload: ForceSimulationReheatMessage,
-  taskId?: string,
-) {
+function handleReheatMessage({
+  payload,
+  taskId,
+}: {
+  payload: ForceSimulationReheatMessage;
+  taskId?: string;
+}) {
   const validatedNodes = createValidatedNodes(payload.nodes);
   reheatSimulation({
     nodes: validatedNodes,
@@ -547,10 +565,13 @@ function handleReheatMessage(
 }
 
 // Helper to handle update links messages
-function handleUpdateLinksMessage(
-  payload: ForceSimulationUpdateLinksMessage,
-  taskId?: string,
-) {
+function handleUpdateLinksMessage({
+  payload,
+  taskId,
+}: {
+  payload: ForceSimulationUpdateLinksMessage;
+  taskId?: string;
+}) {
   updateSimulationLinks({
     links: validateLinks(payload.links),
     alpha: payload.alpha,
@@ -562,10 +583,13 @@ function handleUpdateLinksMessage(
 }
 
 // Helper to handle update nodes messages
-function handleUpdateNodesMessage(
-  payload: ForceSimulationUpdateNodesMessage,
-  taskId?: string,
-) {
+function handleUpdateNodesMessage({
+  payload,
+  taskId,
+}: {
+  payload: ForceSimulationUpdateNodesMessage;
+  taskId?: string;
+}) {
   const validatedNodes = createValidatedNodes(payload.nodes);
   updateSimulationNodes({
     nodes: validatedNodes,

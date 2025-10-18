@@ -87,7 +87,10 @@ const precacheManifest = self.__WB_MANIFEST;
 const sw = self;
 
 // Log precache manifest for debugging
-console.log("[OpenAlex SW] Precache manifest entries:", precacheManifest.length);
+console.log(
+  "[OpenAlex SW] Precache manifest entries:",
+  precacheManifest.length,
+);
 
 // Service worker event types
 interface ExtendableEvent extends Event {
@@ -137,10 +140,13 @@ function isDevelopmentEnvironment(): boolean {
 /**
  * Handle development proxy requests
  */
-async function handleDevelopmentRequest(
-  request: Request,
-  url: URL,
-): Promise<Response> {
+async function handleDevelopmentRequest({
+  request,
+  url,
+}: {
+  request: Request;
+  url: URL;
+}): Promise<Response> {
   const proxyUrl = `/api/openalex${url.pathname}${url.search}`;
   console.log("[OpenAlex SW] Proxying to:", proxyUrl);
 
@@ -174,7 +180,13 @@ async function tryStaticFile(url: URL): Promise<Response | null> {
 /**
  * Try to get cached response
  */
-async function tryCache(request: Request, url: URL): Promise<Response | null> {
+async function tryCache({
+  request,
+  url,
+}: {
+  request: Request;
+  url: URL;
+}): Promise<Response | null> {
   const cache = await caches.open(CACHE_NAME);
   const cachedResponse = await cache.match(request);
   if (cachedResponse) {
@@ -187,11 +199,15 @@ async function tryCache(request: Request, url: URL): Promise<Response | null> {
 /**
  * Validate and cache response if valid
  */
-async function validateAndCacheResponse(
-  request: Request,
-  response: Response,
-  url: URL,
-): Promise<Response> {
+async function validateAndCacheResponse({
+  request,
+  response,
+  url,
+}: {
+  request: Request;
+  response: Response;
+  url: URL;
+}): Promise<Response> {
   if (!response.ok) return response;
 
   try {
@@ -199,7 +215,7 @@ async function validateAndCacheResponse(
     const data = await responseClone.json();
 
     const parsedUrl = parseOpenAlexUrl(request.url);
-    if (parsedUrl && !isValidOpenAlexResponse(data, parsedUrl)) {
+    if (parsedUrl && !isValidOpenAlexResponse({ data, parsedUrl })) {
       console.warn("[OpenAlex SW] Invalid response structure, not caching:", {
         url: request.url,
         expectedFormat: parsedUrl.entityId ? "entity" : "query result",
@@ -225,10 +241,13 @@ async function validateAndCacheResponse(
 /**
  * Validate OpenAlex response structure
  */
-function isValidOpenAlexResponse(
-  data: unknown,
-  parsedUrl: ParsedOpenAlexUrl,
-): boolean {
+function isValidOpenAlexResponse({
+  data,
+  parsedUrl,
+}: {
+  data: unknown;
+  parsedUrl: ParsedOpenAlexUrl;
+}): boolean {
   const isEntity = !!parsedUrl.entityId;
   return isEntity
     ? isValidOpenAlexEntity(data)
@@ -247,7 +266,7 @@ async function handleOpenAlexRequest(request: Request): Promise<Response> {
     );
 
     if (isDevelopmentEnvironment()) {
-      return handleDevelopmentRequest(request, url);
+      return handleDevelopmentRequest({ request, url });
     }
 
     // Try static file first
@@ -255,14 +274,14 @@ async function handleOpenAlexRequest(request: Request): Promise<Response> {
     if (staticResponse) return staticResponse;
 
     // Try cache
-    const cachedResponse = await tryCache(request, url);
+    const cachedResponse = await tryCache({ request, url });
     if (cachedResponse) return cachedResponse;
 
     // Fetch from API
     console.log("[OpenAlex SW] Cache miss, fetching from API:", url.pathname);
     const response = await fetch(request);
 
-    return validateAndCacheResponse(request, response, url);
+    return validateAndCacheResponse({ request, response, url });
   } catch (error) {
     console.error("[OpenAlex SW] Error handling request:", error);
     // Fallback to normal fetch
