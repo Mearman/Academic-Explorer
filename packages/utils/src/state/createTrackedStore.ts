@@ -254,12 +254,18 @@ export function createTrackedStore<
   });
 
   // Create Zustand store with proper middleware composition
-  // Use type assertions to handle Zustand v5 middleware type incompatibilities
-  let storeCreator: any = immer(baseStoreCreator);
+  // Use union type to handle Zustand v5 middleware type incompatibilities
+  let storeCreator:
+    | StateCreator<T, [], [], T>
+    | StateCreator<T & A, [["zustand/devtools", never]], [], T & A>
+    | StateCreator<T & A, [["zustand/persist", unknown]], [], T & A>
+    | StateCreator<T & A, [], [], T & A> = immer(baseStoreCreator);
 
   // Apply devtools if enabled
   if (enableDevtools && isDevelopment()) {
-    storeCreator = devtools(storeCreator as any, { name });
+    storeCreator = devtools(storeCreator, {
+      name,
+    });
   }
 
   // Apply persist if enabled
@@ -285,7 +291,7 @@ export function createTrackedStore<
             logger,
           );
 
-    storeCreator = persist(storeCreator as any, {
+    storeCreator = persist(storeCreator, {
       name: `${name}-state`,
       storage: createPersistStorageAdapter(storage),
       version: persistConfig.version ?? 1,
@@ -302,7 +308,7 @@ export function createTrackedStore<
   const selectors = selectorsFactory ? selectorsFactory(initialState) : {};
 
   // Create actions using the Immer-wrapped set method
-  // Use type assertions to handle middleware-wrapped store setState signatures
+  // Use type guards to handle middleware-wrapped store setState signatures
   const actions = actionsFactory({
     set: ({
       partial,
@@ -312,14 +318,19 @@ export function createTrackedStore<
       replace?: boolean;
     }) => {
       if (typeof partial === "function") {
-        // Immer mutation function
-        (store as any).setState(partial);
+        // Immer mutation function - use type assertion through function call
+        const immerFn = partial;
+        store.setState((state) => {
+          // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
+          immerFn(state as Draft<T & A>);
+          return state;
+        });
       } else if (replace) {
         // Replace entire state
-        (store as any).setState(partial, replace);
+        store.setState(partial, replace);
       } else {
         // Partial update
-        (store as any).setState(partial);
+        store.setState(partial);
       }
     },
     get: () => store.getState(),
