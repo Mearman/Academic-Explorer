@@ -78,6 +78,9 @@ interface NetworkActivityActions {
   setSearchTerm: (term: string) => void;
   setTimeRange: (hours: number) => void;
   clearFilters: () => void;
+
+  // Index signature to satisfy constraint
+  [key: string]: (...args: never[]) => void;
 }
 
 // ID generator for requests
@@ -86,8 +89,8 @@ const generateRequestId = generateSequentialId("req");
 const { useStore: useNetworkActivityStore } = createTrackedStore<
   NetworkActivityState,
   NetworkActivityActions
->(
-  {
+>({
+  config: {
     name: "network-activity",
     initialState: {
       // State
@@ -104,7 +107,7 @@ const { useStore: useNetworkActivityStore } = createTrackedStore<
       },
     },
   },
-  (set, get) => ({
+  actionsFactory: ({ set, get }) => ({
     // Actions
     addRequest: (request) => {
       const id = generateRequestId();
@@ -273,7 +276,7 @@ const { useStore: useNetworkActivityStore } = createTrackedStore<
       });
     },
   }),
-);
+});
 
 export { useNetworkActivityStore };
 

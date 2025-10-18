@@ -211,8 +211,8 @@ function findNeighborIds(edges: GraphEdge[], nodeId: string): string[] {
   return neighbors;
 }
 
-export const useGraphStore = createTrackedStore<GraphState, GraphActions>(
-  {
+export const useGraphStore = createTrackedStore<GraphState, GraphActions>({
+  config: {
     name: "graph-store",
     initialState: {
       // Core state
@@ -327,7 +327,7 @@ export const useGraphStore = createTrackedStore<GraphState, GraphActions>(
       }),
     },
   },
-  (set, get) => ({
+  actionsFactory: ({ set, get }) => ({
     // Essential methods
     addNode: (node) => {
       set((draft) => {
@@ -861,4 +861,4 @@ export const useGraphStore = createTrackedStore<GraphState, GraphActions>(
       return false;
     },
   }),
-).useStore;
+}).useStore;

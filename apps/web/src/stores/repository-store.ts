@@ -69,6 +69,9 @@ interface RepositoryActions {
   recomputeFilteredNodes: () => void;
   recomputeFilteredEdges: () => void;
   recomputeCounts: () => void;
+
+  // Index signature to satisfy constraint
+  [key: string]: (...args: never[]) => void;
 }
 
 // Helper function to create initial node type filter state
@@ -106,8 +109,8 @@ const createInitialEdgeTypeFilter = (): Record<RelationType, boolean> => ({
 const { useStore: useRepositoryStore } = createTrackedStore<
   RepositoryState,
   RepositoryActions
->(
-  {
+>({
+  config: {
     name: "repository",
     initialState: {
       repositoryMode: false,
@@ -140,7 +143,7 @@ const { useStore: useRepositoryStore } = createTrackedStore<
       }),
     },
   },
-  (set, get) => ({
+  actionsFactory: ({ set, get }) => ({
     // Repository mode actions
     setRepositoryMode: (enabled: boolean) => {
       set((state) => {
@@ -396,6 +399,6 @@ const { useStore: useRepositoryStore } = createTrackedStore<
       });
     },
   }),
-);
+});
 
 export { useRepositoryStore };

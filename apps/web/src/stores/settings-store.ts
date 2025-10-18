@@ -19,6 +19,9 @@ interface SettingsActions {
 
   /** Validation */
   isValidEmail: (email: string) => boolean;
+
+  /** Index signature to satisfy constraint */
+  [key: string]: (...args: never[]) => void;
 }
 
 const DEFAULT_EMAIL = "";
@@ -29,8 +32,8 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const { useStore: useSettingsStore } = createTrackedStore<
   SettingsState,
   SettingsActions
->(
-  {
+>({
+  config: {
     name: "settings",
     initialState: {
       politePoolEmail: DEFAULT_EMAIL,
@@ -40,7 +43,7 @@ const { useStore: useSettingsStore } = createTrackedStore<
       storage: "localstorage",
     },
   },
-  (set, get) => ({
+  actionsFactory: ({ set, get }) => ({
     setPolitePoolEmail: (email: string) => {
       set((state) => {
         state.politePoolEmail = email;
@@ -60,7 +63,7 @@ const { useStore: useSettingsStore } = createTrackedStore<
 
     isValidEmail: (email: string) => EMAIL_REGEX.test(email.trim()),
   }),
-);
+});
 
 export { useSettingsStore };
 

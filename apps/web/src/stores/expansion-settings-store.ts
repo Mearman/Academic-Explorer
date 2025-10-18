@@ -64,6 +64,9 @@ interface ExpansionSettingsActions {
   getSettingsSummary: (target: ExpansionTarget) => string;
   exportSettings: () => Record<string, ExpansionSettings>;
   importSettings: (settings: Record<string, ExpansionSettings>) => void;
+
+  // Index signature to satisfy constraint
+  [key: string]: (...args: never[]) => void;
 }
 
 // Initialize with default settings
@@ -134,8 +137,8 @@ const initializeDefaultSettings = (): Record<
 const { useStore: useExpansionSettingsStore } = createTrackedStore<
   ExpansionSettingsState,
   ExpansionSettingsActions
->(
-  {
+>({
+  config: {
     name: "expansion-settings",
     initialState: {
       settings: initializeDefaultSettings(),
@@ -150,7 +153,7 @@ const { useStore: useExpansionSettingsStore } = createTrackedStore<
       },
     },
   },
-  (set, get) => ({
+  actionsFactory: ({ set, get }) => ({
     getSettings: (target: ExpansionTarget) => {
       return get().settings[target];
     },
@@ -459,9 +462,8 @@ const { useStore: useExpansionSettingsStore } = createTrackedStore<
         "ExpansionSettingsStore",
       );
     },
-
   }),
-);
+});
 
 export { useExpansionSettingsStore };
 

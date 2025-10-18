@@ -168,6 +168,9 @@ interface AppActivityActions {
   recomputeActivityStats: () => void;
   recomputeFilteredEvents: () => void;
   recomputeAll: () => void;
+
+  // Index signature to satisfy constraint
+  [key: string]: (...args: never[]) => void;
 }
 
 const generateEventId = () =>
@@ -304,8 +307,8 @@ const computeFilteredEvents = (
 const { useStore: useAppActivityStore } = createTrackedStore<
   AppActivityState,
   AppActivityActions
->(
-  {
+>({
+  config: {
     name: "app-activity",
     initialState: {
       // State
@@ -338,7 +341,7 @@ const { useStore: useAppActivityStore } = createTrackedStore<
       },
     },
   },
-  (set, get) => ({
+  actionsFactory: ({ set, get }) => ({
     // Actions
     addEvent: (event) => {
       const id = generateEventId();
@@ -711,6 +714,6 @@ const { useStore: useAppActivityStore } = createTrackedStore<
       }
     },
   }),
-);
+});
 
 export { useAppActivityStore };

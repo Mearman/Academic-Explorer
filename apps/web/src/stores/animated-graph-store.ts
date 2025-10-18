@@ -99,8 +99,8 @@ interface AnimatedGraphActions {
 export const useAnimatedGraphStore = createTrackedStore<
   AnimatedGraphState,
   AnimatedGraphActions
->(
-  {
+>({
+  config: {
     name: "animated-graph-store",
     initialState: {
       // Animation state
@@ -142,7 +142,7 @@ export const useAnimatedGraphStore = createTrackedStore<
       }),
     },
   },
-  (set, get) => ({
+  actionsFactory: ({ set, get }) => ({
     // Animation state setters
     setAnimating: (animating) => {
       set((state) => {
@@ -431,7 +431,7 @@ export const useAnimatedGraphStore = createTrackedStore<
       });
     },
   }),
-).useStore;
+}).useStore;
 
 // Individual stable selectors to avoid object recreation (React 19 + Zustand compatibility)
 export const useIsAnimating = () =>

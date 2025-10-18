@@ -73,52 +73,95 @@ interface LayoutActions {
   setRightSidebarAutoHidden: (autoHidden: boolean) => void;
   setLeftSidebarHovered: (hovered: boolean) => void;
   setRightSidebarHovered: (hovered: boolean) => void;
-  setSectionCollapsed: (sectionKey: string, collapsed: boolean) => void;
-  expandSidebarToSection: (
-    sidebar: "left" | "right",
-    sectionKey: string,
-  ) => void;
-  setActiveGroup: (sidebar: "left" | "right", groupId: string | null) => void;
-  addSectionToGroup: (
-    sidebar: "left" | "right",
-    groupId: string,
-    sectionId: string,
-  ) => void;
-  removeSectionFromGroup: (
-    sidebar: "left" | "right",
-    groupId: string,
-    sectionId: string,
-  ) => void;
-  setActiveTabInGroup: (
-    sidebar: "left" | "right",
-    groupId: string,
-    sectionId: string,
-  ) => void;
-  moveSectionToSidebar: (
-    sectionId: string,
-    targetSidebar: "left" | "right",
-  ) => void;
+  setSectionCollapsed: ({
+    sectionKey,
+    collapsed,
+  }: {
+    sectionKey: string;
+    collapsed: boolean;
+  }) => void;
+  expandSidebarToSection: ({
+    sidebar,
+    sectionKey,
+  }: {
+    sidebar: "left" | "right";
+    sectionKey: string;
+  }) => void;
+  setActiveGroup: ({
+    sidebar,
+    groupId,
+  }: {
+    sidebar: "left" | "right";
+    groupId: string | null;
+  }) => void;
+  addSectionToGroup: ({
+    sidebar,
+    groupId,
+    sectionId,
+  }: {
+    sidebar: "left" | "right";
+    groupId: string;
+    sectionId: string;
+  }) => void;
+  removeSectionFromGroup: ({
+    sidebar,
+    groupId,
+    sectionId,
+  }: {
+    sidebar: "left" | "right";
+    groupId: string;
+    sectionId: string;
+  }) => void;
+  setActiveTabInGroup: ({
+    sidebar,
+    groupId,
+    sectionId,
+  }: {
+    sidebar: "left" | "right";
+    groupId: string;
+    sectionId: string;
+  }) => void;
+  moveSectionToSidebar: ({
+    sectionId,
+    targetSidebar,
+  }: {
+    sectionId: string;
+    targetSidebar: "left" | "right";
+  }) => void;
   resetSectionPlacements: () => void;
   getSectionsForSidebar: (sidebar: "left" | "right") => string[];
   getActiveGroup: (sidebar: "left" | "right") => string | null;
   getToolGroupsForSidebar: (
     sidebar: "left" | "right",
   ) => Record<string, ToolGroup>;
-  reorderGroups: (
-    sidebar: "left" | "right",
-    sourceGroupId: string,
-    targetGroupId: string,
-    insertBefore: boolean,
-  ) => void;
-  moveGroupToSidebar: (
-    sourceGroupId: string,
-    targetSidebar: "left" | "right",
-    targetGroupId?: string,
-    insertBefore?: boolean,
-  ) => void;
+  reorderGroups: ({
+    sidebar,
+    sourceGroupId,
+    targetGroupId,
+    insertBefore,
+  }: {
+    sidebar: "left" | "right";
+    sourceGroupId: string;
+    targetGroupId: string;
+    insertBefore: boolean;
+  }) => void;
+  moveGroupToSidebar: ({
+    sourceGroupId,
+    targetSidebar,
+    targetGroupId,
+    insertBefore,
+  }: {
+    sourceGroupId: string;
+    targetSidebar: "left" | "right";
+    targetGroupId?: string;
+    insertBefore?: boolean;
+  }) => void;
   setGraphProvider: (provider: ProviderType) => void;
   setPreviewEntity: (entityId: string | null) => void;
   setAutoPinOnLayoutStabilization: (enabled: boolean) => void;
+
+  // Index signature to satisfy constraint
+  [key: string]: unknown;
 }
 
 // Helper function to create default tool groups based on categories
@@ -208,8 +251,8 @@ type LayoutPersistedState = Partial<
 const { useStore: useLayoutStore } = createTrackedStore<
   LayoutState,
   LayoutActions
->(
-  {
+>({
+  config: {
     name: "layout",
     initialState: {
       // Initial state
@@ -249,7 +292,7 @@ const { useStore: useLayoutStore } = createTrackedStore<
       }),
     },
   },
-  (set, get) => ({
+  actionsFactory: ({ set, get }) => ({
     toggleLeftSidebar: () =>
       set((state) => ({
         leftSidebarOpen: !state.leftSidebarOpen,
@@ -284,7 +327,7 @@ const { useStore: useLayoutStore } = createTrackedStore<
     setRightSidebarHovered: (hovered) =>
       set((state) => ({ ...state, rightSidebarHovered: hovered })),
 
-    setSectionCollapsed: (sectionKey, collapsed) =>
+    setSectionCollapsed: ({ sectionKey, collapsed }) =>
       set((state) => ({
         collapsedSections: {
           ...state.collapsedSections,
@@ -292,13 +335,16 @@ const { useStore: useLayoutStore } = createTrackedStore<
         },
       })),
 
-    expandSidebarToSection: (sidebar, sectionKey) =>
+    expandSidebarToSection: ({ sidebar, sectionKey }) =>
       set((state) => {
         // Find which group contains this section
         const toolGroups = state.toolGroups[sidebar];
         let targetGroupId: string | null = null;
 
-        for (const [groupId, group] of Object.entries(toolGroups)) {
+        for (const [groupId, group] of Object.entries(toolGroups) as [
+          string,
+          ToolGroup,
+        ][]) {
           if (group.sections.includes(sectionKey)) {
             targetGroupId = groupId;
             break;
@@ -331,7 +377,7 @@ const { useStore: useLayoutStore } = createTrackedStore<
         };
       }),
 
-    setActiveGroup: (sidebar, groupId) =>
+    setActiveGroup: ({ sidebar, groupId }) =>
       set((state) => ({
         activeGroups: {
           ...state.activeGroups,
@@ -339,7 +385,7 @@ const { useStore: useLayoutStore } = createTrackedStore<
         },
       })),
 
-    addSectionToGroup: (sidebar, groupId, sectionId) =>
+    addSectionToGroup: ({ sidebar, groupId, sectionId }) =>
       set((state) => {
         const toolGroups = state.toolGroups[sidebar];
         const hasGroup = groupId in toolGroups;
@@ -437,7 +483,7 @@ const { useStore: useLayoutStore } = createTrackedStore<
         };
       }),
 
-    removeSectionFromGroup: (sidebar, groupId, sectionId) =>
+    removeSectionFromGroup: ({ sidebar, groupId, sectionId }) =>
       set((state) => {
         const toolGroups = state.toolGroups[sidebar];
         const hasGroup = groupId in toolGroups;
@@ -494,7 +540,7 @@ const { useStore: useLayoutStore } = createTrackedStore<
         };
       }),
 
-    setActiveTabInGroup: (sidebar, groupId, sectionId) =>
+    setActiveTabInGroup: ({ sidebar, groupId, sectionId }) =>
       set((state) => {
         const toolGroups = state.toolGroups[sidebar];
         const hasGroup = groupId in toolGroups;
@@ -518,7 +564,7 @@ const { useStore: useLayoutStore } = createTrackedStore<
         };
       }),
 
-    moveSectionToSidebar: (sectionId, targetSidebar) =>
+    moveSectionToSidebar: ({ sectionId, targetSidebar }) =>
       set((state) => ({
         sectionPlacements: {
           ...state.sectionPlacements,
@@ -551,7 +597,12 @@ const { useStore: useLayoutStore } = createTrackedStore<
       return state.toolGroups[sidebar];
     },
 
-    reorderGroups: (sidebar, sourceGroupId, targetGroupId, insertBefore) => {
+    reorderGroups: ({
+      sidebar,
+      sourceGroupId,
+      targetGroupId,
+      insertBefore,
+    }) => {
       const state = get();
       const toolGroups = state.toolGroups[sidebar];
 
@@ -632,12 +683,12 @@ const { useStore: useLayoutStore } = createTrackedStore<
       logger.debug("ui", `Reorder complete`);
     },
 
-    moveGroupToSidebar: (
+    moveGroupToSidebar: ({
       sourceGroupId,
       targetSidebar,
       targetGroupId,
       insertBefore = false,
-    ) => {
+    }) => {
       const state = get();
 
       logger.debug("ui", `Starting moveGroupToSidebar`, {
@@ -675,12 +726,12 @@ const { useStore: useLayoutStore } = createTrackedStore<
           `Group ${sourceGroupId} is already on ${targetSidebar} sidebar, using reorderGroups instead`,
         );
         if (targetGroupId) {
-          get().reorderGroups(
-            targetSidebar,
+          get().reorderGroups({
+            sidebar: targetSidebar,
             sourceGroupId,
             targetGroupId,
             insertBefore,
-          );
+          });
         }
         return;
       }
@@ -721,17 +772,17 @@ const { useStore: useLayoutStore } = createTrackedStore<
       if (targetGroupId) {
         // Give a moment for the state to update, then reorder
         setTimeout(() => {
-          get().reorderGroups(
-            targetSidebar,
+          get().reorderGroups({
+            sidebar: targetSidebar,
             sourceGroupId,
             targetGroupId,
             insertBefore,
-          );
+          });
         }, 0);
       }
 
       // Set the moved group as active on the target sidebar
-      get().setActiveGroup(targetSidebar, sourceGroupId);
+      get().setActiveGroup({ sidebar: targetSidebar, groupId: sourceGroupId });
 
       // Open the target sidebar to show the moved group
       if (targetSidebar === "left") {
@@ -756,6 +807,6 @@ const { useStore: useLayoutStore } = createTrackedStore<
     setAutoPinOnLayoutStabilization: (enabled) =>
       set((state) => ({ ...state, autoPinOnLayoutStabilization: enabled })),
   }),
-);
+});
 
 export { useLayoutStore };

@@ -47,13 +47,16 @@ interface DataFetchingProgressActions {
   // Selectors
   getActiveRequests: () => DataFetchingProgressItem[];
   getRequestByNodeId: (nodeId: string) => DataFetchingProgressItem | undefined;
+
+  // Index signature to satisfy constraint
+  [key: string]: (...args: never[]) => void;
 }
 
 const { useStore: useDataFetchingProgressStore } = createTrackedStore<
   DataFetchingProgressState,
   DataFetchingProgressActions
->(
-  {
+>({
+  config: {
     name: "data-fetching-progress",
     initialState: {
       // State - using plain object for Immer compatibility
@@ -61,7 +64,7 @@ const { useStore: useDataFetchingProgressStore } = createTrackedStore<
       workerReady: false,
     },
   },
-  (set, get) => ({
+  actionsFactory: ({ set, get }) => ({
     // Actions
     addRequest: (nodeId: string, entityName?: string, entityType?: string) => {
       set((state) => {
@@ -173,6 +176,6 @@ const { useStore: useDataFetchingProgressStore } = createTrackedStore<
       return get().requests[nodeId];
     },
   }),
-);
+});
 
 export { useDataFetchingProgressStore };
