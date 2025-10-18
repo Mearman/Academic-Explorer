@@ -178,39 +178,35 @@ describe("State Utilities", () => {
         }),
         count: vi.fn().mockResolvedValue(1),
         // Add required Table properties
-        db: {} as any,
+        db: {},
         name: "test",
-        schema: {} as any,
-        hook: {} as any,
-        core: {} as any,
+        schema: {},
+        hook: {},
+        core: {},
         // Add other required methods with minimal implementations
         bulkAdd: vi.fn(),
         bulkPut: vi.fn(),
         bulkDelete: vi.fn(),
         update: vi.fn(),
+        bulkUpdate: vi.fn(),
+        modify: vi.fn(),
         reverse: vi.fn(),
+        sortBy: vi.fn(),
         orderBy: vi.fn(),
-        filter: vi.fn(),
         offset: vi.fn(),
         limit: vi.fn(),
+        first: vi.fn(),
+        last: vi.fn(),
+        filter: vi.fn(),
         each: vi.fn(),
         eachKey: vi.fn(),
         eachUniqueKey: vi.fn(),
         keys: vi.fn(),
         primaryKeys: vi.fn(),
         uniqueKeys: vi.fn(),
-        bulkGet: vi.fn(),
-        openCursor: vi.fn(),
-        openKeyCursor: vi.fn(),
-        toCollection: vi.fn(),
-        mapToClass: vi.fn(),
-        upsert: vi.fn(),
-        bulkUpdate: vi.fn(),
       };
 
-      const reactiveTable = createReactiveTable(
-        mockTable as Table<{ id?: string | number; name?: string }>,
-      );
+      const reactiveTable = createReactiveTable(mockTable);
 
       expect(reactiveTable).toHaveProperty("add");
       expect(reactiveTable).toHaveProperty("put");
@@ -223,9 +219,16 @@ describe("State Utilities", () => {
     });
 
     it("should create dexie sync utility", () => {
-      const mockTable = {
+      const mockTable: ReactiveTable<unknown> = {
+        add: vi.fn().mockResolvedValue(1),
+        put: vi.fn().mockResolvedValue(1),
+        get: vi.fn().mockResolvedValue(undefined),
+        delete: vi.fn().mockResolvedValue(undefined),
+        clear: vi.fn().mockResolvedValue(undefined),
         toArray: vi.fn().mockResolvedValue([]),
-      } as any;
+        where: vi.fn().mockResolvedValue([]),
+        count: vi.fn().mockResolvedValue(0),
+      };
 
       const sync = createDexieSync({
         table: mockTable,
@@ -241,7 +244,7 @@ describe("State Utilities", () => {
     });
 
     it("should create dexie store", () => {
-      const mockTable = {
+      const mockTable: ReactiveTable<{ id?: string | number }> = {
         add: vi.fn().mockResolvedValue(1),
         put: vi.fn().mockResolvedValue(1),
         get: vi.fn().mockResolvedValue({ id: 1, name: "test" }),
@@ -250,10 +253,10 @@ describe("State Utilities", () => {
         toArray: vi.fn().mockResolvedValue([]),
         where: vi.fn().mockResolvedValue([]),
         count: vi.fn().mockResolvedValue(0),
-      } as ReactiveTable<{ id?: string | number }>;
+      };
 
       const store = createDexieStore({
-        table: mockTable as any,
+        table: mockTable,
       });
 
       expect(store).toHaveProperty("add");

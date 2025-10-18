@@ -17,6 +17,23 @@ import {
   type StateStorage,
 } from "../storage/indexeddb-storage.js";
 
+// Type guard to check if an object is a Zustand store with required methods
+function isZustandStore(obj: unknown): obj is {
+  setState: (partial: unknown, replace?: boolean) => void;
+  getState: () => unknown;
+} {
+  if (obj === null || typeof obj !== "object") {
+    return false;
+  }
+
+  return (
+    "setState" in obj &&
+    "getState" in obj &&
+    typeof obj.setState === "function" &&
+    typeof obj.getState === "function"
+  );
+}
+
 // Adapter to convert StateStorage to Zustand PersistStorage
 function createPersistStorageAdapter(storage: StateStorage) {
   return createJSONStorage(() => ({
@@ -35,6 +52,15 @@ function createPersistStorageAdapter(storage: StateStorage) {
 
 // Re-export Zustand types for convenience
 export type { StateCreator, StoreApi, UseBoundStore };
+
+// Minimal interface for store methods we need
+interface StoreMethods<T> {
+  setState: (
+    partial: Partial<T> | ((state: Draft<T>) => void),
+    replace?: boolean,
+  ) => void;
+  getState: () => T;
+}
 
 // ============================================================================
 // UTILITY FUNCTIONS
@@ -185,7 +211,7 @@ export interface TrackedStoreConfig<T, A = Record<string, unknown>> {
     storage?: "hybrid" | "indexeddb" | "localstorage";
     config?: Partial<StorageConfig>;
     version?: number;
-    partialize?: (state: T & A) => Partial<T>;
+    partialize?: (state: T) => Partial<T>;
     migrate?: (persistedState: unknown, version: number) => T;
   };
   devtools?: boolean;
@@ -193,8 +219,8 @@ export interface TrackedStoreConfig<T, A = Record<string, unknown>> {
 }
 
 export interface TrackedStoreResult<T, A> {
-  useStore: UseBoundStore<StoreApi<T & A>>; // Zustand hook
-  store: StoreApi<T & A>; // Zustand store API
+  useStore: unknown; // Zustand hook with middleware
+  store: unknown; // Zustand store (same as useStore)
   selectors: Record<string, (state: T) => unknown>;
   actions: A;
 }
@@ -224,10 +250,10 @@ export function createTrackedStore<
     get,
   }: {
     set: (
-      partial: Partial<T & A> | ((state: Draft<T & A>) => void),
+      partial: Partial<T> | ((state: T) => Partial<T>),
       replace?: boolean,
     ) => void;
-    get: () => T & A;
+    get: () => T;
   }) => A;
   selectorsFactory?: (state: T) => Record<string, (state: T) => unknown>;
 }): TrackedStoreResult<T, A> {
@@ -250,78 +276,81 @@ export function createTrackedStore<
     ...initialState,
   });
 
-  // Create Zustand store with proper middleware composition
-  // Middleware composition is inherently complex with Zustand, requiring type assertions
-   
-  let storeCreator: any = immer(baseStoreCreator);
+  // Create the store with middleware
+  const useStore = (() => {
+    if (enableDevtools && persistConfig?.enabled) {
+      const storage = createIndexedDBStorage(
+        {
+          dbName: `${name}-store`,
+          storeName: "state",
+          version: 1,
+        },
+        logger,
+      );
 
-  // Apply devtools if enabled
-  if (enableDevtools) {
-    storeCreator = devtools(storeCreator, { name });
-  }
+      return create(
+        persist(devtools(immer(baseStoreCreator), { name }), {
+          name: `${name}-state`,
+          storage: createPersistStorageAdapter(storage),
+          version: persistConfig.version ?? 1,
+          partialize:
+            persistConfig.partialize ?? ((state: T) => ({ ...state })),
+          migrate: persistConfig.migrate,
+        }),
+      );
+    }
 
-  // Apply persist if enabled
-  if (persistConfig?.enabled) {
-    const storage =
-      persistConfig.storage === "indexeddb"
-        ? createIndexedDBStorage(
-            {
-              dbName: `${name}-store`,
-              storeName: "state",
-              version: persistConfig.version ?? 1,
-              ...persistConfig.config,
-            },
-            logger,
-          )
-        : createHybridStorage(
-            {
-              dbName: `${name}-store`,
-              storeName: "state",
-              version: persistConfig.version ?? 1,
-              ...persistConfig.config,
-            },
-            logger,
-          );
+    if (enableDevtools) {
+      return create(devtools(immer(baseStoreCreator), { name }));
+    }
 
-    storeCreator = persist(storeCreator, {
-      name: `${name}-state`,
-      storage: createPersistStorageAdapter(storage),
-      version: persistConfig.version ?? 1,
-      partialize:
-        persistConfig.partialize ?? ((state: T & A) => ({ ...state })),
-      migrate: persistConfig.migrate,
-    });
-  }
+    if (persistConfig?.enabled) {
+      const storage = createIndexedDBStorage(
+        {
+          dbName: `${name}-store`,
+          storeName: "state",
+          version: 1,
+        },
+        logger,
+      );
 
-  // Create the store - the typing is complex due to middleware composition
-  // but runtime behavior is correct
-  const useStore = create<T & A>(() => storeCreator);
-  const store = useStore;
+      return create(
+        persist(immer(baseStoreCreator), {
+          name: `${name}-state`,
+          storage: createPersistStorageAdapter(storage),
+          version: persistConfig.version ?? 1,
+          partialize:
+            persistConfig.partialize ?? ((state: T) => ({ ...state })),
+          migrate: persistConfig.migrate,
+        }),
+      );
+    }
+
+    return create(immer(baseStoreCreator));
+  })();
 
   // Create selectors
   const selectors = selectorsFactory ? selectorsFactory(initialState) : {};
 
-  // Create actions using the Immer-wrapped set method
+  // Create actions using the store hook methods
   const actions = actionsFactory({
-    set: (
-      partial: Partial<T & A> | ((state: Draft<T & A>) => void),
-      replace?: boolean,
-    ) => {
-      if (typeof partial === "function") {
-        // Immer mutation function
-        (store as any).setState((state: Draft<T & A>) => {
-          partial(state);
-        }, replace);
-      } else {
-        (store as any).setState(partial, replace);
+    set: (partial: unknown, replace?: boolean) => {
+      if (!isZustandStore(useStore)) {
+        throw new Error("Invalid store: missing required methods");
       }
+      useStore.setState(partial, replace);
     },
-    get: () => (store as any).getState(),
+    get: () => {
+      if (!isZustandStore(useStore)) {
+        throw new Error("Invalid store: missing required methods");
+      }
+      return useStore.getState();
+    },
   });
 
   return {
     useStore,
-    store,
+    store: useStore,
     selectors,
     actions,
   };
