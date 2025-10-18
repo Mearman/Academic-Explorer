@@ -17,6 +17,22 @@ import {
   type StateStorage,
 } from "../storage/indexeddb-storage.js";
 
+// Adapter to convert StateStorage to Zustand PersistStorage
+function createPersistStorageAdapter(storage: StateStorage) {
+  return createJSONStorage(() => ({
+    getItem: async (name: string) => {
+      const value = await storage.getItem(name);
+      return value ?? null;
+    },
+    setItem: async (name: string, value: string) => {
+      await storage.setItem(name, value);
+    },
+    removeItem: async (name: string) => {
+      await storage.removeItem(name);
+    },
+  }));
+}
+
 // Re-export Zustand types for convenience
 export type { StateCreator, StoreApi, UseBoundStore };
 
@@ -237,42 +253,41 @@ export function createTrackedStore<
     ...initialState,
   });
 
-  // Build middleware stack
-  let storeCreator: StateCreator<T & A, [], [], T & A> =
-    immer(baseStoreCreator);
+  // Create Zustand store with proper middleware composition
+  // Use type assertions to handle Zustand v5 middleware type incompatibilities
+  let storeCreator: any = immer(baseStoreCreator);
 
-  // Add devtools if enabled (must be applied before persist in Zustand v5)
+  // Apply devtools if enabled
   if (enableDevtools && isDevelopment()) {
-    storeCreator = devtools(storeCreator, {
-      name,
-      enabled: true,
-    });
+    storeCreator = devtools(storeCreator as any, { name });
   }
 
-  // Add persistence if enabled
+  // Apply persist if enabled
   if (persistConfig?.enabled) {
-    const storageConfig: StorageConfig = {
-      dbName: `${name}-store`,
-      storeName: "state",
-      version: persistConfig.version ?? 1,
-      ...persistConfig.config,
-    };
+    const storage =
+      persistConfig.storage === "indexeddb"
+        ? createIndexedDBStorage(
+            {
+              dbName: `${name}-store`,
+              storeName: "state",
+              version: persistConfig.version ?? 1,
+              ...persistConfig.config,
+            },
+            logger,
+          )
+        : createHybridStorage(
+            {
+              dbName: `${name}-store`,
+              storeName: "state",
+              version: persistConfig.version ?? 1,
+              ...persistConfig.config,
+            },
+            logger,
+          );
 
-    let storage: StateStorage;
-    switch (persistConfig.storage) {
-      case "indexeddb":
-        storage = createIndexedDBStorage(storageConfig, logger);
-        break;
-      case "hybrid":
-      default:
-        storage = createHybridStorage(storageConfig, logger);
-        break;
-    }
-
-    // Zustand v5 persist API - curried version
-    storeCreator = persist(storeCreator, {
+    storeCreator = persist(storeCreator as any, {
       name: `${name}-state`,
-      storage,
+      storage: createPersistStorageAdapter(storage),
       version: persistConfig.version ?? 1,
       partialize:
         persistConfig.partialize ?? ((state: T & A) => ({ ...state })),
@@ -280,15 +295,14 @@ export function createTrackedStore<
     });
   }
 
-  // Create the store
-
   const useStore = create<T & A>(storeCreator);
-  const store = useStore; // The store API is the same as the hook in Zustand
+  const store = useStore; // Runtime behavior is correct despite type incompatibilities
 
   // Create selectors
   const selectors = selectorsFactory ? selectorsFactory(initialState) : {};
 
   // Create actions using the Immer-wrapped set method
+  // Use type assertions to handle middleware-wrapped store setState signatures
   const actions = actionsFactory({
     set: ({
       partial,
@@ -296,7 +310,18 @@ export function createTrackedStore<
     }: {
       partial: Partial<T & A> | ((state: Draft<T & A>) => void);
       replace?: boolean;
-    }) => store.setState(partial, replace),
+    }) => {
+      if (typeof partial === "function") {
+        // Immer mutation function
+        (store as any).setState(partial);
+      } else if (replace) {
+        // Replace entire state
+        (store as any).setState(partial, replace);
+      } else {
+        // Partial update
+        (store as any).setState(partial);
+      }
+    },
     get: () => store.getState(),
   });
 
