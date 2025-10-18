@@ -131,12 +131,17 @@ const ENTITY_ICON_COMPONENTS: Record<
  * Complete entity type configurations for UI components
  */
 export const ENTITY_TYPE_CONFIGS: Record<EntityType, EntityTypeConfig> =
-  Object.keys(ENTITY_TAXONOMY).reduce(
-    (acc, entityType) => {
+  (() => {
+    const configs: Record<EntityType, EntityTypeConfig> = {} as Record<
+      EntityType,
+      EntityTypeConfig
+    >;
+
+    for (const entityType of Object.keys(ENTITY_TAXONOMY)) {
       const type = entityType as EntityType;
       const taxon = getEntityTaxon(type);
 
-      acc[type] = {
+      configs[type] = {
         entityType: type,
         label: taxon.displayName,
         plural: taxon.plural,
@@ -144,11 +149,10 @@ export const ENTITY_TYPE_CONFIGS: Record<EntityType, EntityTypeConfig> =
         color: taxon.color,
         icon: ENTITY_ICON_COMPONENTS[type],
       };
+    }
 
-      return acc;
-    },
-    {} as Record<EntityType, EntityTypeConfig>,
-  );
+    return configs;
+  })();
 
 /**
  * Array of all entity type configurations for iteration
