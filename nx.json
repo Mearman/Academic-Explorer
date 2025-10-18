@@ -116,6 +116,7 @@
       "dependsOn": ["build"]
     },
     "lint:fix": {
+      "executor": "nx:run-commands",
       "cache": true,
       "inputs": [
         "source",
@@ -125,9 +126,8 @@
       ],
       "outputs": ["{projectRoot}/**/*.{js,jsx,ts,tsx}"],
       "options": {
-        "fix": true,
-        "cache": true,
-        "cache-location": "{workspaceRoot}/.nx/cache/eslint/"
+        "command": "eslint src --fix",
+        "cwd": "{projectRoot}"
       }
     },
     "lint": {
