@@ -2,8 +2,32 @@
  * Unit tests for OpenAlex CLI
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+
+// Helper class for Node.js-style errors in tests
+class NodeJSError extends Error {
+  code: string;
+  errno: number;
+  syscall: string;
+  path: string;
+
+  constructor(
+    message: string,
+    code: string,
+    errno: number,
+    syscall: string,
+    path: string,
+  ) {
+    super(message);
+    this.code = code;
+    this.errno = errno;
+    this.syscall = syscall;
+    this.path = path;
+  }
+}
+
+// Type for testing invalid entity types
+type InvalidEntityType = string & { readonly __invalid: unique symbol };
 
 // Mock the fs/promises module with spy functions that prevent real operations
 const mockWriteFile = async ({
@@ -60,14 +84,13 @@ vi.mock("fs/promises", async (importOriginal) => {
       }
 
       // For any other path, throw ENOENT to simulate file not found
-      const error = new Error(
+      throw new NodeJSError(
         `ENOENT: no such file or directory, open '${pathStr}'`,
+        "ENOENT",
+        -2,
+        "open",
+        pathStr,
       );
-      (error as any).code = "ENOENT";
-      (error as any).errno = -2;
-      (error as any).syscall = "open";
-      (error as any).path = pathStr;
-      throw error;
     }),
     access: vi.fn().mockImplementation(async (path: string) => {
       const pathStr = path;
@@ -82,14 +105,13 @@ vi.mock("fs/promises", async (importOriginal) => {
       }
 
       // For any other path, throw ENOENT
-      const error = new Error(
+      throw new NodeJSError(
         `ENOENT: no such file or directory, access '${pathStr}'`,
+        "ENOENT",
+        -2,
+        "access",
+        pathStr,
       );
-      (error as any).code = "ENOENT";
-      (error as any).errno = -2;
-      (error as any).syscall = "access";
-      (error as any).path = pathStr;
-      throw error;
     }),
     writeFile: vi.fn().mockImplementation(mockWriteFile),
     mkdir: vi.fn().mockImplementation(async (path: string) => {
@@ -116,14 +138,13 @@ vi.mock("fs/promises", async (importOriginal) => {
       }
 
       // For other paths, throw ENOENT
-      const error = new Error(
+      throw new NodeJSError(
         `ENOENT: no such file or directory, stat '${pathStr}'`,
+        "ENOENT",
+        -2,
+        "stat",
+        pathStr,
       );
-      (error as any).code = "ENOENT";
-      (error as any).errno = -2;
-      (error as any).syscall = "stat";
-      (error as any).path = pathStr;
-      throw error;
     }),
     readdir: vi.fn().mockResolvedValue([]),
   };
@@ -253,9 +274,13 @@ describe("OpenAlexCLI", () => {
       }
 
       // For other paths, simulate file not found
-      const error = new Error("ENOENT: no such file or directory");
-      (error as any).code = "ENOENT";
-      throw error;
+      throw new NodeJSError(
+        "ENOENT: no such file or directory",
+        "ENOENT",
+        -2,
+        "access",
+        "",
+      );
     });
 
     // Mock access function to control file existence checks
@@ -275,9 +300,13 @@ describe("OpenAlexCLI", () => {
       }
 
       // Deny access to all other paths
-      const error = new Error("ENOENT: no such file or directory");
-      (error as any).code = "ENOENT";
-      throw error;
+      throw new NodeJSError(
+        "ENOENT: no such file or directory",
+        "ENOENT",
+        -2,
+        "access",
+        "",
+      );
     });
   }
 
@@ -387,12 +416,13 @@ describe("OpenAlexCLI", () => {
         }
 
         // Throw error for entity file
-        const error = new Error("EACCES: permission denied");
-        (error as any).code = "EACCES";
-        (error as any).errno = -13;
-        (error as any).syscall = "open";
-        (error as any).path = pathStr;
-        throw error;
+        throw new NodeJSError(
+          "EACCES: permission denied",
+          "EACCES",
+          -13,
+          "open",
+          pathStr,
+        );
       });
 
       const result = await cli.loadEntity("authors", "A5017898742");
@@ -555,7 +585,10 @@ describe("OpenAlexCLI", () => {
 
       // This should complete without throwing an error (now mocked)
       await expect(
-        cli.saveEntityToCache("invalid-entity-type" as any, mockEntity),
+        cli.saveEntityToCache(
+          "invalid-entity-type" as InvalidEntityType,
+          mockEntity,
+        ),
       ).resolves.not.toThrow();
       expect(mockSaveEntityToCache).toHaveBeenCalledWith(
         "invalid-entity-type",
@@ -695,7 +728,7 @@ describe("OpenAlexCLI", () => {
         .mockImplementation(() => {});
 
       // Use a non-existent entity type
-      const result = await cli.listEntities("nonexistent" as any);
+      const result = await cli.listEntities("nonexistent" as InvalidEntityType);
 
       expect(result).toEqual([]);
 

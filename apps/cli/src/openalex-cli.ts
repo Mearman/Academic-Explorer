@@ -27,7 +27,16 @@ const CACHE_ONLY_OPTION = "--cache-only";
 /**
  * Print entity summary to console
  */
-function printEntitySummary(entity: any, entityType: string): void {
+interface EntitySummary {
+  display_name?: string;
+  id?: string;
+  works_count?: number;
+  cited_by_count?: number;
+  publication_year?: number;
+  country_code?: string;
+}
+
+function printEntitySummary(entity: EntitySummary, entityType: string): void {
   console.log(`\n${entityType.toUpperCase()}: ${entity.display_name}`);
   console.log(`ID: ${entity.id}`);
 
@@ -285,7 +294,7 @@ program
   .option("--no-cache", "Skip cache, fetch directly from API")
   .option("--no-save", "Don't save API results to cache")
   .option("--cache-only", "Only use cache, don't fetch from API if not found")
-  // eslint-disable-next-line sonarjs/cognitive-complexity
+
   .action(async (entityType: string, entityId: string, options: unknown) => {
     const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType);
     if (!entityTypeValidation.success) {
@@ -379,7 +388,7 @@ program
   .option("--no-cache", "Skip cache, fetch directly from API")
   .option("--no-save", "Don't save API results to cache")
   .option("--cache-only", "Only use cache, don't fetch from API if not found")
-  // eslint-disable-next-line sonarjs/cognitive-complexity
+
   .action(async (entityId: string, options: unknown) => {
     const optionsValidation = GetCommandOptionsSchema.safeParse(options);
     if (!optionsValidation.success) {
