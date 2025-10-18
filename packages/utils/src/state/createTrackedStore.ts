@@ -217,7 +217,7 @@ export function createTrackedStore<
   });
 
   // Build middleware stack
-  let storeCreator: any = immer(baseStoreCreator as any);
+  let storeCreator: any = immer(baseStoreCreator);
 
   // Add persistence if enabled
   if (persistConfig?.enabled) {
@@ -232,9 +232,6 @@ export function createTrackedStore<
     switch (persistConfig.storage) {
       case "indexeddb":
         storage = createIndexedDBStorage(storageConfig, logger);
-        break;
-      case "localstorage":
-        storage = createJSONStorage(() => localStorage);
         break;
       case "hybrid":
       default:
@@ -269,8 +266,9 @@ export function createTrackedStore<
   const selectors = selectorsFactory ? selectorsFactory(initialState) : {};
 
   // Create actions using the Immer-wrapped set method
-  const actions = actionsFactory(store.setState as ImmerSetState<T & A>, () =>
-    store.getState(),
+  const actions = actionsFactory(
+    (partial, replace) => store.setState(partial, replace),
+    () => store.getState(),
   );
 
   return {
