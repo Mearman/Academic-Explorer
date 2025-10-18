@@ -110,7 +110,7 @@ export const noZustandComputedFunctionsRule = createRule<[], MessageIds>({
     docs: {
       description: 'Prevent computed functions in Zustand stores that cause React 19 infinite loops',
     },
-    fixable: null,
+    fixable: undefined,
     schema: [],
     messages: ruleMessages
   },

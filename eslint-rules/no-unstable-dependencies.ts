@@ -89,7 +89,7 @@ export const noUnstableDependenciesRule = createRule<[], MessageIds>({
     docs: {
       description: 'Prevent unstable dependencies in React hooks that cause infinite loops',
     },
-    fixable: null,
+    fixable: undefined,
     schema: [],
     messages: ruleMessages
   },

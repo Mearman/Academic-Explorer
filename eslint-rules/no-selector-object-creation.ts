@@ -149,7 +149,7 @@ export const noSelectorObjectCreationRule = createRule<[], MessageIds>({
     docs: {
       description: 'Prevent object/array creation in Zustand selectors that cause React 19 infinite loops',
     },
-    fixable: null,
+    fixable: undefined,
     schema: [],
     messages: ruleMessages
   },

@@ -8,10 +8,49 @@ import globals from "globals";
 import path from "path";
 import tseslint from "typescript-eslint";
 import { fileURLToPath } from "url";
-import noEmojiPlugin from "./eslint-rules/no-emoji.ts";
-import noTypeAssertionsPlugin from "./eslint-rules/no-type-assertions.ts";
-import testFileNamingPlugin from "./eslint-rules/test-file-naming.ts";
-import zustandStoreDryPlugin from "./eslint-rules/zustand-store-dry.ts";
+
+// Load custom TypeScript ESLint rules using jiti
+import { createJiti } from "jiti";
+
+// Create jiti instance for loading TypeScript modules
+const jiti = createJiti(import.meta.url, {
+  interopDefault: true,
+});
+
+// Helper function to load TypeScript modules using jiti
+function loadTsModule(modulePath: string) {
+  try {
+    return jiti(modulePath);
+  } catch (error) {
+    console.warn(`Failed to load ${modulePath}, skipping...`);
+    return {};
+  }
+}
+
+const noEmojiPlugin = loadTsModule("./eslint-rules/no-emoji.ts");
+const noTypeAssertionsPlugin = loadTsModule(
+  "./eslint-rules/no-type-assertions.ts",
+);
+const testFileNamingPlugin = loadTsModule("./eslint-rules/test-file-naming.ts");
+const zustandStoreDryPlugin = loadTsModule(
+  "./eslint-rules/zustand-store-dry.ts",
+);
+const noDeprecatedCommentsPlugin = loadTsModule(
+  "./eslint-rules/no-deprecated-comments.ts",
+);
+const noLoggerInfoPlugin = loadTsModule("./eslint-rules/no-logger-info.ts");
+const noSelectorObjectCreationPlugin = loadTsModule(
+  "./eslint-rules/no-selector-object-creation.ts",
+);
+const noUnstableDependenciesPlugin = loadTsModule(
+  "./eslint-rules/no-unstable-dependencies.ts",
+);
+const preferDestructuredParamsPlugin = loadTsModule(
+  "./eslint-rules/prefer-destructured-params.ts",
+);
+const noZustandComputedFunctionsPlugin = loadTsModule(
+  "./eslint-rules/no-zustand-computed-functions.ts",
+);
 
 /**
  * Base ESLint configuration for Academic Explorer monorepo
@@ -101,6 +140,12 @@ export default tseslint.config([
       "no-type-assertions-plugin": noTypeAssertionsPlugin,
       "test-file-naming-plugin": testFileNamingPlugin,
       "zustand-store-dry-plugin": zustandStoreDryPlugin,
+      "no-deprecated-comments-plugin": noDeprecatedCommentsPlugin,
+      "no-logger-info-plugin": noLoggerInfoPlugin,
+      "no-selector-object-creation-plugin": noSelectorObjectCreationPlugin,
+      "no-unstable-dependencies-plugin": noUnstableDependenciesPlugin,
+      "no-zustand-computed-functions-plugin": noZustandComputedFunctionsPlugin,
+      "prefer-destructured-params-plugin": preferDestructuredParamsPlugin,
     },
     rules: {
       // TypeScript-specific rules
@@ -150,9 +195,14 @@ export default tseslint.config([
 
       // Forbid all type assertions - use type guards instead
       "no-type-assertions-plugin/no-type-assertions": "error",
-
-      // Zustand store DRY patterns
       "zustand-store-dry-plugin/zustand-store-dry": "error",
+      "no-deprecated-comments-plugin/no-deprecated-comments": "error",
+      "no-logger-info-plugin/no-logger-info": "error",
+      "no-selector-object-creation-plugin/no-selector-object-creation": "error",
+      "no-unstable-dependencies-plugin/no-unstable-dependencies": "error",
+      "no-zustand-computed-functions-plugin/no-zustand-computed-functions":
+        "error",
+      "prefer-destructured-params-plugin/prefer-destructured-params": "error",
     },
   },
   {
@@ -198,7 +248,7 @@ export default tseslint.config([
       "@typescript-eslint/no-unsafe-member-access": "off",
       "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-unsafe-return": "off",
-      "no-type-assertions-plugin/no-type-assertions": "off",
+      // "no-type-assertions-plugin/no-type-assertions": "off",
       "no-console": "off",
     },
   },

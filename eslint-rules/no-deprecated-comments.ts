@@ -3,27 +3,30 @@
  * Enforces removal of deprecated code instead of leaving it marked as deprecated
  */
 
-import { ESLintUtils } from '@typescript-eslint/utils';
+import { ESLintUtils } from "@typescript-eslint/utils";
 
-type MessageIds = 'deprecatedTag' | 'deprecatedComment';
+type MessageIds = "deprecatedTag" | "deprecatedComment";
 
 const createRule = ESLintUtils.RuleCreator(
-  name => `https://github.com/Mearman/Academic-Explorer/blob/main/eslint-rules/${name}.ts`
+  (name) =>
+    `https://github.com/Mearman/Academic-Explorer/blob/main/eslint-rules/${name}.ts`,
 );
 
 export const noDeprecatedCommentsRule = createRule<[], MessageIds>({
-  name: 'no-deprecated-comments',
+  name: "no-deprecated-comments",
   meta: {
-    type: 'problem',
+    type: "problem",
     docs: {
-      description: 'prevent @deprecated JSDoc tags and deprecated comments',
+      description: "prevent @deprecated JSDoc tags and deprecated comments",
     },
-    fixable: null,
+    fixable: undefined,
     schema: [],
     messages: {
-      deprecatedTag: 'Do not use @deprecated tags. Remove deprecated code immediately instead of marking it as deprecated.',
-      deprecatedComment: 'Do not use \'deprecated\' in comments. Remove deprecated code immediately instead of marking it as deprecated.'
-    }
+      deprecatedTag:
+        "Do not use @deprecated tags. Remove deprecated code immediately instead of marking it as deprecated.",
+      deprecatedComment:
+        "Do not use 'deprecated' in comments. Remove deprecated code immediately instead of marking it as deprecated.",
+    },
   },
   defaultOptions: [],
   create(context) {
@@ -33,10 +36,10 @@ export const noDeprecatedCommentsRule = createRule<[], MessageIds>({
       const commentText = comment.value.toLowerCase();
 
       // Check for @deprecated JSDoc tag
-      if (commentText.includes('@deprecated')) {
+      if (commentText.includes("@deprecated")) {
         context.report({
           node: comment,
-          messageId: 'deprecatedTag'
+          messageId: "deprecatedTag",
         });
       }
 
@@ -45,15 +48,17 @@ export const noDeprecatedCommentsRule = createRule<[], MessageIds>({
       // - "deprecated api" (documenting external APIs)
       // - "deprecated or legacy" (describing exclusions)
       // - "// deprecated" (inline comments about external code)
-      if (commentText.includes('deprecated') &&
-          !commentText.includes('deprecation') &&
-          !commentText.includes('deprecated api') &&
-          !commentText.includes('deprecated or legacy') &&
-          !commentText.match(/\/\/\s*deprecated/) &&
-          !commentText.includes('not include deprecated')) {
+      if (
+        commentText.includes("deprecated") &&
+        !commentText.includes("deprecation") &&
+        !commentText.includes("deprecated api") &&
+        !commentText.includes("deprecated or legacy") &&
+        !commentText.match(/\/\/\s*deprecated/) &&
+        !commentText.includes("not include deprecated")
+      ) {
         context.report({
           node: comment,
-          messageId: 'deprecatedComment'
+          messageId: "deprecatedComment",
         });
       }
     }
@@ -62,13 +67,13 @@ export const noDeprecatedCommentsRule = createRule<[], MessageIds>({
       Program() {
         const comments = sourceCode.getAllComments();
         comments.forEach(checkComment);
-      }
+      },
     };
-  }
+  },
 });
 
 export default {
   rules: {
-    'no-deprecated-comments': noDeprecatedCommentsRule,
+    "no-deprecated-comments": noDeprecatedCommentsRule,
   },
 };
