@@ -175,11 +175,38 @@ describe("State Utilities", () => {
         delete: vi.fn().mockResolvedValue(undefined),
         clear: vi.fn().mockResolvedValue(undefined),
         toArray: vi.fn().mockResolvedValue([{ id: 1, name: "test" }]),
-        where: vi.fn().mockResolvedValue([{ id: 1, name: "test" }]),
+        where: vi.fn().mockReturnValue({
+          toArray: vi.fn().mockResolvedValue([{ id: 1, name: "test" }]),
+        }),
         count: vi.fn().mockResolvedValue(1),
-      } as Table<{ id?: string | number; name?: string }>;
+        // Add required Table properties
+        db: {} as any,
+        name: "test",
+        schema: {} as any,
+        hook: {} as any,
+        core: {} as any,
+        // Add other required methods with minimal implementations
+        bulkAdd: vi.fn(),
+        bulkPut: vi.fn(),
+        bulkDelete: vi.fn(),
+        update: vi.fn(),
+        reverse: vi.fn(),
+        orderBy: vi.fn(),
+        filter: vi.fn(),
+        offset: vi.fn(),
+        limit: vi.fn(),
+        each: vi.fn(),
+        eachKey: vi.fn(),
+        eachUniqueKey: vi.fn(),
+        keys: vi.fn(),
+        primaryKeys: vi.fn(),
+        uniqueKeys: vi.fn(),
+        bulkGet: vi.fn(),
+        openCursor: vi.fn(),
+        openKeyCursor: vi.fn(),
+      };
 
-      const reactiveTable = createReactiveTable(mockTable);
+      const reactiveTable = createReactiveTable(mockTable as any);
 
       expect(reactiveTable).toHaveProperty("add");
       expect(reactiveTable).toHaveProperty("put");

@@ -87,7 +87,7 @@ export default defineConfig(({ mode, command }) =>
     },
 
     // Modular plugin configuration
-    plugins: createPlugins(command, mode),
+    plugins: createPlugins({ command, mode }),
 
     // Server configuration
     server: serverConfig,

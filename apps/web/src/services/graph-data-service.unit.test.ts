@@ -503,7 +503,10 @@ describe("GraphDataService", () => {
     });
 
     it("should perform search and visualize results", async () => {
-      await service.searchAndVisualize(searchQuery, searchOptions);
+      await service.searchAndVisualize({
+        query: searchQuery,
+        options: searchOptions,
+      });
 
       expect(mockStore.setLoading).toHaveBeenCalledWith(true);
       expect(cachedOpenAlex.client.works.getWorks).toHaveBeenCalledWith({
@@ -522,7 +525,10 @@ describe("GraphDataService", () => {
         searchError,
       );
 
-      await service.searchAndVisualize(searchQuery, searchOptions);
+      await service.searchAndVisualize({
+        query: searchQuery,
+        options: searchOptions,
+      });
 
       expect(mockStore.setError).toHaveBeenCalledWith(null);
       expect(mockStore.setLoading).toHaveBeenCalledWith(false);
