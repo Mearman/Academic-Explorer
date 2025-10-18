@@ -788,6 +788,37 @@ export class InstitutionsApi {
   }
 
   /**
+   * Extract safe properties from error-like objects
+   *
+   * @private
+   * @param errorObj - Object to extract error properties from
+   * @returns Safe error properties
+   */
+  private extractErrorProperties(
+    errorObj: Record<string, unknown>,
+  ): Record<string, unknown> {
+    return {
+      message:
+        "message" in errorObj && typeof errorObj.message === "string"
+          ? errorObj.message
+          : "Unknown error",
+      name:
+        "name" in errorObj && typeof errorObj.name === "string"
+          ? errorObj.name
+          : "UnknownError",
+      code:
+        "code" in errorObj &&
+        (typeof errorObj.code === "string" || typeof errorObj.code === "number")
+          ? errorObj.code
+          : undefined,
+      status:
+        "status" in errorObj && typeof errorObj.status === "number"
+          ? errorObj.status
+          : undefined,
+    };
+  }
+
+  /**
    * Format unknown error for safe logging using type guards
    *
    * @private
@@ -808,28 +839,7 @@ export class InstitutionsApi {
     }
 
     if (typeof error === "object" && error !== null) {
-      // Safely extract properties from object-like errors
-      const errorObj = error;
-      return {
-        message:
-          "message" in errorObj && typeof errorObj.message === "string"
-            ? errorObj.message
-            : "Unknown error",
-        name:
-          "name" in errorObj && typeof errorObj.name === "string"
-            ? errorObj.name
-            : "UnknownError",
-        code:
-          "code" in errorObj &&
-          (typeof errorObj.code === "string" ||
-            typeof errorObj.code === "number")
-            ? errorObj.code
-            : undefined,
-        status:
-          "status" in errorObj && typeof errorObj.status === "number"
-            ? errorObj.status
-            : undefined,
-      };
+      return this.extractErrorProperties(error as Record<string, unknown>);
     }
 
     // Fallback for primitive types or null

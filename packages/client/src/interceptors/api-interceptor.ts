@@ -144,11 +144,10 @@ export class ApiInterceptor {
   private checkViteDevFlag(): boolean | null {
     if (typeof globalThis !== "undefined" && "__DEV__" in globalThis) {
       try {
-        const devFlag =
-          "__DEV__" in globalThis && typeof globalThis.__DEV__ === "boolean"
-            ? globalThis.__DEV__
-            : undefined;
-        return devFlag === true;
+        const devFlag = (globalThis as Record<string, unknown>)["__DEV__"];
+        if (typeof devFlag === "boolean") {
+          return devFlag;
+        }
       } catch {
         // Ignore errors if __DEV__ is not accessible
       }

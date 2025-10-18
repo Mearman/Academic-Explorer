@@ -201,7 +201,14 @@ class LocalDiskCacheTier implements CacheTierInterface {
         return { found: false };
       }
 
-      const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const parsedData = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+      // Validate that parsedData is a valid value (not null/undefined for our use case)
+      if (parsedData === null || parsedData === undefined) {
+        throw new Error(`Invalid JSON data in file: ${filePath}`);
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const data = parsedData;
 
       this.stats.hits++;
       const loadTime = Date.now() - startTime;
@@ -326,6 +333,63 @@ class GitHubPagesCacheTier implements CacheTierInterface {
     return `${this.baseUrl}${entityType}/${sanitizedId}.json`;
   }
 
+  /**
+   * Create a typed HTTP error object
+   */
+  private createHttpError(response: Response): {
+    message: string;
+    status: number;
+    retryAfter?: string;
+  } {
+    return {
+      message: `HTTP ${response.status}: ${response.statusText}`,
+      status: response.status,
+      retryAfter: response.headers.get("Retry-After") ?? undefined,
+    };
+  }
+
+  /**
+   * Calculate retry delay with exponential backoff and jitter
+   */
+  private calculateRetryDelay(attempt: number, retryAfterSec?: number): number {
+    const base = this.retryConfig.baseDelayMs * Math.pow(2, attempt - 1);
+    const jitter = Math.random() * this.retryConfig.jitterMs;
+    return Math.min(
+      (retryAfterSec ? retryAfterSec * 1000 : base) + jitter,
+      this.retryConfig.maxDelayMs,
+    );
+  }
+
+  /**
+   * Update failure state for a URL
+   */
+  private updateFailureState(url: string, error: unknown): void {
+    const prev = this.recentFailures.get(url) ?? {
+      lastFailure: 0,
+      attempts: 0,
+      cooldownUntil: undefined,
+    };
+    const newState = {
+      lastFailure: Date.now(),
+      attempts: prev.attempts + 1,
+      cooldownUntil: prev.cooldownUntil,
+    };
+
+    // If it's a 404, don't set cooldown
+    const is404 =
+      typeof error === "object" &&
+      error !== null &&
+      "status" in error &&
+      typeof (error as Record<string, unknown>).status === "number" &&
+      (error as Record<string, unknown>).status === 404;
+
+    if (!is404 && newState.attempts >= this.retryConfig.maxAttempts) {
+      newState.cooldownUntil = Date.now() + this.retryConfig.cooldownMs;
+    }
+
+    this.recentFailures.set(url, newState);
+  }
+
   async get(
     entityType: StaticEntityType,
     id: string,
@@ -360,28 +424,14 @@ class GitHubPagesCacheTier implements CacheTierInterface {
         });
 
         if (!response.ok) {
-          // If not found, treat as cache miss (no need to retry)
           if (response.status === 404) {
             return { found: false };
           }
-
-          // For server or rate-limit responses, throw to trigger retry logic
-          // Create a typed error object so TypeScript is happy
-          const typedErr: {
-            message: string;
-            status: number;
-            retryAfter?: string;
-          } = {
-            message: `HTTP ${response.status}: ${response.statusText}`,
-            status: response.status,
-            retryAfter: response.headers.get("Retry-After") ?? undefined,
-          };
-          throw typedErr;
+          throw this.createHttpError(response);
         }
 
-        const data = await response.json();
-
-        // Success — clear any recorded failures
+        // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
+        const data = (await response.json()) as unknown;
         this.recentFailures.delete(url);
 
         this.stats.hits++;
@@ -396,7 +446,6 @@ class GitHubPagesCacheTier implements CacheTierInterface {
           loadTime,
         };
       } catch (error: unknown) {
-        // Network error or HTTP 5xx/429
         logger.debug(this.LOG_PREFIX, "GitHub Pages fetch attempt failed", {
           url,
           entityType,
@@ -405,49 +454,38 @@ class GitHubPagesCacheTier implements CacheTierInterface {
           error,
         });
 
-        // Update failure state
-        const prev = this.recentFailures.get(url) ?? {
-          lastFailure: 0,
-          attempts: 0,
-          cooldownUntil: undefined,
-        };
-        const newState = {
-          lastFailure: Date.now(),
-          attempts: prev.attempts + 1,
-          cooldownUntil: prev.cooldownUntil,
-        };
-        this.recentFailures.set(url, newState);
+        this.updateFailureState(url, error);
 
-        // If it's a typed error object with a status of 404, don't retry
-        const isErrorWithStatus = (
-          err: unknown,
-        ): err is { status?: number; retryAfter?: string } => {
-          return typeof err === "object" && err !== null && "status" in err;
-        };
-        const typed = isErrorWithStatus(error) ? error : undefined;
-        if (typed?.status === 404) {
+        // Check if it's a 404 error
+        const is404 =
+          typeof error === "object" &&
+          error !== null &&
+          "status" in error &&
+          typeof (error as Record<string, unknown>).status === "number" &&
+          (error as Record<string, unknown>).status === 404;
+        if (is404) {
           return { found: false };
         }
 
-        // Determine whether to retry
+        // Retry if attempts remain
         if (attempt < this.retryConfig.maxAttempts) {
-          // Respect Retry-After header if present
-          const retryAfterSec = typed?.retryAfter
-            ? parseInt(typed.retryAfter)
-            : undefined;
-          const base = this.retryConfig.baseDelayMs * Math.pow(2, attempt - 1);
-          const jitter = Math.random() * this.retryConfig.jitterMs;
-          const delay = Math.min(
-            (retryAfterSec ? retryAfterSec * 1000 : base) + jitter,
-            this.retryConfig.maxDelayMs,
-          );
+          let retryAfterSec: number | undefined;
+          if (
+            typeof error === "object" &&
+            error !== null &&
+            "retryAfter" in error
+          ) {
+            const errorObj = error as Record<string, unknown>;
+            const retryAfter = errorObj.retryAfter;
+            if (typeof retryAfter === "string") {
+              retryAfterSec = parseInt(retryAfter);
+            }
+          }
+
+          const delay = this.calculateRetryDelay(attempt, retryAfterSec);
           await new Promise((r) => setTimeout(r, delay));
           return attemptFetch(attempt + 1);
         }
-
-        // Exhausted retries — set a cooldown to avoid hammering the remote
-        newState.cooldownUntil = Date.now() + this.retryConfig.cooldownMs;
-        this.recentFailures.set(url, newState);
 
         return { found: false };
       }
