@@ -1,5 +1,4 @@
 import { describe, it, expect, vi } from "vitest";
- 
 
 import type { Table } from "dexie";
 import type { ReactiveTable } from "./dexieStore.js";
@@ -46,7 +45,7 @@ describe("State Utilities", () => {
 
     it("should filter by string values", () => {
       const filterManager = createFilterManager<TestItem>();
-      filterManager.setFilter("category", "A");
+      filterManager.setFilter({ key: "category", value: "A" });
 
       const filtered = filterManager.applyFilters(items);
       expect(filtered).toHaveLength(2);
@@ -55,7 +54,7 @@ describe("State Utilities", () => {
 
     it("should filter by array values", () => {
       const filterManager = createFilterManager<TestItem>();
-      filterManager.setFilter("category", ["A", "C"]);
+      filterManager.setFilter({ key: "category", value: ["A", "C"] });
 
       const filtered = filterManager.applyFilters(items);
       expect(filtered).toHaveLength(3);
@@ -66,11 +65,11 @@ describe("State Utilities", () => {
 
     it("should filter by function", () => {
       const filterManager = createFilterManager<TestItem>();
-      filterManager.setFilter(
-        "name",
-        (value: unknown) =>
+      filterManager.setFilter({
+        key: "name",
+        value: (value: unknown) =>
           typeof value === "string" && value.includes("Item 1"),
-      );
+      });
 
       const filtered = filterManager.applyFilters(items);
       expect(filtered).toHaveLength(1);
@@ -79,7 +78,7 @@ describe("State Utilities", () => {
 
     it("should clear filters", () => {
       const filterManager = createFilterManager<TestItem>();
-      filterManager.setFilter("category", "A");
+      filterManager.setFilter({ key: "category", value: "A" });
       expect(filterManager.applyFilters(items)).toHaveLength(2);
 
       filterManager.clearFilter("category");
@@ -90,7 +89,7 @@ describe("State Utilities", () => {
       const filterManager = createFilterManager<TestItem>();
       expect(filterManager.hasActiveFilters()).toBe(false);
 
-      filterManager.setFilter("category", "A");
+      filterManager.setFilter({ key: "category", value: "A" });
       expect(filterManager.hasActiveFilters()).toBe(true);
 
       filterManager.clearAllFilters();
@@ -102,7 +101,7 @@ describe("State Utilities", () => {
     const items = Array.from({ length: 25 }, (_, i) => ({ id: i + 1 }));
 
     it("should compute pagination correctly", () => {
-      const result = computePagedItems(items, 1, 10);
+      const result = computePagedItems({ items, page: 1, pageSize: 10 });
 
       expect(result.items).toHaveLength(10);
       expect(result.pagination.page).toBe(1);
@@ -114,7 +113,7 @@ describe("State Utilities", () => {
     });
 
     it("should handle last page correctly", () => {
-      const result = computePagedItems(items, 3, 10);
+      const result = computePagedItems({ items, page: 3, pageSize: 10 });
 
       expect(result.items).toHaveLength(5);
       expect(result.pagination.hasNextPage).toBe(false);
@@ -122,7 +121,7 @@ describe("State Utilities", () => {
     });
 
     it("should handle empty items", () => {
-      const result = computePagedItems([], 1, 10);
+      const result = computePagedItems({ items: [], page: 1, pageSize: 10 });
 
       expect(result.items).toHaveLength(0);
       expect(result.pagination.total).toBe(0);
@@ -178,7 +177,7 @@ describe("State Utilities", () => {
         toArray: vi.fn().mockResolvedValue([{ id: 1, name: "test" }]),
         where: vi.fn().mockResolvedValue([{ id: 1, name: "test" }]),
         count: vi.fn().mockResolvedValue(1),
-      } as Table<{ id?: number | string; name?: string }>;
+      } as any;
 
       const reactiveTable = createReactiveTable(mockTable);
 
