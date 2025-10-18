@@ -234,7 +234,7 @@ function ExternalIdRoute() {
     };
 
     void resolveExternalId();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [externalId, routeSearchKey, navigate]);
 
   return (
