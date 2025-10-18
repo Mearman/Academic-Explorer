@@ -42,7 +42,8 @@
       "options": {
         "command": "npx eslint src --ext .ts --fix --max-warnings 1000",
         "cwd": "apps/cli"
-      }
+      },
+      "cache": true
     },
     "test": {
       "executor": "nx:run-commands",

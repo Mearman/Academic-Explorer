@@ -71,7 +71,7 @@
         "command": "eslint src --fix",
         "cwd": "{projectRoot}"
       },
-      "cache": false
+      "cache": true
     },
     "test": {
       "executor": "nx:run-commands",
