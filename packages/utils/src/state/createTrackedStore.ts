@@ -193,7 +193,13 @@ export function createTrackedStore<
   A extends Record<string, any>,
 >(
   config: TrackedStoreConfig<T, A>,
-  actionsFactory: (set: any, get: () => T & A) => A,
+  actionsFactory: (
+    set: (
+      partial: Partial<T & A> | ((state: T & A) => Partial<T & A>),
+      replace?: boolean,
+    ) => void,
+    get: () => T & A,
+  ) => A,
   selectorsFactory?: (state: T) => Record<string, (state: T) => unknown>,
 ): TrackedStoreResult<T, A> {
   const {
@@ -265,6 +271,7 @@ export function createTrackedStore<
   const selectors = selectorsFactory ? selectorsFactory(initialState) : {};
 
   // Create actions using the Immer-wrapped set method
+  // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
   const actions = actionsFactory(store.setState as any, () => store.getState());
 
   return {
