@@ -28,7 +28,16 @@
       "options": {
         "command": "tsc --noEmit --project tsconfig.typecheck.json",
         "cwd": "apps/cli"
-      }
+      },
+      "inputs": [
+        "source",
+        "configs",
+        "^production",
+        "{workspaceRoot}/tsconfig*.json",
+        "{workspaceRoot}/config/**/*"
+      ],
+      "outputs": ["{projectRoot}/dist/tsc"],
+      "cache": true
     },
     "lint": {
       "executor": "nx:run-commands",
