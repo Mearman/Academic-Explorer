@@ -6,6 +6,20 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 // Mock the fs/promises module with spy functions that prevent real operations
+const mockWriteFile = async ({
+  path,
+  data,
+}: {
+  path: string;
+  data: string | Buffer;
+}) => {
+  // Log the write attempt but don't actually write to filesystem
+  console.log(
+    `[MOCK] Would write to: ${path} (${typeof data === "string" ? data.length : data.length} bytes)`,
+  );
+  return undefined;
+};
+
 vi.mock("fs/promises", async (importOriginal) => {
   const actual = await importOriginal<typeof import("fs/promises")>();
   return {
@@ -77,15 +91,7 @@ vi.mock("fs/promises", async (importOriginal) => {
       (error as any).path = pathStr;
       throw error;
     }),
-    writeFile: vi
-      .fn()
-      .mockImplementation(async (path: string, data: string | Buffer) => {
-        // Log the write attempt but don't actually write to filesystem
-        console.log(
-          `[MOCK] Would write to: ${path} (${typeof data === "string" ? data.length : data.length} bytes)`,
-        );
-        return undefined;
-      }),
+    writeFile: vi.fn().mockImplementation(mockWriteFile),
     mkdir: vi.fn().mockImplementation(async (path: string) => {
       // Log the mkdir attempt but don't actually create directories
       console.log(`[MOCK] Would create directory: ${path}`);
