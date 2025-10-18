@@ -9,6 +9,7 @@ import { useLayoutStore } from "@/stores/layout-store";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { logger } from "@academic-explorer/utils/logger";
 import type { GraphNode } from "@academic-explorer/graph";
+import type { ExpansionOptions } from "@/services/graph-data-service";
 
 export interface EntityInteractionOptions {
   /** Whether to center the viewport on the node (for graph nodes) */
@@ -86,7 +87,10 @@ export const useEntityInteraction = (
     options: EntityInteractionOptions;
     store: ReturnType<typeof useGraphStore.getState>;
     setPreviewEntity: (entityId: string) => void;
-    expandNode: (nodeId: string) => Promise<void>;
+    expandNode: (params: {
+      nodeId: string;
+      options?: Partial<ExpansionOptions>;
+    }) => Promise<void>;
     autoPinOnLayoutStabilization: boolean;
     centerOnNodeFn?: (
       nodeId: string,
@@ -117,7 +121,7 @@ export const useEntityInteraction = (
 
     // Expand the node if requested
     if (options.expandNode) {
-      await expandNode(targetNode.id);
+      await expandNode({ nodeId: targetNode.id });
     }
   };
 

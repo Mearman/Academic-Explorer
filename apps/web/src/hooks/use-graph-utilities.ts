@@ -357,11 +357,11 @@ export const useGraphUtilities = () => {
   // Analysis functions that don't modify the graph
   const findConnectedComponents = useCallback((): string[][] => {
     try {
-      const result = callServiceMethod(
-        "findConnectedComponents",
-        [nodes, edges],
-        "findConnectedComponents",
-      );
+      const result = callServiceMethod({
+        methodName: "findConnectedComponents",
+        args: [nodes, edges],
+        operationName: "findConnectedComponents",
+      });
 
       // Handle direct array result
       if (Array.isArray(result)) {
@@ -400,11 +400,11 @@ export const useGraphUtilities = () => {
     // to avoid infinite dependency chain
     let components: string[][] = [];
     try {
-      const result = callServiceMethod(
-        "findConnectedComponents",
-        [nodes, edges],
-        "findConnectedComponents",
-      );
+      const result = callServiceMethod({
+        methodName: "findConnectedComponents",
+        args: [nodes, edges],
+        operationName: "findConnectedComponents",
+      });
 
       // Handle direct array result
       if (Array.isArray(result)) {

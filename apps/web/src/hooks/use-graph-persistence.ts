@@ -357,7 +357,7 @@ export function useGraphPersistence() {
       // Simple auto-save that creates a new session
       // In a production app, you might want to update an existing auto-save session
       try {
-        saveSession(sessionName, "Automatically saved");
+        saveSession({ name: sessionName, description: "Automatically saved" });
       } catch (error) {
         // Silently fail for auto-save
         logger.warn(

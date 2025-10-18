@@ -138,24 +138,44 @@ export function useTaskQueue(
   const taskQueue = taskQueueRef.current;
 
   // Update stats when tasks change
-  useEventListener(bus, "TASK_ENQUEUED", () => {
-    setStats(taskQueue.getStats());
+  useEventListener({
+    bus,
+    eventType: "TASK_ENQUEUED",
+    handler: () => {
+      setStats(taskQueue.getStats());
+    },
   });
 
-  useEventListener(bus, "TASK_STARTED", () => {
-    setStats(taskQueue.getStats());
+  useEventListener({
+    bus,
+    eventType: "TASK_STARTED",
+    handler: () => {
+      setStats(taskQueue.getStats());
+    },
   });
 
-  useEventListener(bus, "TASK_COMPLETED", () => {
-    setStats(taskQueue.getStats());
+  useEventListener({
+    bus,
+    eventType: "TASK_COMPLETED",
+    handler: () => {
+      setStats(taskQueue.getStats());
+    },
   });
 
-  useEventListener(bus, "TASK_FAILED", () => {
-    setStats(taskQueue.getStats());
+  useEventListener({
+    bus,
+    eventType: "TASK_FAILED",
+    handler: () => {
+      setStats(taskQueue.getStats());
+    },
   });
 
-  useEventListener(bus, "QUEUE_CLEARED", () => {
-    setStats(taskQueue.getStats());
+  useEventListener({
+    bus,
+    eventType: "QUEUE_CLEARED",
+    handler: () => {
+      setStats(taskQueue.getStats());
+    },
   });
 
   const submitTask = useCallback(
@@ -230,24 +250,76 @@ export function useWorkerPool(
   const workerPool = workerPoolRef.current;
 
   // Update stats when pool state changes
-  useEventListener(bus, "POOL_WORKER_CREATED", () => {
-    setStats(workerPool.getStats());
+  useEventListener({
+    bus,
+    eventType: "POOL_WORKER_CREATED",
+    handler: () => {
+      setStats(workerPool.getStats());
+    },
   });
 
-  useEventListener(bus, "POOL_WORKER_TERMINATED", () => {
-    setStats(workerPool.getStats());
+  useEventListener({
+    bus,
+    eventType: "POOL_WORKER_TERMINATED",
+    handler: () => {
+      setStats(workerPool.getStats());
+    },
   });
 
-  useEventListener(bus, "POOL_TASK_QUEUED", () => {
-    setStats(workerPool.getStats());
+  useEventListener({
+    bus,
+    eventType: "POOL_TASK_QUEUED",
+    handler: () => {
+      setStats(workerPool.getStats());
+    },
   });
 
-  useEventListener(bus, "POOL_TASK_ASSIGNED", () => {
-    setStats(workerPool.getStats());
+  useEventListener({
+    bus,
+    eventType: "POOL_TASK_ASSIGNED",
+    handler: () => {
+      setStats(workerPool.getStats());
+    },
   });
 
-  useEventListener(bus, "POOL_WORKER_ERROR", () => {
-    setStats(workerPool.getStats());
+  useEventListener({
+    bus,
+    eventType: "POOL_WORKER_ERROR",
+    handler: () => {
+      setStats(workerPool.getStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "POOL_WORKER_TERMINATED",
+    handler: () => {
+      setStats(workerPool.getStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "POOL_TASK_QUEUED",
+    handler: () => {
+      setStats(workerPool.getStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "POOL_TASK_ASSIGNED",
+    handler: () => {
+      setStats(workerPool.getStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "POOL_WORKER_ERROR",
+    handler: () => {
+      setStats(workerPool.getStats());
+    },
   });
 
   const submitTask = useCallback(
@@ -329,28 +401,92 @@ export function useQueuedResourceCoordinator(
   }, [coordinator]);
 
   // Update queue stats when tasks change
-  useEventListener(bus, "QUEUE_TASK_SUBMITTED", () => {
-    setQueueStats(coordinator.getQueueStats());
+  useEventListener({
+    bus,
+    eventType: "QUEUE_TASK_SUBMITTED",
+    handler: () => {
+      setQueueStats(coordinator.getQueueStats());
+    },
   });
 
-  useEventListener(bus, "QUEUE_TASK_ASSIGNED", () => {
-    setQueueStats(coordinator.getQueueStats());
+  useEventListener({
+    bus,
+    eventType: "QUEUE_TASK_ASSIGNED",
+    handler: () => {
+      setQueueStats(coordinator.getQueueStats());
+    },
   });
 
-  useEventListener(bus, "QUEUE_TASK_COMPLETED", () => {
-    setQueueStats(coordinator.getQueueStats());
+  useEventListener({
+    bus,
+    eventType: "QUEUE_TASK_COMPLETED",
+    handler: () => {
+      setQueueStats(coordinator.getQueueStats());
+    },
   });
 
-  useEventListener(bus, "QUEUE_TASK_FAILED", () => {
-    setQueueStats(coordinator.getQueueStats());
+  useEventListener({
+    bus,
+    eventType: "QUEUE_TASK_FAILED",
+    handler: () => {
+      setQueueStats(coordinator.getQueueStats());
+    },
   });
 
-  useEventListener(bus, "QUEUE_TASK_CANCELLED", () => {
-    setQueueStats(coordinator.getQueueStats());
+  useEventListener({
+    bus,
+    eventType: "QUEUE_TASK_CANCELLED",
+    handler: () => {
+      setQueueStats(coordinator.getQueueStats());
+    },
   });
 
-  useEventListener(bus, "QUEUE_CLEARED", () => {
-    setQueueStats(coordinator.getQueueStats());
+  useEventListener({
+    bus,
+    eventType: "QUEUE_CLEARED",
+    handler: () => {
+      setQueueStats(coordinator.getQueueStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "QUEUE_TASK_ASSIGNED",
+    handler: () => {
+      setQueueStats(coordinator.getQueueStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "QUEUE_TASK_COMPLETED",
+    handler: () => {
+      setQueueStats(coordinator.getQueueStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "QUEUE_TASK_FAILED",
+    handler: () => {
+      setQueueStats(coordinator.getQueueStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "QUEUE_TASK_CANCELLED",
+    handler: () => {
+      setQueueStats(coordinator.getQueueStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "QUEUE_CLEARED",
+    handler: () => {
+      setQueueStats(coordinator.getQueueStats());
+    },
   });
 
   const submitTask = useCallback(
@@ -429,104 +565,124 @@ export function useTaskProgress({
     progress: 0,
   });
 
-  useEventListener(bus, "TASK_PROGRESS", (payload?: unknown) => {
-    if (
-      payload &&
-      typeof payload === "object" &&
-      "id" in payload &&
-      typeof payload.id === "string" &&
-      payload.id === taskId &&
-      "progress" in payload &&
-      typeof payload.progress === "number"
-    ) {
-      // Safe to access properties since we validated above
-      const message =
-        "message" in payload && typeof payload.message === "string"
-          ? payload.message
-          : undefined;
-      setState((prev) => {
-        if ("progress" in payload && typeof payload.progress === "number") {
-          const update: Partial<typeof prev> = {
-            progress: payload.progress,
-          };
-          if (message !== undefined) {
-            update.message = message;
+  useEventListener({
+    bus,
+    eventType: "TASK_PROGRESS",
+    handler: (payload?: unknown) => {
+      if (
+        payload &&
+        typeof payload === "object" &&
+        "id" in payload &&
+        typeof payload.id === "string" &&
+        payload.id === taskId &&
+        "progress" in payload &&
+        typeof payload.progress === "number"
+      ) {
+        // Safe to access properties since we validated above
+        const message =
+          "message" in payload && typeof payload.message === "string"
+            ? payload.message
+            : undefined;
+        setState((prev) => {
+          if ("progress" in payload && typeof payload.progress === "number") {
+            const update: Partial<typeof prev> = {
+              progress: payload.progress,
+            };
+            if (message !== undefined) {
+              update.message = message;
+            }
+            return {
+              ...prev,
+              ...update,
+            };
           }
-          return {
-            ...prev,
-            ...update,
-          };
-        }
-        return prev;
-      });
-    }
+          return prev;
+        });
+      }
+    },
   });
 
-  useEventListener(bus, "TASK_STARTED", (payload?: unknown) => {
-    if (
-      payload &&
-      typeof payload === "object" &&
-      "id" in payload &&
-      typeof payload.id === "string" &&
-      payload.id === taskId
-    ) {
-      setState((prev) => ({
-        ...prev,
-        status: TaskStatus.RUNNING,
-        progress: 0,
-      }));
-    }
+  useEventListener({
+    bus,
+    eventType: "TASK_STARTED",
+    handler: (payload?: unknown) => {
+      if (
+        payload &&
+        typeof payload === "object" &&
+        "id" in payload &&
+        typeof payload.id === "string" &&
+        payload.id === taskId
+      ) {
+        setState((prev) => ({
+          ...prev,
+          status: TaskStatus.RUNNING,
+          progress: 0,
+        }));
+      }
+    },
   });
 
-  useEventListener(bus, "TASK_COMPLETED", (payload?: unknown) => {
-    if (
-      payload &&
-      typeof payload === "object" &&
-      "id" in payload &&
-      typeof payload.id === "string" &&
-      payload.id === taskId &&
-      isTaskResult(payload)
-    ) {
-      setState((prev) => ({
-        ...prev,
-        status: TaskStatus.COMPLETED,
-        progress: 100,
-        result: payload,
-      }));
-    }
+  useEventListener({
+    bus,
+    eventType: "TASK_COMPLETED",
+    handler: (payload?: unknown) => {
+      if (
+        payload &&
+        typeof payload === "object" &&
+        "id" in payload &&
+        typeof payload.id === "string" &&
+        payload.id === taskId &&
+        isTaskResult(payload)
+      ) {
+        setState((prev) => ({
+          ...prev,
+          status: TaskStatus.COMPLETED,
+          progress: 100,
+          result: payload,
+        }));
+      }
+    },
   });
 
-  useEventListener(bus, "TASK_FAILED", (payload?: unknown) => {
-    if (
-      payload &&
-      typeof payload === "object" &&
-      "id" in payload &&
-      typeof payload.id === "string" &&
-      payload.id === taskId &&
-      isTaskResult(payload)
-    ) {
-      setState((prev) => ({
-        ...prev,
-        status: TaskStatus.FAILED,
-        error: new Error(payload.error ?? "Task failed"),
-      }));
-    }
+  useEventListener({
+    bus,
+    eventType: "TASK_FAILED",
+    handler: (payload?: unknown) => {
+      if (
+        payload &&
+        typeof payload === "object" &&
+        "id" in payload &&
+        typeof payload.id === "string" &&
+        payload.id === taskId &&
+        isTaskResult(payload)
+      ) {
+        setState((prev) => ({
+          ...prev,
+          status: TaskStatus.FAILED,
+          error: new Error(payload.error ?? "Task failed"),
+        }));
+      }
+    },
   });
 
-  useEventListener(bus, "TASK_CANCELLED", (payload?: unknown) => {
-    if (
-      payload &&
-      typeof payload === "object" &&
-      "id" in payload &&
-      typeof payload.id === "string" &&
-      payload.id === taskId
-    ) {
-      setState((prev) => ({
-        ...prev,
-        status: TaskStatus.CANCELLED,
-        error: new Error("Task cancelled"),
-      }));
-    }
+  useEventListener({
+    bus,
+    eventType: "TASK_CANCELLED",
+    handler: (payload?: unknown) => {
+      if (
+        payload &&
+        typeof payload === "object" &&
+        "id" in payload &&
+        typeof payload.id === "string" &&
+        payload.id === taskId
+      ) {
+        setState((prev) => ({
+          ...prev,
+          status: TaskStatus.CANCELLED,
+          error: new Error("Task cancelled"),
+        }));
+      }
+    },
   });
 
   return state;
@@ -553,7 +709,7 @@ export function useCrossTabEvent({
   const bus = useEventBus(channelName);
   const [isConnected, setIsConnected] = useState(bus.isBroadcasting());
 
-  useEventListener(bus, eventType, handler, deps);
+  useEventListener({ bus, eventType, handler, deps });
 
   const broadcast = useCallback(
     (payload?: unknown) => {
