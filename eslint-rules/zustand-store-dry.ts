@@ -16,6 +16,11 @@ function isTestFile(filename: string): boolean {
   return /\.(test|spec)\.(ts|tsx|js|jsx)$/.test(filename);
 }
 
+function isLibraryFile(filename: string): boolean {
+  // Allow direct create() usage in library packages that provide abstractions
+  return /packages\/utils/.test(filename);
+}
+
 function isZustandCreateCall(node: any): boolean {
   // Check if this is a call to create() from zustand
   return (
@@ -46,8 +51,8 @@ export const zustandStoreDryRule = createRule<[], MessageIds>({
   create(context) {
     const filename = context.getFilename();
 
-    // Skip test files - allow direct create() usage in tests
-    if (isTestFile(filename)) {
+    // Skip test files and library files - allow direct create() usage in tests and libraries
+    if (isTestFile(filename) || isLibraryFile(filename)) {
       return {};
     }
 

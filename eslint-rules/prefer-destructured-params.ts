@@ -28,7 +28,44 @@ export const preferDestructuredParamsRule = createRule<[], MessageIds>({
     },
   },
   defaultOptions: [],
+
   create(context) {
+    function isCallbackFunction(node: any): boolean {
+      // Check if this function is directly passed as an argument
+      if (node.parent && node.parent.type === "CallExpression") {
+        return true;
+      }
+
+      // Check if this function is in an object literal (likely a callback)
+      if (node.parent && node.parent.type === "Property") {
+        return true;
+      }
+
+      // Check if this function is in an array literal
+      if (node.parent && node.parent.type === "ArrayExpression") {
+        return true;
+      }
+
+      // Check if this function is assigned to a variable (likely a callback)
+      if (
+        node.parent &&
+        node.parent.type === "VariableDeclarator" &&
+        node.parent.init === node
+      ) {
+        return true;
+      }
+
+      // Check if this function is assigned to an object property
+      if (
+        node.parent &&
+        node.parent.type === "AssignmentExpression" &&
+        node.parent.right === node
+      ) {
+        return true;
+      }
+
+      return false;
+    }
     function checkFunction(node: any): void {
       const params = node.params;
 
@@ -64,6 +101,41 @@ export const preferDestructuredParamsRule = createRule<[], MessageIds>({
         (param: any) => param.type === "AssignmentPattern",
       );
       if (hasDefaultValue) {
+        return;
+      }
+
+      // Skip callback functions (functions passed as arguments or assigned to variables)
+      if (isCallbackFunction(node)) {
+        return;
+      }
+
+      // Skip functions with more than 3 parameters - these are often API functions
+      if (params.length > 3) {
+        return;
+      }
+
+      // Skip functions that start with common API patterns
+      if (params.length === 2) {
+        const firstParamName =
+          params[0].type === "Identifier" ? params[0].name : "";
+        const secondParamName =
+          params[1].type === "Identifier" ? params[1].name : "";
+
+        // Skip common API patterns like (id, data), (type, config), etc.
+        if (
+          (firstParamName === "id" && secondParamName === "data") ||
+          (firstParamName === "type" && secondParamName === "data") ||
+          (firstParamName === "entityType" && secondParamName === "id") ||
+          (firstParamName === "table" && secondParamName === "options") ||
+          (firstParamName === "config" && secondParamName === "logger")
+        ) {
+          return;
+        }
+      }
+
+      // Skip callback functions (functions passed as arguments or assigned to variables)
+      // This includes functions in object literals, array literals, and function calls
+      if (isCallbackFunction(node)) {
         return;
       }
 
