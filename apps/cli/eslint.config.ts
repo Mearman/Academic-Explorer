@@ -13,6 +13,9 @@ export default [
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/prefer-nullish-coalescing": "off",
       "@typescript-eslint/prefer-optional-chain": "off",
+
+      // CLI tools should be allowed to use emojis for user-friendly console output
+      "no-emoji-plugin/no-emoji": "off",
     },
   },
 ];

@@ -48,6 +48,9 @@ export default tseslint.config([
       "@typescript-eslint/no-unsafe-assignment": "off", // Allow unsafe assignments in UI
       "@typescript-eslint/no-unsafe-return": "off", // Allow unsafe returns in UI
 
+      // Disable destructuring rule for React component patterns
+      "prefer-destructured-params-plugin/prefer-destructured-params": "off",
+
       // React components may need some prop flexibility
       "react/prop-types": "off", // Using TypeScript
       "jsx-a11y/click-events-have-key-events": "warn",

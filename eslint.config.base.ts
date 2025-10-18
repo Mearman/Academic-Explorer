@@ -314,6 +314,13 @@ export default tseslint.config([
     },
   },
   {
+    // UI components - disable prefer-destructured-params for React component patterns
+    files: ["packages/ui/**/*.{ts,tsx}"],
+    rules: {
+      "prefer-destructured-params-plugin/prefer-destructured-params": "off",
+    },
+  },
+  {
     // Markdown files - process with markdown plugin and apply no-emoji rule
     files: ["**/*.md"],
     languageOptions: {
