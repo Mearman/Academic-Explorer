@@ -338,7 +338,7 @@ describe("useGraphData", () => {
       });
 
       const nodeId = "test-node-id";
-      await result.current.expandNode(nodeId);
+      await result.current.expandNode({ nodeId });
 
       expect(mockStore.setLoading).toHaveBeenCalledWith(true);
       expect(mockService.expandNode).toHaveBeenCalledWith(nodeId, undefined);
@@ -352,7 +352,7 @@ describe("useGraphData", () => {
 
       const nodeId = "test-node-id";
       const options = { depth: 5, limit: 20, force: false };
-      await result.current.expandNode(nodeId, options);
+      await result.current.expandNode({ nodeId, options });
 
       expect(mockService.expandNode).toHaveBeenCalledWith(nodeId, options);
     });
@@ -363,7 +363,7 @@ describe("useGraphData", () => {
       });
 
       const nodeId = "test-node-id";
-      await result.current.expandNode(nodeId);
+      await result.current.expandNode({ nodeId });
 
       expect(logger.debug).toHaveBeenCalledWith(
         "graph",
@@ -379,7 +379,7 @@ describe("useGraphData", () => {
       });
 
       const nodeId = "test-node-id";
-      await result.current.expandNode(nodeId);
+      await result.current.expandNode({ nodeId });
 
       expect(mockStore.calculateNodeDepths).toHaveBeenCalled();
     });
@@ -394,7 +394,7 @@ describe("useGraphData", () => {
       });
 
       const nodeId = "test-node-id";
-      await result.current.expandNode(nodeId);
+      await result.current.expandNode({ nodeId });
 
       expect(localMockStore.calculateNodeDepths).not.toHaveBeenCalled();
     });
@@ -408,7 +408,7 @@ describe("useGraphData", () => {
       mockService.expandNode.mockRejectedValue(error);
 
       const nodeId = "test-node-id";
-      await result.current.expandNode(nodeId);
+      await result.current.expandNode({ nodeId });
 
       expect(logger.error).toHaveBeenCalledWith(
         "graph",
@@ -440,7 +440,7 @@ describe("useGraphData", () => {
       mockService.expandNode.mockRejectedValue(errorValue);
 
       const nodeId = "test-node-id";
-      await result.current.expandNode(nodeId);
+      await result.current.expandNode({ nodeId });
 
       expect(logger.error).toHaveBeenCalledWith(
         "graph",

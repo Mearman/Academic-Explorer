@@ -63,7 +63,10 @@ describe("useContextMenu", () => {
       } as unknown as React.MouseEvent;
 
       act(() => {
-        result.current.showContextMenu(mockGraphNode, mockEvent);
+        result.current.showContextMenu({
+          node: mockGraphNode,
+          event: mockEvent,
+        });
       });
 
       expect(mockEvent.preventDefault).toHaveBeenCalled();
@@ -82,12 +85,15 @@ describe("useContextMenu", () => {
       const mockEvent = {
         preventDefault: vi.fn(),
         stopPropagation: vi.fn(),
-        clientX: 1800, // Close to right edge (viewport width: 1920)
+        clientX: 1800, // Position that would cause menu to extend beyond viewport
         clientY: 400,
       } as unknown as React.MouseEvent;
 
       act(() => {
-        result.current.showContextMenu(mockGraphNode, mockEvent);
+        result.current.showContextMenu({
+          node: mockGraphNode,
+          event: mockEvent,
+        });
       });
 
       // Should be constrained to window.innerWidth - 200 = 1720
@@ -106,7 +112,10 @@ describe("useContextMenu", () => {
       } as unknown as React.MouseEvent;
 
       act(() => {
-        result.current.showContextMenu(mockGraphNode, mockEvent);
+        result.current.showContextMenu({
+          node: mockGraphNode,
+          event: mockEvent,
+        });
       });
 
       // Should be constrained to window.innerHeight - 300 = 780
@@ -125,7 +134,10 @@ describe("useContextMenu", () => {
       } as unknown as React.MouseEvent;
 
       act(() => {
-        result.current.showContextMenu(mockGraphNode, mockEvent);
+        result.current.showContextMenu({
+          node: mockGraphNode,
+          event: mockEvent,
+        });
       });
 
       expect(result.current.contextMenu.x).toBe(1720); // window.innerWidth - 200
@@ -157,7 +169,10 @@ describe("useContextMenu", () => {
 
       // First call
       act(() => {
-        result.current.showContextMenu(mockGraphNode, firstEvent);
+        result.current.showContextMenu({
+          node: mockGraphNode,
+          event: firstEvent,
+        });
       });
 
       expect(result.current.contextMenu).toEqual({
@@ -169,7 +184,10 @@ describe("useContextMenu", () => {
 
       // Second call should update state
       act(() => {
-        result.current.showContextMenu(secondNode, secondEvent);
+        result.current.showContextMenu({
+          node: secondNode,
+          event: secondEvent,
+        });
       });
 
       expect(result.current.contextMenu).toEqual({
@@ -195,7 +213,10 @@ describe("useContextMenu", () => {
       } as unknown as MouseEvent;
 
       act(() => {
-        result.current.showContextMenu(mockGraphNode, mockEvent);
+        result.current.showContextMenu({
+          node: mockGraphNode,
+          event: mockEvent,
+        });
       });
 
       expect(mockEvent.preventDefault).toHaveBeenCalled();
@@ -222,7 +243,10 @@ describe("useContextMenu", () => {
       } as unknown as React.MouseEvent;
 
       act(() => {
-        result.current.showContextMenu(mockGraphNode, mockEvent);
+        result.current.showContextMenu({
+          node: mockGraphNode,
+          event: mockEvent,
+        });
       });
 
       // Verify it's visible
@@ -253,7 +277,10 @@ describe("useContextMenu", () => {
       } as unknown as React.MouseEvent;
 
       act(() => {
-        result.current.showContextMenu(mockGraphNode, mockEvent);
+        result.current.showContextMenu({
+          node: mockGraphNode,
+          event: mockEvent,
+        });
       });
 
       // Hide multiple times
@@ -311,7 +338,10 @@ describe("useContextMenu", () => {
       } as unknown as React.MouseEvent;
 
       act(() => {
-        result.current.showContextMenu(mockGraphNode, mockEvent);
+        result.current.showContextMenu({
+          node: mockGraphNode,
+          event: mockEvent,
+        });
       });
 
       // Should constrain to negative values in this case
@@ -330,7 +360,10 @@ describe("useContextMenu", () => {
       } as unknown as React.MouseEvent;
 
       act(() => {
-        result.current.showContextMenu(mockGraphNode, mockEvent);
+        result.current.showContextMenu({
+          node: mockGraphNode,
+          event: mockEvent,
+        });
       });
 
       expect(result.current.contextMenu.x).toBe(0);
@@ -381,7 +414,7 @@ describe("useContextMenu", () => {
       } as unknown as React.MouseEvent;
 
       act(() => {
-        result.current.showContextMenu(authorNode, mockEvent);
+        result.current.showContextMenu({ node: authorNode, event: mockEvent });
       });
 
       expect(result.current.contextMenu.node).toEqual(authorNode);
@@ -420,7 +453,10 @@ describe("useContextMenu", () => {
       } as unknown as React.MouseEvent;
 
       act(() => {
-        result.current.showContextMenu(nodeWithMultipleIds, mockEvent);
+        result.current.showContextMenu({
+          node: nodeWithMultipleIds,
+          event: mockEvent,
+        });
       });
 
       expect(result.current.contextMenu.node).toEqual(nodeWithMultipleIds);

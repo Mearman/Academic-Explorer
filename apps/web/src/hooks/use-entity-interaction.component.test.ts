@@ -282,12 +282,12 @@ describe("useEntityInteraction", () => {
       const existingNode = createMockNode("node1", testEntityId);
 
       await act(async () => {
-        await result.current.interactWithEntity(
-          testEntityId,
-          testEntityType,
-          INTERACTION_PRESETS.GRAPH_NODE_CLICK,
+        await result.current.interactWithEntity({
+          entityId: testEntityId,
+          entityType: testEntityType,
+          options: INTERACTION_PRESETS.GRAPH_NODE_CLICK,
           existingNode,
-        );
+        });
       });
 
       expect(mockGraphStore.selectNode).toHaveBeenCalledWith("node1");
@@ -296,9 +296,9 @@ describe("useEntityInteraction", () => {
       );
       expect(mockGraphStore.pinNode).not.toHaveBeenCalled();
       expect(mockCenterOnNodeFn).not.toHaveBeenCalled();
-     });
+    });
 
-     it("should handle errors during interaction", async () => {
+    it("should handle errors during interaction", async () => {
       expect(mockGraphData.expandNode).not.toHaveBeenCalled();
     });
 
@@ -315,11 +315,11 @@ describe("useEntityInteraction", () => {
       mockGraphStore.nodes["node1"] = existingNode;
 
       await act(async () => {
-        await result.current.interactWithEntity(
-          testEntityId,
-          testEntityType,
-          INTERACTION_PRESETS.GRAPH_NODE_CLICK,
-        );
+        await result.current.interactWithEntity({
+          entityId: testEntityId,
+          entityType: testEntityType,
+          options: INTERACTION_PRESETS.GRAPH_NODE_CLICK,
+        });
       });
 
       // Should use existing node without loading
@@ -346,11 +346,11 @@ describe("useEntityInteraction", () => {
       });
 
       await act(async () => {
-        await result.current.interactWithEntity(
-          testEntityId,
-          testEntityType,
-          INTERACTION_PRESETS.GRAPH_NODE_CLICK,
-        );
+        await result.current.interactWithEntity({
+          entityId: testEntityId,
+          entityType: testEntityType,
+          options: INTERACTION_PRESETS.GRAPH_NODE_CLICK,
+        });
       });
 
       expect(mockGraphData.loadEntityIntoGraph).toHaveBeenCalledWith(
@@ -369,15 +369,17 @@ describe("useEntityInteraction", () => {
       const existingNode = createMockNode("node1", testEntityId);
 
       await act(async () => {
-        await result.current.interactWithEntity(
-          testEntityId,
-          testEntityType,
-          INTERACTION_PRESETS.GRAPH_NODE_DOUBLE_CLICK,
+        await result.current.interactWithEntity({
+          entityId: testEntityId,
+          entityType: testEntityType,
+          options: INTERACTION_PRESETS.GRAPH_NODE_CLICK,
           existingNode,
-        );
+        });
       });
 
-      expect(mockGraphData.expandNode).toHaveBeenCalledWith("node1");
+      expect(mockGraphData.expandNode).toHaveBeenCalledWith({
+        nodeId: "node1",
+      });
       expect(mockLogger.debug).toHaveBeenCalledWith(
         "graph",
         "Entity interaction completed",
@@ -395,12 +397,12 @@ describe("useEntityInteraction", () => {
       mockLayoutStore.autoPinOnLayoutStabilization = false;
 
       await act(async () => {
-        await result.current.interactWithEntity(
-          testEntityId,
-          testEntityType,
-          INTERACTION_PRESETS.GRAPH_NODE_CLICK,
+        await result.current.interactWithEntity({
+          entityId: testEntityId,
+          entityType: testEntityType,
+          options: INTERACTION_PRESETS.GRAPH_NODE_CLICK,
           existingNode,
-        );
+        });
       });
 
       expect(mockGraphStore.clearAllPinnedNodes).not.toHaveBeenCalled();
@@ -422,12 +424,12 @@ describe("useEntityInteraction", () => {
       const existingNode = createMockNode("node1", testEntityId);
 
       await act(async () => {
-        await result.current.interactWithEntity(
-          testEntityId,
-          testEntityType,
-          INTERACTION_PRESETS.GRAPH_NODE_CLICK,
+        await result.current.interactWithEntity({
+          entityId: testEntityId,
+          entityType: testEntityType,
+          options: INTERACTION_PRESETS.GRAPH_NODE_CLICK,
           existingNode,
-        );
+        });
       });
 
       expect(mockGraphStore.clearAllPinnedNodes).not.toHaveBeenCalled();
@@ -439,45 +441,44 @@ describe("useEntityInteraction", () => {
       const existingNode = createMockNode("node1", testEntityId);
 
       await act(async () => {
-        await result.current.interactWithEntity(
-          testEntityId,
-          testEntityType,
-          INTERACTION_PRESETS.GRAPH_NODE_CLICK,
+        await result.current.interactWithEntity({
+          entityId: testEntityId,
+          entityType: testEntityType,
+          options: INTERACTION_PRESETS.GRAPH_NODE_CLICK,
           existingNode,
-        );
+        });
       });
     });
 
-     it("should handle errors during interaction", async () => {
-       const { result } = renderHook(() =>
-         useEntityInteraction(mockCenterOnNodeFn),
-       );
-       const error = new Error("Test error");
+    it("should handle errors during interaction", async () => {
+      const { result } = renderHook(() =>
+        useEntityInteraction(mockCenterOnNodeFn),
+      );
+      const error = new Error("Test error");
 
-       // Mock an error during loading
-       mockGraphData.loadEntityIntoGraph.mockRejectedValue(error);
-       const mockValues = vi.fn().mockReturnValue([]);
-       mockGraphStore.nodes.values = mockValues;
+      // Mock an error during loading
+      mockGraphData.loadEntityIntoGraph.mockRejectedValue(error);
+      const mockValues = vi.fn().mockReturnValue([]);
+      mockGraphStore.nodes.values = mockValues;
 
-       await act(async () => {
-         await result.current.interactWithEntity(
-           testEntityId,
-           testEntityType,
-           INTERACTION_PRESETS.GRAPH_NODE_CLICK,
-         );
-       });
+      await act(async () => {
+        await result.current.interactWithEntity({
+          entityId: testEntityId,
+          entityType: testEntityType,
+          options: INTERACTION_PRESETS.GRAPH_NODE_CLICK,
+        });
+      });
 
-       expect(mockLogger.error).toHaveBeenCalledWith(
-         "graph",
-         "Entity interaction failed",
-         expect.objectContaining({
-           entityId: testEntityId,
-           entityType: testEntityType,
-           error,
-         }),
-       );
-     });
-
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        "graph",
+        "Entity interaction failed",
+        expect.objectContaining({
+          entityId: testEntityId,
+          entityType: testEntityType,
+          error,
+        }),
+      );
+    });
 
     it("should use custom options", async () => {
       const { result } = renderHook(() =>
@@ -492,12 +493,12 @@ describe("useEntityInteraction", () => {
       };
 
       await act(async () => {
-        await result.current.interactWithEntity(
-          testEntityId,
-          testEntityType,
-          customOptions,
+        await result.current.interactWithEntity({
+          entityId: testEntityId,
+          entityType: testEntityType,
+          options: INTERACTION_PRESETS.GRAPH_NODE_DOUBLE_CLICK,
           existingNode,
-        );
+        });
       });
 
       expect(mockGraphStore.selectNode).toHaveBeenCalledWith("node1");
@@ -547,12 +548,16 @@ describe("useEntityInteraction", () => {
       });
 
       // Verify double-click behavior (expansion)
-      expect(mockGraphStore.selectNode).toHaveBeenCalledWith("node1");
+      expect(mockGraphStore.selectNode).toHaveBeenCalledWith({
+        nodeId: "node1",
+      });
       expect(mockLayoutStore.setPreviewEntity).toHaveBeenCalledWith(
         testEntityId,
       );
-      expect(mockGraphStore.pinNode).toHaveBeenCalledWith("node1");
-      expect(mockGraphData.expandNode).toHaveBeenCalledWith("node1");
+      expect(mockGraphStore.pinNode).toHaveBeenCalledWith({ nodeId: "node1" });
+      expect(mockGraphData.expandNode).toHaveBeenCalledWith({
+        nodeId: "node1",
+      });
     });
 
     it("should handle sidebar entity click with correct preset", async () => {
@@ -565,10 +570,10 @@ describe("useEntityInteraction", () => {
       mockGraphStore.nodes["node1"] = existingNode;
 
       await act(async () => {
-        await result.current.handleSidebarEntityClick(
-          testEntityId,
-          testEntityType,
-        );
+        await result.current.handleSidebarEntityClick({
+          entityId: testEntityId,
+          entityType: testEntityType,
+        });
       });
 
       // Verify sidebar click behavior (same as single click - no expansion)
@@ -642,12 +647,12 @@ describe("useEntityInteraction", () => {
       const existingNode = createMockNode("node1", testEntityId);
 
       await act(async () => {
-        await result.current.interactWithEntity(
-          testEntityId,
-          testEntityType,
-          INTERACTION_PRESETS.GRAPH_NODE_CLICK,
+        await result.current.interactWithEntity({
+          entityId: testEntityId,
+          entityType: testEntityType,
+          options: INTERACTION_PRESETS.GRAPH_NODE_CLICK,
           existingNode,
-        );
+        });
       });
 
       expect(mockLogger.debug).toHaveBeenCalledWith(

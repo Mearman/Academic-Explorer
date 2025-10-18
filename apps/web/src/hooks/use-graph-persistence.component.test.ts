@@ -276,10 +276,10 @@ describe("useGraphPersistence", () => {
     it("should save current graph as session", () => {
       const { result } = renderHook(() => useGraphPersistence());
 
-      const sessionId = result.current.saveSession(
-        "My Test Session",
-        "Test description",
-      );
+      const sessionId = result.current.saveSession({
+        name: "My Test Session",
+        description: "Test description",
+      });
 
       expect(sessionId).toBe("session_1234567890");
 
@@ -309,7 +309,7 @@ describe("useGraphPersistence", () => {
       const { result } = renderHook(() => useGraphPersistence());
 
       expect(() => {
-        result.current.saveSession("Empty Session");
+        result.current.saveSession({ name: "Empty Session" });
       }).toThrow("Cannot save empty graph");
     });
 
@@ -327,7 +327,7 @@ describe("useGraphPersistence", () => {
 
       const { result } = renderHook(() => useGraphPersistence());
 
-      result.current.saveSession("New Session");
+      result.current.saveSession({ name: "New Session" });
 
       const stored = localStorageMock.getItem("academic-explorer-sessions");
       const sessions = JSON.parse(stored!);
@@ -345,7 +345,7 @@ describe("useGraphPersistence", () => {
       const { result } = renderHook(() => useGraphPersistence());
 
       expect(() => {
-        result.current.saveSession("Test Session");
+        result.current.saveSession({ name: "Test Session" });
       }).toThrow("Failed to save session. Storage might be full.");
 
       expect(logError).toHaveBeenCalledWith(
@@ -362,7 +362,7 @@ describe("useGraphPersistence", () => {
 
       const { result } = renderHook(() => useGraphPersistence());
 
-      const sessionId = result.current.saveSession("Test Session");
+      const sessionId = result.current.saveSession({ name: "Test Session" });
 
       expect(sessionId).toBe("session_1234567890");
 

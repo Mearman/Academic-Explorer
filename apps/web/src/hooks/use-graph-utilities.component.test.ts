@@ -435,7 +435,7 @@ describe("useGraphUtilities", () => {
       const maxYear = 2020;
 
       await act(async () => {
-        result.current.filterByPublicationYear(minYear, maxYear);
+        result.current.filterByPublicationYear({ minYear, maxYear });
       });
 
       expect(
@@ -449,7 +449,10 @@ describe("useGraphUtilities", () => {
       const hops = 2;
 
       await act(async () => {
-        const egoResult = result.current.extractEgoNetwork(centerNodeId, hops);
+        const egoResult = result.current.extractEgoNetwork({
+          centerNodeId,
+          hops,
+        });
 
         expect((egoResult as any).operation).toBe("extractEgoNetwork");
       });
@@ -467,7 +470,7 @@ describe("useGraphUtilities", () => {
       const centerNodeId = "W1";
 
       await act(async () => {
-        result.current.extractEgoNetwork(centerNodeId);
+        result.current.extractEgoNetwork({ centerNodeId });
       });
 
       expect(mockGraphUtilitiesService.extractEgoNetwork).toHaveBeenCalledWith(
@@ -552,7 +555,10 @@ describe("useGraphUtilities", () => {
 
       await act(async () => {
         expect(() =>
-          result.current.filterByPublicationYear(2020, 2021),
+          result.current.filterByPublicationYear({
+            minYear: 2020,
+            maxYear: 2021,
+          }),
         ).toThrow("Filter error");
       });
 
@@ -575,9 +581,9 @@ describe("useGraphUtilities", () => {
       });
 
       await act(async () => {
-        expect(() => result.current.extractEgoNetwork("W1", 2)).toThrow(
-          "Ego network error",
-        );
+        expect(() =>
+          result.current.extractEgoNetwork({ centerNodeId: "W1", hops: 2 }),
+        ).toThrow("Ego network error");
       });
 
       expect(mockLogger.error).toHaveBeenCalledWith(

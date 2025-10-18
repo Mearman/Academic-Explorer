@@ -15,7 +15,10 @@ class MockWorker {
   public onmessageerror: ((event: MessageEvent) => void) | null = null;
   private _terminated = false;
 
-  constructor(public url: string, public options?: WorkerOptions) {}
+  constructor(
+    public url: string,
+    public options?: WorkerOptions,
+  ) {}
 
   get terminated() {
     return this._terminated;
@@ -38,7 +41,7 @@ class MockWorker {
               type: "SUCCESS",
               requestId: message.requestId,
               result: { processed: message.data },
-              metadata: { processingTime: 100 }
+              metadata: { processingTime: 100 },
             };
             break;
 
@@ -48,14 +51,14 @@ class MockWorker {
               type: "PROGRESS",
               requestId: message.requestId,
               progress: 0.5,
-              metadata: { step: "processing" }
+              metadata: { step: "processing" },
             };
             this.onmessage(new MessageEvent("message", { data: response }));
 
             response = {
               type: "SUCCESS",
               requestId: message.requestId,
-              result: { completed: true }
+              result: { completed: true },
             };
             break;
 
@@ -63,7 +66,7 @@ class MockWorker {
             response = {
               type: "ERROR",
               requestId: message.requestId,
-              error: "Test error message"
+              error: "Test error message",
             };
             break;
 
@@ -71,7 +74,7 @@ class MockWorker {
             response = {
               type: "ERROR",
               requestId: message.requestId,
-              error: "Unknown message type"
+              error: "Unknown message type",
             };
         }
 
@@ -93,7 +96,7 @@ class MockWorker {
       const errorEvent = new ErrorEvent("error", {
         message,
         filename,
-        lineno
+        lineno,
       });
       this.onerror(errorEvent);
     }
@@ -137,7 +140,7 @@ describe("useWebWorker", () => {
 
   describe("Basic Functionality", () => {
     it("should initialize worker correctly", () => {
-      const { result } = renderHook(() => useWebWorker(workerFactory));
+      const { result } = renderHook(() => useWebWorker({ workerFactory }));
 
       expect(result.current.isWorkerAvailable()).toBe(true);
       expect(result.current.isLoading).toBe(false);
@@ -148,13 +151,13 @@ describe("useWebWorker", () => {
     it("should post messages and track stats", async () => {
       const onMessage = vi.fn();
       const { result } = renderHook(() =>
-        useWebWorker(workerFactory, { onMessage })
+        useWebWorker({ workerFactory, options: { onMessage } }),
       );
 
       await act(async () => {
         const requestId = result.current.postMessage({
           type: "TEST_SUCCESS",
-          data: { test: "data" }
+          data: { test: "data" },
         });
         expect(requestId).toBeTruthy();
       });
@@ -167,7 +170,7 @@ describe("useWebWorker", () => {
         () => {
           expect(result.current.isLoading).toBe(false);
         },
-        { timeout: 1000 }
+        { timeout: 1000 },
       );
 
       expect(result.current.stats.messagesReceived).toBe(1);
@@ -177,13 +180,13 @@ describe("useWebWorker", () => {
     it("should handle successful responses", async () => {
       const onSuccess = vi.fn();
       const { result } = renderHook(() =>
-        useWebWorker(workerFactory, { onSuccess })
+        useWebWorker({ workerFactory, options: { onSuccess } }),
       );
 
       await act(async () => {
         result.current.postMessage({
           type: "TEST_SUCCESS",
-          data: { test: "data" }
+          data: { test: "data" },
         });
       });
 
@@ -191,12 +194,12 @@ describe("useWebWorker", () => {
         () => {
           expect(onSuccess).toHaveBeenCalled();
         },
-        { timeout: 1000 }
+        { timeout: 1000 },
       );
 
       expect(onSuccess).toHaveBeenCalledWith(
         expect.objectContaining({ processed: { test: "data" } }),
-        expect.any(String)
+        expect.any(String),
       );
       expect(result.current.error).toBe(null);
     });
@@ -204,13 +207,13 @@ describe("useWebWorker", () => {
     it("should handle progress updates", async () => {
       const onProgress = vi.fn();
       const { result } = renderHook(() =>
-        useWebWorker(workerFactory, { onProgress })
+        useWebWorker({ workerFactory, options: { onProgress } }),
       );
 
       await act(async () => {
         result.current.postMessage({
           type: "TEST_PROGRESS",
-          data: { test: "data" }
+          data: { test: "data" },
         });
       });
 
@@ -218,7 +221,7 @@ describe("useWebWorker", () => {
         () => {
           expect(onProgress).toHaveBeenCalled();
         },
-        { timeout: 1000 }
+        { timeout: 1000 },
       );
 
       expect(onProgress).toHaveBeenCalledWith(0.5, expect.any(String));
@@ -227,13 +230,13 @@ describe("useWebWorker", () => {
     it("should handle error responses", async () => {
       const onError = vi.fn();
       const { result } = renderHook(() =>
-        useWebWorker(workerFactory, { onError: onError as any })
+        useWebWorker({ workerFactory, options: { onError: onError as any } }),
       );
 
       await act(async () => {
         result.current.postMessage({
           type: "TEST_ERROR",
-          data: { test: "data" }
+          data: { test: "data" },
         });
       });
 
@@ -241,7 +244,7 @@ describe("useWebWorker", () => {
         () => {
           expect(result.current.error).toBe("Test error message");
         },
-        { timeout: 1000 }
+        { timeout: 1000 },
       );
 
       expect(result.current.error).toBe("Test error message");
@@ -253,7 +256,7 @@ describe("useWebWorker", () => {
     it("should handle worker errors", async () => {
       const onError = vi.fn();
       const { result } = renderHook(() =>
-        useWebWorker(workerFactory, { onError })
+        useWebWorker({ workerFactory, options: { onError } }),
       );
 
       await act(async () => {
@@ -264,7 +267,7 @@ describe("useWebWorker", () => {
         () => {
           expect(result.current.error).toContain("Worker error:");
         },
-        { timeout: 1000 }
+        { timeout: 1000 },
       );
 
       expect(result.current.stats.errors).toBe(1);
@@ -272,13 +275,13 @@ describe("useWebWorker", () => {
         expect.objectContaining({
           message: "Worker runtime error",
           filename: "worker.js",
-          lineno: 42
-        })
+          lineno: 42,
+        }),
       );
     });
 
     it("should handle message serialization errors", async () => {
-      const { result } = renderHook(() => useWebWorker(workerFactory));
+      const { result } = renderHook(() => useWebWorker({ workerFactory }));
 
       await act(async () => {
         mockWorker.simulateMessageError();
@@ -288,14 +291,14 @@ describe("useWebWorker", () => {
         () => {
           expect(result.current.error).toContain("message error");
         },
-        { timeout: 1000 }
+        { timeout: 1000 },
       );
 
       expect(result.current.stats.errors).toBe(1);
     });
 
     it("should handle postMessage failures", async () => {
-      const { result } = renderHook(() => useWebWorker(workerFactory));
+      const { result } = renderHook(() => useWebWorker({ workerFactory }));
 
       // Terminate worker first
       await act(async () => {
@@ -305,7 +308,7 @@ describe("useWebWorker", () => {
       await act(async () => {
         const requestId = result.current.postMessage({
           type: "TEST_SUCCESS",
-          data: {}
+          data: {},
         });
         expect(requestId).toBe(null);
       });
@@ -316,12 +319,12 @@ describe("useWebWorker", () => {
 
   describe("Performance Metrics", () => {
     it("should calculate response times", async () => {
-      const { result } = renderHook(() => useWebWorker(workerFactory));
+      const { result } = renderHook(() => useWebWorker({ workerFactory }));
 
       await act(async () => {
         result.current.postMessage({
           type: "TEST_SUCCESS",
-          data: {}
+          data: {},
         });
       });
 
@@ -329,20 +332,20 @@ describe("useWebWorker", () => {
         () => {
           expect(result.current.averageResponseTime).toBeGreaterThan(0);
         },
-        { timeout: 1000 }
+        { timeout: 1000 },
       );
 
       expect(result.current.totalMessages).toBe(2); // 1 sent + 1 received
     });
 
     it("should track error rates", async () => {
-      const { result } = renderHook(() => useWebWorker(workerFactory));
+      const { result } = renderHook(() => useWebWorker({ workerFactory }));
 
       // Send successful message
       await act(async () => {
         result.current.postMessage({
           type: "TEST_SUCCESS",
-          data: {}
+          data: {},
         });
       });
 
@@ -350,14 +353,14 @@ describe("useWebWorker", () => {
         () => {
           expect(result.current.stats.messagesReceived).toBe(1);
         },
-        { timeout: 1000 }
+        { timeout: 1000 },
       );
 
       // Send error message
       await act(async () => {
         result.current.postMessage({
           type: "TEST_ERROR",
-          data: {}
+          data: {},
         });
       });
 
@@ -365,7 +368,7 @@ describe("useWebWorker", () => {
         () => {
           expect(result.current.stats.errors).toBe(1);
         },
-        { timeout: 1000 }
+        { timeout: 1000 },
       );
 
       expect(result.current.errorRate).toBe(0.5); // 1 error out of 2 messages
@@ -374,7 +377,7 @@ describe("useWebWorker", () => {
 
   describe("Worker Lifecycle", () => {
     it("should terminate worker manually", async () => {
-      const { result } = renderHook(() => useWebWorker(workerFactory));
+      const { result } = renderHook(() => useWebWorker({ workerFactory }));
 
       expect(result.current.isWorkerAvailable()).toBe(true);
 
@@ -387,7 +390,7 @@ describe("useWebWorker", () => {
 
     it("should auto-terminate on unmount", () => {
       const { unmount } = renderHook(() =>
-        useWebWorker(workerFactory, { autoTerminate: true })
+        useWebWorker({ workerFactory, options: { autoTerminate: true } }),
       );
 
       const terminateSpy = vi.spyOn(mockWorker, "terminate");
@@ -399,7 +402,7 @@ describe("useWebWorker", () => {
 
     it("should not auto-terminate when disabled", () => {
       const { unmount } = renderHook(() =>
-        useWebWorker(workerFactory, { autoTerminate: false })
+        useWebWorker({ workerFactory, options: { autoTerminate: false } }),
       );
 
       const terminateSpy = vi.spyOn(mockWorker, "terminate");
@@ -412,24 +415,30 @@ describe("useWebWorker", () => {
 
   describe("Request ID Generation", () => {
     it("should generate unique request IDs", async () => {
-      const { result } = renderHook(() => useWebWorker(workerFactory));
+      const { result } = renderHook(() => useWebWorker({ workerFactory }));
 
       const requestIds: (string | null)[] = [];
 
       await act(async () => {
-        requestIds.push(result.current.postMessage({ type: "TEST_SUCCESS", data: {} }));
-        requestIds.push(result.current.postMessage({ type: "TEST_SUCCESS", data: {} }));
-        requestIds.push(result.current.postMessage({ type: "TEST_SUCCESS", data: {} }));
+        requestIds.push(
+          result.current.postMessage({ type: "TEST_SUCCESS", data: {} }),
+        );
+        requestIds.push(
+          result.current.postMessage({ type: "TEST_SUCCESS", data: {} }),
+        );
+        requestIds.push(
+          result.current.postMessage({ type: "TEST_SUCCESS", data: {} }),
+        );
       });
 
-      expect(requestIds.every(id => id !== null)).toBe(true);
+      expect(requestIds.every((id) => id !== null)).toBe(true);
       expect(new Set(requestIds).size).toBe(3); // All unique
     });
 
     it("should preserve custom request IDs", async () => {
       const onMessage = vi.fn();
       const { result } = renderHook(() =>
-        useWebWorker(workerFactory, { onMessage })
+        useWebWorker({ workerFactory, options: { onMessage } }),
       );
 
       const customRequestId = "custom-request-123";
@@ -438,7 +447,7 @@ describe("useWebWorker", () => {
         const returnedId = result.current.postMessage({
           type: "TEST_SUCCESS",
           data: {},
-          requestId: customRequestId
+          requestId: customRequestId,
         });
         expect(returnedId).toBe(customRequestId);
       });
@@ -447,7 +456,7 @@ describe("useWebWorker", () => {
 
   describe("Computed Properties", () => {
     it("should calculate computed properties correctly", async () => {
-      const { result } = renderHook(() => useWebWorker(workerFactory));
+      const { result } = renderHook(() => useWebWorker({ workerFactory }));
 
       // Initial state
       expect(result.current.isIdle).toBe(true);
@@ -457,7 +466,7 @@ describe("useWebWorker", () => {
       await act(async () => {
         result.current.postMessage({
           type: "TEST_SUCCESS",
-          data: {}
+          data: {},
         });
       });
 
@@ -468,7 +477,7 @@ describe("useWebWorker", () => {
         () => {
           expect(result.current.isIdle).toBe(true);
         },
-        { timeout: 1000 }
+        { timeout: 1000 },
       );
 
       expect(result.current.isIdle).toBe(true);
@@ -478,7 +487,7 @@ describe("useWebWorker", () => {
       await act(async () => {
         result.current.postMessage({
           type: "TEST_ERROR",
-          data: {}
+          data: {},
         });
       });
 
@@ -487,7 +496,7 @@ describe("useWebWorker", () => {
         () => {
           expect(result.current.hasError).toBe(true);
         },
-        { timeout: 1000 }
+        { timeout: 1000 },
       );
 
       expect(result.current.hasError).toBe(true);

@@ -107,7 +107,7 @@ describe("useRawEntityData", () => {
   describe("hook initialization", () => {
     it("should initialize with default options", () => {
       const { result } = renderHookWithQueryClient(() =>
-        useRawEntityData({ entityId: "W123456789" }),
+        useRawEntityData({ options: { entityId: "W123456789" } }),
       );
 
       expect(result.current).toMatchObject({
@@ -118,7 +118,9 @@ describe("useRawEntityData", () => {
     });
 
     it("should handle missing entityId", () => {
-      const { result } = renderHookWithQueryClient(() => useRawEntityData({}));
+      const { result } = renderHookWithQueryClient(() =>
+        useRawEntityData({ options: {} }),
+      );
 
       expect(result.current).toMatchObject({
         ...mockUseQueryResult,
@@ -129,7 +131,9 @@ describe("useRawEntityData", () => {
 
     it("should handle enabled=false", () => {
       const { result } = renderHookWithQueryClient(() =>
-        useRawEntityData({ entityId: "W123456789", enabled: false }),
+        useRawEntityData({
+          options: { entityId: "W123456789", enabled: false },
+        }),
       );
 
       expect(result.current).toMatchObject({
@@ -150,7 +154,7 @@ describe("useRawEntityData", () => {
       });
 
       renderHookWithQueryClient(() =>
-        useRawEntityData({ entityId: "W123456789" }),
+        useRawEntityData({ options: { entityId: "W123456789" } }),
       );
 
       expect(
@@ -176,7 +180,7 @@ describe("useRawEntityData", () => {
       });
 
       renderHookWithQueryClient(() =>
-        useRawEntityData({ entityId: "A123456789" }),
+        useRawEntityData({ options: { entityId: "A123456789" } }),
       );
 
       expect(reactQuery.useQuery).toHaveBeenCalled();
@@ -213,7 +217,7 @@ describe("useRawEntityData", () => {
         });
 
         renderHookWithQueryClient(() =>
-          useRawEntityData({ entityId: "TEST123" }),
+          useRawEntityData({ options: { entityId: "TEST123" } }),
         );
 
         expect(reactQuery.useQuery).toHaveBeenCalled();
@@ -238,7 +242,7 @@ describe("useRawEntityData", () => {
 
       expect(() => {
         renderHookWithQueryClient(() =>
-          useRawEntityData({ entityId: "INVALID123" }),
+          useRawEntityData({ options: { entityId: "INVALID123" } }),
         );
       }).toThrow("Unable to detect entity type for: INVALID123");
     });
@@ -247,7 +251,7 @@ describe("useRawEntityData", () => {
   describe("query enablement logic", () => {
     it("should enable query when entityId provided", async () => {
       renderHookWithQueryClient(() =>
-        useRawEntityData({ entityId: "W123456789" }),
+        useRawEntityData({ options: { entityId: "W123456789" } }),
       );
       expect(reactQuery.useQuery).toHaveBeenCalled();
       const lastCall = getLastUseQueryCall();
@@ -262,7 +266,9 @@ describe("useRawEntityData", () => {
 
     it("should disable query when enabled=false", async () => {
       renderHookWithQueryClient(() =>
-        useRawEntityData({ entityId: "W123456789", enabled: false }),
+        useRawEntityData({
+          options: { entityId: "W123456789", enabled: false },
+        }),
       );
       expect(reactQuery.useQuery).toHaveBeenCalled();
       const lastCall = getLastUseQueryCall();
@@ -270,7 +276,7 @@ describe("useRawEntityData", () => {
     });
 
     it("should disable query when no entityId", async () => {
-      renderHookWithQueryClient(() => useRawEntityData({}));
+      renderHookWithQueryClient(() => useRawEntityData({ options: {} }));
       expect(reactQuery.useQuery).toHaveBeenCalled();
       const lastCall = getLastUseQueryCall();
       expect(lastCall.queryKey).toEqual(["raw-entity", null, null, "{}"]);
@@ -288,7 +294,7 @@ describe("useRawEntityData", () => {
       });
 
       renderHookWithQueryClient(() =>
-        useRawEntityData({ entityId: "W123456789" }),
+        useRawEntityData({ options: { entityId: "W123456789" } }),
       );
 
       expect(testLogger.debug).toHaveBeenCalledWith(
@@ -304,7 +310,7 @@ describe("useRawEntityData", () => {
     });
 
     it("should not log when no entityId provided", () => {
-      renderHookWithQueryClient(() => useRawEntityData({}));
+      renderHookWithQueryClient(() => useRawEntityData({ options: {} }));
 
       expect(testLogger.debug).not.toHaveBeenCalled();
     });
@@ -324,7 +330,7 @@ describe("useRawEntityData", () => {
       } as any);
 
       renderHookWithQueryClient(() =>
-        useRawEntityData({ entityId: "W123456789" }),
+        useRawEntityData({ options: { entityId: "W123456789" } }),
       );
 
       expect(reactQuery.useQuery).toHaveBeenCalled();
@@ -337,7 +343,7 @@ describe("useRawEntityData", () => {
   describe("options handling", () => {
     it("should handle undefined options gracefully", () => {
       const { result } = renderHookWithQueryClient(() =>
-        useRawEntityData({} as any),
+        useRawEntityData({ options: {} } as any),
       );
 
       expect(result.current).toEqual(mockUseRawEntityDataResult);
@@ -345,7 +351,7 @@ describe("useRawEntityData", () => {
 
     it("should default enabled to true", async () => {
       renderHookWithQueryClient(() =>
-        useRawEntityData({ entityId: "W123456789" }),
+        useRawEntityData({ options: { entityId: "W123456789" } }),
       );
 
       expect(reactQuery.useQuery).toHaveBeenCalled();
@@ -356,7 +362,9 @@ describe("useRawEntityData", () => {
 
   describe("fallback behavior", () => {
     it("should handle empty string entityId", async () => {
-      renderHookWithQueryClient(() => useRawEntityData({ entityId: "" }));
+      renderHookWithQueryClient(() =>
+        useRawEntityData({ options: { entityId: "" } }),
+      );
 
       expect(reactQuery.useQuery).toHaveBeenCalled();
       const lastCall = getLastUseQueryCall();
@@ -368,7 +376,7 @@ describe("useRawEntityData", () => {
   describe("function stability", () => {
     it("should return consistent query object", () => {
       const { result, rerender } = renderHookWithQueryClient(() =>
-        useRawEntityData({ entityId: "W123456789" }),
+        useRawEntityData({ options: { entityId: "W123456789" } }),
       );
 
       const firstResult = result.current;
