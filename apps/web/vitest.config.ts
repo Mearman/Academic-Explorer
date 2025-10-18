@@ -1,26 +1,27 @@
 /// <reference types="vitest" />
-import { defineConfig } from "vite";
+import { defineConfig, mergeConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "node:path";
+import { baseVitestConfig } from "../../vitest.config.base";
 
-export default defineConfig({
-  plugins: [react()] as any,
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
+export default defineConfig(
+  mergeConfig(baseVitestConfig, {
+    plugins: [react()] as any,
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src"),
+      },
     },
-  },
-  test: {
-    environment: "jsdom",
-    setupFiles: [path.resolve(__dirname, "src/test/setup.ts")],
-    globals: true,
-    watch: false,
-    seed: 12345,
-    exclude: [
-      "node_modules",
-      "**/*.e2e.test.ts", // Exclude E2E tests from Vitest
-      "**/*.integration.test.ts", // Exclude all integration tests
-      "**/*.integration.test.tsx", // Exclude all integration tests
-    ],
-  },
-});
+    test: {
+      environment: "jsdom",
+      setupFiles: [path.resolve(__dirname, "src/test/setup.ts")],
+      watch: false,
+      exclude: [
+        "node_modules",
+        "**/*.e2e.test.ts", // Exclude E2E tests from Vitest
+        "**/*.integration.test.ts", // Exclude all integration tests
+        "**/*.integration.test.tsx", // Exclude all integration tests
+      ],
+    },
+  }),
+);

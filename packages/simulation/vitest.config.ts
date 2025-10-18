@@ -1,26 +1,24 @@
 /// <reference types='vitest' />
 import { nxCopyAssetsPlugin } from "@nx/vite/plugins/nx-copy-assets.plugin";
 import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin";
-import { defineConfig } from "vite";
+import { defineConfig, mergeConfig } from "vite";
+import { baseVitestConfig } from "../../vitest.config.base";
 
-export default defineConfig(() => ({
-  root: __dirname,
-  cacheDir: "../../node_modules/.vite/packages/simulation",
-  plugins: [nxViteTsPaths(), nxCopyAssetsPlugin(["*.md"])],
-  // Uncomment this if you are using workers.
-  // worker: {
-  //  plugins: [ nxViteTsPaths() ],
-  // },
-  test: {
-    watch: false,
-    globals: true,
-    environment: "node",
-    include: ["src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
-    reporters: ["default"],
-    seed: 12345,
-    coverage: {
-      reportsDirectory: "../../coverage/packages/simulation",
-      provider: "v8" as const,
+export default defineConfig(
+  mergeConfig(baseVitestConfig, {
+    root: __dirname,
+    cacheDir: "../../node_modules/.vite/packages/simulation",
+    plugins: [nxViteTsPaths(), nxCopyAssetsPlugin(["*.md"])],
+    // Uncomment this if you are using workers.
+    // worker: {
+    //  plugins: [ nxViteTsPaths() ],
+    // },
+    test: {
+      watch: false,
+      environment: "node",
+      coverage: {
+        reportsDirectory: "../../coverage/packages/simulation",
+      },
     },
-  },
-}));
+  }),
+);

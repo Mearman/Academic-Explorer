@@ -49,9 +49,6 @@ export default defineConfig({
     // Set user agent for consistency
     userAgent: "Academic-Explorer-E2E-Tests/1.0 Playwright",
 
-    // Seed for deterministic test execution
-    seed: 12345,
-
     // Timeout settings
     actionTimeout: 10000,
     navigationTimeout: 30000,
