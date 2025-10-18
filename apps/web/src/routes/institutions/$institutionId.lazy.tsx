@@ -186,8 +186,10 @@ function InstitutionRoute() {
 
   // Fetch entity data for title
   const rawEntityData = useRawEntityData({
-    entityId: institutionId,
-    enabled: !!institutionId,
+    options: {
+      entityId: institutionId,
+      enabled: !!institutionId,
+    },
   });
   const institution = rawEntityData.data as InstitutionEntity | undefined;
 
@@ -319,7 +321,7 @@ function InstitutionRoute() {
             } else {
               const title =
                 institution?.display_name || `Institution ${institutionId}`;
-              await userInteractions.bookmarkEntity(title);
+              await userInteractions.bookmarkEntity({ title });
             }
           }}
           className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${

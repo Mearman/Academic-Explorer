@@ -134,8 +134,10 @@ function AuthorRoute() {
   // Step 2: Re-enable useRawEntityData (entity data fetching)
   // Pass queryParams to honor URL parameters like `select`
   const rawEntityData = useRawEntityData({
-    entityId: cleanAuthorId,
-    queryParams,
+    options: {
+      entityId: cleanAuthorId,
+      queryParams,
+    },
   });
 
   // Fetch entity data for title
@@ -362,7 +364,7 @@ function AuthorRoute() {
               await userInteractions.unbookmarkEntity();
             } else {
               const title = author?.display_name || `Author ${authorId}`;
-              await userInteractions.bookmarkEntity(title);
+              await userInteractions.bookmarkEntity({ title });
             }
           }}
           className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${

@@ -51,8 +51,10 @@ function TopicRoute() {
 
   // Fetch entity data for title
   const rawEntityData = useRawEntityData({
-    entityId: topicId,
-    enabled: !!topicId,
+    options: {
+      entityId: topicId,
+      enabled: !!topicId,
+    },
   });
   const topic = rawEntityData.data;
 
@@ -176,7 +178,7 @@ function TopicRoute() {
               await userInteractions.unbookmarkEntity();
             } else {
               const title = topic?.display_name || `Topic ${topicId}`;
-              await userInteractions.bookmarkEntity(title);
+              await userInteractions.bookmarkEntity({ title });
             }
           }}
           className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${

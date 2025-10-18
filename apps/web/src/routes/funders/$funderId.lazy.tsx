@@ -103,8 +103,10 @@ function FunderRoute() {
 
   // Fetch entity data for title
   const rawEntityData = useRawEntityData({
-    entityId: funderId,
-    enabled: !!funderId,
+    options: {
+      entityId: funderId,
+      enabled: !!funderId,
+    },
   });
   const funder = rawEntityData.data;
 

@@ -135,8 +135,10 @@ function WorkRoute() {
 
   // Fetch entity data for title
   const rawEntityData = useRawEntityData({
-    entityId: workId,
-    enabled: !!workId,
+    options: {
+      entityId: workId,
+      enabled: !!workId,
+    },
   });
   const work = rawEntityData.data as Work | undefined;
 
@@ -259,7 +261,7 @@ function WorkRoute() {
               await userInteractions.unbookmarkEntity();
             } else {
               const title = work?.title || `Work ${workId}`;
-              await userInteractions.bookmarkEntity(title);
+              await userInteractions.bookmarkEntity({ title });
             }
           }}
           className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${

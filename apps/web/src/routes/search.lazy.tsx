@@ -318,7 +318,6 @@ const createSearchColumns = (): ColumnDef<Work>[] => [
       );
     },
   },
-
 ];
 
 function SearchPage() {
@@ -368,13 +367,16 @@ function SearchPage() {
 
     // Record search page visit with metadata
     if (filters.query.trim()) {
-      await userInteractions.recordPageVisit(window.location.href, {
-        searchQuery: filters.query,
-        filters: {
-          startDate: filters.startDate?.toISOString(),
-          endDate: filters.endDate?.toISOString(),
+      await userInteractions.recordPageVisit({
+        url: window.location.href,
+        metadata: {
+          searchQuery: filters.query,
+          filters: {
+            startDate: filters.startDate?.toISOString(),
+            endDate: filters.endDate?.toISOString(),
+          },
+          resultCount: searchResults?.length,
         },
-        resultCount: searchResults?.length,
       });
     }
   };
@@ -408,14 +410,14 @@ function SearchPage() {
                     searchFilters.startDate || searchFilters.endDate
                       ? `${searchFilters.query} (${searchFilters.startDate?.getFullYear() || ""}-${searchFilters.endDate?.getFullYear() || ""})`
                       : searchFilters.query;
-                  await userInteractions.bookmarkSearch(
+                  await userInteractions.bookmarkSearch({
                     title,
-                    searchFilters.query,
-                    {
+                    searchQuery: searchFilters.query,
+                    filters: {
                       startDate: searchFilters.startDate?.toISOString(),
                       endDate: searchFilters.endDate?.toISOString(),
                     },
-                  );
+                  });
                 }
               }}
               className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -476,6 +478,5 @@ function SearchPage() {
     </Container>
   );
 }
-
 
 export default SearchPage;
