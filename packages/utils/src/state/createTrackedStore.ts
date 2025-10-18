@@ -193,7 +193,7 @@ export function createTrackedStore<
   A extends Record<string, any>,
 >(
   config: TrackedStoreConfig<T, A>,
-  actionsFactory: (set: ImmerSetState<T & A>, get: () => T & A) => A,
+  actionsFactory: (set: any, get: () => T & A) => A,
   selectorsFactory?: (state: T) => Record<string, (state: T) => unknown>,
 ): TrackedStoreResult<T, A> {
   const {
@@ -211,9 +211,8 @@ export function createTrackedStore<
   }
 
   // Create the base store creator
-  const baseStoreCreator = (set: ImmerSetState<T & A>, get: () => T & A) => ({
+  const baseStoreCreator = () => ({
     ...initialState,
-    ...actionsFactory(set, get),
   });
 
   // Build middleware stack
@@ -266,10 +265,7 @@ export function createTrackedStore<
   const selectors = selectorsFactory ? selectorsFactory(initialState) : {};
 
   // Create actions using the Immer-wrapped set method
-  const actions = actionsFactory(
-    (partial, replace) => store.setState(partial, replace),
-    () => store.getState(),
-  );
+  const actions = actionsFactory(store.setState as any, () => store.getState());
 
   return {
     useStore,

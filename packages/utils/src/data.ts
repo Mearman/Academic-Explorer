@@ -359,7 +359,7 @@ export function safeGet<T>(
 /**
  * Throttle function calls
  */
-export function throttle<T extends (...args: unknown[]) => unknown>(
+export function throttle<T extends (...args: any[]) => any>(
   func: T,
   delay: number,
 ): (...args: Parameters<T>) => ReturnType<T> | undefined {
@@ -368,7 +368,7 @@ export function throttle<T extends (...args: unknown[]) => unknown>(
     const now = Date.now();
     if (now - lastCall >= delay) {
       lastCall = now;
-      return func(...args);
+      return func(...args) as ReturnType<T>;
     }
     return undefined;
   };
