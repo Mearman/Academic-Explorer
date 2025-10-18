@@ -38,7 +38,7 @@ export interface EntityCollectionListProps<T = Record<string, unknown>> {
 }
 
 // Simple debounce hook
-function useDebounce<T>(value: T, delay: number): T {
+function useDebounce<T>({ value, delay }: { value: T; delay: number }): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
   useEffect(() => {
@@ -92,7 +92,7 @@ export function EntityCollectionList<T = Record<string, unknown>>({
   ...restProps
 }: EntityCollectionListProps<T>) {
   const [searchQuery, setSearchQuery] = useState("");
-  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+  const debouncedSearchQuery = useDebounce({ value: searchQuery, delay: 300 });
 
   // Filter items based on search and active filters
   const filteredItems = useMemo(() => {

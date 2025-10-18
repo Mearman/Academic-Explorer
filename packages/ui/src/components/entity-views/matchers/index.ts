@@ -153,10 +153,13 @@ export function findObjectMatcher(obj: unknown): ObjectMatcher | null {
   return null;
 }
 
-export function findValueMatcher(
-  value: unknown,
-  fieldName?: string,
-): ValueMatcher | null {
+export function findValueMatcher({
+  value,
+  fieldName,
+}: {
+  value: unknown;
+  fieldName?: string;
+}): ValueMatcher | null {
   const sortedMatchers = valueMatchers.sort(
     (a, b) => (b.priority || 0) - (a.priority || 0),
   );

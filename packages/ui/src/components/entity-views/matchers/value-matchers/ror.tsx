@@ -10,7 +10,13 @@ export const rorMatcher: ValueMatcher = {
     if (typeof value !== "string") return false;
     return /^0[a-zA-Z0-9]{8}$/.test(value);
   },
-  render: (value: unknown, _fieldName: string): React.ReactNode => {
+  render: ({
+    value,
+    _fieldName,
+  }: {
+    value: unknown;
+    _fieldName: string;
+  }): React.ReactNode => {
     const rorValue = value as string;
     return (
       <Group gap="xs" wrap="nowrap">

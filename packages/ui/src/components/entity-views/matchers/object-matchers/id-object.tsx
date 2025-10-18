@@ -25,16 +25,20 @@ export const idObjectMatcher: ObjectMatcher = {
         key === "scopus",
     );
   },
-  render: (
-    obj: unknown,
-    _fieldName: string,
-    onNavigate?: (path: string) => void,
-  ): React.ReactNode => {
+  render: ({
+    obj,
+    _fieldName,
+    onNavigate,
+  }: {
+    obj: unknown;
+    _fieldName: string;
+    onNavigate?: (path: string) => void;
+  }): React.ReactNode => {
     const idObj = obj as Record<string, string>;
     return (
       <Group gap="xs" wrap="wrap">
         {Object.entries(idObj).map(([key, value]) =>
-          value ? renderIdBadge(key, value, onNavigate) : null,
+          value ? renderIdBadge({ key, value, onNavigate }) : null,
         )}
       </Group>
     );
@@ -44,25 +48,29 @@ export const idObjectMatcher: ObjectMatcher = {
 /**
  * Renders a single ID badge with appropriate linking and copy functionality
  */
-function renderIdBadge(
-  key: string,
-  value: string,
-  onNavigate?: (path: string) => void,
-): React.ReactNode {
+function renderIdBadge({
+  key,
+  value,
+  onNavigate,
+}: {
+  key: string;
+  value: string;
+  onNavigate?: (path: string) => void;
+}): React.ReactNode {
   const displayKey = key.toUpperCase();
   const isSpecialId = SPECIAL_ID_TYPES.has(key);
-  const relativeUrl = getRelativeUrlForId(key, value);
+  const relativeUrl = getRelativeUrlForId({ key, value });
 
   return (
     <Group key={key} gap="xs" wrap="nowrap">
-      {renderBadgeLink(
+      {renderBadgeLink({
         displayKey,
         value,
         key,
         relativeUrl,
         onNavigate,
         isSpecialId,
-      )}
+      })}
       <Tooltip label="Copy to clipboard">
         <ActionIcon
           size="sm"
@@ -80,7 +88,13 @@ function renderIdBadge(
 /**
  * Gets the relative URL for an ID if it should be linked
  */
-function getRelativeUrlForId(key: string, value: string): string | null {
+function getRelativeUrlForId({
+  key,
+  value,
+}: {
+  key: string;
+  value: string;
+}): string | null {
   // Check if this is an OpenAlex ID that should be linked
   const validation = validateExternalId(value);
   if (validation.isValid && validation.type === "openalex") {
@@ -92,14 +106,21 @@ function getRelativeUrlForId(key: string, value: string): string | null {
 /**
  * Renders the appropriate badge link based on URL and navigation availability
  */
-function renderBadgeLink(
-  displayKey: string,
-  value: string,
-  key: string,
-  relativeUrl: string | null,
-  onNavigate?: (path: string) => void,
-  isSpecialId?: boolean,
-): React.ReactNode {
+function renderBadgeLink({
+  displayKey,
+  value,
+  key,
+  relativeUrl,
+  onNavigate,
+  isSpecialId,
+}: {
+  displayKey: string;
+  value: string;
+  key: string;
+  relativeUrl: string | null;
+  onNavigate?: (path: string) => void;
+  isSpecialId?: boolean;
+}): React.ReactNode {
   const badgeProps = {
     variant: isSpecialId ? "filled" : ("light" as const),
     size: "sm" as const,
