@@ -231,7 +231,13 @@ function formatValue(value: unknown): string {
 }
 
 // Helper functions to reduce cognitive complexity
-function validateLimit(settings: ExpansionSettings, errors: string[]): void {
+function validateLimit({
+  settings,
+  errors,
+}: {
+  settings: ExpansionSettings;
+  errors: string[];
+}): void {
   if (settings.limit !== undefined) {
     if (settings.limit < 0) {
       errors.push("Limit must be 0 (unlimited) or greater");
@@ -242,7 +248,13 @@ function validateLimit(settings: ExpansionSettings, errors: string[]): void {
   }
 }
 
-function validateSorts(settings: ExpansionSettings, errors: string[]): void {
+function validateSorts({
+  settings,
+  errors,
+}: {
+  settings: ExpansionSettings;
+  errors: string[];
+}): void {
   for (const sort of settings.sorts ?? []) {
     if (!sort.property) {
       errors.push("Sort criteria must have a property");
@@ -264,7 +276,13 @@ function validateSorts(settings: ExpansionSettings, errors: string[]): void {
   }
 }
 
-function validateFilters(settings: ExpansionSettings, errors: string[]): void {
+function validateFilters({
+  settings,
+  errors,
+}: {
+  settings: ExpansionSettings;
+  errors: string[];
+}): void {
   for (const filter of settings.filters ?? []) {
     if (!filter.property) {
       errors.push("Filter criteria must have a property");
@@ -301,9 +319,9 @@ function validateSettings(settings: ExpansionSettings): {
 } {
   const errors: string[] = [];
 
-  validateLimit(settings, errors);
-  validateSorts(settings, errors);
-  validateFilters(settings, errors);
+  validateLimit({ settings, errors });
+  validateSorts({ settings, errors });
+  validateFilters({ settings, errors });
 
   return {
     valid: errors.length === 0,
@@ -334,10 +352,13 @@ function getQueryPreview(settings: ExpansionSettings): string {
 /**
  * Merge additional filters with expansion settings filters
  */
-function mergeFilters(
-  baseFilters: string | undefined,
-  additionalFilters: FilterCriteria[],
-): string | undefined {
+function mergeFilters({
+  baseFilters,
+  additionalFilters,
+}: {
+  baseFilters: string | undefined;
+  additionalFilters: FilterCriteria[];
+}): string | undefined {
   const additionalFilterString = buildFilterString(additionalFilters);
 
   if (!baseFilters && !additionalFilterString) {
@@ -358,10 +379,13 @@ function mergeFilters(
 /**
  * Create a copy of settings with modified filters (useful for context-specific queries)
  */
-function withAdditionalFilters(
-  settings: ExpansionSettings,
-  additionalFilters: FilterCriteria[],
-): ExpansionSettings {
+function withAdditionalFilters({
+  settings,
+  additionalFilters,
+}: {
+  settings: ExpansionSettings;
+  additionalFilters: FilterCriteria[];
+}): ExpansionSettings {
   return {
     ...settings,
     filters: [...(settings.filters ?? []), ...additionalFilters],
@@ -371,10 +395,13 @@ function withAdditionalFilters(
 /**
  * Create a copy of settings with modified sort (useful for fallback sorting)
  */
-function withFallbackSort(
-  settings: ExpansionSettings,
-  fallbackSort: SortCriteria,
-): ExpansionSettings {
+function withFallbackSort({
+  settings,
+  fallbackSort,
+}: {
+  settings: ExpansionSettings;
+  fallbackSort: SortCriteria;
+}): ExpansionSettings {
   // Only add fallback if no sorts are defined
   if ((settings.sorts ?? []).length > 0) {
     return settings;

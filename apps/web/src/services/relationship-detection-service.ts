@@ -139,10 +139,10 @@ export class RelationshipDetectionService {
 
     for (const nodeId of nodeIds) {
       try {
-        const crossBatchEdges = await this.detectCrossBatchRelationships(
+        const crossBatchEdges = await this.detectCrossBatchRelationships({
           nodeId,
-          nodeIds,
-        );
+          batchNodeIds: nodeIds,
+        });
         allNewEdges.push(...crossBatchEdges);
       } catch (error) {
         logError(
@@ -192,19 +192,19 @@ export class RelationshipDetectionService {
     }
 
     // Fetch fresh entity data for relationship detection to ensure we have all necessary fields
-    const entityData = await this.fetchMinimalEntityData(
-      node.entityId,
-      node.entityType,
-    );
+    const entityData = await this.fetchMinimalEntityData({
+      entityId: node.entityId,
+      entityType: node.entityType,
+    });
     if (!entityData) {
       return [];
     }
 
     // Analyze relationships based on entity type
-    const relationships = await this.analyzeRelationships(
-      entityData,
+    const relationships = await this.analyzeRelationships({
+      newEntityData: entityData,
       existingNodes,
-    );
+    });
 
     // Create edges from relationships
     const edges = relationships.map((rel) => ({
@@ -225,10 +225,13 @@ export class RelationshipDetectionService {
    * Fetch minimal entity data required for relationship detection
    * Uses field selection to minimize API response size and improve performance
    */
-  private async fetchMinimalEntityData(
-    entityId: string,
-    entityType: EntityType,
-  ): Promise<MinimalEntityData | null> {
+  private async fetchMinimalEntityData({
+    entityId,
+    entityType,
+  }: {
+    entityId: string;
+    entityType: EntityType;
+  }): Promise<MinimalEntityData | null> {
     try {
       // Use advanced type-safe field selections with minimal fields
       const getMinimalFields = (entityType: EntityType): string[] => {
@@ -260,7 +263,7 @@ export class RelationshipDetectionService {
 
       // Fetch entity with minimal fields using deduplication service
       const entity = await this.deduplicationService.getEntity(entityId, () =>
-        this.fetchEntityWithSelect(entityId, entityType, selectFields),
+        this.fetchEntityWithSelect({ entityId, entityType, selectFields }),
       );
 
       logger.debug(
@@ -435,10 +438,13 @@ export class RelationshipDetectionService {
   /**
    * Analyze relationships between the new entity and existing graph nodes
    */
-  private async analyzeRelationships(
-    newEntityData: MinimalEntityData,
-    existingNodes: GraphNode[],
-  ): Promise<DetectedRelationship[]> {
+  private async analyzeRelationships({
+    newEntityData,
+    existingNodes,
+  }: {
+    newEntityData: MinimalEntityData;
+    existingNodes: GraphNode[];
+  }): Promise<DetectedRelationship[]> {
     const relationships: DetectedRelationship[] = [];
 
     logger.debug(
@@ -491,25 +497,34 @@ export class RelationshipDetectionService {
           { entityId: newEntityData.id },
         );
         relationships.push(
-          ...(await this.analyzeWorkRelationships(
-            newEntityData,
+          ...(await this.analyzeWorkRelationships({
+            workData: newEntityData,
             existingNodes,
-          )),
+          })),
         );
         break;
       case "authors":
         relationships.push(
-          ...this.analyzeAuthorRelationships(newEntityData, existingNodes),
+          ...this.analyzeAuthorRelationships({
+            authorData: newEntityData,
+            existingNodes,
+          }),
         );
         break;
       case "sources":
         relationships.push(
-          ...this.analyzeSourceRelationships(newEntityData, existingNodes),
+          ...this.analyzeSourceRelationships({
+            sourceData: newEntityData,
+            existingNodes,
+          }),
         );
         break;
       case "institutions":
         relationships.push(
-          ...this.analyzeInstitutionRelationships(newEntityData, existingNodes),
+          ...this.analyzeInstitutionRelationships({
+            institutionData: newEntityData,
+            existingNodes,
+          }),
         );
         break;
     }
@@ -574,11 +589,15 @@ export class RelationshipDetectionService {
   }
 
   // Helper functions to reduce cognitive complexity
-  private analyzeAuthorRelationshipsForWork(
-    workData: MinimalEntityData,
-    existingNodes: GraphNode[],
-    relationships: DetectedRelationship[],
-  ): void {
+  private analyzeAuthorRelationshipsForWork({
+    workData,
+    existingNodes,
+    relationships,
+  }: {
+    workData: MinimalEntityData;
+    existingNodes: GraphNode[];
+    relationships: DetectedRelationship[];
+  }): void {
     if (workData.authorships) {
       for (const authorship of workData.authorships) {
         const authorNode = existingNodes.find(
@@ -599,11 +618,15 @@ export class RelationshipDetectionService {
     }
   }
 
-  private analyzeSourceRelationshipsForWork(
-    workData: MinimalEntityData,
-    existingNodes: GraphNode[],
-    relationships: DetectedRelationship[],
-  ): void {
+  private analyzeSourceRelationshipsForWork({
+    workData,
+    existingNodes,
+    relationships,
+  }: {
+    workData: MinimalEntityData;
+    existingNodes: GraphNode[];
+    relationships: DetectedRelationship[];
+  }): void {
     if (workData.primary_location?.source) {
       const sourceId = workData.primary_location.source.id;
       const sourceNode = existingNodes.find(
@@ -620,11 +643,15 @@ export class RelationshipDetectionService {
     }
   }
 
-  private async analyzeCitationRelationshipsForWork(
-    workData: MinimalEntityData,
-    existingNodes: GraphNode[],
-    relationships: DetectedRelationship[],
-  ): Promise<void> {
+  private async analyzeCitationRelationshipsForWork({
+    workData,
+    existingNodes,
+    relationships,
+  }: {
+    workData: MinimalEntityData;
+    existingNodes: GraphNode[];
+    relationships: DetectedRelationship[];
+  }): Promise<void> {
     let referencedWorks = workData.referenced_works;
 
     // Get referenced_works from the graph node data if not present
@@ -666,10 +693,13 @@ export class RelationshipDetectionService {
     }
   }
 
-  private async analyzeWorkRelationships(
-    workData: MinimalEntityData,
-    existingNodes: GraphNode[],
-  ): Promise<DetectedRelationship[]> {
+  private async analyzeWorkRelationships({
+    workData,
+    existingNodes,
+  }: {
+    workData: MinimalEntityData;
+    existingNodes: GraphNode[];
+  }): Promise<DetectedRelationship[]> {
     const relationships: DetectedRelationship[] = [];
 
     logger.debug(
@@ -684,21 +714,21 @@ export class RelationshipDetectionService {
       "RelationshipDetectionService",
     );
 
-    this.analyzeAuthorRelationshipsForWork(
+    this.analyzeAuthorRelationshipsForWork({
       workData,
       existingNodes,
       relationships,
-    );
-    this.analyzeSourceRelationshipsForWork(
+    });
+    this.analyzeSourceRelationshipsForWork({
       workData,
       existingNodes,
       relationships,
-    );
-    await this.analyzeCitationRelationshipsForWork(
+    });
+    await this.analyzeCitationRelationshipsForWork({
       workData,
       existingNodes,
       relationships,
-    );
+    });
 
     return relationships;
   }
@@ -706,10 +736,13 @@ export class RelationshipDetectionService {
   /**
    * Analyze relationships for an Author entity
    */
-  private analyzeAuthorRelationships(
-    authorData: MinimalEntityData,
-    existingNodes: GraphNode[],
-  ): DetectedRelationship[] {
+  private analyzeAuthorRelationships({
+    authorData,
+    existingNodes,
+  }: {
+    authorData: MinimalEntityData;
+    existingNodes: GraphNode[];
+  }): DetectedRelationship[] {
     const relationships: DetectedRelationship[] = [];
     const institutionIds = new Set<string>();
 
@@ -754,10 +787,13 @@ export class RelationshipDetectionService {
   /**
    * Analyze relationships for a Source entity
    */
-  private analyzeSourceRelationships(
-    sourceData: MinimalEntityData,
-    existingNodes: GraphNode[],
-  ): DetectedRelationship[] {
+  private analyzeSourceRelationships({
+    sourceData,
+    existingNodes,
+  }: {
+    sourceData: MinimalEntityData;
+    existingNodes: GraphNode[];
+  }): DetectedRelationship[] {
     const relationships: DetectedRelationship[] = [];
 
     // Check for publisher relationships
@@ -787,10 +823,13 @@ export class RelationshipDetectionService {
   /**
    * Analyze relationships for an Institution entity
    */
-  private analyzeInstitutionRelationships(
-    institutionData: MinimalEntityData,
-    existingNodes: GraphNode[],
-  ): DetectedRelationship[] {
+  private analyzeInstitutionRelationships({
+    institutionData,
+    existingNodes,
+  }: {
+    institutionData: MinimalEntityData;
+    existingNodes: GraphNode[];
+  }): DetectedRelationship[] {
     const relationships: DetectedRelationship[] = [];
 
     // Check for parent institution relationships
@@ -818,10 +857,13 @@ export class RelationshipDetectionService {
   /**
    * Fetch entity without field selection (for debugging)
    */
-  private async fetchEntityWithoutSelect(
-    entityId: string,
-    entityType: EntityType,
-  ): Promise<OpenAlexEntity> {
+  private async fetchEntityWithoutSelect({
+    entityId,
+    entityType,
+  }: {
+    entityId: string;
+    entityType: EntityType;
+  }): Promise<OpenAlexEntity> {
     switch (entityType) {
       case "works":
         return cachedOpenAlex.client.works.getWork(entityId);
@@ -847,11 +889,15 @@ export class RelationshipDetectionService {
   /**
    * Fetch entity with field selection based on entity type
    */
-  private async fetchEntityWithSelect(
-    entityId: string,
-    entityType: EntityType,
-    selectFields: string[],
-  ): Promise<OpenAlexEntity> {
+  private async fetchEntityWithSelect({
+    entityId,
+    entityType,
+    selectFields,
+  }: {
+    entityId: string;
+    entityType: EntityType;
+    selectFields: string[];
+  }): Promise<OpenAlexEntity> {
     const params = { select: selectFields };
 
     switch (entityType) {
@@ -885,10 +931,13 @@ export class RelationshipDetectionService {
    * Detect relationships between a node and other nodes in the same batch
    * This finds relationships that wouldn't be caught in the first pass
    */
-  private async detectCrossBatchRelationships(
-    nodeId: string,
-    batchNodeIds: string[],
-  ): Promise<GraphEdge[]> {
+  private async detectCrossBatchRelationships({
+    nodeId,
+    batchNodeIds,
+  }: {
+    nodeId: string;
+    batchNodeIds: string[];
+  }): Promise<GraphEdge[]> {
     const store = useGraphStore.getState();
     const sourceNode = store.getNode(nodeId);
 
@@ -898,10 +947,10 @@ export class RelationshipDetectionService {
 
     try {
       // Fetch minimal entity data for the source node
-      const sourceData = await this.fetchMinimalEntityData(
-        sourceNode.entityId,
-        sourceNode.entityType,
-      );
+      const sourceData = await this.fetchMinimalEntityData({
+        entityId: sourceNode.entityId,
+        entityType: sourceNode.entityType,
+      });
       if (!sourceData) {
         return [];
       }
@@ -913,10 +962,10 @@ export class RelationshipDetectionService {
         .filter((node): node is GraphNode => isNonNull(node));
 
       // Analyze relationships specifically with the batch nodes
-      const detectedRelationships = this.analyzeCrossBatchRelationships(
+      const detectedRelationships = this.analyzeCrossBatchRelationships({
         sourceData,
-        otherBatchNodes,
-      );
+        batchNodes: otherBatchNodes,
+      });
 
       logger.debug(
         "graph",
@@ -946,10 +995,13 @@ export class RelationshipDetectionService {
    * Analyze relationships between source entity and batch nodes specifically
    * Similar to analyzeRelationships but focused on batch nodes only
    */
-  private analyzeCrossBatchRelationships(
-    sourceData: MinimalEntityData,
-    batchNodes: GraphNode[],
-  ): DetectedRelationship[] {
+  private analyzeCrossBatchRelationships({
+    sourceData,
+    batchNodes,
+  }: {
+    sourceData: MinimalEntityData;
+    batchNodes: GraphNode[];
+  }): DetectedRelationship[] {
     const relationships: DetectedRelationship[] = [];
 
     // For works, check if any batch nodes are referenced works

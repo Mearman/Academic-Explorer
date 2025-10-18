@@ -778,15 +778,18 @@ describe("ExpansionQueryBuilder", () => {
 
   describe("mergeFilters", () => {
     it("should return undefined when no filters", () => {
-      const result = ExpansionQueryBuilder.mergeFilters(undefined, []);
+      const result = ExpansionQueryBuilder.mergeFilters({
+        baseFilters: undefined,
+        additionalFilters: [],
+      });
       expect(result).toBeUndefined();
     });
 
     it("should return base filters when no additional filters", () => {
-      const result = ExpansionQueryBuilder.mergeFilters(
-        "entityType:journal-article",
-        [],
-      );
+      const result = ExpansionQueryBuilder.mergeFilters({
+        baseFilters: "entityType:journal-article",
+        additionalFilters: [],
+      });
       expect(result).toBe("entityType:journal-article");
     });
 
@@ -800,10 +803,10 @@ describe("ExpansionQueryBuilder", () => {
         },
       ];
 
-      const result = ExpansionQueryBuilder.mergeFilters(
-        undefined,
+      const result = ExpansionQueryBuilder.mergeFilters({
+        baseFilters: undefined,
         additionalFilters,
-      );
+      });
       expect(result).toBe("is_oa:true");
     });
 
@@ -817,10 +820,10 @@ describe("ExpansionQueryBuilder", () => {
         },
       ];
 
-      const result = ExpansionQueryBuilder.mergeFilters(
-        "type:journal-article",
+      const result = ExpansionQueryBuilder.mergeFilters({
+        baseFilters: "type:journal-article",
         additionalFilters,
-      );
+      });
       expect(result).toBe("type:journal-article,is_oa:true");
     });
   });
@@ -836,10 +839,10 @@ describe("ExpansionQueryBuilder", () => {
         },
       ];
 
-      const result = ExpansionQueryBuilder.withAdditionalFilters(
-        baseSettings,
+      const result = ExpansionQueryBuilder.withAdditionalFilters({
+        settings: baseSettings,
         additionalFilters,
-      );
+      });
       expect(result.filters).toHaveLength(1);
       expect(result.filters?.[0]).toEqual(additionalFilters[0]);
     });
@@ -866,10 +869,10 @@ describe("ExpansionQueryBuilder", () => {
         },
       ];
 
-      const result = ExpansionQueryBuilder.withAdditionalFilters(
-        settingsWithFilter,
+      const result = ExpansionQueryBuilder.withAdditionalFilters({
+        settings: settingsWithFilter,
         additionalFilters,
-      );
+      });
       expect(result.filters).toHaveLength(2);
       expect(result.filters?.[0].property).toBe("type");
       expect(result.filters?.[1].property).toBe("is_oa");
@@ -884,10 +887,10 @@ describe("ExpansionQueryBuilder", () => {
         priority: 1,
       };
 
-      const result = ExpansionQueryBuilder.withFallbackSort(
-        baseSettings,
+      const result = ExpansionQueryBuilder.withFallbackSort({
+        settings: baseSettings,
         fallbackSort,
-      );
+      });
       expect(result.sorts).toHaveLength(1);
       expect(result.sorts?.[0].property).toBe("cited_by_count");
       expect(result.sorts?.[0].priority).toBe(1);
@@ -911,10 +914,10 @@ describe("ExpansionQueryBuilder", () => {
         priority: 1,
       };
 
-      const result = ExpansionQueryBuilder.withFallbackSort(
-        settingsWithSort,
+      const result = ExpansionQueryBuilder.withFallbackSort({
+        settings: settingsWithSort,
         fallbackSort,
-      );
+      });
       expect(result.sorts).toHaveLength(1);
       expect(result.sorts?.[0].property).toBe("publication_year");
     });

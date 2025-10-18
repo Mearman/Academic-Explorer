@@ -152,26 +152,42 @@ function getCachedOpenAlexEntities(
 ): OpenAlexEntity[] {
   return [];
 }
-function setCachedGraphNodes(
-  _queryClient: QueryClient,
-  _nodes: GraphNode[],
-): void {
+function setCachedGraphNodes({
+  queryClient: _queryClient,
+  nodes: _nodes,
+}: {
+  queryClient: QueryClient;
+  nodes: GraphNode[];
+}): void {
   // Stub implementation
 }
-function setCachedGraphEdges(
-  _queryClient: QueryClient,
-  _edges: GraphEdge[],
-): void {
+function setCachedGraphEdges({
+  queryClient: _queryClient,
+  edges: _edges,
+}: {
+  queryClient: QueryClient;
+  edges: GraphEdge[];
+}): void {
   // Stub implementation
 }
-function setNodeExpanded(
-  _queryClient: QueryClient,
-  _nodeId: string,
-  _expanded: boolean,
-): void {
+function setNodeExpanded({
+  queryClient: _queryClient,
+  nodeId: _nodeId,
+  expanded: _expanded,
+}: {
+  queryClient: QueryClient;
+  nodeId: string;
+  expanded: boolean;
+}): void {
   // Stub implementation
 }
-function isNodeExpanded(_queryClient: QueryClient, _nodeId: string): boolean {
+function isNodeExpanded({
+  queryClient: _queryClient,
+  nodeId: _nodeId,
+}: {
+  queryClient: QueryClient;
+  nodeId: string;
+}): boolean {
   return false;
 }
 
@@ -264,7 +280,10 @@ export class GraphDataService {
       // Entity successfully fetched
 
       // Transform to graph data
-      const { nodes, edges } = this.transformEntityToGraph(entity, apiEntityId);
+      const { nodes, edges } = this.transformEntityToGraph({
+        entity,
+        entityId: apiEntityId,
+      });
 
       // Clear existing graph and expansion cache
       store.clear();
@@ -276,8 +295,8 @@ export class GraphDataService {
       store.addEdges(edges);
 
       // Cache the graph data in TanStack Query for persistence
-      setCachedGraphNodes(this.queryClient, nodes);
-      setCachedGraphEdges(this.queryClient, edges);
+      setCachedGraphNodes({ queryClient: this.queryClient, nodes });
+      setCachedGraphEdges({ queryClient: this.queryClient, edges });
 
       // Get the primary node ID and calculate depths
       const primaryNodeId = nodes[0]?.id;
@@ -332,7 +351,10 @@ export class GraphDataService {
 
           // Update cached edges
           const allEdges = Object.values(store.edges);
-          setCachedGraphEdges(this.queryClient, allEdges);
+          setCachedGraphEdges({
+            queryClient: this.queryClient,
+            edges: allEdges,
+          });
         }
       } catch (error) {
         logError(
@@ -428,7 +450,10 @@ export class GraphDataService {
       // Entity successfully fetched
 
       // Transform to graph data
-      const { nodes, edges } = this.transformEntityToGraph(entity, apiEntityId);
+      const { nodes, edges } = this.transformEntityToGraph({
+        entity,
+        entityId: apiEntityId,
+      });
 
       // Add new data to existing graph (do NOT clear)
       store.addNodes(nodes);
@@ -463,66 +488,16 @@ export class GraphDataService {
               setCachedGraphEdges(this.queryClient, allEdges);
             }
           })
-          .catch((error: unknown) => {
-            logError(
-              logger,
-              "Failed to detect relationships for newly added node",
-              error,
-              "GraphDataService",
-              "graph",
-            );
-          });
+          .then(() => {
+            const currentStore = useGraphStore.getState();
+            currentStore.addEdges(detectedEdges);
 
-        // Note: No automatic expansion - user must manually expand nodes
-      }
-
-      logger.debug(
-        "graph",
-        "Entity loaded into graph",
-        {
-          entityId,
-          entityType: detection.entityType,
-          nodeCount: nodes.length,
-          edgeCount: edges.length,
-          // No artificial hydration level tracking
-        },
-        "GraphDataService",
-      );
-
-      // No automatic hydration - data will be fetched on-demand when needed
-      logger.debug(
-        "graph",
-        "Nodes loaded without automatic hydration - will hydrate fields on-demand",
-        {
-          count: nodes.length,
-        },
-        "GraphDataService",
-      );
-
-      // Detect relationships between all initial nodes using batch processing
-      if (nodes.length > 1) {
-        const nodeIds = nodes.map((n) => n.id);
-        this.relationshipDetectionService
-          .detectRelationshipsForNodes(nodeIds)
-          .then((detectedEdges) => {
-            // Add detected relationship edges to the graph
-            if (detectedEdges.length > 0) {
-              logger.debug(
-                "graph",
-                "Adding detected relationship edges for initial graph nodes",
-                {
-                  detectedEdgeCount: detectedEdges.length,
-                },
-                "GraphDataService",
-              );
-
-              const currentStore = useGraphStore.getState();
-              currentStore.addEdges(detectedEdges);
-
-              // Update cached edges
-              const allEdges = Object.values(currentStore.edges);
-              setCachedGraphEdges(this.queryClient, allEdges);
-            }
+            // Update cached edges
+            const allEdges = Object.values(currentStore.edges);
+            setCachedGraphEdges({
+              queryClient: this.queryClient,
+              edges: allEdges,
+            });
           })
           .catch((error: unknown) => {
             logError(
@@ -583,7 +558,10 @@ export class GraphDataService {
       // Entity successfully fetched
 
       // Transform to graph data
-      const { nodes, edges } = this.transformEntityToGraph(entity, apiEntityId);
+      const { nodes, edges } = this.transformEntityToGraph({
+        entity,
+        entityId: apiEntityId,
+      });
 
       // Add to repository instead of main graph
       repositoryStore.addToRepository(nodes, edges);
@@ -660,10 +638,10 @@ export class GraphDataService {
             );
             continue;
           }
-          const { nodes, edges } = this.transformEntityToGraph(
+          const { nodes, edges } = this.transformEntityToGraph({
             entity,
-            entityIdentifier,
-          );
+            entityId: entityIdentifier,
+          });
           allNodes.push(...nodes);
           allEdges.push(...edges);
         } catch (error) {
@@ -692,8 +670,8 @@ export class GraphDataService {
       store.addEdges(finalEdges);
 
       // Update cached graph data
-      setCachedGraphNodes(this.queryClient, finalNodes);
-      setCachedGraphEdges(this.queryClient, finalEdges);
+      setCachedGraphNodes({ queryClient: this.queryClient, nodes: finalNodes });
+      setCachedGraphEdges({ queryClient: this.queryClient, edges: finalEdges });
 
       // If there are pinned nodes, recalculate depths from the first one
       const pinnedNodes = Object.keys(store.pinnedNodes).filter(
@@ -834,11 +812,11 @@ export class GraphDataService {
         );
 
         // Extract full data from the entity
-        const fullNodeData = this.createNodeFromEntity(
+        const fullNodeData = this.createNodeFromEntity({
           entity,
-          node.entityType,
-          node.entityId,
-        );
+          entityType: node.entityType,
+          fallbackId: node.entityId,
+        });
       }
     } catch (error) {
       store.markNodeAsError(nodeId);
@@ -949,7 +927,10 @@ export class GraphDataService {
 
         // Update cached edges
         const updatedEdges = Object.values(currentStore.edges);
-        setCachedGraphEdges(this.queryClient, updatedEdges);
+        setCachedGraphEdges({
+          queryClient: this.queryClient,
+          edges: updatedEdges,
+        });
       }
       processedCount += batch.length;
 
@@ -1191,7 +1172,10 @@ export class GraphDataService {
     );
 
     // Check if already expanded using TanStack Query cache (unless forced)
-    const alreadyExpanded = isNodeExpanded(this.queryClient, nodeId);
+    const alreadyExpanded = isNodeExpanded({
+      queryClient: this.queryClient,
+      nodeId,
+    });
     logger.warn(
       "graph",
       "Checking if node already expanded",
@@ -1505,8 +1489,11 @@ export class GraphDataService {
         detectedEdges.length > 0
           ? [...finalEdges, ...detectedEdges]
           : finalEdges;
-      setCachedGraphNodes(this.queryClient, finalNodes);
-      setCachedGraphEdges(this.queryClient, finalEdgesWithRelationships);
+      setCachedGraphNodes({ queryClient: this.queryClient, nodes: finalNodes });
+      setCachedGraphEdges({
+        queryClient: this.queryClient,
+        edges: finalEdgesWithRelationships,
+      });
 
       logger.error(
         "graph",
@@ -1610,10 +1597,10 @@ export class GraphDataService {
               );
 
               // Update cached edges
-              setCachedGraphEdges(
-                this.queryClient,
-                finalEdgesWithForceRelationships,
-              );
+              setCachedGraphEdges({
+                queryClient: this.queryClient,
+                edges: finalEdgesWithForceRelationships,
+              });
             }
           } catch (error) {
             logError(
@@ -1628,7 +1615,11 @@ export class GraphDataService {
       }
 
       // Mark as expanded in TanStack Query cache
-      setNodeExpanded(this.queryClient, nodeId, true);
+      setNodeExpanded({
+        queryClient: this.queryClient,
+        nodeId,
+        expanded: true,
+      });
 
       // Mark the node as loaded (expansion completed successfully)
       store.markNodeAsLoaded(nodeId);
@@ -1993,11 +1984,11 @@ export class GraphDataService {
 
       // Create updated node data WITHOUT creating related entities (hydration only)
       // This prevents automatic expansion of related entities during single-click hydration
-      const fullNodeData = this.createNodeFromEntity(
-        fullEntity,
-        node.entityType,
-        node.entityId,
-      );
+      const fullNodeData = this.createNodeFromEntity({
+        entity,
+        entityType: node.entityType,
+        fallbackId: node.entityId,
+      });
 
       // Update node with full data
       store.updateNode(nodeId, {
@@ -2082,10 +2073,10 @@ export class GraphDataService {
           }
 
           // Extract entities of target type from the node's entity data
-          const relatedEntityIds = this.extractRelatedEntitiesOfType(
-            node.entityData,
-            entityType,
-          );
+          const relatedEntityIds = this.extractRelatedEntitiesOfType({
+            entityData: node.entityData,
+            targetType: entityType,
+          });
 
           if (relatedEntityIds.length === 0) {
             continue;
@@ -2123,10 +2114,10 @@ export class GraphDataService {
                 newNodes.push(minimalNode);
 
                 // Create edge from source node to new node
-                const relationshipType = this.determineRelationshipType(
-                  node.entityType,
-                  entityType,
-                );
+                const relationshipType = this.determineRelationshipType({
+                  sourceType: node.entityType,
+                  targetType: entityType,
+                });
                 const edge: GraphEdge = {
                   id: `${node.id}-${relationshipType}-${entityId}`,
                   source: node.id,
@@ -2224,10 +2215,13 @@ export class GraphDataService {
   /**
    * Extract related entity IDs of a specific type from entity data
    */
-  private extractRelatedEntitiesOfType(
-    entityData: unknown,
-    targetType: EntityType,
-  ): string[] {
+  private extractRelatedEntitiesOfType({
+    entityData,
+    targetType,
+  }: {
+    entityData: unknown;
+    targetType: EntityType;
+  }): string[] {
     if (!entityData || typeof entityData !== "object") {
       return [];
     }
@@ -2303,10 +2297,13 @@ export class GraphDataService {
   /**
    * Determine the relationship type between two entity types
    */
-  private determineRelationshipType(
-    sourceType: EntityType,
-    targetType: EntityType,
-  ): RelationType {
+  private determineRelationshipType({
+    sourceType,
+    targetType,
+  }: {
+    sourceType: EntityType;
+    targetType: EntityType;
+  }): RelationType {
     // Map common relationships between entity types
     const relationshipMap: Partial<Record<string, RelationType>> = {
       "works-works": RelationType.REFERENCES,
@@ -2328,10 +2325,13 @@ export class GraphDataService {
   /**
    * Transform OpenAlex entity to graph nodes and edges
    */
-  private transformEntityToGraph(
-    entity: OpenAlexEntity,
-    entityId: string,
-  ): {
+  private transformEntityToGraph({
+    entity,
+    entityId,
+  }: {
+    entity: OpenAlexEntity;
+    entityId: string;
+  }): {
     nodes: GraphNode[];
     edges: GraphEdge[];
   } {
@@ -2354,11 +2354,11 @@ export class GraphDataService {
         : { ...entity, id: entityIdToUse };
 
     // Create main entity node
-    const mainNode = this.createNodeFromEntity(
-      normalizedEntity,
+    const mainNode = this.createNodeFromEntity({
+      entity: normalizedEntity,
       entityType,
-      entityIdToUse,
-    );
+      fallbackId: entityIdToUse,
+    });
     nodes.push(mainNode);
 
     // Transform based on entity type
@@ -2616,11 +2616,15 @@ export class GraphDataService {
   /**
    * Create a graph node from an OpenAlex entity
    */
-  private createNodeFromEntity(
-    entity: OpenAlexEntity,
-    entityType: EntityType,
-    fallbackId?: string,
-  ): GraphNode {
+  private createNodeFromEntity({
+    entity,
+    entityType,
+    fallbackId,
+  }: {
+    entity: OpenAlexEntity;
+    entityType: EntityType;
+    fallbackId?: string;
+  }): GraphNode {
     const resolvedId =
       typeof entity.id === "string" && entity.id.length > 0
         ? entity.id
@@ -2635,7 +2639,10 @@ export class GraphDataService {
     const entityWithId: OpenAlexEntity =
       resolvedId === entity.id ? entity : { ...entity, id: resolvedId };
 
-    const externalIds = this.extractExternalIds(entityWithId, entityType);
+    const externalIds = this.extractExternalIds({
+      entity: entityWithId,
+      entityType,
+    });
 
     return {
       id: resolvedId,
@@ -2652,10 +2659,13 @@ export class GraphDataService {
   /**
    * Extract external identifiers from entity
    */
-  private extractExternalIds(
-    entity: OpenAlexEntity,
-    entityType: EntityType,
-  ): ExternalIdentifier[] {
+  private extractExternalIds({
+    entity,
+    entityType,
+  }: {
+    entity: OpenAlexEntity;
+    entityType: EntityType;
+  }): ExternalIdentifier[] {
     const externalIds: ExternalIdentifier[] = [];
 
     // Type guard for basic entity validation - OpenAlexEntity is guaranteed to be an object
@@ -2772,11 +2782,11 @@ export class GraphDataService {
       const detection = EntityDetectionService.detectEntity(entityIdToUse);
 
       if (detection?.entityType) {
-        const node = this.createNodeFromEntity(
+        const node = this.createNodeFromEntity({
           entity,
-          detection.entityType,
-          entityIdToUse,
-        );
+          entityType: detection.entityType,
+          fallbackId: entityIdToUse,
+        });
         // Position nodes in a grid layout for search results
         const cols = Math.ceil(Math.sqrt(results.length));
         const row = Math.floor(index / cols);
