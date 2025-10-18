@@ -178,7 +178,10 @@ export function EntityMiniGraph({
   // Convert entities to graph data
   const graphData = useMemo(() => {
     if (!adapter) return null;
-    return adapter.convertEntitiesToGraphData(entity, relatedEntities);
+    return adapter.convertEntitiesToGraphData({
+      mainEntity: entity,
+      relatedEntities,
+    });
   }, [adapter, entity, relatedEntities]);
 
   // Trigger fit view when graph data changes
@@ -255,7 +258,7 @@ export function EntityMiniGraph({
         <GraphLoadingFallback />
       ) : (
         <div style={{ height: "300px", position: "relative" }}>
-          {adapter.render(graphData, config)}
+          {adapter.render({ data: graphData, config })}
         </div>
       )}
     </div>

@@ -85,7 +85,7 @@ export class FilterBuilder {
 
     // Validate inputs if enabled
     if (this.options.validateInputs && entityType) {
-      const validation = this.validateFilters(filters, entityType);
+      const validation = this.validateFilters({ filters, entityType });
       if (!validation.isValid) {
         logger.warn("filters", "Filter validation failed", {
           errors: validation.errors,
@@ -206,14 +206,18 @@ export class FilterBuilder {
   /**
    * Validate filter object for a specific entity type
    *
-   * @param filters - The filters to validate
-   * @param entityType - The entity type to validate against
+   * @param params - The validation parameters
+   * @param params.filters - The filters to validate
+   * @param params.entityType - The entity type to validate against
    * @returns Validation result with errors and warnings
    */
-  validateFilters(
-    filters: EntityFilters | Partial<EntityFilters>,
-    _entityType: EntityType,
-  ): FilterValidationResult {
+  validateFilters({
+    filters,
+    entityType: _entityType,
+  }: {
+    filters: EntityFilters | Partial<EntityFilters>;
+    entityType: EntityType;
+  }): FilterValidationResult {
     const errors: string[] = [];
     const warnings: string[] = [];
 
@@ -361,7 +365,7 @@ export class FilterBuilder {
   } {
     const validation =
       entityType && this.options.validateInputs && filters
-        ? this.validateFilters(filters, entityType)
+        ? this.validateFilters({ filters, entityType })
         : undefined;
 
     const queryString = this.toQueryString({ filters, entityType });
@@ -448,5 +452,5 @@ export function validateFilters({
   filters: EntityFilters | Partial<EntityFilters>;
   entityType: EntityType;
 }): FilterValidationResult {
-  return strictFilterBuilder.validateFilters(filters, entityType);
+  return strictFilterBuilder.validateFilters({ filters, entityType });
 }

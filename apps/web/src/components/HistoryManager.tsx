@@ -3,6 +3,7 @@
  */
 
 import { historyDB } from "@/lib/history-db";
+import { logError, logger } from "@academic-explorer/utils/logger";
 import {
   IconHistory,
   IconSearch,
@@ -37,7 +38,7 @@ export function HistoryManager({ onNavigate }: HistoryManagerProps) {
         const entries = await historyDB.getAll();
         setHistoryEntries(entries);
       } catch (error) {
-        console.error("Failed to load history:", error);
+        logError(logger, "Failed to load history", error, "HistoryManager");
       }
     };
     loadHistory();
@@ -60,7 +61,7 @@ export function HistoryManager({ onNavigate }: HistoryManagerProps) {
       setHistoryEntries([]);
       setSearchQuery("");
     } catch (error) {
-      console.error("Failed to clear history:", error);
+      logError(logger, "Failed to clear history", error, "HistoryManager");
     }
   };
 

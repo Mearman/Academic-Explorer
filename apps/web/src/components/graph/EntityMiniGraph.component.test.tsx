@@ -83,14 +83,39 @@ vi.mock("@/hooks/use-theme-colors", () => ({
 vi.mock("./adapters/GraphAdapterFactory", () => ({
   GraphAdapterFactory: {
     createAdapter: vi.fn().mockResolvedValue({
-      convertEntitiesToGraphData: vi.fn(() => ({
-        nodes: [
-          { id: "test-entity", label: "Test Entity", color: "primary" },
-          { id: "related-1", label: "Related 1", color: "secondary" },
-        ],
-        links: [{ source: "test-entity", target: "related-1" }],
-      })),
-      render: vi.fn(() => <div data-testid="mock-graph">Mock Graph</div>),
+      convertEntitiesToGraphData: vi
+        .fn(() => ({
+          nodes: [
+            { id: "test-entity", label: "Test Entity", color: "primary" },
+            { id: "related-1", label: "Related 1", color: "secondary" },
+          ],
+          links: [{ source: "test-entity", target: "related-1" }],
+        }))
+        .mockImplementation(({ mainEntity, relatedEntities }) => ({
+          nodes: [
+            {
+              id: mainEntity.id,
+              label: mainEntity.display_name || "Test Entity",
+              color: "primary",
+            },
+            ...relatedEntities.map((entity, index) => ({
+              id: entity.id,
+              label: entity.display_name || `Related ${index + 1}`,
+              color: "secondary",
+            })),
+          ],
+          links: relatedEntities.map((entity) => ({
+            source: mainEntity.id,
+            target: entity.id,
+          })),
+        })),
+      render: vi
+        .fn(() => <div data-testid="mock-graph">Mock Graph</div>)
+        .mockImplementation(({ data, config }) => (
+          <div data-testid="mock-graph">
+            Mock Graph with {data.nodes.length} nodes
+          </div>
+        )),
     }),
     getDefaultAdapter: vi.fn(() => "reactflow-hierarchical"),
     getAvailableAdapters: vi.fn(() => [
@@ -240,8 +265,8 @@ describe("EntityMiniGraph", () => {
 
   it("passes entity display_names and entity-type colors to graph adapter", async () => {
     const mockAdapter = {
-      render: vi.fn(() => <div data-testid="mock-graph">Mock Graph</div>),
-      convertEntitiesToGraphData: vi.fn(() => ({ nodes: [], links: [] })),
+      render: vi.fn(({ data, config }) => <div data-testid="mock-graph">Mock Graph</div>),
+      convertEntitiesToGraphData: vi.fn(({ mainEntity, relatedEntities }) => ({ nodes: [], links: [] })),
       fitView: vi.fn(),
     };
 
@@ -268,15 +293,15 @@ describe("EntityMiniGraph", () => {
     });
 
     // Verify that convertEntitiesToGraphData was called with the correct entities
-    expect(mockAdapter.convertEntitiesToGraphData).toHaveBeenCalledWith(
-      mockEntity, // main entity with display_name
-      mockRelatedEntities, // related entities with display_names
-    );
+    expect(mockAdapter.convertEntitiesToGraphData).toHaveBeenCalledWith({
+      mainEntity: mockEntity, // main entity with display_name
+      relatedEntities: mockRelatedEntities, // related entities with display_names
+    });
 
     // Verify that render was called with theme colors that include getEntityColor
-    expect(mockAdapter.render).toHaveBeenCalledWith(
-      expect.any(Object), // graph data
-      expect.objectContaining({
+    expect(mockAdapter.render).toHaveBeenCalledWith({
+      data: expect.any(Object), // graph data
+      config: expect.objectContaining({
         themeColors: expect.objectContaining({
           getEntityColor: expect.any(Function),
         }),
