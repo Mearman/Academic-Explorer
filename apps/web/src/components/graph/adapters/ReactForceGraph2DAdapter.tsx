@@ -289,7 +289,13 @@ export class ReactForceGraph2DAdapter implements GraphAdapter {
     this.fitViewCallbacks.forEach((callback) => callback());
   }
 
-  render(data: GraphData, config: GraphAdapterConfig): React.ReactElement {
+  render({
+    data,
+    config,
+  }: {
+    data: GraphData;
+    config: GraphAdapterConfig;
+  }): React.ReactElement {
     return (
       <ReactForceGraph2DAdapterComponent
         data={data}
@@ -307,10 +313,13 @@ export class ReactForceGraph2DAdapter implements GraphAdapter {
     );
   }
 
-  convertEntitiesToGraphData(
-    mainEntity: OpenAlexEntity,
-    relatedEntities: OpenAlexEntity[],
-  ): GraphData {
+  convertEntitiesToGraphData({
+    mainEntity,
+    relatedEntities,
+  }: {
+    mainEntity: OpenAlexEntity;
+    relatedEntities: OpenAlexEntity[];
+  }): GraphData {
     const nodes: GraphNode[] = [];
     const links: GraphLink[] = [];
 

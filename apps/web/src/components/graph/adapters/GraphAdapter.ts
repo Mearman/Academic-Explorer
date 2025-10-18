@@ -63,15 +63,24 @@ export interface GraphAdapter {
   /**
    * Renders the graph component
    */
-  render(data: GraphData, config: GraphAdapterConfig): React.ReactElement;
+  render({
+    data,
+    config,
+  }: {
+    data: GraphData;
+    config: GraphAdapterConfig;
+  }): React.ReactElement;
 
   /**
    * Converts OpenAlex entities to graph data format
    */
-  convertEntitiesToGraphData(
-    mainEntity: OpenAlexEntity,
-    relatedEntities: OpenAlexEntity[],
-  ): GraphData;
+  convertEntitiesToGraphData({
+    mainEntity,
+    relatedEntities,
+  }: {
+    mainEntity: OpenAlexEntity;
+    relatedEntities: OpenAlexEntity[];
+  }): GraphData;
 
   /**
    * Optional: Fit view to show all nodes

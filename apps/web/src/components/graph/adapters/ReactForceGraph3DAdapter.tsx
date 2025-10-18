@@ -12,6 +12,7 @@ import type {
 import type { OpenAlexEntity } from "@academic-explorer/client";
 import type { ReactForceGraph3DConfig } from "../configs";
 import { detectEntityType } from "@academic-explorer/graph";
+import { logError, logger } from "@academic-explorer/utils/logger";
 
 // Type for ForceGraph3D ref with camera controls
 interface ForceGraph3DRef {
@@ -109,19 +110,18 @@ export function ReactForceGraph3DAdapterComponent({
 
   // Convert GraphData to react-force-graph-3d format
   const graphData = useMemo(() => {
-    console.log(
-      "[ReactForceGraph3D] Converting graph data, input nodes:",
-      data.nodes,
-    );
-    console.log("[ReactForceGraph3D] Theme colors available:", {
-      primary: config.themeColors.colors.primary,
-      backgroundTertiary: config.themeColors.colors.background.tertiary,
+    logger.debug("graph", "Converting graph data for ReactForceGraph3D", {
+      nodeCount: data.nodes.length,
+      themeColors: {
+        primary: config.themeColors.colors.primary,
+        backgroundTertiary: config.themeColors.colors.background.tertiary,
+      },
     });
 
     const convertedNodes = data.nodes.map((node) => {
       const convertedColor = config.themeColors.getEntityColor(node.entityType);
 
-      console.log(`[ReactForceGraph3D] Node ${node.id} (${node.label}):`, {
+      logger.debug("graph", `Converting node ${node.id} (${node.label})`, {
         entityType: node.entityType,
         convertedColor,
       });
@@ -140,9 +140,9 @@ export function ReactForceGraph3DAdapterComponent({
       value: link.value || 1,
     }));
 
-    console.log("[ReactForceGraph3D] Final converted graphData:", {
-      nodes: convertedNodes,
-      links: convertedLinks,
+    logger.debug("graph", "Final converted graphData for ReactForceGraph3D", {
+      nodeCount: convertedNodes.length,
+      linkCount: convertedLinks.length,
     });
 
     return {
@@ -225,7 +225,7 @@ export function ReactForceGraph3DAdapterComponent({
       }}
     >
       {(() => {
-        console.log("[ReactForceGraph3D] Rendering ForceGraph3D with props:", {
+        logger.debug("graph", "Rendering ForceGraph3D with props", {
           graphData: {
             nodesCount: graphData.nodes.length,
             linksCount: graphData.links.length,
@@ -292,9 +292,11 @@ export function ReactForceGraph3DAdapterComponent({
             />
           );
         } catch (error) {
-          console.error(
-            "[ReactForceGraph3D] ERROR rendering ForceGraph3D component:",
+          logError(
+            logger,
+            "ERROR rendering ForceGraph3D component",
             error,
+            "ReactForceGraph3DAdapter",
           );
           return (
             <div style={{ color: "red", padding: "20px" }}>
@@ -342,7 +344,13 @@ export class ReactForceGraph3DAdapter implements GraphAdapter {
     this.fitViewCallbacks.forEach((callback) => callback());
   }
 
-  render(data: GraphData, config: GraphAdapterConfig): React.ReactElement {
+  render({
+    data,
+    config,
+  }: {
+    data: GraphData;
+    config: GraphAdapterConfig;
+  }): React.ReactElement {
     return (
       <ReactForceGraph3DAdapterComponent
         data={data}
@@ -360,10 +368,13 @@ export class ReactForceGraph3DAdapter implements GraphAdapter {
     );
   }
 
-  convertEntitiesToGraphData(
-    mainEntity: OpenAlexEntity,
-    relatedEntities: OpenAlexEntity[],
-  ): GraphData {
+  convertEntitiesToGraphData({
+    mainEntity,
+    relatedEntities,
+  }: {
+    mainEntity: OpenAlexEntity;
+    relatedEntities: OpenAlexEntity[];
+  }): GraphData {
     const nodes: GraphNode[] = [];
     const links: GraphLink[] = [];
 
@@ -375,7 +386,10 @@ export class ReactForceGraph3DAdapter implements GraphAdapter {
       color: "primary", // Will be resolved by theme
       entityType: mainEntityType,
     };
-    console.log("[ReactForceGraph3D] Adding main entity node:", mainNode);
+    logger.debug("graph", "Adding main entity node to ReactForceGraph3D", {
+      nodeId: mainNode.id,
+      entityType: mainNode.entityType,
+    });
     nodes.push(mainNode);
 
     // Add related entity nodes
@@ -387,9 +401,13 @@ export class ReactForceGraph3DAdapter implements GraphAdapter {
         color: "secondary", // Will be resolved by theme
         entityType,
       };
-      console.log(
-        `[ReactForceGraph3D] Adding related entity node ${index + 1}:`,
-        relatedNode,
+      logger.debug(
+        "graph",
+        `Adding related entity node ${index + 1} to ReactForceGraph3D`,
+        {
+          nodeId: relatedNode.id,
+          entityType: relatedNode.entityType,
+        },
       );
       nodes.push(relatedNode);
 
@@ -398,14 +416,21 @@ export class ReactForceGraph3DAdapter implements GraphAdapter {
         source: mainEntity.id,
         target: relatedEntity.id,
       };
-      console.log(`[ReactForceGraph3D] Adding link ${index + 1}:`, link);
+      logger.debug("graph", `Adding link ${index + 1} to ReactForceGraph3D`, {
+        source: link.source,
+        target: link.target,
+      });
       links.push(link);
     });
 
     const result = { nodes, links };
-    console.log(
-      "[ReactForceGraph3D] convertEntitiesToGraphData result:",
-      result,
+    logger.debug(
+      "graph",
+      "convertEntitiesToGraphData result for ReactForceGraph3D",
+      {
+        nodeCount: result.nodes.length,
+        linkCount: result.links.length,
+      },
     );
     return result;
   }

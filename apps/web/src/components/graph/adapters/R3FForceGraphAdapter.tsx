@@ -484,7 +484,13 @@ export class R3FForceGraphAdapter implements GraphAdapter {
     this.fitViewCallbacks.forEach((callback) => callback());
   }
 
-  render(data: GraphData, config: GraphAdapterConfig): React.ReactElement {
+  render({
+    data,
+    config,
+  }: {
+    data: GraphData;
+    config: GraphAdapterConfig;
+  }): React.ReactElement {
     return (
       <R3FForceGraphComponent
         data={data}
@@ -502,10 +508,13 @@ export class R3FForceGraphAdapter implements GraphAdapter {
     );
   }
 
-  convertEntitiesToGraphData(
-    mainEntity: OpenAlexEntity,
-    relatedEntities: OpenAlexEntity[],
-  ): GraphData {
+  convertEntitiesToGraphData({
+    mainEntity,
+    relatedEntities,
+  }: {
+    mainEntity: OpenAlexEntity;
+    relatedEntities: OpenAlexEntity[];
+  }): GraphData {
     const nodes: GraphNode[] = [];
     const links: GraphLink[] = [];
 

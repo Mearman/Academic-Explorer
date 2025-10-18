@@ -338,7 +338,13 @@ export class ReactFlowAdapter implements GraphAdapter {
     this.fitViewCallbacks.forEach((callback) => callback());
   }
 
-  render(data: GraphData, config: GraphAdapterConfig): React.ReactElement {
+  render({
+    data,
+    config,
+  }: {
+    data: GraphData;
+    config: GraphAdapterConfig;
+  }): React.ReactElement {
     return (
       <ReactFlowAdapterComponent
         data={data}
@@ -356,10 +362,13 @@ export class ReactFlowAdapter implements GraphAdapter {
     );
   }
 
-  convertEntitiesToGraphData(
-    mainEntity: OpenAlexEntity,
-    relatedEntities: OpenAlexEntity[],
-  ): GraphData {
+  convertEntitiesToGraphData({
+    mainEntity,
+    relatedEntities,
+  }: {
+    mainEntity: OpenAlexEntity;
+    relatedEntities: OpenAlexEntity[];
+  }): GraphData {
     const nodes: GraphNode[] = [];
     const links: GraphLink[] = [];
 
