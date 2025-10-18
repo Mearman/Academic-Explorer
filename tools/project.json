@@ -10,21 +10,26 @@
         "command": "tsc --noEmit",
         "cwd": "{projectRoot}"
       },
-      "inputs": [
-        "default",
-        "{workspaceRoot}/tsconfig.base.json"
-      ]
+      "inputs": ["default", "{workspaceRoot}/tsconfig.base.json"]
     },
     "lint": {
       "executor": "nx:run-commands",
+      "dependsOn": ["lint:fix"],
       "options": {
         "command": "eslint scripts",
         "cwd": "{projectRoot}"
       },
-      "inputs": [
-        "default",
-        "{workspaceRoot}/eslint.config.base.ts"
-      ]
+      "inputs": ["default", "{workspaceRoot}/eslint.config.base.ts"],
+      "outputs": ["{workspaceRoot}/.nx/cache/lint-results/{projectName}.json"],
+      "cache": true
+    },
+    "lint:fix": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint scripts --fix",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
     }
   }
 }
