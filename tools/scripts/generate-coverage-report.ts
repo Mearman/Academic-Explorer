@@ -43,18 +43,33 @@ interface Metric {
 
 type ReportFormat = "summary" | "pr-comment";
 
-function getStatusIcon(actual: number, threshold: number): string {
-  return actual >= threshold ? "✅" : "❌";
+function getStatusIcon({
+  actual,
+  threshold,
+}: {
+  actual: number;
+  threshold: number;
+}): string {
+  return actual >= threshold ? "[SUCCESS]" : "[ERROR]";
 }
 
-function getStatusText(actual: number, threshold: number): string {
+function getStatusText({
+  actual,
+  threshold,
+}: {
+  actual: number;
+  threshold: number;
+}): string {
   return actual >= threshold ? "Pass" : "Fail";
 }
 
-function generateReport(
-  coverageData: CoverageData,
-  format: ReportFormat = "summary",
-): void {
+function generateReport({
+  coverageData,
+  format = "summary",
+}: {
+  coverageData: CoverageData;
+  format?: ReportFormat;
+}): void {
   const { total } = coverageData;
 
   const metrics: Metric[] = [
@@ -89,7 +104,10 @@ function generateReport(
     console.log(TABLE_SEPARATOR);
 
     metrics.forEach((metric) => {
-      const icon = getStatusIcon(metric.actual, metric.threshold);
+      const icon = getStatusIcon({
+        actual: metric.actual,
+        threshold: metric.threshold,
+      });
       console.log(`| ${metric.name} | ${metric.actual}% | ${icon} |`);
     });
   } else if (format === "pr-comment") {
@@ -98,7 +116,7 @@ function generateReport(
     console.log(TABLE_SEPARATOR);
 
     metrics.forEach((metric) => {
-      const status = `${getStatusIcon(metric.actual, metric.threshold)} ${getStatusText(metric.actual, metric.threshold)}`;
+      const status = `${getStatusIcon({ actual: metric.actual, threshold: metric.threshold })} ${getStatusText({ actual: metric.actual, threshold: metric.threshold })}`;
       console.log(`| ${metric.name} | ${metric.actual}% | ${status} |`);
     });
 
@@ -118,9 +136,9 @@ function main(): void {
     if (format === "summary") {
       console.log(TABLE_HEADER);
       console.log(TABLE_SEPARATOR);
-      console.log("| No coverage data | - | ❌ |");
+      console.log("| No coverage data | - | [ERROR] |");
     } else {
-      console.log("## Coverage Report\n\n❌ No coverage data found");
+      console.log("## Coverage Report\n\n[ERROR] No coverage data found");
     }
     process.exit(1);
   }
@@ -129,7 +147,7 @@ function main(): void {
     const coverageData: CoverageData = JSON.parse(
       fs.readFileSync(coverageFile, "utf8"),
     );
-    generateReport(coverageData, format);
+    generateReport({ coverageData, format });
   } catch (error) {
     console.error(`Error reading coverage file: ${(error as Error).message}`);
     process.exit(1);
