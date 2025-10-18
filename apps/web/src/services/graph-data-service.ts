@@ -119,7 +119,7 @@ async function fetchEntityViaPipeline({
 }): Promise<OpenAlexEntity> {
   const pipeline = createRequestPipeline();
   const endpoint = `${entityType}/${encodeURIComponent(entityId)}`;
-  const url = buildOpenAlexUrl(endpoint, params);
+  const url = buildOpenAlexUrl({ endpoint, params });
 
   const response = await pipeline.execute(url);
 
@@ -135,7 +135,7 @@ async function fetchEntityViaPipeline({
   return await response.json();
 }
 
-interface ExpansionOptions {
+export interface ExpansionOptions {
   depth?: number;
   limit?: number;
   force?: boolean;
@@ -250,10 +250,10 @@ export class GraphDataService {
       const entity = await this.deduplicationService.getEntity(
         apiEntityId,
         async () => {
-          const result = await fetchEntityViaPipeline(
-            detection.entityType,
-            apiEntityId,
-          );
+          const result = await fetchEntityViaPipeline({
+            entityType: detection.entityType,
+            entityId: apiEntityId,
+          });
           if (!result) {
             throw new Error(`Entity not found: ${apiEntityId}`);
           }
@@ -414,10 +414,10 @@ export class GraphDataService {
       const entity = await this.deduplicationService.getEntity(
         apiEntityId,
         async () => {
-          const result = await fetchEntityViaPipeline(
-            detection.entityType,
-            apiEntityId,
-          );
+          const result = await fetchEntityViaPipeline({
+            entityType: detection.entityType,
+            entityId: apiEntityId,
+          });
           if (!result) {
             throw new Error(`Entity not found: ${apiEntityId}`);
           }
@@ -569,10 +569,10 @@ export class GraphDataService {
       const entity = await this.deduplicationService.getEntity(
         apiEntityId,
         async () => {
-          const result = await fetchEntityViaPipeline(
-            detection.entityType,
-            apiEntityId,
-          );
+          const result = await fetchEntityViaPipeline({
+            entityType: detection.entityType,
+            entityId: apiEntityId,
+          });
           if (!result) {
             throw new Error(`Entity not found: ${apiEntityId}`);
           }
@@ -660,26 +660,10 @@ export class GraphDataService {
             );
             continue;
           }
-          const { nodes, edges } = this.transformEntityToGraph({
+          const { nodes, edges } = this.transformEntityToGraph(
             entity,
-            entityId: entityIdentifier,
-          });
-          allNodes.push(...nodes);
-          allEdges.push(...edges);
-        } catch (error) {
-          logError(
-            logger,
-            "Failed to transform cached entity to graph",
-            error,
-            "GraphDataService",
-            "graph",
+            entityIdentifier,
           );
-        }
-      }
-          const { nodes, edges } = this.transformEntityToGraph({
-            entity,
-            entityId: entityIdentifier,
-          });
           allNodes.push(...nodes);
           allEdges.push(...edges);
         } catch (error) {
@@ -803,11 +787,11 @@ export class GraphDataService {
         );
 
         // Extract metadata-level data from the entity
-        const fullNodeData = this.createNodeFromEntity({
+        const fullNodeData = this.createNodeFromEntity(
           entity,
-          entityType: node.entityType,
-          entityId: node.entityId,
-        });
+          node.entityType,
+          node.entityId,
+        );
 
         // Update the node with full metadata
         store.markNodeAsLoaded(nodeId);
@@ -850,11 +834,11 @@ export class GraphDataService {
         );
 
         // Extract full data from the entity
-        const fullNodeData = this.createNodeFromEntity({
+        const fullNodeData = this.createNodeFromEntity(
           entity,
-          entityType: node.entityType,
-          entityId: node.entityId,
-        });
+          node.entityType,
+          node.entityId,
+        );
       }
     } catch (error) {
       store.markNodeAsError(nodeId);
@@ -1793,7 +1777,7 @@ export class GraphDataService {
       }
 
       // Use the collected results
-      const { nodes, edges } = this.transformSearchResults({ results: flatResults });
+      const { nodes, edges } = this.transformSearchResults(flatResults);
 
       // Clear existing graph and add search results
       store.clear();
@@ -1832,7 +1816,7 @@ export class GraphDataService {
     fields: string[];
   }): Promise<OpenAlexEntity> {
     const params = { select: fields };
-    return await fetchEntityViaPipeline(entityType, entityId, params);
+    return await fetchEntityViaPipeline({ entityType, entityId, params });
   }
 
   /**
@@ -1996,10 +1980,10 @@ export class GraphDataService {
       const fullEntity = await this.deduplicationService.getEntity(
         node.entityId,
         async () => {
-          const result = await fetchEntityViaPipeline(
-            node.entityType,
-            node.entityId,
-          );
+          const result = await fetchEntityViaPipeline({
+            entityType: node.entityType,
+            entityId: node.entityId,
+          });
           if (!result) {
             throw new Error(`Entity not found: ${node.entityId}`);
           }
@@ -2009,11 +1993,11 @@ export class GraphDataService {
 
       // Create updated node data WITHOUT creating related entities (hydration only)
       // This prevents automatic expansion of related entities during single-click hydration
-      const fullNodeData = this.createNodeFromEntity({
-        entity: fullEntity,
-        entityType: node.entityType,
-        entityId: node.entityId,
-      });
+      const fullNodeData = this.createNodeFromEntity(
+        fullEntity,
+        node.entityType,
+        node.entityId,
+      );
 
       // Update node with full data
       store.updateNode(nodeId, {
@@ -2131,10 +2115,10 @@ export class GraphDataService {
 
             try {
               // Create minimal node for the target entity type
-              const minimalNode = await this.createMinimalNode(
+              const minimalNode = await this.createMinimalNode({
                 entityId,
                 entityType,
-              );
+              });
               if (minimalNode) {
                 newNodes.push(minimalNode);
 

@@ -315,7 +315,7 @@ function validateSettings(settings: ExpansionSettings): {
  * Get example query string for preview
  */
 function getQueryPreview(settings: ExpansionSettings): string {
-  const params = buildQueryParams(settings);
+  const params = buildQueryParams({ settings });
   const parts: string[] = [];
 
   if (params.sort) {
