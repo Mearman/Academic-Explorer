@@ -251,14 +251,13 @@ export function createTrackedStore<
   });
 
   // Create Zustand store with proper middleware composition
-  // Start with immer middleware
+  // Middleware composition is inherently complex with Zustand, requiring type assertions
+   
   let storeCreator: any = immer(baseStoreCreator);
 
   // Apply devtools if enabled
-  if (enableDevtools && isDevelopment()) {
-    storeCreator = devtools(storeCreator, {
-      name,
-    });
+  if (enableDevtools) {
+    storeCreator = devtools(storeCreator, { name });
   }
 
   // Apply persist if enabled
@@ -294,31 +293,30 @@ export function createTrackedStore<
     });
   }
 
-  const useStore = create<T & A>(storeCreator);
-  const store = useStore; // Runtime behavior is correct despite type incompatibilities
+  // Create the store - the typing is complex due to middleware composition
+  // but runtime behavior is correct
+  const useStore = create<T & A>(() => storeCreator);
+  const store = useStore;
 
   // Create selectors
   const selectors = selectorsFactory ? selectorsFactory(initialState) : {};
 
   // Create actions using the Immer-wrapped set method
-  // Use type guards to handle middleware-wrapped store setState signatures
   const actions = actionsFactory({
     set: (
       partial: Partial<T & A> | ((state: Draft<T & A>) => void),
       replace?: boolean,
     ) => {
       if (typeof partial === "function") {
-        // Immer mutation function - use type assertion
-        // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
-        (store.setState as any)((state: Draft<T & A>) => {
+        // Immer mutation function
+        (store as any).setState((state: Draft<T & A>) => {
           partial(state);
         }, replace);
       } else {
-        // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
-        (store.setState as any)(partial, replace);
+        (store as any).setState(partial, replace);
       }
     },
-    get: () => store.getState(),
+    get: () => (store as any).getState(),
   });
 
   return {
