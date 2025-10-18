@@ -5,6 +5,8 @@
  * A command-line interface for accessing OpenAlex data via static cache and API
  */
 
+/* eslint-disable prefer-destructured-params-plugin/prefer-destructured-params */
+
 import { Command } from "commander";
 import {
   OpenAlexCLI,

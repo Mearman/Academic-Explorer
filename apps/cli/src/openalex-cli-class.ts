@@ -3,6 +3,8 @@
  * Separated for better testability
  */
 
+/* eslint-disable prefer-destructured-params-plugin/prefer-destructured-params */
+
 import { logError, logger } from "@academic-explorer/utils/logger";
 import {
   getStaticDataCachePath,
@@ -665,9 +667,7 @@ export class OpenAlexCLI {
   }
 
   static getInstance(): OpenAlexCLI {
-    if (!OpenAlexCLI.instance) {
-      OpenAlexCLI.instance = new OpenAlexCLI();
-    }
+    OpenAlexCLI.instance ??= new OpenAlexCLI();
     return OpenAlexCLI.instance;
   }
 
@@ -906,9 +906,9 @@ export class OpenAlexCLI {
   ): boolean {
     return Boolean(
       validationResult.success &&
-        validationResult.data.$ref &&
-        validationResult.data.lastModified &&
-        validationResult.data.contentHash,
+        validationResult.data?.$ref &&
+        validationResult.data?.lastModified &&
+        validationResult.data?.contentHash,
     );
   }
 
@@ -923,7 +923,7 @@ export class OpenAlexCLI {
       if (Object.prototype.hasOwnProperty.call(unifiedIndex, key)) {
         const data = unifiedIndex[key];
         const match = key.match(/[WASITCPFKG]\d{8,10}/);
-        if (match && match[0] === entityId) {
+        if (match && match?.[0] === entityId) {
           const validationResult = EntityIndexEntrySchema.safeParse(data);
           if (this.isValidEntityEntry(validationResult)) {
             return validationResult.data;
@@ -1697,8 +1697,7 @@ export class OpenAlexCLI {
     for (const entityId of entityIds) {
       const entity = await this.loadEntity(entityType, entityId);
       if (
-        entity &&
-        entity.display_name.toLowerCase().includes(searchTerm.toLowerCase())
+        entity?.display_name?.toLowerCase().includes(searchTerm?.toLowerCase())
       ) {
         results.push(entity);
       }
