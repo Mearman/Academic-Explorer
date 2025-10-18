@@ -3,21 +3,22 @@
  * Provides type-safe interfaces for entity metadata, index structures, and validation
  */
 
-import type { FileEntry } from './cache-utilities.js';
+import type { FileEntry } from "./cache-utilities.js";
 
 /**
  * OpenAlex entity types supported by the static data system
  */
-export type EntityType = 
-  | 'works' 
-  | 'authors' 
-  | 'sources' 
-  | 'institutions' 
-  | 'topics' 
-  | 'publishers' 
-  | 'funders' 
-  | 'keywords' 
-  | 'concepts';
+export type EntityType =
+  | "works"
+  | "authors"
+  | "sources"
+  | "institutions"
+  | "topics"
+  | "publishers"
+  | "funders"
+  | "keywords"
+  | "concepts"
+  | "autocomplete";
 
 /**
  * Metadata extracted from entity files for fast lookups
@@ -80,10 +81,10 @@ export interface EntityTypeIndex {
     averageFileSize: number;
     /** File size distribution buckets */
     fileSizeDistribution: {
-      small: number;   // < 10KB
-      medium: number;  // 10KB - 100KB
-      large: number;   // 100KB - 1MB
-      huge: number;    // > 1MB
+      small: number; // < 10KB
+      medium: number; // 10KB - 100KB
+      large: number; // 100KB - 1MB
+      huge: number; // > 1MB
     };
   };
 }
@@ -160,7 +161,12 @@ export interface IndexValidationResult {
  */
 export interface IndexValidationError {
   /** Error type classification */
-  type: 'missing_file' | 'corrupted_metadata' | 'invalid_structure' | 'outdated_timestamp' | 'duplicate_id';
+  type:
+    | "missing_file"
+    | "corrupted_metadata"
+    | "invalid_structure"
+    | "outdated_timestamp"
+    | "duplicate_id";
   /** Human-readable error message */
   message: string;
   /** Entity ID associated with the error */
@@ -180,7 +186,11 @@ export interface IndexValidationError {
  */
 export interface IndexValidationWarning {
   /** Warning type classification */
-  type: 'missing_basic_info' | 'large_file_size' | 'old_modification_date' | 'unusual_structure';
+  type:
+    | "missing_basic_info"
+    | "large_file_size"
+    | "old_modification_date"
+    | "unusual_structure";
   /** Human-readable warning message */
   message: string;
   /** Entity ID associated with the warning */
@@ -188,7 +198,7 @@ export interface IndexValidationWarning {
   /** File path associated with the warning */
   filePath?: string;
   /** Severity level */
-  severity: 'low' | 'medium' | 'high';
+  severity: "low" | "medium" | "high";
 }
 
 /**
@@ -196,7 +206,12 @@ export interface IndexValidationWarning {
  */
 export interface IndexRepairAction {
   /** Action type */
-  type: 'regenerate_metadata' | 'remove_missing_file' | 'update_timestamp' | 'deduplicate_entries' | 'rebuild_index';
+  type:
+    | "regenerate_metadata"
+    | "remove_missing_file"
+    | "update_timestamp"
+    | "deduplicate_entries"
+    | "rebuild_index";
   /** Human-readable description */
   description: string;
   /** Entity IDs affected by this action */
@@ -240,7 +255,7 @@ export interface IndexGenerationConfig {
  */
 export interface IndexGenerationProgress {
   /** Current operation being performed */
-  operation: 'scanning' | 'processing' | 'validating' | 'writing' | 'complete';
+  operation: "scanning" | "processing" | "validating" | "writing" | "complete";
   /** Entity type currently being processed */
   currentEntityType: EntityType;
   /** Number of files processed so far */
@@ -299,7 +314,6 @@ export interface IndexGenerationResult {
   };
 }
 
-
 /**
  * Directory reference with metadata for hierarchical indexes
  */
@@ -354,19 +368,19 @@ export interface PathRootIndex {
 /**
  * Schema version constant for compatibility checking
  */
-export const CURRENT_SCHEMA_VERSION = '1.0.0';
+export const CURRENT_SCHEMA_VERSION = "1.0.0";
 
 /**
  * Default configuration values
  */
 export const DEFAULT_INDEX_CONFIG: Readonly<IndexGenerationConfig> = {
-  rootPath: '',
+  rootPath: "",
   extractBasicInfo: true,
   computeStats: true,
   maxFileSize: 50 * 1024 * 1024, // 50MB
-  fileProcessingTimeoutMs: 30000,  // 30 seconds
+  fileProcessingTimeoutMs: 30000, // 30 seconds
   concurrency: 4,
   createBackups: true,
   schemaVersion: CURRENT_SCHEMA_VERSION,
-  baseApiUrl: 'https://api.openalex.org',
+  baseApiUrl: "https://api.openalex.org",
 } as const;

@@ -1076,8 +1076,9 @@ export class StaticDataIndexGenerator {
       "publishers",
       "funders",
       "concepts",
+      "autocomplete",
     ];
-    return isEntityType(dirName) ? (dirName as EntityType) : null;
+    return isEntityType(dirName) ? dirName : null;
   }
 
   /**
