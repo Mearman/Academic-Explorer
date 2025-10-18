@@ -272,7 +272,7 @@ export function createTrackedStore<
   const selectors = selectorsFactory ? selectorsFactory(initialState) : {};
 
   // Create actions using the Immer-wrapped set method
-  // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
+   
   const actions = actionsFactory(
     store.setState as (
       partial: Partial<T & A> | ((state: Draft<T & A>) => void),
