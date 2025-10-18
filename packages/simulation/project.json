@@ -84,6 +84,12 @@
         "cwd": "{projectRoot}"
       },
       "cache": false
+    },
+    "validate": {
+      "cache": true,
+      "dependsOn": ["build", "test", "lint"],
+      "inputs": [],
+      "outputs": []
     }
   },
   "tags": ["type:library", "scope:simulation", "layer:engine"]

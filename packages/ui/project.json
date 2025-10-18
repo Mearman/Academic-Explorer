@@ -103,6 +103,12 @@
       },
       "outputs": ["{projectRoot}/storybook-static"],
       "cache": true
+    },
+    "validate": {
+      "cache": true,
+      "dependsOn": ["build", "test", "lint"],
+      "inputs": [],
+      "outputs": []
     }
   },
   "tags": ["type:library", "scope:ui", "layer:ui"]

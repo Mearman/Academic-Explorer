@@ -158,6 +158,12 @@
         "cwd": "{projectRoot}"
       },
       "cache": false
+    },
+    "validate": {
+      "cache": true,
+      "dependsOn": ["build", "test", "lint"],
+      "inputs": [],
+      "outputs": []
     }
   },
   "tags": ["type:app", "scope:web", "layer:app"]

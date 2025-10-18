@@ -94,6 +94,12 @@
       "options": {
         "command": "rm -rf apps/cli/dist"
       }
+    },
+    "validate": {
+      "cache": true,
+      "dependsOn": ["build", "test", "lint"],
+      "inputs": [],
+      "outputs": []
     }
   }
 }
