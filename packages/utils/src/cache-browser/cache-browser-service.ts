@@ -1,6 +1,7 @@
 /**
  * Cache Browser Service - UI-agnostic service for browsing cached entities
- * Scans storage systems and provides metadata about cached OpenAlex entities
+ * Scans pure Dexie stores and provides metadata about cached OpenAlex entities
+ * Simplified from hybrid approach - no localStorage scanning
  */
 
 import Dexie from "dexie";
@@ -19,9 +20,8 @@ export interface CacheBrowserConfig {
   dbName: string;
   version: number;
 
-  // Storage locations to scan
+  // Storage locations to scan (simplified - only Dexie)
   includeIndexedDB: boolean;
-  includeLocalStorage: boolean;
   includeRepositoryStore: boolean;
 
   // Performance settings
@@ -29,12 +29,11 @@ export interface CacheBrowserConfig {
   batchSize: number;
 }
 
-// Default configuration
+// Default configuration (removed localStorage options)
 const DEFAULT_CONFIG: CacheBrowserConfig = {
   dbName: "academic-explorer",
   version: 1,
   includeIndexedDB: true,
-  includeLocalStorage: true,
   includeRepositoryStore: true,
   maxScanItems: 10000,
   batchSize: 100,
@@ -43,7 +42,7 @@ const DEFAULT_CONFIG: CacheBrowserConfig = {
 // Constants
 const CACHE_BROWSER_LOG_CONTEXT = "cache-browser";
 
-// Entity type detection patterns
+// Entity type detection patterns (unchanged)
 const ENTITY_TYPE_PATTERNS: Record<EntityType, RegExp[]> = {
   works: [/^W\d+$/, /\/works\/W\d+/, /works-.*/, /work_/],
   authors: [/^A\d+$/, /\/authors\/A\d+/, /authors-.*/, /author_/],
@@ -78,6 +77,7 @@ const ALL_ENTITY_TYPES: readonly EntityType[] = [
   "funders",
   "keywords",
   "concepts",
+  "autocomplete",
 ] as const;
 
 export class CacheBrowserService {
@@ -112,11 +112,11 @@ export class CacheBrowserService {
     );
 
     try {
-      // Merge with defaults
+      // Merge with defaults (removed localStorage from storageLocations)
       const mergedFilters: CacheBrowserFilters = {
         searchQuery: "",
         entityTypes: new Set(ALL_ENTITY_TYPES),
-        storageLocations: new Set(["indexeddb", "localstorage", "repository"]),
+        storageLocations: new Set(["indexeddb", "repository"]),
         ...filters,
       };
 
@@ -130,17 +130,12 @@ export class CacheBrowserService {
         ...options,
       };
 
-      // Collect entities from all sources
+      // Collect entities from available sources
       const allEntities: CachedEntityMetadata[] = [];
 
       if (this.config.includeIndexedDB) {
         const indexedDBEntities = await this.scanIndexedDB(mergedFilters);
         allEntities.push(...indexedDBEntities);
-      }
-
-      if (this.config.includeLocalStorage) {
-        const localStorageEntities = await this.scanLocalStorage(mergedFilters);
-        allEntities.push(...localStorageEntities);
       }
 
       if (this.config.includeRepositoryStore) {
@@ -213,7 +208,7 @@ export class CacheBrowserService {
     const filteredEntities = this.applyFilters(entities, {
       searchQuery: "",
       entityTypes: new Set(ALL_ENTITY_TYPES),
-      storageLocations: new Set(["indexeddb", "localstorage"]),
+      storageLocations: new Set(["indexeddb"]),
       ...filters,
     });
 
@@ -221,18 +216,7 @@ export class CacheBrowserService {
 
     // Clear from IndexedDB
     if (this.config.includeIndexedDB) {
-      const indexedDBEntities = filteredEntities.filter(
-        (e) => e.storageLocation === "indexeddb",
-      );
-      clearedCount += await this.clearFromIndexedDB(indexedDBEntities);
-    }
-
-    // Clear from localStorage
-    if (this.config.includeLocalStorage) {
-      const localStorageEntities = filteredEntities.filter(
-        (e) => e.storageLocation === "localstorage",
-      );
-      clearedCount += await this.clearFromLocalStorage(localStorageEntities);
+      clearedCount += await this.clearFromIndexedDB(filteredEntities);
     }
 
     this.logger?.debug(CACHE_BROWSER_LOG_CONTEXT, "Cache clear completed", {
@@ -299,59 +283,6 @@ export class CacheBrowserService {
     }
   }
 
-  private async scanLocalStorage(
-    filters: CacheBrowserFilters,
-  ): Promise<CachedEntityMetadata[]> {
-    if (!this.isLocalStorageAvailable()) {
-      return [];
-    }
-
-    try {
-      const entities: CachedEntityMetadata[] = [];
-
-      for (
-        let i = 0;
-        i < localStorage.length && entities.length < this.config.maxScanItems;
-        i++
-      ) {
-        const key = localStorage.key(i);
-        if (key === null) continue;
-
-        try {
-          const value = localStorage.getItem(key);
-          if (!value) continue;
-
-          const entityMetadata = this.extractEntityMetadata(
-            key,
-            value,
-            "localstorage",
-          );
-
-          if (
-            entityMetadata &&
-            this.matchesTypeFilter(entityMetadata, filters)
-          ) {
-            entities.push(entityMetadata);
-          }
-        } catch {
-          // Skip invalid JSON entries
-          continue;
-        }
-      }
-
-      return entities;
-    } catch (error) {
-      this.logger?.error(
-        CACHE_BROWSER_LOG_CONTEXT,
-        "localStorage scan failed",
-        {
-          error,
-        },
-      );
-      return [];
-    }
-  }
-
   private async scanRepositoryStore(): Promise<CachedEntityMetadata[]> {
     // This would integrate with the repository store if available
     // For now, return empty array as repository store scanning would need
@@ -367,7 +298,7 @@ export class CacheBrowserService {
     key: string,
     value: unknown,
     storageLocation: CachedEntityMetadata["storageLocation"],
-    _storeName?: string,
+    storeName?: string,
   ): CachedEntityMetadata | null {
     try {
       // Detect entity type from key
@@ -683,25 +614,6 @@ export class CacheBrowserService {
     return 0;
   }
 
-  private async clearFromLocalStorage(
-    entities: CachedEntityMetadata[],
-  ): Promise<number> {
-    let cleared = 0;
-    for (const entity of entities) {
-      try {
-        localStorage.removeItem(entity.id);
-        cleared++;
-      } catch (error) {
-        this.logger?.warn(
-          CACHE_BROWSER_LOG_CONTEXT,
-          "Failed to clear localStorage item",
-          { id: entity.id, error },
-        );
-      }
-    }
-    return cleared;
-  }
-
   private async getDB(): Promise<Dexie> {
     if (!this.dbCache) {
       // Create a Dexie instance for the database
@@ -716,14 +628,6 @@ export class CacheBrowserService {
   private isIndexedDBAvailable(): boolean {
     try {
       return typeof indexedDB !== "undefined";
-    } catch {
-      return false;
-    }
-  }
-
-  private isLocalStorageAvailable(): boolean {
-    try {
-      return typeof localStorage !== "undefined";
     } catch {
       return false;
     }
