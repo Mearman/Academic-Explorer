@@ -2,7 +2,7 @@ import { BaseTable } from "@/components/tables/BaseTable";
 import {
   cacheBrowserService,
   logger,
-  type CacheBrowserEntityType,
+  type EntityType,
   type CacheBrowserFilters,
   type CacheBrowserOptions,
   type CacheBrowserStats,
@@ -139,7 +139,7 @@ export function CacheBrowser({ className }: CacheBrowserProps) {
   const filters: Partial<CacheBrowserFilters> = useMemo(
     () => ({
       searchQuery,
-      entityTypes: new Set(selectedTypes as CacheBrowserEntityType[]),
+      entityTypes: new Set(selectedTypes as EntityType[]),
       storageLocations: new Set(selectedStorage),
       sizeRange:
         minSize !== undefined || maxSize !== undefined
