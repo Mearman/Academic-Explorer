@@ -12,8 +12,9 @@
       },
       "inputs": [
         "production",
-        "{projectRoot}/tsconfig.json",
-        "{projectRoot}/package.json"
+        "^production",
+        "{workspaceRoot}/vite.config.base.ts",
+        "{workspaceRoot}/config/**/*"
       ],
       "outputs": ["{projectRoot}/dist"],
       "cache": true

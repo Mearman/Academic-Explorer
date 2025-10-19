@@ -30,6 +30,20 @@
       "options": {
         "targetName": "test"
       }
+    },
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "lint"
+      }
+    },
+    {
+      "plugin": "@nx/storybook/plugin",
+      "options": {
+        "serveTargetName": "storybook",
+        "buildTargetName": "build-storybook",
+        "testTargetName": "test-storybook"
+      }
     }
   ],
   "namedTargets": {
