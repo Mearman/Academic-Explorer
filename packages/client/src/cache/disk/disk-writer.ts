@@ -495,11 +495,12 @@ export class DiskCacheWriter {
    * Type guard for OpenAlex entity
    */
   private isOpenAlexEntity(data: unknown): data is OpenAlexEntity {
+    const obj = data as Record<string, unknown>;
     return (
       typeof data === "object" &&
       data !== null &&
-      typeof (data as { id?: unknown }).id === "string" &&
-      typeof (data as { display_name?: unknown }).display_name === "string"
+      typeof obj.id === "string" &&
+      typeof obj.display_name === "string"
     );
   }
 
@@ -509,11 +510,12 @@ export class DiskCacheWriter {
   private isOpenAlexResponse(
     data: unknown,
   ): data is OpenAlexResponse<OpenAlexEntity> {
+    const obj = data as Record<string, unknown>;
     return (
       typeof data === "object" &&
       data !== null &&
-      Array.isArray((data as { results?: unknown }).results) &&
-      typeof (data as { meta?: unknown }).meta === "object"
+      Array.isArray(obj.results) &&
+      typeof obj.meta === "object"
     );
   }
 
@@ -919,7 +921,8 @@ export class DiskCacheWriter {
 
       try {
         const existingContent = await fs.readFile(indexPath, "utf8");
-        const existingData = JSON.parse(existingContent) as DirectoryIndex;
+        const parsedData = JSON.parse(existingContent);
+        const existingData = parsedData as DirectoryIndex;
         indexData = {
           lastUpdated: new Date().toISOString(),
           ...(existingData.directories &&
