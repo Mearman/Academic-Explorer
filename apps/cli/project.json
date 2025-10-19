@@ -40,17 +40,18 @@
       "cache": true
     },
     "lint": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/eslint:lint",
       "options": {
-        "command": "npx eslint src --ext .ts --max-warnings 1000",
-        "cwd": "apps/cli"
+        "lintFilePatterns": ["apps/cli/src/**/*.ts"],
+        "maxWarnings": 1000
       }
     },
     "lint:fix": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/eslint:lint",
       "options": {
-        "command": "npx eslint src --ext .ts --fix --max-warnings 1000",
-        "cwd": "apps/cli"
+        "lintFilePatterns": ["apps/cli/src/**/*.ts"],
+        "fix": true,
+        "maxWarnings": 1000
       },
       "cache": true
     },

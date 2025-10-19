@@ -51,10 +51,9 @@
       "cache": true
     },
     "lint": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/eslint:lint",
       "options": {
-        "command": "eslint src",
-        "cwd": "{projectRoot}"
+        "lintFilePatterns": ["packages/graph/src/**/*.{ts,tsx}"]
       },
       "inputs": [
         "source",
@@ -66,10 +65,10 @@
       "cache": true
     },
     "lint:fix": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/eslint:lint",
       "options": {
-        "command": "eslint src --fix",
-        "cwd": "{projectRoot}"
+        "lintFilePatterns": ["packages/graph/src/**/*.{ts,tsx}"],
+        "fix": true
       },
       "cache": true
     },

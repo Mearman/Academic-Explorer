@@ -66,10 +66,10 @@
       "cache": true
     },
     "lint": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/eslint:lint",
       "options": {
-        "command": "eslint . --max-warnings=100",
-        "cwd": "{projectRoot}"
+        "lintFilePatterns": ["apps/web/**/*.{ts,tsx,js,jsx}"],
+        "maxWarnings": 100
       },
       "inputs": [
         "source",
@@ -81,10 +81,11 @@
       "cache": true
     },
     "lint:fix": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/eslint:lint",
       "options": {
-        "command": "eslint . --fix",
-        "cwd": "{projectRoot}"
+        "lintFilePatterns": ["apps/web/**/*.{ts,tsx,js,jsx}"],
+        "fix": true,
+        "maxWarnings": 100
       },
       "inputs": [
         "source",
