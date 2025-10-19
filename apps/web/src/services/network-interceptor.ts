@@ -4,8 +4,8 @@
  */
 
 import { logger } from "@academic-explorer/utils/logger";
-import { useNetworkActivityStore } from "@/stores/network-activity-store";
-import type { NetworkRequest } from "@/stores/network-activity-store";
+import { useNetworkActivityStore } from "../stores/network-activity-store";
+import type { NetworkRequest } from "../stores/network-activity-store";
 
 interface RequestContext {
   id: string;
@@ -155,9 +155,7 @@ export class NetworkInterceptor {
         method,
         headers: init?.headers,
       });
-      const store = useNetworkActivityStore.getState();
-
-      const requestId = store.addRequest({
+      const requestId = useNetworkActivityStore.addRequest({
         entityType: this.detectRequestType(url),
         category: this.detectRequestCategory({ url, headers: init?.headers }),
         url,
@@ -183,7 +181,11 @@ export class NetworkInterceptor {
               ? parseInt(contentLength, 10)
               : undefined;
 
-            store.completeRequest(requestId, response.status, size);
+            useNetworkActivityStore.completeRequest(
+              requestId,
+              response.status,
+              size,
+            );
 
             logger.debug(
               "api",
@@ -271,8 +273,7 @@ export class NetworkInterceptor {
       const requestData = xhrDataMap.get(this);
 
       if (requestData) {
-        const store = useNetworkActivityStore.getState();
-        const requestId = store.addRequest({
+        const requestId = useNetworkActivityStore.addRequest({
           entityType: requestData.entityType,
           category: requestData.category,
           url: requestData.url,
@@ -307,7 +308,7 @@ export class NetworkInterceptor {
                 const responseSize = this.responseText
                   ? this.responseText.length
                   : 0;
-                store.completeRequest(
+                useNetworkActivityStore.completeRequest(
                   finalRequestId,
                   this.status,
                   responseSize,
@@ -325,7 +326,7 @@ export class NetworkInterceptor {
                   "NetworkInterceptor",
                 );
               } else {
-                store.failRequest(
+                useNetworkActivityStore.failRequest(
                   finalRequestId,
                   this.statusText || "Request failed",
                   this.status,
@@ -457,9 +458,7 @@ export class NetworkInterceptor {
     hit: boolean,
     size?: number,
   ): void {
-    const store = useNetworkActivityStore.getState();
-
-    const requestId = store.addRequest({
+    const requestId = useNetworkActivityStore.addRequest({
       entityType: "cache",
       category: "background",
       url: `cache://${operation}/${key}`,
@@ -471,7 +470,7 @@ export class NetworkInterceptor {
     });
 
     // Complete immediately for cache operations
-    store.completeRequest(requestId, 200, size);
+    useNetworkActivityStore.completeRequest(requestId, 200, size);
 
     logger.debug(
       "cache",
@@ -496,9 +495,7 @@ export class NetworkInterceptor {
     entityType?: string,
     entityId?: string,
   ): string {
-    const store = useNetworkActivityStore.getState();
-
-    const requestId = store.addRequest({
+    const requestId = useNetworkActivityStore.addRequest({
       entityType: "worker",
       category: "background",
       url: `worker://${operation}`,
@@ -537,9 +534,7 @@ export class NetworkInterceptor {
     url: string;
     entityId?: string;
   }): void {
-    const store = useNetworkActivityStore.getState();
-
-    store.addRequest({
+    useNetworkActivityStore.addRequest({
       entityType: "api",
       category: "foreground",
       url,
