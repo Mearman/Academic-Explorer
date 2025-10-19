@@ -28,18 +28,28 @@ export const debouncedSearch = debounce(
 /**
  * Remove duplicate items from an array by a specific key
  */
-export function removeDuplicatesBy<T>(array: T[], key: keyof T): T[] {
+export function removeDuplicatesBy<T>({
+  array,
+  key,
+}: {
+  array: T[];
+  key: keyof T;
+}): T[] {
   return uniqBy(array, key);
 }
 
 /**
  * Sort items by a numeric property (descending by default)
  */
-export function sortByNumericProperty<T>(
-  items: T[],
-  getProperty: (item: T) => number | null | undefined,
+export function sortByNumericProperty<T>({
+  items,
+  getProperty,
   ascending = false,
-): T[] {
+}: {
+  items: T[];
+  getProperty: (item: T) => number | null | undefined;
+  ascending?: boolean;
+}): T[] {
   const sorted = sortBy(items, (item) => getProperty(item) ?? 0);
   return ascending ? sorted : sorted.reverse();
 }
@@ -76,17 +86,20 @@ export function groupByProperty<T>(
 export function extractSafeProperties<
   T extends Record<string, unknown>,
   K extends keyof T,
->(obj: T, keys: K[]): Pick<T, K> {
+>({ obj, keys }: { obj: T; keys: K[] }): Pick<T, K> {
   return pick(obj, keys);
 }
 
 /**
  * Remove sensitive or unnecessary properties from objects
  */
-export function sanitizeObject<T extends Record<string, unknown>>(
-  obj: T,
-  keysToOmit: (keyof T)[],
-): Omit<T, keyof T> {
+export function sanitizeObject<T extends Record<string, unknown>>({
+  obj,
+  keysToOmit,
+}: {
+  obj: T;
+  keysToOmit: (keyof T)[];
+}): Omit<T, keyof T> {
   return omit(obj, keysToOmit);
 }
 
