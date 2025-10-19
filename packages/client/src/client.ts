@@ -74,7 +74,6 @@ export class OpenAlexBaseClient {
   private isDevelopmentMode(): boolean {
     // Check NODE_ENV first (most reliable)
     if (
-      typeof globalThis.process !== "undefined" &&
       globalThis.process?.env?.NODE_ENV
     ) {
       const nodeEnv = globalThis.process.env.NODE_ENV.toLowerCase();
