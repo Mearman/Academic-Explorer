@@ -46,28 +46,7 @@
       "outputs": ["{projectRoot}/dist/tsc"],
       "cache": true
     },
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "options": {
-        "lintFilePatterns": ["packages/ui/src/**/*.{ts,tsx}"]
-      },
-      "inputs": [
-        "source",
-        "configs",
-        "{workspaceRoot}/eslint.config.ts",
-        "{workspaceRoot}/eslint.config.*.ts"
-      ],
-      "outputs": ["{workspaceRoot}/.nx/cache/lint-results/{projectName}.json"],
-      "cache": true
-    },
-    "lint:fix": {
-      "executor": "@nx/eslint:lint",
-      "options": {
-        "lintFilePatterns": ["packages/ui/src/**/*.{ts,tsx}"],
-        "fix": true
-      },
-      "cache": true
-    },
+
     "test": {
       "executor": "nx:run-commands",
       "options": {
@@ -140,6 +119,11 @@
         "{workspaceRoot}/eslint.config.*.ts"
       ],
       "outputs": []
+    },
+    "lint": {
+      "options": {
+        "command": "NODE_OPTIONS='--import tsx' eslint --no-warn-ignored src/**/*.{ts,tsx} --fix"
+      }
     }
   },
   "tags": ["type:library", "scope:ui", "layer:ui"]
