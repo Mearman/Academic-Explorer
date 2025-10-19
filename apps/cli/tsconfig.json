@@ -1,7 +1,6 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "./dist",
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
@@ -20,7 +19,7 @@
     "assumeChangesOnlyAffectDirectDependencies": true,
     "composite": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "eslint.config.ts", "vitest.config.ts"],
   "exclude": ["dist", "node_modules"],
   "references": [
     { "path": "../../packages/client" },

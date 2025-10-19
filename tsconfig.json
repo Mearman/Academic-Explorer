@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.base.json",
   "files": [],
-  "include": [],
+  "include": ["eslint-rules/**/*"],
   "references": [
     {
       "path": "./apps/web"
