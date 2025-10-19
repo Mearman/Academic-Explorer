@@ -47,14 +47,10 @@ describe("FieldSearch Component", () => {
       </TestWrapper>,
     );
 
-    expect(screen.getByLabelText("Search by work title")).toBeInTheDocument();
-    expect(
-      screen.getByLabelText("Search by abstract content"),
-    ).toBeInTheDocument();
-    expect(screen.getByLabelText("Search by author name")).toBeInTheDocument();
-    expect(
-      screen.getByLabelText("Search by institution name"),
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Search by work title")).toBeTruthy();
+    expect(screen.getByLabelText("Search by abstract content")).toBeTruthy();
+    expect(screen.getByLabelText("Search by author name")).toBeTruthy();
+    expect(screen.getByLabelText("Search by institution name")).toBeTruthy();
   });
 
   it("shows default placeholder text", () => {
@@ -64,19 +60,19 @@ describe("FieldSearch Component", () => {
       </TestWrapper>,
     );
 
-    expect(screen.getByLabelText("Search by work title")).toHaveAttribute(
+    expect(screen.getByLabelText("Search by work title")).toHaveProperty(
       "placeholder",
       "Search by title...",
     );
-    expect(screen.getByLabelText("Search by abstract content")).toHaveAttribute(
+    expect(screen.getByLabelText("Search by abstract content")).toHaveProperty(
       "placeholder",
       "Search by abstract content...",
     );
-    expect(screen.getByLabelText("Search by author name")).toHaveAttribute(
+    expect(screen.getByLabelText("Search by author name")).toHaveProperty(
       "placeholder",
       "Search by author name...",
     );
-    expect(screen.getByLabelText("Search by institution name")).toHaveAttribute(
+    expect(screen.getByLabelText("Search by institution name")).toHaveProperty(
       "placeholder",
       "Search by institution name...",
     );
@@ -94,20 +90,20 @@ describe("FieldSearch Component", () => {
       </TestWrapper>,
     );
 
-    expect(screen.getByLabelText("Search by work title")).toHaveAttribute(
+    expect(screen.getByLabelText("Search by work title")).toHaveProperty(
       "placeholder",
       "Custom title placeholder",
     );
-    expect(screen.getByLabelText("Search by author name")).toHaveAttribute(
+    expect(screen.getByLabelText("Search by author name")).toHaveProperty(
       "placeholder",
       "Custom author placeholder",
     );
     // Should still show default for fields not customized
-    expect(screen.getByLabelText("Search by abstract content")).toHaveAttribute(
+    expect(screen.getByLabelText("Search by abstract content")).toHaveProperty(
       "placeholder",
       "Search by abstract content...",
     );
-    expect(screen.getByLabelText("Search by institution name")).toHaveAttribute(
+    expect(screen.getByLabelText("Search by institution name")).toHaveProperty(
       "placeholder",
       "Search by institution name...",
     );
@@ -165,7 +161,7 @@ describe("FieldSearch Component", () => {
     );
 
     const searchButton = screen.getByRole("button", { name: /search/i });
-    expect(searchButton).toBeDisabled();
+    expect(searchButton).toHaveProperty("disabled", true);
   });
 
   it("enables search button when at least one field has a value", () => {
@@ -179,7 +175,7 @@ describe("FieldSearch Component", () => {
     fireEvent.change(titleInput, { target: { value: "test" } });
 
     const searchButton = screen.getByRole("button", { name: /search/i });
-    expect(searchButton).toBeEnabled();
+    expect(searchButton).toHaveProperty("disabled", false);
   });
 
   it("shows clear button when fields have values", () => {
@@ -190,18 +186,14 @@ describe("FieldSearch Component", () => {
     );
 
     // Initially no clear button
-    expect(
-      screen.queryByRole("button", { name: /clear all/i }),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /clear all/i })).toBeNull();
 
     // Add some text
     const titleInput = screen.getByLabelText("Search by work title");
     fireEvent.change(titleInput, { target: { value: "test" } });
 
     // Clear button should appear
-    expect(
-      screen.getByRole("button", { name: /clear all/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /clear all/i })).toBeTruthy();
   });
 
   it("clears all fields when clear button is clicked", () => {
@@ -245,8 +237,8 @@ describe("FieldSearch Component", () => {
       </TestWrapper>,
     );
 
-    expect(screen.getByDisplayValue("Initial title")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("Initial author")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Initial title")).toBeTruthy();
+    expect(screen.getByDisplayValue("Initial author")).toBeTruthy();
   });
 
   it("disables all inputs when loading", () => {
@@ -256,10 +248,22 @@ describe("FieldSearch Component", () => {
       </TestWrapper>,
     );
 
-    expect(screen.getByLabelText("Search by work title")).toBeDisabled();
-    expect(screen.getByLabelText("Search by abstract content")).toBeDisabled();
-    expect(screen.getByLabelText("Search by author name")).toBeDisabled();
-    expect(screen.getByLabelText("Search by institution name")).toBeDisabled();
+    expect(screen.getByLabelText("Search by work title")).toHaveProperty(
+      "disabled",
+      true,
+    );
+    expect(screen.getByLabelText("Search by abstract content")).toHaveProperty(
+      "disabled",
+      true,
+    );
+    expect(screen.getByLabelText("Search by author name")).toHaveProperty(
+      "disabled",
+      true,
+    );
+    expect(screen.getByLabelText("Search by institution name")).toHaveProperty(
+      "disabled",
+      true,
+    );
   });
 
   it("hides search button when showSearchButton is false", () => {
@@ -269,8 +273,6 @@ describe("FieldSearch Component", () => {
       </TestWrapper>,
     );
 
-    expect(
-      screen.queryByRole("button", { name: /search/i }),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /search/i })).toBeNull();
   });
 });

@@ -179,7 +179,7 @@ describe("VisualQueryBuilder", () => {
     );
 
     const applyButton = screen.getByRole("button", { name: "Apply Query" });
-    expect(applyButton).toBeInTheDocument();
+    expect(applyButton).toBeTruthy();
     expect((applyButton as HTMLButtonElement).disabled).toBe(true); // Should be disabled when no chips
   });
 
@@ -281,10 +281,10 @@ describe("VisualQueryBuilder", () => {
 
     // Check that buttons have disabled attribute
     addGroupButtons.forEach((button) =>
-      expect(button).toHaveAttribute("disabled"),
+      expect(button).toHaveProperty("disabled", true),
     );
     applyButtons.forEach((button) =>
-      expect(button).toHaveAttribute("disabled"),
+      expect(button).toHaveProperty("disabled", true),
     );
   });
 
