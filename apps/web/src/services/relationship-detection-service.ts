@@ -3,7 +3,7 @@
  * Automatically detects and creates relationships between newly added nodes and existing graph nodes
  */
 
-import { useGraphStore } from "@/stores/graph-store";
+import { graphStore } from "../stores/graph-store";
 import type { OpenAlexEntity } from "@academic-explorer/client";
 import {
   ADVANCED_FIELD_SELECTIONS,
@@ -94,7 +94,7 @@ export class RelationshipDetectionService {
     );
 
     // Log the node types being processed
-    const store = useGraphStore.getState();
+    const store = graphStore.getState();
     const nodeTypes = nodeIds.map((id) => {
       const node = store.getNode(id);
       return node ? `${id}(${node.entityType})` : `${id}(not found)`;
@@ -177,7 +177,7 @@ export class RelationshipDetectionService {
    * Fetches minimal data and analyzes relationships with existing nodes
    */
   async detectRelationshipsForNode(nodeId: string): Promise<GraphEdge[]> {
-    const store = useGraphStore.getState();
+    const store = graphStore.getState();
     const existingNodes = Object.values(store.nodes);
 
     // Get the node from the store
@@ -656,7 +656,7 @@ export class RelationshipDetectionService {
 
     // Get referenced_works from the graph node data if not present
     if (!referencedWorks) {
-      const store = useGraphStore.getState();
+      const store = graphStore.getState();
       const graphNode = Object.values(store.nodes).find(
         (node) => node.entityId === workData.id,
       );
@@ -938,7 +938,7 @@ export class RelationshipDetectionService {
     nodeId: string;
     batchNodeIds: string[];
   }): Promise<GraphEdge[]> {
-    const store = useGraphStore.getState();
+    const store = graphStore.getState();
     const sourceNode = store.getNode(nodeId);
 
     if (!sourceNode) {
