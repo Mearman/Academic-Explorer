@@ -10,6 +10,205 @@ import { logger } from "@academic-explorer/utils/logger";
 import { QueryClient } from "@tanstack/react-query";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+// Mock the graph store with properly shared state
+const { mockStore } = vi.hoisted(() => {
+  // This is the shared state object that both test and service will see
+  const sharedState = {
+    nodes: {} as Record<string, any>,
+    edges: {} as Record<string, any>,
+    // Store methods that operate on shared state
+    addNode: (node: any) => {
+      sharedState.nodes[node.id] = node;
+    },
+    addNodes: (nodes: any[]) => {
+      nodes.forEach((node) => {
+        sharedState.nodes[node.id] = node;
+      });
+    },
+    addEdge: (edge: any) => {
+      sharedState.edges[edge.id] = edge;
+    },
+    addEdges: (edges: any[]) => {
+      edges.forEach((edge) => {
+        sharedState.edges[edge.id] = edge;
+      });
+    },
+    getNode: (nodeId: string) => sharedState.nodes[nodeId],
+    clear: () => {
+      sharedState.nodes = {};
+      sharedState.edges = {};
+    },
+    // Add other methods as no-ops but also operate on shared state
+    removeNode: vi.fn((nodeId: string) => {
+      delete sharedState.nodes[nodeId];
+    }),
+    removeEdge: vi.fn((edgeId: string) => {
+      delete sharedState.edges[edgeId];
+    }),
+    updateNode: vi.fn(),
+    setLoading: vi.fn(),
+    setError: vi.fn(),
+    setGraphData: vi.fn(),
+    selectNode: vi.fn(),
+    hoverNode: vi.fn(),
+    addToSelection: vi.fn(),
+    removeFromSelection: vi.fn(),
+    clearSelection: vi.fn(),
+    pinNode: vi.fn(),
+    unpinNode: vi.fn(),
+    clearAllPinnedNodes: vi.fn(),
+    isPinned: vi.fn(() => false),
+    setLayout: vi.fn(),
+    applyCurrentLayout: vi.fn(),
+    toggleEntityTypeVisibility: vi.fn(),
+    toggleEdgeTypeVisibility: vi.fn(),
+    setEntityTypeVisibility: vi.fn(),
+    setEdgeTypeVisibility: vi.fn(),
+    setAllEntityTypesVisible: vi.fn(),
+    resetEntityTypesToDefaults: vi.fn(),
+    getEntityTypeStats: vi.fn(() => ({
+      total: {},
+      visible: {},
+      searchResults: {},
+    })),
+    getVisibleNodes: vi.fn(() => Object.values(sharedState.nodes)),
+    setShowAllCachedNodes: vi.fn(),
+    setTraversalDepth: vi.fn(),
+    updateSearchStats: vi.fn(),
+    markNodeAsLoading: vi.fn(),
+    markNodeAsLoaded: vi.fn(),
+    markNodeAsError: vi.fn(),
+    calculateNodeDepths: vi.fn(),
+    getMinimalNodes: vi.fn(() => Object.values(sharedState.nodes)),
+    getNodesWithinDepth: vi.fn(() => []),
+    getNeighbors: vi.fn(() => []),
+    getConnectedEdges: vi.fn(() => []),
+    findShortestPath: vi.fn(() => []),
+    getConnectedComponent: vi.fn(() => []),
+    setProvider: vi.fn(),
+    setProviderType: vi.fn(),
+    hasPlaceholderOrLoadingNodes: vi.fn(() => false),
+  };
+
+  // The mock store object that Zustand would normally return
+  const mockStore = {
+    getState: () => ({
+      ...sharedState,
+      // Include all methods in the state object for tests that call getState()
+      addNode: sharedState.addNode,
+      addNodes: sharedState.addNodes,
+      addEdge: sharedState.addEdge,
+      addEdges: sharedState.addEdges,
+      getNode: sharedState.getNode,
+      clear: sharedState.clear,
+      removeNode: sharedState.removeNode,
+      removeEdge: sharedState.removeEdge,
+      updateNode: sharedState.updateNode,
+      setLoading: sharedState.setLoading,
+      setError: sharedState.setError,
+      setGraphData: sharedState.setGraphData,
+      selectNode: sharedState.selectNode,
+      hoverNode: sharedState.hoverNode,
+      addToSelection: sharedState.addToSelection,
+      removeFromSelection: sharedState.removeFromSelection,
+      clearSelection: sharedState.clearSelection,
+      pinNode: sharedState.pinNode,
+      unpinNode: sharedState.unpinNode,
+      clearAllPinnedNodes: sharedState.clearAllPinnedNodes,
+      isPinned: sharedState.isPinned,
+      setLayout: sharedState.setLayout,
+      applyCurrentLayout: sharedState.applyCurrentLayout,
+      toggleEntityTypeVisibility: sharedState.toggleEntityTypeVisibility,
+      toggleEdgeTypeVisibility: sharedState.toggleEdgeTypeVisibility,
+      setEntityTypeVisibility: sharedState.setEntityTypeVisibility,
+      setEdgeTypeVisibility: sharedState.setEdgeTypeVisibility,
+      setAllEntityTypesVisible: sharedState.setAllEntityTypesVisible,
+      resetEntityTypesToDefaults: sharedState.resetEntityTypesToDefaults,
+      getEntityTypeStats: sharedState.getEntityTypeStats,
+      getVisibleNodes: sharedState.getVisibleNodes,
+      setShowAllCachedNodes: sharedState.setShowAllCachedNodes,
+      setTraversalDepth: sharedState.setTraversalDepth,
+      updateSearchStats: sharedState.updateSearchStats,
+      markNodeAsLoading: sharedState.markNodeAsLoading,
+      markNodeAsLoaded: sharedState.markNodeAsLoaded,
+      markNodeAsError: sharedState.markNodeAsError,
+      calculateNodeDepths: sharedState.calculateNodeDepths,
+      getMinimalNodes: sharedState.getMinimalNodes,
+      getNodesWithinDepth: sharedState.getNodesWithinDepth,
+      getNeighbors: sharedState.getNeighbors,
+      getConnectedEdges: sharedState.getConnectedEdges,
+      findShortestPath: sharedState.findShortestPath,
+      getConnectedComponent: sharedState.getConnectedComponent,
+      setProvider: sharedState.setProvider,
+      setProviderType: sharedState.setProviderType,
+      hasPlaceholderOrLoadingNodes: sharedState.hasPlaceholderOrLoadingNodes,
+    }),
+    setState: vi.fn(),
+    // Direct access to shared state properties and methods for tests
+    get nodes() {
+      return sharedState.nodes;
+    },
+    get edges() {
+      return sharedState.edges;
+    },
+    addNode: sharedState.addNode,
+    addNodes: sharedState.addNodes,
+    addEdge: sharedState.addEdge,
+    addEdges: sharedState.addEdges,
+    getNode: sharedState.getNode,
+    clear: sharedState.clear,
+    // All other methods
+    removeNode: sharedState.removeNode,
+    removeEdge: sharedState.removeEdge,
+    updateNode: sharedState.updateNode,
+    setLoading: sharedState.setLoading,
+    setError: sharedState.setError,
+    setGraphData: sharedState.setGraphData,
+    selectNode: sharedState.selectNode,
+    hoverNode: sharedState.hoverNode,
+    addToSelection: sharedState.addToSelection,
+    removeFromSelection: sharedState.removeFromSelection,
+    clearSelection: sharedState.clearSelection,
+    pinNode: sharedState.pinNode,
+    unpinNode: sharedState.unpinNode,
+    clearAllPinnedNodes: sharedState.clearAllPinnedNodes,
+    isPinned: sharedState.isPinned,
+    setLayout: sharedState.setLayout,
+    applyCurrentLayout: sharedState.applyCurrentLayout,
+    toggleEntityTypeVisibility: sharedState.toggleEntityTypeVisibility,
+    toggleEdgeTypeVisibility: sharedState.toggleEdgeTypeVisibility,
+    setEntityTypeVisibility: sharedState.setEntityTypeVisibility,
+    setEdgeTypeVisibility: sharedState.setEdgeTypeVisibility,
+    setAllEntityTypesVisible: sharedState.setAllEntityTypesVisible,
+    resetEntityTypesToDefaults: sharedState.resetEntityTypesToDefaults,
+    getEntityTypeStats: sharedState.getEntityTypeStats,
+    getVisibleNodes: sharedState.getVisibleNodes,
+    setShowAllCachedNodes: sharedState.setShowAllCachedNodes,
+    setTraversalDepth: sharedState.setTraversalDepth,
+    updateSearchStats: sharedState.updateSearchStats,
+    markNodeAsLoading: sharedState.markNodeAsLoading,
+    markNodeAsLoaded: sharedState.markNodeAsLoaded,
+    markNodeAsError: sharedState.markNodeAsError,
+    calculateNodeDepths: sharedState.calculateNodeDepths,
+    getMinimalNodes: sharedState.getMinimalNodes,
+    getNodesWithinDepth: sharedState.getNodesWithinDepth,
+    getNeighbors: sharedState.getNeighbors,
+    getConnectedEdges: sharedState.getConnectedEdges,
+    findShortestPath: sharedState.findShortestPath,
+    getConnectedComponent: sharedState.getConnectedComponent,
+    setProvider: sharedState.setProvider,
+    setProviderType: sharedState.setProviderType,
+    hasPlaceholderOrLoadingNodes: sharedState.hasPlaceholderOrLoadingNodes,
+  };
+
+  return { mockStore };
+});
+
+vi.mock("@/stores/graph-store", () => ({
+  useGraphStore: mockStore,
+  graphStore: mockStore,
+}));
+
 describe("Entity Data Storage Integration", () => {
   let queryClient: QueryClient;
   let graphDataService: ReturnType<typeof createGraphDataService>;
@@ -101,9 +300,9 @@ describe("Entity Data Storage Integration", () => {
           "https://openalex.org/W123456789",
         );
 
-        // Verify the mock was called
+        // Verify the mock was called with normalized ID
         expect(mockGetEntity).toHaveBeenCalledWith(
-          "https://openalex.org/W123456789",
+          "W123456789",
           expect.any(Function),
         );
 
@@ -209,9 +408,9 @@ describe("Entity Data Storage Integration", () => {
           "https://openalex.org/W123456789",
         );
 
-        // Verify the mock was called
+        // Verify the mock was called with normalized ID
         expect(mockGetEntity).toHaveBeenCalledWith(
-          "https://openalex.org/W123456789",
+          "W123456789",
           expect.any(Function),
         );
 
