@@ -25,7 +25,7 @@ import "@mantine/dates/styles.css";
 import { routeTree } from "./routeTree.gen";
 
 // Load persisted app activity events on app start
-import { useAppActivityStore } from "@/stores/app-activity-store";
+import { appActivityStore } from "@/stores/app-activity-store";
 
 // Create Mantine theme using design tokens
 const theme = createTheme({
@@ -83,7 +83,7 @@ declare module "@tanstack/react-router" {
 // Navigation tracking is now handled by NavigationTracker component in MainLayout
 
 // Load persisted app activity events on app start
-useAppActivityStore.getState().loadEvents();
+appActivityStore.loadEvents();
 
 // Service worker registration handled by VitePWA plugin
 // registerOpenAlexServiceWorker().then((registered) => {
