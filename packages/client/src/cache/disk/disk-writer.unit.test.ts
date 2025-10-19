@@ -210,7 +210,11 @@ describe("DiskCacheWriter", () => {
 
   beforeEach(() => {
     // Set mock modules for testing
-    __setMockModules(mockFs as any, mockPath as any, mockCrypto as any);
+    __setMockModules({
+      mockFs: mockFs as any,
+      mockPath: mockPath as any,
+      mockCrypto: mockCrypto as any,
+    });
 
     config = {
       basePath: "/mock/base/path",

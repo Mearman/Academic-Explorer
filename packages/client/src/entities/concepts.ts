@@ -1,12 +1,10 @@
 /**
  * OpenAlex Concepts API Entity Methods
- * Provides methods for interacting with concept entities (deprecated but still supported)
- *
- * Note: Concepts are being phased out and replaced by Topics.
- * This API is maintained for backward compatibility.
+ * Provides methods for interacting with concept entities
  */
 
 import { logger } from "@academic-explorer/utils/logger";
+import { conceptSchema } from "@academic-explorer/utils";
 import type { OpenAlexBaseClient } from "../client";
 import type {
   AutocompleteResult,
@@ -168,9 +166,6 @@ export interface AutocompleteOptions extends Pick<QueryParams, "per_page"> {
 
 /**
  * Concepts API class providing methods for concept operations
- *
- * @deprecated Concepts are being phased out in favor of Topics.
- * Use TopicsApi for new implementations.
  */
 export class ConceptsApi {
   private autocompleteApi: AutocompleteApi;
@@ -317,22 +312,29 @@ export class ConceptsApi {
       typeof params.sort === "string" &&
       this.isQueryParams(params)
     ) {
-      return this.client.getById<Concept>("concepts", normalizedId, params);
+      // TODO: Use conceptSchema once type issues are resolved
+      return this.client.getById(
+        "concepts",
+        normalizedId,
+        params,
+      ) as Promise<Concept>;
     }
     // Otherwise, convert from StrictConceptsQueryParams
     if (this.isStrictConceptsQueryParams(params)) {
-      return this.client.getById<Concept>(
+      // TODO: Use conceptSchema once type issues are resolved
+      return this.client.getById(
         "concepts",
         normalizedId,
         toQueryParams(params),
-      );
+      ) as Promise<Concept>;
     }
     // Default case - treat as basic params
-    return this.client.getById<Concept>(
+    // TODO: Use conceptSchema once type issues are resolved
+    return this.client.getById(
       "concepts",
       normalizedId,
       toQueryParams({}),
-    );
+    ) as Promise<Concept>;
   }
 
   /**

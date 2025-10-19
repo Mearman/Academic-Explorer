@@ -1,8 +1,8 @@
 /**
- * Re-export all OpenAlex API TypeScript types
+ * Re-export all OpenAlex API TypeScript types from shared utils package
  */
 
-// Base types and common structures
+// Re-export all types from utils
 export type {
   OpenAlexId,
   DOI,
@@ -28,10 +28,6 @@ export type {
   APCInfo,
   APCPrice,
   PartialExceptId,
-} from "./base";
-
-// Entity interfaces
-export type {
   BaseEntity,
   EntityWithWorks,
   CountsByYear,
@@ -53,12 +49,8 @@ export type {
   PartialSource,
   PartialInstitution,
   OpenAlexEntity,
-  EntityType,
+  OpenAlexEntityType as EntityType,
   EntityTypeMap,
-} from "./entities";
-
-// Filter interfaces
-export type {
   BaseEntityFilters,
   BaseEntityWithTopicsFilters,
   WorksFilters,
@@ -71,12 +63,8 @@ export type {
   FundersFilters,
   KeywordsFilters,
   EntityFilters,
-} from "./filters";
-
-// Common utility types
-export type {
   OpenAlexResponse,
-  QueryParams,
+  OpenAlexQueryParams as QueryParams,
   StatsParams,
   SampleParams,
   GroupParams,
@@ -84,4 +72,36 @@ export type {
   NGram,
   OpenAlexError,
   TextAnalysis,
-} from "./common";
+} from "@academic-explorer/utils/openalex";
+
+// Re-export schemas and type guards
+export {
+  openAlexIdSchema,
+  dateStringSchema,
+  countsByYearSchema,
+  metaSchema,
+  groupBySchema,
+  baseEntitySchema,
+  workSchema,
+  authorSchema,
+  institutionSchema,
+  openAlexResponseSchema,
+  apiResponseSchema,
+  staticDataSchema,
+  workResponseSchema,
+  authorResponseSchema,
+  institutionResponseSchema,
+} from "@academic-explorer/utils/openalex";
+
+export {
+  isRecord,
+  trustObjectShape,
+  extractPropertyValue,
+  isOpenAlexId,
+  isValidDateString,
+  isValidDOI,
+  isValidORCID,
+  isValidROR,
+  isValidISSN,
+  isValidWikidataId,
+} from "@academic-explorer/utils/openalex";

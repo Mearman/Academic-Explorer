@@ -10,6 +10,7 @@ import {
   DirectoryIndex,
   FileEntry,
   generateContentHash,
+  isDirectoryIndex,
   sanitizeUrlForCaching,
   STATIC_DATA_CACHE_PATH,
 } from "@academic-explorer/utils/static-data/cache-utilities";
@@ -29,11 +30,15 @@ const INDEX_FILE_NAME = "index.json";
 /**
  * For testing: allow injecting mock Node.js modules
  */
-export function __setMockModules(
-  mockFs?: typeof import("fs/promises"),
-  mockPath?: typeof import("path"),
-  mockCrypto?: typeof import("crypto"),
-): void {
+export function __setMockModules({
+  mockFs,
+  mockPath,
+  mockCrypto,
+}: {
+  mockFs?: typeof import("fs/promises");
+  mockPath?: typeof import("path");
+  mockCrypto?: typeof import("crypto");
+}): void {
   fs = mockFs;
   path = mockPath;
   crypto = mockCrypto;
@@ -289,13 +294,16 @@ export class DiskCacheWriter {
       };
 
       // Write data file atomically
-      await this.writeFileAtomic(filePaths.dataFile, content);
+      await this.writeFileAtomic({ filePath: filePaths.dataFile, content });
 
       // Update the containing directory index
       indexData.files ??= {};
       indexData.files[baseName] = fileEntry;
       indexData.lastUpdated = new Date().toISOString();
-      await this.writeFileAtomic(indexPath, JSON.stringify(indexData, null, 2));
+      await this.writeFileAtomic({
+        filePath: indexPath,
+        content: JSON.stringify(indexData, null, 2),
+      });
 
       // Propagate updates to hierarchical parent indexes (skip containing directory)
       await this.updateHierarchicalIndexes(entityInfo, filePaths, data, true);
@@ -310,13 +318,16 @@ export class DiskCacheWriter {
     } finally {
       // Release all locks
       if (indexLockId && filePaths) {
-        await this.releaseFileLock(
-          indexLockId,
-          pathModule.join(filePaths.directoryPath, INDEX_FILE_NAME),
-        );
+        await this.releaseFileLock({
+          lockId: indexLockId,
+          filePath: pathModule.join(filePaths.directoryPath, INDEX_FILE_NAME),
+        });
       }
       if (dataLockId && filePaths) {
-        await this.releaseFileLock(dataLockId, filePaths.dataFile);
+        await this.releaseFileLock({
+          lockId: dataLockId,
+          filePath: filePaths.dataFile,
+        });
       }
     }
   }
@@ -624,10 +635,13 @@ export class DiskCacheWriter {
   /**
    * Write file atomically using temporary file
    */
-  private async writeFileAtomic(
-    filePath: string,
-    content: string,
-  ): Promise<void> {
+  private async writeFileAtomic({
+    filePath,
+    content,
+  }: {
+    filePath: string;
+    content: string;
+  }): Promise<void> {
     if (!crypto) {
       throw new Error("Node.js crypto module not initialized");
     }
@@ -715,10 +729,13 @@ export class DiskCacheWriter {
   /**
    * Release file lock
    */
-  private async releaseFileLock(
-    lockId: string,
-    filePath: string,
-  ): Promise<void> {
+  private async releaseFileLock({
+    lockId,
+    filePath,
+  }: {
+    lockId: string;
+    filePath: string;
+  }): Promise<void> {
     const existingLock = this.activeLocks.get(filePath);
 
     if (existingLock?.lockId === lockId) {
@@ -922,7 +939,10 @@ export class DiskCacheWriter {
       try {
         const existingContent = await fs.readFile(indexPath, "utf8");
         const parsedData = JSON.parse(existingContent);
-        const existingData = parsedData as DirectoryIndex;
+        if (!isDirectoryIndex(parsedData)) {
+          throw new Error(`Invalid directory index format in ${indexPath}`);
+        }
+        const existingData = parsedData;
         indexData = {
           lastUpdated: new Date().toISOString(),
           ...(existingData.directories &&
@@ -977,7 +997,10 @@ export class DiskCacheWriter {
       }
 
       // Write updated index
-      await this.writeFileAtomic(indexPath, JSON.stringify(indexData, null, 2));
+      await this.writeFileAtomic({
+        filePath: indexPath,
+        content: JSON.stringify(indexData, null, 2),
+      });
 
       logger.debug("cache", "Updated directory index", {
         indexPath,

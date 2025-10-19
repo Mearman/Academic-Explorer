@@ -3,6 +3,8 @@
  */
 
 import { logger } from "@academic-explorer/utils/logger";
+import { validateStaticData } from "./internal/type-helpers";
+import { staticDataSchema } from "@academic-explorer/utils/openalex";
 import { OpenAlexBaseClient, type OpenAlexClientConfig } from "./client";
 import { AuthorsApi } from "./entities/authors";
 import { ConceptsApi } from "./entities/concepts";
@@ -91,10 +93,13 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   /**
    * Enhanced entity getter with static cache integration
    */
-  private async tryStaticCache(
-    cleanId: string,
-    entityType: string,
-  ): Promise<OpenAlexEntity | null> {
+  private async tryStaticCache({
+    cleanId,
+    entityType,
+  }: {
+    cleanId: string;
+    entityType: string;
+  }): Promise<OpenAlexEntity | null> {
     try {
       const staticEntityType = toStaticEntityType(entityType);
       const staticResult = await staticDataProvider.getStaticData(
@@ -125,18 +130,22 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
     return null;
   }
 
-  private async tryApiFallback(
-    cleanId: string,
-    entityType: string,
-  ): Promise<OpenAlexEntity | null> {
+  private async tryApiFallback({
+    cleanId,
+    entityType,
+  }: {
+    cleanId: string;
+    entityType: string;
+  }): Promise<unknown> {
     try {
-      const result = await this.getById<OpenAlexEntity>(
-        `${entityType}`,
-        cleanId,
-      );
+      const result = await this.getById(`${entityType}`, cleanId);
 
       if (this.staticCacheEnabled && result) {
-        await this.cacheEntityResult(entityType, cleanId, result);
+        await this.cacheEntityResult({
+          entityType,
+          id: cleanId,
+          _data: result,
+        });
       }
 
       return result;
@@ -148,7 +157,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       );
       this.requestStats.errors++;
 
-      return await this.tryStaticCache(cleanId, entityType);
+      return await this.tryStaticCache({ cleanId, entityType });
     }
   }
 
@@ -170,7 +179,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
 
       // Try static cache first if enabled
       if (this.staticCacheEnabled) {
-        const staticResult = await this.tryStaticCache(cleanId, entityType);
+        const staticResult = await this.tryStaticCache({ cleanId, entityType });
         if (staticResult) {
           return staticResult;
         }
@@ -180,7 +189,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       this.requestStats.apiFallbacks++;
       logger.debug("client", "Falling back to API for entity", { id: cleanId });
 
-      return await this.tryApiFallback(cleanId, entityType);
+      return await this.tryApiFallback({ cleanId, entityType });
     } catch (error: unknown) {
       this.requestStats.errors++;
       logger.error("client", "Failed to get entity", { id: cleanId, error });
@@ -191,11 +200,15 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   /**
    * Cache entity result in static data provider
    */
-  private async cacheEntityResult(
-    entityType: string,
-    id: string,
-    _data: OpenAlexEntity,
-  ): Promise<void> {
+  private async cacheEntityResult({
+    entityType,
+    id,
+    _data,
+  }: {
+    entityType: string;
+    id: string;
+    _data: OpenAlexEntity;
+  }): Promise<void> {
     try {
       // Note: This would require extending the static data provider with a set method for caching API results
       // For now, we log the intent
@@ -226,7 +239,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   /**
    * Enhanced getById with static cache integration
    */
-  async getById<T>(endpoint: string, id: string, params = {}): Promise<T> {
+  async getById(endpoint: string, id: string, params = {}): Promise<unknown> {
     const cleanId = cleanOpenAlexId(id);
 
     if (this.staticCacheEnabled && !params) {
@@ -246,7 +259,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
               id: cleanId,
               tier: staticResult.tier,
             });
-            return staticResult.data as T;
+            return validateStaticData(staticResult.data);
           }
         }
       } catch (error: unknown) {
@@ -260,7 +273,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
 
     // Fallback to parent implementation, but catch API errors and try static cache before giving up
     try {
-      return await super.getById<T>(endpoint, cleanId, params);
+      return await super.getById(endpoint, cleanId, params);
     } catch (apiError: unknown) {
       logger.warn(
         "client",
@@ -285,7 +298,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
                 "Static cache hit during getById fallback",
                 { endpoint, id: cleanId, tier: staticResult.tier },
               );
-              return staticResult.data as T;
+              return staticResult.data;
             }
           }
         } catch (staticError: unknown) {

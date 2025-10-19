@@ -6,7 +6,7 @@
 import { OpenAlexBaseClient } from "../client";
 import type { EntityType, QueryParams, GroupParams } from "../types";
 import { logger } from "../internal/logger";
-import { extractProperty } from "../internal/type-helpers";
+import { extractPropertyValue } from "@academic-explorer/utils/openalex";
 
 /**
  * Raw group item from OpenAlex API response
@@ -515,9 +515,12 @@ export class GroupingApi {
             }
 
             // Extract properties with explicit type checking using helper
-            const idValue = extractProperty(performer, "id");
-            const displayNameValue = extractProperty(performer, "display_name");
-            const metricValue = extractProperty(performer, metric);
+            const idValue = extractPropertyValue(performer, "id");
+            const displayNameValue = extractPropertyValue(
+              performer,
+              "display_name",
+            );
+            const metricValue = extractPropertyValue(performer, metric);
 
             const id = typeof idValue === "string" ? idValue : "";
             const displayName =

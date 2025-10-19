@@ -4,7 +4,10 @@
  */
 
 import { OpenAlexBaseClient } from "../client";
-import { extractProperty, trustObjectShape } from "../internal/type-helpers";
+import {
+  extractPropertyValue,
+  trustObjectShape,
+} from "@academic-explorer/utils/openalex";
 import type {
   Keyword,
   KeywordsFilters,
@@ -193,7 +196,7 @@ export class KeywordsApi {
     }
     // After validation, safely cast to record to access properties
     const paramsObj = trustObjectShape(params);
-    const sortValue = extractProperty(paramsObj, "sort");
+    const sortValue = extractPropertyValue(paramsObj, "sort");
     return typeof sortValue === "string";
   }
 

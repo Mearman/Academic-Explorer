@@ -92,10 +92,10 @@ interface DeduplicationEntry {
   lastRequestId: string;
 }
 
-type MiddlewareFn = (
-  context: RequestContext,
-  next: () => Promise<ResponseContext>,
-) => Promise<ResponseContext>;
+type MiddlewareFn = (args: {
+  context: RequestContext;
+  next: () => Promise<ResponseContext>;
+}) => Promise<ResponseContext>;
 
 /**
  * Pipeline configuration options
@@ -197,11 +197,11 @@ export class RequestPipeline {
 
     const dispatch = (index: number): Promise<ResponseContext> => {
       if (index === middlewares.length) {
-        return this.executionMiddleware(context);
+        return this.executionMiddleware({ context });
       }
 
       const middleware = middlewares[index];
-      return middleware(context, () => dispatch(index + 1));
+      return middleware({ context, next: () => dispatch(index + 1) });
     };
 
     const result = await dispatch(0);
@@ -216,10 +216,13 @@ export class RequestPipeline {
   /**
    * Logging middleware
    */
-  private async loggingMiddleware(
-    context: RequestContext,
-    next: () => Promise<ResponseContext>,
-  ): Promise<ResponseContext> {
+  private async loggingMiddleware({
+    context,
+    next,
+  }: {
+    context: RequestContext;
+    next: () => Promise<ResponseContext>;
+  }): Promise<ResponseContext> {
     logger.debug("pipeline", "Request started", {
       requestId: context.requestId,
       method: context.method,
@@ -242,10 +245,13 @@ export class RequestPipeline {
   /**
    * Cache lookup middleware
    */
-  private async cacheMiddleware(
-    context: RequestContext,
-    next: () => Promise<ResponseContext>,
-  ): Promise<ResponseContext> {
+  private async cacheMiddleware({
+    context,
+    next,
+  }: {
+    context: RequestContext;
+    next: () => Promise<ResponseContext>;
+  }): Promise<ResponseContext> {
     const cacheKey = this.options.cacheKeyGenerator(context);
     const cached = this.cache.get(cacheKey);
 
@@ -291,10 +297,13 @@ export class RequestPipeline {
   /**
    * Request deduplication middleware
    */
-  private async dedupeMiddleware(
-    context: RequestContext,
-    next: () => Promise<ResponseContext>,
-  ): Promise<ResponseContext> {
+  private async dedupeMiddleware({
+    context,
+    next,
+  }: {
+    context: RequestContext;
+    next: () => Promise<ResponseContext>;
+  }): Promise<ResponseContext> {
     const cacheKey = this.options.cacheKeyGenerator(context);
     const now = Date.now();
     const entry = this.dedupeMap.get(cacheKey);
@@ -358,10 +367,13 @@ export class RequestPipeline {
   /**
    * Retry middleware with exponential backoff
    */
-  private async retryMiddleware(
-    context: RequestContext,
-    next: () => Promise<ResponseContext>,
-  ): Promise<ResponseContext> {
+  private async retryMiddleware({
+    context,
+    next,
+  }: {
+    context: RequestContext;
+    next: () => Promise<ResponseContext>;
+  }): Promise<ResponseContext> {
     let lastResult: ResponseContext | undefined;
     let attempt = 0;
 
@@ -430,10 +442,13 @@ export class RequestPipeline {
   /**
    * Error classification middleware
    */
-  private async errorClassificationMiddleware(
-    context: RequestContext,
-    next: () => Promise<ResponseContext>,
-  ): Promise<ResponseContext> {
+  private async errorClassificationMiddleware({
+    context,
+    next,
+  }: {
+    context: RequestContext;
+    next: () => Promise<ResponseContext>;
+  }): Promise<ResponseContext> {
     const result = await next();
 
     if (result.error) {
@@ -455,10 +470,13 @@ export class RequestPipeline {
   /**
    * Actual request execution middleware
    */
-  private async executionMiddleware(
-    context: RequestContext,
-    _next?: () => Promise<ResponseContext>,
-  ): Promise<ResponseContext> {
+  private async executionMiddleware({
+    context,
+    next: _next,
+  }: {
+    context: RequestContext;
+    next?: () => Promise<ResponseContext>;
+  }): Promise<ResponseContext> {
     const startTime = Date.now();
 
     try {

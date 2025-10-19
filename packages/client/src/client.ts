@@ -6,7 +6,12 @@
 import { logger } from "@academic-explorer/utils/logger";
 import { apiInterceptor, type InterceptedRequest } from "./interceptors";
 import { RETRY_CONFIG, calculateRetryDelay } from "./internal/rate-limit";
-import { trustApiContract, validateApiResponse } from "./internal/type-helpers";
+import {
+  isValidApiResponse,
+  validateApiResponse,
+} from "./internal/type-helpers";
+import { validateWithSchema } from "@academic-explorer/utils/openalex";
+import type { z } from "zod";
 import type { OpenAlexError, OpenAlexResponse, QueryParams } from "./types";
 
 export interface OpenAlexClientConfig {
@@ -30,14 +35,22 @@ interface FullyConfiguredClient extends OpenAlexClientConfig {
 }
 
 export class OpenAlexApiError extends Error {
-  constructor(
-    message: string,
-    public statusCode?: number,
-    public response?: Response,
-  ) {
+  statusCode?: number;
+  response?: Response;
+
+  constructor({
+    message,
+    statusCode,
+    response,
+  }: {
+    message: string;
+    statusCode?: number;
+    response?: Response;
+  }) {
     super(message);
     this.name = "OpenAlexApiError";
-    this.message = message; // Explicitly set message to ensure it's available
+    this.statusCode = statusCode;
+    this.response = response;
 
     // Set the prototype explicitly to maintain instanceof checks
     Object.setPrototypeOf(this, OpenAlexApiError.prototype);
@@ -45,16 +58,18 @@ export class OpenAlexApiError extends Error {
 }
 
 export class OpenAlexRateLimitError extends OpenAlexApiError {
-  constructor(
-    message: string,
-    public retryAfter?: number,
-  ) {
-    super(message, 429);
-    this.name = "OpenAlexRateLimitError";
-    this.message = message; // Explicitly set message to ensure it's available
+  retryAfter?: number;
 
-    // Set the prototype explicitly to maintain instanceof checks
-    Object.setPrototypeOf(this, OpenAlexRateLimitError.prototype);
+  constructor({
+    message,
+    retryAfter,
+  }: {
+    message: string;
+    retryAfter?: number;
+  }) {
+    super({ message, statusCode: 429 });
+    this.name = "OpenAlexRateLimitError";
+    this.retryAfter = retryAfter;
   }
 }
 
@@ -348,37 +363,42 @@ export class OpenAlexBaseClient {
       const errorData: unknown = await response.json();
 
       if (isOpenAlexError(errorData)) {
-        return new OpenAlexApiError(
-          errorData.message ||
+        return new OpenAlexApiError({
+          message:
+            errorData.message ||
             errorData.error ||
             `HTTP ${response.status.toString()}`,
-          response.status,
+          statusCode: response.status,
           response,
-        );
+        });
       } else {
-        return new OpenAlexApiError(
-          `HTTP ${response.status.toString()} ${response.statusText}`,
-          response.status,
+        return new OpenAlexApiError({
+          message: `HTTP ${response.status.toString()} ${response.statusText}`,
+          statusCode: response.status,
           response,
-        );
+        });
       }
     } catch {
-      return new OpenAlexApiError(
-        `HTTP ${response.status.toString()} ${response.statusText}`,
-        response.status,
+      return new OpenAlexApiError({
+        message: `HTTP ${response.status.toString()} ${response.statusText}`,
+        statusCode: response.status,
         response,
-      );
+      });
     }
   }
 
   /**
    * Make a request with retries and error handling
    */
-  private logRealApiCall(
-    url: string,
-    options: RequestInit,
-    retryCount: number,
-  ): void {
+  private logRealApiCall({
+    url,
+    options,
+    retryCount,
+  }: {
+    url: string;
+    options: RequestInit;
+    retryCount: number;
+  }): void {
     if (
       url.includes("api.openalex.org") &&
       !url.includes("test") &&
@@ -460,7 +480,11 @@ export class OpenAlexBaseClient {
         retryAfterMs,
       );
       await this.sleep(waitTime);
-      return await this.makeRequest(url, options, retryCount + 1);
+      return await this.makeRequest({
+        url,
+        options,
+        retryCount: retryCount + 1,
+      });
     }
 
     // Set host cooldown and throw error
@@ -494,16 +518,24 @@ export class OpenAlexBaseClient {
           ? this.config.retryDelay * Math.pow(2, retryCount)
           : calculateRetryDelay(retryCount, RETRY_CONFIG.server);
       await this.sleep(waitTime);
-      return await this.makeRequest(url, options, retryCount + 1);
+      return await this.makeRequest({
+        url,
+        options,
+        retryCount: retryCount + 1,
+      });
     }
     throw await this.parseError(response);
   }
 
-  private async handleResponseInterception(
-    interceptedRequest: InterceptedRequest | null,
-    response: Response,
-    responseTime: number,
-  ): Promise<void> {
+  private async handleResponseInterception({
+    interceptedRequest,
+    response,
+    responseTime,
+  }: {
+    interceptedRequest: InterceptedRequest | null;
+    response: Response;
+    responseTime: number;
+  }): Promise<void> {
     if (interceptedRequest && response.status >= 200 && response.status < 300) {
       try {
         const responseClone = response.clone();
@@ -537,7 +569,6 @@ export class OpenAlexBaseClient {
 
         if (
           interceptedCall &&
-          typeof globalThis.process !== "undefined" &&
           globalThis.process?.versions?.node &&
           diskCacheEnabled
         ) {
@@ -571,12 +602,16 @@ export class OpenAlexBaseClient {
     }
   }
 
-  private async makeRequest(
-    url: string,
-    options: RequestInit = {},
+  private async makeRequest({
+    url,
+    options = {},
     retryCount = 0,
-  ): Promise<Response> {
-    this.logRealApiCall(url, options, retryCount);
+  }: {
+    url: string;
+    options?: RequestInit;
+    retryCount?: number;
+  }): Promise<Response> {
+    this.logRealApiCall({ url, options, retryCount });
     const { server: maxServerRetries, network: maxNetworkRetries } =
       this.getMaxRetries();
 
@@ -623,17 +658,17 @@ export class OpenAlexBaseClient {
         );
       }
 
-      await this.handleResponseInterception(
+      await this.handleResponseInterception({
         interceptedRequest,
         response,
         responseTime,
-      );
+      });
       return response;
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") {
-        throw new OpenAlexApiError(
-          `Request timeout after ${this.config.timeout.toString()}ms`,
-        );
+        throw new OpenAlexApiError({
+          message: `Request timeout after ${this.config.timeout.toString()}ms`,
+        });
       }
 
       if (error instanceof OpenAlexApiError) {
@@ -649,16 +684,21 @@ export class OpenAlexBaseClient {
         return this.makeRequest(url, options, retryCount + 1);
       }
 
-      throw new OpenAlexApiError(
-        `Network error after ${String(maxNetworkRetries)} attempts: ${error instanceof Error ? error.message : "Unknown error"}`,
-      );
+      throw new OpenAlexApiError({
+        message: `Network error after ${String(maxNetworkRetries)} attempts: ${error instanceof Error ? error.message : "Unknown error"}`,
+      });
     }
   }
 
   /**
-   * GET request that returns parsed JSON
+   * GET request that returns parsed JSON with schema-based validation
+   * Returns typed result when schema is provided, otherwise unknown
    */
-  public async get<T>(endpoint: string, params: QueryParams = {}): Promise<T> {
+  public async get<T = unknown>(
+    endpoint: string,
+    params: QueryParams = {},
+    schema?: z.ZodType<T>,
+  ): Promise<T> {
     const url = this.buildUrl(endpoint, params);
     const response = await this.makeRequest(url);
 
@@ -666,15 +706,22 @@ export class OpenAlexBaseClient {
     const contentType = response.headers.get("content-type");
     if (!contentType?.includes("application/json")) {
       const text = await response.text();
-      throw new OpenAlexApiError(
-        `Expected JSON response but got ${contentType ?? "unknown content-type"}. Response: ${text.substring(0, 200)}...`,
-        response.status,
-      );
+      throw new OpenAlexApiError({
+        message: `Expected JSON response but got ${contentType ?? "unknown content-type"}. Response: ${text.substring(0, 200)}...`,
+        statusCode: response.status,
+      });
     }
 
     const data: unknown = await response.json();
     const validatedData = validateApiResponse(data);
-    return trustApiContract(validatedData) as T;
+
+    // If schema is provided, use it for type-safe validation
+    if (schema) {
+      return validateWithSchema(validatedData, schema);
+    }
+
+    // Return validated data - callers must handle typing
+    return validatedData as T;
   }
 
   /**
@@ -690,12 +737,13 @@ export class OpenAlexBaseClient {
   /**
    * GET request for a single entity by ID
    */
-  public async getById<T>(
+  public async getById<T = unknown>(
     endpoint: string,
     id: string,
     params: QueryParams = {},
+    schema?: z.ZodType<T>,
   ): Promise<T> {
-    return this.get<T>(`${endpoint}/${encodeURIComponent(id)}`, params);
+    return this.get(`${endpoint}/${encodeURIComponent(id)}`, params, schema);
   }
 
   /**

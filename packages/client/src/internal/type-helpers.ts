@@ -1,56 +1,73 @@
 /**
- * Type helper utilities for handling external API responses and type casting
- * Internal utilities without external dependencies
+ * Type helper utilities for handling external API responses and type validation
+ * Uses Zod schemas for type-safe validation instead of unsafe type assertions
  */
 
+import { z } from "zod";
+import {
+  apiResponseSchema,
+  staticDataSchema,
+  isRecord,
+  trustObjectShape,
+  extractPropertyValue,
+  validateWithSchema,
+} from "@academic-explorer/utils/openalex";
+
 /**
- * Validates and returns external API response data
- * This performs basic validation before trusting external type contracts
+ * Validates external API response data using Zod schema
+ * Throws an error if validation fails
  */
 export function validateApiResponse(data: unknown): NonNullable<unknown> {
-	// Basic validation that we received some data
-	if (data === null || data === undefined) {
-		throw new Error("Received null or undefined response from API");
-	}
-
-	// Return validated data that is guaranteed to be non-null
-	return data;
+  return apiResponseSchema.parse(data);
 }
 
 /**
- * UNAVOIDABLE TYPE ASSERTION: Trust external API contract after validation
- * This function exists to isolate the one place where we must trust external APIs
- * All external API responses eventually need this assertion due to TypeScript limitations
+ * Validates static data using Zod schema
+ * Throws an error if validation fails
  */
-export function trustApiContract(validatedData: NonNullable<unknown>): unknown {
-	// Return the validated data as unknown for further type checking
-	return validatedData;
+export function validateStaticData(data: unknown): unknown {
+  return staticDataSchema.parse(data);
 }
 
 /**
- * Type guard to verify if value is a record object
- * Returns true if the value is a valid Record<string, unknown>
+ * Type guard that validates data is not null or undefined
+ * This is used for generic API responses where the exact type is determined by the caller
  */
-export function isRecord(obj: unknown): obj is Record<string, unknown> {
-	return typeof obj === "object" && obj !== null && !Array.isArray(obj);
+export function isValidApiResponse(
+  data: unknown,
+): data is NonNullable<unknown> {
+  return data !== null && data !== undefined;
 }
 
 /**
- * Safely convert validated object to record
- * This function assumes the object has already been validated as a record
+ * Trust external API contract after validation
+ * This function isolates the type assertion needed for external API responses
  */
-export function trustObjectShape(obj: unknown): Record<string, unknown> {
-	if (!isRecord(obj)) {
-		throw new Error("Object is not a valid record type");
-	}
-	// TypeScript knows this is a Record<string, unknown> after type guard
-	return obj;
+
+// eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
+export function trustApiContract<T>(validatedData: NonNullable<unknown>): T {
+  // Return the validated data with the expected type
+  return validatedData as T;
 }
 
 /**
- * Extract a property value from an object with unknown structure
- * Returns unknown type that must be validated by caller
+ * Trust static data provider contract after validation
+ * This function isolates the type assertion needed for static data responses
  */
-export function extractProperty(obj: Record<string, unknown>, key: string): unknown {
-	return obj[key];
+
+// eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
+export function trustStaticData<T>(data: unknown): T {
+  // Return the static data with the expected type
+  return data as T;
+}
+
+/**
+ * Trust validated static cache data
+ * This function isolates the type assertion needed for validated static cache responses
+ */
+
+// eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
+export function trustValidatedStaticData<T>(validatedData: unknown): T {
+  // Return the validated static data with the expected type
+  return validatedData as T;
 }

@@ -5,6 +5,8 @@
 
 import { MemoryCache } from "@academic-explorer/utils/cache";
 import { logger } from "@academic-explorer/utils/logger";
+import { validateStaticData } from "../../internal/type-helpers";
+import { staticDataSchema } from "@academic-explorer/utils/openalex";
 import type { OpenAlexEntity, OpenAlexResponse } from "../../types";
 
 /**
@@ -126,7 +128,7 @@ export class GitHubPagesReader {
   /**
    * Fetch static data from GitHub Pages with caching and retry logic
    */
-  async fetchStaticData<T = unknown>(path: string): Promise<T | null> {
+  async fetchStaticData(path: string): Promise<unknown> {
     // Only fetch in production mode
     if (!this.isProduction) {
       logger.debug(
@@ -146,7 +148,7 @@ export class GitHubPagesReader {
         path,
         cacheKey,
       });
-      return cached.data as T;
+      return cached.data;
     }
 
     try {
@@ -172,7 +174,7 @@ export class GitHubPagesReader {
         },
       );
 
-      return data;
+      return validatedData;
     } catch (error) {
       logger.error(
         "static-cache",
@@ -191,10 +193,13 @@ export class GitHubPagesReader {
   /**
    * Fetch OpenAlex entity data from static cache
    */
-  async fetchEntity<T extends OpenAlexEntity>(
-    entityType: string,
-    entityId: string,
-  ): Promise<T | null> {
+  async fetchEntity<T extends OpenAlexEntity>({
+    entityType,
+    entityId,
+  }: {
+    entityType: string;
+    entityId: string;
+  }): Promise<T | null> {
     const path = `entities/${entityType}/${entityId}.json`;
     return this.fetchStaticData<T>(path);
   }
@@ -202,10 +207,13 @@ export class GitHubPagesReader {
   /**
    * Fetch OpenAlex response data from static cache
    */
-  async fetchResponse<T extends OpenAlexEntity>(
-    entityType: string,
-    queryHash: string,
-  ): Promise<OpenAlexResponse<T> | null> {
+  async fetchResponse<T extends OpenAlexEntity>({
+    entityType,
+    queryHash,
+  }: {
+    entityType: string;
+    queryHash: string;
+  }): Promise<OpenAlexResponse<T> | null> {
     const path = `responses/${entityType}/${queryHash}.json`;
     return this.fetchStaticData<OpenAlexResponse<T>>(path);
   }
@@ -240,7 +248,13 @@ export class GitHubPagesReader {
   /**
    * Fetch data with retry logic and exponential backoff
    */
-  private async attemptFetch<T>(url: string, attempt: number): Promise<T> {
+  private async attemptFetch<T>({
+    url,
+    attempt,
+  }: {
+    url: string;
+    attempt: number;
+  }): Promise<T> {
     logger.debug("static-cache", "Attempting to fetch from GitHub Pages", {
       url,
       attempt: attempt + 1,
@@ -257,11 +271,11 @@ export class GitHubPagesReader {
       );
     }
 
-    const data = (await response.json()) as T;
+    const rawData = await response.json();
 
     // Validate data if enabled
     if (this.config.validateData) {
-      const validation = this.validateResponseData(data);
+      const validation = this.validateResponseData(rawData);
       if (!validation.isValid) {
         throw new GitHubPagesReaderError(
           `Invalid data format: ${validation.errors.join(", ")}`,
@@ -270,6 +284,9 @@ export class GitHubPagesReader {
         );
       }
     }
+
+    const validatedData = validateStaticData(rawData);
+    return validatedData;
 
     logger.debug(
       "static-cache",
@@ -284,11 +301,15 @@ export class GitHubPagesReader {
     return data;
   }
 
-  private async handleFetchError(
-    error: unknown,
-    url: string,
-    attempt: number,
-  ): Promise<void> {
+  private async handleFetchError({
+    error,
+    url,
+    attempt,
+  }: {
+    error: unknown;
+    url: string;
+    attempt: number;
+  }): Promise<void> {
     const lastError = error instanceof Error ? error : new Error(String(error));
 
     logger.warn("static-cache", "GitHub Pages fetch attempt failed", {
@@ -327,7 +348,7 @@ export class GitHubPagesReader {
         return await this.attemptFetch<T>(url, attempt);
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
-        await this.handleFetchError(error, url, attempt);
+        await this.handleFetchError({ error, url, attempt });
       }
     }
 
