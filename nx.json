@@ -161,7 +161,11 @@
     },
 
     "typecheck": {
-      "cache": true,
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit",
+        "cwd": "{projectRoot}"
+      },
       "inputs": [
         "source",
         "configs",
@@ -170,9 +174,39 @@
         "{workspaceRoot}/config/**/*"
       ],
       "outputs": ["{projectRoot}/dist/tsc"],
+      "cache": true
+    },
+    "typecheck:all": {
+      "executor": "nx:run-commands",
       "options": {
-        "cacheableOperations": ["typecheck"]
-      }
+        "command": "tsc --noEmit --project tsconfig.typecheck.json",
+        "cwd": "{projectRoot}"
+      },
+      "inputs": [
+        "source",
+        "configs",
+        "^production",
+        "{workspaceRoot}/tsconfig*.json",
+        "{workspaceRoot}/config/**/*"
+      ],
+      "outputs": ["{projectRoot}/dist/tsc"],
+      "cache": true
+    },
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rm -rf dist",
+        "cwd": "{projectRoot}"
+      },
+      "cache": false
+    },
+    "test:watch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest",
+        "cwd": "{projectRoot}"
+      },
+      "cache": false
     },
     "knip": {
       "cache": true,
