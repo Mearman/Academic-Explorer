@@ -48,7 +48,7 @@ const DEFAULT_SETTINGS: SettingsState = {
 };
 
 // Email validation regex
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+(?:\.[^\s@]+)+$/;
 
 // Settings keys for storage
 const SETTINGS_KEYS = {
@@ -129,7 +129,8 @@ class SettingsStore {
    * Validate email format
    */
   isValidEmail(email: string): boolean {
-    return EMAIL_REGEX.test(email.trim());
+    const trimmed = email.trim();
+    return EMAIL_REGEX.test(trimmed) && !trimmed.endsWith(".");
   }
 
   /**
@@ -294,7 +295,7 @@ if (typeof window !== "undefined") {
 }
 
 // Exports for backward compatibility
-export const useSettingsStore = () => zustandStore;
+export const useSettingsStore = zustandStore;
 
 export const settingsActions = actions;
 
