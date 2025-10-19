@@ -335,15 +335,9 @@ export function createTrackedStore<
   // Create actions using the store hook methods
   const actions = actionsFactory({
     set: (partial: unknown, replace?: boolean) => {
-      if (!isZustandStore(useStore)) {
-        throw new Error("Invalid store: missing required methods");
-      }
       useStore.setState(partial, replace);
     },
     get: () => {
-      if (!isZustandStore(useStore)) {
-        throw new Error("Invalid store: missing required methods");
-      }
       return useStore.getState();
     },
   });
