@@ -178,11 +178,15 @@ export function parseSTARFile(): Promise<ParseResult> {
  * Create STAR dataset from parse result
  * Stub implementation - applications should provide their own
  */
-export function createSTARDatasetFromParseResult(
-  file: File,
-  parseResult: ParseResult,
-  reviewTopic: string,
-): STARDataset {
+export function createSTARDatasetFromParseResult({
+  file,
+  parseResult,
+  reviewTopic,
+}: {
+  file: File;
+  parseResult: ParseResult;
+  reviewTopic: string;
+}): STARDataset {
   logger.warn(
     DATA_EVALUATION_LOG_CONTEXT,
     "createSTARDatasetFromParseResult: Using stub implementation",
@@ -264,10 +268,13 @@ export function searchBasedOnSTARDataset(
  * Calculate search coverage
  * Stub implementation - applications should provide their own
  */
-export function calculateSearchCoverage(
-  searchResults: WorkReference[],
-  dataset: STARDataset,
-): SearchCoverage {
+export function calculateSearchCoverage({
+  searchResults,
+  dataset,
+}: {
+  searchResults: WorkReference[];
+  dataset: STARDataset;
+}): SearchCoverage {
   logger.warn(
     DATA_EVALUATION_LOG_CONTEXT,
     "calculateSearchCoverage: Using stub implementation",
@@ -283,11 +290,15 @@ export function calculateSearchCoverage(
  * Detect potentially missing papers in search results
  * Stub implementation - applications should provide their own
  */
-export function detectMissingPapers(
-  dataset: STARDataset,
-  config: MissingPaperDetectionConfig,
-  onProgress?: (progress: DetectionProgress) => void,
-): MissingPaperDetectionResults {
+export function detectMissingPapers({
+  dataset,
+  config,
+  onProgress,
+}: {
+  dataset: STARDataset;
+  config: MissingPaperDetectionConfig;
+  onProgress?: (progress: DetectionProgress) => void;
+}): MissingPaperDetectionResults {
   logger.warn(
     DATA_EVALUATION_LOG_CONTEXT,
     "detectMissingPapers: Using stub implementation",
