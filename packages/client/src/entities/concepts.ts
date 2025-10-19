@@ -312,29 +312,29 @@ export class ConceptsApi {
       typeof params.sort === "string" &&
       this.isQueryParams(params)
     ) {
-      // TODO: Use conceptSchema once type issues are resolved
       return this.client.getById(
         "concepts",
         normalizedId,
         params,
-      ) as Promise<Concept>;
+        conceptSchema,
+      );
     }
     // Otherwise, convert from StrictConceptsQueryParams
     if (this.isStrictConceptsQueryParams(params)) {
-      // TODO: Use conceptSchema once type issues are resolved
       return this.client.getById(
         "concepts",
         normalizedId,
         toQueryParams(params),
-      ) as Promise<Concept>;
+        conceptSchema,
+      );
     }
     // Default case - treat as basic params
-    // TODO: Use conceptSchema once type issues are resolved
     return this.client.getById(
       "concepts",
       normalizedId,
       toQueryParams({}),
-    ) as Promise<Concept>;
+      conceptSchema,
+    );
   }
 
   /**
