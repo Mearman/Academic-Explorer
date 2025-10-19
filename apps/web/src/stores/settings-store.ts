@@ -29,43 +29,41 @@ const DEFAULT_EMAIL = "";
 // Email validation regex
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const { useStore: useSettingsStore } = createTrackedStore<
-  SettingsState,
-  SettingsActions
->({
-  config: {
-    name: "settings",
-    initialState: {
-      politePoolEmail: DEFAULT_EMAIL,
+const { useStore: useSettingsStore, actions: settingsActions } =
+  createTrackedStore<SettingsState, SettingsActions>({
+    config: {
+      name: "settings",
+      initialState: {
+        politePoolEmail: DEFAULT_EMAIL,
+      },
+      persist: {
+        enabled: typeof process === "undefined" || !process.env.VITEST,
+        storage: "localstorage",
+      },
     },
-    persist: {
-      enabled: true,
-      storage: "localstorage",
-    },
-  },
-  actionsFactory: ({ set, get }) => ({
-    setPolitePoolEmail: (email: string) => {
-      set((state) => {
-        state.politePoolEmail = email;
-      });
+    actionsFactory: ({ set, get }) => ({
+      setPolitePoolEmail: (email: string) => {
+        set((state) => {
+          state.politePoolEmail = email;
+        });
 
-      logger.debug("settings", "Updated polite pool email", {
-        hasEmail: email.length > 0,
-        isValid: get().isValidEmail(email),
-      });
-    },
+        logger.debug("settings", "Updated polite pool email", {
+          hasEmail: email.length > 0,
+          isValid: get().isValidEmail(email),
+        });
+      },
 
-    resetSettings: () => {
-      set((state) => {
-        state.politePoolEmail = DEFAULT_EMAIL;
-      });
-    },
+      resetSettings: () => {
+        set((state) => {
+          state.politePoolEmail = DEFAULT_EMAIL;
+        });
+      },
 
-    isValidEmail: (email: string) => EMAIL_REGEX.test(email.trim()),
-  }),
-});
+      isValidEmail: (email: string) => EMAIL_REGEX.test(email.trim()),
+    }),
+  });
 
-export { useSettingsStore };
+export { useSettingsStore, settingsActions };
 
 // Export a hook for getting the current email
 export const usePolitePoolEmail = () => {

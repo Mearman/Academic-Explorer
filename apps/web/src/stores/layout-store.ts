@@ -248,7 +248,7 @@ type LayoutPersistedState = Partial<
   >
 >;
 
-const { useStore: useLayoutStore } = createTrackedStore<
+const { useStore: useLayoutStore, actions: layoutActions } = createTrackedStore<
   LayoutState,
   LayoutActions
 >({
@@ -273,7 +273,7 @@ const { useStore: useLayoutStore } = createTrackedStore<
       autoPinOnLayoutStabilization: false,
     },
     persist: {
-      enabled: true,
+      enabled: typeof process === "undefined" || !process.env.VITEST,
       storage: "hybrid",
       config: {
         dbName: "academic-explorer",
@@ -809,4 +809,4 @@ const { useStore: useLayoutStore } = createTrackedStore<
   }),
 });
 
-export { useLayoutStore };
+export { useLayoutStore, layoutActions };

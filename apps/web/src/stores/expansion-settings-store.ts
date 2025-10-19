@@ -134,17 +134,17 @@ const initializeDefaultSettings = (): Record<
   };
 };
 
-const { useStore: useExpansionSettingsStore } = createTrackedStore<
-  ExpansionSettingsState,
-  ExpansionSettingsActions
->({
+const {
+  useStore: useExpansionSettingsStore,
+  actions: expansionSettingsActions,
+} = createTrackedStore<ExpansionSettingsState, ExpansionSettingsActions>({
   config: {
     name: "expansion-settings",
     initialState: {
       settings: initializeDefaultSettings(),
     },
     persist: {
-      enabled: true,
+      enabled: typeof process === "undefined" || !process.env.VITEST,
       storage: "hybrid",
       config: {
         dbName: "academic-explorer",
@@ -465,7 +465,7 @@ const { useStore: useExpansionSettingsStore } = createTrackedStore<
   }),
 });
 
-export { useExpansionSettingsStore };
+export { useExpansionSettingsStore, expansionSettingsActions };
 
 // Export a hook for getting settings for a specific target
 export const useExpansionSettings = (target: ExpansionTarget) => {
