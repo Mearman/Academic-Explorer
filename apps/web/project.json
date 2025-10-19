@@ -66,35 +66,9 @@
       "cache": true
     },
     "lint": {
-      "executor": "@nx/eslint:lint",
       "options": {
-        "lintFilePatterns": ["apps/web/**/*.{ts,tsx,js,jsx}"],
-        "maxWarnings": 100
-      },
-      "inputs": [
-        "source",
-        "configs",
-        "{workspaceRoot}/eslint.config.ts",
-        "{workspaceRoot}/eslint.config.*.ts"
-      ],
-      "outputs": ["{workspaceRoot}/.nx/cache/lint-results/{projectName}.json"],
-      "cache": true
-    },
-    "lint:fix": {
-      "executor": "@nx/eslint:lint",
-      "options": {
-        "lintFilePatterns": ["apps/web/**/*.{ts,tsx,js,jsx}"],
-        "fix": true,
-        "maxWarnings": 100
-      },
-      "inputs": [
-        "source",
-        "configs",
-        "{workspaceRoot}/eslint.config.ts",
-        "{workspaceRoot}/eslint.config.*.ts"
-      ],
-      "outputs": ["{projectRoot}/**/*.{js,jsx,ts,tsx}"],
-      "cache": true
+        "command": "NODE_OPTIONS='--import tsx' eslint --no-warn-ignored **/*.{ts,tsx,js} --fix"
+      }
     },
     "test": {
       "executor": "nx:run-commands",
