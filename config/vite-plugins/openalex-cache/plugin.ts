@@ -147,7 +147,7 @@ function setupTestCacheInterception(
 
         // Only save to cache if response is not mocked
         if (!isMocked) {
-          const cachePath = getCacheFilePath(
+          const cachePath = await getCacheFilePath(
             url,
             pluginState.getStaticDataDir()!,
           );

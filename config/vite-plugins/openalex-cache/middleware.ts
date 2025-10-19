@@ -121,7 +121,7 @@ export function createCacheMiddleware(
         return next();
       }
 
-      const cachePath = getCachePath(fullUrl, context);
+      const cachePath = await getCachePath(fullUrl, context);
       if (!cachePath) {
         return next();
       }

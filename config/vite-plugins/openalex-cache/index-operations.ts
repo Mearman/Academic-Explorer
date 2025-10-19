@@ -284,6 +284,19 @@ export const updateDirectoryIndexWithAggregation = async (
                 : pathSegments;
             const entityTypeStr = resourceSegments[0] ?? "";
             const entityType = entityTypeStr as EntityType;
+            // Check if this is a hash-based filename (can't reconstruct URL from it)
+            if (/^q_[a-f0-9]{16}$/.test(baseName)) {
+              logger.debug(
+                "cache",
+                "Skipping reconstruction for hash-based filename",
+                {
+                  filename: baseName,
+                },
+              );
+              // Skip this file - it will be handled by index migration if needed
+              continue;
+            }
+
             // Decode filename to get original query params
             const decodedQuery = decodeFilename(baseName);
             const queryParams = filenameToQuery(decodedQuery);
@@ -354,7 +367,7 @@ export const updateDirectoryIndexWithAggregation = async (
           }
 
           // Validate the reconstructed entry to catch any inconsistencies
-          if (!validateFileEntry(fileEntry)) {
+          if (!(await validateFileEntry(fileEntry))) {
             if (context?.verbose) {
               console.log(
                 `[openalex-cache] Validation failed for ${baseName} in ${dirPath}, falling back to simple entry`,

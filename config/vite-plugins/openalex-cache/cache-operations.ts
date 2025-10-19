@@ -14,11 +14,11 @@ import type { CacheContext } from "./types";
 /**
  * Get cache path for a request using shared utilities
  */
-export const getCachePath = (
+export const getCachePath = async (
   url: string,
   context: CacheContext,
-): string | null => {
-  return getCacheFilePath(url, context.staticDataDir);
+): Promise<string | null> => {
+  return await getCacheFilePath(url, context.staticDataDir);
 };
 
 /**
