@@ -1,0 +1,566 @@
+{
+  "id": "https://openalex.org/C126322002",
+  "wikidata": "https://www.wikidata.org/wiki/Q11180",
+  "display_name": "Internal medicine",
+  "level": 1,
+  "description": "medical specialty dealing with the prevention, diagnosis, and treatment of adult diseases",
+  "works_count": 25503559,
+  "cited_by_count": 459143109,
+  "summary_stats": {
+    "2yr_mean_citedness": 1.9818801885530515,
+    "h_index": 2613,
+    "i10_index": 7455990
+  },
+  "ids": {
+    "openalex": "https://openalex.org/C126322002",
+    "wikidata": "https://www.wikidata.org/wiki/Q11180",
+    "mag": "126322002",
+    "wikipedia": "https://en.wikipedia.org/wiki/Internal%20medicine",
+    "umls_cui": [
+      "C0021782"
+    ]
+  },
+  "image_url": null,
+  "image_thumbnail_url": null,
+  "international": {
+    "display_name": {
+      "af": "interne medisyne",
+      "ar": "طب باطني",
+      "az": "daxili xəstəliklər",
+      "ba": "эске ауырыуҙар",
+      "be": "унутраныя хваробы",
+      "bg": "Вътрешни болести",
+      "bn": "অন্তররোগ চিকিৎসাবিজ্ঞান",
+      "bs": "Interna medicina",
+      "ca": "medicina interna",
+      "ckb": "پزیشکی نێوخۆیی",
+      "cs": "vnitřní lékařství",
+      "cy": "Meddygaeth fewnol",
+      "da": "intern medicin",
+      "de": "Innere Medizin",
+      "el": "Εσωτερική παθολογία",
+      "en": "internal medicine",
+      "eo": "interna medicino",
+      "es": "medicina interna",
+      "eu": "Barne medikuntza",
+      "fa": "پزشکی داخلی",
+      "fi": "sisätaudit",
+      "fr": "médecine interne",
+      "he": "רפואה פנימית",
+      "hr": "Interna medicina",
+      "hu": "belgyógyászat",
+      "hy": "ներքին հիվանդություններ",
+      "hyw": "Ներքին հիւանդութիւններ",
+      "id": "Penyakit dalam",
+      "io": "Interna medicino",
+      "it": "medicina interna",
+      "ja": "内科学",
+      "jv": "Panyakit njero",
+      "kn": "ಜನರಲ್ ಮೆಡಿಸಿನ್",
+      "ko": "내과",
+      "lv": "Internā medicīna",
+      "mk": "интерна медицина",
+      "ms": "Perubatan dalaman",
+      "nan": "Lāi-kho-ha̍k",
+      "nb": "indremedisin",
+      "nds": "Binnere Medizin",
+      "ne": "आन्तरिक चिकित्सा",
+      "nl": "inwendige geneeskunde",
+      "nn": "indremedisin",
+      "pl": "medycyna wewnętrzna",
+      "pt": "clínica médica",
+      "ro": "medicină internă",
+      "ru": "внутренние болезни",
+      "sh": "Interna medicina",
+      "sk": "Vnútorné lekárstvo",
+      "sl": "Interna medicina",
+      "sq": "Internisti",
+      "sr": "интерна медицина",
+      "sv": "internmedicin",
+      "tg": "Бемориҳои дарунӣ",
+      "th": "อายุรศาสตร์",
+      "tl": "Panggagamot na panloob",
+      "tr": "İç hastalıkları",
+      "uk": "внутрішні захворювання",
+      "vec": "medexina interna",
+      "vi": "nội khoa",
+      "war": "Pansakob nga pagtambal",
+      "yue": "內科",
+      "zh": "內科學",
+      "zh-hant": "內科學"
+    },
+    "description": {
+      "bn": "চিকিৎসাবিজ্ঞানের বিশেষায়িত শাখা যেখানে সামগ্রিক দৃষ্টিভঙ্গি থেকে প্রাপ্তবয়স্কদের দেহের অভ্যন্তরের বিভিন্ন রোগ প্রতিরোধ, নির্ণয় ও চিকিৎসা করা হয়",
+      "cs": "lékařský obor věnující se diagnóze a převážně nechirurgické léčbě onemocnění vnitřních orgánů u dospělých",
+      "de": "Teilgebiet der Medizin",
+      "en": "medical specialty dealing with the prevention, diagnosis, and treatment of adult diseases",
+      "es": "especialidad médica que se dedica a la atención integral del adulto enfermo ingresado en un hospital",
+      "fr": "spécialité médicale",
+      "hu": "orvosi szakterület",
+      "it": "ramo prevalentemente terapeutico della medicina umana",
+      "ja": "医学の一分野",
+      "pl": "dział medycyny",
+      "pt": "Especialidade Médica",
+      "ru": "область медицины, занимающаяся проблемами заболеваний внутренних органов",
+      "sq": "specialitet mjekësor",
+      "vi": "phân ngành trong y khoa",
+      "zh": "学科"
+    }
+  },
+  "ancestors": [
+    {
+      "id": "https://openalex.org/C71924100",
+      "wikidata": "https://www.wikidata.org/wiki/Q11190",
+      "display_name": "Medicine",
+      "level": 0
+    }
+  ],
+  "related_concepts": [
+    {
+      "id": "https://openalex.org/C187212893",
+      "wikidata": null,
+      "display_name": "Pediatrics",
+      "level": 1,
+      "score": 58.21606
+    },
+    {
+      "id": "https://openalex.org/C71924100",
+      "wikidata": null,
+      "display_name": "Medicine",
+      "level": 0,
+      "score": 38.005802
+    },
+    {
+      "id": "https://openalex.org/C194828623",
+      "wikidata": null,
+      "display_name": "Emergency medicine",
+      "level": 1,
+      "score": 35.586212
+    },
+    {
+      "id": "https://openalex.org/C512399662",
+      "wikidata": null,
+      "display_name": "Family medicine",
+      "level": 1,
+      "score": 35.270367
+    },
+    {
+      "id": "https://openalex.org/C16568411",
+      "wikidata": null,
+      "display_name": "Neurology",
+      "level": 2,
+      "score": 33.34955
+    },
+    {
+      "id": "https://openalex.org/C142724271",
+      "wikidata": null,
+      "display_name": "Pathology",
+      "level": 1,
+      "score": 32.92986
+    },
+    {
+      "id": "https://openalex.org/C118487528",
+      "wikidata": null,
+      "display_name": "Ophthalmology",
+      "level": 1,
+      "score": 32.67974
+    },
+    {
+      "id": "https://openalex.org/C118552586",
+      "wikidata": null,
+      "display_name": "Psychiatry",
+      "level": 1,
+      "score": 31.53136
+    },
+    {
+      "id": "https://openalex.org/C141071460",
+      "wikidata": null,
+      "display_name": "Surgery",
+      "level": 1,
+      "score": 29.66851
+    },
+    {
+      "id": "https://openalex.org/C164705383",
+      "wikidata": null,
+      "display_name": "Cardiology",
+      "level": 1,
+      "score": 29.32145
+    },
+    {
+      "id": "https://openalex.org/C68312169",
+      "wikidata": null,
+      "display_name": "Orthopedic surgery",
+      "level": 2,
+      "score": 28.772005
+    },
+    {
+      "id": "https://openalex.org/C16005928",
+      "wikidata": null,
+      "display_name": "Dermatology",
+      "level": 1,
+      "score": 24.550201
+    },
+    {
+      "id": "https://openalex.org/C29456083",
+      "wikidata": null,
+      "display_name": "Gynecology",
+      "level": 1,
+      "score": 24.512356
+    },
+    {
+      "id": "https://openalex.org/C61434518",
+      "wikidata": null,
+      "display_name": "General surgery",
+      "level": 1,
+      "score": 22.78392
+    },
+    {
+      "id": "https://openalex.org/C131872663",
+      "wikidata": null,
+      "display_name": "Obstetrics",
+      "level": 1,
+      "score": 21.39429
+    },
+    {
+      "id": "https://openalex.org/C108516343",
+      "wikidata": null,
+      "display_name": "Otorhinolaryngology",
+      "level": 2,
+      "score": 21.055893
+    },
+    {
+      "id": "https://openalex.org/C126838900",
+      "wikidata": null,
+      "display_name": "Radiology",
+      "level": 1,
+      "score": 19.656185
+    },
+    {
+      "id": "https://openalex.org/C90924648",
+      "wikidata": null,
+      "display_name": "Gastroenterology",
+      "level": 1,
+      "score": 18.728163
+    },
+    {
+      "id": "https://openalex.org/C54183767",
+      "wikidata": null,
+      "display_name": "Geriatrics",
+      "level": 2,
+      "score": 18.353472
+    },
+    {
+      "id": "https://openalex.org/C143998085",
+      "wikidata": null,
+      "display_name": "Oncology",
+      "level": 1,
+      "score": 18.076818
+    },
+    {
+      "id": "https://openalex.org/C54847362",
+      "wikidata": null,
+      "display_name": "Nephrology",
+      "level": 2,
+      "score": 17.641336
+    },
+    {
+      "id": "https://openalex.org/C134018914",
+      "wikidata": null,
+      "display_name": "Endocrinology",
+      "level": 1,
+      "score": 16.886675
+    },
+    {
+      "id": "https://openalex.org/C2780724011",
+      "wikidata": null,
+      "display_name": "Emergency department",
+      "level": 2,
+      "score": 16.371744
+    },
+    {
+      "id": "https://openalex.org/C126894567",
+      "wikidata": null,
+      "display_name": "Urology",
+      "level": 1,
+      "score": 15.458126
+    },
+    {
+      "id": "https://openalex.org/C12770488",
+      "wikidata": null,
+      "display_name": "Neurosurgery",
+      "level": 2,
+      "score": 15.437209
+    },
+    {
+      "id": "https://openalex.org/C194409129",
+      "wikidata": null,
+      "display_name": "Hematology",
+      "level": 2,
+      "score": 15.366749
+    },
+    {
+      "id": "https://openalex.org/C179585855",
+      "wikidata": null,
+      "display_name": "Pulmonology",
+      "level": 2,
+      "score": 13.921101
+    },
+    {
+      "id": "https://openalex.org/C177713679",
+      "wikidata": null,
+      "display_name": "Intensive care medicine",
+      "level": 1,
+      "score": 13.339587
+    },
+    {
+      "id": "https://openalex.org/C198451711",
+      "wikidata": null,
+      "display_name": "Rheumatology",
+      "level": 2,
+      "score": 13.122919
+    },
+    {
+      "id": "https://openalex.org/C199343813",
+      "wikidata": null,
+      "display_name": "Dentistry",
+      "level": 1,
+      "score": 11.737341
+    },
+    {
+      "id": "https://openalex.org/C20387591",
+      "wikidata": null,
+      "display_name": "Specialty",
+      "level": 2,
+      "score": 9.871887
+    },
+    {
+      "id": "https://openalex.org/C99508421",
+      "wikidata": null,
+      "display_name": "Physical medicine and rehabilitation",
+      "level": 1,
+      "score": 9.388915
+    },
+    {
+      "id": "https://openalex.org/C2779526319",
+      "wikidata": null,
+      "display_name": "Anesthesiology",
+      "level": 2,
+      "score": 8.668818
+    },
+    {
+      "id": "https://openalex.org/C509550671",
+      "wikidata": null,
+      "display_name": "Medical education",
+      "level": 1,
+      "score": 5.6020217
+    },
+    {
+      "id": "https://openalex.org/C2780358146",
+      "wikidata": null,
+      "display_name": "Hospital medicine",
+      "level": 2,
+      "score": 5.5879054
+    },
+    {
+      "id": "https://openalex.org/C43893838",
+      "wikidata": null,
+      "display_name": "Sports medicine",
+      "level": 2,
+      "score": 4.98487
+    },
+    {
+      "id": "https://openalex.org/C2780423258",
+      "wikidata": null,
+      "display_name": "Pediatric surgery",
+      "level": 2,
+      "score": 4.210859
+    },
+    {
+      "id": "https://openalex.org/C82988395",
+      "wikidata": null,
+      "display_name": "Medical jurisprudence",
+      "level": 2,
+      "score": 3.6424968
+    },
+    {
+      "id": "https://openalex.org/C41260117",
+      "wikidata": null,
+      "display_name": "Hepatology",
+      "level": 2,
+      "score": 3.484634
+    },
+    {
+      "id": "https://openalex.org/C529978579",
+      "wikidata": null,
+      "display_name": "Clinical pathology",
+      "level": 2,
+      "score": 3.0287359
+    },
+    {
+      "id": "https://openalex.org/C2781247642",
+      "wikidata": null,
+      "display_name": "Adolescent medicine",
+      "level": 2,
+      "score": 2.7764525
+    },
+    {
+      "id": "https://openalex.org/C44519122",
+      "wikidata": null,
+      "display_name": "Medical laboratory",
+      "level": 2,
+      "score": 2.6165028
+    },
+    {
+      "id": "https://openalex.org/C185032368",
+      "wikidata": null,
+      "display_name": "Tropical medicine",
+      "level": 2,
+      "score": 2.395879
+    },
+    {
+      "id": "https://openalex.org/C382228",
+      "wikidata": null,
+      "display_name": "Clinical chemistry",
+      "level": 2,
+      "score": 1.8089961
+    },
+    {
+      "id": "https://openalex.org/C2775961244",
+      "wikidata": null,
+      "display_name": "Doctor–patient relationship",
+      "level": 2,
+      "score": 1.4440688
+    },
+    {
+      "id": "https://openalex.org/C2780642338",
+      "wikidata": null,
+      "display_name": "Subspecialty",
+      "level": 2,
+      "score": 1.4129874
+    },
+    {
+      "id": "https://openalex.org/C125046197",
+      "wikidata": null,
+      "display_name": "Hippocratic Oath",
+      "level": 2,
+      "score": 1.3628916
+    },
+    {
+      "id": "https://openalex.org/C2779437838",
+      "wikidata": null,
+      "display_name": "Venereology",
+      "level": 2,
+      "score": 1.190494
+    },
+    {
+      "id": "https://openalex.org/C63433958",
+      "wikidata": null,
+      "display_name": "Clinical pharmacology",
+      "level": 2,
+      "score": 1.1254036
+    },
+    {
+      "id": "https://openalex.org/C2779516188",
+      "wikidata": null,
+      "display_name": "Travel medicine",
+      "level": 2,
+      "score": 0.9301773
+    },
+    {
+      "id": "https://openalex.org/C542138692",
+      "wikidata": null,
+      "display_name": "Laryngology",
+      "level": 2,
+      "score": 0.7544497
+    }
+  ],
+  "counts_by_year": [
+    {
+      "year": 2025,
+      "works_count": 710241,
+      "oa_works_count": 194292,
+      "cited_by_count": 18280705
+    },
+    {
+      "year": 2024,
+      "works_count": 1050487,
+      "oa_works_count": 483824,
+      "cited_by_count": 28137744
+    },
+    {
+      "year": 2023,
+      "works_count": 1230375,
+      "oa_works_count": 817236,
+      "cited_by_count": 28818195
+    },
+    {
+      "year": 2022,
+      "works_count": 1078995,
+      "oa_works_count": 691494,
+      "cited_by_count": 28660011
+    },
+    {
+      "year": 2021,
+      "works_count": 1135592,
+      "oa_works_count": 689750,
+      "cited_by_count": 28913453
+    },
+    {
+      "year": 2020,
+      "works_count": 1135559,
+      "oa_works_count": 646407,
+      "cited_by_count": 26165311
+    },
+    {
+      "year": 2019,
+      "works_count": 953291,
+      "oa_works_count": 466925,
+      "cited_by_count": 20606841
+    },
+    {
+      "year": 2018,
+      "works_count": 906885,
+      "oa_works_count": 419045,
+      "cited_by_count": 18842605
+    },
+    {
+      "year": 2017,
+      "works_count": 844282,
+      "oa_works_count": 383828,
+      "cited_by_count": 18112750
+    },
+    {
+      "year": 2016,
+      "works_count": 818802,
+      "oa_works_count": 349884,
+      "cited_by_count": 17256039
+    },
+    {
+      "year": 2015,
+      "works_count": 820156,
+      "oa_works_count": 314288,
+      "cited_by_count": 17130432
+    },
+    {
+      "year": 2014,
+      "works_count": 794633,
+      "oa_works_count": 280128,
+      "cited_by_count": 16421348
+    },
+    {
+      "year": 2013,
+      "works_count": 785993,
+      "oa_works_count": 258959,
+      "cited_by_count": 15446328
+    },
+    {
+      "year": 2012,
+      "works_count": 745937,
+      "oa_works_count": 227319,
+      "cited_by_count": 14585000
+    }
+  ],
+  "works_api_url": "https://api.openalex.org/works?filter=concepts.id:C126322002",
+  "updated_date": "2025-10-19T13:12:59.846193",
+  "created_date": "2016-06-24"
+}

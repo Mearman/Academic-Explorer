@@ -1,0 +1,1144 @@
+{
+  "id": "https://openalex.org/C33923547",
+  "wikidata": "https://www.wikidata.org/wiki/Q395",
+  "display_name": "Mathematics",
+  "level": 0,
+  "description": "field of study",
+  "works_count": 31848889,
+  "cited_by_count": 421658101,
+  "summary_stats": {
+    "2yr_mean_citedness": 1.5628602428560867,
+    "h_index": 3544,
+    "i10_index": 6481042
+  },
+  "ids": {
+    "openalex": "https://openalex.org/C33923547",
+    "wikidata": "https://www.wikidata.org/wiki/Q395",
+    "mag": "33923547",
+    "wikipedia": "https://en.wikipedia.org/wiki/Mathematics",
+    "umls_cui": [
+      "C0024934"
+    ]
+  },
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/2/21/Euclid.jpg",
+  "image_thumbnail_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Euclid.jpg/100px-Euclid.jpg",
+  "international": {
+    "display_name": {
+      "af": "wiskunde",
+      "am": "ትምህርተ ሂሳብ",
+      "an": "matematicas",
+      "ang": "rīmcræft",
+      "anp": "गणित",
+      "ar": "رياضيات",
+      "ary": "لماط",
+      "arz": "رياضيات",
+      "as": "গণিত",
+      "ast": "matemátiques",
+      "avk": "Solokseropa",
+      "awa": "गणित",
+      "ay": "jakhu",
+      "az": "riyaziyyat",
+      "azb": "ریاضیات",
+      "ba": "математика",
+      "ban": "Matematika",
+      "bar": "Mathematik",
+      "bcl": "Matematika",
+      "be": "матэматыка",
+      "be-tarask": "матэматыка",
+      "bg": "математика",
+      "bho": "गणित",
+      "bi": "Matematikis",
+      "bjn": "matamatika",
+      "blk": "သင်္ချာ",
+      "bm": "Matematiki",
+      "bn": "গণিত",
+      "bo": "རྩིས་རིག",
+      "bpy": "গণিত",
+      "br": "matematik",
+      "bs": "matematika",
+      "bug": "matematika",
+      "bxr": "Тоогой ухаан",
+      "ca": "matemàtiques",
+      "cbk-zam": "Matematica",
+      "cdo": "Só-hŏk",
+      "ce": "Математика",
+      "ceb": "matematika",
+      "ch": "matematika",
+      "ckb": "ماتماتیک",
+      "co": "matematica",
+      "crh": "riyaziyat",
+      "crh-latn": "Riyaziyat",
+      "crh-ro": "riyaziyet",
+      "cs": "matematika",
+      "csb": "matematika",
+      "cu": "маѳиматїка",
+      "cv": "математика",
+      "cy": "mathemateg",
+      "da": "matematik",
+      "dag": "Laasabu malibu",
+      "de": "Mathematik",
+      "din": "Akuënkäŋ",
+      "diq": "matematik",
+      "dsb": "Matematika",
+      "dtp": "matematik",
+      "dv": "ރިޔާޟިއްޔާތު",
+      "el": "μαθηματικά",
+      "eml": "matemâtica",
+      "en": "mathematics",
+      "en-ca": "mathematics",
+      "en-gb": "mathematics",
+      "eo": "matematiko",
+      "es": "matemáticas",
+      "et": "matemaatika",
+      "eu": "matematika",
+      "ext": "matemáticas",
+      "fa": "ریاضیات",
+      "fi": "matematiikka",
+      "fj": "Fika",
+      "fo": "støddfrøði",
+      "fr": "mathématiques",
+      "frp": "Matèmatiques",
+      "frr": "Matematiik",
+      "fur": "Matematiche",
+      "fy": "wiskunde",
+      "ga": "matamaitic",
+      "gan": "數學",
+      "gcr": "Matématik",
+      "gd": "matamataig",
+      "gl": "matemáticas",
+      "gn": "papapykuaa",
+      "gom": "ಗಣಿತ್",
+      "gor": "Matematika",
+      "gpe": "mathematics",
+      "grc": "μαθηματικά",
+      "gsw": "Mathematik",
+      "gu": "ગણિત",
+      "gv": "maddaght",
+      "ha": "Lissafi",
+      "hak": "sṳ-ho̍k",
+      "haw": "makemakika",
+      "he": "מתמטיקה",
+      "hi": "गणित",
+      "hif": "mathematics",
+      "hr": "matematika",
+      "hsb": "Matematika",
+      "ht": "matematik",
+      "hu": "matematika",
+      "hy": "մաթեմատիկա",
+      "ia": "mathematica",
+      "iba": "Matematik",
+      "id": "matematika",
+      "ie": "matematica",
+      "ig": "ọmúmú-ónúọgụgụ",
+      "ilo": "matematika",
+      "inh": "Математика",
+      "io": "matematiko",
+      "is": "stærðfræði",
+      "it": "matematica",
+      "iu": "ᓈᓴᐅᓯᕆᓂᓗᒃᑖᖅ",
+      "ja": "数学",
+      "jam": "Matimatix",
+      "jbo": "cmaci",
+      "jv": "matématika",
+      "ka": "მათემატიკა",
+      "kaa": "matematika",
+      "kab": "tusnakt",
+      "kge": "Matematika",
+      "kk": "математика",
+      "kl": "matematikki",
+      "km": "គណិតវិទ្យា",
+      "kn": "ಗಣಿತ",
+      "knc": "Mathematics",
+      "ko": "수학",
+      "krc": "математика",
+      "ks": "گرٛؠندُت",
+      "ku": "matematîk",
+      "kw": "Awgrym",
+      "ky": "математика",
+      "la": "mathematica",
+      "lad": "matemátika",
+      "lb": "Mathematik",
+      "lez": "математика",
+      "lfn": "matematica",
+      "lg": "Mathematics",
+      "li": "mathematiek",
+      "lij": "matematica",
+      "lld": "Matematica",
+      "lmo": "matemàtega",
+      "lo": "ຄະນິດສາດ",
+      "lt": "matematika",
+      "lv": "matemātika",
+      "lzh": "數學",
+      "mad": "Matematika",
+      "mag": "गणित",
+      "mai": "गणित",
+      "map-bms": "matematika",
+      "mdf": "математиксь",
+      "mg": "fanisana",
+      "mhr": "математике",
+      "mi": "pāngarau",
+      "min": "Matematika",
+      "mk": "математика",
+      "ml": "ഗണിതം",
+      "mn": "математик",
+      "mni": "ꯆꯩꯁꯤꯡꯂꯣꯟ",
+      "mnw": "သၚ်္ချာ",
+      "mr": "गणित",
+      "ms": "matematik",
+      "ms-arab": "ماتماتيک",
+      "mt": "matematika",
+      "mwl": "matemática",
+      "my": "သင်္ချာ",
+      "myv": "математика",
+      "mzn": "ریاضی",
+      "nah": "tlapōhualmatiliztli",
+      "nan": "Sò͘-ha̍k",
+      "nb": "matematikk",
+      "nds": "Mathematik",
+      "nds-nl": "wiskunde",
+      "ne": "गणित",
+      "new": "गणित",
+      "nia": "Matematika",
+      "nl": "wiskunde",
+      "nn": "matematikk",
+      "nov": "matematike",
+      "nrm": "caltchul",
+      "nv": "Ałhíʼayiiltááh",
+      "oc": "matematicas",
+      "olo": "Matematiekku",
+      "om": "Herreega",
+      "or": "ଗଣିତ",
+      "os": "математикæ",
+      "pa": "ਹਿਸਾਬ",
+      "pag": "matematiks",
+      "pam": "Matematika",
+      "pap": "matemátika",
+      "pcd": "matématikes",
+      "pi": "गणितं",
+      "pih": "maethamatiks",
+      "pl": "matematyka",
+      "pms": "matemàtica",
+      "pnb": "ریاضی",
+      "ps": "شمېرپوهنه",
+      "pt": "matemática",
+      "pt-br": "matemática",
+      "qu": "Yupay yachay",
+      "ro": "matematică",
+      "ru": "математика",
+      "rue": "математіка",
+      "rup": "mathematicã",
+      "sa": "गणितम्",
+      "sah": "математика",
+      "sat": "ᱮᱞᱠᱷᱟ",
+      "sc": "matemàtica",
+      "scn": "matimàtica",
+      "sco": "mathematics",
+      "sd": "رياضي",
+      "se": "matematihkka",
+      "sgs": "Matematėka",
+      "sh": "matematika",
+      "shi": "Tusnakt",
+      "si": "ගණිතය",
+      "sjd": "математика",
+      "sje": "matematijjka",
+      "sk": "matematika",
+      "skr": "ریاضی",
+      "sl": "matematika",
+      "sm": "matematika",
+      "sma": "matematihke",
+      "smj": "matematihkka",
+      "smn": "matematiik",
+      "sms": "matematikk",
+      "sn": "masvomhu",
+      "so": "xisaab",
+      "sq": "matematikë",
+      "sr": "математика",
+      "sr-ec": "математика",
+      "sr-el": "matematika",
+      "srn": "Sabi fu Teri",
+      "ss": "tekubala",
+      "stq": "mathematik",
+      "su": "matematika",
+      "sv": "matematik",
+      "sw": "hisabati",
+      "szl": "matymatyka",
+      "ta": "கணிதம்",
+      "tcy": "ಗಣಿತ",
+      "tdd": "ᥙᥣᥭᥰ ᥘᥙᥳ",
+      "te": "గణితం",
+      "tet": "matemátika",
+      "tg": "риёзиёт",
+      "tg-cyrl": "риёзиёт",
+      "th": "คณิตศาสตร์",
+      "tk": "matematika",
+      "tl": "matematika",
+      "tly": "Riyaziyot",
+      "tn": "Mathematics",
+      "tok": "sona nanpa",
+      "tpi": "ol matematik",
+      "tr": "matematik",
+      "ts": "tinhlayo",
+      "tt": "математика",
+      "tt-cyrl": "математика",
+      "tt-latn": "matematika",
+      "tw": "akontabuo",
+      "udm": "математика",
+      "uk": "математика",
+      "ur": "ریاضی",
+      "uz": "matematika",
+      "vec": "matemàtega",
+      "vep": "matematik",
+      "vi": "toán học",
+      "vls": "Wiskunde",
+      "vo": "matemat",
+      "vro": "Matõmaatiga",
+      "wa": "Matematike",
+      "war": "matematika",
+      "wo": "xayma",
+      "wuu": "数学",
+      "xal": "Эсв",
+      "xh": "I-Mathematics",
+      "xmf": "მათემატიკა",
+      "yi": "מאטעמאטיק",
+      "yo": "mathimátíkì",
+      "yue": "數學",
+      "za": "Soqyoz",
+      "zea": "Wiskunde",
+      "zgh": "ⵜⵓⵙⵏⴰⴽⵜ",
+      "zh": "數學",
+      "zh-cn": "数学",
+      "zh-hans": "数学",
+      "zh-hant": "數學",
+      "zh-hk": "數學",
+      "zh-mo": "數學",
+      "zh-my": "数学",
+      "zh-sg": "数学",
+      "zh-tw": "數學",
+      "zu": "imathemathiki"
+    },
+    "description": {
+      "af": "die studie van patrone in strukture, verandering en ruimte; meer informeel gestel, kan 'n mens sê dat dit die studie van \"getalle en syfers\" is.",
+      "ar": "الدراسة المجردة للمنطق والأعداد والأنماط والتركيب والتغير",
+      "arz": "مجال المعرفة",
+      "as": "অধ্যয়নৰ ক্ষেত্ৰ",
+      "ast": "ciencia de los oxetos y estructures astrautes",
+      "az": "real həyatın miqdar və fəza münasibətlərinə dair məsələlərin həllinin bu obyektlərin xassələrini zərurət üzündən ideallaşdırma yolu ilə tapılmasına əsaslanan elm, təbiət elmlərinin bazisi",
+      "bn": "পরিমাণ, সংগঠন, পরিবর্তন, এবং স্থান সম্পর্কিত অধ্যয়নের ক্ষেত্র",
+      "ca": "camp d'estudi (nombres, quantitat, estructura, relacions, espai, canvi)",
+      "ckb": "سیستمێکی نوێنەرایەتییانەی ڕووت بۆ پشکنینی ژمارەکان و شێوەکان و پێکھاتەکان و گۆڕانی چەندایەتییەکان و پەیوەندییەکانی نێوان ئەمانە",
+      "cs": "věda, zabývající se strukturou abstraktních objektů, jako jsou čísla, prostory, funce a jejich vztahy",
+      "cy": "yr astudiaeth o rif, siap, maint, gofod ayb",
+      "da": "talvidenskab",
+      "de": "Wissenschaft, die abstrakte Strukturen untersucht",
+      "el": "αφηρημένη μελέτη των αριθμών, ποσοτήτων, δομών, σχέσεων, κλπ",
+      "en": "field of study",
+      "eo": "ekzakta logika dedukta scienco pri abstraktaj objektoj kaj strukturoj, kaj la rilatoj inter ili",
+      "es": "ámbito de la ciencia que estudia ciertas entidades abstractas y sus relaciones",
+      "et": "rehkendamisteadus",
+      "fa": "علم محاسبهٔ اعداد",
+      "fi": "deduktiiviseen päättelyyn perustuva tieteenala",
+      "fr": "ensemble de connaissances sur des objets abstraits tels que les nombres, les espaces, les applications, les relations",
+      "gl": "ciencia que estuda os números",
+      "he": "ענף מדעי",
+      "hu": "számok, mennyiségek, struktúrák, összefüggések tanulmányozásával foglalkozó tudományág",
+      "id": "kajian struktur objek abstrak seperti angka, ruang, fungsi dan hubungan",
+      "ilo": "panagadal iti kaadu, patakder, limbang, ken panagbaliw",
+      "is": "vísindagrein",
+      "it": "scienza dello studio dei numeri",
+      "ja": "量（数）、構造、空間、変化などを研究する学問",
+      "kk": "Білім саласы",
+      "kl": "ilinniakkatigut sammivik",
+      "kn": "ಸಂಖ್ಯೆಗಳ ಅಮೂರ್ತ ಅಧ್ಯಯನ, ಪ್ರಮಾಣ,ರಚನೆ,ಸಂಬಂಧಗಳು ಇತ್ಯಾದಿ.; ಗಣಿತಶಾಸ್ತ್ರವನ್ನು ಕ್ರಮಬದ್ಧತೆಗಳ ಹುಡುಕಾಟವೆಂದು ಕಾಣಬಹುದು, ಮತ್ತು ಯಾವುದೇ ಕ್ರಿಯೆಯ ಫಲಿತಾಂಶವು ಗಣಿತದ ನಮೂನೆಯಾಗಿದೆ",
+      "ko": "양, 구조, 공간, 변화 등의 개념을 다루는 학문",
+      "ku": "çiqilekî zanistê",
+      "lad": "la sensia ke estudia las propiedades de los entes abstraktos, komo los numeros, figuras jeometrikas o simbolos, i sus relasiones",
+      "lb": "Wëssenschaft, déi abstrakt Strukturen ënnersicht",
+      "lt": "Mokslas, tiriantis realaus pasaulio kiekybinius santykius ir erdvines formas.",
+      "mag": "अध्ययनके क्षेत्र",
+      "mai": "एक अमूर्त या निराकार आ निगमनात्मक प्रणाली",
+      "mk": "апстрактно проучување броеви, количина, структура, врски и итн.",
+      "ml": "കണക്ക്; അമൂർത്ത വസ്തുക്കളുടെയും ഘടനകളുടെയും ശാസ്ത്രം",
+      "ms": "kajian niskala mengenai nombor, kuantiti, struktur, hubung kait dan lain-lain",
+      "my": "ကိန်း၊ ပမာဏ၊ သဏ္ဌာန်၊ ဆက်နွယ်ချက် စသည်တို့၏ သဘောကို လေ့လာသည့် ဘာသာရပ်",
+      "nb": "læren om tall",
+      "ne": "संख्या, मात्रा, संरचना, सम्बन्ध आदिको सार अध्ययन",
+      "nl": "formele wetenschap",
+      "nn": "abstrakt lære om tal, storleik, struktur, forhold, osb.",
+      "oc": "sciéncia dels estudis dels nombres e sas aplicacions",
+      "pap": "siensia formal",
+      "pl": "nauka badająca m.in. liczby, figury, inne zbiory i inne pojęcia abstrakcyjne",
+      "pnb": "گݨت وگیان",
+      "pt": "ciência que estuda as propriedades e as relações entre os números",
+      "pt-br": "estudo abstrato de números, quantidade, estrutura, relações, etc",
+      "ro": "știință care studiază anumite entități abstracte (numere, cantitate, structură, relații, spațiu, schimbare) și relațiile dintre ele",
+      "ru": "наука о структурах, порядке и отношениях, исторически сложившаяся на основе операций подсчёта, измерения и описания формы объектов",
+      "scn": "scienza ca studìa li nùmmira",
+      "sco": "studie o feck, structur, room, an chynge",
+      "sk": "veda o číselných, kvantitatívnych a priestorových vzťahoch",
+      "sl": "veda, ki raziskuje abstraktne strukture",
+      "sq": "fushë e njohurive",
+      "sr": "апстрактно проучавање бројева, количина, структура, односа итд",
+      "sr-ec": "апстрактно проучавање бројева, количина, структура, односа итд",
+      "sr-el": "apstraktno proučavanje brojeva, količina, struktura, odnosa itd",
+      "sv": "vetenskap om problemlösning och metodutveckling",
+      "szl": "nauka podszukujōncŏ liczby, zbiory liczb, kształty i inksze elymynta",
+      "ta": "ஒரு தனிப்பட்ட படிப்பு வகை",
+      "te": "సంఖ్యలు, పరిమానములు, నిర్మాణాలు, బంధాలు తదితరాదుల నైరుప్య అధ్యయనం; క్రమబద్ధీకరణ కోసం శోధనగా గణితాన్ని చూడవచ్చు; ఏదైనా ధర్మం (ఫంక్షన్) అవుట్పుట్ ను గణిత నమూనా అనవచ్చును",
+      "th": "ศาสตร์ชนิดหนึ่ง",
+      "tl": "larangan ng kaalaman na pangunahing nakatuon sa mga bilang",
+      "tr": "nicelik, yapı, uzay ve değişim gibi konularla ilgilenen bilim dalı",
+      "uk": "наука, яка первісно виникла як один з напрямків пошуку істини у сфері просторових відношень і обчислень, для практичних потреб людини рахувати, обчислювати, вимірювати, досліджувати форми та рух фізичних тіл",
+      "vec": "Siensa del studio dei numari",
+      "vi": "ngành nghiên cứu trừu tượng về những chủ đề như lượng, cấu trúc, không gian, khả năng và sự thay đổi",
+      "wa": "syince des contaedjes et des mzuraedjes",
+      "yi": "די וויסנשאפט וואס פארנעמט זיך מיט צאלן און פארמען",
+      "yo": "MATIMÁTÌSÌ",
+      "yue": "研究數嘅科學",
+      "zh": "利用符號語言研究數量、結構、變化以及空間等概念的學科",
+      "zh-cn": "利用符号语言研究数量、结构、变化以及空间等概念的学科",
+      "zh-hans": "利用符号语言研究数量、结构、变化以及空间等概念的学科",
+      "zh-hant": "利用符號語言研究數量、結構、變化以及空間等概念的學科",
+      "zh-hk": "利用符號語言研究數量、結構、變化以及空間等概念的學科",
+      "zh-mo": "利用符號語言研究數量、結構、變化以及空間等概念的學科",
+      "zh-my": "利用符号语言研究数量、结构、变化以及空间等概念的学科",
+      "zh-sg": "利用符号语言研究数量、结构、变化以及空间等概念的学科",
+      "zh-tw": "利用符號語言研究數量、結構、變化以及空間等概念的學科"
+    }
+  },
+  "ancestors": [],
+  "related_concepts": [
+    {
+      "id": "https://openalex.org/C121332964",
+      "wikidata": null,
+      "display_name": "Physics",
+      "level": 0,
+      "score": 476.25504
+    },
+    {
+      "id": "https://openalex.org/C41008148",
+      "wikidata": null,
+      "display_name": "Computer science",
+      "level": 0,
+      "score": 253.91972
+    },
+    {
+      "id": "https://openalex.org/C185592680",
+      "wikidata": null,
+      "display_name": "Chemistry",
+      "level": 0,
+      "score": 194.35669
+    },
+    {
+      "id": "https://openalex.org/C138885662",
+      "wikidata": null,
+      "display_name": "Philosophy",
+      "level": 0,
+      "score": 175.11475
+    },
+    {
+      "id": "https://openalex.org/C86803240",
+      "wikidata": null,
+      "display_name": "Biology",
+      "level": 0,
+      "score": 157.68698
+    },
+    {
+      "id": "https://openalex.org/C162324750",
+      "wikidata": null,
+      "display_name": "Economics",
+      "level": 0,
+      "score": 136.33258
+    },
+    {
+      "id": "https://openalex.org/C127413603",
+      "wikidata": null,
+      "display_name": "Engineering",
+      "level": 0,
+      "score": 123.503174
+    },
+    {
+      "id": "https://openalex.org/C95457728",
+      "wikidata": null,
+      "display_name": "History",
+      "level": 0,
+      "score": 121.82131
+    },
+    {
+      "id": "https://openalex.org/C2524010",
+      "wikidata": null,
+      "display_name": "Geometry",
+      "level": 1,
+      "score": 116.81084
+    },
+    {
+      "id": "https://openalex.org/C105795698",
+      "wikidata": null,
+      "display_name": "Statistics",
+      "level": 1,
+      "score": 102.42083
+    },
+    {
+      "id": "https://openalex.org/C205649164",
+      "wikidata": null,
+      "display_name": "Geography",
+      "level": 0,
+      "score": 93.49401
+    },
+    {
+      "id": "https://openalex.org/C1276947",
+      "wikidata": null,
+      "display_name": "Astronomy",
+      "level": 1,
+      "score": 88.38019
+    },
+    {
+      "id": "https://openalex.org/C15744967",
+      "wikidata": null,
+      "display_name": "Psychology",
+      "level": 0,
+      "score": 77.07016
+    },
+    {
+      "id": "https://openalex.org/C114614502",
+      "wikidata": null,
+      "display_name": "Combinatorics",
+      "level": 1,
+      "score": 74.91753
+    },
+    {
+      "id": "https://openalex.org/C36289849",
+      "wikidata": null,
+      "display_name": "Social science",
+      "level": 1,
+      "score": 70.41096
+    },
+    {
+      "id": "https://openalex.org/C144024400",
+      "wikidata": null,
+      "display_name": "Sociology",
+      "level": 0,
+      "score": 69.90744
+    },
+    {
+      "id": "https://openalex.org/C142362112",
+      "wikidata": null,
+      "display_name": "Art",
+      "level": 0,
+      "score": 63.855103
+    },
+    {
+      "id": "https://openalex.org/C11413529",
+      "wikidata": null,
+      "display_name": "Algorithm",
+      "level": 1,
+      "score": 58.99724
+    },
+    {
+      "id": "https://openalex.org/C134306372",
+      "wikidata": null,
+      "display_name": "Mathematical analysis",
+      "level": 1,
+      "score": 58.783123
+    },
+    {
+      "id": "https://openalex.org/C15708023",
+      "wikidata": null,
+      "display_name": "Humanities",
+      "level": 1,
+      "score": 55.81571
+    },
+    {
+      "id": "https://openalex.org/C28826006",
+      "wikidata": null,
+      "display_name": "Applied mathematics",
+      "level": 1,
+      "score": 54.51525
+    },
+    {
+      "id": "https://openalex.org/C62520636",
+      "wikidata": null,
+      "display_name": "Quantum mechanics",
+      "level": 1,
+      "score": 52.514996
+    },
+    {
+      "id": "https://openalex.org/C119599485",
+      "wikidata": null,
+      "display_name": "Electrical engineering",
+      "level": 1,
+      "score": 51.520336
+    },
+    {
+      "id": "https://openalex.org/C71924100",
+      "wikidata": null,
+      "display_name": "Medicine",
+      "level": 0,
+      "score": 50.313683
+    },
+    {
+      "id": "https://openalex.org/C17744445",
+      "wikidata": null,
+      "display_name": "Political science",
+      "level": 0,
+      "score": 46.448383
+    },
+    {
+      "id": "https://openalex.org/C33332235",
+      "wikidata": null,
+      "display_name": "Theoretical physics",
+      "level": 1,
+      "score": 45.025303
+    },
+    {
+      "id": "https://openalex.org/C27206212",
+      "wikidata": null,
+      "display_name": "Theology",
+      "level": 1,
+      "score": 43.666107
+    },
+    {
+      "id": "https://openalex.org/C199539241",
+      "wikidata": null,
+      "display_name": "Law",
+      "level": 1,
+      "score": 42.47018
+    },
+    {
+      "id": "https://openalex.org/C124952713",
+      "wikidata": null,
+      "display_name": "Literature",
+      "level": 1,
+      "score": 40.804634
+    },
+    {
+      "id": "https://openalex.org/C78519656",
+      "wikidata": null,
+      "display_name": "Mechanical engineering",
+      "level": 1,
+      "score": 37.827534
+    },
+    {
+      "id": "https://openalex.org/C187736073",
+      "wikidata": null,
+      "display_name": "Management",
+      "level": 1,
+      "score": 33.286705
+    },
+    {
+      "id": "https://openalex.org/C41895202",
+      "wikidata": null,
+      "display_name": "Linguistics",
+      "level": 1,
+      "score": 33.111847
+    },
+    {
+      "id": "https://openalex.org/C37914503",
+      "wikidata": null,
+      "display_name": "Mathematical physics",
+      "level": 1,
+      "score": 32.01708
+    },
+    {
+      "id": "https://openalex.org/C118615104",
+      "wikidata": null,
+      "display_name": "Discrete mathematics",
+      "level": 1,
+      "score": 31.132954
+    },
+    {
+      "id": "https://openalex.org/C147176958",
+      "wikidata": null,
+      "display_name": "Civil engineering",
+      "level": 1,
+      "score": 29.108715
+    },
+    {
+      "id": "https://openalex.org/C94375191",
+      "wikidata": null,
+      "display_name": "Arithmetic",
+      "level": 1,
+      "score": 27.775154
+    },
+    {
+      "id": "https://openalex.org/C121955636",
+      "wikidata": null,
+      "display_name": "Accounting",
+      "level": 1,
+      "score": 27.646355
+    },
+    {
+      "id": "https://openalex.org/C154945302",
+      "wikidata": null,
+      "display_name": "Artificial intelligence",
+      "level": 1,
+      "score": 26.67361
+    },
+    {
+      "id": "https://openalex.org/C202444582",
+      "wikidata": null,
+      "display_name": "Pure mathematics",
+      "level": 1,
+      "score": 26.594627
+    },
+    {
+      "id": "https://openalex.org/C90856448",
+      "wikidata": null,
+      "display_name": "Zoology",
+      "level": 1,
+      "score": 26.530539
+    },
+    {
+      "id": "https://openalex.org/C57879066",
+      "wikidata": null,
+      "display_name": "Mechanics",
+      "level": 1,
+      "score": 26.386894
+    },
+    {
+      "id": "https://openalex.org/C144133560",
+      "wikidata": null,
+      "display_name": "Business",
+      "level": 0,
+      "score": 22.909798
+    },
+    {
+      "id": "https://openalex.org/C80444323",
+      "wikidata": null,
+      "display_name": "Theoretical computer science",
+      "level": 1,
+      "score": 21.215187
+    },
+    {
+      "id": "https://openalex.org/C10138342",
+      "wikidata": null,
+      "display_name": "Finance",
+      "level": 1,
+      "score": 19.827858
+    },
+    {
+      "id": "https://openalex.org/C42475967",
+      "wikidata": null,
+      "display_name": "Operations research",
+      "level": 1,
+      "score": 19.338224
+    },
+    {
+      "id": "https://openalex.org/C39432304",
+      "wikidata": null,
+      "display_name": "Environmental science",
+      "level": 0,
+      "score": 19.296757
+    },
+    {
+      "id": "https://openalex.org/C74916050",
+      "wikidata": null,
+      "display_name": "Classics",
+      "level": 1,
+      "score": 17.943314
+    },
+    {
+      "id": "https://openalex.org/C46312422",
+      "wikidata": null,
+      "display_name": "Communication",
+      "level": 1,
+      "score": 17.197681
+    },
+    {
+      "id": "https://openalex.org/C126255220",
+      "wikidata": null,
+      "display_name": "Mathematical optimization",
+      "level": 1,
+      "score": 16.82393
+    },
+    {
+      "id": "https://openalex.org/C42360764",
+      "wikidata": null,
+      "display_name": "Chemical engineering",
+      "level": 1,
+      "score": 16.787117
+    },
+    {
+      "id": "https://openalex.org/C1965285",
+      "wikidata": null,
+      "display_name": "Earth science",
+      "level": 1,
+      "score": 15.683587
+    },
+    {
+      "id": "https://openalex.org/C113775141",
+      "wikidata": null,
+      "display_name": "Computer engineering",
+      "level": 1,
+      "score": 15.670304
+    },
+    {
+      "id": "https://openalex.org/C192562407",
+      "wikidata": null,
+      "display_name": "Materials science",
+      "level": 0,
+      "score": 15.619874
+    },
+    {
+      "id": "https://openalex.org/C19417346",
+      "wikidata": null,
+      "display_name": "Pedagogy",
+      "level": 1,
+      "score": 15.370129
+    },
+    {
+      "id": "https://openalex.org/C178550888",
+      "wikidata": null,
+      "display_name": "Business administration",
+      "level": 1,
+      "score": 14.993787
+    },
+    {
+      "id": "https://openalex.org/C24326235",
+      "wikidata": null,
+      "display_name": "Electronic engineering",
+      "level": 1,
+      "score": 14.395622
+    },
+    {
+      "id": "https://openalex.org/C188147891",
+      "wikidata": null,
+      "display_name": "Cognitive science",
+      "level": 1,
+      "score": 14.170677
+    },
+    {
+      "id": "https://openalex.org/C153349607",
+      "wikidata": null,
+      "display_name": "Visual arts",
+      "level": 1,
+      "score": 13.931733
+    },
+    {
+      "id": "https://openalex.org/C54750564",
+      "wikidata": null,
+      "display_name": "Commerce",
+      "level": 1,
+      "score": 13.87728
+    },
+    {
+      "id": "https://openalex.org/C13736549",
+      "wikidata": null,
+      "display_name": "Industrial engineering",
+      "level": 1,
+      "score": 13.380866
+    },
+    {
+      "id": "https://openalex.org/C145420912",
+      "wikidata": null,
+      "display_name": "Mathematics education",
+      "level": 1,
+      "score": 12.340055
+    },
+    {
+      "id": "https://openalex.org/C146978453",
+      "wikidata": null,
+      "display_name": "Aerospace engineering",
+      "level": 1,
+      "score": 12.075084
+    },
+    {
+      "id": "https://openalex.org/C3116431",
+      "wikidata": null,
+      "display_name": "Public administration",
+      "level": 1,
+      "score": 12.0704365
+    },
+    {
+      "id": "https://openalex.org/C121684516",
+      "wikidata": null,
+      "display_name": "Computer graphics (images)",
+      "level": 1,
+      "score": 11.596358
+    },
+    {
+      "id": "https://openalex.org/C115903868",
+      "wikidata": null,
+      "display_name": "Software engineering",
+      "level": 1,
+      "score": 10.979575
+    },
+    {
+      "id": "https://openalex.org/C12554922",
+      "wikidata": null,
+      "display_name": "Biophysics",
+      "level": 1,
+      "score": 10.852335
+    },
+    {
+      "id": "https://openalex.org/C144237770",
+      "wikidata": null,
+      "display_name": "Mathematical economics",
+      "level": 1,
+      "score": 10.482178
+    },
+    {
+      "id": "https://openalex.org/C149782125",
+      "wikidata": null,
+      "display_name": "Econometrics",
+      "level": 1,
+      "score": 9.172947
+    },
+    {
+      "id": "https://openalex.org/C58640448",
+      "wikidata": null,
+      "display_name": "Cartography",
+      "level": 1,
+      "score": 8.586021
+    },
+    {
+      "id": "https://openalex.org/C42972112",
+      "wikidata": null,
+      "display_name": "Veterinary medicine",
+      "level": 1,
+      "score": 8.287369
+    },
+    {
+      "id": "https://openalex.org/C24890656",
+      "wikidata": null,
+      "display_name": "Acoustics",
+      "level": 1,
+      "score": 7.924921
+    },
+    {
+      "id": "https://openalex.org/C24667770",
+      "wikidata": null,
+      "display_name": "Religious studies",
+      "level": 1,
+      "score": 7.5956664
+    },
+    {
+      "id": "https://openalex.org/C201995342",
+      "wikidata": null,
+      "display_name": "Systems engineering",
+      "level": 1,
+      "score": 6.6992083
+    },
+    {
+      "id": "https://openalex.org/C61696701",
+      "wikidata": null,
+      "display_name": "Engineering physics",
+      "level": 1,
+      "score": 6.637855
+    },
+    {
+      "id": "https://openalex.org/C459310",
+      "wikidata": null,
+      "display_name": "Computational science",
+      "level": 1,
+      "score": 6.404062
+    },
+    {
+      "id": "https://openalex.org/C29595303",
+      "wikidata": null,
+      "display_name": "Media studies",
+      "level": 1,
+      "score": 6.126089
+    },
+    {
+      "id": "https://openalex.org/C162118730",
+      "wikidata": null,
+      "display_name": "Actuarial science",
+      "level": 1,
+      "score": 5.9846096
+    },
+    {
+      "id": "https://openalex.org/C87717796",
+      "wikidata": null,
+      "display_name": "Environmental engineering",
+      "level": 1,
+      "score": 5.6304126
+    },
+    {
+      "id": "https://openalex.org/C44154836",
+      "wikidata": null,
+      "display_name": "Simulation",
+      "level": 1,
+      "score": 5.536133
+    },
+    {
+      "id": "https://openalex.org/C37621935",
+      "wikidata": null,
+      "display_name": "Agricultural science",
+      "level": 1,
+      "score": 5.251234
+    },
+    {
+      "id": "https://openalex.org/C133731056",
+      "wikidata": null,
+      "display_name": "Control engineering",
+      "level": 1,
+      "score": 5.061759
+    },
+    {
+      "id": "https://openalex.org/C178802073",
+      "wikidata": null,
+      "display_name": "Aeronautics",
+      "level": 1,
+      "score": 4.342737
+    },
+    {
+      "id": "https://openalex.org/C30475298",
+      "wikidata": null,
+      "display_name": "Computational physics",
+      "level": 1,
+      "score": 4.3321414
+    },
+    {
+      "id": "https://openalex.org/C539667460",
+      "wikidata": null,
+      "display_name": "Management science",
+      "level": 1,
+      "score": 4.2049723
+    },
+    {
+      "id": "https://openalex.org/C66938386",
+      "wikidata": null,
+      "display_name": "Structural engineering",
+      "level": 1,
+      "score": 4.1245317
+    },
+    {
+      "id": "https://openalex.org/C161191863",
+      "wikidata": null,
+      "display_name": "Library science",
+      "level": 1,
+      "score": 3.1759527
+    },
+    {
+      "id": "https://openalex.org/C121864883",
+      "wikidata": null,
+      "display_name": "Statistical physics",
+      "level": 1,
+      "score": 3.086873
+    },
+    {
+      "id": "https://openalex.org/C88463610",
+      "wikidata": null,
+      "display_name": "Agricultural engineering",
+      "level": 1,
+      "score": 2.8087502
+    },
+    {
+      "id": "https://openalex.org/C140793950",
+      "wikidata": null,
+      "display_name": "Animal science",
+      "level": 1,
+      "score": 2.288352
+    },
+    {
+      "id": "https://openalex.org/C2522767166",
+      "wikidata": null,
+      "display_name": "Data science",
+      "level": 1,
+      "score": 2.2597783
+    },
+    {
+      "id": "https://openalex.org/C107053488",
+      "wikidata": null,
+      "display_name": "Construction engineering",
+      "level": 1,
+      "score": 1.5907615
+    },
+    {
+      "id": "https://openalex.org/C199104240",
+      "wikidata": null,
+      "display_name": "Marine engineering",
+      "level": 1,
+      "score": 1.5113509
+    }
+  ],
+  "counts_by_year": [
+    {
+      "year": 2025,
+      "works_count": 602812,
+      "oa_works_count": 83835,
+      "cited_by_count": 15647405
+    },
+    {
+      "year": 2024,
+      "works_count": 1031796,
+      "oa_works_count": 363252,
+      "cited_by_count": 25679680
+    },
+    {
+      "year": 2023,
+      "works_count": 1299784,
+      "oa_works_count": 660731,
+      "cited_by_count": 27295543
+    },
+    {
+      "year": 2022,
+      "works_count": 1200158,
+      "oa_works_count": 684426,
+      "cited_by_count": 25833980
+    },
+    {
+      "year": 2021,
+      "works_count": 1289985,
+      "oa_works_count": 622235,
+      "cited_by_count": 27856282
+    },
+    {
+      "year": 2020,
+      "works_count": 1314419,
+      "oa_works_count": 558136,
+      "cited_by_count": 25231364
+    },
+    {
+      "year": 2019,
+      "works_count": 1265290,
+      "oa_works_count": 476388,
+      "cited_by_count": 22090508
+    },
+    {
+      "year": 2018,
+      "works_count": 1215429,
+      "oa_works_count": 423909,
+      "cited_by_count": 19450800
+    },
+    {
+      "year": 2017,
+      "works_count": 1144305,
+      "oa_works_count": 360199,
+      "cited_by_count": 17674364
+    },
+    {
+      "year": 2016,
+      "works_count": 1119418,
+      "oa_works_count": 325504,
+      "cited_by_count": 16835825
+    },
+    {
+      "year": 2015,
+      "works_count": 1107722,
+      "oa_works_count": 292666,
+      "cited_by_count": 16410096
+    },
+    {
+      "year": 2014,
+      "works_count": 1104602,
+      "oa_works_count": 261769,
+      "cited_by_count": 15954430
+    },
+    {
+      "year": 2013,
+      "works_count": 1053081,
+      "oa_works_count": 236191,
+      "cited_by_count": 14713478
+    },
+    {
+      "year": 2012,
+      "works_count": 1013578,
+      "oa_works_count": 210444,
+      "cited_by_count": 13536272
+    }
+  ],
+  "works_api_url": "https://api.openalex.org/works?filter=concepts.id:C33923547",
+  "updated_date": "2025-10-19T14:23:18.559572",
+  "created_date": "2016-06-24"
+}

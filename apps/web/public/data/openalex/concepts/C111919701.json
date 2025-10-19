@@ -1,0 +1,1047 @@
+{
+  "id": "https://openalex.org/C111919701",
+  "wikidata": "https://www.wikidata.org/wiki/Q9135",
+  "display_name": "Operating system",
+  "level": 1,
+  "description": "software that manages computer hardware resources",
+  "works_count": 9346772,
+  "cited_by_count": 100521748,
+  "summary_stats": {
+    "2yr_mean_citedness": 1.721772432477807,
+    "h_index": 1925,
+    "i10_index": 1597124
+  },
+  "ids": {
+    "openalex": "https://openalex.org/C111919701",
+    "wikidata": "https://www.wikidata.org/wiki/Q9135",
+    "mag": "111919701",
+    "wikipedia": "https://en.wikipedia.org/wiki/Operating%20system",
+    "umls_cui": [
+      "C1709324"
+    ]
+  },
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Operating_system_placement.svg",
+  "image_thumbnail_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Operating_system_placement.svg/67px-Operating_system_placement.svg.png",
+  "international": {
+    "display_name": {
+      "ace": "OS",
+      "af": "Bedryfstelsel",
+      "am": "የሲስተም አሰሪ",
+      "an": "Sistema operativo",
+      "ang": "Weorcendebyrdness",
+      "ar": "نظام تشغيل",
+      "arz": "نظام تشغيل",
+      "as": "অপাৰেটিং চিষ্টেম",
+      "ast": "Sistema operativu",
+      "az": "Əməliyyat sistemləri",
+      "azb": "ایشلتیم سیستمی",
+      "ba": "Операцион система",
+      "be": "аперацыйная сістэма",
+      "be-tarask": "апэрацыйная сыстэма",
+      "bg": "Операционна система",
+      "bho": "ऑपरेटिंग सिस्टम",
+      "bn": "অপারেটিং সিস্টেম",
+      "br": "Reizhiad korvoiñ",
+      "bs": "operativni sistem",
+      "bxr": "Үйлэдэлэй системэ",
+      "ca": "sistema operatiu",
+      "cdo": "Chŏ̤-cáuk hiê-tūng",
+      "ce": "Операционни система",
+      "ckb": "سیستەمی بەکارخەری",
+      "crh": "Operatsiya sisteması",
+      "cs": "operační systém",
+      "csb": "Òperacjowô systema",
+      "cv": "Операци системи",
+      "cy": "System weithredu",
+      "da": "styresystem",
+      "de": "Betriebssystem",
+      "de-ch": "Betriebssystem",
+      "diq": "Sistemo operatif",
+      "el": "λειτουργικό σύστημα",
+      "eml": "Sistamma operatîv",
+      "en": "operating system",
+      "en-ca": "operating system",
+      "en-gb": "operating system",
+      "eo": "operaciumo",
+      "es": "sistema operativo",
+      "et": "operatsioonisüsteem",
+      "eu": "sistema eragile",
+      "fa": "سیستم‌عامل",
+      "fi": "käyttöjärjestelmä",
+      "fr": "système d'exploitation",
+      "frr": "Bedriifsüsteem",
+      "fur": "Sisteme operatîf",
+      "ga": "córas oibriúcháin",
+      "gl": "Sistema operativo",
+      "gsw": "Betriebssystem",
+      "hak": "Chok-ngia̍p hì-thúng",
+      "he": "מערכת הפעלה",
+      "hi": "संचालन प्रणाली",
+      "hr": "Operacijski sustav",
+      "hsb": "Dźěłowy system",
+      "hu": "operációs rendszer",
+      "hy": "օպերացիոն համակարգ",
+      "ia": "systema de operation",
+      "id": "sistem operasi",
+      "ie": "Operativ systema",
+      "ilo": "Sistema ti panangpaandar",
+      "io": "Funcionanta sistemo",
+      "is": "Stýrikerfi",
+      "it": "sistema operativo",
+      "ja": "オペレーティングシステム",
+      "jv": "sistem operasi komputer",
+      "ka": "ოპერაციული სისტემა",
+      "kaa": "Operatsion sistema",
+      "kab": "Anagraw n wammud",
+      "kk": "Операциялық жүйелер",
+      "kn": "ಕಾರ್ಯನಿರ್ವಹಣ ಸಾಧನ",
+      "ko": "운영 체제",
+      "ksh": "Bedriefsystem",
+      "ku": "Pergala xebitandinê",
+      "kv": "Операционнöй система",
+      "ky": "Иштетүү системи",
+      "la": "Systema administrativum computatrale",
+      "lb": "Betribssystem",
+      "lbe": "операционная система",
+      "lfn": "Sistem de opera",
+      "lij": "Scistema òperativo",
+      "lmo": "Sistema uperatif",
+      "ln": "Litámbwisi-mokonzi",
+      "lo": "ລະບົບປະຕິບັດການ",
+      "lt": "Operacinė sistema",
+      "lv": "operētājsistēma",
+      "mg": "Mpandrindra milina",
+      "mhr": "операционло системе",
+      "min": "Sistem operasi",
+      "mk": "оперативен систем",
+      "ml": "ഓപ്പറേറ്റിങ്ങ്‌ സിസ്റ്റം",
+      "mn": "Үйлдлийн систем",
+      "mr": "संचालन प्रणाली",
+      "ms": "sistem pengendalian",
+      "mwl": "Sistema ouperacional",
+      "my": "ကွန်ပျူတာ စက်လည်ပတ်ရေး စနစ်",
+      "nan": "Chok-gia̍p hē-thóng",
+      "nb": "operativsystem",
+      "nds": "Bedriefssystem",
+      "new": "अपरेटिङ सिस्टम",
+      "nl": "besturingssysteem",
+      "nn": "operativsystem",
+      "nqo": "ߢߍߥߟߊ ߓߊߖߎߡߊ",
+      "oc": "Sistèma operatiu",
+      "or": "ଅପରେଟିଙ୍ଗ ସିଷ୍ଟମ",
+      "pa": "ਆਪਰੇਟਿੰਗ ਸਿਸਟਮ",
+      "pfl": "Betriebssüsdäm",
+      "pl": "system operacyjny",
+      "pnb": "اوپریٹنگ سسٹم",
+      "ps": "چليز غونډال",
+      "pt": "sistema operacional",
+      "pt-br": "sistema operacional",
+      "qu": "Llamk'aykuna llika",
+      "ro": "sistem de operare",
+      "ru": "операционная система",
+      "rue": "Операчна сістема",
+      "sah": "Операциялыыр система",
+      "sc": "Sistema operativu",
+      "sco": "operatin seestem",
+      "se": "operatiivavuogádat",
+      "sgs": "Uoperacėnė sėstema",
+      "sh": "Operativni sistem",
+      "shn": "ပိူင်သၢင်ႈ ၶွမ်းပျူတႃႇ",
+      "si": "පරිගණක මෙහෙයුම් පද්ධති",
+      "sk": "Operačný systém",
+      "sl": "Operacijski sistem",
+      "smn": "kevttimvuáhádâh",
+      "so": "Operating system",
+      "sq": "Sistemi operativ",
+      "sr": "оперативни систем",
+      "sr-ec": "оперативни систем",
+      "sr-el": "operativni sistem",
+      "su": "Sistim Operasi",
+      "sv": "operativsystem",
+      "sw": "Mfumo wa uendeshaji",
+      "szl": "Uoperacyjno systyma",
+      "ta": "இயக்கு தளம்",
+      "te": "ఆపరేటింగ్ సిస్టమ్",
+      "tg": "Системаи амалӣ",
+      "th": "ระบบปฏิบัติการ",
+      "tl": "operating system",
+      "tr": "işletim sistemi",
+      "tt": "операцион систем",
+      "tt-cyrl": "операцион систем",
+      "tt-latn": "operatsion sistema",
+      "uk": "операційна система",
+      "ur": "اشتغالی نظام",
+      "uz": "Ishlatuv tizimi",
+      "vec": "Sistema operativo",
+      "vi": "hệ điều hành",
+      "vro": "Opõrats'oonisüstem",
+      "wa": "Sistinme d' operance",
+      "war": "Sistema operatibo",
+      "wo": "Nosteg doxiin",
+      "wuu": "操作系统",
+      "xmf": "ოპერაციული სისტემა",
+      "yi": "אפערירן סיסטעם",
+      "yo": "Sístẹ̀mù ìṣiṣẹ́ kọ̀mpútà",
+      "yue": "作業系統",
+      "zh": "操作系统",
+      "zh-cn": "操作系统",
+      "zh-hans": "操作系统",
+      "zh-hant": "作業系統",
+      "zh-hk": "作業系統",
+      "zh-mo": "作業系統",
+      "zh-my": "操作系统",
+      "zh-sg": "操作系统",
+      "zh-tw": "作業系統"
+    },
+    "description": {
+      "ar": "مجموعة من البرامج التي تدير موارد أجهزة الكمبيوتر",
+      "ba": "компьютер ресурстары менән менән идара итеүсе программа тәьминәте",
+      "be-tarask": "праграмнае забесьпячэньне сыстэмнага ўзроўню для загрузкі і кіраваньня кампутарам",
+      "ca": "programari informàtic que controla el funcionament d'un ordinador o dispositiu",
+      "cs": "základní programové vybavení počítače spravující přístup k hardwarovým prostředkům",
+      "da": "program der udgør sammenhængen mellem hardware og brugere til at lette brug af computeren",
+      "de": "Sammlung von Computerprogrammen, die die Systemressourcen eines Computers verwaltet und diese Anwendungsprogrammen zur Verfügung stellt",
+      "el": "λογισμικό του υπολογιστή που είναι υπεύθυνο για τη διαχείριση και τον συντονισμό των εργασιών, καθώς και την κατανομή των διαθέσιμων πόρων",
+      "en": "software that manages computer hardware resources",
+      "en-ca": "collection of software that manages computer hardware resources",
+      "en-gb": "collection of software that manages computer hardware resources",
+      "eo": "programaro, kiu mastrumas komputilajn aparatojn",
+      "es": "programa o conjunto de programas",
+      "eu": "Konputagailuaren oinarrizko programen multzoa, sistema informatikoaren jarduera eraginkorraz eta baliabideen kudeaketa orekatuaz arduratzen dena.",
+      "fa": "مجموعه نرم‌افزارهایی که منابع یک سیستم را مدیریت می‌کنند",
+      "fi": "ohjelmisto, joka hallinnoi tietokoneen resursseja",
+      "fr": "ensemble de programmes qui dirige l'utilisation des capacités d'un ordinateur par des logiciels applicatifs",
+      "gl": "programa que manexa os recursos de hardware e software",
+      "he": "תוכנה המנהלת את משאבי החומרה והתוכנה של המחשב",
+      "hi": "अनुप्रयोग आदि का संग्रह और निर्देशों का संचालन करने वाली प्रणाली।",
+      "hu": "szoftver, amely kezeli a számítógépes hardver erőforrásait",
+      "id": "kumpulan perangkat lunak yang mengatur sumberdaya komputer",
+      "ilo": "programa a mangimaton kadagiti alikamen ken sopwer ti kompiuter",
+      "it": "insieme di componenti software",
+      "ja": "コンピュータの操作・運用・運転を司るシステムソフトウェア",
+      "ko": "컴퓨터 하드웨어 자원을 관리하는 소프트웨어",
+      "lv": "programmatūras kopums, kas ir atbildīgs par datora aparatūras tiešu kontroli un vadību",
+      "mk": "програмска опрема која управува со машинската опрема на еден сметач",
+      "ml": "സിസ്റ്റം സോഫ്റ്റ്‌വെയർ",
+      "nl": "programma dat na het opstarten van een computer in het geheugen geladen wordt en de hardware aanstuurt",
+      "nn": "programvare(r) brukt til å styre ulike maskinvareressursar",
+      "nqo": "ߏ߬ ߦߋ߫ ߢߍߥߟߊ ߛߌߦߊߡߊ߲ ߠߋ߬ ߘߌ߫ ߡߍ߲ ߠߎ߬ ߦߋ߫ ߕߟߋ߬ߓߊ߮ ߓߎ߲ߓߎ߲ ߠߎ߬ ߡߊߡߙߊ߬ ߟߊ߫",
+      "pl": "oprogramowanie zarządzające komputerem",
+      "pt": "conjunto de softwares que gerencia os recursos de hardware do computador",
+      "pt-br": "conjunto de softwares que gerencia os recursos de hardware do computador",
+      "ro": "program informatic care gestionează resursele de hardware ale sistemului",
+      "ru": "программное обеспечение системного уровня для загрузки и управления компьютером",
+      "sco": "system software that manages computer hardware, software resources, and provides common services for computer programs",
+      "si": "පරිගණක මෙහෙයුම් පද්ධති",
+      "sk": "softvér, ktorý spravuje zdroje počítača a poskytuje programom rozhranie na prístup k týmto zdrojom",
+      "sv": "program på basnivå mellan dators hårdvara och applikationsprogramvara",
+      "tr": "bilgisayar donanım kaynaklarını yöneten yazılım",
+      "tt": "санакның җиһазы (hardware), програм (software) ресурслары белән идарә итүче һәм кулланучы белән үзара бәйләнешен оештыручы тәэмин ителеш (үзара бәйләнешле програмнар җыелмасы)",
+      "tt-cyrl": "санакның җиһазы (hardware), програм (software) ресурслары белән идарә итүче һәм кулланучы белән үзара бәйләнешен оештыручы тәэмин ителеш (үзара бәйләнешле програмнар җыелмасы)",
+      "tt-latn": "sanaqnıñ cihazı (hardware), program (software) resursları belän idarä itüçe häm qullanuçı belän üzara bäyläneşen oyıştıruçı tä'min iteleş (üzara bäyläneşle programnar cıyılması)",
+      "vi": "phần mềm điều hành, quản lý thiết bị phần cứng và tài nguyên phần mềm",
+      "wuu": "::<gun>",
+      "zh": "用于管理計算機硬件資源的軟件集合",
+      "zh-hant": "管理電腦硬體資源的軟體集合"
+    }
+  },
+  "ancestors": [
+    {
+      "id": "https://openalex.org/C41008148",
+      "wikidata": "https://www.wikidata.org/wiki/Q21198",
+      "display_name": "Computer science",
+      "level": 0
+    }
+  ],
+  "related_concepts": [
+    {
+      "id": "https://openalex.org/C49154492",
+      "wikidata": null,
+      "display_name": "Central processing unit",
+      "level": 2,
+      "score": 133.13428
+    },
+    {
+      "id": "https://openalex.org/C2777904410",
+      "wikidata": null,
+      "display_name": "Software",
+      "level": 2,
+      "score": 132.06406
+    },
+    {
+      "id": "https://openalex.org/C37789001",
+      "wikidata": null,
+      "display_name": "Graphical user interface",
+      "level": 2,
+      "score": 127.30624
+    },
+    {
+      "id": "https://openalex.org/C43126263",
+      "wikidata": null,
+      "display_name": "Source code",
+      "level": 2,
+      "score": 96.59355
+    },
+    {
+      "id": "https://openalex.org/C2780940931",
+      "wikidata": null,
+      "display_name": "File system",
+      "level": 2,
+      "score": 81.18266
+    },
+    {
+      "id": "https://openalex.org/C25344961",
+      "wikidata": null,
+      "display_name": "Virtual machine",
+      "level": 2,
+      "score": 76.38689
+    },
+    {
+      "id": "https://openalex.org/C99613125",
+      "wikidata": null,
+      "display_name": "Application programming interface",
+      "level": 2,
+      "score": 75.49092
+    },
+    {
+      "id": "https://openalex.org/C169590947",
+      "wikidata": null,
+      "display_name": "Compiler",
+      "level": 2,
+      "score": 73.932556
+    },
+    {
+      "id": "https://openalex.org/C199360897",
+      "wikidata": null,
+      "display_name": "Programming language",
+      "level": 1,
+      "score": 72.203636
+    },
+    {
+      "id": "https://openalex.org/C553261973",
+      "wikidata": null,
+      "display_name": "Linux kernel",
+      "level": 2,
+      "score": 68.09912
+    },
+    {
+      "id": "https://openalex.org/C504728807",
+      "wikidata": null,
+      "display_name": "Booting",
+      "level": 2,
+      "score": 67.06822
+    },
+    {
+      "id": "https://openalex.org/C149635348",
+      "wikidata": null,
+      "display_name": "Embedded system",
+      "level": 1,
+      "score": 63.93521
+    },
+    {
+      "id": "https://openalex.org/C110875604",
+      "wikidata": null,
+      "display_name": "The Internet",
+      "level": 2,
+      "score": 59.524887
+    },
+    {
+      "id": "https://openalex.org/C196697905",
+      "wikidata": null,
+      "display_name": "Input/output",
+      "level": 2,
+      "score": 55.15225
+    },
+    {
+      "id": "https://openalex.org/C154556556",
+      "wikidata": null,
+      "display_name": "Computer multitasking",
+      "level": 2,
+      "score": 52.67353
+    },
+    {
+      "id": "https://openalex.org/C536060405",
+      "wikidata": null,
+      "display_name": "BIOS",
+      "level": 2,
+      "score": 51.492
+    },
+    {
+      "id": "https://openalex.org/C2777362769",
+      "wikidata": null,
+      "display_name": "Computer program",
+      "level": 2,
+      "score": 51.010212
+    },
+    {
+      "id": "https://openalex.org/C92400490",
+      "wikidata": null,
+      "display_name": "Cross-platform",
+      "level": 2,
+      "score": 50.619057
+    },
+    {
+      "id": "https://openalex.org/C2778241615",
+      "wikidata": null,
+      "display_name": "Fortran",
+      "level": 2,
+      "score": 48.545185
+    },
+    {
+      "id": "https://openalex.org/C67212190",
+      "wikidata": null,
+      "display_name": "Firmware",
+      "level": 2,
+      "score": 48.18095
+    },
+    {
+      "id": "https://openalex.org/C31258907",
+      "wikidata": null,
+      "display_name": "Computer network",
+      "level": 1,
+      "score": 45.867825
+    },
+    {
+      "id": "https://openalex.org/C2780728072",
+      "wikidata": null,
+      "display_name": "Microprocessor",
+      "level": 2,
+      "score": 45.55308
+    },
+    {
+      "id": "https://openalex.org/C77088390",
+      "wikidata": null,
+      "display_name": "Database",
+      "level": 1,
+      "score": 43.82622
+    },
+    {
+      "id": "https://openalex.org/C2777549114",
+      "wikidata": null,
+      "display_name": "Floppy disk",
+      "level": 2,
+      "score": 43.262917
+    },
+    {
+      "id": "https://openalex.org/C2778579508",
+      "wikidata": null,
+      "display_name": "System call",
+      "level": 2,
+      "score": 42.215195
+    },
+    {
+      "id": "https://openalex.org/C26771161",
+      "wikidata": null,
+      "display_name": "ARM architecture",
+      "level": 2,
+      "score": 42.03999
+    },
+    {
+      "id": "https://openalex.org/C541664917",
+      "wikidata": null,
+      "display_name": "Malware",
+      "level": 2,
+      "score": 41.889385
+    },
+    {
+      "id": "https://openalex.org/C532756234",
+      "wikidata": null,
+      "display_name": "POSIX",
+      "level": 2,
+      "score": 41.580643
+    },
+    {
+      "id": "https://openalex.org/C2777127024",
+      "wikidata": null,
+      "display_name": "Microkernel",
+      "level": 2,
+      "score": 40.697
+    },
+    {
+      "id": "https://openalex.org/C168395055",
+      "wikidata": null,
+      "display_name": "Minicomputer",
+      "level": 2,
+      "score": 40.57275
+    },
+    {
+      "id": "https://openalex.org/C89836824",
+      "wikidata": null,
+      "display_name": "Read-only memory",
+      "level": 2,
+      "score": 39.82529
+    },
+    {
+      "id": "https://openalex.org/C89505385",
+      "wikidata": null,
+      "display_name": "User interface",
+      "level": 2,
+      "score": 39.331387
+    },
+    {
+      "id": "https://openalex.org/C67953723",
+      "wikidata": null,
+      "display_name": "Workstation",
+      "level": 2,
+      "score": 38.546947
+    },
+    {
+      "id": "https://openalex.org/C9390403",
+      "wikidata": null,
+      "display_name": "Computer hardware",
+      "level": 1,
+      "score": 37.938545
+    },
+    {
+      "id": "https://openalex.org/C75695347",
+      "wikidata": null,
+      "display_name": "32-bit",
+      "level": 2,
+      "score": 37.025604
+    },
+    {
+      "id": "https://openalex.org/C83283714",
+      "wikidata": null,
+      "display_name": "Supercomputer",
+      "level": 2,
+      "score": 36.59795
+    },
+    {
+      "id": "https://openalex.org/C194739806",
+      "wikidata": null,
+      "display_name": "Computer data storage",
+      "level": 2,
+      "score": 36.477398
+    },
+    {
+      "id": "https://openalex.org/C95637964",
+      "wikidata": null,
+      "display_name": "Computer file",
+      "level": 2,
+      "score": 34.84291
+    },
+    {
+      "id": "https://openalex.org/C38725249",
+      "wikidata": null,
+      "display_name": "Time-sharing",
+      "level": 2,
+      "score": 34.58884
+    },
+    {
+      "id": "https://openalex.org/C202491316",
+      "wikidata": null,
+      "display_name": "Instruction set",
+      "level": 2,
+      "score": 31.244946
+    },
+    {
+      "id": "https://openalex.org/C523747234",
+      "wikidata": null,
+      "display_name": ".NET Framework",
+      "level": 2,
+      "score": 31.071463
+    },
+    {
+      "id": "https://openalex.org/C2775877400",
+      "wikidata": null,
+      "display_name": "User space",
+      "level": 2,
+      "score": 30.863083
+    },
+    {
+      "id": "https://openalex.org/C2777002779",
+      "wikidata": null,
+      "display_name": "Perl",
+      "level": 2,
+      "score": 30.52857
+    },
+    {
+      "id": "https://openalex.org/C79974875",
+      "wikidata": null,
+      "display_name": "Cloud computing",
+      "level": 2,
+      "score": 30.386189
+    },
+    {
+      "id": "https://openalex.org/C172173386",
+      "wikidata": null,
+      "display_name": "Ethernet",
+      "level": 2,
+      "score": 29.519306
+    },
+    {
+      "id": "https://openalex.org/C160145156",
+      "wikidata": null,
+      "display_name": "Executable",
+      "level": 2,
+      "score": 29.061296
+    },
+    {
+      "id": "https://openalex.org/C38652104",
+      "wikidata": null,
+      "display_name": "Computer security",
+      "level": 1,
+      "score": 27.888802
+    },
+    {
+      "id": "https://openalex.org/C137471899",
+      "wikidata": null,
+      "display_name": "Local area network",
+      "level": 2,
+      "score": 27.712208
+    },
+    {
+      "id": "https://openalex.org/C523788702",
+      "wikidata": null,
+      "display_name": "Microsoft Office",
+      "level": 2,
+      "score": 27.31068
+    },
+    {
+      "id": "https://openalex.org/C196832560",
+      "wikidata": null,
+      "display_name": "ASCII",
+      "level": 2,
+      "score": 26.985132
+    },
+    {
+      "id": "https://openalex.org/C61423126",
+      "wikidata": null,
+      "display_name": "Scripting language",
+      "level": 2,
+      "score": 26.935116
+    },
+    {
+      "id": "https://openalex.org/C2780008327",
+      "wikidata": null,
+      "display_name": "Laptop",
+      "level": 2,
+      "score": 25.788523
+    },
+    {
+      "id": "https://openalex.org/C136764020",
+      "wikidata": null,
+      "display_name": "World Wide Web",
+      "level": 1,
+      "score": 25.577053
+    },
+    {
+      "id": "https://openalex.org/C172658912",
+      "wikidata": null,
+      "display_name": "Batch processing",
+      "level": 2,
+      "score": 25.215954
+    },
+    {
+      "id": "https://openalex.org/C128595289",
+      "wikidata": null,
+      "display_name": "COBOL",
+      "level": 2,
+      "score": 24.812954
+    },
+    {
+      "id": "https://openalex.org/C557433098",
+      "wikidata": null,
+      "display_name": "Android (operating system)",
+      "level": 2,
+      "score": 24.718866
+    },
+    {
+      "id": "https://openalex.org/C2777421447",
+      "wikidata": null,
+      "display_name": "Mobile phone",
+      "level": 2,
+      "score": 24.374748
+    },
+    {
+      "id": "https://openalex.org/C2776531357",
+      "wikidata": null,
+      "display_name": "Flash memory",
+      "level": 2,
+      "score": 24.286858
+    },
+    {
+      "id": "https://openalex.org/C28472234",
+      "wikidata": null,
+      "display_name": "Real-time operating system",
+      "level": 2,
+      "score": 24.211384
+    },
+    {
+      "id": "https://openalex.org/C96147967",
+      "wikidata": null,
+      "display_name": "Subroutine",
+      "level": 2,
+      "score": 23.764341
+    },
+    {
+      "id": "https://openalex.org/C19407854",
+      "wikidata": null,
+      "display_name": "Computer virus",
+      "level": 2,
+      "score": 22.968187
+    },
+    {
+      "id": "https://openalex.org/C33857546",
+      "wikidata": null,
+      "display_name": "Computer programming",
+      "level": 2,
+      "score": 22.618351
+    },
+    {
+      "id": "https://openalex.org/C204156049",
+      "wikidata": null,
+      "display_name": "Inter-process communication",
+      "level": 2,
+      "score": 22.56271
+    },
+    {
+      "id": "https://openalex.org/C118524514",
+      "wikidata": null,
+      "display_name": "Computer architecture",
+      "level": 1,
+      "score": 22.54085
+    },
+    {
+      "id": "https://openalex.org/C118643609",
+      "wikidata": null,
+      "display_name": "Web application",
+      "level": 2,
+      "score": 22.106977
+    },
+    {
+      "id": "https://openalex.org/C2780814629",
+      "wikidata": null,
+      "display_name": "System administrator",
+      "level": 2,
+      "score": 22.059822
+    },
+    {
+      "id": "https://openalex.org/C43364308",
+      "wikidata": null,
+      "display_name": "Byte",
+      "level": 2,
+      "score": 21.919485
+    },
+    {
+      "id": "https://openalex.org/C78766204",
+      "wikidata": null,
+      "display_name": "Multi-core processor",
+      "level": 2,
+      "score": 21.40606
+    },
+    {
+      "id": "https://openalex.org/C33652231",
+      "wikidata": null,
+      "display_name": "16-bit",
+      "level": 2,
+      "score": 21.278315
+    },
+    {
+      "id": "https://openalex.org/C2777697265",
+      "wikidata": null,
+      "display_name": "Motherboard",
+      "level": 2,
+      "score": 21.202824
+    },
+    {
+      "id": "https://openalex.org/C500551929",
+      "wikidata": null,
+      "display_name": "Unicode",
+      "level": 2,
+      "score": 21.094446
+    },
+    {
+      "id": "https://openalex.org/C50954386",
+      "wikidata": null,
+      "display_name": "Paging",
+      "level": 2,
+      "score": 20.927559
+    },
+    {
+      "id": "https://openalex.org/C2779851693",
+      "wikidata": null,
+      "display_name": "Graphics processing unit",
+      "level": 2,
+      "score": 20.882135
+    },
+    {
+      "id": "https://openalex.org/C193596192",
+      "wikidata": null,
+      "display_name": "CD-ROM",
+      "level": 2,
+      "score": 20.864948
+    },
+    {
+      "id": "https://openalex.org/C79403827",
+      "wikidata": null,
+      "display_name": "Real-time computing",
+      "level": 1,
+      "score": 20.087074
+    },
+    {
+      "id": "https://openalex.org/C145428669",
+      "wikidata": null,
+      "display_name": "Exception handling",
+      "level": 2,
+      "score": 19.534151
+    },
+    {
+      "id": "https://openalex.org/C46762472",
+      "wikidata": null,
+      "display_name": "Peripheral",
+      "level": 2,
+      "score": 19.305286
+    },
+    {
+      "id": "https://openalex.org/C97250363",
+      "wikidata": null,
+      "display_name": "File format",
+      "level": 2,
+      "score": 19.210232
+    },
+    {
+      "id": "https://openalex.org/C20574231",
+      "wikidata": null,
+      "display_name": "Backward compatibility",
+      "level": 2,
+      "score": 19.20158
+    },
+    {
+      "id": "https://openalex.org/C4822641",
+      "wikidata": null,
+      "display_name": "Multiprocessing",
+      "level": 2,
+      "score": 18.729328
+    },
+    {
+      "id": "https://openalex.org/C12269588",
+      "wikidata": null,
+      "display_name": "Communications protocol",
+      "level": 2,
+      "score": 18.691246
+    },
+    {
+      "id": "https://openalex.org/C11413529",
+      "wikidata": null,
+      "display_name": "Algorithm",
+      "level": 1,
+      "score": 18.62146
+    },
+    {
+      "id": "https://openalex.org/C2778002699",
+      "wikidata": null,
+      "display_name": "Multi-user",
+      "level": 2,
+      "score": 18.087807
+    },
+    {
+      "id": "https://openalex.org/C186967261",
+      "wikidata": null,
+      "display_name": "Mobile device",
+      "level": 2,
+      "score": 17.979582
+    },
+    {
+      "id": "https://openalex.org/C206952183",
+      "wikidata": null,
+      "display_name": "Preemption",
+      "level": 2,
+      "score": 17.327593
+    },
+    {
+      "id": "https://openalex.org/C120314980",
+      "wikidata": null,
+      "display_name": "Distributed computing",
+      "level": 1,
+      "score": 17.219181
+    },
+    {
+      "id": "https://openalex.org/C8112396",
+      "wikidata": null,
+      "display_name": "MIDI",
+      "level": 2,
+      "score": 16.713806
+    },
+    {
+      "id": "https://openalex.org/C171659815",
+      "wikidata": null,
+      "display_name": "Network interface controller",
+      "level": 2,
+      "score": 16.699104
+    },
+    {
+      "id": "https://openalex.org/C173018170",
+      "wikidata": null,
+      "display_name": "Microcontroller",
+      "level": 2,
+      "score": 16.469799
+    },
+    {
+      "id": "https://openalex.org/C68694590",
+      "wikidata": null,
+      "display_name": "Original equipment manufacturer",
+      "level": 2,
+      "score": 16.058838
+    },
+    {
+      "id": "https://openalex.org/C548217200",
+      "wikidata": null,
+      "display_name": "Java",
+      "level": 2,
+      "score": 15.802791
+    },
+    {
+      "id": "https://openalex.org/C84211073",
+      "wikidata": null,
+      "display_name": "Floating point",
+      "level": 2,
+      "score": 15.710919
+    },
+    {
+      "id": "https://openalex.org/C53833338",
+      "wikidata": null,
+      "display_name": "Context switch",
+      "level": 2,
+      "score": 15.441806
+    },
+    {
+      "id": "https://openalex.org/C148730421",
+      "wikidata": null,
+      "display_name": "Encryption",
+      "level": 2,
+      "score": 15.370122
+    },
+    {
+      "id": "https://openalex.org/C173608175",
+      "wikidata": null,
+      "display_name": "Parallel computing",
+      "level": 1,
+      "score": 14.875227
+    },
+    {
+      "id": "https://openalex.org/C93996380",
+      "wikidata": null,
+      "display_name": "Server",
+      "level": 2,
+      "score": 14.849061
+    },
+    {
+      "id": "https://openalex.org/C207850805",
+      "wikidata": null,
+      "display_name": "Reverse engineering",
+      "level": 2,
+      "score": 14.699118
+    },
+    {
+      "id": "https://openalex.org/C29140674",
+      "wikidata": null,
+      "display_name": "Computer cluster",
+      "level": 2,
+      "score": 14.670827
+    },
+    {
+      "id": "https://openalex.org/C22174128",
+      "wikidata": null,
+      "display_name": "Microcode",
+      "level": 2,
+      "score": 14.669613
+    },
+    {
+      "id": "https://openalex.org/C162319229",
+      "wikidata": null,
+      "display_name": "Data structure",
+      "level": 2,
+      "score": 14.6470175
+    }
+  ],
+  "counts_by_year": [
+    {
+      "year": 2025,
+      "works_count": 160949,
+      "oa_works_count": 22221,
+      "cited_by_count": 4485202
+    },
+    {
+      "year": 2024,
+      "works_count": 287620,
+      "oa_works_count": 104106,
+      "cited_by_count": 7569856
+    },
+    {
+      "year": 2023,
+      "works_count": 418417,
+      "oa_works_count": 208412,
+      "cited_by_count": 8012614
+    },
+    {
+      "year": 2022,
+      "works_count": 402993,
+      "oa_works_count": 203364,
+      "cited_by_count": 7328286
+    },
+    {
+      "year": 2021,
+      "works_count": 426706,
+      "oa_works_count": 193257,
+      "cited_by_count": 7617969
+    },
+    {
+      "year": 2020,
+      "works_count": 423686,
+      "oa_works_count": 171641,
+      "cited_by_count": 6673676
+    },
+    {
+      "year": 2019,
+      "works_count": 405126,
+      "oa_works_count": 145018,
+      "cited_by_count": 5715310
+    },
+    {
+      "year": 2018,
+      "works_count": 381558,
+      "oa_works_count": 119136,
+      "cited_by_count": 4931665
+    },
+    {
+      "year": 2017,
+      "works_count": 354145,
+      "oa_works_count": 98729,
+      "cited_by_count": 4349205
+    },
+    {
+      "year": 2016,
+      "works_count": 353478,
+      "oa_works_count": 87467,
+      "cited_by_count": 4052615
+    },
+    {
+      "year": 2015,
+      "works_count": 377398,
+      "oa_works_count": 77220,
+      "cited_by_count": 3913475
+    },
+    {
+      "year": 2014,
+      "works_count": 369340,
+      "oa_works_count": 65329,
+      "cited_by_count": 3741038
+    },
+    {
+      "year": 2013,
+      "works_count": 354835,
+      "oa_works_count": 56764,
+      "cited_by_count": 3401487
+    },
+    {
+      "year": 2012,
+      "works_count": 331846,
+      "oa_works_count": 50103,
+      "cited_by_count": 3088079
+    }
+  ],
+  "works_api_url": "https://api.openalex.org/works?filter=concepts.id:C111919701",
+  "updated_date": "2025-10-19T12:50:05.446925",
+  "created_date": "2016-06-24"
+}

@@ -1,0 +1,473 @@
+{
+  "id": "https://openalex.org/C161191863",
+  "wikidata": "https://www.wikidata.org/wiki/Q199655",
+  "display_name": "Library science",
+  "level": 1,
+  "description": "the application of practices, methods, technologies, tools of management, education, training, perspectives, and related areas, to the organized collection and the systematic classification of information in libraries",
+  "works_count": 6690142,
+  "cited_by_count": 47333176,
+  "summary_stats": {
+    "2yr_mean_citedness": 0.477908510572592,
+    "h_index": 1617,
+    "i10_index": 680442
+  },
+  "ids": {
+    "openalex": "https://openalex.org/C161191863",
+    "wikidata": "https://www.wikidata.org/wiki/Q199655",
+    "mag": "161191863",
+    "wikipedia": "https://en.wikipedia.org/wiki/Library%20science",
+    "umls_cui": [
+      "C0023630"
+    ]
+  },
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/6/64/Ancientlibraryalex.jpg",
+  "image_thumbnail_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Ancientlibraryalex.jpg/98px-Ancientlibraryalex.jpg",
+  "international": {
+    "display_name": {
+      "af": "Biblioteekkunde",
+      "am": "የመጻሕፍት ቤትና የመረጃ ጥናት",
+      "ar": "علم المكتبات",
+      "ast": "biblioteconomia",
+      "az": "kitabxanaşünaslıq",
+      "be": "бібліятэказнаўства",
+      "be-tarask": "бібліятэчная справа",
+      "bn": "গ্রন্থাগার বিজ্ঞান",
+      "br": "Levraouegouriezh",
+      "bs": "bibliotekarstvo",
+      "ca": "biblioteconomia",
+      "ckb": "زانستی کتێبخانە",
+      "cs": "knihovní věda",
+      "cy": "Llyfrgellyddiaeth",
+      "da": "biblioteks- og informationsvidenskab",
+      "de": "Bibliothekswissenschaft",
+      "el": "Βιβλιοθηκονομία και επιστήμη της πληροφόρησης",
+      "en": "library science",
+      "en-ca": "Library science",
+      "en-gb": "library science",
+      "eo": "bibliotekscienco",
+      "es": "ciencias de la información",
+      "et": "Raamatukoguteadus",
+      "eu": "Bibliotekonomia",
+      "fa": "علم کتابداری",
+      "fi": "kirjastotiede",
+      "fr": "science des bibliothèques",
+      "ga": "eolaíocht leabharlainne",
+      "gl": "bibliotecoloxía",
+      "gsw": "Bibliothekswüsseschaft",
+      "gv": "Oaylleeaght lioarlann",
+      "he": "מידענות",
+      "hi": "पुस्तकालय विज्ञान",
+      "hr": "knjižničarstvo",
+      "hu": "könyvtártudomány",
+      "hy": "գրադարանագիտություն",
+      "id": "ilmu perpustakaan",
+      "io": "Libraro ed informo cienco",
+      "is": "Bókasafns- og upplýsingafræði",
+      "it": "biblioteconomia",
+      "ja": "図書館学",
+      "jv": "Ngèlmu kapustakan",
+      "km": "បណ្ណារក្សសាស្ត្រនិងវិទ្យាសាស្រ្តព័ត៌មាន",
+      "kn": "ಗ್ರಂಥಾಲಯ ವಿಜ್ಞಾನ",
+      "ko": "도서관학",
+      "lb": "Bibliothéikswëssenschaft",
+      "lo": "ບັນນາລັກສາດແລະສາລະນິເທດສາດ",
+      "lt": "Bibliotekininkystė",
+      "mk": "библиотекарство",
+      "ml": "ഗ്രന്ഥാലയ വിവര ശാസ്ത്രം",
+      "mr": "ग्रंथालयशास्त्र",
+      "ms": "sains perpustakaan",
+      "ms-arab": "ساءين‌س ڤرڤوستاکاءن",
+      "nb": "bibliotek- og informasjonsvitenskap",
+      "ne": "पुस्तकालय विज्ञान",
+      "nl": "bibliotheekwetenschap",
+      "nn": "bibliotek- og informasjonsvitskap",
+      "oc": "Sciéncias de l'informacion e de las bibliotècas",
+      "pa": "ਲਾਇਬ੍ਰੇਰੀ ਵਿਗਿਆਨ",
+      "pl": "bibliotekoznawstwo",
+      "ps": "د کتابتون معلوماتو ساینس",
+      "pt": "biblioteconomia",
+      "pt-br": "biblioteconomia",
+      "ro": "biblioteconomie",
+      "ru": "библиотековедение",
+      "sco": "librar science",
+      "sh": "Bibliotekarstvo",
+      "si": "පුස්තකාල විද්‍යාව",
+      "sk": "Knihovníctvo",
+      "sl": "Bibliotekarstvo in informacijska znanost",
+      "sq": "Shkenca e bibliotekës",
+      "sr": "библиотекарство",
+      "sr-ec": "библиотекарство",
+      "sr-el": "bibliotekarstvo",
+      "sv": "biblioteks- och informationsvetenskap",
+      "ta": "நூலகவியல்",
+      "tg": "илми китобдонӣ",
+      "th": "บรรณารักษศาสตร์และสารนิเทศศาสตร์",
+      "tl": "Agham pang-aklatan at pang-impormasyon",
+      "tr": "kütüphane bilimi",
+      "uk": "бібліотекознавство",
+      "ur": "کتب خانہ سائنس",
+      "uz": "Kutubxonashunoslik",
+      "vec": "biblioteconomia",
+      "vi": "khoa học thư viện",
+      "vro": "Raamadukogondus",
+      "war": "Syensya hin sulod-barasahan",
+      "wuu": "图书馆学",
+      "yue": "圖書館學",
+      "zh": "圖書館學",
+      "zh-cn": "图书馆信息学",
+      "zh-hans": "图书馆信息学",
+      "zh-hant": "圖書館學",
+      "zh-hk": "圖書館信息學",
+      "zh-sg": "图书馆信息学",
+      "zh-tw": "圖書館學"
+    },
+    "description": {
+      "ast": "ciencia qu'aplica les práutiques y ferramientes de xestión de la información a les biblioteques",
+      "cs": "věda",
+      "de": "Wissenschaft, die sich mit dem Bibliothekswesen beschäftigt",
+      "en": "the application of practices, methods, technologies, tools of management, education, training, perspectives, and related areas, to the organized collection and the systematic classification of information in libraries",
+      "es": "campo interdisciplinario aplicado a las bibliotecas",
+      "eu": "liburutegietan arlo hauek aplikatzen dituen eremua: praktikak, kudeaketa-aukerak, tresnak, informazio-teknologia, hezkuntza...",
+      "fr": "champ d'étude sur l'application de pratiques, méthodes, technologies, outils de gestion, éducation, formation, perspectives et domaines liés, à la collecte organisée et au classement systématique des informations dans les bibliothèques",
+      "gsw": "e Wüsseschaft, wo sich mit em Bibliothekswese beschäftigt",
+      "he": "לימוד מידע וספרנות",
+      "id": "bidang yang menerapkan praktik, perspektif, dan peralatan manajemen, teknologi informasi, pendidikan, dan bidang lain ke dalam perpustakaan",
+      "it": "disciplina che studia l'organizzazione e il funzionamento delle biblioteche",
+      "ms": "bidang yang menerapkan amalan, sudut pandang, dan alatan pengurusan, teknologi maklumat, pendidikan, dan lain-lain berkaitan perpustakaan",
+      "pl": "Humanistyczna dyscyplina naukowa",
+      "pt": "campo que aplica as práticas, perspectivas e ferramentas do gerenciamento, da tecnologia da informação, da educação e de outras áreas das bibliotecas",
+      "pt-br": "campo que aplica as práticas, perspectivas e ferramentas do gerenciamento, da tecnologia da informação, da educação e de outras áreas das bibliotecas",
+      "ro": "domeniu care aplică practicile, perspectivele și uneltele administrării, tehnologiei informației, educației și alte câmpuri pentru biblioteci",
+      "sk": "náuka o vedení knižníc alebo vedenie knižníc",
+      "sr-ec": "интердисциплинарна наука о примени пракси, метода, технологија, алата управљања, образовања, обуке, перспектива и сродних области, на организовано прикупљање и систематску класификацију информација у библиотекама",
+      "tr": "yönetim, bilgi teknolojisi, eğitim diğer alanlardaki uygulamaları, perspektifleri ve araçları kütüphanelere uyarlayan alan",
+      "uk": "наука, яка займається бібліотечною системою",
+      "zh": "學科",
+      "zh-hant": "學科",
+      "zh-tw": "學科"
+    }
+  },
+  "ancestors": [
+    {
+      "id": "https://openalex.org/C41008148",
+      "wikidata": "https://www.wikidata.org/wiki/Q21198",
+      "display_name": "Computer science",
+      "level": 0
+    }
+  ],
+  "related_concepts": [
+    {
+      "id": "https://openalex.org/C95831776",
+      "wikidata": null,
+      "display_name": "Information science",
+      "level": 2,
+      "score": 15.0644865
+    },
+    {
+      "id": "https://openalex.org/C95457728",
+      "wikidata": null,
+      "display_name": "History",
+      "level": 0,
+      "score": 4.8049603
+    },
+    {
+      "id": "https://openalex.org/C36289849",
+      "wikidata": null,
+      "display_name": "Social science",
+      "level": 1,
+      "score": 4.5809226
+    },
+    {
+      "id": "https://openalex.org/C138885662",
+      "wikidata": null,
+      "display_name": "Philosophy",
+      "level": 0,
+      "score": 4.467008
+    },
+    {
+      "id": "https://openalex.org/C2777922441",
+      "wikidata": null,
+      "display_name": "Cataloging",
+      "level": 2,
+      "score": 4.4285746
+    },
+    {
+      "id": "https://openalex.org/C41008148",
+      "wikidata": null,
+      "display_name": "Computer science",
+      "level": 0,
+      "score": 4.2409
+    },
+    {
+      "id": "https://openalex.org/C137355542",
+      "wikidata": null,
+      "display_name": "World War II",
+      "level": 2,
+      "score": 4.009772
+    },
+    {
+      "id": "https://openalex.org/C520346617",
+      "wikidata": null,
+      "display_name": "Archival science",
+      "level": 2,
+      "score": 3.8332093
+    },
+    {
+      "id": "https://openalex.org/C97002063",
+      "wikidata": null,
+      "display_name": "Bibliography",
+      "level": 2,
+      "score": 3.6762905
+    },
+    {
+      "id": "https://openalex.org/C119883117",
+      "wikidata": null,
+      "display_name": "Information literacy",
+      "level": 2,
+      "score": 3.533371
+    },
+    {
+      "id": "https://openalex.org/C144024400",
+      "wikidata": null,
+      "display_name": "Sociology",
+      "level": 0,
+      "score": 3.4762142
+    },
+    {
+      "id": "https://openalex.org/C74305511",
+      "wikidata": null,
+      "display_name": "Library catalog",
+      "level": 2,
+      "score": 3.3495927
+    },
+    {
+      "id": "https://openalex.org/C2779756819",
+      "wikidata": null,
+      "display_name": "Archivist",
+      "level": 2,
+      "score": 3.2750604
+    },
+    {
+      "id": "https://openalex.org/C187736073",
+      "wikidata": null,
+      "display_name": "Management",
+      "level": 1,
+      "score": 3.258082
+    },
+    {
+      "id": "https://openalex.org/C33923547",
+      "wikidata": null,
+      "display_name": "Mathematics",
+      "level": 0,
+      "score": 3.1759527
+    },
+    {
+      "id": "https://openalex.org/C180198813",
+      "wikidata": null,
+      "display_name": "Information system",
+      "level": 2,
+      "score": 3.104996
+    },
+    {
+      "id": "https://openalex.org/C204126058",
+      "wikidata": null,
+      "display_name": "Library classification",
+      "level": 2,
+      "score": 3.103787
+    },
+    {
+      "id": "https://openalex.org/C2781312700",
+      "wikidata": null,
+      "display_name": "School library",
+      "level": 2,
+      "score": 2.5198903
+    },
+    {
+      "id": "https://openalex.org/C2779810430",
+      "wikidata": null,
+      "display_name": "Knowledge organization",
+      "level": 2,
+      "score": 2.2310271
+    },
+    {
+      "id": "https://openalex.org/C2776146408",
+      "wikidata": null,
+      "display_name": "Interlibrary loan",
+      "level": 2,
+      "score": 1.6754702
+    },
+    {
+      "id": "https://openalex.org/C2777855551",
+      "wikidata": null,
+      "display_name": "Subject (documents)",
+      "level": 2,
+      "score": 1.3468614
+    },
+    {
+      "id": "https://openalex.org/C2775918691",
+      "wikidata": null,
+      "display_name": "Library management",
+      "level": 2,
+      "score": 1.3057775
+    },
+    {
+      "id": "https://openalex.org/C2778584369",
+      "wikidata": null,
+      "display_name": "Reference desk",
+      "level": 2,
+      "score": 1.1874903
+    },
+    {
+      "id": "https://openalex.org/C2775953033",
+      "wikidata": null,
+      "display_name": "Digital curation",
+      "level": 2,
+      "score": 1.1854331
+    },
+    {
+      "id": "https://openalex.org/C2780416505",
+      "wikidata": null,
+      "display_name": "Collection development",
+      "level": 2,
+      "score": 1.141631
+    },
+    {
+      "id": "https://openalex.org/C2781293084",
+      "wikidata": null,
+      "display_name": "Special collections",
+      "level": 2,
+      "score": 1.115696
+    },
+    {
+      "id": "https://openalex.org/C2777341132",
+      "wikidata": null,
+      "display_name": "Medical library",
+      "level": 2,
+      "score": 1.0832422
+    },
+    {
+      "id": "https://openalex.org/C2778940482",
+      "wikidata": null,
+      "display_name": "Pathfinder",
+      "level": 2,
+      "score": 1.0107771
+    },
+    {
+      "id": "https://openalex.org/C2776508926",
+      "wikidata": null,
+      "display_name": "Library history",
+      "level": 2,
+      "score": 1.0029039
+    },
+    {
+      "id": "https://openalex.org/C2777377694",
+      "wikidata": null,
+      "display_name": "Law library",
+      "level": 2,
+      "score": 0.988264
+    },
+    {
+      "id": "https://openalex.org/C2776636917",
+      "wikidata": null,
+      "display_name": "Information seeking",
+      "level": 2,
+      "score": 0.9168456
+    },
+    {
+      "id": "https://openalex.org/C2776543384",
+      "wikidata": null,
+      "display_name": "Information access",
+      "level": 2,
+      "score": 0.8362893
+    }
+  ],
+  "counts_by_year": [
+    {
+      "year": 2025,
+      "works_count": 27595,
+      "oa_works_count": 3340,
+      "cited_by_count": 916681
+    },
+    {
+      "year": 2024,
+      "works_count": 57756,
+      "oa_works_count": 19438,
+      "cited_by_count": 1523833
+    },
+    {
+      "year": 2023,
+      "works_count": 117224,
+      "oa_works_count": 58253,
+      "cited_by_count": 1689119
+    },
+    {
+      "year": 2022,
+      "works_count": 109289,
+      "oa_works_count": 45934,
+      "cited_by_count": 1655903
+    },
+    {
+      "year": 2021,
+      "works_count": 138246,
+      "oa_works_count": 51282,
+      "cited_by_count": 1869252
+    },
+    {
+      "year": 2020,
+      "works_count": 181035,
+      "oa_works_count": 50260,
+      "cited_by_count": 1854700
+    },
+    {
+      "year": 2019,
+      "works_count": 162657,
+      "oa_works_count": 42325,
+      "cited_by_count": 1785495
+    },
+    {
+      "year": 2018,
+      "works_count": 157029,
+      "oa_works_count": 39096,
+      "cited_by_count": 1550682
+    },
+    {
+      "year": 2017,
+      "works_count": 162232,
+      "oa_works_count": 31663,
+      "cited_by_count": 1480555
+    },
+    {
+      "year": 2016,
+      "works_count": 168074,
+      "oa_works_count": 33986,
+      "cited_by_count": 1485058
+    },
+    {
+      "year": 2015,
+      "works_count": 163458,
+      "oa_works_count": 27035,
+      "cited_by_count": 1503585
+    },
+    {
+      "year": 2014,
+      "works_count": 159855,
+      "oa_works_count": 24732,
+      "cited_by_count": 1528067
+    },
+    {
+      "year": 2013,
+      "works_count": 149061,
+      "oa_works_count": 22705,
+      "cited_by_count": 1483139
+    },
+    {
+      "year": 2012,
+      "works_count": 162502,
+      "oa_works_count": 22407,
+      "cited_by_count": 1409979
+    }
+  ],
+  "works_api_url": "https://api.openalex.org/works?filter=concepts.id:C161191863",
+  "updated_date": "2025-10-19T14:02:59.215002",
+  "created_date": "2016-06-24"
+}

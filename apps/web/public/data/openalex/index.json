@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-10-19T18:48:28.339Z",
+  "lastUpdated": "2025-10-19T19:01:42.212Z",
   "directories": {
     "authors": {
       "$ref": "./authors",
@@ -11,7 +11,7 @@
     },
     "concepts": {
       "$ref": "./concepts",
-      "lastModified": "2025-10-19T18:48:27.519Z"
+      "lastModified": "2025-10-19T19:01:42.093Z"
     },
     "funders": {
       "$ref": "./funders",

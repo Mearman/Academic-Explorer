@@ -1,0 +1,946 @@
+{
+  "id": "https://openalex.org/C136764020",
+  "wikidata": "https://www.wikidata.org/wiki/Q466",
+  "display_name": "World Wide Web",
+  "level": 1,
+  "description": "system of interlinked hypertext documents accessed via the Internet",
+  "works_count": 9077490,
+  "cited_by_count": 67712863,
+  "summary_stats": {
+    "2yr_mean_citedness": 0.6268852705034892,
+    "h_index": 1785,
+    "i10_index": 982091
+  },
+  "ids": {
+    "openalex": "https://openalex.org/C136764020",
+    "wikidata": "https://www.wikidata.org/wiki/Q466",
+    "mag": "136764020",
+    "wikipedia": "https://en.wikipedia.org/wiki/World%20Wide%20Web",
+    "umls_cui": [
+      "C0282111"
+    ]
+  },
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/b/b2/WWW_logo_by_Robert_Cailliau.svg",
+  "image_thumbnail_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/WWW_logo_by_Robert_Cailliau.svg/100px-WWW_logo_by_Robert_Cailliau.svg.png",
+  "international": {
+    "display_name": {
+      "af": "Wêreldwye web",
+      "an": "World Wide Web",
+      "ang": "Woruldwīd Webb",
+      "ar": "ويب",
+      "arz": "ويب",
+      "as": "ৱৰ্ল্ড ৱাইড ৱেব",
+      "ast": "Web",
+      "az": "Ümumdünya hörümçək toru",
+      "azb": "دونیا میقیاسیندا وب",
+      "ba": "Бөтә Донъя Селтәре",
+      "be": "World Wide Web",
+      "be-tarask": "Сусьветнае павуціньне",
+      "bg": "Уеб",
+      "bho": "वल्ड वाइड वेब",
+      "bn": "ওয়ার্ল্ড ওয়াইড ওয়েব",
+      "bpy": "ওয়ার্ড ওয়াইড ওয়েব",
+      "br": "World Wide Web",
+      "bs": "World Wide Web",
+      "ca": "World Wide Web",
+      "ckb": "تەونی بەربڵاوی جیھانی",
+      "co": "Reta",
+      "crh": "Bütün dünya yuvası",
+      "cs": "World Wide Web",
+      "cy": "Gwe fyd-eang",
+      "da": "World Wide Web",
+      "de": "World Wide Web",
+      "de-ch": "World Wide Web",
+      "diq": "World Wide Web",
+      "el": "Παγκόσμιος Ιστός",
+      "eml": "Gran Tlarè mundièl",
+      "en": "World Wide Web",
+      "en-ca": "World Wide Web",
+      "en-gb": "World Wide Web",
+      "eo": "TTT",
+      "es": "World Wide Web",
+      "et": "Veeb",
+      "eu": "World Wide Web",
+      "fa": "وب جهان‌گستر",
+      "fi": "World Wide Web",
+      "fo": "Heimsvevur",
+      "fr": "World Wide Web",
+      "frr": "World Wide Web",
+      "ga": "an Gréasán Domhanda",
+      "gan": "萬維網",
+      "gcr": "World Wide Web",
+      "gl": "World Wide Web",
+      "glk": "جهاني وب",
+      "gsw": "World Wide Web",
+      "gu": "વર્લ્ડ વાઈડ વેબ",
+      "ha": "Yanar Gizo na Duniya",
+      "hak": "Chhiòn-khiù Chṳ̂-sín Mióng",
+      "he": "World Wide Web",
+      "hi": "विश्व व्यापी वेब",
+      "hr": "World Wide Web",
+      "hu": "világháló",
+      "hy": "համաշխարհային սարդոստայն",
+      "ia": "World Wide Web",
+      "id": "Waring Wera Wanua",
+      "ilo": "World Wide Web",
+      "inh": "ОагӀат:Дунен маза",
+      "is": "Veraldarvefurinn",
+      "it": "World Wide Web",
+      "ja": "World Wide Web",
+      "jam": "Wol Waid Web",
+      "jv": "Waring Wéra Wanua",
+      "ka": "მსოფლიო აბლაბუდა",
+      "kab": "World Wide Web",
+      "kk": "Ғаламтор",
+      "km": "វើលវ៉ាយវែប​",
+      "kn": "ವರ್ಲ್ಡ್ ವೈಡ್ ವೆಬ್",
+      "ko": "월드 와이드 웹",
+      "ku": "World Wide Web",
+      "ky": "Дүйнөлүк жөргөмүш желеси",
+      "la": "Tela totius terrae",
+      "lad": "Web",
+      "lb": "World Wide Web",
+      "lfn": "WWW",
+      "lmo": "World Wide Web",
+      "lt": "Saitynas",
+      "lv": "vispasaules tīmeklis",
+      "mai": "विश्व व्यापी वेब",
+      "mg": "Tranonkala",
+      "mhr": "Тӱнямбал эҥыремышвот",
+      "mi": "Tukutuku-Ao-Whānui",
+      "min": "World Wide Web",
+      "mk": "светска пајажина",
+      "ml": "വേൾഡ് വൈഡ് വെബ്",
+      "mn": "Дэлхий дахины веб",
+      "mr": "वर्ल्ड वाईड वेब",
+      "ms": "Jaringan Sejagat",
+      "ms-arab": "جاريڠن سجاڬت",
+      "my": "ဝက်ဘ်",
+      "mzn": "وب",
+      "nan": "World Wide Web",
+      "nb": "verdensveven",
+      "nds": "World Wide Web",
+      "ne": "वर्ल्ड वाइड वेब",
+      "new": "वोर्ल्ड वाइड वेब्",
+      "nl": "wereldwijd web",
+      "nn": "verdsveven",
+      "oc": "World Wide Web",
+      "pa": "ਵਰਲਡ ਵਾਈਡ ਵੈੱਬ",
+      "pap": "Red Informatica Social",
+      "pcd": "Arnitoèle",
+      "pdc": "Weltweit Gewebb",
+      "pl": "World Wide Web",
+      "pnb": "ورلڈ وائڈ ویب",
+      "ps": "WWW",
+      "pt": "World Wide Web",
+      "pt-br": "World Wide Web",
+      "rm": "World Wide Web",
+      "ro": "World Wide Web",
+      "ru": "всемирная паутина",
+      "rue": "Цїлосвітова павучіна",
+      "sah": "World Wide Web",
+      "sc": "World Wide Web",
+      "scn": "World Wide Web",
+      "sco": "Warld Wide Wab",
+      "sd": "عالمگير ويب",
+      "sh": "World Wide Web",
+      "si": "විශ්ව විසිරි වියමන",
+      "sk": "World Wide Web",
+      "sl": "Splet",
+      "so": "World Wide Web",
+      "sq": "World Wide Web",
+      "sr": "веб",
+      "sr-ec": "Веб",
+      "sr-el": "Veb",
+      "sv": "World Wide Web",
+      "sw": "Wavuti wa Walimwengu",
+      "ta": "உலகளாவிய வலை",
+      "te": "వరల్డ్ వైడ్ వెబ్",
+      "tg": "Веби ҷаҳонгустар",
+      "th": "เวิลด์ไวด์เว็บ",
+      "tl": "World Wide Web",
+      "tr": "World Wide Web",
+      "tt": "Бөтендөнья пәрәвезе",
+      "tt-cyrl": "Бөтендөнья пәрәвезе",
+      "tt-latn": "Bötendönya päräweze",
+      "uk": "всесвітня павутина",
+      "ur": "ورلڈ وائڈ ویب",
+      "uz": "World Wide Web",
+      "vec": "Web",
+      "vi": "World Wide Web",
+      "vro": "WWW",
+      "wa": "Daegntoele ås waibes",
+      "war": "World Wide Web",
+      "wo": "World Wide Web",
+      "wuu": "万维网",
+      "yi": "World Wide Web",
+      "yue": "萬維網",
+      "zh": "万维网",
+      "zh-cn": "万维网",
+      "zh-hans": "万维网",
+      "zh-hant": "全球資訊網",
+      "zh-hk": "萬維網",
+      "zh-tw": "全球資訊網",
+      "zu": "Isizindalwazi sokuxhumana somhlaba jikelele"
+    },
+    "description": {
+      "ar": "نظام",
+      "be-tarask": "сыстэма ўзаемазьвязаных гіпэртэкставых дакумэнтаў, даступных праз інтэрнэт",
+      "bg": "световна система от взаимно свързани уебсайтове",
+      "cs": "označení pro systém prohlížení, ukládání a odkazování dokumentů nacházejících se v internetu",
+      "de": "über das Internet abrufbares System von elektronischen Hypertext-Dokumenten",
+      "el": "σύστημα διασυνδεμένων εγγράφων υπερκειμένου προσπελασμένο μέσω διαδικτύου",
+      "en": "system of interlinked hypertext documents accessed via the Internet",
+      "es": "sistema de distribución de documentos de hipertexto o hipermedios interconectados y accesibles vía Internet",
+      "fa": "شبکه جهانی وب",
+      "fi": "Internetissä toimiva toisiinsa linkittävien hypertekstidokumenttien järjestelmä",
+      "fr": "système hypertexte public fonctionnant sur Internet qui permet de consulter, avec un navigateur, des pages accessibles sur des sites",
+      "gl": "rede de páxinas escritas en hipertexto e conectadas entre si",
+      "he": "מרחב דפי ההיפרטקסט באינטרנט",
+      "hi": "भूल गए पासपोर्ट की जानकारी चाहिए हमको क्या डाला है",
+      "hu": "interneten működő, egymással hiperlinkekkel összekötött dokumentumok rendszere",
+      "it": "servizio di Internet",
+      "ja": "インターネット経由でアクセスされるハイパーテキスト・ドキュメント・システム",
+      "ml": "പരസ്പരം ബന്ധപ്പെടുത്തിയിട്ടുള്ള ഹൈപ്പർടെക്സ്റ്റ് പ്രമാണങ്ങള്‍",
+      "my": "ဝက်ဘ်",
+      "nb": "globalt informasjonsrom på Internett",
+      "nl": "wereldwijd netwerk van hyperlinked documenten",
+      "pcd": "système ipertéske public por voèr des paches édseur Intarnète",
+      "pl": "internetowy system informacyjny",
+      "pt": "sistema de documentos hipertexto interligados e executados na Internet",
+      "pt-br": "sistema de documentos hipertexto interligados e executados na Internet",
+      "ru": "распределенная система, предоставляющая доступ к связанным между собой документам",
+      "sco": "seestem o interlinked hypertext documents accessed via the Internet",
+      "sd": "ڄاڻ جي جڳهه",
+      "sk": "distribuovaný hypertextový internetový informačný systém",
+      "so": "Nidaam",
+      "sr": "систем међусобно повезаних хипертекстуалних докумената којима се приступа путем интернета",
+      "sv": "tjänst som gör webbsidor och andra datafiler åtkomliga via Internet eller intranät",
+      "ta": "நாகப்பட்டினம் மாவட்டம்",
+      "tr": "Bilgi sistemi",
+      "tt": "Интернетка тоташтырылган санакларда сакланучы һәм бер-берсенә бәйле булган документлардан гиперсылтамалар ярдәмендә файдаланырга мөмкинлек бирә торган үзара бүленешле система",
+      "tt-cyrl": "Интернетка тоташтырылган санакларда сакланучы һәм бер-берсенә бәйле булган документлардан гиперсылтамалар ярдәмендә файдаланырга мөмкинлек бирә торган үзара бүленешле система",
+      "tt-latn": "İnternetqa totaştırılğan sanaqlarda saqlanuçı häm ber-bersenä bäyle bulğan dokumentlardan gipersıltamalar yärdämendä faydalanırğa mömkinlek birä torğan üzara büleneşle sistema",
+      "uk": "найбільше всесвітнє багатомовне сховище інформації в електронному вигляді",
+      "vi": "không gian thông tin toàn cầu truy cập qua thiết bị kết nối Internet",
+      "zh": "通過因特網訪問的相互關連的超文本文檔系統",
+      "zh-hans": "由许多互相链接的超文本组成的系统，通过互联网访问",
+      "zh-hant": "別名：萬維網、環球網、全球信息網"
+    }
+  },
+  "ancestors": [
+    {
+      "id": "https://openalex.org/C41008148",
+      "wikidata": "https://www.wikidata.org/wiki/Q21198",
+      "display_name": "Computer science",
+      "level": 0
+    }
+  ],
+  "related_concepts": [
+    {
+      "id": "https://openalex.org/C110875604",
+      "wikidata": null,
+      "display_name": "The Internet",
+      "level": 2,
+      "score": 119.67857
+    },
+    {
+      "id": "https://openalex.org/C21959979",
+      "wikidata": null,
+      "display_name": "Web page",
+      "level": 2,
+      "score": 42.393135
+    },
+    {
+      "id": "https://openalex.org/C544833334",
+      "wikidata": null,
+      "display_name": "JavaScript",
+      "level": 2,
+      "score": 30.282413
+    },
+    {
+      "id": "https://openalex.org/C111919701",
+      "wikidata": null,
+      "display_name": "Operating system",
+      "level": 1,
+      "score": 25.577053
+    },
+    {
+      "id": "https://openalex.org/C8797682",
+      "wikidata": null,
+      "display_name": "XML",
+      "level": 2,
+      "score": 23.251995
+    },
+    {
+      "id": "https://openalex.org/C118643609",
+      "wikidata": null,
+      "display_name": "Web application",
+      "level": 2,
+      "score": 23.208153
+    },
+    {
+      "id": "https://openalex.org/C31258907",
+      "wikidata": null,
+      "display_name": "Computer network",
+      "level": 1,
+      "score": 22.966385
+    },
+    {
+      "id": "https://openalex.org/C77088390",
+      "wikidata": null,
+      "display_name": "Database",
+      "level": 1,
+      "score": 22.749268
+    },
+    {
+      "id": "https://openalex.org/C162215914",
+      "wikidata": null,
+      "display_name": "Hypertext",
+      "level": 2,
+      "score": 22.442396
+    },
+    {
+      "id": "https://openalex.org/C2777904410",
+      "wikidata": null,
+      "display_name": "Software",
+      "level": 2,
+      "score": 20.592838
+    },
+    {
+      "id": "https://openalex.org/C2129575",
+      "wikidata": null,
+      "display_name": "Semantic Web",
+      "level": 2,
+      "score": 18.208973
+    },
+    {
+      "id": "https://openalex.org/C2779298391",
+      "wikidata": null,
+      "display_name": "Proxy server",
+      "level": 2,
+      "score": 13.350041
+    },
+    {
+      "id": "https://openalex.org/C13743948",
+      "wikidata": null,
+      "display_name": "Web crawler",
+      "level": 2,
+      "score": 12.605105
+    },
+    {
+      "id": "https://openalex.org/C79974875",
+      "wikidata": null,
+      "display_name": "Cloud computing",
+      "level": 2,
+      "score": 12.24673
+    },
+    {
+      "id": "https://openalex.org/C93518851",
+      "wikidata": null,
+      "display_name": "Metadata",
+      "level": 2,
+      "score": 11.914161
+    },
+    {
+      "id": "https://openalex.org/C518677369",
+      "wikidata": null,
+      "display_name": "Social media",
+      "level": 2,
+      "score": 11.008511
+    },
+    {
+      "id": "https://openalex.org/C78597825",
+      "wikidata": null,
+      "display_name": "E-commerce",
+      "level": 2,
+      "score": 10.481458
+    },
+    {
+      "id": "https://openalex.org/C2385561",
+      "wikidata": null,
+      "display_name": "RSS",
+      "level": 2,
+      "score": 10.306321
+    },
+    {
+      "id": "https://openalex.org/C534932454",
+      "wikidata": null,
+      "display_name": "Peer-to-peer",
+      "level": 2,
+      "score": 10.110066
+    },
+    {
+      "id": "https://openalex.org/C49774154",
+      "wikidata": null,
+      "display_name": "Multimedia",
+      "level": 1,
+      "score": 10.034137
+    },
+    {
+      "id": "https://openalex.org/C2780126544",
+      "wikidata": null,
+      "display_name": "Hypermedia",
+      "level": 2,
+      "score": 9.733956
+    },
+    {
+      "id": "https://openalex.org/C35578498",
+      "wikidata": null,
+      "display_name": "Web service",
+      "level": 2,
+      "score": 8.685515
+    },
+    {
+      "id": "https://openalex.org/C71191987",
+      "wikidata": null,
+      "display_name": "User agent",
+      "level": 2,
+      "score": 8.077583
+    },
+    {
+      "id": "https://openalex.org/C2780102126",
+      "wikidata": null,
+      "display_name": "Online and offline",
+      "level": 2,
+      "score": 7.827041
+    },
+    {
+      "id": "https://openalex.org/C16443162",
+      "wikidata": null,
+      "display_name": "Educational technology",
+      "level": 2,
+      "score": 7.4398875
+    },
+    {
+      "id": "https://openalex.org/C2779172887",
+      "wikidata": null,
+      "display_name": "PageRank",
+      "level": 2,
+      "score": 6.861804
+    },
+    {
+      "id": "https://openalex.org/C23123220",
+      "wikidata": null,
+      "display_name": "Information retrieval",
+      "level": 1,
+      "score": 6.858868
+    },
+    {
+      "id": "https://openalex.org/C65603577",
+      "wikidata": null,
+      "display_name": "Web resource",
+      "level": 2,
+      "score": 6.627105
+    },
+    {
+      "id": "https://openalex.org/C2780416260",
+      "wikidata": null,
+      "display_name": "JSON",
+      "level": 2,
+      "score": 6.464331
+    },
+    {
+      "id": "https://openalex.org/C108827166",
+      "wikidata": null,
+      "display_name": "Internet privacy",
+      "level": 1,
+      "score": 6.2044053
+    },
+    {
+      "id": "https://openalex.org/C2776911938",
+      "wikidata": null,
+      "display_name": "HyperCard",
+      "level": 2,
+      "score": 5.853019
+    },
+    {
+      "id": "https://openalex.org/C17632256",
+      "wikidata": null,
+      "display_name": "Digital media",
+      "level": 2,
+      "score": 5.8336353
+    },
+    {
+      "id": "https://openalex.org/C25493698",
+      "wikidata": null,
+      "display_name": "Desktop publishing",
+      "level": 2,
+      "score": 5.6535234
+    },
+    {
+      "id": "https://openalex.org/C170130773",
+      "wikidata": null,
+      "display_name": "Usability",
+      "level": 2,
+      "score": 5.2130184
+    },
+    {
+      "id": "https://openalex.org/C2777381677",
+      "wikidata": null,
+      "display_name": "Social software",
+      "level": 2,
+      "score": 5.1943197
+    },
+    {
+      "id": "https://openalex.org/C180652500",
+      "wikidata": null,
+      "display_name": "Push technology",
+      "level": 2,
+      "score": 4.3871403
+    },
+    {
+      "id": "https://openalex.org/C164554305",
+      "wikidata": null,
+      "display_name": "Application server",
+      "level": 2,
+      "score": 4.313482
+    },
+    {
+      "id": "https://openalex.org/C2778132726",
+      "wikidata": null,
+      "display_name": "Digital Revolution",
+      "level": 2,
+      "score": 4.206681
+    },
+    {
+      "id": "https://openalex.org/C180505990",
+      "wikidata": null,
+      "display_name": "News aggregator",
+      "level": 2,
+      "score": 4.128955
+    },
+    {
+      "id": "https://openalex.org/C148863701",
+      "wikidata": null,
+      "display_name": "Encyclopedia",
+      "level": 2,
+      "score": 4.09027
+    },
+    {
+      "id": "https://openalex.org/C2780154274",
+      "wikidata": null,
+      "display_name": "Download",
+      "level": 2,
+      "score": 3.8896782
+    },
+    {
+      "id": "https://openalex.org/C91093795",
+      "wikidata": null,
+      "display_name": "Information Age",
+      "level": 2,
+      "score": 3.8472226
+    },
+    {
+      "id": "https://openalex.org/C20136886",
+      "wikidata": null,
+      "display_name": "Interoperability",
+      "level": 2,
+      "score": 3.5433786
+    },
+    {
+      "id": "https://openalex.org/C144430266",
+      "wikidata": null,
+      "display_name": "Interactivity",
+      "level": 2,
+      "score": 3.4789684
+    },
+    {
+      "id": "https://openalex.org/C554579003",
+      "wikidata": null,
+      "display_name": "Collaborative software",
+      "level": 2,
+      "score": 3.4622183
+    },
+    {
+      "id": "https://openalex.org/C33039251",
+      "wikidata": null,
+      "display_name": "Content management",
+      "level": 2,
+      "score": 3.3606753
+    },
+    {
+      "id": "https://openalex.org/C2777064793",
+      "wikidata": null,
+      "display_name": "Videotex",
+      "level": 2,
+      "score": 3.3496578
+    },
+    {
+      "id": "https://openalex.org/C182590292",
+      "wikidata": null,
+      "display_name": "Network security",
+      "level": 2,
+      "score": 3.1072261
+    },
+    {
+      "id": "https://openalex.org/C178005623",
+      "wikidata": null,
+      "display_name": "Anonymity",
+      "level": 2,
+      "score": 3.0340066
+    },
+    {
+      "id": "https://openalex.org/C2778165684",
+      "wikidata": null,
+      "display_name": "Online community",
+      "level": 2,
+      "score": 2.7799072
+    },
+    {
+      "id": "https://openalex.org/C202477664",
+      "wikidata": null,
+      "display_name": "Client-side",
+      "level": 2,
+      "score": 2.6766744
+    },
+    {
+      "id": "https://openalex.org/C86297840",
+      "wikidata": null,
+      "display_name": "Interactive design",
+      "level": 2,
+      "score": 2.2063599
+    },
+    {
+      "id": "https://openalex.org/C57374464",
+      "wikidata": null,
+      "display_name": "Webcast",
+      "level": 2,
+      "score": 2.2025352
+    },
+    {
+      "id": "https://openalex.org/C2778431730",
+      "wikidata": null,
+      "display_name": "Folksonomy",
+      "level": 2,
+      "score": 2.175254
+    },
+    {
+      "id": "https://openalex.org/C2778805511",
+      "wikidata": null,
+      "display_name": "Citation",
+      "level": 2,
+      "score": 2.1259656
+    },
+    {
+      "id": "https://openalex.org/C2777646416",
+      "wikidata": null,
+      "display_name": "Digital literacy",
+      "level": 2,
+      "score": 2.0360892
+    },
+    {
+      "id": "https://openalex.org/C195807954",
+      "wikidata": null,
+      "display_name": "Information extraction",
+      "level": 2,
+      "score": 1.9987183
+    },
+    {
+      "id": "https://openalex.org/C163339463",
+      "wikidata": null,
+      "display_name": "CAPTCHA",
+      "level": 2,
+      "score": 1.9740875
+    },
+    {
+      "id": "https://openalex.org/C91262260",
+      "wikidata": null,
+      "display_name": "End user",
+      "level": 2,
+      "score": 1.9672947
+    },
+    {
+      "id": "https://openalex.org/C183003079",
+      "wikidata": null,
+      "display_name": "Personalization",
+      "level": 2,
+      "score": 1.7636055
+    },
+    {
+      "id": "https://openalex.org/C186625053",
+      "wikidata": null,
+      "display_name": "Information overload",
+      "level": 2,
+      "score": 1.6733974
+    },
+    {
+      "id": "https://openalex.org/C2779167275",
+      "wikidata": null,
+      "display_name": "Source tracking",
+      "level": 2,
+      "score": 1.6290891
+    },
+    {
+      "id": "https://openalex.org/C2779790888",
+      "wikidata": null,
+      "display_name": "WebRTC",
+      "level": 2,
+      "score": 1.6084036
+    },
+    {
+      "id": "https://openalex.org/C41525213",
+      "wikidata": null,
+      "display_name": "Electronic data interchange",
+      "level": 2,
+      "score": 1.5558847
+    },
+    {
+      "id": "https://openalex.org/C2780644320",
+      "wikidata": null,
+      "display_name": "Pagination",
+      "level": 2,
+      "score": 1.4017555
+    },
+    {
+      "id": "https://openalex.org/C31395832",
+      "wikidata": null,
+      "display_name": "Testbed",
+      "level": 2,
+      "score": 1.2959201
+    },
+    {
+      "id": "https://openalex.org/C71901391",
+      "wikidata": null,
+      "display_name": "Upload",
+      "level": 2,
+      "score": 1.2851001
+    },
+    {
+      "id": "https://openalex.org/C2780328347",
+      "wikidata": null,
+      "display_name": "Science policy",
+      "level": 2,
+      "score": 1.2425817
+    },
+    {
+      "id": "https://openalex.org/C2779344036",
+      "wikidata": null,
+      "display_name": "Digital content",
+      "level": 2,
+      "score": 1.1621903
+    },
+    {
+      "id": "https://openalex.org/C161936438",
+      "wikidata": null,
+      "display_name": "Working group",
+      "level": 2,
+      "score": 1.1532137
+    },
+    {
+      "id": "https://openalex.org/C93906722",
+      "wikidata": null,
+      "display_name": "Sensationalism",
+      "level": 2,
+      "score": 1.1489723
+    },
+    {
+      "id": "https://openalex.org/C2778695844",
+      "wikidata": null,
+      "display_name": "Collaborative writing",
+      "level": 2,
+      "score": 1.1361563
+    },
+    {
+      "id": "https://openalex.org/C2778616913",
+      "wikidata": null,
+      "display_name": "Bulletin board",
+      "level": 2,
+      "score": 1.12716
+    },
+    {
+      "id": "https://openalex.org/C521491914",
+      "wikidata": null,
+      "display_name": "Webometrics",
+      "level": 2,
+      "score": 1.111668
+    },
+    {
+      "id": "https://openalex.org/C99016210",
+      "wikidata": null,
+      "display_name": "Query expansion",
+      "level": 2,
+      "score": 1.0735966
+    },
+    {
+      "id": "https://openalex.org/C2780103627",
+      "wikidata": null,
+      "display_name": "SLATES",
+      "level": 2,
+      "score": 0.9925723
+    },
+    {
+      "id": "https://openalex.org/C2778315425",
+      "wikidata": null,
+      "display_name": "Electronic document",
+      "level": 2,
+      "score": 0.9885727
+    },
+    {
+      "id": "https://openalex.org/C2776187405",
+      "wikidata": null,
+      "display_name": "Geek",
+      "level": 2,
+      "score": 0.9673433
+    },
+    {
+      "id": "https://openalex.org/C2776854237",
+      "wikidata": null,
+      "display_name": "Information sharing",
+      "level": 2,
+      "score": 0.96210843
+    },
+    {
+      "id": "https://openalex.org/C2776293862",
+      "wikidata": null,
+      "display_name": "Discussion group",
+      "level": 2,
+      "score": 0.95004046
+    },
+    {
+      "id": "https://openalex.org/C2778781608",
+      "wikidata": null,
+      "display_name": "WebQuest",
+      "level": 2,
+      "score": 0.94403154
+    },
+    {
+      "id": "https://openalex.org/C2779786915",
+      "wikidata": null,
+      "display_name": "Community network",
+      "level": 2,
+      "score": 0.8777321
+    },
+    {
+      "id": "https://openalex.org/C2779576378",
+      "wikidata": null,
+      "display_name": "Technology policy",
+      "level": 2,
+      "score": 0.8748348
+    },
+    {
+      "id": "https://openalex.org/C2781168091",
+      "wikidata": null,
+      "display_name": "Audience response",
+      "level": 2,
+      "score": 0.8468773
+    },
+    {
+      "id": "https://openalex.org/C2777715827",
+      "wikidata": null,
+      "display_name": "Online database",
+      "level": 2,
+      "score": 0.84042084
+    },
+    {
+      "id": "https://openalex.org/C2781455918",
+      "wikidata": null,
+      "display_name": "Smiley",
+      "level": 2,
+      "score": 0.7860011
+    },
+    {
+      "id": "https://openalex.org/C2778940482",
+      "wikidata": null,
+      "display_name": "Pathfinder",
+      "level": 2,
+      "score": 0.77039206
+    },
+    {
+      "id": "https://openalex.org/C113041634",
+      "wikidata": null,
+      "display_name": "Computer network programming",
+      "level": 2,
+      "score": 0.75414854
+    }
+  ],
+  "counts_by_year": [
+    {
+      "year": 2025,
+      "works_count": 111716,
+      "oa_works_count": 14410,
+      "cited_by_count": 2476872
+    },
+    {
+      "year": 2024,
+      "works_count": 215913,
+      "oa_works_count": 69025,
+      "cited_by_count": 4170024
+    },
+    {
+      "year": 2023,
+      "works_count": 594670,
+      "oa_works_count": 129921,
+      "cited_by_count": 4465201
+    },
+    {
+      "year": 2022,
+      "works_count": 524110,
+      "oa_works_count": 117981,
+      "cited_by_count": 4170851
+    },
+    {
+      "year": 2021,
+      "works_count": 413675,
+      "oa_works_count": 112839,
+      "cited_by_count": 4383696
+    },
+    {
+      "year": 2020,
+      "works_count": 461577,
+      "oa_works_count": 105852,
+      "cited_by_count": 3908029
+    },
+    {
+      "year": 2019,
+      "works_count": 375923,
+      "oa_works_count": 84640,
+      "cited_by_count": 3387835
+    },
+    {
+      "year": 2018,
+      "works_count": 360075,
+      "oa_works_count": 73815,
+      "cited_by_count": 2973557
+    },
+    {
+      "year": 2017,
+      "works_count": 334823,
+      "oa_works_count": 60129,
+      "cited_by_count": 2687574
+    },
+    {
+      "year": 2016,
+      "works_count": 329466,
+      "oa_works_count": 57161,
+      "cited_by_count": 2582572
+    },
+    {
+      "year": 2015,
+      "works_count": 337156,
+      "oa_works_count": 48855,
+      "cited_by_count": 2546256
+    },
+    {
+      "year": 2014,
+      "works_count": 268936,
+      "oa_works_count": 44253,
+      "cited_by_count": 2477709
+    },
+    {
+      "year": 2013,
+      "works_count": 258539,
+      "oa_works_count": 39532,
+      "cited_by_count": 2294141
+    },
+    {
+      "year": 2012,
+      "works_count": 265947,
+      "oa_works_count": 34417,
+      "cited_by_count": 2118530
+    }
+  ],
+  "works_api_url": "https://api.openalex.org/works?filter=concepts.id:C136764020",
+  "updated_date": "2025-10-19T13:05:08.492104",
+  "created_date": "2016-06-24"
+}

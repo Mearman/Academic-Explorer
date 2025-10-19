@@ -1,6 +1,86 @@
 {
-  "lastUpdated": "2025-10-19T18:48:28.331Z",
+  "lastUpdated": "2025-10-19T19:01:42.202Z",
   "files": {
+    "C105345328": {
+      "url": "https://api.openalex.org/concepts/C105345328",
+      "$ref": "./C105345328.json",
+      "lastRetrieved": "2025-10-19T19:01:41.922Z",
+      "contentHash": "841e05a0969502fc",
+      "equivalentUrls": [
+        "https://api.openalex.org/concepts/C105345328"
+      ],
+      "urlTimestamps": {
+        "https://api.openalex.org/concepts/C105345328": "2025-10-19T19:01:41.922Z"
+      },
+      "collisionInfo": {
+        "mergedCount": 0,
+        "totalUrls": 1
+      }
+    },
+    "C105795698": {
+      "url": "https://api.openalex.org/concepts/C105795698",
+      "$ref": "./C105795698.json",
+      "lastRetrieved": "2025-10-19T19:01:41.753Z",
+      "contentHash": "8000cdfb499f104e",
+      "equivalentUrls": [
+        "https://api.openalex.org/concepts/C105795698"
+      ],
+      "urlTimestamps": {
+        "https://api.openalex.org/concepts/C105795698": "2025-10-19T19:01:41.753Z"
+      },
+      "collisionInfo": {
+        "mergedCount": 0,
+        "totalUrls": 1
+      }
+    },
+    "C111919701": {
+      "url": "https://api.openalex.org/concepts/C111919701",
+      "$ref": "./C111919701.json",
+      "lastRetrieved": "2025-10-19T19:01:41.916Z",
+      "contentHash": "aa9d46d978c6051d",
+      "equivalentUrls": [
+        "https://api.openalex.org/concepts/C111919701"
+      ],
+      "urlTimestamps": {
+        "https://api.openalex.org/concepts/C111919701": "2025-10-19T19:01:41.916Z"
+      },
+      "collisionInfo": {
+        "mergedCount": 0,
+        "totalUrls": 1
+      }
+    },
+    "C126322002": {
+      "url": "https://api.openalex.org/concepts/C126322002",
+      "$ref": "./C126322002.json",
+      "lastRetrieved": "2025-10-19T19:01:41.771Z",
+      "contentHash": "3614ee53c25ef0dd",
+      "equivalentUrls": [
+        "https://api.openalex.org/concepts/C126322002"
+      ],
+      "urlTimestamps": {
+        "https://api.openalex.org/concepts/C126322002": "2025-10-19T19:01:41.771Z"
+      },
+      "collisionInfo": {
+        "mergedCount": 0,
+        "totalUrls": 1
+      }
+    },
+    "C136764020": {
+      "url": "https://api.openalex.org/concepts/C136764020",
+      "$ref": "./C136764020.json",
+      "lastRetrieved": "2025-10-19T19:01:42.092Z",
+      "contentHash": "31f19de5e8b9331a",
+      "equivalentUrls": [
+        "https://api.openalex.org/concepts/C136764020"
+      ],
+      "urlTimestamps": {
+        "https://api.openalex.org/concepts/C136764020": "2025-10-19T19:01:42.092Z"
+      },
+      "collisionInfo": {
+        "mergedCount": 0,
+        "totalUrls": 1
+      }
+    },
     "C151719136": {
       "url": "https://api.openalex.org/concepts/C151719136",
       "$ref": "./C151719136.json",
@@ -11,6 +91,22 @@
       ],
       "urlTimestamps": {
         "https://api.openalex.org/concepts/C151719136": "2025-10-19T18:42:13.620Z"
+      },
+      "collisionInfo": {
+        "mergedCount": 0,
+        "totalUrls": 1
+      }
+    },
+    "C161191863": {
+      "url": "https://api.openalex.org/concepts/C161191863",
+      "$ref": "./C161191863.json",
+      "lastRetrieved": "2025-10-19T19:01:41.773Z",
+      "contentHash": "6d069f66f54f474a",
+      "equivalentUrls": [
+        "https://api.openalex.org/concepts/C161191863"
+      ],
+      "urlTimestamps": {
+        "https://api.openalex.org/concepts/C161191863": "2025-10-19T19:01:41.773Z"
       },
       "collisionInfo": {
         "mergedCount": 0,
@@ -52,13 +148,13 @@
     "C199539241": {
       "url": "https://api.openalex.org/concepts/C199539241",
       "$ref": "./C199539241.json",
-      "lastRetrieved": "2025-10-19T18:48:28.226Z",
+      "lastRetrieved": "2025-10-19T18:48:28.227Z",
       "contentHash": "403cebc237ffc048",
       "equivalentUrls": [
         "https://api.openalex.org/concepts/C199539241"
       ],
       "urlTimestamps": {
-        "https://api.openalex.org/concepts/C199539241": "2025-10-19T18:48:28.226Z"
+        "https://api.openalex.org/concepts/C199539241": "2025-10-19T18:48:28.227Z"
       },
       "collisionInfo": {
         "mergedCount": 0,
@@ -145,6 +241,22 @@
         "totalUrls": 1
       }
     },
+    "C33923547": {
+      "url": "https://api.openalex.org/concepts/C33923547",
+      "$ref": "./C33923547.json",
+      "lastRetrieved": "2025-10-19T19:01:41.989Z",
+      "contentHash": "649106f183588a0d",
+      "equivalentUrls": [
+        "https://api.openalex.org/concepts/C33923547"
+      ],
+      "urlTimestamps": {
+        "https://api.openalex.org/concepts/C33923547": "2025-10-19T19:01:41.989Z"
+      },
+      "collisionInfo": {
+        "mergedCount": 0,
+        "totalUrls": 1
+      }
+    },
     "C41008148": {
       "url": "https://api.openalex.org/concepts/C41008148",
       "$ref": "./C41008148.json",
@@ -155,6 +267,22 @@
       ],
       "urlTimestamps": {
         "https://api.openalex.org/concepts/C41008148": "2025-10-12T21:29:20.613Z"
+      },
+      "collisionInfo": {
+        "mergedCount": 0,
+        "totalUrls": 1
+      }
+    },
+    "C71924100": {
+      "url": "https://api.openalex.org/concepts/C71924100",
+      "$ref": "./C71924100.json",
+      "lastRetrieved": "2025-10-19T19:01:41.753Z",
+      "contentHash": "607bd374f9e6ecfb",
+      "equivalentUrls": [
+        "https://api.openalex.org/concepts/C71924100"
+      ],
+      "urlTimestamps": {
+        "https://api.openalex.org/concepts/C71924100": "2025-10-19T19:01:41.753Z"
       },
       "collisionInfo": {
         "mergedCount": 0,

@@ -1,0 +1,1017 @@
+{
+  "id": "https://openalex.org/C105795698",
+  "wikidata": "https://www.wikidata.org/wiki/Q12483",
+  "display_name": "Statistics",
+  "level": 1,
+  "description": "study of the collection, organization, analysis, interpretation, and presentation of data",
+  "works_count": 8455687,
+  "cited_by_count": 143038136,
+  "summary_stats": {
+    "2yr_mean_citedness": 1.8072258775332857,
+    "h_index": 2547,
+    "i10_index": 2029766
+  },
+  "ids": {
+    "openalex": "https://openalex.org/C105795698",
+    "wikidata": "https://www.wikidata.org/wiki/Q12483",
+    "mag": "105795698",
+    "wikipedia": "https://en.wikipedia.org/wiki/Statistics",
+    "umls_cui": [
+      "C0038215"
+    ]
+  },
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/4/44/Standard_Normal_Distribution.png",
+  "image_thumbnail_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Standard_Normal_Distribution.png/100px-Standard_Normal_Distribution.png",
+  "international": {
+    "display_name": {
+      "af": "statistiek",
+      "am": "የዝርዝር ሂሳብ",
+      "an": "Estatistica",
+      "ar": "إحصاء",
+      "as": "পৰিসংখ্যা",
+      "ast": "estadística",
+      "az": "statistika",
+      "azb": "آمار",
+      "ba": "статистика",
+      "bcl": "Estadistika",
+      "be": "статыстыка",
+      "be-tarask": "статыстыка",
+      "bg": "Статистика",
+      "bi": "Statistikis",
+      "bn": "পরিসংখ্যান",
+      "br": "Stadegouriezh",
+      "bs": "Statistika",
+      "ca": "estadística",
+      "ckb": "ئامار",
+      "co": "Statistica",
+      "crh": "isaiyat",
+      "cs": "statistika",
+      "cv": "Статистика",
+      "cy": "ystadegaeth",
+      "da": "statistik",
+      "de": "Statistik",
+      "diq": "İstatistik",
+      "dv": "ތަފާސް ހިސާބު",
+      "el": "στατιστική",
+      "en": "statistics",
+      "en-ca": "Statistics",
+      "en-gb": "statistics",
+      "eo": "statistiko",
+      "es": "estadística",
+      "et": "statistika",
+      "eu": "estatistika",
+      "ext": "Estaística",
+      "fa": "آمار",
+      "fi": "tilastotiede",
+      "fo": "Hagfrøði",
+      "fr": "statistique",
+      "frr": "statistik",
+      "fur": "Statistiche",
+      "fy": "Statistyk",
+      "ga": "Staidreamh",
+      "gan": "統計學",
+      "gcr": "Statistik",
+      "gd": "Staitistearachd",
+      "gl": "estatística",
+      "gsw": "Statistik",
+      "gv": "Staydraa",
+      "haw": "Kumuhana",
+      "he": "סטטיסטיקה",
+      "hi": "सांख्यिकी",
+      "hr": "statistika",
+      "hu": "statisztika",
+      "hy": "Վիճակագրություն",
+      "ia": "statistica",
+      "id": "statistika",
+      "io": "statistiko",
+      "is": "tölfræði",
+      "it": "statistica",
+      "iu": "ᑭᓯᑦᓯᓯᖕᖑᕐᓗᒋᑦ ᐹᓯᔅᓱᑎᔅᓴᑦ",
+      "ja": "統計学",
+      "jam": "Statistix",
+      "jv": "Statistika",
+      "ka": "სტატისტიკა",
+      "kbp": "Samaɣ ñʊʊ tɩlʊʊ",
+      "kk": "Статистика",
+      "kn": "ಸಂಖ್ಯಾಶಾಸ್ತ್ರ",
+      "ko": "통계학",
+      "ku": "amar",
+      "kw": "Statystek",
+      "ky": "Статистика",
+      "la": "statistica",
+      "lad": "estadistika",
+      "lb": "Statistik",
+      "lfn": "Statistica",
+      "li": "Sjtatistiek",
+      "lij": "Statistega",
+      "lmo": "Statistega",
+      "lo": "ສະຖິຕິສາດ",
+      "lt": "statistika",
+      "lv": "statistika",
+      "mad": "Statistika",
+      "mg": "Statistika",
+      "mi": "tatauranga",
+      "mk": "статистика",
+      "ml": "സ്ഥിതിവിവരക്കണക്കുകൾ",
+      "mr": "संख्याशास्त्र",
+      "ms": "perangkaan",
+      "ms-arab": "ڤراڠکاءن",
+      "mwl": "Statística",
+      "my": "စာရင်းအင်း ပညာ",
+      "nan": "Thóng-kè-ha̍k",
+      "nb": "statistikk",
+      "ne": "तथ्याङ्क",
+      "new": "तथ्यांक",
+      "nl": "statistiek",
+      "nn": "statistikk",
+      "oc": "estatistica",
+      "or": "ପରିସଂଖ୍ୟାନ",
+      "pa": "ਅੰਕੜਾ ਵਿਗਿਆਨ",
+      "pih": "Stetistiks",
+      "pl": "statystyka",
+      "pms": "Statìstica",
+      "pnb": "سٹیٹ",
+      "ps": "سرشمیرنه",
+      "pt": "estatística",
+      "pt-br": "estatística",
+      "ro": "statistică",
+      "ru": "статистика",
+      "rue": "Штатістіка",
+      "scn": "Statìstica",
+      "sco": "Stateestics",
+      "sd": "اِسٽيٽسٽڪس",
+      "sgs": "Statėstėka",
+      "sh": "Statistika",
+      "si": "සංඛ්‍යානය",
+      "sk": "štatistika",
+      "sl": "statistika",
+      "sq": "statistika",
+      "sr": "статистика",
+      "sr-ec": "статистика",
+      "sr-el": "statistika",
+      "stq": "Statistik",
+      "su": "Statistik",
+      "sv": "statistik",
+      "sw": "Takwimu",
+      "ta": "புள்ளியியல்",
+      "tcy": "ಸಂಖ್ಯಾಶಾಸ್ತ್ರ",
+      "te": "సంఖ్యా శాస్త్రం",
+      "tet": "Estatístika",
+      "tg": "Омор",
+      "th": "สถิติศาสตร์",
+      "tk": "Statistika",
+      "tl": "Estadistika",
+      "tr": "istatistik",
+      "tt": "статистика",
+      "uk": "статистика",
+      "ur": "احصاء",
+      "uz": "Statistika",
+      "vec": "Statìstega",
+      "vi": "thống kê",
+      "vro": "Statistiga",
+      "war": "Estadistiká",
+      "wuu": "统计学",
+      "yi": "סטאטיסטיק",
+      "yo": "Ìsirò Statistiki",
+      "yue": "統計學",
+      "zh": "統計學",
+      "zh-cn": "统计学",
+      "zh-hans": "统计学",
+      "zh-hant": "統計學",
+      "zh-hk": "統計學",
+      "zh-mo": "統計學",
+      "zh-my": "统计学",
+      "zh-sg": "统计学",
+      "zh-tw": "統計學"
+    },
+    "description": {
+      "ar": "دراسة جمع وتنظيم وتحليل وتفسير وعرض البيانات",
+      "bn": "উপাত্ত সংগ্রহ, বিশ্লেষণ, পরিবেশন ও ব্যাখ্যা করার বিজ্ঞান",
+      "ca": "estudi de la recol·lecció, organització, anàlisi, interpretació i presentació de les dades",
+      "cy": "yr astudiaeth o ddata",
+      "de": "Lehre von Methoden zum Umgang mit quantitativen Informationen",
+      "en": "study of the collection, organization, analysis, interpretation, and presentation of data",
+      "es": "estudio de la recolección, organización, análisis, interpretación y presentación de los datos",
+      "fi": "tieteenala, joka tutkii aineistojen keräämistä ja analyysiä todennäköisyyslaskennan avulla",
+      "fr": "étude de la collecte de données, de leur analyse, de leur traitement, de l'interprétation des résultats et de leur présentation",
+      "gl": "rama das matemáticas",
+      "he": "תחום ידע הנוגע להסקת מסקנות מנתונים כמותיים",
+      "hi": "विधियाँ",
+      "id": "kajian kumpulan, organisasi, analisis, interpretasi, dan presentasi data",
+      "it": "disciplina che ha come fine lo studio quantitativo e qualitativo di un particolare fenomeno",
+      "ja": "経験的に得られたバラツキのあるデータから、応用数学の手法を用いて数値上の性質や規則性あるいは不規則性を見いだす学問",
+      "ko": "수학에 속하는 학문",
+      "ml": "ഡാറ്റ ശേഖരണം, ക്രമപ്പെടുത്തൽ, വിശകലനം, വ്യാഖ്യാനം, അവതരണം എന്നിവയുടെ പഠനം",
+      "nl": "studie van de verzameling, bewerking en publicatie van statistieken",
+      "pt": "estudo da coleta, organização, análise, interpretação e apresentação de dados",
+      "pt-br": "estudo da coleta, organização, análise, interpretação e apresentação de dados",
+      "ro": "studiul colectării, organizării, analizei,interpretării și prezentării de date",
+      "ru": "отрасль знаний о сборе, измерении, анализе, толковании и представлении данных",
+      "sco": "typ o mathematics that studies samples o data",
+      "sk": "odbor zaoberajúci sa kvantitatívnou charakteristikou rozličných javov",
+      "uk": "галузь знань про збирання, вимірювання, аналіз, тлумачення та поданні даних",
+      "vi": "Khoa học về thu thập và phân tích dữ liệu số với số lượng lớn",
+      "yue": "應用學科，屬數學嘅子領域",
+      "zh": "學科"
+    }
+  },
+  "ancestors": [
+    {
+      "id": "https://openalex.org/C33923547",
+      "wikidata": "https://www.wikidata.org/wiki/Q395",
+      "display_name": "Mathematics",
+      "level": 0
+    }
+  ],
+  "related_concepts": [
+    {
+      "id": "https://openalex.org/C33923547",
+      "wikidata": null,
+      "display_name": "Mathematics",
+      "level": 0,
+      "score": 102.42083
+    },
+    {
+      "id": "https://openalex.org/C102094743",
+      "wikidata": null,
+      "display_name": "Normal distribution",
+      "level": 2,
+      "score": 82.92962
+    },
+    {
+      "id": "https://openalex.org/C149441793",
+      "wikidata": null,
+      "display_name": "Probability distribution",
+      "level": 2,
+      "score": 77.094086
+    },
+    {
+      "id": "https://openalex.org/C122203268",
+      "wikidata": null,
+      "display_name": "Probability theory",
+      "level": 2,
+      "score": 67.28476
+    },
+    {
+      "id": "https://openalex.org/C22679943",
+      "wikidata": null,
+      "display_name": "Standard deviation",
+      "level": 2,
+      "score": 63.013397
+    },
+    {
+      "id": "https://openalex.org/C152877465",
+      "wikidata": null,
+      "display_name": "Regression analysis",
+      "level": 2,
+      "score": 61.148853
+    },
+    {
+      "id": "https://openalex.org/C122123141",
+      "wikidata": null,
+      "display_name": "Random variable",
+      "level": 2,
+      "score": 56.309998
+    },
+    {
+      "id": "https://openalex.org/C87007009",
+      "wikidata": null,
+      "display_name": "Statistical hypothesis testing",
+      "level": 2,
+      "score": 55.870598
+    },
+    {
+      "id": "https://openalex.org/C162324750",
+      "wikidata": null,
+      "display_name": "Economics",
+      "level": 0,
+      "score": 55.032867
+    },
+    {
+      "id": "https://openalex.org/C121332964",
+      "wikidata": null,
+      "display_name": "Physics",
+      "level": 0,
+      "score": 53.014526
+    },
+    {
+      "id": "https://openalex.org/C41008148",
+      "wikidata": null,
+      "display_name": "Computer science",
+      "level": 0,
+      "score": 47.862644
+    },
+    {
+      "id": "https://openalex.org/C151406439",
+      "wikidata": null,
+      "display_name": "Time series",
+      "level": 2,
+      "score": 45.21473
+    },
+    {
+      "id": "https://openalex.org/C141042865",
+      "wikidata": null,
+      "display_name": "Expected value",
+      "level": 2,
+      "score": 44.180202
+    },
+    {
+      "id": "https://openalex.org/C149782125",
+      "wikidata": null,
+      "display_name": "Econometrics",
+      "level": 1,
+      "score": 42.91447
+    },
+    {
+      "id": "https://openalex.org/C44249647",
+      "wikidata": null,
+      "display_name": "Confidence interval",
+      "level": 2,
+      "score": 40.54685
+    },
+    {
+      "id": "https://openalex.org/C48921125",
+      "wikidata": null,
+      "display_name": "Linear regression",
+      "level": 2,
+      "score": 40.05362
+    },
+    {
+      "id": "https://openalex.org/C197055811",
+      "wikidata": null,
+      "display_name": "Probability density function",
+      "level": 2,
+      "score": 38.145298
+    },
+    {
+      "id": "https://openalex.org/C134261354",
+      "wikidata": null,
+      "display_name": "Statistical inference",
+      "level": 2,
+      "score": 37.494392
+    },
+    {
+      "id": "https://openalex.org/C15744967",
+      "wikidata": null,
+      "display_name": "Psychology",
+      "level": 0,
+      "score": 36.85741
+    },
+    {
+      "id": "https://openalex.org/C119857082",
+      "wikidata": null,
+      "display_name": "Machine learning",
+      "level": 1,
+      "score": 35.559208
+    },
+    {
+      "id": "https://openalex.org/C191988596",
+      "wikidata": null,
+      "display_name": "Null hypothesis",
+      "level": 2,
+      "score": 31.453335
+    },
+    {
+      "id": "https://openalex.org/C27574286",
+      "wikidata": null,
+      "display_name": "Variables",
+      "level": 2,
+      "score": 30.693342
+    },
+    {
+      "id": "https://openalex.org/C114289077",
+      "wikidata": null,
+      "display_name": "Statistical model",
+      "level": 2,
+      "score": 29.805012
+    },
+    {
+      "id": "https://openalex.org/C34559072",
+      "wikidata": null,
+      "display_name": "Design of experiments",
+      "level": 2,
+      "score": 28.308987
+    },
+    {
+      "id": "https://openalex.org/C96608239",
+      "wikidata": null,
+      "display_name": "Statistical power",
+      "level": 2,
+      "score": 26.285915
+    },
+    {
+      "id": "https://openalex.org/C65409693",
+      "wikidata": null,
+      "display_name": "Statistical significance",
+      "level": 2,
+      "score": 26.273853
+    },
+    {
+      "id": "https://openalex.org/C185429906",
+      "wikidata": null,
+      "display_name": "Estimator",
+      "level": 2,
+      "score": 26.026693
+    },
+    {
+      "id": "https://openalex.org/C99476002",
+      "wikidata": null,
+      "display_name": "Analysis of variance",
+      "level": 2,
+      "score": 25.995777
+    },
+    {
+      "id": "https://openalex.org/C55078378",
+      "wikidata": null,
+      "display_name": "Pearson product-moment correlation coefficient",
+      "level": 2,
+      "score": 24.434029
+    },
+    {
+      "id": "https://openalex.org/C167928553",
+      "wikidata": null,
+      "display_name": "Estimation theory",
+      "level": 2,
+      "score": 23.70798
+    },
+    {
+      "id": "https://openalex.org/C79337645",
+      "wikidata": null,
+      "display_name": "Outlier",
+      "level": 2,
+      "score": 22.94674
+    },
+    {
+      "id": "https://openalex.org/C99656134",
+      "wikidata": null,
+      "display_name": "Ordinary least squares",
+      "level": 2,
+      "score": 21.901356
+    },
+    {
+      "id": "https://openalex.org/C35651441",
+      "wikidata": null,
+      "display_name": "Independence (probability theory)",
+      "level": 2,
+      "score": 21.265993
+    },
+    {
+      "id": "https://openalex.org/C6260981",
+      "wikidata": null,
+      "display_name": "Mathematical statistics",
+      "level": 2,
+      "score": 20.73067
+    },
+    {
+      "id": "https://openalex.org/C89128539",
+      "wikidata": null,
+      "display_name": "Statistic",
+      "level": 2,
+      "score": 20.488628
+    },
+    {
+      "id": "https://openalex.org/C124101348",
+      "wikidata": null,
+      "display_name": "Data mining",
+      "level": 1,
+      "score": 19.928652
+    },
+    {
+      "id": "https://openalex.org/C76969082",
+      "wikidata": null,
+      "display_name": "Mathematical model",
+      "level": 2,
+      "score": 19.82694
+    },
+    {
+      "id": "https://openalex.org/C175801342",
+      "wikidata": null,
+      "display_name": "Data analysis",
+      "level": 2,
+      "score": 19.811031
+    },
+    {
+      "id": "https://openalex.org/C41054675",
+      "wikidata": null,
+      "display_name": "Binomial distribution",
+      "level": 2,
+      "score": 19.382517
+    },
+    {
+      "id": "https://openalex.org/C178650346",
+      "wikidata": null,
+      "display_name": "Covariance",
+      "level": 2,
+      "score": 19.283627
+    },
+    {
+      "id": "https://openalex.org/C166785042",
+      "wikidata": null,
+      "display_name": "Central limit theorem",
+      "level": 2,
+      "score": 19.083788
+    },
+    {
+      "id": "https://openalex.org/C28826006",
+      "wikidata": null,
+      "display_name": "Applied mathematics",
+      "level": 1,
+      "score": 18.993092
+    },
+    {
+      "id": "https://openalex.org/C73945780",
+      "wikidata": null,
+      "display_name": "Survey methodology",
+      "level": 2,
+      "score": 18.686325
+    },
+    {
+      "id": "https://openalex.org/C151956035",
+      "wikidata": null,
+      "display_name": "Logistic regression",
+      "level": 2,
+      "score": 18.323141
+    },
+    {
+      "id": "https://openalex.org/C100906024",
+      "wikidata": null,
+      "display_name": "Poisson distribution",
+      "level": 2,
+      "score": 18.236721
+    },
+    {
+      "id": "https://openalex.org/C55350006",
+      "wikidata": null,
+      "display_name": "Exponential distribution",
+      "level": 2,
+      "score": 18.152824
+    },
+    {
+      "id": "https://openalex.org/C8272713",
+      "wikidata": null,
+      "display_name": "Stochastic process",
+      "level": 2,
+      "score": 18.130041
+    },
+    {
+      "id": "https://openalex.org/C11413529",
+      "wikidata": null,
+      "display_name": "Algorithm",
+      "level": 1,
+      "score": 17.987225
+    },
+    {
+      "id": "https://openalex.org/C107130276",
+      "wikidata": null,
+      "display_name": "Epidemiology",
+      "level": 2,
+      "score": 17.698606
+    },
+    {
+      "id": "https://openalex.org/C40696583",
+      "wikidata": null,
+      "display_name": "Type I and type II errors",
+      "level": 2,
+      "score": 17.279238
+    },
+    {
+      "id": "https://openalex.org/C129848803",
+      "wikidata": null,
+      "display_name": "Sample size determination",
+      "level": 2,
+      "score": 17.213314
+    },
+    {
+      "id": "https://openalex.org/C42475967",
+      "wikidata": null,
+      "display_name": "Operations research",
+      "level": 1,
+      "score": 17.133423
+    },
+    {
+      "id": "https://openalex.org/C19499675",
+      "wikidata": null,
+      "display_name": "Monte Carlo method",
+      "level": 2,
+      "score": 16.903515
+    },
+    {
+      "id": "https://openalex.org/C10138342",
+      "wikidata": null,
+      "display_name": "Finance",
+      "level": 1,
+      "score": 16.463284
+    },
+    {
+      "id": "https://openalex.org/C2779677306",
+      "wikidata": null,
+      "display_name": "Statistician",
+      "level": 2,
+      "score": 15.98802
+    },
+    {
+      "id": "https://openalex.org/C102366305",
+      "wikidata": null,
+      "display_name": "Nonparametric statistics",
+      "level": 2,
+      "score": 15.847871
+    },
+    {
+      "id": "https://openalex.org/C149923435",
+      "wikidata": null,
+      "display_name": "Demography",
+      "level": 1,
+      "score": 15.837659
+    },
+    {
+      "id": "https://openalex.org/C63830546",
+      "wikidata": null,
+      "display_name": "Scientific method",
+      "level": 2,
+      "score": 15.498108
+    },
+    {
+      "id": "https://openalex.org/C122342681",
+      "wikidata": null,
+      "display_name": "Skewness",
+      "level": 2,
+      "score": 15.444598
+    },
+    {
+      "id": "https://openalex.org/C73555534",
+      "wikidata": null,
+      "display_name": "Cluster analysis",
+      "level": 2,
+      "score": 15.355829
+    },
+    {
+      "id": "https://openalex.org/C166963901",
+      "wikidata": null,
+      "display_name": "Kurtosis",
+      "level": 2,
+      "score": 15.214011
+    },
+    {
+      "id": "https://openalex.org/C48057537",
+      "wikidata": null,
+      "display_name": "Statistical theory",
+      "level": 2,
+      "score": 15.010391
+    },
+    {
+      "id": "https://openalex.org/C49344536",
+      "wikidata": null,
+      "display_name": "Cauchy distribution",
+      "level": 2,
+      "score": 14.680528
+    },
+    {
+      "id": "https://openalex.org/C52622258",
+      "wikidata": null,
+      "display_name": "Information theory",
+      "level": 2,
+      "score": 14.385067
+    },
+    {
+      "id": "https://openalex.org/C48753275",
+      "wikidata": null,
+      "display_name": "Numerical analysis",
+      "level": 2,
+      "score": 13.117555
+    },
+    {
+      "id": "https://openalex.org/C58489278",
+      "wikidata": null,
+      "display_name": "Data set",
+      "level": 2,
+      "score": 13.0541725
+    },
+    {
+      "id": "https://openalex.org/C21621910",
+      "wikidata": null,
+      "display_name": "Beta distribution",
+      "level": 2,
+      "score": 12.44688
+    },
+    {
+      "id": "https://openalex.org/C108882938",
+      "wikidata": null,
+      "display_name": "Uniform distribution (continuous)",
+      "level": 2,
+      "score": 12.416686
+    },
+    {
+      "id": "https://openalex.org/C149717495",
+      "wikidata": null,
+      "display_name": "Gamma distribution",
+      "level": 2,
+      "score": 12.3985405
+    },
+    {
+      "id": "https://openalex.org/C20256973",
+      "wikidata": null,
+      "display_name": "Standard score",
+      "level": 2,
+      "score": 12.204509
+    },
+    {
+      "id": "https://openalex.org/C18653775",
+      "wikidata": null,
+      "display_name": "Joint probability distribution",
+      "level": 2,
+      "score": 12.051424
+    },
+    {
+      "id": "https://openalex.org/C41587187",
+      "wikidata": null,
+      "display_name": "Generalized linear model",
+      "level": 2,
+      "score": 11.960823
+    },
+    {
+      "id": "https://openalex.org/C27438332",
+      "wikidata": null,
+      "display_name": "Principal component analysis",
+      "level": 2,
+      "score": 11.92051
+    },
+    {
+      "id": "https://openalex.org/C39896193",
+      "wikidata": null,
+      "display_name": "Descriptive statistics",
+      "level": 2,
+      "score": 11.881956
+    },
+    {
+      "id": "https://openalex.org/C9483764",
+      "wikidata": null,
+      "display_name": "Likelihood-ratio test",
+      "level": 2,
+      "score": 11.544013
+    },
+    {
+      "id": "https://openalex.org/C110083411",
+      "wikidata": null,
+      "display_name": "Statistical classification",
+      "level": 2,
+      "score": 11.240712
+    },
+    {
+      "id": "https://openalex.org/C5297727",
+      "wikidata": null,
+      "display_name": "Autocorrelation",
+      "level": 2,
+      "score": 11.238694
+    },
+    {
+      "id": "https://openalex.org/C185142706",
+      "wikidata": null,
+      "display_name": "Covariance matrix",
+      "level": 2,
+      "score": 11.007264
+    },
+    {
+      "id": "https://openalex.org/C93959086",
+      "wikidata": null,
+      "display_name": "Model selection",
+      "level": 2,
+      "score": 10.809362
+    },
+    {
+      "id": "https://openalex.org/C126255220",
+      "wikidata": null,
+      "display_name": "Mathematical optimization",
+      "level": 1,
+      "score": 10.714383
+    },
+    {
+      "id": "https://openalex.org/C125112378",
+      "wikidata": null,
+      "display_name": "Randomness",
+      "level": 2,
+      "score": 10.659529
+    },
+    {
+      "id": "https://openalex.org/C55786151",
+      "wikidata": null,
+      "display_name": "Level of measurement",
+      "level": 2,
+      "score": 10.622592
+    },
+    {
+      "id": "https://openalex.org/C10879293",
+      "wikidata": null,
+      "display_name": "Factor analysis",
+      "level": 2,
+      "score": 10.6199465
+    },
+    {
+      "id": "https://openalex.org/C95190672",
+      "wikidata": null,
+      "display_name": "Meta-analysis",
+      "level": 2,
+      "score": 10.593632
+    },
+    {
+      "id": "https://openalex.org/C28901747",
+      "wikidata": null,
+      "display_name": "Decision theory",
+      "level": 2,
+      "score": 10.504615
+    },
+    {
+      "id": "https://openalex.org/C77350462",
+      "wikidata": null,
+      "display_name": "Confounding",
+      "level": 2,
+      "score": 10.334895
+    },
+    {
+      "id": "https://openalex.org/C107673813",
+      "wikidata": null,
+      "display_name": "Bayesian probability",
+      "level": 2,
+      "score": 10.185599
+    },
+    {
+      "id": "https://openalex.org/C183905921",
+      "wikidata": null,
+      "display_name": "Multiple comparisons problem",
+      "level": 2,
+      "score": 9.99508
+    },
+    {
+      "id": "https://openalex.org/C118671147",
+      "wikidata": null,
+      "display_name": "Quantile",
+      "level": 2,
+      "score": 9.983526
+    },
+    {
+      "id": "https://openalex.org/C87858587",
+      "wikidata": null,
+      "display_name": "Quantitative research",
+      "level": 2,
+      "score": 9.425439
+    },
+    {
+      "id": "https://openalex.org/C91998498",
+      "wikidata": null,
+      "display_name": "Contingency table",
+      "level": 2,
+      "score": 9.36691
+    },
+    {
+      "id": "https://openalex.org/C29406490",
+      "wikidata": null,
+      "display_name": "Fisher information",
+      "level": 2,
+      "score": 9.287654
+    },
+    {
+      "id": "https://openalex.org/C2780365114",
+      "wikidata": null,
+      "display_name": "MATLAB",
+      "level": 2,
+      "score": 9.152526
+    },
+    {
+      "id": "https://openalex.org/C32809988",
+      "wikidata": null,
+      "display_name": "Chi-square test",
+      "level": 2,
+      "score": 9.126827
+    },
+    {
+      "id": "https://openalex.org/C166921843",
+      "wikidata": null,
+      "display_name": "Statistical parameter",
+      "level": 2,
+      "score": 9.114875
+    },
+    {
+      "id": "https://openalex.org/C132480984",
+      "wikidata": null,
+      "display_name": "Goodness of fit",
+      "level": 2,
+      "score": 9.1137295
+    },
+    {
+      "id": "https://openalex.org/C23131810",
+      "wikidata": null,
+      "display_name": "Observational study",
+      "level": 2,
+      "score": 9.080921
+    },
+    {
+      "id": "https://openalex.org/C61224824",
+      "wikidata": null,
+      "display_name": "Mixture model",
+      "level": 2,
+      "score": 9.08009
+    },
+    {
+      "id": "https://openalex.org/C33724603",
+      "wikidata": null,
+      "display_name": "Bayesian network",
+      "level": 2,
+      "score": 8.921044
+    },
+    {
+      "id": "https://openalex.org/C202799725",
+      "wikidata": null,
+      "display_name": "Accuracy and precision",
+      "level": 2,
+      "score": 8.848233
+    }
+  ],
+  "counts_by_year": [
+    {
+      "year": 2025,
+      "works_count": 149783,
+      "oa_works_count": 26979,
+      "cited_by_count": 5813588
+    },
+    {
+      "year": 2024,
+      "works_count": 268285,
+      "oa_works_count": 112030,
+      "cited_by_count": 9465446
+    },
+    {
+      "year": 2023,
+      "works_count": 395774,
+      "oa_works_count": 230149,
+      "cited_by_count": 9952339
+    },
+    {
+      "year": 2022,
+      "works_count": 377158,
+      "oa_works_count": 228511,
+      "cited_by_count": 9480465
+    },
+    {
+      "year": 2021,
+      "works_count": 414098,
+      "oa_works_count": 211531,
+      "cited_by_count": 10032523
+    },
+    {
+      "year": 2020,
+      "works_count": 404652,
+      "oa_works_count": 184382,
+      "cited_by_count": 8964348
+    },
+    {
+      "year": 2019,
+      "works_count": 370820,
+      "oa_works_count": 153383,
+      "cited_by_count": 7715919
+    },
+    {
+      "year": 2018,
+      "works_count": 348957,
+      "oa_works_count": 132643,
+      "cited_by_count": 6804266
+    },
+    {
+      "year": 2017,
+      "works_count": 321820,
+      "oa_works_count": 112538,
+      "cited_by_count": 6172356
+    },
+    {
+      "year": 2016,
+      "works_count": 319175,
+      "oa_works_count": 99388,
+      "cited_by_count": 5850010
+    },
+    {
+      "year": 2015,
+      "works_count": 314991,
+      "oa_works_count": 89637,
+      "cited_by_count": 5689780
+    },
+    {
+      "year": 2014,
+      "works_count": 314103,
+      "oa_works_count": 78709,
+      "cited_by_count": 5524918
+    },
+    {
+      "year": 2013,
+      "works_count": 300510,
+      "oa_works_count": 69278,
+      "cited_by_count": 5025868
+    },
+    {
+      "year": 2012,
+      "works_count": 284467,
+      "oa_works_count": 60884,
+      "cited_by_count": 4600153
+    }
+  ],
+  "works_api_url": "https://api.openalex.org/works?filter=concepts.id:C105795698",
+  "updated_date": "2025-10-19T13:27:14.644581",
+  "created_date": "2016-06-24"
+}
