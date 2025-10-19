@@ -478,7 +478,7 @@ export function BaseTable<T>({
   };
 
   return (
-    <Box>
+    <Box data-testid="table">
       {renderSearchControls()}
       {shouldVirtualize ? renderVirtualizedTable() : renderRegularTable()}
       {renderPaginationInfo()}

@@ -1,7 +1,11 @@
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { IconSearch } from "@tabler/icons-react";
-import { useNavigate, useParams, useSearch, createLazyFileRoute } from "@tanstack/react-router";
+import {
+  useParams,
+  useSearch,
+  createLazyFileRoute,
+} from "@tanstack/react-router";
 import { useEffect } from "react";
 
 export const Route = createLazyFileRoute("/api-openalex-org/$")({
@@ -12,7 +16,6 @@ function ApiOpenAlexRoute() {
   const { _splat: splat } = useParams({ from: "/api-openalex-org/$" });
   const externalId = splat || "";
   const routeSearch = useSearch({ from: "/api-openalex-org/$" });
-  const navigate = useNavigate();
   // Serialize routeSearch to avoid infinite loop from object reference changes
   const routeSearchKey = JSON.stringify(routeSearch);
 
@@ -33,41 +36,92 @@ function ApiOpenAlexRoute() {
             { original: decodedId, cleanPath },
             "ApiOpenAlexRoute",
           );
-          // Navigate to the clean path
-          navigate({ to: `/${cleanPath}`, replace: true });
+
+          // Check if cleanPath is just an entity ID (like W2741809807)
+          const entityType = EntityDetectionService.detectEntityType(cleanPath);
+          if (entityType) {
+            // Navigate to the proper entity route
+            const targetPath = `/${entityType}/${cleanPath}`;
+            window.location.hash = targetPath;
+          } else {
+            // Navigate to the clean path (for queries, etc.)
+            window.location.hash = `/${cleanPath}`;
+          }
+          return;
+        }
+
+        // Handle the case where the splat contains the path part of an OpenAlex URL
+        // (when the test constructs /api-openalex-org/{path})
+        const pathWithQuery = decodedId;
+
+        // Check if this looks like an OpenAlex path (starts with entity type or known endpoint)
+        const entityType = EntityDetectionService.detectEntityType(
+          pathWithQuery.split("?")[0],
+        );
+        if (entityType) {
+          // This is an entity path like "W2741809807"
+          const targetPath = `/${entityType}/${pathWithQuery}`;
+          window.location.hash = targetPath;
+          return;
+        }
+
+        // Check if this is a list endpoint
+        if (
+          pathWithQuery.startsWith("works") ||
+          pathWithQuery.startsWith("authors") ||
+          pathWithQuery.startsWith("institutions") ||
+          pathWithQuery.startsWith("concepts") ||
+          pathWithQuery.startsWith("funders") ||
+          pathWithQuery.startsWith("publishers") ||
+          pathWithQuery.startsWith("sources")
+        ) {
+          const targetPath = `/${pathWithQuery}`;
+          window.location.hash = targetPath;
+          return;
+        }
+
+        // Check if this is an autocomplete endpoint
+        if (pathWithQuery.startsWith("autocomplete/")) {
+          const targetPath = `/${pathWithQuery}`;
+          window.location.hash = targetPath;
           return;
         }
 
         // If not an API URL, try to detect entity type
-        const entityType = EntityDetectionService.detectEntityType(decodedId);
-        if (entityType) {
+        const entityTypeFromId =
+          EntityDetectionService.detectEntityType(decodedId);
+        if (entityTypeFromId) {
           logger.debug(
             "routing",
             "Detected entity type from external ID",
-            { externalId: decodedId, entityType },
+            { externalId: decodedId, entityType: entityTypeFromId },
             "ApiOpenAlexRoute",
           );
-          // Load the entity
-          const graphData = { loadEntity: () => {}, loadEntityIntoGraph: () => {} };
+          // Navigate to the entity route
+          const targetPath = `/${entityTypeFromId}/${decodedId}`;
+          window.location.hash = targetPath;
           return;
         }
 
-        // If nothing worked, show error
-        logger.error(
-          "routing",
-          "Could not resolve external ID",
-          { externalId: decodedId },
-          "ApiOpenAlexRoute",
-        );
+        // If nothing worked, redirect to search with the full OpenAlex URL
+        const fullUrl = `https://api.openalex.org/${decodedId}`;
+        const searchPath = `/search?q=${encodeURIComponent(fullUrl)}`;
+        window.location.hash = searchPath;
       } catch (error) {
-        logError(logger, "Error resolving external ID", error, "ApiOpenAlexRoute", "routing");
+        logError(
+          logger,
+          "Error resolving external ID",
+          error,
+          "ApiOpenAlexRoute",
+          "routing",
+        );
       }
     };
 
     if (externalId) {
       resolveExternalId();
     }
-  }, [externalId, navigate]);
+  }, [externalId]);
 
   return (
     <div

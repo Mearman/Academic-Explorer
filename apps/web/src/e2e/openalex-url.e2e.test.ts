@@ -8,7 +8,9 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
       expectedUrl: "/works/W2741809807",
       assertUI: async (page: Page) => {
         // Should show work details, not the search page
-        await expect(page.locator("h2").filter({ hasText: "The state of OA" })).toBeVisible(); // Work title
+        await expect(
+          page.locator("h2").filter({ hasText: "The state of OA" }),
+        ).toBeVisible(); // Work title
         // Check that we're not on the search page
         await expect(page.locator("text=Academic Search")).not.toBeVisible();
       },
@@ -16,7 +18,7 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
     // 2. List query with filter
     {
       url: "https://api.openalex.org/works?filter=publication_year:2020",
-      expectedUrl: "/works/?filter=publication_year%3A2020",
+      expectedUrl: "/works?filter=publication_year%3A2020",
       assertUI: async (page: Page) => {
         await expect(page.locator("h1")).toContainText("Works");
         // Assert table renders (stub)
@@ -34,7 +36,7 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
     // 4. With sort param
     {
       url: "https://api.openalex.org/authors?sort=cited_by_count:desc",
-      expectedUrl: "/authors/?sort=cited_by_count%3Adesc",
+      expectedUrl: "/authors?sort=cited_by_count%3Adesc",
       assertUI: async (page: Page) => {
         await expect(page.locator("h1")).toContainText("Authors");
       },
@@ -42,7 +44,7 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
     // 5. Paging params
     {
       url: "https://api.openalex.org/works?per_page=50&page=2",
-      expectedUrl: "/works/?per_page=50&page=2",
+      expectedUrl: "/works?per_page=50&page=2",
       assertUI: async (page: Page) => {
         await expect(page.locator("h1")).toContainText("Works");
       },
@@ -50,7 +52,7 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
     // 6. Sample param
     {
       url: "https://api.openalex.org/institutions?sample=10",
-      expectedUrl: "/institutions/?sample=10",
+      expectedUrl: "/institutions?sample=10",
       assertUI: async (page: Page) => {
         await expect(page.locator("h1")).toContainText("Institutions");
       },
@@ -58,7 +60,7 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
     // 7. Group by
     {
       url: "https://api.openalex.org/authors?group_by=last_known_institutions.continent",
-      expectedUrl: "/authors/?group_by=last_known_institutions.continent",
+      expectedUrl: "/authors?group_by=last_known_institutions.continent",
       assertUI: async (page: Page) => {
         await expect(page.locator("h1")).toContainText("Authors");
       },
@@ -66,7 +68,7 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
     // 8. Search param
     {
       url: "https://api.openalex.org/works?search=dna",
-      expectedUrl: "/works/?search=dna",
+      expectedUrl: "/works?search=dna",
       assertUI: async (page: Page) => {
         await expect(page.locator("h1")).toContainText("Works");
       },
@@ -92,12 +94,14 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
   ];
 
   testScenarios.forEach(({ url, expectedUrl, assertUI }) => {
-    test(`should handle ${url} and redirect to ${expectedUrl}`, async ({ page }) => {
+    test(`should handle ${url} and redirect to ${expectedUrl}`, async ({
+      page,
+    }) => {
       // Parse the URL to determine the correct route path
       const urlObj = new URL(url);
       const domain = urlObj.hostname; // e.g., "api.openalex.org"
       const path = urlObj.pathname + urlObj.search; // e.g., "/works?filter=publication_year:2020"
-      const routeDomain = domain.replace(/\./g, '-'); // Convert dots to hyphens: "api-openalex-org"
+      const routeDomain = domain.replace(/\./g, "-"); // Convert dots to hyphens: "api-openalex-org"
       const routePath = `/${routeDomain}${path}`; // e.g., "/api-openalex-org/works?filter=publication_year:2020"
 
       // Navigate to the constructed route path
@@ -108,7 +112,7 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
 
       // Listen for console messages to debug the route
       const consoleMessages: string[] = [];
-      page.on('console', (msg) => {
+      page.on("console", (msg) => {
         consoleMessages.push(msg.text());
       });
 
@@ -119,8 +123,11 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
       await page.waitForFunction(
         (expectedHash) => {
           const hash = window.location.hash;
-          console.log('Current hash:', hash);
-          return hash !== expectedHash && !document.body.textContent?.includes('Resolving');
+          console.log("Current hash:", hash);
+          return (
+            hash !== expectedHash &&
+            !document.body.textContent?.includes("Resolving")
+          );
         },
         `#${routePath}`,
         { timeout: 15000 },
@@ -128,16 +135,16 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
 
       // Check what the final URL is
       const finalUrl = page.url();
-      console.log('Final URL:', finalUrl);
+      console.log("Final URL:", finalUrl);
       const finalHash = await page.evaluate(() => window.location.hash);
-      console.log('Final hash:', finalHash);
+      console.log("Final hash:", finalHash);
 
       // Run the UI assertion
       await assertUI(page);
 
       // Print console messages for debugging
       if (consoleMessages.length > 0) {
-        console.log('Console messages:', consoleMessages);
+        console.log("Console messages:", consoleMessages);
       }
     });
   });
