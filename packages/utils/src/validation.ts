@@ -71,7 +71,7 @@ export function isStringInSet<T extends string>(
   value: string,
   validValues: readonly T[],
 ): value is T {
-  // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
+   
   return validValues.includes(value as T);
 }
 

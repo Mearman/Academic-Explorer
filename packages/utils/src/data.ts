@@ -297,7 +297,7 @@ export function sample<T>({
  * Note: This only works with JSON-serializable data
  */
 export function deepClone<T>(obj: T): T {
-  // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
+   
   return JSON.parse(JSON.stringify(obj)) as T;
 }
 
@@ -419,7 +419,7 @@ export function safeGet<T>({
     current = (current as Record<string, unknown>)[key];
   }
 
-  // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
+   
   return (current as T) ?? defaultValue;
 }
 
