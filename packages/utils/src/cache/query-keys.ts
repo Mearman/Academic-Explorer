@@ -7,7 +7,13 @@
  * Generic query parameters interface
  */
 export interface QueryParams {
-  [key: string]: string | number | boolean | null | undefined | (string | number)[];
+  [key: string]:
+    | string
+    | number
+    | boolean
+    | null
+    | undefined
+    | (string | number)[];
 }
 
 /**
@@ -38,7 +44,13 @@ function normalizeParamValue(value: unknown): string {
 /**
  * Create a deterministic cache key from query parameters
  */
-export function createQueryKey(baseKey: string, params?: QueryParams): string {
+export function createQueryKey({
+  baseKey,
+  params,
+}: {
+  baseKey: string;
+  params?: QueryParams;
+}): string {
   if (!params || Object.keys(params).length === 0) {
     return baseKey;
   }
@@ -46,7 +58,7 @@ export function createQueryKey(baseKey: string, params?: QueryParams): string {
   // Sort keys for deterministic ordering
   const sortedKeys = Object.keys(params).sort();
   const paramPairs = sortedKeys
-    .map(key => {
+    .map((key) => {
       const value = params[key];
       const normalizedValue = normalizeParamValue(value);
       return normalizedValue ? `${key}:${normalizedValue}` : null;
@@ -63,30 +75,46 @@ export function createQueryKey(baseKey: string, params?: QueryParams): string {
 /**
  * Create a cache key for a resource by ID
  */
-export function createResourceKey(resourceType: string, id: string | number): string {
+export function createResourceKey({
+  resourceType,
+  id,
+}: {
+  resourceType: string;
+  id: string | number;
+}): string {
   return `${resourceType}:${id}`;
 }
 
 /**
  * Create a cache key for a collection query
  */
-export function createCollectionKey(
-  resourceType: string,
-  params?: QueryParams
-): string {
-  return createQueryKey(`${resourceType}:collection`, params);
+export function createCollectionKey({
+  resourceType,
+  params,
+}: {
+  resourceType: string;
+  params?: QueryParams;
+}): string {
+  return createQueryKey({ baseKey: `${resourceType}:collection`, params });
 }
 
 /**
  * Create a cache key for a search query
  */
-export function createSearchKey(
-  resourceType: string,
-  query: string,
-  params?: QueryParams
-): string {
+export function createSearchKey({
+  resourceType,
+  query,
+  params,
+}: {
+  resourceType: string;
+  query: string;
+  params?: QueryParams;
+}): string {
   const searchParams = { query, ...params };
-  return createQueryKey(`${resourceType}:search`, searchParams);
+  return createQueryKey({
+    baseKey: `${resourceType}:search`,
+    params: searchParams,
+  });
 }
 
 /**
@@ -126,7 +154,11 @@ export function isSearchKey(cacheKey: string): boolean {
  * Check if a cache key represents a single resource
  */
 export function isResourceKey(cacheKey: string): boolean {
-  return !isCollectionKey(cacheKey) && !isSearchKey(cacheKey) && cacheKey.includes(":");
+  return (
+    !isCollectionKey(cacheKey) &&
+    !isSearchKey(cacheKey) &&
+    cacheKey.includes(":")
+  );
 }
 
 /**
@@ -139,7 +171,13 @@ export function createInvalidationPattern(resourceType: string): string {
 /**
  * Check if a cache key matches an invalidation pattern
  */
-export function matchesPattern(cacheKey: string, pattern: string): boolean {
+export function matchesPattern({
+  cacheKey,
+  pattern,
+}: {
+  cacheKey: string;
+  pattern: string;
+}): boolean {
   if (pattern.endsWith("*")) {
     const prefix = pattern.slice(0, -1);
     return cacheKey.startsWith(prefix);
@@ -155,7 +193,7 @@ export function hashParams(params: QueryParams): string {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
     hash = hash & hash; // Convert to 32bit integer
   }
   return Math.abs(hash).toString(36);
@@ -164,7 +202,13 @@ export function hashParams(params: QueryParams): string {
 /**
  * Create a short cache key using parameter hashing
  */
-export function createShortQueryKey(baseKey: string, params?: QueryParams): string {
+export function createShortQueryKey({
+  baseKey,
+  params,
+}: {
+  baseKey: string;
+  params?: QueryParams;
+}): string {
   if (!params || Object.keys(params).length === 0) {
     return baseKey;
   }
