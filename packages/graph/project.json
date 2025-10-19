@@ -50,28 +50,7 @@
       "outputs": ["{projectRoot}/dist/tsc"],
       "cache": true
     },
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "options": {
-        "lintFilePatterns": ["packages/graph/src/**/*.{ts,tsx}"]
-      },
-      "inputs": [
-        "source",
-        "configs",
-        "{workspaceRoot}/eslint.config.ts",
-        "{workspaceRoot}/eslint.config.*.ts"
-      ],
-      "outputs": ["{workspaceRoot}/.nx/cache/lint-results/{projectName}.json"],
-      "cache": true
-    },
-    "lint:fix": {
-      "executor": "@nx/eslint:lint",
-      "options": {
-        "lintFilePatterns": ["packages/graph/src/**/*.{ts,tsx}"],
-        "fix": true
-      },
-      "cache": true
-    },
+
     "test": {
       "executor": "nx:run-commands",
       "options": {
@@ -125,7 +104,8 @@
         "{workspaceRoot}/eslint.config.*.ts"
       ],
       "outputs": []
-    }
+    },
+    "lint": {}
   },
   "tags": ["type:library", "scope:graph", "layer:core"]
 }

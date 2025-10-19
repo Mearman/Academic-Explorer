@@ -46,28 +46,7 @@
       "outputs": ["{projectRoot}/dist/tsc"],
       "cache": true
     },
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "options": {
-        "lintFilePatterns": ["packages/utils/src/**/*.{ts,tsx}"]
-      },
-      "inputs": [
-        "source",
-        "configs",
-        "{workspaceRoot}/eslint.config.ts",
-        "{workspaceRoot}/eslint.config.*.ts"
-      ],
-      "outputs": ["{workspaceRoot}/.nx/cache/lint-results/{projectName}.json"],
-      "cache": true
-    },
-    "lint:fix": {
-      "executor": "@nx/eslint:lint",
-      "options": {
-        "lintFilePatterns": ["packages/utils/src/**/*.{ts,tsx}"],
-        "fix": true
-      },
-      "cache": true
-    },
+    "lint": {},
     "test": {
       "executor": "nx:run-commands",
       "dependsOn": ["test:unit", "test:integration"],
