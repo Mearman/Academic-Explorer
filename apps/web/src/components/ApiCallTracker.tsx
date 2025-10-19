@@ -20,19 +20,8 @@ export function ApiCallTracker({
   queryParams,
 }: ApiCallTrackerProps) {
   // Log the API call when component mounts
-  const store = useAppActivityStore.getState();
-  store.addEvent({
-    type: "api",
-    category: "data",
-    event: "api_call",
-    description: `API call to ${entityType}${entityId ? `/${entityId}` : ""}`,
-    severity: "info",
-    metadata: {
-      entityType,
-      entityId,
-      queryParams,
-    },
-  });
+  const store = useAppActivityStore();
+  store.logApiCall(entityType, entityId, queryParams);
 
   return null; // This component doesn't render anything
 }
@@ -41,7 +30,7 @@ export function ApiCallTracker({
  * Hook to track API calls
  */
 export function useApiCallTracker() {
-  const store = useAppActivityStore.getState();
+  const store = useAppActivityStore();
 
   return {
     trackApiCall: ({
@@ -53,18 +42,7 @@ export function useApiCallTracker() {
       entityId?: string;
       queryParams?: Record<string, unknown>;
     }) => {
-      store.addEvent({
-        type: "api",
-        category: "data",
-        event: "api_call",
-        description: `API call to ${entityType}${entityId ? `/${entityId}` : ""}`,
-        severity: "info",
-        metadata: {
-          entityType,
-          entityId,
-          queryParams,
-        },
-      });
+      store.logApiCall(entityType, entityId, queryParams);
     },
   };
 }
