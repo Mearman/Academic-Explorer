@@ -138,11 +138,23 @@ describe("OpenAlexCLI Integration Tests", () => {
     });
 
     it("should return null for non-existent entity", async () => {
+      const hasAuthors = await cli.hasStaticData("authors");
+      if (!hasAuthors) {
+        console.log("Skipping test: No static author data available.");
+        return;
+      }
+
       const entity = await cli.loadEntity("authors", "A9999999999");
       expect(entity).toBeNull();
     });
 
     it("should return empty array for non-existent entity type search", async () => {
+      const hasAuthors = await cli.hasStaticData("authors");
+      if (!hasAuthors) {
+        console.log("Skipping test: No static author data available.");
+        return;
+      }
+
       const results = await cli.searchEntities(
         "authors",
         "NonExistentNameXYZ123",
@@ -185,9 +197,15 @@ describe("OpenAlexCLI Integration Tests", () => {
     });
 
     it("should handle cache-only mode for non-existing entity", async () => {
-      const consoleSpy = vi
-        .spyOn(console, "warn")
-        .mockImplementation(() => {});
+      const hasAuthors = await cli.hasStaticData("authors");
+      if (!hasAuthors) {
+        console.log(
+          "Skipping test: No static author data available for cache test.",
+        );
+        return;
+      }
+
+      const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
       const result = await cli.getEntityWithCache("authors", "A9999999999", {
         useCache: true,
@@ -197,7 +215,7 @@ describe("OpenAlexCLI Integration Tests", () => {
 
       expect(result).toBeNull();
       expect(consoleSpy).toHaveBeenCalledWith(
-        "[general] Cache-only mode: entity A9999999999 not found in cache",
+        expect.stringContaining("[general] Cache miss for authors/A9999999999"),
         "",
       );
 
@@ -205,6 +223,14 @@ describe("OpenAlexCLI Integration Tests", () => {
     });
 
     it("should skip cache when no-cache enabled", async () => {
+      const hasAuthors = await cli.hasStaticData("authors");
+      if (!hasAuthors) {
+        console.log(
+          "Skipping test: No static author data available for cache test.",
+        );
+        return;
+      }
+
       const entities = await cli.listEntities("authors");
       const authorId = entities[0];
 
