@@ -29,23 +29,24 @@ class NodeJSError extends Error {
 // Type for testing invalid entity types
 type InvalidEntityType = string & { readonly __invalid: unique symbol };
 
-// Mock the fs/promises module with spy functions that prevent real operations
-const mockWriteFile = async ({
-  path,
-  data,
-}: {
-  path: string;
-  data: string | Buffer;
-}) => {
-  // Log the write attempt but don't actually write to filesystem
-  console.log(
-    `[MOCK] Would write to: ${path} (${typeof data === "string" ? data.length : data.length} bytes)`,
-  );
-  return undefined;
-};
-
 vi.mock("fs/promises", async (importOriginal) => {
   const actual = await importOriginal<typeof import("fs/promises")>();
+
+  // Mock the fs/promises module with spy functions that prevent real operations
+  const mockWriteFile = async ({
+    path,
+    data,
+  }: {
+    path: string;
+    data: string | Buffer;
+  }) => {
+    // Log the write attempt but don't actually write to filesystem
+    console.log(
+      `[MOCK] Would write to: ${path} (${typeof data === "string" ? data.length : data.length} bytes)`,
+    );
+    return undefined;
+  };
+
   return {
     ...actual,
     readFile: vi.fn().mockImplementation(async (path: string) => {
