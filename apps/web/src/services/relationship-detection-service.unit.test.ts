@@ -5,7 +5,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { QueryClient } from "@tanstack/react-query";
 import { RelationshipDetectionService } from "./relationship-detection-service";
-import { useGraphStore } from "@/stores/graph-store";
+import { graphStore } from "../stores/graph-store";
 import { RelationType } from "@academic-explorer/graph";
 import type { GraphNode, EntityType } from "@academic-explorer/graph";
 import { cachedOpenAlex } from "@academic-explorer/client";
@@ -97,7 +97,17 @@ vi.mock("@academic-explorer/client", () => ({
     },
   },
 }));
-vi.mock("@/stores/graph-store");
+// Mock graph store
+vi.mock("../stores/graph-store", () => ({
+  graphStore: {
+    getState: vi.fn(() => ({
+      nodes: {},
+      edges: {},
+      getNode: vi.fn(),
+      getPlaceholderNodes: vi.fn().mockReturnValue([]),
+    })),
+  },
+}));
 vi.mock("./request-deduplication-service");
 
 describe("RelationshipDetectionService", () => {
@@ -121,7 +131,7 @@ describe("RelationshipDetectionService", () => {
       nodes: {},
       addEdges: vi.fn(),
     };
-    vi.mocked(useGraphStore.getState).mockReturnValue(mockStore);
+    vi.mocked(graphStore.getState).mockReturnValue(mockStore);
 
     // Mock the deduplication service to prevent undefined access
     const mockDeduplicationService = {
@@ -244,10 +254,10 @@ describe("RelationshipDetectionService", () => {
       ];
 
       // Access the private method via bracket notation for testing
-      const result = await (service as any).analyzeWorkRelationships(
+      const result = await (service as any).analyzeWorkRelationships({
         workData,
         existingNodes,
-      );
+      });
 
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual({
@@ -284,10 +294,10 @@ describe("RelationshipDetectionService", () => {
         },
       ];
 
-      const result = await (service as any).analyzeWorkRelationships(
+      const result = await (service as any).analyzeWorkRelationships({
         workData,
         existingNodes,
-      );
+      });
 
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual({
@@ -318,10 +328,10 @@ describe("RelationshipDetectionService", () => {
         },
       ];
 
-      const result = await (service as any).analyzeWorkRelationships(
+      const result = await (service as any).analyzeWorkRelationships({
         workData,
         existingNodes,
-      );
+      });
 
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual({
@@ -365,10 +375,10 @@ describe("RelationshipDetectionService", () => {
         },
       ];
 
-      const result = await (service as any).analyzeWorkRelationships(
+      const result = await (service as any).analyzeWorkRelationships({
         workData,
         existingNodes,
-      );
+      });
 
       expect(result).toHaveLength(2);
       expect(
@@ -414,10 +424,10 @@ describe("RelationshipDetectionService", () => {
         },
       ];
 
-      const result = (service as any).analyzeAuthorRelationships(
+      const result = (service as any).analyzeAuthorRelationships({
         authorData,
         existingNodes,
-      );
+      });
 
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual({
@@ -497,10 +507,10 @@ describe("RelationshipDetectionService", () => {
 
       mockDeduplicationService.getEntity.mockResolvedValue(mockWorkData);
 
-      const result = await (service as any).fetchMinimalEntityData(
-        "https://openalex.org/W123",
-        "works",
-      );
+      const result = await (service as any).fetchMinimalEntityData({
+        entityId: "https://openalex.org/W123",
+        entityType: "works",
+      });
 
       expect(result).toEqual({
         id: "https://openalex.org/W123",
@@ -544,10 +554,10 @@ describe("RelationshipDetectionService", () => {
 
       mockDeduplicationService.getEntity.mockResolvedValue(mockAuthorData);
 
-      const result = await (service as any).fetchMinimalEntityData(
-        "https://openalex.org/A123",
-        "authors",
-      );
+      const result = await (service as any).fetchMinimalEntityData({
+        entityId: "https://openalex.org/A123",
+        entityType: "authors",
+      });
 
       expect(result).toEqual({
         id: "https://openalex.org/A123",
@@ -577,10 +587,10 @@ describe("RelationshipDetectionService", () => {
 
       mockDeduplicationService.getEntity.mockResolvedValue(mockSourceData);
 
-      const result = await (service as any).fetchMinimalEntityData(
-        "https://openalex.org/S123",
-        "sources",
-      );
+      const result = await (service as any).fetchMinimalEntityData({
+        entityId: "https://openalex.org/S123",
+        entityType: "sources",
+      });
 
       expect(result).toEqual({
         id: "https://openalex.org/S123",
@@ -598,10 +608,10 @@ describe("RelationshipDetectionService", () => {
 
       mockDeduplicationService.getEntity.mockResolvedValue(mockInstitutionData);
 
-      const result = await (service as any).fetchMinimalEntityData(
-        "https://openalex.org/I123",
-        "institutions",
-      );
+      const result = await (service as any).fetchMinimalEntityData({
+        entityId: "https://openalex.org/I123",
+        entityType: "institutions",
+      });
 
       expect(result).toEqual({
         id: "https://openalex.org/I123",
@@ -615,10 +625,10 @@ describe("RelationshipDetectionService", () => {
         new Error("API Error"),
       );
 
-      const result = await (service as any).fetchMinimalEntityData(
-        "https://openalex.org/W123",
-        "works",
-      );
+      const result = await (service as any).fetchMinimalEntityData({
+        entityId: "https://openalex.org/W123",
+        entityType: "works",
+      });
 
       expect(result).toBeNull();
     });
@@ -631,10 +641,10 @@ describe("RelationshipDetectionService", () => {
 
       mockDeduplicationService.getEntity.mockResolvedValue(mockTopicData);
 
-      const result = await (service as any).fetchMinimalEntityData(
-        "https://openalex.org/T123",
-        "topics",
-      );
+      const result = await (service as any).fetchMinimalEntityData({
+        entityId: "https://openalex.org/T123",
+        entityType: "topics",
+      });
 
       expect(result).toEqual({
         id: "https://openalex.org/T123",
@@ -687,10 +697,10 @@ describe("RelationshipDetectionService", () => {
         },
       ];
 
-      const result = await (service as any).analyzeWorkRelationships(
+      const result = await (service as any).analyzeWorkRelationships({
         workData,
         existingNodes,
-      );
+      });
 
       expect(result).toHaveLength(2);
       expect(result[0].relationType).toBe(RelationType.AUTHORED);
@@ -734,10 +744,10 @@ describe("RelationshipDetectionService", () => {
         },
       ];
 
-      const result = await (service as any).analyzeWorkRelationships(
+      const result = await (service as any).analyzeWorkRelationships({
         workData,
         existingNodes,
-      );
+      });
 
       expect(result).toHaveLength(2);
       expect(
@@ -776,10 +786,10 @@ describe("RelationshipDetectionService", () => {
         },
       ];
 
-      const result = await (service as any).analyzeWorkRelationships(
+      const result = await (service as any).analyzeWorkRelationships({
         workData,
         existingNodes,
-      );
+      });
 
       expect(result).toHaveLength(0);
     });
@@ -817,10 +827,10 @@ describe("RelationshipDetectionService", () => {
         },
       ];
 
-      const result = await (service as any).analyzeWorkRelationships(
+      const result = await (service as any).analyzeWorkRelationships({
         workData,
         existingNodes,
-      );
+      });
 
       expect(result).toHaveLength(1);
       expect(result[0].relationType).toBe(RelationType.AUTHORED);
@@ -872,10 +882,10 @@ describe("RelationshipDetectionService", () => {
         },
       ];
 
-      const result = (service as any).analyzeAuthorRelationships(
+      const result = (service as any).analyzeAuthorRelationships({
         authorData,
         existingNodes,
-      );
+      });
 
       expect(result).toHaveLength(2);
       expect(
@@ -907,10 +917,10 @@ describe("RelationshipDetectionService", () => {
         },
       ];
 
-      const result = (service as any).analyzeAuthorRelationships(
+      const result = (service as any).analyzeAuthorRelationships({
         authorData,
         existingNodes,
-      );
+      });
 
       expect(result).toHaveLength(0);
     });
@@ -937,10 +947,10 @@ describe("RelationshipDetectionService", () => {
         },
       ];
 
-      const result = (service as any).analyzeSourceRelationships(
+      const result = (service as any).analyzeSourceRelationships({
         sourceData,
         existingNodes,
-      );
+      });
 
       expect(result).toHaveLength(1);
       expect(result[0].relationType).toBe(RelationType.SOURCE_PUBLISHED_BY);
@@ -967,10 +977,10 @@ describe("RelationshipDetectionService", () => {
         },
       ];
 
-      const result = (service as any).analyzeSourceRelationships(
+      const result = (service as any).analyzeSourceRelationships({
         sourceData,
         existingNodes,
-      );
+      });
 
       expect(result).toHaveLength(0);
     });
@@ -996,10 +1006,10 @@ describe("RelationshipDetectionService", () => {
         },
       ];
 
-      const result = (service as any).analyzeInstitutionRelationships(
+      const result = (service as any).analyzeInstitutionRelationships({
         institutionData,
         existingNodes,
-      );
+      });
 
       expect(result).toHaveLength(0);
     });
