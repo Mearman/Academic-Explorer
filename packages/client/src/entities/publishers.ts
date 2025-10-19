@@ -14,7 +14,7 @@ import type {
 } from "../types";
 import { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";
-import { logger } from "@academic-explorer/utils";
+import { logger } from "@academic-explorer/utils/logger";
 
 /**
  * PublishersApi provides methods for interacting with OpenAlex publishers

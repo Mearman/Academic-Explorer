@@ -3,7 +3,7 @@
  * Handles requests, rate limiting, error handling, and response parsing
  */
 
-import { logger } from "@academic-explorer/utils";
+import { logger } from "@academic-explorer/utils/logger";
 import { apiInterceptor, type InterceptedRequest } from "./interceptors";
 import { RETRY_CONFIG, calculateRetryDelay } from "./internal/rate-limit";
 import { trustApiContract, validateApiResponse } from "./internal/type-helpers";
@@ -73,9 +73,7 @@ export class OpenAlexBaseClient {
    */
   private isDevelopmentMode(): boolean {
     // Check NODE_ENV first (most reliable)
-    if (
-      globalThis.process?.env?.NODE_ENV
-    ) {
+    if (globalThis.process?.env?.NODE_ENV) {
       const nodeEnv = globalThis.process.env.NODE_ENV.toLowerCase();
       if (nodeEnv === "development" || nodeEnv === "dev") return true;
       if (nodeEnv === "production") return false;

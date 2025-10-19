@@ -6,7 +6,7 @@
  * This API is maintained for backward compatibility.
  */
 
-import { logger } from "@academic-explorer/utils";
+import { logger } from "@academic-explorer/utils/logger";
 import type { OpenAlexBaseClient } from "../client";
 import type {
   AutocompleteResult,

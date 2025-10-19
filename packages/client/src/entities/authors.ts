@@ -14,7 +14,7 @@ import type {
 } from "../types";
 import type { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";
-import { logger } from "@academic-explorer/utils";
+import { logger } from "@academic-explorer/utils/logger";
 
 /**
  * Extended filters for specific author query methods

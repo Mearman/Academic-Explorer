@@ -15,7 +15,7 @@ import type {
 import { OpenAlexBaseClient } from "../client";
 import { isValidWikidata, normalizeExternalId } from "../utils/id-resolver";
 import { buildFilterString } from "../utils/query-builder";
-import { logger } from "@academic-explorer/utils";
+import { logger } from "@academic-explorer/utils/logger";
 
 /**
  * TopicsApi provides methods for interacting with OpenAlex topics

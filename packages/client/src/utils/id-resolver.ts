@@ -8,7 +8,10 @@
  * validation functions and enhanced normalization capabilities.
  */
 
-import { isNonEmptyString, isString } from "@academic-explorer/utils";
+import {
+  isNonEmptyString,
+  isString,
+} from "@academic-explorer/utils/validation";
 
 /**
  * Supported external identifier types

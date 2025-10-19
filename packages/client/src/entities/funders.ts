@@ -3,7 +3,7 @@
  * Provides methods for interacting with OpenAlex funders endpoint
  */
 
-import { logger } from "@academic-explorer/utils";
+import { logger } from "@academic-explorer/utils/logger";
 import { OpenAlexBaseClient } from "../client";
 import type {
   AutocompleteResult,
