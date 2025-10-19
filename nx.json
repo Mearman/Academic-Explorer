@@ -181,7 +181,7 @@
     },
     "test:aggregate": {
       "executor": "nx:run-commands",
-      "dependsOn": ["test:unit", "test:integration"],
+      "dependsOn": ["test:unit"],
       "options": {
         "command": "echo 'All tests completed successfully'",
         "cwd": "{projectRoot}"
@@ -197,43 +197,9 @@
     },
     "validate": {
       "cache": true,
-      "dependsOn": ["build", "test", "lint"],
-      "inputs": [
-        "production",
-        "^production",
-        "{workspaceRoot}/vite.config.base.ts",
-        "{workspaceRoot}/config/**/*",
-        "source",
-        "tests",
-        "configs",
-        "{workspaceRoot}/eslint.config.ts",
-        "{workspaceRoot}/eslint.config.*.ts"
-      ],
+      "dependsOn": ["build", "test", "lint", "typecheck"],
+      "inputs": [],
       "outputs": []
-    },
-    "test:watch": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "vitest",
-        "cwd": "{projectRoot}"
-      },
-      "cache": false
-    },
-    "clean": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "rm -rf dist",
-        "cwd": "{projectRoot}"
-      },
-      "cache": false
-    },
-    "dev:app": {
-      "executor": "nx:run-commands",
-      "dependsOn": ["^build"],
-      "options": {
-        "command": "vite",
-        "cwd": "{projectRoot}"
-      }
     },
     "typecheck": {
       "executor": "nx:run-commands",
@@ -291,59 +257,85 @@
     },
     "test": {
       "cache": true,
-      "inputs": [
-        "source",
-        "tests",
-        "configs",
-        "^production",
-        "{workspaceRoot}/config/**/*"
-      ],
-      "outputs": ["{projectRoot}/coverage"]
-    },
-    "test:unit:run": {
-      "cache": true,
-      "inputs": [
-        "source",
-        "tests",
-        "configs",
-        "^production",
-        "{workspaceRoot}/config/**/*"
-      ],
-      "outputs": ["{projectRoot}/coverage"]
-    },
-    "test:component:run": {
-      "cache": true,
-      "inputs": [
-        "source",
-        "tests",
-        "configs",
-        "^production",
-        "{workspaceRoot}/config/**/*"
-      ],
-      "outputs": ["{projectRoot}/coverage"]
-    },
-    "test:integration:run": {
-      "cache": true,
-      "inputs": [
-        "source",
-        "tests",
-        "configs",
-        "^production",
-        "{workspaceRoot}/config/**/*"
-      ],
-      "outputs": ["{projectRoot}/coverage"]
-    },
-    "test:e2e:run": {
-      "cache": true,
+      "dependsOn": ["typecheck"],
       "inputs": [
         "source",
         "tests",
         "configs",
         "^production",
         "{workspaceRoot}/config/**/*",
-        "{workspaceRoot}/playwright.config.ts"
+        "{workspaceRoot}/tsconfig*.json"
       ],
       "outputs": ["{projectRoot}/coverage"]
+    },
+    "test:unit:run": {
+      "cache": true,
+      "dependsOn": ["typecheck"],
+      "inputs": [
+        "source",
+        "tests",
+        "configs",
+        "^production",
+        "{workspaceRoot}/config/**/*",
+        "{workspaceRoot}/tsconfig*.json"
+      ],
+      "outputs": ["{projectRoot}/coverage"],
+      "cache": true
+    },
+    "test:component:run": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "config": "{workspaceRoot}/vite.config.base.ts",
+        "include": "src/**/*.component.test.{ts,tsx}"
+      },
+      "dependsOn": ["typecheck"],
+      "inputs": [
+        "source",
+        "tests",
+        "configs",
+        "^production",
+        "{workspaceRoot}/config/**/*",
+        "{workspaceRoot}/tsconfig*.json"
+      ],
+      "outputs": ["{projectRoot}/coverage"],
+      "cache": true
+    },
+    "test:integration:run": {
+      "cache": true,
+      "dependsOn": ["typecheck", "test:unit:run"],
+      "inputs": [
+        "source",
+        "tests",
+        "configs",
+        "^production",
+        "{workspaceRoot}/config/**/*",
+        "{workspaceRoot}/tsconfig*.json"
+      ],
+      "outputs": ["{projectRoot}/coverage"],
+      "cache": true
+    },
+    "test:e2e:run": {
+      "executor": "@nx/playwright:playwright",
+      "options": {
+        "config": "{projectRoot}/playwright.config.ts"
+      },
+      "configurations": {
+        "ci": {
+          "ci": true
+        }
+      },
+      "dependsOn": ["typecheck"],
+      "inputs": [
+        "source",
+        "tests",
+        "configs",
+        "^production",
+        "{workspaceRoot}/config/**/*",
+        "{workspaceRoot}/playwright.config.ts",
+        "{workspaceRoot}/tsconfig*.json"
+      ],
+      "outputs": ["{projectRoot}/coverage"],
+      "cache": true
     },
     "preview": {
       "cache": true,
@@ -471,8 +463,22 @@
     },
     "validate": {
       "cache": true,
-      "dependsOn": ["build", "test", "lint"],
-      "inputs": [],
+      "dependsOn": ["build", "test", "lint", "typecheck"],
+      "inputs": [
+        "production",
+        "^production",
+        "{workspaceRoot}/vite.config.base.ts",
+        "{projectRoot}/vite.config.base.ts",
+        "{projectRoot}/index.html",
+        "{projectRoot}/public/**/*",
+        "source",
+        "tests",
+        "configs",
+        "{workspaceRoot}/eslint.config.ts",
+        "{workspaceRoot}/eslint.config.*.ts",
+        "{workspaceRoot}/tsconfig*.json",
+        "{workspaceRoot}/config/**/*"
+      ],
       "outputs": []
     }
   },
