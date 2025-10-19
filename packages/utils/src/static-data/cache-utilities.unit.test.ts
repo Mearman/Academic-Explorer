@@ -84,11 +84,11 @@ describe("Cache Utilities - Collision Handling", () => {
     const collidingUrl = `${TEST_URL_WITH_FILTER}&${TEST_API_KEY_PARAM}`;
 
     // Test with real function
-    const realResult = hasCollision(entry, collidingUrl);
+    const realResult = await hasCollision(entry, collidingUrl);
     expect(realResult).toBe(true); // URLs have the same cache path after api_key sanitization
   });
 
-  it("should not detect collision when paths differ", () => {
+  it("should not detect collision when paths differ", async () => {
     const entry: FileEntry = {
       url: TEST_URL_WITH_FILTER,
       $ref: TEST_DATA_REF,
@@ -100,10 +100,10 @@ describe("Cache Utilities - Collision Handling", () => {
       .fn()
       .mockReturnValueOnce(TEST_CACHE_PATH)
       .mockReturnValueOnce(TEST_AUTHOR_CACHE_PATH);
-    expect(hasCollision(entry, nonCollidingUrl, mockPathFn)).toBe(false);
+    expect(await hasCollision(entry, nonCollidingUrl, mockPathFn)).toBe(false);
   });
 
-  it("should handle equivalent URLs with different api_key/mailto", () => {
+  it("should handle equivalent URLs with different api_key/mailto", async () => {
     const entry: FileEntry = {
       url: TEST_URL_WITH_FILTER,
       $ref: TEST_DATA_REF,
@@ -112,10 +112,10 @@ describe("Cache Utilities - Collision Handling", () => {
     };
     const equivalentUrl = TEST_BASE_URL_WITH_API_KEY;
     const mockPathFn = vi.fn().mockReturnValue("/same/path.json");
-    expect(hasCollision(entry, equivalentUrl, mockPathFn)).toBe(true); // Mock makes both URLs return same path, so they collide
+    expect(await hasCollision(entry, equivalentUrl, mockPathFn)).toBe(true); // Mock makes both URLs return same path, so they collide
   });
 
-  it("should not collide with non-equivalent query parameters", () => {
+  it("should not collide with non-equivalent query parameters", async () => {
     const entry: FileEntry = {
       url: TEST_WORKS_URL,
       $ref: TEST_DATA_REF,
@@ -127,7 +127,7 @@ describe("Cache Utilities - Collision Handling", () => {
       .fn()
       .mockReturnValueOnce("/mock/cache/test.json")
       .mockReturnValueOnce("/mock/cache/other.json");
-    expect(hasCollision(entry, differentUrl, mockPathFn)).toBe(false);
+    expect(await hasCollision(entry, differentUrl, mockPathFn)).toBe(false);
   });
 
   it("should detect collision when paths match", async () => {
@@ -140,11 +140,11 @@ describe("Cache Utilities - Collision Handling", () => {
     const collidingUrl = `${TEST_URL_WITH_FILTER}&api_key=secret`;
 
     // Test with real function
-    const realResult = hasCollision(entry, collidingUrl);
+    const realResult = await hasCollision(entry, collidingUrl);
     expect(realResult).toBe(true); // URLs have the same cache path after api_key sanitization
   });
 
-  it("should not detect collision when paths differ", () => {
+  it("should not detect collision when paths differ", async () => {
     const entry: FileEntry = {
       url: TEST_URL_WITH_FILTER,
       $ref: TEST_DATA_REF,
@@ -156,10 +156,10 @@ describe("Cache Utilities - Collision Handling", () => {
       .fn()
       .mockReturnValueOnce("/mock/cache/works.json")
       .mockReturnValueOnce("/mock/cache/authors.json");
-    expect(hasCollision(entry, nonCollidingUrl, mockPathFn)).toBe(false);
+    expect(await hasCollision(entry, nonCollidingUrl, mockPathFn)).toBe(false);
   });
 
-  it("should handle equivalent URLs with different api_key/mailto", () => {
+  it("should handle equivalent URLs with different api_key/mailto", async () => {
     const entry: FileEntry = {
       url: TEST_URL_WITH_FILTER,
       $ref: TEST_DATA_REF,
@@ -168,22 +168,22 @@ describe("Cache Utilities - Collision Handling", () => {
     };
     const equivalentUrl = `${TEST_BASE_URL}?api_key=secret&filter=doi:10.1234/test&mailto=user@example.com`;
     const mockPathFn = vi.fn().mockReturnValue("/same/path.json");
-    expect(hasCollision(entry, equivalentUrl, mockPathFn)).toBe(true); // Mock makes both URLs return same path, so they collide
+    expect(await hasCollision(entry, equivalentUrl, mockPathFn)).toBe(true); // Mock makes both URLs return same path, so they collide
   });
 
-  it("should not collide with non-equivalent query parameters", () => {
+  it("should not collide with non-equivalent query parameters", async () => {
     const entry: FileEntry = {
-      url: "TEST_URL_WITH_FILTER",
-      $ref: "TEST_DATA_REF",
-      lastRetrieved: "TEST_TIMESTAMP",
-      contentHash: "TEST_CONTENT_HASH",
+      url: TEST_WORKS_URL,
+      $ref: TEST_DATA_REF,
+      lastRetrieved: TEST_TIMESTAMP,
+      contentHash: TEST_CONTENT_HASH,
     };
-    const differentUrl = "TEST_BASE_URL?filter=doi:10.5678/other";
+    const differentUrl = `${TEST_BASE_URL}?filter=doi:10.5678/other`;
     const mockPathFn = vi
       .fn()
       .mockReturnValueOnce("/mock/cache/test.json")
       .mockReturnValueOnce("/mock/cache/other.json");
-    expect(hasCollision(entry, differentUrl, mockPathFn)).toBe(false);
+    expect(await hasCollision(entry, differentUrl, mockPathFn)).toBe(false);
   });
 
   describe("mergeCollision", () => {
@@ -455,7 +455,7 @@ describe("Cache Utilities - Collision Handling", () => {
   });
 
   describe("validateFileEntry", () => {
-    it("should validate legacy single-URL entry as true", () => {
+    it("should validate legacy single-URL entry as true", async () => {
       const legacyEntry: FileEntry = {
         url: TEST_WORKS_URL,
         $ref: TEST_DATA_REF,
@@ -463,10 +463,10 @@ describe("Cache Utilities - Collision Handling", () => {
         contentHash: TEST_CONTENT_HASH,
       };
 
-      expect(validateFileEntry(legacyEntry)).toBe(true);
+      expect(await validateFileEntry(legacyEntry)).toBe(true);
     });
 
-    it("should validate valid multi-URL entry", () => {
+    it("should validate valid multi-URL entry", async () => {
       const validEntry: FileEntry = {
         url: TEST_URL_WITH_FILTER,
         $ref: TEST_DATA_REF,
@@ -485,10 +485,10 @@ describe("Cache Utilities - Collision Handling", () => {
         },
       };
 
-      expect(validateFileEntry(validEntry, getCacheFilePath)).toBe(true); // Validation passes - URLs map to same path after sanitization
+      expect(await validateFileEntry(validEntry, getCacheFilePath)).toBe(true); // Validation passes - URLs map to same path after sanitization
     });
 
-    it("should invalidate when equivalentUrls[0] !== url", () => {
+    it("should invalidate when equivalentUrls[0] !== url", async () => {
       const invalidEntry: FileEntry = {
         url: TEST_URL_WITH_FILTER,
         $ref: TEST_DATA_REF,
@@ -501,10 +501,12 @@ describe("Cache Utilities - Collision Handling", () => {
         collisionInfo: { mergedCount: 0, totalUrls: 1 },
       };
 
-      expect(validateFileEntry(invalidEntry, getCacheFilePath)).toBe(false);
+      expect(await validateFileEntry(invalidEntry, getCacheFilePath)).toBe(
+        false,
+      );
     });
 
-    it("should invalidate when URLs map to different cache paths", () => {
+    it("should invalidate when URLs map to different cache paths", async () => {
       const invalidEntry: FileEntry = {
         url: TEST_WORKS_URL,
         $ref: TEST_DATA_REF,
@@ -526,10 +528,10 @@ describe("Cache Utilities - Collision Handling", () => {
         .mockReturnValueOnce(TEST_CACHE_PATH)
         .mockReturnValueOnce(TEST_AUTHOR_CACHE_PATH); // Different
 
-      expect(validateFileEntry(invalidEntry, mockPathFn)).toBe(false);
+      expect(await validateFileEntry(invalidEntry, mockPathFn)).toBe(false);
     });
 
-    it("should invalidate when missing timestamp for a URL", () => {
+    it("should invalidate when missing timestamp for a URL", async () => {
       const invalidEntry: FileEntry = {
         url: TEST_WORKS_URL,
         $ref: TEST_DATA_REF,
@@ -544,10 +546,10 @@ describe("Cache Utilities - Collision Handling", () => {
 
       const mockPathFn = vi.fn().mockReturnValue(TEST_MOCK_CACHE_PATH);
 
-      expect(validateFileEntry(invalidEntry, mockPathFn)).toBe(false);
+      expect(await validateFileEntry(invalidEntry, mockPathFn)).toBe(false);
     });
 
-    it("should invalidate when collisionInfo.totalUrls mismatches length", () => {
+    it("should invalidate when collisionInfo.totalUrls mismatches length", async () => {
       const invalidEntry: FileEntry = {
         url: TEST_WORKS_URL,
         $ref: TEST_DATA_REF,
@@ -563,10 +565,10 @@ describe("Cache Utilities - Collision Handling", () => {
 
       const mockPathFn = vi.fn().mockReturnValue(TEST_MOCK_CACHE_PATH);
 
-      expect(validateFileEntry(invalidEntry, mockPathFn)).toBe(false);
+      expect(await validateFileEntry(invalidEntry, mockPathFn)).toBe(false);
     });
 
-    it("should handle empty equivalentUrls array as invalid", () => {
+    it("should handle empty equivalentUrls array as invalid", async () => {
       const invalidEntry: FileEntry = {
         url: TEST_WORKS_URL,
         $ref: TEST_DATA_REF,
@@ -577,10 +579,12 @@ describe("Cache Utilities - Collision Handling", () => {
         collisionInfo: { mergedCount: 0, totalUrls: 0 },
       };
 
-      expect(validateFileEntry(invalidEntry, getCacheFilePath)).toBe(false);
+      expect(await validateFileEntry(invalidEntry, getCacheFilePath)).toBe(
+        false,
+      );
     });
 
-    it("should validate when all URLs normalize to same path", () => {
+    it("should validate when all URLs normalize to same path", async () => {
       const validEntry: FileEntry = {
         url: TEST_WORKS_URL,
         $ref: TEST_DATA_REF,
@@ -606,7 +610,7 @@ describe("Cache Utilities - Collision Handling", () => {
 
       const mockPathFn = vi.fn().mockReturnValue(TEST_MOCK_CACHE_PATH);
 
-      expect(validateFileEntry(validEntry, mockPathFn)).toBe(true); // Validation passes - mock makes all URLs map to same path
+      expect(await validateFileEntry(validEntry, mockPathFn)).toBe(true); // Validation passes - mock makes all URLs map to same path
     });
 
     describe("Index Format Adapters", () => {
@@ -876,8 +880,8 @@ describe("parseOpenAlexUrl", () => {
 describe("getCacheFilePath", () => {
   const STATIC_ROOT = "/mock/cache";
 
-  it("should map entity select queries into entity-specific query directories", () => {
-    const cachePath = getCacheFilePath(
+  it("should map entity select queries into entity-specific query directories", async () => {
+    const cachePath = await getCacheFilePath(
       "https://api.openalex.org/authors/A5017898742?select=id,display_name",
       STATIC_ROOT,
     );
@@ -885,8 +889,8 @@ describe("getCacheFilePath", () => {
     expect(cachePath).toContain("authors/A5017898742/queries/");
   });
 
-  it("should preserve encoded ORCID identifiers in cache path", () => {
-    const cachePath = getCacheFilePath(
+  it("should preserve encoded ORCID identifiers in cache path", async () => {
+    const cachePath = await getCacheFilePath(
       "https://api.openalex.org/authors/https%3A%2F%2Forcid.org%2F0000-0001-2345-6789?select=id",
       STATIC_ROOT,
     );
