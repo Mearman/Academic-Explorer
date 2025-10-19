@@ -304,416 +304,414 @@ const computeFilteredEvents = (
     .sort((a, b) => b.timestamp - a.timestamp);
 };
 
-const { useStore: useAppActivityStore } = createTrackedStore<
-  AppActivityState,
-  AppActivityActions
->({
-  config: {
-    name: "app-activity",
-    initialState: {
-      // State
-      events: {},
-      maxHistorySize: 1000,
+const { useStore: useAppActivityStore, store: appActivityStore } =
+  createTrackedStore<AppActivityState, AppActivityActions>({
+    config: {
+      name: "app-activity",
+      initialState: {
+        // State
+        events: {},
+        maxHistorySize: 1000,
 
-      // Cached computed state (stable references)
-      recentEvents: [],
-      activityStats: {
-        totalEvents: 0,
-        eventsLast5Min: 0,
-        eventsPerMinute: 0,
-        errorCount: 0,
-        warningCount: 0,
-        userInteractions: 0,
-        componentLifecycleEvents: 0,
-        navigationEvents: 0,
-        apiCallEvents: 0,
-        averageEventFrequency: 0,
-      },
-      filteredEvents: [],
-
-      // Filters
-      filters: {
-        type: [],
-        category: [],
-        severity: [],
-        searchTerm: "",
-        timeRange: 30, // 30 minutes default
-      },
-    },
-  },
-  actionsFactory: ({ set, get }) => ({
-    // Actions
-    addEvent: (event) => {
-      const id = generateEventId();
-      const fullEvent = {
-        ...event,
-        id,
-        timestamp: Date.now(),
-      };
-
-      // Save to Dexie for persistence
-      getDB()
-        .appActivityEvents.add({
-          ...fullEvent,
-          id: undefined, // Let Dexie auto-generate numeric ID
-        })
-        .catch((error) => {
-          logger.error(
-            "ui",
-            "Failed to save event to Dexie",
-            { error, eventId: id },
-            "AppActivityStore",
-          );
-        });
-
-      set((state) => {
-        state.events[id] = fullEvent;
-      });
-
-      get().recomputeAll();
-
-      logger.debug(
-        "ui",
-        "App activity event added",
-        {
-          id,
-          type: event.type,
-          category: event.category,
-          event: event.event,
+        // Cached computed state (stable references)
+        recentEvents: [],
+        activityStats: {
+          totalEvents: 0,
+          eventsLast5Min: 0,
+          eventsPerMinute: 0,
+          errorCount: 0,
+          warningCount: 0,
+          userInteractions: 0,
+          componentLifecycleEvents: 0,
+          navigationEvents: 0,
+          apiCallEvents: 0,
+          averageEventFrequency: 0,
         },
-        "AppActivityStore",
-      );
+        filteredEvents: [],
 
-      return id;
-    },
-
-    updateEvent: (id, updates) => {
-      set((state) => {
-        const event = state.events[id];
-        if (event) {
-          Object.assign(event, updates);
-        }
-      });
-    },
-
-    removeEvent: (id) => {
-      set((state) => {
-        const { [id]: _removed, ...rest } = state.events;
-        state.events = rest;
-      });
-
-      get().recomputeAll();
-    },
-
-    clearOldEvents: () => {
-      const { maxHistorySize } = get();
-      const events = Object.values(get().events) as AppActivityEvent[];
-
-      if (events.length <= maxHistorySize) return;
-
-      // Keep most recent events
-      const sorted = events.sort((a, b) => b.timestamp - a.timestamp);
-      const toKeep = sorted.slice(0, maxHistorySize);
-      const toRemove = sorted.slice(maxHistorySize);
-
-      // Remove from Dexie
-      const idsToRemove = toRemove
-        .map((event) => parseInt(event.id.split("_")[2] || "0"))
-        .filter((id) => !isNaN(id));
-
-      if (idsToRemove.length > 0) {
-        getDB()
-          .appActivityEvents.bulkDelete(idsToRemove)
-          .catch((error) => {
-            logger.error(
-              "ui",
-              "Failed to delete old events from Dexie",
-              { error, count: idsToRemove.length },
-              "AppActivityStore",
-            );
-          });
-      }
-
-      set((state) => {
-        state.events = {};
-        toKeep.forEach((event) => {
-          state.events[event.id] = event;
-        });
-      });
-
-      get().recomputeAll();
-
-      logger.debug(
-        "ui",
-        "Cleared old app activity events",
-        {
-          removed: toRemove.length,
-          kept: toKeep.length,
-        },
-        "AppActivityStore",
-      );
-    },
-
-    clearAllEvents: () => {
-      // Clear Dexie
-      getDB()
-        .appActivityEvents.clear()
-        .catch((error) => {
-          logger.error(
-            "ui",
-            "Failed to clear events from Dexie",
-            { error },
-            "AppActivityStore",
-          );
-        });
-
-      set((state) => {
-        state.events = {};
-      });
-
-      get().recomputeAll();
-
-      logger.debug(
-        "ui",
-        "Cleared all app activity events",
-        {},
-        "AppActivityStore",
-      );
-    },
-
-    // Convenience methods for common event types
-    logUserInteraction: (action, component, metadata) => {
-      get().addEvent({
-        type: "user",
-        category: "interaction",
-        event: action,
-        description: `User ${action}${component ? ` in ${component}` : ""}`,
-        severity: "info",
-        metadata: {
-          component,
-          ...metadata,
-        },
-      });
-    },
-
-    logNavigation: (from, to, metadata) => {
-      get().addEvent({
-        type: "navigation",
-        category: "interaction",
-        event: "navigate",
-        description: `Navigation from ${from} to ${to}`,
-        severity: "info",
-        metadata: {
-          route: to,
-          previousRoute: from,
-          ...metadata,
-        },
-      });
-    },
-
-    logComponentMount: (component, metadata) => {
-      get().addEvent({
-        type: "component",
-        category: "lifecycle",
-        event: "mount",
-        description: `Component ${component} mounted`,
-        severity: "debug",
-        metadata: {
-          component,
-          ...metadata,
-        },
-      });
-    },
-
-    logComponentUnmount: (component, metadata) => {
-      get().addEvent({
-        type: "component",
-        category: "lifecycle",
-        event: "unmount",
-        description: `Component ${component} unmounted`,
-        severity: "debug",
-        metadata: {
-          component,
-          ...metadata,
-        },
-      });
-    },
-
-    logPerformanceMetric: (metric, value, metadata) => {
-      get().addEvent({
-        type: "performance",
-        category: "data",
-        event: metric,
-        description: `Performance metric: ${metric} = ${value}`,
-        severity: "info",
-        metadata: {
-          performance: {
-            [metric]: value,
-          },
-          ...metadata,
-        },
-      });
-    },
-
-    logError: (error, component, metadata) => {
-      get().addEvent({
-        type: "error",
-        category: "data",
-        event: "error",
-        description: error,
-        severity: "error",
-        metadata: {
-          component,
-          ...metadata,
-        },
-      });
-    },
-
-    logWarning: (warning, component, metadata) => {
-      get().addEvent({
-        type: "system",
-        category: "data",
-        event: "warning",
-        description: warning,
-        severity: "warning",
-        metadata: {
-          component,
-          ...metadata,
-        },
-      });
-    },
-
-    logApiCall: (entityType, entityId, queryParams) => {
-      get().addEvent({
-        type: "api",
-        category: "data",
-        event: "call",
-        description: `API call for ${entityType}${entityId ? ` (${entityId})` : ""}`,
-        severity: "info",
-        metadata: {
-          entityType,
-          entityId,
-          queryParams,
-        },
-      });
-    },
-
-    // Filter actions
-    setTypeFilter: (types) => {
-      set((state) => {
-        state.filters.type = types;
-      });
-      get().recomputeFilteredEvents();
-    },
-
-    setCategoryFilter: (categories) => {
-      set((state) => {
-        state.filters.category = categories;
-      });
-      get().recomputeFilteredEvents();
-    },
-
-    setSeverityFilter: (severities) => {
-      set((state) => {
-        state.filters.severity = severities;
-      });
-      get().recomputeFilteredEvents();
-    },
-
-    setSearchTerm: (term) => {
-      set((state) => {
-        state.filters.searchTerm = term;
-      });
-      get().recomputeFilteredEvents();
-    },
-
-    setTimeRange: (minutes) => {
-      set((state) => {
-        state.filters.timeRange = minutes;
-      });
-      get().recomputeFilteredEvents();
-    },
-
-    clearFilters: () => {
-      set((state) => {
-        state.filters = {
+        // Filters
+        filters: {
           type: [],
           category: [],
           severity: [],
           searchTerm: "",
-          timeRange: 30,
+          timeRange: 30, // 30 minutes default
+        },
+      },
+    },
+    actionsFactory: ({ set, get }) => ({
+      // Actions
+      addEvent: (event) => {
+        const id = generateEventId();
+        const fullEvent = {
+          ...event,
+          id,
+          timestamp: Date.now(),
         };
-      });
-      get().recomputeFilteredEvents();
-    },
 
-    // Recomputation functions (called after mutations)
-    recomputeRecentEvents: () => {
-      set((state) => {
-        state.recentEvents = computeRecentEvents(state.events);
-      });
-    },
-
-    recomputeActivityStats: () => {
-      set((state) => {
-        state.activityStats = computeActivityStats(state.events);
-      });
-    },
-
-    recomputeFilteredEvents: () => {
-      set((state) => {
-        state.filteredEvents = computeFilteredEvents(
-          state.events,
-          state.filters,
-        );
-      });
-    },
-
-    loadEvents: async () => {
-      try {
-        const dbEvents = await getDB()
-          .appActivityEvents.orderBy("timestamp")
-          .reverse()
-          .limit(1000)
-          .toArray();
-
-        const events: Record<string, AppActivityEvent> = {};
-        dbEvents.forEach((event) => {
-          if (event.id !== undefined) {
-            const id = event.id.toString();
-            events[id] = {
-              ...event,
-              id,
-            };
-          }
-        });
+        // Save to Dexie for persistence
+        getDB()
+          .appActivityEvents.add({
+            ...fullEvent,
+            id: undefined, // Let Dexie auto-generate numeric ID
+          })
+          .catch((error) => {
+            logger.error(
+              "ui",
+              "Failed to save event to Dexie",
+              { error, eventId: id },
+              "AppActivityStore",
+            );
+          });
 
         set((state) => {
-          state.events = events;
+          state.events[id] = fullEvent;
         });
+
         get().recomputeAll();
-      } catch (error) {
-        logger.error(
+
+        logger.debug(
           "ui",
-          "Failed to load events from Dexie",
-          { error },
+          "App activity event added",
+          {
+            id,
+            type: event.type,
+            category: event.category,
+            event: event.event,
+          },
           "AppActivityStore",
         );
-      }
-    },
 
-    recomputeAll: () => {
-      const state = get();
-      state.recomputeRecentEvents();
-      state.recomputeActivityStats();
-      state.recomputeFilteredEvents();
+        return id;
+      },
 
-      // Auto-cleanup old events
-      if (Object.keys(state.events).length > state.maxHistorySize) {
-        state.clearOldEvents();
-      }
-    },
-  }),
-});
+      updateEvent: (id, updates) => {
+        set((state) => {
+          const event = state.events[id];
+          if (event) {
+            Object.assign(event, updates);
+          }
+        });
+      },
 
-export { useAppActivityStore };
+      removeEvent: (id) => {
+        set((state) => {
+          const { [id]: _removed, ...rest } = state.events;
+          state.events = rest;
+        });
+
+        get().recomputeAll();
+      },
+
+      clearOldEvents: () => {
+        const { maxHistorySize } = get();
+        const events = Object.values(get().events) as AppActivityEvent[];
+
+        if (events.length <= maxHistorySize) return;
+
+        // Keep most recent events
+        const sorted = events.sort((a, b) => b.timestamp - a.timestamp);
+        const toKeep = sorted.slice(0, maxHistorySize);
+        const toRemove = sorted.slice(maxHistorySize);
+
+        // Remove from Dexie
+        const idsToRemove = toRemove
+          .map((event) => parseInt(event.id.split("_")[2] || "0"))
+          .filter((id) => !isNaN(id));
+
+        if (idsToRemove.length > 0) {
+          getDB()
+            .appActivityEvents.bulkDelete(idsToRemove)
+            .catch((error) => {
+              logger.error(
+                "ui",
+                "Failed to delete old events from Dexie",
+                { error, count: idsToRemove.length },
+                "AppActivityStore",
+              );
+            });
+        }
+
+        set((state) => {
+          state.events = {};
+          toKeep.forEach((event) => {
+            state.events[event.id] = event;
+          });
+        });
+
+        get().recomputeAll();
+
+        logger.debug(
+          "ui",
+          "Cleared old app activity events",
+          {
+            removed: toRemove.length,
+            kept: toKeep.length,
+          },
+          "AppActivityStore",
+        );
+      },
+
+      clearAllEvents: () => {
+        // Clear Dexie
+        getDB()
+          .appActivityEvents.clear()
+          .catch((error) => {
+            logger.error(
+              "ui",
+              "Failed to clear events from Dexie",
+              { error },
+              "AppActivityStore",
+            );
+          });
+
+        set((state) => {
+          state.events = {};
+        });
+
+        get().recomputeAll();
+
+        logger.debug(
+          "ui",
+          "Cleared all app activity events",
+          {},
+          "AppActivityStore",
+        );
+      },
+
+      // Convenience methods for common event types
+      logUserInteraction: (action, component, metadata) => {
+        get().addEvent({
+          type: "user",
+          category: "interaction",
+          event: action,
+          description: `User ${action}${component ? ` in ${component}` : ""}`,
+          severity: "info",
+          metadata: {
+            component,
+            ...metadata,
+          },
+        });
+      },
+
+      logNavigation: (from, to, metadata) => {
+        get().addEvent({
+          type: "navigation",
+          category: "interaction",
+          event: "navigate",
+          description: `Navigation from ${from} to ${to}`,
+          severity: "info",
+          metadata: {
+            route: to,
+            previousRoute: from,
+            ...metadata,
+          },
+        });
+      },
+
+      logComponentMount: (component, metadata) => {
+        get().addEvent({
+          type: "component",
+          category: "lifecycle",
+          event: "mount",
+          description: `Component ${component} mounted`,
+          severity: "debug",
+          metadata: {
+            component,
+            ...metadata,
+          },
+        });
+      },
+
+      logComponentUnmount: (component, metadata) => {
+        get().addEvent({
+          type: "component",
+          category: "lifecycle",
+          event: "unmount",
+          description: `Component ${component} unmounted`,
+          severity: "debug",
+          metadata: {
+            component,
+            ...metadata,
+          },
+        });
+      },
+
+      logPerformanceMetric: (metric, value, metadata) => {
+        get().addEvent({
+          type: "performance",
+          category: "data",
+          event: metric,
+          description: `Performance metric: ${metric} = ${value}`,
+          severity: "info",
+          metadata: {
+            performance: {
+              [metric]: value,
+            },
+            ...metadata,
+          },
+        });
+      },
+
+      logError: (error, component, metadata) => {
+        get().addEvent({
+          type: "error",
+          category: "data",
+          event: "error",
+          description: error,
+          severity: "error",
+          metadata: {
+            component,
+            ...metadata,
+          },
+        });
+      },
+
+      logWarning: (warning, component, metadata) => {
+        get().addEvent({
+          type: "system",
+          category: "data",
+          event: "warning",
+          description: warning,
+          severity: "warning",
+          metadata: {
+            component,
+            ...metadata,
+          },
+        });
+      },
+
+      logApiCall: (entityType, entityId, queryParams) => {
+        get().addEvent({
+          type: "api",
+          category: "data",
+          event: "call",
+          description: `API call for ${entityType}${entityId ? ` (${entityId})` : ""}`,
+          severity: "info",
+          metadata: {
+            entityType,
+            entityId,
+            queryParams,
+          },
+        });
+      },
+
+      // Filter actions
+      setTypeFilter: (types) => {
+        set((state) => {
+          state.filters.type = types;
+        });
+        get().recomputeFilteredEvents();
+      },
+
+      setCategoryFilter: (categories) => {
+        set((state) => {
+          state.filters.category = categories;
+        });
+        get().recomputeFilteredEvents();
+      },
+
+      setSeverityFilter: (severities) => {
+        set((state) => {
+          state.filters.severity = severities;
+        });
+        get().recomputeFilteredEvents();
+      },
+
+      setSearchTerm: (term) => {
+        set((state) => {
+          state.filters.searchTerm = term;
+        });
+        get().recomputeFilteredEvents();
+      },
+
+      setTimeRange: (minutes) => {
+        set((state) => {
+          state.filters.timeRange = minutes;
+        });
+        get().recomputeFilteredEvents();
+      },
+
+      clearFilters: () => {
+        set((state) => {
+          state.filters = {
+            type: [],
+            category: [],
+            severity: [],
+            searchTerm: "",
+            timeRange: 30,
+          };
+        });
+        get().recomputeFilteredEvents();
+      },
+
+      // Recomputation functions (called after mutations)
+      recomputeRecentEvents: () => {
+        set((state) => {
+          state.recentEvents = computeRecentEvents(state.events);
+        });
+      },
+
+      recomputeActivityStats: () => {
+        set((state) => {
+          state.activityStats = computeActivityStats(state.events);
+        });
+      },
+
+      recomputeFilteredEvents: () => {
+        set((state) => {
+          state.filteredEvents = computeFilteredEvents(
+            state.events,
+            state.filters,
+          );
+        });
+      },
+
+      loadEvents: async () => {
+        try {
+          const dbEvents = await getDB()
+            .appActivityEvents.orderBy("timestamp")
+            .reverse()
+            .limit(1000)
+            .toArray();
+
+          const events: Record<string, AppActivityEvent> = {};
+          dbEvents.forEach((event) => {
+            if (event.id !== undefined) {
+              const id = event.id.toString();
+              events[id] = {
+                ...event,
+                id,
+              };
+            }
+          });
+
+          set((state) => {
+            state.events = events;
+          });
+          get().recomputeAll();
+        } catch (error) {
+          logger.error(
+            "ui",
+            "Failed to load events from Dexie",
+            { error },
+            "AppActivityStore",
+          );
+        }
+      },
+
+      recomputeAll: () => {
+        const state = get();
+        state.recomputeRecentEvents();
+        state.recomputeActivityStats();
+        state.recomputeFilteredEvents();
+
+        // Auto-cleanup old events
+        if (Object.keys(state.events).length > state.maxHistorySize) {
+          state.clearOldEvents();
+        }
+      },
+    }),
+  });
+
+export { useAppActivityStore, appActivityStore };
