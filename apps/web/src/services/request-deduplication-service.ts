@@ -5,10 +5,7 @@
 
 import { QueryClient } from "@tanstack/react-query";
 import { logger } from "@academic-explorer/utils/logger";
-import {
-  trackDeduplication,
-  trackCacheOperation,
-} from "@/services/network-interceptor";
+import { trackDeduplication, trackCacheOperation } from "./network-interceptor";
 import type { OpenAlexEntity } from "@academic-explorer/client";
 import { isOpenAlexEntity } from "@academic-explorer/client";
 
