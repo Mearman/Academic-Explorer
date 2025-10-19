@@ -6,7 +6,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { QueryClient } from "@tanstack/react-query";
 import { GraphDataService } from "./graph-data-service";
 import { EntityDetectionService } from "@academic-explorer/graph";
-import { useGraphStore } from "@/stores/graph-store";
+import { graphStore } from "../stores/graph-store";
 import type { EntityType, SearchOptions } from "@academic-explorer/graph";
 import type {
   Work,
@@ -85,13 +85,9 @@ vi.mock("@academic-explorer/graph", () => ({
   },
 }));
 
-vi.mock("@/stores/graph-store", () => ({
-  useGraphStore: {
-    getState: vi.fn(),
-  },
-}));
+// Mock will be set up in beforeEach
 
-vi.mock("@/stores/expansion-settings-store", () => ({
+vi.mock("../stores/expansion-settings-store", () => ({
   useExpansionSettingsStore: {
     getState: vi.fn(),
   },
@@ -120,7 +116,7 @@ import { cachedOpenAlex } from "@academic-explorer/client";
 import { logger, logError } from "@academic-explorer/utils/logger";
 import { createRequestDeduplicationService } from "./request-deduplication-service";
 import { createRelationshipDetectionService } from "./relationship-detection-service";
-import { useExpansionSettingsStore } from "@/stores/expansion-settings-store";
+import { useExpansionSettingsStore } from "../stores/expansion-settings-store";
 
 describe("GraphDataService", () => {
   let service: GraphDataService;
@@ -274,8 +270,8 @@ describe("GraphDataService", () => {
       },
     );
 
-    // Mock useGraphStore
-    vi.mocked(useGraphStore.getState).mockReturnValue(mockStore);
+    // Mock graphStore
+    vi.spyOn(graphStore, "getState").mockReturnValue(mockStore);
 
     // Mock expansion settings store
     mockExpansionSettingsStore = {
