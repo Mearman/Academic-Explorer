@@ -887,7 +887,10 @@ const {
   }),
 });
 
-// Export hook for backward compatibility with tests
-const useGraphStoreHook = () => useGraphStore.getState();
+// Export hook that returns state with actions bound
+const useGraphStoreHook = () => ({
+  ...useGraphStore.getState(),
+  ...graphActions,
+});
 
 export { useGraphStoreHook as useGraphStore, graphStore, graphActions };
