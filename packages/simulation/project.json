@@ -55,3 +55,6 @@
       "cache": false
     },
     "validate": {}
+  },
+  "tags": ["type:library", "scope:simulation", "layer:core"]
+}
