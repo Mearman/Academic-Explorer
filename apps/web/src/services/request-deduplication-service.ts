@@ -24,9 +24,14 @@ interface RequestCacheEntry {
 export class RequestDeduplicationService {
   private ongoingRequests = new Map<string, RequestCacheEntry>();
   private readonly queryClient: QueryClient;
+  private readonly defaultFetcher?: () => Promise<OpenAlexEntity>;
 
-  constructor(queryClient: QueryClient) {
+  constructor(
+    queryClient: QueryClient,
+    defaultFetcher?: () => Promise<OpenAlexEntity>,
+  ) {
     this.queryClient = queryClient;
+    this.defaultFetcher = defaultFetcher;
   }
 
   /**
