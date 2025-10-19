@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { useGraphStore } from "./graph-store";
+import { useGraphStore, graphStore, graphActions } from "./graph-store";
 import type {
   GraphNode,
   GraphEdge,
@@ -128,20 +128,18 @@ describe("GraphStore", () => {
     vi.clearAllMocks();
 
     // Reset store to initial state using store methods
-    const store = useGraphStore.getState();
-    store.clear();
-    store.clearAllPinnedNodes();
-    store.clearSelection();
-    store.setError(null);
-    store.setLoading(false);
-    store.setShowAllCachedNodes(false);
-    store.setTraversalDepth(2);
-    store.resetEntityTypesToDefaults();
+    graphActions.clear();
+    graphActions.clearAllPinnedNodes();
+    graphActions.setError(null);
+    graphActions.setLoading(false);
+    graphActions.setShowAllCachedNodes(false);
+    graphActions.setTraversalDepth(2);
+    graphActions.resetEntityTypesToDefaults();
   });
 
   describe("Initial State", () => {
     it("should have correct initial state", () => {
-      const state = useGraphStore.getState();
+      const state = graphStore.getState();
 
       expect(Object.keys(state.nodes).length).toBe(0);
       expect(Object.keys(state.edges).length).toBe(0);
@@ -157,7 +155,7 @@ describe("GraphStore", () => {
     });
 
     it("should have correct default visible entity types", () => {
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       const expectedTypes: EntityType[] = [
         "works",
         "authors",
@@ -176,7 +174,7 @@ describe("GraphStore", () => {
     });
 
     it("should have correct default visible edge types", () => {
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       const expectedTypes: RelationType[] = [
         RelationType.AUTHORED,
         RelationType.AFFILIATED,
@@ -192,7 +190,7 @@ describe("GraphStore", () => {
     });
 
     it("should have correct default layout configuration", () => {
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
 
       expect(state.currentLayout.type).toBe("force");
       expect(state.currentLayout.options!.iterations).toBe(100);
@@ -209,25 +207,25 @@ describe("GraphStore", () => {
       const testNode = createTestNode("N1");
       const testEdge = createTestEdge("E1", "N1", "N2");
 
-      const { addNode, addEdge, setProvider } = useGraphStore.getState();
+      const { addNode, addEdge, setProvider } = useGraphStore();
       addNode(testNode);
       addEdge(testEdge);
 
       // Set provider
       setProvider(mockProvider);
 
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       expect(state.provider).toBe(mockProvider);
       expect(mockProvider.setNodes).toHaveBeenCalledWith([testNode]);
       expect(mockProvider.setEdges).toHaveBeenCalledWith([testEdge]);
     });
 
     it("should set provider type", () => {
-      const { setProviderType } = useGraphStore.getState();
+      const { setProviderType } = useGraphStore();
 
       setProviderType("d3-force");
 
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       expect(state.providerType).toBe("d3-force");
     });
   });
@@ -235,7 +233,7 @@ describe("GraphStore", () => {
   describe("Layout Management", () => {
     it("should set layout and apply to provider", () => {
       const mockProvider = createMockProvider();
-      const { setProvider, setLayout } = useGraphStore.getState();
+      const { setProvider, setLayout } = useGraphStore();
       setProvider(mockProvider);
 
       const newLayout: GraphLayout = {
@@ -257,26 +255,26 @@ describe("GraphStore", () => {
 
       setLayout(newLayout);
 
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       expect(state.currentLayout).toEqual(newLayout);
       expect(mockProvider.applyLayout).toHaveBeenCalledWith(newLayout);
     });
 
     it("should apply current layout to provider", () => {
       const mockProvider = createMockProvider();
-      const { setProvider, applyCurrentLayout } = useGraphStore.getState();
+      const { setProvider, applyCurrentLayout } = useGraphStore();
       setProvider(mockProvider);
 
       applyCurrentLayout();
 
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       expect(mockProvider.applyLayout).toHaveBeenCalledWith(
         state.currentLayout,
       );
     });
 
     it("should handle layout operations when no provider is set", () => {
-      const { setLayout, applyCurrentLayout } = useGraphStore.getState();
+      const { setLayout, applyCurrentLayout } = useGraphStore();
 
       const newLayout: GraphLayout = {
         type: "hierarchical",
@@ -301,7 +299,7 @@ describe("GraphStore", () => {
         applyCurrentLayout();
       }).not.toThrow();
 
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       expect(state.currentLayout).toEqual(newLayout);
     });
   });
@@ -309,13 +307,13 @@ describe("GraphStore", () => {
   describe("Node Management", () => {
     it("should add single node", () => {
       const mockProvider = createMockProvider();
-      const { setProvider, addNode } = useGraphStore.getState();
+      const { setProvider, addNode } = useGraphStore();
       setProvider(mockProvider);
 
       const testNode = createTestNode("N1", "authors");
       addNode(testNode);
 
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       expect(state.nodes["N1"]).toEqual(testNode);
       expect(Object.keys(state.nodes).length).toBe(1);
       expect(mockProvider.addNode).toHaveBeenCalledWith(testNode);
@@ -323,7 +321,7 @@ describe("GraphStore", () => {
 
     it("should add multiple nodes", () => {
       const mockProvider = createMockProvider();
-      const { setProvider, addNodes } = useGraphStore.getState();
+      const { setProvider, addNodes } = useGraphStore();
       setProvider(mockProvider);
 
       const testNodes = [
@@ -334,7 +332,7 @@ describe("GraphStore", () => {
 
       addNodes(testNodes);
 
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       expect(Object.keys(state.nodes).length).toBe(3);
       testNodes.forEach((node) => {
         expect(state.nodes[node.id]).toEqual(node);
@@ -343,14 +341,14 @@ describe("GraphStore", () => {
     });
 
     it("should add nodes without provider", () => {
-      const { addNode } = useGraphStore.getState();
+      const { addNode } = useGraphStore();
       const testNode = createTestNode("N1");
 
       expect(() => {
         addNode(testNode);
       }).not.toThrow();
 
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       expect(state.nodes["N1"]).toEqual(testNode);
     });
 
@@ -364,7 +362,7 @@ describe("GraphStore", () => {
         hoverNode,
         addToSelection,
         removeNode,
-      } = useGraphStore.getState();
+      } = useGraphStore();
       setProvider(mockProvider);
 
       // Add nodes and edges
@@ -390,7 +388,7 @@ describe("GraphStore", () => {
       // Remove node
       removeNode("N1");
 
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       expect(state.nodes["N1"]).toBeUndefined();
       expect(Object.keys(state.nodes).length).toBe(2);
       expect(state.edges["E1"]).toBeUndefined(); // Connected edge removed
@@ -409,7 +407,7 @@ describe("GraphStore", () => {
     });
 
     it("should update existing node", () => {
-      const { addNode, updateNode } = useGraphStore.getState();
+      const { addNode, updateNode } = useGraphStore();
       const testNode = createTestNode("N1");
       addNode(testNode);
 
@@ -420,26 +418,26 @@ describe("GraphStore", () => {
 
       updateNode("N1", updates);
 
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       const updatedNode = state.nodes["N1"];
       expect(updatedNode.entityData?.label).toBe("Updated Label");
       expect(updatedNode.metadata?.directlyVisited).toBe(true);
     });
 
     it("should handle update of non-existent node", () => {
-      const { updateNode } = useGraphStore.getState();
+      const { updateNode } = useGraphStore();
 
       expect(() => {
         updateNode("NON_EXISTENT", { metadata: { directlyVisited: true } });
       }).not.toThrow();
 
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       // updateNode creates a node with the updates even if it didn't exist before
       expect(Object.keys(state.nodes).length).toBe(1);
     });
 
     it("should get existing node", () => {
-      const { addNode, getNode } = useGraphStore.getState();
+      const { addNode, getNode } = useGraphStore();
       const testNode = createTestNode("N1");
       addNode(testNode);
 
@@ -448,7 +446,7 @@ describe("GraphStore", () => {
     });
 
     it("should return undefined for non-existent node", () => {
-      const { getNode } = useGraphStore.getState();
+      const { getNode } = useGraphStore();
 
       const retrieved = getNode("NON_EXISTENT");
       expect(retrieved).toBeUndefined();
@@ -457,39 +455,39 @@ describe("GraphStore", () => {
 
   describe("Selection Management", () => {
     it("should select node", () => {
-      const { selectNode } = useGraphStore.getState();
+      const { selectNode } = useGraphStore();
 
       selectNode("N1");
-      expect(useGraphStore.getState().selectedNodeId).toBe("N1");
+      expect(useGraphStore().selectedNodeId).toBe("N1");
 
       selectNode("N2");
-      expect(useGraphStore.getState().selectedNodeId).toBe("N2");
+      expect(useGraphStore().selectedNodeId).toBe("N2");
 
       selectNode(null);
-      expect(useGraphStore.getState().selectedNodeId).toBeNull();
+      expect(useGraphStore().selectedNodeId).toBeNull();
     });
 
     it("should hover node", () => {
-      const { hoverNode } = useGraphStore.getState();
+      const { hoverNode } = useGraphStore();
 
       hoverNode("N1");
-      expect(useGraphStore.getState().hoveredNodeId).toBe("N1");
+      expect(useGraphStore().hoveredNodeId).toBe("N1");
 
       hoverNode("N2");
-      expect(useGraphStore.getState().hoveredNodeId).toBe("N2");
+      expect(useGraphStore().hoveredNodeId).toBe("N2");
 
       hoverNode(null);
-      expect(useGraphStore.getState().hoveredNodeId).toBeNull();
+      expect(useGraphStore().hoveredNodeId).toBeNull();
     });
 
     it("should add to selection", () => {
-      const { addToSelection } = useGraphStore.getState();
+      const { addToSelection } = useGraphStore();
 
       addToSelection("N1");
       addToSelection("N2");
       addToSelection("N3");
 
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       expect(state.selectedNodes["N1"]).toBeTruthy();
       expect(state.selectedNodes["N2"]).toBeTruthy();
       expect(state.selectedNodes["N3"]).toBeTruthy();
@@ -497,7 +495,7 @@ describe("GraphStore", () => {
     });
 
     it("should remove from selection", () => {
-      const { addToSelection, removeFromSelection } = useGraphStore.getState();
+      const { addToSelection, removeFromSelection } = useGraphStore();
 
       addToSelection("N1");
       addToSelection("N2");
@@ -505,7 +503,7 @@ describe("GraphStore", () => {
 
       removeFromSelection("N2");
 
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       expect(state.selectedNodes["N1"]).toBeTruthy();
       expect(state.selectedNodes["N2"]).toBeFalsy();
       expect(state.selectedNodes["N3"]).toBeTruthy();
@@ -513,8 +511,7 @@ describe("GraphStore", () => {
     });
 
     it("should clear all selection", () => {
-      const { selectNode, addToSelection, clearSelection } =
-        useGraphStore.getState();
+      const { selectNode, addToSelection, clearSelection } = useGraphStore();
 
       selectNode("N1");
       addToSelection("N1");
@@ -523,7 +520,7 @@ describe("GraphStore", () => {
 
       clearSelection();
 
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       expect(state.selectedNodeId).toBeNull();
       expect(Object.keys(state.selectedNodes).length).toBe(0);
     });
@@ -531,23 +528,23 @@ describe("GraphStore", () => {
 
   describe("Multi-Pin Node Management", () => {
     it("should pin node", () => {
-      const { pinNode } = useGraphStore.getState();
+      const { pinNode } = useGraphStore();
 
       pinNode("N1");
 
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       expect(state.pinnedNodes["N1"]).toBeTruthy();
       expect(Object.keys(state.pinnedNodes).length).toBe(1);
     });
 
     it("should pin multiple nodes", () => {
-      const { pinNode } = useGraphStore.getState();
+      const { pinNode } = useGraphStore();
 
       pinNode("N1");
       pinNode("N2");
       pinNode("N3");
 
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       expect(state.pinnedNodes["N1"]).toBeTruthy();
       expect(state.pinnedNodes["N2"]).toBeTruthy();
       expect(state.pinnedNodes["N3"]).toBeTruthy();
@@ -555,7 +552,7 @@ describe("GraphStore", () => {
     });
 
     it("should unpin node", () => {
-      const { pinNode, unpinNode } = useGraphStore.getState();
+      const { pinNode, unpinNode } = useGraphStore();
 
       pinNode("N1");
       pinNode("N2");
@@ -563,7 +560,7 @@ describe("GraphStore", () => {
 
       unpinNode("N2");
 
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       expect(state.pinnedNodes["N1"]).toBeTruthy();
       expect(state.pinnedNodes["N2"]).toBeFalsy();
       expect(state.pinnedNodes["N3"]).toBeTruthy();
@@ -571,7 +568,7 @@ describe("GraphStore", () => {
     });
 
     it("should update legacy pin when unpinning first node", () => {
-      const { pinNode, unpinNode } = useGraphStore.getState();
+      const { pinNode, unpinNode } = useGraphStore();
 
       pinNode("N1");
       pinNode("N2");
@@ -579,22 +576,22 @@ describe("GraphStore", () => {
 
       unpinNode("N1");
 
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       expect(state.pinnedNodes["N1"]).toBeFalsy();
     });
 
     it("should clear legacy pin when unpinning last node", () => {
-      const { pinNode, unpinNode } = useGraphStore.getState();
+      const { pinNode, unpinNode } = useGraphStore();
 
       pinNode("N1");
       unpinNode("N1");
 
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       expect(Object.keys(state.pinnedNodes).length).toBe(0);
     });
 
     it("should clear all pinned nodes", () => {
-      const { pinNode, clearAllPinnedNodes } = useGraphStore.getState();
+      const { pinNode, clearAllPinnedNodes } = useGraphStore();
 
       pinNode("N1");
       pinNode("N2");
@@ -602,12 +599,12 @@ describe("GraphStore", () => {
 
       clearAllPinnedNodes();
 
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       expect(Object.keys(state.pinnedNodes).length).toBe(0);
     });
 
     it("should check if node is pinned", () => {
-      const { pinNode, isPinned } = useGraphStore.getState();
+      const { pinNode, isPinned } = useGraphStore();
 
       pinNode("N1");
 
@@ -618,66 +615,64 @@ describe("GraphStore", () => {
 
   describe("Loading States", () => {
     it("should set loading state", () => {
-      const { setLoading } = useGraphStore.getState();
+      const { setLoading } = useGraphStore();
 
-      expect(useGraphStore.getState().isLoading).toBe(false);
+      expect(useGraphStore().isLoading).toBe(false);
 
       setLoading(true);
-      expect(useGraphStore.getState().isLoading).toBe(true);
+      expect(useGraphStore().isLoading).toBe(true);
 
       setLoading(false);
-      expect(useGraphStore.getState().isLoading).toBe(false);
+      expect(useGraphStore().isLoading).toBe(false);
     });
 
     it("should set error state", () => {
-      const { setError } = useGraphStore.getState();
+      const { setError } = useGraphStore();
 
-      expect(useGraphStore.getState().error).toBeNull();
+      expect(useGraphStore().error).toBeNull();
 
       setError("Test error message");
-      expect(useGraphStore.getState().error).toBe("Test error message");
+      expect(useGraphStore().error).toBe("Test error message");
 
       setError(null);
-      expect(useGraphStore.getState().error).toBeNull();
+      expect(useGraphStore().error).toBeNull();
     });
   });
 
   describe("Entity Type Management", () => {
     it("should toggle entity type visibility", () => {
-      const { toggleEntityTypeVisibility } = useGraphStore.getState();
+      const { toggleEntityTypeVisibility } = useGraphStore();
 
-      expect(useGraphStore.getState().visibleEntityTypes["works"]).toBe(true);
-
-      toggleEntityTypeVisibility("works");
-      expect(useGraphStore.getState().visibleEntityTypes["works"]).toBe(false);
+      expect(useGraphStore().visibleEntityTypes["works"]).toBe(true);
 
       toggleEntityTypeVisibility("works");
-      expect(useGraphStore.getState().visibleEntityTypes["works"]).toBe(true);
+      expect(useGraphStore().visibleEntityTypes["works"]).toBe(false);
+
+      toggleEntityTypeVisibility("works");
+      expect(useGraphStore().visibleEntityTypes["works"]).toBe(true);
     });
 
     it("should set entity type visibility explicitly", () => {
-      const { setEntityTypeVisibility } = useGraphStore.getState();
+      const { setEntityTypeVisibility } = useGraphStore();
 
       setEntityTypeVisibility("authors", false);
-      expect(useGraphStore.getState().visibleEntityTypes["authors"]).toBe(
-        false,
-      );
+      expect(useGraphStore().visibleEntityTypes["authors"]).toBe(false);
 
       setEntityTypeVisibility("authors", true);
-      expect(useGraphStore.getState().visibleEntityTypes["authors"]).toBe(true);
+      expect(useGraphStore().visibleEntityTypes["authors"]).toBe(true);
 
       setEntityTypeVisibility("new_type" as EntityType, true);
-      expect(
-        useGraphStore.getState().visibleEntityTypes["new_type" as EntityType],
-      ).toBe(true);
+      expect(useGraphStore().visibleEntityTypes["new_type" as EntityType]).toBe(
+        true,
+      );
     });
 
     it("should set all entity types visible", () => {
-      const { setAllEntityTypesVisible } = useGraphStore.getState();
+      const { setAllEntityTypesVisible } = useGraphStore();
 
       // Clear all first - this replaces current object entirely
       setAllEntityTypesVisible(false);
-      const falseState = useGraphStore.getState();
+      const falseState = useGraphStore();
       expect(Object.keys(falseState.visibleEntityTypes).length).toBe(9); // concepts, topics, keywords, works, authors, sources, institutions, publishers, funders
       // When false, all values should be false (the key exists but value is false)
       expect(falseState.visibleEntityTypes["works"]).toBe(false);
@@ -686,7 +681,7 @@ describe("GraphStore", () => {
 
       // Set all visible - this creates a new object with all true
       setAllEntityTypesVisible(true);
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       expect(Object.keys(state.visibleEntityTypes).length).toBe(9); // same 9 types
       expect(state.visibleEntityTypes["works"]).toBe(true);
       expect(state.visibleEntityTypes["authors"]).toBe(true);
@@ -694,7 +689,7 @@ describe("GraphStore", () => {
     });
 
     it("should update search stats", () => {
-      const { updateSearchStats } = useGraphStore.getState();
+      const { updateSearchStats } = useGraphStore();
 
       const stats = {
         works: 100,
@@ -704,7 +699,7 @@ describe("GraphStore", () => {
 
       updateSearchStats(stats);
 
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       expect(state.lastSearchStats["works"]).toBe(100);
       expect(state.lastSearchStats["authors"]).toBe(50);
       expect(state.lastSearchStats["sources"]).toBe(25);
@@ -716,7 +711,7 @@ describe("GraphStore", () => {
         setEntityTypeVisibility,
         updateSearchStats,
         getEntityTypeStats,
-      } = useGraphStore.getState();
+      } = useGraphStore();
 
       // Add nodes of different types
       const nodes = [
@@ -754,7 +749,7 @@ describe("GraphStore", () => {
 
     it("should get visible nodes", () => {
       const { addNodes, setEntityTypeVisibility, getVisibleNodes } =
-        useGraphStore.getState();
+        useGraphStore();
 
       const nodes = [
         createTestNode("W1", "works"),
@@ -774,36 +769,35 @@ describe("GraphStore", () => {
 
   describe("Cache Visibility and Traversal Control", () => {
     it("should set show all cached nodes", () => {
-      const { setShowAllCachedNodes } = useGraphStore.getState();
+      const { setShowAllCachedNodes } = useGraphStore();
 
-      expect(useGraphStore.getState().showAllCachedNodes).toBe(false);
+      expect(useGraphStore().showAllCachedNodes).toBe(false);
 
       setShowAllCachedNodes(true);
-      expect(useGraphStore.getState().showAllCachedNodes).toBe(true);
+      expect(useGraphStore().showAllCachedNodes).toBe(true);
 
       setShowAllCachedNodes(false);
-      expect(useGraphStore.getState().showAllCachedNodes).toBe(false);
+      expect(useGraphStore().showAllCachedNodes).toBe(false);
     });
 
     it("should set traversal depth with minimum validation", () => {
-      const { setTraversalDepth } = useGraphStore.getState();
+      const { setTraversalDepth } = useGraphStore();
 
       setTraversalDepth(5);
-      expect(useGraphStore.getState().traversalDepth).toBe(5);
+      expect(useGraphStore().traversalDepth).toBe(5);
 
       setTraversalDepth(0); // Should be clamped to 1
-      expect(useGraphStore.getState().traversalDepth).toBe(1);
+      expect(useGraphStore().traversalDepth).toBe(1);
 
       setTraversalDepth(-5); // Should be clamped to 1
-      expect(useGraphStore.getState().traversalDepth).toBe(1);
+      expect(useGraphStore().traversalDepth).toBe(1);
 
       setTraversalDepth(Infinity);
-      expect(useGraphStore.getState().traversalDepth).toBe(Infinity);
+      expect(useGraphStore().traversalDepth).toBe(Infinity);
     });
 
     it("should calculate node depths using BFS", () => {
-      const { addNodes, addEdges, calculateNodeDepths } =
-        useGraphStore.getState();
+      const { addNodes, addEdges, calculateNodeDepths } = useGraphStore();
 
       // Create a simple graph: N1 -> N2 -> N3, N1 -> N4
       const nodes = [
@@ -823,7 +817,7 @@ describe("GraphStore", () => {
 
       calculateNodeDepths();
 
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       expect(state.nodeDepths["N1"]).toBe(0);
       expect(state.nodeDepths["N2"]).toBe(1);
       expect(state.nodeDepths["N3"]).toBe(2);
@@ -831,7 +825,7 @@ describe("GraphStore", () => {
     });
 
     it("should handle calculate depths for disconnected graph", () => {
-      const { addNodes, calculateNodeDepths } = useGraphStore.getState();
+      const { addNodes, calculateNodeDepths } = useGraphStore();
 
       // Create disconnected nodes
       const nodes = [
@@ -843,7 +837,7 @@ describe("GraphStore", () => {
       addNodes(nodes);
       calculateNodeDepths();
 
-      const state = useGraphStore.getState();
+      const state = useGraphStore();
       expect(state.nodeDepths["N1"]).toBe(0);
       expect(state.nodeDepths["N2"]).toBeUndefined();
       expect(state.nodeDepths["N3"]).toBeUndefined();
@@ -851,7 +845,7 @@ describe("GraphStore", () => {
 
     it("should get nodes within depth", () => {
       const { addNodes, addEdges, calculateNodeDepths, getNodesWithinDepth } =
-        useGraphStore.getState();
+        useGraphStore();
 
       // Create nodes and calculate depths
       const nodes = [
@@ -886,7 +880,7 @@ describe("GraphStore", () => {
     });
 
     it("should handle get nodes within depth when no depths calculated", () => {
-      const { addNodes, getNodesWithinDepth } = useGraphStore.getState();
+      const { addNodes, getNodesWithinDepth } = useGraphStore();
 
       const nodes = [createTestNode("N1"), createTestNode("N2")];
       addNodes(nodes);
@@ -899,7 +893,7 @@ describe("GraphStore", () => {
   describe("Graph Algorithms", () => {
     beforeEach(() => {
       // Create test graph: N1 <-> N2 <-> N3, N1 <-> N4
-      const { addNodes, addEdges } = useGraphStore.getState();
+      const { addNodes, addEdges } = useGraphStore();
       const nodes = [
         createTestNode("N1"),
         createTestNode("N2"),
@@ -917,7 +911,7 @@ describe("GraphStore", () => {
     });
 
     it("should get neighbors of a node", () => {
-      const { getNeighbors } = useGraphStore.getState();
+      const { getNeighbors } = useGraphStore();
 
       const n1Neighbors = getNeighbors("N1");
       expect(n1Neighbors).toHaveLength(2);
@@ -936,7 +930,7 @@ describe("GraphStore", () => {
     });
 
     it("should get connected edges of a node", () => {
-      const { getConnectedEdges } = useGraphStore.getState();
+      const { getConnectedEdges } = useGraphStore();
 
       const n1Edges = getConnectedEdges("N1");
       expect(n1Edges).toHaveLength(2);
@@ -955,7 +949,7 @@ describe("GraphStore", () => {
     });
 
     it("should find shortest path between nodes", () => {
-      const { findShortestPath } = useGraphStore.getState();
+      const { findShortestPath } = useGraphStore();
 
       const path1to3 = findShortestPath("N1", "N3");
       expect(path1to3).toEqual(["N1", "N2", "N3"]);
@@ -971,7 +965,7 @@ describe("GraphStore", () => {
     });
 
     it("should return empty path when no path exists", () => {
-      const { addNode, findShortestPath } = useGraphStore.getState();
+      const { addNode, findShortestPath } = useGraphStore();
 
       // Add disconnected node
       addNode(createTestNode("ISOLATED"));
@@ -984,7 +978,7 @@ describe("GraphStore", () => {
     });
 
     it("should return empty path for non-existent nodes", () => {
-      const { findShortestPath } = useGraphStore.getState();
+      const { findShortestPath } = useGraphStore();
 
       const pathToNonExistent = findShortestPath("N1", "NON_EXISTENT");
       expect(pathToNonExistent).toEqual([]);
@@ -994,7 +988,7 @@ describe("GraphStore", () => {
     });
 
     it("should get connected component", () => {
-      const { getConnectedComponent, addNode } = useGraphStore.getState();
+      const { getConnectedComponent, addNode } = useGraphStore();
 
       const component1 = getConnectedComponent("N1");
       expect(component1.length).toBe(4);
@@ -1012,7 +1006,7 @@ describe("GraphStore", () => {
     });
 
     it("should handle connected component for non-existent node", () => {
-      const { getConnectedComponent } = useGraphStore.getState();
+      const { getConnectedComponent } = useGraphStore();
 
       const component = getConnectedComponent("NON_EXISTENT");
       expect(component.length).toBe(1);
@@ -1023,7 +1017,7 @@ describe("GraphStore", () => {
   describe("Type Safety", () => {
     it("should maintain type safety for entity types", () => {
       const { setEntityTypeVisibility, toggleEntityTypeVisibility } =
-        useGraphStore.getState();
+        useGraphStore();
 
       const entityTypes: EntityType[] = [
         "works",
@@ -1047,7 +1041,7 @@ describe("GraphStore", () => {
 
     it("should maintain type safety for edge types", () => {
       const { setEdgeTypeVisibility, toggleEdgeTypeVisibility } =
-        useGraphStore.getState();
+        useGraphStore();
 
       const edgeTypes: RelationType[] = [
         RelationType.AUTHORED,
@@ -1067,16 +1061,16 @@ describe("GraphStore", () => {
     });
 
     it("should handle Record operations correctly", () => {
-      const { addNode, pinNode, isPinned } = useGraphStore.getState();
+      const { addNode, pinNode, isPinned } = useGraphStore();
 
       // Test Record operations
       const node = createTestNode("N1");
       addNode(node);
-      expect(useGraphStore.getState().nodes["N1"]).toEqual(node);
+      expect(useGraphStore().nodes["N1"]).toEqual(node);
 
       // Test Record operations
       pinNode("N1");
-      expect(useGraphStore.getState().pinnedNodes["N1"]).toBeTruthy();
+      expect(useGraphStore().pinnedNodes["N1"]).toBeTruthy();
       expect(isPinned("N1")).toBe(true);
     });
   });

@@ -227,7 +227,11 @@ function findNeighborIds({
   return neighbors;
 }
 
-export const useGraphStore = createTrackedStore<GraphState, GraphActions>({
+const {
+  useStore: useGraphStore,
+  store: graphStore,
+  actions: graphActions,
+} = createTrackedStore<GraphState, GraphActions>({
   config: {
     name: "graph-store",
     initialState: {
@@ -330,7 +334,7 @@ export const useGraphStore = createTrackedStore<GraphState, GraphActions>({
       },
     },
     persist: {
-      enabled: true,
+      enabled: false,
       storage: "hybrid",
       config: {
         dbName: "academic-explorer",
@@ -881,4 +885,9 @@ export const useGraphStore = createTrackedStore<GraphState, GraphActions>({
       return false;
     },
   }),
-}).useStore;
+});
+
+// Export hook for backward compatibility with tests
+const useGraphStoreHook = () => useGraphStore.getState();
+
+export { useGraphStoreHook as useGraphStore, graphStore, graphActions };
