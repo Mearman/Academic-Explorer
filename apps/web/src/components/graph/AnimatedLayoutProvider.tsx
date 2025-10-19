@@ -6,7 +6,7 @@
 
 import React, { useEffect, useMemo, useRef, useCallback } from "react";
 import {
-  useAnimatedGraphStore,
+  animatedGraphStore,
   useRestartRequested,
   useClearRestartRequest,
 } from "@/stores/animated-graph-store";
@@ -40,9 +40,7 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
   const eventBus = useEventBus();
 
   // Use stable selector to prevent infinite loops in React 19
-  const useAnimation = useAnimatedGraphStore(
-    (state) => state.useAnimatedLayout,
-  );
+  const useAnimation = animatedGraphStore((state) => state.useAnimatedLayout);
 
   // ReactFlow hooks for node tracking
   const { getNodes, getEdges } = useReactFlow();
@@ -480,7 +478,7 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const animatedStoreState = useAnimatedGraphStore.getState();
+      const animatedStoreState = animatedGraphStore.getState();
       (
         window as Window & { __animatedGraphDebug?: unknown }
       ).__animatedGraphDebug = {
