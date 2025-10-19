@@ -10,5 +10,6 @@
     }
   },
   "include": ["src/**/*"],
+  "exclude": ["**/*.test.*", "**/*.spec.*"],
   "references": [{ "path": "../client" }, { "path": "../utils" }]
 }
