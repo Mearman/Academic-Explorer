@@ -4,6 +4,26 @@ import baseConfig from "../../eslint.config.base.js";
 export default tseslint.config([
   ...baseConfig,
   {
+    // ESLint config file itself - disable type-aware rules
+    files: ["eslint.config.ts"],
+    languageOptions: {
+      parserOptions: {
+        projectService: false,
+      },
+    },
+    rules: {
+      "@typescript-eslint/prefer-nullish-coalescing": "off",
+      "@typescript-eslint/prefer-optional-chain": "off",
+      "@typescript-eslint/no-floating-promises": "off",
+      "@typescript-eslint/await-thenable": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
+    },
+  },
+  {
     // Source files only (test files are handled by base config with project: false)
     files: ["src/**/*.{ts,tsx}"],
     ignores: ["src/**/*.{test,spec}.{ts,tsx}"], // Exclude test files from type-aware linting
