@@ -17,15 +17,11 @@ export const affiliationMatcher: ArrayMatcher = {
       "years" in first
     );
   },
-  render: ({
-    array,
-    fieldName,
-    onNavigate,
-  }: {
-    array: unknown[];
-    fieldName: string;
-    onNavigate?: (path: string) => void;
-  }): React.ReactNode => {
+  render: (
+    array: unknown[],
+    fieldName: string,
+    onNavigate?: (path: string) => void,
+  ): React.ReactNode => {
     const affiliationArray = array as AffiliationItem[];
 
     return (

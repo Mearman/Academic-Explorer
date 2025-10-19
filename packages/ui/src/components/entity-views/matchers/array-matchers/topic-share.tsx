@@ -20,15 +20,11 @@ export const topicShareMatcher: ArrayMatcher = {
       "domain" in first
     );
   },
-  render: ({
-    array,
-    fieldName,
-    onNavigate,
-  }: {
-    array: unknown[];
-    fieldName: string;
-    onNavigate?: (path: string) => void;
-  }): React.ReactNode => {
+  render: (
+    array: unknown[],
+    fieldName: string,
+    onNavigate?: (path: string) => void,
+  ): React.ReactNode => {
     const topicArray = array as Array<{
       id: string;
       display_name: string;
