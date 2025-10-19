@@ -8,8 +8,10 @@ import type {
   Source,
   InstitutionEntity,
   Topic,
+  Concept,
   Publisher,
   Funder,
+  Keyword,
   OpenAlexEntity,
 } from "./entities";
 
@@ -70,7 +72,7 @@ export function isTopic(entity: unknown): entity is Topic {
   );
 }
 
-export function isConcept(entity: unknown): entity is Topic {
+export function isConcept(entity: unknown): entity is Concept {
   if (typeof entity !== "object" || entity === null) return false;
   const obj = entity;
   return (
@@ -103,11 +105,14 @@ export function isFunder(entity: unknown): entity is Funder {
   );
 }
 
-export function isKeyword(
-  entity: unknown,
-): entity is { id: string; display_name: string } {
+export function isKeyword(entity: unknown): entity is Keyword {
+  if (typeof entity !== "object" || entity === null) return false;
+  const obj = entity;
   return (
-    typeof entity === "object" && entity !== null && "display_name" in entity
+    "id" in obj &&
+    typeof obj.id === "string" &&
+    (obj.id.toLowerCase().startsWith("k") ||
+      obj.id.toLowerCase().startsWith("https://openalex.org/k"))
   );
 }
 
@@ -117,8 +122,10 @@ export function getEntityType(entity: OpenAlexEntity): string {
   if (isSource(entity)) return "sources";
   if (isInstitution(entity)) return "institutions";
   if (isTopic(entity)) return "topics";
+  if (isConcept(entity)) return "concepts";
   if (isPublisher(entity)) return "publishers";
   if (isFunder(entity)) return "funders";
+  if (isKeyword(entity)) return "keywords";
   return "unknown";
 }
 
@@ -142,7 +149,8 @@ export function isOpenAlexEntity(entity: unknown): entity is OpenAlexEntity {
     isTopic(entity) ||
     isConcept(entity) ||
     isPublisher(entity) ||
-    isFunder(entity)
+    isFunder(entity) ||
+    isKeyword(entity)
   );
 }
 
