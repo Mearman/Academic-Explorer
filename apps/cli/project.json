@@ -9,6 +9,13 @@
       "executor": "@nx/js:tsc",
       "dependsOn": ["client:build", "utils:build"],
       "outputs": ["{options.outputPath}"],
+      "inputs": [
+        "production",
+        "^production",
+        "{workspaceRoot}/vite.config.base.ts",
+        "{workspaceRoot}/config/**/*"
+      ],
+      "cache": true,
       "options": {
         "outputPath": "apps/cli/dist",
         "main": "apps/cli/src/simple-cli.ts",

@@ -65,7 +65,6 @@
     "package.json"
   ],
   "scripts": {
-    "build": "tsc -b && tsup",
     "build:types": "tsc --emitDeclarationOnly",
     "dev": "tsup --watch",
     "test": "vitest run",

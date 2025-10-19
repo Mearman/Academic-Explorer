@@ -4,6 +4,9 @@
   "sourceRoot": "packages/client/src",
   "projectType": "library",
   "targets": {
+    "build": {
+      "dependsOn": ["build:bundle"]
+    },
     "build:compile": {
       "executor": "nx:run-commands",
       "options": {
@@ -35,9 +38,6 @@
       ],
       "outputs": ["{projectRoot}/dist"],
       "cache": true
-    },
-    "build": {
-      "dependsOn": ["build:bundle"]
     },
 
     "test": {
