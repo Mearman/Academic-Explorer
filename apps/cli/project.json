@@ -17,7 +17,9 @@
       }
     },
 
-    "test": "test:aggregate",
+    "test": {
+      "dependsOn": ["test:aggregate"]
+    },
     "test:unit": {
       "executor": "@nx/vite:test",
       "options": {
@@ -59,7 +61,7 @@
         "command": "rm -rf apps/cli/dist"
       }
     },
-    "validate": {}
+    "validate": {},
     "lint": {}
   }
 }

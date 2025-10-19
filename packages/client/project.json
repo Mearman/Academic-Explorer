@@ -39,7 +39,9 @@
       "dependsOn": ["build:bundle"]
     },
 
-    "test": "test:aggregate",
+    "test": {
+      "dependsOn": ["test:aggregate"]
+    },
 
     "dev": {
       "executor": "nx:run-commands",
@@ -49,7 +51,7 @@
       },
       "cache": false
     },
-    "validate": {}
+    "validate": {},
     "lint": {}
   },
   "tags": ["type:library", "scope:openalex", "layer:core"]
