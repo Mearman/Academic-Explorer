@@ -372,7 +372,7 @@ describe("useEntityInteraction", () => {
         await result.current.interactWithEntity({
           entityId: testEntityId,
           entityType: testEntityType,
-          options: INTERACTION_PRESETS.GRAPH_NODE_CLICK,
+          options: INTERACTION_PRESETS.GRAPH_NODE_DOUBLE_CLICK,
           existingNode,
         });
       });
@@ -496,7 +496,7 @@ describe("useEntityInteraction", () => {
         await result.current.interactWithEntity({
           entityId: testEntityId,
           entityType: testEntityType,
-          options: INTERACTION_PRESETS.GRAPH_NODE_DOUBLE_CLICK,
+          options: customOptions,
           existingNode,
         });
       });
@@ -548,13 +548,11 @@ describe("useEntityInteraction", () => {
       });
 
       // Verify double-click behavior (expansion)
-      expect(mockGraphStore.selectNode).toHaveBeenCalledWith({
-        nodeId: "node1",
-      });
+      expect(mockGraphStore.selectNode).toHaveBeenCalledWith("node1");
       expect(mockLayoutStore.setPreviewEntity).toHaveBeenCalledWith(
         testEntityId,
       );
-      expect(mockGraphStore.pinNode).toHaveBeenCalledWith({ nodeId: "node1" });
+      expect(mockGraphStore.pinNode).toHaveBeenCalledWith("node1");
       expect(mockGraphData.expandNode).toHaveBeenCalledWith({
         nodeId: "node1",
       });

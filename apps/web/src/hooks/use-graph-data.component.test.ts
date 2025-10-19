@@ -341,7 +341,10 @@ describe("useGraphData", () => {
       await result.current.expandNode({ nodeId });
 
       expect(mockStore.setLoading).toHaveBeenCalledWith(true);
-      expect(mockService.expandNode).toHaveBeenCalledWith(nodeId, undefined);
+      expect(mockService.expandNode).toHaveBeenCalledWith({
+        nodeId,
+        options: undefined,
+      });
       expect(mockStore.setLoading).toHaveBeenCalledWith(false);
     });
 
@@ -354,7 +357,7 @@ describe("useGraphData", () => {
       const options = { depth: 5, limit: 20, force: false };
       await result.current.expandNode({ nodeId, options });
 
-      expect(mockService.expandNode).toHaveBeenCalledWith(nodeId, options);
+      expect(mockService.expandNode).toHaveBeenCalledWith({ nodeId, options });
     });
 
     it("should log expansion start and completion", async () => {
@@ -470,10 +473,10 @@ describe("useGraphData", () => {
         limit: 20,
       };
 
-      expect(mockService.searchAndVisualize).toHaveBeenCalledWith(
+      expect(mockService.searchAndVisualize).toHaveBeenCalledWith({
         query,
-        expectedOptions,
-      );
+        options: expectedOptions,
+      });
     });
 
     it("should use provided search options", async () => {
@@ -499,10 +502,10 @@ describe("useGraphData", () => {
         limit: options.limit,
       };
 
-      expect(mockService.searchAndVisualize).toHaveBeenCalledWith(
+      expect(mockService.searchAndVisualize).toHaveBeenCalledWith({
         query,
-        expectedOptions,
-      );
+        options: expectedOptions,
+      });
     });
 
     it("should handle partial options and merge with defaults", async () => {
@@ -526,10 +529,10 @@ describe("useGraphData", () => {
         limit: 100,
       };
 
-      expect(mockService.searchAndVisualize).toHaveBeenCalledWith(
+      expect(mockService.searchAndVisualize).toHaveBeenCalledWith({
         query,
-        expectedOptions,
-      );
+        options: expectedOptions,
+      });
     });
 
     it("should handle errors and log them", async () => {
