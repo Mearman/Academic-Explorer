@@ -1,6 +1,6 @@
 /**
- * Generic IndexedDB storage adapter
- * This is a generified version that can be used across packages without domain dependencies
+ * Pure Dexie storage adapter
+ * Simplified IndexedDB-only implementation replacing hybrid localStorage + IndexedDB approach
  */
 
 import Dexie, { type Table } from "dexie";
@@ -12,9 +12,6 @@ export interface StateStorage {
   setItem: (name: string, value: string) => void | Promise<void>;
   removeItem: (name: string) => void | Promise<void>;
 }
-
-// We'll use a more flexible approach without strict typing for the schema
-// This allows runtime configuration of store names
 
 // Storage configuration
 export interface StorageConfig {
@@ -67,270 +64,9 @@ const getDB = (config: StorageConfig): Promise<KeyValueDB> => {
   return cached;
 };
 
-// Check if localStorage is available
-const isLocalStorageAvailable = (): boolean => {
-  try {
-    return typeof localStorage !== "undefined";
-  } catch {
-    return false;
-  }
-};
-
 /**
- * Handle IndexedDB write operation with error handling
- */
-const performIndexedDBWrite = async (
-  config: StorageConfig,
-  name: string,
-  value: string,
-  logger: GenericLogger | undefined,
-  writeQueue: Set<string>,
-  indexedDBWrites: { value: number },
-  indexedDBErrors: { value: number },
-): Promise<void> => {
-  try {
-    const db = await getDB(config);
-    await db.keyValueStore.put({ key: name, value });
-    indexedDBWrites.value++;
-    logger?.debug("storage", "Background IndexedDB write completed", {
-      name,
-      valueSize: value.length,
-      totalWrites: indexedDBWrites.value,
-      queueSize: writeQueue.size,
-    });
-  } catch (error) {
-    indexedDBErrors.value++;
-
-    // Handle specific IndexedDB errors
-    if (error && typeof error === "object" && "name" in error) {
-      const errorName = String(error.name);
-
-      if (errorName === "QuotaExceededError") {
-        logger?.warn(
-          "storage",
-          "IndexedDB quota exceeded, data may not persist",
-          {
-            name,
-            valueSize: value.length,
-            totalErrors: indexedDBErrors.value,
-          },
-        );
-      } else if (errorName === "VersionError") {
-        logger?.warn(
-          "storage",
-          "IndexedDB version conflict, database may need refresh",
-          {
-            name,
-            totalErrors: indexedDBErrors.value,
-          },
-        );
-      } else if (errorName === "InvalidStateError") {
-        logger?.warn(
-          "storage",
-          "IndexedDB invalid state, database may be corrupted",
-          {
-            name,
-            totalErrors: indexedDBErrors.value,
-          },
-        );
-      } else {
-        logger?.warn("storage", "IndexedDB write failed", {
-          name,
-          error,
-          totalErrors: indexedDBErrors.value,
-        });
-      }
-    } else {
-      logger?.warn("storage", "IndexedDB write failed", {
-        name,
-        error,
-        totalErrors: indexedDBErrors.value,
-      });
-    }
-  } finally {
-    writeQueue.delete(name);
-  }
-};
-
-/**
- * Creates a hybrid storage adapter that writes synchronously to localStorage
- * and asynchronously to IndexedDB for best performance and reliability
- */
-export const createHybridStorage = (
-  config: StorageConfig,
-  logger?: GenericLogger,
-): StateStorage => {
-  const useIndexedDB = isIndexedDBAvailable();
-  const useLocalStorage = isLocalStorageAvailable();
-  const writeQueue = new Set<string>();
-
-  // Track storage statistics
-  let localStorageWrites = 0;
-  const indexedDBWrites = { value: 0 };
-  let localStorageErrors = 0;
-  const indexedDBErrors = { value: 0 };
-
-  if (!useIndexedDB && !useLocalStorage) {
-    logger?.debug(
-      "storage",
-      "Neither IndexedDB nor localStorage available, using memory storage fallback",
-    );
-  }
-
-  return {
-    getItem: async (name: string): Promise<string | null> => {
-      // Try IndexedDB first (larger capacity, authoritative source)
-      if (useIndexedDB) {
-        try {
-          const db = await getDB(config);
-          const item = await db.keyValueStore.get({ key: name });
-          const value = item?.value ?? null;
-          if (value) {
-            logger?.debug("storage", "Retrieved item from IndexedDB", {
-              name,
-              hasValue: true,
-              source: "indexeddb",
-            });
-            return value;
-          }
-        } catch (error) {
-          logger?.warn(
-            "storage",
-            "IndexedDB read failed, falling back to localStorage",
-            { name, error },
-          );
-          indexedDBErrors.value++;
-        }
-      }
-
-      // Fallback to localStorage
-      if (useLocalStorage) {
-        try {
-          const value = localStorage.getItem(name);
-          if (value !== null) {
-            logger?.debug("storage", "Retrieved item from localStorage", {
-              name,
-              hasValue: true,
-              source: "localstorage",
-            });
-            return value;
-          }
-        } catch (error) {
-          logger?.warn("storage", "localStorage read failed", { name, error });
-          localStorageErrors++;
-        }
-      }
-
-      // Final fallback to memory storage (test environments)
-      const value = memoryStorage.get(name) ?? null;
-      if (value !== null) {
-        logger?.debug("storage", "Retrieved item from memory storage", {
-          name,
-          hasValue: true,
-          source: "memory",
-        });
-      }
-      return value;
-    },
-
-    setItem: (name: string, value: string): void => {
-      // 1. Write to localStorage immediately (synchronous, fast)
-      if (useLocalStorage) {
-        try {
-          localStorage.setItem(name, value);
-          localStorageWrites++;
-          logger?.debug("storage", "Stored item in localStorage", {
-            name,
-            valueSize: value.length,
-            totalWrites: localStorageWrites,
-          });
-        } catch (error) {
-          localStorageErrors++;
-          logger?.warn(
-            "storage",
-            "localStorage write failed (quota exceeded?)",
-            {
-              name,
-              error,
-              valueSize: value.length,
-              totalErrors: localStorageErrors,
-            },
-          );
-        }
-      } else {
-        // Fallback to memory storage if localStorage unavailable
-        memoryStorage.set(name, value);
-        logger?.debug("storage", "Stored item in memory storage", {
-          name,
-          valueSize: value.length,
-        });
-      }
-
-      // 2. Queue IndexedDB write (asynchronous, non-blocking)
-      if (useIndexedDB && !writeQueue.has(name)) {
-        writeQueue.add(name);
-        queueMicrotask(() =>
-          performIndexedDBWrite(
-            config,
-            name,
-            value,
-            logger,
-            writeQueue,
-            indexedDBWrites,
-            indexedDBErrors,
-          ),
-        );
-      }
-    },
-
-    removeItem: (name: string): void => {
-      // Remove from localStorage immediately
-      if (useLocalStorage) {
-        try {
-          localStorage.removeItem(name);
-          logger?.debug("storage", "Removed item from localStorage", { name });
-        } catch (error) {
-          localStorageErrors++;
-          logger?.warn("storage", "localStorage remove failed", {
-            name,
-            error,
-          });
-        }
-      } else {
-        // Fallback to memory storage
-        memoryStorage.delete(name);
-        logger?.debug("storage", "Removed item from memory storage", { name });
-      }
-
-      // Queue IndexedDB removal (asynchronous)
-      if (useIndexedDB) {
-        queueMicrotask(() => {
-          void (async () => {
-            try {
-              const db = await getDB(config);
-              await db.keyValueStore.delete(name);
-              logger?.debug(
-                "storage",
-                "Background IndexedDB delete completed",
-                { name },
-              );
-            } catch (error) {
-              indexedDBErrors.value++;
-              logger?.error("storage", "IndexedDB background delete failed", {
-                name,
-                error,
-              });
-            }
-          })();
-        });
-      }
-    },
-  };
-};
-
-/**
- * Creates an IndexedDB-only storage adapter for Zustand persistence
- * Uses idb library for IndexedDB operations with fallback to memory storage in test environments
+ * Creates a pure Dexie storage adapter for IndexedDB operations
+ * Simplified from hybrid approach - no localStorage fallback
  */
 export const createIndexedDBStorage = (
   config: StorageConfig,
@@ -396,7 +132,7 @@ export const createIndexedDBStorage = (
           name,
           error,
         });
-        throw error; // Re-throw to trigger Zustand error handling
+        throw error; // Re-throw to trigger error handling
       }
     },
 
@@ -427,4 +163,19 @@ export const defaultStorageConfig: StorageConfig = {
   dbName: "app-storage",
   storeName: "app-storage",
   version: 1,
+};
+
+// DEPRECATED: Hybrid storage removed - use createIndexedDBStorage instead
+/**
+ * @deprecated Use createIndexedDBStorage instead. Hybrid storage has been removed.
+ */
+export const createHybridStorage = (
+  config: StorageConfig,
+  logger?: GenericLogger,
+): StateStorage => {
+  logger?.warn(
+    "storage",
+    "createHybridStorage is deprecated. Use createIndexedDBStorage for pure Dexie storage.",
+  );
+  return createIndexedDBStorage(config, logger);
 };
