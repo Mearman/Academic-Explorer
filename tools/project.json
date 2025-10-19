@@ -13,23 +13,9 @@
       "inputs": ["default", "{workspaceRoot}/tsconfig.base.json"]
     },
     "lint": {
-      "executor": "nx:run-commands",
-      "dependsOn": ["lint:fix"],
       "options": {
-        "command": "eslint scripts",
-        "cwd": "{projectRoot}"
-      },
-      "inputs": ["default", "{workspaceRoot}/eslint.config.base.ts"],
-      "outputs": ["{workspaceRoot}/.nx/cache/lint-results/{projectName}.json"],
-      "cache": true
-    },
-    "lint:fix": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "eslint scripts --fix",
-        "cwd": "{projectRoot}"
-      },
-      "cache": true
+        "command": "NODE_OPTIONS='--import tsx' eslint --no-warn-ignored scripts/**/*.ts"
+      }
     }
   }
 }
