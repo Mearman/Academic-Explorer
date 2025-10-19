@@ -409,6 +409,143 @@ export class UserInteractionsService {
   }
 
   /**
+   * Check if an entity is bookmarked
+   * @param entityId - The entity ID
+   * @param entityType - The entity type
+   */
+  async isEntityBookmarked(
+    entityId: string,
+    entityType: string,
+  ): Promise<boolean> {
+    const cacheKey = `/${entityType}/${entityId}`;
+    return this.isRequestBookmarked(cacheKey);
+  }
+
+  /**
+   * Check if a search is bookmarked
+   * @param searchQuery - The search query
+   * @param filters - The search filters
+   */
+  async isSearchBookmarked(
+    searchQuery: string,
+    filters?: Record<string, unknown>,
+  ): Promise<boolean> {
+    const cacheKey = `/search?q=${searchQuery}`;
+    return this.isRequestBookmarked(cacheKey);
+  }
+
+  /**
+   * Check if a list is bookmarked
+   * @param url - The list URL
+   */
+  async isListBookmarked(url: string): Promise<boolean> {
+    return this.isRequestBookmarked(url);
+  }
+
+  /**
+   * Get entity bookmark
+   * @param entityId - The entity ID
+   * @param entityType - The entity type
+   */
+  async getEntityBookmark(
+    entityId: string,
+    entityType: string,
+  ): Promise<BookmarkRecord | null> {
+    const cacheKey = `/${entityType}/${entityId}`;
+    return this.getBookmark(cacheKey);
+  }
+
+  /**
+   * Get search bookmark
+   * @param searchQuery - The search query
+   * @param filters - The search filters
+   */
+  async getSearchBookmark(
+    searchQuery: string,
+    filters?: Record<string, unknown>,
+  ): Promise<BookmarkRecord | null> {
+    const cacheKey = `/search?q=${searchQuery}`;
+    return this.getBookmark(cacheKey);
+  }
+
+  /**
+   * Get list bookmark
+   * @param url - The list URL
+   */
+  async getListBookmark(url: string): Promise<BookmarkRecord | null> {
+    return this.getBookmark(url);
+  }
+
+  /**
+   * Add list bookmark
+   * @param url - The list URL
+   * @param title - The bookmark title
+   * @param notes - Optional notes
+   * @param tags - Optional tags
+   */
+  async addListBookmark(
+    url: string,
+    title: string,
+    notes?: string,
+    tags?: string[],
+  ): Promise<number> {
+    const request = {
+      cacheKey: url,
+      hash: url.slice(0, 16),
+      endpoint: url,
+      params: {},
+    };
+
+    return this.addBookmark({
+      request,
+      title,
+      notes,
+      tags,
+    });
+  }
+
+  /**
+   * Get page visit statistics (legacy format for compatibility)
+   */
+  async getPageVisitStatsLegacy(): Promise<{
+    totalVisits: number;
+    uniqueRequests: number;
+    byEndpoint: Record<string, number>;
+  }> {
+    const stats = await this.getPageVisitStats();
+    return {
+      totalVisits: stats.totalVisits,
+      uniqueRequests: stats.uniqueRequests,
+      byEndpoint: stats.byEndpoint,
+    };
+  }
+
+  /**
+   * Record page visit (legacy format for compatibility)
+   * @param cacheKey - The cache key
+   * @param metadata - Optional metadata
+   */
+  async recordPageVisitLegacy(
+    cacheKey: string,
+    metadata?: {
+      sessionId?: string;
+      referrer?: string;
+      duration?: number;
+      cached?: boolean;
+      bytesSaved?: number;
+    },
+  ): Promise<void> {
+    const request = {
+      cacheKey,
+      hash: cacheKey.slice(0, 16),
+      endpoint: cacheKey,
+      params: {},
+    };
+
+    return this.recordPageVisit({ request, metadata });
+  }
+
+  /**
    * Get page visit statistics
    */
   async getPageVisitStats(): Promise<{

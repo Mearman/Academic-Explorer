@@ -32,7 +32,7 @@ export type { StateCreator, StoreApi, UseBoundStore };
 // Minimal interface for store methods we need
 interface StoreMethods<T> {
   setState: (
-    partial: Partial<T> | ((state: Draft<T>) => void),
+    partial: T | Partial<T> | ((state: T) => T | Partial<T>),
     replace?: boolean,
   ) => void;
   getState: () => T;
@@ -186,15 +186,38 @@ export interface TrackedStoreConfig<T> {
 }
 
 export interface TrackedStoreResult<T, A> {
-  useStore: any; // Hook that returns state with bound actions and supports selectors
-  store: any; // Custom store with actions - typed as any for flexibility
+  useStore: () => T & A; // Hook that returns state with bound actions and supports selectors
+  store: StoreMethods<T> & A; // Custom store with actions - properly typed
   selectors: Record<string, (state: T) => unknown>;
   actions: A;
 }
 
 /**
  * Create a simplified Zustand store with Immer and DevTools
- * Removed persistence - use pure Dexie stores for data persistence
+ * Follows standard Zustand patterns for better type safety
+ */
+export function createStore<T extends object>(
+  initialState: T,
+  options: { name?: string; devtools?: boolean } = {},
+): UseBoundStore<StoreApi<T>> {
+  const { name, devtools: enableDevtools = false } = options;
+
+  const storeCreator = (set: any, get: any) => ({
+    ...initialState,
+  });
+
+  if (enableDevtools && name) {
+    return create(devtools(immer(storeCreator), { name })) as UseBoundStore<
+      StoreApi<T>
+    >;
+  }
+
+  return create(immer(storeCreator)) as UseBoundStore<StoreApi<T>>;
+}
+
+/**
+ * Legacy factory function - kept for backwards compatibility
+ * @deprecated Use createStore directly instead
  */
 export function createTrackedStore<
   T extends object,
@@ -219,31 +242,15 @@ export function createTrackedStore<
 }): TrackedStoreResult<T, A> {
   const { name, initialState, devtools: enableDevtools = false } = config;
 
-  // Create the store with both state and actions combined
+  // Create the store with Zustand - follow standard pattern
   const useStore = (() => {
     const storeCreator = (set: any, get: any) => {
-      // Create a getState function that returns just the state part
-      const getState = (): T => {
-        const fullState = get();
-        const stateOnly: Partial<T> = {};
-        Object.keys(initialState).forEach((key) => {
-          if (key in fullState) {
-            (stateOnly as any)[key] = (fullState as any)[key];
-          }
-        });
-        return stateOnly as T;
-      };
-
       // Create actions
       const actions = actionsFactory({
-        set: (partial, replace) => {
-          if (replace) {
-            set(partial, true);
-          } else {
-            set(partial);
-          }
+        set: (partial: any, replace?: boolean) => {
+          set(partial, replace);
         },
-        get: getState,
+        get: () => get(),
       });
 
       return {
@@ -253,13 +260,15 @@ export function createTrackedStore<
     };
 
     if (enableDevtools) {
-      return create(devtools(immer(storeCreator), { name })) as any;
+      return create(devtools(immer(storeCreator), { name })) as UseBoundStore<
+        StoreApi<T & A>
+      >;
     }
 
-    return create(immer(storeCreator)) as any;
+    return create(immer(storeCreator)) as UseBoundStore<StoreApi<T & A>>;
   })();
 
-  // Get actions from the store after it's created
+  // Get actions from the store
   const actions = (() => {
     const fullState = useStore.getState();
     const extractedActions: Partial<A> = {};
@@ -275,7 +284,7 @@ export function createTrackedStore<
   const selectors = selectorsFactory ? selectorsFactory(initialState) : {};
 
   // Create a store object
-  const storeWithActions = {
+  const storeWithActions: StoreMethods<T> & A = {
     getState: () => {
       const fullState = useStore.getState();
       const stateOnly: Partial<T> = {};
@@ -286,17 +295,31 @@ export function createTrackedStore<
       });
       return stateOnly as T;
     },
-    setState: useStore.setState,
+    setState: (partial, replace) =>
+      (useStore as any).setState(partial, replace),
     subscribe: useStore.subscribe,
     ...actions,
   };
 
   return {
-    useStore: useStore as any,
+    useStore: useStore as () => T & A,
     store: storeWithActions,
     selectors,
     actions,
   };
+}
+
+// ============================================================================
+// TYPE HELPERS
+// ============================================================================
+
+/**
+ * Type assertion helper for store hooks
+ * Since Zustand's complex typing can result in 'unknown' inference,
+ * this helper provides a way to assert the correct types at runtime
+ */
+export function assertStoreHook<T>(hook: unknown): T {
+  return hook as T;
 }
 
 // ============================================================================

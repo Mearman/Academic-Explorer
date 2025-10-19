@@ -8,6 +8,7 @@ import { useGraphStore } from "@/stores/graph-store";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { logger } from "@academic-explorer/utils/logger";
 import type { EntityType } from "@academic-explorer/client";
+import type { GraphNode } from "@academic-explorer/graph";
 import { Checkbox, Badge, Stack } from "@mantine/core";
 import { SectionFrame } from "@academic-explorer/ui";
 import {
@@ -49,7 +50,7 @@ export const EntityFiltersSection: React.FC = () => {
 
   const entityStats = useMemo(() => {
     try {
-      const nodeValues = Object.values(nodesMap);
+      const nodeValues = Object.values(nodesMap) as GraphNode[];
       const nodes = Array.isArray(nodeValues) ? nodeValues : [];
 
       // Initialize counters for all entity types

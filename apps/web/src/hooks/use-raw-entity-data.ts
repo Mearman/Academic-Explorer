@@ -20,14 +20,11 @@ interface UseRawEntityDataOptions {
 /**
  * Type guard to check if we have a valid entity type for the query
  */
-function isValidEntityData({
-  entityId,
-  entityType,
-}: {
+function isValidEntityData(data: {
   entityId: string | null | undefined;
   entityType: EntityType | null;
-}): entityType is EntityType {
-  return !!entityId && !!entityType;
+}): data is { entityId: string; entityType: EntityType } {
+  return !!data.entityId && !!data.entityType;
 }
 
 export const useRawEntityData = ({

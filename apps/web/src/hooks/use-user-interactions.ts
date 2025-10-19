@@ -385,7 +385,12 @@ export function useUserInteractions(
           params,
         };
 
-        await userInteractionsService.addBookmark(request, title, notes, tags);
+        await userInteractionsService.addBookmark({
+          request,
+          title,
+          notes,
+          tags,
+        });
 
         setIsBookmarked(true);
         await refreshData();

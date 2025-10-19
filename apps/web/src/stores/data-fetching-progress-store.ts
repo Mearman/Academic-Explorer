@@ -52,130 +52,112 @@ interface DataFetchingProgressActions {
   [key: string]: (...args: never[]) => void;
 }
 
-const { useStore: useDataFetchingProgressStore } = createTrackedStore<
-  DataFetchingProgressState,
-  DataFetchingProgressActions
+const dataFetchingProgressStoreResult = createTrackedStore<
+  DataFetchingProgressState & DataFetchingProgressActions
 >({
-  config: {
-    name: "data-fetching-progress",
-    initialState: {
-      // State - using plain object for Immer compatibility
-      requests: {},
-      workerReady: false,
-    },
+  // State - using plain object for Immer compatibility
+  requests: {},
+  workerReady: false,
+
+  // Actions
+  addRequest: function (
+    nodeId: string,
+    entityName?: string,
+    entityType?: string,
+  ) {
+    this.requests[nodeId] = {
+      nodeId,
+      ...(entityName && { entityName }),
+      ...(entityType && { entityType }),
+      progress: {
+        completed: 0,
+        total: 1,
+        stage: "Starting...",
+      },
+      status: "active",
+      startTime: Date.now(),
+    };
   },
-  actionsFactory: ({ set, get }) => ({
-    // Actions
-    addRequest: (nodeId: string, entityName?: string, entityType?: string) => {
-      set((state) => {
-        state.requests[nodeId] = {
-          nodeId,
-          ...(entityName && { entityName }),
-          ...(entityType && { entityType }),
-          progress: {
-            completed: 0,
-            total: 1,
-            stage: "Starting...",
-          },
-          status: "active",
-          startTime: Date.now(),
-        };
-      });
-    },
 
-    updateProgress: (
-      nodeId: string,
-      progress: { completed: number; total: number; stage: string },
-    ) => {
-      set((state) => {
-        const request = state.requests[nodeId];
-        if (request?.status === "active") {
-          request.progress = progress;
-        }
-      });
-    },
+  updateProgress: function (
+    nodeId: string,
+    progress: { completed: number; total: number; stage: string },
+  ) {
+    const request = this.requests[nodeId];
+    if (request?.status === "active") {
+      request.progress = progress;
+    }
+  },
 
-    completeRequest: (nodeId: string) => {
-      set((state) => {
-        const request = state.requests[nodeId];
-        if (request) {
-          request.status = "completed";
-          request.progress = {
-            completed: request.progress.total,
-            total: request.progress.total,
-            stage: "Completed",
-          };
+  completeRequest: function (nodeId: string) {
+    const request = this.requests[nodeId];
+    if (request) {
+      request.status = "completed";
+      request.progress = {
+        completed: request.progress.total,
+        total: request.progress.total,
+        stage: "Completed",
+      };
 
-          // Auto-remove completed requests after 3 seconds
-          setTimeout(() => {
-            get().removeRequest(nodeId);
-          }, 3000);
-        }
-      });
-    },
+      // Auto-remove completed requests after 3 seconds
+      setTimeout(() => {
+        this.removeRequest(nodeId);
+      }, 3000);
+    }
+  },
 
-    failRequest: (nodeId: string, error: string) => {
-      set((state) => {
-        const request = state.requests[nodeId];
-        if (request) {
-          request.status = "error";
-          request.error = error;
-          request.progress = {
-            completed: 0,
-            total: request.progress.total,
-            stage: "Failed",
-          };
+  failRequest: function (nodeId: string, error: string) {
+    const request = this.requests[nodeId];
+    if (request) {
+      request.status = "error";
+      request.error = error;
+      request.progress = {
+        completed: 0,
+        total: request.progress.total,
+        stage: "Failed",
+      };
 
-          // Auto-remove failed requests after 5 seconds
-          setTimeout(() => {
-            get().removeRequest(nodeId);
-          }, 5000);
-        }
-      });
-    },
+      // Auto-remove failed requests after 5 seconds
+      setTimeout(() => {
+        this.removeRequest(nodeId);
+      }, 5000);
+    }
+  },
 
-    removeRequest: (nodeId: string) => {
-      set((state) => {
-        const { [nodeId]: _removed, ...rest } = state.requests;
-        state.requests = rest;
-      });
-    },
+  removeRequest: function (nodeId: string) {
+    const { [nodeId]: _removed, ...rest } = this.requests;
+    this.requests = rest;
+  },
 
-    setWorkerReady: (ready: boolean) => {
-      set((state) => {
-        state.workerReady = ready;
-      });
-    },
+  setWorkerReady: function (ready: boolean) {
+    this.workerReady = ready;
+  },
 
-    clearCompleted: () => {
-      set((state) => {
-        const filteredRequests: Record<string, DataFetchingProgressItem> = {};
-        Object.entries(state.requests).forEach(([nodeId, request]) => {
-          if (request && request.status !== "completed") {
-            filteredRequests[nodeId] = request;
-          }
-        });
-        state.requests = filteredRequests;
-      });
-    },
+  clearCompleted: function () {
+    const filteredRequests: Record<string, DataFetchingProgressItem> = {};
+    Object.entries(this.requests).forEach(([nodeId, request]) => {
+      if (request && request.status !== "completed") {
+        filteredRequests[nodeId] = request;
+      }
+    });
+    this.requests = filteredRequests;
+  },
 
-    clearAll: () => {
-      set((state) => {
-        state.requests = {};
-      });
-    },
+  clearAll: function () {
+    this.requests = {};
+  },
 
-    // Selectors
-    getActiveRequests: () => {
-      return Object.values(get().requests).filter(
-        (request): request is NonNullable<typeof request> => request != null,
-      );
-    },
+  // Selectors
+  getActiveRequests: function () {
+    return Object.values(this.requests).filter(
+      (request): request is NonNullable<typeof request> => request != null,
+    );
+  },
 
-    getRequestByNodeId: (nodeId: string) => {
-      return get().requests[nodeId];
-    },
-  }),
+  getRequestByNodeId: function (nodeId: string) {
+    return this.requests[nodeId];
+  },
 });
 
-export { useDataFetchingProgressStore };
+export const useDataFetchingProgressStore =
+  dataFetchingProgressStoreResult.useStore;

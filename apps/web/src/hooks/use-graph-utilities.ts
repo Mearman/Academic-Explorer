@@ -57,8 +57,14 @@ export const useGraphUtilities = () => {
   const setError = useGraphStore((state) => state.setError);
 
   // Convert Records to arrays with stable dependencies
-  const nodes = useMemo(() => Object.values(nodesMap), [nodesMap]);
-  const edges = useMemo(() => Object.values(edgesMap), [edgesMap]);
+  const nodes = useMemo(
+    () => Object.values(nodesMap) as GraphNode[],
+    [nodesMap],
+  );
+  const edges = useMemo(
+    () => Object.values(edgesMap) as GraphEdge[],
+    [edgesMap],
+  );
 
   // Apply utility result to store
   const applyUtilityResult = useCallback(

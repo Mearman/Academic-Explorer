@@ -57,16 +57,16 @@ export const GraphStatsSection: React.FC<GraphStatsSectionProps> = ({
   // Top entity types by count
   const topEntityTypes = useMemo(() => {
     return Object.entries(entityTypeStats.visible || {})
-      .filter(([, count]) => count > 0)
-      .sort(([, a], [, b]) => b - a)
+      .filter(([, count]) => (count as number) > 0)
+      .sort(([, a], [, b]) => (b as number) - (a as number))
       .slice(0, 5);
   }, [entityTypeStats.visible]);
 
   // Top edge types by count
   const topEdgeTypes = useMemo(() => {
     return Object.entries(edgeTypeStats.visible || {})
-      .filter(([, count]) => count > 0)
-      .sort(([, a], [, b]) => b - a)
+      .filter(([, count]) => (count as number) > 0)
+      .sort(([, a], [, b]) => (b as number) - (a as number))
       .slice(0, 5);
   }, [edgeTypeStats.visible]);
 

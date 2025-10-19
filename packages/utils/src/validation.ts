@@ -67,13 +67,11 @@ export function extractProperty({
  * @param validValues - Array of valid values
  * @returns True if value is in validValues
  */
-export function isStringInSet<T extends string>({
-  value,
-  validValues,
-}: {
+export function isStringInSet<T extends string>(params: {
   value: string;
   validValues: readonly T[];
-}): value is T {
+}): params is { value: T; validValues: readonly T[] } {
+  const { value, validValues } = params;
   return validValues.includes(value as T);
 }
 
@@ -90,22 +88,23 @@ export function safeParseEnum<T extends string>({
   value: string;
   validValues: readonly T[];
 }): T | null {
-  return isStringInSet(value, validValues) ? value : null;
+  return isStringInSet({ value, validValues }) ? (value as T) : null;
 }
 
 /**
  * Assert that a value is within a specific set, throwing an error if invalid
  * Use only when you're certain the value should be valid
  */
-export function assertStringInSet<T extends string>({
-  value,
-  validValues,
-  typeName,
-}: {
+export function assertStringInSet<T extends string>(params: {
   value: string;
   validValues: readonly T[];
   typeName: string;
-}): asserts value is T {
+}): asserts params is {
+  value: T;
+  validValues: readonly T[];
+  typeName: string;
+} {
+  const { value, validValues, typeName } = params;
   if (!isStringInSet({ value, validValues })) {
     throw new Error(
       `Invalid ${typeName}: ${value}. Valid values: ${validValues.join(", ")}`,
@@ -217,29 +216,31 @@ export function isValidEmail(value: unknown): value is string {
 /**
  * Type guard factory for objects with specific properties
  */
-export function hasProperty<K extends string>({
-  obj,
-  key,
-}: {
+export function hasProperty<K extends string>(params: {
   obj: unknown;
   key: K;
-}): obj is Record<K, unknown> {
+}): params is { obj: Record<K, unknown>; key: K } {
+  const { obj, key } = params;
   return isRecord(obj) && key in obj;
 }
 
 /**
  * Type guard factory for objects with specific property types
  */
-export function hasPropertyOfType<T>({
-  obj,
-  key,
-  typeGuard,
-}: {
+export function hasPropertyOfType<T>(params: {
   obj: unknown;
   key: string;
   typeGuard: (value: unknown) => value is T;
-}): obj is Record<string, unknown> & { [K in typeof key]: T } {
-  return hasProperty({ obj, key }) && typeGuard(obj[key]);
+}): params is {
+  obj: Record<string, unknown> & { [K in typeof params.key]: T };
+  key: string;
+  typeGuard: (value: unknown) => value is T;
+} {
+  const { obj, key, typeGuard } = params;
+  return (
+    hasProperty({ obj, key }) &&
+    typeGuard((obj as Record<string, unknown>)[key])
+  );
 }
 
 /**
@@ -264,13 +265,11 @@ export function createShapeValidator<T>(validators: {
 /**
  * Validate that an array contains only items of a specific type
  */
-export function isArrayOfType<T>({
-  value,
-  itemGuard,
-}: {
+export function isArrayOfType<T>(params: {
   value: unknown;
   itemGuard: (item: unknown) => item is T;
-}): value is T[] {
+}): params is { value: T[]; itemGuard: (item: unknown) => item is T } {
+  const { value, itemGuard } = params;
   return isArray(value) && value.every(itemGuard);
 }
 

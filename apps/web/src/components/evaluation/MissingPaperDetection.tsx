@@ -103,15 +103,15 @@ export function MissingPaperDetection({
       // Dynamic import to avoid loading the heavy detection module until needed
       const { detectMissingPapers } = await import("@academic-explorer/utils");
 
-      const results = detectMissingPapers(
+      const results = detectMissingPapers({
         dataset,
-        detectionConfig,
-        (progress) => {
+        config: detectionConfig,
+        onProgress: (progress) => {
           setDetectionJobs((prev) =>
             prev.map((job) => (job.id === jobId ? { ...job, progress } : job)),
           );
         },
-      );
+      });
 
       const completedJob: DetectionJob = {
         ...newJob,

@@ -53,8 +53,8 @@ export const useEntityInteraction = (
     loadEntityIntoGraph: (entityId: string) => Promise<void>;
   }): Promise<GraphNode | undefined> => {
     // First check if a minimal node already exists
-    let targetNode = Object.values(store.nodes).find(
-      (node: GraphNode) => node.entityId === entityId,
+    let targetNode = (Object.values(store.nodes) as GraphNode[]).find(
+      (node) => node.entityId === entityId,
     );
 
     if (!targetNode) {
@@ -62,8 +62,8 @@ export const useEntityInteraction = (
       await loadEntityIntoGraph(entityId);
       // Find the newly loaded node
       const updatedStore = useGraphStore.getState();
-      targetNode = Object.values(updatedStore.nodes).find(
-        (node: GraphNode) => node.entityId === entityId,
+      targetNode = (Object.values(updatedStore.nodes) as GraphNode[]).find(
+        (node) => node.entityId === entityId,
       );
     }
 

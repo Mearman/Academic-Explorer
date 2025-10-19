@@ -687,5 +687,6 @@ const result = createTrackedStore<AppActivityState, AppActivityActions>({
   },
 });
 
-export const useAppActivityStore = result.useStore;
+export const useAppActivityStore = result.useStore as () => AppActivityState &
+  AppActivityActions;
 export const appActivityStore = result.store;

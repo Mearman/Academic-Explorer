@@ -235,7 +235,7 @@ export const AllNodesSection: React.FC = () => {
 
   // Convert nodes record to array
   const nodeArray = useMemo(() => {
-    return Object.values(nodes);
+    return Object.values(nodes) as GraphNode[];
   }, [nodes]);
 
   // Filter and group nodes

@@ -303,16 +303,16 @@ if (typeof window !== "undefined") {
 
 // Hook for Zustand-style usage
 export const useSettingsStore = <T>(
-  selector: (state: SettingsStoreState) => T,
+  selector: (state: SettingsStoreState & SettingsStoreActions) => T,
 ): T => {
   // Initialize state if not done yet
   if (!initialized && typeof window !== "undefined") {
     void initializeState();
   }
 
-  // For now, return the selected value directly
-  // In a full implementation, this would use React state and subscriptions
-  return selector(currentState);
+  // Return state with actions for Zustand compatibility
+  const stateWithActions = { ...currentState, ...actions };
+  return selector(stateWithActions);
 };
 
 export const settingsActions = actions;

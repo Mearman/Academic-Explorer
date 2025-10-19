@@ -16,6 +16,7 @@ export {
 
 // Store factory
 export {
+  createStore,
   createTrackedStore,
   type TrackedStoreConfig,
   type TrackedStoreResult,
@@ -29,3 +30,6 @@ export {
   type LoadingState,
   createAsyncAction,
 } from "./createTrackedStore.js";
+
+// Type helpers
+export { assertStoreHook } from "./createTrackedStore.js";

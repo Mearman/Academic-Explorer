@@ -129,13 +129,11 @@ export function getEntityType(entity: OpenAlexEntity): string {
   return "unknown";
 }
 
-export function hasProperty<T extends Record<string, unknown>>({
-  obj,
-  prop,
-}: {
+export function hasProperty<T extends Record<string, unknown>>(params: {
   obj: unknown;
   prop: string;
-}): obj is T & Record<typeof prop, unknown> {
+}): params is { obj: T & Record<typeof params.prop, unknown>; prop: string } {
+  const { obj, prop } = params;
   return typeof obj === "object" && obj !== null && prop in obj;
 }
 

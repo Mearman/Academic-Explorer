@@ -806,7 +806,6 @@ const result = createTrackedStore<LayoutState, LayoutActions>({
   }),
 });
 
-export const useLayoutStore: () => LayoutState & LayoutActions =
-  result.useStore;
+export const useLayoutStore = result.useStore;
 export const layoutStore = result.store;
 export const layoutActions = result.actions;

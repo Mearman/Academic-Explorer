@@ -286,7 +286,7 @@ export const AllEdgesSection: React.FC = () => {
 
   // Convert edges record to array
   const edgeArray = useMemo(() => {
-    return Object.values(edges);
+    return Object.values(edges) as GraphEdge[];
   }, [edges]);
 
   // Get node labels for display

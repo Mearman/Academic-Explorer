@@ -56,7 +56,11 @@ export {
   type ParseResult,
   type WorkReference,
   type ComparisonResults,
+  type ComparisonProgress,
   type SearchCoverage,
+  type MissingPaperDetectionConfig,
+  type DetectionProgress,
+  type MissingPaperDetectionResults,
 } from "./data-evaluation";
 
 // OpenAlex types, schemas, and utilities
