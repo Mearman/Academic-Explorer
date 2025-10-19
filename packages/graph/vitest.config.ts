@@ -19,6 +19,23 @@ export default defineConfig(
       coverage: {
         reportsDirectory: "../../coverage/packages/graph",
       },
+      projects: [
+        {
+          test: {
+            name: "unit",
+            include: ["src/**/*.unit.test.ts"],
+            environment: "node",
+          },
+        },
+        // Integration tests are disabled by default - run with: pnpm test --project=integration
+        // {
+        //   test: {
+        //     name: 'integration',
+        //     include: ['src/**/*.integration.test.ts'],
+        //     environment: 'node',
+        //   },
+        // },
+      ],
     },
   }),
 );
