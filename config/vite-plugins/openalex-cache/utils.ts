@@ -21,10 +21,7 @@ export const isDevelopment = (config: ResolvedConfig): boolean => {
  * Check if we're in test mode
  */
 export const isTest = (): boolean => {
-  return (
-    (typeof process !== "undefined" && process.env.VITEST === "true") ||
-    (typeof process !== "undefined" && process.env.RUNNING_E2E === "true")
-  );
+  return typeof process !== "undefined" && process.env.VITEST === "true";
 };
 
 /**
@@ -34,5 +31,5 @@ export const shouldEnablePlugin = (
   options: OpenAlexCachePluginOptions,
   config: ResolvedConfig,
 ): boolean => {
-  return options.enabled !== false && (isDevelopment(config) || isTest());
+  return options.enabled !== false && isDevelopment(config);
 };

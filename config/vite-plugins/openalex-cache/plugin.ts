@@ -43,7 +43,7 @@ export function openalexCachePlugin(
 
     config(userConfig, configEnv) {
       // Initialize plugin state early
-      pluginState.setConfig({} as any, opts);
+      pluginState.setConfig(configEnv, opts);
 
       // Check if we're in development mode using configEnv
       if (configEnv.command !== "serve" || opts.enabled === false) {
@@ -65,11 +65,8 @@ export function openalexCachePlugin(
     },
 
     configureServer(server) {
-      // Check if plugin should be enabled - use command check since config might not be set yet
-      if (
-        opts.enabled === false ||
-        (!isTest() && server.config.command !== "serve")
-      ) {
+      // Check if plugin should be enabled
+      if (opts.enabled === false || server.config.command !== "serve") {
         return;
       }
 
@@ -96,7 +93,11 @@ export function openalexCachePlugin(
       );
 
       // Set up global fetch interception for testing environments
-      if (isTest() && opts.enabled !== false) {
+      if (
+        isTest() &&
+        opts.enabled !== false &&
+        process.env.RUNNING_E2E !== "true"
+      ) {
         logVerbose(`Setting up cache interception for testing`);
         setupTestCacheInterception(pluginState, opts, logVerbose);
       }
