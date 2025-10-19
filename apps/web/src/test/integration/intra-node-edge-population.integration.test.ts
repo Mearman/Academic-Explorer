@@ -206,6 +206,7 @@ const { mockStore } = vi.hoisted(() => {
 
 vi.mock("@/stores/graph-store", () => ({
   useGraphStore: mockStore,
+  graphStore: mockStore,
 }));
 
 // Mock the cached client with proper nested structure
