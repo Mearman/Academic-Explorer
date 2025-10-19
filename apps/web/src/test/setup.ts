@@ -60,9 +60,9 @@ if (typeof process !== "undefined" && process.env.VITEST) {
     } as any;
   }
 
-  // Import jest-dom for all tests - it will work in jsdom environment
+  // Import jest-dom for Vitest - extends expect with DOM matchers
   // The vitest environment should be set to jsdom for component tests
-  await import("@testing-library/jest-dom/vitest");
+  await import("@testing-library/jest-dom");
 
   const { enableMapSet } = await import("immer");
   await import("vitest-axe/extend-expect");

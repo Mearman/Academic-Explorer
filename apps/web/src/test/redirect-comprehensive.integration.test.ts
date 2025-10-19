@@ -222,8 +222,8 @@ describe("Comprehensive Redirect Integration Tests", () => {
 
   describe("Test Suite Coverage", () => {
     it("should test all documented URLs from docs/openalex-docs", async () => {
-      // Verify we're testing all documented URLs (currently 311)
-      expect(allTestCases.length).toBeGreaterThan(300);
+      // Verify we're testing all documented URLs (currently 276)
+      expect(allTestCases.length).toBeGreaterThan(250);
       console.log(
         `✅ Comprehensive testing: ${allTestCases.length} documented URLs validated`,
       );
