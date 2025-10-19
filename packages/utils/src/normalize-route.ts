@@ -6,7 +6,13 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-export function normalizeRoute(path: string, search: string): string {
+export function normalizeRoute({
+  path,
+  search,
+}: {
+  path: string;
+  search: string;
+}): string {
   const query = search.startsWith("?") ? search.slice(1) : search;
 
   try {

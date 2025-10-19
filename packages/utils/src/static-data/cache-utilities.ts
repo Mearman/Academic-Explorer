@@ -450,10 +450,13 @@ export function decodeFilename(filename: string): string {
  * Generate cache file path from OpenAlex URL
  * This is the canonical mapping used by all systems
  */
-export async function getCacheFilePath(
-  url: string,
-  staticDataRoot: string,
-): Promise<string | null> {
+export async function getCacheFilePath({
+  url,
+  staticDataRoot,
+}: {
+  url: string;
+  staticDataRoot: string;
+}): Promise<string | null> {
   const parsed = parseOpenAlexUrl(url);
   if (!parsed) {
     return null;
@@ -470,7 +473,7 @@ export async function getCacheFilePath(
         url,
       );
     }
-    return generateEntityFilePath(pathSegments, staticDataRoot);
+    return generateEntityFilePath({ pathSegments, staticDataRoot });
   } catch (error) {
     logger.warn("cache", "Failed to generate cache file path", { url, error });
     return null;
@@ -489,7 +492,7 @@ async function generateQueryFilePath(
 
   // If all query parameters were stripped, treat this as a base collection URL
   if (!normalizedQuery || normalizedQuery === "?") {
-    return generateBaseCollectionPath(pathSegments, staticDataRoot);
+    return generateBaseCollectionPath({ pathSegments, staticDataRoot });
   }
 
   // Handle actual query parameters - create query file
@@ -497,7 +500,7 @@ async function generateQueryFilePath(
   const cleanQuery = normalizedQuery.startsWith("?")
     ? normalizedQuery.slice(1)
     : normalizedQuery;
-  let queryFilename = encodeFilename(cleanQuery);
+  const queryFilename = encodeFilename(cleanQuery);
 
   // Handle very long filenames that exceed filesystem limits
   const MAX_FILENAME_LENGTH = 240; // Leave some buffer below 255 char limit
@@ -513,16 +516,19 @@ async function generateQueryFilePath(
       url,
       normalizedQuery,
     });
-    return generateBaseCollectionPath(pathSegments, staticDataRoot);
+    return generateBaseCollectionPath({ pathSegments, staticDataRoot });
   }
 
   return `${staticDataRoot}/${baseDir}/queries/${queryFilename}.json`;
 }
 
-function generateEntityFilePath(
-  pathSegments: string[],
-  staticDataRoot: string,
-): string | null {
+function generateEntityFilePath({
+  pathSegments,
+  staticDataRoot,
+}: {
+  pathSegments: string[];
+  staticDataRoot: string;
+}): string | null {
   if (pathSegments.length === 1) {
     // For root collections: /authors → authors.json (at top level)
     return `${staticDataRoot}/${pathSegments[0]}.json`;
@@ -544,10 +550,13 @@ function generateEntityFilePath(
   return null;
 }
 
-function generateBaseCollectionPath(
-  pathSegments: string[],
-  staticDataRoot: string,
-): string {
+function generateBaseCollectionPath({
+  pathSegments,
+  staticDataRoot,
+}: {
+  pathSegments: string[];
+  staticDataRoot: string;
+}): string {
   if (pathSegments.length === 1) {
     return `${staticDataRoot}/${pathSegments[0]}.json`;
   }
@@ -569,18 +578,22 @@ export async function getStaticFilePath(url: string): Promise<string> {
   }
 
   // Use the same logic as cache file path but with /data/openalex prefix
-  const cacheFilePath = await getCacheFilePath(url, "");
+  const cacheFilePath = await getCacheFilePath({ url, staticDataRoot: "" });
   return `/data/openalex${cacheFilePath}`;
 }
 
 /**
  * Determine if cached content needs updating based on content hash
  */
-export async function shouldUpdateCache(
-  existingMetadata: CacheEntryMetadata | null,
-  newData: unknown,
-  maxAge?: number,
-): Promise<boolean> {
+export async function shouldUpdateCache({
+  existingMetadata,
+  newData,
+  maxAge,
+}: {
+  existingMetadata: CacheEntryMetadata | null;
+  newData: unknown;
+  maxAge?: number;
+}): Promise<boolean> {
   if (!existingMetadata) {
     return true; // No existing cache
   }
@@ -606,11 +619,15 @@ export async function shouldUpdateCache(
 /**
  * Create cache entry metadata for new cached content
  */
-export async function createCacheEntryMetadata(
-  data: unknown,
-  sourceUrl?: string,
-  contentType?: string,
-): Promise<CacheEntryMetadata> {
+export async function createCacheEntryMetadata({
+  data,
+  sourceUrl,
+  contentType,
+}: {
+  data: unknown;
+  sourceUrl?: string;
+  contentType?: string;
+}): Promise<CacheEntryMetadata> {
   return {
     contentHash: await generateContentHash(data),
     lastModified: new Date().toISOString(),
@@ -719,20 +736,23 @@ export function filenameToQuery(filename: string): string {
  * Check if two URLs are equivalent for caching purposes
  * Ignores parameter order and sensitive parameters (api_key, mailto)
  */
-export function areUrlsEquivalentForCaching(
-  url1: string,
-  url2: string,
-): boolean {
-  if (!areValidUrlInputs(url1, url2)) {
+export function areUrlsEquivalentForCaching({
+  url1,
+  url2,
+}: {
+  url1: string;
+  url2: string;
+}): boolean {
+  if (!areValidUrlInputs({ url1, url2 })) {
     return false;
   }
 
-  if (!areValidHttpUrls(url1, url2)) {
+  if (!areValidHttpUrls({ url1, url2 })) {
     return false;
   }
 
   try {
-    return compareUrlComponents(url1, url2);
+    return compareUrlComponents({ url1, url2 });
   } catch (error) {
     logger.warn("cache", "Failed to compare URLs for equivalence", {
       url1,
@@ -743,7 +763,13 @@ export function areUrlsEquivalentForCaching(
   }
 }
 
-function areValidUrlInputs(url1: string, url2: string): boolean {
+function areValidUrlInputs({
+  url1,
+  url2,
+}: {
+  url1: string;
+  url2: string;
+}): boolean {
   if (
     typeof url1 !== "string" ||
     typeof url2 !== "string" ||
@@ -759,7 +785,13 @@ function areValidUrlInputs(url1: string, url2: string): boolean {
   return true;
 }
 
-function areValidHttpUrls(url1: string, url2: string): boolean {
+function areValidHttpUrls({
+  url1,
+  url2,
+}: {
+  url1: string;
+  url2: string;
+}): boolean {
   if (
     (!url1.startsWith("http://") && !url1.startsWith("https://")) ||
     (!url2.startsWith("http://") && !url2.startsWith("https://"))
@@ -774,7 +806,13 @@ function areValidHttpUrls(url1: string, url2: string): boolean {
   return true;
 }
 
-function compareUrlComponents(url1: string, url2: string): boolean {
+function compareUrlComponents({
+  url1,
+  url2,
+}: {
+  url1: string;
+  url2: string;
+}): boolean {
   const urlObj1 = new URL(url1);
   const urlObj2 = new URL(url2);
 
@@ -811,8 +849,11 @@ export async function hasCollision(
     return false;
   }
 
-  const entryPath = await getCacheFilePathFn(entry.url, "");
-  const urlPath = await getCacheFilePathFn(url, "");
+  const entryPath = await getCacheFilePathFn({
+    url: entry.url,
+    staticDataRoot: "",
+  });
+  const urlPath = await getCacheFilePathFn({ url, staticDataRoot: "" });
 
   logger.debug(
     "cache",
@@ -856,11 +897,15 @@ export function isMultiUrlFileEntry(entry: unknown): entry is FileEntry & {
 /**
  * Add new URL to equivalent URLs if not already present
  */
-function addNewUrlToEntry(
-  entry: FileEntry,
-  newUrl: string,
-  currentTime: string,
-): void {
+function addNewUrlToEntry({
+  entry,
+  newUrl,
+  currentTime,
+}: {
+  entry: FileEntry;
+  newUrl: string;
+  currentTime: string;
+}): void {
   if (entry.equivalentUrls && !entry.equivalentUrls.includes(newUrl)) {
     entry.equivalentUrls.push(newUrl);
     if (entry.urlTimestamps) {
@@ -936,7 +981,13 @@ function groupUrlsByCollisionKey(urls: string[]): Map<string, string[]> {
 /**
  * Select up to 2 non-primary URLs from a group, keeping recency order
  */
-function selectNonPrimaryUrls(urls: string[], primary: string): string[] {
+function selectNonPrimaryUrls({
+  urls,
+  primary,
+}: {
+  urls: string[];
+  primary: string;
+}): string[] {
   const selected: string[] = [];
   let count = 0;
   for (const url of urls) {
@@ -965,7 +1016,7 @@ function deduplicateUrls(entry: FileEntry): void {
       // For determinism, iterate groups in insertion order of keys
       for (const urls of groups.values()) {
         // Collect up to two non-primary URLs from each group
-        const nonPrimaryUrls = selectNonPrimaryUrls(urls, primary);
+        const nonPrimaryUrls = selectNonPrimaryUrls({ urls, primary });
         rebuilt.push(...nonPrimaryUrls);
       }
 
@@ -993,7 +1044,7 @@ export function mergeCollision(
 ): FileEntry {
   const entry = migrateToMultiUrl(existingEntry);
 
-  addNewUrlToEntry(entry, newUrl, currentTime);
+  addNewUrlToEntry({ entry, newUrl, currentTime });
   sortUrlsByRecency(entry);
   deduplicateUrls(entry);
 
@@ -1005,10 +1056,13 @@ export function mergeCollision(
  * Generates canonical URL and variations with sensitive parameters
  * Assumes filename is a query filename from the queries/ directory
  */
-export function reconstructPossibleCollisions(
-  queryFilename: string,
-  entityType: EntityType,
-): string[] {
+export function reconstructPossibleCollisions({
+  queryFilename,
+  entityType,
+}: {
+  queryFilename: string;
+  entityType: EntityType;
+}): string[] {
   const base = `https://api.openalex.org/${entityType}`;
   const queryStr = filenameToQuery(decodeFilename(queryFilename));
   const canonical = `${base}${queryStr}`;
@@ -1093,10 +1147,13 @@ export async function validateFileEntry(
   }
 
   // Validate all equivalent URLs normalize to the same cache path
-  const basePath = await getCacheFilePathFn(entry.url, "");
+  const basePath = await getCacheFilePathFn({
+    url: entry.url,
+    staticDataRoot: "",
+  });
   if (basePath) {
     for (const url of entry.equivalentUrls) {
-      const urlPath = await getCacheFilePathFn(url, "");
+      const urlPath = await getCacheFilePathFn({ url, staticDataRoot: "" });
       if (urlPath !== basePath) {
         errors.push(
           `URL '${url}' maps to '${urlPath}' but expected '${basePath}'`,

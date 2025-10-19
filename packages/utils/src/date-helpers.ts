@@ -64,7 +64,13 @@ export function getCurrentTimestamp(): number {
 /**
  * Calculate the difference between two dates in days
  */
-export function daysBetween(date1: Date, date2: Date): number {
+export function daysBetween({
+  date1,
+  date2,
+}: {
+  date1: Date;
+  date2: Date;
+}): number {
   const msPerDay = 24 * 60 * 60 * 1000;
   return Math.floor((date2.getTime() - date1.getTime()) / msPerDay);
 }
@@ -72,25 +78,35 @@ export function daysBetween(date1: Date, date2: Date): number {
 /**
  * Calculate the difference between two dates in milliseconds
  */
-export function msBetween(date1: Date, date2: Date): number {
+export function msBetween({
+  date1,
+  date2,
+}: {
+  date1: Date;
+  date2: Date;
+}): number {
   return Math.abs(date2.getTime() - date1.getTime());
 }
 
 /**
  * Check if a date is within a certain range
  */
-export function isDateInRange(
-  date: Date,
-  startDate: Date,
-  endDate: Date,
-): boolean {
+export function isDateInRange({
+  date,
+  startDate,
+  endDate,
+}: {
+  date: Date;
+  startDate: Date;
+  endDate: Date;
+}): boolean {
   return date >= startDate && date <= endDate;
 }
 
 /**
  * Add days to a date
  */
-export function addDays(date: Date, days: number): Date {
+export function addDays({ date, days }: { date: Date; days: number }): Date {
   const result = new Date(date);
   result.setDate(result.getDate() + days);
   return result;
@@ -99,7 +115,13 @@ export function addDays(date: Date, days: number): Date {
 /**
  * Add months to a date
  */
-export function addMonths(date: Date, months: number): Date {
+export function addMonths({
+  date,
+  months,
+}: {
+  date: Date;
+  months: number;
+}): Date {
   const result = new Date(date);
   result.setMonth(result.getMonth() + months);
   return result;
@@ -108,7 +130,7 @@ export function addMonths(date: Date, months: number): Date {
 /**
  * Add years to a date
  */
-export function addYears(date: Date, years: number): Date {
+export function addYears({ date, years }: { date: Date; years: number }): Date {
   const result = new Date(date);
   result.setFullYear(result.getFullYear() + years);
   return result;
@@ -175,7 +197,13 @@ export function endOfYear(date: Date): Date {
 /**
  * Check if two dates are the same day
  */
-export function isSameDay(date1: Date, date2: Date): boolean {
+export function isSameDay({
+  date1,
+  date2,
+}: {
+  date1: Date;
+  date2: Date;
+}): boolean {
   return (
     date1.getFullYear() === date2.getFullYear() &&
     date1.getMonth() === date2.getMonth() &&
@@ -187,7 +215,7 @@ export function isSameDay(date1: Date, date2: Date): boolean {
  * Check if a date is today
  */
 export function isToday(date: Date): boolean {
-  return isSameDay(date, new Date());
+  return isSameDay({ date1: date, date2: new Date() });
 }
 
 /**
@@ -301,7 +329,13 @@ export function createDateRange(
 /**
  * Get the number of days in a month
  */
-export function getDaysInMonth(year: number, month: number): number {
+export function getDaysInMonth({
+  year,
+  month,
+}: {
+  year: number;
+  month: number;
+}): number {
   return new Date(year, month + 1, 0).getDate();
 }
 

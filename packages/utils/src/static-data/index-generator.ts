@@ -269,7 +269,10 @@ export class StaticDataIndexGenerator {
     }
 
     // Discover entity files
-    const entityFiles = await this.discoverEntityFiles(entityDir, entityType);
+    const entityFiles = await this.discoverEntityFiles({
+      entityDir,
+      _entityType: entityType,
+    });
 
     // Process files with concurrency control
     const entities: Record<string, EntityFileMetadata> = {};
@@ -279,10 +282,10 @@ export class StaticDataIndexGenerator {
     const processingPromises = entityFiles.map(async (filePath, index) => {
       return semaphore.acquire(async () => {
         try {
-          const metadata = await this.extractEntityMetadata(
+          const metadata = await this.extractEntityMetadata({
             filePath,
             entityType,
-          );
+          });
           entities[metadata.id] = metadata;
 
           // Update progress occasionally
@@ -596,22 +599,22 @@ export class StaticDataIndexGenerator {
 
         switch (action.type) {
           case "remove_missing_file":
-            await this.removeMissingEntitiesFromIndex(
-              validationResult.indexPath,
-              action.affectedEntityIds,
-            );
+            await this.removeMissingEntitiesFromIndex({
+              indexPath: validationResult.indexPath,
+              entityIds: action.affectedEntityIds,
+            });
             break;
           case "update_timestamp":
-            await this.updateEntityTimestamps(
-              validationResult.indexPath,
-              action.affectedEntityIds,
-            );
+            await this.updateEntityTimestamps({
+              indexPath: validationResult.indexPath,
+              entityIds: action.affectedEntityIds,
+            });
             break;
           case "regenerate_metadata":
-            await this.regenerateEntityMetadata(
-              validationResult.indexPath,
-              action.affectedEntityIds,
-            );
+            await this.regenerateEntityMetadata({
+              indexPath: validationResult.indexPath,
+              entityIds: action.affectedEntityIds,
+            });
             break;
           case "rebuild_index": {
             // Extract entity type from path and rebuild
@@ -683,10 +686,13 @@ export class StaticDataIndexGenerator {
   /**
    * Discover entity files in a directory
    */
-  private async discoverEntityFiles(
-    entityDir: string,
-    _entityType: EntityType,
-  ): Promise<string[]> {
+  private async discoverEntityFiles({
+    entityDir,
+    _entityType,
+  }: {
+    entityDir: string;
+    _entityType: EntityType;
+  }): Promise<string[]> {
     const files: string[] = [];
 
     const scanDirectory = async (dir: string): Promise<void> => {
@@ -727,10 +733,13 @@ export class StaticDataIndexGenerator {
   /**
    * Extract metadata from an entity file
    */
-  private async extractEntityMetadata(
-    filePath: string,
-    entityType: EntityType,
-  ): Promise<EntityFileMetadata> {
+  private async extractEntityMetadata({
+    filePath,
+    entityType,
+  }: {
+    filePath: string;
+    entityType: EntityType;
+  }): Promise<EntityFileMetadata> {
     const stat = await this.fs.stat(filePath);
     const relativePath = this.path.relative(
       this.path.join(this.config.rootPath, entityType),
@@ -738,7 +747,10 @@ export class StaticDataIndexGenerator {
     );
 
     // Extract entity ID from filename or path
-    const entityId = this.extractEntityIdFromPath(filePath, entityType);
+    const entityId = this.extractEntityIdFromPath({
+      filePath,
+      _entityType: entityType,
+    });
 
     const metadata: EntityFileMetadata = {
       id: entityId,
@@ -752,10 +764,10 @@ export class StaticDataIndexGenerator {
     // Extract basic info if requested
     if (this.config.extractBasicInfo) {
       try {
-        const basicInfo = await this.extractBasicEntityInfo(
+        const basicInfo = await this.extractBasicEntityInfo({
           filePath,
-          entityType,
-        );
+          _entityType: entityType,
+        });
         metadata.basicInfo = basicInfo;
       } catch (error) {
         logger.warn(
@@ -772,10 +784,13 @@ export class StaticDataIndexGenerator {
   /**
    * Extract entity ID from file path using naming conventions
    */
-  private extractEntityIdFromPath(
-    filePath: string,
-    _entityType: EntityType,
-  ): string {
+  private extractEntityIdFromPath({
+    filePath,
+    _entityType,
+  }: {
+    filePath: string;
+    _entityType: EntityType;
+  }): string {
     const filename = this.path.basename(filePath, ".json");
 
     // Try different patterns based on entity type
@@ -802,10 +817,13 @@ export class StaticDataIndexGenerator {
   /**
    * Extract basic information from entity file content
    */
-  private async extractBasicEntityInfo(
-    filePath: string,
-    _entityType: EntityType,
-  ): Promise<EntityFileMetadata["basicInfo"]> {
+  private async extractBasicEntityInfo({
+    filePath,
+    _entityType,
+  }: {
+    filePath: string;
+    _entityType: EntityType;
+  }): Promise<EntityFileMetadata["basicInfo"]> {
     const content = await this.fs.readFile(filePath, "utf8");
     let entity: Record<string, unknown>;
     try {
@@ -897,10 +915,13 @@ export class StaticDataIndexGenerator {
    * Aggregate statistics from individual entity type indexes
    */
   // eslint-disable-next-line sonarjs/cognitive-complexity
-  private async aggregateIndexStats(
-    typeIndexPaths: Record<EntityType, string>,
-    masterIndex: MasterIndex,
-  ): Promise<{
+  private async aggregateIndexStats({
+    typeIndexPaths,
+    masterIndex,
+  }: {
+    typeIndexPaths: Record<EntityType, string>;
+    masterIndex: MasterIndex;
+  }): Promise<{
     withBasicInfo: number;
     withExternalIds: number;
     withCitationCounts: number;
@@ -986,10 +1007,10 @@ export class StaticDataIndexGenerator {
     };
 
     // Aggregate stats from individual indexes
-    const coverageStats = await this.aggregateIndexStats(
+    const coverageStats = await this.aggregateIndexStats({
       typeIndexPaths,
       masterIndex,
-    );
+    });
 
     // Calculate coverage percentages
     if (masterIndex.totalEntities > 0) {
@@ -1084,10 +1105,13 @@ export class StaticDataIndexGenerator {
   /**
    * Remove missing entities from index
    */
-  private async removeMissingEntitiesFromIndex(
-    indexPath: string,
-    entityIds: string[],
-  ): Promise<void> {
+  private async removeMissingEntitiesFromIndex({
+    indexPath,
+    entityIds,
+  }: {
+    indexPath: string;
+    entityIds: string[];
+  }): Promise<void> {
     const indexContent = await this.fs.readFile(indexPath, "utf8");
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const parsedData = JSON.parse(indexContent);
@@ -1109,10 +1133,13 @@ export class StaticDataIndexGenerator {
   /**
    * Update entity timestamps in index
    */
-  private async updateEntityTimestamps(
-    indexPath: string,
-    entityIds: string[],
-  ): Promise<void> {
+  private async updateEntityTimestamps({
+    indexPath,
+    entityIds,
+  }: {
+    indexPath: string;
+    entityIds: string[];
+  }): Promise<void> {
     const indexContent = await this.fs.readFile(indexPath, "utf8");
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const parsedData = JSON.parse(indexContent);
@@ -1140,10 +1167,13 @@ export class StaticDataIndexGenerator {
   /**
    * Regenerate metadata for specific entities
    */
-  private async regenerateEntityMetadata(
-    indexPath: string,
-    entityIds: string[],
-  ): Promise<void> {
+  private async regenerateEntityMetadata({
+    indexPath,
+    entityIds,
+  }: {
+    indexPath: string;
+    entityIds: string[];
+  }): Promise<void> {
     const indexContent = await this.fs.readFile(indexPath, "utf8");
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const parsedData = JSON.parse(indexContent);
@@ -1156,10 +1186,10 @@ export class StaticDataIndexGenerator {
       const entity = index.entities[entityId];
       if (entity) {
         try {
-          const newMetadata = await this.extractEntityMetadata(
-            entity.absolutePath,
-            entity.type,
-          );
+          const newMetadata = await this.extractEntityMetadata({
+            filePath: entity.absolutePath,
+            entityType: entity.type,
+          });
           index.entities[entityId] = newMetadata;
         } catch {
           // Failed to regenerate, remove from index
@@ -1189,7 +1219,10 @@ export class StaticDataIndexGenerator {
     );
 
     // Generate hierarchical indexes starting from root
-    await this.generateHierarchicalIndex(this.config.rootPath, "");
+    await this.generateHierarchicalIndex({
+      dirPath: this.config.rootPath,
+      relativePath: "",
+    });
 
     logger.debug(
       logCategory,
@@ -1203,10 +1236,13 @@ export class StaticDataIndexGenerator {
   /**
    * Recursively generate hierarchical indexes for a directory and all subdirectories
    */
-  private async generateHierarchicalIndex(
-    dirPath: string,
-    relativePath: string,
-  ): Promise<void> {
+  private async generateHierarchicalIndex({
+    dirPath,
+    relativePath,
+  }: {
+    dirPath: string;
+    relativePath: string;
+  }): Promise<void> {
     try {
       const entries = await this.fs.readdir(dirPath, { withFileTypes: true });
       const indexPath = this.path.join(dirPath, INDEX_FILE_NAME);
@@ -1232,11 +1268,11 @@ export class StaticDataIndexGenerator {
           }
 
           // Process JSON file
-          const fileRef = await this.createFileReference(
-            entryPath,
-            entry.name,
-            entryRelativePath,
-          );
+          const fileRef = await this.createFileReference({
+            filePath: entryPath,
+            fileName: entry.name,
+            relativePath: entryRelativePath,
+          });
           const fileName = this.path.basename(entry.name, ".json");
           index.files[fileName] = fileRef;
         } else if (entry.isDirectory()) {
@@ -1248,7 +1284,10 @@ export class StaticDataIndexGenerator {
           };
 
           // Recursively generate index for subdirectory
-          await this.generateHierarchicalIndex(entryPath, entryRelativePath);
+          await this.generateHierarchicalIndex({
+            dirPath: entryPath,
+            relativePath: entryRelativePath,
+          });
         }
       }
 
@@ -1279,11 +1318,15 @@ export class StaticDataIndexGenerator {
   /**
    * Create a file reference with metadata and content hash
    */
-  private async createFileReference(
-    filePath: string,
-    fileName: string,
-    relativePath: string,
-  ): Promise<FileEntry> {
+  private async createFileReference({
+    filePath,
+    fileName,
+    relativePath,
+  }: {
+    filePath: string;
+    fileName: string;
+    relativePath: string;
+  }): Promise<FileEntry> {
     try {
       const stat = await this.fs.stat(filePath);
       const fileRef: FileEntry = {

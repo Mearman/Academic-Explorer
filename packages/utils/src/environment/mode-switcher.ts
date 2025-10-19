@@ -74,9 +74,12 @@ export class ModeSwitcher {
    */
   static initialize(options: ModeOptions = {}): RuntimeEnvironmentConfig {
     const context = this.createEnvironmentContext(options);
-    const cacheConfig = this.createCacheConfiguration(context, options);
-    const strategy = this.selectCacheStrategy(context, options);
-    const strategyConfig = this.createStrategyConfiguration(strategy, options);
+    const cacheConfig = this.createCacheConfiguration({ context, options });
+    const strategy = this.selectCacheStrategy({ context, options });
+    const strategyConfig = this.createStrategyConfiguration({
+      strategy,
+      options,
+    });
 
     const config: RuntimeEnvironmentConfig = {
       context,
@@ -289,17 +292,20 @@ export class ModeSwitcher {
   /**
    * Create cache configuration based on context and options
    */
-  private static createCacheConfiguration(
-    context: BuildContext,
-    options: ModeOptions,
-  ): CacheConfig {
+  private static createCacheConfiguration({
+    context,
+    options,
+  }: {
+    context: BuildContext;
+    options: ModeOptions;
+  }): CacheConfig {
     let config: CacheConfig;
 
     if (options.useCase) {
-      config = CacheConfigFactory.createOptimizedConfig(
-        options.useCase,
+      config = CacheConfigFactory.createOptimizedConfig({
+        useCase: options.useCase,
         context,
-      );
+      });
     } else {
       config = CacheConfigFactory.createCacheConfig(context);
     }
@@ -323,28 +329,37 @@ export class ModeSwitcher {
   /**
    * Select cache strategy based on context and options
    */
-  private static selectCacheStrategy(
-    context: BuildContext,
-    options: ModeOptions,
-  ): CacheStrategy {
+  private static selectCacheStrategy({
+    context,
+    options,
+  }: {
+    context: BuildContext;
+    options: ModeOptions;
+  }): CacheStrategy {
     if (options.cacheStrategy) {
       return options.cacheStrategy;
     }
 
-    return CacheStrategySelector.selectStrategy(context, {
-      useCase: options.useCase,
-      offline: options.offline,
-      debug: options.debug,
+    return CacheStrategySelector.selectStrategy({
+      context,
+      options: {
+        useCase: options.useCase,
+        offline: options.offline,
+        debug: options.debug,
+      },
     });
   }
 
   /**
    * Create strategy configuration with overrides
    */
-  private static createStrategyConfiguration(
-    strategy: CacheStrategy,
-    options: ModeOptions,
-  ): CacheStrategyConfig {
+  private static createStrategyConfiguration({
+    strategy,
+    options,
+  }: {
+    strategy: CacheStrategy;
+    options: ModeOptions;
+  }): CacheStrategyConfig {
     let config = CacheStrategySelector.getStrategyConfig(strategy);
 
     // Apply option overrides

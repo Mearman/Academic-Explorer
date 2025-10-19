@@ -276,10 +276,13 @@ export class CacheConfigFactory {
   /**
    * Get optimized configuration for specific use cases
    */
-  static createOptimizedConfig(
-    useCase: "research" | "production" | "testing" | "development",
-    context?: BuildContext,
-  ): CacheConfig {
+  static createOptimizedConfig({
+    useCase,
+    context,
+  }: {
+    useCase: "research" | "production" | "testing" | "development";
+    context?: BuildContext;
+  }): CacheConfig {
     const baseConfig = this.createCacheConfig(context);
 
     switch (useCase) {
@@ -377,16 +380,19 @@ export function getCurrentCacheConfig(): CacheConfig {
 export function getOptimizedCacheConfig(
   useCase: "research" | "production" | "testing" | "development",
 ): CacheConfig {
-  return CacheConfigFactory.createOptimizedConfig(useCase);
+  return CacheConfigFactory.createOptimizedConfig({ useCase });
 }
 
 /**
  * Get static data URL for a given path
  */
-export function getStaticDataUrl(
-  relativePath: string,
-  config?: CacheConfig,
-): string {
+export function getStaticDataUrl({
+  relativePath,
+  config,
+}: {
+  relativePath: string;
+  config?: CacheConfig;
+}): string {
   const cacheConfig = config ?? getCurrentCacheConfig();
   const { paths } = cacheConfig;
 
@@ -406,10 +412,13 @@ export function getStaticDataUrl(
 /**
  * Get OpenAlex data URL for a given entity path
  */
-export function getOpenAlexDataUrl(
-  entityPath: string,
-  config?: CacheConfig,
-): string {
+export function getOpenAlexDataUrl({
+  entityPath,
+  config,
+}: {
+  entityPath: string;
+  config?: CacheConfig;
+}): string {
   const cacheConfig = config ?? getCurrentCacheConfig();
   const { paths } = cacheConfig;
 

@@ -51,10 +51,13 @@ export function trustObjectShape(obj: unknown): Record<string, unknown> {
  * Extract a property value from an object with unknown structure
  * Returns unknown type that must be validated by caller
  */
-export function extractProperty(
-  obj: Record<string, unknown>,
-  key: string,
-): unknown {
+export function extractProperty({
+  obj,
+  key,
+}: {
+  obj: Record<string, unknown>;
+  key: string;
+}): unknown {
   return obj[key];
 }
 
@@ -78,10 +81,13 @@ export function isStringInSet<T extends string>(
  * @param validValues - Array of valid enum values
  * @returns Enum value if valid, null if invalid
  */
-export function safeParseEnum<T extends string>(
-  value: string,
-  validValues: readonly T[],
-): T | null {
+export function safeParseEnum<T extends string>({
+  value,
+  validValues,
+}: {
+  value: string;
+  validValues: readonly T[];
+}): T | null {
   return isStringInSet(value, validValues) ? value : null;
 }
 
@@ -255,10 +261,13 @@ export function isArrayOfType<T>(
 /**
  * Safely parse JSON with type validation
  */
-export function safeJsonParse<T>(
-  jsonString: string,
-  validator: (value: unknown) => value is T,
-): T | null {
+export function safeJsonParse<T>({
+  jsonString,
+  validator,
+}: {
+  jsonString: string;
+  validator: (value: unknown) => value is T;
+}): T | null {
   try {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const parsed = JSON.parse(jsonString);
@@ -286,7 +295,7 @@ export type RelationType = (typeof VALID_RELATION_TYPES)[number];
  * Safely parse relation type with validation
  */
 export function safeParseRelationType(value: string): RelationType | null {
-  return safeParseEnum(value, VALID_RELATION_TYPES);
+  return safeParseEnum({ value, validValues: VALID_RELATION_TYPES });
 }
 
 // Define valid expansion targets for graph expansion
@@ -310,5 +319,5 @@ export type ExpansionTarget = (typeof VALID_EXPANSION_TARGETS)[number];
 export function safeParseExpansionTarget(
   value: string,
 ): ExpansionTarget | null {
-  return safeParseEnum(value, VALID_EXPANSION_TARGETS);
+  return safeParseEnum({ value, validValues: VALID_EXPANSION_TARGETS });
 }

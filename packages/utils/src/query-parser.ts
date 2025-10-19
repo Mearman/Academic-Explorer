@@ -56,12 +56,12 @@ export function parseSearchQuery(query: string): ParsedQuery {
   while (i < tokens.length) {
     const token = tokens[i];
 
-    if (tryParseFieldQueryWithSpace(tokens, i, fieldQueries)) {
+    if (tryParseFieldQueryWithSpace({ tokens, index: i, fieldQueries })) {
       i += 2; // Skip both field and value tokens
-    } else if (tryParseFieldQueryInOneToken(token, fieldQueries)) {
+    } else if (tryParseFieldQueryInOneToken({ token, fieldQueries })) {
       i++;
     } else {
-      processGeneralTerm(token, generalTerms);
+      processGeneralTerm({ token, generalTerms });
       i++;
     }
   }
@@ -78,11 +78,15 @@ function tokenizeQuery(query: string): string[] {
   return query.match(tokenRegex) ?? [];
 }
 
-function tryParseFieldQueryWithSpace(
-  tokens: string[],
-  index: number,
-  fieldQueries: FieldQuery[],
-): boolean {
+function tryParseFieldQueryWithSpace({
+  tokens,
+  index,
+  fieldQueries,
+}: {
+  tokens: string[];
+  index: number;
+  fieldQueries: FieldQuery[];
+}): boolean {
   const token = tokens[index];
 
   // Check if this token ends with colon (field prefix with space)
@@ -98,21 +102,24 @@ function tryParseFieldQueryWithSpace(
   }
 
   const nextToken = tokens[index + 1];
-  const fieldQuery = createFieldQuery(field, nextToken);
+  const fieldQuery = createFieldQuery({ field, value: nextToken });
   fieldQueries.push(fieldQuery);
   return true;
 }
 
-function tryParseFieldQueryInOneToken(
-  token: string,
-  fieldQueries: FieldQuery[],
-): boolean {
+function tryParseFieldQueryInOneToken({
+  token,
+  fieldQueries,
+}: {
+  token: string;
+  fieldQueries: FieldQuery[];
+}): boolean {
   // Check if this is a field query in one token (format: field:value)
   const fieldMatch = token.match(/^([a-zA-Z_][a-zA-Z0-9_]*):(.+)$/);
 
   if (fieldMatch) {
     const [, field, value] = fieldMatch;
-    const fieldQuery = createFieldQuery(field, value);
+    const fieldQuery = createFieldQuery({ field, value });
     fieldQueries.push(fieldQuery);
     return true;
   }
@@ -120,7 +127,13 @@ function tryParseFieldQueryInOneToken(
   return false;
 }
 
-function createFieldQuery(field: string, value: string): FieldQuery {
+function createFieldQuery({
+  field,
+  value,
+}: {
+  field: string;
+  value: string;
+}): FieldQuery {
   const isQuoted = value.startsWith('"') && value.endsWith('"');
   const cleanValue = isQuoted ? value.slice(1, -1) : value;
   const isWildcard = cleanValue.includes("*");
@@ -136,7 +149,13 @@ function createFieldQuery(field: string, value: string): FieldQuery {
 /**
  * Process a token as a general term and add it to the generalTerms array
  */
-function processGeneralTerm(token: string, generalTerms: QueryTerm[]): void {
+function processGeneralTerm({
+  token,
+  generalTerms,
+}: {
+  token: string;
+  generalTerms: QueryTerm[];
+}): void {
   const isQuoted = token.startsWith('"') && token.endsWith('"');
   const cleanValue = isQuoted ? token.slice(1, -1) : token;
   const isWildcard = cleanValue.includes("*");
@@ -165,10 +184,13 @@ export function getQueryFields(parsedQuery: ParsedQuery): string[] {
 /**
  * Get field queries for a specific field
  */
-export function getFieldQueries(
-  parsedQuery: ParsedQuery,
-  field: string,
-): FieldQuery[] {
+export function getFieldQueries({
+  parsedQuery,
+  field,
+}: {
+  parsedQuery: ParsedQuery;
+  field: string;
+}): FieldQuery[] {
   return parsedQuery.fieldQueries.filter((fq) => fq.field === field);
 }
 

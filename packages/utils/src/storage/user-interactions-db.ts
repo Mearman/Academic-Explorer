@@ -113,21 +113,24 @@ export class UserInteractionsService {
    * Record a page visit with normalized OpenAlex request
    * @param request - The normalized request from @academic-explorer/client
    */
-  async recordPageVisit(
+  async recordPageVisit({
+    request,
+    metadata,
+  }: {
     request: {
       cacheKey: string;
       hash: string;
       endpoint: string;
       params: Record<string, unknown>;
-    },
+    };
     metadata?: {
       sessionId?: string;
       referrer?: string;
       duration?: number;
       cached?: boolean;
       bytesSaved?: number;
-    },
-  ): Promise<void> {
+    };
+  }): Promise<void> {
     try {
       const pageVisit: PageVisitRecord = {
         request: {
@@ -266,17 +269,22 @@ export class UserInteractionsService {
   /**
    * Add a bookmark for a normalized request
    */
-  async addBookmark(
+  async addBookmark({
+    request,
+    title,
+    notes,
+    tags,
+  }: {
     request: {
       cacheKey: string;
       hash: string;
       endpoint: string;
       params: Record<string, unknown>;
-    },
-    title: string,
-    notes?: string,
-    tags?: string[],
-  ): Promise<number> {
+    };
+    title: string;
+    notes?: string;
+    tags?: string[];
+  }): Promise<number> {
     try {
       const bookmark: BookmarkRecord = {
         request: {
@@ -349,10 +357,13 @@ export class UserInteractionsService {
   /**
    * Update a bookmark
    */
-  async updateBookmark(
-    bookmarkId: number,
-    updates: Partial<Pick<BookmarkRecord, "title" | "notes" | "tags">>,
-  ): Promise<void> {
+  async updateBookmark({
+    bookmarkId,
+    updates,
+  }: {
+    bookmarkId: number;
+    updates: Partial<Pick<BookmarkRecord, "title" | "notes" | "tags">>;
+  }): Promise<void> {
     try {
       await this.db.bookmarks.update(bookmarkId, updates);
 
@@ -569,10 +580,13 @@ export class UserInteractionsService {
       params,
     };
 
-    await this.recordPageVisit(request, {
-      sessionId,
-      referrer,
-      cached: false,
+    await this.recordPageVisit({
+      request,
+      metadata: {
+        sessionId,
+        referrer,
+        cached: false,
+      },
     });
   }
 
@@ -647,7 +661,7 @@ export class UserInteractionsService {
       params: {},
     };
 
-    return this.addBookmark(request, title, notes, tags);
+    return this.addBookmark({ request, title, notes, tags });
   }
 
   /**
@@ -674,7 +688,7 @@ export class UserInteractionsService {
       params,
     };
 
-    return this.addBookmark(request, title, notes, tags);
+    return this.addBookmark({ request, title, notes, tags });
   }
 
   /**
@@ -698,7 +712,7 @@ export class UserInteractionsService {
       params: {},
     };
 
-    return this.addBookmark(request, title, notes, tags);
+    return this.addBookmark({ request, title, notes, tags });
   }
 
   /**

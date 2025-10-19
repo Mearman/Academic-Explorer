@@ -165,7 +165,15 @@ export function formatPercentage(value: number, decimals = 1): string {
 /**
  * Clamp a number between min and max values
  */
-export function clamp(value: number, min: number, max: number): number {
+export function clamp({
+  value,
+  min,
+  max,
+}: {
+  value: number;
+  min: number;
+  max: number;
+}): number {
   return Math.min(Math.max(value, min), max);
 }
 
@@ -183,7 +191,7 @@ export function range(start: number, end: number, step = 1): number[] {
 /**
  * Chunk an array into smaller arrays of specified size
  */
-export function chunk<T>(array: T[], size: number): T[][] {
+export function chunk<T>({ array, size }: { array: T[]; size: number }): T[][] {
   const chunks: T[][] = [];
   for (let i = 0; i < array.length; i += size) {
     chunks.push(array.slice(i, i + size));
@@ -201,10 +209,13 @@ export function flatten<T>(arrays: T[][]): T[] {
 /**
  * Create a Map from an array using a key function
  */
-export function arrayToMap<T, K>(
-  array: T[],
-  getKey: (item: T) => K,
-): Map<K, T> {
+export function arrayToMap<T, K>({
+  array,
+  getKey,
+}: {
+  array: T[];
+  getKey: (item: T) => K;
+}): Map<K, T> {
   const map = new Map<K, T>();
   for (const item of array) {
     map.set(getKey(item), item);
@@ -215,10 +226,13 @@ export function arrayToMap<T, K>(
 /**
  * Create a lookup object from an array using a key function
  */
-export function arrayToLookup<T>(
-  array: T[],
-  getKey: (item: T) => string | number,
-): Record<string, T> {
+export function arrayToLookup<T>({
+  array,
+  getKey,
+}: {
+  array: T[];
+  getKey: (item: T) => string | number;
+}): Record<string, T> {
   const lookup: Record<string, T> = {};
   for (const item of array) {
     const key = getKey(item).toString();
@@ -237,7 +251,13 @@ export function unique<T>(array: T[]): T[] {
 /**
  * Get intersection of two arrays
  */
-export function intersection<T>(array1: T[], array2: T[]): T[] {
+export function intersection<T>({
+  array1,
+  array2,
+}: {
+  array1: T[];
+  array2: T[];
+}): T[] {
   const set2 = new Set(array2);
   return array1.filter((item) => set2.has(item));
 }
@@ -245,7 +265,13 @@ export function intersection<T>(array1: T[], array2: T[]): T[] {
 /**
  * Get difference between two arrays (items in first but not second)
  */
-export function difference<T>(array1: T[], array2: T[]): T[] {
+export function difference<T>({
+  array1,
+  array2,
+}: {
+  array1: T[];
+  array2: T[];
+}): T[] {
   const set2 = new Set(array2);
   return array1.filter((item) => !set2.has(item));
 }
@@ -253,7 +279,13 @@ export function difference<T>(array1: T[], array2: T[]): T[] {
 /**
  * Sample random items from an array
  */
-export function sample<T>(array: T[], count: number): T[] {
+export function sample<T>({
+  array,
+  count,
+}: {
+  array: T[];
+  count: number;
+}): T[] {
   if (count >= array.length) return [...array];
 
   const shuffled = [...array].sort(() => Math.random() - 0.5);
@@ -279,10 +311,13 @@ export function mergeUnique<T>(...arrays: T[][]): T[] {
 /**
  * Partition an array into two arrays based on a predicate
  */
-export function partition<T>(
-  array: T[],
-  predicate: (item: T) => boolean,
-): [T[], T[]] {
+export function partition<T>({
+  array,
+  predicate,
+}: {
+  array: T[];
+  predicate: (item: T) => boolean;
+}): [T[], T[]] {
   const truthy: T[] = [];
   const falsy: T[] = [];
 
@@ -300,10 +335,13 @@ export function partition<T>(
 /**
  * Get the maximum value in an array using a selector function
  */
-export function maxBy<T>(
-  array: T[],
-  selector: (item: T) => number,
-): T | undefined {
+export function maxBy<T>({
+  array,
+  selector,
+}: {
+  array: T[];
+  selector: (item: T) => number;
+}): T | undefined {
   if (array.length === 0) return undefined;
 
   return array.reduce((max, current) =>
@@ -314,10 +352,13 @@ export function maxBy<T>(
 /**
  * Get the minimum value in an array using a selector function
  */
-export function minBy<T>(
-  array: T[],
-  selector: (item: T) => number,
-): T | undefined {
+export function minBy<T>({
+  array,
+  selector,
+}: {
+  array: T[];
+  selector: (item: T) => number;
+}): T | undefined {
   if (array.length === 0) return undefined;
 
   return array.reduce((min, current) =>
@@ -328,29 +369,42 @@ export function minBy<T>(
 /**
  * Sum values in an array using a selector function
  */
-export function sumBy<T>(array: T[], selector: (item: T) => number): number {
+export function sumBy<T>({
+  array,
+  selector,
+}: {
+  array: T[];
+  selector: (item: T) => number;
+}): number {
   return array.reduce((sum, item) => sum + selector(item), 0);
 }
 
 /**
  * Calculate average of values in an array using a selector function
  */
-export function averageBy<T>(
-  array: T[],
-  selector: (item: T) => number,
-): number {
+export function averageBy<T>({
+  array,
+  selector,
+}: {
+  array: T[];
+  selector: (item: T) => number;
+}): number {
   if (array.length === 0) return 0;
-  return sumBy(array, selector) / array.length;
+  return sumBy({ array, selector }) / array.length;
 }
 
 /**
  * Safely access nested object properties
  */
-export function safeGet<T>(
-  obj: unknown,
-  path: string,
-  defaultValue?: T,
-): T | undefined {
+export function safeGet<T>({
+  obj,
+  path,
+  defaultValue,
+}: {
+  obj: unknown;
+  path: string;
+  defaultValue?: T;
+}): T | undefined {
   const keys = path.split(".");
   let current = obj;
 
@@ -372,10 +426,13 @@ export function safeGet<T>(
 /**
  * Throttle function calls
  */
-export function throttle<TArgs extends unknown[], TReturn>(
-  func: (...args: TArgs) => TReturn,
-  delay: number,
-): (...args: TArgs) => TReturn | undefined {
+export function throttle<TArgs extends unknown[], TReturn>({
+  func,
+  delay,
+}: {
+  func: (...args: TArgs) => TReturn;
+  delay: number;
+}): (...args: TArgs) => TReturn | undefined {
   let lastCall = 0;
   return (...args: TArgs): TReturn | undefined => {
     const now = Date.now();

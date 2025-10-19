@@ -379,14 +379,17 @@ export class CacheStrategySelector {
   /**
    * Select optimal cache strategy based on build context
    */
-  static selectStrategy(
-    context: BuildContext,
+  static selectStrategy({
+    context,
+    options,
+  }: {
+    context: BuildContext;
     options?: {
       useCase?: "research" | "production" | "development" | "testing";
       offline?: boolean;
       debug?: boolean;
-    },
-  ): CacheStrategy {
+    };
+  }): CacheStrategy {
     const { useCase, offline, debug } = options ?? {};
 
     // Handle special cases

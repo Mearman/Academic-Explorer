@@ -23,10 +23,13 @@ const LOG_CATEGORY = "static-data";
 /**
  * Log validation summary information
  */
-function logValidationSummary(
-  validation: IndexValidationResult,
-  indexPath: string,
-): void {
+function logValidationSummary({
+  validation,
+  indexPath,
+}: {
+  validation: IndexValidationResult;
+  indexPath: string;
+}): void {
   logger.debug(LOG_CATEGORY, `Index validation results for ${indexPath}:`);
   logger.debug(
     LOG_CATEGORY,
@@ -123,10 +126,13 @@ export async function exampleGenerateAllIndexes(
 /**
  * Example: Generate index for a specific entity type
  */
-export async function exampleGenerateEntityTypeIndex(
-  rootPath: string,
-  entityType: EntityType,
-): Promise<void> {
+export async function exampleGenerateEntityTypeIndex({
+  rootPath,
+  entityType,
+}: {
+  rootPath: string;
+  entityType: EntityType;
+}): Promise<void> {
   try {
     const config: Partial<IndexGenerationConfig> = {
       rootPath,
@@ -162,7 +168,7 @@ export async function exampleValidateAndRepairIndex(
     // Validate the index
     const validation = await validateIndex(indexPath);
 
-    logValidationSummary(validation, indexPath);
+    logValidationSummary({ validation, indexPath });
     logValidationErrors(validation);
     logValidationWarnings(validation);
 
