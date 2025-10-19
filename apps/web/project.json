@@ -4,14 +4,7 @@
   "sourceRoot": "apps/web/src",
   "projectType": "application",
   "targets": {
-    "dev": {
-      "executor": "nx:run-commands",
-      "dependsOn": ["^build"],
-      "options": {
-        "command": "vite",
-        "cwd": "{projectRoot}"
-      }
-    },
+    "dev": "dev:app",
     "build": {
       "executor": "nx:run-commands",
       "dependsOn": ["^build"],
@@ -31,23 +24,7 @@
       "outputs": ["{projectRoot}/dist"],
       "cache": true
     },
-    "typecheck": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsc --noEmit",
-        "cwd": "{projectRoot}",
-        "nodeOptions": ["--max-old-space-size=8192"]
-      },
-      "inputs": [
-        "source",
-        "configs",
-        "^production",
-        "{workspaceRoot}/tsconfig*.json",
-        "{workspaceRoot}/config/**/*"
-      ],
-      "outputs": ["{projectRoot}/dist/tsc"],
-      "cache": true
-    },
+    "typecheck": "typecheck",
 
     "lint": {
       "options": {

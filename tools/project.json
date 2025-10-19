@@ -4,14 +4,7 @@
   "sourceRoot": "tools/scripts",
   "projectType": "library",
   "targets": {
-    "typecheck": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsc --noEmit",
-        "cwd": "{projectRoot}"
-      },
-      "inputs": ["default", "{workspaceRoot}/tsconfig.base.json"]
-    },
+    "typecheck": "typecheck",
     "lint": {
       "options": {
         "command": "NODE_OPTIONS='--import tsx' eslint --no-warn-ignored scripts/**/*.ts"
