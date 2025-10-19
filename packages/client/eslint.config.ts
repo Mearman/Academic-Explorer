@@ -4,22 +4,6 @@ import baseConfig from "../../eslint.config.base.js";
 export default tseslint.config([
   ...baseConfig,
   {
-    // Disable type-aware rules for config files
-    files: ["eslint.config.ts"],
-    languageOptions: {
-      parserOptions: {
-        projectService: false,
-      },
-    },
-    rules: {
-      "@typescript-eslint/prefer-nullish-coalescing": "off",
-      "@typescript-eslint/prefer-optional-chain": "off",
-      "@typescript-eslint/no-floating-promises": "off",
-      "@typescript-eslint/await-thenable": "off",
-      "@typescript-eslint/no-unsafe-argument": "off",
-    },
-  },
-  {
     // Global ignores for this package
     ignores: [
       "**/*.test.ts",
@@ -29,6 +13,7 @@ export default tseslint.config([
       "src/generated-tests/**/*",
       "src/test-generator/**/*",
       "src/**/__tests__/**/*",
+      "eslint.config.ts",
     ],
   },
   {

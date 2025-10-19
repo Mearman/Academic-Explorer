@@ -53,7 +53,24 @@
       "cache": false
     },
     "validate": {},
-    "lint": {}
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_OPTIONS='--import tsx' eslint --no-warn-ignored 'src/**/*.{ts,tsx}' --ignore-pattern 'src/**/*.{test,spec}.{ts,tsx}' --fix",
+        "cwd": "{projectRoot}"
+      },
+      "inputs": [
+        "source",
+        "configs",
+        "{workspaceRoot}/eslint.config.ts",
+        "{workspaceRoot}/eslint.config.*.ts"
+      ],
+      "outputs": [
+        "{workspaceRoot}/.nx/cache/lint-results/{projectName}.json",
+        "{projectRoot}/**/*.{js,jsx,ts,tsx}"
+      ],
+      "cache": true
+    }
   },
   "tags": ["type:library", "scope:openalex", "layer:core"]
 }

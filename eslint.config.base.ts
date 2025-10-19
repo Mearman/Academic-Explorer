@@ -161,7 +161,7 @@ export default tseslint.config([
       "prefer-destructured-params-plugin": preferDestructuredParamsPlugin,
     },
     rules: {
-      // TypeScript-specific rules
+      // TypeScript-specific rules (non-type-aware)
       "@typescript-eslint/no-unused-vars": "off", // handled by unused-imports
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/no-non-null-assertion": "error",
@@ -172,18 +172,6 @@ export default tseslint.config([
           "ts-ignore": false,
         },
       ],
-      // Type-aware rules for better type safety - disabled for config files
-      // "@typescript-eslint/prefer-nullish-coalescing": "error",
-      // "@typescript-eslint/prefer-optional-chain": "error",
-      // "@typescript-eslint/no-floating-promises": "error",
-      // "@typescript-eslint/await-thenable": "error",
-
-      // Strict type safety rules to prevent type coercion
-      "@typescript-eslint/no-unsafe-assignment": "error",
-      "@typescript-eslint/no-unsafe-member-access": "error",
-      "@typescript-eslint/no-unsafe-call": "error",
-      "@typescript-eslint/no-unsafe-return": "error",
-      "@typescript-eslint/no-unsafe-argument": "error",
 
       // Keep some rules relaxed for practical reasons
       "@typescript-eslint/restrict-template-expressions": "off",
@@ -312,11 +300,16 @@ export default tseslint.config([
       "@typescript-eslint/no-unsafe-assignment": "warn",
       "@typescript-eslint/no-unsafe-member-access": "warn",
 
-      // Re-enable type-aware rules for source files
+      // Type-aware rules for better type safety
       "@typescript-eslint/prefer-nullish-coalescing": "error",
       "@typescript-eslint/prefer-optional-chain": "error",
       "@typescript-eslint/no-floating-promises": "error",
       "@typescript-eslint/await-thenable": "error",
+
+      // Strict type safety rules to prevent type coercion
+      "@typescript-eslint/no-unsafe-call": "error",
+      "@typescript-eslint/no-unsafe-return": "error",
+      "@typescript-eslint/no-unsafe-argument": "error",
     },
   },
   {
