@@ -48,23 +48,7 @@
       "outputs": ["{projectRoot}/dist/tsc"],
       "cache": true
     },
-    "typecheck:all": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsc --noEmit --project tsconfig.typecheck.json",
-        "cwd": "{projectRoot}",
-        "nodeOptions": ["--max-old-space-size=8192"]
-      },
-      "inputs": [
-        "source",
-        "configs",
-        "^production",
-        "{workspaceRoot}/tsconfig*.json",
-        "{workspaceRoot}/config/**/*"
-      ],
-      "outputs": ["{projectRoot}/dist/tsc"],
-      "cache": true
-    },
+
     "lint": {
       "options": {
         "command": "NODE_OPTIONS='--import tsx' eslint --no-warn-ignored **/*.{ts,tsx,js} --fix"
