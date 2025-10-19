@@ -21,7 +21,10 @@ export const isDevelopment = (config: ResolvedConfig): boolean => {
  * Check if we're in test mode
  */
 export const isTest = (): boolean => {
-  return typeof process !== "undefined" && process.env.VITEST === "true";
+  return (
+    (typeof process !== "undefined" && process.env.VITEST === "true") ||
+    (typeof process !== "undefined" && process.env.RUNNING_E2E === "true")
+  );
 };
 
 /**

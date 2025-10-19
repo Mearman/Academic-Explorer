@@ -12,7 +12,7 @@ export default defineConfig({
   // Test files pattern for E2E tests
   testMatch: "**/*.e2e.test.ts",
 
-  // Run tests in serial to prevent memory issues
+  // Run tests in serial to prevent memory issues and API rate limiting
   fullyParallel: false,
   workers: 1,
 
@@ -103,6 +103,7 @@ export default defineConfig({
     timeout: 120000,
     env: {
       NODE_ENV: "development",
+      RUNNING_E2E: "true",
     },
   },
 });
