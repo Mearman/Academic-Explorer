@@ -137,7 +137,7 @@ describe("State Utilities", () => {
     }
 
     it("should create a store factory", () => {
-      const { useStore } = createTrackedStore<TestState, TestActions>({
+      const { useStore, store } = createTrackedStore<TestState, TestActions>({
         config: {
           name: "test-store",
           initialState: { count: 0, items: [] },
@@ -153,11 +153,17 @@ describe("State Utilities", () => {
         }),
       });
 
-      // Test that the store is an object with methods
-      expect(typeof useStore).toBe("object");
-      expect(useStore).toBeDefined();
-      expect(typeof (useStore as any).getState).toBe("function");
-      expect(typeof (useStore as any).setState).toBe("function");
+      // Test that the hook is a function
+      expect(typeof useStore).toBe("function");
+
+      // Test that the store object has methods
+      expect(typeof store).toBe("object");
+      expect(store).toBeDefined();
+      expect(typeof store.getState).toBe("function");
+      expect(typeof store.setState).toBe("function");
+      expect(typeof store.subscribe).toBe("function");
+      expect(typeof store.increment).toBe("function");
+      expect(typeof store.addItem).toBe("function");
     });
   });
 });

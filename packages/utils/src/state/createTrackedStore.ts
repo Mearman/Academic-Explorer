@@ -186,7 +186,7 @@ export interface TrackedStoreConfig<T> {
 }
 
 export interface TrackedStoreResult<T, A> {
-  useStore: unknown; // Store object with getState, setState, subscribe, and actions
+  useStore: () => T & A; // Hook that returns state with bound actions
   store: unknown; // Zustand store
   selectors: Record<string, (state: T) => unknown>;
   actions: A;
@@ -257,8 +257,11 @@ export function createTrackedStore<
   });
 
   // Create a custom hook that returns state with actions bound
-  const useStoreWithActions = () => {
-    return originalGetState();
+  const useStoreWithActions: () => T & A = () => {
+    return {
+      ...originalGetState(),
+      ...actions,
+    };
   };
 
   // Create a store object with actions, getState, setState, and subscribe methods
@@ -270,7 +273,7 @@ export function createTrackedStore<
   };
 
   return {
-    useStore: storeWithActions,
+    useStore: useStoreWithActions,
     store: storeWithActions,
     selectors,
     actions,
