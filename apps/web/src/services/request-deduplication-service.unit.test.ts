@@ -24,12 +24,11 @@ vi.mock("@academic-explorer/utils/logger", () => ({
 // Mock network activity store
 vi.mock("@/stores/network-activity-store", () => ({
   useNetworkActivityStore: {
-    getState: vi.fn(() => ({
-      addRequest: vi.fn(),
-      updateRequest: vi.fn(),
-      removeRequest: vi.fn(),
-      completeRequest: vi.fn(),
-    })),
+    addRequest: vi.fn(),
+    updateRequest: vi.fn(),
+    removeRequest: vi.fn(),
+    completeRequest: vi.fn(),
+    failRequest: vi.fn(),
   },
 }));
 
