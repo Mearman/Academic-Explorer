@@ -680,7 +680,10 @@ describe("GraphToolbar", () => {
       fireEvent.click(expandButton);
 
       await waitFor(() => {
-        expect(mockExpandNode).toHaveBeenCalledWith("W2", expect.any(Object));
+        expect(mockExpandNode).toHaveBeenCalledWith({
+          nodeId: "W2",
+          options: expect.any(Object),
+        });
       });
     });
   });
