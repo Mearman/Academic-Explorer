@@ -4,9 +4,9 @@
  * Now integrated with TanStack Query for persistent caching
  */
 
-import { useExpansionSettingsStore } from "@/stores/expansion-settings-store";
-import { useGraphStore } from "@/stores/graph-store";
-import { useRepositoryStore } from "@/stores/repository-store";
+import { useExpansionSettingsStore } from "../stores/expansion-settings-store";
+import { graphStore } from "../stores/graph-store";
+import { useRepositoryStore } from "../stores/repository-store";
 import type {
   Author,
   InstitutionEntity,
@@ -248,7 +248,7 @@ export class GraphDataService {
    * Load initial graph for an entity with related entities
    */
   async loadEntityGraph(entityId: string): Promise<void> {
-    const store = useGraphStore.getState();
+    const store = graphStore.getState();
     store.setLoading(true);
     store.setError(null);
 
@@ -396,7 +396,7 @@ export class GraphDataService {
       "GraphDataService",
     );
 
-    const store = useGraphStore.getState();
+    const store = graphStore.getState();
 
     try {
       // Check if the node already exists (regardless of hydration level)
@@ -594,7 +594,7 @@ export class GraphDataService {
    * Shows all available cached data up to the specified traversal depth
    */
   loadAllCachedNodes(): void {
-    const store = useGraphStore.getState();
+    const store = graphStore.getState();
 
     try {
       // Get all cached OpenAlex entities from TanStack Query
@@ -709,7 +709,7 @@ export class GraphDataService {
    * This method uses selective field loading to minimize API payload while providing rich metadata
    */
   async hydrateNodeToFull(nodeId: string): Promise<void> {
-    const store = useGraphStore.getState();
+    const store = graphStore.getState();
     const node = store.getNode(nodeId);
 
     if (!node) {
@@ -855,7 +855,7 @@ export class GraphDataService {
    * This can be useful to retroactively detect relationships after loading cached data
    */
   async detectRelationshipsForAllNodes(): Promise<void> {
-    const store = useGraphStore.getState();
+    const store = graphStore.getState();
     const allNodes = Object.values(store.nodes);
 
     logger.debug(
@@ -970,7 +970,7 @@ export class GraphDataService {
    * This method processes minimal nodes in the background without blocking the UI
    */
   async hydrateAllMinimalNodes(): Promise<void> {
-    const store = useGraphStore.getState();
+    const store = graphStore.getState();
     const minimalNodes = store.getMinimalNodes();
 
     if (minimalNodes.length === 0) {
@@ -1073,7 +1073,7 @@ export class GraphDataService {
    * Recommended for use when the graph is first loaded to proactively hydrate all minimal node data
    */
   async hydrateAllMinimalNodesImmediate(): Promise<void> {
-    const store = useGraphStore.getState();
+    const store = graphStore.getState();
     const minimalNodes = store.getMinimalNodes();
 
     if (minimalNodes.length === 0) {
@@ -1204,7 +1204,7 @@ export class GraphDataService {
 
       // Even if node is already expanded, run relationship detection
       // in case new nodes were added since last expansion
-      const store = useGraphStore.getState();
+      const store = graphStore.getState();
       const allNodeIds = Object.keys(store.nodes);
 
       if (allNodeIds.length > 1) {
@@ -1263,7 +1263,7 @@ export class GraphDataService {
       return;
     }
 
-    const store = useGraphStore.getState();
+    const store = graphStore.getState();
 
     // DON'T set loading state for incremental expansions to avoid showing "Loading graph..."
     // Individual expansions should be seamless and not disrupt the existing graph
@@ -1663,7 +1663,7 @@ export class GraphDataService {
     query: string;
     options: SearchOptions;
   }): Promise<void> {
-    const store = useGraphStore.getState();
+    const store = graphStore.getState();
     store.setLoading(true);
     store.setError(null);
 
@@ -1902,7 +1902,7 @@ export class GraphDataService {
     entityId: string;
     entityType: EntityType;
   }): Promise<void> {
-    const store = useGraphStore.getState();
+    const store = graphStore.getState();
 
     if (!(entityId in store.nodes)) {
       return;
@@ -1953,7 +1953,7 @@ export class GraphDataService {
    * Hydrate a node with full data when needed (e.g., when user interacts with it)
    */
   async hydrateNode(nodeId: string): Promise<void> {
-    const store = useGraphStore.getState();
+    const store = graphStore.getState();
 
     if (!(nodeId in store.nodes)) {
       logger.warn("graph", "Cannot hydrate non-existent node", { nodeId });
@@ -2028,7 +2028,7 @@ export class GraphDataService {
       { entityType, options },
       "GraphDataService",
     );
-    const store = useGraphStore.getState();
+    const store = graphStore.getState();
     // Use direct selectors instead of unstable getter function to avoid infinite loops
     const { nodes, visibleEntityTypes } = store;
     const allVisibleNodes = Object.values(nodes).filter(
@@ -2449,7 +2449,7 @@ export class GraphDataService {
   } {
     const nodes: GraphNode[] = [];
     const edges: GraphEdge[] = [];
-    const store = useGraphStore.getState();
+    const store = graphStore.getState();
 
     // Only create edges to authors that already exist in the graph
     // Do NOT automatically create author nodes - they should only be created during explicit expansion
@@ -2523,7 +2523,7 @@ export class GraphDataService {
   } {
     const nodes: GraphNode[] = [];
     const edges: GraphEdge[] = [];
-    const store = useGraphStore.getState();
+    const store = graphStore.getState();
 
     // Only create edges to institutions that already exist in the graph
     // Do NOT automatically create institution nodes - they should only be created during explicit expansion
@@ -2558,7 +2558,7 @@ export class GraphDataService {
   } {
     const nodes: GraphNode[] = [];
     const edges: GraphEdge[] = [];
-    const store = useGraphStore.getState();
+    const store = graphStore.getState();
 
     // Only create edges to publishers that already exist in the graph
     // Do NOT automatically create publisher nodes - they should only be created during explicit expansion
@@ -2589,7 +2589,7 @@ export class GraphDataService {
   } {
     const nodes: GraphNode[] = [];
     const edges: GraphEdge[] = [];
-    const store = useGraphStore.getState();
+    const store = graphStore.getState();
 
     // Only create edges to parent institutions that already exist in the graph
     // Do NOT automatically create parent institution nodes - they should only be created during explicit expansion
