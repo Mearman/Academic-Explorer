@@ -719,7 +719,7 @@ export class DiskCacheWriter {
   ): Promise<void> {
     const existingLock = this.activeLocks.get(filePath);
 
-    if (existingLock && existingLock.lockId === lockId) {
+    if (existingLock?.lockId === lockId) {
       this.activeLocks.delete(filePath);
       logger.debug("disk-writer", "File lock released", {
         filePath,
