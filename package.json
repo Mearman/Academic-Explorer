@@ -68,7 +68,7 @@
     "@nx/playwright": "21.5.3",
     "@nx/react": "21.5.3",
     "@nx/storybook": "^21.6.5",
-    "@nx/vite": "21.5.3",
+    "@nx/vite": "21.6.5",
     "@nx/web": "21.5.3",
     "@octokit/rest": "^22.0.0",
     "@playwright/test": "^1.55.1",
