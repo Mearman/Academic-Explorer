@@ -13,6 +13,7 @@
       "inputs": [
         "production",
         "^production",
+        "^outputs",
         "{workspaceRoot}/vite.config.base.ts",
         "{workspaceRoot}/config/**/*"
       ],
