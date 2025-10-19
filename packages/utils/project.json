@@ -5,14 +5,7 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "nx:run-commands",
-      "dependsOn": ["^build"],
-      "options": {
-        "command": "tsc -b",
-        "cwd": "{projectRoot}"
-      },
-      "outputs": ["{projectRoot}/dist"],
-      "cache": true
+      "dependsOn": ["^build"]
     },
 
     "lint": {},
@@ -62,14 +55,6 @@
       "cache": true
     },
 
-    "dev": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsc -b --watch",
-        "cwd": "{projectRoot}"
-      },
-      "cache": false
-    },
     "validate": {
       "cache": true,
       "dependsOn": ["build", "test", "lint"],

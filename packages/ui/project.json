@@ -11,6 +11,12 @@
         "commands": ["tsc --emitDeclarationOnly", "vite build"],
         "cwd": "{projectRoot}"
       },
+      "inputs": [
+        "production",
+        "^production",
+        "{workspaceRoot}/vite.config.base.ts",
+        "{workspaceRoot}/config/**/*"
+      ],
       "outputs": ["{projectRoot}/dist"],
       "cache": true
     },
