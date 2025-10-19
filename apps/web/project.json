@@ -49,11 +49,10 @@
       "cache": true
     },
     "test:unit": {
-      "executor": "@nx/vite:test",
+      "executor": "nx:run-commands",
       "options": {
-        "config": "{projectRoot}/vitest.config.ts",
-        "project": "unit",
-        "coverage": true
+        "command": "vitest run src/**/*.unit.test.{ts,tsx} --exclude='**/*.e2e.test.ts' --exclude='**/*.integration.test.ts' --exclude='**/*.integration.test.tsx' --exclude='**/*.component.test.{ts,tsx}'",
+        "cwd": "{projectRoot}"
       },
       "inputs": [
         "default",
@@ -66,12 +65,11 @@
       "cache": true
     },
     "test:component": {
-      "executor": "@nx/vite:test",
+      "executor": "nx:run-commands",
       "dependsOn": ["test:unit"],
       "options": {
-        "config": "{projectRoot}/vitest.config.ts",
-        "project": "component",
-        "coverage": true
+        "command": "vitest run src/**/*.component.test.{ts,tsx} --exclude='**/*.e2e.test.ts' --exclude='**/*.integration.test.ts' --exclude='**/*.integration.test.tsx'",
+        "cwd": "{projectRoot}"
       },
       "inputs": [
         "source",
