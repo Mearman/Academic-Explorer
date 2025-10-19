@@ -4,10 +4,26 @@
   "sourceRoot": "packages/client/src",
   "projectType": "library",
   "targets": {
-    "build": {
+    "build:compile": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "tsc -b && tsup",
+        "command": "tsc -b",
+        "cwd": "{projectRoot}"
+      },
+      "inputs": [
+        "production",
+        "^production",
+        "{workspaceRoot}/vite.config.base.ts",
+        "{workspaceRoot}/config/**/*"
+      ],
+      "outputs": ["{projectRoot}/dist"],
+      "cache": true
+    },
+    "build:bundle": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build:compile"],
+      "options": {
+        "command": "tsup",
         "cwd": "{projectRoot}"
       },
       "inputs": [
@@ -18,6 +34,9 @@
       ],
       "outputs": ["{projectRoot}/dist"],
       "cache": true
+    },
+    "build": {
+      "dependsOn": ["build:bundle"]
     },
 
     "test": {

@@ -33,6 +33,78 @@
     }
   ],
   "namedTargets": {
+    "build:lib": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -b",
+        "cwd": "{projectRoot}"
+      },
+      "inputs": [
+        "production",
+        "^production",
+        "{workspaceRoot}/vite.config.base.ts",
+        "{workspaceRoot}/config/**/*"
+      ],
+      "outputs": ["{projectRoot}/dist"],
+      "cache": true
+    },
+    "build:compile": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -b",
+        "cwd": "{projectRoot}"
+      },
+      "inputs": [
+        "production",
+        "^production",
+        "{workspaceRoot}/vite.config.base.ts",
+        "{workspaceRoot}/config/**/*"
+      ],
+      "outputs": ["{projectRoot}/dist"],
+      "cache": true
+    },
+    "build:bundle": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build:compile"],
+      "options": {
+        "command": "tsup",
+        "cwd": "{projectRoot}"
+      },
+      "inputs": [
+        "production",
+        "{projectRoot}/tsup.config.ts",
+        "{projectRoot}/tsconfig.json",
+        "{projectRoot}/package.json"
+      ],
+      "outputs": ["{projectRoot}/dist"],
+      "cache": true
+    },
+    "build:lib-with-bundle": {
+      "dependsOn": ["build:bundle"]
+    },
+    "build:ui": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["tsc --emitDeclarationOnly", "vite build"],
+        "cwd": "{projectRoot}"
+      },
+      "inputs": [
+        "production",
+        "^production",
+        "{workspaceRoot}/vite.config.base.ts",
+        "{workspaceRoot}/config/**/*"
+      ],
+      "outputs": ["{projectRoot}/dist"],
+      "cache": true
+    },
+    "dev:lib": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -b --watch",
+        "cwd": "{projectRoot}"
+      },
+      "cache": false
+    },
     "lint": {
       "executor": "@nx/eslint:lint",
       "options": {
@@ -84,15 +156,20 @@
     },
 
     "build": {
-      "cache": true,
+      "executor": "nx:run-commands",
       "dependsOn": ["^build"],
+      "options": {
+        "command": "tsc -b",
+        "cwd": "{projectRoot}"
+      },
       "inputs": [
         "production",
         "^production",
         "{workspaceRoot}/vite.config.base.ts",
         "{workspaceRoot}/config/**/*"
       ],
-      "outputs": ["{projectRoot}/dist"]
+      "outputs": ["{projectRoot}/dist"],
+      "cache": true
     },
     "test": {
       "cache": true,
