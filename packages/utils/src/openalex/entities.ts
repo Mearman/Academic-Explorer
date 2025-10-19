@@ -2,6 +2,7 @@
  * Entity interfaces for OpenAlex API
  */
 
+import { z } from "zod";
 import type {
   APCInfo,
   APCPrice,
@@ -24,6 +25,17 @@ import type {
   WikidataId,
   WorkIds,
 } from "./base";
+import {
+  workSchema,
+  authorSchema,
+  institutionSchema,
+  conceptSchema,
+  sourceSchema,
+  publisherSchema,
+  funderSchema,
+  topicSchema,
+  keywordSchema,
+} from "./schemas";
 
 /**
  * Maps base entity field names to their types.
@@ -121,90 +133,8 @@ export interface Authorship {
 }
 
 // Work entity
-export interface Work extends BaseEntity {
-  doi?: DOI;
-  title?: string;
-  publication_year?: number;
-  publication_date?: string;
-  ids: WorkIds;
-  primary_location?: Location;
-  best_oa_location?: Location;
-  locations: Location[];
-  locations_count: number;
-  authorships: Authorship[];
-  countries_distinct_count: number;
-  institutions_distinct_count: number;
-  corresponding_author_ids: OpenAlexId[];
-  corresponding_institution_ids: OpenAlexId[];
-  apc_list?: APCInfo;
-  apc_paid?: APCInfo;
-  fwci?: number;
-  has_fulltext: boolean;
-  fulltext_origin?: string;
-  cited_by_api_url: string;
-  type: string;
-  type_crossref?: string;
-  indexed_in: string[];
-  open_access: {
-    is_oa: boolean;
-    oa_date?: string;
-    oa_url?: string;
-    any_repository_has_fulltext: boolean;
-  };
-  authorships_count?: number;
-  cited_by_percentile_year?: {
-    min: number;
-    max: number;
-  };
-  concepts: ConceptItem[];
-  mesh: Array<{
-    descriptor_ui: string;
-    descriptor_name: string;
-    qualifier_ui?: string;
-    qualifier_name?: string;
-    is_major_topic: boolean;
-  }>;
-  alternate_host_venues?: Array<{
-    id?: OpenAlexId;
-    display_name: string;
-    type: string;
-    url?: string;
-    is_oa: boolean;
-    version?: string;
-    license?: string;
-  }>;
-  referenced_works: OpenAlexId[];
-  referenced_works_count: number;
-  related_works: OpenAlexId[];
-  sustainable_development_goals?: Array<{
-    id: OpenAlexId;
-    display_name: string;
-    score: number;
-  }>;
-  grants?: Array<{
-    funder: OpenAlexId;
-    funder_display_name: string;
-    award_id?: string;
-  }>;
-  datasets?: string[];
-  versions?: OpenAlexId[];
-  is_retracted: boolean;
-  is_paratext: boolean;
-  abstract_inverted_index?: Record<string, number[]>;
-  biblio?: {
-    volume?: string;
-    issue?: string;
-    first_page?: string;
-    last_page?: string;
-  };
-  language?: string;
-  topics?: TopicItem[];
-  keywords?: Array<{
-    id: OpenAlexId;
-    display_name: string;
-    score: number;
-  }>;
-}
+// Work type inferred from comprehensive Zod schema
+export type Work = z.infer<typeof workSchema>;
 
 // Partial hydration types - only id is guaranteed, all other fields are optional
 export type PartialWork = PartialExceptId<Work>;
@@ -212,180 +142,39 @@ export type PartialWork = PartialExceptId<Work>;
 /**
  * Author entity - define the complete type first.
  */
-export interface Author
-  extends EntityWithWorks<
-    | "id"
-    | "display_name"
-    | "cited_by_count"
-    | "counts_by_year"
-    | "updated_date"
-    | "created_date"
-    | "works_count"
-    | "works_api_url"
-  > {
-  orcid?: ORCID;
-  display_name_alternatives?: string[];
-  ids: AuthorIds;
-  last_known_institutions?: Institution[];
-  affiliations: Array<{
-    institution: Institution;
-    years: number[];
-  }>;
-  summary_stats: SummaryStats;
-  x_concepts?: ConceptItem[];
-  topics?: TopicItem[];
-}
+// Author type inferred from comprehensive Zod schema
+export type Author = z.infer<typeof authorSchema>;
 
 export type PartialAuthor = PartialExceptId<Author>;
 
 // Source entity (journals, conferences, etc.)
-export interface Source extends EntityWithWorks {
-  issn_l?: string;
-  issn?: string[];
-  publisher?: string;
-  is_oa: boolean;
-  is_in_doaj: boolean;
-  ids: SourceIds;
-  homepage_url?: string;
-  apc_prices?: APCPrice[];
-  apc_usd?: number;
-  country_code?: string;
-  societies?: string[];
-  alternate_titles?: string[];
-  abbreviated_title?: string;
-  type: string;
-  x_concepts?: ConceptItem[];
-  summary_stats: SummaryStats;
-  topics?: TopicItem[];
-}
+// Source type inferred from comprehensive Zod schema
+export type Source = z.infer<typeof sourceSchema>;
 
 // Institution entity
-export interface InstitutionEntity extends EntityWithWorks {
-  ror?: RORId;
-  country_code: string;
-  type: string;
-  homepage_url?: string;
-  image_url?: string;
-  image_thumbnail_url?: string;
-  display_name_acronyms?: string[];
-  display_name_alternatives?: string[];
-  ids: InstitutionIds;
-  geo: {
-    city?: string;
-    geonames_city_id?: string;
-    region?: string;
-    country_code: string;
-    country: string;
-    latitude?: number;
-    longitude?: number;
-  };
-  international: {
-    display_name: Record<string, string>;
-  };
-  associated_institutions?: Array<{
-    id: OpenAlexId;
-    display_name: string;
-    ror?: RORId;
-    country_code: string;
-    type: string;
-    relationship: string;
-  }>;
-  x_concepts?: ConceptItem[];
-  topics?: TopicItem[];
-  lineage?: OpenAlexId[];
-}
+// Institution type inferred from comprehensive Zod schema
+export type InstitutionEntity = z.infer<typeof institutionSchema>;
 
-// Concept entity (being phased out, replaced by Topics)
-export interface Concept extends EntityWithWorks {
-  wikidata?: WikidataId;
-  level: number;
-  description?: string;
-  ids: ConceptIds;
-  image_url?: string;
-  image_thumbnail_url?: string;
-  international: {
-    display_name: Record<string, string>;
-    description?: Record<string, string>;
-  };
-  ancestors?: Array<{
-    id: OpenAlexId;
-    wikidata?: WikidataId;
-    display_name: string;
-    level: number;
-  }>;
-  related_concepts?: ConceptItem[];
-}
+// Concept type inferred from comprehensive Zod schema
+export type Concept = z.infer<typeof conceptSchema>;
 
 // Topic entity (replacing Concepts)
-export interface Topic extends EntityWithWorks {
-  description?: string;
-  keywords?: string[];
-  ids: TopicIds;
-  subfield: {
-    id: OpenAlexId;
-    display_name: string;
-  };
-  field: {
-    id: OpenAlexId;
-    display_name: string;
-  };
-  domain: {
-    id: OpenAlexId;
-    display_name: string;
-  };
-  siblings?: Array<{
-    id: OpenAlexId;
-    display_name: string;
-  }>;
-}
+// Topic type inferred from comprehensive Zod schema
+export type Topic = z.infer<typeof topicSchema>;
 
 // Publisher entity
-export interface Publisher extends EntityWithWorks {
-  alternate_titles?: string[];
-  country_codes?: string[];
-  hierarchy_level: number;
-  parent_publisher?: OpenAlexId;
-  lineage: OpenAlexId[];
-  sources_count: number;
-  ids: PublisherIds;
-  sources_api_url: string;
-}
+// Publisher type inferred from comprehensive Zod schema
+export type Publisher = z.infer<typeof publisherSchema>;
 
 // Funder entity
-export interface Funder extends EntityWithWorks {
-  alternate_titles?: string[];
-  country_code?: string;
-  description?: string;
-  homepage_url?: string;
-  image_url?: string;
-  image_thumbnail_url?: string;
-  grants_count: number;
-  ids: FunderIds;
-  roles?: Array<{
-    role: string;
-    id: OpenAlexId;
-    works_count: number;
-  }>;
-  summary_stats: SummaryStats;
-  topics?: TopicItem[];
-}
+// Funder type inferred from comprehensive Zod schema
+export type Funder = z.infer<typeof funderSchema>;
 
 /**
  * Keywords Entity - Research keywords and their usage
  */
-export interface Keyword extends Omit<EntityWithWorks, "counts_by_year"> {
-  /** Optional description or definition of the keyword */
-  readonly description?: string;
-
-  /** Array of related or synonymous keywords */
-  readonly keywords?: readonly string[];
-
-  /** External identifiers for the keyword */
-  readonly ids: KeywordIds;
-
-  /** Year-by-year breakdown of works and citations (overrides BaseEntity) */
-  readonly counts_by_year: readonly KeywordCountsByYear[];
-}
+// Keyword type inferred from comprehensive Zod schema
+export type Keyword = z.infer<typeof keywordSchema>;
 
 /**
  * Year-by-year statistics for a keyword
@@ -484,7 +273,12 @@ export type EntityWithWorksField = (typeof ENTITY_WITH_WORKS_FIELDS)[number];
  * Use with the select parameter to request specific fields.
  */
 export const AUTHOR_FIELDS = keysOf<Author>()([
-  ...ENTITY_WITH_WORKS_FIELDS,
+  "id",
+  "display_name",
+  "cited_by_count",
+  "counts_by_year",
+  "updated_date",
+  "created_date",
   "orcid",
   "display_name_alternatives",
   "ids",
@@ -552,26 +346,7 @@ export type WorkField = (typeof WORK_FIELDS)[number];
 /**
  * Fields that can be selected for Source entities.
  */
-export const SOURCE_FIELDS = keysOf<Source>()([
-  ...ENTITY_WITH_WORKS_FIELDS,
-  "issn_l",
-  "issn",
-  "publisher",
-  "is_oa",
-  "is_in_doaj",
-  "ids",
-  "homepage_url",
-  "apc_prices",
-  "apc_usd",
-  "country_code",
-  "societies",
-  "alternate_titles",
-  "abbreviated_title",
-  "type",
-  "x_concepts",
-  "summary_stats",
-  "topics",
-]);
+export const SOURCE_FIELDS = sourceSchema.keyof().options;
 
 export type SourceField = (typeof SOURCE_FIELDS)[number];
 
@@ -579,7 +354,12 @@ export type SourceField = (typeof SOURCE_FIELDS)[number];
  * Fields that can be selected for Institution entities.
  */
 export const INSTITUTION_FIELDS = keysOf<InstitutionEntity>()([
-  ...ENTITY_WITH_WORKS_FIELDS,
+  "id",
+  "display_name",
+  "cited_by_count",
+  "counts_by_year",
+  "updated_date",
+  "created_date",
   "ror",
   "country_code",
   "type",
@@ -602,35 +382,13 @@ export type InstitutionField = (typeof INSTITUTION_FIELDS)[number];
 /**
  * Fields that can be selected for Topic entities.
  */
-export const TOPIC_FIELDS = keysOf<Topic>()([
-  ...ENTITY_WITH_WORKS_FIELDS,
-  "description",
-  "keywords",
-  "ids",
-  "subfield",
-  "field",
-  "domain",
-  "siblings",
-]);
+export const TOPIC_FIELDS = topicSchema.keyof().options;
 
 export type TopicField = (typeof TOPIC_FIELDS)[number];
 
 /**
  * Fields that can be selected for Funder entities.
  */
-export const FUNDER_FIELDS = keysOf<Funder>()([
-  ...ENTITY_WITH_WORKS_FIELDS,
-  "alternate_titles",
-  "country_code",
-  "description",
-  "homepage_url",
-  "image_url",
-  "image_thumbnail_url",
-  "grants_count",
-  "ids",
-  "roles",
-  "summary_stats",
-  "topics",
-]);
+export const FUNDER_FIELDS = funderSchema.keyof().options;
 
 export type FunderField = (typeof FUNDER_FIELDS)[number];
