@@ -31,7 +31,7 @@ export const Route = createLazyFileRoute("/search")({
   component: SearchPage,
 });
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SearchInterface } from "../components/search/SearchInterface";
 import { BaseTable } from "../components/tables/BaseTable";
 import { pageDescription, pageTitle } from "../styles/layout.css";
@@ -338,14 +338,21 @@ function SearchPage() {
     }
   }, [searchParams.q]);
 
-  // Track page visits and bookmarks
+  // Memoize filters to prevent unnecessary re-renders
+  const memoizedFilters = useMemo(() => {
+    return searchFilters.query
+      ? {
+          startDate: searchFilters.startDate?.toISOString(),
+          endDate: searchFilters.endDate?.toISOString(),
+        }
+      : undefined;
+  }, [searchFilters.query, searchFilters.startDate, searchFilters.endDate]);
+
+  // Track page visits and bookmarks - only when we have a query to avoid re-render loops
   const userInteractions = useUserInteractions({
-    searchQuery: searchFilters.query,
-    filters: {
-      startDate: searchFilters.startDate,
-      endDate: searchFilters.endDate,
-    },
-    autoTrackVisits: true,
+    searchQuery: searchFilters.query || undefined,
+    filters: memoizedFilters,
+    autoTrackVisits: Boolean(searchFilters.query),
   });
 
   const {
@@ -364,21 +371,7 @@ function SearchPage() {
 
   const handleSearch = async (filters: SearchFilters) => {
     setSearchFilters(filters);
-
-    // Record search page visit with metadata
-    if (filters.query.trim()) {
-      await userInteractions.recordPageVisit({
-        url: window.location.href,
-        metadata: {
-          searchQuery: filters.query,
-          filters: {
-            startDate: filters.startDate?.toISOString(),
-            endDate: filters.endDate?.toISOString(),
-          },
-          resultCount: searchResults?.length,
-        },
-      });
-    }
+    // Auto-tracking in useUserInteractions will handle page visit recording
   };
 
   const hasResults = searchResults && searchResults.length > 0;

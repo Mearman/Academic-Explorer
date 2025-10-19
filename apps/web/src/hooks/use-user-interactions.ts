@@ -178,7 +178,7 @@ export function useUserInteractions(
     }
   }, [entityId, entityType, searchQuery, filters, url]);
 
-  // Auto-track page visits when enabled
+  // Auto-track page visits when enabled - stabilize dependencies to prevent loops
   useEffect(() => {
     if (autoTrackVisits) {
       const trackPageVisit = async () => {
@@ -214,16 +214,18 @@ export function useUserInteractions(
   }, [
     entityId,
     entityType,
+    searchQuery,
     autoTrackVisits,
+    sessionId,
+    // Only track when pathname or search changes, not filters object
     location.pathname,
     location.search,
-    sessionId,
   ]);
 
   // Load data on mount and when entity changes
   useEffect(() => {
     void refreshData();
-  }, [entityId, entityType, refreshData]);
+  }, [entityId, entityType, searchQuery, url]); // Don't include filters or refreshData to prevent loops
 
   const recordPageVisit = useCallback(
     async ({
