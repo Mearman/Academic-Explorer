@@ -70,6 +70,10 @@
       "import": "./dist/state/index.js",
       "types": "./dist/state/index.d.ts"
     },
+    "./validation": {
+      "import": "./dist/validation.js",
+      "types": "./dist/validation.d.ts"
+    },
     "./environment": {
       "import": "./dist/environment/index.js",
       "types": "./dist/environment/index.d.ts"
