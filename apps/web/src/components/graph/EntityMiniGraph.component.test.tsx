@@ -3,7 +3,7 @@
  * @vitest-environment jsdom
  */
 
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock ResizeObserver before importing Mantine
@@ -246,12 +246,14 @@ describe("EntityMiniGraph", () => {
   });
 
   it("should show loading state initially", () => {
-    renderWithMantine(
-      <EntityMiniGraph
-        entity={mockEntity}
-        relatedEntities={mockRelatedEntities}
-      />,
-    );
+    act(() => {
+      renderWithMantine(
+        <EntityMiniGraph
+          entity={mockEntity}
+          relatedEntities={mockRelatedEntities}
+        />,
+      );
+    });
 
     // Should show loading text initially
     expect(screen.getByText("Loading graph...")).toBeTruthy();
