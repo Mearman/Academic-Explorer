@@ -455,18 +455,21 @@ describe("helper functions", () => {
         generalTerms: [],
       };
 
-      const titleQueries = getFieldQueries(parsedQuery, "title");
+      const titleQueries = getFieldQueries({ parsedQuery, field: "title" });
       expect(titleQueries).toEqual([
         { field: "title", value: "test1", ...UNQUOTED_TERM },
         { field: "title", value: "test3", ...WILDCARD_TERM },
       ]);
 
-      const authorQueries = getFieldQueries(parsedQuery, "author");
+      const authorQueries = getFieldQueries({ parsedQuery, field: "author" });
       expect(authorQueries).toEqual([
         { field: "author", value: "test2", ...UNQUOTED_TERM },
       ]);
 
-      const nonExistentQueries = getFieldQueries(parsedQuery, "nonexistent");
+      const nonExistentQueries = getFieldQueries({
+        parsedQuery,
+        field: "nonexistent",
+      });
       expect(nonExistentQueries).toEqual([]);
     });
   });

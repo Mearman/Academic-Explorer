@@ -314,20 +314,20 @@ describe("Cache Utilities - Collision Handling", () => {
   describe("reconstructPossibleCollisions", () => {
     it("should generate canonical URL from query filename", () => {
       const queryFilename = TEST_QUERY_FILENAME;
-      const result = reconstructPossibleCollisions(
+      const result = reconstructPossibleCollisions({
         queryFilename,
-        TEST_ENTITY_TYPE,
-      );
+        entityType: TEST_ENTITY_TYPE,
+      });
 
       expect(result).toContain(`${TEST_BASE_URL_WITH_FILTER}&select=title`);
     });
 
     it("should include variation with api_key parameter", () => {
       const queryFilename = TEST_DOI_FILTER;
-      const result = reconstructPossibleCollisions(
+      const result = reconstructPossibleCollisions({
         queryFilename,
-        TEST_ENTITY_TYPE,
-      );
+        entityType: TEST_ENTITY_TYPE,
+      });
 
       expect(result).toContain(
         `${TEST_BASE_URL_WITH_FILTER}&${TEST_API_KEY_PARAM}`,
@@ -336,10 +336,10 @@ describe("Cache Utilities - Collision Handling", () => {
 
     it("should include variation with mailto parameter", () => {
       const queryFilename = TEST_DOI_FILTER;
-      const result = reconstructPossibleCollisions(
+      const result = reconstructPossibleCollisions({
         queryFilename,
-        TEST_ENTITY_TYPE,
-      );
+        entityType: TEST_ENTITY_TYPE,
+      });
 
       expect(result).toContain(
         `${TEST_BASE_URL_WITH_FILTER}&${TEST_MAILTO_PARAM}`,
@@ -348,10 +348,10 @@ describe("Cache Utilities - Collision Handling", () => {
 
     it("should include cursor variation when cursor=* is present", () => {
       const queryFilename = "filter=doi:10.1234/test&cursor=*";
-      const result = reconstructPossibleCollisions(
+      const result = reconstructPossibleCollisions({
         queryFilename,
-        TEST_ENTITY_TYPE,
-      );
+        entityType: TEST_ENTITY_TYPE,
+      });
 
       const hasCursorVar = result.some((url) =>
         url.includes(TEST_CURSOR_PARAM),
@@ -361,10 +361,10 @@ describe("Cache Utilities - Collision Handling", () => {
 
     it("should not include cursor variation when no cursor=*", () => {
       const queryFilename = TEST_DOI_FILTER;
-      const result = reconstructPossibleCollisions(
+      const result = reconstructPossibleCollisions({
         queryFilename,
-        TEST_ENTITY_TYPE,
-      );
+        entityType: TEST_ENTITY_TYPE,
+      });
 
       const hasCursorVar = result.some((url) =>
         url.includes(TEST_CURSOR_PARAM),
@@ -373,7 +373,10 @@ describe("Cache Utilities - Collision Handling", () => {
     });
 
     it("should handle empty query filename", () => {
-      const result = reconstructPossibleCollisions("", TEST_ENTITY_TYPE);
+      const result = reconstructPossibleCollisions({
+        queryFilename: "",
+        entityType: TEST_ENTITY_TYPE,
+      });
       expect(result).toHaveLength(3); // canonical, api_key, mailto
       expect(result[0]).toBe(TEST_BASE_URL);
     });
@@ -381,10 +384,10 @@ describe("Cache Utilities - Collision Handling", () => {
     it("should filter only equivalent URLs (though impl generates all variants)", () => {
       // Per code, it generates specific variants, all equivalent by design
       const queryFilename = TEST_DOI_FILTER;
-      const result = reconstructPossibleCollisions(
+      const result = reconstructPossibleCollisions({
         queryFilename,
-        TEST_ENTITY_TYPE,
-      );
+        entityType: TEST_ENTITY_TYPE,
+      });
       // All should map to same path
       expect(result.length).toBe(3); // canonical, api_key, mailto; +1 if cursor
     });
@@ -881,19 +884,19 @@ describe("getCacheFilePath", () => {
   const STATIC_ROOT = "/mock/cache";
 
   it("should map entity select queries into entity-specific query directories", async () => {
-    const cachePath = await getCacheFilePath(
-      "https://api.openalex.org/authors/A5017898742?select=id,display_name",
-      STATIC_ROOT,
-    );
+    const cachePath = await getCacheFilePath({
+      url: "https://api.openalex.org/authors/A5017898742?select=id,display_name",
+      staticDataRoot: STATIC_ROOT,
+    });
     expect(cachePath).not.toBeNull();
     expect(cachePath).toContain("authors/A5017898742/queries/");
   });
 
   it("should preserve encoded ORCID identifiers in cache path", async () => {
-    const cachePath = await getCacheFilePath(
-      "https://api.openalex.org/authors/https%3A%2F%2Forcid.org%2F0000-0001-2345-6789?select=id",
-      STATIC_ROOT,
-    );
+    const cachePath = await getCacheFilePath({
+      url: "https://api.openalex.org/authors/https%3A%2F%2Forcid.org%2F0000-0001-2345-6789?select=id",
+      staticDataRoot: STATIC_ROOT,
+    });
     expect(cachePath).not.toBeNull();
     expect(cachePath).toContain(
       "authors/https%3A%2F%2Forcid.org%2F0000-0001-2345-6789/queries",
