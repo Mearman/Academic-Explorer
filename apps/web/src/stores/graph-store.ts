@@ -3,7 +3,10 @@
  * Uses shared createTrackedStore abstraction for DRY compliance
  */
 
-import { createTrackedStore } from "@academic-explorer/utils/state";
+import {
+  createTrackedStore,
+  type TrackedStoreResult,
+} from "@academic-explorer/utils/state";
 import { enableMapSet } from "immer";
 
 // Enable Immer MapSet plugin for Set support
@@ -227,7 +230,10 @@ function findNeighborIds({
   return neighbors;
 }
 
-const result = createTrackedStore<GraphState, GraphActions>({
+const result: TrackedStoreResult<GraphState, GraphActions> = createTrackedStore<
+  GraphState,
+  GraphActions
+>({
   config: {
     name: "graph-store",
     initialState: {
@@ -883,6 +889,6 @@ const result = createTrackedStore<GraphState, GraphActions>({
   }),
 });
 
-export const useGraphStore: () => GraphState & GraphActions = result.useStore;
+export const useGraphStore = result.useStore as any;
 export const graphStore = result.store;
 export const graphActions = result.actions;

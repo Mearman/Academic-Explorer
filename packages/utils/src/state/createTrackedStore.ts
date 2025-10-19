@@ -186,7 +186,7 @@ export interface TrackedStoreConfig<T> {
 }
 
 export interface TrackedStoreResult<T, A> {
-  useStore: () => T & A; // Hook that returns state with bound actions
+  useStore: any; // Hook that returns state with bound actions and supports selectors
   store: any; // Custom store with actions - typed as any for flexibility
   selectors: Record<string, (state: T) => unknown>;
   actions: A;
@@ -219,61 +219,80 @@ export function createTrackedStore<
 }): TrackedStoreResult<T, A> {
   const { name, initialState, devtools: enableDevtools = false } = config;
 
-  // Create the base store creator
-  const baseStoreCreator = () => ({
-    ...initialState,
-  });
-
-  // Create the store with middleware (removed persist)
+  // Create the store with both state and actions combined
   const useStore = (() => {
+    const storeCreator = (set: any, get: any) => {
+      // Create a getState function that returns just the state part
+      const getState = (): T => {
+        const fullState = get();
+        const stateOnly: Partial<T> = {};
+        Object.keys(initialState).forEach((key) => {
+          if (key in fullState) {
+            (stateOnly as any)[key] = (fullState as any)[key];
+          }
+        });
+        return stateOnly as T;
+      };
+
+      // Create actions
+      const actions = actionsFactory({
+        set: (partial, replace) => {
+          if (replace) {
+            set(partial, true);
+          } else {
+            set(partial);
+          }
+        },
+        get: getState,
+      });
+
+      return {
+        ...initialState,
+        ...actions,
+      };
+    };
+
     if (enableDevtools) {
-      return create(devtools(immer(baseStoreCreator), { name }));
+      return create(devtools(immer(storeCreator), { name })) as any;
     }
 
-    return create(immer(baseStoreCreator));
+    return create(immer(storeCreator)) as any;
+  })();
+
+  // Get actions from the store after it's created
+  const actions = (() => {
+    const fullState = useStore.getState();
+    const extractedActions: Partial<A> = {};
+    Object.keys(fullState).forEach((key) => {
+      if (!(key in initialState)) {
+        (extractedActions as any)[key] = (fullState as any)[key];
+      }
+    });
+    return extractedActions as A;
   })();
 
   // Create selectors
   const selectors = selectorsFactory ? selectorsFactory(initialState) : {};
 
-  // Save the original getState
-  const originalGetState = useStore.getState;
-
-  // Create actions using the store hook methods
-  const actions = actionsFactory({
-    set: (
-      partial: Partial<T> | ((state: Draft<T>) => void),
-      replace?: boolean,
-    ) => {
-      if (replace === true) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        useStore.setState(partial as any, true);
-      } else {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        useStore.setState(partial as any);
-      }
-    },
-    get: originalGetState,
-  });
-
-  // Create a custom hook that returns state with actions bound
-  const useStoreWithActions: () => T & A = () => {
-    return {
-      ...originalGetState(),
-      ...actions,
-    };
-  };
-
-  // Create a store object with actions, getState, setState, and subscribe methods
+  // Create a store object
   const storeWithActions = {
-    getState: originalGetState,
+    getState: () => {
+      const fullState = useStore.getState();
+      const stateOnly: Partial<T> = {};
+      Object.keys(initialState).forEach((key) => {
+        if (key in fullState) {
+          (stateOnly as any)[key] = (fullState as any)[key];
+        }
+      });
+      return stateOnly as T;
+    },
     setState: useStore.setState,
     subscribe: useStore.subscribe,
     ...actions,
   };
 
   return {
-    useStore: useStoreWithActions,
+    useStore: useStore as any,
     store: storeWithActions,
     selectors,
     actions,
