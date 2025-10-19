@@ -450,10 +450,10 @@ export function decodeFilename(filename: string): string {
  * Generate cache file path from OpenAlex URL
  * This is the canonical mapping used by all systems
  */
-export function getCacheFilePath(
+export async function getCacheFilePath(
   url: string,
   staticDataRoot: string,
-): string | null {
+): Promise<string | null> {
   const parsed = parseOpenAlexUrl(url);
   if (!parsed) {
     return null;
@@ -463,7 +463,7 @@ export function getCacheFilePath(
 
   try {
     if (isQuery) {
-      return generateQueryFilePath(
+      return await generateQueryFilePath(
         pathSegments,
         queryString,
         staticDataRoot,
@@ -477,12 +477,12 @@ export function getCacheFilePath(
   }
 }
 
-function generateQueryFilePath(
+async function generateQueryFilePath(
   pathSegments: string[],
   queryString: string,
   staticDataRoot: string,
   url: string,
-): string | null {
+): Promise<string | null> {
   // Normalize query string to remove sensitive information before caching
   const sanitized = sanitizeUrlForCaching(queryString.slice(1)); // Remove leading '?'
   const normalizedQuery = normalizeQueryForFilename(sanitized);
@@ -497,7 +497,14 @@ function generateQueryFilePath(
   const cleanQuery = normalizedQuery.startsWith("?")
     ? normalizedQuery.slice(1)
     : normalizedQuery;
-  const queryFilename = encodeFilename(cleanQuery);
+  let queryFilename = encodeFilename(cleanQuery);
+
+  // Handle very long filenames that exceed filesystem limits
+  const MAX_FILENAME_LENGTH = 240; // Leave some buffer below 255 char limit
+  if (queryFilename.length > MAX_FILENAME_LENGTH) {
+    // Skip caching for very long queries to avoid filesystem errors
+    return null;
+  }
 
   // Ensure we have a valid filename for the query
   if (!queryFilename || queryFilename.trim() === "") {
@@ -555,14 +562,14 @@ function generateBaseCollectionPath(
  * Generate static file path for service worker
  * Maps OpenAlex URLs to static file paths for production serving
  */
-export function getStaticFilePath(url: string): string {
+export async function getStaticFilePath(url: string): Promise<string> {
   const parsed = parseOpenAlexUrl(url);
   if (!parsed) {
     return `/data/openalex${new URL(url).pathname}.json`;
   }
 
   // Use the same logic as cache file path but with /data/openalex prefix
-  const cacheFilePath = getCacheFilePath(url, "");
+  const cacheFilePath = await getCacheFilePath(url, "");
   return `/data/openalex${cacheFilePath}`;
 }
 
@@ -795,17 +802,17 @@ function compareUrlComponents(url1: string, url2: string): boolean {
  * @param getCacheFilePathFn Function to get cache path (defaults to getCacheFilePath)
  * @returns true if the URL maps to the same cache path as the entry
  */
-export function hasCollision(
+export async function hasCollision(
   entry: FileEntry,
   url: string,
   getCacheFilePathFn = getCacheFilePath,
-): boolean {
+): Promise<boolean> {
   if (!entry || !url) {
     return false;
   }
 
-  const entryPath = getCacheFilePathFn(entry.url, "");
-  const urlPath = getCacheFilePathFn(url, "");
+  const entryPath = await getCacheFilePathFn(entry.url, "");
+  const urlPath = await getCacheFilePathFn(url, "");
 
   logger.debug(
     "cache",
@@ -1067,10 +1074,10 @@ export function migrateToMultiUrl(entry: FileEntry): FileEntry {
  * Checks equivalentUrls[0] === url and that all URLs map to the same cache path
  * Logs warnings for any issues found
  */
-export function validateFileEntry(
+export async function validateFileEntry(
   entry: FileEntry,
   getCacheFilePathFn = getCacheFilePath,
-): boolean {
+): Promise<boolean> {
   if (!isMultiUrlFileEntry(entry)) {
     // Legacy entries are considered valid
     return true;
@@ -1086,10 +1093,10 @@ export function validateFileEntry(
   }
 
   // Validate all equivalent URLs normalize to the same cache path
-  const basePath = getCacheFilePathFn(entry.url, "");
+  const basePath = await getCacheFilePathFn(entry.url, "");
   if (basePath) {
     for (const url of entry.equivalentUrls) {
-      const urlPath = getCacheFilePathFn(url, "");
+      const urlPath = await getCacheFilePathFn(url, "");
       if (urlPath !== basePath) {
         errors.push(
           `URL '${url}' maps to '${urlPath}' but expected '${basePath}'`,
