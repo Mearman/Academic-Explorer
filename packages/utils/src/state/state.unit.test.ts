@@ -1,15 +1,10 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 
-import type { Table } from "dexie";
-import type { ReactiveTable } from "./dexieStore.js";
 import {
   generateSequentialId,
   createFilterManager,
   computePagedItems,
   createTrackedStore,
-  createReactiveTable,
-  createDexieSync,
-  createDexieStore,
 } from "./index.js";
 
 describe("State Utilities", () => {
@@ -158,164 +153,11 @@ describe("State Utilities", () => {
         }),
       });
 
-      // Test that the store hook is a function
-      expect(typeof useStore).toBe("function");
+      // Test that the store is an object with methods
+      expect(typeof useStore).toBe("object");
       expect(useStore).toBeDefined();
-    });
-  });
-
-  describe("Dexie Integration", () => {
-    it("should create reactive table wrapper", () => {
-      const mockTable = {
-        add: vi.fn().mockResolvedValue(1),
-        put: vi.fn().mockResolvedValue(1),
-        get: vi.fn().mockResolvedValue({ id: 1, name: "test" }),
-        delete: vi.fn().mockResolvedValue(undefined),
-        clear: vi.fn().mockResolvedValue(undefined),
-        toArray: vi.fn().mockResolvedValue([{ id: 1, name: "test" }]),
-        where: vi.fn().mockReturnValue({
-          toArray: vi.fn().mockResolvedValue([{ id: 1, name: "test" }]),
-        }),
-        count: vi.fn().mockResolvedValue(1),
-        // Add required Table properties
-        db: {
-          name: "test",
-          tables: [],
-          verno: 1,
-          vip: vi.fn(),
-          _createTransaction: vi.fn(),
-          _dbSchema: {},
-          _deps: [],
-          _eval: vi.fn(),
-          _options: {},
-          _storeNames: [],
-          _hasBeenClosed: vi.fn(),
-          _hasBeenOpened: vi.fn(),
-          _onClose: [],
-          _onOpen: [],
-          _onReady: [],
-          _onVersionChange: [],
-          _transports: [],
-          _uncommittedTables: new Set(),
-          close: vi.fn(),
-          delete: vi.fn(),
-          isOpen: vi.fn(),
-          open: vi.fn(),
-          transaction: vi.fn(),
-          version: vi.fn(),
-        } as any,
-        name: "test",
-        schema: {
-          name: "test",
-          primKey: {
-            name: "id",
-            keyPath: "id",
-            autoIncrement: false,
-            compound: false,
-            src: "id",
-          },
-          indexes: {},
-          mappedClass: null,
-          idxByName: {},
-          getIndexByKeyPath: vi.fn(),
-        } as any,
-        hook: {
-          creating: { addEventType: vi.fn(), fire: vi.fn() },
-          reading: { addEventType: vi.fn(), fire: vi.fn() },
-          updating: { addEventType: vi.fn(), fire: vi.fn() },
-          deleting: { addEventType: vi.fn(), fire: vi.fn() },
-          addEventType: vi.fn(),
-        } as any,
-        core: {},
-        // Add other required methods with minimal implementations
-        bulkAdd: vi.fn(),
-        bulkPut: vi.fn(),
-        bulkDelete: vi.fn(),
-        bulkGet: vi.fn(),
-        update: vi.fn(),
-        bulkUpdate: vi.fn(),
-        modify: vi.fn(),
-        upsert: vi.fn(),
-        toCollection: vi.fn(),
-        mapToClass: vi.fn(),
-        reverse: vi.fn(),
-        sortBy: vi.fn(),
-        orderBy: vi.fn(),
-        offset: vi.fn(),
-        limit: vi.fn(),
-        first: vi.fn(),
-        last: vi.fn(),
-        filter: vi.fn(),
-        each: vi.fn(),
-        eachKey: vi.fn(),
-        eachUniqueKey: vi.fn(),
-        keys: vi.fn(),
-        primaryKeys: vi.fn(),
-        uniqueKeys: vi.fn(),
-      } as any;
-
-      const reactiveTable = createReactiveTable(mockTable);
-
-      expect(reactiveTable).toHaveProperty("add");
-      expect(reactiveTable).toHaveProperty("put");
-      expect(reactiveTable).toHaveProperty("get");
-      expect(reactiveTable).toHaveProperty("delete");
-      expect(reactiveTable).toHaveProperty("clear");
-      expect(reactiveTable).toHaveProperty("toArray");
-      expect(reactiveTable).toHaveProperty("where");
-      expect(reactiveTable).toHaveProperty("count");
-    });
-
-    it("should create dexie sync utility", () => {
-      const mockTable: ReactiveTable<unknown> = {
-        add: vi.fn().mockResolvedValue(1),
-        put: vi.fn().mockResolvedValue(1),
-        get: vi.fn().mockResolvedValue(undefined),
-        delete: vi.fn().mockResolvedValue(undefined),
-        clear: vi.fn().mockResolvedValue(undefined),
-        toArray: vi.fn().mockResolvedValue([]),
-        where: vi.fn().mockResolvedValue([]),
-        count: vi.fn().mockResolvedValue(0),
-      };
-
-      const sync = createDexieSync({
-        table: mockTable,
-        syncInterval: 1000,
-      });
-
-      expect(sync).toHaveProperty("start");
-      expect(sync).toHaveProperty("stop");
-      expect(sync).toHaveProperty("syncNow");
-      expect(typeof sync.start).toBe("function");
-      expect(typeof sync.stop).toBe("function");
-      expect(typeof sync.syncNow).toBe("function");
-    });
-
-    it("should create dexie store", () => {
-      const mockTable: ReactiveTable<{ id?: string | number }> = {
-        add: vi.fn().mockResolvedValue(1),
-        put: vi.fn().mockResolvedValue(1),
-        get: vi.fn().mockResolvedValue({ id: 1, name: "test" }),
-        delete: vi.fn().mockResolvedValue(undefined),
-        clear: vi.fn().mockResolvedValue(undefined),
-        toArray: vi.fn().mockResolvedValue([]),
-        where: vi.fn().mockResolvedValue([]),
-        count: vi.fn().mockResolvedValue(0),
-      };
-
-      const store = createDexieStore({
-        table: mockTable,
-      });
-
-      expect(store).toHaveProperty("add");
-      expect(store).toHaveProperty("update");
-      expect(store).toHaveProperty("remove");
-      expect(store).toHaveProperty("get");
-      expect(store).toHaveProperty("getAll");
-      expect(store).toHaveProperty("find");
-      expect(store).toHaveProperty("clear");
-      expect(store).toHaveProperty("count");
-      expect(store).toHaveProperty("createSync");
+      expect(typeof (useStore as any).getState).toBe("function");
+      expect(typeof (useStore as any).setState).toBe("function");
     });
   });
 });

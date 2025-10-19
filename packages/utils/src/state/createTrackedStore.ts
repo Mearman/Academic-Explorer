@@ -1,21 +1,13 @@
 /**
- * Tracked store factory with Zustand, Immer, DevTools, and production guards
- * Provides reusable utilities for state management with persistence and debugging
+ * Simplified Zustand store factory
+ * Removed persistence middleware - use pure Dexie stores for data persistence
  */
 
 import type { StateCreator, StoreApi, UseBoundStore } from "zustand";
 import { create } from "zustand";
-import { createJSONStorage, devtools, persist } from "zustand/middleware";
+import { devtools } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import type { Draft } from "immer";
-import { isDevelopment, isProduction } from "../environment/index.js";
-import { logger } from "../logger.js";
-import {
-  createHybridStorage,
-  createIndexedDBStorage,
-  type StorageConfig,
-  type StateStorage,
-} from "../storage/indexeddb-storage.js";
 
 // Type guard to check if an object is a Zustand store with required methods
 function isZustandStore(obj: unknown): obj is {
@@ -32,22 +24,6 @@ function isZustandStore(obj: unknown): obj is {
     typeof obj.setState === "function" &&
     typeof obj.getState === "function"
   );
-}
-
-// Adapter to convert StateStorage to Zustand PersistStorage
-function createPersistStorageAdapter(storage: StateStorage) {
-  return createJSONStorage(() => ({
-    getItem: async (name: string) => {
-      const value = await storage.getItem(name);
-      return value ?? null;
-    },
-    setItem: async (name: string, value: string) => {
-      await storage.setItem(name, value);
-    },
-    removeItem: async (name: string) => {
-      await storage.removeItem(name);
-    },
-  }));
 }
 
 // Re-export Zustand types for convenience
@@ -203,39 +179,23 @@ export function computePagedItems<T>({
 // STORE FACTORY
 // ============================================================================
 
-export interface TrackedStoreConfig<T, A = Record<string, unknown>> {
+export interface TrackedStoreConfig<T> {
   name: string;
   initialState: T;
-  persist?: {
-    enabled: boolean;
-    storage?: "hybrid" | "indexeddb" | "localstorage";
-    config?: Partial<StorageConfig>;
-    version?: number;
-    partialize?: (state: T) => Partial<T>;
-    migrate?: (persistedState: unknown, version: number) => T;
-  };
   devtools?: boolean;
-  productionGuards?: boolean;
 }
 
 export interface TrackedStoreResult<T, A> {
-  useStore: unknown; // Zustand hook with middleware
-  store: unknown; // Zustand store (same as useStore)
+  useStore: unknown; // Store object with getState, setState, subscribe, and actions
+  store: unknown; // Zustand store
   selectors: Record<string, (state: T) => unknown>;
   actions: A;
 }
 
 /**
- * Create a tracked Zustand store with Immer, DevTools, and production guards
+ * Create a simplified Zustand store with Immer and DevTools
+ * Removed persistence - use pure Dexie stores for data persistence
  */
-type ImmerSetState<T> = {
-  (
-    partial: T | Partial<T> | ((state: T) => T | Partial<T> | void),
-    replace?: false,
-  ): void;
-  (state: T | ((state: T) => T), replace: true): void;
-};
-
 export function createTrackedStore<
   T extends object,
   A extends Record<string, unknown>,
@@ -244,86 +204,30 @@ export function createTrackedStore<
   actionsFactory,
   selectorsFactory,
 }: {
-  config: TrackedStoreConfig<T, A>;
+  config: TrackedStoreConfig<T>;
   actionsFactory: ({
     set,
     get,
   }: {
     set: (
-      partial: Partial<T> | ((state: T) => Partial<T>),
+      partial: Partial<T> | ((state: Draft<T>) => void),
       replace?: boolean,
     ) => void;
     get: () => T;
   }) => A;
   selectorsFactory?: (state: T) => Record<string, (state: T) => unknown>;
 }): TrackedStoreResult<T, A> {
-  const {
-    name,
-    initialState,
-    persist: persistConfig,
-    devtools: enableDevtools = isDevelopment(),
-    productionGuards = true,
-  } = config;
-
-  // Production guards
-  if (productionGuards && isProduction()) {
-    // Disable devtools in production
-    // Add any other production safety measures
-  }
+  const { name, initialState, devtools: enableDevtools = false } = config;
 
   // Create the base store creator
   const baseStoreCreator = () => ({
     ...initialState,
   });
 
-  // Create the store with middleware
+  // Create the store with middleware (removed persist)
   const useStore = (() => {
-    if (enableDevtools && persistConfig?.enabled) {
-      const storage = createIndexedDBStorage(
-        {
-          dbName: `${name}-store`,
-          storeName: "state",
-          version: 1,
-        },
-        logger,
-      );
-
-      return create(
-        persist(devtools(immer(baseStoreCreator), { name }), {
-          name: `${name}-state`,
-          storage: createPersistStorageAdapter(storage),
-          version: persistConfig.version ?? 1,
-          partialize:
-            persistConfig.partialize ?? ((state: T) => ({ ...state })),
-          migrate: persistConfig.migrate,
-        }),
-      );
-    }
-
     if (enableDevtools) {
       return create(devtools(immer(baseStoreCreator), { name }));
-    }
-
-    if (persistConfig?.enabled) {
-      const storage = createIndexedDBStorage(
-        {
-          dbName: `${name}-store`,
-          storeName: "state",
-          version: 1,
-        },
-        logger,
-      );
-
-      return create(
-        persist(immer(baseStoreCreator), {
-          name: `${name}-state`,
-          storage: createPersistStorageAdapter(storage),
-          version: persistConfig.version ?? 1,
-          partialize:
-            persistConfig.partialize ?? ((state: T) => ({ ...state })),
-          migrate: persistConfig.migrate,
-        }),
-      );
     }
 
     return create(immer(baseStoreCreator));
@@ -332,19 +236,41 @@ export function createTrackedStore<
   // Create selectors
   const selectors = selectorsFactory ? selectorsFactory(initialState) : {};
 
+  // Save the original getState
+  const originalGetState = useStore.getState;
+
   // Create actions using the store hook methods
   const actions = actionsFactory({
-    set: (partial: unknown, replace?: boolean) => {
-      useStore.setState(partial, replace);
+    set: (
+      partial: Partial<T> | ((state: Draft<T>) => void),
+      replace?: boolean,
+    ) => {
+      if (replace === true) {
+        useStore.setState(partial as any, true);
+      } else {
+        useStore.setState(partial as any);
+      }
     },
-    get: () => {
-      return useStore.getState();
-    },
+    get: originalGetState,
   });
 
+  // Create a custom hook that returns state with actions bound
+  const useStoreWithActions = () => {
+    const state = originalGetState();
+    return state;
+  };
+
+  // Create a store object with actions, getState, setState, and subscribe methods
+  const storeWithActions = {
+    getState: originalGetState,
+    setState: useStore.setState,
+    subscribe: useStore.subscribe,
+    ...actions,
+  };
+
   return {
-    useStore,
-    store: useStore,
+    useStore: storeWithActions,
+    store: storeWithActions,
     selectors,
     actions,
   };

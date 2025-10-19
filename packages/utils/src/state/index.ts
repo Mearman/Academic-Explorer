@@ -29,13 +29,3 @@ export {
   type LoadingState,
   createAsyncAction,
 } from "./createTrackedStore.js";
-
-// Dexie integration
-export {
-  createReactiveTable,
-  createDexieSync,
-  createDexieStore,
-  type ReactiveTable,
-  type DexieSyncOptions,
-  type DexieStoreOptions,
-} from "./dexieStore.js";
