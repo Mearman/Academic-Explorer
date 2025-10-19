@@ -144,14 +144,20 @@ export class CacheBrowserService {
       }
 
       // Apply filters and sorting
-      const filteredEntities = this.applyFilters(allEntities, mergedFilters);
-      const sortedEntities = this.applySorting(filteredEntities, mergedOptions);
+      const filteredEntities = this.applyFilters({
+        entities: allEntities,
+        filters: mergedFilters,
+      });
+      const sortedEntities = this.applySorting({
+        entities: filteredEntities,
+        options: mergedOptions,
+      });
 
       // Apply pagination
-      const paginatedEntities = this.applyPagination(
-        sortedEntities,
-        mergedOptions,
-      );
+      const paginatedEntities = this.applyPagination({
+        entities: sortedEntities,
+        options: mergedOptions,
+      });
 
       // Calculate statistics
       const stats = this.calculateStats(allEntities);
@@ -205,11 +211,14 @@ export class CacheBrowserService {
     );
 
     const entities = await this.getAllEntities();
-    const filteredEntities = this.applyFilters(entities, {
-      searchQuery: "",
-      entityTypes: new Set(ALL_ENTITY_TYPES),
-      storageLocations: new Set(["indexeddb"]),
-      ...filters,
+    const filteredEntities = this.applyFilters({
+      entities,
+      filters: {
+        searchQuery: "",
+        entityTypes: new Set(ALL_ENTITY_TYPES),
+        storageLocations: new Set(["indexeddb"]),
+        ...filters,
+      },
     });
 
     let clearedCount = 0;
@@ -260,7 +269,7 @@ export class CacheBrowserService {
 
             if (
               entityMetadata &&
-              this.matchesTypeFilter(entityMetadata, filters)
+              this.matchesTypeFilter({ entity: entityMetadata, filters })
             ) {
               entities.push(entityMetadata);
             }
@@ -318,11 +327,18 @@ export class CacheBrowserService {
       }
 
       // Extract basic info from parsed data
-      const basicInfo = this.extractBasicInfo(parsedValue, entityType);
+      const basicInfo = this.extractBasicInfo({
+        value: parsedValue,
+        _type: entityType,
+      });
       const dataSize = this.calculateDataSize(value);
 
       // Try to extract entity ID
-      const entityId = this.extractEntityId(key, parsedValue, entityType);
+      const entityId = this.extractEntityId({
+        key,
+        value: parsedValue,
+        type: entityType,
+      });
 
       return {
         id: entityId ?? key,
@@ -359,11 +375,15 @@ export class CacheBrowserService {
     return null;
   }
 
-  private extractEntityId(
-    key: string,
-    value: unknown,
-    type: EntityType,
-  ): string | null {
+  private extractEntityId({
+    key,
+    value,
+    type,
+  }: {
+    key: string;
+    value: unknown;
+    type: EntityType;
+  }): string | null {
     // Try to extract from parsed value first
     if (value && typeof value === "object" && value !== null) {
       const obj = value as Record<string, unknown>;
@@ -392,10 +412,13 @@ export class CacheBrowserService {
     return null;
   }
 
-  private extractBasicInfo(
-    value: unknown,
-    _type: EntityType,
-  ): CachedEntityMetadata["basicInfo"] | undefined {
+  private extractBasicInfo({
+    value,
+    _type,
+  }: {
+    value: unknown;
+    _type: EntityType;
+  }): CachedEntityMetadata["basicInfo"] | undefined {
     if (!value || typeof value !== "object" || value === null) {
       return undefined;
     }
@@ -470,20 +493,26 @@ export class CacheBrowserService {
     }
   }
 
-  private matchesTypeFilter(
-    entity: CachedEntityMetadata,
-    filters: CacheBrowserFilters,
-  ): boolean {
+  private matchesTypeFilter({
+    entity,
+    filters,
+  }: {
+    entity: CachedEntityMetadata;
+    filters: CacheBrowserFilters;
+  }): boolean {
     return (
       filters.entityTypes.has(entity.type) &&
       filters.storageLocations.has(entity.storageLocation)
     );
   }
 
-  private applyFilters(
-    entities: CachedEntityMetadata[],
-    filters: CacheBrowserFilters,
-  ): CachedEntityMetadata[] {
+  private applyFilters({
+    entities,
+    filters,
+  }: {
+    entities: CachedEntityMetadata[];
+    filters: CacheBrowserFilters;
+  }): CachedEntityMetadata[] {
     return entities.filter((entity) => {
       // Search query filter
       if (filters.searchQuery) {
@@ -518,10 +547,13 @@ export class CacheBrowserService {
     });
   }
 
-  private applySorting(
-    entities: CachedEntityMetadata[],
-    options: CacheBrowserOptions,
-  ): CachedEntityMetadata[] {
+  private applySorting({
+    entities,
+    options,
+  }: {
+    entities: CachedEntityMetadata[];
+    options: CacheBrowserOptions;
+  }): CachedEntityMetadata[] {
     return [...entities].sort((a, b) => {
       let comparison = 0;
 
@@ -549,10 +581,13 @@ export class CacheBrowserService {
     });
   }
 
-  private applyPagination(
-    entities: CachedEntityMetadata[],
-    options: CacheBrowserOptions,
-  ): CachedEntityMetadata[] {
+  private applyPagination({
+    entities,
+    options,
+  }: {
+    entities: CachedEntityMetadata[];
+    options: CacheBrowserOptions;
+  }): CachedEntityMetadata[] {
     const offset = options.offset ?? 0;
     const limit = options.limit ?? entities.length;
     return entities.slice(offset, offset + limit);
