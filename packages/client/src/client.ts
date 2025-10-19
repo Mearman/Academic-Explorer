@@ -198,10 +198,10 @@ export class OpenAlexBaseClient {
       this.rateLimitState.requestsToday >= this.config.rateLimit.requestsPerDay
     ) {
       const resetTime = new Date(this.rateLimitState.dailyResetTime);
-      throw new OpenAlexRateLimitError(
-        `Daily request limit of ${this.config.rateLimit.requestsPerDay.toString()} exceeded. Resets at ${resetTime.toISOString()}`,
-        this.rateLimitState.dailyResetTime - now,
-      );
+      throw new OpenAlexRateLimitError({
+        message: `Daily request limit of ${this.config.rateLimit.requestsPerDay} exceeded. Resets at ${resetTime.toISOString()}`,
+        retryAfter: this.rateLimitState.dailyResetTime - now,
+      });
     }
 
     // Check per-second limit
@@ -434,10 +434,10 @@ export class OpenAlexBaseClient {
       const host = new URL(url).hostname;
       const cooldownUntil = hostCooldowns.get(host);
       if (cooldownUntil && Date.now() < cooldownUntil) {
-        throw new OpenAlexRateLimitError(
-          `Host ${host} is in cooldown until ${new Date(cooldownUntil).toISOString()}`,
-          cooldownUntil - Date.now(),
-        );
+        throw new OpenAlexRateLimitError({
+          message: `Host ${host} is in cooldown until ${new Date(cooldownUntil).toISOString()}`,
+          retryAfter: cooldownUntil - Date.now(),
+        });
       }
     } catch {
       // If URL parsing fails or no cooldown, continue with normal flow
@@ -499,10 +499,10 @@ export class OpenAlexBaseClient {
       // ignore URL parsing failures
     }
 
-    throw new OpenAlexRateLimitError(
-      `Rate limit exceeded (HTTP 429) after ${String(maxRateLimitAttempts)} attempts`,
-      retryAfterMs,
-    );
+    throw new OpenAlexRateLimitError({
+      message: `Rate limit exceeded (HTTP 429) after ${maxRateLimitAttempts} attempts`,
+      retryAfter: retryAfterMs,
+    });
   }
 
   private async handleServerError(
@@ -681,7 +681,7 @@ export class OpenAlexBaseClient {
             ? this.config.retryDelay * Math.pow(2, retryCount)
             : calculateRetryDelay(retryCount, RETRY_CONFIG.network);
         await this.sleep(waitTime);
-        return this.makeRequest(url, options, retryCount + 1);
+        return this.makeRequest({ url, options, retryCount: retryCount + 1 });
       }
 
       throw new OpenAlexApiError({
@@ -700,7 +700,7 @@ export class OpenAlexBaseClient {
     schema?: z.ZodType<T>,
   ): Promise<T> {
     const url = this.buildUrl(endpoint, params);
-    const response = await this.makeRequest(url);
+    const response = await this.makeRequest({ url });
 
     // Validate content-type before parsing JSON
     const contentType = response.headers.get("content-type");

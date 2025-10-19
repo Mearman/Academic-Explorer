@@ -144,7 +144,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
         await this.cacheEntityResult({
           entityType,
           id: cleanId,
-          _data: result,
+          _data: result as OpenAlexEntity,
         });
       }
 
@@ -189,7 +189,10 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       this.requestStats.apiFallbacks++;
       logger.debug("client", "Falling back to API for entity", { id: cleanId });
 
-      return await this.tryApiFallback({ cleanId, entityType });
+      return (await this.tryApiFallback({
+        cleanId,
+        entityType,
+      })) as OpenAlexEntity | null;
     } catch (error: unknown) {
       this.requestStats.errors++;
       logger.error("client", "Failed to get entity", { id: cleanId, error });

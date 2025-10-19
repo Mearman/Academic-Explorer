@@ -128,7 +128,7 @@ export class GitHubPagesReader {
   /**
    * Fetch static data from GitHub Pages with caching and retry logic
    */
-  async fetchStaticData(path: string): Promise<unknown> {
+  async fetchStaticData<T>(path: string): Promise<T | null> {
     // Only fetch in production mode
     if (!this.isProduction) {
       logger.debug(
@@ -174,7 +174,7 @@ export class GitHubPagesReader {
         },
       );
 
-      return validatedData;
+      return data;
     } catch (error) {
       logger.error(
         "static-cache",
@@ -285,8 +285,7 @@ export class GitHubPagesReader {
       }
     }
 
-    const validatedData = validateStaticData(rawData);
-    return validatedData;
+    const validatedData = validateStaticData(rawData) as T;
 
     logger.debug(
       "static-cache",
@@ -294,11 +293,11 @@ export class GitHubPagesReader {
       {
         url,
         attempt: attempt + 1,
-        dataSize: JSON.stringify(data).length,
+        dataSize: JSON.stringify(validatedData).length,
       },
     );
 
-    return data;
+    return validatedData;
   }
 
   private async handleFetchError({
@@ -345,7 +344,7 @@ export class GitHubPagesReader {
 
     for (let attempt = 0; attempt <= this.retryConfig.maxRetries; attempt++) {
       try {
-        return await this.attemptFetch<T>(url, attempt);
+        return await this.attemptFetch<T>({ url, attempt });
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
         await this.handleFetchError({ error, url, attempt });
