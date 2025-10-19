@@ -57,6 +57,16 @@ export const noTypeAssertionsRule = createRule<[], MessageIds>({
           return;
         }
 
+        // Allow generic type assertions (T, U, etc.) in return statements
+        // This is commonly used in generic API client methods
+        if (
+          node.typeAnnotation.type === "TSTypeReference" &&
+          node.typeAnnotation.typeName.type === "Identifier" &&
+          /^[A-Z]$/.test(node.typeAnnotation.typeName.name)
+        ) {
+          return;
+        }
+
         context.report({
           node,
           messageId: "noTypeAssertion",
