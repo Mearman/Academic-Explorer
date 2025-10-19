@@ -16,7 +16,9 @@
     "node_modules",
     "**/*.test.ts",
     "**/*.spec.ts",
-    "src/test-generator/**/*"
+    "src/test-generator/**/*",
+    "vitest.config.ts",
+    "eslint.config.ts"
   ],
   "references": [{ "path": "../utils" }]
 }
