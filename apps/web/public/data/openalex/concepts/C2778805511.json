@@ -1,0 +1,374 @@
+{
+  "id": "https://openalex.org/C2778805511",
+  "wikidata": "https://www.wikidata.org/wiki/Q1713",
+  "display_name": "Citation",
+  "level": 2,
+  "description": "reference to a source",
+  "works_count": 3208076,
+  "cited_by_count": 33015924,
+  "summary_stats": {
+    "2yr_mean_citedness": 0.42650941230486683,
+    "h_index": 1370,
+    "i10_index": 471903
+  },
+  "ids": {
+    "openalex": "https://openalex.org/C2778805511",
+    "wikidata": "https://www.wikidata.org/wiki/Q1713",
+    "mag": "2778805511",
+    "wikipedia": "https://en.wikipedia.org/wiki/Citation",
+    "umls_cui": [
+      "C0552371"
+    ]
+  },
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Humanit%C3%A9s_Num%C3%A9riques.JPG",
+  "image_thumbnail_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Humanit%C3%A9s_Num%C3%A9riques.JPG/100px-Humanit%C3%A9s_Num%C3%A9riques.JPG",
+  "international": {
+    "display_name": {
+      "af": "verwysing",
+      "ar": "استشهاد",
+      "az": "Sitat",
+      "ba": "библиоһылтанма",
+      "be": "скасаванне",
+      "be-tarask": "цытата",
+      "br": "meneg",
+      "bs": "Citati",
+      "ca": "citació",
+      "cs": "citace",
+      "da": "kildehenvisning",
+      "de": "Quellenangabe",
+      "el": "παραπομπή",
+      "en": "citation",
+      "en-gb": "citation",
+      "eo": "bibliografia referenco",
+      "es": "cita",
+      "et": "allikaviide",
+      "eu": "Aipu eta erreferentzia bibliografikoak",
+      "fa": "یادکرد",
+      "fi": "lähdeviittaus",
+      "fr": "citation",
+      "gn": "Ñe'ēngambyry",
+      "ha": "Kididdiga",
+      "he": "הפניה למקור",
+      "hr": "Citiranje radova",
+      "hu": "hivatkozás",
+      "id": "rujukan",
+      "it": "citazione",
+      "ja": "参考文献",
+      "kn": "ಉಲ್ಲೇಖ",
+      "ko": "참조주",
+      "ky": "Шилтеме",
+      "mk": "навод",
+      "mn": "Ишлэл",
+      "mr": "संदर्भ",
+      "ms": "petikan",
+      "ms-arab": "ڤتيقن",
+      "nan": "Ín-chiàu",
+      "nb": "sitering",
+      "nl": "citatie",
+      "nn": "sitering",
+      "pl": "cytowanie piśmiennictwa",
+      "pt": "citação",
+      "ru": "цитирование",
+      "sh": "Citiranje",
+      "sk": "citácia",
+      "sl": "navajanje virov",
+      "sq": "Citimi",
+      "sr": "навод",
+      "sv": "källhänvisning",
+      "tr": "Kaynakça",
+      "tt": "өземтәләштерү",
+      "tt-cyrl": "өземтәләштерү",
+      "uk": "цитування",
+      "ur": "حوالہ",
+      "yue": "參考文獻",
+      "zh": "参考文献",
+      "zh-cn": "参考文献",
+      "zh-hans": "参考文献",
+      "zh-hant": "參考文獻"
+    },
+    "description": {
+      "br": "daveenn ur vammenn",
+      "da": "reference til hvor information kommer fra",
+      "de": "expliziter Verweis auf eine Informationsquelle",
+      "en": "reference to a source",
+      "en-gb": "a reference to a source",
+      "es": "referencia a una fuente publicada o no publicada",
+      "et": "viide info allikale",
+      "fa": "ذکر کردن منبع",
+      "fr": "référence vers une source d'information",
+      "gn": "kuatiahai, téra kuatiahaipyrépe oje'eva",
+      "hu": "információ forrásra történő utalás",
+      "mk": "упат кон изворот на информацијата",
+      "ms": "rujukan ke sumber",
+      "nl": "verwijzing naar een informatiebron",
+      "nn": "referanser til ei kjelde",
+      "pl": "dosłowne przytoczenie czyichś słów",
+      "pt": "referência a uma fonte de dados/informações",
+      "sv": "referens till en informationskälla",
+      "uk": "посилання на джерело"
+    }
+  },
+  "ancestors": [
+    {
+      "id": "https://openalex.org/C199539241",
+      "wikidata": "https://www.wikidata.org/wiki/Q7748",
+      "display_name": "Law",
+      "level": 1
+    },
+    {
+      "id": "https://openalex.org/C161191863",
+      "wikidata": "https://www.wikidata.org/wiki/Q199655",
+      "display_name": "Library science",
+      "level": 1
+    },
+    {
+      "id": "https://openalex.org/C136764020",
+      "wikidata": "https://www.wikidata.org/wiki/Q466",
+      "display_name": "World Wide Web",
+      "level": 1
+    },
+    {
+      "id": "https://openalex.org/C41008148",
+      "wikidata": "https://www.wikidata.org/wiki/Q21198",
+      "display_name": "Computer science",
+      "level": 0
+    },
+    {
+      "id": "https://openalex.org/C17744445",
+      "wikidata": "https://www.wikidata.org/wiki/Q36442",
+      "display_name": "Political science",
+      "level": 0
+    }
+  ],
+  "related_concepts": [
+    {
+      "id": "https://openalex.org/C97002063",
+      "wikidata": null,
+      "display_name": "Bibliography",
+      "level": 2,
+      "score": 6.726278
+    },
+    {
+      "id": "https://openalex.org/C2779455604",
+      "wikidata": null,
+      "display_name": "Impact factor",
+      "level": 2,
+      "score": 4.037565
+    },
+    {
+      "id": "https://openalex.org/C105345328",
+      "wikidata": null,
+      "display_name": "Citation analysis",
+      "level": 3,
+      "score": 3.3644755
+    },
+    {
+      "id": "https://openalex.org/C83867959",
+      "wikidata": null,
+      "display_name": "Scopus",
+      "level": 3,
+      "score": 3.0001173
+    },
+    {
+      "id": "https://openalex.org/C138368954",
+      "wikidata": null,
+      "display_name": "Peer review",
+      "level": 2,
+      "score": 2.912789
+    },
+    {
+      "id": "https://openalex.org/C2778032371",
+      "wikidata": null,
+      "display_name": "Citation index",
+      "level": 3,
+      "score": 2.7151704
+    },
+    {
+      "id": "https://openalex.org/C2781083858",
+      "wikidata": null,
+      "display_name": "Scientific literature",
+      "level": 2,
+      "score": 2.6790917
+    },
+    {
+      "id": "https://openalex.org/C30088001",
+      "wikidata": null,
+      "display_name": "Hyperlink",
+      "level": 3,
+      "score": 2.481234
+    },
+    {
+      "id": "https://openalex.org/C138708601",
+      "wikidata": null,
+      "display_name": "HTML",
+      "level": 3,
+      "score": 2.3555212
+    },
+    {
+      "id": "https://openalex.org/C110875604",
+      "wikidata": null,
+      "display_name": "The Internet",
+      "level": 2,
+      "score": 2.2285824
+    },
+    {
+      "id": "https://openalex.org/C136764020",
+      "wikidata": null,
+      "display_name": "World Wide Web",
+      "level": 1,
+      "score": 2.1259656
+    },
+    {
+      "id": "https://openalex.org/C2779980791",
+      "wikidata": null,
+      "display_name": "Bibliographic database",
+      "level": 2,
+      "score": 2.1067867
+    },
+    {
+      "id": "https://openalex.org/C77088390",
+      "wikidata": null,
+      "display_name": "Database",
+      "level": 1,
+      "score": 1.9307929
+    },
+    {
+      "id": "https://openalex.org/C36289849",
+      "wikidata": null,
+      "display_name": "Social science",
+      "level": 1,
+      "score": 1.9080886
+    },
+    {
+      "id": "https://openalex.org/C137355542",
+      "wikidata": null,
+      "display_name": "World War II",
+      "level": 2,
+      "score": 1.8595577
+    },
+    {
+      "id": "https://openalex.org/C41008148",
+      "wikidata": null,
+      "display_name": "Computer science",
+      "level": 0,
+      "score": 1.6825376
+    },
+    {
+      "id": "https://openalex.org/C178315738",
+      "wikidata": null,
+      "display_name": "Bibliometrics",
+      "level": 2,
+      "score": 1.611069
+    },
+    {
+      "id": "https://openalex.org/C2778793908",
+      "wikidata": null,
+      "display_name": "Citation impact",
+      "level": 3,
+      "score": 1.3389295
+    },
+    {
+      "id": "https://openalex.org/C2776822937",
+      "wikidata": null,
+      "display_name": "Bibliographic coupling",
+      "level": 3,
+      "score": 0.91688275
+    },
+    {
+      "id": "https://openalex.org/C2778407487",
+      "wikidata": null,
+      "display_name": "Altmetrics",
+      "level": 2,
+      "score": 0.7733297
+    }
+  ],
+  "counts_by_year": [
+    {
+      "year": 2025,
+      "works_count": 1371,
+      "oa_works_count": 388,
+      "cited_by_count": 492563
+    },
+    {
+      "year": 2024,
+      "works_count": 7403,
+      "oa_works_count": 3077,
+      "cited_by_count": 810379
+    },
+    {
+      "year": 2023,
+      "works_count": 37176,
+      "oa_works_count": 18008,
+      "cited_by_count": 884041
+    },
+    {
+      "year": 2022,
+      "works_count": 32519,
+      "oa_works_count": 10111,
+      "cited_by_count": 898031
+    },
+    {
+      "year": 2021,
+      "works_count": 41102,
+      "oa_works_count": 12869,
+      "cited_by_count": 1010926
+    },
+    {
+      "year": 2020,
+      "works_count": 61634,
+      "oa_works_count": 15597,
+      "cited_by_count": 1012138
+    },
+    {
+      "year": 2019,
+      "works_count": 44346,
+      "oa_works_count": 14556,
+      "cited_by_count": 1012138
+    },
+    {
+      "year": 2018,
+      "works_count": 45376,
+      "oa_works_count": 14742,
+      "cited_by_count": 923111
+    },
+    {
+      "year": 2017,
+      "works_count": 47839,
+      "oa_works_count": 10343,
+      "cited_by_count": 898419
+    },
+    {
+      "year": 2016,
+      "works_count": 51629,
+      "oa_works_count": 13661,
+      "cited_by_count": 910875
+    },
+    {
+      "year": 2015,
+      "works_count": 56536,
+      "oa_works_count": 8808,
+      "cited_by_count": 921857
+    },
+    {
+      "year": 2014,
+      "works_count": 47084,
+      "oa_works_count": 8145,
+      "cited_by_count": 952856
+    },
+    {
+      "year": 2013,
+      "works_count": 43835,
+      "oa_works_count": 7444,
+      "cited_by_count": 947555
+    },
+    {
+      "year": 2012,
+      "works_count": 68433,
+      "oa_works_count": 8390,
+      "cited_by_count": 911501
+    }
+  ],
+  "works_api_url": "https://api.openalex.org/works?filter=concepts.id:C2778805511",
+  "updated_date": "2025-10-19T14:30:40.331550",
+  "created_date": "2018-01-05"
+}

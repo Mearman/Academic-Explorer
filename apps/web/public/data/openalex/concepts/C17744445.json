@@ -1,0 +1,494 @@
+{
+  "id": "https://openalex.org/C17744445",
+  "wikidata": "https://www.wikidata.org/wiki/Q36442",
+  "display_name": "Political science",
+  "level": 0,
+  "description": "social science concerned with the study of politics and political systems",
+  "works_count": 39095631,
+  "cited_by_count": 252183898,
+  "summary_stats": {
+    "2yr_mean_citedness": 1.051090676060235,
+    "h_index": 2624,
+    "i10_index": 3919301
+  },
+  "ids": {
+    "openalex": "https://openalex.org/C17744445",
+    "wikidata": "https://www.wikidata.org/wiki/Q36442",
+    "mag": "17744445",
+    "wikipedia": "https://en.wikipedia.org/wiki/Political%20science",
+    "umls_cui": [
+      "C0335116"
+    ]
+  },
+  "image_url": null,
+  "image_thumbnail_url": null,
+  "international": {
+    "display_name": {
+      "af": "politieke wetenskap",
+      "am": "የፖለቲካ ጥናት",
+      "ar": "علوم سياسية",
+      "ary": "العلوم تاع السياسية",
+      "arz": "علوم سياسيه",
+      "ast": "ciencies polítiques",
+      "az": "politologiya",
+      "azb": "سیاسی علم",
+      "ba": "политология",
+      "be": "паліталогія",
+      "be-tarask": "паліталёгія",
+      "bg": "Политология",
+      "bho": "राजनीति विज्ञान",
+      "bn": "রাষ্ট্রবিজ্ঞান",
+      "br": "skiantoù politikel",
+      "bs": "političke nauke",
+      "ca": "ciències polítiques",
+      "ceb": "Siyensiya sa politika",
+      "ckb": "زانستی سیاسی",
+      "cs": "politologie",
+      "csb": "Pòlitologijô",
+      "cy": "gwyddor gwleidyddiaeth",
+      "da": "statskundskab",
+      "de": "Politikwissenschaft",
+      "diq": "Politolociye",
+      "el": "πολιτική επιστήμη",
+      "en": "political science",
+      "en-gb": "political science",
+      "eo": "politika scienco",
+      "es": "ciencia política",
+      "et": "politoloogia",
+      "eu": "politika zientzia",
+      "fa": "علم سیاست",
+      "fi": "politiikan tutkimus",
+      "fo": "Stjórnmálafrøði",
+      "fr": "science politique",
+      "fur": "Siencis politichis",
+      "fy": "Politikology",
+      "ga": "eolaíocht pholaitiúil",
+      "gcr": "Syans politik",
+      "gd": "saidheansan poileataigeach",
+      "gl": "ciencia política",
+      "gu": "રાજનૈતિક વિજ્ઞાન",
+      "gv": "Oaylleeaght pholitickagh",
+      "he": "מדע המדינה",
+      "hi": "राजनीति विज्ञान",
+      "hr": "političke znanosti",
+      "ht": "Syans politik",
+      "hu": "politikatudomány",
+      "hy": "Քաղաքագիտություն",
+      "hyw": "Քաղաքագիտութիւն",
+      "id": "ilmu politik",
+      "ie": "political scientie",
+      "is": "stjórnmálafræði",
+      "it": "scienza politica",
+      "ja": "政治学",
+      "jam": "Palitikal sayans",
+      "jv": "Èlmu pulitik",
+      "ka": "პოლიტოლოგია",
+      "kbp": "Politiki tɩlɩyɛ lɩmaɣza",
+      "kk": "Саясаттану",
+      "ko": "정치학",
+      "ku": "siyasetnasî",
+      "ku-latn": "siyasetnasî",
+      "ky": "Саясий илимдер",
+      "li": "Politicologie",
+      "lij": "sciensa politica",
+      "lt": "politologija",
+      "lv": "politoloģija",
+      "mi": "mātauranga tōrangapū",
+      "mk": "политички науки",
+      "ml": "രാഷ്ട്രതന്ത്രം",
+      "mr": "राज्यशास्त्र",
+      "ms": "sains politik",
+      "ms-arab": "ساءين‌س ڤوليتيک",
+      "mwl": "ciéncia política",
+      "my": "နိုင်ငံရေးသိပ္ပံ",
+      "nb": "statsvitenskap",
+      "ne": "राजनीति विज्ञान",
+      "nl": "politicologie",
+      "nn": "statsvitskap",
+      "nov": "politikal sientie",
+      "or": "ରାଜନୀତି ବିଜ୍ଞାନ",
+      "pa": "ਰਾਜਨੀਤੀ ਵਿਗਿਆਨ",
+      "pam": "pamagaral politiku",
+      "pl": "politologia",
+      "pt": "ciência política",
+      "pt-br": "ciência política",
+      "ro": "politologie",
+      "ru": "политология",
+      "rue": "Політолоґія",
+      "sat": "ᱞᱟᱠᱪᱟᱨ ᱥᱟᱬᱮᱥ",
+      "sc": "Iscièntzia Polìtica",
+      "se": "stáhtaoahppu",
+      "sh": "političke nauke",
+      "si": "දේශපාලන විද්‍යාව",
+      "sk": "politológia",
+      "sl": "politične znanosti",
+      "smn": "staatâoppâ",
+      "sms": "valdiamätt",
+      "sq": "shkenca politike",
+      "sr": "политичке науке",
+      "sr-ec": "политичке науке",
+      "sv": "statsvetenskap",
+      "ta": "அரசறிவியல்",
+      "te": "రాజనీతి శాస్త్రము",
+      "tg": "сиёсатшиносӣ",
+      "th": "รัฐศาสตร์",
+      "tl": "Agham pampolitika",
+      "tr": "siyaset bilimi",
+      "uk": "політологія",
+      "ur": "سیاسیات",
+      "vi": "chính trị học",
+      "war": "Syensya panpolitika",
+      "wuu": "政治学",
+      "yo": "sáyẹ́nsì òṣèlú",
+      "yue": "政治學",
+      "za": "cwngciyoz",
+      "zh": "政治學",
+      "zh-cn": "政治学",
+      "zh-hans": "政治学",
+      "zh-hant": "政治學",
+      "zh-hk": "政治學",
+      "zh-mo": "政治學",
+      "zh-my": "政治学",
+      "zh-sg": "政治学",
+      "zh-tw": "政治學"
+    },
+    "description": {
+      "ar": "من تخصصات العلوم الاجتماعية،تهتم بدراسة السياسة والانظمة السياسية والدساتير المرتبطة بها",
+      "ary": "علم اجتماعي كيديها فالدراسة تاع السياسات ؤ نظم الحكم",
+      "ba": "сәйәсәт тураһындағы фән",
+      "bn": "সমাজবিজ্ঞানের একটি শাখাবিশেষ",
+      "ca": "ciència social que estudia la política i els sistemes polítics",
+      "cs": "společenská věda o politice a politické teorii",
+      "de": "Teil der Sozialwissenschaft für Politik, Regierungssystem und Staat",
+      "en": "social science concerned with the study of politics and political systems",
+      "eo": "socia scienco pri politikaj sistemoj",
+      "es": "ciencia social que estudia la teoría y práctica de la política",
+      "fa": "رشته تحصیلی در دانشگاه زیر گروه علوم انسانی",
+      "fi": "poliittisia ilmiöitä tutkiva tieteenhaara",
+      "fr": "discipline consistant à étudier les processus politiques",
+      "gl": "ciencia social adicada ó estudo das ideas e sistemas políticos",
+      "he": "ענף במדעי החברה",
+      "id": "cabang ilmu sosial | Ilmu sosial yang berurusan dengan ilmu politik dan sistem politik",
+      "it": "scienza sociale che studia il fenomeno politico",
+      "ja": "政治を対象とする学問分野",
+      "ko": "정치, 또는 정치 체계에 대하여 연구하는 사회과학 학문",
+      "mk": "општествени науки што се занимаваат со политиката и политичките системи",
+      "mr": "भारतीय संविधान",
+      "nl": "wetenschap van de politiek",
+      "pa": "ਰਾਜਨੀਤੀ ਅਤੇ ਰਾਜਨੀਤਿਕ ਪ੍ਰਣਾਲੀਆਂ ਦੇ ਅਧਿਐਨ ਨਾਲ ਸਬੰਧਤ ਸਮਾਜਿਕ ਵਿਗਿਆਨ",
+      "pl": "nauka społeczna",
+      "pt": "estudo empírico da política",
+      "ro": "știință socială care se ocupă cu studiul politicii și sistemelor politice",
+      "ru": "общественная наука, направленная на изучение политики и политических систем",
+      "sco": "social science discipline concerned wi the study o the state, naition, govrenment, an politics an policies o govrenment",
+      "sk": "veda o inštitucionálnych podobách, procesoch, obsahoch a normatívnych základoch politiky",
+      "tr": "siyasi teorileri ve siyasi teorilerin pratiklerini inceleyen, siyasi sistemler ve siyasi davranışlar alanıyla ilgilenen bir sosyal bilim",
+      "uk": "дисципліна",
+      "zh": "研究政治領域的學科",
+      "zh-hk": "研究政治領域的學科",
+      "zh-tw": "研究政治領域的學科"
+    }
+  },
+  "ancestors": [],
+  "related_concepts": [
+    {
+      "id": "https://openalex.org/C144024400",
+      "wikidata": null,
+      "display_name": "Sociology",
+      "level": 0,
+      "score": 163.40619
+    },
+    {
+      "id": "https://openalex.org/C162324750",
+      "wikidata": null,
+      "display_name": "Economics",
+      "level": 0,
+      "score": 139.76366
+    },
+    {
+      "id": "https://openalex.org/C95457728",
+      "wikidata": null,
+      "display_name": "History",
+      "level": 0,
+      "score": 102.660484
+    },
+    {
+      "id": "https://openalex.org/C36289849",
+      "wikidata": null,
+      "display_name": "Social science",
+      "level": 1,
+      "score": 95.13162
+    },
+    {
+      "id": "https://openalex.org/C15744967",
+      "wikidata": null,
+      "display_name": "Psychology",
+      "level": 0,
+      "score": 89.73422
+    },
+    {
+      "id": "https://openalex.org/C138885662",
+      "wikidata": null,
+      "display_name": "Philosophy",
+      "level": 0,
+      "score": 65.79948
+    },
+    {
+      "id": "https://openalex.org/C199539241",
+      "wikidata": null,
+      "display_name": "Law",
+      "level": 1,
+      "score": 54.419907
+    },
+    {
+      "id": "https://openalex.org/C3116431",
+      "wikidata": null,
+      "display_name": "Public administration",
+      "level": 1,
+      "score": 47.759674
+    },
+    {
+      "id": "https://openalex.org/C33923547",
+      "wikidata": null,
+      "display_name": "Mathematics",
+      "level": 0,
+      "score": 46.448383
+    },
+    {
+      "id": "https://openalex.org/C19165224",
+      "wikidata": null,
+      "display_name": "Anthropology",
+      "level": 1,
+      "score": 46.4482
+    },
+    {
+      "id": "https://openalex.org/C121332964",
+      "wikidata": null,
+      "display_name": "Physics",
+      "level": 0,
+      "score": 42.336998
+    },
+    {
+      "id": "https://openalex.org/C41008148",
+      "wikidata": null,
+      "display_name": "Computer science",
+      "level": 0,
+      "score": 35.794933
+    },
+    {
+      "id": "https://openalex.org/C86803240",
+      "wikidata": null,
+      "display_name": "Biology",
+      "level": 0,
+      "score": 31.628723
+    },
+    {
+      "id": "https://openalex.org/C205649164",
+      "wikidata": null,
+      "display_name": "Geography",
+      "level": 0,
+      "score": 27.850567
+    },
+    {
+      "id": "https://openalex.org/C185592680",
+      "wikidata": null,
+      "display_name": "Chemistry",
+      "level": 0,
+      "score": 26.148746
+    },
+    {
+      "id": "https://openalex.org/C187736073",
+      "wikidata": null,
+      "display_name": "Management",
+      "level": 1,
+      "score": 23.966406
+    },
+    {
+      "id": "https://openalex.org/C15708023",
+      "wikidata": null,
+      "display_name": "Humanities",
+      "level": 1,
+      "score": 23.162395
+    },
+    {
+      "id": "https://openalex.org/C138921699",
+      "wikidata": null,
+      "display_name": "Political economy",
+      "level": 1,
+      "score": 21.562206
+    },
+    {
+      "id": "https://openalex.org/C178550888",
+      "wikidata": null,
+      "display_name": "Business administration",
+      "level": 1,
+      "score": 16.111261
+    },
+    {
+      "id": "https://openalex.org/C46312422",
+      "wikidata": null,
+      "display_name": "Communication",
+      "level": 1,
+      "score": 15.103402
+    },
+    {
+      "id": "https://openalex.org/C29595303",
+      "wikidata": null,
+      "display_name": "Media studies",
+      "level": 1,
+      "score": 12.508687
+    },
+    {
+      "id": "https://openalex.org/C77805123",
+      "wikidata": null,
+      "display_name": "Social psychology",
+      "level": 1,
+      "score": 11.507452
+    },
+    {
+      "id": "https://openalex.org/C39549134",
+      "wikidata": null,
+      "display_name": "Public relations",
+      "level": 1,
+      "score": 10.807318
+    },
+    {
+      "id": "https://openalex.org/C39432304",
+      "wikidata": null,
+      "display_name": "Environmental science",
+      "level": 0,
+      "score": 8.854418
+    },
+    {
+      "id": "https://openalex.org/C73484699",
+      "wikidata": null,
+      "display_name": "Criminology",
+      "level": 1,
+      "score": 8.425199
+    },
+    {
+      "id": "https://openalex.org/C24667770",
+      "wikidata": null,
+      "display_name": "Religious studies",
+      "level": 1,
+      "score": 7.6981
+    },
+    {
+      "id": "https://openalex.org/C19417346",
+      "wikidata": null,
+      "display_name": "Pedagogy",
+      "level": 1,
+      "score": 7.4908304
+    },
+    {
+      "id": "https://openalex.org/C107993555",
+      "wikidata": null,
+      "display_name": "Gender studies",
+      "level": 1,
+      "score": 6.7054815
+    },
+    {
+      "id": "https://openalex.org/C45355965",
+      "wikidata": null,
+      "display_name": "Socioeconomics",
+      "level": 1,
+      "score": 4.498757
+    },
+    {
+      "id": "https://openalex.org/C118084267",
+      "wikidata": null,
+      "display_name": "Positive economics",
+      "level": 1,
+      "score": 1.0603601
+    }
+  ],
+  "counts_by_year": [
+    {
+      "year": 2025,
+      "works_count": 659996,
+      "oa_works_count": 90956,
+      "cited_by_count": 11233271
+    },
+    {
+      "year": 2024,
+      "works_count": 1099051,
+      "oa_works_count": 400866,
+      "cited_by_count": 18073019
+    },
+    {
+      "year": 2023,
+      "works_count": 1343275,
+      "oa_works_count": 688948,
+      "cited_by_count": 19051620
+    },
+    {
+      "year": 2022,
+      "works_count": 1277055,
+      "oa_works_count": 646856,
+      "cited_by_count": 17440359
+    },
+    {
+      "year": 2021,
+      "works_count": 1515478,
+      "oa_works_count": 619633,
+      "cited_by_count": 18273782
+    },
+    {
+      "year": 2020,
+      "works_count": 1715726,
+      "oa_works_count": 562091,
+      "cited_by_count": 16943776
+    },
+    {
+      "year": 2019,
+      "works_count": 1618090,
+      "oa_works_count": 451738,
+      "cited_by_count": 14645963
+    },
+    {
+      "year": 2018,
+      "works_count": 1600268,
+      "oa_works_count": 393181,
+      "cited_by_count": 12057528
+    },
+    {
+      "year": 2017,
+      "works_count": 1602627,
+      "oa_works_count": 333125,
+      "cited_by_count": 10621366
+    },
+    {
+      "year": 2016,
+      "works_count": 1616934,
+      "oa_works_count": 295136,
+      "cited_by_count": 10116495
+    },
+    {
+      "year": 2015,
+      "works_count": 1537147,
+      "oa_works_count": 246030,
+      "cited_by_count": 9937544
+    },
+    {
+      "year": 2014,
+      "works_count": 1491389,
+      "oa_works_count": 210554,
+      "cited_by_count": 9707411
+    },
+    {
+      "year": 2013,
+      "works_count": 1420488,
+      "oa_works_count": 181376,
+      "cited_by_count": 8879663
+    },
+    {
+      "year": 2012,
+      "works_count": 1339461,
+      "oa_works_count": 157681,
+      "cited_by_count": 8119036
+    }
+  ],
+  "works_api_url": "https://api.openalex.org/works?filter=concepts.id:C17744445",
+  "updated_date": "2025-10-19T12:58:30.745499",
+  "created_date": "2016-06-24"
+}

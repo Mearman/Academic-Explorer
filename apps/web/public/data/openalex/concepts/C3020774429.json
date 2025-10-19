@@ -1,0 +1,219 @@
+{
+  "id": "https://openalex.org/C3020774429",
+  "wikidata": "https://www.wikidata.org/wiki/Q1201886",
+  "display_name": "Web of science",
+  "level": 3,
+  "description": "online subscription index of citations",
+  "works_count": 30463,
+  "cited_by_count": 528936,
+  "summary_stats": {
+    "2yr_mean_citedness": 3.2423940149625934,
+    "h_index": 254,
+    "i10_index": 8681
+  },
+  "ids": {
+    "openalex": "https://openalex.org/C3020774429",
+    "wikidata": "https://www.wikidata.org/wiki/Q1201886",
+    "mag": "3020774429",
+    "wikipedia": "https://en.wikipedia.org/wiki/Web%20of%20Science"
+  },
+  "image_url": null,
+  "image_thumbnail_url": null,
+  "international": {
+    "display_name": {
+      "ar": "شبكة العلوم",
+      "be": "Web of Science",
+      "be-tarask": "Павуціньне навукі",
+      "ca": "Web of Science",
+      "cs": "Web of Science",
+      "da": "Web of Science",
+      "de": "Web of Science",
+      "en": "Web of Science",
+      "eo": "Web of Science",
+      "es": "Web of Science",
+      "fa": "وب آو ساینس",
+      "fi": "Web of Science",
+      "fo": "Web of Science",
+      "fr": "Web of Science",
+      "hr": "Web of Science",
+      "id": "Web of Science",
+      "is": "Web of Science",
+      "it": "Web of Science",
+      "ja": "Web of Science",
+      "kl": "Web of Science",
+      "ko": "Web of Science",
+      "ky": "Web of Science",
+      "nb": "Web of Science",
+      "nl": "Web of Science",
+      "nn": "Web of Science",
+      "pt": "Web of Science",
+      "ru": "Web of Science",
+      "sl": "Web of Science",
+      "sv": "Web of Science",
+      "ta": "அறிவியல் வலை",
+      "tr": "Web of Science",
+      "uk": "Web of Science",
+      "vi": "Web of Science",
+      "zh": "Web of Science"
+    },
+    "description": {
+      "ca": "servei d'informació científica i d'indexació en línia",
+      "de": "Literatur- und Zitationsdatenbank",
+      "en": "online subscription index of citations",
+      "es": "Web of Sciencie",
+      "fr": "plateforme d’information scientifique et technique"
+    }
+  },
+  "ancestors": [
+    {
+      "id": "https://openalex.org/C2779473830",
+      "wikidata": "https://www.wikidata.org/wiki/Q1540899",
+      "display_name": "MEDLINE",
+      "level": 2
+    },
+    {
+      "id": "https://openalex.org/C95190672",
+      "wikidata": "https://www.wikidata.org/wiki/Q815382",
+      "display_name": "Meta-analysis",
+      "level": 2
+    },
+    {
+      "id": "https://openalex.org/C55493867",
+      "wikidata": "https://www.wikidata.org/wiki/Q7094",
+      "display_name": "Biochemistry",
+      "level": 1
+    },
+    {
+      "id": "https://openalex.org/C126322002",
+      "wikidata": "https://www.wikidata.org/wiki/Q11180",
+      "display_name": "Internal medicine",
+      "level": 1
+    },
+    {
+      "id": "https://openalex.org/C199539241",
+      "wikidata": "https://www.wikidata.org/wiki/Q7748",
+      "display_name": "Law",
+      "level": 1
+    },
+    {
+      "id": "https://openalex.org/C142724271",
+      "wikidata": "https://www.wikidata.org/wiki/Q7208",
+      "display_name": "Pathology",
+      "level": 1
+    },
+    {
+      "id": "https://openalex.org/C86803240",
+      "wikidata": "https://www.wikidata.org/wiki/Q420",
+      "display_name": "Biology",
+      "level": 0
+    },
+    {
+      "id": "https://openalex.org/C185592680",
+      "wikidata": "https://www.wikidata.org/wiki/Q2329",
+      "display_name": "Chemistry",
+      "level": 0
+    },
+    {
+      "id": "https://openalex.org/C71924100",
+      "wikidata": "https://www.wikidata.org/wiki/Q11190",
+      "display_name": "Medicine",
+      "level": 0
+    },
+    {
+      "id": "https://openalex.org/C17744445",
+      "wikidata": "https://www.wikidata.org/wiki/Q36442",
+      "display_name": "Political science",
+      "level": 0
+    }
+  ],
+  "related_concepts": [],
+  "counts_by_year": [
+    {
+      "year": 2025,
+      "works_count": 1181,
+      "oa_works_count": 498,
+      "cited_by_count": 57288
+    },
+    {
+      "year": 2024,
+      "works_count": 2325,
+      "oa_works_count": 1558,
+      "cited_by_count": 83590
+    },
+    {
+      "year": 2023,
+      "works_count": 4241,
+      "oa_works_count": 3084,
+      "cited_by_count": 75117
+    },
+    {
+      "year": 2022,
+      "works_count": 3779,
+      "oa_works_count": 2687,
+      "cited_by_count": 61093
+    },
+    {
+      "year": 2021,
+      "works_count": 3219,
+      "oa_works_count": 2071,
+      "cited_by_count": 49580
+    },
+    {
+      "year": 2020,
+      "works_count": 2596,
+      "oa_works_count": 1479,
+      "cited_by_count": 36047
+    },
+    {
+      "year": 2019,
+      "works_count": 1664,
+      "oa_works_count": 899,
+      "cited_by_count": 24810
+    },
+    {
+      "year": 2018,
+      "works_count": 1414,
+      "oa_works_count": 638,
+      "cited_by_count": 19835
+    },
+    {
+      "year": 2017,
+      "works_count": 1065,
+      "oa_works_count": 486,
+      "cited_by_count": 16175
+    },
+    {
+      "year": 2016,
+      "works_count": 959,
+      "oa_works_count": 409,
+      "cited_by_count": 14053
+    },
+    {
+      "year": 2015,
+      "works_count": 856,
+      "oa_works_count": 309,
+      "cited_by_count": 12486
+    },
+    {
+      "year": 2014,
+      "works_count": 774,
+      "oa_works_count": 246,
+      "cited_by_count": 10303
+    },
+    {
+      "year": 2013,
+      "works_count": 735,
+      "oa_works_count": 215,
+      "cited_by_count": 8835
+    },
+    {
+      "year": 2012,
+      "works_count": 649,
+      "oa_works_count": 159,
+      "cited_by_count": 7422
+    }
+  ],
+  "works_api_url": "https://api.openalex.org/works?filter=concepts.id:C3020774429",
+  "updated_date": "2025-10-19T13:24:08.867221",
+  "created_date": "2020-05-01"
+}

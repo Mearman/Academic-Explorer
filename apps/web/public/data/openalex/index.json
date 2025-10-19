@@ -1,9 +1,9 @@
 {
-  "lastUpdated": "2025-10-12T21:29:20.805Z",
+  "lastUpdated": "2025-10-19T18:48:28.339Z",
   "directories": {
     "authors": {
       "$ref": "./authors",
-      "lastModified": "2025-10-12T20:38:11.303Z"
+      "lastModified": "2025-10-19T18:42:13.094Z"
     },
     "autocomplete": {
       "$ref": "./autocomplete",
@@ -11,7 +11,7 @@
     },
     "concepts": {
       "$ref": "./concepts",
-      "lastModified": "2025-10-12T21:29:20.718Z"
+      "lastModified": "2025-10-19T18:48:27.519Z"
     },
     "funders": {
       "$ref": "./funders",
@@ -19,7 +19,7 @@
     },
     "institutions": {
       "$ref": "./institutions",
-      "lastModified": "2025-10-12T21:10:37.773Z"
+      "lastModified": "2025-10-19T18:40:40.585Z"
     },
     "sources": {
       "$ref": "./sources",
@@ -31,7 +31,7 @@
     },
     "works": {
       "$ref": "./works",
-      "lastModified": "2025-10-12T20:38:11.303Z"
+      "lastModified": "2025-10-19T18:40:40.585Z"
     }
   },
   "files": {

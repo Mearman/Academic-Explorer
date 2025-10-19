@@ -1,0 +1,278 @@
+{
+  "id": "https://openalex.org/C2778149293",
+  "wikidata": "https://www.wikidata.org/wiki/Q309823",
+  "display_name": "Open science",
+  "level": 2,
+  "description": "scientific research performed in public",
+  "works_count": 9047,
+  "cited_by_count": 109026,
+  "summary_stats": {
+    "2yr_mean_citedness": 1.4400684931506849,
+    "h_index": 135,
+    "i10_index": 1585
+  },
+  "ids": {
+    "openalex": "https://openalex.org/C2778149293",
+    "wikidata": "https://www.wikidata.org/wiki/Q309823",
+    "mag": "2778149293",
+    "wikipedia": "https://en.wikipedia.org/wiki/Open%20science"
+  },
+  "image_url": null,
+  "image_thumbnail_url": null,
+  "international": {
+    "display_name": {
+      "ar": "فتح العلوم",
+      "az": "Açıq elm",
+      "be-tarask": "адкрытая навука",
+      "bg": "Отворена наука",
+      "bn": "উন্মুক্ত বিজ্ঞান",
+      "bs": "otvorena nauka",
+      "ca": "ciència oberta",
+      "cs": "Otevřená věda",
+      "da": "åben videnskab",
+      "de": "Offene Wissenschaft",
+      "en": "open science",
+      "en-ca": "Open science",
+      "en-gb": "Open science",
+      "eo": "malfermita scienco",
+      "es": "ciencia abierta",
+      "et": "Avatud teadus",
+      "eu": "Zientzia irekia",
+      "fa": "علوم باز",
+      "fi": "avoin tiede",
+      "fr": "science ouverte",
+      "he": "מדע פתוח",
+      "hi": "मुक्त विज्ञान",
+      "hy": "Բաց գիտություն",
+      "id": "sains terbuka",
+      "it": "open science",
+      "ja": "オープン・サイエンス",
+      "nb": "åpen vitenskap",
+      "new": "खुला विज्ञान",
+      "nl": "open science",
+      "pl": "otwarta nauka",
+      "pt": "ciência aberta",
+      "ru": "открытая наука",
+      "sq": "Shkenca e hapur",
+      "sr": "отворена наука",
+      "sv": "öppen vetenskap",
+      "tr": "Açık bilim",
+      "uk": "Відкрита наука",
+      "yue": "開放科學",
+      "zh": "開放科學"
+    },
+    "description": {
+      "be-tarask": "публічныя навуковыя дасьледаваньні",
+      "de": "öffentlich nachvollziehbar durchgeführte Forschung",
+      "en": "scientific research performed in public",
+      "es": "Movimiento cuyo objetivo es hacer la ciencia más abierta, accesible, eficiente, democrática y transparente, y ser aprovechados por la sociedad",
+      "fr": "pratiques scientifiques publiques",
+      "hy": "Գիտական հետազոտությունները բաց են հանրության համար",
+      "it": "ricerca scientifica condotta in modo aperto",
+      "ja": "非専門家であっても学術的研究や調査結果、その他の情報にアクセスしたり、研究活動に多様な方法で参加したりできるようにする様々な運動",
+      "pl": "badania naukowe przeprowadzane publicznie",
+      "sr": "научно истраживање које се обавља у јавности"
+    }
+  },
+  "ancestors": [
+    {
+      "id": "https://openalex.org/C1276947",
+      "wikidata": "https://www.wikidata.org/wiki/Q333",
+      "display_name": "Astronomy",
+      "level": 1
+    },
+    {
+      "id": "https://openalex.org/C105795698",
+      "wikidata": "https://www.wikidata.org/wiki/Q12483",
+      "display_name": "Statistics",
+      "level": 1
+    },
+    {
+      "id": "https://openalex.org/C33923547",
+      "wikidata": "https://www.wikidata.org/wiki/Q395",
+      "display_name": "Mathematics",
+      "level": 0
+    },
+    {
+      "id": "https://openalex.org/C121332964",
+      "wikidata": "https://www.wikidata.org/wiki/Q413",
+      "display_name": "Physics",
+      "level": 0
+    }
+  ],
+  "related_concepts": [
+    {
+      "id": "https://openalex.org/C2780535194",
+      "wikidata": null,
+      "display_name": "Open data",
+      "level": 2,
+      "score": 4.476278
+    },
+    {
+      "id": "https://openalex.org/C2778464652",
+      "wikidata": null,
+      "display_name": "Open research",
+      "level": 2,
+      "score": 3.880424
+    },
+    {
+      "id": "https://openalex.org/C197352329",
+      "wikidata": null,
+      "display_name": "Citizen science",
+      "level": 2,
+      "score": 3.22287
+    },
+    {
+      "id": "https://openalex.org/C2779965156",
+      "wikidata": null,
+      "display_name": "Data sharing",
+      "level": 3,
+      "score": 2.0370607
+    },
+    {
+      "id": "https://openalex.org/C2781396290",
+      "wikidata": null,
+      "display_name": "Data publishing",
+      "level": 3,
+      "score": 1.8401698
+    },
+    {
+      "id": "https://openalex.org/C138368954",
+      "wikidata": null,
+      "display_name": "Peer review",
+      "level": 2,
+      "score": 1.8385944
+    },
+    {
+      "id": "https://openalex.org/C9893847",
+      "wikidata": null,
+      "display_name": "Reproducibility",
+      "level": 2,
+      "score": 1.6396858
+    },
+    {
+      "id": "https://openalex.org/C517757529",
+      "wikidata": null,
+      "display_name": "e-Science",
+      "level": 3,
+      "score": 1.3607395
+    },
+    {
+      "id": "https://openalex.org/C2781083858",
+      "wikidata": null,
+      "display_name": "Scientific literature",
+      "level": 2,
+      "score": 1.2302052
+    },
+    {
+      "id": "https://openalex.org/C85659524",
+      "wikidata": null,
+      "display_name": "History of science",
+      "level": 2,
+      "score": 1.1119907
+    },
+    {
+      "id": "https://openalex.org/C459310",
+      "wikidata": null,
+      "display_name": "Computational science",
+      "level": 1,
+      "score": 1.103144
+    },
+    {
+      "id": "https://openalex.org/C2778407487",
+      "wikidata": null,
+      "display_name": "Altmetrics",
+      "level": 2,
+      "score": 0.84601605
+    }
+  ],
+  "counts_by_year": [
+    {
+      "year": 2025,
+      "works_count": 346,
+      "oa_works_count": 83,
+      "cited_by_count": 7873
+    },
+    {
+      "year": 2024,
+      "works_count": 553,
+      "oa_works_count": 292,
+      "cited_by_count": 13224
+    },
+    {
+      "year": 2023,
+      "works_count": 837,
+      "oa_works_count": 581,
+      "cited_by_count": 13681
+    },
+    {
+      "year": 2022,
+      "works_count": 909,
+      "oa_works_count": 640,
+      "cited_by_count": 13627
+    },
+    {
+      "year": 2021,
+      "works_count": 837,
+      "oa_works_count": 508,
+      "cited_by_count": 13633
+    },
+    {
+      "year": 2020,
+      "works_count": 884,
+      "oa_works_count": 478,
+      "cited_by_count": 11052
+    },
+    {
+      "year": 2019,
+      "works_count": 721,
+      "oa_works_count": 356,
+      "cited_by_count": 7797
+    },
+    {
+      "year": 2018,
+      "works_count": 616,
+      "oa_works_count": 288,
+      "cited_by_count": 5900
+    },
+    {
+      "year": 2017,
+      "works_count": 562,
+      "oa_works_count": 237,
+      "cited_by_count": 4983
+    },
+    {
+      "year": 2016,
+      "works_count": 494,
+      "oa_works_count": 223,
+      "cited_by_count": 3715
+    },
+    {
+      "year": 2015,
+      "works_count": 400,
+      "oa_works_count": 143,
+      "cited_by_count": 2785
+    },
+    {
+      "year": 2014,
+      "works_count": 315,
+      "oa_works_count": 150,
+      "cited_by_count": 2246
+    },
+    {
+      "year": 2013,
+      "works_count": 254,
+      "oa_works_count": 122,
+      "cited_by_count": 1524
+    },
+    {
+      "year": 2012,
+      "works_count": 226,
+      "oa_works_count": 86,
+      "cited_by_count": 1129
+    }
+  ],
+  "works_api_url": "https://api.openalex.org/works?filter=concepts.id:C2778149293",
+  "updated_date": "2025-10-19T14:36:00.482213",
+  "created_date": "2018-01-05"
+}

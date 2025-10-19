@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-10-12T21:10:37.881Z",
+  "lastUpdated": "2025-10-19T18:42:30.055Z",
   "files": {
     "I114027177": {
       "url": "https://api.openalex.org/institutions/I114027177",
@@ -57,7 +57,7 @@
     },
     "queries": {
       "$ref": "./queries",
-      "lastModified": "2025-10-11T21:16:11.339Z"
+      "lastModified": "2025-10-19T18:42:29.931Z"
     }
   }
 }

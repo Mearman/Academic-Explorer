@@ -1,0 +1,451 @@
+{
+  "id": "https://openalex.org/C2780560020",
+  "wikidata": "https://www.wikidata.org/wiki/Q79719",
+  "display_name": "License",
+  "level": 2,
+  "description": "set of permissions and restrictions to use something",
+  "works_count": 70835,
+  "cited_by_count": 619471,
+  "summary_stats": {
+    "2yr_mean_citedness": 1.2599609919197547,
+    "h_index": 252,
+    "i10_index": 7962
+  },
+  "ids": {
+    "openalex": "https://openalex.org/C2780560020",
+    "wikidata": "https://www.wikidata.org/wiki/Q79719",
+    "mag": "2780560020",
+    "wikipedia": "https://en.wikipedia.org/wiki/License",
+    "umls_cui": [
+      "C0023636"
+    ]
+  },
+  "image_url": null,
+  "image_thumbnail_url": null,
+  "international": {
+    "display_name": {
+      "ar": "تصريح",
+      "ast": "llicencia",
+      "az": "Lisenziya",
+      "be": "Ліцэнзія",
+      "be-tarask": "ліцэнзія",
+      "bg": "Лиценз",
+      "bn": "লাইসেন্স",
+      "bs": "licenca",
+      "ca": "llicència",
+      "ce": "лицензи",
+      "cs": "licence",
+      "da": "licens",
+      "de": "Lizenz",
+      "diq": "Lisans",
+      "el": "άδεια",
+      "en": "license",
+      "en-ca": "licence",
+      "en-gb": "licence",
+      "eo": "permesilo",
+      "es": "licencia",
+      "et": "litsents",
+      "fa": "پروانه",
+      "fi": "lisenssi",
+      "fr": "licence",
+      "fy": "Lisinsje",
+      "ga": "ceadúnas",
+      "gl": "licenza",
+      "he": "רישיון",
+      "hi": "लाइसेंस",
+      "hr": "Licencija",
+      "hsb": "Dataja:Verbascum phoeniceum 6.jpg",
+      "ht": "Lisans",
+      "hu": "licenc",
+      "hy": "Արտոնագիր",
+      "id": "Lisensi",
+      "ilo": "lisensia",
+      "it": "licenza",
+      "ja": "利用許諾",
+      "kk": "Лицензиялық келісім",
+      "kn": "ಪರವಾನಗಿ",
+      "ko": "면허",
+      "ku": "Destûrname",
+      "ky": "Лицензия",
+      "la": "Licentia",
+      "lb": "Lizenz",
+      "lt": "Licencija",
+      "lv": "licence",
+      "mhr": "лицензий",
+      "mk": "лиценца",
+      "ml": "ഉപയോഗാനുമതി",
+      "ms": "lesen",
+      "nb": "konsesjon",
+      "nds-nl": "licentie",
+      "nl": "licentie",
+      "nn": "konsesjon",
+      "pa": "ਲਸੰਸ",
+      "pl": "licencja",
+      "pt": "licença",
+      "pt-br": "Licença",
+      "ro": "licență",
+      "ru": "лицензия",
+      "sa": "लघ्नाक्",
+      "sco": "license",
+      "se": "lohpi",
+      "sgs": "Licenzėjė",
+      "sh": "Licenca",
+      "smn": "lope",
+      "sms": "lååʹpp",
+      "sq": "Licenca",
+      "sr": "уговор о лиценци",
+      "sv": "licens",
+      "sw": "Leseni",
+      "te": "లైసెన్సు",
+      "tg": "Литсензиякунонӣ",
+      "th": "สัญญาอนุญาต",
+      "tr": "lisans",
+      "tt": "лицензия",
+      "tt-cyrl": "лицензия",
+      "uk": "ліцензія",
+      "ur": "اجازہ",
+      "uz": "Litsenziya",
+      "vec": "licensa",
+      "vi": "giấy phép",
+      "wuu": "牌照",
+      "yue": "牌照",
+      "zh": "许可",
+      "zh-cn": "许可",
+      "zh-hans": "许可",
+      "zh-hant": "授權",
+      "zh-tw": "授權"
+    },
+    "description": {
+      "ast": "permisu pa usar daqué",
+      "be-tarask": "сукупнасьць дазволаў і абмежаваньняў на выкарыстаньне чагосьці",
+      "cs": "povolení něco dělat",
+      "da": "tilladelse til at bruge eller gøre noget",
+      "de": "Erlaubnis, Dinge zu tun, die ohne diese verboten wären",
+      "en": "set of permissions and restrictions to use something",
+      "en-ca": "set of permissions to use something",
+      "en-gb": "set of permissions to use something",
+      "es": "conjunto de permisos y prohibiciones a la hora de usar algo",
+      "fi": "todistus olemassa olevasta luvasta",
+      "fr": "autorisation d'utilisation ou contrat de licence",
+      "gl": "conxunto de permisos e prohibicións ó usar algo",
+      "hi": "कुछ का उपयोग करने की अनुमति",
+      "it": "tipo di contratto",
+      "ja": "ものを利用する諸々の許可",
+      "kn": "ಏನಾದರು ಉಪಯೋಗಿಸಲು ಅನುಮತಿ",
+      "ko": "무언가를 사용하기 위한 권한들",
+      "mk": "право на користење на нешто",
+      "nb": "tillatelse til å bruke eller gjøre noe",
+      "nds-nl": "formeel of wettelijk goedvienden",
+      "nl": "een voorwaardelijk recht om iets te gebruiken",
+      "pl": "pojęcie prawne",
+      "pt": "conjunto de permissões para usar algo",
+      "pt-br": "conjunto de permissões para usar algo",
+      "ru": "правовое разрешение, исключение из запрета",
+      "sa": "कचना उपयोगस्य अनुमति:",
+      "sv": "avtal om rätt att bedriva viss verksamhet eller rätt att nyttja annans rättighet",
+      "tr": "bir şeyi kullanmak için izinler kümesi",
+      "uk": "дозвіл на використання чогось",
+      "zh": "使用某些东西的权限集",
+      "zh-tw": "使用某些東西的權限集合"
+    }
+  },
+  "ancestors": [
+    {
+      "id": "https://openalex.org/C199539241",
+      "wikidata": "https://www.wikidata.org/wiki/Q7748",
+      "display_name": "Law",
+      "level": 1
+    },
+    {
+      "id": "https://openalex.org/C111919701",
+      "wikidata": "https://www.wikidata.org/wiki/Q9135",
+      "display_name": "Operating system",
+      "level": 1
+    },
+    {
+      "id": "https://openalex.org/C41008148",
+      "wikidata": "https://www.wikidata.org/wiki/Q21198",
+      "display_name": "Computer science",
+      "level": 0
+    },
+    {
+      "id": "https://openalex.org/C17744445",
+      "wikidata": "https://www.wikidata.org/wiki/Q36442",
+      "display_name": "Political science",
+      "level": 0
+    }
+  ],
+  "related_concepts": [
+    {
+      "id": "https://openalex.org/C34974158",
+      "wikidata": null,
+      "display_name": "Intellectual property",
+      "level": 2,
+      "score": 15.649095
+    },
+    {
+      "id": "https://openalex.org/C2779027411",
+      "wikidata": null,
+      "display_name": "Trademark",
+      "level": 2,
+      "score": 7.5729933
+    },
+    {
+      "id": "https://openalex.org/C512654426",
+      "wikidata": null,
+      "display_name": "Public domain",
+      "level": 2,
+      "score": 7.5659995
+    },
+    {
+      "id": "https://openalex.org/C137355542",
+      "wikidata": null,
+      "display_name": "World War II",
+      "level": 2,
+      "score": 6.483137
+    },
+    {
+      "id": "https://openalex.org/C2779776346",
+      "wikidata": null,
+      "display_name": "Copyright infringement",
+      "level": 3,
+      "score": 6.2200437
+    },
+    {
+      "id": "https://openalex.org/C2777029862",
+      "wikidata": null,
+      "display_name": "Patent infringement",
+      "level": 3,
+      "score": 5.608647
+    },
+    {
+      "id": "https://openalex.org/C110875604",
+      "wikidata": null,
+      "display_name": "The Internet",
+      "level": 2,
+      "score": 5.2945433
+    },
+    {
+      "id": "https://openalex.org/C2777904410",
+      "wikidata": null,
+      "display_name": "Software",
+      "level": 2,
+      "score": 5.264567
+    },
+    {
+      "id": "https://openalex.org/C2777134139",
+      "wikidata": null,
+      "display_name": "Lawsuit",
+      "level": 2,
+      "score": 5.0914826
+    },
+    {
+      "id": "https://openalex.org/C199539241",
+      "wikidata": null,
+      "display_name": "Law",
+      "level": 1,
+      "score": 4.6817985
+    },
+    {
+      "id": "https://openalex.org/C517481932",
+      "wikidata": null,
+      "display_name": "GNU/Linux",
+      "level": 3,
+      "score": 4.6750035
+    },
+    {
+      "id": "https://openalex.org/C508378895",
+      "wikidata": null,
+      "display_name": "Microsoft Windows",
+      "level": 3,
+      "score": 4.6558185
+    },
+    {
+      "id": "https://openalex.org/C191935318",
+      "wikidata": null,
+      "display_name": "China",
+      "level": 2,
+      "score": 4.493499
+    },
+    {
+      "id": "https://openalex.org/C2776254780",
+      "wikidata": null,
+      "display_name": "Fair use",
+      "level": 2,
+      "score": 4.2286043
+    },
+    {
+      "id": "https://openalex.org/C162853370",
+      "wikidata": null,
+      "display_name": "Marketing",
+      "level": 1,
+      "score": 4.1002626
+    },
+    {
+      "id": "https://openalex.org/C144133560",
+      "wikidata": null,
+      "display_name": "Business",
+      "level": 0,
+      "score": 3.7487967
+    },
+    {
+      "id": "https://openalex.org/C112698675",
+      "wikidata": null,
+      "display_name": "Advertising",
+      "level": 1,
+      "score": 3.5328505
+    },
+    {
+      "id": "https://openalex.org/C2781005140",
+      "wikidata": null,
+      "display_name": "Occupational licensing",
+      "level": 2,
+      "score": 3.2710733
+    },
+    {
+      "id": "https://openalex.org/C2776139478",
+      "wikidata": null,
+      "display_name": "Trade secret",
+      "level": 3,
+      "score": 2.8027318
+    },
+    {
+      "id": "https://openalex.org/C46304622",
+      "wikidata": null,
+      "display_name": "Certification",
+      "level": 2,
+      "score": 2.501724
+    },
+    {
+      "id": "https://openalex.org/C2779534841",
+      "wikidata": null,
+      "display_name": "Patent application",
+      "level": 2,
+      "score": 2.0876172
+    },
+    {
+      "id": "https://openalex.org/C2777543875",
+      "wikidata": null,
+      "display_name": "Waiver",
+      "level": 2,
+      "score": 1.2194445
+    },
+    {
+      "id": "https://openalex.org/C2780530410",
+      "wikidata": null,
+      "display_name": "Credentialing",
+      "level": 2,
+      "score": 0.94984764
+    },
+    {
+      "id": "https://openalex.org/C2779635493",
+      "wikidata": null,
+      "display_name": "Patent portfolio",
+      "level": 3,
+      "score": 0.93188506
+    },
+    {
+      "id": "https://openalex.org/C2779777834",
+      "wikidata": null,
+      "display_name": "Enforcement",
+      "level": 2,
+      "score": 0.8376945
+    },
+    {
+      "id": "https://openalex.org/C2779151265",
+      "wikidata": null,
+      "display_name": "Copying",
+      "level": 2,
+      "score": 0.8074221
+    }
+  ],
+  "counts_by_year": [
+    {
+      "year": 2025,
+      "works_count": 625,
+      "oa_works_count": 113,
+      "cited_by_count": 30969
+    },
+    {
+      "year": 2024,
+      "works_count": 1692,
+      "oa_works_count": 987,
+      "cited_by_count": 57234
+    },
+    {
+      "year": 2023,
+      "works_count": 3978,
+      "oa_works_count": 2444,
+      "cited_by_count": 61768
+    },
+    {
+      "year": 2022,
+      "works_count": 3198,
+      "oa_works_count": 1897,
+      "cited_by_count": 55166
+    },
+    {
+      "year": 2021,
+      "works_count": 3244,
+      "oa_works_count": 1833,
+      "cited_by_count": 63358
+    },
+    {
+      "year": 2020,
+      "works_count": 3370,
+      "oa_works_count": 1732,
+      "cited_by_count": 53470
+    },
+    {
+      "year": 2019,
+      "works_count": 2866,
+      "oa_works_count": 1174,
+      "cited_by_count": 41717
+    },
+    {
+      "year": 2018,
+      "works_count": 2847,
+      "oa_works_count": 1208,
+      "cited_by_count": 32827
+    },
+    {
+      "year": 2017,
+      "works_count": 2678,
+      "oa_works_count": 1036,
+      "cited_by_count": 27330
+    },
+    {
+      "year": 2016,
+      "works_count": 2689,
+      "oa_works_count": 963,
+      "cited_by_count": 23818
+    },
+    {
+      "year": 2015,
+      "works_count": 2902,
+      "oa_works_count": 937,
+      "cited_by_count": 22043
+    },
+    {
+      "year": 2014,
+      "works_count": 2520,
+      "oa_works_count": 662,
+      "cited_by_count": 20334
+    },
+    {
+      "year": 2013,
+      "works_count": 2561,
+      "oa_works_count": 747,
+      "cited_by_count": 18043
+    },
+    {
+      "year": 2012,
+      "works_count": 2492,
+      "oa_works_count": 749,
+      "cited_by_count": 15262
+    }
+  ],
+  "works_api_url": "https://api.openalex.org/works?filter=concepts.id:C2780560020",
+  "updated_date": "2025-10-19T12:49:19.571862",
+  "created_date": "2018-01-05"
+}

@@ -1,0 +1,211 @@
+{
+  "id": "https://openalex.org/C2777462167",
+  "wikidata": "https://www.wikidata.org/wiki/Q7432048",
+  "display_name": "Scholarly communication",
+  "level": 3,
+  "description": "process of creation, transformation, dissemination and preservation of scholarly knowledge",
+  "works_count": 16197,
+  "cited_by_count": 113033,
+  "summary_stats": {
+    "2yr_mean_citedness": 1.273794002607562,
+    "h_index": 125,
+    "i10_index": 1995
+  },
+  "ids": {
+    "openalex": "https://openalex.org/C2777462167",
+    "wikidata": "https://www.wikidata.org/wiki/Q7432048",
+    "mag": "2777462167",
+    "wikipedia": "https://en.wikipedia.org/wiki/Scholarly%20communication",
+    "umls_cui": [
+      "C4505122"
+    ]
+  },
+  "image_url": null,
+  "image_thumbnail_url": null,
+  "international": {
+    "display_name": {
+      "af": "Wetenskaplike kommunikasie",
+      "be-tarask": "акадэмічная камунікацыя",
+      "ca": "comunicació escolar",
+      "de": "wissenschaftliche Kommunikation",
+      "en": "scholarly communication",
+      "fa": "ارتباطات علمی",
+      "fr": "communication académique",
+      "it": "comunicazione accademica",
+      "ja": "学術情報流通",
+      "ms": "komunikasi sarjana",
+      "nl": "academische communicatie",
+      "nn": "fagfellekommunikasjon",
+      "pt": "comunicação científica",
+      "ru": "академическая коммуникация",
+      "sr": "школска комуникација",
+      "tr": "bilimsel iletişim",
+      "zh": "學術傳播"
+    },
+    "description": {
+      "en": "process of creation, transformation, dissemination and preservation of scholarly knowledge",
+      "fr": "procès de création, transformation, dissémination et préservation du savoir académique",
+      "it": "processo di creazione, trasformazione, disseminazione e preservazione della conoscenza accademica",
+      "pt": "processo de criação, transformação, disseminação e preservação do conhecimento da academia, da ciência",
+      "tr": "bilimsel bilginin yaratılması, dönüştürülmesi, yayılması ve korunması süreci"
+    }
+  },
+  "ancestors": [
+    {
+      "id": "https://openalex.org/C151719136",
+      "wikidata": "https://www.wikidata.org/wiki/Q3972943",
+      "display_name": "Publishing",
+      "level": 2
+    },
+    {
+      "id": "https://openalex.org/C199539241",
+      "wikidata": "https://www.wikidata.org/wiki/Q7748",
+      "display_name": "Law",
+      "level": 1
+    },
+    {
+      "id": "https://openalex.org/C124952713",
+      "wikidata": "https://www.wikidata.org/wiki/Q8242",
+      "display_name": "Literature",
+      "level": 1
+    },
+    {
+      "id": "https://openalex.org/C142362112",
+      "wikidata": "https://www.wikidata.org/wiki/Q735",
+      "display_name": "Art",
+      "level": 0
+    },
+    {
+      "id": "https://openalex.org/C17744445",
+      "wikidata": "https://www.wikidata.org/wiki/Q36442",
+      "display_name": "Political science",
+      "level": 0
+    }
+  ],
+  "related_concepts": [
+    {
+      "id": "https://openalex.org/C138368954",
+      "wikidata": null,
+      "display_name": "Peer review",
+      "level": 2,
+      "score": 1.1428708
+    },
+    {
+      "id": "https://openalex.org/C2778881803",
+      "wikidata": null,
+      "display_name": "Digital scholarship",
+      "level": 2,
+      "score": 0.92108667
+    },
+    {
+      "id": "https://openalex.org/C15708023",
+      "wikidata": null,
+      "display_name": "Humanities",
+      "level": 1,
+      "score": 0.87407833
+    },
+    {
+      "id": "https://openalex.org/C2780824705",
+      "wikidata": null,
+      "display_name": "Institutional repository",
+      "level": 2,
+      "score": 0.7663303
+    },
+    {
+      "id": "https://openalex.org/C2781396290",
+      "wikidata": null,
+      "display_name": "Data publishing",
+      "level": 3,
+      "score": 0.7503562
+    }
+  ],
+  "counts_by_year": [
+    {
+      "year": 2025,
+      "works_count": 146,
+      "oa_works_count": 35,
+      "cited_by_count": 4426
+    },
+    {
+      "year": 2024,
+      "works_count": 226,
+      "oa_works_count": 106,
+      "cited_by_count": 7616
+    },
+    {
+      "year": 2023,
+      "works_count": 387,
+      "oa_works_count": 248,
+      "cited_by_count": 8563
+    },
+    {
+      "year": 2022,
+      "works_count": 377,
+      "oa_works_count": 250,
+      "cited_by_count": 8361
+    },
+    {
+      "year": 2021,
+      "works_count": 495,
+      "oa_works_count": 231,
+      "cited_by_count": 9262
+    },
+    {
+      "year": 2020,
+      "works_count": 803,
+      "oa_works_count": 266,
+      "cited_by_count": 8717
+    },
+    {
+      "year": 2019,
+      "works_count": 860,
+      "oa_works_count": 265,
+      "cited_by_count": 7642
+    },
+    {
+      "year": 2018,
+      "works_count": 999,
+      "oa_works_count": 241,
+      "cited_by_count": 6254
+    },
+    {
+      "year": 2017,
+      "works_count": 1074,
+      "oa_works_count": 198,
+      "cited_by_count": 5715
+    },
+    {
+      "year": 2016,
+      "works_count": 1102,
+      "oa_works_count": 196,
+      "cited_by_count": 5132
+    },
+    {
+      "year": 2015,
+      "works_count": 931,
+      "oa_works_count": 161,
+      "cited_by_count": 5203
+    },
+    {
+      "year": 2014,
+      "works_count": 818,
+      "oa_works_count": 180,
+      "cited_by_count": 5033
+    },
+    {
+      "year": 2013,
+      "works_count": 901,
+      "oa_works_count": 137,
+      "cited_by_count": 4098
+    },
+    {
+      "year": 2012,
+      "works_count": 747,
+      "oa_works_count": 117,
+      "cited_by_count": 3481
+    }
+  ],
+  "works_api_url": "https://api.openalex.org/works?filter=concepts.id:C2777462167",
+  "updated_date": "2025-10-19T13:49:20.412460",
+  "created_date": "2018-01-05"
+}

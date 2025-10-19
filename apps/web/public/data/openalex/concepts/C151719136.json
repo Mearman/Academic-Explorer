@@ -1,0 +1,708 @@
+{
+  "id": "https://openalex.org/C151719136",
+  "wikidata": "https://www.wikidata.org/wiki/Q3972943",
+  "display_name": "Publishing",
+  "level": 2,
+  "description": "process of production and dissemination of literature, music, or information",
+  "works_count": 407680,
+  "cited_by_count": 1914449,
+  "summary_stats": {
+    "2yr_mean_citedness": 0.728503937007874,
+    "h_index": 367,
+    "i10_index": 35285
+  },
+  "ids": {
+    "openalex": "https://openalex.org/C151719136",
+    "wikidata": "https://www.wikidata.org/wiki/Q3972943",
+    "mag": "151719136",
+    "wikipedia": "https://en.wikipedia.org/wiki/Publishing",
+    "umls_cui": [
+      "C0034037"
+    ]
+  },
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/1/1b/The_Caxton_Celebration_-_William_Caxton_showing_specimens_of_his_printing_to_King_Edward_IV_and_his_Queen.jpg",
+  "image_thumbnail_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/The_Caxton_Celebration_-_William_Caxton_showing_specimens_of_his_printing_to_King_Edward_IV_and_his_Queen.jpg/100px-The_Caxton_Celebration_-_William_Caxton_showing_specimens_of_his_printing_to_King_Edward_IV_and_his_Queen.jpg",
+  "international": {
+    "display_name": {
+      "af": "drukkerswese",
+      "ar": "نشر",
+      "ast": "edición de llibros",
+      "az": "nəşriyyat işi",
+      "be": "выдавецкая справа",
+      "be-tarask": "выдавецкая справа",
+      "bg": "Издателска дейност",
+      "bn": "প্রকাশনা",
+      "br": "Embannerezh",
+      "bs": "izdavaštvo",
+      "ca": "edició",
+      "ckb": "بڵاوکردنەوە",
+      "cs": "vydavatelská činnost",
+      "cy": "cyhoeddiad",
+      "da": "udgivelse",
+      "de": "Veröffentlichung",
+      "de-ch": "Edition",
+      "el": "εκδόσεις",
+      "en": "publishing",
+      "en-ca": "publishing",
+      "en-gb": "publishing",
+      "eo": "eldonado",
+      "es": "edición",
+      "et": "Kirjastamine",
+      "eu": "edizio",
+      "fa": "نشر",
+      "fi": "kustannustoimi",
+      "fr": "édition",
+      "fy": "Utjouwerij",
+      "ga": "foilsitheoireacht",
+      "gcr": "Édisyon litérèr",
+      "gl": "edición",
+      "gsw": "Edition",
+      "ha": "wallafawa",
+      "he": "הוצאה לאור",
+      "hi": "प्रकाशन",
+      "hr": "Izdanje",
+      "ht": "Edisyon",
+      "hu": "kiadás",
+      "hy": "հրատարակչություն",
+      "id": "penerbitan",
+      "is": "Útgáfufyrirtæki",
+      "it": "editoria",
+      "ja": "出版",
+      "jam": "Poblishin",
+      "kk": "Баспа ісі",
+      "ko": "출판",
+      "kw": "dyllo",
+      "ky": "Басма иши",
+      "la": "Editio",
+      "lb": "Editioun",
+      "lt": "leidyba",
+      "lv": "grāmatizdevniecība",
+      "lzh": "上梓",
+      "mk": "издаваштво",
+      "mn": "Хэвлэн нийтлэх",
+      "mr": "प्रकाशन",
+      "ms": "penerbitan",
+      "ms-arab": "ڤنربيتن",
+      "mzn": "تنک‌کری",
+      "nan": "Chhut-pán",
+      "nb": "forlagsvirksomhet",
+      "nl": "uitgeven",
+      "nn": "forlagsverksemd",
+      "oc": "edicion",
+      "pl": "publikacja",
+      "pt": "editoração",
+      "pt-br": "Editoração",
+      "ro": "editare",
+      "ru": "издательское дело",
+      "sat": "ᱯᱟᱨᱥᱟᱞ",
+      "scn": "Pubbricazzioni",
+      "sd": "اشاعت",
+      "sl": "založništvo",
+      "sq": "Botuesi",
+      "sr": "издаваштво",
+      "sr-ec": "издаваштво",
+      "sr-el": "izdavaštvo",
+      "sv": "publicering",
+      "ta": "பதிப்பகம்",
+      "te": "ప్రచురణ",
+      "tg": "нашр",
+      "th": "การจัดพิมพ์",
+      "tr": "yayıncılık",
+      "tt": "матбагачылык",
+      "tt-cyrl": "матбагачылык",
+      "uk": "видавнича справа",
+      "ur": "اشاعت",
+      "uz": "Noshirlik",
+      "vec": "editoria",
+      "vi": "xuất bản",
+      "wuu": "出版",
+      "yue": "出版",
+      "zh": "出版",
+      "zh-cn": "出版",
+      "zh-hans": "出版",
+      "zh-hant": "出版",
+      "zh-hk": "出版",
+      "zh-mo": "出版",
+      "zh-my": "出版",
+      "zh-sg": "出版",
+      "zh-tw": "出版"
+    },
+    "description": {
+      "af": "proses van produksie en verspreiding van literatuur, musiek of inligting",
+      "ar": "عملية النشر",
+      "az": "çap, musiqi və digər məhsulların hazırlanması, istehsalı və intişar edilməsi üzrə ixtisaslaşan iqtisadiyyat sahəsi",
+      "be": "від чалавечай дзейнасці, адгалінаванне эканомікі, якое спецыялізуецца на падрыхтоўцы, стварэнні і масавым распаўсюджванні друкаванай, музычнай прадукцыі і іншых відаў кантэнту",
+      "be-tarask": "сфэра грамадзкіх стасункаў, якая аб’ядноўвае арганізацыйна-творчую і вытворча-гаспадарчую дзейнасьць па стварэньні, вырабе і распаўсюду выдавецкай прадукцыі",
+      "bs": "aktivnost objavljivanja informacija, literature, muzike, softvera i drugih sadržaja na raspolaganje javnosti",
+      "ca": "procés de producció i difusió de literatura, música o informació",
+      "cs": "proces a odvětví tvorby a šíření knih, časopisů, hudby a dalších forem informace",
+      "de": "Prozess der Veröffentlichung eines Werkes",
+      "en": "process of production and dissemination of literature, music, or information",
+      "en-ca": "process of production and dissemination of literature, music, or information",
+      "en-gb": "process of production and dissemination of literature, music, or information",
+      "eo": "procezo de produktado kaj disvastigo de literaturo, muziko aŭ informo",
+      "es": "industria relativa a la producción y difusión de libros, música o información",
+      "eu": "argitaratzeko asmoarekin egiten den testuen, audioen, bideoen, irudien, programa informatikoen eta informazioaren beste hainbat formaturen aldatze prozesua",
+      "fr": "processus de sélection, impression et commercialisation de textes",
+      "gl": "proceso de produción e difusión de literatura, música ou información",
+      "ha": "hanyar samar da abu",
+      "he": "תהליך הבאתה של יצירה כתובה לרשות הרבים",
+      "id": "proses produksi dan penyebaran literatur, musik, atau informasi",
+      "it": "attività imprenditoriale di produzione e gestione di contenuti riproducibili in serie e della loro diffusione e commercializzazione",
+      "ja": "文書や図画を複製し、書籍や雑誌の形態で発行すること",
+      "ko": "저작물을 복제하여 다수에게 배포하는 것",
+      "lb": "Aktivitéit fir e Wierk zesummenzestellen, ze drécken an erauszebréngen",
+      "lt": "veikla, kurios dėka informacija, literatūra, muzika, programinė įranga ir kitas turinys tampa prieinami visuomenei, jį pardavus arba išplatinus nemokamai",
+      "nl": "proces van productie en distribueren van een werk",
+      "ru": "деятельность, отрасль экономики, специализирующаяся на подготовке, выпуске и распространении печатной, музыкальной и др. продукции",
+      "tr": "edebiyat, müzik veya bilginin üretim ve dağıtım süreci",
+      "uk": "сфера суспільних відносин, що поєднує організаційно-творчу та виробничо-господарську діяльність зі створення, виготовлення і розповсюдження видавничої продукції",
+      "zh": "製作及散播資訊的過程",
+      "zh-cn": "制作及散播信息的过程",
+      "zh-hans": "制作及散播信息的过程",
+      "zh-hant": "製作及散播資訊的過程",
+      "zh-hk": "製作及散播資訊的過程",
+      "zh-mo": "製作及散播資訊的過程",
+      "zh-my": "制作及散播信息的过程",
+      "zh-sg": "制作及散播信息的过程",
+      "zh-tw": "製作及散播資訊的過程"
+    }
+  },
+  "ancestors": [
+    {
+      "id": "https://openalex.org/C199539241",
+      "wikidata": "https://www.wikidata.org/wiki/Q7748",
+      "display_name": "Law",
+      "level": 1
+    },
+    {
+      "id": "https://openalex.org/C124952713",
+      "wikidata": "https://www.wikidata.org/wiki/Q8242",
+      "display_name": "Literature",
+      "level": 1
+    },
+    {
+      "id": "https://openalex.org/C142362112",
+      "wikidata": "https://www.wikidata.org/wiki/Q735",
+      "display_name": "Art",
+      "level": 0
+    },
+    {
+      "id": "https://openalex.org/C17744445",
+      "wikidata": "https://www.wikidata.org/wiki/Q36442",
+      "display_name": "Political science",
+      "level": 0
+    }
+  ],
+  "related_concepts": [
+    {
+      "id": "https://openalex.org/C201280247",
+      "wikidata": null,
+      "display_name": "Newspaper",
+      "level": 2,
+      "score": 57.27181
+    },
+    {
+      "id": "https://openalex.org/C137355542",
+      "wikidata": null,
+      "display_name": "World War II",
+      "level": 2,
+      "score": 28.24624
+    },
+    {
+      "id": "https://openalex.org/C558299567",
+      "wikidata": null,
+      "display_name": "Mass media",
+      "level": 2,
+      "score": 19.908161
+    },
+    {
+      "id": "https://openalex.org/C103631927",
+      "wikidata": null,
+      "display_name": "Sci-Fi",
+      "level": 3,
+      "score": 17.827353
+    },
+    {
+      "id": "https://openalex.org/C117374575",
+      "wikidata": null,
+      "display_name": "Children's literature",
+      "level": 2,
+      "score": 16.402493
+    },
+    {
+      "id": "https://openalex.org/C110875604",
+      "wikidata": null,
+      "display_name": "The Internet",
+      "level": 2,
+      "score": 15.204366
+    },
+    {
+      "id": "https://openalex.org/C112698675",
+      "wikidata": null,
+      "display_name": "Advertising",
+      "level": 1,
+      "score": 14.8219795
+    },
+    {
+      "id": "https://openalex.org/C124952713",
+      "wikidata": null,
+      "display_name": "Literature",
+      "level": 1,
+      "score": 13.484679
+    },
+    {
+      "id": "https://openalex.org/C119513131",
+      "wikidata": null,
+      "display_name": "Journalism",
+      "level": 2,
+      "score": 12.369852
+    },
+    {
+      "id": "https://openalex.org/C512654426",
+      "wikidata": null,
+      "display_name": "Public domain",
+      "level": 2,
+      "score": 12.299612
+    },
+    {
+      "id": "https://openalex.org/C164913051",
+      "wikidata": null,
+      "display_name": "Poetry",
+      "level": 2,
+      "score": 12.176699
+    },
+    {
+      "id": "https://openalex.org/C5021161",
+      "wikidata": null,
+      "display_name": "Non-fiction",
+      "level": 2,
+      "score": 10.85363
+    },
+    {
+      "id": "https://openalex.org/C162853370",
+      "wikidata": null,
+      "display_name": "Marketing",
+      "level": 1,
+      "score": 9.895053
+    },
+    {
+      "id": "https://openalex.org/C191935318",
+      "wikidata": null,
+      "display_name": "China",
+      "level": 2,
+      "score": 9.393779
+    },
+    {
+      "id": "https://openalex.org/C535889608",
+      "wikidata": null,
+      "display_name": "Music",
+      "level": 3,
+      "score": 9.026903
+    },
+    {
+      "id": "https://openalex.org/C41458344",
+      "wikidata": null,
+      "display_name": "Publication",
+      "level": 2,
+      "score": 8.720434
+    },
+    {
+      "id": "https://openalex.org/C534859617",
+      "wikidata": null,
+      "display_name": "Fantasy",
+      "level": 2,
+      "score": 8.5861845
+    },
+    {
+      "id": "https://openalex.org/C2778081389",
+      "wikidata": null,
+      "display_name": "Short Film",
+      "level": 2,
+      "score": 8.525616
+    },
+    {
+      "id": "https://openalex.org/C18599908",
+      "wikidata": null,
+      "display_name": "Electronic publishing",
+      "level": 3,
+      "score": 7.875543
+    },
+    {
+      "id": "https://openalex.org/C125261785",
+      "wikidata": null,
+      "display_name": "Periodical literature",
+      "level": 2,
+      "score": 7.606
+    },
+    {
+      "id": "https://openalex.org/C529099274",
+      "wikidata": null,
+      "display_name": "Comics",
+      "level": 2,
+      "score": 7.4237366
+    },
+    {
+      "id": "https://openalex.org/C2776506252",
+      "wikidata": null,
+      "display_name": "Printing press",
+      "level": 2,
+      "score": 7.2092543
+    },
+    {
+      "id": "https://openalex.org/C186855751",
+      "wikidata": null,
+      "display_name": "Music industry",
+      "level": 3,
+      "score": 6.7694993
+    },
+    {
+      "id": "https://openalex.org/C148863701",
+      "wikidata": null,
+      "display_name": "Encyclopedia",
+      "level": 2,
+      "score": 5.3462234
+    },
+    {
+      "id": "https://openalex.org/C520712124",
+      "wikidata": null,
+      "display_name": "Biography",
+      "level": 2,
+      "score": 5.309104
+    },
+    {
+      "id": "https://openalex.org/C529147693",
+      "wikidata": null,
+      "display_name": "News media",
+      "level": 2,
+      "score": 5.2742796
+    },
+    {
+      "id": "https://openalex.org/C17632256",
+      "wikidata": null,
+      "display_name": "Digital media",
+      "level": 2,
+      "score": 4.380137
+    },
+    {
+      "id": "https://openalex.org/C188985296",
+      "wikidata": null,
+      "display_name": "Page layout",
+      "level": 2,
+      "score": 4.314841
+    },
+    {
+      "id": "https://openalex.org/C177897776",
+      "wikidata": null,
+      "display_name": "Memoir",
+      "level": 2,
+      "score": 3.9067938
+    },
+    {
+      "id": "https://openalex.org/C513874922",
+      "wikidata": null,
+      "display_name": "Digital library",
+      "level": 3,
+      "score": 3.5731144
+    },
+    {
+      "id": "https://openalex.org/C2781083858",
+      "wikidata": null,
+      "display_name": "Scientific literature",
+      "level": 2,
+      "score": 2.8903053
+    },
+    {
+      "id": "https://openalex.org/C157714500",
+      "wikidata": null,
+      "display_name": "Newsprint",
+      "level": 3,
+      "score": 2.7983987
+    },
+    {
+      "id": "https://openalex.org/C97002063",
+      "wikidata": null,
+      "display_name": "Bibliography",
+      "level": 2,
+      "score": 2.4849477
+    },
+    {
+      "id": "https://openalex.org/C2776182711",
+      "wikidata": null,
+      "display_name": "Creative industries",
+      "level": 2,
+      "score": 2.4779673
+    },
+    {
+      "id": "https://openalex.org/C2780966802",
+      "wikidata": null,
+      "display_name": "Book design",
+      "level": 2,
+      "score": 2.4086084
+    },
+    {
+      "id": "https://openalex.org/C117774814",
+      "wikidata": null,
+      "display_name": "Electronic media",
+      "level": 2,
+      "score": 2.336423
+    },
+    {
+      "id": "https://openalex.org/C2779118283",
+      "wikidata": null,
+      "display_name": "Title page",
+      "level": 2,
+      "score": 2.308351
+    },
+    {
+      "id": "https://openalex.org/C41022531",
+      "wikidata": null,
+      "display_name": "Communication design",
+      "level": 2,
+      "score": 2.1070242
+    },
+    {
+      "id": "https://openalex.org/C2778489119",
+      "wikidata": null,
+      "display_name": "Reprint",
+      "level": 2,
+      "score": 1.9816366
+    },
+    {
+      "id": "https://openalex.org/C2778689934",
+      "wikidata": null,
+      "display_name": "Headline",
+      "level": 2,
+      "score": 1.9100131
+    },
+    {
+      "id": "https://openalex.org/C55322685",
+      "wikidata": null,
+      "display_name": "Media conglomerate",
+      "level": 3,
+      "score": 1.8974981
+    },
+    {
+      "id": "https://openalex.org/C2779840692",
+      "wikidata": null,
+      "display_name": "Obituary",
+      "level": 2,
+      "score": 1.801123
+    },
+    {
+      "id": "https://openalex.org/C536601067",
+      "wikidata": null,
+      "display_name": "Alternative media",
+      "level": 2,
+      "score": 1.6382107
+    },
+    {
+      "id": "https://openalex.org/C2780644320",
+      "wikidata": null,
+      "display_name": "Pagination",
+      "level": 2,
+      "score": 1.5771743
+    },
+    {
+      "id": "https://openalex.org/C43169469",
+      "wikidata": null,
+      "display_name": "Preprint",
+      "level": 2,
+      "score": 1.5705994
+    },
+    {
+      "id": "https://openalex.org/C2778945725",
+      "wikidata": null,
+      "display_name": "Addendum",
+      "level": 2,
+      "score": 1.4662608
+    },
+    {
+      "id": "https://openalex.org/C2776604462",
+      "wikidata": null,
+      "display_name": "Electronic journal",
+      "level": 3,
+      "score": 1.3757086
+    },
+    {
+      "id": "https://openalex.org/C2776509796",
+      "wikidata": null,
+      "display_name": "Content creation",
+      "level": 2,
+      "score": 1.3564991
+    },
+    {
+      "id": "https://openalex.org/C84933800",
+      "wikidata": null,
+      "display_name": "Literary fiction",
+      "level": 3,
+      "score": 1.3433794
+    },
+    {
+      "id": "https://openalex.org/C2777890638",
+      "wikidata": null,
+      "display_name": "Cultural industry",
+      "level": 2,
+      "score": 1.3104934
+    },
+    {
+      "id": "https://openalex.org/C65290094",
+      "wikidata": null,
+      "display_name": "Canadian literature",
+      "level": 2,
+      "score": 1.2967751
+    },
+    {
+      "id": "https://openalex.org/C2779344036",
+      "wikidata": null,
+      "display_name": "Digital content",
+      "level": 2,
+      "score": 1.173697
+    },
+    {
+      "id": "https://openalex.org/C2778671685",
+      "wikidata": null,
+      "display_name": "Recipe",
+      "level": 2,
+      "score": 1.0144393
+    },
+    {
+      "id": "https://openalex.org/C2777744765",
+      "wikidata": null,
+      "display_name": "Hatching",
+      "level": 2,
+      "score": 1.0049909
+    },
+    {
+      "id": "https://openalex.org/C756385",
+      "wikidata": null,
+      "display_name": "World literature",
+      "level": 2,
+      "score": 1.004951
+    },
+    {
+      "id": "https://openalex.org/C2776003135",
+      "wikidata": null,
+      "display_name": "Publicity",
+      "level": 2,
+      "score": 0.9482024
+    },
+    {
+      "id": "https://openalex.org/C68476402",
+      "wikidata": null,
+      "display_name": "Table of contents",
+      "level": 2,
+      "score": 0.9455835
+    },
+    {
+      "id": "https://openalex.org/C119867837",
+      "wikidata": null,
+      "display_name": "Academic writing",
+      "level": 2,
+      "score": 0.8279586
+    },
+    {
+      "id": "https://openalex.org/C2778473407",
+      "wikidata": null,
+      "display_name": "Compendium",
+      "level": 2,
+      "score": 0.8156506
+    },
+    {
+      "id": "https://openalex.org/C101780184",
+      "wikidata": null,
+      "display_name": "Dissemination",
+      "level": 2,
+      "score": 0.76957047
+    }
+  ],
+  "counts_by_year": [
+    {
+      "year": 2025,
+      "works_count": 2947,
+      "oa_works_count": 486,
+      "cited_by_count": 67772
+    },
+    {
+      "year": 2024,
+      "works_count": 6495,
+      "oa_works_count": 2895,
+      "cited_by_count": 111441
+    },
+    {
+      "year": 2023,
+      "works_count": 11720,
+      "oa_works_count": 6290,
+      "cited_by_count": 125143
+    },
+    {
+      "year": 2022,
+      "works_count": 10493,
+      "oa_works_count": 6161,
+      "cited_by_count": 113818
+    },
+    {
+      "year": 2021,
+      "works_count": 13416,
+      "oa_works_count": 7946,
+      "cited_by_count": 128082
+    },
+    {
+      "year": 2020,
+      "works_count": 13168,
+      "oa_works_count": 6254,
+      "cited_by_count": 122674
+    },
+    {
+      "year": 2019,
+      "works_count": 13668,
+      "oa_works_count": 4622,
+      "cited_by_count": 119579
+    },
+    {
+      "year": 2018,
+      "works_count": 14321,
+      "oa_works_count": 4114,
+      "cited_by_count": 93244
+    },
+    {
+      "year": 2017,
+      "works_count": 13254,
+      "oa_works_count": 4034,
+      "cited_by_count": 83432
+    },
+    {
+      "year": 2016,
+      "works_count": 14576,
+      "oa_works_count": 3706,
+      "cited_by_count": 80276
+    },
+    {
+      "year": 2015,
+      "works_count": 15989,
+      "oa_works_count": 3074,
+      "cited_by_count": 81011
+    },
+    {
+      "year": 2014,
+      "works_count": 16745,
+      "oa_works_count": 2829,
+      "cited_by_count": 77764
+    },
+    {
+      "year": 2013,
+      "works_count": 17489,
+      "oa_works_count": 2681,
+      "cited_by_count": 72689
+    },
+    {
+      "year": 2012,
+      "works_count": 17466,
+      "oa_works_count": 2516,
+      "cited_by_count": 64813
+    }
+  ],
+  "works_api_url": "https://api.openalex.org/works?filter=concepts.id:C151719136",
+  "updated_date": "2025-10-19T13:39:05.968243",
+  "created_date": "2016-06-24"
+}

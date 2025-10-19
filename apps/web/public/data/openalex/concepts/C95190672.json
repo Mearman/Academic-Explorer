@@ -1,0 +1,599 @@
+{
+  "id": "https://openalex.org/C95190672",
+  "wikidata": "https://www.wikidata.org/wiki/Q815382",
+  "display_name": "Meta-analysis",
+  "level": 2,
+  "description": "statistical method that summarizes data from multiple sources",
+  "works_count": 421686,
+  "cited_by_count": 14591961,
+  "summary_stats": {
+    "2yr_mean_citedness": 3.98717138288774,
+    "h_index": 1027,
+    "i10_index": 166495
+  },
+  "ids": {
+    "openalex": "https://openalex.org/C95190672",
+    "wikidata": "https://www.wikidata.org/wiki/Q815382",
+    "mag": "95190672",
+    "wikipedia": "https://en.wikipedia.org/wiki/Meta-analysis",
+    "umls_cui": [
+      "C0920317"
+    ]
+  },
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Integrated_Molecular_Meta-Analysis_of_1%2C000_Pediatric_High-Grade_and_Diffuse_Intrinsic_Pontine_Glioma_-_graphical_abstract.jpg",
+  "image_thumbnail_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Integrated_Molecular_Meta-Analysis_of_1%2C000_Pediatric_High-Grade_and_Diffuse_Intrinsic_Pontine_Glioma_-_graphical_abstract.jpg/100px-Integrated_Molecular_Meta-Analysis_of_1%2C000_Pediatric_High-Grade_and_Diffuse_Intrinsic_Pontine_Glioma_-_graphical_abstract.jpg",
+  "international": {
+    "display_name": {
+      "ar": "تحليل تلوي",
+      "ca": "metanàlisi",
+      "cs": "metaanalýza",
+      "da": "metaanalyse",
+      "de": "Metaanalyse",
+      "en": "meta-analysis",
+      "eo": "metaanalizo",
+      "es": "metaanálisis",
+      "et": "Metaanalüüs",
+      "eu": "Metaanalisi",
+      "fa": "فراتحلیل",
+      "fi": "Meta-analyysi",
+      "fr": "méta-analyse",
+      "gl": "Metaanálise",
+      "he": "מטא-אנליזה",
+      "hu": "metaanalízis",
+      "hy": "Մետաանալիզ",
+      "id": "Metaanalisis",
+      "it": "meta-analisi",
+      "ja": "メタアナリシス",
+      "ko": "메타분석",
+      "ku": "Metaanalîz",
+      "ku-arab": "مەتاانالیز",
+      "ku-latn": "Metaanalîz",
+      "lv": "Metanalīze",
+      "mk": "Мета-анализа",
+      "nb": "Metaanalyse",
+      "nl": "meta-analyse",
+      "nn": "metaanalyse",
+      "pl": "Metaanaliza",
+      "pt": "metanálise",
+      "pt-br": "meta-análise",
+      "ro": "metaanaliza",
+      "ru": "мета-анализ",
+      "sh": "Metaanaliza",
+      "sl": "Metaanaliza",
+      "sr": "Metaanaliza",
+      "sr-ec": "Метаанализа",
+      "sr-el": "Metaanaliza",
+      "sv": "metaanalys",
+      "th": "การวิเคราะห์อภิมาน",
+      "uk": "мета-аналіз",
+      "vi": "Phân tích tổng hợp",
+      "yue": "元分析",
+      "zh": "元分析",
+      "zh-hans": "元分析",
+      "zh-hant": "元分析",
+      "zh-hk": "元分析"
+    },
+    "description": {
+      "ar": "هو تحليل في عِلم الإِحصاء يتَضَمَّن تطبيق الّطُرُق الإحصائيّة على نَتائِج عِدّة دِراسات",
+      "de": "Art von Analyse",
+      "en": "statistical method that summarizes data from multiple sources",
+      "eo": "statistika metodo kiu kombinas datenojn el pluraj analizoj",
+      "es": "método estadístico que resume información de múltiples fuentes",
+      "fr": "type d'analyse",
+      "it": "strumento di ricerca statistico",
+      "ja": "複数の研究の結果を統合し、より高い見地から分析すること",
+      "sv": "studie av vetenskapliga publikationer",
+      "uk": "статистичний метод, який узагальнює дані з декількох джерел"
+    }
+  },
+  "ancestors": [
+    {
+      "id": "https://openalex.org/C126322002",
+      "wikidata": "https://www.wikidata.org/wiki/Q11180",
+      "display_name": "Internal medicine",
+      "level": 1
+    },
+    {
+      "id": "https://openalex.org/C142724271",
+      "wikidata": "https://www.wikidata.org/wiki/Q7208",
+      "display_name": "Pathology",
+      "level": 1
+    },
+    {
+      "id": "https://openalex.org/C71924100",
+      "wikidata": "https://www.wikidata.org/wiki/Q11190",
+      "display_name": "Medicine",
+      "level": 0
+    }
+  ],
+  "related_concepts": [
+    {
+      "id": "https://openalex.org/C189708586",
+      "wikidata": null,
+      "display_name": "Systematic review",
+      "level": 3,
+      "score": 24.30443
+    },
+    {
+      "id": "https://openalex.org/C168563851",
+      "wikidata": null,
+      "display_name": "Randomized controlled trial",
+      "level": 2,
+      "score": 22.929625
+    },
+    {
+      "id": "https://openalex.org/C2780051608",
+      "wikidata": null,
+      "display_name": "Major depressive disorder",
+      "level": 3,
+      "score": 12.858211
+    },
+    {
+      "id": "https://openalex.org/C2780439572",
+      "wikidata": null,
+      "display_name": "Publication bias",
+      "level": 3,
+      "score": 11.608505
+    },
+    {
+      "id": "https://openalex.org/C15744967",
+      "wikidata": null,
+      "display_name": "Psychology",
+      "level": 0,
+      "score": 11.414805
+    },
+    {
+      "id": "https://openalex.org/C27081682",
+      "wikidata": null,
+      "display_name": "Placebo",
+      "level": 3,
+      "score": 11.341652
+    },
+    {
+      "id": "https://openalex.org/C535046627",
+      "wikidata": null,
+      "display_name": "Clinical trial",
+      "level": 2,
+      "score": 11.327051
+    },
+    {
+      "id": "https://openalex.org/C105795698",
+      "wikidata": null,
+      "display_name": "Statistics",
+      "level": 1,
+      "score": 10.593632
+    },
+    {
+      "id": "https://openalex.org/C107130276",
+      "wikidata": null,
+      "display_name": "Epidemiology",
+      "level": 2,
+      "score": 7.918098
+    },
+    {
+      "id": "https://openalex.org/C2780783007",
+      "wikidata": null,
+      "display_name": "Attention deficit hyperactivity disorder",
+      "level": 2,
+      "score": 7.4896173
+    },
+    {
+      "id": "https://openalex.org/C500558357",
+      "wikidata": null,
+      "display_name": "Myocardial infarction",
+      "level": 2,
+      "score": 6.7421436
+    },
+    {
+      "id": "https://openalex.org/C65409693",
+      "wikidata": null,
+      "display_name": "Statistical significance",
+      "level": 2,
+      "score": 6.3979926
+    },
+    {
+      "id": "https://openalex.org/C2780074459",
+      "wikidata": null,
+      "display_name": "Heart disease",
+      "level": 2,
+      "score": 6.241009
+    },
+    {
+      "id": "https://openalex.org/C19648533",
+      "wikidata": null,
+      "display_name": "Evidence-based medicine",
+      "level": 3,
+      "score": 6.177137
+    },
+    {
+      "id": "https://openalex.org/C121608353",
+      "wikidata": null,
+      "display_name": "Cancer",
+      "level": 2,
+      "score": 6.084298
+    },
+    {
+      "id": "https://openalex.org/C2778198053",
+      "wikidata": null,
+      "display_name": "Heart failure",
+      "level": 2,
+      "score": 6.0444183
+    },
+    {
+      "id": "https://openalex.org/C2779177272",
+      "wikidata": null,
+      "display_name": "Antidepressant",
+      "level": 3,
+      "score": 6.0198307
+    },
+    {
+      "id": "https://openalex.org/C2777180221",
+      "wikidata": null,
+      "display_name": "Type 2 diabetes",
+      "level": 3,
+      "score": 5.9149113
+    },
+    {
+      "id": "https://openalex.org/C23131810",
+      "wikidata": null,
+      "display_name": "Observational study",
+      "level": 2,
+      "score": 4.938523
+    },
+    {
+      "id": "https://openalex.org/C2776478404",
+      "wikidata": null,
+      "display_name": "Cochrane Library",
+      "level": 3,
+      "score": 4.3615074
+    },
+    {
+      "id": "https://openalex.org/C2777895361",
+      "wikidata": null,
+      "display_name": "Longitudinal study",
+      "level": 2,
+      "score": 3.8035307
+    },
+    {
+      "id": "https://openalex.org/C40423286",
+      "wikidata": null,
+      "display_name": "Selection bias",
+      "level": 2,
+      "score": 3.6922874
+    },
+    {
+      "id": "https://openalex.org/C119423318",
+      "wikidata": null,
+      "display_name": "Study heterogeneity",
+      "level": 3,
+      "score": 3.40813
+    },
+    {
+      "id": "https://openalex.org/C194661718",
+      "wikidata": null,
+      "display_name": "Forest plot",
+      "level": 3,
+      "score": 3.2486188
+    },
+    {
+      "id": "https://openalex.org/C82789193",
+      "wikidata": null,
+      "display_name": "Relative risk",
+      "level": 3,
+      "score": 3.1899242
+    },
+    {
+      "id": "https://openalex.org/C2777203310",
+      "wikidata": null,
+      "display_name": "Transfer pricing",
+      "level": 3,
+      "score": 2.866063
+    },
+    {
+      "id": "https://openalex.org/C201903717",
+      "wikidata": null,
+      "display_name": "Cohort study",
+      "level": 2,
+      "score": 2.7360632
+    },
+    {
+      "id": "https://openalex.org/C21951064",
+      "wikidata": null,
+      "display_name": "Combinatorial chemistry",
+      "level": 1,
+      "score": 2.7323937
+    },
+    {
+      "id": "https://openalex.org/C156957248",
+      "wikidata": null,
+      "display_name": "Odds ratio",
+      "level": 2,
+      "score": 2.69315
+    },
+    {
+      "id": "https://openalex.org/C146304588",
+      "wikidata": null,
+      "display_name": "Case-control study",
+      "level": 2,
+      "score": 2.5271623
+    },
+    {
+      "id": "https://openalex.org/C51082289",
+      "wikidata": null,
+      "display_name": "Internal validity",
+      "level": 2,
+      "score": 2.461276
+    },
+    {
+      "id": "https://openalex.org/C100480397",
+      "wikidata": null,
+      "display_name": "Treatment and control groups",
+      "level": 2,
+      "score": 2.4163918
+    },
+    {
+      "id": "https://openalex.org/C142052008",
+      "wikidata": null,
+      "display_name": "Cross-sectional study",
+      "level": 2,
+      "score": 2.3595495
+    },
+    {
+      "id": "https://openalex.org/C126583095",
+      "wikidata": null,
+      "display_name": "Organizational citizenship behavior",
+      "level": 3,
+      "score": 2.2061176
+    },
+    {
+      "id": "https://openalex.org/C140608501",
+      "wikidata": null,
+      "display_name": "Review article",
+      "level": 2,
+      "score": 1.9273541
+    },
+    {
+      "id": "https://openalex.org/C136206449",
+      "wikidata": null,
+      "display_name": "Reporting bias",
+      "level": 3,
+      "score": 1.9051884
+    },
+    {
+      "id": "https://openalex.org/C141330323",
+      "wikidata": null,
+      "display_name": "Evidence-based practice",
+      "level": 3,
+      "score": 1.8543721
+    },
+    {
+      "id": "https://openalex.org/C188816634",
+      "wikidata": null,
+      "display_name": "Prospective cohort study",
+      "level": 2,
+      "score": 1.8487682
+    },
+    {
+      "id": "https://openalex.org/C2778962194",
+      "wikidata": null,
+      "display_name": "Mediterranean diet",
+      "level": 2,
+      "score": 1.8386132
+    },
+    {
+      "id": "https://openalex.org/C75917345",
+      "wikidata": null,
+      "display_name": "Sampling bias",
+      "level": 3,
+      "score": 1.8113317
+    },
+    {
+      "id": "https://openalex.org/C174106493",
+      "wikidata": null,
+      "display_name": "External validity",
+      "level": 2,
+      "score": 1.676624
+    },
+    {
+      "id": "https://openalex.org/C63363279",
+      "wikidata": null,
+      "display_name": "Clinical significance",
+      "level": 2,
+      "score": 1.567582
+    },
+    {
+      "id": "https://openalex.org/C49290038",
+      "wikidata": null,
+      "display_name": "Consolidated Standards of Reporting Trials",
+      "level": 3,
+      "score": 1.415845
+    },
+    {
+      "id": "https://openalex.org/C195768694",
+      "wikidata": null,
+      "display_name": "Hawthorne effect",
+      "level": 2,
+      "score": 1.3518469
+    },
+    {
+      "id": "https://openalex.org/C152541439",
+      "wikidata": null,
+      "display_name": "Critical appraisal",
+      "level": 3,
+      "score": 1.3500217
+    },
+    {
+      "id": "https://openalex.org/C157481446",
+      "wikidata": null,
+      "display_name": "Diagnostic odds ratio",
+      "level": 3,
+      "score": 1.1181151
+    },
+    {
+      "id": "https://openalex.org/C124936440",
+      "wikidata": null,
+      "display_name": "Meta-regression",
+      "level": 3,
+      "score": 1.051763
+    },
+    {
+      "id": "https://openalex.org/C142259097",
+      "wikidata": null,
+      "display_name": "Homogeneity (statistics)",
+      "level": 2,
+      "score": 1.0227193
+    },
+    {
+      "id": "https://openalex.org/C202953159",
+      "wikidata": null,
+      "display_name": "Intention-to-treat analysis",
+      "level": 3,
+      "score": 0.95899063
+    },
+    {
+      "id": "https://openalex.org/C102803821",
+      "wikidata": null,
+      "display_name": "Standardized mortality ratio",
+      "level": 3,
+      "score": 0.94471526
+    },
+    {
+      "id": "https://openalex.org/C148482608",
+      "wikidata": null,
+      "display_name": "Clinical study design",
+      "level": 3,
+      "score": 0.92504805
+    },
+    {
+      "id": "https://openalex.org/C101265243",
+      "wikidata": null,
+      "display_name": "Case series",
+      "level": 3,
+      "score": 0.906219
+    },
+    {
+      "id": "https://openalex.org/C2779824711",
+      "wikidata": null,
+      "display_name": "Health intervention",
+      "level": 3,
+      "score": 0.89278924
+    },
+    {
+      "id": "https://openalex.org/C176400912",
+      "wikidata": null,
+      "display_name": "Cluster randomised controlled trial",
+      "level": 3,
+      "score": 0.78300536
+    },
+    {
+      "id": "https://openalex.org/C190210774",
+      "wikidata": null,
+      "display_name": "Ecological validity",
+      "level": 3,
+      "score": 0.7687957
+    },
+    {
+      "id": "https://openalex.org/C2777503682",
+      "wikidata": null,
+      "display_name": "Evidence-based policy",
+      "level": 3,
+      "score": 0.76705074
+    },
+    {
+      "id": "https://openalex.org/C93360035",
+      "wikidata": null,
+      "display_name": "Impact evaluation",
+      "level": 2,
+      "score": 0.7586211
+    }
+  ],
+  "counts_by_year": [
+    {
+      "year": 2025,
+      "works_count": 32873,
+      "oa_works_count": 10547,
+      "cited_by_count": 1153182
+    },
+    {
+      "year": 2024,
+      "works_count": 42679,
+      "oa_works_count": 20912,
+      "cited_by_count": 1652418
+    },
+    {
+      "year": 2023,
+      "works_count": 41613,
+      "oa_works_count": 27280,
+      "cited_by_count": 1578928
+    },
+    {
+      "year": 2022,
+      "works_count": 39056,
+      "oa_works_count": 25640,
+      "cited_by_count": 1463765
+    },
+    {
+      "year": 2021,
+      "works_count": 38200,
+      "oa_works_count": 23854,
+      "cited_by_count": 1373468
+    },
+    {
+      "year": 2020,
+      "works_count": 33416,
+      "oa_works_count": 19837,
+      "cited_by_count": 1185487
+    },
+    {
+      "year": 2019,
+      "works_count": 25150,
+      "oa_works_count": 13347,
+      "cited_by_count": 875992
+    },
+    {
+      "year": 2018,
+      "works_count": 21303,
+      "oa_works_count": 10961,
+      "cited_by_count": 740093
+    },
+    {
+      "year": 2017,
+      "works_count": 18649,
+      "oa_works_count": 9572,
+      "cited_by_count": 648317
+    },
+    {
+      "year": 2016,
+      "works_count": 16973,
+      "oa_works_count": 8453,
+      "cited_by_count": 569490
+    },
+    {
+      "year": 2015,
+      "works_count": 16049,
+      "oa_works_count": 7211,
+      "cited_by_count": 518362
+    },
+    {
+      "year": 2014,
+      "works_count": 14328,
+      "oa_works_count": 5846,
+      "cited_by_count": 448831
+    },
+    {
+      "year": 2013,
+      "works_count": 12738,
+      "oa_works_count": 4629,
+      "cited_by_count": 382004
+    },
+    {
+      "year": 2012,
+      "works_count": 10293,
+      "oa_works_count": 3516,
+      "cited_by_count": 320044
+    }
+  ],
+  "works_api_url": "https://api.openalex.org/works?filter=concepts.id:C95190672",
+  "updated_date": "2025-10-19T13:33:08.051904",
+  "created_date": "2016-06-24"
+}

@@ -1,0 +1,348 @@
+{
+  "id": "https://openalex.org/C178315738",
+  "wikidata": "https://www.wikidata.org/wiki/Q603441",
+  "display_name": "Bibliometrics",
+  "level": 2,
+  "description": "statistical analysis of written publications, such as books or articles",
+  "works_count": 35509,
+  "cited_by_count": 627501,
+  "summary_stats": {
+    "2yr_mean_citedness": 3.403562408613585,
+    "h_index": 263,
+    "i10_index": 9507
+  },
+  "ids": {
+    "openalex": "https://openalex.org/C178315738",
+    "wikidata": "https://www.wikidata.org/wiki/Q603441",
+    "mag": "178315738",
+    "wikipedia": "https://en.wikipedia.org/wiki/Bibliometrics",
+    "umls_cui": [
+      "C0005364"
+    ]
+  },
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/8/87/When_science_goes_viral_-_The_research_response_during_three_months_of_the_COVID-19_outbreak_-_Fig._4.jpg",
+  "image_thumbnail_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/When_science_goes_viral_-_The_research_response_during_three_months_of_the_COVID-19_outbreak_-_Fig._4.jpg/100px-When_science_goes_viral_-_The_research_response_during_three_months_of_the_COVID-19_outbreak_-_Fig._4.jpg",
+  "international": {
+    "display_name": {
+      "ar": "تحليل الاستشهادات المرجعية",
+      "az": "Bibliometriya",
+      "be-tarask": "бібліямэтрыя",
+      "ca": "Bibliometria",
+      "cs": "bibliometrie",
+      "da": "bibliometri",
+      "de": "Bibliometrie",
+      "de-ch": "Bibliometrie",
+      "en": "bibliometrics",
+      "en-ca": "Bibliometrics",
+      "en-gb": "bibliometrics",
+      "eo": "bibliografia mezuriko",
+      "es": "bibliometría",
+      "et": "Bibliomeetria",
+      "fa": "کتاب‌سنجی",
+      "fi": "Bibliometriikka",
+      "fr": "bibliométrie",
+      "he": "ביבליומטריקה",
+      "hr": "Bibliometrija",
+      "it": "bibliometria",
+      "ja": "計量書誌学",
+      "nb": "bibliometri",
+      "nl": "bibliometrie",
+      "pl": "Bibliometria",
+      "pt": "bibliometria",
+      "pt-br": "Bibliometria",
+      "ro": "Bibliometrie",
+      "ru": "Библиометрия",
+      "sk": "Bibliometria",
+      "sl": "Bibliometrija",
+      "sv": "bibliometri",
+      "th": "Bibliometrics",
+      "uk": "бібліометрія",
+      "zh": "書目計量學"
+    },
+    "description": {
+      "cs": "vědní obor zabývající se kvantitativní analýzou dokumentů vznikajících v rámci vědecké komunikace",
+      "de": "Lehre von der Messung von wissenschaftlichen Publikationen",
+      "en": "statistical analysis of written publications, such as books or articles",
+      "es": "parte de la cienciometría que aplica métodos matemáticos y estadísticos a toda la literatura de carácter científico y a los autores que la producen",
+      "fi": "tieteellisen painettujen julkaisujen tutkimus"
+    }
+  },
+  "ancestors": [
+    {
+      "id": "https://openalex.org/C124101348",
+      "wikidata": "https://www.wikidata.org/wiki/Q172491",
+      "display_name": "Data mining",
+      "level": 1
+    },
+    {
+      "id": "https://openalex.org/C161191863",
+      "wikidata": "https://www.wikidata.org/wiki/Q199655",
+      "display_name": "Library science",
+      "level": 1
+    },
+    {
+      "id": "https://openalex.org/C136764020",
+      "wikidata": "https://www.wikidata.org/wiki/Q466",
+      "display_name": "World Wide Web",
+      "level": 1
+    },
+    {
+      "id": "https://openalex.org/C41008148",
+      "wikidata": "https://www.wikidata.org/wiki/Q21198",
+      "display_name": "Computer science",
+      "level": 0
+    }
+  ],
+  "related_concepts": [
+    {
+      "id": "https://openalex.org/C525823164",
+      "wikidata": null,
+      "display_name": "Scientometrics",
+      "level": 2,
+      "score": 6.619356
+    },
+    {
+      "id": "https://openalex.org/C105345328",
+      "wikidata": null,
+      "display_name": "Citation analysis",
+      "level": 3,
+      "score": 4.9036117
+    },
+    {
+      "id": "https://openalex.org/C2779455604",
+      "wikidata": null,
+      "display_name": "Impact factor",
+      "level": 2,
+      "score": 4.103527
+    },
+    {
+      "id": "https://openalex.org/C2778793908",
+      "wikidata": null,
+      "display_name": "Citation impact",
+      "level": 3,
+      "score": 4.0405297
+    },
+    {
+      "id": "https://openalex.org/C2778407487",
+      "wikidata": null,
+      "display_name": "Altmetrics",
+      "level": 2,
+      "score": 2.5396087
+    },
+    {
+      "id": "https://openalex.org/C521491914",
+      "wikidata": null,
+      "display_name": "Webometrics",
+      "level": 2,
+      "score": 2.302627
+    },
+    {
+      "id": "https://openalex.org/C2780378607",
+      "wikidata": null,
+      "display_name": "Informetrics",
+      "level": 3,
+      "score": 2.1396947
+    },
+    {
+      "id": "https://openalex.org/C2778032371",
+      "wikidata": null,
+      "display_name": "Citation index",
+      "level": 3,
+      "score": 1.8888942
+    },
+    {
+      "id": "https://openalex.org/C83867959",
+      "wikidata": null,
+      "display_name": "Scopus",
+      "level": 3,
+      "score": 1.6536747
+    },
+    {
+      "id": "https://openalex.org/C2781083858",
+      "wikidata": null,
+      "display_name": "Scientific literature",
+      "level": 2,
+      "score": 1.6163236
+    },
+    {
+      "id": "https://openalex.org/C2778805511",
+      "wikidata": null,
+      "display_name": "Citation",
+      "level": 2,
+      "score": 1.611069
+    },
+    {
+      "id": "https://openalex.org/C36289849",
+      "wikidata": null,
+      "display_name": "Social science",
+      "level": 1,
+      "score": 1.6031636
+    },
+    {
+      "id": "https://openalex.org/C95831776",
+      "wikidata": null,
+      "display_name": "Information science",
+      "level": 2,
+      "score": 1.5750017
+    },
+    {
+      "id": "https://openalex.org/C2779172887",
+      "wikidata": null,
+      "display_name": "PageRank",
+      "level": 2,
+      "score": 1.5363927
+    },
+    {
+      "id": "https://openalex.org/C124101348",
+      "wikidata": null,
+      "display_name": "Data mining",
+      "level": 1,
+      "score": 1.5347114
+    },
+    {
+      "id": "https://openalex.org/C138368954",
+      "wikidata": null,
+      "display_name": "Peer review",
+      "level": 2,
+      "score": 1.4112837
+    },
+    {
+      "id": "https://openalex.org/C2776822937",
+      "wikidata": null,
+      "display_name": "Bibliographic coupling",
+      "level": 3,
+      "score": 1.3375385
+    },
+    {
+      "id": "https://openalex.org/C41008148",
+      "wikidata": null,
+      "display_name": "Computer science",
+      "level": 0,
+      "score": 1.3350035
+    },
+    {
+      "id": "https://openalex.org/C2779693592",
+      "wikidata": null,
+      "display_name": "Journal ranking",
+      "level": 3,
+      "score": 1.1321522
+    },
+    {
+      "id": "https://openalex.org/C2779810430",
+      "wikidata": null,
+      "display_name": "Knowledge organization",
+      "level": 2,
+      "score": 1.0037539
+    },
+    {
+      "id": "https://openalex.org/C45462083",
+      "wikidata": null,
+      "display_name": "Documentation science",
+      "level": 3,
+      "score": 0.84736085
+    },
+    {
+      "id": "https://openalex.org/C2780416505",
+      "wikidata": null,
+      "display_name": "Collection development",
+      "level": 2,
+      "score": 0.81378585
+    },
+    {
+      "id": "https://openalex.org/C2777765086",
+      "wikidata": null,
+      "display_name": "Co-citation",
+      "level": 3,
+      "score": 0.80022407
+    }
+  ],
+  "counts_by_year": [
+    {
+      "year": 2025,
+      "works_count": 2461,
+      "oa_works_count": 733,
+      "cited_by_count": 63990
+    },
+    {
+      "year": 2024,
+      "works_count": 3874,
+      "oa_works_count": 2187,
+      "cited_by_count": 96892
+    },
+    {
+      "year": 2023,
+      "works_count": 4104,
+      "oa_works_count": 2882,
+      "cited_by_count": 87520
+    },
+    {
+      "year": 2022,
+      "works_count": 3414,
+      "oa_works_count": 2294,
+      "cited_by_count": 68086
+    },
+    {
+      "year": 2021,
+      "works_count": 2791,
+      "oa_works_count": 1565,
+      "cited_by_count": 52968
+    },
+    {
+      "year": 2020,
+      "works_count": 2127,
+      "oa_works_count": 1020,
+      "cited_by_count": 38775
+    },
+    {
+      "year": 2019,
+      "works_count": 1654,
+      "oa_works_count": 646,
+      "cited_by_count": 27035
+    },
+    {
+      "year": 2018,
+      "works_count": 1593,
+      "oa_works_count": 516,
+      "cited_by_count": 22498
+    },
+    {
+      "year": 2017,
+      "works_count": 1157,
+      "oa_works_count": 389,
+      "cited_by_count": 17750
+    },
+    {
+      "year": 2016,
+      "works_count": 1101,
+      "oa_works_count": 373,
+      "cited_by_count": 16610
+    },
+    {
+      "year": 2015,
+      "works_count": 1151,
+      "oa_works_count": 320,
+      "cited_by_count": 15317
+    },
+    {
+      "year": 2014,
+      "works_count": 1072,
+      "oa_works_count": 245,
+      "cited_by_count": 12847
+    },
+    {
+      "year": 2013,
+      "works_count": 1057,
+      "oa_works_count": 228,
+      "cited_by_count": 11884
+    },
+    {
+      "year": 2012,
+      "works_count": 995,
+      "oa_works_count": 185,
+      "cited_by_count": 10162
+    }
+  ],
+  "works_api_url": "https://api.openalex.org/works?filter=concepts.id:C178315738",
+  "updated_date": "2025-10-19T14:11:51.282422",
+  "created_date": "2016-06-24"
+}

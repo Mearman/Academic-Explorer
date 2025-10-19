@@ -1,0 +1,1064 @@
+{
+  "id": "https://openalex.org/C199539241",
+  "wikidata": "https://www.wikidata.org/wiki/Q7748",
+  "display_name": "Law",
+  "level": 1,
+  "description": "system of rules and guidelines, generally backed by governmental authority",
+  "works_count": 21863195,
+  "cited_by_count": 209618943,
+  "summary_stats": {
+    "2yr_mean_citedness": 1.3722288702593186,
+    "h_index": 2459,
+    "i10_index": 3227973
+  },
+  "ids": {
+    "openalex": "https://openalex.org/C199539241",
+    "wikidata": "https://www.wikidata.org/wiki/Q7748",
+    "mag": "199539241",
+    "umls_cui": [
+      "C0728724"
+    ]
+  },
+  "image_url": null,
+  "image_thumbnail_url": null,
+  "international": {
+    "display_name": {
+      "af": "Reg",
+      "ak": "Mmara",
+      "am": "ሕግ",
+      "an": "Dreito",
+      "ar": "قانون",
+      "arc": "ܩܢܘܢܐ",
+      "ary": "قانون",
+      "arz": "قانون",
+      "ast": "derechu",
+      "az": "hüquq",
+      "azb": "حوقوق",
+      "ba": "Хоҡуҡ",
+      "bar": "Recht",
+      "be": "права",
+      "be-tarask": "права",
+      "bg": "право",
+      "bho": "कानून",
+      "bm": "Sàrìya",
+      "bn": "আইন",
+      "bo": "ཁྲིམས།",
+      "br": "Gwir",
+      "bs": "pravo",
+      "bxr": "Хуули",
+      "ca": "dret",
+      "cdo": "Huák-lŭk",
+      "ce": "Бакъо",
+      "ceb": "balaod",
+      "ch": "Lai",
+      "chr": "ᏗᎧᎿᏩᏛᏍᏗ",
+      "ckb": "یاسا",
+      "co": "Drittu",
+      "crh": "qanun",
+      "cs": "právo",
+      "cv": "Тивĕçлĕ ирĕклĕх",
+      "cy": "cyfraith",
+      "da": "jura",
+      "de": "Recht",
+      "de-ch": "Recht",
+      "diq": "Huqûq",
+      "el": "δίκαιο",
+      "en": "law",
+      "en-ca": "Law",
+      "en-gb": "law",
+      "eo": "juro",
+      "es": "derecho",
+      "et": "õigus",
+      "eu": "zuzenbide",
+      "ext": "Derechu",
+      "fa": "حقوق",
+      "ff": "Handal",
+      "fi": "laki",
+      "fj": "Lawa",
+      "fr": "droit",
+      "frr": "Rocht",
+      "fur": "Dirit",
+      "fy": "Rjocht",
+      "ga": "dlí",
+      "gcr": "Drwè",
+      "gd": "lagh",
+      "gl": "Dereito",
+      "gn": "Tekoiterape",
+      "gsw": "Recht",
+      "gv": "leigh",
+      "hak": "Fap-li̍t",
+      "he": "דין",
+      "hi": "विधि",
+      "hif": "Kanuun",
+      "hr": "pravo",
+      "ht": "Lwa",
+      "hu": "jog",
+      "hy": "իրավունք",
+      "hyw": "Իրաւունք",
+      "ia": "Derecto",
+      "id": "hukum",
+      "ie": "Jure",
+      "ilo": "linteg",
+      "io": "Yuro",
+      "is": "Lögfræði",
+      "it": "diritto",
+      "ja": "法",
+      "jam": "Laa",
+      "jbo": "flalu",
+      "jv": "Hukum",
+      "ka": "სამართალი",
+      "kk": "Құқық",
+      "km": "ច្បាប់",
+      "kn": "ಕಾನೂನು",
+      "ko": "법",
+      "krc": "Хакъ",
+      "ku": "dad",
+      "ku-latn": "dad",
+      "kv": "Инӧд",
+      "kw": "Lagha",
+      "ky": "Укук",
+      "la": "ius",
+      "lad": "Dirito",
+      "lb": "Droit",
+      "lfn": "Lege",
+      "li": "Rech",
+      "lij": "Diritto",
+      "ln": "Mambí ma mibéko",
+      "lo": "ກົດໝາຍ",
+      "lt": "Teisė",
+      "lv": "tieslietas",
+      "lzh": "法律",
+      "mai": "कानून",
+      "map-bms": "Hukum",
+      "mg": "Lalàna",
+      "mi": "Ture",
+      "min": "Hukum",
+      "mk": "право",
+      "ml": "നിയമം",
+      "mn": "Хууль",
+      "mr": "कायदा",
+      "ms": "undang-undang",
+      "ms-arab": "اوندڠ٢",
+      "mt": "liġi",
+      "mwl": "Dreito",
+      "my": "ဥပဒေ",
+      "myv": "Права",
+      "nan": "Hoat-lu̍t",
+      "nb": "lov og rett",
+      "nds": "Juristeree",
+      "nds-nl": "Recht",
+      "ne": "कानून",
+      "nl": "recht",
+      "nn": "lov og rett",
+      "nrm": "Loué",
+      "oc": "drech",
+      "os": "барад",
+      "pa": "ਕਾਨੂੰਨ",
+      "pap": "lèi",
+      "pl": "prawo",
+      "pms": "Lej",
+      "pnb": "قنون",
+      "ps": "حقوق",
+      "pt": "direito",
+      "pt-br": "direito",
+      "qu": "Chiqa",
+      "ro": "drept",
+      "ru": "закон",
+      "rue": "Право",
+      "sc": "Deretu",
+      "scn": "Liggi",
+      "sco": "law",
+      "sd": "قانون",
+      "sgs": "Teisė",
+      "sh": "Pravo",
+      "si": "නීතිය",
+      "sk": "Objektívne právo",
+      "sl": "Pravo",
+      "sn": "Mutemo",
+      "so": "Sharci",
+      "sq": "ligj",
+      "sr": "право",
+      "su": "Hukum",
+      "sv": "juridik",
+      "sw": "Sheria",
+      "ta": "சட்டம்",
+      "te": "చట్టం",
+      "tg": "ҳуқуқ",
+      "th": "กฎหมาย",
+      "tl": "batas",
+      "tpi": "Lo",
+      "tr": "hukuk",
+      "ts": "Nawu",
+      "tt": "хокук",
+      "tt-cyrl": "хокук",
+      "uk": "право",
+      "ur": "قانون",
+      "uz": "Huquq",
+      "vec": "derito",
+      "vi": "luật pháp",
+      "vo": "Detik",
+      "war": "Balaud",
+      "wuu": "法律",
+      "xh": "Umthetho",
+      "xmf": "სამართალი",
+      "yi": "געזעץ",
+      "yo": "Òfin",
+      "yue": "法律",
+      "za": "Faplwd",
+      "zea": "Recht",
+      "zh": "法律",
+      "zh-cn": "法律",
+      "zh-hans": "法律",
+      "zh-hant": "法律",
+      "zh-hk": "法律",
+      "zh-mo": "法律",
+      "zh-my": "法律",
+      "zh-sg": "法律",
+      "zh-tw": "法律"
+    },
+    "description": {
+      "ar": "نظام القواعد والمبادئ التوجيهية المدعومة بشكل عام من قبل السلطة الحكومية في الدولة",
+      "ast": "orde xurídicu que s'espresa de forma normativa pa rexir una sociedá",
+      "ba": "йәмәғәт мөнәсәбәттәрен көйләүсе, мотлаҡ үтәлергә тейешле тәртип ҡағиҙәләре системаһы.",
+      "bm": "Mali",
+      "ca": "ordre jurídic que s'expressa normativament per regir una societat",
+      "ch": "coitus",
+      "cs": "normativní systém pravidel, zvyklostí a institucí",
+      "da": "læren om retsregler for fortolkning og anvendelse",
+      "de": "Gesamtheit genereller Verhaltensregeln, die von der Gemeinschaft gewährleistet werden",
+      "en": "system of rules and guidelines, generally backed by governmental authority",
+      "eo": "sistemo de reguloj kiuj estas plifortigitaj pere de sociaj institucioj por regadi super ĝeneralan kondutaron",
+      "es": "conjunto de principios y normas inspiradas en ideas de justicia y orden",
+      "fa": "احکامی که همه باید از آن تبعيت کنند",
+      "ff": "dendaanghal dhates houbhoudhè fii dhowougol neddho e nder mottondiral ngal",
+      "fr": "l'ensemble des règles qui régissent la conduite des hommes et des femmes en société",
+      "gl": "orde normativa e institucional da conduta humana en sociedade",
+      "he": "נורמה משפטית",
+      "id": "sistem aturan dan pedoman, umumnya disokong oleh otoritas pemerintah",
+      "ilo": "sistema dagiti alagaden ken dagiti pagbagnosan",
+      "it": "complesso delle norme di legge e consuetudine che ordinano la vita di una o più collettività in un determinato momento storico",
+      "ja": "社会規範の大系",
+      "ko": "사회의 질서를 유지하기 위해 정부기관에서 만든 규칙",
+      "lv": "tiesu iestāžu sistēma, to darbību kopums",
+      "mt": "sistema ta' regoli u linji gwida, ġeneralment appoġġati minn awtorità governattiva",
+      "ne": "कुनै पनि नियम , निर्देशिका र पद्दती जसलाई प्राय: सरकारले कार्यन्वयन गरेको हुन्छ",
+      "nl": "systeem van regels waarmee men de maatschappij ordent",
+      "pap": "sistema di reglanan i direktivanan, apoyá en general di outoridat gubernamental",
+      "pl": "system norm prawnych",
+      "pt": "sistema de normas que regula as condutas humanas por meio de direitos e deveres",
+      "pt-br": "sistema de normas que regula as condutas humanas por meio de direitos e deveres",
+      "ro": "sistem de reguli și îndrumări, în general, susținute de autoritatea guvernamentală",
+      "ru": "правило регулирования общественных отношений",
+      "sq": "sistemi i rregullave dhe udhëzimeve, të mbështetura përgjithësisht nga autoriteti qeveritar",
+      "sv": "läran om rättsreglernas tolkning och tillämpning",
+      "ta": "விதிகள் மற்றும் நெறிமுறைகள்",
+      "th": "กฎและแนวปฏิบัติเพื่อปกครองประเทศโดยรัฐบาล",
+      "tr": "genellikle devlet otoritesi tarafından desteklenen kurallar ve yönergeler sistemi",
+      "uk": "система суспільних норм і настанов (законів)",
+      "ur": "قانون وراثت",
+      "vec": "Conpleso de norme de leje che regołamenta ła condota de ła socetà",
+      "vi": "Hệ thống các quy tắc và hướng dẫn thường được hỗ trợ bởi cơ quan chính phủ",
+      "zh": "由立法機關制定通過，總統公布施行，司法機關執行，具有强制力的明文規範。",
+      "zh-hans": "由人制定的非自然规则，以武力保障，反映一段时间内的社会力量平衡，部分人在规则中占据有利地位，具有时代局限性的社会契约"
+    }
+  },
+  "ancestors": [
+    {
+      "id": "https://openalex.org/C17744445",
+      "wikidata": "https://www.wikidata.org/wiki/Q36442",
+      "display_name": "Political science",
+      "level": 0
+    }
+  ],
+  "related_concepts": [
+    {
+      "id": "https://openalex.org/C162324750",
+      "wikidata": null,
+      "display_name": "Economics",
+      "level": 0,
+      "score": 87.047516
+    },
+    {
+      "id": "https://openalex.org/C170706310",
+      "wikidata": null,
+      "display_name": "Common law",
+      "level": 2,
+      "score": 81.76921
+    },
+    {
+      "id": "https://openalex.org/C138885662",
+      "wikidata": null,
+      "display_name": "Philosophy",
+      "level": 0,
+      "score": 75.01747
+    },
+    {
+      "id": "https://openalex.org/C71924100",
+      "wikidata": null,
+      "display_name": "Medicine",
+      "level": 0,
+      "score": 67.21371
+    },
+    {
+      "id": "https://openalex.org/C17744445",
+      "wikidata": null,
+      "display_name": "Political science",
+      "level": 0,
+      "score": 54.419907
+    },
+    {
+      "id": "https://openalex.org/C127413603",
+      "wikidata": null,
+      "display_name": "Engineering",
+      "level": 0,
+      "score": 54.40368
+    },
+    {
+      "id": "https://openalex.org/C94625758",
+      "wikidata": null,
+      "display_name": "Politics",
+      "level": 2,
+      "score": 51.7752
+    },
+    {
+      "id": "https://openalex.org/C144024400",
+      "wikidata": null,
+      "display_name": "Sociology",
+      "level": 0,
+      "score": 51.65202
+    },
+    {
+      "id": "https://openalex.org/C95457728",
+      "wikidata": null,
+      "display_name": "History",
+      "level": 0,
+      "score": 50.782085
+    },
+    {
+      "id": "https://openalex.org/C36289849",
+      "wikidata": null,
+      "display_name": "Social science",
+      "level": 1,
+      "score": 46.65163
+    },
+    {
+      "id": "https://openalex.org/C137355542",
+      "wikidata": null,
+      "display_name": "World War II",
+      "level": 2,
+      "score": 45.522987
+    },
+    {
+      "id": "https://openalex.org/C512654426",
+      "wikidata": null,
+      "display_name": "Public domain",
+      "level": 2,
+      "score": 44.170647
+    },
+    {
+      "id": "https://openalex.org/C15744967",
+      "wikidata": null,
+      "display_name": "Psychology",
+      "level": 0,
+      "score": 42.907173
+    },
+    {
+      "id": "https://openalex.org/C144133560",
+      "wikidata": null,
+      "display_name": "Business",
+      "level": 0,
+      "score": 42.571747
+    },
+    {
+      "id": "https://openalex.org/C33923547",
+      "wikidata": null,
+      "display_name": "Mathematics",
+      "level": 0,
+      "score": 42.47018
+    },
+    {
+      "id": "https://openalex.org/C2776154427",
+      "wikidata": null,
+      "display_name": "Constitution",
+      "level": 2,
+      "score": 39.43126
+    },
+    {
+      "id": "https://openalex.org/C27206212",
+      "wikidata": null,
+      "display_name": "Theology",
+      "level": 1,
+      "score": 38.3032
+    },
+    {
+      "id": "https://openalex.org/C55447825",
+      "wikidata": null,
+      "display_name": "International law",
+      "level": 2,
+      "score": 35.79981
+    },
+    {
+      "id": "https://openalex.org/C169437150",
+      "wikidata": null,
+      "display_name": "Human rights",
+      "level": 2,
+      "score": 33.824623
+    },
+    {
+      "id": "https://openalex.org/C2776949292",
+      "wikidata": null,
+      "display_name": "Jurisdiction",
+      "level": 2,
+      "score": 33.266533
+    },
+    {
+      "id": "https://openalex.org/C187736073",
+      "wikidata": null,
+      "display_name": "Management",
+      "level": 1,
+      "score": 33.119503
+    },
+    {
+      "id": "https://openalex.org/C71043370",
+      "wikidata": null,
+      "display_name": "Jurisprudence",
+      "level": 2,
+      "score": 32.68943
+    },
+    {
+      "id": "https://openalex.org/C124952713",
+      "wikidata": null,
+      "display_name": "Literature",
+      "level": 1,
+      "score": 29.840302
+    },
+    {
+      "id": "https://openalex.org/C2777134139",
+      "wikidata": null,
+      "display_name": "Lawsuit",
+      "level": 2,
+      "score": 29.32771
+    },
+    {
+      "id": "https://openalex.org/C202565627",
+      "wikidata": null,
+      "display_name": "Criminal law",
+      "level": 2,
+      "score": 28.766153
+    },
+    {
+      "id": "https://openalex.org/C15708023",
+      "wikidata": null,
+      "display_name": "Humanities",
+      "level": 1,
+      "score": 27.716858
+    },
+    {
+      "id": "https://openalex.org/C17319257",
+      "wikidata": null,
+      "display_name": "Statute",
+      "level": 2,
+      "score": 25.296017
+    },
+    {
+      "id": "https://openalex.org/C123657996",
+      "wikidata": null,
+      "display_name": "Architecture",
+      "level": 2,
+      "score": 24.683348
+    },
+    {
+      "id": "https://openalex.org/C121955636",
+      "wikidata": null,
+      "display_name": "Accounting",
+      "level": 1,
+      "score": 24.58734
+    },
+    {
+      "id": "https://openalex.org/C83009810",
+      "wikidata": null,
+      "display_name": "Legislature",
+      "level": 2,
+      "score": 23.237555
+    },
+    {
+      "id": "https://openalex.org/C18650270",
+      "wikidata": null,
+      "display_name": "Constitutional law",
+      "level": 2,
+      "score": 20.883974
+    },
+    {
+      "id": "https://openalex.org/C178550888",
+      "wikidata": null,
+      "display_name": "Business administration",
+      "level": 1,
+      "score": 20.662949
+    },
+    {
+      "id": "https://openalex.org/C70789860",
+      "wikidata": null,
+      "display_name": "The arts",
+      "level": 2,
+      "score": 20.259466
+    },
+    {
+      "id": "https://openalex.org/C193235544",
+      "wikidata": null,
+      "display_name": "Natural science",
+      "level": 2,
+      "score": 19.780209
+    },
+    {
+      "id": "https://openalex.org/C10138342",
+      "wikidata": null,
+      "display_name": "Finance",
+      "level": 1,
+      "score": 19.714193
+    },
+    {
+      "id": "https://openalex.org/C136264566",
+      "wikidata": null,
+      "display_name": "Economy",
+      "level": 1,
+      "score": 18.360111
+    },
+    {
+      "id": "https://openalex.org/C14042566",
+      "wikidata": null,
+      "display_name": "English law",
+      "level": 2,
+      "score": 18.086136
+    },
+    {
+      "id": "https://openalex.org/C3116431",
+      "wikidata": null,
+      "display_name": "Public administration",
+      "level": 1,
+      "score": 16.92336
+    },
+    {
+      "id": "https://openalex.org/C2777351106",
+      "wikidata": null,
+      "display_name": "Legislation",
+      "level": 2,
+      "score": 16.644333
+    },
+    {
+      "id": "https://openalex.org/C54750564",
+      "wikidata": null,
+      "display_name": "Commerce",
+      "level": 1,
+      "score": 16.318115
+    },
+    {
+      "id": "https://openalex.org/C34974158",
+      "wikidata": null,
+      "display_name": "Intellectual property",
+      "level": 2,
+      "score": 15.912122
+    },
+    {
+      "id": "https://openalex.org/C46312422",
+      "wikidata": null,
+      "display_name": "Communication",
+      "level": 1,
+      "score": 15.460655
+    },
+    {
+      "id": "https://openalex.org/C119513131",
+      "wikidata": null,
+      "display_name": "Journalism",
+      "level": 2,
+      "score": 15.276814
+    },
+    {
+      "id": "https://openalex.org/C200113983",
+      "wikidata": null,
+      "display_name": "Morality",
+      "level": 2,
+      "score": 15.262481
+    },
+    {
+      "id": "https://openalex.org/C104863432",
+      "wikidata": null,
+      "display_name": "Pharmacy",
+      "level": 2,
+      "score": 15.215174
+    },
+    {
+      "id": "https://openalex.org/C2780656516",
+      "wikidata": null,
+      "display_name": "Prison",
+      "level": 2,
+      "score": 15.0284
+    },
+    {
+      "id": "https://openalex.org/C102587632",
+      "wikidata": null,
+      "display_name": "Criminal justice",
+      "level": 2,
+      "score": 15.016044
+    },
+    {
+      "id": "https://openalex.org/C155785087",
+      "wikidata": null,
+      "display_name": "Natural law",
+      "level": 2,
+      "score": 14.381912
+    },
+    {
+      "id": "https://openalex.org/C177986884",
+      "wikidata": null,
+      "display_name": "Public law",
+      "level": 2,
+      "score": 14.363396
+    },
+    {
+      "id": "https://openalex.org/C54707276",
+      "wikidata": null,
+      "display_name": "Canon law",
+      "level": 2,
+      "score": 14.089684
+    },
+    {
+      "id": "https://openalex.org/C120912362",
+      "wikidata": null,
+      "display_name": "Higher education",
+      "level": 2,
+      "score": 14.048487
+    },
+    {
+      "id": "https://openalex.org/C73484699",
+      "wikidata": null,
+      "display_name": "Criminology",
+      "level": 1,
+      "score": 13.557575
+    },
+    {
+      "id": "https://openalex.org/C135874517",
+      "wikidata": null,
+      "display_name": "Sociology of law",
+      "level": 2,
+      "score": 13.111331
+    },
+    {
+      "id": "https://openalex.org/C2778348171",
+      "wikidata": null,
+      "display_name": "Corporation",
+      "level": 2,
+      "score": 12.376753
+    },
+    {
+      "id": "https://openalex.org/C48764862",
+      "wikidata": null,
+      "display_name": "Judicial review",
+      "level": 2,
+      "score": 12.283665
+    },
+    {
+      "id": "https://openalex.org/C97460637",
+      "wikidata": null,
+      "display_name": "Plaintiff",
+      "level": 2,
+      "score": 12.127364
+    },
+    {
+      "id": "https://openalex.org/C30730545",
+      "wikidata": null,
+      "display_name": "Legal history",
+      "level": 2,
+      "score": 11.989683
+    },
+    {
+      "id": "https://openalex.org/C58583792",
+      "wikidata": null,
+      "display_name": "Administrative law",
+      "level": 2,
+      "score": 11.45027
+    },
+    {
+      "id": "https://openalex.org/C2776119841",
+      "wikidata": null,
+      "display_name": "Jury",
+      "level": 2,
+      "score": 11.31758
+    },
+    {
+      "id": "https://openalex.org/C2779010840",
+      "wikidata": null,
+      "display_name": "Treaty",
+      "level": 2,
+      "score": 11.0947275
+    },
+    {
+      "id": "https://openalex.org/C2780510313",
+      "wikidata": null,
+      "display_name": "Institution",
+      "level": 2,
+      "score": 11.0717535
+    },
+    {
+      "id": "https://openalex.org/C109986646",
+      "wikidata": null,
+      "display_name": "Public policy",
+      "level": 2,
+      "score": 10.816174
+    },
+    {
+      "id": "https://openalex.org/C2778272461",
+      "wikidata": null,
+      "display_name": "Supreme court",
+      "level": 2,
+      "score": 10.732207
+    },
+    {
+      "id": "https://openalex.org/C2778063847",
+      "wikidata": null,
+      "display_name": "Magistrate",
+      "level": 2,
+      "score": 10.457746
+    },
+    {
+      "id": "https://openalex.org/C2778449503",
+      "wikidata": null,
+      "display_name": "Appeal",
+      "level": 2,
+      "score": 10.426747
+    },
+    {
+      "id": "https://openalex.org/C86432685",
+      "wikidata": null,
+      "display_name": "Commercial law",
+      "level": 2,
+      "score": 10.0698595
+    },
+    {
+      "id": "https://openalex.org/C42972112",
+      "wikidata": null,
+      "display_name": "Veterinary medicine",
+      "level": 1,
+      "score": 9.977545
+    },
+    {
+      "id": "https://openalex.org/C504631918",
+      "wikidata": null,
+      "display_name": "Bankruptcy",
+      "level": 2,
+      "score": 9.904895
+    },
+    {
+      "id": "https://openalex.org/C538833194",
+      "wikidata": null,
+      "display_name": "Civil procedure",
+      "level": 2,
+      "score": 9.29612
+    },
+    {
+      "id": "https://openalex.org/C2777381055",
+      "wikidata": null,
+      "display_name": "Damages",
+      "level": 2,
+      "score": 9.171341
+    },
+    {
+      "id": "https://openalex.org/C62100270",
+      "wikidata": null,
+      "display_name": "Conflict of laws",
+      "level": 2,
+      "score": 8.996051
+    },
+    {
+      "id": "https://openalex.org/C2778958867",
+      "wikidata": null,
+      "display_name": "Decree",
+      "level": 2,
+      "score": 8.831934
+    },
+    {
+      "id": "https://openalex.org/C149209484",
+      "wikidata": null,
+      "display_name": "Comparative law",
+      "level": 2,
+      "score": 8.352387
+    },
+    {
+      "id": "https://openalex.org/C2780070776",
+      "wikidata": null,
+      "display_name": "Legal person",
+      "level": 2,
+      "score": 7.95024
+    },
+    {
+      "id": "https://openalex.org/C10144844",
+      "wikidata": null,
+      "display_name": "Labour law",
+      "level": 2,
+      "score": 7.849081
+    },
+    {
+      "id": "https://openalex.org/C2777480472",
+      "wikidata": null,
+      "display_name": "Trust law",
+      "level": 2,
+      "score": 7.591769
+    },
+    {
+      "id": "https://openalex.org/C158129432",
+      "wikidata": null,
+      "display_name": "Statutory law",
+      "level": 2,
+      "score": 7.2996807
+    },
+    {
+      "id": "https://openalex.org/C160151201",
+      "wikidata": null,
+      "display_name": "Arbitration",
+      "level": 2,
+      "score": 7.230252
+    },
+    {
+      "id": "https://openalex.org/C190253527",
+      "wikidata": null,
+      "display_name": "Law and economics",
+      "level": 1,
+      "score": 7.0850935
+    },
+    {
+      "id": "https://openalex.org/C2777701304",
+      "wikidata": null,
+      "display_name": "Civil code",
+      "level": 2,
+      "score": 7.0087414
+    },
+    {
+      "id": "https://openalex.org/C39549134",
+      "wikidata": null,
+      "display_name": "Public relations",
+      "level": 1,
+      "score": 6.997359
+    },
+    {
+      "id": "https://openalex.org/C131932780",
+      "wikidata": null,
+      "display_name": "Family law",
+      "level": 2,
+      "score": 6.4237022
+    },
+    {
+      "id": "https://openalex.org/C2778049185",
+      "wikidata": null,
+      "display_name": "Legal case",
+      "level": 2,
+      "score": 6.336715
+    },
+    {
+      "id": "https://openalex.org/C504945742",
+      "wikidata": null,
+      "display_name": "Criminal procedure",
+      "level": 2,
+      "score": 6.2199774
+    },
+    {
+      "id": "https://openalex.org/C65414064",
+      "wikidata": null,
+      "display_name": "Autonomy",
+      "level": 2,
+      "score": 6.184327
+    },
+    {
+      "id": "https://openalex.org/C95831776",
+      "wikidata": null,
+      "display_name": "Information science",
+      "level": 2,
+      "score": 6.012954
+    },
+    {
+      "id": "https://openalex.org/C2776205810",
+      "wikidata": null,
+      "display_name": "Writ",
+      "level": 2,
+      "score": 5.994036
+    },
+    {
+      "id": "https://openalex.org/C2778415160",
+      "wikidata": null,
+      "display_name": "Procedural law",
+      "level": 2,
+      "score": 5.95397
+    },
+    {
+      "id": "https://openalex.org/C128069549",
+      "wikidata": null,
+      "display_name": "Environmental law",
+      "level": 2,
+      "score": 5.3371434
+    },
+    {
+      "id": "https://openalex.org/C2780928512",
+      "wikidata": null,
+      "display_name": "Pleading",
+      "level": 2,
+      "score": 5.136746
+    },
+    {
+      "id": "https://openalex.org/C121426985",
+      "wikidata": null,
+      "display_name": "Private sector",
+      "level": 2,
+      "score": 4.7770553
+    },
+    {
+      "id": "https://openalex.org/C2779018085",
+      "wikidata": null,
+      "display_name": "Federal Rules of Evidence",
+      "level": 2,
+      "score": 4.7502923
+    },
+    {
+      "id": "https://openalex.org/C107645774",
+      "wikidata": null,
+      "display_name": "Human resources",
+      "level": 2,
+      "score": 4.7063413
+    },
+    {
+      "id": "https://openalex.org/C2780560020",
+      "wikidata": null,
+      "display_name": "License",
+      "level": 2,
+      "score": 4.6817985
+    },
+    {
+      "id": "https://openalex.org/C2778375574",
+      "wikidata": null,
+      "display_name": "Expert witness",
+      "level": 2,
+      "score": 4.59815
+    },
+    {
+      "id": "https://openalex.org/C2776893234",
+      "wikidata": null,
+      "display_name": "Uniform Commercial Code",
+      "level": 2,
+      "score": 4.4569654
+    },
+    {
+      "id": "https://openalex.org/C2779845782",
+      "wikidata": null,
+      "display_name": "Deed",
+      "level": 2,
+      "score": 4.4197373
+    },
+    {
+      "id": "https://openalex.org/C2778770431",
+      "wikidata": null,
+      "display_name": "Imprisonment",
+      "level": 2,
+      "score": 4.4073277
+    },
+    {
+      "id": "https://openalex.org/C2776218876",
+      "wikidata": null,
+      "display_name": "Duty of care",
+      "level": 2,
+      "score": 4.376477
+    },
+    {
+      "id": "https://openalex.org/C2779614062",
+      "wikidata": null,
+      "display_name": "Lease",
+      "level": 2,
+      "score": 4.3572464
+    }
+  ],
+  "counts_by_year": [
+    {
+      "year": 2025,
+      "works_count": 391225,
+      "oa_works_count": 59096,
+      "cited_by_count": 9829228
+    },
+    {
+      "year": 2024,
+      "works_count": 661352,
+      "oa_works_count": 257049,
+      "cited_by_count": 15608819
+    },
+    {
+      "year": 2023,
+      "works_count": 907422,
+      "oa_works_count": 482192,
+      "cited_by_count": 16175965
+    },
+    {
+      "year": 2022,
+      "works_count": 861022,
+      "oa_works_count": 449327,
+      "cited_by_count": 14847994
+    },
+    {
+      "year": 2021,
+      "works_count": 970016,
+      "oa_works_count": 430828,
+      "cited_by_count": 15451882
+    },
+    {
+      "year": 2020,
+      "works_count": 1042159,
+      "oa_works_count": 385487,
+      "cited_by_count": 14339826
+    },
+    {
+      "year": 2019,
+      "works_count": 933280,
+      "oa_works_count": 305077,
+      "cited_by_count": 12369665
+    },
+    {
+      "year": 2018,
+      "works_count": 907053,
+      "oa_works_count": 262259,
+      "cited_by_count": 10120760
+    },
+    {
+      "year": 2017,
+      "works_count": 893092,
+      "oa_works_count": 219185,
+      "cited_by_count": 8871983
+    },
+    {
+      "year": 2016,
+      "works_count": 891281,
+      "oa_works_count": 192856,
+      "cited_by_count": 8396522
+    },
+    {
+      "year": 2015,
+      "works_count": 852510,
+      "oa_works_count": 161978,
+      "cited_by_count": 8220265
+    },
+    {
+      "year": 2014,
+      "works_count": 832416,
+      "oa_works_count": 136655,
+      "cited_by_count": 7991977
+    },
+    {
+      "year": 2013,
+      "works_count": 806237,
+      "oa_works_count": 117140,
+      "cited_by_count": 7288515
+    },
+    {
+      "year": 2012,
+      "works_count": 758270,
+      "oa_works_count": 99526,
+      "cited_by_count": 6651725
+    }
+  ],
+  "works_api_url": "https://api.openalex.org/works?filter=concepts.id:C199539241",
+  "updated_date": "2025-10-19T12:48:47.256891",
+  "created_date": "2016-06-24"
+}
