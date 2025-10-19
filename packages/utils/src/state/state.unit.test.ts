@@ -178,10 +178,54 @@ describe("State Utilities", () => {
         }),
         count: vi.fn().mockResolvedValue(1),
         // Add required Table properties
-        db: {},
+        db: {
+          name: "test",
+          tables: [],
+          verno: 1,
+          vip: vi.fn(),
+          _createTransaction: vi.fn(),
+          _dbSchema: {},
+          _deps: [],
+          _eval: vi.fn(),
+          _options: {},
+          _storeNames: [],
+          _hasBeenClosed: vi.fn(),
+          _hasBeenOpened: vi.fn(),
+          _onClose: [],
+          _onOpen: [],
+          _onReady: [],
+          _onVersionChange: [],
+          _transports: [],
+          _uncommittedTables: new Set(),
+          close: vi.fn(),
+          delete: vi.fn(),
+          isOpen: vi.fn(),
+          open: vi.fn(),
+          transaction: vi.fn(),
+          version: vi.fn(),
+        } as any,
         name: "test",
-        schema: {},
-        hook: {},
+        schema: {
+          name: "test",
+          primKey: {
+            name: "id",
+            keyPath: "id",
+            autoIncrement: false,
+            compound: false,
+            src: "id",
+          },
+          indexes: {},
+          mappedClass: null,
+          idxByName: {},
+          getIndexByKeyPath: vi.fn(),
+        } as any,
+        hook: {
+          creating: { addEventType: vi.fn(), fire: vi.fn() },
+          reading: { addEventType: vi.fn(), fire: vi.fn() },
+          updating: { addEventType: vi.fn(), fire: vi.fn() },
+          deleting: { addEventType: vi.fn(), fire: vi.fn() },
+          addEventType: vi.fn(),
+        } as any,
         core: {},
         // Add other required methods with minimal implementations
         bulkAdd: vi.fn(),
@@ -208,7 +252,7 @@ describe("State Utilities", () => {
         keys: vi.fn(),
         primaryKeys: vi.fn(),
         uniqueKeys: vi.fn(),
-      };
+      } as any;
 
       const reactiveTable = createReactiveTable(mockTable);
 
