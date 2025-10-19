@@ -1,6 +1,6 @@
 /**
  * Playwright configuration for Academic Explorer E2E tests
- * Integrates with Vitest for consistent test execution
+ * Uses Playwright's built-in test runner and web server management
  */
 
 import { defineConfig, devices } from "@playwright/test";

@@ -7,7 +7,7 @@ import { resolve } from "path";
 
 /**
  * E2E Test Runner
- * Starts dev server, waits for it to be ready, runs E2E tests, then cleans up
+ * Runs Playwright E2E tests (Playwright handles dev server startup automatically)
  */
 class E2ETestRunner {
   private devServerProcess: ChildProcess | null = null;
@@ -189,20 +189,16 @@ class E2ETestRunner {
     console.log("🧪 Running E2E tests...");
 
     return new Promise<number>((resolve, reject) => {
-      const testProcess = spawn(
-        "npx",
-        ["vitest", "run", "--config=vitest.config.e2e.ts"],
-        {
-          stdio: ["inherit", "inherit", "inherit"],
-          shell: true,
-          detached: process.platform !== "win32",
-          cwd: this.webAppDir,
-          env: {
-            ...process.env,
-            E2E_BASE_URL: `http://localhost:${this.port}`,
-          },
+      const testProcess = spawn("npx", ["playwright", "test"], {
+        stdio: ["inherit", "inherit", "inherit"],
+        shell: true,
+        detached: process.platform !== "win32",
+        cwd: this.webAppDir,
+        env: {
+          ...process.env,
+          E2E_BASE_URL: `http://localhost:${this.port}`,
         },
-      );
+      });
 
       testProcess.on("error", (error) => {
         console.error("💥 Failed to run tests:", error);
@@ -226,7 +222,11 @@ class E2ETestRunner {
    */
   public async run(): Promise<number> {
     try {
-      await this.startDevServer();
+      // Playwright handles its own web server, so we don't need to start it manually
+      // unless we're in a mode where we want manual control
+      if (process.env.MANUAL_DEV_SERVER) {
+        await this.startDevServer();
+      }
       const exitCode = await this.runTests();
       return exitCode;
     } catch (error) {
