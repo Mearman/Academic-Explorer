@@ -43,7 +43,7 @@ export class MemoryCache<T> {
 
   constructor(
     config: Partial<CacheConfig> = {},
-    private logger?: GenericLogger
+    private logger?: GenericLogger,
   ) {
     this.config = {
       maxSize: 1000,
@@ -73,7 +73,10 @@ export class MemoryCache<T> {
       if (this.config.enableStats) {
         this.stats.misses++;
       }
-      this.logger?.debug("cache", "Cache miss (expired)", { key, age: Date.now() - entry.timestamp });
+      this.logger?.debug("cache", "Cache miss (expired)", {
+        key,
+        age: Date.now() - entry.timestamp,
+      });
       return undefined;
     }
 
@@ -88,14 +91,17 @@ export class MemoryCache<T> {
       this.stats.hits++;
     }
 
-    this.logger?.debug("cache", "Cache hit", { key, accessCount: entry.accessCount });
+    this.logger?.debug("cache", "Cache hit", {
+      key,
+      accessCount: entry.accessCount,
+    });
     return entry.value;
   }
 
   /**
    * Set a value in the cache
    */
-  set(key: string, value: T, ttl?: number): void {
+  set({ key, value, ttl }: { key: string; value: T; ttl?: number }): void {
     const now = Date.now();
     const entry: CacheEntry<T> = {
       value,
@@ -114,7 +120,10 @@ export class MemoryCache<T> {
     if (this.cache.has(key)) {
       this.cache.set(key, entry);
       this.updateAccessOrder(key);
-      this.logger?.debug("cache", "Cache updated", { key, size: this.cache.size });
+      this.logger?.debug("cache", "Cache updated", {
+        key,
+        size: this.cache.size,
+      });
       return;
     }
 
@@ -129,7 +138,7 @@ export class MemoryCache<T> {
     this.logger?.debug("cache", "Cache set", {
       key,
       size: this.cache.size,
-      ttl: entry.ttl
+      ttl: entry.ttl,
     });
   }
 
@@ -140,7 +149,10 @@ export class MemoryCache<T> {
     const existed = this.cache.delete(key);
     if (existed) {
       this.removeFromAccessOrder(key);
-      this.logger?.debug("cache", "Cache deleted", { key, size: this.cache.size });
+      this.logger?.debug("cache", "Cache deleted", {
+        key,
+        size: this.cache.size,
+      });
     }
     return existed;
   }
@@ -157,7 +169,7 @@ export class MemoryCache<T> {
    * Clear all entries from the cache
    */
   clear(): void {
-    const {size} = this.cache;
+    const { size } = this.cache;
     this.cache.clear();
     this.accessOrder = [];
     this.logger?.debug("cache", "Cache cleared", { previousSize: size });
@@ -212,7 +224,10 @@ export class MemoryCache<T> {
 
     const removed = before - this.cache.size;
     if (removed > 0) {
-      this.logger?.debug("cache", "Cleanup completed", { removed, remaining: this.cache.size });
+      this.logger?.debug("cache", "Cleanup completed", {
+        removed,
+        remaining: this.cache.size,
+      });
     }
 
     return removed;
@@ -260,7 +275,7 @@ export class MemoryCache<T> {
     if (keysToDelete.length > 0) {
       this.logger?.debug("cache", "Pattern deletion completed", {
         pattern,
-        deleted: keysToDelete.length
+        deleted: keysToDelete.length,
       });
     }
 
@@ -286,7 +301,7 @@ export class MemoryCache<T> {
 
       this.logger?.debug("cache", "LRU eviction", {
         evictedKey: lruKey,
-        size: this.cache.size
+        size: this.cache.size,
       });
     }
   }

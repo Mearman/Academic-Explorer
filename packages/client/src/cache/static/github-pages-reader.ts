@@ -160,7 +160,7 @@ export class GitHubPagesReader {
         url,
       };
 
-      this.cache.set(cacheKey, cacheEntry);
+      this.cache.set({ key: cacheKey, value: cacheEntry });
 
       logger.debug(
         "static-cache",
@@ -172,7 +172,7 @@ export class GitHubPagesReader {
         },
       );
 
-      return data as T;
+      return data;
     } catch (error) {
       logger.error(
         "static-cache",
