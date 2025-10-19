@@ -294,8 +294,19 @@ if (typeof window !== "undefined") {
   void initializeState();
 }
 
-// Exports for backward compatibility
-export const useSettingsStore = zustandStore;
+// Hook for Zustand-style usage
+export const useSettingsStore = <T>(
+  selector: (state: SettingsStoreState) => T,
+): T => {
+  // Initialize state if not done yet
+  if (!initialized && typeof window !== "undefined") {
+    void initializeState();
+  }
+
+  // For now, return the selected value directly
+  // In a full implementation, this would use React state and subscriptions
+  return selector(currentState);
+};
 
 export const settingsActions = actions;
 

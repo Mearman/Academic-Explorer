@@ -248,10 +248,7 @@ type LayoutPersistedState = Partial<
   >
 >;
 
-const { useStore: useLayoutStore, actions: layoutActions } = createTrackedStore<
-  LayoutState,
-  LayoutActions
->({
+const result = createTrackedStore<LayoutState, LayoutActions>({
   config: {
     name: "layout",
     initialState: {
@@ -809,4 +806,7 @@ const { useStore: useLayoutStore, actions: layoutActions } = createTrackedStore<
   }),
 });
 
-export { useLayoutStore, layoutActions };
+export const useLayoutStore: () => LayoutState & LayoutActions =
+  result.useStore;
+export const layoutStore = result.store;
+export const layoutActions = result.actions;

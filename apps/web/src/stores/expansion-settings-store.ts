@@ -134,10 +134,10 @@ const initializeDefaultSettings = (): Record<
   };
 };
 
-const {
-  useStore: useExpansionSettingsStore,
-  actions: expansionSettingsActions,
-} = createTrackedStore<ExpansionSettingsState, ExpansionSettingsActions>({
+const result = createTrackedStore<
+  ExpansionSettingsState,
+  ExpansionSettingsActions
+>({
   config: {
     name: "expansion-settings",
     initialState: {
@@ -465,7 +465,10 @@ const {
   }),
 });
 
-export { useExpansionSettingsStore, expansionSettingsActions };
+export const useExpansionSettingsStore: () => ExpansionSettingsState &
+  ExpansionSettingsActions = result.useStore;
+export const expansionSettingsStore = result.store;
+export const expansionSettingsActions = result.actions;
 
 // Export a hook for getting settings for a specific target
 export const useExpansionSettings = (target: ExpansionTarget) => {

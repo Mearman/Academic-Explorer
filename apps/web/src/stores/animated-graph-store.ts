@@ -5,7 +5,7 @@
  */
 
 import { createTrackedStore } from "@academic-explorer/utils/state";
-import { useGraphStore } from "./graph-store";
+import { useGraphStore, graphStore } from "./graph-store";
 import type { GraphNode } from "@academic-explorer/graph";
 import { logger } from "@academic-explorer/utils/logger";
 import type { Draft } from "immer";
@@ -96,10 +96,7 @@ interface AnimatedGraphActions {
   [key: string]: (...args: never[]) => void;
 }
 
-export const useAnimatedGraphStore = createTrackedStore<
-  AnimatedGraphState,
-  AnimatedGraphActions
->({
+const result = createTrackedStore<AnimatedGraphState, AnimatedGraphActions>({
   config: {
     name: "animated-graph-store",
     initialState: {
@@ -376,7 +373,7 @@ export const useAnimatedGraphStore = createTrackedStore<
 
     // Integration with base graph store
     syncWithGraphStore: () => {
-      const graphStore = useGraphStore.getState();
+      const graphStoreState = graphStore.getState();
       const nodes = Object.values(graphStore.nodes).filter(
         (node): node is NonNullable<typeof node> => Boolean(node),
       );
@@ -402,15 +399,15 @@ export const useAnimatedGraphStore = createTrackedStore<
         logger.debug("graph", "Synced animated store with graph store", {
           nodeCount: nodes.length,
           positionCount: positions.length,
-          layoutType: graphStore.currentLayout.type,
-          pinnedNodeCount: Object.keys(graphStore.pinnedNodes).length,
+          layoutType: graphStoreState.currentLayout.type,
+          pinnedNodeCount: Object.keys(graphStoreState.pinnedNodes).length,
         });
       });
     },
 
     applyPositionsToGraphStore: () => {
       const state = get();
-      const graphStore = useGraphStore.getState();
+      const graphStoreState = graphStore.getState();
       const currentPositions = state.getAllPositions();
 
       if (currentPositions.length === 0) {
@@ -431,7 +428,11 @@ export const useAnimatedGraphStore = createTrackedStore<
       });
     },
   }),
-}).useStore;
+});
+
+export const useAnimatedGraphStore: () => AnimatedGraphState &
+  AnimatedGraphActions = result.useStore;
+export const animatedGraphStore = result.store;
 
 // Individual stable selectors to avoid object recreation (React 19 + Zustand compatibility)
 export const useIsAnimating = () =>

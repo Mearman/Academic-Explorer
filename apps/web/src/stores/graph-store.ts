@@ -227,11 +227,7 @@ function findNeighborIds({
   return neighbors;
 }
 
-const {
-  useStore: useGraphStore,
-  store: graphStore,
-  actions: graphActions,
-} = createTrackedStore<GraphState, GraphActions>({
+const result = createTrackedStore<GraphState, GraphActions>({
   config: {
     name: "graph-store",
     initialState: {
@@ -887,10 +883,6 @@ const {
   }),
 });
 
-// Export hook that returns state with actions bound
-const useGraphStoreHook = () => ({
-  ...useGraphStore.getState(),
-  ...graphActions,
-});
-
-export { useGraphStoreHook as useGraphStore, graphStore, graphActions };
+export const useGraphStore: () => GraphState & GraphActions = result.useStore;
+export const graphStore = result.store;
+export const graphActions = result.actions;
