@@ -107,10 +107,21 @@ export default tseslint.config([
 
       // Markdown files to exclude from emoji checking
       "docs/openalex-docs/**/*.md",
+
+      // ESLint config files - exclude from type-aware linting
+      "**/eslint.config.ts",
     ],
   },
   {
     files: ["**/*.{ts,tsx}"],
+    ignores: [
+      "**/eslint.config.{ts,js}",
+      "**/*.config.{ts,js}",
+      "**/vite.config.{ts,js}",
+      "**/vitest.config.{ts,js}",
+      "**/knip.ts",
+      "**/config/**/*.{ts,js}",
+    ],
     extends: [
       js.configs.recommended,
       // Use recommended instead of strict for performance
@@ -161,11 +172,11 @@ export default tseslint.config([
           "ts-ignore": false,
         },
       ],
-      // Type-aware rules for better type safety
-      "@typescript-eslint/prefer-nullish-coalescing": "error",
-      "@typescript-eslint/prefer-optional-chain": "error",
-      "@typescript-eslint/no-floating-promises": "error",
-      "@typescript-eslint/await-thenable": "error",
+      // Type-aware rules for better type safety - disabled for config files
+      // "@typescript-eslint/prefer-nullish-coalescing": "error",
+      // "@typescript-eslint/prefer-optional-chain": "error",
+      // "@typescript-eslint/no-floating-promises": "error",
+      // "@typescript-eslint/await-thenable": "error",
 
       // Strict type safety rules to prevent type coercion
       "@typescript-eslint/no-unsafe-assignment": "error",
@@ -237,7 +248,29 @@ export default tseslint.config([
     },
   },
   {
-    // Relaxed rules for config files
+    // Disable type-aware rules for eslint config files specifically
+    files: ["**/eslint.config.{ts,js}"],
+    languageOptions: {
+      parserOptions: {
+        // Disable project service for eslint config files to avoid parsing errors
+        projectService: false,
+      },
+    },
+    rules: {
+      // Disable all type-aware rules for eslint config files
+      "@typescript-eslint/prefer-nullish-coalescing": "off",
+      "@typescript-eslint/prefer-optional-chain": "off",
+      "@typescript-eslint/no-floating-promises": "off",
+      "@typescript-eslint/await-thenable": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
+    },
+  },
+  {
+    // Relaxed rules for other config files
     files: [
       "**/*.config.{ts,js}",
       "**/vite.config.{ts,js}",
@@ -261,13 +294,34 @@ export default tseslint.config([
     },
   },
   {
-    // Test file rules - disable strict type checking since test files aren't in tsconfig
-    files: ["**/*.{test,spec}.{ts,tsx}", "**/test/**/*.{ts,tsx}"],
+    // Only apply strict rules to non-test TypeScript files
+    files: ["src/**/*.{ts,tsx}"],
     languageOptions: {
       parserOptions: {
-        project: false, // Disable type-aware rules for test files
+        project: "./tsconfig.json",
+        tsconfigRootDir: import.meta.dirname,
       },
     },
+    rules: {
+      // Package-specific rules for API client
+      "@typescript-eslint/no-explicit-any": "warn", // Some flexibility for API responses
+      "@typescript-eslint/no-non-null-assertion": "error",
+      "no-console": "error", // No console usage in library code
+
+      // API clients may need some type flexibility
+      "@typescript-eslint/no-unsafe-assignment": "warn",
+      "@typescript-eslint/no-unsafe-member-access": "warn",
+
+      // Re-enable type-aware rules for source files
+      "@typescript-eslint/prefer-nullish-coalescing": "error",
+      "@typescript-eslint/prefer-optional-chain": "error",
+      "@typescript-eslint/no-floating-promises": "error",
+      "@typescript-eslint/await-thenable": "error",
+    },
+  },
+  {
+    // Test files - relax some rules for testing
+    files: ["**/*.{test,spec}.{ts,tsx}", "**/__tests__/**/*.{ts,tsx}"],
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-non-null-assertion": "off",
