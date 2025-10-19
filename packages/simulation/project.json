@@ -14,22 +14,6 @@
       "outputs": ["{projectRoot}/dist"],
       "cache": true
     },
-    "typecheck": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsc --noEmit",
-        "cwd": "{projectRoot}"
-      },
-      "cache": true
-    },
-    "typecheck:all": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsc --noEmit --project tsconfig.typecheck.json",
-        "cwd": "{projectRoot}"
-      },
-      "cache": true
-    },
 
     "test": {
       "executor": "nx:run-commands",

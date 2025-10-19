@@ -16,29 +16,7 @@
         "assets": []
       }
     },
-    "typecheck": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsc --noEmit",
-        "cwd": "apps/cli"
-      }
-    },
-    "typecheck:all": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsc --noEmit --project tsconfig.typecheck.json",
-        "cwd": "apps/cli"
-      },
-      "inputs": [
-        "source",
-        "configs",
-        "^production",
-        "{workspaceRoot}/tsconfig*.json",
-        "{workspaceRoot}/config/**/*"
-      ],
-      "outputs": ["{projectRoot}/dist/tsc"],
-      "cache": true
-    },
+
     "test": {
       "executor": "nx:run-commands",
       "dependsOn": ["test:unit", "test:integration"],

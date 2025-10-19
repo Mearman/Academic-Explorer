@@ -18,38 +18,6 @@
       "outputs": ["{projectRoot}/dist"],
       "cache": true
     },
-    "typecheck": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsc --noEmit",
-        "cwd": "{projectRoot}"
-      },
-      "inputs": [
-        "source",
-        "configs",
-        "^production",
-        "{workspaceRoot}/tsconfig*.json",
-        "{workspaceRoot}/config/**/*"
-      ],
-      "outputs": ["{projectRoot}/dist/tsc"],
-      "cache": true
-    },
-    "typecheck:all": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsc --noEmit --project tsconfig.typecheck.json",
-        "cwd": "{projectRoot}"
-      },
-      "inputs": [
-        "source",
-        "configs",
-        "^production",
-        "{workspaceRoot}/tsconfig*.json",
-        "{workspaceRoot}/config/**/*"
-      ],
-      "outputs": ["{projectRoot}/dist/tsc"],
-      "cache": true
-    },
 
     "test": {
       "executor": "nx:run-commands",
