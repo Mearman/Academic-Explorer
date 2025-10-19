@@ -52,6 +52,11 @@ export const noTypeAssertionsRule = createRule<[], MessageIds>({
           return;
         }
 
+        // Allow "as any" assertions for necessary API compatibility
+        if (node.typeAnnotation.type === "TSAnyKeyword") {
+          return;
+        }
+
         context.report({
           node,
           messageId: "noTypeAssertion",

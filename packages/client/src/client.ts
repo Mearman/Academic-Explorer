@@ -82,12 +82,11 @@ export class OpenAlexBaseClient {
     // Check Vite's __DEV__ flag
     if (typeof globalThis !== "undefined" && "__DEV__" in globalThis) {
       try {
-        const devFlag =
-          "__DEV__" in globalThis &&
-          typeof (globalThis as { __DEV__?: boolean }).__DEV__ === "boolean"
-            ? (globalThis as { __DEV__?: boolean }).__DEV__
-            : undefined;
-        return devFlag === true;
+        const globalObj = globalThis as Record<string, unknown>;
+        const devFlag = globalObj.__DEV__;
+        if (typeof devFlag === "boolean") {
+          return devFlag;
+        }
       } catch {
         // Ignore errors if __DEV__ is not accessible
       }

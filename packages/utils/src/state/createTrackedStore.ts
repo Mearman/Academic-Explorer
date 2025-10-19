@@ -246,8 +246,10 @@ export function createTrackedStore<
       replace?: boolean,
     ) => {
       if (replace === true) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         useStore.setState(partial as any, true);
       } else {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         useStore.setState(partial as any);
       }
     },
@@ -256,8 +258,7 @@ export function createTrackedStore<
 
   // Create a custom hook that returns state with actions bound
   const useStoreWithActions = () => {
-    const state = originalGetState();
-    return state;
+    return originalGetState();
   };
 
   // Create a store object with actions, getState, setState, and subscribe methods
