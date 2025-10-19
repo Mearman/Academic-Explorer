@@ -202,7 +202,7 @@ export function createStore<T extends object>(
 ): UseBoundStore<StoreApi<T>> {
   const { name, devtools: enableDevtools = false } = options;
 
-  const storeCreator = (set: any, get: any) => ({
+  const storeCreator = () => ({
     ...initialState,
   });
 
@@ -216,8 +216,7 @@ export function createStore<T extends object>(
 }
 
 /**
- * Legacy factory function - kept for backwards compatibility
- * @deprecated Use createStore directly instead
+ * Factory function for creating tracked stores with actions and selectors
  */
 export function createTrackedStore<
   T extends object,
@@ -274,7 +273,9 @@ export function createTrackedStore<
     const extractedActions: Partial<A> = {};
     Object.keys(fullState).forEach((key) => {
       if (!(key in initialState)) {
-        (extractedActions as any)[key] = (fullState as any)[key];
+        (extractedActions as Record<string, unknown>)[key] = (
+          fullState as Record<string, unknown>
+        )[key];
       }
     });
     return extractedActions as A;
@@ -290,19 +291,22 @@ export function createTrackedStore<
       const stateOnly: Partial<T> = {};
       Object.keys(initialState).forEach((key) => {
         if (key in fullState) {
-          (stateOnly as any)[key] = (fullState as any)[key];
+          (stateOnly as Record<string, unknown>)[key] = (
+            fullState as Record<string, unknown>
+          )[key];
         }
       });
       return stateOnly as T;
     },
-    setState: (partial, replace) =>
-      (useStore as any).setState(partial, replace),
+    setState: (partial, replace) => {
+      (useStore as any).setState(partial, replace);
+    },
     subscribe: useStore.subscribe,
     ...actions,
   };
 
   return {
-    useStore: useStore as () => T & A,
+    useStore,
     store: storeWithActions,
     selectors,
     actions,

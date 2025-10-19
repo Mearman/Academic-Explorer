@@ -3,7 +3,7 @@
  * Framework-agnostic heuristics for determining when to start/restart simulations
  */
 
-import type { Logger } from './force-simulation-engine.js';
+import type { Logger } from "./force-simulation-engine.js";
 
 export interface AutoSimulationState {
   nodeCount: number;
@@ -53,7 +53,9 @@ const noopLogger: Logger = {
 export class AutoSimulationManager {
   private readonly minNodeThreshold: number;
   private readonly logger: Logger;
-  private readonly onDebugStateChange: ((debug: AutoSimulationDebugState) => void) | undefined;
+  private readonly onDebugStateChange:
+    | ((debug: AutoSimulationDebugState) => void)
+    | undefined;
   private hasTriggered = false;
   private lastNodeCount = 0;
 
@@ -79,18 +81,19 @@ export class AutoSimulationManager {
     if (!state.isWorkerReady || !state.useAnimation) {
       this.hasTriggered = false;
       this.lastNodeCount = state.nodeCount;
-      this.publishDebugState(state, decision);
+      this.publishDebugState({ state, decision });
       return decision;
     }
 
     const shouldConsiderAutoStart = state.nodeCount >= this.minNodeThreshold;
     const hasNewContent = state.nodeCount > this.lastNodeCount;
-    const shouldAutoStart = shouldConsiderAutoStart && (!this.hasTriggered || hasNewContent);
+    const shouldAutoStart =
+      shouldConsiderAutoStart && (!this.hasTriggered || hasNewContent);
 
     this.lastNodeCount = Math.max(this.lastNodeCount, state.nodeCount);
 
     if (!shouldAutoStart) {
-      this.publishDebugState(state, decision);
+      this.publishDebugState({ state, decision });
       return decision;
     }
 
@@ -104,15 +107,19 @@ export class AutoSimulationManager {
       decision.shouldApplyLayout = true;
     }
 
-    this.logger.debug("simulation", "AutoSimulationManager generated decision", {
-      state,
-      decision,
-      minNodeThreshold: this.minNodeThreshold,
-      hasTriggered: this.hasTriggered,
-      lastNodeCount: this.lastNodeCount,
-    });
+    this.logger.debug(
+      "simulation",
+      "AutoSimulationManager generated decision",
+      {
+        state,
+        decision,
+        minNodeThreshold: this.minNodeThreshold,
+        hasTriggered: this.hasTriggered,
+        lastNodeCount: this.lastNodeCount,
+      },
+    );
 
-    this.publishDebugState(state, decision);
+    this.publishDebugState({ state, decision });
     return decision;
   }
 
@@ -127,7 +134,13 @@ export class AutoSimulationManager {
   /**
    * Get debug state for current conditions
    */
-  getDebugState(state: AutoSimulationState, decision: AutoSimulationDecision): AutoSimulationDebugState {
+  getDebugState({
+    state,
+    decision,
+  }: {
+    state: AutoSimulationState;
+    decision: AutoSimulationDecision;
+  }): AutoSimulationDebugState {
     return {
       nodeCount: state.nodeCount,
       isWorkerReady: state.isWorkerReady,
@@ -149,8 +162,14 @@ export class AutoSimulationManager {
     };
   }
 
-  private publishDebugState(state: AutoSimulationState, decision: AutoSimulationDecision) {
-    const debug = this.getDebugState(state, decision);
+  private publishDebugState({
+    state,
+    decision,
+  }: {
+    state: AutoSimulationState;
+    decision: AutoSimulationDecision;
+  }) {
+    const debug = this.getDebugState({ state, decision });
     if (this.onDebugStateChange) {
       this.onDebugStateChange(debug);
     }
@@ -160,5 +179,6 @@ export class AutoSimulationManager {
 /**
  * Factory function for creating auto-simulation managers
  */
-export const createAutoSimulationManager = (options?: AutoSimulationManagerOptions) =>
-  new AutoSimulationManager(options);
+export const createAutoSimulationManager = (
+  options?: AutoSimulationManagerOptions,
+) => new AutoSimulationManager(options);

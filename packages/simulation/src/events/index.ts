@@ -73,10 +73,13 @@ export class SimulationEventEmitter {
   private globalHandlers = new Set<SimulationEventHandler<SimulationEvent>>();
 
   // Subscribe to events of a specific type
-  on<T extends SimulationEvent["type"]>(
-    eventType: T,
-    handler: SimulationEventHandler<SimulationEvent>,
-  ): EventSubscription {
+  on<T extends SimulationEvent["type"]>({
+    eventType,
+    handler,
+  }: {
+    eventType: T;
+    handler: SimulationEventHandler<SimulationEvent>;
+  }): EventSubscription {
     if (!this.handlers.has(eventType)) {
       this.handlers.set(eventType, new Set());
     }
@@ -118,9 +121,12 @@ export class SimulationEventEmitter {
           handler(event);
         } catch (error) {
           // Emit error event if handler throws
-          this.emitError(`Event handler error for ${event.type}`, {
-            originalEvent: event,
-            error: error instanceof Error ? error.message : String(error),
+          this.emitError({
+            message: `Event handler error for ${event.type}`,
+            context: {
+              originalEvent: event,
+              error: error instanceof Error ? error.message : String(error),
+            },
           });
         }
       });
@@ -132,9 +138,12 @@ export class SimulationEventEmitter {
         handler(event);
       } catch (error) {
         // Emit error event if handler throws
-        this.emitError(`Global event handler error for ${event.type}`, {
-          originalEvent: event,
-          error: error instanceof Error ? error.message : String(error),
+        this.emitError({
+          message: `Global event handler error for ${event.type}`,
+          context: {
+            originalEvent: event,
+            error: error instanceof Error ? error.message : String(error),
+          },
         });
       }
     });
@@ -163,7 +172,13 @@ export class SimulationEventEmitter {
   }
 
   // Convenience method to emit error events
-  emitError(message: string, context?: Record<string, unknown>): void {
+  emitError({
+    message,
+    context,
+  }: {
+    message: string;
+    context?: Record<string, unknown>;
+  }): void {
     this.emit({
       type: "error",
       timestamp: Date.now(),
@@ -173,7 +188,13 @@ export class SimulationEventEmitter {
   }
 
   // Convenience method to emit debug events
-  emitDebug(message: string, context?: Record<string, unknown>): void {
+  emitDebug({
+    message,
+    context,
+  }: {
+    message: string;
+    context?: Record<string, unknown>;
+  }): void {
     this.emit({
       type: "debug",
       timestamp: Date.now(),

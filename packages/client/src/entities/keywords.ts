@@ -196,7 +196,7 @@ export class KeywordsApi {
     }
     // After validation, safely cast to record to access properties
     const paramsObj = trustObjectShape(params);
-    const sortValue = extractPropertyValue(paramsObj, "sort");
+    const sortValue = extractPropertyValue({ obj: paramsObj, key: "sort" });
     return typeof sortValue === "string";
   }
 
@@ -237,18 +237,22 @@ export class KeywordsApi {
       typeof params.sort === "string" &&
       this.isQueryParams(params)
     ) {
-      return this.client.getById<Keyword>("keywords", id, params);
+      return this.client.getById("keywords", id, params) as Promise<Keyword>;
     }
     // Otherwise, convert from StrictKeywordsQueryParams
     if (this.isStrictKeywordsQueryParams(params)) {
-      return this.client.getById<Keyword>(
+      return this.client.getById(
         "keywords",
         id,
         toQueryParams(params),
-      );
+      ) as Promise<Keyword>;
     }
     // Default case - treat as basic params
-    return this.client.getById<Keyword>("keywords", id, toQueryParams({}));
+    return this.client.getById(
+      "keywords",
+      id,
+      toQueryParams({}),
+    ) as Promise<Keyword>;
   }
 
   /**
@@ -493,7 +497,12 @@ export class KeywordsApi {
     });
 
     const totalWorks = sample.results.reduce(
-      (sum, keyword) => sum + keyword.works_count,
+      (sum, keyword) =>
+        sum +
+        keyword.counts_by_year.reduce(
+          (yearSum, year) => yearSum + (year.works_count ?? 0),
+          0,
+        ),
       0,
     );
     const totalCitations = sample.results.reduce(

@@ -355,8 +355,8 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
     const { nodes, links, config, pinnedNodes = [], alpha = 1.0 } = params;
 
     this.simulationConfig = config;
-    const d3Nodes = this.mergeNodesIntoSimulation(nodes, pinnedNodes);
-    const d3Links = this.mapLinksToSimulation(links, d3Nodes);
+    const d3Nodes = this.mergeNodesIntoSimulation({ nodes, pinnedNodes });
+    const d3Links = this.mapLinksToSimulation({ links, nodes: d3Nodes });
 
     this.simulationLinks = d3Links;
 
@@ -499,11 +499,11 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
         this.currentSimulation.alpha(update.alpha).restart();
         applied = true;
       } else if (update.type === "nodes" && update.nodes) {
-        this.applyNodesImmediately(
-          update.nodes,
-          update.pinnedNodes ?? [],
-          update.alpha,
-        );
+        this.applyNodesImmediately({
+          nodes: update.nodes,
+          pinnedNodes: update.pinnedNodes ?? [],
+          alpha: update.alpha,
+        });
         applied = true;
       }
     }
@@ -525,7 +525,10 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
       return;
     }
 
-    const d3Links = this.mapLinksToSimulation(links, this.simulationNodes);
+    const d3Links = this.mapLinksToSimulation({
+      links,
+      nodes: this.simulationNodes,
+    });
     this.simulationLinks = d3Links;
 
     const linkForce = forceLink<D3SimulationNode, D3SimulationLink>(d3Links)
@@ -546,11 +549,15 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
     }
   }
 
-  private applyNodesImmediately(
-    nodes: SimulationNode[],
-    pinnedNodes: string[],
-    alpha: number,
-  ) {
+  private applyNodesImmediately({
+    nodes,
+    pinnedNodes,
+    alpha,
+  }: {
+    nodes: SimulationNode[];
+    pinnedNodes: string[];
+    alpha: number;
+  }) {
     if (!this.currentSimulation) {
       return;
     }
@@ -620,10 +627,13 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
     this.currentSimulation.alpha(alpha).restart();
   }
 
-  private mergeNodesIntoSimulation(
-    nodes: SimulationNode[],
-    pinnedNodes: string[],
-  ) {
+  private mergeNodesIntoSimulation({
+    nodes,
+    pinnedNodes,
+  }: {
+    nodes: SimulationNode[];
+    pinnedNodes: string[];
+  }) {
     const pinnedSet = new Set(pinnedNodes);
 
     this.simulationNodes = nodes.map((node) => {
@@ -649,10 +659,13 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
     return this.simulationNodes;
   }
 
-  private mapLinksToSimulation(
-    links: SimulationLink[],
-    nodes: D3SimulationNode[],
-  ): D3SimulationLink[] {
+  private mapLinksToSimulation({
+    links,
+    nodes,
+  }: {
+    links: SimulationLink[];
+    nodes: D3SimulationNode[];
+  }): D3SimulationLink[] {
     const nodeById = new Map(nodes.map((node) => [node.id, node]));
 
     return links.map((link) => {
@@ -693,8 +706,11 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
     pinnedNodes: string[],
   ) {
     try {
-      const d3Nodes = this.mergeNodesIntoSimulation(nodes, pinnedNodes);
-      const d3Links = this.mapLinksToSimulation(links, this.simulationNodes);
+      const d3Nodes = this.mergeNodesIntoSimulation({ nodes, pinnedNodes });
+      const d3Links = this.mapLinksToSimulation({
+        links,
+        nodes: this.simulationNodes,
+      });
 
       this.simulationLinks = d3Links;
 
@@ -753,7 +769,10 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
       this.logger.error("simulation", "Failed to create D3 simulation", {
         error: message,
       });
-      this.emitError("Failed to create D3 simulation", { error: message });
+      this.emitError({
+        message: "Failed to create D3 simulation",
+        context: { error: message },
+      });
       throw error;
     }
   }

@@ -19,7 +19,12 @@
     "assumeChangesOnlyAffectDirectDependencies": true,
     "composite": true
   },
-  "include": ["src/**/*", "eslint.config.ts", "vitest.config.ts"],
+  "include": [
+    "src/**/*",
+    "eslint.config.ts",
+    "vitest.config.ts",
+    "../../vitest.config.base.ts"
+  ],
   "exclude": ["dist", "node_modules"],
   "references": [
     { "path": "../../packages/client" },

@@ -148,7 +148,7 @@ export class GitHubPagesReader {
         path,
         cacheKey,
       });
-      return cached.data;
+      return cached.data as T;
     }
 
     try {

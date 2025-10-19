@@ -717,7 +717,7 @@ export class OpenAlexBaseClient {
 
     // If schema is provided, use it for type-safe validation
     if (schema) {
-      return validateWithSchema(validatedData, schema);
+      return validateWithSchema({ data: validatedData, schema });
     }
 
     // Return validated data - callers must handle typing

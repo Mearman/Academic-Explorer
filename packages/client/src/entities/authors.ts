@@ -434,7 +434,12 @@ export class AuthorsApi {
       select: ["x_concepts"],
     });
 
-    return author.x_concepts ?? [];
+    return (author.x_concepts ?? []) as Array<{
+      id: OpenAlexId;
+      display_name: string;
+      score: number;
+      level: number;
+    }>;
   }
 
   /**
@@ -523,9 +528,9 @@ export class AuthorsApi {
 
     // Analyze co-authorships
     works.results.forEach((work) => {
-      const coauthorIds = work.authorships
-        .map((auth) => auth.author.id)
-        .filter((id) => id !== authorId);
+      const coauthorIds = (work.authorships ?? [])
+        .map((auth) => auth.author?.id)
+        .filter((id): id is string => id !== undefined && id !== authorId);
 
       coauthorIds.forEach((coauthorId) => {
         if (!collaboratorStats.has(coauthorId)) {

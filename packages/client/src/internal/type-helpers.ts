@@ -17,7 +17,7 @@ import {
  * Validates external API response data using Zod schema
  * Throws an error if validation fails
  */
-export function validateApiResponse(data: unknown): NonNullable<unknown> {
+export function validateApiResponse(data: unknown): unknown {
   return apiResponseSchema.parse(data);
 }
 
@@ -44,7 +44,6 @@ export function isValidApiResponse(
  * This function isolates the type assertion needed for external API responses
  */
 
-// eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
 export function trustApiContract<T>(validatedData: NonNullable<unknown>): T {
   // Return the validated data with the expected type
   return validatedData as T;
@@ -55,7 +54,6 @@ export function trustApiContract<T>(validatedData: NonNullable<unknown>): T {
  * This function isolates the type assertion needed for static data responses
  */
 
-// eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
 export function trustStaticData<T>(data: unknown): T {
   // Return the static data with the expected type
   return data as T;
@@ -66,7 +64,6 @@ export function trustStaticData<T>(data: unknown): T {
  * This function isolates the type assertion needed for validated static cache responses
  */
 
-// eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
 export function trustValidatedStaticData<T>(validatedData: unknown): T {
   // Return the validated static data with the expected type
   return validatedData as T;

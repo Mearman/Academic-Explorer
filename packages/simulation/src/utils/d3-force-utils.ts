@@ -28,34 +28,58 @@ export interface D3SimulationLink {
 // Type guard interfaces for different force types
 interface ForceWithStrength {
   strength(): number;
-  strength(strength: number | ((d: D3SimulationNode, i: number, data: D3SimulationNode[]) => number)): this;
+  strength(
+    strength:
+      | number
+      | ((d: D3SimulationNode, i: number, data: D3SimulationNode[]) => number),
+  ): this;
 }
 
 interface ForceWithDistance {
   distance(): number;
-  distance(distance: number | ((d: D3SimulationNode, i: number, data: D3SimulationNode[]) => number)): this;
+  distance(
+    distance:
+      | number
+      | ((d: D3SimulationNode, i: number, data: D3SimulationNode[]) => number),
+  ): this;
 }
 
 interface ForceWithRadius {
   radius(): number;
-  radius(radius: number | ((d: D3SimulationNode, i: number, data: D3SimulationNode[]) => number)): this;
+  radius(
+    radius:
+      | number
+      | ((d: D3SimulationNode, i: number, data: D3SimulationNode[]) => number),
+  ): this;
 }
 
 // Type guards
-export function hasStrength(force: Force<D3SimulationNode, D3SimulationLink>): force is Force<D3SimulationNode, D3SimulationLink> & ForceWithStrength {
+export function hasStrength(
+  force: Force<D3SimulationNode, D3SimulationLink>,
+): force is Force<D3SimulationNode, D3SimulationLink> & ForceWithStrength {
   return "strength" in force && typeof force.strength === "function";
 }
 
-export function hasDistance(force: Force<D3SimulationNode, D3SimulationLink>): force is Force<D3SimulationNode, D3SimulationLink> & ForceWithDistance {
+export function hasDistance(
+  force: Force<D3SimulationNode, D3SimulationLink>,
+): force is Force<D3SimulationNode, D3SimulationLink> & ForceWithDistance {
   return "distance" in force && typeof force.distance === "function";
 }
 
-export function hasRadius(force: Force<D3SimulationNode, D3SimulationLink>): force is Force<D3SimulationNode, D3SimulationLink> & ForceWithRadius {
+export function hasRadius(
+  force: Force<D3SimulationNode, D3SimulationLink>,
+): force is Force<D3SimulationNode, D3SimulationLink> & ForceWithRadius {
   return "radius" in force && typeof force.radius === "function";
 }
 
 // Safe accessor functions
-export function setForceStrength({ force, strength }: { force: Force<D3SimulationNode, D3SimulationLink>; strength: number }): boolean {
+export function setForceStrength({
+  force,
+  strength,
+}: {
+  force: Force<D3SimulationNode, D3SimulationLink>;
+  strength: number;
+}): boolean {
   if (hasStrength(force)) {
     force.strength(strength);
     return true;
@@ -63,7 +87,13 @@ export function setForceStrength({ force, strength }: { force: Force<D3Simulatio
   return false;
 }
 
-export function setForceDistance({ force, distance }: { force: Force<D3SimulationNode, D3SimulationLink>; distance: number }): boolean {
+export function setForceDistance({
+  force,
+  distance,
+}: {
+  force: Force<D3SimulationNode, D3SimulationLink>;
+  distance: number;
+}): boolean {
   if (hasDistance(force)) {
     force.distance(distance);
     return true;
@@ -71,7 +101,13 @@ export function setForceDistance({ force, distance }: { force: Force<D3Simulatio
   return false;
 }
 
-export function setForceRadius({ force, radius }: { force: Force<D3SimulationNode, D3SimulationLink>; radius: number }): boolean {
+export function setForceRadius({
+  force,
+  radius,
+}: {
+  force: Force<D3SimulationNode, D3SimulationLink>;
+  radius: number;
+}): boolean {
   if (hasRadius(force)) {
     force.radius(radius);
     return true;
@@ -79,21 +115,27 @@ export function setForceRadius({ force, radius }: { force: Force<D3SimulationNod
   return false;
 }
 
-export function getForceStrength(force: Force<D3SimulationNode, D3SimulationLink>): number | null {
+export function getForceStrength(
+  force: Force<D3SimulationNode, D3SimulationLink>,
+): number | null {
   if (hasStrength(force)) {
     return force.strength();
   }
   return null;
 }
 
-export function getForceDistance(force: Force<D3SimulationNode, D3SimulationLink>): number | null {
+export function getForceDistance(
+  force: Force<D3SimulationNode, D3SimulationLink>,
+): number | null {
   if (hasDistance(force)) {
     return force.distance();
   }
   return null;
 }
 
-export function getForceRadius(force: Force<D3SimulationNode, D3SimulationLink>): number | null {
+export function getForceRadius(
+  force: Force<D3SimulationNode, D3SimulationLink>,
+): number | null {
   if (hasRadius(force)) {
     return force.radius();
   }
@@ -110,19 +152,38 @@ export function sanitizePosition(value: unknown, fallback = 0): number {
 }
 
 // Node position utilities
-export function extractNodePosition(node: D3SimulationNode): { x: number; y: number } {
+export function extractNodePosition(node: D3SimulationNode): {
+  x: number;
+  y: number;
+} {
   return {
     x: sanitizePosition(node.x),
-    y: sanitizePosition(node.y)
+    y: sanitizePosition(node.y),
   };
 }
 
-export function setNodePosition(node: D3SimulationNode, x: number, y: number): void {
+export function setNodePosition({
+  node,
+  x,
+  y,
+}: {
+  node: D3SimulationNode;
+  x: number;
+  y: number;
+}): void {
   if (isValidPosition(x)) node.x = x;
   if (isValidPosition(y)) node.y = y;
 }
 
-export function pinNode(node: D3SimulationNode, x?: number, y?: number): void {
+export function pinNode({
+  node,
+  x,
+  y,
+}: {
+  node: D3SimulationNode;
+  x?: number;
+  y?: number;
+}): void {
   node.fx = x ?? node.x ?? 0;
   node.fy = y ?? node.y ?? 0;
 }
@@ -133,6 +194,10 @@ export function unpinNode(node: D3SimulationNode): void {
 }
 
 export function isNodePinned(node: D3SimulationNode): boolean {
-  return node.fx !== null && node.fx !== undefined &&
-         node.fy !== null && node.fy !== undefined;
+  return (
+    node.fx !== null &&
+    node.fx !== undefined &&
+    node.fy !== null &&
+    node.fy !== undefined
+  );
 }

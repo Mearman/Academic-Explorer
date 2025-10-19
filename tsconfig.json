@@ -1,28 +1,5 @@
 {
   "extends": "./tsconfig.base.json",
   "files": [],
-  "include": ["eslint-rules/**/*"],
-  "references": [
-    {
-      "path": "./apps/web"
-    },
-    {
-      "path": "./apps/cli"
-    },
-    {
-      "path": "./packages/graph"
-    },
-    {
-      "path": "./packages/client"
-    },
-    {
-      "path": "./packages/utils"
-    },
-    {
-      "path": "./packages/simulation"
-    },
-    {
-      "path": "./packages/ui"
-    }
-  ]
+  "include": ["eslint-rules/**/*"]
 }

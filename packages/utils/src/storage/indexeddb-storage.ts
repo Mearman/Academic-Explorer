@@ -24,7 +24,15 @@ export interface StorageConfig {
 class KeyValueDB extends Dexie {
   keyValueStore!: Table<{ key: string; value: string }>;
 
-  constructor(dbName: string, storeName: string, version: number) {
+  constructor({
+    dbName,
+    storeName,
+    version,
+  }: {
+    dbName: string;
+    storeName: string;
+    version: number;
+  }) {
     super(dbName);
     this.version(version).stores({
       [storeName]: "key,value",
@@ -52,7 +60,11 @@ const getDB = (config: StorageConfig): Promise<KeyValueDB> => {
 
   if (!dbCache.has(cacheKey)) {
     const dbPromise = Promise.resolve(
-      new KeyValueDB(config.dbName, config.storeName, config.version),
+      new KeyValueDB({
+        dbName: config.dbName,
+        storeName: config.storeName,
+        version: config.version,
+      }),
     );
     dbCache.set(cacheKey, dbPromise);
   }
