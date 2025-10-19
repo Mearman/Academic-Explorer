@@ -137,21 +137,22 @@ describe("State Utilities", () => {
     }
 
     it("should create a store factory", () => {
-      const { useStore, store } = createTrackedStore<TestState, TestActions>({
-        config: {
-          name: "test-store",
-          initialState: { count: 0, items: [] },
-        },
-        actionsFactory: ({ set, get }) => ({
-          increment: () =>
-            set((state) => ({ ...state, count: state.count + 1 })),
-          addItem: (item: string) =>
-            set((state) => ({
-              ...state,
-              items: [...state.items, item],
-            })),
-        }),
-      });
+      const { useStore, store }: { useStore: any; store: any } =
+        createTrackedStore<TestState, TestActions>({
+          config: {
+            name: "test-store",
+            initialState: { count: 0, items: [] },
+          },
+          actionsFactory: ({ set, get }) => ({
+            increment: () =>
+              set((state) => ({ ...state, count: state.count + 1 })),
+            addItem: (item: string) =>
+              set((state) => ({
+                ...state,
+                items: [...state.items, item],
+              })),
+          }),
+        });
 
       // Test that the hook is a function
       expect(typeof useStore).toBe("function");

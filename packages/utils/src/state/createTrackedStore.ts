@@ -187,7 +187,7 @@ export interface TrackedStoreConfig<T> {
 
 export interface TrackedStoreResult<T, A> {
   useStore: () => T & A; // Hook that returns state with bound actions
-  store: unknown; // Zustand store
+  store: any; // Custom store with actions - typed as any for flexibility
   selectors: Record<string, (state: T) => unknown>;
   actions: A;
 }
