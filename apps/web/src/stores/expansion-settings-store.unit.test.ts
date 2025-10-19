@@ -10,6 +10,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   useExpansionSettingsStore,
+  expansionSettingsStore,
   expansionSettingsActions,
 } from "./expansion-settings-store";
 import type {
@@ -61,7 +62,7 @@ describe("Expansion Settings Store", () => {
 
   describe("Store initialization", () => {
     it("should initialize with default settings for all target types", () => {
-      const { settings } = useExpansionSettingsStore.getState();
+      const { settings } = expansionSettingsStore.getState();
 
       // Should have settings for all entity types
       expect(settings.works).toBeDefined();
