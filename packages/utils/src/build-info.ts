@@ -66,10 +66,13 @@ export function formatBuildTimestamp(timestamp: string): string {
 /**
  * Generate GitHub commit URL
  */
-export function getCommitUrl(
-  repositoryUrl: string,
-  commitHash: string,
-): string {
+export function getCommitUrl({
+  repositoryUrl,
+  commitHash,
+}: {
+  repositoryUrl: string;
+  commitHash: string;
+}): string {
   if (commitHash === "unknown" || !repositoryUrl) {
     return repositoryUrl || "#";
   }
@@ -82,7 +85,13 @@ export function getCommitUrl(
 /**
  * Generate GitHub release URL
  */
-export function getReleaseUrl(repositoryUrl: string, version: string): string {
+export function getReleaseUrl({
+  repositoryUrl,
+  version,
+}: {
+  repositoryUrl: string;
+  version: string;
+}): string {
   if (version === "0.0.0-dev" || !repositoryUrl) {
     return repositoryUrl || "#";
   }
