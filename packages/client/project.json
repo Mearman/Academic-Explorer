@@ -39,51 +39,7 @@
       "dependsOn": ["build:bundle"]
     },
 
-    "test": {
-      "executor": "nx:run-commands",
-      "dependsOn": ["test:unit", "test:integration"],
-      "options": {
-        "command": "echo 'All client tests completed successfully'",
-        "cwd": "{projectRoot}"
-      },
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/vite.config.base.ts",
-        "{projectRoot}/vitest.config.ts"
-      ],
-      "outputs": ["{projectRoot}/coverage"],
-      "cache": true
-    },
-    "test:unit": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "project": "unit",
-        "coverage": true
-      },
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/vite.config.base.ts",
-        "{projectRoot}/vitest.config.ts"
-      ],
-      "outputs": ["{projectRoot}/coverage"],
-      "cache": true
-    },
-    "test:integration": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "project": "integration"
-      },
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/vite.config.base.ts",
-        "{projectRoot}/vitest.config.ts"
-      ],
-      "outputs": ["{projectRoot}/coverage"],
-      "cache": true
-    },
+    "test": "test:aggregate",
 
     "dev": {
       "executor": "nx:run-commands",
@@ -93,22 +49,7 @@
       },
       "cache": false
     },
-    "validate": {
-      "cache": true,
-      "dependsOn": ["build", "test", "lint"],
-      "inputs": [
-        "production",
-        "{projectRoot}/tsup.config.ts",
-        "{projectRoot}/tsconfig.json",
-        "{projectRoot}/package.json",
-        "source",
-        "tests",
-        "configs",
-        "{workspaceRoot}/eslint.config.ts",
-        "{workspaceRoot}/eslint.config.*.ts"
-      ],
-      "outputs": []
-    },
+    "validate": {}
     "lint": {}
   },
   "tags": ["type:library", "scope:openalex", "layer:core"]

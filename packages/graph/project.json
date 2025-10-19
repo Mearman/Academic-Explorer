@@ -58,22 +58,4 @@
       },
       "cache": false
     },
-    "validate": {
-      "cache": true,
-      "dependsOn": ["build", "test", "lint"],
-      "inputs": [
-        "production",
-        "{projectRoot}/tsconfig.json",
-        "{projectRoot}/package.json",
-        "source",
-        "tests",
-        "configs",
-        "{workspaceRoot}/eslint.config.ts",
-        "{workspaceRoot}/eslint.config.*.ts"
-      ],
-      "outputs": []
-    },
-    "lint": {}
-  },
-  "tags": ["type:library", "scope:graph", "layer:core"]
-}
+    "validate": {}
