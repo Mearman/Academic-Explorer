@@ -91,190 +91,191 @@ const { useStore: useNetworkActivityStore } = createTrackedStore<
   NetworkActivityActions
 >({
   config: {
-      name: "network-activity",
-      initialState: {
-        // State
-        requests: {},
-        maxHistorySize: 500,
+    name: "network-activity",
+    initialState: {
+      // State
+      requests: {},
+      maxHistorySize: 500,
 
-        // Filters
-        filters: {
+      // Filters
+      filters: {
+        status: [],
+        entityType: [],
+        category: [],
+        searchTerm: "",
+        timeRange: 24, // 24 hours default
+      },
+    },
+  },
+  actionsFactory: ({ set, get }) => ({
+    // Actions
+    addRequest: (request) => {
+      const id = generateRequestId();
+
+      set((state) => {
+        state.requests[id] = {
+          ...request,
+          id,
+          startTime: Date.now(),
+        };
+      });
+
+      logger.debug(
+        "api",
+        "Network request added",
+        {
+          id,
+          url: request.url,
+          entityType: request.entityType,
+          category: request.category,
+        },
+        "NetworkActivityStore",
+      );
+
+      return id;
+    },
+
+    updateRequest: (id, updates) => {
+      set((state) => {
+        const request = state.requests[id] as NetworkRequest | undefined;
+        if (request) {
+          Object.assign(request, updates);
+        }
+      });
+    },
+
+    completeRequest: (id, statusCode, size) => {
+      const endTime = Date.now();
+
+      set((state) => {
+        const request = state.requests[id] as NetworkRequest | undefined;
+        if (request) {
+          request.status = "success";
+          request.endTime = endTime;
+          request.duration = endTime - request.startTime;
+          if (statusCode !== undefined) request.statusCode = statusCode;
+          if (size !== undefined) request.size = size;
+        }
+      });
+    },
+
+    failRequest: (id, error, statusCode) => {
+      const endTime = Date.now();
+
+      set((state) => {
+        const request = state.requests[id] as NetworkRequest | undefined;
+        if (request) {
+          request.status = "error";
+          request.endTime = endTime;
+          request.duration = endTime - request.startTime;
+          request.error = error;
+          if (statusCode !== undefined) request.statusCode = statusCode;
+        }
+      });
+
+      logger.warn(
+        "api",
+        "Network request failed",
+        {
+          id,
+          error,
+          statusCode,
+        },
+        "NetworkActivityStore",
+      );
+    },
+
+    removeRequest: (id) => {
+      set((state) => {
+        const { [id]: _removed, ...rest } = state.requests;
+        state.requests = rest;
+      });
+    },
+
+    clearOldRequests: () => {
+      const { maxHistorySize } = get();
+      const requests = Object.values(get().requests);
+
+      if (requests.length <= maxHistorySize) return;
+
+      // Keep most recent requests
+      const sorted = requests.sort((a, b) => b.startTime - a.startTime);
+      const toKeep = sorted.slice(0, maxHistorySize);
+
+      set((state) => {
+        state.requests = {};
+        toKeep.forEach((req) => {
+          state.requests[req.id] = req;
+        });
+      });
+
+      logger.debug(
+        "api",
+        "Cleared old network requests",
+        {
+          removed: requests.length - toKeep.length,
+          kept: toKeep.length,
+        },
+        "NetworkActivityStore",
+      );
+    },
+
+    clearAllRequests: () => {
+      set((state) => {
+        state.requests = {};
+      });
+
+      logger.debug(
+        "api",
+        "Cleared all network requests",
+        {},
+        "NetworkActivityStore",
+      );
+    },
+
+    // Filter actions
+    setStatusFilter: (statuses) => {
+      set((state) => {
+        state.filters.status = statuses;
+      });
+    },
+
+    setTypeFilter: (types) => {
+      set((state) => {
+        state.filters.entityType = types;
+      });
+    },
+
+    setCategoryFilter: (categories) => {
+      set((state) => {
+        state.filters.category = categories;
+      });
+    },
+
+    setSearchTerm: (term) => {
+      set((state) => {
+        state.filters.searchTerm = term;
+      });
+    },
+
+    setTimeRange: (hours) => {
+      set((state) => {
+        state.filters.timeRange = hours;
+      });
+    },
+
+    clearFilters: () => {
+      set((state) => {
+        state.filters = {
           status: [],
           entityType: [],
           category: [],
           searchTerm: "",
-          timeRange: 24, // 24 hours default
-        },
-      },
+          timeRange: 24,
+        };
+      });
     },
-    actionsFactory: ({ set, get }) => ({
-      // Actions
-      addRequest: (request) => {
-        const id = generateRequestId();
-
-        set((state) => {
-          state.requests[id] = {
-            ...request,
-            id,
-            startTime: Date.now(),
-          };
-        });
-
-        logger.debug(
-          "api",
-          "Network request added",
-          {
-            id,
-            url: request.url,
-            entityType: request.entityType,
-            category: request.category,
-          },
-          "NetworkActivityStore",
-        );
-
-        return id;
-      },
-
-      updateRequest: (id, updates) => {
-        set((state) => {
-          const request = state.requests[id] as NetworkRequest | undefined;
-          if (request) {
-            Object.assign(request, updates);
-          }
-        });
-      },
-
-      completeRequest: (id, statusCode, size) => {
-        const endTime = Date.now();
-
-        set((state) => {
-          const request = state.requests[id] as NetworkRequest | undefined;
-          if (request) {
-            request.status = "success";
-            request.endTime = endTime;
-            request.duration = endTime - request.startTime;
-            if (statusCode !== undefined) request.statusCode = statusCode;
-            if (size !== undefined) request.size = size;
-          }
-        });
-      },
-
-      failRequest: (id, error, statusCode) => {
-        const endTime = Date.now();
-
-        set((state) => {
-          const request = state.requests[id] as NetworkRequest | undefined;
-          if (request) {
-            request.status = "error";
-            request.endTime = endTime;
-            request.duration = endTime - request.startTime;
-            request.error = error;
-            if (statusCode !== undefined) request.statusCode = statusCode;
-          }
-        });
-
-        logger.warn(
-          "api",
-          "Network request failed",
-          {
-            id,
-            error,
-            statusCode,
-          },
-          "NetworkActivityStore",
-        );
-      },
-
-      removeRequest: (id) => {
-        set((state) => {
-          const { [id]: _removed, ...rest } = state.requests;
-          state.requests = rest;
-        });
-      },
-
-      clearOldRequests: () => {
-        const { maxHistorySize } = get();
-        const requests = Object.values(get().requests);
-
-        if (requests.length <= maxHistorySize) return;
-
-        // Keep most recent requests
-        const sorted = requests.sort((a, b) => b.startTime - a.startTime);
-        const toKeep = sorted.slice(0, maxHistorySize);
-
-        set((state) => {
-          state.requests = {};
-          toKeep.forEach((req) => {
-            state.requests[req.id] = req;
-          });
-        });
-
-        logger.debug(
-          "api",
-          "Cleared old network requests",
-          {
-            removed: requests.length - toKeep.length,
-            kept: toKeep.length,
-          },
-          "NetworkActivityStore",
-        );
-      },
-
-      clearAllRequests: () => {
-        set((state) => {
-          state.requests = {};
-        });
-
-        logger.debug(
-          "api",
-          "Cleared all network requests",
-          {},
-          "NetworkActivityStore",
-        );
-      },
-
-      // Filter actions
-      setStatusFilter: (statuses) => {
-        set((state) => {
-          state.filters.status = statuses;
-        });
-      },
-
-      setTypeFilter: (types) => {
-        set((state) => {
-          state.filters.entityType = types;
-        });
-      },
-
-      setCategoryFilter: (categories) => {
-        set((state) => {
-          state.filters.category = categories;
-        });
-      },
-
-      setSearchTerm: (term) => {
-        set((state) => {
-          state.filters.searchTerm = term;
-        });
-      },
-
-      setTimeRange: (hours) => {
-        set((state) => {
-          state.filters.timeRange = hours;
-        });
-      },
-
-      clearFilters: () => {
-        set((state) => {
-          state.filters = {
-            status: [],
-            entityType: [],
-            category: [],
-            searchTerm: "",
-            timeRange: 24,
-          };
-        });
-  },
+  }),
 });
 
 export { useNetworkActivityStore };

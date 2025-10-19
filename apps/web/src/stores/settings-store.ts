@@ -205,11 +205,11 @@ class SettingsStore {
 }
 
 // Singleton instance
-export const settingsStore = new SettingsStore();
+const dexieStore = new SettingsStore();
 
 // Initialize migration on first load (only in browser)
 if (typeof window !== "undefined") {
-  void settingsStore.migrateFromOldStorage();
+  void dexieStore.migrateFromOldStorage();
 }
 
 // Zustand-compatible API for backward compatibility
@@ -221,6 +221,7 @@ interface SettingsStoreState {
 
 interface SettingsStoreActions {
   setPolitePoolEmail: (email: string) => void;
+  clearPolitePoolEmail: () => void;
   resetSettings: () => void;
   isValidEmail: (email: string) => boolean;
 }
@@ -246,7 +247,7 @@ let initialized = false;
 const initializeState = async () => {
   if (initialized) return;
   try {
-    const settings = await settingsStore.getSettings();
+    const settings = await dexieStore.getSettings();
     currentState = { politePoolEmail: settings.politePoolEmail };
     notifyListeners();
     initialized = true;
@@ -260,18 +261,24 @@ const initializeState = async () => {
 // Actions that update both Dexie and Zustand state
 const actions: SettingsStoreActions = {
   setPolitePoolEmail: async (email: string) => {
-    await settingsStore.setPolitePoolEmail(email);
+    await dexieStore.setPolitePoolEmail(email);
     currentState = { ...currentState, politePoolEmail: email };
     notifyListeners();
   },
 
+  clearPolitePoolEmail: async () => {
+    await dexieStore.setPolitePoolEmail("");
+    currentState = { ...currentState, politePoolEmail: "" };
+    notifyListeners();
+  },
+
   resetSettings: async () => {
-    await settingsStore.resetSettings();
+    await dexieStore.resetSettings();
     currentState = { ...DEFAULT_SETTINGS };
     notifyListeners();
   },
 
-  isValidEmail: (email: string) => settingsStore.isValidEmail(email),
+  isValidEmail: (email: string) => dexieStore.isValidEmail(email),
 };
 
 // Zustand-compatible store interface
@@ -310,6 +317,9 @@ export const useSettingsStore = <T>(
 
 export const settingsActions = actions;
 
+// Export Zustand-compatible store as settingsStore for backward compatibility
+export const settingsStore = zustandStore;
+
 // Additional hooks for convenience
 export const usePolitePoolEmail = (): string => {
   // Initialize state if not done yet
@@ -324,5 +334,5 @@ export const useHasValidEmail = (): boolean => {
   if (!initialized && typeof window !== "undefined") {
     void initializeState();
   }
-  return settingsStore.isValidEmail(currentState.politePoolEmail);
+  return dexieStore.isValidEmail(currentState.politePoolEmail);
 };
