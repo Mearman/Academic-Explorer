@@ -164,18 +164,3 @@ export const defaultStorageConfig: StorageConfig = {
   storeName: "app-storage",
   version: 1,
 };
-
-// DEPRECATED: Hybrid storage removed - use createIndexedDBStorage instead
-/**
- * @deprecated Use createIndexedDBStorage instead. Hybrid storage has been removed.
- */
-export const createHybridStorage = (
-  config: StorageConfig,
-  logger?: GenericLogger,
-): StateStorage => {
-  logger?.warn(
-    "storage",
-    "createHybridStorage is deprecated. Use createIndexedDBStorage for pure Dexie storage.",
-  );
-  return createIndexedDBStorage(config, logger);
-};

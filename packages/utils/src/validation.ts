@@ -67,11 +67,13 @@ export function extractProperty({
  * @param validValues - Array of valid values
  * @returns True if value is in validValues
  */
-export function isStringInSet<T extends string>(
-  value: string,
-  validValues: readonly T[],
-): value is T {
-   
+export function isStringInSet<T extends string>({
+  value,
+  validValues,
+}: {
+  value: string;
+  validValues: readonly T[];
+}): value is T {
   return validValues.includes(value as T);
 }
 
@@ -95,12 +97,16 @@ export function safeParseEnum<T extends string>({
  * Assert that a value is within a specific set, throwing an error if invalid
  * Use only when you're certain the value should be valid
  */
-export function assertStringInSet<T extends string>(
-  value: string,
-  validValues: readonly T[],
-  typeName: string,
-): asserts value is T {
-  if (!isStringInSet(value, validValues)) {
+export function assertStringInSet<T extends string>({
+  value,
+  validValues,
+  typeName,
+}: {
+  value: string;
+  validValues: readonly T[];
+  typeName: string;
+}): asserts value is T {
+  if (!isStringInSet({ value, validValues })) {
     throw new Error(
       `Invalid ${typeName}: ${value}. Valid values: ${validValues.join(", ")}`,
     );
@@ -211,22 +217,29 @@ export function isValidEmail(value: unknown): value is string {
 /**
  * Type guard factory for objects with specific properties
  */
-export function hasProperty<K extends string>(
-  obj: unknown,
-  key: K,
-): obj is Record<K, unknown> {
+export function hasProperty<K extends string>({
+  obj,
+  key,
+}: {
+  obj: unknown;
+  key: K;
+}): obj is Record<K, unknown> {
   return isRecord(obj) && key in obj;
 }
 
 /**
  * Type guard factory for objects with specific property types
  */
-export function hasPropertyOfType<T>(
-  obj: unknown,
-  key: string,
-  typeGuard: (value: unknown) => value is T,
-): obj is Record<string, unknown> & { [K in typeof key]: T } {
-  return hasProperty(obj, key) && typeGuard(obj[key]);
+export function hasPropertyOfType<T>({
+  obj,
+  key,
+  typeGuard,
+}: {
+  obj: unknown;
+  key: string;
+  typeGuard: (value: unknown) => value is T;
+}): obj is Record<string, unknown> & { [K in typeof key]: T } {
+  return hasProperty({ obj, key }) && typeGuard(obj[key]);
 }
 
 /**
@@ -251,10 +264,13 @@ export function createShapeValidator<T>(validators: {
 /**
  * Validate that an array contains only items of a specific type
  */
-export function isArrayOfType<T>(
-  value: unknown,
-  itemGuard: (item: unknown) => item is T,
-): value is T[] {
+export function isArrayOfType<T>({
+  value,
+  itemGuard,
+}: {
+  value: unknown;
+  itemGuard: (item: unknown) => item is T;
+}): value is T[] {
   return isArray(value) && value.every(itemGuard);
 }
 

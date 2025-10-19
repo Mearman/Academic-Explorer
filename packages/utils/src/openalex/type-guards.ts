@@ -129,10 +129,13 @@ export function getEntityType(entity: OpenAlexEntity): string {
   return "unknown";
 }
 
-export function hasProperty<T extends Record<string, unknown>>(
-  obj: unknown,
-  prop: string,
-): obj is T & Record<typeof prop, unknown> {
+export function hasProperty<T extends Record<string, unknown>>({
+  obj,
+  prop,
+}: {
+  obj: unknown;
+  prop: string;
+}): obj is T & Record<typeof prop, unknown> {
   return typeof obj === "object" && obj !== null && prop in obj;
 }
 
@@ -178,10 +181,13 @@ export function trustObjectShape(obj: unknown): Record<string, unknown> {
  * Extract a property value from an object with unknown structure
  * Returns unknown type that must be validated by caller
  */
-export function extractPropertyValue(
-  obj: Record<string, unknown>,
-  key: string,
-): unknown {
+export function extractPropertyValue({
+  obj,
+  key,
+}: {
+  obj: Record<string, unknown>;
+  key: string;
+}): unknown {
   return obj[key];
 }
 
@@ -237,9 +243,12 @@ export function createSchemaTypeGuard<T>(schema: {
  * Validates data with a Zod schema and returns typed result
  * Throws an error if validation fails
  */
-export function validateWithSchema<T>(
-  data: unknown,
-  schema: { parse: (data: unknown) => T },
-): T {
+export function validateWithSchema<T>({
+  data,
+  schema,
+}: {
+  data: unknown;
+  schema: { parse: (data: unknown) => T };
+}): T {
   return schema.parse(data);
 }
