@@ -30,15 +30,59 @@
       "options": {
         "targetName": "test"
       }
-    },
-    {
-      "plugin": "@nx/eslint/plugin",
-      "options": {
-        "targetName": "lint"
-      }
     }
   ],
+  "namedTargets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": ["{sourceRoot}/**/*.{ts,tsx}"]
+      },
+      "inputs": [
+        "source",
+        "configs",
+        "{workspaceRoot}/eslint.config.ts",
+        "{workspaceRoot}/eslint.config.*.ts"
+      ],
+      "outputs": ["{workspaceRoot}/.nx/cache/lint-results/{projectName}.json"],
+      "cache": true
+    },
+    "lint:fix": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": ["{sourceRoot}/**/*.{ts,tsx}"],
+        "fix": true
+      },
+      "inputs": [
+        "source",
+        "configs",
+        "{workspaceRoot}/eslint.config.ts",
+        "{workspaceRoot}/eslint.config.*.ts"
+      ],
+      "outputs": ["{projectRoot}/**/*.{js,jsx,ts,tsx}"],
+      "cache": true
+    }
+  },
   "targetDefaults": {
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_OPTIONS='--import tsx' eslint --no-warn-ignored src/**/*.ts --fix",
+        "cwd": "{projectRoot}"
+      },
+      "inputs": [
+        "source",
+        "configs",
+        "{workspaceRoot}/eslint.config.ts",
+        "{workspaceRoot}/eslint.config.*.ts"
+      ],
+      "outputs": [
+        "{workspaceRoot}/.nx/cache/lint-results/{projectName}.json",
+        "{projectRoot}/**/*.{js,jsx,ts,tsx}"
+      ],
+      "cache": true
+    },
+
     "build": {
       "cache": true,
       "dependsOn": ["^build"],
@@ -115,32 +159,7 @@
       ],
       "dependsOn": ["build"]
     },
-    "lint:fix": {
-      "executor": "nx:run-commands",
-      "cache": true,
-      "inputs": [
-        "source",
-        "configs",
-        "{workspaceRoot}/eslint.config.ts",
-        "{workspaceRoot}/eslint.config.*.ts"
-      ],
-      "outputs": ["{projectRoot}/**/*.{js,jsx,ts,tsx}"],
-      "options": {
-        "command": "eslint src --fix",
-        "cwd": "{projectRoot}"
-      }
-    },
-    "lint": {
-      "cache": true,
-      "dependsOn": ["lint:fix"],
-      "inputs": [
-        "source",
-        "configs",
-        "{workspaceRoot}/eslint.config.ts",
-        "{workspaceRoot}/eslint.config.*.ts"
-      ],
-      "outputs": ["{workspaceRoot}/.nx/cache/lint-results/{projectName}.json"]
-    },
+
     "typecheck": {
       "cache": true,
       "inputs": [
