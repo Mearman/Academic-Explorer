@@ -51,14 +51,13 @@
     "test:unit": {
       "executor": "@nx/vite:test",
       "options": {
-        "config": "{workspaceRoot}/vite.config.base.ts",
+        "config": "{projectRoot}/vitest.config.ts",
         "project": "unit",
         "coverage": true
       },
       "inputs": [
         "default",
         "^production",
-        "{workspaceRoot}/vitest.workspace.ts",
         "{workspaceRoot}/vite.config.base.ts",
         "{projectRoot}/vite.config.ts",
         "{projectRoot}/vitest.config.ts"
@@ -70,8 +69,9 @@
       "executor": "@nx/vite:test",
       "dependsOn": ["test:unit"],
       "options": {
-        "config": "{workspaceRoot}/vite.config.base.ts",
-        "include": "src/**/*.component.test.{ts,tsx}"
+        "config": "{projectRoot}/vitest.config.ts",
+        "project": "component",
+        "coverage": true
       },
       "inputs": [
         "source",

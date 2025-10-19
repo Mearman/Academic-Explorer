@@ -16,11 +16,32 @@ export default defineConfig(
       environment: "jsdom",
       setupFiles: [path.resolve(__dirname, "src/test/setup.ts")],
       watch: false,
-      exclude: [
-        "node_modules",
-        "**/*.e2e.test.ts", // Exclude E2E tests from Vitest
-        "**/*.integration.test.ts", // Exclude all integration tests
-        "**/*.integration.test.tsx", // Exclude all integration tests
+      projects: [
+        {
+          test: {
+            name: "unit",
+            include: ["src/**/*.unit.test.{ts,tsx}"],
+            exclude: [
+              "**/*.e2e.test.ts",
+              "**/*.integration.test.ts",
+              "**/*.integration.test.tsx",
+              "**/*.component.test.{ts,tsx}",
+            ],
+            environment: "jsdom",
+          },
+        },
+        {
+          test: {
+            name: "component",
+            include: ["src/**/*.component.test.{ts,tsx}"],
+            exclude: [
+              "**/*.e2e.test.ts",
+              "**/*.integration.test.ts",
+              "**/*.integration.test.tsx",
+            ],
+            environment: "jsdom",
+          },
+        },
       ],
     },
   }),
