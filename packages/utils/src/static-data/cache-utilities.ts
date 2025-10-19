@@ -386,18 +386,6 @@ export function normalizeQueryForFilename(queryString: string): string {
 }
 
 /**
- * Normalize URL query string for caching by removing sensitive parameters
- * and ensuring consistent filename generation
- *
- * @deprecated Use sanitizeUrlForCaching + normalizeQueryForFilename instead
- */
-export function normalizeQueryForCaching(queryString: string): string {
-  // Chain the separated concerns for backwards compatibility
-  const sanitized = sanitizeUrlForCaching(queryString);
-  return normalizeQueryForFilename(sanitized);
-}
-
-/**
  * Encode filename by replacing problematic characters with hex codes
  * Uses format __XX__ where XX is the hex code of the character
  *
@@ -459,14 +447,6 @@ export function decodeFilename(filename: string): string {
 }
 
 /**
- * Sanitize filename by replacing problematic characters
- * @deprecated Use encodeFilename instead for reversible encoding
- */
-export function sanitizeFilename(filename: string): string {
-  return encodeFilename(filename);
-}
-
-/**
  * Generate cache file path from OpenAlex URL
  * This is the canonical mapping used by all systems
  */
@@ -504,7 +484,8 @@ function generateQueryFilePath(
   url: string,
 ): string | null {
   // Normalize query string to remove sensitive information before caching
-  const normalizedQuery = normalizeQueryForCaching(queryString.slice(1)); // Remove leading '?'
+  const sanitized = sanitizeUrlForCaching(queryString.slice(1)); // Remove leading '?'
+  const normalizedQuery = normalizeQueryForFilename(sanitized);
 
   // If all query parameters were stripped, treat this as a base collection URL
   if (!normalizedQuery || normalizedQuery === "?") {
@@ -516,7 +497,7 @@ function generateQueryFilePath(
   const cleanQuery = normalizedQuery.startsWith("?")
     ? normalizedQuery.slice(1)
     : normalizedQuery;
-  const queryFilename = sanitizeFilename(cleanQuery);
+  const queryFilename = encodeFilename(cleanQuery);
 
   // Ensure we have a valid filename for the query
   if (!queryFilename || queryFilename.trim() === "") {
@@ -799,8 +780,10 @@ function compareUrlComponents(url1: string, url2: string): boolean {
   }
 
   // Normalize both query strings for comparison
-  const normalized1 = normalizeQueryForCaching(urlObj1.search);
-  const normalized2 = normalizeQueryForCaching(urlObj2.search);
+  const sanitized1 = sanitizeUrlForCaching(urlObj1.search);
+  const normalized1 = normalizeQueryForFilename(sanitized1);
+  const sanitized2 = sanitizeUrlForCaching(urlObj2.search);
+  const normalized2 = normalizeQueryForFilename(sanitized2);
 
   return normalized1 === normalized2;
 }
