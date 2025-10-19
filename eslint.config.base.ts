@@ -245,6 +245,12 @@ export default tseslint.config([
       "**/knip.ts",
       "**/config/**/*.{ts,js}",
     ],
+    languageOptions: {
+      parserOptions: {
+        // Disable project service for config files to avoid parsing errors
+        projectService: false,
+      },
+    },
     rules: {
       "@typescript-eslint/no-unsafe-assignment": "off",
       "@typescript-eslint/no-unsafe-member-access": "off",
