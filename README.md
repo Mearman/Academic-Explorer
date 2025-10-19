@@ -72,22 +72,34 @@ pnpm validate
 pnpm dev              # Start web development server
 pnpm cli              # OpenAlex CLI tool
 pnpm build            # Build all projects
-pnpm test             # Run all tests sequentially with verbose output (Nx-managed)
+pnpm test             # Run all tests with typecheck (Nx-managed dependencies)
 pnpm test:verbose     # Run tests in parallel with verbose output (may hang)
 pnpm test:sequential  # Alias for pnpm test
-pnpm typecheck        # TypeScript validation
+pnpm typecheck        # TypeScript validation (runs automatically with tests)
 pnpm lint             # ESLint checking
-pnpm validate           # Complete quality pipeline
+pnpm validate         # Complete quality pipeline (build + test + lint + typecheck)
 ```
 
 ### Nx Monorepo Commands
 
 ```bash
 nx graph              # View dependency graph
-nx affected:test      # Test only changed projects
+nx affected:test      # Test + typecheck only changed projects (fail-fast order)
 nx affected:build     # Build only changed projects
-nx run-many -t test   # Run tests across all projects
+nx run-many -t test   # Run tests + typecheck across all projects (fail-fast order)
 ```
+
+#### Test Execution Order (Fail-Fast)
+
+Tests run in the following order to fail fast on basic issues:
+
+1. **Type Check** - TypeScript validation (automatic dependency)
+2. **Unit Tests** - Fast, isolated component tests
+3. **Component Tests** - React component integration tests
+4. **Integration Tests** - Cross-component integration tests
+5. **E2E Tests** - Full application end-to-end tests
+
+If unit tests fail, the more expensive component/integration/e2e tests won't run.
 
 ### CLI Features
 
