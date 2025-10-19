@@ -27,18 +27,21 @@ function logValidationSummary(
   validation: IndexValidationResult,
   indexPath: string,
 ): void {
-  logger.info(LOG_CATEGORY, `Index validation results for ${indexPath}:`);
-  logger.info(
+  logger.debug(LOG_CATEGORY, `Index validation results for ${indexPath}:`);
+  logger.debug(
     LOG_CATEGORY,
     `   Valid: ${validation.isValid ? "Valid" : "Invalid"}`,
   );
-  logger.info(
+  logger.debug(
     LOG_CATEGORY,
     `   Entities validated: ${validation.entitiesValidated}`,
   );
-  logger.info(LOG_CATEGORY, `   Errors found: ${validation.errors.length}`);
-  logger.info(LOG_CATEGORY, `   Warnings found: ${validation.warnings.length}`);
-  logger.info(
+  logger.debug(LOG_CATEGORY, `   Errors found: ${validation.errors.length}`);
+  logger.debug(
+    LOG_CATEGORY,
+    `   Warnings found: ${validation.warnings.length}`,
+  );
+  logger.debug(
     LOG_CATEGORY,
     `   Duration: ${validation.performance.durationMs}ms`,
   );
@@ -91,16 +94,16 @@ export async function exampleGenerateAllIndexes(
     const result = await generateAllIndexes(rootPath, config);
 
     if (result.success) {
-      logger.info(LOG_CATEGORY, "All indexes generated successfully");
-      logger.info(
+      logger.debug(LOG_CATEGORY, "All indexes generated successfully");
+      logger.debug(
         LOG_CATEGORY,
         `Total entities indexed: ${result.stats.entitiesIndexed}`,
       );
-      logger.info(
+      logger.debug(
         LOG_CATEGORY,
         `Total duration: ${result.stats.totalDurationMs}ms`,
       );
-      logger.info(
+      logger.debug(
         LOG_CATEGORY,
         "Generated indexes:",
         Object.keys(result.generatedIndexes),
@@ -136,7 +139,7 @@ export async function exampleGenerateEntityTypeIndex(
       entityType,
       config,
     );
-    logger.info(
+    logger.debug(
       LOG_CATEGORY,
       `Index generated for ${entityType}: ${indexPath}`,
     );
@@ -165,15 +168,15 @@ export async function exampleValidateAndRepairIndex(
 
     // Attempt repair if needed
     if (!validation.isValid && validation.repairActions.length > 0) {
-      logger.info(LOG_CATEGORY, "Attempting to repair index...");
+      logger.debug(LOG_CATEGORY, "Attempting to repair index...");
       const repaired = await repairIndex(validation);
 
       if (repaired) {
-        logger.info(LOG_CATEGORY, "Index repair completed successfully");
+        logger.debug(LOG_CATEGORY, "Index repair completed successfully");
 
         // Re-validate to confirm repair
         const revalidation = await validateIndex(indexPath);
-        logger.info(
+        logger.debug(
           LOG_CATEGORY,
           `   Re-validation: ${revalidation.isValid ? "Valid" : "Still invalid"}`,
         );
@@ -225,7 +228,7 @@ export async function exampleCustomGeneratorWithProgress(
     const result = await generator.generateAllIndexes();
 
     if (result.success) {
-      logger.info(
+      logger.debug(
         LOG_CATEGORY,
         "Index generation completed with progress tracking!",
       );
@@ -247,7 +250,7 @@ export async function exampleCustomGeneratorWithProgress(
 export async function exampleBatchValidation(
   indexPaths: string[],
 ): Promise<void> {
-  logger.info(LOG_CATEGORY, `Validating ${indexPaths.length} indexes...`);
+  logger.debug(LOG_CATEGORY, `Validating ${indexPaths.length} indexes...`);
 
   const results = await Promise.allSettled(
     indexPaths.map(async (indexPath) => {
@@ -264,7 +267,7 @@ export async function exampleBatchValidation(
       const { indexPath, validation } = result.value;
       if (validation.isValid) {
         validCount++;
-        logger.info(
+        logger.debug(
           LOG_CATEGORY,
           `${indexPath}: Valid (${validation.entitiesValidated} entities)`,
         );
@@ -281,7 +284,7 @@ export async function exampleBatchValidation(
     }
   }
 
-  logger.info(
+  logger.debug(
     LOG_CATEGORY,
     `Validation summary: ${validCount} valid, ${invalidCount} invalid`,
   );
