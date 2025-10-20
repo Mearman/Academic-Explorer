@@ -1,0 +1,63 @@
+{
+  "name": "@academic-explorer/entities",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Entity definitions, schemas, and type guards for Academic Explorer",
+  "keywords": [
+    "entities",
+    "schemas",
+    "type-guards",
+    "academic",
+    "research",
+    "typescript",
+    "zod"
+  ],
+  "author": "Joe Mearman",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mearman/Academic-Explorer.git",
+    "directory": "packages/entities"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./schemas": {
+      "import": "./dist/schemas.js",
+      "types": "./dist/schemas.d.ts"
+    },
+    "./type-guards": {
+      "import": "./dist/type-guards.js",
+      "types": "./dist/type-guards.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "dev": "tsc -b --watch"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "eslint": "^9.36.0",
+    "typescript": "~5.9.2",
+    "vitest": "^3.2.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
