@@ -140,5 +140,6 @@ export {
   createForceSimulationExecutor,
   type ForceSimulationTask,
   type ForceSimulationNode,
-  type ForceSimulationLink,
 } from "./forces";
+
+export type { ForceSimulationLink } from "@academic-explorer/utils";
