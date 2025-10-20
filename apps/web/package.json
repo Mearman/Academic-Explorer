@@ -33,6 +33,7 @@
     "@academic-explorer/client": "workspace:*",
     "@academic-explorer/graph": "workspace:*",
     "@academic-explorer/simulation": "workspace:*",
+    "@academic-explorer/types": "workspace:*",
     "@academic-explorer/ui": "workspace:*",
     "@academic-explorer/utils": "workspace:*",
     "@dnd-kit/core": "^6.3.1",
