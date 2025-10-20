@@ -50,10 +50,8 @@ if (typeof process !== "undefined" && process.env.VITEST) {
   const { vi } = await import("vitest");
 
   if (typeof (global as any).TextDecoder === "undefined") {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (global as any).TextDecoder = class {
       decode(input: Uint8Array | Buffer) {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const Buffer = require("buffer").Buffer;
         return Buffer.from(input as any).toString("utf-8");
       }

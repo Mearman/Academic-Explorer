@@ -369,7 +369,6 @@ export function useWebWorker({
         throw new Error("Failed to submit task: worker not available");
       }
       // Wait for completion or error (simplified - in real impl, use promise from queue)
-      // eslint-disable-next-line prefer-destructured-params-plugin/prefer-destructured-params
       return new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
           reject(new Error("Task timeout"));
