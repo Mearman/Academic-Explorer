@@ -253,7 +253,7 @@ export function createShapeValidator<T>(validators: {
     if (!isRecord(obj)) return false;
 
     for (const [key, validator] of Object.entries(validators)) {
-      if (!validator(obj[key])) return false;
+      if (!(validator as (value: unknown) => boolean)(obj[key])) return false;
     }
 
     return true;
