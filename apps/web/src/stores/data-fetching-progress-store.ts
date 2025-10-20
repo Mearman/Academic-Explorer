@@ -53,110 +53,132 @@ interface DataFetchingProgressActions {
 }
 
 const dataFetchingProgressStoreResult = createTrackedStore<
-  DataFetchingProgressState & DataFetchingProgressActions
+  DataFetchingProgressState,
+  DataFetchingProgressActions
 >({
-  // State - using plain object for Immer compatibility
-  requests: {},
-  workerReady: false,
-
-  // Actions
-  addRequest: function (
-    nodeId: string,
-    entityName?: string,
-    entityType?: string,
-  ) {
-    this.requests[nodeId] = {
-      nodeId,
-      ...(entityName && { entityName }),
-      ...(entityType && { entityType }),
-      progress: {
-        completed: 0,
-        total: 1,
-        stage: "Starting...",
-      },
-      status: "active",
-      startTime: Date.now(),
-    };
+  config: {
+    name: "data-fetching-progress",
+    initialState: {
+      requests: {},
+      workerReady: false,
+    },
   },
+  actionsFactory: ({ set, get }) => ({
+    addRequest: (nodeId: string, entityName?: string, entityType?: string) => {
+      set((state) => {
+        state.requests[nodeId] = {
+          nodeId,
+          ...(entityName && { entityName }),
+          ...(entityType && { entityType }),
+          progress: {
+            completed: 0,
+            total: 1,
+            stage: "Starting...",
+          },
+          status: "active",
+          startTime: Date.now(),
+        };
+      });
+    },
 
-  updateProgress: function (
-    nodeId: string,
-    progress: { completed: number; total: number; stage: string },
-  ) {
-    const request = this.requests[nodeId];
-    if (request?.status === "active") {
-      request.progress = progress;
-    }
-  },
+    updateProgress: (
+      nodeId: string,
+      progress: { completed: number; total: number; stage: string },
+    ) => {
+      set((state) => {
+        const request = state.requests[nodeId];
+        if (request?.status === "active") {
+          request.progress = progress;
+        }
+      });
+    },
 
-  completeRequest: function (nodeId: string) {
-    const request = this.requests[nodeId];
-    if (request) {
-      request.status = "completed";
-      request.progress = {
-        completed: request.progress.total,
-        total: request.progress.total,
-        stage: "Completed",
-      };
+    completeRequest: (nodeId: string) => {
+      set((state) => {
+        const request = state.requests[nodeId];
+        if (request) {
+          request.status = "completed";
+          request.progress = {
+            completed: request.progress.total,
+            total: request.progress.total,
+            stage: "Completed",
+          };
 
-      // Auto-remove completed requests after 3 seconds
-      setTimeout(() => {
-        this.removeRequest(nodeId);
-      }, 3000);
-    }
-  },
+          // Auto-remove completed requests after 3 seconds
+          setTimeout(() => {
+            set((state) => {
+              delete state.requests[nodeId];
+            });
+          }, 3000);
+        }
+      });
+    },
 
-  failRequest: function (nodeId: string, error: string) {
-    const request = this.requests[nodeId];
-    if (request) {
-      request.status = "error";
-      request.error = error;
-      request.progress = {
-        completed: 0,
-        total: request.progress.total,
-        stage: "Failed",
-      };
+    failRequest: (nodeId: string, error: string) => {
+      set((state) => {
+        const request = state.requests[nodeId];
+        if (request) {
+          request.status = "error";
+          request.error = error;
+        }
+      });
+    },
 
-      // Auto-remove failed requests after 5 seconds
-      setTimeout(() => {
-        this.removeRequest(nodeId);
-      }, 5000);
-    }
-  },
+    removeRequest: (nodeId: string) => {
+      set((state) => {
+        delete state.requests[nodeId];
+      });
+    },
 
-  removeRequest: function (nodeId: string) {
-    const { [nodeId]: _removed, ...rest } = this.requests;
-    this.requests = rest;
-  },
+    setWorkerReady: (ready: boolean) => {
+      set((state) => {
+        state.workerReady = ready;
+      });
+    },
 
-  setWorkerReady: function (ready: boolean) {
-    this.workerReady = ready;
-  },
+    getActiveRequests: () => {
+      const state = get();
+      return Object.values(state.requests).filter(
+        (req): req is DataFetchingProgressItem => req?.status === "active",
+      );
+    },
 
-  clearCompleted: function () {
-    const filteredRequests: Record<string, DataFetchingProgressItem> = {};
-    Object.entries(this.requests).forEach(([nodeId, request]) => {
-      if (request && request.status !== "completed") {
-        filteredRequests[nodeId] = request;
-      }
-    });
-    this.requests = filteredRequests;
-  },
+    getCompletedRequests: () => {
+      const state = get();
+      return Object.values(state.requests).filter(
+        (req): req is DataFetchingProgressItem => req?.status === "completed",
+      );
+    },
 
-  clearAll: function () {
-    this.requests = {};
-  },
+    getFailedRequests: () => {
+      const state = get();
+      return Object.values(state.requests).filter(
+        (req): req is DataFetchingProgressItem => req?.status === "error",
+      );
+    },
 
-  // Selectors
-  getActiveRequests: function () {
-    return Object.values(this.requests).filter(
-      (request): request is NonNullable<typeof request> => request != null,
-    );
-  },
+    clearCompleted: () => {
+      set((state) => {
+        Object.keys(state.requests).forEach((nodeId) => {
+          const request = state.requests[nodeId];
+          if (request?.status === "completed") {
+            delete state.requests[nodeId];
+          }
+        });
+      });
+    },
 
-  getRequestByNodeId: function (nodeId: string) {
-    return this.requests[nodeId];
-  },
+    clearAll: () => {
+      set((state) => {
+        state.requests = {};
+      });
+    },
+
+    getRequestByNodeId: (nodeId: string) => {
+      const state = get();
+      return state.requests[nodeId];
+    },
+  }),
 });
 
 export const useDataFetchingProgressStore =

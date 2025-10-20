@@ -143,15 +143,6 @@ const result = createTrackedStore<
     initialState: {
       settings: initializeDefaultSettings(),
     },
-    persist: {
-      enabled: typeof process === "undefined" || !process.env.VITEST,
-      storage: "hybrid",
-      config: {
-        dbName: "academic-explorer",
-        storeName: "expansion-settings",
-        version: 1,
-      },
-    },
   },
   actionsFactory: ({ set, get }) => ({
     getSettings: (target: ExpansionTarget) => {
@@ -472,10 +463,12 @@ export const expansionSettingsActions = result.actions;
 
 // Export a hook for getting settings for a specific target
 export const useExpansionSettings = (target: ExpansionTarget) => {
-  return useExpansionSettingsStore((state) => state.getSettings(target));
+  const state = useExpansionSettingsStore();
+  return state.getSettings(target);
 };
 
 // Export a hook for getting the settings summary
 export const useExpansionSettingsSummary = (target: ExpansionTarget) => {
-  return useExpansionSettingsStore((state) => state.getSettingsSummary(target));
+  const state = useExpansionSettingsStore();
+  return state.getSettingsSummary(target);
 };

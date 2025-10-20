@@ -276,6 +276,7 @@ const networkActivityStoreResult = createTrackedStore({
 });
 
 export const useNetworkActivityStore = networkActivityStoreResult.useStore;
+export const networkActivityStore = networkActivityStoreResult.store;
 
 // Selectors for computed state
 export const selectActiveRequests = (state: NetworkActivityState) =>

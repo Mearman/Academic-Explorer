@@ -269,25 +269,26 @@ const result = createTrackedStore<LayoutState, LayoutActions>({
       previewEntityId: null,
       autoPinOnLayoutStabilization: false,
     },
-    persist: {
-      enabled: typeof process === "undefined" || !process.env.VITEST,
-      storage: "hybrid",
-      config: {
-        dbName: "academic-explorer",
-        storeName: "layout-store",
-        version: 1,
-      },
-      partialize: (state) => ({
-        leftSidebarPinned: state.leftSidebarPinned,
-        rightSidebarPinned: state.rightSidebarPinned,
-        collapsedSections: state.collapsedSections,
-        sectionPlacements: state.sectionPlacements,
-        activeGroups: state.activeGroups,
-        toolGroups: state.toolGroups,
-        graphProvider: state.graphProvider,
-        autoPinOnLayoutStabilization: state.autoPinOnLayoutStabilization,
-      }),
-    },
+    // TODO: Re-implement persistence when store supports it
+    // persist: {
+    //   enabled: typeof process === "undefined" || !process.env.VITEST,
+    //   storage: "hybrid",
+    //   config: {
+    //     dbName: "academic-explorer",
+    //     storeName: "layout-store",
+    //     version: 1,
+    //   },
+    //   partialize: (state) => ({
+    //     leftSidebarPinned: state.leftSidebarPinned,
+    //     rightSidebarPinned: state.rightSidebarPinned,
+    //     collapsedSections: state.collapsedSections,
+    //     sectionPlacements: state.sectionPlacements,
+    //     activeGroups: state.activeGroups,
+    //     toolGroups: state.toolGroups,
+    //     graphProvider: state.graphProvider,
+    //     autoPinOnLayoutStabilization: state.autoPinOnLayoutStabilization,
+    //   }),
+    // },
   },
   actionsFactory: ({ set, get }) => ({
     toggleLeftSidebar: () =>
@@ -723,7 +724,7 @@ const result = createTrackedStore<LayoutState, LayoutActions>({
           `Group ${sourceGroupId} is already on ${targetSidebar} sidebar, using reorderGroups instead`,
         );
         if (targetGroupId) {
-          get().reorderGroups({
+          (get() as LayoutState & LayoutActions).reorderGroups({
             sidebar: targetSidebar,
             sourceGroupId,
             targetGroupId,
@@ -769,7 +770,7 @@ const result = createTrackedStore<LayoutState, LayoutActions>({
       if (targetGroupId) {
         // Give a moment for the state to update, then reorder
         setTimeout(() => {
-          get().reorderGroups({
+          (get() as LayoutState & LayoutActions).reorderGroups({
             sidebar: targetSidebar,
             sourceGroupId,
             targetGroupId,
@@ -779,13 +780,16 @@ const result = createTrackedStore<LayoutState, LayoutActions>({
       }
 
       // Set the moved group as active on the target sidebar
-      get().setActiveGroup({ sidebar: targetSidebar, groupId: sourceGroupId });
+      (get() as LayoutState & LayoutActions).setActiveGroup({
+        sidebar: targetSidebar,
+        groupId: sourceGroupId,
+      });
 
       // Open the target sidebar to show the moved group
       if (targetSidebar === "left") {
-        get().setLeftSidebarOpen(true);
+        (get() as LayoutState & LayoutActions).setLeftSidebarOpen(true);
       } else {
-        get().setRightSidebarOpen(true);
+        (get() as LayoutState & LayoutActions).setRightSidebarOpen(true);
       }
 
       logger.debug("ui", `Move to ${targetSidebar} sidebar complete`);

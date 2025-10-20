@@ -106,9 +106,9 @@ export const useAnimatedGraphStore = createStore({
 
   animatedPositions: {},
   staticPositions: {},
-  _cachedAnimatedPositionsArray: [],
-  _cachedStaticPositionsArray: [],
-  animationHistory: [],
+  _cachedAnimatedPositionsArray: [] as NodePosition[],
+  _cachedStaticPositionsArray: [] as NodePosition[],
+  animationHistory: [] as AnimationStats[],
   currentAnimationStart: 0,
 
   useAnimatedLayout: true, // Default to using animated layout
@@ -220,8 +220,8 @@ export const useAnimatedGraphStore = createStore({
     this.animatedPositions = {};
     this.staticPositions = {};
     // Clear cached arrays for React 19 compatibility
-    this._cachedAnimatedPositionsArray = [];
-    this._cachedStaticPositionsArray = [];
+    this._cachedAnimatedPositionsArray = [] as NodePosition[];
+    this._cachedStaticPositionsArray = [] as NodePosition[];
     logger.debug("graph", "Cleared all positions");
   },
 
@@ -254,7 +254,7 @@ export const useAnimatedGraphStore = createStore({
     const newStaticPositions: NodePosition[] = [];
     Object.entries(this.animatedPositions).forEach(([id, pos]) => {
       if (pos) {
-        const newPos = { ...pos };
+        const newPos = { ...pos } as NodePosition;
         this.staticPositions[id] = newPos;
         newStaticPositions.push(newPos);
       }
@@ -262,7 +262,7 @@ export const useAnimatedGraphStore = createStore({
     this.animatedPositions = {};
     // Update cached arrays for React 19 compatibility
     this._cachedStaticPositionsArray = newStaticPositions;
-    this._cachedAnimatedPositionsArray = [];
+    this._cachedAnimatedPositionsArray = [] as NodePosition[];
 
     logger.debug("graph", "Animation completed", {
       ...completedStats,
@@ -280,7 +280,7 @@ export const useAnimatedGraphStore = createStore({
     this.fps = 0;
     this.animatedPositions = {};
     // Clear cached array for React 19 compatibility
-    this._cachedAnimatedPositionsArray = [];
+    this._cachedAnimatedPositionsArray = [] as NodePosition[];
     logger.debug("graph", "Animation reset");
   },
 

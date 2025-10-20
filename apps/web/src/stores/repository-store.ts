@@ -618,7 +618,7 @@ class RepositoryStore {
 
     return nodes.filter((node) => {
       // Filter by node type
-      if (!state.nodeTypeFilter[node.type]) {
+      if (!state.nodeTypeFilter[node.entityType]) {
         return false;
       }
 
@@ -911,14 +911,6 @@ const actions: RepositoryStoreActions = {
     recomputeCache();
     return filteredEdgesCache;
   },
-
-  // Helper to compute filtered nodes (made public for compatibility)
-  computeFilteredNodes: (state: RepositoryState) =>
-    repositoryStore.computeFilteredNodes(state),
-
-  // Helper to compute filtered edges (made public for compatibility)
-  computeFilteredEdges: (state: RepositoryState) =>
-    repositoryStore.computeFilteredEdges(state),
 
   getSelectedNodes: () => {
     return Object.keys(currentState.selectedRepositoryNodes)
