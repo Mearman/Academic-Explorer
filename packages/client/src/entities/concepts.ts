@@ -172,12 +172,7 @@ export class ConceptsApi {
       typeof params.sort === "string" &&
       this.isQueryParams(params)
     ) {
-      return this.client.getById<Concept>(
-        "concepts",
-        normalizedId,
-        params,
-        conceptSchema as unknown as z.ZodType<Concept>,
-      );
+      return this.client.getById<Concept>("concepts", normalizedId, params);
     }
     // Otherwise, convert from ConceptsQueryParams
     if (this.isConceptsQueryParams(params)) {
@@ -185,7 +180,6 @@ export class ConceptsApi {
         "concepts",
         normalizedId,
         toQueryParams(params),
-        conceptSchema as unknown as z.ZodType<Concept>,
       );
     }
     // Default case - treat as basic params
@@ -193,7 +187,6 @@ export class ConceptsApi {
       "concepts",
       normalizedId,
       toQueryParams({}),
-      conceptSchema as unknown as z.ZodType<Concept>,
     );
   }
 
