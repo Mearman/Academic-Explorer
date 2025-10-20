@@ -1,0 +1,31 @@
+{
+  "name": "types",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/types/entities/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "dependsOn": ["^build"]
+    },
+
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_OPTIONS='--import tsx' eslint --no-warn-ignored 'src/**/*.{ts,tsx}' --ignore-pattern 'src/**/*.{test,spec}.{ts,tsx}' --fix",
+        "cwd": "{projectRoot}"
+      },
+      "inputs": [
+        "source",
+        "configs",
+        "{workspaceRoot}/eslint.config.ts",
+        "{workspaceRoot}/eslint.config.*.ts"
+      ],
+      "outputs": ["{workspaceRoot}/.nx/cache/lint-results/{projectName}.json"],
+      "cache": true
+    },
+    "test": "test:aggregate",
+
+    "validate": {}
+  },
+  "tags": ["type:library", "scope:shared", "type:entity"]
+}
