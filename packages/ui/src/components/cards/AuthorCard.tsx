@@ -1,5 +1,5 @@
 import type { Author } from "@academic-explorer/client";
-import { isAuthor } from "@academic-explorer/types/entities/authors";
+import { isAuthor } from "@academic-explorer/client";
 import {
   ActionIcon,
   Anchor,

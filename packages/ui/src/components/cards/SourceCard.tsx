@@ -1,5 +1,5 @@
 import type { Source } from "@academic-explorer/client";
-import { isSource } from "@academic-explorer/types/entities/sources";
+import { isSource } from "@academic-explorer/client";
 import { ActionIcon, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { IconExternalLink, IconLockOpen } from "@tabler/icons-react";
 import React from "react";
