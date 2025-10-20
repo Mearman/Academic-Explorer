@@ -164,7 +164,12 @@ export function useUserInteractions(
 
       // Load page visit stats (using legacy format for compatibility)
       const pageStats = await userInteractionsService.getPageVisitStatsLegacy();
-      setPageVisitStats(pageStats);
+      setPageVisitStats({
+        totalVisits: pageStats.totalVisits,
+        uniqueUrls: pageStats.uniqueRequests,
+        byType: pageStats.byEndpoint,
+        mostVisitedUrl: null,
+      });
     } catch (error) {
       logger.error(
         USER_INTERACTIONS_LOGGER_CONTEXT,

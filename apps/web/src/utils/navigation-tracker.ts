@@ -2,7 +2,7 @@
  * Navigation tracking utility for logging route changes
  */
 
-import { useAppActivityStore } from "@/stores/app-activity-store";
+import { appActivityStore } from "@/stores/app-activity-store";
 
 export function setupNavigationTracking(router: any) {
   // Use onAfterNavigate for cleaner data after navigation completes
@@ -29,8 +29,7 @@ export function setupNavigationTracking(router: any) {
       if (fromPath && fromPath !== currentLocation) {
         // Use setTimeout to ensure the store is available
         setTimeout(() => {
-          const store = useAppActivityStore.getState();
-          store.logNavigation(fromPath, currentLocation);
+          appActivityStore.logNavigation(fromPath, currentLocation);
         }, 0);
       }
     },
