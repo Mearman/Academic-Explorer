@@ -53,11 +53,7 @@ export class SamplingApi {
     entityType: EntityType,
     params: SampleParams = {},
   ): Promise<OpenAlexResponse<T>> {
-    const {
-      sample_size = 25,
-      seed,
-      ...queryParams
-    } = params as SampleParams & AdvancedSampleParams;
+    const { sample_size = 25, seed, ...queryParams }: SampleParams = params;
 
     const sampleParams: QueryParams = {
       ...queryParams,
@@ -101,11 +97,7 @@ export class SamplingApi {
       sample_count: number;
     }>;
   }> {
-    const {
-      sample_size = 100,
-      seed,
-      ...queryParams
-    } = params as SampleParams & AdvancedSampleParams;
+    const { sample_size = 100, seed, ...queryParams } = params;
 
     // First, get distribution of the stratification field
     const groupedResponse = await this.client.getResponse<{
@@ -155,10 +147,10 @@ export class SamplingApi {
 
       try {
         const stratumParams: SampleParams = {
-          ...(queryParams as SampleParams),
+          ...queryParams,
           sample_size: stratumSampleSize,
-          filter: (queryParams as SampleParams).filter
-            ? `${(queryParams as SampleParams).filter},${stratifyBy}:${stratum.key}`
+          filter: queryParams.filter
+            ? `${queryParams.filter},${stratifyBy}:${stratum.key}`
             : `${stratifyBy}:${stratum.key}`,
         };
         if (seed !== undefined) {
@@ -243,8 +235,8 @@ export class SamplingApi {
             ? `publication_year:${String(period.start)}-${String(period.end)}`
             : `from_created_date:${String(period.start)}-01-01,to_created_date:${String(period.end)}-12-31`;
 
-        const periodFilter = (params as SampleParams).filter
-          ? `${(params as SampleParams).filter},${dateFilter}`
+        const periodFilter = params.filter
+          ? `${params.filter},${dateFilter}`
           : dateFilter;
 
         const periodSample = await this.randomSample(entityType, {
@@ -298,11 +290,7 @@ export class SamplingApi {
     // For citation-weighted sampling, we'll use a mixed approach:
     // 70% from highly cited entities, 30% from regular sample
 
-    const {
-      sample_size = 50,
-      seed,
-      ...queryParams
-    } = params as SampleParams & AdvancedSampleParams;
+    const { sample_size = 50, seed, ...queryParams }: SampleParams = params;
 
     const highlyCitedSize = Math.floor(sample_size * 0.7);
     const regularSize = sample_size - highlyCitedSize;
@@ -311,10 +299,10 @@ export class SamplingApi {
       // Sample from highly cited entities
       (async () => {
         const highlyCitedParams: SampleParams = {
-          ...(queryParams as SampleParams),
+          ...queryParams,
           sample_size: highlyCitedSize,
-          filter: (queryParams as SampleParams).filter
-            ? `${(queryParams as SampleParams).filter},cited_by_count:>10`
+          filter: queryParams.filter
+            ? `${queryParams.filter},cited_by_count:>10`
             : "cited_by_count:>10",
           sort: "random", // Still random within highly cited
         };
@@ -426,8 +414,8 @@ export class SamplingApi {
 
     return this.randomSample<T>(entityType, {
       ...params,
-      filter: (params as SampleParams).filter
-        ? `${(params as SampleParams).filter},${qualityFilters}`
+      filter: params.filter
+        ? `${params.filter},${qualityFilters}`
         : qualityFilters,
     });
   }

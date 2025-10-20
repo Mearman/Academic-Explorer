@@ -259,6 +259,10 @@ export function createTrackedStore<
 
   // Create the store with Zustand - follow standard pattern
   const useStore = (() => {
+    // Note: Zustand middleware (immer, devtools) fundamentally transforms function signatures
+    // in ways that TypeScript's generic system cannot perfectly express. The 'any' types below
+    // are a necessary compromise for runtime correctness while acknowledging type system limitations.
+    // This is a documented escape hatch for complex third-party library integrations.
     const storeCreator = (set: any, get: any) => {
       // Create actions
       const actions = actionsFactory({
