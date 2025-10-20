@@ -27,6 +27,30 @@ export { TextAnalysisApi } from "./entities/text-analysis";
 export { TopicsApi } from "./entities/topics";
 export { WorksApi } from "./entities/works";
 
+// Helper functions for common operations
+export {
+  getAuthorById,
+  getAuthors,
+  getWorkById,
+  getWorks,
+  getConceptById,
+  getConcepts,
+  getInstitutionById,
+  getInstitutions,
+  getFunderById,
+  getFunders,
+  getPublisherById,
+  getPublishers,
+  getSourceById,
+  getSources,
+  getTopicById,
+  getTopics,
+  getKeywordById,
+  getKeywords,
+  setSharedClient,
+  resetSharedClient,
+} from "./helpers";
+
 // Utilities
 export { AutocompleteApi } from "./utils/autocomplete";
 
