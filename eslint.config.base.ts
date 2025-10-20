@@ -204,6 +204,9 @@ export default tseslint.config([
       "no-zustand-computed-functions-plugin/no-zustand-computed-functions":
         "error",
       "prefer-destructured-params-plugin/prefer-destructured-params": "error",
+
+      // ESLint comment rules
+      "eslint-comments/no-unused-disable": "error",
     },
   },
   {
@@ -258,13 +261,14 @@ export default tseslint.config([
     },
   },
   {
-    // Relaxed rules for other config files
+    // Relaxed rules for other config files and scripts
     files: [
       "**/*.config.{ts,js}",
       "**/vite.config.{ts,js}",
       "**/vitest.config.{ts,js}",
       "**/knip.ts",
       "**/config/**/*.{ts,js}",
+      "scripts/**/*.{ts,js}",
     ],
     languageOptions: {
       parserOptions: {
