@@ -310,7 +310,7 @@ class GitHubPagesCacheTier implements CacheTierInterface {
 
   constructor(baseUrl?: string) {
     this.baseUrl =
-      baseUrl || "https://username.github.io/academic-explorer-cache/";
+      baseUrl ?? "https://username.github.io/academic-explorer-cache/";
   }
   // Track recent failures per URL to avoid repeated bursts against remote
   private recentFailures: Map<
