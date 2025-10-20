@@ -54,7 +54,7 @@
     }
   },
   "scripts": {
-    "build": "tsc -b && vite build --configLoader runner",
+    "build": "vite build --configLoader runner",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
