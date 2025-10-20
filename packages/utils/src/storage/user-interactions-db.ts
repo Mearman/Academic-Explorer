@@ -299,17 +299,14 @@ export class UserInteractionsService {
         timestamp: new Date(),
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const id = await this.db.bookmarks.add(bookmark);
 
       this.logger?.debug(LOG_CATEGORY, "Bookmark added", {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         id,
         cacheKey: request.cacheKey,
         title,
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return id;
     } catch (error) {
       this.logger?.error(LOG_CATEGORY, "Failed to add bookmark", {
@@ -393,7 +390,6 @@ export class UserInteractionsService {
       return bookmarks.filter(
         (bookmark) =>
           bookmark.title.toLowerCase().includes(lowercaseQuery) ||
-          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
           bookmark.notes?.toLowerCase().includes(lowercaseQuery) ||
           bookmark.tags?.some((tag) =>
             tag.toLowerCase().includes(lowercaseQuery),

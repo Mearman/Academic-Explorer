@@ -284,7 +284,6 @@ export function safeJsonParse<T>({
   validator: (value: unknown) => value is T;
 }): T | null {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const parsed = JSON.parse(jsonString);
     return validator(parsed) ? parsed : null;
   } catch {

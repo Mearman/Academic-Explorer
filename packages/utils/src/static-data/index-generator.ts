@@ -322,7 +322,6 @@ export class StaticDataIndexGenerator {
 
     try {
       const indexContent = await this.fs.readFile(indexPath, "utf8");
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const parsedData = JSON.parse(indexContent);
       if (this.validateIndexStructure(parsedData)) {
         existingIndex = parsedData;
@@ -406,7 +405,6 @@ export class StaticDataIndexGenerator {
       const indexContent = await this.fs.readFile(indexPath, "utf8");
       let index: EntityTypeIndex;
       try {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const parsedData = JSON.parse(indexContent);
         if (!this.validateIndexStructure(parsedData)) {
           errors.push({
@@ -827,7 +825,6 @@ export class StaticDataIndexGenerator {
     const content = await this.fs.readFile(filePath, "utf8");
     let entity: Record<string, unknown>;
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const parsedData = JSON.parse(content);
       if (!isRecord(parsedData)) {
         return undefined;
@@ -914,7 +911,6 @@ export class StaticDataIndexGenerator {
   /**
    * Aggregate statistics from individual entity type indexes
    */
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   private async aggregateIndexStats({
     typeIndexPaths,
     masterIndex,
@@ -933,7 +929,6 @@ export class StaticDataIndexGenerator {
     for (const [entityType, indexPath] of Object.entries(typeIndexPaths)) {
       try {
         const indexContent = await this.fs.readFile(indexPath, "utf8");
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const parsedData = JSON.parse(indexContent);
         if (!this.validateIndexStructure(parsedData)) {
           continue; // Skip invalid indexes
@@ -1113,7 +1108,6 @@ export class StaticDataIndexGenerator {
     entityIds: string[];
   }): Promise<void> {
     const indexContent = await this.fs.readFile(indexPath, "utf8");
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const parsedData = JSON.parse(indexContent);
     if (!this.validateIndexStructure(parsedData)) {
       throw new Error(`Invalid index structure at ${indexPath}`);
@@ -1141,7 +1135,6 @@ export class StaticDataIndexGenerator {
     entityIds: string[];
   }): Promise<void> {
     const indexContent = await this.fs.readFile(indexPath, "utf8");
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const parsedData = JSON.parse(indexContent);
     if (!this.validateIndexStructure(parsedData)) {
       throw new Error(`Invalid index structure at ${indexPath}`);
@@ -1175,7 +1168,6 @@ export class StaticDataIndexGenerator {
     entityIds: string[];
   }): Promise<void> {
     const indexContent = await this.fs.readFile(indexPath, "utf8");
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const parsedData = JSON.parse(indexContent);
     if (!this.validateIndexStructure(parsedData)) {
       throw new Error(`Invalid index structure at ${indexPath}`);
@@ -1440,7 +1432,6 @@ class Semaphore {
       }
     }
 
-    // eslint-disable-next-line prefer-destructured-params-plugin/prefer-destructured-params
     return new Promise((resolve, reject) => {
       this.waiting.push(async () => {
         this.permits--;

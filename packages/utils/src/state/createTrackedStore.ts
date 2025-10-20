@@ -250,10 +250,8 @@ export function createTrackedStore<
       // Create actions
       const actions = actionsFactory({
         set: (partial: any, replace?: boolean) => {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
           set(partial, replace);
         },
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
         get: () => get(),
       });
 
@@ -306,7 +304,6 @@ export function createTrackedStore<
       return stateOnly as T;
     },
     setState: (partial, replace) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       (useStore as any).setState(partial, replace);
     },
     subscribe: useStore.subscribe,

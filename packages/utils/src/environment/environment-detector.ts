@@ -94,10 +94,8 @@ export class EnvironmentDetector {
   private static getModeFromViteEnv(): EnvironmentMode | null {
     if (typeof import.meta !== "undefined") {
       try {
-        // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
         const viteEnv = (import.meta as { env?: Record<string, unknown> }).env;
         if (viteEnv) {
-          // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
           const viteMode = (viteEnv.MODE as string | undefined)?.toLowerCase();
           switch (viteMode) {
             case "production":
@@ -109,10 +107,8 @@ export class EnvironmentDetector {
           }
 
           // Check Vite's DEV flag
-          // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
           if ((viteEnv.DEV as boolean | undefined) === true)
             return EnvironmentMode.DEVELOPMENT;
-          // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
           if ((viteEnv.PROD as boolean | undefined) === true)
             return EnvironmentMode.PRODUCTION;
         }
@@ -126,7 +122,6 @@ export class EnvironmentDetector {
   private static getModeFromDevFlag(): EnvironmentMode | null {
     if (typeof globalThis !== "undefined" && "__DEV__" in globalThis) {
       try {
-        // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
         const devFlag = (globalThis as unknown as { __DEV__?: boolean })
           .__DEV__;
         return devFlag

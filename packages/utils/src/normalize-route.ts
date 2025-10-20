@@ -16,7 +16,6 @@ export function normalizeRoute({
   const query = search.startsWith("?") ? search.slice(1) : search;
 
   try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     const parsedRaw = parse(query);
 
     // Safely handle the parsed query object
@@ -32,7 +31,6 @@ export function normalizeRoute({
       sortedQuery[key] = parsed[key];
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment
     const normalizedSearch = stringify(sortedQuery, { encode: false });
     return normalizedSearch ? `${path}?${normalizedSearch}` : path;
   } catch {
