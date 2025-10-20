@@ -488,7 +488,7 @@ export class SourcesApi {
     params: Omit<QueryParams, "filter"> & { filter?: SourcesFilters } = {},
   ): Promise<OpenAlexResponse<Source>> {
     const filters: SourcesFilters = {
-      ...params.filter,
+      ...(params.filter || {}),
       country_code: countryCode,
     };
 
@@ -496,7 +496,9 @@ export class SourcesApi {
     const searchOptions: SourceSearchOptions = {
       ...paramsWithoutFilter,
       filters,
-      sort: paramsWithoutFilter.sort ?? this.WORKS_COUNT_DESC,
+      sort:
+        (paramsWithoutFilter.sort as string | undefined) ??
+        this.WORKS_COUNT_DESC,
     };
 
     const queryParams = this.buildFilterParams(searchOptions);
