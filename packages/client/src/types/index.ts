@@ -2,7 +2,7 @@
  * Re-export all OpenAlex API TypeScript types from shared utils package
  */
 
-// Re-export all types from utils
+// Re-export all types from entities
 export type {
   OpenAlexId,
   DOI,
@@ -72,7 +72,7 @@ export type {
   NGram,
   OpenAlexError,
   TextAnalysis,
-} from "@academic-explorer/utils/openalex";
+} from "@academic-explorer/entities";
 
 // Re-export schemas and type guards
 export {
@@ -90,7 +90,7 @@ export {
   workResponseSchema,
   authorResponseSchema,
   institutionResponseSchema,
-} from "@academic-explorer/utils/openalex";
+} from "@academic-explorer/entities";
 
 export {
   isRecord,
@@ -99,4 +99,4 @@ export {
   isOpenAlexId,
   isValidDateString,
   isValidWikidataId,
-} from "@academic-explorer/utils/openalex";
+} from "@academic-explorer/entities";

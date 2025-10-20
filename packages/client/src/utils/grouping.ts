@@ -6,7 +6,7 @@
 import { OpenAlexBaseClient } from "../client";
 import type { EntityType, QueryParams, GroupParams } from "../types";
 import { logger } from "../internal/logger";
-import { extractPropertyValue } from "@academic-explorer/utils/openalex";
+import { extractPropertyValue } from "@academic-explorer/entities";
 
 /**
  * Raw group item from OpenAlex API response

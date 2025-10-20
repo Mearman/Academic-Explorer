@@ -11,7 +11,7 @@ import {
   trustObjectShape,
   extractPropertyValue,
   validateWithSchema,
-} from "@academic-explorer/utils/openalex";
+} from "@academic-explorer/entities";
 
 /**
  * Validates external API response data using Zod schema

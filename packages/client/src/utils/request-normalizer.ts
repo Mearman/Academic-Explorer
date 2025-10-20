@@ -3,7 +3,7 @@
  * Provides consistent request representation for caching and visit tracking
  */
 
-import { isRecord } from "@academic-explorer/utils/openalex";
+import { isRecord } from "@academic-explorer/entities";
 
 /**
  * Simple synchronous hash function that works in both browser and Node.js

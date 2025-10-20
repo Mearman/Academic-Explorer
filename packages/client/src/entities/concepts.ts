@@ -4,7 +4,7 @@
  */
 
 import { logger } from "@academic-explorer/utils/logger";
-import { conceptSchema } from "@academic-explorer/utils";
+import { conceptSchema } from "@academic-explorer/entities";
 import type { OpenAlexBaseClient } from "../client";
 import type {
   AutocompleteResult,

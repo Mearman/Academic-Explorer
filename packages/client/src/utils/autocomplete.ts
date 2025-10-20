@@ -5,7 +5,7 @@
 
 import { OpenAlexBaseClient } from "../client";
 import { logger } from "../internal/logger";
-import { isRecord } from "@academic-explorer/utils/openalex";
+import { isRecord } from "@academic-explorer/entities";
 import type { AutocompleteResult, EntityType, QueryParams } from "../types";
 
 /**
