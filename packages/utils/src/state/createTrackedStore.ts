@@ -26,10 +26,18 @@ function isZustandStore(obj: unknown): obj is {
   );
 }
 
-function extractState<T extends object>(
-  fullState: T,
-  keys: string[],
-): Record<string, unknown> {
+// Type guard to check if a value is a function
+function isFunction(value: unknown): value is (arg: unknown) => unknown {
+  return typeof value === "function";
+}
+
+function extractState<T extends object>({
+  fullState,
+  keys,
+}: {
+  fullState: T;
+  keys: string[];
+}): Record<string, unknown> {
   const result: Record<string, unknown> = {};
   for (const key of keys) {
     if (key in fullState) {
@@ -113,12 +121,9 @@ export function createFilterManager<T extends Record<string, unknown>>(
           if (filterValue === undefined) return true;
 
           // Handle different filter types
-          if (typeof filterValue === "function") {
+          if (isFunction(filterValue)) {
             try {
-              return Boolean(
-                // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
-                (filterValue as (value: unknown) => unknown)(itemValue),
-              );
+              return Boolean(filterValue(itemValue));
             } catch {
               return false;
             }
@@ -221,14 +226,10 @@ export function createStore<T extends object>(
   });
 
   if (enableDevtools && name) {
-    // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
-    return create(devtools(immer(storeCreator), { name })) as UseBoundStore<
-      StoreApi<T>
-    >;
+    return create(devtools(immer(storeCreator), { name }));
   }
 
-  // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
-  return create(immer(storeCreator)) as UseBoundStore<StoreApi<T>>;
+  return create(immer(storeCreator));
 }
 
 /**
@@ -263,10 +264,20 @@ export function createTrackedStore<
     // in ways that TypeScript's generic system cannot perfectly express. The 'any' types below
     // are a necessary compromise for runtime correctness while acknowledging type system limitations.
     // This is a documented escape hatch for complex third-party library integrations.
-    const storeCreator = (set: any, get: any) => {
+
+    const storeCreator = (
+      set: (
+        partial: Partial<T> | ((state: T) => Partial<T>),
+        replace?: boolean,
+      ) => void,
+      get: () => T,
+    ) => {
       // Create actions
       const actions = actionsFactory({
-        set: (partial: any, replace?: boolean) => {
+        set: (
+          partial: Partial<T> | ((state: T) => Partial<T>),
+          replace?: boolean,
+        ) => {
           set(partial, replace);
         },
         get: () => get(),
@@ -307,7 +318,7 @@ export function createTrackedStore<
     getState: () => {
       const fullState = useStore.getState();
       const keys = Object.keys(initialState);
-      const extracted = extractState(fullState, keys);
+      const extracted = extractState({ fullState, keys });
       return extracted as T;
     },
     setState: (partial, replace) => {

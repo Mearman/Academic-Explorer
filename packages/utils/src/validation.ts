@@ -253,9 +253,7 @@ export function createShapeValidator<T>(validators: {
     if (!isRecord(obj)) return false;
 
     for (const [key, validator] of Object.entries(validators)) {
-      // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
-      const typedValidator = validator as (value: unknown) => boolean;
-      if (!typedValidator(obj[key])) return false;
+      if (!validator(obj[key])) return false;
     }
 
     return true;

@@ -390,7 +390,7 @@ export class UserInteractionsService {
       return bookmarks.filter(
         (bookmark) =>
           bookmark.title.toLowerCase().includes(lowercaseQuery) ||
-          bookmark.notes?.toLowerCase().includes(lowercaseQuery) ||
+          Boolean(bookmark.notes?.toLowerCase().includes(lowercaseQuery)) ||
           bookmark.tags?.some((tag) =>
             tag.toLowerCase().includes(lowercaseQuery),
           ),

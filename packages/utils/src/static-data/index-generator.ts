@@ -1432,23 +1432,31 @@ class Semaphore {
       }
     }
 
-    return new Promise((resolve, reject) => {
-      this.waiting.push(async () => {
-        this.permits--;
-        try {
-          const result = await fn();
-          resolve(result);
-        } catch (error) {
-          reject(error);
-        } finally {
-          this.permits++;
-          if (this.waiting.length > 0) {
-            const next = this.waiting.shift();
-            next?.();
+    return new Promise(
+      ({
+        resolve,
+        reject,
+      }: {
+        resolve: (value: T) => void;
+        reject: (reason?: unknown) => void;
+      }) => {
+        this.waiting.push(async () => {
+          this.permits--;
+          try {
+            const result = await fn();
+            resolve(result);
+          } catch (error) {
+            reject(error);
+          } finally {
+            this.permits++;
+            if (this.waiting.length > 0) {
+              const next = this.waiting.shift();
+              next?.();
+            }
           }
-        }
-      });
-    });
+        });
+      },
+    );
   }
 }
 
