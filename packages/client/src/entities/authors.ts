@@ -455,10 +455,11 @@ export class AuthorsApi {
           "display_name" in concept &&
           "score" in concept &&
           "level" in concept &&
-          typeof concept.id === "string" &&
-          typeof concept.display_name === "string" &&
-          typeof concept.score === "number" &&
-          typeof concept.level === "number"
+          typeof (concept as Record<string, unknown>).id === "string" &&
+          typeof (concept as Record<string, unknown>).display_name ===
+            "string" &&
+          typeof (concept as Record<string, unknown>).score === "number" &&
+          typeof (concept as Record<string, unknown>).level === "number"
         );
       },
     );
@@ -509,39 +510,46 @@ export class AuthorsApi {
         field?: { id: OpenAlexId; display_name: string };
         domain?: { id: OpenAlexId; display_name: string };
       } => {
+        const topicRecord = topic as Record<string, unknown>;
         return (
           typeof topic === "object" &&
           topic !== null &&
           "id" in topic &&
           "display_name" in topic &&
           "count" in topic &&
-          typeof topic.id === "string" &&
-          typeof topic.display_name === "string" &&
-          typeof topic.count === "number" &&
+          typeof topicRecord.id === "string" &&
+          typeof topicRecord.display_name === "string" &&
+          typeof topicRecord.count === "number" &&
           (!("subfield" in topic) ||
-            topic.subfield === undefined ||
-            (typeof topic.subfield === "object" &&
-              topic.subfield !== null &&
-              "id" in topic.subfield &&
-              "display_name" in topic.subfield &&
-              typeof topic.subfield.id === "string" &&
-              typeof topic.subfield.display_name === "string")) &&
+            topicRecord.subfield === undefined ||
+            (typeof topicRecord.subfield === "object" &&
+              topicRecord.subfield !== null &&
+              "id" in topicRecord.subfield &&
+              "display_name" in topicRecord.subfield &&
+              typeof (topicRecord.subfield as Record<string, unknown>).id ===
+                "string" &&
+              typeof (topicRecord.subfield as Record<string, unknown>)
+                .display_name === "string")) &&
           (!("field" in topic) ||
-            topic.field === undefined ||
-            (typeof topic.field === "object" &&
-              topic.field !== null &&
-              "id" in topic.field &&
-              "display_name" in topic.field &&
-              typeof topic.field.id === "string" &&
-              typeof topic.field.display_name === "string")) &&
+            topicRecord.field === undefined ||
+            (typeof topicRecord.field === "object" &&
+              topicRecord.field !== null &&
+              "id" in topicRecord.field &&
+              "display_name" in topicRecord.field &&
+              typeof (topicRecord.field as Record<string, unknown>).id ===
+                "string" &&
+              typeof (topicRecord.field as Record<string, unknown>)
+                .display_name === "string")) &&
           (!("domain" in topic) ||
-            topic.domain === undefined ||
-            (typeof topic.domain === "object" &&
-              topic.domain !== null &&
-              "id" in topic.domain &&
-              "display_name" in topic.domain &&
-              typeof topic.domain.id === "string" &&
-              typeof topic.domain.display_name === "string"))
+            topicRecord.domain === undefined ||
+            (typeof topicRecord.domain === "object" &&
+              topicRecord.domain !== null &&
+              "id" in topicRecord.domain &&
+              "display_name" in topicRecord.domain &&
+              typeof (topicRecord.domain as Record<string, unknown>).id ===
+                "string" &&
+              typeof (topicRecord.domain as Record<string, unknown>)
+                .display_name === "string"))
         );
       },
     );

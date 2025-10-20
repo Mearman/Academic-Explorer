@@ -277,9 +277,13 @@ export class DiskCacheWriter {
 
       try {
         const existingContent = await fsModule.readFile(indexPath, "utf8");
-        const existingData = JSON.parse(existingContent);
+        const parsedData: unknown = JSON.parse(existingContent);
+        if (!isDirectoryIndex(parsedData)) {
+          throw new Error(`Invalid directory index format in ${indexPath}`);
+        }
+        // parsedData is validated as DirectoryIndex by isDirectoryIndex
         indexData = {
-          ...existingData,
+          ...parsedData,
           lastUpdated: new Date().toISOString(),
         };
       } catch {
@@ -940,20 +944,20 @@ export class DiskCacheWriter {
 
       try {
         const existingContent = await fs.readFile(indexPath, "utf8");
-        const parsedData = JSON.parse(existingContent);
+        const parsedData: unknown = JSON.parse(existingContent);
         if (!isDirectoryIndex(parsedData)) {
           throw new Error(`Invalid directory index format in ${indexPath}`);
         }
-        const existingData = parsedData;
+        // parsedData is validated as DirectoryIndex by isDirectoryIndex
         indexData = {
           lastUpdated: new Date().toISOString(),
-          ...(existingData.directories &&
-            Object.keys(existingData.directories).length > 0 && {
-              directories: existingData.directories,
+          ...(parsedData.directories &&
+            Object.keys(parsedData.directories).length > 0 && {
+              directories: parsedData.directories,
             }),
-          ...(existingData.files &&
-            Object.keys(existingData.files).length > 0 && {
-              files: existingData.files,
+          ...(parsedData.files &&
+            Object.keys(parsedData.files).length > 0 && {
+              files: parsedData.files,
             }),
         };
       } catch {

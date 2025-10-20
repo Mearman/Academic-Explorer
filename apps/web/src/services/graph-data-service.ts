@@ -394,7 +394,14 @@ export class GraphDataService {
     const existingNode = store.getNode?.(entityId);
 
     if (existingNode) {
-      // Node will be hydrated on-demand when specific fields are needed
+      // Check if the existing node is minimal and needs upgrading
+      if (existingNode.metadata?.hydrationLevel === "minimal") {
+        // Upgrade minimal node to full hydration
+        await this.hydrateNodeToFull(existingNode.id);
+      }
+
+      // Select the node (whether it was upgraded or already full)
+      store.selectNode(existingNode.id);
 
       logger.debug(
         "graph",
@@ -402,6 +409,7 @@ export class GraphDataService {
         {
           nodeId: existingNode.id,
           entityId,
+          wasUpgraded: existingNode.metadata?.hydrationLevel === "minimal",
         },
         "GraphDataService",
       );
@@ -800,7 +808,18 @@ export class GraphDataService {
           fallbackId: node.entityId,
         });
 
-        // Update the node with full metadata
+        // Update the node with full data
+        store.updateNode(nodeId, {
+          ...fullNodeData,
+          metadata: {
+            ...node.metadata,
+            hydrationLevel: "full",
+            isLoading: false,
+            hasError: false,
+          },
+        });
+
+        // Mark node as loaded
         store.markNodeAsLoaded(nodeId);
 
         logger.debug(
@@ -855,6 +874,20 @@ export class GraphDataService {
           entityType: node.entityType,
           fallbackId: node.entityId,
         });
+
+        // Update the node with full data
+        store.updateNode(nodeId, {
+          ...fullNodeData,
+          metadata: {
+            ...node.metadata,
+            hydrationLevel: "full",
+            isLoading: false,
+            hasError: false,
+          },
+        });
+
+        // Mark node as loaded
+        store.markNodeAsLoaded(nodeId);
       }
     } catch (error) {
       store.markNodeAsError(nodeId);

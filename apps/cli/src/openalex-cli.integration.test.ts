@@ -13,6 +13,8 @@ global.fetch = vi.fn();
 const SKIP_NO_STATIC_DATA =
   "Skipping test: No static data available. Run 'pnpm cli static:generate' to generate static data.";
 const SKIP_NO_AUTHOR_DATA = "Skipping test: No static author data available.";
+const SKIP_NO_AUTHOR_DATA_CACHE =
+  "Skipping test: No static author data available for cache test.";
 
 describe("OpenAlexCLI Integration Tests", () => {
   let cli: OpenAlexCLI;
@@ -140,7 +142,7 @@ describe("OpenAlexCLI Integration Tests", () => {
     it("should return null for non-existent entity", async () => {
       const hasAuthors = await cli.hasStaticData("authors");
       if (!hasAuthors) {
-        console.log("Skipping test: No static author data available.");
+        console.log(SKIP_NO_AUTHOR_DATA);
         return;
       }
 
@@ -151,7 +153,7 @@ describe("OpenAlexCLI Integration Tests", () => {
     it("should return empty array for non-existent entity type search", async () => {
       const hasAuthors = await cli.hasStaticData("authors");
       if (!hasAuthors) {
-        console.log("Skipping test: No static author data available.");
+        console.log(SKIP_NO_AUTHOR_DATA);
         return;
       }
 
@@ -168,9 +170,7 @@ describe("OpenAlexCLI Integration Tests", () => {
     it("should handle cache-only mode for existing entity", async () => {
       const hasAuthors = await cli.hasStaticData("authors");
       if (!hasAuthors) {
-        console.log(
-          "Skipping test: No static author data available for cache test.",
-        );
+        console.log(SKIP_NO_AUTHOR_DATA_CACHE);
         return;
       }
 
@@ -199,9 +199,7 @@ describe("OpenAlexCLI Integration Tests", () => {
     it("should handle cache-only mode for non-existing entity", async () => {
       const hasAuthors = await cli.hasStaticData("authors");
       if (!hasAuthors) {
-        console.log(
-          "Skipping test: No static author data available for cache test.",
-        );
+        console.log(SKIP_NO_AUTHOR_DATA_CACHE);
         return;
       }
 
@@ -225,9 +223,7 @@ describe("OpenAlexCLI Integration Tests", () => {
     it("should skip cache when no-cache enabled", async () => {
       const hasAuthors = await cli.hasStaticData("authors");
       if (!hasAuthors) {
-        console.log(
-          "Skipping test: No static author data available for cache test.",
-        );
+        console.log(SKIP_NO_AUTHOR_DATA_CACHE);
         return;
       }
 

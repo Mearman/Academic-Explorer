@@ -75,7 +75,7 @@ describe("OpenAlex API Routes - Generated Tests", () => {
   };
 
   beforeEach(() => {
-    vi.clearAllMocks( });
+    vi.clearAllMocks();
 
     mockClient = {
       getById: vi.fn(),
@@ -101,11 +101,11 @@ describe("OpenAlex API Routes - Generated Tests", () => {
       concepts: new ConceptsApi(mockClient),
       text: new TextAnalysisApi(mockClient),
     };
-  } });
+  });
 
   afterEach(() => {
-    vi.restoreAllMocks( });
-  } });
+    vi.restoreAllMocks();
+  });
 
   // Mock response factory
   const createMockResponse = <T>(

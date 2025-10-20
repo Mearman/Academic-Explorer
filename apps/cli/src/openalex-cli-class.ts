@@ -1702,6 +1702,50 @@ export class OpenAlexCLI {
   }
 
   /**
+   * Calculate total size of JSON files in an entity directory
+   */
+  private async calculateEntityDirectorySize(
+    entityType: string,
+  ): Promise<number> {
+    try {
+      const entityDir = join(this.dataPath, entityType);
+      const files = await readdir(entityDir);
+      let totalSize = 0;
+
+      for (const file of files) {
+        if (file.endsWith(".json")) {
+          const filePath = join(entityDir, file);
+          const fileStat = await stat(filePath);
+          totalSize += fileStat.size;
+        }
+      }
+
+      return totalSize;
+    } catch {
+      // If we can't calculate size, return 0
+      return 0;
+    }
+  }
+
+  /**
+   * Find the most recent lastModified date from index entries
+   */
+  private findLatestLastModified(entries: IndexEntry[]): string {
+    const lastModified = entries.reduce<string | null>(
+      (latest: string | null, entry: IndexEntry) => {
+        const entryTime = entry.lastModified
+          ? new Date(entry.lastModified).getTime()
+          : 0;
+        const latestTime = latest ? new Date(latest).getTime() : 0;
+        return entryTime > latestTime ? entry.lastModified || latest : latest;
+      },
+      null,
+    );
+
+    return lastModified ?? new Date().toISOString();
+  }
+
+  /**
    * Get statistics for all entity types
    */
   async getStatistics(): Promise<
@@ -1718,41 +1762,13 @@ export class OpenAlexCLI {
         if (index) {
           const entries = Object.values(index);
           const count = entries.length;
-
-          // Calculate total size by examining the entity directory
-          let totalSize = 0;
-          try {
-            const entityDir = join(this.dataPath, entityType);
-            const files = await readdir(entityDir);
-            for (const file of files) {
-              if (file.endsWith(".json")) {
-                const filePath = join(entityDir, file);
-                const fileStat = await stat(filePath);
-                totalSize += fileStat.size;
-              }
-            }
-          } catch {
-            // If we can't calculate size, use a default
-            totalSize = count * 1000; // Rough estimate
-          }
-
-          const lastModified = entries.reduce<string | null>(
-            (latest: string | null, entry: IndexEntry) => {
-              const entryTime = entry.lastModified
-                ? new Date(entry.lastModified).getTime()
-                : 0;
-              const latestTime = latest ? new Date(latest).getTime() : 0;
-              return entryTime > latestTime
-                ? entry.lastModified || latest
-                : latest;
-            },
-            null,
-          );
+          const totalSize = await this.calculateEntityDirectorySize(entityType);
+          const lastModified = this.findLatestLastModified(entries);
 
           stats[entityType] = {
             count,
-            totalSize,
-            lastModified: lastModified ?? new Date().toISOString(),
+            totalSize: totalSize || count * 1000, // Rough estimate if calculation failed
+            lastModified,
           };
         }
       }

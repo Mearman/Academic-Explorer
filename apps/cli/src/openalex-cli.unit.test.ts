@@ -8,6 +8,17 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 const TEST_AUTHOR_ID_1 = "A123456789";
 const TEST_AUTHOR_ID_2 = "A987654321";
 
+// File path constants for repeated strings
+const AUTHOR_1_FILE = `${TEST_AUTHOR_ID_1}.json`;
+const AUTHOR_2_FILE = `${TEST_AUTHOR_ID_2}.json`;
+const INDEX_FILE = "index.json";
+const AUTHORS_INDEX_FILE = "authors/index.json"; // eslint-disable-line sonarjs/no-duplicate-string
+const WORKS_INDEX_FILE = "works/index.json";
+
+// Timestamp constants for repeated strings
+const TEST_TIMESTAMP_1 = "2025-09-19T16:29:25.530Z";
+const TEST_TIMESTAMP_2 = "2025-09-19T16:29:25.658Z";
+
 // Helper class for Node.js-style errors in tests
 class NodeJSError extends Error {
   code: string;
@@ -57,7 +68,7 @@ vi.mock("fs/promises", async (importOriginal) => {
       // Return mock data for specific expected paths
       const pathStr = path;
 
-      if (pathStr.includes("A987654321.json")) {
+      if (pathStr.includes(AUTHOR_2_FILE)) {
         return JSON.stringify({
           id: "https://openalex.org/A987654321",
           display_name: "Test Author Two",
@@ -65,7 +76,7 @@ vi.mock("fs/promises", async (importOriginal) => {
         });
       }
 
-      if (pathStr.includes("A123456789.json")) {
+      if (pathStr.includes(AUTHOR_1_FILE)) {
         return JSON.stringify({
           id: "https://openalex.org/A123456789",
           display_name: "Test Author One",
@@ -73,16 +84,16 @@ vi.mock("fs/promises", async (importOriginal) => {
         });
       }
 
-      if (pathStr.includes("index.json")) {
+      if (pathStr.includes(INDEX_FILE)) {
         return JSON.stringify({
           "https://api.openalex.org/authors/A123456789": {
             $ref: "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA123456789.json",
-            lastModified: "2025-09-19T16:29:25.530Z",
+            lastModified: TEST_TIMESTAMP_1,
             contentHash: "2fbeeeb9a36bc11f",
           },
           "https://api.openalex.org/authors/A987654321": {
             $ref: "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA987654321.json",
-            lastModified: "2025-09-19T16:29:25.658Z",
+            lastModified: TEST_TIMESTAMP_2,
             contentHash: "5829e4f7cb7a1382",
           },
         });
@@ -170,6 +181,7 @@ vi.mock("@academic-explorer/utils/logger", () => ({
 
 // Import after mocks are set up
 import { OpenAlexCLI } from "./openalex-cli-class.js";
+import type { StaticEntityType } from "./entity-detection.js";
 import { readFile, access, writeFile, mkdir } from "fs/promises";
 import { logger, logError } from "@academic-explorer/utils/logger";
 
@@ -202,12 +214,12 @@ describe("OpenAlexCLI", () => {
     const mockAuthorsIndex = {
       "https://api.openalex.org/authors/A123456789": {
         $ref: "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA123456789.json",
-        lastModified: "2025-09-19T16:29:25.530Z",
+        lastModified: TEST_TIMESTAMP_1,
         contentHash: "2fbeeeb9a36bc11f",
       },
       "https://api.openalex.org/authors/A987654321": {
         $ref: "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA987654321.json",
-        lastModified: "2025-09-19T16:29:25.658Z",
+        lastModified: TEST_TIMESTAMP_2,
         contentHash: "5829e4f7cb7a1382",
       },
       "https://api.openalex.org/authors/A5025875274": {
@@ -230,12 +242,12 @@ describe("OpenAlexCLI", () => {
     const mockWorksIndex = {
       "https://api.openalex.org/works/W2241997964": {
         $ref: "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fworks%2FW2241997964.json",
-        lastModified: "2025-09-19T16:29:25.530Z",
+        lastModified: TEST_TIMESTAMP_1,
         contentHash: "2fbeeeb9a36bc11f",
       },
       "https://api.openalex.org/works/W2250748100": {
         $ref: "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fworks%2FW2250748100.json",
-        lastModified: "2025-09-19T16:29:25.658Z",
+        lastModified: TEST_TIMESTAMP_2,
         contentHash: "5829e4f7cb7a1382",
       },
     };
@@ -260,18 +272,18 @@ describe("OpenAlexCLI", () => {
       const pathStr = path;
 
       // Mock index files
-      if (pathStr.includes("authors/index.json")) {
+      if (pathStr.includes(AUTHORS_INDEX_FILE)) {
         return JSON.stringify(mockAuthorsIndex);
       }
-      if (pathStr.includes("works/index.json")) {
+      if (pathStr.includes(WORKS_INDEX_FILE)) {
         return JSON.stringify(mockWorksIndex);
       }
 
       // Mock individual author files
-      if (pathStr.includes("A123456789.json")) {
+      if (pathStr.includes(AUTHOR_1_FILE)) {
         return JSON.stringify(mockAuthor1);
       }
-      if (pathStr.includes("A987654321.json")) {
+      if (pathStr.includes(AUTHOR_2_FILE)) {
         return JSON.stringify(mockAuthor2);
       }
       if (pathStr.includes("A5025875274.json")) {
@@ -294,8 +306,8 @@ describe("OpenAlexCLI", () => {
 
       // Allow access to known entity type indexes
       if (
-        pathStr.includes("authors/index.json") ||
-        pathStr.includes("works/index.json") ||
+        pathStr.includes(AUTHORS_INDEX_FILE) ||
+        pathStr.includes(WORKS_INDEX_FILE) ||
         pathStr.includes("institutions/index.json") ||
         pathStr.includes("topics/index.json") ||
         pathStr.includes("publishers/index.json") ||
@@ -410,11 +422,11 @@ describe("OpenAlexCLI", () => {
         const pathStr = path.toString();
 
         // Return index data
-        if (pathStr.includes("authors/index.json")) {
+        if (pathStr.includes(AUTHORS_INDEX_FILE)) {
           return JSON.stringify({
             "https://api.openalex.org/authors/A987654321": {
               $ref: "./A987654321.json",
-              lastModified: "2025-09-19T16:29:25.658Z",
+              lastModified: TEST_TIMESTAMP_2,
               contentHash: "5829e4f7cb7a1382",
             },
           });
@@ -590,7 +602,10 @@ describe("OpenAlexCLI", () => {
 
       // This should complete without throwing an error (now mocked)
       await expect(
-        cli.saveEntityToCache("invalid-entity-type" as any, mockEntity),
+        cli.saveEntityToCache(
+          "invalid-entity-type" as StaticEntityType,
+          mockEntity,
+        ),
       ).resolves.not.toThrow();
       expect(mockSaveEntityToCache).toHaveBeenCalledWith(
         "invalid-entity-type",
@@ -730,7 +745,7 @@ describe("OpenAlexCLI", () => {
         .mockImplementation(() => {});
 
       // Use a non-existent entity type
-      const result = await cli.listEntities("nonexistent" as any);
+      const result = await cli.listEntities("nonexistent" as StaticEntityType);
 
       expect(result).toEqual([]);
 

@@ -45,7 +45,14 @@ const { mockStore } = vi.hoisted(() => {
     removeEdge: vi.fn((edgeId: string) => {
       delete sharedState.edges[edgeId];
     }),
-    updateNode: vi.fn(),
+    updateNode: (nodeId: string, updates: any) => {
+      if (sharedState.nodes[nodeId]) {
+        sharedState.nodes[nodeId] = {
+          ...sharedState.nodes[nodeId],
+          ...updates,
+        };
+      }
+    },
     setLoading: vi.fn(),
     setError: vi.fn(),
     setGraphData: vi.fn(),
@@ -452,7 +459,7 @@ describe("Entity Data Storage Integration", () => {
   describe("Hydration level transitions", () => {
     // TODO: Fix test environment issue where manually added nodes don't persist in Zustand store
     // This test validates functionality that works in the other 3 passing tests
-    it.skip("should transition from minimal to full hydration when fully loaded", async () => {
+    it("should transition from minimal to full hydration when fully loaded", async () => {
       const store = useGraphStore.getState();
 
       // Create a minimal node first

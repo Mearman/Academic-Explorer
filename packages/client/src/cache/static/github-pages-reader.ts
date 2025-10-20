@@ -283,7 +283,7 @@ export class GitHubPagesReader {
       );
     }
 
-    const rawData = await response.json();
+    const rawData: unknown = await response.json();
 
     // Validate data if enabled
     if (this.config.validateData) {

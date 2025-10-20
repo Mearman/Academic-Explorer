@@ -23,6 +23,8 @@ const PRETTY_OPTION = "-p, --pretty";
 const NO_CACHE_OPTION = "--no-cache";
 const NO_SAVE_OPTION = "--no-save";
 const CACHE_ONLY_OPTION = "--cache-only";
+const ENTITY_TYPE_OPTION = "--entity-type <type>";
+const LIMIT_OPTION = "-l, --limit <limit>";
 
 // Common CLI option descriptions
 const FORMAT_TABLE_DESC = "Output format (json, table)";
@@ -30,6 +32,12 @@ const FORMAT_SUMMARY_DESC = "Output format (json, summary)";
 const NO_CACHE_DESC = "Skip cache, fetch directly from API";
 const NO_SAVE_DESC = "Don't save API results to cache";
 const CACHE_ONLY_DESC = "Only use cache, don't fetch from API if not found";
+
+// Common CLI option values and descriptions for duplicate strings
+const LIMIT_RESULTS_DESC = "Limit results";
+const CACHE_GENERATE_STATIC_CMD = "cache:generate-static";
+const DEFAULT_FORMAT_TABLE = "table";
+const DEFAULT_LIMIT = "10";
 
 /**
  * Print entity summary to console
@@ -43,44 +51,199 @@ interface EntitySummary {
   country_code?: string;
 }
 
-function printEntitySummary(entity: EntitySummary, entityType: string): void {
-  console.log(`\n${entityType.toUpperCase()}: ${entity.display_name}`);
-  console.log(`ID: ${entity.id}`);
-
-  // Entity-specific summary fields
-  if (entityType === "authors" && "works_count" in entity) {
+function printAuthorSummary(entity: EntitySummary): void {
+  if ("works_count" in entity) {
     const worksCount =
       typeof entity["works_count"] === "number"
         ? entity["works_count"]
         : "Unknown";
     console.log(`Works Count: ${worksCount.toString()}`);
-    const citedBy =
-      typeof entity["cited_by_count"] === "number"
-        ? entity["cited_by_count"]
-        : 0;
-    console.log(`Cited By Count: ${citedBy.toString()}`);
-  } else if (entityType === "works" && "publication_year" in entity) {
+  }
+
+  const citedBy =
+    typeof entity["cited_by_count"] === "number" ? entity["cited_by_count"] : 0;
+  console.log(`Cited By Count: ${citedBy.toString()}`);
+}
+
+function printWorkSummary(entity: EntitySummary): void {
+  if ("publication_year" in entity) {
     const pubYear =
       typeof entity["publication_year"] === "number"
         ? entity["publication_year"]
         : "Unknown";
     console.log(`Publication Year: ${pubYear.toString()}`);
-    const citedBy =
-      typeof entity["cited_by_count"] === "number"
-        ? entity["cited_by_count"]
-        : 0;
-    console.log(`Cited By Count: ${citedBy.toString()}`);
-  } else if (entityType === "institutions" && "works_count" in entity) {
+  }
+
+  const citedBy =
+    typeof entity["cited_by_count"] === "number" ? entity["cited_by_count"] : 0;
+  console.log(`Cited By Count: ${citedBy.toString()}`);
+}
+
+function printInstitutionSummary(entity: EntitySummary): void {
+  if ("works_count" in entity) {
     const worksCount =
       typeof entity["works_count"] === "number"
         ? entity["works_count"]
         : "Unknown";
     console.log(`Works Count: ${worksCount.toString()}`);
-    const country =
-      "country_code" in entity && typeof entity["country_code"] === "string"
-        ? entity["country_code"]
-        : "Unknown";
-    console.log(`Country: ${country}`);
+  }
+
+  const country =
+    "country_code" in entity && typeof entity["country_code"] === "string"
+      ? entity["country_code"]
+      : "Unknown";
+  console.log(`Country: ${country}`);
+}
+
+function validateEntityType(entityType: string): StaticEntityType {
+  const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType);
+  if (!entityTypeValidation.success) {
+    console.error(`Unsupported entity type: ${entityType}`);
+    console.error(`Supported types: ${SUPPORTED_ENTITIES.join(", ")}`);
+    process.exit(1);
+  }
+  return entityTypeValidation.data;
+}
+
+type GetTypedCommandOptions = z.infer<typeof GetTypedCommandOptionsSchema>;
+
+function validateGetCommandOptions(options: unknown): GetTypedCommandOptions {
+  const optionsValidation = GetTypedCommandOptionsSchema.safeParse(options);
+  if (!optionsValidation.success) {
+    console.error(`Invalid options: ${optionsValidation.error.message}`);
+    process.exit(1);
+  }
+  return optionsValidation.data;
+}
+
+function buildCacheOptions(
+  validatedOptions: GetTypedCommandOptions,
+): CacheOptions {
+  return {
+    useCache: !validatedOptions.noCache,
+    saveToCache: !validatedOptions.noSave,
+    cacheOnly: validatedOptions.cacheOnly ?? false,
+  };
+}
+
+function detectAndValidateEntityType(entityId: string): StaticEntityType {
+  try {
+    const entityType = detectEntityType(entityId);
+    return toStaticEntityType(entityType);
+  } catch {
+    console.error(`Cannot detect entity type from ID: ${entityId}`);
+    console.error(
+      "Expected format: W2241997964 (works), A5017898742 (authors), S123 (sources), I123 (institutions), T123 (topics), P123 (publishers)",
+    );
+    console.error("Or full URLs like: https://openalex.org/A5017898742");
+    console.error(`Supported types: ${SUPPORTED_ENTITIES.join(", ")}`);
+    process.exit(1);
+  }
+}
+
+type FetchCommandOptions = z.infer<typeof FetchCommandOptionsSchema>;
+
+function validateFetchCommandOptions(options: unknown): FetchCommandOptions {
+  const optionsValidation = FetchCommandOptionsSchema.safeParse(options);
+  if (!optionsValidation.success) {
+    console.error(`Invalid options: ${optionsValidation.error.message}`);
+    process.exit(1);
+  }
+  return optionsValidation.data;
+}
+
+function buildQueryOptions(
+  validatedOptions: FetchCommandOptions,
+): QueryOptions {
+  const perPage =
+    typeof validatedOptions.perPage === "string"
+      ? parseInt(validatedOptions.perPage, 10)
+      : 25;
+  const page =
+    typeof validatedOptions.page === "string"
+      ? parseInt(validatedOptions.page, 10)
+      : 1;
+
+  const queryOptions: QueryOptions = {
+    per_page: perPage,
+    page,
+  };
+
+  if (validatedOptions.filter) queryOptions.filter = validatedOptions.filter;
+  if (validatedOptions.select)
+    queryOptions.select = (validatedOptions.select as string)
+      .split(",")
+      .map((s) => s.trim());
+  if (validatedOptions.sort) queryOptions.sort = validatedOptions.sort;
+
+  return queryOptions;
+}
+
+function outputQueryResult(
+  result: unknown,
+  staticEntityType: StaticEntityType,
+  format?: string,
+): void {
+  if (format === "json") {
+    console.log(JSON.stringify(result, null, 2));
+  } else {
+    // Summary format for query results
+    const queryResultValidation = QueryResultSchema.safeParse(result);
+    if (queryResultValidation.success) {
+      const apiResult = queryResultValidation.data;
+      console.log(`\nQuery Results for ${staticEntityType.toUpperCase()}:`);
+      console.log(
+        `Total results: ${(apiResult.meta?.count ?? apiResult.results.length).toString()}`,
+      );
+      console.log(`Returned: ${apiResult.results.length.toString()}`);
+
+      if (apiResult.results.length > 0) {
+        apiResult.results.slice(0, 10).forEach((item, index: number) => {
+          const displayName =
+            item.display_name ?? item.id ?? `Item ${(index + 1).toString()}`;
+          console.log(`${(index + 1).toString().padStart(3)}: ${displayName}`);
+        });
+
+        if (apiResult.results.length > 10) {
+          console.log(
+            `... and ${(apiResult.results.length - 10).toString()} more`,
+          );
+        }
+      }
+    } else {
+      console.log("Unexpected result format");
+    }
+  }
+}
+
+function outputEntity(
+  entity: EntitySummary,
+  staticEntityType: StaticEntityType,
+  format?: string,
+  pretty?: boolean,
+): void {
+  if (format === "json") {
+    console.log(JSON.stringify(entity, null, pretty ? 2 : 0));
+  } else {
+    printEntitySummary(entity, staticEntityType);
+  }
+}
+
+function printEntitySummary(entity: EntitySummary, entityType: string): void {
+  console.log(`\n${entityType.toUpperCase()}: ${entity.display_name}`);
+  console.log(`ID: ${entity.id}`);
+
+  // Entity-specific summary fields
+  switch (entityType) {
+    case "authors":
+      printAuthorSummary(entity);
+      break;
+    case "works":
+      printWorkSummary(entity);
+      break;
+    case "institutions":
+      printInstitutionSummary(entity);
+      break;
   }
 }
 import { detectEntityType } from "./entity-detection.js";
@@ -256,7 +419,7 @@ program
   .command("list <entity-type>")
   .description("List all entities of a specific type")
   .option("-c, --count", "Show only count")
-  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, "table")
+  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, DEFAULT_FORMAT_TABLE)
   .action(async (entityType: string, options: unknown) => {
     const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType);
     if (!entityTypeValidation.success) {
@@ -303,27 +466,10 @@ program
   .option(CACHE_ONLY_OPTION, CACHE_ONLY_DESC)
 
   .action(async (entityType: string, entityId: string, options: unknown) => {
-    const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType);
-    if (!entityTypeValidation.success) {
-      console.error(`Unsupported entity type: ${entityType}`);
-      console.error(`Supported types: ${SUPPORTED_ENTITIES.join(", ")}`);
-      process.exit(1);
-    }
+    const staticEntityType = validateEntityType(entityType);
+    const validatedOptions = validateGetCommandOptions(options);
+    const cacheOptions = buildCacheOptions(validatedOptions);
 
-    const optionsValidation = GetTypedCommandOptionsSchema.safeParse(options);
-    if (!optionsValidation.success) {
-      console.error(`Invalid options: ${optionsValidation.error.message}`);
-      process.exit(1);
-    }
-
-    const staticEntityType = entityTypeValidation.data;
-    const validatedOptions = optionsValidation.data;
-
-    const cacheOptions: CacheOptions = {
-      useCache: !validatedOptions.noCache,
-      saveToCache: !validatedOptions.noSave,
-      cacheOnly: validatedOptions.cacheOnly ?? false,
-    };
     const entity = await cli.getEntityWithCache(
       staticEntityType,
       entityId,
@@ -335,55 +481,12 @@ program
       process.exit(1);
     }
 
-    if (validatedOptions.format === "json") {
-      console.log(
-        JSON.stringify(entity, null, validatedOptions.pretty ? 2 : 0),
-      );
-    } else {
-      console.log(
-        `\n${staticEntityType.toUpperCase()}: ${entity.display_name}`,
-      );
-      console.log(`ID: ${entity.id}`);
-
-      // Entity-specific summary fields
-      if (staticEntityType === "authors" && "works_count" in entity) {
-        const worksCount =
-          typeof entity["works_count"] === "number"
-            ? entity["works_count"]
-            : "Unknown";
-        console.log(`Works Count: ${worksCount.toString()}`);
-        const citedBy =
-          typeof entity["cited_by_count"] === "number"
-            ? entity["cited_by_count"]
-            : 0;
-        console.log(`Cited By Count: ${citedBy.toString()}`);
-      } else if (staticEntityType === "works" && "publication_year" in entity) {
-        const pubYear =
-          typeof entity["publication_year"] === "number"
-            ? entity["publication_year"]
-            : "Unknown";
-        console.log(`Publication Year: ${pubYear.toString()}`);
-        const citedBy =
-          typeof entity["cited_by_count"] === "number"
-            ? entity["cited_by_count"]
-            : 0;
-        console.log(`Cited By Count: ${citedBy.toString()}`);
-      } else if (
-        staticEntityType === "institutions" &&
-        "works_count" in entity
-      ) {
-        const worksCount =
-          typeof entity["works_count"] === "number"
-            ? entity["works_count"]
-            : "Unknown";
-        console.log(`Works Count: ${worksCount.toString()}`);
-        const country =
-          "country_code" in entity && typeof entity["country_code"] === "string"
-            ? entity["country_code"]
-            : "Unknown";
-        console.log(`Country: ${country}`);
-      }
-    }
+    outputEntity(
+      entity,
+      staticEntityType,
+      validatedOptions.format,
+      validatedOptions.pretty,
+    );
   });
 
 // Auto-detect get command (takes just entity ID)
@@ -397,35 +500,9 @@ program
   .option(CACHE_ONLY_OPTION, CACHE_ONLY_DESC)
 
   .action(async (entityId: string, options: unknown) => {
-    const optionsValidation = GetCommandOptionsSchema.safeParse(options);
-    if (!optionsValidation.success) {
-      console.error(`Invalid options: ${optionsValidation.error.message}`);
-      process.exit(1);
-    }
-
-    const validatedOptions = optionsValidation.data;
-
-    let entityType: EntityType;
-    let staticEntityType: StaticEntityType;
-
-    try {
-      entityType = detectEntityType(entityId);
-      staticEntityType = toStaticEntityType(entityType);
-    } catch {
-      console.error(`Cannot detect entity type from ID: ${entityId}`);
-      console.error(
-        "Expected format: W2241997964 (works), A5017898742 (authors), S123 (sources), I123 (institutions), T123 (topics), P123 (publishers)",
-      );
-      console.error("Or full URLs like: https://openalex.org/A5017898742");
-      console.error(`Supported types: ${SUPPORTED_ENTITIES.join(", ")}`);
-      process.exit(1);
-    }
-
-    const cacheOptions: CacheOptions = {
-      useCache: !validatedOptions.noCache,
-      saveToCache: !validatedOptions.noSave,
-      cacheOnly: validatedOptions.cacheOnly ?? false,
-    };
+    const validatedOptions = validateGetCommandOptions(options);
+    const staticEntityType = detectAndValidateEntityType(entityId);
+    const cacheOptions = buildCacheOptions(validatedOptions);
 
     const entity = await cli.getEntityWithCache(
       staticEntityType,
@@ -438,63 +515,20 @@ program
       process.exit(1);
     }
 
-    if (validatedOptions.format === "json") {
-      console.log(
-        JSON.stringify(entity, null, validatedOptions.pretty ? 2 : 0),
-      );
-    } else {
-      console.log(
-        `\n${staticEntityType.toUpperCase()}: ${entity.display_name}`,
-      );
-      console.log(`ID: ${entity.id}`);
-
-      // Entity-specific summary fields
-      if (staticEntityType === "authors" && "works_count" in entity) {
-        const worksCount =
-          typeof entity["works_count"] === "number"
-            ? entity["works_count"]
-            : "Unknown";
-        console.log(`Works Count: ${worksCount.toString()}`);
-        const citedBy =
-          typeof entity["cited_by_count"] === "number"
-            ? entity["cited_by_count"]
-            : 0;
-        console.log(`Cited By Count: ${citedBy.toString()}`);
-      } else if (staticEntityType === "works" && "publication_year" in entity) {
-        const pubYear =
-          typeof entity["publication_year"] === "number"
-            ? entity["publication_year"]
-            : "Unknown";
-        console.log(`Publication Year: ${pubYear.toString()}`);
-        const citedBy =
-          typeof entity["cited_by_count"] === "number"
-            ? entity["cited_by_count"]
-            : 0;
-        console.log(`Cited By Count: ${citedBy.toString()}`);
-      } else if (
-        staticEntityType === "institutions" &&
-        "works_count" in entity
-      ) {
-        const worksCount =
-          typeof entity["works_count"] === "number"
-            ? entity["works_count"]
-            : "Unknown";
-        console.log(`Works Count: ${worksCount.toString()}`);
-        const country =
-          "country_code" in entity && typeof entity["country_code"] === "string"
-            ? entity["country_code"]
-            : "Unknown";
-        console.log(`Country: ${country}`);
-      }
-    }
+    outputEntity(
+      entity,
+      staticEntityType,
+      validatedOptions.format,
+      validatedOptions.pretty,
+    );
   });
 
 // Search command
 program
   .command("search <entity-type> <term>")
   .description("Search entities by display name")
-  .option("-l, --limit <limit>", "Limit results", "10")
-  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, "table")
+  .option(LIMIT_OPTION, LIMIT_RESULTS_DESC, DEFAULT_LIMIT)
+  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, DEFAULT_FORMAT_TABLE)
   .action(async (entityType: string, searchTerm: string, options) => {
     const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType);
     if (!entityTypeValidation.success) {
@@ -536,7 +570,7 @@ program
 program
   .command("stats")
   .description("Show statistics for all entity types")
-  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, "table")
+  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, DEFAULT_FORMAT_TABLE)
   .action(async (options: unknown) => {
     const optionsValidation = StatsCommandOptionsSchema.safeParse(options);
     if (!optionsValidation.success) {
@@ -600,48 +634,10 @@ program
   .option(CACHE_ONLY_OPTION, CACHE_ONLY_DESC)
   .option(FORMAT_OPTION, FORMAT_SUMMARY_DESC, "json")
   .action(async (entityType: string, options) => {
-    const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType);
-    if (!entityTypeValidation.success) {
-      console.error(`Unsupported entity type: ${entityType}`);
-      console.error(`Supported types: ${SUPPORTED_ENTITIES.join(", ")}`);
-      process.exit(1);
-    }
-
-    const optionsValidation = FetchCommandOptionsSchema.safeParse(options);
-    if (!optionsValidation.success) {
-      console.error(`Invalid options: ${optionsValidation.error.message}`);
-      process.exit(1);
-    }
-
-    const staticEntityType = entityTypeValidation.data;
-    const validatedOptions = optionsValidation.data;
-
-    const perPage =
-      typeof validatedOptions.perPage === "string"
-        ? parseInt(validatedOptions.perPage, 10)
-        : 25;
-    const page =
-      typeof validatedOptions.page === "string"
-        ? parseInt(validatedOptions.page, 10)
-        : 1;
-
-    const queryOptions: QueryOptions = {
-      per_page: perPage,
-      page,
-    };
-
-    if (validatedOptions.filter) queryOptions.filter = validatedOptions.filter;
-    if (validatedOptions.select)
-      queryOptions.select = validatedOptions.select
-        .split(",")
-        .map((s: string) => s.trim());
-    if (validatedOptions.sort) queryOptions.sort = validatedOptions.sort;
-
-    const cacheOptions: CacheOptions = {
-      useCache: !validatedOptions.noCache,
-      saveToCache: !validatedOptions.noSave,
-      cacheOnly: validatedOptions.cacheOnly ?? false,
-    };
+    const staticEntityType = validateEntityType(entityType);
+    const validatedOptions = validateFetchCommandOptions(options);
+    const queryOptions = buildQueryOptions(validatedOptions);
+    const cacheOptions = buildCacheOptions(validatedOptions);
 
     try {
       const result = await cli.queryWithCache(
@@ -655,40 +651,7 @@ program
         process.exit(1);
       }
 
-      if (validatedOptions.format === "json") {
-        console.log(JSON.stringify(result, null, 2));
-      } else {
-        // Summary format for query results
-        const queryResultValidation = QueryResultSchema.safeParse(result);
-        if (queryResultValidation.success) {
-          const apiResult = queryResultValidation.data;
-          console.log(`\nQuery Results for ${staticEntityType.toUpperCase()}:`);
-          console.log(
-            `Total results: ${(apiResult.meta?.count ?? apiResult.results.length).toString()}`,
-          );
-          console.log(`Returned: ${apiResult.results.length.toString()}`);
-
-          if (apiResult.results.length > 0) {
-            apiResult.results.slice(0, 10).forEach((item, index: number) => {
-              const displayName =
-                item.display_name ??
-                item.id ??
-                `Item ${(index + 1).toString()}`;
-              console.log(
-                `${(index + 1).toString().padStart(3)}: ${displayName}`,
-              );
-            });
-
-            if (apiResult.results.length > 10) {
-              console.log(
-                `... and ${(apiResult.results.length - 10).toString()} more`,
-              );
-            }
-          }
-        } else {
-          console.log("Unexpected result format");
-        }
-      }
+      outputQueryResult(result, staticEntityType, validatedOptions.format);
     } catch (error) {
       console.error("Query failed:", error);
       process.exit(1);
@@ -699,7 +662,7 @@ program
 program
   .command("cache:stats")
   .description("Show synthetic cache statistics and field accumulation data")
-  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, "table")
+  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, DEFAULT_FORMAT_TABLE)
   .action(async (options: unknown) => {
     const optionsValidation = CacheStatsCommandOptionsSchema.safeParse(options);
     if (!optionsValidation.success) {
@@ -756,7 +719,7 @@ program
   .description(
     "Show field coverage for a specific entity across all cache tiers",
   )
-  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, "table")
+  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, DEFAULT_FORMAT_TABLE)
   .action(async (entityType: string, entityId: string, options: unknown) => {
     const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType);
     if (!entityTypeValidation.success) {
@@ -815,8 +778,8 @@ program
 program
   .command("cache:popular-entities <entity-type>")
   .description("Show well-populated entities with extensive field coverage")
-  .option("-l, --limit <limit>", "Limit results", "10")
-  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, "table")
+  .option(LIMIT_OPTION, LIMIT_RESULTS_DESC, DEFAULT_LIMIT)
+  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, DEFAULT_FORMAT_TABLE)
   .action(async (entityType: string, options: unknown) => {
     const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType);
     if (!entityTypeValidation.success) {
@@ -869,8 +832,8 @@ program
 program
   .command("cache:popular-collections")
   .description("Show popular cached collections with high entity counts")
-  .option("-l, --limit <limit>", "Limit results", "10")
-  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, "table")
+  .option(LIMIT_OPTION, LIMIT_RESULTS_DESC, DEFAULT_LIMIT)
+  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, DEFAULT_FORMAT_TABLE)
   .action(async (options: unknown) => {
     const optionsValidation =
       CachePopularCollectionsCommandOptionsSchema.safeParse(options);
@@ -935,13 +898,13 @@ program
 
 // Static cache management commands
 program
-  .command("cache:generate-static")
+  .command(CACHE_GENERATE_STATIC_CMD)
   .description("Generate static cache with environment-aware operations")
-  .option("--entity-type <type>", "Generate for specific entity type only")
+  .option(ENTITY_TYPE_OPTION, "Generate for specific entity type only")
   .option("--limit <limit>", "Limit number of entities to generate")
   .option("--force", "Force regeneration even if files exist")
   .option("--dry-run", "Show what would be generated without writing files")
-  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, "table")
+  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, DEFAULT_FORMAT_TABLE)
   .action(async (options: unknown) => {
     const optionsValidation =
       CacheGenerateStaticCommandOptionsSchema.safeParse(options);
@@ -1010,7 +973,7 @@ program
 program
   .command("cache:validate-static")
   .description("Validate static cache integrity and structure")
-  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, "table")
+  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, DEFAULT_FORMAT_TABLE)
   .option("--verbose", "Show detailed validation information")
   .action(async (options: unknown) => {
     const optionsValidation =
@@ -1148,7 +1111,7 @@ program
   .description(
     "Analyze static data cache usage patterns and suggest optimizations",
   )
-  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, "table")
+  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, DEFAULT_FORMAT_TABLE)
   .action(async (options: unknown) => {
     const optionsValidation =
       StaticAnalyzeCommandOptionsSchema.safeParse(options);
@@ -1204,7 +1167,7 @@ program
 program
   .command("static:generate")
   .description("Generate optimized static data cache from usage patterns")
-  .option("--entity-type <type>", "Generate for specific entity type only")
+  .option(ENTITY_TYPE_OPTION, "Generate for specific entity type only")
   .option("--dry-run", "Show what would be generated without writing files")
   .option("--force", "Force regeneration even if files exist")
   .action(async (options: unknown) => {
