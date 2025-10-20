@@ -7,9 +7,11 @@
     "baseUrl": ".",
     "paths": {
       "@/ui/section-kit": ["./src/components/section-kit"]
-    }
+    },
+    "declaration": false,
+    "composite": false
   },
   "include": ["src/**/*"],
   "exclude": ["**/*.test.*", "**/*.spec.*"],
-  "references": [{ "path": "../client" }, { "path": "../utils" }]
+  "references": []
 }
