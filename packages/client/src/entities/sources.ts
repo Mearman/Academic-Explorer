@@ -496,7 +496,7 @@ export class SourcesApi {
     const searchOptions: SourceSearchOptions = {
       ...paramsWithoutFilter,
       filters,
-      sort: (params as QueryParams).sort ?? this.WORKS_COUNT_DESC,
+      sort: paramsWithoutFilter.sort ?? this.WORKS_COUNT_DESC,
     };
 
     const queryParams = this.buildFilterParams(searchOptions);

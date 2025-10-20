@@ -258,7 +258,7 @@ export class ConceptsApi {
     }
 
     const {
-      filters = {},
+      filters,
       sort = "relevance_score:desc",
       page = 1,
       per_page = 25,
@@ -275,7 +275,9 @@ export class ConceptsApi {
 
     const baseParams = {
       search: query.trim(),
-      filter: buildFilterString(filters),
+      filter: filters
+        ? buildFilterString(filters as Record<string, unknown>)
+        : "",
       sort: sort,
       page,
       per_page,

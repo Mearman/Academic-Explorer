@@ -834,7 +834,7 @@ export class AuthorsApi {
     field: string,
     options: AuthorGroupingOptions = {},
   ): Promise<GroupedResponse<Author>> {
-    const { filters = {}, sort, per_page = 25, page } = options;
+    const { filters, sort, per_page = 25, page } = options;
 
     const params: QueryParams & { filter?: string } = {
       group_by: field,
@@ -843,7 +843,9 @@ export class AuthorsApi {
       ...(page && { page }),
     };
 
-    const filterString = buildFilterString(filters);
+    const filterString = filters
+      ? buildFilterString(filters as Record<string, unknown>)
+      : "";
     if (filterString) {
       params.filter = filterString;
     }
