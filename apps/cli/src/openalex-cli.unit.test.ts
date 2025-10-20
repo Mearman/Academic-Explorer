@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 /**
  * Unit tests for OpenAlex CLI
  */
@@ -9,11 +10,12 @@ const TEST_AUTHOR_ID_1 = "A123456789";
 const TEST_AUTHOR_ID_2 = "A987654321";
 
 // File path constants for repeated strings
+const INDEX_SUFFIX = "index.json";
 const AUTHOR_1_FILE = `${TEST_AUTHOR_ID_1}.json`;
 const AUTHOR_2_FILE = `${TEST_AUTHOR_ID_2}.json`;
-const INDEX_FILE = "index.json";
-const AUTHORS_INDEX_FILE = "authors/index.json"; // eslint-disable-line sonarjs/no-duplicate-string
-const WORKS_INDEX_FILE = "works/index.json";
+const INDEX_FILE = INDEX_SUFFIX;
+const AUTHORS_INDEX_FILE = `authors/${INDEX_SUFFIX}`;
+const WORKS_INDEX_FILE = `works/${INDEX_SUFFIX}`;
 
 // Timestamp constants for repeated strings
 const TEST_TIMESTAMP_1 = "2025-09-19T16:29:25.530Z";

@@ -12,83 +12,90 @@ import {
   useEntityInteraction,
 } from "./use-entity-interaction";
 
-const mockGraphStore = {
-  // Core state
-  nodes: {} as Record<string, any>,
-  edges: {} as Record<string, any>,
-  isLoading: false,
-  error: null,
-
-  // Essential methods
-  addNode: vi.fn(),
-  addNodes: vi.fn(),
-  addEdge: vi.fn(),
-  addEdges: vi.fn(),
-  removeNode: vi.fn(),
-  removeEdge: vi.fn(),
-  updateNode: vi.fn(),
-  getNode: vi.fn(),
-  setLoading: vi.fn(),
-  setError: vi.fn(),
-  clear: vi.fn(),
-  setGraphData: vi.fn(),
-
-  // Selection and interaction
-  selectedNodeId: null as string | null,
-  hoveredNodeId: null,
-  selectedNodes: {},
-  selectNode: vi.fn().mockImplementation((nodeId: string | null) => {
-    // Simulate state guard behavior - only update if different
-    if (mockGraphStore.selectedNodeId !== nodeId) {
-      mockGraphStore.selectedNodeId = nodeId;
-    }
-  }),
-  hoverNode: vi.fn(),
-  addToSelection: vi.fn(),
-  removeFromSelection: vi.fn(),
-  clearSelection: vi.fn(),
-
-  // Pinning system
-  pinnedNodes: {},
-  pinNode: vi.fn(),
-  unpinNode: vi.fn(),
-  clearAllPinnedNodes: vi.fn(),
-  isPinned: vi.fn(),
-
-  // Layout system
-  currentLayout: { type: "force" },
-  setLayout: vi.fn(),
-
-  // Visibility
-  visibleEntityTypes: {},
-  visibleEdgeTypes: {},
-  toggleEdgeTypeVisibility: vi.fn(),
-
-  // Cache settings
-  showAllCachedNodes: false,
-  traversalDepth: 1,
-
-  // Statistics
-  totalNodeCount: 0,
-  totalEdgeCount: 0,
-  entityTypeStats: {},
-
-  // Methods
-  calculateNodeDepths: vi.fn(),
-  updateSearchStats: vi.fn(),
-  markNodeAsLoading: vi.fn(),
-  markNodeAsLoaded: vi.fn(),
-  markNodeAsError: vi.fn(),
-  getMinimalNodes: vi.fn(() => []),
-};
+let mockGraphStore: any;
 
 // Mock dependencies with factory functions
-vi.mock("@/stores/graph-store", () => ({
-  useGraphStore: {
-    getState: vi.fn(),
-  },
-  graphStore: mockGraphStore,
-}));
+vi.mock("@/stores/graph-store", () => {
+  const mockStore = {
+    // Core state
+    nodes: {} as Record<string, any>,
+    edges: {} as Record<string, any>,
+    isLoading: false,
+    error: null,
+
+    // Essential methods
+    addNode: vi.fn(),
+    addNodes: vi.fn(),
+    addEdge: vi.fn(),
+    addEdges: vi.fn(),
+    removeNode: vi.fn(),
+    removeEdge: vi.fn(),
+    updateNode: vi.fn(),
+    getNode: vi.fn(),
+    setLoading: vi.fn(),
+    setError: vi.fn(),
+    clear: vi.fn(),
+    setGraphData: vi.fn(),
+
+    // Selection and interaction
+    selectedNodeId: null as string | null,
+    hoveredNodeId: null,
+    selectedNodes: {},
+    selectNode: vi.fn().mockImplementation(function (
+      this: any,
+      nodeId: string | null,
+    ) {
+      this.selectedNodeId = nodeId;
+    }),
+    hoverNode: vi.fn(),
+    addToSelection: vi.fn(),
+    removeFromSelection: vi.fn(),
+    clearSelection: vi.fn(),
+
+    // Pinning system
+    pinnedNodes: {},
+    pinNode: vi.fn(),
+    unpinNode: vi.fn(),
+    clearAllPinnedNodes: vi.fn(),
+    isPinned: vi.fn(),
+
+    // Layout system
+    currentLayout: { type: "force" },
+    setLayout: vi.fn(),
+
+    // Visibility
+    visibleEntityTypes: {},
+    visibleEdgeTypes: {},
+    toggleEdgeTypeVisibility: vi.fn(),
+
+    // Cache settings
+    showAllCachedNodes: false,
+    traversalDepth: 1,
+
+    // Statistics
+    totalNodeCount: 0,
+    totalEdgeCount: 0,
+    entityTypeStats: {},
+
+    // Methods
+    calculateNodeDepths: vi.fn(),
+    updateSearchStats: vi.fn(),
+    markNodeAsLoading: vi.fn(),
+    markNodeAsLoaded: vi.fn(),
+    markNodeAsError: vi.fn(),
+    getMinimalNodes: vi.fn(() => []),
+    getState: vi.fn(function (this: any) {
+      return this;
+    }),
+  };
+
+  return {
+    useGraphStore: {
+      getState: vi.fn(() => mockStore),
+    },
+    graphStore: mockStore,
+  };
+});
 
 vi.mock("@/stores/layout-store", () => ({
   useLayoutStore: vi.fn(),
@@ -106,110 +113,6 @@ vi.mock("@academic-explorer/utils/logger", () => ({
     error: vi.fn(),
   },
 }));
-
-const mockGraphStore = {
-  // Core state
-  nodes: {} as Record<string, any>,
-  edges: {} as Record<string, any>,
-  isLoading: false,
-  error: null,
-
-  // Essential methods
-  addNode: vi.fn(),
-  addNodes: vi.fn(),
-  addEdge: vi.fn(),
-  addEdges: vi.fn(),
-  removeNode: vi.fn(),
-  removeEdge: vi.fn(),
-  updateNode: vi.fn(),
-  getNode: vi.fn(),
-  setLoading: vi.fn(),
-  setError: vi.fn(),
-  clear: vi.fn(),
-  setGraphData: vi.fn(),
-
-  // Selection and interaction
-  selectedNodeId: null as string | null,
-  hoveredNodeId: null,
-  selectedNodes: {},
-  selectNode: vi.fn().mockImplementation((nodeId: string | null) => {
-    // Simulate state guard behavior - only update if different
-    if (mockGraphStore.selectedNodeId !== nodeId) {
-      mockGraphStore.selectedNodeId = nodeId;
-    }
-  }),
-  hoverNode: vi.fn(),
-  addToSelection: vi.fn(),
-  removeFromSelection: vi.fn(),
-  clearSelection: vi.fn(),
-
-  // Pinning system
-  pinnedNodes: {},
-  pinNode: vi.fn(),
-  unpinNode: vi.fn(),
-  clearAllPinnedNodes: vi.fn(),
-  isPinned: vi.fn(),
-
-  // Layout system
-  currentLayout: {} as any,
-  setLayout: vi.fn(),
-  applyCurrentLayout: vi.fn(),
-
-  // Visibility state
-  visibleEntityTypes: {} as any,
-  visibleEdgeTypes: {} as any,
-  toggleEntityTypeVisibility: vi.fn(),
-  toggleEdgeTypeVisibility: vi.fn(),
-  setEntityTypeVisibility: vi.fn(),
-  setEdgeTypeVisibility: vi.fn(),
-  setAllEntityTypesVisible: vi.fn(),
-  resetEntityTypesToDefaults: vi.fn(),
-  getEntityTypeStats: vi.fn(),
-  getVisibleNodes: vi.fn(),
-
-  // Cache settings
-  showAllCachedNodes: false,
-  setShowAllCachedNodes: vi.fn(),
-  traversalDepth: 1,
-  setTraversalDepth: vi.fn(),
-
-  // Statistics
-  totalNodeCount: 0,
-  totalEdgeCount: 0,
-  entityTypeStats: {} as any,
-  edgeTypeStats: {} as any,
-  lastSearchStats: {},
-  updateSearchStats: vi.fn(),
-
-  // Node state management
-  markNodeAsLoading: vi.fn(),
-  markNodeAsLoaded: vi.fn(),
-  markNodeAsError: vi.fn(),
-  calculateNodeDepths: vi.fn(),
-  getMinimalNodes: vi.fn(),
-  getNodesWithinDepth: vi.fn(),
-  nodeDepths: {},
-
-  // Graph algorithms
-  getNeighbors: vi.fn(),
-  getConnectedEdges: vi.fn(),
-  findShortestPath: vi.fn(),
-  getConnectedComponent: vi.fn(),
-
-  // Computed getters
-  cachedVisibleNodes: [],
-
-  // Provider reference
-  provider: null,
-  providerType: null,
-  setProvider: vi.fn(),
-  setProviderType: vi.fn(),
-
-  // Hydration state
-  hasPlaceholderOrLoadingNodes: vi.fn(),
-
-  getState: vi.fn(),
-} as any;
 
 const mockLayoutStore = {
   previewEntityId: null as string | null,
@@ -272,15 +175,17 @@ describe("useEntityInteraction", () => {
     vi.clearAllMocks();
 
     // Get the mocked modules
-    const { useGraphStore } = await import("../stores/graph-store");
+    const { useGraphStore, graphStore } = await import("../stores/graph-store");
     const { useLayoutStore } = await import("../stores/layout-store");
     const { useGraphData } = await import("./use-graph-data");
     const { logger } = await import("@academic-explorer/utils/logger");
 
+    // Assign the mocked graphStore to our variable
+    mockGraphStore = graphStore;
+
     // Setup default mock implementations
     mockGraphStore.nodes = {};
     mockGraphStore.selectedNodeId = null;
-    mockGraphStore.getState.mockReturnValue(mockGraphStore);
 
     // Reset layout store state
     mockLayoutStore.previewEntityId = null;

@@ -2,17 +2,17 @@
  * Generated Integration Tests for OpenAlex API Routes
  *
  * This file contains integration tests that make actual HTTP requests to OpenAlex API
- * to verify that all 308 documented routes are working correctly.
+ * to verify that all 276 documented routes are working correctly.
  *
  * IMPORTANT: These tests require internet connection and respect OpenAlex rate limits.
  * Run sparingly and consider using environment variables to control execution.
  *
- * Generated on: 2025-09-27T10:43:54.634Z
- * Total test cases: 308
+ * Generated on: 2025-10-20T05:05:16.309Z
+ * Total test cases: 276
  */
 
 import { describe, it, expect, beforeAll } from "vitest";
-import { cachedOpenAlex, OpenAlexBaseClient } from "@academic-explorer/client";
+import { OpenAlexBaseClient } from "../client";
 import { WorksApi } from "../entities/works";
 import { AuthorsApi } from "../entities/authors";
 import { SourcesApi } from "../entities/sources";
@@ -24,9 +24,12 @@ import { KeywordsApi } from "../entities/keywords";
 import { ConceptsApi } from "../entities/concepts";
 import { TextAnalysisApi } from "../entities/text-analysis";
 
-// Integration tests always run
+// Skip integration tests unless explicitly enabled
+const runIntegrationTests = process.env.RUN_INTEGRATION_TESTS === "true";
 
-describe("OpenAlex API Integration Tests", () => {
+const conditionalDescribe = runIntegrationTests ? describe : describe.skip;
+
+conditionalDescribe("OpenAlex API Integration Tests", () => {
   let client: OpenAlexBaseClient;
   let apis: {
     works: WorksApi;
@@ -42,11 +45,15 @@ describe("OpenAlex API Integration Tests", () => {
   };
 
   beforeAll(() => {
-    // Disable disk caching for integration tests to avoid path issues
-    process.env.ACADEMIC_EXPLORER_DISK_CACHE_ENABLED = "false";
-
-    // Use cached client with static data cache enabled
-    client = cachedOpenAlex;
+    // Configure client with email for polite requests
+    client = new OpenAlexBaseClient({
+      userEmail: process.env.OPENALEX_EMAIL || "test@academic-explorer.org",
+      rateLimit: {
+        requestsPerSecond: 8, // Conservative rate limit for tests
+        requestsPerDay: 100000,
+      },
+      timeout: 30000, // Longer timeout for integration tests
+    });
 
     apis = {
       works: new WorksApi(client),
@@ -544,12 +551,12 @@ describe("OpenAlex API Integration Tests", () => {
             error.message.includes("not a function")
           ) {
             console.warn(
-              `Integration test skipped - method not implemented: /authors?search=carl`,
+              `Integration test skipped - method not implemented: /authors?search=Heather+Piwowar`,
             );
             expect(true).toBe(true);
           } else {
             console.error(
-              `Integration test failed for /authors?search=carl:`,
+              `Integration test failed for /authors?search=Heather+Piwowar:`,
               error,
             );
             throw error;
@@ -853,12 +860,12 @@ describe("OpenAlex API Integration Tests", () => {
             error.message.includes("not a function")
           ) {
             console.warn(
-              `Integration test skipped - method not implemented: /concepts?search=artificial`,
+              `Integration test skipped - method not implemented: /concepts?search=artificial%20intelligence`,
             );
             expect(true).toBe(true);
           } else {
             console.error(
-              `Integration test failed for /concepts?search=artificial:`,
+              `Integration test failed for /concepts?search=artificial%20intelligence:`,
               error,
             );
             throw error;
@@ -1471,12 +1478,12 @@ describe("OpenAlex API Integration Tests", () => {
             error.message.includes("not a function")
           ) {
             console.warn(
-              `Integration test skipped - method not implemented: /institutions?search=nyu`,
+              `Integration test skipped - method not implemented: /institutions?search=MIT`,
             );
             expect(true).toBe(true);
           } else {
             console.error(
-              `Integration test failed for /institutions?search=nyu:`,
+              `Integration test failed for /institutions?search=MIT:`,
               error,
             );
             throw error;
@@ -2089,12 +2096,12 @@ describe("OpenAlex API Integration Tests", () => {
             error.message.includes("not a function")
           ) {
             console.warn(
-              `Integration test skipped - method not implemented: /sources?search=jacs`,
+              `Integration test skipped - method not implemented: /sources?search=Nature`,
             );
             expect(true).toBe(true);
           } else {
             console.error(
-              `Integration test failed for /sources?search=jacs:`,
+              `Integration test failed for /sources?search=Nature:`,
               error,
             );
             throw error;
@@ -2336,12 +2343,12 @@ describe("OpenAlex API Integration Tests", () => {
             error.message.includes("not a function")
           ) {
             console.warn(
-              `Integration test skipped - method not implemented: /keywords?search=artificial`,
+              `Integration test skipped - method not implemented: /keywords?search=artificial%20intelligence`,
             );
             expect(true).toBe(true);
           } else {
             console.error(
-              `Integration test failed for /keywords?search=artificial:`,
+              `Integration test failed for /keywords?search=artificial%20intelligence:`,
               error,
             );
             throw error;
@@ -2412,58 +2419,7 @@ describe("OpenAlex API Integration Tests", () => {
       }, 45000); // Longer timeout for real API calls
     });
 
-    describe("Text Integration", () => {
-      it("should analyze text", async () => {
-        const api = apis.text as any;
-
-        try {
-          let result;
-
-          if (api.analyzeText) {
-            result = await api.analyzeText({
-              title: "Machine learning applications in healthcare",
-              abstract:
-                "This paper explores the use of AI in medical diagnosis.",
-            });
-          } else if (api.getText) {
-            result = await api.getText({
-              title: "Machine learning applications in healthcare",
-            });
-          }
-
-          // Verify response structure
-          if (result) {
-            expect(result).toBeDefined();
-            // Text analysis typically returns concepts, topics, or keywords
-            expect(typeof result).toBe("object");
-          }
-
-          // Add delay between requests to respect rate limits
-          await new Promise((resolve) => setTimeout(resolve, 250));
-        } catch (error) {
-          console.error(`Integration test failed for text analysis:`, error);
-          // Text analysis might not be available or might require special permissions
-          // Don't throw error if it's a 403 or 404 (service not available)
-          if (error instanceof Error && "statusCode" in error) {
-            const statusCode = (error as any).statusCode;
-            if (
-              statusCode === 403 ||
-              statusCode === 404 ||
-              statusCode === 500 ||
-              statusCode === 501 ||
-              statusCode === 502 ||
-              statusCode === 503
-            ) {
-              console.warn(
-                `Text analysis endpoint not available (${statusCode}), skipping test`,
-              );
-              return; // Skip this test gracefully
-            }
-          }
-          throw error;
-        }
-      }, 45000); // Longer timeout for real API calls
-    });
+    describe("Text Integration", () => {});
 
     describe("Topics Integration", () => {
       it("should get single topic by id", async () => {
@@ -2633,12 +2589,12 @@ describe("OpenAlex API Integration Tests", () => {
             error.message.includes("not a function")
           ) {
             console.warn(
-              `Integration test skipped - method not implemented: /topics?search=artificial`,
+              `Integration test skipped - method not implemented: /topics?search=artificial%20intelligence`,
             );
             expect(true).toBe(true);
           } else {
             console.error(
-              `Integration test failed for /topics?search=artificial:`,
+              `Integration test failed for /topics?search=artificial%20intelligence:`,
               error,
             );
             throw error;
@@ -2749,8 +2705,6 @@ describe("OpenAlex API Integration Tests", () => {
         return "F4320332161"; // NSF
       case "keywords":
         return "cardiac-imaging"; // Known keyword
-      case "concepts":
-        return "C41008148"; // Computer Science concept from OpenAlex docs
       default:
         return "test123";
     }

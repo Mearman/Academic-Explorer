@@ -191,11 +191,26 @@ export class RelationshipDetectionService {
       return [];
     }
 
-    // Fetch fresh entity data for relationship detection to ensure we have all necessary fields
-    const entityData = await this.fetchMinimalEntityData({
-      entityId: node.entityId,
-      entityType: node.entityType,
-    });
+    // Use existing entity data from the node if it has sufficient fields for relationship detection
+    let entityData: MinimalEntityData | null = null;
+
+    // Check if the node already has entity data with required fields
+    if (
+      node.entityData &&
+      this.hasSufficientEntityData(node.entityData, node.entityType)
+    ) {
+      entityData = this.convertNodeEntityDataToMinimal(
+        node.entityData,
+        node.entityType,
+      );
+    } else {
+      // Fetch fresh entity data for relationship detection to ensure we have all necessary fields
+      entityData = await this.fetchMinimalEntityData({
+        entityId: node.entityId,
+        entityType: node.entityType,
+      });
+    }
+
     if (!entityData) {
       return [];
     }
@@ -219,6 +234,57 @@ export class RelationshipDetectionService {
     store.addEdges(edges);
 
     return edges;
+  }
+
+  /**
+   * Check if existing entity data has sufficient fields for relationship detection
+   */
+  private hasSufficientEntityData(
+    entityData: any,
+    entityType: EntityType,
+  ): boolean {
+    if (!entityData || typeof entityData !== "object") return false;
+
+    switch (entityType) {
+      case "works":
+        return (
+          "authorships" in entityData &&
+          "primary_location" in entityData &&
+          "referenced_works" in entityData
+        );
+      case "authors":
+        return (
+          "affiliations" in entityData ||
+          "last_known_institutions" in entityData
+        );
+      case "sources":
+        return "id" in entityData && "display_name" in entityData;
+      case "institutions":
+        return "lineage" in entityData;
+      default:
+        return "id" in entityData && "display_name" in entityData;
+    }
+  }
+
+  /**
+   * Convert existing node entity data to minimal format for relationship detection
+   */
+  private convertNodeEntityDataToMinimal(
+    entityData: any,
+    entityType: EntityType,
+  ): MinimalEntityData {
+    return {
+      id: entityData.id,
+      entityType,
+      display_name: entityData.display_name,
+      authorships: entityData.authorships,
+      primary_location: entityData.primary_location,
+      referenced_works: entityData.referenced_works,
+      affiliations: entityData.affiliations,
+      last_known_institutions: entityData.last_known_institutions,
+      lineage: entityData.lineage,
+      publisher: entityData.publisher,
+    };
   }
 
   /**

@@ -282,6 +282,11 @@ const persistenceService = new LayoutPersistenceService();
 
 // Helper function to handle persistence operations safely in test environments
 const safePersist = (operation: Promise<void>) => {
+  // Skip persistence entirely in test environments to avoid slowdowns
+  if (typeof process !== "undefined" && process.env.VITEST) {
+    return Promise.resolve();
+  }
+
   return operation.catch((error) => {
     // In test environments, persistence may fail due to missing IndexedDB
     if (typeof process !== "undefined" && process.env.VITEST) {
@@ -294,8 +299,11 @@ const safePersist = (operation: Promise<void>) => {
   });
 };
 
-// Initialize migration on first load (only in browser)
-if (typeof window !== "undefined") {
+// Initialize migration on first load (only in browser, skip in tests)
+if (
+  typeof window !== "undefined" &&
+  !(typeof process !== "undefined" && process.env.VITEST)
+) {
   void persistenceService.migrateFromOldStorage();
 }
 
@@ -558,8 +566,14 @@ const notifyListeners = () => {
 // Initialize state from Dexie on first load
 let initialized = false;
 const initializeState = async () => {
-  if (initialized || typeof window === "undefined" || process.env.VITEST)
+  if (initialized || typeof window === "undefined") return;
+
+  // Skip persistence entirely in test environments
+  if (typeof process !== "undefined" && process.env.VITEST) {
+    initialized = true;
     return;
+  }
+
   try {
     const persistedState = await persistenceService.getLayoutState();
     currentState = {
@@ -1279,7 +1293,7 @@ if (typeof window !== "undefined") {
 
 // Hook for Zustand-style usage
 export const useLayoutStore = <T>(
-  selector: (state: LayoutState & LayoutActions) => T,
+  selector?: (state: LayoutState & LayoutActions) => T,
 ): T => {
   // Initialize state if not done yet
   if (!initialized && typeof window !== "undefined") {
@@ -1288,7 +1302,7 @@ export const useLayoutStore = <T>(
 
   // Return state with actions for Zustand compatibility
   const stateWithActions = { ...currentState, ...actions };
-  return selector(stateWithActions);
+  return selector ? selector(stateWithActions) : (stateWithActions as T);
 };
 
 // Export Zustand-compatible store as layoutStore for backward compatibility

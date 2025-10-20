@@ -4,22 +4,17 @@
  * query parameter building, and response parsing
  */
 
+// Mock fetch BEFORE any imports
+const mockFetch = vi.fn();
+
+// Mock global fetch using Object.defineProperty for Node.js compatibility
+Object.defineProperty(global, "fetch", {
+  writable: true,
+  value: mockFetch,
+});
+
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-vi.mock("./cache/disk", () => {
-  const writeStub = vi.fn(async () => {});
-
-  class MockDiskCacheWriter {
-    writeToCache = writeStub;
-  }
-
-  return {
-    __esModule: true,
-    defaultDiskWriter: new MockDiskCacheWriter(),
-    DiskCacheWriter: MockDiskCacheWriter,
-    writeToDiskCache: writeStub,
-  };
-});
 import {
   OpenAlexBaseClient,
   OpenAlexApiError,
@@ -27,18 +22,12 @@ import {
 } from "./client";
 import type { OpenAlexResponse } from "./types";
 
-// Mock global fetch
-const mockFetch = vi.fn();
-global.fetch = mockFetch;
-
 describe("OpenAlexBaseClient", () => {
   let client: OpenAlexBaseClient;
   let mockResponse: Response;
 
   beforeEach(() => {
     vi.clearAllMocks();
-
-    client = new OpenAlexBaseClient();
 
     // Create a factory function for mock responses to avoid reuse issues
     const createMockResponse = (
@@ -59,6 +48,8 @@ describe("OpenAlexBaseClient", () => {
 
     // Default mock - create a new response for each call
     mockFetch.mockImplementation(() => Promise.resolve(createMockResponse()));
+
+    client = new OpenAlexBaseClient();
   });
 
   describe("Constructor and Configuration", () => {
@@ -618,9 +609,9 @@ describe("OpenAlexBaseClient", () => {
         ),
       );
 
-      await expect(client.get("works", { select: largeSelect })).rejects.toThrow(
-        OpenAlexApiError,
-      );
+      await expect(
+        client.get("works", { select: largeSelect }),
+      ).rejects.toThrow(OpenAlexApiError);
 
       const callUrl = mockFetch.mock.calls[0][0] as string;
       const url = new URL(callUrl);

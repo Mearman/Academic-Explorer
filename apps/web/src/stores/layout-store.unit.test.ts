@@ -5,6 +5,43 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import type { ProviderType } from "@academic-explorer/graph";
 
+// Mock Dexie to prevent IndexedDB operations in tests
+vi.mock("dexie", () => {
+  const mockTable = {
+    put: vi.fn().mockResolvedValue(undefined),
+    toArray: vi.fn().mockResolvedValue([]),
+    get: vi.fn().mockResolvedValue(null),
+    clear: vi.fn().mockResolvedValue(undefined),
+  };
+
+  const DexieMock = vi.fn().mockImplementation(function (
+    this: any,
+    name?: string,
+  ) {
+    this.version = vi.fn().mockImplementation((version: number) => {
+      const versionObj = {
+        stores: vi.fn().mockImplementation((schema: any) => {
+          // Set up the table properties based on the schema
+          Object.keys(schema).forEach((tableName) => {
+            this[tableName] = mockTable;
+          });
+          return this;
+        }),
+      };
+      return versionObj;
+    });
+    return this;
+  });
+
+  return {
+    default: DexieMock,
+    Dexie: DexieMock,
+    type: {
+      Table: vi.fn(),
+    },
+  };
+});
+
 // Mock the section-registry and group-registry modules to avoid import resolution issues
 vi.mock("./section-registry", () => ({
   getDefaultSectionPlacements: vi.fn(() => ({})),

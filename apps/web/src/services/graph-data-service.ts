@@ -1074,17 +1074,6 @@ export class GraphDataService {
     for (let i = 0; i < minimalNodes.length; i++) {
       const node = minimalNodes[i];
 
-      logger.debug(
-        "graph",
-        `Processing minimal node ${String(i + 1)}/${String(minimalNodes.length)}`,
-        {
-          nodeId: node.id,
-          entityType: node.entityType,
-          label: node.label,
-        },
-        "GraphDataService",
-      );
-
       try {
         await this.hydrateNodeToFull(node.id);
         processedCount++;
@@ -1219,25 +1208,9 @@ export class GraphDataService {
   }): Promise<void> {
     const { force = false } = options;
 
-    logger.debug(LOGGER_CATEGORY_GRAPH_DATA, "expandNode function START", {
-      nodeId,
-      force,
-    });
-    logger.error(
-      "graph",
-      "DEBUG: expandNode called with",
-      { nodeId, force },
-      "GraphDataService",
-    );
-    logger.error(
-      "graph",
-      "DEBUG: expandNode START CONSOLE LOG",
-      { nodeId, force },
-      "GraphDataService",
-    );
     logger.debug(
       "graph",
-      "GraphDataService.expandNode called",
+      "Expanding node",
       { nodeId, force },
       "GraphDataService",
     );
@@ -1253,22 +1226,10 @@ export class GraphDataService {
       { nodeId, alreadyExpanded, force },
       "GraphDataService",
     );
-    logger.error(
-      "graph",
-      "DEBUG: alreadyExpanded check",
-      { alreadyExpanded, force, shouldSkip: !force && alreadyExpanded },
-      "GraphDataService",
-    );
     if (!force && alreadyExpanded) {
       logger.debug(
         "graph",
         "Node already expanded, running relationship detection only",
-        { nodeId },
-        "GraphDataService",
-      );
-      logger.error(
-        "graph",
-        "DEBUG: Taking early return path for already expanded node - THIS SHOULD NOT HAPPEN WITH force=true",
         { nodeId },
         "GraphDataService",
       );
@@ -1341,44 +1302,12 @@ export class GraphDataService {
 
     try {
       // Get the node to expand - use "in" operator to avoid ESLint false positive
-      logger.error(
-        "graph",
-        "DEBUG: Checking if node exists in store",
-        {
-          nodeId,
-          exists: nodeId in store.nodes,
-          storeNodeCount: Object.keys(store.nodes).length,
-        },
-        "GraphDataService",
-      );
       if (!(nodeId in store.nodes)) {
-        logger.error(
-          "graph",
-          "DEBUG: Node not in store, returning early",
-          { nodeId },
-          "GraphDataService",
-        );
         return;
       }
       const node = store.nodes[nodeId];
-      logger.error(
-        "graph",
-        "DEBUG: Retrieved node from store",
-        { nodeId, nodeExists: !!node, nodeType: node.entityType },
-        "GraphDataService",
-      );
 
       // Check if entity type is supported
-      logger.error(
-        "graph",
-        "DEBUG: Checking if entity type is supported",
-        {
-          nodeId,
-          entityType: node.entityType,
-          isSupported: EntityFactory.isSupported(node.entityType),
-        },
-        "GraphDataService",
-      );
       if (!EntityFactory.isSupported(node.entityType)) {
         logger.warn(
           "graph",
@@ -1387,12 +1316,6 @@ export class GraphDataService {
             nodeId,
             entityType: node.entityType,
           },
-          "GraphDataService",
-        );
-        logger.error(
-          "graph",
-          "DEBUG: Entity type not supported, returning early",
-          { nodeId, entityType: node.entityType },
           "GraphDataService",
         );
         return;
@@ -1564,76 +1487,27 @@ export class GraphDataService {
         edges: finalEdgesWithRelationships,
       });
 
-      logger.error(
-        "graph",
-        "DEBUG: About to check force condition",
-        { force, nodeId },
-        "GraphDataService",
-      );
       // If force is true, run relationship detection on all nodes in the graph
       // This ensures relationships are detected even when no new nodes are added
-      logger.error(
-        "graph",
-        "FORCE CHECK START",
-        { force, nodeId, typeofForce: typeof force },
-        "GraphDataService",
-      );
       if (force) {
-        logger.error(
-          "graph",
-          "INSIDE FORCE IF BLOCK",
-          { force, nodeId },
-          "GraphDataService",
-        );
-        logger.debug(LOGGER_CATEGORY_GRAPH_DATA, "FORCE BRANCH EXECUTING", {
-          nodeId,
-        });
         const allNodeIds = Object.keys(store.nodes);
-        logger.error(
-          "graph",
-          "FORCE BRANCH NODES",
-          { count: allNodeIds.length, nodeIds: allNodeIds },
-          "GraphDataService",
-        );
         if (allNodeIds.length > 1) {
           // Only run if there are multiple nodes
-          logger.error(
-            "graph",
-            "FORCE BRANCH CONDITION MET",
-            { count: allNodeIds.length },
-            "GraphDataService",
-          );
           logger.debug(
             "graph",
             "Running relationship detection on all nodes due to force=true",
             {
               expandedNodeId: nodeId,
               totalNodeCount: allNodeIds.length,
-              allNodeIds,
             },
             "GraphDataService",
           );
 
           try {
-            logger.error(
-              "graph",
-              "DEBUG: FORCE BRANCH - Calling detectRelationshipsForNodes",
-              { allNodeIds, count: allNodeIds.length },
-              "GraphDataService",
-            );
             const forceDetectedEdges =
               await this.relationshipDetectionService.detectRelationshipsForNodes(
                 allNodeIds,
               );
-            logger.error(
-              "graph",
-              "DEBUG: FORCE BRANCH - detectRelationshipsForNodes returned",
-              {
-                forceDetectedEdgesCount: forceDetectedEdges.length,
-                forceDetectedEdges,
-              },
-              "GraphDataService",
-            );
 
             if (forceDetectedEdges.length > 0) {
               logger.debug(
@@ -1694,19 +1568,10 @@ export class GraphDataService {
       store.markNodeAsLoaded(nodeId);
 
       // Layout is automatically handled by the provider when nodes/edges are added
-
-      logger.debug(LOGGER_CATEGORY_GRAPH_DATA, "About to reach force check", {
-        nodeId,
-        force,
-      });
     } catch (error) {
       // Mark the node as error if expansion failed
       store.markNodeAsError(nodeId);
 
-      logger.debug(LOGGER_CATEGORY_GRAPH_DATA, "expandNode function ERROR", {
-        nodeId,
-        error: error instanceof Error ? error.message : String(error),
-      });
       logError(
         logger,
         "Failed to expand node",
@@ -1714,11 +1579,6 @@ export class GraphDataService {
         "GraphDataService",
         "graph",
       );
-    } finally {
-      logger.debug(LOGGER_CATEGORY_GRAPH_DATA, "expandNode function END", {
-        nodeId,
-        force,
-      });
     }
   }
 
