@@ -20,7 +20,6 @@ export interface ForceSimulationNode extends ForceNode {
   fixed?: boolean;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ForceSimulationLink extends ForceLink {
   // Extends ForceLink for type compatibility in force simulation contexts
   // May be extended in the future with force-specific properties
@@ -401,7 +400,10 @@ export function createForceSimulation(nodes?: ForceNode[]): ForceSimulation {
 
   function forceGetter(name: string): unknown;
   function forceGetter(name: string, force: unknown): ForceSimulation;
-  function forceGetter(name: string, force?: unknown): unknown | ForceSimulation {
+  function forceGetter(
+    name: string,
+    force?: unknown,
+  ): unknown | ForceSimulation {
     if (force !== undefined) {
       forces[name] = force;
       return mockSimulation;
