@@ -86,7 +86,7 @@ export async function generateAllIndexes(
         const entityDir = path.join(staticDataDir, entityType);
         console.log(`Processing ${entityType} directory...`);
 
-        await (options.autoDownload ? generateIndexWithAutoDownload(entityDir, entityType, staticDataDir) : generateIndexForEntityType(entityDir, entityType, true));
+        await (options.autoDownload ? generateIndexWithAutoDownload({ entityDir, entityType, staticDataDir }) : generateIndexForEntityType(entityDir, entityType));
       }),
     );
 
@@ -128,7 +128,7 @@ export async function generateIndexWithAutoDownload({
     console.log(`Auto-download enabled for ${entityType}`);
 
     // First generate index for existing files
-    await generateIndexForEntityType(entityDir, entityType, true);
+    await generateIndexForEntityType(entityDir, entityType);
 
     // TODO: Implement auto-download logic here
     // This would integrate with the OpenAlex client to download missing popular entities
@@ -376,7 +376,7 @@ async function processSubdirectories({
       const subPath = path.join(entityDir, subdir);
       try {
         // Recursively generate index for subdirectory (same entityType)
-        await generateIndexForEntityType(subPath, entityType, recursive);
+        await generateIndexForEntityType(subPath, entityType);
 
         // Read sub-index
         const subIndexPath = path.join(subPath, INDEX_FILENAME);
