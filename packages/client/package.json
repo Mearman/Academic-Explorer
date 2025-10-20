@@ -75,7 +75,7 @@
     "prepublishOnly": "pnpm run clean && pnpm run build && pnpm run test"
   },
   "dependencies": {
-    "@academic-explorer/entities": "workspace:*",
+    "@academic-explorer/types": "workspace:*",
     "@academic-explorer/utils": "workspace:*"
   },
   "devDependencies": {
