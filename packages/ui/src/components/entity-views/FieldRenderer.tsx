@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /**
  * Reusable field rendering components that use the intelligent matcher system
  */

@@ -1,5 +1,4 @@
 import { ActionIcon, Anchor, Badge, Group, Tooltip } from "@mantine/core";
-/* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
 import { IconCopy } from "@tabler/icons-react";
 import React from "react";
 import { validateExternalId } from "@academic-explorer/client";

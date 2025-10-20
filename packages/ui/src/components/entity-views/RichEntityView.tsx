@@ -1,5 +1,4 @@
 import React from "react";
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Card, Title, Badge, Group, Stack } from "@mantine/core";
 import type { OpenAlexEntity } from "@academic-explorer/client";
 import { getEntityType } from "@academic-explorer/client";
