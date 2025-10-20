@@ -1,4 +1,5 @@
 import type { Author } from "@academic-explorer/client";
+import { isAuthor } from "@academic-explorer/types/entities/authors";
 import {
   ActionIcon,
   Anchor,
@@ -28,6 +29,15 @@ export const AuthorCard: React.FC<AuthorCardProps> = ({
   className,
   showAffiliations = true,
 }) => {
+  // Type guard to ensure author is valid
+  if (!isAuthor(author)) {
+    return (
+      <Card className={className}>
+        <Text c="red">Invalid author data</Text>
+      </Card>
+    );
+  }
+
   // Use author data directly (validation should happen at API/client level)
   const validatedAuthor = author;
 

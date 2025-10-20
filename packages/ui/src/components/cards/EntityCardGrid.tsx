@@ -13,12 +13,13 @@ import {
   isAuthor,
   isFunder,
   isInstitution,
+  isOpenAlexEntity,
   isPublisher,
   isSource,
   isTopic,
   isWork,
 } from "@academic-explorer/client";
-import { SimpleGrid } from "@mantine/core";
+import { Card, SimpleGrid, Text } from "@mantine/core";
 import React from "react";
 import { AuthorCard } from "./AuthorCard";
 import { EntityCard } from "./EntityCard";
@@ -54,7 +55,17 @@ export const EntityCardGrid: React.FC<EntityCardGridProps> = ({
   spacing = "md",
 }) => {
   const renderCard = (entity: OpenAlexEntity, index: number) => {
-    const key = entity.id || `entity-${index}`;
+    // Type guard to ensure entity is valid
+    if (!isOpenAlexEntity(entity)) {
+      return (
+        <Card key={`error-${index}`}>
+          <Text c="red">Invalid entity data</Text>
+        </Card>
+      );
+    }
+
+    const validatedEntity = entity;
+    const key = (validatedEntity as { id: string }).id || `entity-${index}`;
 
     // Use type guards with explicit type assertions for UI components
     // TypeScript narrowing doesn't work reliably with union types in this context
@@ -145,13 +156,13 @@ export const EntityCardGrid: React.FC<EntityCardGridProps> = ({
     return (
       <EntityCard
         key={key}
-        id={entity.id}
+        id={validatedEntity.id}
         displayName={
           (entityRecord.display_name as string) ||
           (entityRecord.title as string) ||
           "Unknown Entity"
         }
-        entityType={getEntityTypeFromId(entity.id)}
+        entityType={getEntityTypeFromId(validatedEntity.id)}
         worksCount={entityRecord.works_count as number | undefined}
         citedByCount={entityRecord.cited_by_count as number | undefined}
         description={entityRecord.description as string | undefined}

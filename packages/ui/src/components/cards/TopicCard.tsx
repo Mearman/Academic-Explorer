@@ -1,4 +1,5 @@
 import type { Topic } from "@academic-explorer/client";
+import { isTopic } from "@academic-explorer/types/entities/topics";
 import { ActionIcon, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { IconExternalLink } from "@tabler/icons-react";
 import React from "react";
@@ -20,6 +21,15 @@ export const TopicCard: React.FC<TopicCardProps> = ({
   className,
   showHierarchy = true,
 }) => {
+  // Type guard to ensure topic is valid
+  if (!isTopic(topic)) {
+    return (
+      <Card className={className}>
+        <Text c="red">Invalid topic data</Text>
+      </Card>
+    );
+  }
+
   // Use topic data directly (validation should happen at API/client level)
   const validatedTopic = topic;
 

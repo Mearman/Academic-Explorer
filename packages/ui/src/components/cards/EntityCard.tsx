@@ -89,7 +89,7 @@ export const EntityCard: React.FC<EntityCardProps> = ({
           {/* Header with entity type badge */}
           <Group justify="space-between" wrap="nowrap">
             <Badge color={getEntityColor(entityType)} variant="light">
-              {ENTITY_TYPE_LABELS[entityType]}
+              {ENTITY_TYPE_LABELS[entityType as EntityType]}
             </Badge>
             {href && (
               <ActionIcon
@@ -179,7 +179,7 @@ export const EntityCard: React.FC<EntityCardProps> = ({
         {/* Header with entity type badge */}
         <Group justify="space-between" wrap="nowrap">
           <Badge color={getEntityColor(entityType)} variant="light">
-            {ENTITY_TYPE_LABELS[entityType]}
+            {ENTITY_TYPE_LABELS[entityType as EntityType]}
           </Badge>
           {href && (
             <ActionIcon

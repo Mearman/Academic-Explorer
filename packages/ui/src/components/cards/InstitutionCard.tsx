@@ -1,4 +1,5 @@
 import type { InstitutionEntity } from "@academic-explorer/client";
+import { isInstitution } from "@academic-explorer/types/entities/institutions";
 import { ActionIcon, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { IconExternalLink, IconMapPin } from "@tabler/icons-react";
 import React from "react";
@@ -18,6 +19,15 @@ export const InstitutionCard: React.FC<InstitutionCardProps> = ({
   onNavigate,
   className,
 }) => {
+  // Type guard to ensure institution is valid
+  if (!isInstitution(institution)) {
+    return (
+      <Card className={className}>
+        <Text c="red">Invalid institution data</Text>
+      </Card>
+    );
+  }
+
   // Use institution data directly (validation should happen at API/client level)
   const validatedInstitution = institution;
 

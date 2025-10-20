@@ -1,4 +1,5 @@
 import type { Funder } from "@academic-explorer/client";
+import { isFunder } from "@academic-explorer/types/entities/funders";
 import {
   ActionIcon,
   Anchor,
@@ -26,6 +27,15 @@ export const FunderCard: React.FC<FunderCardProps> = ({
   onNavigate,
   className,
 }) => {
+  // Type guard to ensure funder is valid
+  if (!isFunder(funder)) {
+    return (
+      <Card className={className}>
+        <Text c="red">Invalid funder data</Text>
+      </Card>
+    );
+  }
+
   // Use funder data directly (validation should happen at API/client level)
   const validatedFunder = funder;
 

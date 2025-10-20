@@ -1,4 +1,5 @@
 import type { Source } from "@academic-explorer/client";
+import { isSource } from "@academic-explorer/types/entities/sources";
 import { ActionIcon, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { IconExternalLink, IconLockOpen } from "@tabler/icons-react";
 import React from "react";
@@ -18,6 +19,15 @@ export const SourceCard: React.FC<SourceCardProps> = ({
   onNavigate,
   className,
 }) => {
+  // Type guard to ensure source is valid
+  if (!isSource(source)) {
+    return (
+      <Card className={className}>
+        <Text c="red">Invalid source data</Text>
+      </Card>
+    );
+  }
+
   // Use source data directly (validation should happen at API/client level)
   const validatedSource = source;
 

@@ -1,4 +1,5 @@
 import type { Publisher } from "@academic-explorer/client";
+import { isPublisher } from "@academic-explorer/types/entities/publishers";
 import { ActionIcon, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { IconExternalLink } from "@tabler/icons-react";
 import React from "react";
@@ -18,6 +19,15 @@ export const PublisherCard: React.FC<PublisherCardProps> = ({
   onNavigate,
   className,
 }) => {
+  // Type guard to ensure publisher is valid
+  if (!isPublisher(publisher)) {
+    return (
+      <Card className={className}>
+        <Text c="red">Invalid publisher data</Text>
+      </Card>
+    );
+  }
+
   // Use publisher data directly (validation should happen at API/client level)
   const validatedPublisher = publisher;
 
