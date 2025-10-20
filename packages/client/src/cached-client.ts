@@ -4,7 +4,6 @@
 
 import { logger } from "@academic-explorer/utils/logger";
 import { validateStaticData } from "./internal/type-helpers";
-import { staticDataSchema } from "@academic-explorer/utils/openalex";
 import { OpenAlexBaseClient, type OpenAlexClientConfig } from "./client";
 import type { QueryParams } from "./types";
 import { z } from "zod";

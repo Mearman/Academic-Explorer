@@ -153,7 +153,10 @@ function ComparisonResults() {
       const results = searchBasedOnSTARDataset(dataset, DEFAULT_SEARCH_CONFIG);
 
       // Calculate and log search coverage for debugging
-      const coverage = calculateSearchCoverage(results, dataset);
+      const coverage = calculateSearchCoverage({
+        searchResults: results,
+        dataset,
+      });
       logger.debug(
         "api",
         "Search coverage analysis",

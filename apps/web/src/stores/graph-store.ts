@@ -886,10 +886,11 @@ export const useGraphStore = (() => {
 })();
 
 export const graphStore = {
-  getState: () => graphStoreResult.store.getState(),
+  getState: (): GraphState & GraphActions =>
+    graphStoreResult.useStore.getState() as GraphState & GraphActions,
   setState: (partial: any, replace?: boolean) =>
-    graphStoreResult.store.setState(partial, replace),
-  subscribe: graphStoreResult.store.subscribe,
+    graphStoreResult.useStore.setState(partial, replace),
+  subscribe: graphStoreResult.useStore.subscribe,
 };
 
 // Export actions from the store result

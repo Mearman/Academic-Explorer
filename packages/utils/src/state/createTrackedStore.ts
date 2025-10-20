@@ -36,6 +36,7 @@ interface StoreMethods<T> {
     replace?: boolean,
   ) => void;
   getState: () => T;
+  subscribe: (listener: (state: T, prevState: T) => void) => () => void;
 }
 
 // ============================================================================

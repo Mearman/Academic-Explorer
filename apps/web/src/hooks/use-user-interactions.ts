@@ -509,10 +509,10 @@ export function useUserInteractions(
       }
 
       try {
-        const bookmark = await userInteractionsService.getEntityBookmark(
+        const bookmark = await userInteractionsService.getEntityBookmark({
           entityId,
           entityType,
-        );
+        });
         if (bookmark?.id) {
           await userInteractionsService.updateBookmark({
             bookmarkId: bookmark.id,

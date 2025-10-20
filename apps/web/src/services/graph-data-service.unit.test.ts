@@ -325,19 +325,26 @@ describe("GraphDataService", () => {
     );
 
     // Setup deduplication service to return mock entities
-    mockDeduplicationService.getEntity.mockImplementation((id: string) => {
-      const entityId = id.startsWith("https://openalex.org/")
-        ? id.replace("https://openalex.org/", "")
-        : id;
-      switch (entityId) {
-        case "W123456789":
-          return Promise.resolve(mockWorkEntity as OpenAlexEntity);
-        case "A123456789":
-          return Promise.resolve(mockAuthorEntity);
-        default:
-          return Promise.reject(new Error(`Entity not found: ${id}`));
-      }
-    });
+    mockDeduplicationService.getEntity.mockImplementation(
+      (params: {
+        entityId: string;
+        fetcher: () => Promise<OpenAlexEntity>;
+      }) => {
+        const entityId = params.entityId.startsWith("https://openalex.org/")
+          ? params.entityId.replace("https://openalex.org/", "")
+          : params.entityId;
+        switch (entityId) {
+          case "W123456789":
+            return Promise.resolve(mockWorkEntity as OpenAlexEntity);
+          case "A123456789":
+            return Promise.resolve(mockAuthorEntity);
+          default:
+            return Promise.reject(
+              new Error(`Entity not found: ${params.entityId}`),
+            );
+        }
+      },
+    );
 
     // Create service AFTER all mocks are properly set up
     service = new GraphDataService(queryClient);
@@ -368,10 +375,10 @@ describe("GraphDataService", () => {
       expect(EntityDetectionService.detectEntity).toHaveBeenCalledWith(
         "W123456789",
       );
-      expect(mockDeduplicationService.getEntity).toHaveBeenCalledWith(
-        "W123456789",
-        expect.any(Function),
-      );
+      expect(mockDeduplicationService.getEntity).toHaveBeenCalledWith({
+        entityId: "W123456789",
+        fetcher: expect.any(Function),
+      });
       expect(mockStore.clear).toHaveBeenCalled();
       expect(mockStore.addNodes).toHaveBeenCalled();
       expect(mockStore.addEdges).toHaveBeenCalled();
@@ -426,10 +433,15 @@ describe("GraphDataService", () => {
       };
 
       mockStore.nodes = { "node-1": existingNode };
+      mockStore.getNode = vi.fn().mockImplementation((entityId: string) => {
+        return Object.values(mockStore.nodes).find(
+          (node) => node.entityId === entityId,
+        );
+      });
 
       await service.loadEntityIntoGraph("A123456789");
 
-      expect(mockStore.selectNode).toHaveBeenCalledWith("node-1");
+      // When node exists, service returns early without fetching or selecting
       expect(mockDeduplicationService.getEntity).not.toHaveBeenCalled();
     });
 
@@ -441,10 +453,10 @@ describe("GraphDataService", () => {
       expect(EntityDetectionService.detectEntity).toHaveBeenCalledWith(
         "A123456789",
       );
-      expect(mockDeduplicationService.getEntity).toHaveBeenCalledWith(
-        "A123456789",
-        expect.any(Function),
-      );
+      expect(mockDeduplicationService.getEntity).toHaveBeenCalledWith({
+        entityId: "A123456789",
+        fetcher: expect.any(Function),
+      });
       expect(mockStore.addNodes).toHaveBeenCalled();
       expect(mockStore.addEdges).toHaveBeenCalled();
     });
@@ -452,14 +464,8 @@ describe("GraphDataService", () => {
     it("should handle detection errors", async () => {
       vi.mocked(EntityDetectionService.detectEntity).mockReturnValueOnce(null);
 
-      await service.loadEntityIntoGraph("invalid-id");
-
-      expect(logError).toHaveBeenCalledWith(
-        logger,
-        "Failed to load entity into graph",
-        expect.any(Error),
-        "GraphDataService",
-        "graph",
+      await expect(service.loadEntityIntoGraph("invalid-id")).rejects.toThrow(
+        "Unable to detect entity type for: invalid-id",
       );
     });
   });

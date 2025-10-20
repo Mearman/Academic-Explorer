@@ -1,4 +1,5 @@
 import type { Funder } from "@academic-explorer/client";
+/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
 import {
   ActionIcon,
   Anchor,

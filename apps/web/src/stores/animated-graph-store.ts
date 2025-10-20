@@ -312,7 +312,7 @@ export const useAnimatedGraphStore = createStore({
 
   // Integration with base graph store
   syncWithGraphStore: function () {
-    const nodes = Object.values(graphStore.nodes).filter(
+    const nodes = Object.values(graphStore.getState().nodes).filter(
       (node): node is NonNullable<typeof node> => Boolean(node),
     );
 
@@ -336,8 +336,8 @@ export const useAnimatedGraphStore = createStore({
     logger.debug("graph", "Synced animated store with graph store", {
       nodeCount: nodes.length,
       positionCount: positions.length,
-      layoutType: graphStore.currentLayout.type,
-      pinnedNodeCount: Object.keys(graphStore.pinnedNodes).length,
+      layoutType: graphStore.getState().currentLayout.type,
+      pinnedNodeCount: Object.keys(graphStore.getState().pinnedNodes).length,
     });
   },
 
@@ -352,7 +352,7 @@ export const useAnimatedGraphStore = createStore({
 
     // Update graph store nodes with current positions
     currentPositions.forEach((pos) => {
-      graphStore.updateNode(pos.id, {
+      graphStore.getState().updateNode(pos.id, {
         x: pos.x,
         y: pos.y,
       });

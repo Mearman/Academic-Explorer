@@ -8,21 +8,21 @@ export { GroupingApi } from "./grouping";
 export { StatisticsApi } from "./statistics";
 
 export {
-	QueryBuilder,
-	createWorksQuery,
-	createAuthorsQuery,
-	createSourcesQuery,
-	createInstitutionsQuery,
-	createTopicsQuery,
-	createPublishersQuery,
-	createFundersQuery,
-	buildFilterString,
-	buildSortString,
-	buildSelectString,
-	validateDateRange,
-	escapeFilterValue,
-	SORT_FIELDS,
-	SELECT_PRESETS
+  QueryBuilder,
+  createWorksQuery,
+  createAuthorsQuery,
+  createSourcesQuery,
+  createInstitutionsQuery,
+  createTopicsQuery,
+  createPublishersQuery,
+  createFundersQuery,
+  buildFilterString,
+  buildSortString,
+  buildSelectString,
+  validateDateRange,
+  escapeFilterValue,
+  SORT_FIELDS,
+  SELECT_PRESETS,
 } from "./query-builder";
 
 // Re-export transformers
@@ -33,19 +33,15 @@ export * from "./hydration-helpers";
 
 // Re-export ID resolver utilities
 export {
-	IdResolver,
-	createIdResolver,
-	isValidDOI,
-	isValidORCID,
-	isValidROR,
-	isValidISSN,
-	isValidPMID,
-	isValidWikidata,
-	isValidOpenAlex,
-	validateExternalId,
-	normalizeExternalId,
-	normalizeToUrl,
-	type ExternalIdType,
-	type IdValidationResult,
-	type IdValidationConfig
+  IdResolver,
+  createIdResolver,
+  isValidPMID,
+  isValidWikidata,
+  isValidOpenAlex,
+  validateExternalId,
+  normalizeExternalId,
+  normalizeToUrl,
+  type ExternalIdType,
+  type IdValidationResult,
+  type IdValidationConfig,
 } from "./id-resolver";

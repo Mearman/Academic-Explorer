@@ -87,7 +87,6 @@ export {
   institutionSchema,
   openAlexResponseSchema,
   apiResponseSchema,
-  staticDataSchema,
   workResponseSchema,
   authorResponseSchema,
   institutionResponseSchema,
@@ -99,9 +98,5 @@ export {
   extractPropertyValue,
   isOpenAlexId,
   isValidDateString,
-  isValidDOI,
-  isValidORCID,
-  isValidROR,
-  isValidISSN,
   isValidWikidataId,
 } from "@academic-explorer/utils/openalex";

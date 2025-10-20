@@ -6,7 +6,6 @@
 import { MemoryCache } from "@academic-explorer/utils/cache";
 import { logger } from "@academic-explorer/utils/logger";
 import { validateStaticData } from "../../internal/type-helpers";
-import { staticDataSchema } from "@academic-explorer/utils/openalex";
 import type { OpenAlexEntity, OpenAlexResponse } from "../../types";
 
 /**

@@ -26,80 +26,54 @@ export function isWork(entity: unknown): entity is Work {
   );
 }
 
-export function isAuthor(entity: unknown): entity is Author {
-  if (typeof entity !== "object" || entity === null) return false;
-  const obj = entity;
+export function isAuthor(entity: OpenAlexEntity): entity is Author {
   return (
-    "id" in obj &&
-    typeof obj.id === "string" &&
-    (obj.id.toLowerCase().startsWith("a") ||
-      obj.id.toLowerCase().startsWith("https://openalex.org/a"))
+    entity.id.toLowerCase().startsWith("a") ||
+    entity.id.toLowerCase().startsWith("https://openalex.org/a")
   );
 }
 
-export function isSource(entity: unknown): entity is Source {
-  if (typeof entity !== "object" || entity === null) return false;
-  const obj = entity;
+export function isSource(entity: OpenAlexEntity): entity is Source {
   return (
-    "id" in obj &&
-    typeof obj.id === "string" &&
-    (obj.id.toLowerCase().startsWith("s") ||
-      obj.id.toLowerCase().startsWith("https://openalex.org/s"))
+    entity.id.toLowerCase().startsWith("s") ||
+    entity.id.toLowerCase().startsWith("https://openalex.org/s")
   );
 }
 
-export function isInstitution(entity: unknown): entity is InstitutionEntity {
-  if (typeof entity !== "object" || entity === null) return false;
-  const obj = entity;
+export function isInstitution(
+  entity: OpenAlexEntity,
+): entity is InstitutionEntity {
   return (
-    "id" in obj &&
-    typeof obj.id === "string" &&
-    (obj.id.toLowerCase().startsWith("i") ||
-      obj.id.toLowerCase().startsWith("https://openalex.org/i"))
+    entity.id.toLowerCase().startsWith("i") ||
+    entity.id.toLowerCase().startsWith("https://openalex.org/i")
   );
 }
 
-export function isTopic(entity: unknown): entity is Topic {
-  if (typeof entity !== "object" || entity === null) return false;
-  const obj = entity;
+export function isTopic(entity: OpenAlexEntity): entity is Topic {
   return (
-    "id" in obj &&
-    typeof obj.id === "string" &&
-    (obj.id.toLowerCase().startsWith("t") ||
-      obj.id.toLowerCase().startsWith("https://openalex.org/t"))
+    entity.id.toLowerCase().startsWith("t") ||
+    entity.id.toLowerCase().startsWith("https://openalex.org/t")
   );
 }
 
-export function isConcept(entity: unknown): entity is Topic {
-  if (typeof entity !== "object" || entity === null) return false;
-  const obj = entity;
+export function isConcept(entity: OpenAlexEntity): entity is Topic {
   return (
-    "id" in obj &&
-    typeof obj.id === "string" &&
-    (obj.id.toLowerCase().startsWith("c") ||
-      obj.id.toLowerCase().startsWith("https://openalex.org/c"))
+    entity.id.toLowerCase().startsWith("c") ||
+    entity.id.toLowerCase().startsWith("https://openalex.org/c")
   );
 }
 
-export function isPublisher(entity: unknown): entity is Publisher {
-  if (typeof entity !== "object" || entity === null) return false;
-  const obj = entity;
+export function isPublisher(entity: OpenAlexEntity): entity is Publisher {
   return (
-    "id" in obj &&
-    typeof obj.id === "string" &&
-    (obj.id.toLowerCase().startsWith("p") ||
-      obj.id.toLowerCase().startsWith("https://openalex.org/p"))
+    entity.id.toLowerCase().startsWith("p") ||
+    entity.id.toLowerCase().startsWith("https://openalex.org/p")
   );
 }
 
-export function isFunder(entity: unknown): entity is Funder {
-  if (typeof entity !== "object" || entity === null) return false;
-  const obj = entity;
+export function isFunder(entity: OpenAlexEntity): entity is Funder {
   return (
-    "id" in obj &&
-    typeof obj.id === "string" &&
-    (obj.id.toLowerCase().startsWith("f") ||
-      obj.id.toLowerCase().startsWith("https://openalex.org/f"))
+    entity.id.toLowerCase().startsWith("f") ||
+    entity.id.toLowerCase().startsWith("https://openalex.org/f")
   );
 }
 

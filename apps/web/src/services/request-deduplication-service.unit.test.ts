@@ -30,6 +30,13 @@ vi.mock("@/stores/network-activity-store", () => ({
     completeRequest: vi.fn(),
     failRequest: vi.fn(),
   },
+  networkActivityStore: {
+    addRequest: vi.fn(),
+    updateRequest: vi.fn(),
+    removeRequest: vi.fn(),
+    completeRequest: vi.fn(),
+    failRequest: vi.fn(),
+  },
 }));
 
 describe("RequestDeduplicationService", () => {

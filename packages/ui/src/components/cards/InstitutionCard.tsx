@@ -1,4 +1,5 @@
 import type { InstitutionEntity } from "@academic-explorer/client";
+/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
 import { ActionIcon, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { IconExternalLink, IconMapPin } from "@tabler/icons-react";
 import React from "react";

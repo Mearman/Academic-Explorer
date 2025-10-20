@@ -263,9 +263,9 @@ export class GraphDataService {
       // Fetch entity with deduplication service and cache-first strategy
       const apiEntityId = detection.normalizedId;
 
-      const entity = await this.deduplicationService.getEntity(
-        apiEntityId,
-        async () => {
+      const entity = await this.deduplicationService.getEntity({
+        entityId: apiEntityId,
+        fetcher: async () => {
           const result = await fetchEntityViaPipeline({
             entityType: detection.entityType,
             entityId: apiEntityId,
@@ -275,7 +275,7 @@ export class GraphDataService {
           }
           return result;
         },
-      );
+      });
 
       // Entity successfully fetched
 
@@ -389,12 +389,48 @@ export class GraphDataService {
    * Used for progressive graph building when clicking on nodes
    */
   async loadEntityIntoGraph(entityId: string): Promise<void> {
-    logger.debug(
-      "graph",
-      "loadEntityIntoGraph called",
-      { entityId, entityType: typeof entityId },
-      "GraphDataService",
-    );
+    // Check if entity is already in graph
+    const existingNode = this.getNode(entityId);
+
+    if (existingNode) {
+      // Node will be hydrated on-demand when specific fields are needed
+
+      logger.debug(
+        "graph",
+        "Existing node selected",
+        {
+          nodeId: existingNode.id,
+          entityId,
+        },
+        "GraphDataService",
+      );
+
+      return;
+    }
+
+    // Detect entity type
+    const detection = EntityDetectionService.detectEntity(entityId);
+
+    if (!detection?.entityType) {
+      throw new Error(`Unable to detect entity type for: ${entityId}`);
+    }
+
+    // Fetch entity with deduplication service and cache-first strategy
+    const apiEntityId = detection.normalizedId;
+
+    const entity = await this.deduplicationService.getEntity({
+      entityId: apiEntityId,
+      fetcher: async () => {
+        const result = await fetchEntityViaPipeline({
+          entityType: detection.entityType,
+          entityId: apiEntityId,
+        });
+        if (!result) {
+          throw new Error(`Entity not found: ${apiEntityId}`);
+        }
+        return result;
+      },
+    });
 
     const store = graphStore.getState();
 
@@ -433,9 +469,9 @@ export class GraphDataService {
       // Fetch entity with deduplication service and cache-first strategy
       const apiEntityId = detection.normalizedId;
 
-      const entity = await this.deduplicationService.getEntity(
-        apiEntityId,
-        async () => {
+      const entity = await this.deduplicationService.getEntity({
+        entityId: apiEntityId,
+        fetcher: async () => {
           const result = await fetchEntityViaPipeline({
             entityType: detection.entityType,
             entityId: apiEntityId,
@@ -445,7 +481,7 @@ export class GraphDataService {
           }
           return result;
         },
-      );
+      });
 
       // Entity successfully fetched
 
@@ -544,9 +580,9 @@ export class GraphDataService {
       // Fetch entity with deduplication service and cache-first strategy
       const apiEntityId = detection.normalizedId;
 
-      const entity = await this.deduplicationService.getEntity(
-        apiEntityId,
-        async () => {
+      const entity = await this.deduplicationService.getEntity({
+        entityId: apiEntityId,
+        fetcher: async () => {
           const result = await fetchEntityViaPipeline({
             entityType: detection.entityType,
             entityId: apiEntityId,
@@ -556,7 +592,7 @@ export class GraphDataService {
           }
           return result;
         },
-      );
+      });
 
       // Entity successfully fetched
 
@@ -762,17 +798,17 @@ export class GraphDataService {
           "GraphDataService",
         );
 
-        const entity = await this.deduplicationService.getEntity(
-          node.entityId,
-          () => entityInstance.fetchWithMetadata(node.entityId),
-        );
+        const entity = await this.deduplicationService.getEntity({
+          entityId: node.entityId,
+          fetcher: () => entityInstance.fetchWithMetadata(node.entityId),
+        });
 
         // Extract metadata-level data from the entity
-        const fullNodeData = this.createNodeFromEntity(
+        const fullNodeData = this.createNodeFromEntity({
           entity,
-          node.entityType,
-          node.entityId,
-        );
+          entityType: node.entityType,
+          fallbackId: node.entityId,
+        });
 
         // Update the node with full metadata
         store.markNodeAsLoaded(nodeId);
@@ -800,19 +836,19 @@ export class GraphDataService {
           "GraphDataService",
         );
 
-        const entity = await this.deduplicationService.getEntity(
-          node.entityId,
-          async () => {
+        const entity = await this.deduplicationService.getEntity({
+          entityId: apiEntityId,
+          fetcher: async () => {
             const result = await fetchEntityViaPipeline({
-              entityType: node.entityType,
-              entityId: node.entityId,
+              entityType: detection.entityType,
+              entityId: apiEntityId,
             });
             if (!result) {
-              throw new Error(`Entity not found: ${node.entityId}`);
+              throw new Error(`Entity not found: ${apiEntityId}`);
             }
             return result;
           },
-        );
+        });
 
         // Extract full data from the entity
         const fullNodeData = this.createNodeFromEntity({
@@ -1207,7 +1243,7 @@ export class GraphDataService {
 
       // Even if node is already expanded, run relationship detection
       // in case new nodes were added since last expansion
-      const store = graphStore.getState();
+      const store = graphStore.getState() as GraphState & GraphActions;
       const allNodeIds = Object.keys(store.nodes);
 
       if (allNodeIds.length > 1) {
@@ -1867,9 +1903,11 @@ export class GraphDataService {
       const fields = minimalFieldsMap[entityType] ?? ["id", "display_name"];
 
       // Use the specific entity method with field selection for minimal data
-      const entity = await this.deduplicationService.getEntity(entityId, () =>
-        this.fetchEntityWithFields({ entityId, entityType, fields }),
-      );
+      const entity = await this.deduplicationService.getEntity({
+        entityId,
+        fetcher: () =>
+          this.fetchEntityWithFields({ entityId, entityType, fields }),
+      });
 
       // Create node with minimal data using entityData
       return {
@@ -1971,9 +2009,9 @@ export class GraphDataService {
       store.markNodeAsLoading(nodeId);
 
       // Fetch full entity data without field restrictions
-      const fullEntity = await this.deduplicationService.getEntity(
-        node.entityId,
-        async () => {
+      const fullEntity = await this.deduplicationService.getEntity({
+        entityId: node.entityId,
+        fetcher: async () => {
           const result = await fetchEntityViaPipeline({
             entityType: node.entityType,
             entityId: node.entityId,
@@ -1983,7 +2021,7 @@ export class GraphDataService {
           }
           return result;
         },
-      );
+      });
 
       // Create updated node data WITHOUT creating related entities (hydration only)
       // This prevents automatic expansion of related entities during single-click hydration
