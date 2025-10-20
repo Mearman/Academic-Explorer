@@ -178,7 +178,7 @@ export class RelationshipDetectionService {
    */
   async detectRelationshipsForNode(nodeId: string): Promise<GraphEdge[]> {
     const store = graphStore.getState();
-    const existingNodes = Object.values(store.nodes);
+    const existingNodes = Object.values(store.nodes) as GraphNode[];
 
     // Get the node from the store
     const node = store.getNode(nodeId);
@@ -262,9 +262,11 @@ export class RelationshipDetectionService {
       // Deduplication service is always initialized in constructor
 
       // Fetch entity with minimal fields using deduplication service
-      const entity = await this.deduplicationService.getEntity(entityId, () =>
-        this.fetchEntityWithSelect({ entityId, entityType, selectFields }),
-      );
+      const entity = await this.deduplicationService.getEntity({
+        entityId,
+        fetcher: () =>
+          this.fetchEntityWithSelect({ entityId, entityType, selectFields }),
+      });
 
       logger.debug(
         "graph",
@@ -658,7 +660,7 @@ export class RelationshipDetectionService {
     if (!referencedWorks) {
       const store = graphStore.getState();
       const graphNode = Object.values(store.nodes).find(
-        (node) => node.entityId === workData.id,
+        (node: GraphNode) => node.entityId === workData.id,
       );
       const referencedWorksFromNode =
         graphNode?.entityData &&

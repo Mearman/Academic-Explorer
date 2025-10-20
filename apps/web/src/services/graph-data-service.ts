@@ -4,7 +4,7 @@
  * Now integrated with TanStack Query for persistent caching
  */
 
-import { useExpansionSettingsStore } from "../stores/expansion-settings-store";
+import { expansionSettingsActions } from "../stores/expansion-settings-store";
 import { graphStore } from "../stores/graph-store";
 import { useRepositoryStore } from "../stores/repository-store";
 import type {
@@ -390,7 +390,8 @@ export class GraphDataService {
    */
   async loadEntityIntoGraph(entityId: string): Promise<void> {
     // Check if entity is already in graph
-    const existingNode = this.getNode(entityId);
+    const store = graphStore.getState();
+    const existingNode = store.getNode?.(entityId);
 
     if (existingNode) {
       // Node will be hydrated on-demand when specific fields are needed
@@ -432,17 +433,17 @@ export class GraphDataService {
       },
     });
 
-    const store = graphStore.getState();
+    const currentStore = graphStore.getState();
 
     try {
       // Check if the node already exists (regardless of hydration level)
-      const existingNode = Object.values(store.nodes).find(
+      const existingNode = Object.values(currentStore.nodes).find(
         (node) => node.entityId === entityId,
       );
 
       if (existingNode) {
         // Node already exists, select it and optionally hydrate if needed
-        store.selectNode(existingNode.id);
+        currentStore.selectNode(existingNode.id);
 
         // Node will be hydrated on-demand when specific fields are needed
 
@@ -492,13 +493,13 @@ export class GraphDataService {
       });
 
       // Add new data to existing graph (do NOT clear)
-      store.addNodes(nodes);
-      store.addEdges(edges);
+      currentStore.addNodes(nodes);
+      currentStore.addEdges(edges);
 
       // Select the newly added primary node
       const primaryNodeId = nodes[0]?.id;
       if (primaryNodeId) {
-        store.selectNode(primaryNodeId);
+        currentStore.selectNode(primaryNodeId);
 
         // Detect relationships for newly added node
         this.relationshipDetectionService
@@ -526,17 +527,6 @@ export class GraphDataService {
                 edges: allEdges,
               });
             }
-          })
-          .then(() => {
-            const currentStore = graphStore.getState();
-            currentStore.addEdges(detectedEdges);
-
-            // Update cached edges
-            const allEdges = Object.values(currentStore.edges);
-            setCachedGraphEdges({
-              queryClient: this.queryClient,
-              edges: allEdges,
-            });
           })
           .catch((error: unknown) => {
             logError(
@@ -567,7 +557,7 @@ export class GraphDataService {
    * Used for repository mode when building a collection before adding to graph
    */
   async loadEntityIntoRepository(entityId: string): Promise<void> {
-    const repositoryStore = useRepositoryStore.getState();
+    const repositoryStore = useRepositoryStore();
 
     try {
       // Detect entity type
@@ -836,6 +826,15 @@ export class GraphDataService {
           "GraphDataService",
         );
 
+        // Detect entity type and get normalized ID
+        const detection = EntityDetectionService.detectEntity(node.entityId);
+
+        if (!detection?.entityType) {
+          throw new Error(`Unable to detect entity type for: ${node.entityId}`);
+        }
+
+        const apiEntityId = detection.normalizedId;
+
         const entity = await this.deduplicationService.getEntity({
           entityId: apiEntityId,
           fetcher: async () => {
@@ -961,11 +960,11 @@ export class GraphDataService {
           "GraphDataService",
         );
 
-        const currentStore = useGraphStore.getState();
+        const currentStore = graphStore.getState();
         currentStore.addEdges(allDetectedEdges);
 
         // Update cached edges
-        const updatedEdges = Object.values(currentStore.edges);
+        const updatedEdges = Object.values(currentStore.edges) as GraphEdge[];
         setCachedGraphEdges({
           queryClient: this.queryClient,
           edges: updatedEdges,
@@ -1243,7 +1242,7 @@ export class GraphDataService {
 
       // Even if node is already expanded, run relationship detection
       // in case new nodes were added since last expansion
-      const store = graphStore.getState() as GraphState & GraphActions;
+      const store = graphStore.getState();
       const allNodeIds = Object.keys(store.nodes);
 
       if (allNodeIds.length > 1) {
@@ -1387,8 +1386,6 @@ export class GraphDataService {
       // Create entity instance using the factory
       const entity = EntityFactory.create(node.entityType, cachedOpenAlex);
 
-      // Get expansion settings for this entity type
-      const expansionSettingsStore = useExpansionSettingsStore.getState();
       // Safely convert entity type to expansion target with type guard
       if (!isEntityType(node.entityType)) {
         logger.error(
@@ -1401,7 +1398,7 @@ export class GraphDataService {
       }
       const expansionTarget = node.entityType; // Already validated as EntityType, which extends ExpansionTarget
       const expansionSettings =
-        expansionSettingsStore.getSettings(expansionTarget);
+        expansionSettingsActions.getSettings(expansionTarget);
 
       // Log expansion settings usage
       logger.debug(
@@ -1819,7 +1816,7 @@ export class GraphDataService {
       // No need for explicit layout application here
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Search failed";
+        error instanceof Error ? error.message : ERROR_MESSAGE_UNKNOWN;
       store.setError(errorMessage);
       logError(
         logger,
@@ -2026,7 +2023,7 @@ export class GraphDataService {
       // Create updated node data WITHOUT creating related entities (hydration only)
       // This prevents automatic expansion of related entities during single-click hydration
       const fullNodeData = this.createNodeFromEntity({
-        entity,
+        entity: fullEntity,
         entityType: node.entityType,
         fallbackId: node.entityId,
       });
