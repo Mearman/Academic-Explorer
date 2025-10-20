@@ -306,7 +306,12 @@ class LocalDiskCacheTier implements CacheTierInterface {
 class GitHubPagesCacheTier implements CacheTierInterface {
   private stats = { requests: 0, hits: 0, totalLoadTime: 0 };
   private readonly LOG_PREFIX = "github-pages-cache";
-  private baseUrl = "https://username.github.io/academic-explorer-cache/"; // Configure as needed
+  private baseUrl: string;
+
+  constructor(baseUrl?: string) {
+    this.baseUrl =
+      baseUrl || "https://username.github.io/academic-explorer-cache/";
+  }
   // Track recent failures per URL to avoid repeated bursts against remote
   private recentFailures: Map<
     string,
@@ -575,14 +580,26 @@ class StaticDataProvider {
   private localDiskCacheTier: LocalDiskCacheTier;
   private gitHubPagesCacheTier: GitHubPagesCacheTier;
   private environment: Environment;
-  private globalStats: CacheStatistics;
+  private globalStats!: CacheStatistics;
 
   constructor() {
     this.memoryCacheTier = new MemoryCacheTier();
     this.localDiskCacheTier = new LocalDiskCacheTier();
     this.gitHubPagesCacheTier = new GitHubPagesCacheTier();
     this.environment = this.detectEnvironment();
+    this.initializeStats();
+  }
 
+  configure(config: { gitHubPagesBaseUrl?: string }) {
+    if (config.gitHubPagesBaseUrl) {
+      // Re-create the GitHub Pages tier with new URL
+      this.gitHubPagesCacheTier = new GitHubPagesCacheTier(
+        config.gitHubPagesBaseUrl,
+      );
+    }
+  }
+
+  private initializeStats() {
     this.globalStats = {
       totalRequests: 0,
       hits: 0,

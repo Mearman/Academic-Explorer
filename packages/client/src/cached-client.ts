@@ -68,7 +68,9 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
 
     // Configure static cache URLs if provided
     if (config.staticCacheGitHubPagesUrl) {
-      // TODO: Configure GitHub Pages URL in static data provider
+      staticDataProvider.configure({
+        gitHubPagesBaseUrl: config.staticCacheGitHubPagesUrl,
+      });
       logger.debug("client", "Static cache GitHub Pages URL configured", {
         url: config.staticCacheGitHubPagesUrl,
       });

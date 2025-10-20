@@ -17,16 +17,12 @@ import { access, mkdir, readdir, readFile, stat, writeFile } from "fs/promises";
 import { dirname, join, resolve } from "path";
 import { fileURLToPath } from "url";
 import { z } from "zod";
-// TODO: Re-enable when openalex-client package build issues are resolved
-// import {
-//   CachedOpenAlexClient,
-//   type EntityType,
-//   type QueryParams
-// } from "@academic-explorer/openalex-client";
+import {
+  CachedOpenAlexClient,
+  type EntityType,
+  type QueryParams,
+} from "@academic-explorer/client";
 
-// Temporary types until package is fixed - currently unused but kept for future compatibility
-// type _EntityType = "works" | "authors" | "sources" | "institutions" | "topics" | "concepts" | "publishers" | "funders";
-// type _QueryParams = Record<string, unknown>;
 import type { StaticEntityType } from "./entity-detection.js";
 
 // Simple hash function for content hashing
@@ -339,14 +335,13 @@ function getStaticDataPath(): string {
 export class OpenAlexCLI {
   private static instance: OpenAlexCLI | undefined;
   private dataPath: string;
-  // TODO: Re-enable when openalex-client package is fixed
-  // private cachedClient: CachedOpenAlexClient;
+  private cachedClient: CachedOpenAlexClient;
   // defaultFilenameFormat removed - now using URL encoding only
 
   constructor(dataPath?: string) {
     this.dataPath = dataPath ?? getStaticDataPath();
-    // TODO: Re-enable when openalex-client package is fixed
-    // this.cachedClient = new CachedOpenAlexClient();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    this.cachedClient = new CachedOpenAlexClient();
   }
 
   /**
@@ -1769,13 +1764,10 @@ export class OpenAlexCLI {
   /**
    * Get synthetic cache statistics
    */
-  getCacheStats(): Promise<CacheStats> {
+  async getCacheStats(): Promise<CacheStats> {
     try {
-      // TODO: Re-enable when openalex-client package is fixed
-      // const stats = await this.cachedClient.getCacheStats();
-
-      logger.warn(LOG_CONTEXT_GENERAL, CACHE_STATS_NOT_AVAILABLE_MESSAGE);
-      return Promise.resolve({ enabled: false });
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      return await this.cachedClient.getCacheStats();
     } catch (error) {
       logError(
         logger,
@@ -1875,15 +1867,10 @@ export class OpenAlexCLI {
   /**
    * Clear synthetic cache data
    */
-  clearSyntheticCache(): Promise<void> {
+  async clearSyntheticCache(): Promise<void> {
     try {
-      // TODO: Re-enable when openalex-client package is fixed
-      // await this.cachedClient.clearCache();
-      logger.warn(
-        LOG_CONTEXT_GENERAL,
-        SYNTHETIC_CACHE_CLEAR_NOT_AVAILABLE_MESSAGE,
-      );
-      return Promise.resolve();
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      await this.cachedClient.clearCache();
     } catch (error) {
       logError(
         logger,
@@ -2102,8 +2089,8 @@ export class OpenAlexCLI {
     display_name: string;
     [key: string]: unknown;
   } | null> {
-    // TODO: Re-enable when openalex-client package is fixed
-    const entity: unknown = null; // Placeholder until client is fixed
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    const entity = await this.cachedClient.getEntity(_entityData.entityId);
 
     if (this.isValidEntityForCaching(entity)) {
       return this.normalizeEntityForCaching(entity);

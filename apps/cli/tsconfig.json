@@ -23,7 +23,8 @@
     "src/**/*",
     "eslint.config.ts",
     "vitest.config.ts",
-    "../../vitest.config.base.ts"
+    "../../vitest.config.base.ts",
+    "../../eslint.config.base.ts"
   ],
   "exclude": ["dist", "node_modules"],
   "references": [

@@ -5,8 +5,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 // Test constants
-const TEST_AUTHOR_ID_1 = "${TEST_AUTHOR_ID_1}";
-const TEST_AUTHOR_ID_2 = "${TEST_AUTHOR_ID_2}";
+const TEST_AUTHOR_ID_1 = "A123456789";
+const TEST_AUTHOR_ID_2 = "A987654321";
 
 // Helper class for Node.js-style errors in tests
 class NodeJSError extends Error {
@@ -57,17 +57,17 @@ vi.mock("fs/promises", async (importOriginal) => {
       // Return mock data for specific expected paths
       const pathStr = path;
 
-      if (pathStr.includes("${TEST_AUTHOR_ID_2}.json")) {
+      if (pathStr.includes("A987654321.json")) {
         return JSON.stringify({
-          id: "https://openalex.org/${TEST_AUTHOR_ID_2}",
+          id: "https://openalex.org/A987654321",
           display_name: "Test Author Two",
           works_count: 42,
         });
       }
 
-      if (pathStr.includes("${TEST_AUTHOR_ID_1}.json")) {
+      if (pathStr.includes("A123456789.json")) {
         return JSON.stringify({
-          id: "https://openalex.org/${TEST_AUTHOR_ID_1}",
+          id: "https://openalex.org/A123456789",
           display_name: "Test Author One",
           works_count: 10,
         });
@@ -75,13 +75,13 @@ vi.mock("fs/promises", async (importOriginal) => {
 
       if (pathStr.includes("index.json")) {
         return JSON.stringify({
-          "https://api.openalex.org/authors/${TEST_AUTHOR_ID_1}": {
-            $ref: "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2F${TEST_AUTHOR_ID_1}.json",
+          "https://api.openalex.org/authors/A123456789": {
+            $ref: "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA123456789.json",
             lastModified: "2025-09-19T16:29:25.530Z",
             contentHash: "2fbeeeb9a36bc11f",
           },
-          "https://api.openalex.org/authors/${TEST_AUTHOR_ID_2}": {
-            $ref: "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2F${TEST_AUTHOR_ID_2}.json",
+          "https://api.openalex.org/authors/A987654321": {
+            $ref: "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA987654321.json",
             lastModified: "2025-09-19T16:29:25.658Z",
             contentHash: "5829e4f7cb7a1382",
           },
@@ -102,8 +102,8 @@ vi.mock("fs/promises", async (importOriginal) => {
 
       // Allow access to expected test files
       if (
-        pathStr.includes("${TEST_AUTHOR_ID_2}.json") ||
-        pathStr.includes("${TEST_AUTHOR_ID_1}.json") ||
+        pathStr.includes("A987654321.json") ||
+        pathStr.includes("A123456789.json") ||
         pathStr.includes("index.json")
       ) {
         return undefined; // Success
@@ -129,8 +129,8 @@ vi.mock("fs/promises", async (importOriginal) => {
 
       // Allow stat for test files
       if (
-        pathStr.includes("${TEST_AUTHOR_ID_2}.json") ||
-        pathStr.includes("${TEST_AUTHOR_ID_1}.json") ||
+        pathStr.includes("A987654321.json") ||
+        pathStr.includes("A123456789.json") ||
         pathStr.includes("index.json")
       ) {
         return {
@@ -200,13 +200,13 @@ describe("OpenAlexCLI", () => {
 
     // Set up mock data for consistent tests
     const mockAuthorsIndex = {
-      "https://api.openalex.org/authors/${TEST_AUTHOR_ID_1}": {
-        $ref: "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2F${TEST_AUTHOR_ID_1}.json",
+      "https://api.openalex.org/authors/A123456789": {
+        $ref: "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA123456789.json",
         lastModified: "2025-09-19T16:29:25.530Z",
         contentHash: "2fbeeeb9a36bc11f",
       },
-      "https://api.openalex.org/authors/${TEST_AUTHOR_ID_2}": {
-        $ref: "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2F${TEST_AUTHOR_ID_2}.json",
+      "https://api.openalex.org/authors/A987654321": {
+        $ref: "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA987654321.json",
         lastModified: "2025-09-19T16:29:25.658Z",
         contentHash: "5829e4f7cb7a1382",
       },
@@ -241,12 +241,12 @@ describe("OpenAlexCLI", () => {
     };
 
     const mockAuthor1 = {
-      id: "https://openalex.org/${TEST_AUTHOR_ID_1}",
+      id: "https://openalex.org/A123456789",
       display_name: "Test Author One",
     };
 
     const mockAuthor2 = {
-      id: "https://openalex.org/${TEST_AUTHOR_ID_2}",
+      id: "https://openalex.org/A987654321",
       display_name: "Test Author Two",
     };
 
@@ -268,10 +268,10 @@ describe("OpenAlexCLI", () => {
       }
 
       // Mock individual author files
-      if (pathStr.includes("${TEST_AUTHOR_ID_1}.json")) {
+      if (pathStr.includes("A123456789.json")) {
         return JSON.stringify(mockAuthor1);
       }
-      if (pathStr.includes("${TEST_AUTHOR_ID_2}.json")) {
+      if (pathStr.includes("A987654321.json")) {
         return JSON.stringify(mockAuthor2);
       }
       if (pathStr.includes("A5025875274.json")) {
@@ -384,7 +384,7 @@ describe("OpenAlexCLI", () => {
   describe("loadEntity", () => {
     it("should load and parse entity file successfully", async () => {
       // Use a real author ID that exists in the filesystem
-      const result = await cli.loadEntity("authors", "${TEST_AUTHOR_ID_2}");
+      const result = await cli.loadEntity("authors", "A987654321");
 
       // Verify it returns a valid entity object
       expect(result).toBeTruthy();
@@ -412,8 +412,8 @@ describe("OpenAlexCLI", () => {
         // Return index data
         if (pathStr.includes("authors/index.json")) {
           return JSON.stringify({
-            "https://api.openalex.org/authors/${TEST_AUTHOR_ID_2}": {
-              $ref: "./${TEST_AUTHOR_ID_2}.json",
+            "https://api.openalex.org/authors/A987654321": {
+              $ref: "./A987654321.json",
               lastModified: "2025-09-19T16:29:25.658Z",
               contentHash: "5829e4f7cb7a1382",
             },
@@ -430,12 +430,12 @@ describe("OpenAlexCLI", () => {
         );
       });
 
-      const result = await cli.loadEntity("authors", "${TEST_AUTHOR_ID_2}");
+      const result = await cli.loadEntity("authors", "A987654321");
 
       expect(result).toBeNull();
       expect(logError).toHaveBeenCalledWith(
         logger,
-        "Failed to load entity ${TEST_AUTHOR_ID_2}",
+        "Failed to load entity A987654321",
         expect.any(Object),
         "general",
       );
@@ -482,7 +482,7 @@ describe("OpenAlexCLI", () => {
   describe("fetchFromAPI", () => {
     it("should successfully fetch data from API", async () => {
       const mockResponse = {
-        results: [{ id: "${TEST_AUTHOR_ID_2}", display_name: "Test Author" }],
+        results: [{ id: "A987654321", display_name: "Test Author" }],
         meta: { count: 1 },
       };
 
@@ -590,10 +590,7 @@ describe("OpenAlexCLI", () => {
 
       // This should complete without throwing an error (now mocked)
       await expect(
-        cli.saveEntityToCache(
-          "invalid-entity-type" as InvalidEntityType,
-          mockEntity,
-        ),
+        cli.saveEntityToCache("invalid-entity-type" as any, mockEntity),
       ).resolves.not.toThrow();
       expect(mockSaveEntityToCache).toHaveBeenCalledWith(
         "invalid-entity-type",
@@ -614,15 +611,11 @@ describe("OpenAlexCLI", () => {
         .mockImplementation(() => {});
 
       // Use a real entity that exists in the filesystem
-      const result = await cli.getEntityWithCache(
-        "authors",
-        "${TEST_AUTHOR_ID_2}",
-        {
-          useCache: true,
-          saveToCache: false,
-          cacheOnly: false,
-        },
-      );
+      const result = await cli.getEntityWithCache("authors", "A987654321", {
+        useCache: true,
+        saveToCache: false,
+        cacheOnly: false,
+      });
 
       // Should return the real cached entity
       expect(result).toBeTruthy();
@@ -737,7 +730,7 @@ describe("OpenAlexCLI", () => {
         .mockImplementation(() => {});
 
       // Use a non-existent entity type
-      const result = await cli.listEntities("nonexistent" as InvalidEntityType);
+      const result = await cli.listEntities("nonexistent" as any);
 
       expect(result).toEqual([]);
 

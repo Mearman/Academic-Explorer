@@ -7,17 +7,21 @@ import React, { useCallback, useMemo } from "react";
 import { Group, ActionIcon, Tooltip, Text, Alert } from "@mantine/core";
 import { IconX, IconAlertCircle } from "@tabler/icons-react";
 import { useThemeColors } from "@/hooks/use-theme-colors";
-import type { FilterFieldProps, FilterCondition, EntityFilters } from "../types/filter-ui";
+import type {
+  FilterFieldProps,
+  FilterCondition,
+  EntityFilters,
+} from "../types/filter-ui";
 
-// Field type components - TODO: Implement these components
-// import { TextFilter } from "../fields/TextFilter";
-// import { NumericFilter } from "../fields/NumericFilter";
-// import { DateFilter } from "../fields/DateFilter";
-// import { BooleanFilter } from "../fields/BooleanFilter";
-// import { EnumFilter } from "../fields/EnumFilter";
-// import { EntityFilter } from "../fields/EntityFilter";
+import { TextFilter } from "../fields/TextFilter";
+import { NumericFilter } from "../fields/NumericFilter";
+import { DateFilter } from "../fields/DateFilter";
+import { BooleanFilter } from "../fields/BooleanFilter";
+import { EnumFilter } from "../fields/EnumFilter";
+import { EntityFilter } from "../fields/EntityFilter";
 
-interface FilterFieldWrapperProps<T extends EntityFilters = EntityFilters> extends FilterFieldProps<T> {
+interface FilterFieldWrapperProps<T extends EntityFilters = EntityFilters>
+  extends FilterFieldProps<T> {
   showRemoveButton?: boolean;
   showLabel?: boolean;
   error?: string;
@@ -40,22 +44,28 @@ export function FilterField<T extends EntityFilters = EntityFilters>({
   const fieldId = useMemo(() => `filter-${condition.id}`, [condition.id]);
 
   // Handle field value updates
-  const handleValueChange = useCallback((value: unknown) => {
-    const updatedCondition: FilterCondition<T> = {
-      ...condition,
-      value,
-    };
-    onUpdate(updatedCondition);
-  }, [condition, onUpdate]);
+  const handleValueChange = useCallback(
+    (value: unknown) => {
+      const updatedCondition: FilterCondition<T> = {
+        ...condition,
+        value,
+      };
+      onUpdate(updatedCondition);
+    },
+    [condition, onUpdate],
+  );
 
   // Handle operator changes
-  const handleOperatorChange = useCallback((operator: string) => {
-    const updatedCondition: FilterCondition<T> = {
-      ...condition,
-      operator: operator as FilterCondition<T>["operator"],
-    };
-    onUpdate(updatedCondition);
-  }, [condition, onUpdate]);
+  const handleOperatorChange = useCallback(
+    (operator: string) => {
+      const updatedCondition: FilterCondition<T> = {
+        ...condition,
+        operator: operator as FilterCondition<T>["operator"],
+      };
+      onUpdate(updatedCondition);
+    },
+    [condition, onUpdate],
+  );
 
   // Handle enabled/disabled toggle
   const handleToggleEnabled = useCallback(() => {
@@ -82,25 +92,91 @@ export function FilterField<T extends EntityFilters = EntityFilters>({
     switch (config.type) {
       case "text":
       case "search":
-        return <Text size="sm" c="dimmed">Text Filter (TODO: Implement)</Text>;
+        return (
+          <TextFilter
+            value={condition.value as string}
+            operator={condition.operator}
+            config={config}
+            onValueChange={handleValueChange}
+            onOperatorChange={handleOperatorChange}
+            disabled={disabled || !condition.enabled}
+            compact={compact}
+            fieldId={fieldId}
+          />
+        );
 
       case "number":
-        return <Text size="sm" c="dimmed">Numeric Filter (TODO: Implement)</Text>;
+        return (
+          <NumericFilter
+            value={condition.value as number}
+            operator={condition.operator}
+            config={config}
+            onValueChange={handleValueChange}
+            onOperatorChange={handleOperatorChange}
+            disabled={disabled || !condition.enabled}
+            compact={compact}
+            fieldId={fieldId}
+          />
+        );
 
       case "date":
       case "dateRange":
-        return <Text size="sm" c="dimmed">Date Filter (TODO: Implement)</Text>;
+        return (
+          <DateFilter
+            value={condition.value as string | [string, string] | null}
+            operator={condition.operator}
+            config={config}
+            onValueChange={handleValueChange}
+            onOperatorChange={handleOperatorChange}
+            disabled={disabled || !condition.enabled}
+            compact={compact}
+            fieldId={fieldId}
+          />
+        );
 
       case "boolean":
-        return <Text size="sm" c="dimmed">Boolean Filter (TODO: Implement)</Text>;
+        return (
+          <BooleanFilter
+            value={condition.value as boolean}
+            operator={condition.operator}
+            config={config}
+            onValueChange={handleValueChange}
+            onOperatorChange={handleOperatorChange}
+            disabled={disabled || !condition.enabled}
+            compact={compact}
+            fieldId={fieldId}
+          />
+        );
 
       case "select":
       case "multiSelect":
-        return <Text size="sm" c="dimmed">Enum Filter (TODO: Implement)</Text>;
+        return (
+          <EnumFilter
+            value={condition.value as string | string[]}
+            operator={condition.operator}
+            config={config}
+            onValueChange={handleValueChange}
+            onOperatorChange={handleOperatorChange}
+            disabled={disabled || !condition.enabled}
+            compact={compact}
+            fieldId={fieldId}
+          />
+        );
 
       case "entity":
       case "entityMulti":
-        return <Text size="sm" c="dimmed">Entity Filter (TODO: Implement)</Text>;
+        return (
+          <EntityFilter
+            value={condition.value as string | string[]}
+            operator={condition.operator}
+            config={config}
+            onValueChange={handleValueChange}
+            onOperatorChange={handleOperatorChange}
+            disabled={disabled || !condition.enabled}
+            compact={compact}
+            fieldId={fieldId}
+          />
+        );
 
       default:
         return (
@@ -117,7 +193,9 @@ export function FilterField<T extends EntityFilters = EntityFilters>({
         padding: compact ? "8px" : "12px",
         border: `1px solid ${condition.enabled ? colors.border.primary : colors.border.secondary}`,
         borderRadius: "6px",
-        backgroundColor: condition.enabled ? colors.background.primary : colors.background.secondary,
+        backgroundColor: condition.enabled
+          ? colors.background.primary
+          : colors.background.secondary,
         opacity: condition.enabled ? 1 : 0.7,
         transition: "all 0.2s ease",
       }}
@@ -130,7 +208,9 @@ export function FilterField<T extends EntityFilters = EntityFilters>({
               size={compact ? "xs" : "sm"}
               fw={500}
               style={{
-                color: condition.enabled ? colors.text.primary : colors.text.secondary,
+                color: condition.enabled
+                  ? colors.text.primary
+                  : colors.text.secondary,
               }}
             >
               {condition.label || config.label}
@@ -148,7 +228,9 @@ export function FilterField<T extends EntityFilters = EntityFilters>({
 
           <Group gap="xs">
             {/* Enable/Disable Toggle */}
-            <Tooltip label={condition.enabled ? "Disable filter" : "Enable filter"}>
+            <Tooltip
+              label={condition.enabled ? "Disable filter" : "Enable filter"}
+            >
               <ActionIcon
                 size="sm"
                 variant="subtle"
