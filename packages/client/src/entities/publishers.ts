@@ -17,6 +17,17 @@ import { buildFilterString } from "../utils/query-builder";
 import { logger } from "@academic-explorer/utils/logger";
 
 /**
+ * Search options for publishers API
+ */
+export interface PublisherSearchOptions {
+  filters?: PublishersFilters;
+  sort?: string;
+  page?: number;
+  per_page?: number;
+  select?: string[];
+}
+
+/**
  * PublishersApi provides methods for interacting with OpenAlex publishers
  * Publishers represent organizations that publish academic sources (journals, conferences, etc.)
  */
@@ -34,7 +45,11 @@ export class PublishersApi {
    * @returns Promise resolving to the publisher object
    */
   async get(id: string, params: QueryParams = {}): Promise<Publisher> {
-    return this.client.getById<Publisher>("publishers", id, params);
+    return this.client.getById<Publisher>({
+      endpoint: "publishers",
+      id,
+      params,
+    });
   }
 
   /**
@@ -64,8 +79,7 @@ export class PublishersApi {
    * @returns Promise resolving to paginated publishers response
    */
   async getPublishers(
-    params: QueryParams &
-      PublishersFilters & { filter?: PublishersFilters } = {},
+    params: PublisherSearchOptions = {},
   ): Promise<OpenAlexResponse<Publisher>> {
     const processedParams = this.buildQueryParams(params);
     return this.client.getResponse<Publisher>("publishers", processedParams);
@@ -75,20 +89,34 @@ export class PublishersApi {
    * Build query parameters with proper filter processing
    * @private
    */
-  private buildQueryParams(
-    params: QueryParams &
-      PublishersFilters & { filter?: PublishersFilters } = {},
-  ): QueryParams {
-    const { filter, ...otherParams } = params;
-    const queryParams: QueryParams = { ...otherParams };
+  private buildQueryParams(options: PublisherSearchOptions = {}): QueryParams {
+    const { filters, sort, page, per_page, select, ...otherOptions } = options;
 
-    // Handle filter object conversion to string
-    if (
-      filter &&
-      typeof filter === "object" &&
-      Object.keys(filter).length > 0
-    ) {
-      queryParams.filter = buildFilterString(filter);
+    const queryParams: QueryParams = {
+      ...otherOptions,
+    };
+
+    // Handle filters
+    if (filters && Object.keys(filters).length > 0) {
+      queryParams.filter = buildFilterString(filters);
+    }
+
+    // Add sort if provided
+    if (sort) {
+      queryParams.sort = sort;
+    }
+
+    // Add pagination if provided
+    if (page !== undefined) {
+      queryParams.page = page;
+    }
+    if (per_page !== undefined) {
+      queryParams.per_page = per_page;
+    }
+
+    // Add select if provided
+    if (select) {
+      queryParams.select = select;
     }
 
     return queryParams;

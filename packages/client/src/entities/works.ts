@@ -282,17 +282,25 @@ export class WorksApi {
     // Validate and normalize DOI if applicable
     const normalizedDoi = this.validateAndNormalizeDOI(id);
     if (normalizedDoi) {
-      return this.client.getById<Work>("works", normalizedDoi, params);
+      return this.client.getById<Work>({
+        endpoint: "works",
+        id: normalizedDoi,
+        params,
+      });
     }
 
     // Validate and normalize PMID if applicable
     const normalizedPmid = this.validateAndNormalizePMID(id);
     if (normalizedPmid) {
-      return this.client.getById<Work>("works", normalizedPmid, params);
+      return this.client.getById<Work>({
+        endpoint: "works",
+        id: normalizedPmid,
+        params,
+      });
     }
 
     // For other identifiers (OpenAlex ID, etc.), pass through directly
-    return this.client.getById<Work>("works", id, params);
+    return this.client.getById<Work>({ endpoint: "works", id, params });
   }
 
   /**

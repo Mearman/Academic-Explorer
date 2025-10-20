@@ -177,7 +177,11 @@ export class AuthorsApi {
   async getAuthor(id: string, params: QueryParams = {}): Promise<Author> {
     // Normalize ORCID if it's an ORCID identifier
     const normalizedId = this.normalizeOrcidId(id) ?? id;
-    return this.client.getById<Author>("authors", normalizedId, params);
+    return this.client.getById<Author>({
+      endpoint: "authors",
+      id: normalizedId,
+      params,
+    });
   }
 
   /**

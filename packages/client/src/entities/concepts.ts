@@ -6,6 +6,8 @@
 import { logger } from "@academic-explorer/utils/logger";
 import { conceptSchema } from "@academic-explorer/types/entities";
 import type { OpenAlexBaseClient } from "../client";
+import type { ZodType } from "zod";
+
 import type {
   AutocompleteResult,
   Concept,
@@ -18,7 +20,6 @@ import type {
   SearchConceptsOptions,
   AutocompleteOptions,
 } from "../types";
-import type { z } from "zod";
 import { AutocompleteApi } from "../utils/autocomplete";
 import { isValidWikidata, normalizeExternalId } from "../utils/id-resolver";
 import { buildFilterString } from "../utils/query-builder";
@@ -172,22 +173,26 @@ export class ConceptsApi {
       typeof params.sort === "string" &&
       this.isQueryParams(params)
     ) {
-      return this.client.getById<Concept>("concepts", normalizedId, params);
+      return this.client.getById<Concept>({
+        endpoint: "concepts",
+        id: normalizedId,
+        params,
+      });
     }
     // Otherwise, convert from ConceptsQueryParams
     if (this.isConceptsQueryParams(params)) {
-      return this.client.getById<Concept>(
-        "concepts",
-        normalizedId,
-        toQueryParams(params),
-      );
+      return this.client.getById<Concept>({
+        endpoint: "concepts",
+        id: normalizedId,
+        params: toQueryParams(params),
+      });
     }
     // Default case - treat as basic params
-    return this.client.getById<Concept>(
-      "concepts",
-      normalizedId,
-      toQueryParams({}),
-    );
+    return this.client.getById<Concept>({
+      endpoint: "concepts",
+      id: normalizedId,
+      params,
+    });
   }
 
   /**

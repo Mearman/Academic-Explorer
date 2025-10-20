@@ -34,7 +34,7 @@ export class FundersApi {
    * @returns Promise resolving to the funder object
    */
   async get(id: string, params: QueryParams = {}): Promise<Funder> {
-    return this.client.getById<Funder>("funders", id, params);
+    return this.client.getById<Funder>({ endpoint: "funders", id, params });
   }
 
   /**

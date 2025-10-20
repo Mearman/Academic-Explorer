@@ -18,6 +18,17 @@ import { buildFilterString } from "../utils/query-builder";
 import { logger } from "@academic-explorer/utils/logger";
 
 /**
+ * Search options for topics API
+ */
+export interface TopicSearchOptions {
+  filters?: TopicsFilters;
+  sort?: string;
+  page?: number;
+  per_page?: number;
+  select?: string[];
+}
+
+/**
  * TopicsApi provides methods for interacting with OpenAlex topics
  * Topics represent research areas, subjects, and academic fields
  */
@@ -58,17 +69,21 @@ export class TopicsApi {
         const wikidataFormat = normalizedId.startsWith("Q")
           ? `wikidata:${normalizedId}`
           : normalizedId;
-        return this.client.getById<Topic>("topics", wikidataFormat, params);
+        return this.client.getById<Topic>({
+          endpoint: "topics",
+          id: wikidataFormat,
+          params,
+        });
       }
       // If normalization failed, fall through to use original ID
     }
 
     // Handle case where ID is already in wikidata: format
     if (id.startsWith("wikidata:Q")) {
-      return this.client.getById<Topic>("topics", id, params);
+      return this.client.getById<Topic>({ endpoint: "topics", id, params });
     }
 
-    return this.client.getById<Topic>("topics", id, params);
+    return this.client.getById<Topic>({ endpoint: "topics", id, params });
   }
 
   /**
@@ -98,7 +113,7 @@ export class TopicsApi {
    * @returns Promise resolving to paginated topics response
    */
   async getTopics(
-    params: QueryParams & TopicsFilters & { filter?: TopicsFilters } = {},
+    params: TopicSearchOptions = {},
   ): Promise<OpenAlexResponse<Topic>> {
     const processedParams = this.buildQueryParams(params);
     return this.client.getResponse<Topic>("topics", processedParams);
@@ -108,19 +123,34 @@ export class TopicsApi {
    * Build query parameters with proper filter processing
    * @private
    */
-  private buildQueryParams(
-    params: QueryParams & TopicsFilters & { filter?: TopicsFilters } = {},
-  ): QueryParams {
-    const { filter, ...otherParams } = params;
-    const queryParams: QueryParams = { ...otherParams };
+  private buildQueryParams(options: TopicSearchOptions = {}): QueryParams {
+    const { filters, sort, page, per_page, select, ...otherOptions } = options;
 
-    // Handle filter object conversion to string
-    if (
-      filter &&
-      typeof filter === "object" &&
-      Object.keys(filter).length > 0
-    ) {
-      queryParams.filter = buildFilterString(filter);
+    const queryParams: QueryParams = {
+      ...otherOptions,
+    };
+
+    // Handle filters
+    if (filters && Object.keys(filters).length > 0) {
+      queryParams.filter = buildFilterString(filters);
+    }
+
+    // Add sort if provided
+    if (sort) {
+      queryParams.sort = sort;
+    }
+
+    // Add pagination if provided
+    if (page !== undefined) {
+      queryParams.page = page;
+    }
+    if (per_page !== undefined) {
+      queryParams.per_page = per_page;
+    }
+
+    // Add select if provided
+    if (select) {
+      queryParams.select = select;
     }
 
     return queryParams;

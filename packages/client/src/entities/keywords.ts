@@ -237,14 +237,22 @@ export class KeywordsApi {
       typeof params.sort === "string" &&
       this.isQueryParams(params)
     ) {
-      return this.client.getById("keywords", id, params);
+      return this.client.getById({ endpoint: "keywords", id, params });
     }
     // Otherwise, convert from StrictKeywordsQueryParams
     if (this.isStrictKeywordsQueryParams(params)) {
-      return this.client.getById("keywords", id, toQueryParams(params));
+      return this.client.getById({
+        endpoint: "keywords",
+        id,
+        params: toQueryParams(params),
+      });
     }
     // Default case - treat as basic params
-    return this.client.getById("keywords", id, toQueryParams({}));
+    return this.client.getById({
+      endpoint: "keywords",
+      id,
+      params: toQueryParams({}),
+    });
   }
 
   /**

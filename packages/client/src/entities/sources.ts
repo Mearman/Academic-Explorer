@@ -84,16 +84,14 @@ import { logger } from "../internal/logger";
 /**
  * Options for searching sources
  */
-export interface SearchSourcesOptions {
+export interface SourceSearchOptions {
   filters?: SourcesFilters;
-  sort?:
-    | "relevance_score:desc"
-    | "cited_by_count"
-    | "works_count"
-    | "created_date";
+  sort?: string;
   page?: number;
   per_page?: number;
   select?: string[];
+  sample?: number;
+  seed?: number;
 }
 
 export class SourcesApi {
@@ -307,7 +305,7 @@ export class SourcesApi {
     }
 
     // Use standard ID-based lookup for OpenAlex IDs and URLs
-    return this.client.getById<Source>("sources", id, params);
+    return this.client.getById<Source>({ endpoint: "sources", id, params });
   }
 
   /**
@@ -325,7 +323,7 @@ export class SourcesApi {
    * ```
    */
   async getSources(
-    params: Omit<QueryParams, "filter"> & { filter?: SourcesFilters } = {},
+    params: SourceSearchOptions = {},
   ): Promise<OpenAlexResponse<Source>> {
     const queryParams = this.buildFilterParams(params);
     return this.client.getResponse<Source>("sources", queryParams);
@@ -348,7 +346,7 @@ export class SourcesApi {
    */
   async searchSources(
     query: string,
-    options: SearchSourcesOptions = {},
+    options: SourceSearchOptions = {},
   ): Promise<OpenAlexResponse<Source>> {
     const params: QueryParams = {
       search: query,
@@ -431,12 +429,13 @@ export class SourcesApi {
       publisher,
     };
 
-    const { filter: _, ...paramsWithoutFilter } = params;
-    const queryParams = this.buildFilterParams({
-      ...paramsWithoutFilter,
-      filter: filters,
+    const searchOptions: SourceSearchOptions = {
+      ...params,
+      filters,
       sort: params.sort ?? "works_count:desc",
-    });
+    };
+
+    const queryParams = this.buildFilterParams(searchOptions);
     return this.client.getResponse<Source>("sources", queryParams);
   }
 
@@ -460,12 +459,13 @@ export class SourcesApi {
       is_oa: true,
     };
 
-    const { filter: _, ...paramsWithoutFilter } = params;
-    const queryParams = this.buildFilterParams({
-      ...paramsWithoutFilter,
-      filter: filters,
+    const searchOptions: SourceSearchOptions = {
+      ...params,
+      filters,
       sort: params.sort ?? this.WORKS_COUNT_DESC,
-    });
+    };
+
+    const queryParams = this.buildFilterParams(searchOptions);
     return this.client.getResponse<Source>("sources", queryParams);
   }
 
@@ -493,11 +493,13 @@ export class SourcesApi {
     };
 
     const { filter: _, ...paramsWithoutFilter } = params;
-    const queryParams = this.buildFilterParams({
+    const searchOptions: SourceSearchOptions = {
       ...paramsWithoutFilter,
-      filter: filters,
-      sort: params.sort ?? this.WORKS_COUNT_DESC,
-    });
+      filters,
+      sort: (params as QueryParams).sort ?? this.WORKS_COUNT_DESC,
+    };
+
+    const queryParams = this.buildFilterParams(searchOptions);
     return this.client.getResponse<Source>("sources", queryParams);
   }
 
@@ -588,17 +590,17 @@ export class SourcesApi {
       throw new Error("Random sample size cannot exceed 10,000");
     }
 
-    const params: Omit<QueryParams, "filter"> & { filter?: SourcesFilters } = {
-      filter: filters,
+    const options: SourceSearchOptions = {
+      filters,
       sample: count,
       per_page: count,
     };
 
     if (seed !== undefined) {
-      params["seed"] = seed;
+      options.seed = seed;
     }
 
-    const queryParams = this.buildFilterParams(params);
+    const queryParams = this.buildFilterParams(options);
     return this.client.getResponse<Source>("sources", queryParams);
   }
 
@@ -622,11 +624,13 @@ export class SourcesApi {
       is_in_doaj: true,
     };
 
-    return this.getSources({
+    const searchOptions: SourceSearchOptions = {
       ...params,
-      filter: filters,
+      filters,
       sort: params.sort ?? this.WORKS_COUNT_DESC,
-    });
+    };
+
+    return this.getSources(searchOptions);
   }
 
   /**
@@ -651,11 +655,13 @@ export class SourcesApi {
       type,
     };
 
-    return this.getSources({
+    const searchOptions: SourceSearchOptions = {
       ...params,
-      filter: filters,
+      filters,
       sort: params.sort ?? this.WORKS_COUNT_DESC,
-    });
+    };
+
+    return this.getSources(searchOptions);
   }
 
   /**
@@ -688,11 +694,13 @@ export class SourcesApi {
       filters["apc_usd"] = `<${maxAPC.toString()}`;
     }
 
-    return this.getSources({
+    const searchOptions: SourceSearchOptions = {
       ...params,
-      filter: filters,
+      filters,
       sort: params.sort ?? this.WORKS_COUNT_DESC,
-    });
+    };
+
+    return this.getSources(searchOptions);
   }
 
   /**
@@ -717,8 +725,8 @@ export class SourcesApi {
   ): Promise<OpenAlexResponse<Source>> {
     const combinedFilters = { ...filters };
 
-    const params: Omit<QueryParams, "filter"> & { filter?: SourcesFilters } = {
-      filter: combinedFilters,
+    const params: SourceSearchOptions = {
+      filters: combinedFilters,
       sort: "cited_by_count:desc",
       per_page: limit,
     };
@@ -810,10 +818,12 @@ export class SourcesApi {
       "ids.issn": normalizedISSN,
     };
 
-    return this.getSources({
+    const searchOptions: SourceSearchOptions = {
       ...params,
-      filter: filters,
-    });
+      filters,
+    };
+
+    return this.getSources(searchOptions);
   }
 
   /**
@@ -959,15 +969,17 @@ export class SourcesApi {
       `Searching for sources with ISSNs: ${normalizedISSNs.join(", ")}`,
     );
 
-    // Use OR filter for multiple ISSNs - pass as array for proper handling
+    // Use OR filter for multiple ISSNs - join with pipe for OR logic
     const filters: SourcesFilters = {
-      "ids.issn": normalizedISSNs,
+      "ids.issn": normalizedISSNs.join("|"),
     };
 
-    return this.getSources({
+    const searchOptions: SourceSearchOptions = {
       ...params,
-      filter: filters,
-    });
+      filters,
+    };
+
+    return this.getSources(searchOptions);
   }
 
   /**
@@ -975,25 +987,55 @@ export class SourcesApi {
    * Converts SourcesFilters object to query string format using standardized FilterBuilder
    * @private
    */
-  private buildFilterParams(
-    params: Omit<QueryParams, "filter"> & { filter?: SourcesFilters },
-  ): QueryParams {
-    const { filter, ...otherParams } = params;
-    const result: QueryParams = { ...otherParams };
+  private buildFilterParams(options: SourceSearchOptions = {}): QueryParams {
+    const {
+      filters,
+      sort,
+      page,
+      per_page,
+      select,
+      sample,
+      seed,
+      ...otherOptions
+    } = options;
 
-    // Convert filters object to filter string, if it's not already a string
-    if (filter) {
-      if (typeof filter === "string") {
-        result.filter = filter;
-      } else if (this.isSourcesFilters(filter)) {
-        const filterString = buildFilterString(filter);
-        // Only add filter if it's not empty
-        if (filterString) {
-          result.filter = filterString;
-        }
-      }
+    const queryParams: QueryParams = {
+      ...otherOptions,
+    };
+
+    // Handle filters
+    if (filters && Object.keys(filters).length > 0) {
+      queryParams.filter = buildFilterString(filters);
     }
 
-    return result;
+    // Add sort if provided
+    if (sort) {
+      queryParams.sort = sort;
+    }
+
+    // Add pagination if provided
+    if (page !== undefined) {
+      queryParams.page = page;
+    }
+    if (per_page !== undefined) {
+      queryParams.per_page = per_page;
+    }
+
+    // Add select if provided
+    if (select) {
+      queryParams.select = select;
+    }
+
+    // Add sample if provided
+    if (sample !== undefined) {
+      queryParams.sample = sample;
+    }
+
+    // Add seed if provided
+    if (seed !== undefined) {
+      queryParams.seed = seed;
+    }
+
+    return queryParams;
   }
 }
