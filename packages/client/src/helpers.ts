@@ -39,9 +39,7 @@ let _sharedClient: OpenAlexBaseClient | null = null;
  * Get or create the shared client instance
  */
 function getSharedClient(): OpenAlexBaseClient {
-  if (!_sharedClient) {
-    _sharedClient = new OpenAlexBaseClient();
-  }
+  _sharedClient ??= new OpenAlexBaseClient();
   return _sharedClient;
 }
 

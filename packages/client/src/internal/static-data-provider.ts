@@ -421,8 +421,7 @@ class GitHubPagesCacheTier implements CacheTierInterface {
     const handleSuccessfulResponse = async (
       response: Response,
     ): Promise<StaticDataResult> => {
-      // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
-      const data = (await response.json()) as unknown;
+      const data: unknown = await response.json();
       this.recentFailures.delete(url);
 
       this.stats.hits++;
