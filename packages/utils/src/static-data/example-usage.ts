@@ -140,11 +140,11 @@ export async function exampleGenerateEntityTypeIndex({
       computeStats: true,
     };
 
-    const indexPath = await generateIndexForEntityType(
+    const indexPath = await generateIndexForEntityType({
       rootPath,
       entityType,
       config,
-    );
+    });
     logger.debug(
       LOG_CATEGORY,
       `Index generated for ${entityType}: ${indexPath}`,

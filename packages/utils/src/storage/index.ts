@@ -3,9 +3,8 @@
  */
 
 export {
-  createHybridStorage,
   createIndexedDBStorage,
   defaultStorageConfig,
   type StorageConfig,
-  type StateStorage
-} from "./indexeddb-storage.js";
+  type StateStorage,
+} from "./indexeddb-storage";

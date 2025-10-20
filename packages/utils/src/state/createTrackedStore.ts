@@ -259,7 +259,7 @@ export function createTrackedStore<
 
   // Create the store with Zustand - follow standard pattern
   const useStore = (() => {
-    const storeCreator: StateCreator<T & A, [], [], T & A> = (set, get) => {
+    const storeCreator: StateCreator<T, [], [], T> = (set, get) => {
       // Create actions
       const actions = actionsFactory({
         set: (partial, replace) => {
@@ -303,7 +303,8 @@ export function createTrackedStore<
     getState: () => {
       const fullState = useStore.getState();
       const keys = Object.keys(initialState);
-      return extractState({ fullState, keys: keys as (keyof T)[] });
+      const extracted = extractState(fullState, keys);
+      return extracted as T;
     },
     setState: (partial, replace) => {
       if (isZustandStore(useStore)) {
