@@ -3,8 +3,6 @@
  * Separated for better testability
  */
 
-/* eslint-disable prefer-destructured-params-plugin/prefer-destructured-params */
-
 import { logError, logger } from "@academic-explorer/utils/logger";
 import {
   getStaticDataCachePath,
@@ -340,7 +338,6 @@ export class OpenAlexCLI {
 
   constructor(dataPath?: string) {
     this.dataPath = dataPath ?? getStaticDataPath();
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     this.cachedClient = new CachedOpenAlexClient();
   }
 
@@ -411,14 +408,12 @@ export class OpenAlexCLI {
 
       const validatedResult = OpenAlexAPIResponseSchema.safeParse(apiResult);
       if (validatedResult.success && validatedResult.data.results.length > 0) {
-        const entity = validatedResult.data.results[0] as {
-          id: string;
-          display_name: string;
-          [key: string]: unknown;
-        };
+        const entity = validatedResult.data.results[0];
 
         // Type guard to ensure entity has required properties
         if (
+          entity &&
+          typeof entity === "object" &&
           "id" in entity &&
           "display_name" in entity &&
           typeof entity.id === "string" &&
@@ -957,11 +952,7 @@ export class OpenAlexCLI {
       validatedEntity.data.id &&
       validatedEntity.data.display_name
     ) {
-      return validatedEntity.data as {
-        id: string;
-        display_name: string;
-        [key: string]: unknown;
-      };
+      return validatedEntity.data;
     }
 
     logger.warn(
@@ -1782,7 +1773,6 @@ export class OpenAlexCLI {
    */
   async getCacheStats(): Promise<CacheStats> {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       return await this.cachedClient.getCacheStats();
     } catch (error) {
       logError(
@@ -1885,7 +1875,6 @@ export class OpenAlexCLI {
    */
   async clearSyntheticCache(): Promise<void> {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       await this.cachedClient.clearCache();
     } catch (error) {
       logError(
@@ -2105,7 +2094,6 @@ export class OpenAlexCLI {
     display_name: string;
     [key: string]: unknown;
   } | null> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     const entity = await this.cachedClient.getEntity(_entityData.entityId);
 
     if (this.isValidEntityForCaching(entity)) {

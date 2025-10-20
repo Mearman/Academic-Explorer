@@ -5,8 +5,6 @@
  * A command-line interface for accessing OpenAlex data via static cache and API
  */
 
-/* eslint-disable prefer-destructured-params-plugin/prefer-destructured-params */
-
 import { Command } from "commander";
 import {
   OpenAlexCLI,
@@ -171,7 +169,7 @@ function buildQueryOptions(
 
   if (validatedOptions.filter) queryOptions.filter = validatedOptions.filter;
   if (validatedOptions.select)
-    queryOptions.select = (validatedOptions.select as string)
+    queryOptions.select = validatedOptions.select
       .split(",")
       .map((s) => s.trim());
   if (validatedOptions.sort) queryOptions.sort = validatedOptions.sort;
