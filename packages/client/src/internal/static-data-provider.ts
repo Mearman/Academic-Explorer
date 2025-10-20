@@ -201,13 +201,11 @@ class LocalDiskCacheTier implements CacheTierInterface {
         return { found: false };
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const parsedData = JSON.parse(fs.readFileSync(filePath, "utf-8"));
       // Validate that parsedData is a valid value (not null/undefined for our use case)
       if (parsedData === null || parsedData === undefined) {
         throw new Error(`Invalid JSON data in file: ${filePath}`);
       }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const data = parsedData;
 
       this.stats.hits++;
