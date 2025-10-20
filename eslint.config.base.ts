@@ -3,6 +3,7 @@ import markdownPlugin from "@eslint/markdown";
 import nxPlugin from "@nx/eslint-plugin";
 import eslintComments from "eslint-plugin-eslint-comments";
 import unusedImports from "eslint-plugin-unused-imports";
+import importPlugin from "eslint-plugin-import";
 import sonarjs from "eslint-plugin-sonarjs";
 import globals from "globals";
 import path from "path";
@@ -52,6 +53,9 @@ const preferDestructuredParamsPlugin = loadTsModule(
 );
 const noZustandComputedFunctionsPlugin = loadTsModule(
   "./eslint-rules/no-zustand-computed-functions.ts",
+);
+const noReExportsFromPackagesPlugin = loadTsModule(
+  "./eslint-rules/no-re-exports-from-packages.ts",
 );
 
 /**
@@ -147,6 +151,7 @@ export default tseslint.config([
     plugins: {
       "eslint-comments": eslintComments,
       "unused-imports": unusedImports,
+      import: importPlugin,
       sonarjs,
       "@nx": nxPlugin,
       "no-emoji": noEmojiPlugin,
@@ -158,6 +163,7 @@ export default tseslint.config([
       "no-selector-object-creation-plugin": noSelectorObjectCreationPlugin,
       "no-unstable-dependencies-plugin": noUnstableDependenciesPlugin,
       "no-zustand-computed-functions-plugin": noZustandComputedFunctionsPlugin,
+      "no-re-exports-from-packages-plugin": noReExportsFromPackagesPlugin,
       "prefer-destructured-params-plugin": preferDestructuredParamsPlugin,
     },
     rules: {
@@ -189,7 +195,9 @@ export default tseslint.config([
       "sonarjs/prefer-immediate-return": "error",
       "sonarjs/prefer-object-literal": "error",
       "sonarjs/prefer-single-boolean-return": "error",
-      "sonarjs/prefer-while": "error",
+
+      // Import/export validation
+      "import/export": "error",
 
       // Emoji detection
       "no-emoji/no-emoji": "error",
@@ -203,6 +211,7 @@ export default tseslint.config([
       "no-unstable-dependencies-plugin/no-unstable-dependencies": "error",
       "no-zustand-computed-functions-plugin/no-zustand-computed-functions":
         "error",
+      "no-re-exports-from-packages-plugin/no-re-exports-from-packages": "error",
       "prefer-destructured-params-plugin/prefer-destructured-params": "error",
 
       // ESLint comment rules
