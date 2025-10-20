@@ -259,10 +259,10 @@ export function createTrackedStore<
 
   // Create the store with Zustand - follow standard pattern
   const useStore = (() => {
-    const storeCreator: StateCreator<T, [], [], T> = (set, get) => {
+    const storeCreator = (set: any, get: any) => {
       // Create actions
       const actions = actionsFactory({
-        set: (partial, replace) => {
+        set: (partial: any, replace?: boolean) => {
           set(partial, replace);
         },
         get: () => get(),

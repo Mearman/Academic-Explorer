@@ -176,7 +176,7 @@ export class ConceptsApi {
         "concepts",
         normalizedId,
         params,
-        conceptSchema as z.ZodType<Concept>,
+        conceptSchema as unknown as z.ZodType<Concept>,
       );
     }
     // Otherwise, convert from ConceptsQueryParams
@@ -185,7 +185,7 @@ export class ConceptsApi {
         "concepts",
         normalizedId,
         toQueryParams(params),
-        conceptSchema as z.ZodType<Concept>,
+        conceptSchema as unknown as z.ZodType<Concept>,
       );
     }
     // Default case - treat as basic params
@@ -193,7 +193,7 @@ export class ConceptsApi {
       "concepts",
       normalizedId,
       toQueryParams({}),
-      conceptSchema as z.ZodType<Concept>,
+      conceptSchema as unknown as z.ZodType<Concept>,
     );
   }
 
@@ -347,7 +347,7 @@ export class ConceptsApi {
     }
 
     const filters: ConceptsFilters = {
-      level,
+      level: level.toString(),
     };
 
     return this.getConcepts({

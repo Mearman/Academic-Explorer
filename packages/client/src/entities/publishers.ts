@@ -272,7 +272,7 @@ export class PublishersApi {
     lineageIds: string[],
     params: QueryParams = {},
   ): Promise<OpenAlexResponse<Publisher>> {
-    return this.filters({ lineage: lineageIds }, params);
+    return this.filters({ lineage: lineageIds.join("|") }, params);
   }
 
   /**

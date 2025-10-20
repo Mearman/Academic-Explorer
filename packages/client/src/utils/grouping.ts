@@ -515,12 +515,15 @@ export class GroupingApi {
             }
 
             // Extract properties with explicit type checking using helper
-            const idValue = extractPropertyValue(performer, "id");
-            const displayNameValue = extractPropertyValue(
-              performer,
-              "display_name",
-            );
-            const metricValue = extractPropertyValue(performer, metric);
+            const idValue = extractPropertyValue({ obj: performer, key: "id" });
+            const displayNameValue = extractPropertyValue({
+              obj: performer,
+              key: "display_name",
+            });
+            const metricValue = extractPropertyValue({
+              obj: performer,
+              key: metric,
+            });
 
             const id = typeof idValue === "string" ? idValue : "";
             const displayName =

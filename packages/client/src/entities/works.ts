@@ -498,8 +498,8 @@ export class WorksApi {
     // First get the work to access its referenced_works array
     const work = await this.getWork(workId, { select: ["referenced_works"] });
 
-    // Check if referenced_works array is empty
-    if (work.referenced_works.length === 0) {
+    // Check if referenced_works array exists and is not empty
+    if (!work.referenced_works || work.referenced_works.length === 0) {
       return [];
     }
 
@@ -510,7 +510,7 @@ export class WorksApi {
 
     // Build filter to get all referenced works in one request
     const filters: WorksFilters = {
-      "ids.openalex": referencesToFetch,
+      "ids.openalex": referencesToFetch.join("|"),
       ...options.filters,
     };
 
@@ -549,8 +549,8 @@ export class WorksApi {
     // First get the work to access its related_works array
     const work = await this.getWork(workId, { select: ["related_works"] });
 
-    // Check if related_works array is empty
-    if (work.related_works.length === 0) {
+    // Check if related_works array exists and is not empty
+    if (!work.related_works || work.related_works.length === 0) {
       return [];
     }
 
@@ -561,7 +561,7 @@ export class WorksApi {
 
     // Build filter to get all related works in one request
     const filters: WorksFilters = {
-      "ids.openalex": relatedToFetch,
+      "ids.openalex": relatedToFetch.join("|"),
       ...options.filters,
     };
 

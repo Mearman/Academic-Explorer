@@ -281,7 +281,7 @@ export class FundersApi {
     topicIds: string[],
     params: QueryParams = {},
   ): Promise<OpenAlexResponse<Funder>> {
-    return this.filters({ "topics.id": topicIds }, params);
+    return this.filters({ "topics.id": topicIds.join("|") }, params);
   }
 
   /**

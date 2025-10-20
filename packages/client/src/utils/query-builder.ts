@@ -435,7 +435,7 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
       // OpenAlex API is flexible with filter value types, so this assignment is safe
       // after type guard validation
       const filterKey = String(field);
-      const filtersRecord = this.filters;
+      const filtersRecord = this.filters as Record<string, unknown>;
       if (typeof filtersRecord === "object" && filtersRecord !== null) {
         filtersRecord[filterKey] = value;
       }

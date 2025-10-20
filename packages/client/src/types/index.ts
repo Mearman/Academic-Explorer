@@ -82,7 +82,7 @@ export type {
 } from "@academic-explorer/types/entities";
 
 // Client-specific type aliases
-export type SearchConceptsOptions = Record<string, unknown>;
+export type { ConceptSearchOptions as SearchConceptsOptions } from "@academic-explorer/types/entities";
 export type { BaseAutocompleteOptions as AutocompleteOptions } from "@academic-explorer/types/entities";
 
 // Re-export schemas and type guards
