@@ -54,5 +54,4 @@ export default tseslint.config([
       "@typescript-eslint/no-unnecessary-type-assertion": "off",
     },
   },
-  },
 ]);

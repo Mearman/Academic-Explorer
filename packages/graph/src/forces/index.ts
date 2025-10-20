@@ -20,11 +20,6 @@ export interface ForceSimulationNode extends ForceNode {
   fixed?: boolean;
 }
 
-export interface ForceSimulationLink extends ForceLink {
-  // Extends ForceLink for type compatibility in force simulation contexts
-  // May be extended in the future with force-specific properties
-}
-
 // Force manager interface
 export interface ForceManager {
   updateForces(config: ForceConfig): void;
@@ -258,7 +253,7 @@ export interface ForceSimulationTask {
     | "FORCE_SIMULATION_UPDATE_LINKS"
     | "FORCE_SIMULATION_UPDATE_NODES";
   nodes?: ForceSimulationNode[];
-  links?: ForceSimulationLink[];
+  links?: ForceLink[];
   pinnedNodes?: string[];
   config?: {
     linkStrength?: number;
