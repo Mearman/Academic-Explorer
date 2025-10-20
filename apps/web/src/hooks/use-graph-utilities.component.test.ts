@@ -11,8 +11,23 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useGraphUtilities } from "./use-graph-utilities";
 
 // Mock dependencies with factory functions
+let currentStoreState: any;
+let subscriptionCallback: ((state: any) => void) | null = null;
+
 vi.mock("@/stores/graph-store", () => ({
   useGraphStore: vi.fn(),
+  graphStore: {
+    getState: vi.fn(() => currentStoreState),
+    subscribe: vi.fn((callback) => {
+      subscriptionCallback = callback;
+      // Call the callback immediately with current state
+      callback(currentStoreState);
+      // Return unsubscribe function
+      return vi.fn(() => {
+        subscriptionCallback = null;
+      });
+    }),
+  },
 }));
 
 vi.mock("@academic-explorer/graph", async (importOriginal) => {
@@ -82,6 +97,9 @@ const mockGraphStore = {
     visible: 0,
   },
 };
+
+// Initialize current store state
+currentStoreState = mockGraphStore;
 
 const mockGraphUtilitiesService = {
   trimLeafNodes: vi.fn(),
@@ -154,12 +172,7 @@ describe("useGraphUtilities", () => {
     // Reset all mocks
     vi.clearAllMocks();
 
-    // Get the mocked modules
-    const { useGraphStore } = await import("@/stores/graph-store");
-    const { graphUtilitiesService } = await import("@academic-explorer/graph");
-    const { logger } = await import("@academic-explorer/utils/logger");
-
-    // Setup mock graph store - use Records instead of Maps
+    // Setup mock graph store with test data
     const testNodesRecord: Record<string, GraphNode> = {};
     const testEdgesRecord: Record<string, GraphEdge> = {};
 
@@ -170,19 +183,21 @@ describe("useGraphUtilities", () => {
       testEdgesRecord[edge.id] = edge;
     });
 
-    mockGraphStore.nodes = testNodesRecord;
-    mockGraphStore.edges = testEdgesRecord;
-
-    // Populate aggregate counts expected by getGraphStats / cachedGraphStats
-    mockGraphStore.totalNodeCount = Object.keys(testNodesRecord).length;
-    mockGraphStore.totalEdgeCount = Object.keys(testEdgesRecord).length;
+    // Update mock store with test data
+    const testStoreState = {
+      ...mockGraphStore,
+      nodes: testNodesRecord,
+      edges: testEdgesRecord,
+      totalNodeCount: Object.keys(testNodesRecord).length,
+      totalEdgeCount: Object.keys(testEdgesRecord).length,
+    };
 
     // Build nodesByType counts
     const nodesByType: Record<string, number> = {};
     Object.values(testNodesRecord).forEach((n) => {
       nodesByType[n.entityType] = (nodesByType[n.entityType] || 0) + 1;
     });
-    mockGraphStore.entityTypeStats = {
+    testStoreState.entityTypeStats = {
       ...(nodesByType as any),
       total: Object.keys(testNodesRecord).length,
       visible: Object.keys(testNodesRecord).length,
@@ -194,35 +209,23 @@ describe("useGraphUtilities", () => {
       const key = String(e.type).toLowerCase();
       edgesByType[key] = (edgesByType[key] || 0) + 1;
     });
-    mockGraphStore.edgeTypeStats = {
+    testStoreState.edgeTypeStats = {
       ...(edgesByType as any),
       total: Object.keys(testEdgesRecord).length,
       visible: Object.keys(testEdgesRecord).length,
     };
 
-    // Configure useGraphStore mock to return different values based on selector
-    vi.mocked(useGraphStore).mockImplementation((selector: any) => {
-      if (typeof selector === "function") {
-        // Mock the state object
-        const state = {
-          nodes: testNodesRecord,
-          edges: testEdgesRecord,
-          setGraphData: mockGraphStore.setGraphData,
-          setLoading: mockGraphStore.setLoading,
-          setError: mockGraphStore.setError,
-        };
-        return selector(state);
-      }
-      // Return the entire store for direct access
-      return mockGraphStore;
-    });
+    // Update current store state
+    currentStoreState = testStoreState;
 
-    // Some code paths call useGraphStore.getState() directly (Zustand-style).
-    // Attach a getState function onto the mocked hook so those calls succeed.
-    // We attach the function to the mocked hook (functions are objects in JS)
-    (
-      useGraphStore as unknown as { getState?: () => typeof mockGraphStore }
-    ).getState = vi.fn(() => mockGraphStore);
+    // Trigger subscription callback to update any existing hooks
+    if (subscriptionCallback) {
+      subscriptionCallback(testStoreState);
+    }
+
+    // Setup service mocks
+    const { graphUtilitiesService } = await import("@academic-explorer/graph");
+    const { logger } = await import("@academic-explorer/utils/logger");
 
     // Connect service mocks
     const graphUtilitiesServiceAny = graphUtilitiesService as unknown as any;
@@ -674,32 +677,53 @@ describe("useGraphUtilities", () => {
       // Mock empty graph
       mockGraphUtilitiesService.findConnectedComponents.mockReturnValue([]);
 
-      const { useGraphStore } = await import("@/stores/graph-store");
-      vi.mocked(useGraphStore).mockImplementation((selector: any) => {
-        if (typeof selector === "function") {
-          const state = {
-            nodes: {},
-            edges: {},
-            setGraphData: mockGraphStore.setGraphData,
-            setLoading: mockGraphStore.setLoading,
-            setError: mockGraphStore.setError,
-          };
-          return selector(state);
-        }
-        return mockGraphStore;
-      });
+      // Update the current store state to empty
+      const emptyStoreState = {
+        ...mockGraphStore,
+        nodes: {},
+        edges: {},
+        totalNodeCount: 0,
+        totalEdgeCount: 0,
+        entityTypeStats: {
+          concepts: 0,
+          topics: 0,
+          keywords: 0,
+          works: 0,
+          authors: 0,
+          sources: 0,
+          institutions: 0,
+          publishers: 0,
+          funders: 0,
+          total: 0,
+          visible: 0,
+        },
+        edgeTypeStats: {
+          [RelationType.AUTHORED]: 0,
+          [RelationType.AFFILIATED]: 0,
+          [RelationType.PUBLISHED_IN]: 0,
+          [RelationType.FUNDED_BY]: 0,
+          [RelationType.REFERENCES]: 0,
+          [RelationType.RELATED_TO]: 0,
+          [RelationType.SOURCE_PUBLISHED_BY]: 0,
+          [RelationType.INSTITUTION_CHILD_OF]: 0,
+          [RelationType.PUBLISHER_CHILD_OF]: 0,
+          [RelationType.WORK_HAS_TOPIC]: 0,
+          [RelationType.WORK_HAS_KEYWORD]: 0,
+          [RelationType.AUTHOR_RESEARCHES]: 0,
+          [RelationType.INSTITUTION_LOCATED_IN]: 0,
+          [RelationType.FUNDER_LOCATED_IN]: 0,
+          [RelationType.TOPIC_PART_OF_FIELD]: 0,
+          total: 0,
+          visible: 0,
+        },
+      };
 
-      // Ensure getState returns the same empty store for cachedGraphStats
-      (useGraphStore as unknown as { getState?: () => any }).getState = vi.fn(
-        () => ({
-          nodes: {},
-          edges: {},
-          totalNodeCount: 0,
-          totalEdgeCount: 0,
-          entityTypeStats: { total: {} },
-          edgeTypeStats: { total: {} },
-        }),
-      );
+      currentStoreState = emptyStoreState;
+
+      // Trigger subscription callback to update the hook
+      if (subscriptionCallback) {
+        subscriptionCallback(emptyStoreState);
+      }
 
       const { result } = renderHook(() => useGraphUtilities());
 
@@ -718,7 +742,7 @@ describe("useGraphUtilities", () => {
 
   describe("reactive updates", () => {
     it("should update node and edge counts when store changes", async () => {
-      const { result, rerender } = renderHook(() => useGraphUtilities());
+      const { result } = renderHook(() => useGraphUtilities());
 
       expect(result.current.nodeCount).toBe(3);
       expect(result.current.edgeCount).toBe(2);
@@ -734,22 +758,23 @@ describe("useGraphUtilities", () => {
         newEdgesRecord[edge.id] = edge;
       });
 
-      const { useGraphStore } = await import("@/stores/graph-store");
-      vi.mocked(useGraphStore).mockImplementation((selector: any) => {
-        if (typeof selector === "function") {
-          const state = {
-            nodes: newNodesRecord,
-            edges: newEdgesRecord,
-            setGraphData: mockGraphStore.setGraphData,
-            setLoading: mockGraphStore.setLoading,
-            setError: mockGraphStore.setError,
-          };
-          return selector(state);
-        }
-        return mockGraphStore;
-      });
+      // Update the current store state
+      const updatedStoreState = {
+        ...mockGraphStore,
+        nodes: newNodesRecord,
+        edges: newEdgesRecord,
+        totalNodeCount: Object.keys(newNodesRecord).length,
+        totalEdgeCount: Object.keys(newEdgesRecord).length,
+      };
 
-      rerender();
+      currentStoreState = updatedStoreState;
+
+      // Trigger subscription callback to update the hook
+      await act(async () => {
+        if (subscriptionCallback) {
+          subscriptionCallback(updatedStoreState);
+        }
+      });
 
       expect(result.current.nodeCount).toBe(2);
       expect(result.current.edgeCount).toBe(1);

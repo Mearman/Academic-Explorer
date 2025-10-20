@@ -3,8 +3,8 @@
  * Provides access to graph manipulation functions with proper store integration
  */
 
-import { useCallback, useMemo } from "react";
-import { useGraphStore } from "@/stores/graph-store";
+import { useCallback, useMemo, useState, useEffect } from "react";
+import { graphStore } from "@/stores/graph-store";
 import {
   graphUtilitiesService,
   type GraphUtilityResult,
@@ -49,12 +49,25 @@ function hasDataProperty(
 }
 
 export const useGraphUtilities = () => {
-  // Get current graph state with stable selectors
-  const nodesMap = useGraphStore((state) => state.nodes);
-  const edgesMap = useGraphStore((state) => state.edges);
-  const setGraphData = useGraphStore((state) => state.setGraphData);
-  const setLoading = useGraphStore((state) => state.setLoading);
-  const setError = useGraphStore((state) => state.setError);
+  // Get current graph state - using direct store access with reactivity
+  const [nodesMap, setNodesMap] = useState(
+    (graphStore.getState() as any).nodes,
+  );
+  const [edgesMap, setEdgesMap] = useState(
+    (graphStore.getState() as any).edges,
+  );
+  const store = graphStore.getState() as any;
+  const setGraphData = store.setGraphData;
+  const setLoading = store.setLoading;
+  const setError = store.setError;
+
+  useEffect(() => {
+    const unsubscribe = (graphStore as any).subscribe((state: any) => {
+      setNodesMap(state.nodes);
+      setEdgesMap(state.edges);
+    });
+    return unsubscribe;
+  }, []);
 
   // Convert Records to arrays with stable dependencies
   const nodes = useMemo(

@@ -24,6 +24,13 @@ const NO_CACHE_OPTION = "--no-cache";
 const NO_SAVE_OPTION = "--no-save";
 const CACHE_ONLY_OPTION = "--cache-only";
 
+// Common CLI option descriptions
+const FORMAT_TABLE_DESC = "Output format (json, table)";
+const FORMAT_SUMMARY_DESC = "Output format (json, summary)";
+const NO_CACHE_DESC = "Skip cache, fetch directly from API";
+const NO_SAVE_DESC = "Don't save API results to cache";
+const CACHE_ONLY_DESC = "Only use cache, don't fetch from API if not found";
+
 /**
  * Print entity summary to console
  */
@@ -249,7 +256,7 @@ program
   .command("list <entity-type>")
   .description("List all entities of a specific type")
   .option("-c, --count", "Show only count")
-  .option("-f, --format <format>", "Output format (json, table)", "table")
+  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, "table")
   .action(async (entityType: string, options: unknown) => {
     const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType);
     if (!entityTypeValidation.success) {
@@ -289,11 +296,11 @@ program
 program
   .command("get-typed <entity-type> <entity-id>")
   .description("Get a specific entity by ID with explicit entity type")
-  .option("-f, --format <format>", "Output format (json, summary)", "summary")
-  .option("-p, --pretty", "Pretty print JSON")
-  .option("--no-cache", "Skip cache, fetch directly from API")
-  .option("--no-save", "Don't save API results to cache")
-  .option("--cache-only", "Only use cache, don't fetch from API if not found")
+  .option(FORMAT_OPTION, FORMAT_SUMMARY_DESC, "summary")
+  .option(PRETTY_OPTION, "Pretty print JSON")
+  .option(NO_CACHE_OPTION, NO_CACHE_DESC)
+  .option(NO_SAVE_OPTION, NO_SAVE_DESC)
+  .option(CACHE_ONLY_OPTION, CACHE_ONLY_DESC)
 
   .action(async (entityType: string, entityId: string, options: unknown) => {
     const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType);
@@ -383,11 +390,11 @@ program
 program
   .command("get <entity-id>")
   .description("Get entity by ID with auto-detection of entity type")
-  .option("-f, --format <format>", "Output format (json, summary)", "summary")
-  .option("-p, --pretty", "Pretty print JSON")
-  .option("--no-cache", "Skip cache, fetch directly from API")
-  .option("--no-save", "Don't save API results to cache")
-  .option("--cache-only", "Only use cache, don't fetch from API if not found")
+  .option(FORMAT_OPTION, FORMAT_SUMMARY_DESC, "summary")
+  .option(PRETTY_OPTION, "Pretty print JSON")
+  .option(NO_CACHE_OPTION, NO_CACHE_DESC)
+  .option(NO_SAVE_OPTION, NO_SAVE_DESC)
+  .option(CACHE_ONLY_OPTION, CACHE_ONLY_DESC)
 
   .action(async (entityId: string, options: unknown) => {
     const optionsValidation = GetCommandOptionsSchema.safeParse(options);
@@ -487,7 +494,7 @@ program
   .command("search <entity-type> <term>")
   .description("Search entities by display name")
   .option("-l, --limit <limit>", "Limit results", "10")
-  .option("-f, --format <format>", "Output format (json, table)", "table")
+  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, "table")
   .action(async (entityType: string, searchTerm: string, options) => {
     const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType);
     if (!entityTypeValidation.success) {
@@ -529,7 +536,7 @@ program
 program
   .command("stats")
   .description("Show statistics for all entity types")
-  .option("-f, --format <format>", "Output format (json, table)", "table")
+  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, "table")
   .action(async (options: unknown) => {
     const optionsValidation = StatsCommandOptionsSchema.safeParse(options);
     if (!optionsValidation.success) {
@@ -588,10 +595,10 @@ program
   .option("--sort <sort>", "Sort parameter")
   .option("--per-page <number>", "Number of results per page", "25")
   .option("--page <number>", "Page number", "1")
-  .option("--no-cache", "Skip cache, fetch directly from API")
-  .option("--no-save", "Don't save API results to cache")
-  .option("--cache-only", "Only use cache, don't fetch from API if not found")
-  .option("-f, --format <format>", "Output format (json, summary)", "json")
+  .option(NO_CACHE_OPTION, NO_CACHE_DESC)
+  .option(NO_SAVE_OPTION, NO_SAVE_DESC)
+  .option(CACHE_ONLY_OPTION, CACHE_ONLY_DESC)
+  .option(FORMAT_OPTION, FORMAT_SUMMARY_DESC, "json")
   .action(async (entityType: string, options) => {
     const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType);
     if (!entityTypeValidation.success) {
@@ -692,7 +699,7 @@ program
 program
   .command("cache:stats")
   .description("Show synthetic cache statistics and field accumulation data")
-  .option("-f, --format <format>", "Output format (json, table)", "table")
+  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, "table")
   .action(async (options: unknown) => {
     const optionsValidation = CacheStatsCommandOptionsSchema.safeParse(options);
     if (!optionsValidation.success) {
@@ -749,7 +756,7 @@ program
   .description(
     "Show field coverage for a specific entity across all cache tiers",
   )
-  .option("-f, --format <format>", "Output format (json, table)", "table")
+  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, "table")
   .action(async (entityType: string, entityId: string, options: unknown) => {
     const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType);
     if (!entityTypeValidation.success) {
@@ -809,7 +816,7 @@ program
   .command("cache:popular-entities <entity-type>")
   .description("Show well-populated entities with extensive field coverage")
   .option("-l, --limit <limit>", "Limit results", "10")
-  .option("-f, --format <format>", "Output format (json, table)", "table")
+  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, "table")
   .action(async (entityType: string, options: unknown) => {
     const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType);
     if (!entityTypeValidation.success) {
@@ -863,7 +870,7 @@ program
   .command("cache:popular-collections")
   .description("Show popular cached collections with high entity counts")
   .option("-l, --limit <limit>", "Limit results", "10")
-  .option("-f, --format <format>", "Output format (json, table)", "table")
+  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, "table")
   .action(async (options: unknown) => {
     const optionsValidation =
       CachePopularCollectionsCommandOptionsSchema.safeParse(options);
@@ -934,7 +941,7 @@ program
   .option("--limit <limit>", "Limit number of entities to generate")
   .option("--force", "Force regeneration even if files exist")
   .option("--dry-run", "Show what would be generated without writing files")
-  .option("-f, --format <format>", "Output format (json, table)", "table")
+  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, "table")
   .action(async (options: unknown) => {
     const optionsValidation =
       CacheGenerateStaticCommandOptionsSchema.safeParse(options);
@@ -1003,7 +1010,7 @@ program
 program
   .command("cache:validate-static")
   .description("Validate static cache integrity and structure")
-  .option("-f, --format <format>", "Output format (json, table)", "table")
+  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, "table")
   .option("--verbose", "Show detailed validation information")
   .action(async (options: unknown) => {
     const optionsValidation =
@@ -1141,7 +1148,7 @@ program
   .description(
     "Analyze static data cache usage patterns and suggest optimizations",
   )
-  .option("-f, --format <format>", "Output format (json, table)", "table")
+  .option(FORMAT_OPTION, FORMAT_TABLE_DESC, "table")
   .action(async (options: unknown) => {
     const optionsValidation =
       StaticAnalyzeCommandOptionsSchema.safeParse(options);

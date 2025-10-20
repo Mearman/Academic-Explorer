@@ -142,16 +142,16 @@ export function useUserInteractions(
 
       // Check bookmark status based on content type
       if (entityId && entityType) {
-        const bookmarked = await userInteractionsService.isEntityBookmarked(
+        const bookmarked = await userInteractionsService.isEntityBookmarked({
           entityId,
           entityType,
-        );
+        });
         setIsBookmarked(bookmarked);
       } else if (searchQuery) {
-        const bookmarked = await userInteractionsService.isSearchBookmarked(
+        const bookmarked = await userInteractionsService.isSearchBookmarked({
           searchQuery,
           filters,
-        );
+        });
         setIsBookmarked(bookmarked);
       } else if (url) {
         const bookmarked = await userInteractionsService.isListBookmarked(url);
@@ -185,17 +185,13 @@ export function useUserInteractions(
         try {
           const url = location.pathname + location.search;
 
-          await userInteractionsService.recordPageVisitLegacy(
-            url,
-            {
-              searchQuery,
-              filters,
-              entityId,
-              entityType,
+          await userInteractionsService.recordPageVisitLegacy({
+            cacheKey: url,
+            metadata: {
+              sessionId,
+              referrer: document.referrer || undefined,
             },
-            sessionId,
-            document.referrer || undefined,
-          );
+          });
         } catch (error) {
           logger.error(
             USER_INTERACTIONS_LOGGER_CONTEXT,
@@ -242,12 +238,14 @@ export function useUserInteractions(
       };
     }) => {
       try {
-        await userInteractionsService.recordPageVisitLegacy(
-          url,
-          metadata,
-          sessionId,
-          document.referrer || undefined,
-        );
+        await userInteractionsService.recordPageVisitLegacy({
+          cacheKey: url,
+          metadata: {
+            ...metadata,
+            sessionId,
+            referrer: document.referrer || undefined,
+          },
+        });
 
         // Refresh data to update UI
         await refreshData();
@@ -294,15 +292,19 @@ export function useUserInteractions(
         const url = location.pathname + location.search;
         const queryParams = getSearchParams();
 
-        await userInteractionsService.addEntityBookmark(
-          entityId,
-          entityType,
+        const request = {
+          cacheKey: `/${entityType}/${entityId}`,
+          hash: `entity-${entityType}-${entityId}`.slice(0, 16),
+          endpoint: `/${entityType}`,
+          params: { id: entityId, ...queryParams },
+        };
+
+        await userInteractionsService.addBookmark({
+          request,
           title,
-          url,
-          Object.keys(queryParams).length > 0 ? queryParams : undefined,
           notes,
           tags,
-        );
+        });
 
         setIsBookmarked(true);
         await refreshData();
@@ -335,10 +337,10 @@ export function useUserInteractions(
     }
 
     try {
-      const bookmark = await userInteractionsService.getEntityBookmark(
+      const bookmark = await userInteractionsService.getEntityBookmark({
         entityId,
         entityType,
-      );
+      });
       if (bookmark?.id) {
         await userInteractionsService.removeBookmark(bookmark.id);
         setIsBookmarked(false);
@@ -425,13 +427,7 @@ export function useUserInteractions(
       try {
         const queryParams = getSearchParams();
 
-        await userInteractionsService.addListBookmark(
-          title,
-          url,
-          Object.keys(queryParams).length > 0 ? queryParams : undefined,
-          notes,
-          tags,
-        );
+        await userInteractionsService.addListBookmark(url, title, notes, tags);
 
         setIsBookmarked(true);
         await refreshData();
@@ -456,10 +452,10 @@ export function useUserInteractions(
     }
 
     try {
-      const bookmark = await userInteractionsService.getSearchBookmark(
+      const bookmark = await userInteractionsService.getSearchBookmark({
         searchQuery,
         filters,
-      );
+      });
       if (bookmark?.id) {
         await userInteractionsService.removeBookmark(bookmark.id);
         setIsBookmarked(false);
@@ -518,7 +514,10 @@ export function useUserInteractions(
           entityType,
         );
         if (bookmark?.id) {
-          await userInteractionsService.updateBookmark(bookmark.id, updates);
+          await userInteractionsService.updateBookmark({
+            bookmarkId: bookmark.id,
+            updates,
+          });
           await refreshData();
         }
       } catch (error) {

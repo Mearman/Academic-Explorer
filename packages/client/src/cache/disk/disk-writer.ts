@@ -26,6 +26,8 @@ const ERROR_MESSAGE_FS_NOT_INITIALIZED = "Node.js fs module not initialized";
 const __ERROR_MESSAGE_ENTITY_EXTRACTION_FAILED =
   "Entity info extraction failed";
 const INDEX_FILE_NAME = "index.json";
+const LOGGER_NAME = "disk-writer";
+const UNKNOWN_ERROR_MESSAGE = "Unknown error";
 
 /**
  * For testing: allow injecting mock Node.js modules
@@ -382,7 +384,7 @@ export class DiskCacheWriter {
     } catch (error) {
       logError(logger, "Failed to extract entity info", error);
       throw new Error(
-        `_ERROR_MESSAGE_ENTITY_EXTRACTION_FAILED: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `${__ERROR_MESSAGE_ENTITY_EXTRACTION_FAILED}: ${error instanceof Error ? error.message : UNKNOWN_ERROR_MESSAGE}`,
       );
     }
   }
@@ -627,7 +629,7 @@ export class DiskCacheWriter {
     } catch (error) {
       logError(logger, "Failed to create directory structure", error);
       throw new Error(
-        `Directory creation failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Directory creation failed: ${error instanceof Error ? error.message : UNKNOWN_ERROR_MESSAGE}`,
       );
     }
   }
@@ -666,7 +668,7 @@ export class DiskCacheWriter {
 
       logError(logger, "Atomic file write failed", error);
       throw new Error(
-        `Atomic write failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Atomic write failed: ${error instanceof Error ? error.message : UNKNOWN_ERROR_MESSAGE}`,
       );
     }
   }
@@ -698,7 +700,7 @@ export class DiskCacheWriter {
           filePath,
         });
 
-        logger.debug("disk-writer", "File lock acquired", {
+        logger.debug("LOGGER_NAME", "File lock acquired", {
           filePath,
           lockId,
         });
@@ -710,7 +712,7 @@ export class DiskCacheWriter {
       if (existingLock && Date.now() - existingLock.timestamp > maxWaitTime) {
         // Remove stale lock
         this.activeLocks.delete(filePath);
-        logger.warn("disk-writer", "Removed stale file lock", {
+        logger.warn("LOGGER_NAME", "Removed stale file lock", {
           filePath,
           staleLockId: existingLock.lockId,
         });
@@ -740,13 +742,13 @@ export class DiskCacheWriter {
 
     if (existingLock?.lockId === lockId) {
       this.activeLocks.delete(filePath);
-      logger.debug("disk-writer", "File lock released", {
+      logger.debug("LOGGER_NAME", "File lock released", {
         filePath,
         lockId,
       });
     } else {
       logger.warn(
-        "disk-writer",
+        "LOGGER_NAME",
         "Attempted to release non-existent or mismatched lock",
         { filePath, lockId },
       );
@@ -771,7 +773,7 @@ export class DiskCacheWriter {
         );
       }
 
-      logger.debug("disk-writer", "Disk space check passed", {
+      logger.debug("LOGGER_NAME", "Disk space check passed", {
         availableBytes,
         requiredBytes: this.config.minDiskSpaceBytes,
       });
@@ -779,7 +781,7 @@ export class DiskCacheWriter {
       // If statfs is not available, skip the check
       if (error instanceof Error && error.message.includes("ENOSYS")) {
         logger.warn(
-          "disk-writer",
+          "LOGGER_NAME",
           "Disk space checking not available on this platform",
         );
         return;
@@ -897,7 +899,7 @@ export class DiskCacheWriter {
     } catch (error) {
       logError(logger, "Failed to update hierarchical indexes", error);
       throw new Error(
-        `Index update failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Index update failed: ${error instanceof Error ? error.message : UNKNOWN_ERROR_MESSAGE}`,
       );
     }
   }
@@ -1012,7 +1014,7 @@ export class DiskCacheWriter {
     } catch (error) {
       logError(logger, "Failed to update directory index", error);
       throw new Error(
-        `Directory index update failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Directory index update failed: ${error instanceof Error ? error.message : UNKNOWN_ERROR_MESSAGE}`,
       );
     }
   }
@@ -1051,7 +1053,7 @@ export class DiskCacheWriter {
     // Clear all locks
     this.activeLocks.clear();
 
-    logger.debug("disk-writer", "DiskCacheWriter cleanup completed");
+    logger.debug("LOGGER_NAME", "DiskCacheWriter cleanup completed");
   }
 }
 

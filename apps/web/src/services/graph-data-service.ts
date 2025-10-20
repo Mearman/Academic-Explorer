@@ -480,16 +480,19 @@ export class GraphDataService {
                 "GraphDataService",
               );
 
-              const currentStore = useGraphStore.getState();
+              const currentStore = graphStore.getState();
               currentStore.addEdges(detectedEdges);
 
               // Update cached edges
               const allEdges = Object.values(currentStore.edges);
-              setCachedGraphEdges(this.queryClient, allEdges);
+              setCachedGraphEdges({
+                queryClient: this.queryClient,
+                edges: allEdges,
+              });
             }
           })
           .then(() => {
-            const currentStore = useGraphStore.getState();
+            const currentStore = graphStore.getState();
             currentStore.addEdges(detectedEdges);
 
             // Update cached edges

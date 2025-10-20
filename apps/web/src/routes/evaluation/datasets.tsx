@@ -46,7 +46,7 @@ function DatasetsManagement() {
 
       // Parse file using actual file parser
       setUploadProgress(30);
-      const parseResult = await parseSTARFile();
+      const parseResult = await parseSTARFile(uploadFile);
 
       // Check for parsing errors
       if (parseResult.metadata.errors.length > 0) {
@@ -76,11 +76,11 @@ function DatasetsManagement() {
       const reviewTopic =
         prompt("Enter the review topic for this dataset:") ??
         "Systematic Literature Review";
-      const newDataset = createSTARDatasetFromParseResult(
-        uploadFile,
+      const newDataset = createSTARDatasetFromParseResult({
+        file: uploadFile,
         parseResult,
         reviewTopic,
-      );
+      });
 
       setUploadProgress(100);
 

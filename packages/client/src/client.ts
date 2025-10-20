@@ -84,17 +84,21 @@ export class OpenAlexBaseClient {
   private rateLimitState: RateLimitState;
 
   /**
-   * Detect if running in development mode
+   * Check if running in development mode based on NODE_ENV
    */
-  private isDevelopmentMode(): boolean {
-    // Check NODE_ENV first (most reliable)
+  private checkNodeEnv(): boolean | null {
     if (globalThis.process?.env?.NODE_ENV) {
       const nodeEnv = globalThis.process.env.NODE_ENV.toLowerCase();
       if (nodeEnv === "development" || nodeEnv === "dev") return true;
       if (nodeEnv === "production") return false;
     }
+    return null;
+  }
 
-    // Check Vite's __DEV__ flag
+  /**
+   * Check Vite's __DEV__ flag
+   */
+  private checkViteDevFlag(): boolean | null {
     if (typeof globalThis !== "undefined" && "__DEV__" in globalThis) {
       try {
         const globalObj = globalThis as Record<string, unknown>;
@@ -106,8 +110,13 @@ export class OpenAlexBaseClient {
         // Ignore errors if __DEV__ is not accessible
       }
     }
+    return null;
+  }
 
-    // Check browser-based development indicators
+  /**
+   * Check browser-based development indicators
+   */
+  private checkBrowserDevIndicators(): boolean | null {
     try {
       if (typeof globalThis !== "undefined" && "window" in globalThis) {
         const win =
@@ -131,6 +140,24 @@ export class OpenAlexBaseClient {
     } catch {
       // Ignore errors in browser detection
     }
+    return null;
+  }
+
+  /**
+   * Detect if running in development mode
+   */
+  private isDevelopmentMode(): boolean {
+    // Check NODE_ENV first (most reliable)
+    const nodeEnvResult = this.checkNodeEnv();
+    if (nodeEnvResult !== null) return nodeEnvResult;
+
+    // Check Vite's __DEV__ flag
+    const viteResult = this.checkViteDevFlag();
+    if (viteResult !== null) return viteResult;
+
+    // Check browser-based development indicators
+    const browserResult = this.checkBrowserDevIndicators();
+    if (browserResult !== null) return browserResult;
 
     // Default to development if uncertain (fail-safe for dev mode)
     return true;

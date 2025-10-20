@@ -86,14 +86,10 @@ interface NetworkActivityActions {
 // ID generator for requests
 const generateRequestId = generateSequentialId("req");
 
-const networkActivityStoreResult = createTrackedStore<
-  NetworkActivityState & NetworkActivityActions
->({
-  // State
+// Initial state
+const initialState: NetworkActivityState = {
   requests: {},
   maxHistorySize: 500,
-
-  // Filters
   filters: {
     status: [],
     entityType: [],
@@ -101,147 +97,182 @@ const networkActivityStoreResult = createTrackedStore<
     searchTerm: "",
     timeRange: 24, // 24 hours default
   },
+};
 
-  // Actions
-  addRequest: function (request) {
-    const id = generateRequestId();
-
-    this.requests[id] = {
-      ...request,
-      id,
-      startTime: Date.now(),
-    };
-
-    logger.debug(
-      "api",
-      "Network request added",
-      {
-        id,
-        url: request.url,
-        entityType: request.entityType,
-        category: request.category,
-      },
-      "NetworkActivityStore",
-    );
-
-    return id;
+const networkActivityStoreResult = createTrackedStore({
+  config: {
+    name: "network-activity-store",
+    initialState,
+    devtools: true,
   },
+  actionsFactory: ({ set, get }) => ({
+    addRequest: function (request) {
+      const id = generateRequestId();
 
-  updateRequest: function (id, updates) {
-    const request = this.requests[id];
-    if (request) {
-      Object.assign(request, updates);
-    }
-  },
+      set((draft) => {
+        draft.requests[id] = {
+          ...request,
+          id,
+          startTime: Date.now(),
+        };
+      });
 
-  completeRequest: function (id, statusCode, size) {
-    const endTime = Date.now();
+      logger.debug(
+        "api",
+        "Network request added",
+        {
+          id,
+          url: request.url,
+          entityType: request.entityType,
+          category: request.category,
+        },
+        "NetworkActivityStore",
+      );
 
-    const request = this.requests[id];
-    if (request) {
-      request.status = "success";
-      request.endTime = endTime;
-      request.duration = endTime - request.startTime;
-      if (statusCode !== undefined) request.statusCode = statusCode;
-      if (size !== undefined) request.size = size;
-    }
-  },
+      return id;
+    },
 
-  failRequest: function (id, error, statusCode) {
-    const endTime = Date.now();
+    updateRequest: function (id, updates) {
+      set((draft) => {
+        const request = draft.requests[id];
+        if (request) {
+          Object.assign(request, updates);
+        }
+      });
+    },
 
-    const request = this.requests[id];
-    if (request) {
-      request.status = "error";
-      request.endTime = endTime;
-      request.duration = endTime - request.startTime;
-      request.error = error;
-      if (statusCode !== undefined) request.statusCode = statusCode;
-    }
+    completeRequest: function (id, statusCode, size) {
+      const endTime = Date.now();
 
-    logger.warn(
-      "api",
-      "Network request failed",
-      {
-        id,
-        error,
-        statusCode,
-      },
-      "NetworkActivityStore",
-    );
-  },
+      set((draft) => {
+        const request = draft.requests[id];
+        if (request) {
+          request.status = "success";
+          request.endTime = endTime;
+          request.duration = endTime - request.startTime;
+          if (statusCode !== undefined) request.statusCode = statusCode;
+          if (size !== undefined) request.size = size;
+        }
+      });
+    },
 
-  removeRequest: function (id) {
-    const { [id]: _removed, ...rest } = this.requests;
-    this.requests = rest;
-  },
+    failRequest: function (id, error, statusCode) {
+      const endTime = Date.now();
 
-  clearOldRequests: function () {
-    const requests = Object.values(this.requests);
+      set((draft) => {
+        const request = draft.requests[id];
+        if (request) {
+          request.status = "error";
+          request.endTime = endTime;
+          request.duration = endTime - request.startTime;
+          request.error = error;
+          if (statusCode !== undefined) request.statusCode = statusCode;
+        }
+      });
 
-    if (requests.length <= this.maxHistorySize) return;
+      logger.warn(
+        "api",
+        "Network request failed",
+        {
+          id,
+          error,
+          statusCode,
+        },
+        "NetworkActivityStore",
+      );
+    },
 
-    // Keep most recent requests
-    const sorted = requests.sort((a, b) => b.startTime - a.startTime);
-    const toKeep = sorted.slice(0, this.maxHistorySize);
+    removeRequest: function (id) {
+      set((draft) => {
+        const { [id]: _removed, ...rest } = draft.requests;
+        draft.requests = rest;
+      });
+    },
 
-    this.requests = {};
-    toKeep.forEach((req) => {
-      this.requests[req.id] = req;
-    });
+    clearOldRequests: function () {
+      const state = get();
+      const requests = Object.values(state.requests);
 
-    logger.debug(
-      "api",
-      "Cleared old network requests",
-      {
-        removed: requests.length - toKeep.length,
-        kept: toKeep.length,
-      },
-      "NetworkActivityStore",
-    );
-  },
+      if (requests.length <= state.maxHistorySize) return;
 
-  clearAllRequests: function () {
-    this.requests = {};
+      // Keep most recent requests
+      const sorted = requests.sort((a, b) => b.startTime - a.startTime);
+      const toKeep = sorted.slice(0, state.maxHistorySize);
 
-    logger.debug(
-      "api",
-      "Cleared all network requests",
-      {},
-      "NetworkActivityStore",
-    );
-  },
+      set((draft) => {
+        draft.requests = {};
+        toKeep.forEach((req) => {
+          draft.requests[req.id] = req;
+        });
+      });
 
-  // Filter actions
-  setStatusFilter: function (statuses) {
-    this.filters.status = statuses;
-  },
+      logger.debug(
+        "api",
+        "Cleared old network requests",
+        {
+          removed: requests.length - toKeep.length,
+          kept: toKeep.length,
+        },
+        "NetworkActivityStore",
+      );
+    },
 
-  setTypeFilter: function (types) {
-    this.filters.entityType = types;
-  },
+    clearAllRequests: function () {
+      set((draft) => {
+        draft.requests = {};
+      });
 
-  setCategoryFilter: function (categories) {
-    this.filters.category = categories;
-  },
+      logger.debug(
+        "api",
+        "Cleared all network requests",
+        {},
+        "NetworkActivityStore",
+      );
+    },
 
-  setSearchTerm: function (term) {
-    this.filters.searchTerm = term;
-  },
+    // Filter actions
+    setStatusFilter: function (statuses) {
+      set((draft) => {
+        draft.filters.status = statuses;
+      });
+    },
 
-  setTimeRange: function (hours) {
-    this.filters.timeRange = hours;
-  },
+    setTypeFilter: function (types) {
+      set((draft) => {
+        draft.filters.entityType = types;
+      });
+    },
 
-  clearFilters: function () {
-    this.filters = {
-      status: [],
-      entityType: [],
-      category: [],
-      searchTerm: "",
-      timeRange: 24,
-    };
-  },
+    setCategoryFilter: function (categories) {
+      set((draft) => {
+        draft.filters.category = categories;
+      });
+    },
+
+    setSearchTerm: function (term) {
+      set((draft) => {
+        draft.filters.searchTerm = term;
+      });
+    },
+
+    setTimeRange: function (hours) {
+      set((draft) => {
+        draft.filters.timeRange = hours;
+      });
+    },
+
+    clearFilters: function () {
+      set((draft) => {
+        draft.filters = {
+          status: [],
+          entityType: [],
+          category: [],
+          searchTerm: "",
+          timeRange: 24,
+        };
+      });
+    },
+  }),
 });
 
 export const useNetworkActivityStore = networkActivityStoreResult.useStore;

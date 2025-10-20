@@ -51,15 +51,15 @@ import type {
 } from "../types";
 
 // Mock only the base client
-vi.mock("../client", statusCode: async () => {
-  const actual = await vi.importActual("../client" });
+vi.mock("../client", async () => {
+  const actual = await vi.importActual("../client");
   return {
     ...actual,
     OpenAlexBaseClient: vi.fn(),
   };
-} });
+});
 
-describe("OpenAlex API Routes - Generated Tests", statusCode: () => {
+describe("OpenAlex API Routes - Generated Tests", () => {
   let mockClient: Mocked<OpenAlexBaseClient>;
   let apis: {
     works: WorksApi;

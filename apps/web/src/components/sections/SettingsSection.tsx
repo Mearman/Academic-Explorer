@@ -28,7 +28,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { clearAllCacheLayers } from "@academic-explorer/utils/cache";
 import { clearAppMetadata } from "@academic-explorer/utils/cache";
 import { useLayoutStore } from "@/stores/layout-store";
-import { useSettingsStore } from "@/stores/settings-store";
+import { settingsStore } from "@/stores/settings-store";
 import { updateOpenAlexEmail } from "@academic-explorer/client";
 import { logger } from "@academic-explorer/utils/logger";
 
@@ -43,12 +43,19 @@ export const SettingsSection: React.FC = () => {
     resettingPreferences: false,
   });
 
-  // Settings store hooks
-  const politePoolEmail = useSettingsStore((state) => state.politePoolEmail);
-  const setPolitePoolEmail = useSettingsStore(
-    (state) => state.setPolitePoolEmail,
+  // Settings store - using direct store access
+  const [politePoolEmail, setPolitePoolEmailState] = React.useState(
+    (settingsStore.getState() as any).politePoolEmail,
   );
-  const isValidEmail = useSettingsStore((state) => state.isValidEmail);
+  const setPolitePoolEmail = (settingsStore as any).setPolitePoolEmail;
+  const isValidEmail = (settingsStore as any).isValidEmail;
+
+  React.useEffect(() => {
+    const unsubscribe = (settingsStore as any).subscribe((state: any) => {
+      setPolitePoolEmailState(state.politePoolEmail);
+    });
+    return unsubscribe;
+  }, []);
 
   // Local state for email editing
   const [localEmail, setLocalEmail] = React.useState(politePoolEmail);

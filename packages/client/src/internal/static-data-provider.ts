@@ -412,6 +412,80 @@ class GitHubPagesCacheTier implements CacheTierInterface {
       return { found: false };
     }
 
+    /**
+     * Handle successful fetch response
+     */
+    const handleSuccessfulResponse = async (
+      response: Response,
+    ): Promise<StaticDataResult> => {
+      // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
+      const data = (await response.json()) as unknown;
+      this.recentFailures.delete(url);
+
+      this.stats.hits++;
+      const loadTime = Date.now() - startTime;
+      this.stats.totalLoadTime += loadTime;
+
+      return {
+        found: true,
+        data,
+        cacheHit: true,
+        tier: CacheTier.GITHUB_PAGES,
+        loadTime,
+      };
+    };
+
+    /**
+     * Handle fetch error and determine if retry is needed
+     */
+    const handleFetchError = async (
+      error: unknown,
+      attempt: number,
+    ): Promise<StaticDataResult> => {
+      logger.debug(this.LOG_PREFIX, "GitHub Pages fetch attempt failed", {
+        url,
+        entityType,
+        id,
+        attempt,
+        error,
+      });
+
+      this.updateFailureState(url, error);
+
+      // Check if it's a 404 error
+      const is404 =
+        typeof error === "object" &&
+        error !== null &&
+        "status" in error &&
+        typeof (error as Record<string, unknown>).status === "number" &&
+        (error as Record<string, unknown>).status === 404;
+      if (is404) {
+        return { found: false };
+      }
+
+      // Retry if attempts remain
+      if (attempt < this.retryConfig.maxAttempts) {
+        let retryAfterSec: number | undefined;
+        if (
+          typeof error === "object" &&
+          error !== null &&
+          "retryAfter" in error
+        ) {
+          const errorObj = error as Record<string, unknown>;
+          const retryAfter = errorObj.retryAfter;
+          if (typeof retryAfter === "string") {
+            retryAfterSec = parseInt(retryAfter);
+          }
+        }
+
+        const delay = this.calculateRetryDelay(attempt, retryAfterSec);
+        await new Promise((r) => setTimeout(r, delay));
+        return attemptFetch(attempt + 1);
+      }
+
+      return { found: false };
+    };
+
     const attemptFetch = async (attempt: number): Promise<StaticDataResult> => {
       try {
         const response = await fetch(url, {
@@ -430,64 +504,9 @@ class GitHubPagesCacheTier implements CacheTierInterface {
           throw this.createHttpError(response);
         }
 
-        // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
-        const data = (await response.json()) as unknown;
-        this.recentFailures.delete(url);
-
-        this.stats.hits++;
-        const loadTime = Date.now() - startTime;
-        this.stats.totalLoadTime += loadTime;
-
-        return {
-          found: true,
-          data,
-          cacheHit: true,
-          tier: CacheTier.GITHUB_PAGES,
-          loadTime,
-        };
+        return await handleSuccessfulResponse(response);
       } catch (error: unknown) {
-        logger.debug(this.LOG_PREFIX, "GitHub Pages fetch attempt failed", {
-          url,
-          entityType,
-          id,
-          attempt,
-          error,
-        });
-
-        this.updateFailureState(url, error);
-
-        // Check if it's a 404 error
-        const is404 =
-          typeof error === "object" &&
-          error !== null &&
-          "status" in error &&
-          typeof (error as Record<string, unknown>).status === "number" &&
-          (error as Record<string, unknown>).status === 404;
-        if (is404) {
-          return { found: false };
-        }
-
-        // Retry if attempts remain
-        if (attempt < this.retryConfig.maxAttempts) {
-          let retryAfterSec: number | undefined;
-          if (
-            typeof error === "object" &&
-            error !== null &&
-            "retryAfter" in error
-          ) {
-            const errorObj = error as Record<string, unknown>;
-            const retryAfter = errorObj.retryAfter;
-            if (typeof retryAfter === "string") {
-              retryAfterSec = parseInt(retryAfter);
-            }
-          }
-
-          const delay = this.calculateRetryDelay(attempt, retryAfterSec);
-          await new Promise((r) => setTimeout(r, delay));
-          return attemptFetch(attempt + 1);
-        }
-
-        return { found: false };
+        return await handleFetchError(error, attempt);
       }
     };
 

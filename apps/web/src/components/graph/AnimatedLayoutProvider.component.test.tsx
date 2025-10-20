@@ -54,6 +54,7 @@ vi.mock("@/stores/animated-graph-store", () => {
 
   return {
     useAnimatedGraphStore: mockStore,
+    animatedGraphStore: mockStore,
     useRestartRequested: vi.fn(() => false),
     useClearRestartRequest: vi.fn(() => vi.fn()),
   };

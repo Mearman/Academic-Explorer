@@ -3,8 +3,8 @@
  * Extracted from LeftSidebar for dynamic section system
  */
 
-import React, { useMemo } from "react";
-import { useGraphStore } from "@/stores/graph-store";
+import React, { useMemo, useState, useEffect } from "react";
+import { graphStore } from "@/stores/graph-store";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { logger } from "@academic-explorer/utils/logger";
 import type { EntityType } from "@academic-explorer/client";
@@ -42,11 +42,21 @@ const entityTypeOptions: Array<{
 export const EntityFiltersSection: React.FC = () => {
   const themeColors = useThemeColors();
   const { colors } = themeColors;
-  const nodesMap = useGraphStore((state) => state.nodes);
-  const setEntityTypeVisibility = useGraphStore(
-    (state) => state.setEntityTypeVisibility,
+  const state = graphStore.getState() as any;
+  const [nodesMap, setNodesMap] = useState(state.nodes);
+  const [visibleEntityTypes, setVisibleEntityTypes] = useState(
+    state.visibleEntityTypes,
   );
-  const visibleEntityTypes = useGraphStore((state) => state.visibleEntityTypes);
+
+  useEffect(() => {
+    const unsubscribe = (graphStore as any).subscribe((state: any) => {
+      setNodesMap(state.nodes);
+      setVisibleEntityTypes(state.visibleEntityTypes);
+    });
+    return unsubscribe;
+  }, []);
+
+  const setEntityTypeVisibility = state.setEntityTypeVisibility;
 
   const entityStats = useMemo(() => {
     try {

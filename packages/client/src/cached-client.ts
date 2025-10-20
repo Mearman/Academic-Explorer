@@ -243,6 +243,66 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   }
 
   /**
+   * Try to get data from static cache for getById requests
+   */
+  private async tryStaticCacheForGetById<T>(
+    endpoint: string,
+    cleanId: string,
+    isFallback: boolean = false,
+  ): Promise<T | null> {
+    if (!this.staticCacheEnabled) return null;
+
+    try {
+      const entityType = this.detectEntityTypeFromId(cleanId);
+      if (!entityType) return null;
+
+      const expectedEndpoint = entityType;
+      if (
+        !isFallback &&
+        expectedEndpoint !== endpoint.replace(/s$/, "") + "s"
+      ) {
+        return null;
+      }
+
+      const staticEntityType = toStaticEntityType(entityType);
+      const staticResult = await staticDataProvider.getStaticData(
+        staticEntityType,
+        cleanId,
+      );
+
+      if (staticResult.found && staticResult.data) {
+        if (isFallback) {
+          this.requestStats.cacheHits++;
+        }
+        logger.debug(
+          "client",
+          `Static cache ${isFallback ? "fallback" : "hit"} for getById`,
+          {
+            endpoint,
+            id: cleanId,
+            tier: staticResult.tier,
+          },
+        );
+        return isFallback
+          ? (staticResult.data as T)
+          : (validateStaticData(staticResult.data) as T);
+      }
+    } catch (error: unknown) {
+      logger.debug(
+        "client",
+        `Static cache ${isFallback ? "fallback" : "lookup"} failed for getById`,
+        {
+          endpoint,
+          id: cleanId,
+          error,
+        },
+      );
+    }
+
+    return null;
+  }
+
+  /**
    * Enhanced getById with static cache integration
    */
   async getById<T = unknown>(
@@ -253,36 +313,18 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   ): Promise<T> {
     const cleanId = cleanOpenAlexId(id);
 
-    if (this.staticCacheEnabled && !params) {
-      // Try static cache first for simple getById requests without parameters
-      try {
-        const entityType = this.detectEntityTypeFromId(cleanId);
-        if (entityType === endpoint.replace(/s$/, "") + "s") {
-          const staticEntityType = toStaticEntityType(entityType);
-          const staticResult = await staticDataProvider.getStaticData(
-            staticEntityType,
-            cleanId,
-          );
-
-          if (staticResult.found && staticResult.data) {
-            logger.debug("client", "Static cache hit for getById", {
-              endpoint,
-              id: cleanId,
-              tier: staticResult.tier,
-            });
-            return validateStaticData(staticResult.data) as T;
-          }
-        }
-      } catch (error: unknown) {
-        logger.debug("client", "Static cache lookup failed for getById", {
-          endpoint,
-          id: cleanId,
-          error,
-        });
+    // Try static cache first for simple requests without parameters
+    if (!params) {
+      const staticResult = await this.tryStaticCacheForGetById<T>(
+        endpoint,
+        cleanId,
+      );
+      if (staticResult !== null) {
+        return staticResult;
       }
     }
 
-    // Fallback to parent implementation, but catch API errors and try static cache before giving up
+    // Fallback to parent implementation
     try {
       return await super.getById(endpoint, cleanId, params, schema);
     } catch (apiError: unknown) {
@@ -292,33 +334,14 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
         { endpoint, id: cleanId, error: apiError },
       );
 
-      // If static cache is enabled, attempt to return cached data
-      if (this.staticCacheEnabled) {
-        try {
-          const entityType = this.detectEntityTypeFromId(cleanId);
-          if (entityType) {
-            const staticEntityType = toStaticEntityType(entityType);
-            const staticResult = await staticDataProvider.getStaticData(
-              staticEntityType,
-              cleanId,
-            );
-            if (staticResult.found && staticResult.data) {
-              this.requestStats.cacheHits++;
-              logger.debug(
-                "client",
-                "Static cache hit during getById fallback",
-                { endpoint, id: cleanId, tier: staticResult.tier },
-              );
-              return staticResult.data as T;
-            }
-          }
-        } catch (staticError: unknown) {
-          logger.debug(
-            "client",
-            "Static cache fallback failed during getById",
-            { endpoint, id: cleanId, error: staticError },
-          );
-        }
+      // Try static cache as fallback
+      const fallbackResult = await this.tryStaticCacheForGetById<T>(
+        endpoint,
+        cleanId,
+        true,
+      );
+      if (fallbackResult !== null) {
+        return fallbackResult;
       }
 
       // Re-throw the original API error if nothing else works

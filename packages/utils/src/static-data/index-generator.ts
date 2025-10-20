@@ -1440,6 +1440,7 @@ class Semaphore {
       }
     }
 
+    // eslint-disable-next-line prefer-destructured-params-plugin/prefer-destructured-params
     return new Promise((resolve, reject) => {
       this.waiting.push(async () => {
         this.permits--;

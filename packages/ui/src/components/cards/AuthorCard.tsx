@@ -1,12 +1,12 @@
 import type { Author } from "@academic-explorer/client";
 import {
-	ActionIcon,
-	Anchor,
-	Badge,
-	Card,
-	Group,
-	Stack,
-	Text,
+  ActionIcon,
+  Anchor,
+  Badge,
+  Card,
+  Group,
+  Stack,
+  Text,
 } from "@mantine/core";
 import { IconExternalLink } from "@tabler/icons-react";
 import React from "react";

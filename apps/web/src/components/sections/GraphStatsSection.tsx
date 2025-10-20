@@ -3,7 +3,7 @@
  * Displays comprehensive graph statistics and metrics
  */
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
   IconChartBar,
   IconCircle,
@@ -12,7 +12,7 @@ import {
   IconDownload,
 } from "@tabler/icons-react";
 import { Button, Badge, Progress, Divider } from "@mantine/core";
-import { useGraphStore } from "@/stores/graph-store";
+import { graphStore } from "@/stores/graph-store";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { CollapsibleSection } from "@/components/molecules/CollapsibleSection";
 import { logger } from "@academic-explorer/utils/logger";
@@ -32,11 +32,32 @@ export const GraphStatsSection: React.FC<GraphStatsSectionProps> = ({
   const { colors } = themeColors;
 
   // Get stats from graph store
-  const totalNodeCount = useGraphStore((state) => state.totalNodeCount);
-  const totalEdgeCount = useGraphStore((state) => state.totalEdgeCount);
-  const entityTypeStats = useGraphStore((state) => state.entityTypeStats);
-  const edgeTypeStats = useGraphStore((state) => state.edgeTypeStats);
-  const lastSearchStats = useGraphStore((state) => state.lastSearchStats);
+  const [totalNodeCount, setTotalNodeCount] = useState(
+    (graphStore.getState() as any).totalNodeCount,
+  );
+  const [totalEdgeCount, setTotalEdgeCount] = useState(
+    (graphStore.getState() as any).totalEdgeCount,
+  );
+  const [entityTypeStats, setEntityTypeStats] = useState(
+    (graphStore.getState() as any).entityTypeStats,
+  );
+  const [edgeTypeStats, setEdgeTypeStats] = useState(
+    (graphStore.getState() as any).edgeTypeStats,
+  );
+  const [lastSearchStats, setLastSearchStats] = useState(
+    (graphStore.getState() as any).lastSearchStats,
+  );
+
+  useEffect(() => {
+    const unsubscribe = (graphStore as any).subscribe((state: any) => {
+      setTotalNodeCount(state.totalNodeCount);
+      setTotalEdgeCount(state.totalEdgeCount);
+      setEntityTypeStats(state.entityTypeStats);
+      setEdgeTypeStats(state.edgeTypeStats);
+      setLastSearchStats(state.lastSearchStats);
+    });
+    return unsubscribe;
+  }, []);
 
   // Calculate derived metrics
   const networkMetrics = useMemo(() => {

@@ -7,12 +7,12 @@
 import { RichEntityDisplay } from "@/components/molecules/RichEntityDisplay";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
-import { useGraphStore } from "@/stores/graph-store";
-import { useLayoutStore } from "@/stores/layout-store";
+import { graphStore } from "@/stores/graph-store";
+import { layoutStore } from "@/stores/layout-store";
 import type { GraphNode } from "@academic-explorer/graph";
 import { logger } from "@academic-explorer/utils/logger";
 import { IconInfoCircle } from "@tabler/icons-react";
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 interface ThemeColors {
   text: {
@@ -239,10 +239,33 @@ export const EntityInfoSection: React.FC<EntityInfoSectionProps> = ({
   const themeColors = useThemeColors();
   const { colors } = themeColors;
 
-  const hoveredNodeId = useGraphStore((state) => state.hoveredNodeId);
-  const selectedNodeId = useGraphStore((state) => state.selectedNodeId);
-  const previewEntityId = useLayoutStore((state) => state.previewEntityId);
-  const nodesMap = useGraphStore((state) => state.nodes);
+  const [hoveredNodeId, setHoveredNodeId] = useState(
+    (graphStore.getState() as any).hoveredNodeId,
+  );
+  const [selectedNodeId, setSelectedNodeId] = useState(
+    (graphStore.getState() as any).selectedNodeId,
+  );
+  const [nodesMap, setNodesMap] = useState(
+    (graphStore.getState() as any).nodes,
+  );
+  const [previewEntityId, setPreviewEntityId] = useState(
+    (layoutStore.getState() as any).previewEntityId,
+  );
+
+  useEffect(() => {
+    const unsubscribeGraph = (graphStore as any).subscribe((state: any) => {
+      setHoveredNodeId(state.hoveredNodeId);
+      setSelectedNodeId(state.selectedNodeId);
+      setNodesMap(state.nodes);
+    });
+    const unsubscribeLayout = (layoutStore as any).subscribe((state: any) => {
+      setPreviewEntityId(state.previewEntityId);
+    });
+    return () => {
+      unsubscribeGraph();
+      unsubscribeLayout();
+    };
+  }, []);
 
   const routeEntityId = useRouteEntityId();
   const displayEntityId = getDisplayEntityId({

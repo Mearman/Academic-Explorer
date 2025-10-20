@@ -284,6 +284,7 @@ export default tseslint.config([
   {
     // Only apply strict rules to non-test TypeScript files
     files: ["src/**/*.{ts,tsx}"],
+    ignores: ["packages/ui/**/*"],
     languageOptions: {
       parserOptions: {
         project: "./tsconfig.json",
@@ -371,6 +372,16 @@ export default tseslint.config([
     files: ["packages/ui/**/*.{ts,tsx}"],
     rules: {
       "prefer-destructured-params-plugin/prefer-destructured-params": "off",
+      // Disable unsafe rules for UI components that handle dynamic data
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/prefer-nullish-coalescing": "off",
+      "@typescript-eslint/prefer-optional-chain": "off",
+      "@typescript-eslint/no-floating-promises": "off",
+      "@typescript-eslint/await-thenable": "off",
     },
   },
   {

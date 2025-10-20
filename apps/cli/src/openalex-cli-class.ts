@@ -678,7 +678,7 @@ export class OpenAlexCLI {
    */
   async hasStaticData(entityType: StaticEntityType): Promise<boolean> {
     try {
-      const indexPath = join(this.dataPath, entityType, "index.json");
+      const indexPath = join(this.dataPath, entityType, INDEX_FILENAME);
       await access(indexPath);
       return true;
     } catch {
@@ -742,7 +742,7 @@ export class OpenAlexCLI {
     entityType: StaticEntityType,
   ): Promise<UnifiedIndex | null> {
     try {
-      const indexPath = join(this.dataPath, entityType, "index.json");
+      const indexPath = join(this.dataPath, entityType, INDEX_FILENAME);
       const indexContent = await readFile(indexPath, "utf-8");
       const parsed: unknown = JSON.parse(indexContent);
 
@@ -787,7 +787,7 @@ export class OpenAlexCLI {
     try {
       const entityDir = join(this.dataPath, entityType);
       await mkdir(entityDir, { recursive: true });
-      const indexPath = join(entityDir, "index.json");
+      const indexPath = join(entityDir, INDEX_FILENAME);
       const content = JSON.stringify(index, null, 2);
       await writeFile(indexPath, content);
       logger.debug(
@@ -861,7 +861,7 @@ export class OpenAlexCLI {
     entityType: StaticEntityType,
     entityId: string,
   ): Promise<UnifiedIndex | null> {
-    const indexPath = join(this.dataPath, entityType, "index.json");
+    const indexPath = join(this.dataPath, entityType, INDEX_FILENAME);
     const indexContent = await readFile(indexPath, "utf-8");
     const parsedIndex: unknown = JSON.parse(indexContent);
 
@@ -1054,7 +1054,7 @@ export class OpenAlexCLI {
       const { readdir } = await import("fs/promises");
       const files = await readdir(queryDir);
       const queryFiles = files.filter(
-        (f) => f.endsWith(".json") && f !== "index.json",
+        (f) => f.endsWith(".json") && f !== INDEX_FILENAME,
       );
 
       for (const filename of queryFiles) {
@@ -1327,7 +1327,7 @@ export class OpenAlexCLI {
         this.dataPath,
         entityType,
         "queries",
-        "index.json",
+        INDEX_FILENAME,
       );
       const indexContent = await readFile(queryIndexPath, "utf-8");
       const parsed: unknown = JSON.parse(indexContent);
@@ -1385,7 +1385,7 @@ export class OpenAlexCLI {
     try {
       const queryDir = join(this.dataPath, entityType, "queries");
       await mkdir(queryDir, { recursive: true });
-      const queryIndexPath = join(queryDir, "index.json");
+      const queryIndexPath = join(queryDir, INDEX_FILENAME);
       const content = JSON.stringify(queryIndex, null, 2);
       await writeFile(queryIndexPath, content);
       logger.debug(
@@ -1601,7 +1601,7 @@ export class OpenAlexCLI {
     }> = [];
 
     for (const file of files) {
-      if (file.endsWith(".json") && file !== "index.json") {
+      if (file.endsWith(".json") && file !== INDEX_FILENAME) {
         const result = await this.processQueryFile(queryDir, file);
         if (result) results.push(result);
       }

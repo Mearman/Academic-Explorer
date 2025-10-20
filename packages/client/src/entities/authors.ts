@@ -434,12 +434,34 @@ export class AuthorsApi {
       select: ["x_concepts"],
     });
 
-    return (author.x_concepts ?? []) as Array<{
-      id: OpenAlexId;
-      display_name: string;
-      score: number;
-      level: number;
-    }>;
+    const concepts = author.x_concepts ?? [];
+    if (!Array.isArray(concepts)) {
+      return [];
+    }
+
+    return concepts.filter(
+      (
+        concept,
+      ): concept is {
+        id: OpenAlexId;
+        display_name: string;
+        score: number;
+        level: number;
+      } => {
+        return (
+          typeof concept === "object" &&
+          concept !== null &&
+          "id" in concept &&
+          "display_name" in concept &&
+          "score" in concept &&
+          "level" in concept &&
+          typeof concept.id === "string" &&
+          typeof concept.display_name === "string" &&
+          typeof concept.score === "number" &&
+          typeof concept.level === "number"
+        );
+      },
+    );
   }
 
   /**
@@ -471,7 +493,58 @@ export class AuthorsApi {
       select: ["topics"],
     });
 
-    return author.topics ?? [];
+    const topics = author.topics ?? [];
+    if (!Array.isArray(topics)) {
+      return [];
+    }
+
+    return topics.filter(
+      (
+        topic,
+      ): topic is {
+        id: OpenAlexId;
+        display_name: string;
+        count: number;
+        subfield?: { id: OpenAlexId; display_name: string };
+        field?: { id: OpenAlexId; display_name: string };
+        domain?: { id: OpenAlexId; display_name: string };
+      } => {
+        return (
+          typeof topic === "object" &&
+          topic !== null &&
+          "id" in topic &&
+          "display_name" in topic &&
+          "count" in topic &&
+          typeof topic.id === "string" &&
+          typeof topic.display_name === "string" &&
+          typeof topic.count === "number" &&
+          (!("subfield" in topic) ||
+            topic.subfield === undefined ||
+            (typeof topic.subfield === "object" &&
+              topic.subfield !== null &&
+              "id" in topic.subfield &&
+              "display_name" in topic.subfield &&
+              typeof topic.subfield.id === "string" &&
+              typeof topic.subfield.display_name === "string")) &&
+          (!("field" in topic) ||
+            topic.field === undefined ||
+            (typeof topic.field === "object" &&
+              topic.field !== null &&
+              "id" in topic.field &&
+              "display_name" in topic.field &&
+              typeof topic.field.id === "string" &&
+              typeof topic.field.display_name === "string")) &&
+          (!("domain" in topic) ||
+            topic.domain === undefined ||
+            (typeof topic.domain === "object" &&
+              topic.domain !== null &&
+              "id" in topic.domain &&
+              "display_name" in topic.domain &&
+              typeof topic.domain.id === "string" &&
+              typeof topic.domain.display_name === "string"))
+        );
+      },
+    );
   }
 
   /**

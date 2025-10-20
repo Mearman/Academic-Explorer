@@ -78,6 +78,7 @@ export class GitHubPagesReaderError extends Error {
  * GitHub Pages static data reader with caching and retry logic
  */
 export class GitHubPagesReader {
+  private static readonly LOGGER_NAME = "static-cache";
   private config: Required<GitHubPagesReaderConfig>;
   private cache: MemoryCache<CachedStaticData<unknown>>;
   private retryConfig: RetryConfig;
@@ -117,12 +118,16 @@ export class GitHubPagesReader {
     // Detect production environment
     this.isProduction = this.detectProductionEnvironment();
 
-    logger.debug("static-cache", "GitHubPagesReader initialized", {
-      baseUrl: this.config.baseUrl,
-      isProduction: this.isProduction,
-      cacheTtl: this.config.cacheTtl,
-      maxRetries: this.config.maxRetries,
-    });
+    logger.debug(
+      GitHubPagesReader.LOGGER_NAME,
+      "GitHubPagesReader initialized",
+      {
+        baseUrl: this.config.baseUrl,
+        isProduction: this.isProduction,
+        cacheTtl: this.config.cacheTtl,
+        maxRetries: this.config.maxRetries,
+      },
+    );
   }
 
   /**
@@ -132,7 +137,7 @@ export class GitHubPagesReader {
     // Only fetch in production mode
     if (!this.isProduction) {
       logger.debug(
-        "static-cache",
+        GitHubPagesReader.LOGGER_NAME,
         "Skipping GitHub Pages fetch in non-production environment",
         { path },
       );
@@ -144,10 +149,14 @@ export class GitHubPagesReader {
     // Check cache first
     const cached = this.cache.get(cacheKey);
     if (cached) {
-      logger.debug("static-cache", "Returning cached static data", {
-        path,
-        cacheKey,
-      });
+      logger.debug(
+        GitHubPagesReader.LOGGER_NAME,
+        "Returning cached static data",
+        {
+          path,
+          cacheKey,
+        },
+      );
       return cached.data as T;
     }
 
@@ -165,7 +174,7 @@ export class GitHubPagesReader {
       this.cache.set({ key: cacheKey, value: cacheEntry });
 
       logger.debug(
-        "static-cache",
+        GitHubPagesReader.LOGGER_NAME,
         "Successfully fetched and cached static data",
         {
           path,
@@ -177,7 +186,7 @@ export class GitHubPagesReader {
       return data;
     } catch (error) {
       logger.error(
-        "static-cache",
+        GitHubPagesReader.LOGGER_NAME,
         "Failed to fetch static data from GitHub Pages",
         {
           path,
@@ -230,7 +239,7 @@ export class GitHubPagesReader {
    */
   clearCache(): void {
     this.cache.clear();
-    logger.debug("static-cache", "GitHub Pages cache cleared");
+    logger.debug(GitHubPagesReader.LOGGER_NAME, "GitHub Pages cache cleared");
   }
 
   /**
@@ -239,7 +248,7 @@ export class GitHubPagesReader {
   updateConfig(newConfig: Partial<GitHubPagesReaderConfig>): void {
     this.config = { ...this.config, ...newConfig };
     logger.debug(
-      "static-cache",
+      GitHubPagesReader.LOGGER_NAME,
       "GitHub Pages reader configuration updated",
       newConfig,
     );
@@ -255,11 +264,15 @@ export class GitHubPagesReader {
     url: string;
     attempt: number;
   }): Promise<T> {
-    logger.debug("static-cache", "Attempting to fetch from GitHub Pages", {
-      url,
-      attempt: attempt + 1,
-      maxRetries: this.retryConfig.maxRetries + 1,
-    });
+    logger.debug(
+      GitHubPagesReader.LOGGER_NAME,
+      "Attempting to fetch from GitHub Pages",
+      {
+        url,
+        attempt: attempt + 1,
+        maxRetries: this.retryConfig.maxRetries + 1,
+      },
+    );
 
     const response = await this.fetchWithTimeout(url);
 
@@ -288,7 +301,7 @@ export class GitHubPagesReader {
     const validatedData = validateStaticData(rawData) as T;
 
     logger.debug(
-      "static-cache",
+      GitHubPagesReader.LOGGER_NAME,
       "Successfully fetched data from GitHub Pages",
       {
         url,
@@ -311,11 +324,15 @@ export class GitHubPagesReader {
   }): Promise<void> {
     const lastError = error instanceof Error ? error : new Error(String(error));
 
-    logger.warn("static-cache", "GitHub Pages fetch attempt failed", {
-      url,
-      attempt: attempt + 1,
-      error: lastError.message,
-    });
+    logger.warn(
+      GitHubPagesReader.LOGGER_NAME,
+      "GitHub Pages fetch attempt failed",
+      {
+        url,
+        attempt: attempt + 1,
+        error: lastError.message,
+      },
+    );
 
     // Don't retry on the last attempt
     if (attempt === this.retryConfig.maxRetries) {
@@ -330,11 +347,15 @@ export class GitHubPagesReader {
     // Calculate delay with exponential backoff
     const delay = this.calculateRetryDelay(attempt);
 
-    logger.debug("static-cache", "Retrying GitHub Pages fetch after delay", {
-      url,
-      attempt: attempt + 1,
-      delay,
-    });
+    logger.debug(
+      GitHubPagesReader.LOGGER_NAME,
+      "Retrying GitHub Pages fetch after delay",
+      {
+        url,
+        attempt: attempt + 1,
+        delay,
+      },
+    );
 
     await this.sleep(delay);
   }
@@ -492,10 +513,14 @@ export class GitHubPagesReader {
     const nodeEnv = process.env.NODE_ENV;
     const isProd = nodeEnv === "production";
 
-    logger.debug("static-cache", "Production environment detection", {
-      nodeEnv,
-      isProd,
-    });
+    logger.debug(
+      GitHubPagesReader.LOGGER_NAME,
+      "Production environment detection",
+      {
+        nodeEnv,
+        isProd,
+      },
+    );
 
     return isProd;
   }

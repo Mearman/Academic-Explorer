@@ -321,9 +321,7 @@ describe("OpenAlexCLI Integration Tests", () => {
     it("should have consistent data structure in author entities", async () => {
       const hasAuthors = await cli.hasStaticData("authors");
       if (!hasAuthors) {
-        console.log(
-          "Skipping test: No static author data available for validation.",
-        );
+        console.log(SKIP_NO_AUTHOR_DATA);
         return;
       }
 

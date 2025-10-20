@@ -4,7 +4,7 @@
  */
 
 import { useCallback } from "react";
-import { useGraphStore } from "@/stores/graph-store";
+import { useGraphStore, graphStore } from "@/stores/graph-store";
 import { useLayoutStore } from "@/stores/layout-store";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { logger } from "@academic-explorer/utils/logger";
@@ -49,7 +49,7 @@ export const useEntityInteraction = (
     loadEntityIntoGraph,
   }: {
     entityId: string;
-    store: ReturnType<typeof useGraphStore.getState>;
+    store: any;
     loadEntityIntoGraph: (entityId: string) => Promise<void>;
   }): Promise<GraphNode | undefined> => {
     // First check if a minimal node already exists
@@ -61,7 +61,7 @@ export const useEntityInteraction = (
       // No existing node, load entity into graph
       await loadEntityIntoGraph(entityId);
       // Find the newly loaded node
-      const updatedStore = useGraphStore.getState();
+      const updatedStore = graphStore.getState() as any;
       targetNode = (Object.values(updatedStore.nodes) as GraphNode[]).find(
         (node) => node.entityId === entityId,
       );
@@ -85,7 +85,7 @@ export const useEntityInteraction = (
     entityId: string;
     entityType: string;
     options: EntityInteractionOptions;
-    store: ReturnType<typeof useGraphStore.getState>;
+    store: any;
     setPreviewEntity: (entityId: string) => void;
     expandNode: (params: {
       nodeId: string;
@@ -141,7 +141,7 @@ export const useEntityInteraction = (
       existingNode?: GraphNode;
     }) => {
       try {
-        const store = useGraphStore.getState();
+        const store = graphStore.getState() as any;
 
         logger.debug("graph", "Entity interaction started", {
           ...(entityId && { entityId }),
