@@ -1,4 +1,5 @@
 import type { Topic } from "@academic-explorer/client";
+import { topicSchema } from "@academic-explorer/entities";
 import { ActionIcon, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { IconExternalLink } from "@tabler/icons-react";
 import React from "react";
@@ -20,7 +21,16 @@ export const TopicCard: React.FC<TopicCardProps> = ({
   className,
   showHierarchy = true,
 }) => {
-  const href = `/topics/${topic.id}`;
+  // Validate topic data with Zod schema
+  let validatedTopic: Topic;
+  try {
+    validatedTopic = topicSchema.parse(topic);
+  } catch (error) {
+    console.error("Invalid topic data:", error);
+    return null; // or render an error state
+  }
+
+  const href = `/topics/${validatedTopic.id}`;
 
   const handleClick = () => {
     if (onNavigate) {
@@ -58,48 +68,48 @@ export const TopicCard: React.FC<TopicCardProps> = ({
 
         {/* Name */}
         <Text fw={600} size="md" lineClamp={2}>
-          {topic.display_name}
+          {validatedTopic.display_name}
         </Text>
 
         {/* Description */}
-        {topic.description && (
+        {validatedTopic.description && (
           <Text size="sm" c="dimmed" lineClamp={2}>
-            {topic.description}
+            {validatedTopic.description}
           </Text>
         )}
 
         {/* Hierarchy */}
         {showHierarchy && (
           <Stack gap="xs">
-            {topic.domain && (
+            {validatedTopic.domain && (
               <Text size="xs" c="dimmed">
-                Domain: {topic.domain.display_name}
+                Domain: {validatedTopic.domain.display_name}
               </Text>
             )}
-            {topic.field && (
+            {validatedTopic.field && (
               <Text size="xs" c="dimmed">
-                Field: {topic.field.display_name}
+                Field: {validatedTopic.field.display_name}
               </Text>
             )}
-            {topic.subfield && (
+            {validatedTopic.subfield && (
               <Text size="xs" c="dimmed">
-                Subfield: {topic.subfield.display_name}
+                Subfield: {validatedTopic.subfield.display_name}
               </Text>
             )}
           </Stack>
         )}
 
         {/* Keywords */}
-        {topic.keywords && topic.keywords.length > 0 && (
+        {validatedTopic.keywords && validatedTopic.keywords.length > 0 && (
           <Group gap="xs">
-            {topic.keywords.slice(0, 3).map((keyword, index) => (
+            {validatedTopic.keywords.slice(0, 3).map((keyword, index) => (
               <Badge key={index} color="gray" variant="dot" size="sm">
                 {keyword}
               </Badge>
             ))}
-            {topic.keywords.length > 3 && (
+            {validatedTopic.keywords.length > 3 && (
               <Text size="xs" c="dimmed">
-                +{topic.keywords.length - 3} more
+                +{validatedTopic.keywords.length - 3} more
               </Text>
             )}
           </Group>
@@ -109,13 +119,13 @@ export const TopicCard: React.FC<TopicCardProps> = ({
         <Group gap="md">
           <Text size="sm" c="dimmed">
             <Text component="span" fw={500}>
-              {topic.works_count?.toLocaleString() || 0}
+              {validatedTopic.works_count?.toLocaleString() || 0}
             </Text>{" "}
             works
           </Text>
           <Text size="sm" c="dimmed">
             <Text component="span" fw={500}>
-              {topic.cited_by_count?.toLocaleString() || 0}
+              {validatedTopic.cited_by_count?.toLocaleString() || 0}
             </Text>{" "}
             citations
           </Text>
@@ -123,7 +133,7 @@ export const TopicCard: React.FC<TopicCardProps> = ({
 
         {/* OpenAlex ID */}
         <Text size="xs" c="dimmed" style={{ fontFamily: "monospace" }}>
-          {topic.id}
+          {validatedTopic.id}
         </Text>
       </Stack>
     </Card>

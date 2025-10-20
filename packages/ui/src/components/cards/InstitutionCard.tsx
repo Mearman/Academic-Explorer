@@ -1,4 +1,5 @@
 import type { InstitutionEntity } from "@academic-explorer/client";
+import { institutionSchema } from "@academic-explorer/entities";
 import { ActionIcon, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { IconExternalLink, IconMapPin } from "@tabler/icons-react";
 import React from "react";
@@ -18,7 +19,16 @@ export const InstitutionCard: React.FC<InstitutionCardProps> = ({
   onNavigate,
   className,
 }) => {
-  const href = `/institutions/${institution.id}`;
+  // Validate institution data with Zod schema
+  let validatedInstitution: InstitutionEntity;
+  try {
+    validatedInstitution = institutionSchema.parse(institution);
+  } catch (error) {
+    console.error("Invalid institution data:", error);
+    return null; // or render an error state
+  }
+
+  const href = `/institutions/${validatedInstitution.id}`;
 
   const handleClick = () => {
     if (onNavigate) {
@@ -27,7 +37,10 @@ export const InstitutionCard: React.FC<InstitutionCardProps> = ({
   };
 
   // Build location string
-  const location = [institution.geo?.city, institution.geo?.country]
+  const location = [
+    validatedInstitution.geo?.city,
+    validatedInstitution.geo?.country,
+  ]
     .filter(Boolean)
     .join(", ");
 
@@ -61,7 +74,7 @@ export const InstitutionCard: React.FC<InstitutionCardProps> = ({
 
         {/* Name */}
         <Text fw={600} size="md" lineClamp={2}>
-          {institution.display_name}
+          {validatedInstitution.display_name}
         </Text>
 
         {/* Location */}
@@ -75,9 +88,9 @@ export const InstitutionCard: React.FC<InstitutionCardProps> = ({
         )}
 
         {/* Institution type */}
-        {institution.type && (
+        {validatedInstitution.type && (
           <Badge color="gray" variant="dot" size="sm">
-            {institution.type}
+            {validatedInstitution.type}
           </Badge>
         )}
 
@@ -85,13 +98,13 @@ export const InstitutionCard: React.FC<InstitutionCardProps> = ({
         <Group gap="md">
           <Text size="sm" c="dimmed">
             <Text component="span" fw={500}>
-              {institution.works_count?.toLocaleString() || 0}
+              {validatedInstitution.works_count?.toLocaleString() || 0}
             </Text>{" "}
             works
           </Text>
           <Text size="sm" c="dimmed">
             <Text component="span" fw={500}>
-              {institution.cited_by_count?.toLocaleString() || 0}
+              {validatedInstitution.cited_by_count?.toLocaleString() || 0}
             </Text>{" "}
             citations
           </Text>
@@ -99,7 +112,7 @@ export const InstitutionCard: React.FC<InstitutionCardProps> = ({
 
         {/* OpenAlex ID */}
         <Text size="xs" c="dimmed" style={{ fontFamily: "monospace" }}>
-          {institution.id}
+          {validatedInstitution.id}
         </Text>
       </Stack>
     </Card>

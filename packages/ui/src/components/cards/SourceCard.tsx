@@ -1,4 +1,5 @@
 import type { Source } from "@academic-explorer/client";
+import { sourceSchema } from "@academic-explorer/entities";
 import { ActionIcon, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { IconExternalLink, IconLockOpen } from "@tabler/icons-react";
 import React from "react";
@@ -18,7 +19,16 @@ export const SourceCard: React.FC<SourceCardProps> = ({
   onNavigate,
   className,
 }) => {
-  const href = `/sources/${source.id}`;
+  // Validate source data with Zod schema
+  let validatedSource: Source;
+  try {
+    validatedSource = sourceSchema.parse(source);
+  } catch (error) {
+    console.error("Invalid source data:", error);
+    return null; // or render an error state
+  }
+
+  const href = `/sources/${validatedSource.id}`;
 
   const handleClick = () => {
     if (onNavigate) {
@@ -43,7 +53,7 @@ export const SourceCard: React.FC<SourceCardProps> = ({
             <Badge color="purple" variant="light">
               Source
             </Badge>
-            {source.is_oa && (
+            {validatedSource.is_oa && (
               <Badge
                 color="green"
                 variant="light"
@@ -67,26 +77,26 @@ export const SourceCard: React.FC<SourceCardProps> = ({
 
         {/* Name */}
         <Text fw={600} size="md" lineClamp={2}>
-          {source.display_name}
+          {validatedSource.display_name}
         </Text>
 
         {/* Publisher */}
-        {source.publisher && (
+        {validatedSource.publisher && (
           <Text size="sm" c="dimmed" lineClamp={1}>
-            Publisher: {source.publisher}
+            Publisher: {validatedSource.publisher}
           </Text>
         )}
 
         {/* Source type and ISSN */}
         <Group gap="xs">
-          {source.type && (
+          {validatedSource.type && (
             <Badge color="gray" variant="dot" size="sm">
-              {source.type}
+              {validatedSource.type}
             </Badge>
           )}
-          {source.issn_l && (
+          {validatedSource.issn_l && (
             <Text size="xs" c="dimmed" style={{ fontFamily: "monospace" }}>
-              ISSN: {source.issn_l}
+              ISSN: {validatedSource.issn_l}
             </Text>
           )}
         </Group>
@@ -95,28 +105,29 @@ export const SourceCard: React.FC<SourceCardProps> = ({
         <Group gap="md">
           <Text size="sm" c="dimmed">
             <Text component="span" fw={500}>
-              {source.works_count?.toLocaleString() || 0}
+              {validatedSource.works_count?.toLocaleString() || 0}
             </Text>{" "}
             works
           </Text>
           <Text size="sm" c="dimmed">
             <Text component="span" fw={500}>
-              {source.cited_by_count?.toLocaleString() || 0}
+              {validatedSource.cited_by_count?.toLocaleString() || 0}
             </Text>{" "}
             citations
           </Text>
         </Group>
 
         {/* APC info */}
-        {source.apc_usd !== undefined && source.apc_usd > 0 && (
-          <Text size="sm" c="dimmed">
-            APC: ${source.apc_usd.toLocaleString()} USD
-          </Text>
-        )}
+        {validatedSource.apc_usd !== undefined &&
+          validatedSource.apc_usd > 0 && (
+            <Text size="sm" c="dimmed">
+              APC: ${validatedSource.apc_usd.toLocaleString()} USD
+            </Text>
+          )}
 
         {/* OpenAlex ID */}
         <Text size="xs" c="dimmed" style={{ fontFamily: "monospace" }}>
-          {source.id}
+          {validatedSource.id}
         </Text>
       </Stack>
     </Card>

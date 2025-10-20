@@ -1,4 +1,5 @@
 import type { Work } from "@academic-explorer/client";
+import { workSchema } from "@academic-explorer/entities";
 import { ActionIcon, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { IconExternalLink, IconLock, IconLockOpen } from "@tabler/icons-react";
 import React from "react";
@@ -20,8 +21,17 @@ export const WorkCard: React.FC<WorkCardProps> = ({
   className,
   showAuthors = true,
 }) => {
-  const href = `/works/${work.id}`;
-  const isOA = work.open_access?.is_oa || false;
+  // Validate work data with Zod schema
+  let validatedWork: Work;
+  try {
+    validatedWork = workSchema.parse(work);
+  } catch (error) {
+    console.error("Invalid work data:", error);
+    return null; // or render an error state
+  }
+
+  const href = `/works/${validatedWork.id}`;
+  const isOA = validatedWork.open_access?.is_oa || false;
 
   const handleClick = () => {
     if (onNavigate) {
@@ -31,11 +41,11 @@ export const WorkCard: React.FC<WorkCardProps> = ({
 
   // Get author names from authorships
   const authorNames =
-    work.authorships
+    validatedWork.authorships
       ?.slice(0, 3)
       .map((a) => a.author?.display_name)
       .filter(Boolean) || [];
-  const hasMoreAuthors = (work.authorships?.length || 0) > 3;
+  const hasMoreAuthors = (validatedWork.authorships?.length || 0) > 3;
 
   return (
     <Card
@@ -86,7 +96,7 @@ export const WorkCard: React.FC<WorkCardProps> = ({
 
         {/* Title */}
         <Text fw={600} size="md" lineClamp={2}>
-          {work.title || work.display_name}
+          {validatedWork.title || validatedWork.display_name}
         </Text>
 
         {/* Authors */}
@@ -99,16 +109,16 @@ export const WorkCard: React.FC<WorkCardProps> = ({
 
         {/* Publication info */}
         <Group gap="md">
-          {work.publication_year && (
+          {validatedWork.publication_year && (
             <Text size="sm" c="dimmed">
               <Text component="span" fw={500}>
-                {work.publication_year}
+                {validatedWork.publication_year}
               </Text>
             </Text>
           )}
-          {work.primary_location?.source?.display_name && (
+          {validatedWork.primary_location?.source?.display_name && (
             <Text size="sm" c="dimmed" lineClamp={1}>
-              {work.primary_location.source.display_name}
+              {validatedWork.primary_location.source.display_name}
             </Text>
           )}
         </Group>
@@ -117,14 +127,14 @@ export const WorkCard: React.FC<WorkCardProps> = ({
         <Group gap="md">
           <Text size="sm" c="dimmed">
             <Text component="span" fw={500}>
-              {work.cited_by_count?.toLocaleString() || 0}
+              {validatedWork.cited_by_count?.toLocaleString() || 0}
             </Text>{" "}
             citations
           </Text>
-          {work.referenced_works_count !== undefined && (
+          {validatedWork.referenced_works_count !== undefined && (
             <Text size="sm" c="dimmed">
               <Text component="span" fw={500}>
-                {work.referenced_works_count.toLocaleString()}
+                {validatedWork.referenced_works_count.toLocaleString()}
               </Text>{" "}
               references
             </Text>
@@ -133,21 +143,21 @@ export const WorkCard: React.FC<WorkCardProps> = ({
 
         {/* DOI and Type */}
         <Group gap="xs">
-          {work.type && (
+          {validatedWork.type && (
             <Badge color="gray" variant="dot" size="sm">
-              {work.type}
+              {validatedWork.type}
             </Badge>
           )}
-          {work.doi && (
+          {validatedWork.doi && (
             <Text size="xs" c="dimmed" style={{ fontFamily: "monospace" }}>
-              {work.doi}
+              {validatedWork.doi}
             </Text>
           )}
         </Group>
 
         {/* OpenAlex ID */}
         <Text size="xs" c="dimmed" style={{ fontFamily: "monospace" }}>
-          {work.id}
+          {validatedWork.id}
         </Text>
       </Stack>
     </Card>

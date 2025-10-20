@@ -1,4 +1,5 @@
 import type { Publisher } from "@academic-explorer/client";
+import { publisherSchema } from "@academic-explorer/entities";
 import { ActionIcon, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { IconExternalLink } from "@tabler/icons-react";
 import React from "react";
@@ -18,7 +19,16 @@ export const PublisherCard: React.FC<PublisherCardProps> = ({
   onNavigate,
   className,
 }) => {
-  const href = `/publishers/${publisher.id}`;
+  // Validate publisher data with Zod schema
+  let validatedPublisher: Publisher;
+  try {
+    validatedPublisher = publisherSchema.parse(publisher);
+  } catch (error) {
+    console.error("Invalid publisher data:", error);
+    return null; // or render an error state
+  }
+
+  const href = `/publishers/${validatedPublisher.id}`;
 
   const handleClick = () => {
     if (onNavigate) {
@@ -56,43 +66,46 @@ export const PublisherCard: React.FC<PublisherCardProps> = ({
 
         {/* Name */}
         <Text fw={600} size="md" lineClamp={2}>
-          {publisher.display_name}
+          {validatedPublisher.display_name}
         </Text>
 
         {/* Hierarchy level */}
-        {publisher.hierarchy_level !== undefined && (
+        {validatedPublisher.hierarchy_level !== undefined && (
           <Badge color="gray" variant="dot" size="sm">
-            Level {publisher.hierarchy_level}
+            Level {validatedPublisher.hierarchy_level}
           </Badge>
         )}
 
         {/* Country codes */}
-        {publisher.country_codes && publisher.country_codes.length > 0 && (
-          <Group gap="xs">
-            {publisher.country_codes.slice(0, 3).map((code, index) => (
-              <Badge key={index} color="gray" variant="outline" size="sm">
-                {code}
-              </Badge>
-            ))}
-            {publisher.country_codes.length > 3 && (
-              <Text size="xs" c="dimmed">
-                +{publisher.country_codes.length - 3} more
-              </Text>
-            )}
-          </Group>
-        )}
+        {validatedPublisher.country_codes &&
+          validatedPublisher.country_codes.length > 0 && (
+            <Group gap="xs">
+              {validatedPublisher.country_codes
+                .slice(0, 3)
+                .map((code, index) => (
+                  <Badge key={index} color="gray" variant="outline" size="sm">
+                    {code}
+                  </Badge>
+                ))}
+              {validatedPublisher.country_codes.length > 3 && (
+                <Text size="xs" c="dimmed">
+                  +{validatedPublisher.country_codes.length - 3} more
+                </Text>
+              )}
+            </Group>
+          )}
 
         {/* Metrics */}
         <Group gap="md">
           <Text size="sm" c="dimmed">
             <Text component="span" fw={500}>
-              {publisher.sources_count?.toLocaleString() || 0}
+              {validatedPublisher.sources_count?.toLocaleString() || 0}
             </Text>{" "}
             sources
           </Text>
           <Text size="sm" c="dimmed">
             <Text component="span" fw={500}>
-              {publisher.works_count?.toLocaleString() || 0}
+              {validatedPublisher.works_count?.toLocaleString() || 0}
             </Text>{" "}
             works
           </Text>
@@ -100,14 +113,14 @@ export const PublisherCard: React.FC<PublisherCardProps> = ({
 
         <Text size="sm" c="dimmed">
           <Text component="span" fw={500}>
-            {publisher.cited_by_count?.toLocaleString() || 0}
+            {validatedPublisher.cited_by_count?.toLocaleString() || 0}
           </Text>{" "}
           citations
         </Text>
 
         {/* OpenAlex ID */}
         <Text size="xs" c="dimmed" style={{ fontFamily: "monospace" }}>
-          {publisher.id}
+          {validatedPublisher.id}
         </Text>
       </Stack>
     </Card>

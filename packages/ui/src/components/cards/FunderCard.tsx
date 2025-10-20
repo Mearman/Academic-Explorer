@@ -1,4 +1,5 @@
 import type { Funder } from "@academic-explorer/client";
+import { funderSchema } from "@academic-explorer/entities";
 import {
   ActionIcon,
   Anchor,
@@ -26,7 +27,16 @@ export const FunderCard: React.FC<FunderCardProps> = ({
   onNavigate,
   className,
 }) => {
-  const href = `/funders/${funder.id}`;
+  // Validate funder data with Zod schema
+  let validatedFunder: Funder;
+  try {
+    validatedFunder = funderSchema.parse(funder);
+  } catch (error) {
+    console.error("Invalid funder data:", error);
+    return null; // or render an error state
+  }
+
+  const href = `/funders/${validatedFunder.id}`;
 
   const handleClick = () => {
     if (onNavigate) {
@@ -51,9 +61,9 @@ export const FunderCard: React.FC<FunderCardProps> = ({
             <Badge color="cyan" variant="light">
               Funder
             </Badge>
-            {funder.homepage_url && (
+            {validatedFunder.homepage_url && (
               <Anchor
-                href={funder.homepage_url}
+                href={validatedFunder.homepage_url}
                 target="_blank"
                 size="xs"
                 onClick={(e: React.MouseEvent) => e.stopPropagation()}
@@ -76,36 +86,36 @@ export const FunderCard: React.FC<FunderCardProps> = ({
 
         {/* Name */}
         <Text fw={600} size="md" lineClamp={2}>
-          {funder.display_name}
+          {validatedFunder.display_name}
         </Text>
 
         {/* Description */}
-        {funder.description && (
+        {validatedFunder.description && (
           <Text size="sm" c="dimmed" lineClamp={2}>
-            {funder.description}
+            {validatedFunder.description}
           </Text>
         )}
 
         {/* Country */}
-        {funder.country_code && (
+        {validatedFunder.country_code && (
           <Badge color="gray" variant="outline" size="sm">
-            {funder.country_code}
+            {validatedFunder.country_code}
           </Badge>
         )}
 
         {/* Metrics */}
         <Group gap="md">
-          {funder.grants_count !== undefined && (
+          {validatedFunder.grants_count !== undefined && (
             <Text size="sm" c="dimmed">
               <Text component="span" fw={500}>
-                {funder.grants_count.toLocaleString()}
+                {validatedFunder.grants_count.toLocaleString()}
               </Text>{" "}
               grants
             </Text>
           )}
           <Text size="sm" c="dimmed">
             <Text component="span" fw={500}>
-              {funder.works_count?.toLocaleString() || 0}
+              {validatedFunder.works_count?.toLocaleString() || 0}
             </Text>{" "}
             works
           </Text>
@@ -113,24 +123,24 @@ export const FunderCard: React.FC<FunderCardProps> = ({
 
         <Text size="sm" c="dimmed">
           <Text component="span" fw={500}>
-            {funder.cited_by_count?.toLocaleString() || 0}
+            {validatedFunder.cited_by_count?.toLocaleString() || 0}
           </Text>{" "}
           citations
         </Text>
 
         {/* Summary stats */}
-        {funder.summary_stats && (
+        {validatedFunder.summary_stats && (
           <Group gap="md">
             <Text size="sm" c="dimmed">
               h-index:{" "}
               <Text component="span" fw={500}>
-                {funder.summary_stats.h_index}
+                {validatedFunder.summary_stats.h_index}
               </Text>
             </Text>
             <Text size="sm" c="dimmed">
               i10:{" "}
               <Text component="span" fw={500}>
-                {funder.summary_stats.i10_index}
+                {validatedFunder.summary_stats.i10_index}
               </Text>
             </Text>
           </Group>
@@ -138,7 +148,7 @@ export const FunderCard: React.FC<FunderCardProps> = ({
 
         {/* OpenAlex ID */}
         <Text size="xs" c="dimmed" style={{ fontFamily: "monospace" }}>
-          {funder.id}
+          {validatedFunder.id}
         </Text>
       </Stack>
     </Card>

@@ -1,4 +1,5 @@
 import type { Author } from "@academic-explorer/client";
+import { authorSchema } from "@academic-explorer/entities";
 import {
   ActionIcon,
   Anchor,
@@ -28,7 +29,16 @@ export const AuthorCard: React.FC<AuthorCardProps> = ({
   className,
   showAffiliations = true,
 }) => {
-  const href = `/authors/${author.id}`;
+  // Validate author data with Zod schema
+  let validatedAuthor: Author;
+  try {
+    validatedAuthor = authorSchema.parse(author);
+  } catch (error) {
+    console.error("Invalid author data:", error);
+    return null; // or render an error state
+  }
+
+  const href = `/authors/${validatedAuthor.id}`;
 
   const handleClick = () => {
     if (onNavigate) {
@@ -37,7 +47,8 @@ export const AuthorCard: React.FC<AuthorCardProps> = ({
   };
 
   // Get primary affiliation
-  const primaryInstitution = author.last_known_institutions?.[0]?.display_name;
+  const primaryInstitution =
+    validatedAuthor.last_known_institutions?.[0]?.display_name;
 
   return (
     <Card
@@ -56,9 +67,9 @@ export const AuthorCard: React.FC<AuthorCardProps> = ({
             <Badge color="green" variant="light">
               Author
             </Badge>
-            {author.orcid && (
+            {validatedAuthor.orcid && (
               <Anchor
-                href={author.orcid}
+                href={validatedAuthor.orcid}
                 target="_blank"
                 size="xs"
                 onClick={(e: React.MouseEvent) => e.stopPropagation()}
@@ -81,7 +92,7 @@ export const AuthorCard: React.FC<AuthorCardProps> = ({
 
         {/* Name */}
         <Text fw={600} size="md" lineClamp={2}>
-          {author.display_name}
+          {validatedAuthor.display_name}
         </Text>
 
         {/* Affiliation */}
@@ -92,18 +103,18 @@ export const AuthorCard: React.FC<AuthorCardProps> = ({
         )}
 
         {/* Summary stats */}
-        {author.summary_stats && (
+        {validatedAuthor.summary_stats && (
           <Group gap="md">
             <Text size="sm" c="dimmed">
               h-index:{" "}
               <Text component="span" fw={500}>
-                {author.summary_stats.h_index}
+                {validatedAuthor.summary_stats.h_index}
               </Text>
             </Text>
             <Text size="sm" c="dimmed">
               i10:{" "}
               <Text component="span" fw={500}>
-                {author.summary_stats.i10_index}
+                {validatedAuthor.summary_stats.i10_index}
               </Text>
             </Text>
           </Group>
@@ -113,13 +124,13 @@ export const AuthorCard: React.FC<AuthorCardProps> = ({
         <Group gap="md">
           <Text size="sm" c="dimmed">
             <Text component="span" fw={500}>
-              {author.works_count?.toLocaleString() || 0}
+              {validatedAuthor.works_count?.toLocaleString() || 0}
             </Text>{" "}
             works
           </Text>
           <Text size="sm" c="dimmed">
             <Text component="span" fw={500}>
-              {author.cited_by_count?.toLocaleString() || 0}
+              {validatedAuthor.cited_by_count?.toLocaleString() || 0}
             </Text>{" "}
             citations
           </Text>
@@ -127,7 +138,7 @@ export const AuthorCard: React.FC<AuthorCardProps> = ({
 
         {/* OpenAlex ID */}
         <Text size="xs" c="dimmed" style={{ fontFamily: "monospace" }}>
-          {author.id}
+          {validatedAuthor.id}
         </Text>
       </Stack>
     </Card>
