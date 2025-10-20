@@ -147,10 +147,10 @@ function setupTestCacheInterception(
 
         // Only save to cache if response is not mocked
         if (!isMocked) {
-          const cachePath = await getCacheFilePath(
+          const cachePath = await getCacheFilePath({
             url,
-            pluginState.getStaticDataDir()!,
-          );
+            staticDataRoot: pluginState.getStaticDataDir()!,
+          });
           if (cachePath) {
             // Simple directory index update for testing
             const updateDirectoryIndexes = async (

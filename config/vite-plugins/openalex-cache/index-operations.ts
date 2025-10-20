@@ -18,6 +18,7 @@ import {
   type EntityType,
   type CollisionInfo,
 } from "../../../packages/utils/src/static-data/cache-utilities";
+import { logger } from "../../../packages/utils/src/logger";
 import type { CacheContext } from "./types";
 
 /**
@@ -321,15 +322,15 @@ export const updateDirectoryIndexWithAggregation = async (
             // variations (e.g., with api_key or mailto params) that would normalize to
             // the same filename, improving cache efficiency and debugging capabilities.
             // Only merges if hasCollision confirms path equivalence.
-            const possibleUrls = reconstructPossibleCollisions(
-              baseName,
+            const possibleUrls = reconstructPossibleCollisions({
+              queryFilename: baseName,
               entityType,
-            );
+            });
             let mergedThisEntry = 0;
             for (const possibleUrl of possibleUrls) {
               if (
                 possibleUrl !== primaryUrl &&
-                hasCollision(fileEntry, possibleUrl)
+                (await hasCollision(fileEntry, possibleUrl))
               ) {
                 fileEntry = mergeCollision(fileEntry, possibleUrl);
                 mergedThisEntry++;

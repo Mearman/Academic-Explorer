@@ -18,7 +18,7 @@ export const getCachePath = async (
   url: string,
   context: CacheContext,
 ): Promise<string | null> => {
-  return await getCacheFilePath(url, context.staticDataDir);
+  return await getCacheFilePath({ url, staticDataRoot: context.staticDataDir });
 };
 
 /**
