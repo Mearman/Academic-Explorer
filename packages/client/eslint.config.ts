@@ -1,5 +1,5 @@
 import tseslint from "typescript-eslint";
-import baseConfig from "../../eslint.config.base.js";
+import baseConfig from "../../eslint.config.base";
 
 export default tseslint.config([
   ...baseConfig,
@@ -15,6 +15,12 @@ export default tseslint.config([
       "src/**/__tests__/**/*",
       "eslint.config.ts",
     ],
+  },
+  {
+    // Disable prefer-destructured-params for the entire client package
+    rules: {
+      "prefer-destructured-params-plugin/prefer-destructured-params": "off",
+    },
   },
   {
     // Only apply strict rules to non-test TypeScript files
@@ -34,6 +40,9 @@ export default tseslint.config([
       // API clients may need some type flexibility
       "@typescript-eslint/no-unsafe-assignment": "warn",
       "@typescript-eslint/no-unsafe-member-access": "warn",
+
+      // Disable prefer-destructured-params for API function patterns
+      "prefer-destructured-params-plugin/prefer-destructured-params": "off",
     },
   },
   {

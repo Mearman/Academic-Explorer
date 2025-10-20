@@ -15,6 +15,21 @@
       "cache": true
     },
 
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_OPTIONS='--import tsx' eslint --no-warn-ignored 'src/**/*.{ts,tsx}' --ignore-pattern 'src/**/*.{test,spec}.{ts,tsx}' --fix",
+        "cwd": "{projectRoot}"
+      },
+      "inputs": [
+        "default",
+        "{workspaceRoot}/eslint.config.ts",
+        "{workspaceRoot}/eslint.config.*.ts"
+      ],
+      "outputs": ["{workspaceRoot}/.nx/cache/lint-results/{projectName}.json"],
+      "cache": true
+    },
+
     "test": {
       "executor": "nx:run-commands",
       "options": {
