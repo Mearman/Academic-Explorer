@@ -9,7 +9,8 @@ import type {
   QueryParams,
   OpenAlexResponse,
   AutocompleteResult,
-} from "../types";
+  GroupedResponse,
+} from "@academic-explorer/types/entities";
 import { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";
 
@@ -62,21 +63,6 @@ export interface GroupByResult {
   key: string;
   key_display_name: string;
   count: number;
-}
-
-/**
- * Response structure for grouped Works API results
- */
-export interface GroupedResponse<T> {
-  results: T[];
-  meta: {
-    count: number;
-    db_response_time_ms: number;
-    page: number;
-    per_page: number;
-    groups_count?: number;
-  };
-  group_by: GroupByResult[];
 }
 
 /**

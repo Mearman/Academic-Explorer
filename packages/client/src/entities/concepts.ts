@@ -4,7 +4,7 @@
  */
 
 import { logger } from "@academic-explorer/utils/logger";
-import { conceptSchema } from "@academic-explorer/entities";
+import { conceptSchema } from "@academic-explorer/types/entities";
 import type { OpenAlexBaseClient } from "../client";
 import type {
   AutocompleteResult,
@@ -12,157 +12,17 @@ import type {
   ConceptsFilters,
   OpenAlexResponse,
   QueryParams,
+  ConceptsQueryParams,
+  ConceptSortOption,
+  ConceptSelectField,
+  SearchConceptsOptions,
+  AutocompleteOptions,
 } from "../types";
+import type { z } from "zod";
 import { AutocompleteApi } from "../utils/autocomplete";
 import { isValidWikidata, normalizeExternalId } from "../utils/id-resolver";
 import { buildFilterString } from "../utils/query-builder";
-
-/**
- * Strict query parameters specific to Concepts API
- */
-export interface StrictConceptsQueryParams {
-  /** Filter string for concept queries */
-  readonly filter?: string;
-
-  /** Search query string */
-  readonly search?: string;
-
-  /** Sort order for results */
-  readonly sort?: ConceptSortOption;
-
-  /** Page number for pagination */
-  readonly page?: number;
-
-  /** Number of results per page */
-  readonly per_page?: number;
-
-  /** Cursor for cursor-based pagination */
-  readonly cursor?: string;
-
-  /** Specific fields to include in response */
-  readonly select?: ConceptSelectField[];
-
-  /** Sample size for random sampling */
-  readonly sample?: number;
-
-  /** Seed for reproducible random sampling */
-  readonly seed?: number;
-
-  /** Group by field */
-  readonly group_by?: string;
-}
-
-/**
- * Type guard to check if a value is a string
- */
-function isString(value: unknown): value is string {
-  return typeof value === "string";
-}
-
-/**
- * Type guard to check if a value is a string array
- */
-function isStringArray(value: unknown): value is string[] {
-  return Array.isArray(value) && value.every((item) => isString(item));
-}
-
-/**
- * Convert strict concepts query params to base query params
- */
-function toQueryParams(params: StrictConceptsQueryParams): QueryParams {
-  const result: QueryParams = {
-    ...params,
-  };
-
-  if (params.sort && isString(params.sort)) {
-    result.sort = params.sort;
-  }
-
-  if (params.select && isStringArray(params.select)) {
-    result.select = params.select;
-  }
-
-  // Convert filter object to filter string if it exists and is an object
-  if (
-    params.filter &&
-    typeof params.filter === "object" &&
-    !isString(params.filter)
-  ) {
-    result.filter = buildFilterString(params.filter);
-  }
-
-  return result;
-}
-
-/**
- * Extended query parameters specific to Concepts API (for backward compatibility)
- */
-export type ConceptsQueryParams = QueryParams;
-
-/**
- * Sort options for concepts with strict typing
- */
-export type ConceptSortOption =
-  | "relevance_score"
-  | "relevance_score:desc"
-  | "cited_by_count"
-  | "cited_by_count:desc"
-  | "works_count"
-  | "works_count:desc"
-  | "created_date"
-  | "created_date:desc"
-  | "updated_date"
-  | "updated_date:desc"
-  | "display_name"
-  | "display_name:desc"
-  | "level"
-  | "level:desc"
-  | "random";
-
-/**
- * Selectable fields for concepts queries
- */
-export type ConceptSelectField =
-  | "id"
-  | "display_name"
-  | "description"
-  | "level"
-  | "wikidata"
-  | "works_count"
-  | "cited_by_count"
-  | "ids"
-  | "counts_by_year"
-  | "works_api_url"
-  | "updated_date"
-  | "created_date";
-
-/**
- * Options for searching concepts with strict typing
- */
-export interface SearchConceptsOptions {
-  /** Filters to apply to the search */
-  readonly filters?: ConceptsFilters;
-
-  /** Sort order for results */
-  readonly sort?: ConceptSortOption;
-
-  /** Page number for pagination (1-based) */
-  readonly page?: number;
-
-  /** Number of results per page (1-200) */
-  readonly per_page?: number;
-
-  /** Specific fields to include in response */
-  readonly select?: ConceptSelectField[];
-}
-
-/**
- * Options for concept autocomplete queries
- */
-export interface AutocompleteOptions extends Pick<QueryParams, "per_page"> {
-  /** Maximum number of autocomplete results to return (default: 25, max: 200) */
-  per_page?: number;
-}
+import { toQueryParams } from "../utils/query-params";
 
 /**
  * Concepts API class providing methods for concept operations
@@ -189,11 +49,11 @@ export class ConceptsApi {
   }
 
   /**
-   * Type guard to check if params is StrictConceptsQueryParams
+   * Type guard to check if params is ConceptsQueryParams
    */
-  private isStrictConceptsQueryParams(
+  private isConceptsQueryParams(
     params: unknown,
-  ): params is StrictConceptsQueryParams {
+  ): params is ConceptsQueryParams {
     return typeof params === "object" && params !== null;
   }
 
@@ -282,7 +142,7 @@ export class ConceptsApi {
    */
   async getConcept(
     id: string,
-    params: StrictConceptsQueryParams | QueryParams = {},
+    params: ConceptsQueryParams | QueryParams = {},
   ): Promise<Concept> {
     if (!id || typeof id !== "string") {
       throw new Error("Concept ID must be a non-empty string");
@@ -312,28 +172,28 @@ export class ConceptsApi {
       typeof params.sort === "string" &&
       this.isQueryParams(params)
     ) {
-      return this.client.getById(
+      return this.client.getById<Concept>(
         "concepts",
         normalizedId,
         params,
-        conceptSchema,
+        conceptSchema as z.ZodType<Concept>,
       );
     }
-    // Otherwise, convert from StrictConceptsQueryParams
-    if (this.isStrictConceptsQueryParams(params)) {
-      return this.client.getById(
+    // Otherwise, convert from ConceptsQueryParams
+    if (this.isConceptsQueryParams(params)) {
+      return this.client.getById<Concept>(
         "concepts",
         normalizedId,
         toQueryParams(params),
-        conceptSchema,
+        conceptSchema as z.ZodType<Concept>,
       );
     }
     // Default case - treat as basic params
-    return this.client.getById(
+    return this.client.getById<Concept>(
       "concepts",
       normalizedId,
       toQueryParams({}),
-      conceptSchema,
+      conceptSchema as z.ZodType<Concept>,
     );
   }
 
@@ -353,7 +213,7 @@ export class ConceptsApi {
    * ```
    */
   async getConcepts(
-    params: StrictConceptsQueryParams | QueryParams = {},
+    params: ConceptsQueryParams | QueryParams = {},
   ): Promise<OpenAlexResponse<Concept>> {
     // If it's already QueryParams (has string sort), pass directly
     if (
@@ -363,8 +223,8 @@ export class ConceptsApi {
     ) {
       return this.client.getResponse<Concept>("concepts", params);
     }
-    // Otherwise, convert from StrictConceptsQueryParams
-    if (this.isStrictConceptsQueryParams(params)) {
+    // Otherwise, convert from ConceptsQueryParams
+    if (this.isConceptsQueryParams(params)) {
       return this.client.getResponse<Concept>(
         "concepts",
         toQueryParams(params),
@@ -423,7 +283,7 @@ export class ConceptsApi {
       per_page,
     };
 
-    const params: StrictConceptsQueryParams =
+    const params: ConceptsQueryParams =
       select !== undefined ? { ...baseParams, select } : baseParams;
 
     return this.getConcepts(params);
@@ -447,7 +307,7 @@ export class ConceptsApi {
    */
   async getConceptsByWorksCount(
     minWorksCount: number,
-    params: StrictConceptsQueryParams = {},
+    params: ConceptsQueryParams = {},
   ): Promise<OpenAlexResponse<Concept>> {
     if (!Number.isInteger(minWorksCount) || minWorksCount < 0) {
       throw new Error("minWorksCount must be a non-negative integer");
@@ -480,7 +340,7 @@ export class ConceptsApi {
    */
   async getConceptsByLevel(
     level: number,
-    params: StrictConceptsQueryParams = {},
+    params: ConceptsQueryParams = {},
   ): Promise<OpenAlexResponse<Concept>> {
     if (!Number.isInteger(level) || level < 0 || level > 5) {
       throw new Error("Level must be an integer between 0 and 5");
@@ -511,7 +371,7 @@ export class ConceptsApi {
    * ```
    */
   async getRandomConcepts(
-    params: StrictConceptsQueryParams = {},
+    params: ConceptsQueryParams = {},
   ): Promise<OpenAlexResponse<Concept>> {
     return this.getConcepts({
       ...params,
@@ -533,7 +393,7 @@ export class ConceptsApi {
    * ```
    */
   async *streamConcepts(
-    params: StrictConceptsQueryParams | QueryParams = {},
+    params: ConceptsQueryParams | QueryParams = {},
   ): AsyncGenerator<Concept[], void, unknown> {
     // If it's already QueryParams (has string sort), pass directly
     if (
@@ -544,8 +404,8 @@ export class ConceptsApi {
       yield* this.client.stream<Concept>("concepts", params);
       return;
     }
-    // Otherwise, convert from StrictConceptsQueryParams
-    if (this.isStrictConceptsQueryParams(params)) {
+    // Otherwise, convert from ConceptsQueryParams
+    if (this.isConceptsQueryParams(params)) {
       yield* this.client.stream<Concept>("concepts", toQueryParams(params));
     } else {
       // Default case - treat as basic params
@@ -568,7 +428,7 @@ export class ConceptsApi {
    * ```
    */
   async getAllConcepts(
-    params: StrictConceptsQueryParams = {},
+    params: ConceptsQueryParams = {},
     maxResults?: number,
   ): Promise<Concept[]> {
     return this.client.getAll<Concept>(
@@ -591,7 +451,7 @@ export class ConceptsApi {
    * });
    * ```
    */
-  async getConceptsStats(params: StrictConceptsQueryParams = {}): Promise<{
+  async getConceptsStats(params: ConceptsQueryParams = {}): Promise<{
     count: number;
     total_works: number;
     total_citations: number;
@@ -656,7 +516,7 @@ export class ConceptsApi {
   async getTrendingConcepts(
     fromYear: number,
     toYear: number = new Date().getFullYear(),
-    params: StrictConceptsQueryParams = {},
+    params: ConceptsQueryParams = {},
   ): Promise<OpenAlexResponse<Concept>> {
     const filters: ConceptsFilters = {
       from_created_date: `${String(fromYear)}-01-01`,
@@ -686,7 +546,7 @@ export class ConceptsApi {
    * ```
    */
   async getHighlyCitedConcepts(
-    params: StrictConceptsQueryParams = {},
+    params: ConceptsQueryParams = {},
   ): Promise<OpenAlexResponse<Concept>> {
     const filters: ConceptsFilters = {
       cited_by_count: ">1000",

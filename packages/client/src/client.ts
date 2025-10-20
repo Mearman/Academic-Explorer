@@ -10,7 +10,7 @@ import {
   isValidApiResponse,
   validateApiResponse,
 } from "./internal/type-helpers";
-import { validateWithSchema } from "@academic-explorer/entities";
+import { validateWithSchema } from "@academic-explorer/types/entities";
 import type { z } from "zod";
 import type { OpenAlexError, OpenAlexResponse, QueryParams } from "./types";
 

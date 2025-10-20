@@ -198,8 +198,7 @@ export type {
   ConceptSortOption,
   ConceptsQueryParams,
   SearchConceptsOptions,
-  StrictConceptsQueryParams,
-} from "./entities/concepts";
+} from "./types";
 
 // Static cache exports
 export {

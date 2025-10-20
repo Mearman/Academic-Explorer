@@ -5,9 +5,14 @@
  */
 
 import { describe, it, expect, vi, beforeEach, type Mocked } from "vitest";
-import { AuthorsApi, AuthorWorksFilters } from "./authors";
+import { AuthorsApi } from "./authors";
 import { OpenAlexBaseClient } from "../client";
-import type { Author, OpenAlexResponse, Work } from "../types";
+import type {
+  Author,
+  OpenAlexResponse,
+  Work,
+  AuthorWorksFilters,
+} from "../types";
 
 // Mock the base client
 vi.mock("../client");

@@ -7,7 +7,7 @@ import { OpenAlexBaseClient } from "../client";
 import {
   extractPropertyValue,
   trustObjectShape,
-} from "@academic-explorer/entities";
+} from "@academic-explorer/types/entities";
 import type {
   Keyword,
   KeywordsFilters,

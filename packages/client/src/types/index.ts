@@ -72,7 +72,18 @@ export type {
   NGram,
   OpenAlexError,
   TextAnalysis,
-} from "@academic-explorer/entities";
+} from "@academic-explorer/types/entities";
+
+// Re-export concept-specific types from entities
+export type {
+  ConceptSortOption,
+  ConceptSelectField,
+  ConceptsQueryParams,
+} from "@academic-explorer/types/entities";
+
+// Client-specific type aliases
+export type SearchConceptsOptions = Record<string, unknown>;
+export type { BaseAutocompleteOptions as AutocompleteOptions } from "@academic-explorer/types/entities";
 
 // Re-export schemas and type guards
 export {
@@ -90,7 +101,7 @@ export {
   workResponseSchema,
   authorResponseSchema,
   institutionResponseSchema,
-} from "@academic-explorer/entities";
+} from "@academic-explorer/types/entities";
 
 export {
   isRecord,
@@ -99,4 +110,4 @@ export {
   isOpenAlexId,
   isValidDateString,
   isValidWikidataId,
-} from "@academic-explorer/entities";
+} from "@academic-explorer/types/entities";

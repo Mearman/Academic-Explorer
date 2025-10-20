@@ -6,82 +6,22 @@
 import type {
   Author,
   AuthorsFilters,
+  AuthorCollaboratorsFilters,
+  AuthorWorksFilters,
+  GroupByResult,
+  AuthorGroupingOptions,
+  AuthorAutocompleteOptions,
+  AuthorSearchOptions,
+  GroupedResponse,
+  AutocompleteResult,
   QueryParams,
   OpenAlexResponse,
   Work,
   OpenAlexId,
-  AutocompleteResult,
-} from "../types";
+} from "@academic-explorer/types/entities";
 import type { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";
 import { logger } from "@academic-explorer/utils/logger";
-
-/**
- * Extended filters for specific author query methods
- */
-export interface AuthorWorksFilters extends AuthorsFilters {
-  publication_year?: number | string;
-  cited_by_count?: string | number;
-  is_oa?: boolean;
-  type?: string | string[];
-  "primary_topic.id"?: string | string[];
-}
-
-/**
- * Options for searching authors
- */
-export interface SearchAuthorsOptions {
-  filters?: AuthorsFilters;
-  sort?:
-    | "relevance_score:desc"
-    | "cited_by_count"
-    | "works_count"
-    | "created_date";
-  page?: number;
-  per_page?: number;
-  select?: string[];
-}
-
-export interface AuthorCollaboratorsFilters {
-  min_works?: number;
-  from_publication_year?: number;
-  to_publication_year?: number;
-}
-
-/**
- * Grouping result for author statistics
- */
-export interface GroupByResult {
-  key: string;
-  key_display_name: string;
-  count: number;
-}
-
-/**
- * Grouped response specifically for Authors with statistics
- */
-export interface GroupedResponse<T>
-  extends Omit<OpenAlexResponse<T>, "group_by"> {
-  group_by: GroupByResult[];
-}
-
-/**
- * Options for grouping authors
- */
-export interface AuthorGroupingOptions {
-  filters?: AuthorsFilters;
-  sort?: string;
-  per_page?: number;
-  page?: number;
-}
-
-/**
- * Options for author autocomplete queries
- */
-export interface AutocompleteOptions extends Pick<QueryParams, "per_page"> {
-  /** Maximum number of autocomplete results to return (default: 25, max: 200) */
-  per_page?: number;
-}
 
 /**
  * Authors API class providing comprehensive methods for author entity operations
@@ -166,7 +106,7 @@ export class AuthorsApi {
    */
   async autocomplete(
     query: string,
-    options: AutocompleteOptions = {},
+    options: AuthorAutocompleteOptions = {},
   ): Promise<AutocompleteResult[]> {
     // Validate query parameter
     if (!query || typeof query !== "string") {
@@ -294,7 +234,7 @@ export class AuthorsApi {
    */
   async searchAuthors(
     query: string,
-    options: SearchAuthorsOptions = {},
+    options: AuthorSearchOptions = {},
   ): Promise<OpenAlexResponse<Author>> {
     const params: QueryParams = {
       search: query,

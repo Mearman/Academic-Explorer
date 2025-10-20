@@ -11,7 +11,7 @@ import {
   trustObjectShape,
   extractPropertyValue,
   validateWithSchema,
-} from "@academic-explorer/entities";
+} from "@academic-explorer/types/entities";
 
 /**
  * Validates external API response data using Zod schema
