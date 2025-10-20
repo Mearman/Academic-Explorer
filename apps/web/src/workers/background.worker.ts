@@ -167,14 +167,14 @@ function createSafeConfig(
     "sendEveryNTicks",
   ];
 
-  numericKeys.forEach((key) => assignNumericConfig(result, config, key));
+  numericKeys.forEach((key) => assignNumericConfig({ result, config, key }));
 
   // Assign boolean properties
   const booleanKeys: (keyof ForceSimulationConfig)[] = [
     "enableOptimizations",
     "batchUpdates",
   ];
-  booleanKeys.forEach((key) => assignBooleanConfig(result, config, key));
+  booleanKeys.forEach((key) => assignBooleanConfig({ result, config, key }));
 
   return result;
 }
@@ -215,113 +215,169 @@ function createSimulationEngine(): ForceSimulationEngine {
   });
 
   // Set up event listeners
-  engine.on("progress", (event) => {
-    // Type guard to ensure we have a progress event
-    if (event.type !== "progress") return;
+  engine.on<"progress">({
+    eventType: "progress",
+    handler: (event) => {
+      // Type guard to ensure we have a progress event
+      if (event.type !== "progress") return;
 
-    const now = Date.now();
+      const now = Date.now();
 
-    if (event.messageType === "tick") {
-      logger.debug("worker", "Sending progress update", {
-        messageType: event.messageType,
-        positionsLength: event.positions?.length,
-        alpha: event.alpha,
-        iteration: event.iteration,
-        timeSinceLastProgress: now - lastProgressTime,
-        throttleMs: PROGRESS_THROTTLE_MS,
-        samplePosition: event.positions?.[0]
-          ? {
-              id: event.positions[0].id,
-              x: Number(event.positions[0].x.toFixed(2)),
-              y: Number(event.positions[0].y.toFixed(2)),
-            }
-          : null,
-      });
-    }
-
-    // Throttle progress updates except for important state changes
-    if (
-      event.messageType === "tick" &&
-      now - lastProgressTime < PROGRESS_THROTTLE_MS
-    ) {
-      logger.debug("worker", "Throttling tick event");
-      return;
-    }
-
-    lastProgressTime = now;
-
-    // Calculate FPS for tick messages
-    let fps = 0;
-    if (event.messageType === "tick") {
-      frameCount++;
-      if (now - lastFpsTime >= FPS_CALCULATION_INTERVAL) {
-        fps = Math.round((frameCount * 1000) / (now - lastFpsTime));
-        frameCount = 0;
-        lastFpsTime = now;
+      if (event.messageType === "tick") {
+        logger.debug("worker", "Sending progress update", {
+          messageType: event.messageType,
+          positionsLength: event.positions?.length,
+          alpha: event.alpha,
+          iteration: event.iteration,
+          timeSinceLastProgress: now - lastProgressTime,
+          throttleMs: PROGRESS_THROTTLE_MS,
+          samplePosition: event.positions?.[0]
+            ? {
+                id: event.positions[0].id,
+                x: Number(event.positions[0].x.toFixed(2)),
+                y: Number(event.positions[0].y.toFixed(2)),
+              }
+            : null,
+        });
       }
-    }
 
-    const progress = event.alpha
-      ? Math.max(0, Math.min(1, 1 - event.alpha))
-      : 1;
-    const progressEvent = createProgressEventPayload(event, fps, progress);
+      // Throttle progress updates except for important state changes
+      if (
+        event.messageType === "tick" &&
+        now - lastProgressTime < PROGRESS_THROTTLE_MS
+      ) {
+        logger.debug("worker", "Throttling tick event");
+        return;
+      }
 
-    workerEventBus.emit(progressEvent);
+      lastProgressTime = now;
 
-    const message = {
-      type: "PROGRESS" as const,
-      ...(currentSimulationTaskId && { taskId: currentSimulationTaskId }),
-      payload: {
-        type: WorkerEventType.FORCE_SIMULATION_PROGRESS,
-        ...progressEvent.payload,
-      },
-    };
+      // Calculate FPS for tick messages
+      let fps = 0;
+      if (event.messageType === "tick") {
+        frameCount++;
+        if (now - lastFpsTime >= FPS_CALCULATION_INTERVAL) {
+          fps = Math.round((frameCount * 1000) / (now - lastFpsTime));
+          frameCount = 0;
+          lastFpsTime = now;
+        }
+      }
 
-    if (event.messageType === "tick") {
-      logger.debug("worker", "Worker postMessage", {
-        messageType: event.messageType,
-        payloadType: message.payload.type,
+      const progress = event.alpha
+        ? Math.max(0, Math.min(1, 1 - event.alpha))
+        : 1;
+      const progressEvent = createProgressEventPayload({
+        event,
+        fps,
+        progress,
       });
-    }
 
-    self.postMessage(message);
+      workerEventBus.emit(progressEvent);
+
+      const message = {
+        type: "PROGRESS" as const,
+        ...(currentSimulationTaskId && { taskId: currentSimulationTaskId }),
+        payload: {
+          type: WorkerEventType.FORCE_SIMULATION_PROGRESS,
+          ...progressEvent.payload,
+        },
+      };
+
+      if (event.messageType === "tick") {
+        logger.debug("worker", "Worker postMessage", {
+          messageType: event.messageType,
+          payloadType: message.payload.type,
+        });
+      }
+
+      self.postMessage(message);
+    },
   });
 
-  engine.on("complete", (event) => {
-    if (event.type !== "complete") return;
-    const completeEvent = createCompleteEventPayload(event);
+  engine.on<"complete">({
+    eventType: "complete",
+    handler: (event) => {
+      if (event.type !== "complete") return;
+      const completeEvent = createCompleteEventPayload(event);
 
-    workerEventBus.emit(completeEvent);
+      workerEventBus.emit(completeEvent);
 
-    self.postMessage({
-      type: "SUCCESS" as const,
-      ...(currentSimulationTaskId && { taskId: currentSimulationTaskId }),
-      payload: {
-        type: WorkerEventType.FORCE_SIMULATION_COMPLETE,
-        ...completeEvent.payload,
-      },
-    });
+      self.postMessage({
+        type: "SUCCESS" as const,
+        ...(currentSimulationTaskId && { taskId: currentSimulationTaskId }),
+        payload: {
+          type: WorkerEventType.FORCE_SIMULATION_COMPLETE,
+          ...completeEvent.payload,
+        },
+      });
 
-    currentSimulationTaskId = null;
+      currentSimulationTaskId = null;
+    },
   });
 
-  engine.on("error", (event) => {
-    if (event.type !== "error") return;
-    const errorEvent = createErrorEventPayload(event);
+  engine.on<"error">({
+    eventType: "error",
+    handler: (event) => {
+      if (event.type !== "error") return;
+      const errorEvent = createErrorEventPayload(event);
 
-    logger.error(
-      "worker",
-      "Force simulation error with context",
-      errorEvent.payload,
-    );
+      logger.error(
+        "worker",
+        "Force simulation error with context",
+        errorEvent.payload,
+      );
 
-    workerEventBus.emit(errorEvent);
+      workerEventBus.emit(errorEvent);
 
-    self.postMessage({
-      type: "ERROR" as const,
-      ...(currentSimulationTaskId && { taskId: currentSimulationTaskId }),
-      payload: `Force simulation error: ${event.message}. Context: ${JSON.stringify(errorEvent.payload.context)}`,
-    });
+      self.postMessage({
+        type: "ERROR" as const,
+        ...(currentSimulationTaskId && { taskId: currentSimulationTaskId }),
+        payload: `Force simulation error: ${event.message}. Context: ${JSON.stringify(errorEvent.payload.context)}`,
+      });
+    },
+  });
+
+  engine.on({
+    eventType: "complete",
+    handler: (event) => {
+      if (event.type !== "complete") return;
+      const completeEvent = createCompleteEventPayload(event);
+
+      workerEventBus.emit(completeEvent);
+
+      self.postMessage({
+        type: "SUCCESS" as const,
+        ...(currentSimulationTaskId && { taskId: currentSimulationTaskId }),
+        payload: {
+          type: WorkerEventType.FORCE_SIMULATION_COMPLETE,
+          ...completeEvent.payload,
+        },
+      });
+
+      currentSimulationTaskId = null;
+    },
+  });
+
+  engine.on({
+    eventType: "error",
+    handler: (event) => {
+      if (event.type !== "error") return;
+      const errorEvent = createErrorEventPayload(event);
+
+      logger.error(
+        "worker",
+        "Force simulation error with context",
+        errorEvent.payload,
+      );
+
+      workerEventBus.emit(errorEvent);
+
+      self.postMessage({
+        type: "ERROR" as const,
+        ...(currentSimulationTaskId && { taskId: currentSimulationTaskId }),
+        payload: `Force simulation error: ${event.message}. Context: ${JSON.stringify(errorEvent.payload.context)}`,
+      });
+    },
   });
 
   return engine;
@@ -477,7 +533,10 @@ function handleExecuteTaskMessage(data: ExecuteTaskMessage) {
       pinnedNodes: actualPayload.pinnedNodes ?? [],
     });
   } else if (isForceSimulationControlMessage(actualPayload)) {
-    handleForceSimulationControlMessage(actualPayload, data.taskId);
+    handleForceSimulationControlMessage({
+      payload: actualPayload,
+      taskId: data.taskId,
+    });
   } else {
     logger.warn("worker", "Unknown task payload format", {
       taskId: data.taskId,
@@ -515,19 +574,22 @@ function handleForceSimulationControlMessage({
       sendControlAck(taskId, payload.type);
       break;
     case "FORCE_SIMULATION_REHEAT":
-      handleReheatMessage(payload as ForceSimulationReheatMessage, taskId);
+      handleReheatMessage({
+        payload: payload as ForceSimulationReheatMessage,
+        taskId,
+      });
       break;
     case "FORCE_SIMULATION_UPDATE_LINKS":
-      handleUpdateLinksMessage(
-        payload as ForceSimulationUpdateLinksMessage,
+      handleUpdateLinksMessage({
+        payload: payload as ForceSimulationUpdateLinksMessage,
         taskId,
-      );
+      });
       break;
     case "FORCE_SIMULATION_UPDATE_NODES":
-      handleUpdateNodesMessage(
-        payload as ForceSimulationUpdateNodesMessage,
+      handleUpdateNodesMessage({
+        payload: payload as ForceSimulationUpdateNodesMessage,
         taskId,
-      );
+      });
       break;
     default:
       logger.warn("worker", "Unknown simulation control message in task", {
