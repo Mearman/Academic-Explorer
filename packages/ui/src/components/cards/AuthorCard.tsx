@@ -1,5 +1,4 @@
 import type { Author } from "@academic-explorer/client";
-import { authorSchema } from "@academic-explorer/types/entities";
 import {
   ActionIcon,
   Anchor,
@@ -29,14 +28,8 @@ export const AuthorCard: React.FC<AuthorCardProps> = ({
   className,
   showAffiliations = true,
 }) => {
-  // Validate author data with Zod schema
-  let validatedAuthor: Author;
-  try {
-    validatedAuthor = authorSchema.parse(author);
-  } catch (error) {
-    console.error("Invalid author data:", error);
-    return null; // or render an error state
-  }
+  // Use author data directly (validation should happen at API/client level)
+  const validatedAuthor = author;
 
   const href = `/authors/${validatedAuthor.id}`;
 

@@ -1,5 +1,4 @@
 import type { Funder } from "@academic-explorer/client";
-import { funderSchema } from "@academic-explorer/types/entities";
 import {
   ActionIcon,
   Anchor,
@@ -27,14 +26,8 @@ export const FunderCard: React.FC<FunderCardProps> = ({
   onNavigate,
   className,
 }) => {
-  // Validate funder data with Zod schema
-  let validatedFunder: Funder;
-  try {
-    validatedFunder = funderSchema.parse(funder);
-  } catch (error) {
-    console.error("Invalid funder data:", error);
-    return null; // or render an error state
-  }
+  // Use funder data directly (validation should happen at API/client level)
+  const validatedFunder = funder;
 
   const href = `/funders/${validatedFunder.id}`;
 

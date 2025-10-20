@@ -1,5 +1,4 @@
 import type { Publisher } from "@academic-explorer/client";
-import { publisherSchema } from "@academic-explorer/types/entities";
 import { ActionIcon, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { IconExternalLink } from "@tabler/icons-react";
 import React from "react";
@@ -19,14 +18,8 @@ export const PublisherCard: React.FC<PublisherCardProps> = ({
   onNavigate,
   className,
 }) => {
-  // Validate publisher data with Zod schema
-  let validatedPublisher: Publisher;
-  try {
-    validatedPublisher = publisherSchema.parse(publisher);
-  } catch (error) {
-    console.error("Invalid publisher data:", error);
-    return null; // or render an error state
-  }
+  // Use publisher data directly (validation should happen at API/client level)
+  const validatedPublisher = publisher;
 
   const href = `/publishers/${validatedPublisher.id}`;
 

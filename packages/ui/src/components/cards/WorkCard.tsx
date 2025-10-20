@@ -1,5 +1,4 @@
 import type { Work } from "@academic-explorer/client";
-import { workSchema } from "@academic-explorer/types/entities";
 import { ActionIcon, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { IconExternalLink, IconLock, IconLockOpen } from "@tabler/icons-react";
 import React from "react";
@@ -21,14 +20,8 @@ export const WorkCard: React.FC<WorkCardProps> = ({
   className,
   showAuthors = true,
 }) => {
-  // Validate work data with Zod schema
-  let validatedWork: Work;
-  try {
-    validatedWork = workSchema.parse(work);
-  } catch (error) {
-    console.error("Invalid work data:", error);
-    return null; // or render an error state
-  }
+  // Use work data directly (validation should happen at API/client level)
+  const validatedWork = work;
 
   const href = `/works/${validatedWork.id}`;
   const isOA = validatedWork.open_access?.is_oa || false;

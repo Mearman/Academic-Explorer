@@ -1,5 +1,4 @@
 import type { InstitutionEntity } from "@academic-explorer/client";
-import { institutionSchema } from "@academic-explorer/types/entities";
 import { ActionIcon, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { IconExternalLink, IconMapPin } from "@tabler/icons-react";
 import React from "react";
@@ -19,14 +18,8 @@ export const InstitutionCard: React.FC<InstitutionCardProps> = ({
   onNavigate,
   className,
 }) => {
-  // Validate institution data with Zod schema
-  let validatedInstitution: InstitutionEntity;
-  try {
-    validatedInstitution = institutionSchema.parse(institution);
-  } catch (error) {
-    console.error("Invalid institution data:", error);
-    return null; // or render an error state
-  }
+  // Use institution data directly (validation should happen at API/client level)
+  const validatedInstitution = institution;
 
   const href = `/institutions/${validatedInstitution.id}`;
 

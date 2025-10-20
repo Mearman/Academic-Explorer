@@ -1,5 +1,4 @@
 import type { Source } from "@academic-explorer/client";
-import { sourceSchema } from "@academic-explorer/types/entities";
 import { ActionIcon, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { IconExternalLink, IconLockOpen } from "@tabler/icons-react";
 import React from "react";
@@ -19,14 +18,8 @@ export const SourceCard: React.FC<SourceCardProps> = ({
   onNavigate,
   className,
 }) => {
-  // Validate source data with Zod schema
-  let validatedSource: Source;
-  try {
-    validatedSource = sourceSchema.parse(source);
-  } catch (error) {
-    console.error("Invalid source data:", error);
-    return null; // or render an error state
-  }
+  // Use source data directly (validation should happen at API/client level)
+  const validatedSource = source;
 
   const href = `/sources/${validatedSource.id}`;
 

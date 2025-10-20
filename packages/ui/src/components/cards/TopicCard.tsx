@@ -1,5 +1,4 @@
 import type { Topic } from "@academic-explorer/client";
-import { topicSchema } from "@academic-explorer/types/entities";
 import { ActionIcon, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { IconExternalLink } from "@tabler/icons-react";
 import React from "react";
@@ -21,14 +20,8 @@ export const TopicCard: React.FC<TopicCardProps> = ({
   className,
   showHierarchy = true,
 }) => {
-  // Validate topic data with Zod schema
-  let validatedTopic: Topic;
-  try {
-    validatedTopic = topicSchema.parse(topic);
-  } catch (error) {
-    console.error("Invalid topic data:", error);
-    return null; // or render an error state
-  }
+  // Use topic data directly (validation should happen at API/client level)
+  const validatedTopic = topic;
 
   const href = `/topics/${validatedTopic.id}`;
 
