@@ -1,5 +1,5 @@
 import type { Funder } from "@academic-explorer/client";
-import { funderSchema } from "@academic-explorer/entities";
+import { funderSchema } from "@academic-explorer/types/entities";
 import {
   ActionIcon,
   Anchor,

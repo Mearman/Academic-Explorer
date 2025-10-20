@@ -1,5 +1,5 @@
 import type { Author } from "@academic-explorer/client";
-import { authorSchema } from "@academic-explorer/entities";
+import { authorSchema } from "@academic-explorer/types/entities";
 import {
   ActionIcon,
   Anchor,

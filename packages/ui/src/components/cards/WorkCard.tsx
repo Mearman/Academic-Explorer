@@ -1,5 +1,5 @@
 import type { Work } from "@academic-explorer/client";
-import { workSchema } from "@academic-explorer/entities";
+import { workSchema } from "@academic-explorer/types/entities";
 import { ActionIcon, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { IconExternalLink, IconLock, IconLockOpen } from "@tabler/icons-react";
 import React from "react";
