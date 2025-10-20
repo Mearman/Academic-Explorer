@@ -11,7 +11,7 @@ import {
   validateApiResponse,
 } from "./internal/type-helpers";
 import { validateWithSchema } from "@academic-explorer/types/entities";
-import type { z } from "zod";
+import { z } from "zod";
 import type { OpenAlexError, OpenAlexResponse, QueryParams } from "./types";
 
 export interface OpenAlexClientConfig {
@@ -764,12 +764,17 @@ export class OpenAlexBaseClient {
   /**
    * GET request for a single entity by ID
    */
-  public async getById<T = unknown>(
-    endpoint: string,
-    id: string,
-    params: QueryParams = {},
-    schema?: z.ZodType<T>,
-  ): Promise<T> {
+  public async getById<T = unknown>({
+    endpoint,
+    id,
+    params = {},
+    schema,
+  }: {
+    endpoint: string;
+    id: string;
+    params?: QueryParams;
+    schema?: z.ZodType<T>;
+  }): Promise<T> {
     return this.get(`${endpoint}/${encodeURIComponent(id)}`, params, schema);
   }
 
