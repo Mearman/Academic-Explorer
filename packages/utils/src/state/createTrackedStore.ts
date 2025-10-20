@@ -26,6 +26,19 @@ function isZustandStore(obj: unknown): obj is {
   );
 }
 
+function extractState<T extends object>(
+  fullState: T,
+  keys: string[],
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const key of keys) {
+    if (key in fullState) {
+      result[key] = (fullState as Record<string, unknown>)[key];
+    }
+  }
+  return result;
+}
+
 // Re-export Zustand types for convenience
 export type { StateCreator, StoreApi, UseBoundStore };
 
@@ -246,10 +259,10 @@ export function createTrackedStore<
 
   // Create the store with Zustand - follow standard pattern
   const useStore = (() => {
-    const storeCreator = (set: any, get: any) => {
+    const storeCreator: StateCreator<T & A, [], [], T & A> = (set, get) => {
       // Create actions
       const actions = actionsFactory({
-        set: (partial: any, replace?: boolean) => {
+        set: (partial, replace) => {
           set(partial, replace);
         },
         get: () => get(),
@@ -261,15 +274,11 @@ export function createTrackedStore<
       };
     };
 
-    if (enableDevtools) {
-      // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
-      return create(devtools(immer(storeCreator), { name })) as UseBoundStore<
-        StoreApi<T & A>
-      >;
+    if (enableDevtools && name) {
+      return create(devtools(immer(storeCreator), { name }));
     }
 
-    // eslint-disable-next-line no-type-assertions-plugin/no-type-assertions
-    return create(immer(storeCreator)) as UseBoundStore<StoreApi<T & A>>;
+    return create(immer(storeCreator));
   })();
 
   // Get actions from the store
@@ -293,18 +302,13 @@ export function createTrackedStore<
   const storeWithActions: StoreMethods<T> & A = {
     getState: () => {
       const fullState = useStore.getState();
-      const stateOnly: Partial<T> = {};
-      Object.keys(initialState).forEach((key) => {
-        if (key in fullState) {
-          (stateOnly as Record<string, unknown>)[key] = (
-            fullState as Record<string, unknown>
-          )[key];
-        }
-      });
-      return stateOnly as T;
+      const keys = Object.keys(initialState);
+      return extractState({ fullState, keys: keys as (keyof T)[] });
     },
     setState: (partial, replace) => {
-      (useStore as any).setState(partial, replace);
+      if (isZustandStore(useStore)) {
+        useStore.setState(partial, replace);
+      }
     },
     subscribe: useStore.subscribe,
     ...actions,

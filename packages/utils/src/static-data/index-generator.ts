@@ -1468,11 +1468,15 @@ export async function generateAllIndexes(
 /**
  * Generate index for a specific entity type
  */
-export async function generateIndexForEntityType(
-  rootPath: string,
-  entityType: EntityType,
-  config: Partial<IndexGenerationConfig> = {},
-): Promise<string> {
+export async function generateIndexForEntityType({
+  rootPath,
+  entityType,
+  config = {},
+}: {
+  rootPath: string;
+  entityType: EntityType;
+  config?: Partial<IndexGenerationConfig>;
+}): Promise<string> {
   const generator = new StaticDataIndexGenerator({ ...config, rootPath });
   return generator.generateIndexForEntityType(entityType);
 }
@@ -1501,10 +1505,13 @@ export async function repairIndex(
  * Generate path-based indexes for all entity types in the specified root directory
  * Creates hierarchical indexes that map entity IDs to file references
  */
-export async function generatePathBasedIndexes(
-  rootPath: string,
-  config: Partial<IndexGenerationConfig> = {},
-): Promise<void> {
+export async function generatePathBasedIndexes({
+  rootPath,
+  config = {},
+}: {
+  rootPath: string;
+  config?: Partial<IndexGenerationConfig>;
+}): Promise<void> {
   const generator = new StaticDataIndexGenerator({ ...config, rootPath });
   return generator.generatePathBasedIndexes();
 }

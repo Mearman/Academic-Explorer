@@ -5,6 +5,24 @@
  * Provides robust environment detection for both browser and Node.js environments.
  */
 
+// Type declarations for global environment properties
+declare const __DEV__: boolean | undefined;
+declare const __BUILD_INFO__: Record<string, unknown> | undefined;
+
+// Extend import.meta for Vite environment
+declare global {
+  interface ImportMetaEnv {
+    MODE?: string;
+    DEV?: boolean;
+    PROD?: boolean;
+    [key: string]: unknown;
+  }
+
+  interface ImportMeta {
+    env: ImportMetaEnv;
+  }
+}
+
 /**
  * Environment mode enumeration
  */
@@ -92,41 +110,63 @@ export class EnvironmentDetector {
   }
 
   private static getModeFromViteEnv(): EnvironmentMode | null {
-    if (typeof import.meta !== "undefined") {
-      try {
-        const viteEnv = (import.meta as { env?: Record<string, unknown> }).env;
-        if (viteEnv) {
-          const viteMode = (viteEnv.MODE as string | undefined)?.toLowerCase();
-          switch (viteMode) {
-            case "production":
-              return EnvironmentMode.PRODUCTION;
-            case "test":
-              return EnvironmentMode.TEST;
-            case "development":
-              return EnvironmentMode.DEVELOPMENT;
-          }
-
-          // Check Vite's DEV flag
-          if ((viteEnv.DEV as boolean | undefined) === true)
-            return EnvironmentMode.DEVELOPMENT;
-          if ((viteEnv.PROD as boolean | undefined) === true)
-            return EnvironmentMode.PRODUCTION;
-        }
-      } catch {
-        // Ignore errors if import.meta.env is not available
-      }
+    if (typeof import.meta === "undefined" || !("env" in import.meta)) {
+      return null;
     }
-    return null;
+
+    try {
+      const env = import.meta.env;
+      if (!env) return null;
+
+      // Check MODE first
+      const mode = env.MODE;
+      if (typeof mode === "string") {
+        const modeLower = mode.toLowerCase();
+        switch (modeLower) {
+          case "production":
+            return EnvironmentMode.PRODUCTION;
+          case "test":
+            return EnvironmentMode.TEST;
+          case "development":
+            return EnvironmentMode.DEVELOPMENT;
+        }
+      }
+
+      // Check boolean flags
+      if (env.DEV === true) return EnvironmentMode.DEVELOPMENT;
+      if (env.PROD === true) return EnvironmentMode.PRODUCTION;
+
+      return null;
+    } catch {
+      // Ignore errors if import.meta.env is not available
+      return null;
+    }
+  }
+
+  private static isViteEnv(meta: unknown): boolean {
+    if (typeof meta !== "object" || meta === null) return false;
+    return "env" in meta;
+  }
+
+  private static getViteMode(env: unknown): string | undefined {
+    if (typeof env !== "object" || env === null || !("MODE" in env))
+      return undefined;
+    const mode = (env as Record<string, unknown>).MODE;
+    return typeof mode === "string" ? mode.toLowerCase() : undefined;
   }
 
   private static getModeFromDevFlag(): EnvironmentMode | null {
-    if (typeof globalThis !== "undefined" && "__DEV__" in globalThis) {
+    if (
+      typeof globalThis !== "undefined" &&
+      Object.prototype.hasOwnProperty.call(globalThis, "__DEV__")
+    ) {
       try {
-        const devFlag = (globalThis as unknown as { __DEV__?: boolean })
-          .__DEV__;
-        return devFlag
-          ? EnvironmentMode.DEVELOPMENT
-          : EnvironmentMode.PRODUCTION;
+        const devFlag = __DEV__;
+        if (typeof devFlag === "boolean") {
+          return devFlag
+            ? EnvironmentMode.DEVELOPMENT
+            : EnvironmentMode.PRODUCTION;
+        }
       } catch {
         // Ignore errors if __DEV__ is not accessible
       }
@@ -260,19 +300,18 @@ export class EnvironmentDetector {
   static getBuildInfo(): { buildTimestamp?: string; commitHash?: string } {
     try {
       // Check for Vite-injected build info
-      if (typeof globalThis !== "undefined" && "__BUILD_INFO__" in globalThis) {
+      if (
+        typeof globalThis !== "undefined" &&
+        Object.prototype.hasOwnProperty.call(globalThis, "__BUILD_INFO__")
+      ) {
         try {
-          const buildInfoRaw = (globalThis as Record<string, unknown>)[
-            "__BUILD_INFO__"
-          ];
+          const buildInfoRaw = __BUILD_INFO__;
           if (
             buildInfoRaw &&
             typeof buildInfoRaw === "object" &&
             buildInfoRaw !== null
           ) {
-            return this.extractBuildInfo(
-              buildInfoRaw as Record<string, unknown>,
-            );
+            return this.extractBuildInfo(buildInfoRaw);
           }
         } catch {
           // Ignore errors if __BUILD_INFO__ is not accessible
