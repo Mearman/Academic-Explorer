@@ -466,13 +466,28 @@ export default tseslint.config([
     },
   },
 
-  // Prettier configuration with custom preferences
+  // Prettier configuration with custom preferences (override XO stylistic rules)
   {
     files: ["**/*.{ts,tsx,js,jsx}"],
     plugins: {
       prettier: prettierPlugin,
     },
     rules: {
+      // Disable conflicting XO stylistic rules (let Prettier handle all formatting)
+      "@stylistic/quotes": "off",
+      "@stylistic/semi": "off",
+      "@stylistic/object-curly-spacing": "off",
+      "@stylistic/arrow-parens": "off",
+      "@stylistic/jsx-quotes": "off",
+      "@stylistic/object-curly-newline": "off",
+      "@stylistic/member-delimiter-style": "off",
+      "@stylistic/indent": "off",
+      "@stylistic/function-paren-newline": "off",
+      "@stylistic/comma-dangle": "off",
+      "@stylistic/multiline-ternary": "off",
+      "@stylistic/operator-linebreak": "off",
+
+      // Use Prettier for all formatting
       "prettier/prettier": [
         "error",
         {
@@ -483,6 +498,10 @@ export default tseslint.config([
           "semi": false,
           "trailingComma": "es5",
           "printWidth": 100,
+          // Bracket spacing preferences
+          "bracketSpacing": true,
+          "arrowParens": "always",
+          "jsxBracketSameLine": false,
         },
       ],
     },
