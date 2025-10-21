@@ -299,7 +299,7 @@ export class UserInteractionsService {
         timestamp: new Date(),
       };
 
-      const id = await this.db.bookmarks.add(bookmark);
+      const id: number = await this.db.bookmarks.add(bookmark);
 
       this.logger?.debug(LOG_CATEGORY, "Bookmark added", {
         id,

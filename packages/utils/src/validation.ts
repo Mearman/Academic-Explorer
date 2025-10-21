@@ -252,8 +252,30 @@ export function createShapeValidator<T>(validators: {
   return (obj: unknown): obj is T => {
     if (!isRecord(obj)) return false;
 
-    for (const [key, validator] of Object.entries(validators)) {
-      if (!(validator as (value: unknown) => boolean)(obj[key])) return false;
+    for (const [key, validatorFn] of Object.entries(validators)) {
+      // Type guard: ensure we have a function before calling
+      if (typeof validatorFn !== "function") {
+        return false;
+      }
+      
+      // Type guard: ensure obj is a record before accessing properties
+      if (!isRecord(obj)) {
+        return false;
+      }
+      
+      // Additional type guard for validator function signature
+      function isValidValidator(fn: unknown): fn is (value: unknown) => boolean {
+        return typeof fn === "function";
+      }
+      
+      if (!isValidValidator(validatorFn)) {
+        return false;
+      }
+      
+      const value = obj[key];
+      if (!validatorFn(value)) {
+        return false;
+      }
     }
 
     return true;

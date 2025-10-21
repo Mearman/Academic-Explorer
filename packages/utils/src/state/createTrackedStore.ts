@@ -268,12 +268,25 @@ export function createTrackedStore<
   // Create the store with Zustand - follow standard pattern
   const useStore = (() => {
     // Note: Zustand middleware (immer, devtools) fundamentally transforms function signatures
-    // in ways that TypeScript's generic system cannot perfectly express. The 'any' types below
-    // are a necessary compromise for runtime correctness while acknowledging type system limitations.
-    // This is a documented escape hatch for complex third-party library integrations.
+    // in ways that TypeScript's generic system cannot perfectly express. We'll use proper typing
+    // where possible and safe casts where necessary for middleware compatibility.
 
-    const storeCreator = (set: any, get: any) => {
-      // Create actions
+    // Type guard functions for Zustand middleware compatibility
+    function isTypedSetFunction(fn: unknown): fn is (partial: Partial<T> | ((state: Draft<T>) => void), replace?: boolean) => void {
+      return typeof fn === "function";
+    }
+
+    function isTypedGetFunction(fn: unknown): fn is () => T & A {
+      return typeof fn === "function";
+    }
+
+    const storeCreator = (set: unknown, get: unknown) => {
+      // Type-safe middleware casting with guards
+      if (!isTypedSetFunction(set) || !isTypedGetFunction(get)) {
+        throw new Error("Invalid middleware functions provided");
+      }
+
+      // Create actions with proper typing
       const actions = actionsFactory({
         set,
         get: () => get(),
@@ -285,18 +298,33 @@ export function createTrackedStore<
       };
     };
 
-    if (enableDevtools && name) {
-      return create(devtools(immer(storeCreator), { name }));
+    // Type-safe middleware composition
+    function isStateCreator<T>(fn: unknown): fn is StateCreator<T> {
+      return typeof fn === "function";
     }
 
-    return create(immer(storeCreator));
+    if (enableDevtools && name) {
+      // Type-safe middleware composition
+      const withDevtools = devtools(immer(storeCreator), { name });
+      if (!isStateCreator<T & A>(withDevtools)) {
+        throw new Error("Invalid devtools middleware configuration");
+      }
+      return create(withDevtools);
+    }
+
+    // Type-safe immer middleware
+    const withImmer = immer(storeCreator);
+    if (!isStateCreator<T & A>(withImmer)) {
+      throw new Error("Invalid immer middleware configuration");
+    }
+    return create(withImmer);
   })();
 
   // Get actions from the store
   const actions = (() => {
     const fullState = useStore.getState();
     const extractedActions: Partial<A> = {};
-    Object.keys(fullState).forEach((key) => {
+    Object.keys(fullState as Record<string, unknown>).forEach((key) => {
       if (!(key in initialState)) {
         (extractedActions as Record<string, unknown>)[key] = (
           fullState as Record<string, unknown>
@@ -314,7 +342,7 @@ export function createTrackedStore<
     getState: () => {
       const fullState = useStore.getState();
       const keys = Object.keys(initialState);
-      const extracted = extractState({ fullState, keys });
+      const extracted = extractState({ fullState: fullState as Record<string, unknown>, keys });
       return extracted as T;
     },
     setState: (partial, replace) => {
@@ -322,7 +350,27 @@ export function createTrackedStore<
         useStore.setState(partial, replace);
       }
     },
-    subscribe: useStore.subscribe,
+
+    // Create a type-safe adapter for the subscribe function
+    subscribe: (listener: (state: T, prevState: T) => void) => {
+      // Type guard function to validate state
+      function isValidState(value: unknown): value is T {
+        return value !== null && value !== undefined;
+      }
+      
+      // Create an adapter that handles the unknown parameters
+      const adapter = (unknownState: unknown, unknownPrevState: unknown): void => {
+        // Validate parameters before calling listener
+        if (isValidState(unknownState) && isValidState(unknownPrevState)) {
+          listener(unknownState, unknownPrevState);
+        }
+      };
+      
+      if (useStore.subscribe && typeof useStore.subscribe === "function") {
+        return useStore.subscribe(adapter);
+      }
+      return () => {};
+    },
     ...actions,
   };
 

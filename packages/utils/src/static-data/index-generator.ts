@@ -1432,6 +1432,8 @@ class Semaphore {
       }
     }
 
+    // Standard Promise constructor pattern - this is an exception to destructuring rule
+    // as Promise constructor fundamentally uses separate resolve/reject parameters
     return new Promise<T>((resolve, reject) => {
       this.waiting.push(async () => {
         this.permits--;
