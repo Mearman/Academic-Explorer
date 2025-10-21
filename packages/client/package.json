@@ -65,6 +65,7 @@
     "package.json"
   ],
   "scripts": {
+    "build": "nx build",
     "build:types": "tsc --emitDeclarationOnly",
     "dev": "tsup --watch",
     "test": "vitest run",
