@@ -257,6 +257,7 @@ export const conceptSchema = baseEntitySchema.extend({
 
 // Author schema
 export const authorSchema = baseEntitySchema.extend({
+  works_count: z.number().int().min(0),
   orcid: z.string().optional(),
   display_name_alternatives: z.array(z.string()).optional(),
   ids: z
@@ -287,6 +288,7 @@ export const authorSchema = baseEntitySchema.extend({
 
 // Institution schema
 export const institutionSchema = baseEntitySchema.extend({
+  works_count: z.number().int().min(0),
   ror: z.string().optional(),
   country_code: z.string(),
   type: z.string(),
