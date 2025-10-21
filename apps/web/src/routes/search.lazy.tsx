@@ -4,9 +4,8 @@ import { useUserInteractions } from "@/hooks/use-user-interactions";
 import {
   cachedOpenAlex,
   createWorksQuery,
-  type Work,
-  type WorksFilters,
 } from "@academic-explorer/client";
+import type { Work, WorksFilters } from "@academic-explorer/types";
 import { convertToRelativeUrl } from "@academic-explorer/ui/components/entity-views/matchers/index";
 import { formatLargeNumber, logger } from "@academic-explorer/utils";
 import {

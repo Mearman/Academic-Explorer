@@ -3,7 +3,7 @@
  * @vitest-environment jsdom
  */
 
-import type { OpenAlexEntity } from "@academic-explorer/client";
+import type { OpenAlexEntity } from "@academic-explorer/types";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import * as reactQuery from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";

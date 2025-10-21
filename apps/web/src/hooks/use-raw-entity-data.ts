@@ -3,7 +3,7 @@
  * Uses the proper cache system with Memory → IndexedDB → localStorage → API hierarchy
  */
 
-import type { OpenAlexEntity, QueryParams } from "@academic-explorer/client";
+import type { OpenAlexEntity, QueryParams } from "@academic-explorer/types";
 import { cachedOpenAlex } from "@academic-explorer/client";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { logger } from "@academic-explorer/utils";

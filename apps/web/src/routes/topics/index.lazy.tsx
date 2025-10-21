@@ -2,7 +2,7 @@ import { createLazyFileRoute } from "@tanstack/react-router";
 import { useSearch } from "@tanstack/react-router";
 import { EntityList } from "@/components/EntityList";
 import type { ColumnConfig } from "@/components/types";
-import type { Topic } from "@academic-explorer/client";
+import type { Topic } from "@academic-explorer/types";
 import { createFilterBuilder } from "@academic-explorer/client";
 
 export const Route = createLazyFileRoute("/topics/")({

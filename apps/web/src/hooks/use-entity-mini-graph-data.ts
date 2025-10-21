@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { cachedOpenAlex } from "@academic-explorer/client";
 import { logger } from "@academic-explorer/utils/logger";
-import type { OpenAlexEntity } from "@academic-explorer/client";
+import type { OpenAlexEntity } from "@academic-explorer/types";
 
 interface UseEntityMiniGraphDataOptions {
   entityId: string;

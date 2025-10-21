@@ -10,8 +10,8 @@ import { decodeUrlQueryParams } from "@/utils/url-helpers";
 import {
   WORK_FIELDS,
   cachedOpenAlex,
-  type Work,
 } from "@academic-explorer/client";
+import type { Work } from "@academic-explorer/types";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
