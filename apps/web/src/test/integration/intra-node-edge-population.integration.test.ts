@@ -8,7 +8,7 @@ import type {
   InstitutionEntity,
   Source,
   Work,
-} from "@academic-explorer/client";
+} from "@academic-explorer/types";
 import type { EntityType, GraphNode } from "@academic-explorer/graph";
 import { RelationType } from "@academic-explorer/graph";
 import { QueryClient } from "@tanstack/react-query";

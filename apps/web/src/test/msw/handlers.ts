@@ -4,7 +4,7 @@
  */
 
 import { http, HttpResponse } from "msw";
-import type { Work, Author, Institution } from "@academic-explorer/client";
+import type { Work, Author, Institution } from "@academic-explorer/types";
 
 const API_BASE = "https://api.openalex.org";
 

@@ -6,8 +6,8 @@
 import { QueryClient } from "@tanstack/react-query";
 import { logger } from "@academic-explorer/utils/logger";
 import { trackDeduplication, trackCacheOperation } from "./network-interceptor";
-import type { OpenAlexEntity } from "@academic-explorer/client";
-import { isOpenAlexEntity } from "@academic-explorer/client";
+import type { OpenAlexEntity } from "@academic-explorer/types";
+import { isOpenAlexEntity } from "@academic-explorer/types";
 
 interface RequestCacheEntry {
   promise: Promise<OpenAlexEntity>;

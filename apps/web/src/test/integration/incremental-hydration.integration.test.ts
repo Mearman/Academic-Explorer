@@ -5,7 +5,7 @@
 
 import { createGraphDataService } from "@/services/graph-data-service";
 import { useGraphStore } from "@/stores/graph-store";
-import type { Work } from "@academic-explorer/client";
+import type { Work } from "@academic-explorer/types";
 import { logger } from "@academic-explorer/utils/logger";
 import { QueryClient } from "@tanstack/react-query";
 import { beforeEach, describe, expect, it, vi } from "vitest";

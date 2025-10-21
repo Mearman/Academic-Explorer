@@ -4,7 +4,7 @@
  */
 
 import { graphStore } from "../stores/graph-store";
-import type { OpenAlexEntity } from "@academic-explorer/client";
+import type { OpenAlexEntity } from "@academic-explorer/types";
 import {
   ADVANCED_FIELD_SELECTIONS,
   cachedOpenAlex,

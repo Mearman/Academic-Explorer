@@ -9,7 +9,7 @@ import {
   RequestDeduplicationService,
   createRequestDeduplicationService,
 } from "./request-deduplication-service";
-import type { OpenAlexEntity } from "@academic-explorer/client";
+import type { OpenAlexEntity } from "@academic-explorer/types";
 
 // Mock logger to prevent console output during tests
 vi.mock("@academic-explorer/utils/logger", () => ({

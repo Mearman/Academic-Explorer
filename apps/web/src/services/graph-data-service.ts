@@ -13,15 +13,16 @@ import type {
   OpenAlexEntity,
   Source,
   Work,
-} from "@academic-explorer/client";
+  QueryParams,
+} from "@academic-explorer/types";
 import {
   cachedOpenAlex,
   isAuthor,
   isInstitution,
   isSource,
   isWork,
+  createRequestPipeline,
 } from "@academic-explorer/client";
-import { createRequestPipeline } from "@academic-explorer/client";
 import type {
   EntityType,
   ExternalIdentifier,
@@ -30,7 +31,6 @@ import type {
   GraphNode,
   SearchOptions,
 } from "@academic-explorer/graph";
-import type { QueryParams } from "@academic-explorer/client";
 import { EntityDetectionService, RelationType } from "@academic-explorer/graph";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { QueryClient } from "@tanstack/react-query";
