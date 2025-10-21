@@ -13,7 +13,7 @@ import {
   type CacheOptions,
 } from "./openalex-cli-class.js";
 import type { StaticEntityType } from "./entity-detection.js";
-import type { EntityType } from "@academic-explorer/client";
+import type { EntityType } from "@academic-explorer/types";
 
 // Common CLI option strings
 const FORMAT_OPTION = "-f, --format <format>";

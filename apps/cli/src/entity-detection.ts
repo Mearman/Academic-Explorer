@@ -2,7 +2,7 @@
  * Entity type detection utilities for CLI
  */
 
-import type { EntityType } from "@academic-explorer/client";
+import type { EntityType } from "@academic-explorer/types";
 
 /**
  * Map OpenAlex ID prefixes to entity types
