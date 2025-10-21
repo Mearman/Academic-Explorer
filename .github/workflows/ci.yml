@@ -15,7 +15,7 @@ concurrency:
 
 env:
   NODE_VERSION: "20"
-  PNPM_VERSION: "10.16.1"
+  PNPM_VERSION: "10.18.3"
   # Disable Nx daemon in CI to prevent hanging issues
   NX_DAEMON: false
   # Optional: Add Nx Cloud tokens for distributed caching
