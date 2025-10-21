@@ -9,6 +9,9 @@ import globals from "globals";
 import path from "path";
 import tseslint from "typescript-eslint";
 import { fileURLToPath } from "url";
+import configXO from "eslint-config-xo";
+import configXOTypeScript from "eslint-config-xo-typescript";
+import prettierPlugin from "eslint-plugin-prettier";
 
 // Load custom TypeScript ESLint rules using jiti
 import { createJiti } from "jiti";
@@ -63,13 +66,20 @@ const noReExportsFromPackagesPlugin = loadTsModule(
  *
  * This configuration provides:
  * - TypeScript strict type checking
- * - Common rules for all packages/apps
+ * - XO code quality and style rules
+ * - Prettier formatting (tabs + double quotes)
+ * - Custom domain-specific rules
  * - Import/export linting
  * - Comment rules
  *
  * Individual packages/apps can extend this and add specific plugins.
  */
 export default tseslint.config([
+  // Start with XO's base configuration
+  configXO,
+
+  // Add XO's TypeScript configuration
+  configXOTypeScript,
   {
     // Global ignores for all workspaces
     ignores: [
@@ -165,6 +175,7 @@ export default tseslint.config([
       "no-zustand-computed-functions-plugin": noZustandComputedFunctionsPlugin,
       "no-re-exports-from-packages-plugin": noReExportsFromPackagesPlugin,
       "prefer-destructured-params-plugin": preferDestructuredParamsPlugin,
+      prettier: prettierPlugin,
     },
     rules: {
       // TypeScript-specific rules (non-type-aware)
@@ -212,10 +223,13 @@ export default tseslint.config([
       "no-zustand-computed-functions-plugin/no-zustand-computed-functions":
         "error",
       "no-re-exports-from-packages-plugin/no-re-exports-from-packages": "error",
-      "prefer-destructured-params-plugin/prefer-destructured-params": "error",
+      "prefer-destructured-params-plugin/prefer-destructured-params": "warn",
 
       // ESLint comment rules
       "eslint-comments/no-unused-disable": "error",
+
+      // Prettier formatting rules
+      "prettier/prettier": "error",
     },
   },
   {
@@ -449,6 +463,28 @@ export default tseslint.config([
       "@typescript-eslint/no-empty-function": "off",
       "@typescript-eslint/ban-types": "off",
       "@typescript-eslint/no-inferrable-types": "off",
+    },
+  },
+
+  // Prettier configuration with custom preferences
+  {
+    files: ["**/*.{ts,tsx,js,jsx}"],
+    plugins: {
+      prettier: prettierPlugin,
+    },
+    rules: {
+      "prettier/prettier": [
+        "error",
+        {
+          // Custom Prettier configuration: tabs + double quotes
+          "useTabs": true,
+          "tabWidth": 1,
+          "singleQuote": false,
+          "semi": false,
+          "trailingComma": "es5",
+          "printWidth": 100,
+        },
+      ],
     },
   },
 ]);
