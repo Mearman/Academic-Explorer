@@ -27,7 +27,7 @@ import {
   toStaticEntityType,
 } from "./internal/static-data-utils";
 import type { OpenAlexEntity } from "./types";
-import { isOpenAlexEntity } from "./type-guards";
+import { isOpenAlexEntity } from "@academic-explorer/types/entities";
 import { AutocompleteApi } from "./utils/autocomplete";
 
 export interface ClientApis {
@@ -141,7 +141,10 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
     entityType: string;
   }): Promise<unknown> {
     try {
-      const result = await this.getById(`${entityType}`, cleanId);
+      const result = await this.getById({
+        endpoint: `${entityType}`,
+        id: cleanId,
+      });
 
       if (this.staticCacheEnabled && result && isOpenAlexEntity(result)) {
         await this.cacheEntityResult({
@@ -306,12 +309,17 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   /**
    * Enhanced getById with static cache integration
    */
-  async getById<T = unknown>(
-    endpoint: string,
-    id: string,
-    params: QueryParams = {},
-    schema?: z.ZodType<T>,
-  ): Promise<T> {
+  async getById<T = unknown>({
+    endpoint,
+    id,
+    params = {},
+    schema,
+  }: {
+    endpoint: string;
+    id: string;
+    params?: QueryParams;
+    schema?: z.ZodType<T>;
+  }): Promise<T> {
     const cleanId = cleanOpenAlexId(id);
 
     // Try static cache first for simple requests without parameters
@@ -327,7 +335,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
 
     // Fallback to parent implementation
     try {
-      return await super.getById(endpoint, cleanId, params, schema);
+      return await super.getById({ endpoint, id: cleanId, params, schema });
     } catch (apiError: unknown) {
       logger.warn(
         "client",
