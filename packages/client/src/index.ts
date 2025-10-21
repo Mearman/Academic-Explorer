@@ -54,23 +54,6 @@ export {
 // Utilities
 export { AutocompleteApi } from "./utils/autocomplete";
 
-// Type guards
-export {
-  getEntityType,
-  hasProperty,
-  isAuthor,
-  isConcept,
-  isFunder,
-  isInstitution,
-  isKeyword,
-  isNonNull,
-  isOpenAlexEntity,
-  isPublisher,
-  isSource,
-  isTopic,
-  isWork,
-} from "./type-guards";
-
 // Client configuration utilities
 export {
   cachedOpenAlex,
