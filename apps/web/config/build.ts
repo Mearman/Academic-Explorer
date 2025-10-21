@@ -16,6 +16,7 @@ export const buildConfig = {
 
   build: {
     rollupOptions: {
+      external: ["@academic-explorer/types"],
       input: {
         // Main HTML entry point
         main: path.resolve(__dirname, "../index.html"),

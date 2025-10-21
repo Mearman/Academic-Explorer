@@ -95,6 +95,10 @@ export default defineConfig(({ mode, command }) =>
           workspaceRoot,
           "packages/simulation/src",
         ),
+        "@academic-explorer/types": path.resolve(
+          workspaceRoot,
+          "packages/types/src",
+        ),
       },
     },
 
