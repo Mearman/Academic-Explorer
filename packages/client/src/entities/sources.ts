@@ -488,17 +488,20 @@ export class SourcesApi {
     params: Omit<QueryParams, "filter"> & { filter?: SourcesFilters } = {},
   ): Promise<OpenAlexResponse<Source>> {
     const filters: SourcesFilters = {
-      ...(params.filter || {}),
+      ...(params.filter ?? {}),
       country_code: countryCode,
     };
 
     const { filter: _, ...paramsWithoutFilter } = params;
+    // Type guard function to validate sort parameter
+    function isString(value: unknown): value is string {
+      return typeof value === "string";
+    }
+
     const searchOptions: SourceSearchOptions = {
       ...paramsWithoutFilter,
       filters,
-      sort:
-        (paramsWithoutFilter.sort as string | undefined) ??
-        this.WORKS_COUNT_DESC,
+      sort: isString(paramsWithoutFilter.sort) ? paramsWithoutFilter.sort : this.WORKS_COUNT_DESC,
     };
 
     const queryParams = this.buildFilterParams(searchOptions);

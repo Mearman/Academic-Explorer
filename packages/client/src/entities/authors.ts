@@ -834,7 +834,17 @@ export class AuthorsApi {
     field: string,
     options: AuthorGroupingOptions = {},
   ): Promise<GroupedResponse<Author>> {
+    function hasValidProperties<T extends Record<string, unknown>>(
+      obj: unknown,
+      keys: (keyof T)[]
+    ): obj is T {
+      return typeof obj === "object" && obj !== null && keys.every(key => key in obj);
+    }
+
     const { filters, sort, per_page = 25, page } = options;
+    if (!hasValidProperties(options, ["filters", "sort", "per_page", "page"])) {
+      throw new Error("Invalid options structure");
+    }
 
     const params: QueryParams & { filter?: string } = {
       group_by: field,

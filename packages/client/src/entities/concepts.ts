@@ -257,6 +257,17 @@ export class ConceptsApi {
       throw new Error("Search query must be a non-empty string");
     }
 
+    function hasValidProperties<T extends Record<string, unknown>>(
+      obj: unknown,
+      keys: (keyof T)[]
+    ): obj is T {
+      return typeof obj === "object" && obj !== null && keys.every(key => key in obj);
+    }
+
+    if (!hasValidProperties(options, ["filters", "sort", "page", "per_page", "select"])) {
+      throw new Error("Invalid options structure");
+    }
+
     const {
       filters,
       sort = "relevance_score:desc",

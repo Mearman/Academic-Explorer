@@ -16,7 +16,7 @@ export function toQueryParams<T extends Record<string, unknown>>(
   // Copy all properties
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined) {
-      (result as any)[key] = value;
+      (result as Record<string, unknown>)[key] = value;
     }
   });
 
