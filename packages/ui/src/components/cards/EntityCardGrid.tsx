@@ -18,7 +18,7 @@ import {
   isSource,
   isTopic,
   isWork,
-} from "@academic-explorer/client";
+} from "@academic-explorer/types";
 import { Card, SimpleGrid, Text } from "@mantine/core";
 import React from "react";
 import { AuthorCard } from "./AuthorCard";
