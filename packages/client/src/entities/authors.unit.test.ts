@@ -68,10 +68,8 @@ describe("AuthorsApi", () => {
         select: ["id", "display_name", "works_count"],
       });
 
-      expect(mockClient.getById).toHaveBeenCalledWith({
-        endpoint: "authors",
-        id: "A123",
-        params: { select: ["id", "display_name", "works_count"] },
+      expect(mockClient.getById).toHaveBeenCalledWith("authors", "A123", {
+        select: ["id", "display_name", "works_count"],
       });
     });
 
@@ -86,11 +84,7 @@ describe("AuthorsApi", () => {
 
       const result = await authorsApi.getAuthor("0000-0003-1613-5981");
 
-      expect(mockClient.getById).toHaveBeenCalledWith({
-        endpoint: "authors",
-        id: "https://orcid.org/0000-0003-1613-5981",
-        params: {},
-      });
+      expect(mockClient.getById).toHaveBeenCalledWith("authors", "https://orcid.org/0000-0003-1613-5981", {});
       expect(result).toEqual(mockAuthor);
     });
 
@@ -145,11 +139,7 @@ describe("AuthorsApi", () => {
 
       const result = await authorsApi.getAuthor("0000-0003-1613-598x");
 
-      expect(mockClient.getById).toHaveBeenCalledWith({
-        endpoint: "authors",
-        id: "A2208157607",
-        params: {},
-      });
+      expect(mockClient.getById).toHaveBeenCalledWith("authors", "https://orcid.org/0000-0003-1613-598X", {});
       expect(result).toEqual(mockAuthor);
     });
 

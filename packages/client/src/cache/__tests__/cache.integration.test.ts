@@ -40,7 +40,7 @@ vi.mock("../../client", () => ({
       this.config = config;
     }
     config: any;
-    async getById<T>(endpoint: string, id: string, params = {}): Promise<T> {
+    async getById<T>({ endpoint, id, params = {} }: { endpoint: string; id: string; params?: any }): Promise<T> {
       throw new Error("API call failed");
     }
     updateConfig(config: any): void {

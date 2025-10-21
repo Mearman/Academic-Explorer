@@ -763,19 +763,23 @@ export class OpenAlexBaseClient {
 
   /**
    * GET request for a single entity by ID
+   * Supports both legacy signature (endpoint, id, params) and new signature ({ endpoint, id, params })
    */
-  public async getById<T = unknown>({
-    endpoint,
-    id,
-    params = {},
-    schema,
-  }: {
-    endpoint: string;
-    id: string;
-    params?: QueryParams;
-    schema?: z.ZodType<T>;
-  }): Promise<T> {
-    return this.get(`${endpoint}/${encodeURIComponent(id)}`, params, schema);
+  public async getById<T = unknown>(
+    endpointOrParams: string | { endpoint: string; id: string; params?: QueryParams; schema?: z.ZodType<T> },
+    id?: string,
+    params?: QueryParams,
+    schema?: z.ZodType<T>
+  ): Promise<T> {
+    // Handle legacy signature: getById(endpoint, id, params, schema)
+    if (typeof endpointOrParams === 'string') {
+      const endpoint = endpointOrParams;
+      return this.get(`${endpoint}/${encodeURIComponent(id!)}`, params, schema);
+    }
+    
+    // Handle new signature: getById({ endpoint, id, params, schema })
+    const { endpoint, id: entityId, params: newParams = {}, schema: newSchema } = endpointOrParams;
+    return this.get(`${endpoint}/${encodeURIComponent(entityId)}`, newParams, newSchema);
   }
 
   /**
