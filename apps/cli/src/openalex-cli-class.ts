@@ -237,10 +237,13 @@ const FAILED_TO_CLEAR_SYNTHETIC_CACHE_MESSAGE =
   "Failed to clear synthetic cache";
 
 // Helper functions for canonical URL handling
-function generateCanonicalEntityUrl(
-  entityType: StaticEntityType,
-  entityId: string,
-): string {
+function generateCanonicalEntityUrl({
+  entityType,
+  entityId,
+}: {
+  entityType: StaticEntityType;
+  entityId: string;
+}): string {
   const cleanId = entityId.replace("https://openalex.org/", "");
   return `${OPENALEX_API_BASE_URL}${entityType}/${cleanId}`;
 }

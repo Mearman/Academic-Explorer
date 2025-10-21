@@ -177,11 +177,15 @@ function buildQueryOptions(
   return queryOptions;
 }
 
-function outputQueryResult(
-  result: unknown,
-  staticEntityType: StaticEntityType,
-  format?: string,
-): void {
+function outputQueryResult({
+  result,
+  staticEntityType,
+  format,
+}: {
+  result: unknown;
+  staticEntityType: StaticEntityType;
+  format?: string;
+}): void {
   if (format === "json") {
     console.log(JSON.stringify(result, null, 2));
   } else {
@@ -214,20 +218,31 @@ function outputQueryResult(
   }
 }
 
-function outputEntity(
-  entity: EntitySummary,
-  staticEntityType: StaticEntityType,
-  format?: string,
-  pretty?: boolean,
-): void {
+function outputEntity({
+  entity,
+  staticEntityType,
+  format,
+  pretty,
+}: {
+  entity: EntitySummary;
+  staticEntityType: StaticEntityType;
+  format?: string;
+  pretty?: boolean;
+}): void {
   if (format === "json") {
     console.log(JSON.stringify(entity, null, pretty ? 2 : 0));
   } else {
-    printEntitySummary(entity, staticEntityType);
+    printEntitySummary({ entity, entityType: staticEntityType });
   }
 }
 
-function printEntitySummary(entity: EntitySummary, entityType: string): void {
+function printEntitySummary({
+  entity,
+  entityType,
+}: {
+  entity: EntitySummary;
+  entityType: string;
+}): void {
   console.log(`\n${entityType.toUpperCase()}: ${entity.display_name}`);
   console.log(`ID: ${entity.id}`);
 
@@ -479,12 +494,12 @@ program
       process.exit(1);
     }
 
-    outputEntity(
+    outputEntity({
       entity,
       staticEntityType,
-      validatedOptions.format,
-      validatedOptions.pretty,
-    );
+      format: validatedOptions.format,
+      pretty: validatedOptions.pretty,
+    });
   });
 
 // Auto-detect get command (takes just entity ID)
@@ -513,12 +528,12 @@ program
       process.exit(1);
     }
 
-    outputEntity(
+    outputEntity({
       entity,
       staticEntityType,
-      validatedOptions.format,
-      validatedOptions.pretty,
-    );
+      format: validatedOptions.format,
+      pretty: validatedOptions.pretty,
+    });
   });
 
 // Search command
@@ -649,7 +664,7 @@ program
         process.exit(1);
       }
 
-      outputQueryResult(result, staticEntityType, validatedOptions.format);
+      outputQueryResult({ result, staticEntityType, format: validatedOptions.format });
     } catch (error) {
       console.error("Query failed:", error);
       process.exit(1);
