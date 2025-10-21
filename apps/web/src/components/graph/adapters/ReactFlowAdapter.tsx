@@ -18,7 +18,7 @@ import type {
 } from "./GraphAdapter";
 import type { ReactFlowConfig } from "../configs";
 import { detectEntityType } from "@academic-explorer/graph";
-import type { OpenAlexEntity } from "@academic-explorer/client";
+import type { OpenAlexEntity } from "@academic-explorer/types";
 
 // Hierarchical left-to-right layout algorithm for better node positioning
 function applyHierarchicalLayout({

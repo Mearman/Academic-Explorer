@@ -10,7 +10,7 @@ import type {
 } from "./GraphAdapter";
 import type { ReactForceGraph2DConfig } from "../configs";
 import { detectEntityType } from "@academic-explorer/graph";
-import type { OpenAlexEntity } from "@academic-explorer/client";
+import type { OpenAlexEntity } from "@academic-explorer/types";
 
 interface ForceGraph2DMethods {
   zoomToFit: (duration?: number) => void;

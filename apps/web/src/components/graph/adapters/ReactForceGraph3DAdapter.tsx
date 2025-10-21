@@ -9,7 +9,7 @@ import type {
   GraphNode,
   GraphLink,
 } from "./GraphAdapter";
-import type { OpenAlexEntity } from "@academic-explorer/client";
+import type { OpenAlexEntity } from "@academic-explorer/types";
 import type { ReactForceGraph3DConfig } from "../configs";
 import { detectEntityType } from "@academic-explorer/graph";
 import { logError, logger } from "@academic-explorer/utils/logger";

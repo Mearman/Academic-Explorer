@@ -44,8 +44,8 @@ import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useEntityInteraction } from "@/hooks/use-entity-interaction";
 import type { GraphNode } from "@academic-explorer/graph";
-import type { Authorship, OpenAlexEntity } from "@academic-explorer/client";
-import { isWork, isAuthor, isInstitution } from "@academic-explorer/client";
+import type { Authorship, OpenAlexEntity } from "@academic-explorer/types";
+import { isWork, isAuthor, isInstitution } from "@academic-explorer/types";
 import {
   getNodeYear,
   getNodeOpenAccess,

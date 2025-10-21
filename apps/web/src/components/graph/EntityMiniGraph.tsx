@@ -2,7 +2,7 @@ import { useMemo, useState, useRef, useEffect } from "react";
 import { Select } from "@mantine/core";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 
-import type { OpenAlexEntity } from "@academic-explorer/client";
+import type { OpenAlexEntity } from "@academic-explorer/types";
 import type { GraphAdapter } from "./adapters/GraphAdapter";
 import {
   GraphAdapterFactory,

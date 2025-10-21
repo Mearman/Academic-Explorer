@@ -20,7 +20,7 @@ import type {
 } from "./GraphAdapter";
 import type { R3FForceGraphConfig } from "../configs";
 import { detectEntityType } from "@academic-explorer/graph";
-import type { OpenAlexEntity } from "@academic-explorer/client";
+import type { OpenAlexEntity } from "@academic-explorer/types";
 
 // Fit View Button Component
 function FitViewButton({ onFitView }: { onFitView: () => void }) {
