@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, Title, Badge, Group, Stack } from "@mantine/core";
 import type { OpenAlexEntity } from "@academic-explorer/client";
-import { getEntityType } from "@academic-explorer/client";
+import { getEntityType } from "@academic-explorer/types";
 import { EntityFieldRenderer } from "./FieldRenderer";
 
 interface RichEntityViewProps {
