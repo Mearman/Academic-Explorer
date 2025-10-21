@@ -6,7 +6,7 @@
 import React, { useState } from "react";
 import { Container, Title, Space, Group, Button, Code } from "@mantine/core";
 import { VisualQueryBuilder, type VisualQuery } from "./VisualQueryBuilder";
-import type { EntityType } from "@academic-explorer/client";
+import type { EntityType } from "@academic-explorer/types";
 import { logger } from "@academic-explorer/utils";
 
 export function VisualQueryBuilderExample() {

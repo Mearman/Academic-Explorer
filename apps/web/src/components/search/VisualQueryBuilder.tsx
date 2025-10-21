@@ -1,4 +1,4 @@
-import type { EntityType } from "@academic-explorer/client";
+import type { EntityType } from "@academic-explorer/types";
 import { logger } from "@academic-explorer/utils";
 import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import {
