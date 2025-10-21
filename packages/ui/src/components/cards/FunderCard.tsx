@@ -1,5 +1,5 @@
 import type { Funder } from "@academic-explorer/client";
-import { isFunder } from "@academic-explorer/client";
+import { isFunder } from "@academic-explorer/types";
 import {
   ActionIcon,
   Anchor,

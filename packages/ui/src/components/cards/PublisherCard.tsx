@@ -1,5 +1,5 @@
 import type { Publisher } from "@academic-explorer/client";
-import { isPublisher } from "@academic-explorer/client";
+import { isPublisher } from "@academic-explorer/types";
 import { ActionIcon, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { IconExternalLink } from "@tabler/icons-react";
 import React from "react";
