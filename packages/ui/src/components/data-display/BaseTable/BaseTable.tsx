@@ -161,7 +161,7 @@ export const BaseTable = forwardRef<HTMLDivElement, BaseTableProps<unknown>>(
 													<IconSortAscending size={14} />
 												) : (
 													<IconSortDescending size={14} />
-												))}
+												)}
 									</Group>
 								</Table.Th>
 							))}
