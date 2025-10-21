@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client"
-import {createRouter, RouterProvider, createHashHistory} from '@tanstack/react-router'
+import { createRouter, RouterProvider, createHashHistory } from "@tanstack/react-router"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { MantineProvider, createTheme } from "@mantine/core"
 import { Notifications } from "@mantine/notifications"
@@ -46,7 +46,7 @@ const theme = createTheme({
 			},
 		},
 	},
-});
+})
 
 // DEBUGGING: Temporarily disable global initializations
 // setupGlobalErrorHandling(logger)
@@ -61,13 +61,13 @@ const queryClient = new QueryClient({
 			gcTime: 1000 * 60 * 30, // 30 minutes (was cacheTime)
 		},
 	},
-});
+})
 
 // Create a new router instance with hash-based history for GitHub Pages
 const router = createRouter({
 	routeTree,
 	history: createHashHistory(),
-});
+})
 
 // Register the router instance for type safety
 declare module "@tanstack/react-router" {
@@ -79,7 +79,7 @@ declare module "@tanstack/react-router" {
 // Navigation tracking is now handled by NavigationTracker component in MainLayout
 
 // Load persisted app activity events on app start
-appActivityStore.loadEvents();
+appActivityStore.loadEvents()
 
 // Service worker registration handled by VitePWA plugin
 // registerOpenAlexServiceWorker().then((registered) => {
@@ -91,16 +91,16 @@ appActivityStore.loadEvents();
 //   void error; // Suppress unused variable warning
 // });
 
-const rootElement = document.getElementById("root");
+const rootElement = document.getElementById("root")
 if (!rootElement) {
 	throw new Error("Root element not found")
 }
 
 createRoot(rootElement).render(
 	<QueryClientProvider client={queryClient}>
-	<MantineProvider theme={theme} defaultColorScheme="auto">
-		<Notifications />
-		<RouterProvider router={router} />
-	</MantineProvider>
-</QueryClientProvider>
+		<MantineProvider theme={theme} defaultColorScheme="auto">
+			<Notifications />
+			<RouterProvider router={router} />
+		</MantineProvider>
+	</QueryClientProvider>
 )

@@ -33,8 +33,8 @@ export const WorkCard: React.FC<WorkCardProps> = ({
 	}
 
 	// Get author names from authorships
-	const authorNames
-		= validatedWork.authorships
+	const authorNames =
+		validatedWork.authorships
 			?.slice(0, 3)
 			.map((a) => a.author?.display_name)
 			.filter(Boolean) || []
@@ -57,13 +57,11 @@ export const WorkCard: React.FC<WorkCardProps> = ({
 						<Badge color="blue" variant="light">
 							Work
 						</Badge>
-						{isOA
-? (
+						{isOA ? (
 							<Badge color="green" variant="light" leftSection={<IconLockOpen size={12} />}>
 								Open Access
 							</Badge>
-						)
-: (
+						) : (
 							<Badge color="gray" variant="light" leftSection={<IconLock size={12} />}>
 								Closed
 							</Badge>

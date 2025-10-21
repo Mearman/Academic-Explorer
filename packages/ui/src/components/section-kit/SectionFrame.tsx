@@ -97,8 +97,7 @@ export const SectionFrame: React.FC<SectionFrameProps> = ({
 							onClick={toggleExpanded}
 							leftSection={
 								<span style={{ display: "flex", alignItems: "center" }}>
-									{isExpanded ? <IconChevronDown size={14} />
-: <IconChevronRight size={14} />}
+									{isExpanded ? <IconChevronDown size={14} /> : <IconChevronRight size={14} />}
 								</span>
 							}
 							styles={{

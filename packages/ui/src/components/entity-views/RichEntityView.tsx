@@ -26,7 +26,7 @@ const RichEntityView: React.FC<RichEntityViewProps> = ({ entity, entityType, onN
 
 	// Get key metrics for the header badges
 	const getHeaderMetrics = (
-		entity: OpenAlexEntity | Record<string, unknown>,
+		entity: OpenAlexEntity | Record<string, unknown>
 	): Array<{ label: string; value: string | number; color?: string }> => {
 		const metrics: Array<{
 			label: string

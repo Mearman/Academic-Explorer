@@ -173,8 +173,7 @@ export function EntityCollectionList<T = Record<string, unknown>>({
 					}}
 					leftSection={<IconSearch size={16} />}
 					rightSection={
-						searchQuery
-? <IconX size={16} style={{ cursor: "pointer" }} onClick={clearSearch} /> : null
+						searchQuery ? <IconX size={16} style={{ cursor: "pointer" }} onClick={clearSearch} /> : null
 					}
 					size="sm"
 				/>
@@ -202,23 +201,19 @@ export function EntityCollectionList<T = Record<string, unknown>>({
 
 			{/* Content Area */}
 			<Box style={{ position: "relative" }}>
-				{loading
-? (
+				{loading ? (
 					<Center style={{ height }}>
 						<Loader size="md" />
 					</Center>
-				)
-: (
+				) : (
 					<ScrollArea style={{ height }}>
-						{filteredItems.length > 0
-? (
+						{filteredItems.length > 0 ? (
 							<Stack gap="sm">
 								{filteredItems.map((item, index) => (
 									<Box key={index}>{renderItem(item, index)}</Box>
 								))}
 							</Stack>
-						)
-: (
+						) : (
 							renderEmptyState()
 						)}
 					</ScrollArea>
