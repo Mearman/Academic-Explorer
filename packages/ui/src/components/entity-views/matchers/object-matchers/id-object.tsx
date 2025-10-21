@@ -19,12 +19,12 @@ export const idObjectMatcher: ObjectMatcher = {
 		const keys = Object.keys(obj as Record<string, unknown>)
 		return keys.some(
 			(key) =>
-				key === "openalex"
-				|| key === "orcid" ||
-				key === "doi"
-				|| key === "ror" ||
-				key === "issn"
-				|| key === "scopus"
+				key === "openalex" ||
+				key === "orcid" ||
+				key === "doi" ||
+				key === "ror" ||
+				key === "issn" ||
+				key === "scopus"
 		)
 	},
 	render(obj: unknown, fieldName: string, onNavigate?: (path: string) => void): React.ReactNode {
@@ -32,7 +32,7 @@ export const idObjectMatcher: ObjectMatcher = {
 		return (
 			<Group gap="xs" wrap="wrap">
 				{Object.entries(idObj).map(async ([key, value]) =>
-					value ? renderIdBadge({ key, value, onNavigate }) : null,
+					value ? renderIdBadge({ key, value, onNavigate }) : null
 				)}
 			</Group>
 		)
@@ -88,12 +88,12 @@ function getRelativeUrlForId({ key, value }: { key: string; value: string }): st
 
 	// Validate validation result safely without coercion
 	if (validation === null || typeof validation !== "object") {
-		return null
+		return undefined
 	}
 
 	// Check for required properties
 	if (!("isValid" in validation) || !("type" in validation)) {
-		return null
+		return undefined
 	}
 
 	// Safely check types
@@ -104,7 +104,7 @@ function getRelativeUrlForId({ key, value }: { key: string; value: string }): st
 		return convertToRelativeUrl(`https://openalex.org/${value}`)
 	}
 
-	return null
+	return undefined
 }
 
 /**

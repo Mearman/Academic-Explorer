@@ -76,16 +76,16 @@ type DebugInfo = {
  * ```
  */
 export class ErrorBoundary extends React.Component<ErrorBoundaryProps, State> {
-	private copyTimeout: NodeJS.Timeout | undefined = null
+	private copyTimeout: NodeJS.Timeout | undefined = undefined
 
 	constructor(props: ErrorBoundaryProps) {
 		super(props)
 		this.state = {
 			hasError: false,
-			error: null,
-			errorInfo: null,
-			errorId: null,
-			debugInfo: null,
+			error: undefined,
+			errorInfo: undefined,
+			errorId: undefined,
+			debugInfo: undefined,
 			copied: false,
 			clearingCache: false,
 		}
@@ -133,10 +133,10 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, State> {
 	private readonly handleReset = (): void => {
 		this.setState({
 			hasError: false,
-			error: null,
-			errorInfo: null,
-			errorId: null,
-			debugInfo: null,
+			error: undefined,
+			errorInfo: undefined,
+			errorId: undefined,
+			debugInfo: undefined,
 			copied: false,
 			clearingCache: false,
 		})
