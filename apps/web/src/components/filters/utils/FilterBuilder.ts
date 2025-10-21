@@ -5,7 +5,7 @@
  * from structured filter objects with type safety and validation.
  */
 
-import type { EntityFilters, EntityType } from "@academic-explorer/client";
+import type { EntityFilters, EntityType } from "@academic-explorer/types";
 import { logger } from "@academic-explorer/utils/logger";
 
 /**

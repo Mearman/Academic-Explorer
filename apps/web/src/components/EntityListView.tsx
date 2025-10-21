@@ -1,4 +1,4 @@
-import type { EntityType } from "@academic-explorer/client";
+import type { EntityType } from "@academic-explorer/types";
 import { EntityCard } from "@academic-explorer/ui";
 import { Stack, Text } from "@mantine/core";
 

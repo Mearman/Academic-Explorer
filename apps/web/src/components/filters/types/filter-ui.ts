@@ -3,7 +3,7 @@
  * Extends the core OpenAlex types with UI state and interactions
  */
 
-import type { EntityFilters, WorksFilters, AuthorsFilters, EntityType } from "@academic-explorer/client";
+import type { EntityFilters, WorksFilters, AuthorsFilters, EntityType } from "@academic-explorer/types";
 
 // Re-export core types for convenience
 export type { EntityFilters, WorksFilters, AuthorsFilters, EntityType };

@@ -10,7 +10,7 @@ import type {
   Source,
   Topic,
   Work,
-} from "@academic-explorer/client";
+} from "@academic-explorer/types";
 import {
   buildFilterString,
   cachedOpenAlex as openAlex,
