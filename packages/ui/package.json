@@ -67,6 +67,7 @@
   "dependencies": {
     "@academic-explorer/client": "workspace:*",
     "@academic-explorer/graph": "workspace:*",
+    "@academic-explorer/types": "workspace:*",
     "@tanstack/react-table": "^8.21.3"
   },
   "peerDependencies": {
