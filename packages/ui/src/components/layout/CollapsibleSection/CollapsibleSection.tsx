@@ -1,17 +1,17 @@
-import React, { useState, forwardRef } from "react";
-import { useMantineTheme, useMantineColorScheme } from "@mantine/core";
-import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
+import React, { useState, forwardRef } from "react"
+import { useMantineTheme, useMantineColorScheme } from "@mantine/core"
+import { IconChevronDown, IconChevronRight } from "@tabler/icons-react"
 
-export interface CollapsibleSectionProps {
-	title: string;
-	icon: React.ReactNode;
-	children: React.ReactNode;
-	defaultExpanded?: boolean;
-	storageKey?: string;
-	onToggle?: (expanded: boolean) => void;
-	className?: string;
-	'data-testid'?: string;
-}
+export type CollapsibleSectionProps = {
+	title: string
+	icon: React.ReactNode
+	children: React.ReactNode
+	defaultExpanded?: boolean
+	storageKey?: string
+	onToggle?: (expanded: boolean) => void
+	className?: string
+	"data-testid"?: string
+};
 
 /**
  * A collapsible section component with expandable content and optional state persistence.
@@ -31,131 +31,129 @@ export interface CollapsibleSectionProps {
  */
 export const CollapsibleSection = forwardRef<HTMLDivElement, CollapsibleSectionProps>(
 	(props, ref) => {
-		const {
-			title,
-			icon,
-			children,
-			defaultExpanded = true,
-			storageKey,
-			onToggle,
-			className,
-			...restProps
-		} = props;
+	const {
+		title,
+		icon,
+		children,
+		defaultExpanded = true,
+		storageKey,
+		onToggle,
+		className,
+		...restProps
+	} = props
 		// Initialize state from localStorage if storageKey is provided
-		const [isExpanded, setIsExpanded] = useState(() => {
-			if (storageKey && typeof window !== 'undefined') {
-				try {
-					const stored = localStorage.getItem(`collapsible-${storageKey}`);
-					return stored ? JSON.parse(stored) : defaultExpanded;
-				} catch {
-					return defaultExpanded;
-				}
+	const [isExpanded, setIsExpanded] = useState(() => {
+		if (storageKey && typeof window !== "undefined") {
+			try {
+				const stored = localStorage.getItem(`collapsible-${storageKey}`)
+				return stored ? JSON.parse(stored) : defaultExpanded
+			} catch {
+				return defaultExpanded
 			}
-			return defaultExpanded;
-		});
+		}
 
-		const theme = useMantineTheme();
-		const { colorScheme } = useMantineColorScheme();
+		return defaultExpanded
+	})
 
-		// Resolve the actual color scheme when colorScheme is 'auto'
-		const resolvedColorScheme = colorScheme === "auto"
+	const theme = useMantineTheme()
+	const { colorScheme } = useMantineColorScheme()
+
+	// Resolve the actual color scheme when colorScheme is 'auto'
+	const resolvedColorScheme =
+		= colorScheme === 'auto'
 			? (() => {
 				try {
-					return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-				} catch {
-					return "light";
+					return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+						} catch {
+					return 'light';
 				}
-			})()
-			: colorScheme;
+					})()
+			: colorScheme
 
-		const _isDark = resolvedColorScheme === "dark";
+	const _isDark = resolvedColorScheme === "dark"
 
-		// Theme-aware colors
-		const colors = {
-			text: {
-				primary: "var(--mantine-color-text)",
-			},
-			border: {
-				primary: "var(--mantine-color-default-border)",
-			},
-			primary: theme.colors.blue[5] || "#228be6",
-		};
+	// Theme-aware colors
+	const colors = {
+		text: {
+			primary: "var(--mantine-color-text)",
+		},
+		border: {
+			primary: "var(--mantine-color-default-border)",
+		},
+		primary: theme.colors.blue[5] || "#228be6",
+	}
 
-		const toggleExpanded = () => {
-			const newExpanded = !isExpanded;
-			setIsExpanded(newExpanded);
+	const toggleExpanded = () => {
+		const newExpanded = !isExpanded
+		setIsExpanded(newExpanded)
 
-			// Persist to localStorage if storageKey is provided
-			if (storageKey && typeof window !== 'undefined') {
-				try {
-					localStorage.setItem(`collapsible-${storageKey}`, JSON.stringify(newExpanded));
-				} catch {
-					// Silently fail if localStorage is not available
-				}
+		// Persist to localStorage if storageKey is provided
+		if (storageKey && typeof window !== "undefined") {
+			try {
+				localStorage.setItem(`collapsible-${storageKey}`, JSON.stringify(newExpanded))
+			} catch {
+				// Silently fail if localStorage is not available
 			}
+		}
 
-			// Call external toggle handler
-			onToggle?.(newExpanded);
-		};
+		// Call external toggle handler
+		onToggle?.(newExpanded)
+	}
 
-		return (
-			<div ref={ref} className={className} style={{ width: "100%" }} {...restProps}>
-				{/* Section Header */}
-				<button
-					onClick={toggleExpanded}
+	return (
+		<div ref={ref} className={className} style={{ width: "100%" }} {...restProps}>
+			{/* Section Header */}
+			<button
+				onClick={toggleExpanded}
+				style={{
+					display: "flex",
+					alignItems: "center",
+					gap: "8px",
+					width: "100%",
+					padding: "8px 0",
+					backgroundColor: "transparent",
+					border: "none",
+					borderBottom: `1px solid ${colors.border.primary}`,
+					fontSize: "13px",
+					fontWeight: 600,
+					color: colors.text.primary,
+					cursor: "pointer",
+					transition: "color 0.2s ease",
+				}}
+				onMouseEnter={(e) => {
+					e.currentTarget.style.color = colors.primary
+				}}
+				onMouseLeave={(e) => {
+					e.currentTarget.style.color = colors.text.primary
+				}}
+			>
+				{/* Expand/collapse chevron */}
+				<span style={{ display: "flex", alignItems: "center" }}>
+					{isExpanded ? <IconChevronDown size={14} /> : <IconChevronRight size={14} />}
+				</span>
+
+				{/* Section icon */}
+				<span style={{ display: "flex", alignItems: "center" }}>{icon}</span>
+
+				{/* Section title */}
+				<span>{title}</span>
+			</button>
+
+			{/* Section Content */}
+			{isExpanded && (
+				<div
 					style={{
-						display: "flex",
-						alignItems: "center",
-						gap: "8px",
-						width: "100%",
-						padding: "8px 0",
-						backgroundColor: "transparent",
-						border: "none",
-						borderBottom: `1px solid ${colors.border.primary}`,
-						fontSize: "13px",
-						fontWeight: 600,
-						color: colors.text.primary,
-						cursor: "pointer",
-						transition: "color 0.2s ease",
-					}}
-					onMouseEnter={(e) => {
-						e.currentTarget.style.color = colors.primary;
-					}}
-					onMouseLeave={(e) => {
-						e.currentTarget.style.color = colors.text.primary;
-					}}
-				>
-					{/* Expand/collapse chevron */}
-					<span style={{ display: "flex", alignItems: "center" }}>
-						{isExpanded ? (
-							<IconChevronDown size={14} />
-						) : (
-							<IconChevronRight size={14} />
-						)}
-					</span>
-
-					{/* Section icon */}
-					<span style={{ display: "flex", alignItems: "center" }}>
-						{icon}
-					</span>
-
-					{/* Section title */}
-					<span>{title}</span>
-				</button>
-
-				{/* Section Content */}
-				{isExpanded && (
-					<div style={{
 						paddingTop: "12px",
 						paddingBottom: "20px",
 						animation: "fadeIn 0.2s ease-in-out",
-					}}>
-						{children}
-					</div>
-				)}
+					}}
+				>
+					{children}
+				</div>
+			)}
 
-				{/* CSS for fade-in animation */}
-				<style>{`
+			{/* CSS for fade-in animation */}
+			<style>{`
 					@keyframes fadeIn {
 						from {
 							opacity: 0;
@@ -167,9 +165,9 @@ export const CollapsibleSection = forwardRef<HTMLDivElement, CollapsibleSectionP
 						}
 					}
 				`}</style>
-			</div>
-		);
-	}
-);
+		</div>
+	)
+}
+)
 
-CollapsibleSection.displayName = 'CollapsibleSection';
+CollapsibleSection.displayName = "CollapsibleSection"

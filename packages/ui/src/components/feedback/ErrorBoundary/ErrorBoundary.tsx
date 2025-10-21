@@ -1,5 +1,5 @@
-import * as React from "react";
-import { ErrorInfo, ReactNode } from "react";
+import * as React from "react"
+import { type ErrorInfo, type ReactNode } from "react"
 import {
 	Container,
 	Stack,
@@ -14,7 +14,7 @@ import {
 	Divider,
 	ActionIcon,
 	Tooltip,
-} from "@mantine/core";
+} from "@mantine/core"
 import {
 	IconAlertTriangle,
 	IconRefresh,
@@ -22,42 +22,42 @@ import {
 	IconCheck,
 	IconBug,
 	IconExternalLink,
-} from "@tabler/icons-react";
-import { notifications } from "@mantine/notifications";
+} from "@tabler/icons-react"
+import { notifications } from "@mantine/notifications"
 
-export interface ErrorBoundaryProps {
-	children: ReactNode;
-	fallback?: ReactNode;
-	onError?: (error: Error, errorInfo: ErrorInfo) => void;
-	onReset?: () => void;
-	onClearCache?: () => Promise<void>;
-	reportUrl?: string;
-	showDebugInfo?: boolean;
-	className?: string;
-	'data-testid'?: string;
+export type ErrorBoundaryProps = {
+	children: ReactNode
+	fallback?: ReactNode
+	onError?: (error: Error, errorInfo: ErrorInfo) => void
+	onReset?: () => void
+	onClearCache?: () => Promise<void>
+	reportUrl?: string
+	showDebugInfo?: boolean
+	className?: string
+	"data-testid"?: string
 }
 
-interface State {
-	hasError: boolean;
-	error: Error | null;
-	errorInfo: ErrorInfo | null;
-	errorId: string | null;
-	debugInfo: DebugInfo | null;
-	copied: boolean;
-	clearingCache: boolean;
+type State = {
+	hasError: boolean
+	error: Error | undefined
+	errorInfo: ErrorInfo | undefined
+	errorId: string | undefined
+	debugInfo: DebugInfo | undefined
+	copied: boolean
+	clearingCache: boolean
 }
 
-interface DebugInfo {
-	timestamp: string;
-	userAgent: string;
-	url: string;
-	errorStack: string | undefined;
-	componentStack: string | undefined;
-	errorBoundary: string;
+type DebugInfo = {
+	timestamp: string
+	userAgent: string
+	url: string
+	errorStack: string | undefined
+	componentStack: string | undefined
+	errorBoundary: string
 	additionalContext: {
-		reactVersion: string;
-		isDev: boolean;
-	};
+		reactVersion: string
+		isDev: boolean
+	}
 }
 
 /**
@@ -76,10 +76,10 @@ interface DebugInfo {
  * ```
  */
 export class ErrorBoundary extends React.Component<ErrorBoundaryProps, State> {
-	private copyTimeout: NodeJS.Timeout | null = null;
+	private copyTimeout: NodeJS.Timeout | undefined = null
 
 	constructor(props: ErrorBoundaryProps) {
-		super(props);
+		super(props)
 		this.state = {
 			hasError: false,
 			error: null,
@@ -88,7 +88,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, State> {
 			debugInfo: null,
 			copied: false,
 			clearingCache: false,
-		};
+		}
 	}
 
 	static getDerivedStateFromError(error: Error): Partial<State> {
@@ -96,11 +96,11 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, State> {
 		return {
 			hasError: true,
 			error,
-		};
+		}
 	}
 
 	componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-		const errorId = Math.random().toString(36).substring(7);
+		const errorId = Math.random().toString(36).substring(7)
 
 		// Generate debug info
 		const debugInfo: DebugInfo = {
@@ -111,26 +111,26 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, State> {
 			componentStack: errorInfo.componentStack ?? undefined,
 			errorBoundary: "ErrorBoundary",
 			additionalContext: {
-				reactVersion: React.version || 'unknown',
-				isDev: process.env['NODE_ENV'] === 'development',
+				reactVersion: React.version || "unknown",
+				isDev: process.env.NODE_ENV === "development",
 			},
-		};
+		}
 
 		this.setState({
 			errorInfo,
 			errorId,
 			debugInfo,
-		});
+		})
 
 		// Call external error handler
-		this.props.onError?.(error, errorInfo);
+		this.props.onError?.(error, errorInfo)
 	}
 
-	private handleReload = (): void => {
-		window.location.reload();
-	};
+	private readonly handleReload = (): void => {
+		window.location.reload()
+	}
 
-	private handleReset = (): void => {
+	private readonly handleReset = (): void => {
 		this.setState({
 			hasError: false,
 			error: null,
@@ -139,42 +139,42 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, State> {
 			debugInfo: null,
 			copied: false,
 			clearingCache: false,
-		});
+		})
 
-		this.props.onReset?.();
-	};
+		this.props.onReset?.()
+	}
 
-	private handleClearCache = async (): Promise<void> => {
+	private readonly handleClearCache = async (): Promise<void> => {
 		if (!this.props.onClearCache) {
 			notifications.show({
 				title: "Cache Clear Not Available",
 				message: "Cache clearing functionality is not implemented",
 				color: "orange",
-			});
-			return;
+			})
+			return
 		}
 
-		this.setState({ clearingCache: true });
+		this.setState({ clearingCache: true })
 		try {
-			await this.props.onClearCache();
+			await this.props.onClearCache()
 			notifications.show({
 				title: "Cache Cleared",
 				message: "All cached data has been cleared. Please reload the page.",
 				color: "green",
-			});
+			})
 		} catch {
 			notifications.show({
 				title: "Cache Clear Failed",
 				message: "Failed to clear cache. Please try reloading the page.",
 				color: "red",
-			});
+			})
 		} finally {
-			this.setState({ clearingCache: false });
+			this.setState({ clearingCache: false })
 		}
-	};
+	}
 
-	private generateDebugData = (): string => {
-		const { error, errorInfo, errorId, debugInfo } = this.state;
+	private readonly generateDebugData = (): string => {
+		const { error, errorInfo, errorId, debugInfo } = this.state
 
 		const debugData = {
 			errorId,
@@ -192,45 +192,46 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, State> {
 				userAgent: debugInfo?.userAgent,
 				url: debugInfo?.url,
 			},
-		};
+		}
 
-		return JSON.stringify(debugData, null, 2);
-	};
+		return JSON.stringify(debugData, null, 2)
+	}
 
-	private handleCopyDebugData = async (): Promise<void> => {
+	private readonly handleCopyDebugData = async (): Promise<void> => {
 		try {
-			const debugData = this.generateDebugData();
-			await navigator.clipboard.writeText(debugData);
+			const debugData = this.generateDebugData()
+			await navigator.clipboard.writeText(debugData)
 
-			this.setState({ copied: true });
+			this.setState({ copied: true })
 
 			notifications.show({
 				title: "Debug data copied",
 				message: "Error information has been copied to your clipboard",
 				color: "green",
 				icon: <IconCheck size={16} />,
-			});
+			})
 
 			// Reset copied state after 2 seconds
 			if (this.copyTimeout) {
-				clearTimeout(this.copyTimeout);
+				clearTimeout(this.copyTimeout)
 			}
+
 			this.copyTimeout = setTimeout(() => {
-				this.setState({ copied: false });
-			}, 2000);
+				this.setState({ copied: false })
+			}, 2000)
 		} catch {
 			notifications.show({
 				title: "Copy failed",
 				message: "Could not copy to clipboard. Please copy manually from the debug section below.",
 				color: "red",
 				icon: <IconAlertTriangle size={16} />,
-			});
+			})
 		}
-	};
+	}
 
 	componentWillUnmount(): void {
 		if (this.copyTimeout) {
-			clearTimeout(this.copyTimeout);
+			clearTimeout(this.copyTimeout)
 		}
 	}
 
@@ -238,14 +239,19 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, State> {
 		if (this.state.hasError) {
 			// Custom fallback UI
 			if (this.props.fallback) {
-				return this.props.fallback;
+				return this.props.fallback
 			}
 
-			const { error, errorId, copied, clearingCache } = this.state;
-			const { reportUrl, showDebugInfo = false, onClearCache } = this.props;
+			const { error, errorId, copied, clearingCache } = this.state
+			const { reportUrl, showDebugInfo = false, onClearCache } = this.props
 
 			return (
-				<Container size="md" py="xl" className={this.props.className ?? ''} data-testid={this.props['data-testid']}>
+				<Container
+					size="md"
+					py="xl"
+					className={this.props.className ?? ""}
+					data-testid={this.props["data-testid"]}
+				>
 					<Stack gap="lg">
 						{/* Header */}
 						<Alert
@@ -255,8 +261,8 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, State> {
 							variant="light"
 						>
 							<Text size="sm">
-								Something went wrong and the application encountered an unexpected error.
-								This error has been logged for investigation.
+								Something went wrong and the application encountered an unexpected error. This error has
+								been logged for investigation.
 							</Text>
 						</Alert>
 
@@ -299,11 +305,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, State> {
 									>
 										Reload Page
 									</Button>
-									<Button
-										leftSection={<IconBug size={16} />}
-										onClick={this.handleReset}
-										variant="light"
-									>
+									<Button leftSection={<IconBug size={16} />} onClick={this.handleReset} variant="light">
 										Try Again
 									</Button>
 									{onClearCache && (
@@ -342,8 +344,8 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, State> {
 									</Group>
 
 									<Text size="sm" c="dimmed">
-										This debug information is shown because debug mode is enabled.
-										Click the copy button above to copy all debug data to clipboard.
+										This debug information is shown because debug mode is enabled. Click the copy button above
+										to copy all debug data to clipboard.
 									</Text>
 
 									<Divider />
@@ -381,9 +383,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, State> {
 											</Text>
 										</summary>
 										<ScrollArea.Autosize mah={300} mt="xs">
-											<Code block>
-												{this.generateDebugData()}
-											</Code>
+											<Code block>{this.generateDebugData()}</Code>
 										</ScrollArea.Autosize>
 									</details>
 								</Stack>
@@ -418,10 +418,10 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, State> {
 						</Alert>
 					</Stack>
 				</Container>
-			);
+			)
 		}
 
-		return this.props.children;
+		return this.props.children
 	}
 }
 

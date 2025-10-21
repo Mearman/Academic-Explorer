@@ -1,29 +1,21 @@
-import React from "react";
-import {
-  Paper,
-  Title,
-  Text,
-  Box,
-  Group,
-  Button,
-  Collapse,
-} from "@mantine/core";
-import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
+import React from "react"
+import { Paper, Title, Text, Box, Group, Button, Collapse } from "@mantine/core"
+import { IconChevronDown, IconChevronRight } from "@tabler/icons-react"
 
-export interface SectionFrameProps {
-  children: React.ReactNode;
-  title?: string;
-  subtitle?: string;
-  icon?: React.ReactNode;
-  actions?: React.ReactNode;
-  defaultExpanded?: boolean;
-  storageKey?: string;
-  onToggle?: (expanded: boolean) => void;
-  withShadow?: boolean;
-  withBorder?: boolean;
-  padding?: "xs" | "sm" | "md" | "lg" | "xl";
-  className?: string;
-  "data-testid"?: string;
+export type SectionFrameProps = {
+	children: React.ReactNode
+	title?: string
+	subtitle?: string
+	icon?: React.ReactNode
+	actions?: React.ReactNode
+	defaultExpanded?: boolean
+	storageKey?: string
+	onToggle?: (expanded: boolean) => void
+	withShadow?: boolean
+	withBorder?: boolean
+	padding?: "xs" | "sm" | "md" | "lg" | "xl"
+	className?: string
+	"data-testid"?: string
 }
 
 /**
@@ -44,113 +36,104 @@ export interface SectionFrameProps {
  * ```
  */
 export const SectionFrame: React.FC<SectionFrameProps> = ({
-  children,
-  title,
-  subtitle,
-  icon,
-  actions,
-  defaultExpanded = true,
-  storageKey,
-  onToggle,
-  withShadow = false,
-  withBorder = true,
-  padding = "md",
-  className,
-  ...restProps
+	children,
+	title,
+	subtitle,
+	icon,
+	actions,
+	defaultExpanded = true,
+	storageKey,
+	onToggle,
+	withShadow = false,
+	withBorder = true,
+	padding = "md",
+	className,
+	...restProps
 }) => {
-  const [isExpanded, setIsExpanded] = React.useState(() => {
-    if (storageKey && typeof window !== "undefined") {
-      try {
-        const stored = localStorage.getItem(`section-frame-${storageKey}`);
-        return stored ? JSON.parse(stored) : defaultExpanded;
-      } catch {
-        return defaultExpanded;
-      }
-    }
-    return defaultExpanded;
-  });
+	const [isExpanded, setIsExpanded] = React.useState(() => {
+		if (storageKey && typeof window !== "undefined") {
+			try {
+				const stored = localStorage.getItem(`section-frame-${storageKey}`)
+				return stored ? JSON.parse(stored) : defaultExpanded
+			} catch {
+				return defaultExpanded
+			}
+		}
 
-  const toggleExpanded = () => {
-    const newExpanded = !isExpanded;
-    setIsExpanded(newExpanded);
+		return defaultExpanded
+	})
 
-    // Persist to localStorage if storageKey is provided
-    if (storageKey && typeof window !== "undefined") {
-      try {
-        localStorage.setItem(
-          `section-frame-${storageKey}`,
-          JSON.stringify(newExpanded),
-        );
-      } catch {
-        // Silently fail if localStorage is not available
-      }
-    }
+	const toggleExpanded = () => {
+		const newExpanded = !isExpanded
+		setIsExpanded(newExpanded)
 
-    // Call external toggle handler
-    onToggle?.(newExpanded);
-  };
+		// Persist to localStorage if storageKey is provided
+		if (storageKey && typeof window !== "undefined") {
+			try {
+				localStorage.setItem(`section-frame-${storageKey}`, JSON.stringify(newExpanded))
+			} catch {
+				// Silently fail if localStorage is not available
+			}
+		}
 
-  const hasHeader = title || subtitle || icon || actions;
+		// Call external toggle handler
+		onToggle?.(newExpanded)
+	}
 
-  return (
-    <Paper
-      withBorder={withBorder}
-      shadow={withShadow ? "sm" : undefined}
-      className={className}
-      {...restProps}
-    >
-      {hasHeader && (
-        <Box p={padding}>
-          <Group justify="space-between" wrap="nowrap">
-            <Button
-              variant="subtle"
-              onClick={toggleExpanded}
-              leftSection={
-                <span style={{ display: "flex", alignItems: "center" }}>
-                  {isExpanded ? (
-                    <IconChevronDown size={14} />
-                  ) : (
-                    <IconChevronRight size={14} />
-                  )}
-                </span>
-              }
-              styles={{
-                inner: { justifyContent: "flex-start" },
-                label: { flex: 1 },
-              }}
-              fullWidth
-            >
-              <Group gap="xs" wrap="nowrap" style={{ width: "100%" }}>
-                {icon && (
-                  <span style={{ display: "flex", alignItems: "center" }}>
-                    {icon}
-                  </span>
-                )}
-                <Box style={{ flex: 1, minWidth: 0 }}>
-                  {title && (
-                    <Title order={4} mb={subtitle ? 4 : 0}>
-                      {title}
-                    </Title>
-                  )}
-                  {subtitle && (
-                    <Text size="sm" c="dimmed">
-                      {subtitle}
-                    </Text>
-                  )}
-                </Box>
-              </Group>
-            </Button>
+	const hasHeader = title || subtitle || icon || actions
 
-            {actions && <Box style={{ flexShrink: 0 }}>{actions}</Box>}
-          </Group>
-        </Box>
-      )}
+	return (
+		<Paper
+			withBorder={withBorder}
+			shadow={withShadow ? "sm" : undefined}
+			className={className}
+			{...restProps}
+		>
+			{hasHeader && (
+				<Box p={padding}>
+					<Group justify="space-between" wrap="nowrap">
+						<Button
+							variant="subtle"
+							onClick={toggleExpanded}
+							leftSection={
+								<span style={{ display: "flex", alignItems: "center" }}>
+									{isExpanded ? <IconChevronDown size={14} />
+: <IconChevronRight size={14} />}
+								</span>
+							}
+							styles={{
+								inner: { justifyContent: "flex-start" },
+								label: { flex: 1 },
+							}}
+							fullWidth
+						>
+							<Group gap="xs" wrap="nowrap" style={{ width: "100%" }}>
+								{icon && <span style={{ display: "flex", alignItems: "center" }}>{icon}</span>}
+								<Box style={{ flex: 1, minWidth: 0 }}>
+									{title && (
+										<Title order={4} mb={subtitle ? 4 : 0}>
+											{title}
+										</Title>
+									)}
+									{subtitle && (
+										<Text size="sm" c="dimmed">
+											{subtitle}
+										</Text>
+									)}
+								</Box>
+							</Group>
+						</Button>
 
-      <Collapse in={isExpanded}>
-        <Box p={hasHeader ? 0 : padding} pt={hasHeader ? padding : 0}>
-          {children}
-        </Box>
-      </Collapse>
-    </Paper>
-  );
-};
+						{actions && <Box style={{ flexShrink: 0 }}>{actions}</Box>}
+					</Group>
+				</Box>
+			)}
+
+			<Collapse in={isExpanded}>
+				<Box p={hasHeader ? 0 : padding} pt={hasHeader ? padding : 0}>
+					{children}
+				</Box>
+			</Collapse>
+		</Paper>
+	)
+}

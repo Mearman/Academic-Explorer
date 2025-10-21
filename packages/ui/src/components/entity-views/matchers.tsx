@@ -6,4 +6,4 @@
  */
 
 // Re-export everything from the modular structure
-export * from "./matchers";
+export type * from "./matchers"

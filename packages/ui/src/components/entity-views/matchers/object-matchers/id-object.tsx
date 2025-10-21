@@ -1,167 +1,173 @@
-import { ActionIcon, Anchor, Badge, Group, Tooltip } from "@mantine/core";
-import { IconCopy } from "@tabler/icons-react";
-import React from "react";
-import { validateExternalId } from "@academic-explorer/client";
-import type { ObjectMatcher } from "../types";
-import { convertToRelativeUrl, getIdColor } from "../utils";
+import { ActionIcon, Anchor, Badge, Group, Tooltip } from "@mantine/core"
+import { IconCopy } from "@tabler/icons-react"
+import React from "react"
+import { validateExternalId } from "@academic-explorer/client"
+import type { ObjectMatcher } from "../types"
+import { convertToRelativeUrl, getIdColor } from "../utils"
 
 // Constants for ID types
-const SPECIAL_ID_TYPES = new Set(["orcid", "doi", "ror"]);
+const SPECIAL_ID_TYPES = new Set(["orcid", "doi", "ror"])
 
 export const idObjectMatcher: ObjectMatcher = {
-  name: "id-object",
-  priority: 10,
-  detect: (obj: unknown): boolean => {
-    if (typeof obj !== "object" || obj === null) return false;
+	name: "id-object",
+	priority: 10,
+	detect(obj: unknown): boolean {
+		if (typeof obj !== "object" || obj === null) {
+			return false
+		}
 
-    const keys = Object.keys(obj as Record<string, unknown>);
-    return keys.some(
-      (key) =>
-        key === "openalex" ||
-        key === "orcid" ||
-        key === "doi" ||
-        key === "ror" ||
-        key === "issn" ||
-        key === "scopus",
-    );
-  },
-  render: (
-    obj: unknown,
-    fieldName: string,
-    onNavigate?: (path: string) => void,
-  ): React.ReactNode => {
-    const idObj = obj as Record<string, string>;
-    return (
-      <Group gap="xs" wrap="wrap">
-        {Object.entries(idObj).map(([key, value]) =>
-          value ? renderIdBadge({ key, value, onNavigate }) : null,
-        )}
-      </Group>
-    );
-  },
-};
+		const keys = Object.keys(obj as Record<string, unknown>)
+		return keys.some(
+			(key) =>
+				key === "openalex"
+				|| key === "orcid" ||
+				key === "doi"
+				|| key === "ror" ||
+				key === "issn"
+				|| key === "scopus"
+		)
+	},
+	render(obj: unknown, fieldName: string, onNavigate?: (path: string) => void): React.ReactNode {
+		const idObj = obj as Record<string, string>
+		return (
+			<Group gap="xs" wrap="wrap">
+				{Object.entries(idObj).map(async ([key, value]) =>
+					value ? renderIdBadge({ key, value, onNavigate }) : null,
+				)}
+			</Group>
+		)
+	},
+}
 
 /**
  * Renders a single ID badge with appropriate linking and copy functionality
  */
 function renderIdBadge({
-  key,
-  value,
-  onNavigate,
+	key,
+	value,
+	onNavigate,
 }: {
-  key: string;
-  value: string;
-  onNavigate?: (path: string) => void;
+	key: string
+	value: string
+	onNavigate?: (path: string) => void
 }): React.ReactNode {
-  const displayKey = key.toUpperCase();
-  const isSpecialId = SPECIAL_ID_TYPES.has(key);
-  const relativeUrl = getRelativeUrlForId({ key, value });
+	const displayKey = key.toUpperCase()
+	const isSpecialId = SPECIAL_ID_TYPES.has(key)
+	const relativeUrl = getRelativeUrlForId({ key, value })
 
-  return (
-    <Group key={key} gap="xs" wrap="nowrap">
-      {renderBadgeLink({
-        displayKey,
-        value,
-        key,
-        relativeUrl,
-        onNavigate,
-        isSpecialId,
-      })}
-      <Tooltip label="Copy to clipboard">
-        <ActionIcon
-          size="sm"
-          variant="subtle"
-          onClick={() => navigator.clipboard.writeText(value)}
-          aria-label={`Copy ${key} ${value} to clipboard`}
-        >
-          <IconCopy size={14} />
-        </ActionIcon>
-      </Tooltip>
-    </Group>
-  );
+	return (
+		<Group key={key} gap="xs" wrap="nowrap">
+			{renderBadgeLink({
+				displayKey,
+				value,
+				key,
+				relativeUrl,
+				onNavigate,
+				isSpecialId,
+			})}
+			<Tooltip label="Copy to clipboard">
+				<ActionIcon
+					size="sm"
+					variant="subtle"
+					onClick={async () => navigator.clipboard.writeText(value)}
+					aria-label={`Copy ${key} ${value} to clipboard`}
+				>
+					<IconCopy size={14} />
+				</ActionIcon>
+			</Tooltip>
+		</Group>
+	)
 }
 
 /**
  * Gets the relative URL for an ID if it should be linked
  */
-function getRelativeUrlForId({
-  key,
-  value,
-}: {
-  key: string;
-  value: string;
-}): string | null {
-  // Check if this is an OpenAlex ID that should be linked
-  const validation = validateExternalId(value);
-  if (validation.isValid && validation.type === "openalex") {
-    return convertToRelativeUrl(`https://openalex.org/${value}`);
-  }
-  return null;
+function getRelativeUrlForId({ key, value }: { key: string; value: string }): string | undefined {
+	// Check if this is an OpenAlex ID that should be linked
+	const validation = validateExternalId(value)
+
+	// Validate validation result safely without coercion
+	if (validation === null || typeof validation !== "object") {
+		return null
+	}
+
+	// Check for required properties
+	if (!("isValid" in validation) || !("type" in validation)) {
+		return null
+	}
+
+	// Safely check types
+	const { isValid } = validation
+	const { type } = validation
+
+	if (typeof isValid === "boolean" && typeof type === "string" && isValid && type === "openalex") {
+		return convertToRelativeUrl(`https://openalex.org/${value}`)
+	}
+
+	return null
 }
 
 /**
  * Renders the appropriate badge link based on URL and navigation availability
  */
 function renderBadgeLink({
-  displayKey,
-  value,
-  key,
-  relativeUrl,
-  onNavigate,
-  isSpecialId,
+	displayKey,
+	value,
+	key,
+	relativeUrl,
+	onNavigate,
+	isSpecialId,
 }: {
-  displayKey: string;
-  value: string;
-  key: string;
-  relativeUrl: string | null;
-  onNavigate?: (path: string) => void;
-  isSpecialId?: boolean;
+	displayKey: string
+	value: string
+	key: string
+	relativeUrl: string | undefined
+	onNavigate?: (path: string) => void
+	isSpecialId?: boolean
 }): React.ReactNode {
-  const badgeProps = {
-    variant: isSpecialId ? "filled" : ("light" as const),
-    size: "sm" as const,
-    color: getIdColor(key),
-  };
+	const badgeProps = {
+		variant: isSpecialId ? "filled" : ("light" as const),
+		size: "sm" as const,
+		color: getIdColor(key),
+	}
 
-  if (relativeUrl && onNavigate) {
-    return (
-      <Anchor
-        href={relativeUrl}
-        style={{ textDecoration: "none" }}
-        onClick={(e) => {
-          e.preventDefault();
-          const routePath = relativeUrl.startsWith("#/")
-            ? relativeUrl.slice(1)
-            : relativeUrl;
-          onNavigate(routePath);
-        }}
-      >
-        <Badge {...badgeProps} style={{ cursor: "pointer" }}>
-          {displayKey}: {value}
-        </Badge>
-      </Anchor>
-    );
-  }
+	if (relativeUrl && onNavigate) {
+		return (
+			<Anchor
+				href={relativeUrl}
+				style={{ textDecoration: "none" }}
+				onClick={(e) => {
+					e.preventDefault()
+					const routePath = relativeUrl.startsWith("#/") ? relativeUrl.slice(1) : relativeUrl
+					onNavigate(routePath)
+				}}
+			>
+				<Badge {...badgeProps} style={{ cursor: "pointer" }}>
+					{displayKey}: {value}
+				</Badge>
+			</Anchor>
+		)
+	}
 
-  if (relativeUrl) {
-    return (
-      <Anchor
-        href={relativeUrl}
-        target={relativeUrl.startsWith("http") ? "_blank" : undefined}
-        rel={relativeUrl.startsWith("http") ? "noopener noreferrer" : undefined}
-        style={{ textDecoration: "none" }}
-        aria-label={`Navigate to ${key} ${value}`}
-      >
-        <Badge {...badgeProps}>
-          {displayKey}: {value}
-        </Badge>
-      </Anchor>
-    );
-  }
+	if (relativeUrl) {
+		return (
+			<Anchor
+				href={relativeUrl}
+				target={relativeUrl.startsWith("http") ? "_blank" : undefined}
+				rel={relativeUrl.startsWith("http") ? "noopener noreferrer" : undefined}
+				style={{ textDecoration: "none" }}
+				aria-label={`Navigate to ${key} ${value}`}
+			>
+				<Badge {...badgeProps}>
+					{displayKey}: {value}
+				</Badge>
+			</Anchor>
+		)
+	}
 
-  return (
-    <Badge {...badgeProps}>
-      {displayKey}: {value}
-    </Badge>
-  );
+	return (
+		<Badge {...badgeProps}>
+			{displayKey}: {value}
+		</Badge>
+	)
 }
