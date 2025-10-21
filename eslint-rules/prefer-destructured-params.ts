@@ -109,6 +109,17 @@ export const preferDestructuredParamsRule = createRule<[], MessageIds>({
         return;
       }
 
+      // Skip Promise constructor functions - they use standard resolve/reject pattern
+      if (
+        node.parent &&
+        node.parent.type === "NewExpression" &&
+        node.parent.callee &&
+        node.parent.callee.type === "Identifier" &&
+        node.parent.callee.name === "Promise"
+      ) {
+        return;
+      }
+
       // Skip functions with more than 3 parameters - these are often API functions
       if (params.length > 3) {
         return;

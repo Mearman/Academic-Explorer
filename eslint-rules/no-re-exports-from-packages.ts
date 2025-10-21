@@ -62,7 +62,6 @@ export const rule = createRule({
     type: "problem",
     docs: {
       description: "Disallow re-exporting from external packages",
-      recommended: "error",
     },
     messages: {
       noReExportFromPackage:
