@@ -31,6 +31,7 @@ const uiOverrides = defineConfig({
         "@xyflow/react",
         "date-fns",
         "immer",
+        "@academic-explorer/types",
       ],
       output: {
         globals: {
