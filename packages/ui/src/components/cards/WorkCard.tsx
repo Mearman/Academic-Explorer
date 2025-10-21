@@ -1,4 +1,4 @@
-import type { Work } from "@academic-explorer/client";
+import type { Work } from "@academic-explorer/types";
 import { ActionIcon, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { IconExternalLink, IconLock, IconLockOpen } from "@tabler/icons-react";
 import React from "react";

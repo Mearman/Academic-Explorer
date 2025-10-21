@@ -3,7 +3,7 @@
  * Combines taxonomy data with React icon components for UI rendering
  */
 
-import type { EntityType } from "@academic-explorer/client";
+import type { EntityType } from "@academic-explorer/types";
 
 /**
  * Taxonomy entry for entities

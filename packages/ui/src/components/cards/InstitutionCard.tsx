@@ -1,4 +1,4 @@
-import type { InstitutionEntity } from "@academic-explorer/client";
+import type { InstitutionEntity } from "@academic-explorer/types";
 import { isInstitution } from "@academic-explorer/types";
 import { ActionIcon, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { IconExternalLink, IconMapPin } from "@tabler/icons-react";

@@ -4,7 +4,7 @@
 
 import React from "react";
 import { Text, Group, Stack, Box, Card, Title, Divider } from "@mantine/core";
-import type { OpenAlexEntity } from "@academic-explorer/client";
+import type { OpenAlexEntity } from "@academic-explorer/types";
 import {
   findArrayMatcher,
   findObjectMatcher,

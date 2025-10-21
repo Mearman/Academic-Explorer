@@ -1,4 +1,4 @@
-import type { Funder } from "@academic-explorer/client";
+import type { Funder } from "@academic-explorer/types";
 import { isFunder } from "@academic-explorer/types";
 import {
   ActionIcon,

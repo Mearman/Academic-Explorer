@@ -1,4 +1,4 @@
-import type { Author } from "@academic-explorer/client";
+import type { Author } from "@academic-explorer/types";
 import { isAuthor } from "@academic-explorer/types";
 import {
   ActionIcon,
