@@ -12,6 +12,7 @@ import { fileURLToPath } from "url";
 import configXO from "eslint-config-xo";
 import configXOTypeScript from "eslint-config-xo-typescript";
 import prettierPlugin from "eslint-plugin-prettier";
+import yamlPlugin from "eslint-plugin-yaml";
 
 // Load custom TypeScript ESLint rules using jiti
 import { createJiti } from "jiti";
@@ -395,6 +396,22 @@ export default tseslint.config([
     },
   },
 
+  {
+    // YAML files - process with yaml plugin
+    files: ["**/*.yml", "**/*.yaml"],
+    languageOptions: {
+      parserOptions: {
+        projectService: false,
+      },
+    },
+    plugins: {
+      yaml: yamlPlugin,
+    },
+    rules: {
+      // Use recommended YAML rules
+      ...yamlPlugin.configs.recommended.rules,
+    },
+  },
   {
     // Markdown files - process with markdown plugin and apply no-emoji rule
     files: ["**/*.md"],

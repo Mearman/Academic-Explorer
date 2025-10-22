@@ -1,9 +1,13 @@
 import * as path from "path";
+import { fileURLToPath } from "node:url";
 
 /**
  * Shared configuration constants used across workspace
  * Note: Individual apps/packages may have their own configs
  */
+
+// Get __dirname equivalent for ES modules
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Project root directory (workspace root)
 export const workspaceRoot = path.resolve(__dirname, "..");

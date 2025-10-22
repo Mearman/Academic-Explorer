@@ -8,5 +8,16 @@ export default {
   // Type check all affected projects
   '*.{ts,tsx}': [
     () => 'nx affected --target=typecheck'
+  ],
+
+  // GitHub workflow files
+  '.github/**/*.yml': [
+    // Validate GitHub workflows with actionlint
+    'actionlint'
+  ],
+
+  '.github/**/*.yaml': [
+    // Validate GitHub workflows with actionlint
+    'actionlint'
   ]
 };

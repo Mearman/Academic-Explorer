@@ -1,4 +1,8 @@
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+// Get __dirname equivalent for ES modules
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /**
  * Build configuration for the web app

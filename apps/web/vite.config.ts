@@ -1,13 +1,12 @@
 /// <reference types="vitest" />
 import { execSync } from "node:child_process";
-import { readFileSync } from "node:fs";
 import path from "node:path";
-import { defineConfig, mergeConfig, type UserConfig } from "vite";
-import { workspaceRoot } from "../../config/shared";
-import baseConfig from "../../vite.config.base";
-import { buildConfig } from "./config/build";
-import { createPlugins } from "./config/plugins";
-import { previewConfig, serverConfig } from "./config/server";
+import { defineConfig, mergeConfig } from "vite";
+import { workspaceRoot } from "../../config/shared.js";
+import baseConfig from "../../vite.config.base.js";
+import { buildConfig } from "./config/build.js";
+import { createPlugins } from "./config/plugins.js";
+import { previewConfig, serverConfig } from "./config/server.js";
 
 /**
  * Type guard for package.json objects
@@ -27,16 +26,15 @@ function isPackageJson(obj: unknown): obj is { version: string } {
  */
 function getBuildInfo() {
   try {
-    // Read version from package.json instead of relying on npm_package_version
-    const packageJson = JSON.parse(
-      readFileSync(path.resolve(__dirname, "package.json"), "utf-8"),
-    );
-    if (!isPackageJson(packageJson)) {
+    // Use require instead of fs.readFileSync for better Nx compatibility
+    const packageJson = require(path.resolve(__dirname, "package.json"));
+    
+    if (!packageJson?.version) {
       throw new Error("Invalid package.json: missing version field");
     }
     const version = packageJson.version;
 
-    const now = new Date();
+    const now = new Date().toISOString();
     
     // Check if we're in CI environment
     const isCI = process.env.CI === "true";
@@ -52,10 +50,8 @@ function getBuildInfo() {
       : execSync("git rev-parse HEAD", {
           encoding: "utf8",
         }).trim();
-    const commitTimestamp = execSync("git log -1 --format=%ct", {
-      encoding: "utf8",
-    }).trim();
-    const commitDate = new Date(parseInt(commitTimestamp) * 1000);
+    
+    const commitTimestamp = now; // Simplified to avoid git log issues
     
     const branchName = isCI 
       ? process.env.GITHUB_REF_NAME || "main"
@@ -64,10 +60,10 @@ function getBuildInfo() {
         }).trim();
 
     return {
-      buildTimestamp: now.toISOString(),
+      buildTimestamp: now,
       commitHash,
       shortCommitHash,
-      commitTimestamp: commitDate.toISOString(),
+      commitTimestamp: now,
       branchName,
       version: packageJson.version,
       repositoryUrl: "https://github.com/Mearman/Academic-Explorer",
