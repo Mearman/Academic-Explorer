@@ -50,6 +50,7 @@
     "@tanstack/react-router": "^1.132.17",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.12",
+    "@tanstack/router-plugin": "^1.133.22",
     "@xyflow/react": "^12.8.5",
     "dexie": "^4.2.1",
     "immer": "^10.1.3",

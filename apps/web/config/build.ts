@@ -1,4 +1,4 @@
-import path from "path";
+import path from "node:path";
 
 /**
  * Build configuration for the web app

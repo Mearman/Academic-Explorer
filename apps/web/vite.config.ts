@@ -1,13 +1,25 @@
 /// <reference types="vitest" />
-import { execSync } from "child_process";
-import { readFileSync } from "fs";
-import path from "path";
+import { execSync } from "node:child_process";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { defineConfig, mergeConfig, type UserConfig } from "vite";
 import { workspaceRoot } from "../../config/shared";
 import baseConfig from "../../vite.config.base";
 import { buildConfig } from "./config/build";
 import { createPlugins } from "./config/plugins";
 import { previewConfig, serverConfig } from "./config/server";
+
+/**
+ * Type guard for package.json objects
+ */
+function isPackageJson(obj: unknown): obj is { version: string } {
+  return (
+    typeof obj === "object" &&
+    obj !== null &&
+    "version" in obj &&
+    typeof (obj as Record<string, unknown>).version === "string"
+  );
+}
 
 /**
  * Build metadata generation for the web app
@@ -19,14 +31,6 @@ function getBuildInfo() {
     const packageJson = JSON.parse(
       readFileSync(path.resolve(__dirname, "package.json"), "utf-8"),
     );
-    function isPackageJson(obj: unknown): obj is { version: string } {
-      return (
-        typeof obj === "object" &&
-        obj !== null &&
-        "version" in obj &&
-        typeof (obj as Record<string, unknown>).version === "string"
-      );
-    }
     if (!isPackageJson(packageJson)) {
       throw new Error("Invalid package.json: missing version field");
     }
