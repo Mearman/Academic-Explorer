@@ -1,6 +1,6 @@
-/// <reference types="vitest" />
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { readFileSync } from "node:fs";
 import { defineConfig, mergeConfig, type UserConfig } from "vite";
 import baseConfig from "../../vite.config.base";
 import { buildConfig } from "./config/build";
@@ -10,13 +10,14 @@ import { previewConfig, serverConfig } from "./config/server";
 // Get __dirname equivalent for ES modules
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Simple build metadata function that doesn't use git commands in CI
+// Simple build metadata function that works in both dev and production
 function getBuildInfo() {
   const isCI = process.env.CI === "true";
   
   try {
-    // Read package.json for version
-    const packageJson = require(path.resolve(__dirname, "package.json"));
+    // Read package.json using a static path
+    const packageJsonPath = path.resolve(__dirname, "package.json");
+    const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8"));
     const version = packageJson?.version || "0.0.0";
     
     const now = new Date().toISOString();
@@ -34,15 +35,13 @@ function getBuildInfo() {
       };
     }
     
-    // Local development - use git commands
-    const { execSync } = require("child_process");
-    
+    // Local development - skip git commands to avoid issues in CI
     return {
       buildTimestamp: now,
-      commitHash: execSync("git rev-parse HEAD", { encoding: "utf8", stdio: "pipe" }).toString().trim(),
-      shortCommitHash: execSync("git rev-parse --short HEAD", { encoding: "utf8", stdio: "pipe" }).toString().trim(),
+      commitHash: "dev-commit",
+      shortCommitHash: "dev", 
       commitTimestamp: now,
-      branchName: execSync("git rev-parse --abbrev-ref HEAD", { encoding: "utf8", stdio: "pipe" }).toString().trim(),
+      branchName: "dev",
       version,
       repositoryUrl: "https://github.com/Mearman/Academic-Explorer",
     };
@@ -74,6 +73,5 @@ export default defineConfig(({ mode, command }) => {
     define: {
       __APP_INFO__: JSON.stringify(getBuildInfo()),
     },
-    // Additional configuration as needed
   });
 });

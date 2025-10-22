@@ -9,7 +9,7 @@ import path from "path";
  * - Configuring service worker entry point separately
  * - Setting appropriate chunk size limits
  */
-export const buildConfig = {
+export const buildConfig = (isProduction: boolean = false) => ({
   // Configure for hash-based routing deployment
   // Allows the app to be deployed in any subdirectory
   base: "./",
@@ -54,4 +54,4 @@ export const buildConfig = {
     // This reduces false warnings while maintaining reasonable bundle sizes
     chunkSizeWarningLimit: 800,
   },
-};
+});
