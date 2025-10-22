@@ -470,6 +470,9 @@ importers:
 
   packages/graph:
     dependencies:
+      '@academic-explorer/types':
+        specifier: workspace:*
+        version: link:../types
       '@academic-explorer/utils':
         specifier: workspace:*
         version: link:../utils
