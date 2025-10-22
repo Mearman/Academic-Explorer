@@ -2,7 +2,7 @@
  * Query parameter utilities
  */
 
-import type { QueryParams } from "@academic-explorer/types/entities";
+import type { QueryParams } from "@academic-explorer/types";
 
 /**
  * Convert typed query parameters to base QueryParams
