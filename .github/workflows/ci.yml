@@ -85,20 +85,14 @@ jobs:
           AFFECTED_PROJECTS=$(pnpm nx affected -t build --type=lib --exclude=web --exclude=apps --plain 2>/dev/null || echo "")
           
           if [ -z "$AFFECTED_PROJECTS" ]; then
-            echo "✅ No affected library packages found - no builds needed for this commit"
+            echo "✅ No affected projects found - no builds needed for this commit"
             echo "📋 This is normal for refactoring, documentation, or configuration changes"
-            
-            # For refactoring commits, we still need some artifacts, so build essential packages
-            echo "📦 Building essential library packages for artifact generation..."
-            pnpm --filter @academic-explorer/types build
-            pnpm --filter @academic-explorer/client build
-            pnpm --filter @academic-explorer/utils build
           else
-            echo "📊 Found affected library packages: $AFFECTED_PROJECTS"
-            echo "🏗️ Building affected library packages..."
+            echo "📊 Found affected projects: $AFFECTED_PROJECTS"
+            echo "🏗️ Building affected packages with proper dependency graph..."
             
-            # Use Nx affected to build changed projects, excluding web app
-            if ! pnpm nx affected -t build --exclude=web --exclude=apps --parallel=3 --maxParallel=3; then
+            # Use Nx affected to build changed projects with full functionality
+            if ! pnpm nx affected -t build --parallel=3 --maxParallel=3; then
               echo "❌ Nx affected build failed"
               echo "🔍 Running diagnostic to understand failure..."
               
@@ -108,13 +102,13 @@ jobs:
               
               # Show dependency graph for affected projects
               echo "📊 Dependency graph for affected projects:"
-              pnpm nx affected -t build --exclude=web --exclude=apps --type=lib --graph || echo "  No affected projects"
+              pnpm nx affected -t build --type=app --type=lib --graph || echo "  No affected projects"
               
               exit 1
             fi
           fi
           
-          echo "✅ Library build step completed successfully"
+          echo "✅ Build step completed successfully"
 
             echo "🛠️ Building CLI..."
             pnpm --filter @academic-explorer/cli build
