@@ -74,8 +74,10 @@ jobs:
             ${{ runner.os }}-nx-${{ env.NODE_VERSION }}-${{ env.PNPM_VERSION }}-
             ${{ runner.os }}-nx-
 
-      # Build all library packages (skip Nx affected to avoid web app issues)
-      echo "🔨 Building all library packages..."
+      - name: Build all library packages
+        run: |
+          # Build all library packages (skip Nx affected to avoid web app issues)
+          echo "🔨 Building all library packages..."
       echo "📦 Building types package..."
       pnpm --filter @academic-explorer/types build
 
