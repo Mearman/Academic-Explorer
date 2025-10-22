@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: "24.7.0"
+  NODE_VERSION: "20"
   PNPM_VERSION: "10.18.3"
   # Disable Nx daemon in CI to prevent hanging issues
   NX_DAEMON: false
@@ -78,26 +78,27 @@ jobs:
         run: |
           echo "🔨 Building affected projects with Nx orchestration..."
           
-          # Check if there are any affected projects (excluding web app to avoid vite config issues)
-          echo "📋 Checking for affected packages..."
+          # Use Nx affected to build only changed projects, excluding problematic web app
+          echo "📋 Checking for affected packages (excluding web app)..."
           
-          # Check if there are any affected projects (excluding web app)
-          AFFECTED_PROJECTS=$(pnpm nx affected -t build --type=app --type=lib --exclude=web --plain 2>/dev/null || echo "")
+          # Check if there are any affected projects (excluding web and apps to focus on libraries)
+          AFFECTED_PROJECTS=$(pnpm nx affected -t build --type=lib --exclude=web --exclude=apps --plain 2>/dev/null || echo "")
           
           if [ -z "$AFFECTED_PROJECTS" ]; then
-            echo "✅ No affected packages found - no builds needed for this commit"
+            echo "✅ No affected library packages found - no builds needed for this commit"
             echo "📋 This is normal for refactoring, documentation, or configuration changes"
             
             # For refactoring commits, we still need some artifacts, so build essential packages
-            echo "📦 Building essential packages for artifact generation..."
+            echo "📦 Building essential library packages for artifact generation..."
             pnpm --filter @academic-explorer/types build
             pnpm --filter @academic-explorer/client build
+            pnpm --filter @academic-explorer/utils build
           else
-            echo "📊 Found affected projects: $AFFECTED_PROJECTS"
-            echo "🏗️ Building affected packages (excluding web app)..."
+            echo "📊 Found affected library packages: $AFFECTED_PROJECTS"
+            echo "🏗️ Building affected library packages..."
             
             # Use Nx affected to build changed projects, excluding web app
-            if ! pnpm nx affected -t build --exclude=web --parallel=3 --maxParallel=3; then
+            if ! pnpm nx affected -t build --exclude=web --exclude=apps --parallel=3 --maxParallel=3; then
               echo "❌ Nx affected build failed"
               echo "🔍 Running diagnostic to understand failure..."
               
@@ -107,13 +108,13 @@ jobs:
               
               # Show dependency graph for affected projects
               echo "📊 Dependency graph for affected projects:"
-              pnpm nx affected -t build --exclude=web --type=app --type=lib --graph || echo "  No affected projects"
+              pnpm nx affected -t build --exclude=web --exclude=apps --type=lib --graph || echo "  No affected projects"
               
               exit 1
             fi
           fi
           
-          echo "✅ Build step completed successfully"
+          echo "✅ Library build step completed successfully"
 
             echo "🛠️ Building CLI..."
             pnpm --filter @academic-explorer/cli build
