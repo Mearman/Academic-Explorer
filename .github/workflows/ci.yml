@@ -78,28 +78,28 @@ jobs:
         run: |
           # Build all library packages (skip Nx affected to avoid web app issues)
           echo "🔨 Building all library packages..."
-      echo "📦 Building types package..."
-      pnpm --filter @academic-explorer/types build
+          echo "📦 Building types package..."
+          pnpm --filter @academic-explorer/types build
 
-      echo "📦 Building utils package..."
-      pnpm --filter @academic-explorer/utils build
+          echo "📦 Building utils package..."
+          pnpm --filter @academic-explorer/utils build
 
-      echo "📦 Building graph package..."
-      pnpm --filter @academic-explorer/graph build
+          echo "📦 Building graph package..."
+          pnpm --filter @academic-explorer/graph build
 
-      echo "📦 Building client package..."
-      pnpm --filter @academic-explorer/client build
+          echo "📦 Building client package..."
+          pnpm --filter @academic-explorer/client build
 
-      echo "📦 Building simulation package..."
-      pnpm --filter @academic-explorer/simulation build
+          echo "📦 Building simulation package..."
+          pnpm --filter @academic-explorer/simulation build
 
-      echo "📦 Building ui package..."
-      pnpm --filter @academic-explorer/ui build
+          echo "📦 Building ui package..."
+          pnpm --filter @academic-explorer/ui build
 
-      echo "📦 Building CLI..."
-      pnpm --filter @academic-explorer/cli build
+          echo "📦 Building CLI..."
+          pnpm --filter @academic-explorer/cli build
 
-      echo "✅ All library builds completed successfully"
+          echo "✅ All library builds completed successfully"
 
             echo "🛠️ Building CLI..."
             pnpm --filter @academic-explorer/cli build
