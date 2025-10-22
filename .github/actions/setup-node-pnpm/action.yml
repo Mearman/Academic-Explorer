@@ -7,7 +7,8 @@ runs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version: ${{ env.NODE_VERSION }}
+        node-options: '--experimental-strip-types'
 
     - name: Install pnpm
       uses: pnpm/action-setup@v4

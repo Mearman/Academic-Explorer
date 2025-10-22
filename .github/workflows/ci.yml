@@ -16,8 +16,6 @@ concurrency:
 env:
   NODE_VERSION: "24.7.0"
   PNPM_VERSION: "10.18.3"
-  # Enable native TypeScript support in Node.js 24+
-  NODE_OPTIONS: "--experimental-strip-types"
   # Disable Nx daemon in CI to prevent hanging issues
   NX_DAEMON: false
   # Optional: Add Nx Cloud tokens for distributed caching
