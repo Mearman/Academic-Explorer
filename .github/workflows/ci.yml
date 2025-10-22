@@ -74,32 +74,28 @@ jobs:
             ${{ runner.os }}-nx-${{ env.NODE_VERSION }}-${{ env.PNPM_VERSION }}-
             ${{ runner.os }}-nx-
 
-      - name: Build all library packages
+      - name: Build affected projects
         run: |
-          # Build all library packages (skip Nx affected to avoid web app issues)
-          echo "🔨 Building all library packages..."
-          echo "📦 Building types package..."
-          pnpm --filter @academic-explorer/types build
-
-          echo "📦 Building utils package..."
-          pnpm --filter @academic-explorer/utils build
-
-          echo "📦 Building graph package..."
-          pnpm --filter @academic-explorer/graph build
-
-          echo "📦 Building client package..."
-          pnpm --filter @academic-explorer/client build
-
-          echo "📦 Building simulation package..."
-          pnpm --filter @academic-explorer/simulation build
-
-          echo "📦 Building ui package..."
-          pnpm --filter @academic-explorer/ui build
-
-          echo "📦 Building CLI..."
-          pnpm --filter @academic-explorer/cli build
-
-          echo "✅ All library builds completed successfully"
+          echo "🔨 Building affected projects with Nx orchestration..."
+          
+          # Use Nx affected to build only changed projects with proper dependency graph
+          # Exclude tests from affected builds (we'll run tests separately)
+          if ! pnpm nx affected -t build --parallel=3 --maxParallel=3; then
+            echo "❌ Nx affected build failed"
+            echo "🔍 Running diagnostic to understand failure..."
+            
+            # Show what projects are affected
+            echo "📋 Affected projects:"
+            pnpm nx affected --type=app --type=lib --plain || echo "  No affected projects"
+            
+            # Show dependency graph for affected projects
+            echo "📊 Dependency graph for affected projects:"
+            pnpm nx affected --type=app --type=lib --graph || echo "  No affected projects"
+            
+            exit 1
+          fi
+          
+          echo "✅ Affected builds completed successfully"
 
             echo "🛠️ Building CLI..."
             pnpm --filter @academic-explorer/cli build

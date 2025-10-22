@@ -33,19 +33,31 @@ function getBuildInfo() {
     const version = packageJson.version;
 
     const now = new Date();
-    const commitHash = execSync("git rev-parse HEAD", {
-      encoding: "utf8",
-    }).trim();
-    const shortCommitHash = execSync("git rev-parse --short HEAD", {
-      encoding: "utf8",
-    }).trim();
+    
+    // Check if we're in CI environment
+    const isCI = process.env.CI === "true";
+    
+    const shortCommitHash = isCI
+      ? (process.env.GITHUB_SHA?.slice(0, 7) || "unknown")
+      : execSync("git rev-parse --short HEAD", {
+          encoding: "utf8",
+        }).trim();
+
+    const commitHash = isCI
+      ? (process.env.GITHUB_SHA || "unknown")
+      : execSync("git rev-parse HEAD", {
+          encoding: "utf8",
+        }).trim();
     const commitTimestamp = execSync("git log -1 --format=%ct", {
       encoding: "utf8",
     }).trim();
     const commitDate = new Date(parseInt(commitTimestamp) * 1000);
-    const branchName = execSync("git rev-parse --abbrev-ref HEAD", {
-      encoding: "utf8",
-    }).trim();
+    
+    const branchName = isCI 
+      ? process.env.GITHUB_REF_NAME || "main"
+      : execSync("git rev-parse --abbrev-ref HEAD", {
+          encoding: "utf8",
+        }).trim();
 
     return {
       buildTimestamp: now.toISOString(),

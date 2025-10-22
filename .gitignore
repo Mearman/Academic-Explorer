@@ -89,3 +89,5 @@ debug-homepage.png
 
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
+
+output.json

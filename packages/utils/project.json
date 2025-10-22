@@ -5,7 +5,7 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "dependsOn": ["types:build", "^build"]
+      "dependsOn": ["^build"]
     },
 
     "lint": {
