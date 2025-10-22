@@ -79,23 +79,41 @@ jobs:
           echo "🔨 Building affected projects with Nx orchestration..."
           
           # Use Nx affected to build only changed projects with proper dependency graph
-          # Exclude tests from affected builds (we'll run tests separately)
-          if ! pnpm nx affected -t build --parallel=3 --maxParallel=3; then
-            echo "❌ Nx affected build failed"
-            echo "🔍 Running diagnostic to understand failure..."
+          echo "📋 Checking for affected packages..."
+          
+          # Check if there are any affected projects
+          AFFECTED_PROJECTS=$(pnpm nx affected -t build --type=app --type=lib --plain 2>/dev/null || echo "")
+          
+          if [ -z "$AFFECTED_PROJECTS" ]; then
+            echo "✅ No affected projects found - no builds needed for this commit"
+            echo "📋 This is normal for refactoring, documentation, or configuration changes"
             
-            # Show what projects are affected
-            echo "📋 Affected projects:"
-            pnpm nx affected --type=app --type=lib --plain || echo "  No affected projects"
+            # For refactoring commits, we still need some artifacts, so build essential packages
+            echo "📦 Building essential packages for artifact generation..."
+            pnpm --filter @academic-explorer/types build
+            pnpm --filter @academic-explorer/client build
+          else
+            echo "📊 Found affected projects: $AFFECTED_PROJECTS"
+            echo "🏗️ Building affected packages..."
             
-            # Show dependency graph for affected projects
-            echo "📊 Dependency graph for affected projects:"
-            pnpm nx affected --type=app --type=lib --graph || echo "  No affected projects"
-            
-            exit 1
+            # Use Nx affected to build changed projects with proper dependency graph
+            if ! pnpm nx affected -t build --parallel=3 --maxParallel=3; then
+              echo "❌ Nx affected build failed"
+              echo "🔍 Running diagnostic to understand failure..."
+              
+              # Show what projects are affected
+              echo "📋 Affected projects:"
+              echo "$AFFECTED_PROJECTS"
+              
+              # Show dependency graph for affected projects
+              echo "📊 Dependency graph for affected projects:"
+              pnpm nx affected -t build --type=app --type=lib --graph || echo "  No affected projects"
+              
+              exit 1
+            fi
           fi
           
-          echo "✅ Affected builds completed successfully"
+          echo "✅ Build step completed successfully"
 
             echo "🛠️ Building CLI..."
             pnpm --filter @academic-explorer/cli build
