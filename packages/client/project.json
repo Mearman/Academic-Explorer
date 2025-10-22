@@ -5,9 +5,10 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "dependsOn": ["build:bundle"]
+      "dependsOn": ["types:build", "build:bundle"]
     },
     "build:compile": {
+      "dependsOn": ["types:build"],
       "executor": "nx:run-commands",
       "options": {
         "command": "tsc -b",

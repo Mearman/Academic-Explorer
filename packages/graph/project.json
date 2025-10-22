@@ -5,6 +5,7 @@
   "projectType": "library",
   "targets": {
     "build": {
+      "dependsOn": ["types:build", "utils:build"],
       "executor": "nx:run-commands",
       "options": {
         "command": "tsc -b",
