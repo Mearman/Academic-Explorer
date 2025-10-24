@@ -12,10 +12,11 @@ Shared utilities and helpers for Academic Explorer monorepo packages. Provides g
 - **Cache**: Multi-tier caching with memory, localStorage, and IndexedDB
 - **Build Info**: Build metadata and versioning utilities
 - **Services**: Graph data services and OpenAlex entity hooks
-- **State Management**: DRY Zustand store abstractions:
-  - `createTrackedStore` - Standardized store factory with Immer, DevTools, and persistence
+- **State Management**: React Context-based state management:
+  - `createContextStore` - Standardized Context store with actions and selectors
+  - `createCombinedContext` - Multiple contexts in one provider
+  - `createSimpleContext` - Simple context provider for basic state
   - `createFilterManager` - Reusable filter state management
-  - `createLoadingState` - Common loading/error state patterns
   - `generateSequentialId` - ID generation utilities
 
 ## Usage

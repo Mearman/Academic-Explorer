@@ -144,7 +144,7 @@ export function waitForEvent<T = unknown>(
 
     emitter.on(event, listener);
 
-    const timeoutHandle = setTimeout(() => {
+    const _timeoutHandle = setTimeout(() => {
       cleanup();
       reject(new Error(`Timeout waiting for event "${event}"`));
     }, timeout);
