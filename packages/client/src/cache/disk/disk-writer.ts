@@ -52,11 +52,11 @@ export function __setMockModules({
 async function initializeNodeModules(): Promise<void> {
   if (!fs || !path || !crypto) {
     const [fsModule, pathModule, cryptoModule] = await Promise.all([
-      import("node:fs"),
+      import("node:fs/promises"),
       import("node:path"),
       import("node:crypto"),
     ]);
-    fs = fsModule.promises;
+    fs = fsModule;
     path = pathModule;
     crypto = cryptoModule;
   }

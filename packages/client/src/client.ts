@@ -7,7 +7,7 @@ import { logger } from "@academic-explorer/utils/logger";
 import { apiInterceptor, type InterceptedRequest } from "./interceptors";
 import { RETRY_CONFIG, calculateRetryDelay } from "./internal/rate-limit";
 import {
-  _isValidApiResponse,
+  isValidApiResponse,
   validateApiResponse,
 } from "./internal/type-helpers";
 import { validateWithSchema } from "@academic-explorer/types/entities";
