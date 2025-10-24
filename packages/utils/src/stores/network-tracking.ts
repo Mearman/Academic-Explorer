@@ -1,5 +1,5 @@
 import type { BaseActivity, StatusTracking } from "./activity-tracking"
-import { createContextStore } from "./react-context-store"
+import { createContextStore } from "@academic-explorer/ui/react-context-store"
 
 /**
  * Network request tracking interface
