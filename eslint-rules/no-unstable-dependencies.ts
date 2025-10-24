@@ -31,15 +31,15 @@ const REACT_HOOKS = [
 	"useDebugValue",
 ]
 
-function isObjectOrArrayLiteral(node: any): boolean {
+function isObjectOrArrayLiteral(node: { type: string }): boolean {
 	return node.type === "ObjectExpression" || node.type === "ArrayExpression"
 }
 
-function isFunctionCall(node: any): boolean {
+function isFunctionCall(node: { type: string }): boolean {
 	return node.type === "CallExpression"
 }
 
-function isComputedExpression(node: any): boolean {
+function isComputedExpression(node: { type: string; computed?: boolean }): boolean {
 	// Check for expressions that compute new values
 	return (
 		node.type === "BinaryExpression" ||
@@ -49,7 +49,7 @@ function isComputedExpression(node: any): boolean {
 	)
 }
 
-function isStoreComputedFunction(node: any): boolean {
+function isStoreComputedFunction(node: { type: string; callee?: { type?: string; property?: { name?: string } } }): boolean {
 	// Check for patterns like store.getFilteredItems() or useStore(state => state.getItems())
 	if (node.type === "CallExpression" && node.callee && node.callee.type === "MemberExpression") {
 		const methodName = node.callee.property?.name || ""
@@ -59,10 +59,10 @@ function isStoreComputedFunction(node: any): boolean {
 	return false
 }
 
-function checkDependencyArray(context: any, dependencyArray: any): void {
+function checkDependencyArray(context: { report: (data: { node: unknown; messageId: string }) => void }, dependencyArray: { elements?: unknown[] }): void {
 	if (!dependencyArray || !dependencyArray.elements) return
 
-	dependencyArray.elements.forEach((dep: any) => {
+	dependencyArray.elements.forEach((dep: unknown) => {
 		if (!dep) return
 
 		if (isObjectOrArrayLiteral(dep)) {

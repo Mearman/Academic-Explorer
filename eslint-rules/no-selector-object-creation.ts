@@ -22,7 +22,7 @@ const ruleMessages = {
 		"Avoid object literals in selectors. Split into multiple selectors or use cached state.",
 }
 
-function isZustandSelector(node: any): boolean {
+function isZustandSelector(node: { type: string; callee?: { type?: string; name?: string }; arguments?: Array<{ type: string }> }): boolean {
 	// Check if this is a useStore call: useStore(state => ...)
 	if (
 		node.type === "CallExpression" &&
@@ -37,7 +37,7 @@ function isZustandSelector(node: any): boolean {
 	return false
 }
 
-function hasArrayMethods(node: any): boolean {
+function hasArrayMethods(node: { type: string; callee?: { property?: { name?: string } } }): boolean {
 	const problematicMethods = [
 		"filter",
 		"map",
@@ -67,7 +67,7 @@ function hasArrayMethods(node: any): boolean {
 	return false
 }
 
-function hasObjectMethods(node: any): boolean {
+function hasObjectMethods(node: { type: string; callee?: { type?: string; object?: { name?: string }; property?: { name?: string } } }): boolean {
 	// Check for Object.values(), Object.keys(), Object.entries()
 	if (
 		node.type === "CallExpression" &&
@@ -82,18 +82,18 @@ function hasObjectMethods(node: any): boolean {
 	return false
 }
 
-function hasSpreadOperator(node: any): boolean {
+function hasSpreadOperator(node: { type: string; properties?: Array<{ type: string }>; elements?: Array<{ type: string } | null> }): boolean {
 	if (node.type === "ObjectExpression") {
-		return node.properties.some((prop: any) => prop.type === "SpreadElement")
+		return node.properties?.some((prop: { type: string }) => prop.type === "SpreadElement") ?? false
 	}
 	if (node.type === "ArrayExpression") {
-		return node.elements.some((elem: any) => elem && elem.type === "SpreadElement")
+		return node.elements?.some((elem: { type: string } | null) => elem && elem.type === "SpreadElement") ?? false
 	}
 	return false
 }
 
-function checkSelectorFunction(context: any, selectorFunction: any): void {
-	function traverse(node: any): void {
+function checkSelectorFunction(context: { report: (data: { node: unknown; messageId: string }) => void }, selectorFunction: { body?: { body?: unknown } }): void {
+	function traverse(node: unknown): void {
 		if (!node) return
 
 		// Check for array methods

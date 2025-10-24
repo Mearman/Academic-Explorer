@@ -31,7 +31,7 @@ export const noDeprecatedCommentsRule = createRule<[], MessageIds>({
 	create(context) {
 		const sourceCode = context.getSourceCode()
 
-		function checkComment(comment: any): void {
+		function checkComment(comment: { value: string; node?: unknown }): void {
 			const commentText = comment.value.toLowerCase()
 
 			// Check for @deprecated JSDoc tag
