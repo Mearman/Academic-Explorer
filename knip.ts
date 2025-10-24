@@ -117,7 +117,7 @@ const config: KnipConfig = {
 
     // UI components package
     "packages/ui": {
-      entry: ["src/test/setup.ts"],
+      entry: ["src/index.ts", "src/test/setup.ts"],
       project: ["src/**/*.{ts,tsx}"],
       ignore: [
         "src/**/*.stories.{ts,tsx}", // Storybook stories
@@ -131,6 +131,17 @@ const config: KnipConfig = {
         "src/components/cards/PublisherCard.tsx",
         "src/components/cards/FunderCard.tsx",
         "src/components/cards/examples.tsx",
+        // Library components exported but not yet used in web app
+        "src/components/data-display/BaseTable.tsx",
+        "src/components/data-display/index.ts",
+        "src/components/feedback/ErrorBoundary/ErrorBoundary.tsx",
+        "src/components/feedback/ErrorBoundary/index.ts",
+        "src/components/feedback/index.ts",
+        "src/components/layout/CollapsibleSection.tsx",
+        "src/components/layout/index.ts",
+        "src/components/section-kit/BulkActionToolbar.tsx",
+        "src/components/section-kit/EntityCollectionList.tsx",
+        "src/components/section-kit/index.ts",
       ],
     },
 
@@ -156,6 +167,7 @@ const config: KnipConfig = {
   ignoreDependencies: [
     "@vanilla-extract/vite-plugin", // Used in vite.config.ts but knip doesn't detect it properly
     "@mantine/notifications", // Optional peerDependency for UI components
+    "@tanstack/react-table", // Used by BaseTable component in UI package
     // Module resolution dependencies added for runtime and test environments
     "@types/d3-force", // Type definitions for d3-force used in graph visualizations
     "@types/d3-random", // Type definitions for d3-random used in force simulations
