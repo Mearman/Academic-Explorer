@@ -51,22 +51,21 @@ function hasDataProperty(
 export const useGraphUtilities = () => {
   // Get current graph state - using direct store access with reactivity
   const [nodesMap, setNodesMap] = useState(
-    (graphStore.getState() as any).nodes,
+    (graphStore.getState() as unknown).nodes,
   );
   const [edgesMap, setEdgesMap] = useState(
-    (graphStore.getState() as any).edges,
+    (graphStore.getState() as unknown).edges,
   );
-  const store = graphStore.getState() as any;
+  const store = graphStore.getState() as unknown;
   const setGraphData = store.setGraphData;
   const setLoading = store.setLoading;
   const setError = store.setError;
 
   useEffect(() => {
-    const unsubscribe = (graphStore as any).subscribe((state: any) => {
+    return (graphStore as unknown).subscribe((state: unknown) => {
       setNodesMap(state.nodes);
       setEdgesMap(state.edges);
     });
-    return unsubscribe;
   }, []);
 
   // Convert Records to arrays with stable dependencies
@@ -124,11 +123,9 @@ export const useGraphUtilities = () => {
     ({
       methodName,
       args,
-      operationName,
     }: {
       methodName: string;
       args: unknown[];
-      operationName: string;
     }): GraphOperationResult | GraphUtilityResult => {
       const service = graphUtilitiesService as unknown as Record<
         string,

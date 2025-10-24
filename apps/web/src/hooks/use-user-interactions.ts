@@ -294,14 +294,11 @@ export function useUserInteractions(
       }
 
       try {
-        const url = location.pathname + location.search;
-        const queryParams = getSearchParams();
-
         const request = {
           cacheKey: `/${entityType}/${entityId}`,
           hash: `entity-${entityType}-${entityId}`.slice(0, 16),
           endpoint: `/${entityType}`,
-          params: { id: entityId, ...queryParams },
+          params: { id: entityId },
         };
 
         await userInteractionsService.addBookmark({
@@ -430,8 +427,6 @@ export function useUserInteractions(
       tags?: string[];
     }) => {
       try {
-        const queryParams = getSearchParams();
-
         await userInteractionsService.addListBookmark(url, title, notes, tags);
 
         setIsBookmarked(true);

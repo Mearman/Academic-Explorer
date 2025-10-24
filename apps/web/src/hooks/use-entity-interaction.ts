@@ -4,12 +4,13 @@
  */
 
 import { useCallback } from "react";
-import { useGraphStore, graphStore } from "@/stores/graph-store";
 import { useLayoutStore } from "@/stores/layout-store";
+import { useGraphStore } from "@/stores/graph-store";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { logger } from "@academic-explorer/utils/logger";
 import type { GraphNode } from "@academic-explorer/graph";
 import type { ExpansionOptions } from "@/services/graph-data-service";
+import type { GraphState } from "@/stores/graph-store";
 
 export interface EntityInteractionOptions {
   /** Whether to center the viewport on the node (for graph nodes) */
@@ -41,15 +42,14 @@ export const useEntityInteraction = (
 ) => {
   const { loadEntityIntoGraph, expandNode } = useGraphData();
   const { setPreviewEntity, autoPinOnLayoutStabilization } = useLayoutStore();
+  const store = useGraphStore();
 
   // Helper functions to reduce cognitive complexity
   const findOrLoadTargetNode = async ({
     entityId,
-    store,
     loadEntityIntoGraph,
   }: {
     entityId: string;
-    store: any;
     loadEntityIntoGraph: (entityId: string) => Promise<void>;
   }): Promise<GraphNode | undefined> => {
     // First check if a minimal node already exists
@@ -61,8 +61,7 @@ export const useEntityInteraction = (
       // No existing node, load entity into graph
       await loadEntityIntoGraph(entityId);
       // Find the newly loaded node
-      const updatedStore = graphStore.getState() as any;
-      targetNode = (Object.values(updatedStore.nodes) as GraphNode[]).find(
+      targetNode = (Object.values(store.nodes) as GraphNode[]).find(
         (node) => node.entityId === entityId,
       );
     }
@@ -73,7 +72,6 @@ export const useEntityInteraction = (
   const performNodeInteractions = async ({
     targetNode,
     entityId,
-    entityType,
     options,
     store,
     setPreviewEntity,
@@ -85,7 +83,7 @@ export const useEntityInteraction = (
     entityId: string;
     entityType: string;
     options: EntityInteractionOptions;
-    store: any;
+    store: GraphState;
     setPreviewEntity: (entityId: string) => void;
     expandNode: (params: {
       nodeId: string;
@@ -141,7 +139,7 @@ export const useEntityInteraction = (
       existingNode?: GraphNode;
     }) => {
       try {
-        const store = graphStore.getState() as any;
+        const store = useGraphStore();
 
         logger.debug("graph", "Entity interaction started", {
           ...(entityId && { entityId }),
@@ -156,7 +154,6 @@ export const useEntityInteraction = (
         if (!targetNode) {
           targetNode = await findOrLoadTargetNode({
             entityId,
-            store,
             loadEntityIntoGraph,
           });
         }

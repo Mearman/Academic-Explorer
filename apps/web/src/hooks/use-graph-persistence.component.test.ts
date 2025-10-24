@@ -78,8 +78,9 @@ const localStorageMock = (() => {
       store[key] = value;
     }),
     removeItem: vi.fn((key: string) => {
-      const { [key]: _, ...rest } = store;
-      store = rest;
+      const newStore = { ...store };
+      delete newStore[key];
+      store = newStore;
     }),
     clear: vi.fn(() => {
       store = {};

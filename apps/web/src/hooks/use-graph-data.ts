@@ -21,8 +21,8 @@ export function useGraphData() {
     () => createGraphDataService(queryClient),
     [queryClient],
   );
-  const isLoading = useGraphStore((state) => state.isLoading);
-  const error = useGraphStore((state) => state.error);
+  const graphStore = useGraphStore();
+  const { isLoading, error } = graphStore;
 
   // CRITICAL: No worker dependency to prevent infinite loops
   // All operations use the service directly for maximum stability

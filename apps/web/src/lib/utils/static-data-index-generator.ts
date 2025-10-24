@@ -13,8 +13,8 @@ import {
 } from "@academic-explorer/utils/static-data/cache-utilities";
 
 // Dynamic imports for Node.js modules to avoid browser bundling issues
-let fs: any;
-let path: any;
+let fs: typeof import("node:fs/promises");
+let path: typeof import("node:path");
 
 /**
  * Initialize Node.js modules (required before using any file operations)
@@ -42,7 +42,6 @@ async function fileExists(filePath: string): Promise<boolean> {
   }
 }
 
-
 export interface IndexGenerationOptions {
   autoDownload?: boolean;
   force?: boolean;
@@ -50,7 +49,14 @@ export interface IndexGenerationOptions {
 }
 
 const VALID_ENTITY_TYPES: EntityType[] = [
-  "works", "authors", "sources", "institutions", "topics", "publishers", "funders", "concepts",
+  "works",
+  "authors",
+  "sources",
+  "institutions",
+  "topics",
+  "publishers",
+  "funders",
+  "concepts",
 ];
 
 const INDEX_FILENAME = "index.json";
@@ -72,11 +78,17 @@ export async function generateAllIndexes(
     // Find all entity type directories
     const entries = await fs.readdir(staticDataDir, { withFileTypes: true });
     const entityDirs = entries
-      .filter(entry => entry.isDirectory() && VALID_ENTITY_TYPES.includes(entry.name as EntityType))
-      .map(entry => entry.name as EntityType);
+      .filter(
+        (entry) =>
+          entry.isDirectory() &&
+          VALID_ENTITY_TYPES.includes(entry.name as EntityType),
+      )
+      .map((entry) => entry.name as EntityType);
 
     if (entityDirs.length === 0) {
-      console.log("No entity directories found - directories will be created when data is cached");
+      console.log(
+        "No entity directories found - directories will be created when data is cached",
+      );
       return;
     }
 
@@ -86,25 +98,35 @@ export async function generateAllIndexes(
         const entityDir = path.join(staticDataDir, entityType);
         console.log(`Processing ${entityType} directory...`);
 
-        await (options.autoDownload ? generateIndexWithAutoDownload({ entityDir, entityType, staticDataDir }) : generateIndexForEntityType(entityDir, entityType));
+        await (options.autoDownload
+          ? generateIndexWithAutoDownload({
+              entityDir,
+              entityType,
+              staticDataDir,
+            })
+          : generateIndexForEntityType(entityDir, entityType));
       }),
     );
 
     // Report results
-    const successful = results.filter(r => r.status === "fulfilled").length;
-    const failed = results.filter(r => r.status === "rejected").length;
+    const successful = results.filter((r) => r.status === "fulfilled").length;
+    const failed = results.filter((r) => r.status === "rejected").length;
 
     if (failed > 0) {
-      console.warn(`Warning: Generated ${successful} indexes, ${failed} failed`);
+      console.warn(
+        `Warning: Generated ${successful} indexes, ${failed} failed`,
+      );
       results.forEach((result, index) => {
         if (result.status === "rejected") {
-          console.error(`Failed to generate index for ${entityDirs[index]}:`, result.reason);
+          console.error(
+            `Failed to generate index for ${entityDirs[index]}:`,
+            result.reason,
+          );
         }
       });
     } else {
       console.log(`Successfully generated ${successful} entity indexes`);
     }
-
   } catch (error) {
     console.error("Failed to generate static data indexes:", error);
     throw error;
@@ -117,11 +139,11 @@ export async function generateAllIndexes(
 export async function generateIndexWithAutoDownload({
   entityDir,
   entityType,
-  staticDataDir,
+  staticDataDir: _staticDataDir,
 }: {
   entityDir: string;
   entityType: EntityType;
-  staticDataDir: string;
+  _staticDataDir: string;
 }): Promise<void> {
   await initializeNodeModules();
   try {
@@ -133,9 +155,11 @@ export async function generateIndexWithAutoDownload({
     // TODO: Implement auto-download logic here
     // This would integrate with the OpenAlex client to download missing popular entities
     console.log(`Auto-download for ${entityType} not yet implemented`);
-
   } catch (error) {
-    console.error(`Failed to generate index with auto-download for ${entityType}:`, error);
+    console.error(
+      `Failed to generate index with auto-download for ${entityType}:`,
+      error,
+    );
     throw error;
   }
 }
@@ -157,15 +181,20 @@ export async function generateIndexForEntityType(
 
     // Read all JSON files in the directory (direct entities)
     const dirContents = await fs.readdir(entityDir);
-    const jsonFiles = dirContents.filter(file =>
-      path.extname(file) === ".json" &&
-      path.basename(file, ".json") !== "index", // Don't include the index file itself
+    const jsonFiles = dirContents.filter(
+      (file) =>
+        path.extname(file) === ".json" &&
+        path.basename(file, ".json") !== "index", // Don't include the index file itself
     );
 
-    console.log(`Found ${jsonFiles.length} JSON files in ${entityType} directory`);
+    console.log(
+      `Found ${jsonFiles.length} JSON files in ${entityType} directory`,
+    );
 
     if (jsonFiles.length === 0) {
-      console.log(`No data files found for ${entityType}, creating empty index`);
+      console.log(
+        `No data files found for ${entityType}, creating empty index`,
+      );
     }
 
     // Process each file to extract metadata
@@ -176,12 +205,16 @@ export async function generateIndexForEntityType(
     let maxLastUpdated = new Date().toISOString();
 
     if (recursive) {
-      const { directories: subDirs, maxLastUpdated: subMaxUpdated } = await processSubdirectories({ entityDir, entityType, recursive });
+      const { directories: subDirs, maxLastUpdated: subMaxUpdated } =
+        await processSubdirectories({ entityDir, entityType, recursive });
       directories = subDirs;
       maxLastUpdated = subMaxUpdated;
     }
 
-    const overallLastUpdated = maxLastUpdated > new Date().toISOString() ? maxLastUpdated : new Date().toISOString();
+    const overallLastUpdated =
+      maxLastUpdated > new Date().toISOString()
+        ? maxLastUpdated
+        : new Date().toISOString();
 
     // Read existing index to check if content has changed
     const indexPath = path.join(entityDir, INDEX_FILENAME);
@@ -197,11 +230,17 @@ export async function generateIndexForEntityType(
     }
 
     // Check if content has actually changed (excluding lastUpdated field)
-    const contentChanged = hasIndexContentChanged({ existingIndex, files, directories });
+    const contentChanged = hasIndexContentChanged({
+      existingIndex,
+      files,
+      directories,
+    });
 
     // Create index with conditional lastUpdated
     const index: DirectoryIndex = {
-      lastUpdated: contentChanged ? overallLastUpdated : (existingIndex?.lastUpdated || overallLastUpdated),
+      lastUpdated: contentChanged
+        ? overallLastUpdated
+        : existingIndex?.lastUpdated || overallLastUpdated,
       ...(Object.keys(files).length > 0 && { files }),
       ...(Object.keys(directories).length > 0 && { directories }),
     };
@@ -209,11 +248,14 @@ export async function generateIndexForEntityType(
     // Only write if content has changed
     if (contentChanged) {
       await fs.writeFile(indexPath, JSON.stringify(index, null, 2), "utf-8");
-      console.log(`Updated index for ${entityType}: ${Object.keys(files).length} files, ${Object.keys(directories).length} directories (content changed)`);
+      console.log(
+        `Updated index for ${entityType}: ${Object.keys(files).length} files, ${Object.keys(directories).length} directories (content changed)`,
+      );
     } else {
-      console.log(`Index for ${entityType} unchanged: ${Object.keys(files).length} files, ${Object.keys(directories).length} directories (skipped write)`);
+      console.log(
+        `Index for ${entityType} unchanged: ${Object.keys(files).length} files, ${Object.keys(directories).length} directories (skipped write)`,
+      );
     }
-
   } catch (error) {
     console.error(`Failed to generate index for ${entityType}:`, error);
     throw error;
@@ -223,7 +265,9 @@ export async function generateIndexForEntityType(
 /**
  * Validate static data index and entities recursively
  */
-export async function validateStaticDataIndex(entityDir: string): Promise<boolean> {
+export async function validateStaticDataIndex(
+  entityDir: string,
+): Promise<boolean> {
   try {
     const indexPath = path.join(entityDir, INDEX_FILENAME);
 
@@ -251,15 +295,20 @@ export async function validateStaticDataIndex(entityDir: string): Promise<boolea
     // Recursively validate directories if present
     const subdirIssues = await validateIndexDirectories({ index, entityDir });
     if (subdirIssues > 0) {
-      console.warn(`Warning: ${subdirIssues} subdirectory validation issues found`);
+      console.warn(
+        `Warning: ${subdirIssues} subdirectory validation issues found`,
+      );
       return false;
     }
 
     const fileCount = index.files ? Object.keys(index.files).length : 0;
-    const dirCount = index.directories ? Object.keys(index.directories).length : 0;
-    console.log(`Index validation passed: ${fileCount} files, ${dirCount} directories`);
+    const dirCount = index.directories
+      ? Object.keys(index.directories).length
+      : 0;
+    console.log(
+      `Index validation passed: ${fileCount} files, ${dirCount} directories`,
+    );
     return true;
-
   } catch (error) {
     console.error("Failed to validate index:", error);
     return false;
@@ -269,7 +318,9 @@ export async function validateStaticDataIndex(entityDir: string): Promise<boolea
 /**
  * Get static data index for an entity type
  */
-export async function getStaticDataIndex(entityDir: string): Promise<DirectoryIndex | null> {
+export async function getStaticDataIndex(
+  entityDir: string,
+): Promise<DirectoryIndex | null> {
   try {
     const indexPath = path.join(entityDir, INDEX_FILENAME);
 
@@ -279,7 +330,6 @@ export async function getStaticDataIndex(entityDir: string): Promise<DirectoryIn
 
     const indexContent = await fs.readFile(indexPath, "utf-8");
     return JSON.parse(indexContent);
-
   } catch (error) {
     console.error("Failed to read static data index:", error);
     return null;
@@ -326,7 +376,9 @@ async function processJsonFiles({
 
       // Basic validation - ensure it looks like an OpenAlex entity
       if (!isValidOpenAlexEntity(data)) {
-        console.warn(`⚠️  File ${fileName} doesn't appear to be a valid OpenAlex entity`);
+        console.warn(
+          `⚠️  File ${fileName} doesn't appear to be a valid OpenAlex entity`,
+        );
       }
 
       // Create FileEntry with reconstructed URL
@@ -353,12 +405,15 @@ async function processJsonFiles({
 async function processSubdirectories({
   entityDir,
   entityType,
-  recursive,
+  _recursive,
 }: {
   entityDir: string;
   entityType: EntityType;
   recursive: boolean;
-}): Promise<{ directories: Record<string, DirectoryEntry>; maxLastUpdated: string }> {
+}): Promise<{
+  directories: Record<string, DirectoryEntry>;
+  maxLastUpdated: string;
+}> {
   const directories: Record<string, DirectoryEntry> = {};
   let maxLastUpdated = new Date().toISOString();
 
@@ -366,8 +421,13 @@ async function processSubdirectories({
     // Get subdirectories (non-hidden directories)
     const entries = await fs.readdir(entityDir, { withFileTypes: true });
     const subdirs = entries
-      .filter(entry => entry.isDirectory() && !entry.name.startsWith(".") && entry.name !== "queries")
-      .map(entry => entry.name)
+      .filter(
+        (entry) =>
+          entry.isDirectory() &&
+          !entry.name.startsWith(".") &&
+          entry.name !== "queries",
+      )
+      .map((entry) => entry.name)
       .sort(); // Sort for consistent order
 
     console.log(`Found ${subdirs.length} subdirectories in ${entityType}`);
@@ -425,8 +485,11 @@ function hasIndexContentChanged({
     return true;
   }
 
-  const filesChanged = JSON.stringify(existingIndex.files || {}) !== JSON.stringify(files);
-  const dirsChanged = JSON.stringify(existingIndex.directories || {}) !== JSON.stringify(directories);
+  const filesChanged =
+    JSON.stringify(existingIndex.files || {}) !== JSON.stringify(files);
+  const dirsChanged =
+    JSON.stringify(existingIndex.directories || {}) !==
+    JSON.stringify(directories);
 
   return filesChanged || dirsChanged;
 }
@@ -444,7 +507,7 @@ async function validateIndexFiles({
   let missingFiles = 0;
 
   if (index.files) {
-    for (const [key, fileEntry] of Object.entries(index.files)) {
+    for (const [_key, fileEntry] of Object.entries(index.files)) {
       const fileName = fileEntry.$ref.replace("./", "");
       const filePath = path.join(entityDir, fileName);
       if (!(await fileExists(filePath))) {
@@ -485,14 +548,19 @@ async function validateSubdirectory({
 
     // Check metadata consistency
     if (subIndex.lastUpdated !== subdirMeta.lastModified) {
-      console.warn(`Warning: Last updated mismatch in ${subdirName}: index=${subIndex.lastUpdated}, metadata=${subdirMeta.lastModified}`);
+      console.warn(
+        `Warning: Last updated mismatch in ${subdirName}: index=${subIndex.lastUpdated}, metadata=${subdirMeta.lastModified}`,
+      );
       return false;
     }
 
     // Recursively validate sub-index
     return await validateStaticDataIndex(subPath);
   } catch (subError) {
-    console.warn(`Warning: Failed to validate subdirectory ${subdirName}:`, subError);
+    console.warn(
+      `Warning: Failed to validate subdirectory ${subdirName}:`,
+      subError,
+    );
     return false;
   }
 }
@@ -511,7 +579,11 @@ async function validateIndexDirectories({
 
   if (index.directories) {
     for (const [subdirName, subdirMeta] of Object.entries(index.directories)) {
-      const isValid = await validateSubdirectory({ subdirName, subdirMeta, entityDir });
+      const isValid = await validateSubdirectory({
+        subdirName,
+        subdirMeta,
+        entityDir,
+      });
       if (!isValid) {
         subdirIssues++;
       }
@@ -526,8 +598,9 @@ async function validateIndexDirectories({
  */
 export function getEntityTypeFromPath(dirPath: string): EntityType | null {
   // Use simple string operations to avoid sync Node.js imports
-  const dirName = dirPath.split("/").pop() || dirPath.split("\\").pop() || dirPath;
+  const dirName =
+    dirPath.split("/").pop() || dirPath.split("\\").pop() || dirPath;
   return VALID_ENTITY_TYPES.includes(dirName as EntityType)
-    ? dirName as EntityType
+    ? (dirName as EntityType)
     : null;
 }
