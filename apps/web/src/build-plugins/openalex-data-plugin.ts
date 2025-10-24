@@ -9,7 +9,6 @@
 import { logger } from "@academic-explorer/utils";
 import {
   generateContentHash,
-  parseOpenAlexUrl,
   type UnifiedIndexEntry,
 } from "@academic-explorer/utils/static-data/cache-utilities";
 import {
@@ -1617,7 +1616,6 @@ function determineCanonicalQueryUrl(
       const reconstructedUrl = reverseEngineerQueryUrl(
         entityType,
         queryResult,
-        filename,
       );
       if (reconstructedUrl) {
         return reconstructedUrl;
@@ -1655,7 +1653,6 @@ function determineCanonicalQueryUrl(
 function reverseEngineerQueryUrl(
   entityType: string,
   queryResult: unknown,
-  _filename: string,
 ): string | null {
   if (
     !queryResult ||
@@ -1925,8 +1922,7 @@ async function migrateQueryFilesToEntityDirectory(
 function generateDescriptiveFilename(canonicalUrl: string): string | null {
   try {
     // Use the same URL encoding approach as urlToEncodedKey for consistency
-    const filename = urlToEncodedKey(canonicalUrl) + ".json";
-    return filename;
+    return urlToEncodedKey(canonicalUrl) + ".json";
   } catch {
     return null;
   }
@@ -2011,10 +2007,11 @@ async function generateMainIndex(dataPath: string): Promise<void> {
   // Compare content structure (excluding lastModified) to determine if update is needed
   let contentChanged = true;
   if (existingMainIndex) {
-    const { lastModified: _existingLastModified, ...existingContent } =
-      existingMainIndex;
+    // Create a copy without lastModified for comparison
+    const existingContentCopy = { ...existingMainIndex };
+    delete existingContentCopy.lastModified;
     const contentMatches =
-      JSON.stringify(existingContent) === JSON.stringify(newMainIndexContent);
+      JSON.stringify(existingContentCopy) === JSON.stringify(newMainIndexContent);
     contentChanged = !contentMatches;
   }
 
