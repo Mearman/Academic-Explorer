@@ -13,7 +13,7 @@ export const rorMatcher: ValueMatcher = {
 
 		return /^0[a-zA-Z0-9]{8}$/.test(value)
 	},
-	render(value: unknown, fieldName: string, onNavigate?: (path: string) => void): React.ReactNode {
+	render(value: unknown, _fieldName: string, _onNavigate?: (path: string) => void): React.ReactNode {
 		const rorValue = value as string
 		return (
 			<Group gap="xs" wrap="nowrap">

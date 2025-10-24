@@ -59,7 +59,7 @@ export const CollapsibleSection = forwardRef<HTMLDivElement, CollapsibleSectionP
 		const { colorScheme } = useMantineColorScheme()
 
 		// Resolve the actual color scheme when colorScheme is 'auto'
-		const resolvedColorScheme =
+		const _resolvedColorScheme =
 			colorScheme === "auto"
 				? (() => {
 						try {

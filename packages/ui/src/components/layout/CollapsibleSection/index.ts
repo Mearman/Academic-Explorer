@@ -1,1 +1,1 @@
-export { CollapsibleSection, type CollapsibleSectionProps } from './CollapsibleSection';
+export { CollapsibleSection, type CollapsibleSectionProps } from "./CollapsibleSection"

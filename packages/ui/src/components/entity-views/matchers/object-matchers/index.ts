@@ -1,4 +1,4 @@
-export { idObjectMatcher } from "./id-object";
+export { idObjectMatcher } from "./id-object"
 // TODO: Add remaining object matchers
 // export { summaryStatsMatcher } from "./summary-stats";
 // export { entityObjectMatcher } from "./entity-object";

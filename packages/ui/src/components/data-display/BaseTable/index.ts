@@ -1,1 +1,1 @@
-export { BaseTable, type BaseTableProps } from './BaseTable';
+export { BaseTable, type BaseTableProps } from "./BaseTable"

@@ -82,7 +82,7 @@ function renderIdBadge({
 /**
  * Gets the relative URL for an ID if it should be linked
  */
-function getRelativeUrlForId({ key, value }: { key: string; value: string }): string | undefined {
+function getRelativeUrlForId({ value }: { key: string; value: string }): string | undefined {
 	// Check if this is an OpenAlex ID that should be linked
 	const validation = validateExternalId(value)
 
@@ -101,7 +101,8 @@ function getRelativeUrlForId({ key, value }: { key: string; value: string }): st
 	const { type } = validation
 
 	if (typeof isValid === "boolean" && typeof type === "string" && isValid && type === "openalex") {
-		return convertToRelativeUrl(`https://openalex.org/${value}`)
+		const result = convertToRelativeUrl(`https://openalex.org/${value}`)
+		return result || undefined
 	}
 
 	return undefined

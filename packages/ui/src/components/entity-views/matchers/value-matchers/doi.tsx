@@ -13,7 +13,7 @@ export const doiMatcher: ValueMatcher = {
 
 		return /^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i.test(value)
 	},
-	render(value: unknown, fieldName: string, onNavigate?: (path: string) => void): React.ReactNode {
+	render(value: unknown, _fieldName: string, _onNavigate?: (path: string) => void): React.ReactNode {
 		const doiValue = value as string
 		return (
 			<Group gap="xs" wrap="nowrap">

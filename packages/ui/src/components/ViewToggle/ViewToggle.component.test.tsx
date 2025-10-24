@@ -25,12 +25,12 @@ import {
   screen,
   fireEvent,
   cleanup,
-  waitFor,
+  waitFor as _waitFor,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom/vitest";
 import { MantineProvider } from "@mantine/core";
-import { ViewToggle, type ViewMode } from "./ViewToggle";
+import { ViewToggle, type ViewMode as _ViewMode } from "./ViewToggle";
 
 // Test wrapper with MantineProvider
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (

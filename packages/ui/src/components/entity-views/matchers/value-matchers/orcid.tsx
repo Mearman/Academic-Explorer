@@ -13,7 +13,7 @@ export const orcidMatcher: ValueMatcher = {
 
 		return /^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/.test(value)
 	},
-	render(value: unknown, fieldName: string, onNavigate?: (path: string) => void): React.ReactNode {
+	render(value: unknown, _fieldName: string, _onNavigate?: (path: string) => void): React.ReactNode {
 		const orcidValue = value as string
 		return (
 			<Group gap="xs" wrap="nowrap">
