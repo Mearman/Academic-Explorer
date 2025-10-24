@@ -166,7 +166,7 @@ export function createNodeFixture(
   };
 
   const baseLabel = options.customLabel ||
-    (template.sampleEntityData as any)?.display_name ||
+    (template.sampleEntityData as { display_name?: string })?.display_name ||
     `${entityType.charAt(0).toUpperCase()}${entityType.slice(1)} ${nodeId}`;
 
   const externalIds: ExternalIdentifier[] = [];

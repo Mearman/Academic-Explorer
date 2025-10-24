@@ -825,7 +825,7 @@ describe("Example: Author-Centered Research Workflows", () => {
   async function buildCollaborationNetwork(
     provider: OpenAlexGraphProvider,
     authorId: string,
-    options: { depth: number },
+    _options: { depth: number },
   ) {
     const expansion = await provider.expandEntity(authorId, { limit: 20 });
 
@@ -875,7 +875,7 @@ describe("Example: Author-Centered Research Workflows", () => {
           target: collaboratorId,
           type: RelationType.AUTHORED,
         });
-      } catch (error) {
+      } catch (_error) {
         // Skip unavailable collaborators
         console.warn(`Could not fetch collaborator ${collaboratorId}`);
       }

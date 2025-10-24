@@ -6,7 +6,7 @@
  * Prerequisites: Understanding of EntityType and GraphNode concepts
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi as _vi } from "vitest";
 import { OpenAlexGraphProvider } from "../../../providers/openalex-provider";
 import type { EntityType, GraphNode } from "../../../types/core";
 
@@ -107,7 +107,7 @@ class MockOpenAlexClient {
   }
 
   async works(
-    params: Record<string, unknown>,
+    _params: Record<string, unknown>,
   ): Promise<{ results: Record<string, unknown>[] }> {
     // Mock search results for works
     return {
@@ -143,7 +143,7 @@ class MockOpenAlexClient {
   }
 
   async authors(
-    params: Record<string, unknown>,
+    _params: Record<string, unknown>,
   ): Promise<{ results: Record<string, unknown>[] }> {
     return {
       results: [
@@ -162,7 +162,7 @@ class MockOpenAlexClient {
   }
 
   async sources(
-    params: Record<string, unknown>,
+    _params: Record<string, unknown>,
   ): Promise<{ results: Record<string, unknown>[] }> {
     return {
       results: [
@@ -176,7 +176,7 @@ class MockOpenAlexClient {
   }
 
   async institutions(
-    params: Record<string, unknown>,
+    _params: Record<string, unknown>,
   ): Promise<{ results: Record<string, unknown>[] }> {
     return {
       results: [
@@ -542,7 +542,7 @@ describe("Example: Basic Provider Usage", () => {
       // When: An operation fails
       try {
         await errorProvider.fetchEntity("A5017898742");
-      } catch (error) {
+      } catch (_error) {
         // Expected to fail
       }
 

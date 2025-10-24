@@ -192,7 +192,7 @@ class MockGraphProvider extends GraphDataProvider {
         const results: GraphNode[] = [];
         const limit = query.limit || 20;
 
-        for (const [id, entity] of this.mockData) {
+        for (const [_id, entity] of this.mockData) {
           if (results.length >= limit) break;
 
           if (
@@ -584,7 +584,7 @@ describe("Provider Performance Tests", () => {
       );
       await provider.fetchEntities(entityIds);
 
-      const beforeCleanupMemory = memoryMonitor.takeMeasurement();
+      const _beforeCleanupMemory = memoryMonitor.takeMeasurement();
 
       // Cleanup and destroy
       provider.cleanup();
@@ -825,7 +825,7 @@ describe("Provider Performance Tests", () => {
       provider.on("cacheMiss", () => cacheMisses++);
 
       // First fetch (cache miss)
-      const { duration: missTime } = await PerformanceTimer.measure(
+      const { duration: _missTime } = await PerformanceTimer.measure(
         async () => {
           return provider.fetchEntity(entityId);
         },
@@ -1145,7 +1145,7 @@ describe("Provider Performance Tests", () => {
 
         const entityIds = Array.from(
           { length: 20 },
-          (_, i) =>
+          () =>
             `W${(Math.floor(Math.random() * 1000) + 1).toString().padStart(8, "0")}`,
         );
 

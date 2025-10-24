@@ -4,8 +4,8 @@
  * and cross-provider functionality with realistic usage patterns.
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi, beforeAll, afterAll } from 'vitest';
-import { EventEmitter } from 'events';
+import { describe, it, expect, beforeEach, afterEach, _vi, _beforeAll, _afterAll } from 'vitest';
+import { _EventEmitter } from 'events';
 import {
   GraphDataProvider,
   ProviderRegistry,
@@ -16,7 +16,7 @@ import {
 } from './base-provider';
 import { OpenAlexGraphProvider } from './openalex-provider';
 import { EntityResolver } from '../services/entity-resolver-interface';
-import type { GraphNode, EntityType, EntityIdentifier, GraphEdge } from '../types/core';
+import type { GraphNode, _EntityType, EntityIdentifier, GraphEdge } from '../types/core';
 import { RelationType } from '../types/core';
 
 // Mock OpenAlex Client for testing
@@ -181,11 +181,11 @@ class MockOpenAlexClient {
     return { results: [] };
   }
 
-  async sources(params: any) {
+  async sources(_params: any) {
     return { results: [] };
   }
 
-  async institutions(params: any) {
+  async institutions(_params: any) {
     return { results: [] };
   }
 }
@@ -237,7 +237,7 @@ class MockGraphDataProvider extends GraphDataProvider {
 
       // Return filtered mock data based on query
       const results: GraphNode[] = [];
-      for (const [id, node] of this.mockData.entries()) {
+      for (const [, node] of this.mockData.entries()) {
         if (
           query.entityTypes.includes(node.entityType) &&
           node.label.toLowerCase().includes(query.query.toLowerCase())
@@ -606,7 +606,7 @@ describe('Provider System Integration Tests', () => {
 
       try {
         await entityResolver.resolveEntity('M001');
-      } catch (error) {
+      } catch (_error) {
         // Expected failure
       }
 
@@ -688,7 +688,7 @@ describe('Provider System Integration Tests', () => {
       // Make concurrent requests to different providers
       const promises = [
         entityResolver.resolveEntity('W2741809807'), // OpenAlex
-        ...Array.from({ length: 5 }, (_, i) => {
+        ...Array.from({ length: 5 }, () => {
           entityResolver.switchProvider('mock1');
           return entityResolver.resolveEntity('M001');
         }),
@@ -921,9 +921,9 @@ describe('Provider System Integration Tests', () => {
           } else if (providerName === 'mock2') {
             aggregatedData.push(await entityResolver.resolveEntity('M002'));
           }
-        } catch (error) {
+        } catch (_error) {
           // Note: This would use logger.warn in real implementation
-          // logger.warn('provider', `Provider ${providerName} failed`, { error });
+          // logger.warn('provider', `Provider ${providerName} failed`, { error: _error });
         }
       }
 

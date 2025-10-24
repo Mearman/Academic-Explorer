@@ -36,8 +36,8 @@ export function expectDeepEqualWithTolerance<T>(
 
     for (const key of actualKeys) {
       expectDeepEqualWithTolerance(
-        (actual as any)[key],
-        (expected as any)[key],
+        (actual as Record<string, unknown>)[key],
+        (expected as Record<string, unknown>)[key],
         tolerance
       );
     }
@@ -230,8 +230,8 @@ export function expectNodesHaveMoved(
     expect(afterPos).toBeDefined();
 
     const distance = Math.sqrt(
-      Math.pow(afterPos!.x - beforePos.x, 2) +
-      Math.pow(afterPos!.y - beforePos.y, 2)
+      Math.pow((afterPos?.x ?? 0) - beforePos.x, 2) +
+      Math.pow((afterPos?.y ?? 0) - beforePos.y, 2)
     );
 
     if (distance > tolerance) {
@@ -301,7 +301,7 @@ export function expectEntityTypeDistribution(
   nodes: GraphNode[],
   expectedDistribution: Partial<Record<EntityType, number>>
 ): void {
-  const actualDistribution: Record<EntityType, number> = {} as any;
+  const actualDistribution: Record<EntityType, number> = {} as Record<EntityType, number>;
 
   // Count entity types
   for (const node of nodes) {
@@ -370,7 +370,7 @@ export function expectArrayContainsSubset<T>(
   actual: T[],
   expected: Partial<T>[],
   matcher: (actual: T, expected: Partial<T>) => boolean = (a, e) =>
-    Object.keys(e).every(key => (a as any)[key] === (e as any)[key])
+    Object.keys(e).every(key => (a as Record<string, unknown>)[key] === (e as Record<string, unknown>)[key])
 ): void {
   for (const expectedItem of expected) {
     const found = actual.some(actualItem => matcher(actualItem, expectedItem));

@@ -3,6 +3,8 @@
  * Central export point for all graph package testing utilities
  */
 
+import type { EntityType, RelationType } from '../../types/core';
+
 // Core setup and configuration
 export { testUtils as vitestTestUtils, testEnvironment } from './vitest-setup';
 export {
@@ -119,37 +121,37 @@ export const testUtils = {
   cleanupEnv: () => import('./test-environment').then(m => { m.cleanupTestEnvironment(); }),
 
   // Fixtures
-  createNode: (entityType: string, id?: string, options?: any) =>
-    import('./test-fixtures').then(m => m.createNodeFixture(entityType as any, id, options)),
-  createEdge: (source: string, target: string, type: string, options?: any) =>
-    import('./test-fixtures').then(m => m.createEdgeFixture(source, target, type as any, options)),
+  createNode: (entityType: string, id?: string, options?: Record<string, unknown>) =>
+    import('./test-fixtures').then(m => m.createNodeFixture(entityType as EntityType, id, options)),
+  createEdge: (source: string, target: string, type: string, options?: Record<string, unknown>) =>
+    import('./test-fixtures').then(m => m.createEdgeFixture(source, target, type as RelationType, options)),
   scenarios: () => import('./test-fixtures').then(m => m.testScenarios),
 
   // Providers
-  createProvider: (name: string, config?: any) =>
+  createProvider: (name: string, config?: Record<string, unknown>) =>
     import('./provider-helpers').then(m => m.getProviderHelper().createProvider(name, config)),
   getProviderHelper: () => import('./provider-helpers').then(m => m.getProviderHelper()),
 
   // Events
-  trackEvents: (emitter: any, events?: string[], label?: string) =>
+  trackEvents: (emitter: { on: (event: string, listener: (...args: unknown[]) => void) => void }, events?: string[], label?: string) =>
     import('./event-helpers').then(m => { m.getEventHelper().track(emitter, events, label); }),
   getEventHelper: () => import('./event-helpers').then(m => m.getEventHelper()),
 
   // Performance
-  measure: (operation: () => any, name: string) =>
+  measure: (operation: () => unknown, name: string) =>
     import('./performance-helpers').then(m => m.getPerformanceHelper().measurePerformance(operation, name)),
-  benchmark: (operation: () => any, name: string, options?: any) =>
+  benchmark: (operation: () => unknown, name: string, options?: Record<string, unknown>) =>
     import('./performance-helpers').then(m => m.getPerformanceHelper().benchmark(operation, name, options)),
   getPerformanceHelper: () => import('./performance-helpers').then(m => m.getPerformanceHelper()),
 
   // Async utilities
-  waitFor: (condition: () => any, options?: any) =>
+  waitFor: (condition: () => unknown, options?: Record<string, unknown>) =>
     import('./async-helpers').then(m => m.waitFor(condition, options)),
-  retry: (operation: () => any, options?: any) =>
+  retry: (operation: () => unknown, options?: Record<string, unknown>) =>
     import('./async-helpers').then(m => m.retry(operation, options)),
 
   // Isolation
-  isolate: (testFn: () => any, config?: any) =>
+  isolate: (testFn: () => unknown, config?: Record<string, unknown>) =>
     import('./isolation-helpers').then(m => m.testIsolation.withIsolation(testFn, config)),
   createCleanup: () => import('./isolation-helpers').then(m => m.createCleanupScope()),
 
@@ -217,7 +219,7 @@ export const testPatterns = {
   },
 
   // Graph data test with fixtures
-  graph: (testFn: (data: any) => void | Promise<void>) => {
+  graph: (testFn: (data: Record<string, unknown>) => void | Promise<void>) => {
     return () => import('./setup-teardown').then(async m => {
       const scenario = await m.setupAcademicPaperScenario();
 

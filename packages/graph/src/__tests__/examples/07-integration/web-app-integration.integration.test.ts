@@ -6,7 +6,7 @@
  * Prerequisites: Understanding of React patterns and web application architecture
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi as _vi } from 'vitest';
 import { OpenAlexGraphProvider, ProviderRegistry } from '../../../providers';
 import type { GraphNode, GraphEdge } from '../../../types/core';
 
@@ -704,7 +704,7 @@ describe('Example: Web Application Integration', () => {
         await graphHook.fetchEntity(`A${50000000 + i}`);
       }
 
-      let initialNodeCount = stateManager.getState().nodes.length;
+      const initialNodeCount = stateManager.getState().nodes.length;
       expect(initialNodeCount).toBe(20);
 
       // When: Implementing cleanup strategy

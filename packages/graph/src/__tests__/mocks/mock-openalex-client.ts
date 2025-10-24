@@ -13,7 +13,7 @@ export interface MockClientOptions {
   shouldFail?: boolean;
   failureMode?: 'network' | 'timeout' | 'rate-limit' | 'malformed' | 'invalid-response' | 'missing-fields' | 'server-error' | 'quota-exceeded';
   requestDelay?: number;
-  customResponseData?: any;
+  customResponseData?: Record<string, unknown>;
 }
 
 /**
@@ -26,7 +26,7 @@ export class MockOpenAlexClient {
   };
   // EntityDetectionService is static, no instance needed
 
-  public requestHistory: Array<{ method: string; params: any; timestamp: number }> = [];
+  public requestHistory: Array<{ method: string; params: Record<string, unknown>; timestamp: number }> = [];
 
   constructor(options: MockClientOptions = {}) {
     this.options = { ...this.options, ...options };
@@ -34,7 +34,7 @@ export class MockOpenAlexClient {
   }
 
   // Configuration methods for tests
-  setFailureMode(mode: MockClientOptions['failureMode'], customData?: any) {
+  setFailureMode(mode: MockClientOptions['failureMode'], customData?: Record<string, unknown>) {
     this.options.failureMode = mode;
     this.options.shouldFail = mode !== null && mode !== undefined;
     this.options.customResponseData = customData;
@@ -53,7 +53,7 @@ export class MockOpenAlexClient {
   }
 
   // Default test data
-  private defaultData: Map<string, any> = new Map();
+  private defaultData: Map<string, Record<string, unknown>> = new Map();
 
   private setupDefaultResponses() {
     // Works
@@ -262,7 +262,7 @@ export class MockOpenAlexClient {
         keywords: 'K'
       };
 
-      const prefix = entityTypes[endpoint] || 'X';
+      const _prefix = entityTypes[endpoint] || 'X';
       mockData = {
         id: actualId,
         display_name: `Mock ${endpoint.slice(0, -1)} Entity`,
@@ -354,7 +354,7 @@ export class MockOpenAlexClient {
   }
 
   // Core request handling with error simulation
-  private async makeRequest(method: string, params: any, dataKey?: string, customData?: any): Promise<any> {
+  private async makeRequest(method: string, params: Record<string, unknown>, dataKey?: string, customData?: unknown): Promise<unknown> {
     this.requestHistory.push({ method, params, timestamp: Date.now() });
 
     // Simulate network delay
@@ -394,51 +394,59 @@ export class MockOpenAlexClient {
     }
   }
 
-  private async simulateFailure(mode: NonNullable<MockClientOptions['failureMode']>): Promise<any> {
+  private async simulateFailure(mode: NonNullable<MockClientOptions['failureMode']>): Promise<unknown> {
     switch (mode) {
-      case 'network':
+      case 'network': {
         const networkError = new Error('fetch failed');
-        (networkError as any).cause = { code: 'ECONNRESET' };
+        (networkError as { cause?: { code?: string } }).cause = { code: 'ECONNRESET' };
         throw networkError;
+      }
 
-      case 'timeout':
+      case 'timeout': {
         // Simulate timeout by delaying then throwing AbortError
         await new Promise(resolve => setTimeout(resolve, 50));
         const timeoutError = new Error('The operation was aborted.');
-        (timeoutError as any).name = 'AbortError';
+        (timeoutError as { name?: string }).name = 'AbortError';
         throw timeoutError;
+      }
 
-      case 'rate-limit':
+      case 'rate-limit': {
         const rateLimitError = new Error('Too Many Requests');
-        (rateLimitError as any).status = 429;
-        (rateLimitError as any).headers = new Map([['retry-after', '3600']]);
+        (rateLimitError as { status?: number; headers?: Map<string, string> }).status = 429;
+        (rateLimitError as { status?: number; headers?: Map<string, string> }).headers = new Map([['retry-after', '3600']]);
         throw rateLimitError;
+      }
 
-      case 'quota-exceeded':
+      case 'quota-exceeded': {
         const quotaError = new Error('API quota exceeded');
-        (quotaError as any).status = 403;
-        (quotaError as any).headers = new Map([['x-ratelimit-remaining', '0']]);
+        (quotaError as { status?: number; headers?: Map<string, string> }).status = 403;
+        (quotaError as { status?: number; headers?: Map<string, string> }).headers = new Map([['x-ratelimit-remaining', '0']]);
         throw quotaError;
+      }
 
-      case 'server-error':
+      case 'server-error': {
         const serverError = new Error('Internal Server Error');
-        (serverError as any).status = 500;
+        (serverError as { status?: number }).status = 500;
         throw serverError;
+      }
 
-      case 'malformed':
+      case 'malformed': {
         // Return malformed data instead of throwing
         if (this.options.customResponseData) {
           return this.options.customResponseData;
         }
         return { malformed: true, results: "not-an-array" };
+      }
 
-      case 'invalid-response':
+      case 'invalid-response': {
         // Return null/invalid response
         return null;
+      }
 
-      case 'missing-fields':
+      case 'missing-fields': {
         // Return response with missing/null required fields
         return { id: undefined, display_name: null };
+      }
 
       default:
         throw new Error(`Unknown failure mode: ${mode}`);
@@ -446,7 +454,7 @@ export class MockOpenAlexClient {
   }
 
   // Test utility methods
-  addMockData(key: string, data: any) {
+  addMockData(key: string, data: Record<string, unknown>) {
     this.defaultData.set(key, data);
   }
 
@@ -463,11 +471,11 @@ export class MockOpenAlexClient {
     return this.requestHistory.length;
   }
 
-  getLastRequest() {
+  getLastRequest(): { method: string; params: Record<string, unknown>; timestamp: number } | undefined {
     return this.requestHistory[this.requestHistory.length - 1];
   }
 
-  getRequestsForMethod(method: string) {
+  getRequestsForMethod(method: string): { method: string; params: Record<string, unknown>; timestamp: number }[] {
     return this.requestHistory.filter(r => r.method === method);
   }
 }
@@ -485,7 +493,7 @@ export function createSlowMockClient(delay: number): MockOpenAlexClient {
   return new MockOpenAlexClient({ shouldFail: false, requestDelay: delay });
 }
 
-export function createMockClientWithData(data: Record<string, any>): MockOpenAlexClient {
+export function createMockClientWithData(data: Record<string, Record<string, unknown>>): MockOpenAlexClient {
   const client = new MockOpenAlexClient();
   Object.entries(data).forEach(([key, value]) => {
     client.addMockData(key, value);

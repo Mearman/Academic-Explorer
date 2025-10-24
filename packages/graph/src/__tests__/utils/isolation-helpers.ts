@@ -50,11 +50,11 @@ interface GlobalTestState {
   timerRegistry: Set<NodeJS.Timeout>;
   listenerRegistry: Map<EventTarget | EventEmitter, Array<{
     event: string;
-    listener: EventListenerOrEventListenerObject | ((...args: any[]) => void);
+    listener: EventListenerOrEventListenerObject | ((...args: unknown[]) => void);
     options?: AddEventListenerOptions | boolean;
   }>>;
   globalVariables: Map<string, unknown>;
-  processListeners: Map<string, Array<(...args: any[]) => void>>;
+  processListeners: Map<string, Array<(...args: unknown[]) => void>>;
 }
 
 /**
@@ -157,19 +157,21 @@ export class TestIsolationHelper {
   registerEventListener(
     target: EventTarget | EventEmitter,
     event: string,
-    listener: EventListenerOrEventListenerObject | ((...args: any[]) => void),
+    listener: EventListenerOrEventListenerObject | ((...args: unknown[]) => void),
     options?: AddEventListenerOptions | boolean
   ): void {
     if (!this.state.listenerRegistry.has(target)) {
       this.state.listenerRegistry.set(target, []);
     }
 
-    this.state.listenerRegistry.get(target)!.push({
-      event,
-      listener,
-      options,
-    });
-  }
+    const listenerRegistry = this.state.listenerRegistry.get(target);
+    if (listenerRegistry) {
+      listenerRegistry.push({
+        event,
+        listener,
+        options,
+      });
+    }
 
   /**
    * Set a global variable with automatic cleanup
@@ -177,10 +179,10 @@ export class TestIsolationHelper {
   setGlobalVariable(key: string, value: unknown): void {
     // Store original value if not already stored
     if (!this.state.globalVariables.has(key)) {
-      this.state.globalVariables.set(key, (globalThis as any)[key]);
+      this.state.globalVariables.set(key, (globalThis as Record<string, unknown>)[key]);
     }
 
-    (globalThis as any)[key] = value;
+    (globalThis as Record<string, unknown>)[key] = value;
   }
 
   /**
@@ -216,7 +218,7 @@ export class TestIsolationHelper {
       text: vi.fn().mockResolvedValue(''),
       blob: vi.fn().mockResolvedValue(new Blob()),
       arrayBuffer: vi.fn().mockResolvedValue(new ArrayBuffer(0)),
-    } as any);
+    } as ReturnType<typeof vi.fn>);
 
     globalThis.fetch = mockFetch;
   }
@@ -423,9 +425,9 @@ export class TestIsolationHelper {
           } else if ('removeListener' in target || 'off' in target) {
             const emitter = target;
             if (emitter.removeListener) {
-              emitter.removeListener(event, listener as (...args: any[]) => void);
+              emitter.removeListener(event, listener as (...args: unknown[]) => void);
             } else if ('off' in emitter) {
-              (emitter as any).off(event, listener);
+              (emitter as { off: (event: string, listener: unknown) => void }).off(event, listener);
             }
           }
         } catch {
@@ -439,9 +441,9 @@ export class TestIsolationHelper {
   private clearGlobalVariables(): void {
     for (const [key, originalValue] of this.state.globalVariables) {
       if (originalValue === undefined) {
-        delete (globalThis as any)[key];
+        delete (globalThis as Record<string, unknown>)[key];
       } else {
-        (globalThis as any)[key] = originalValue;
+        (globalThis as Record<string, unknown>)[key] = originalValue;
       }
     }
     this.state.globalVariables.clear();
@@ -452,7 +454,7 @@ export class TestIsolationHelper {
       for (const [event, listeners] of this.state.processListeners) {
         for (const listener of listeners) {
           try {
-            process.removeListener(event as any, listener);
+            (process.removeListener as (event: string, listener: (...args: unknown[]) => void) => void)(event, listener);
           } catch {
             // Ignore errors during process listener cleanup
           }
@@ -553,7 +555,7 @@ export function useTestIsolation(config: TestIsolationConfig = isolationPatterns
  * Decorator for isolated test functions
  */
 export function isolated(config: TestIsolationConfig = isolationPatterns.standard()) {
-  return function<T extends (...args: any[]) => any>(
+  return function<T extends (...args: unknown[]) => unknown>(
     target: T
   ): T {
     return (async (...args: Parameters<T>) => {

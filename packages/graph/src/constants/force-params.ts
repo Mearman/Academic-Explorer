@@ -14,9 +14,9 @@ export const DEFAULT_FORCE_PARAMS = {
 	alphaDecay: 0.03,
 	maxIterations: 1000,
 	seed: 0x12345678,
-} as const;
+} as const
 
-export type ForceParameters = typeof DEFAULT_FORCE_PARAMS;
+export type ForceParameters = typeof DEFAULT_FORCE_PARAMS
 
 // Force parameter metadata for UI controls
 export const FORCE_PARAM_CONFIG = {
@@ -86,8 +86,8 @@ export const FORCE_PARAM_CONFIG = {
 	seed: {
 		label: "Random Seed",
 		min: 0,
-		max: 0xFFFFFFFF,
+		max: 0xffffffff,
 		step: 1,
 		description: "Seed for deterministic random number generation",
 	},
-} as const;
+} as const

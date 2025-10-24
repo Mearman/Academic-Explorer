@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { EventEmitter } from 'events';
+import { _EventEmitter as _ } from 'events';
 import {
   EntityResolver,
   type IEntityResolver,

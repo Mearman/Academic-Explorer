@@ -9,7 +9,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { OpenAlexGraphProvider } from "../../../providers/openalex-provider";
 import { RelationType } from "../../../types/core";
-import type { GraphNode, GraphEdge } from "../../../types/core";
+import type { _GraphNode, _GraphEdge } from "../../../types/core";
 
 // Enhanced mock client with citation and reference data
 class PublicationMockClient {
@@ -885,8 +885,8 @@ describe("Example: Work-Centered Research Workflows", () => {
 
   // Additional helper functions would be implemented similarly...
   async function trackForwardCitations(
-    provider: OpenAlexGraphProvider,
-    workId: string,
+    _provider: OpenAlexGraphProvider,
+    _workId: string,
   ) {
     // Implementation would query citing works
     return {
@@ -1039,8 +1039,8 @@ describe("Example: Work-Centered Research Workflows", () => {
   }
 
   async function identifyResearchFront(
-    provider: OpenAlexGraphProvider,
-    topicId: string,
+    _provider: OpenAlexGraphProvider,
+    _topicId: string,
   ) {
     return {
       emerging_topics: ["Ethical AI", "Responsible ML"],
@@ -1064,12 +1064,12 @@ describe("Example: Work-Centered Research Workflows", () => {
   }
 
   async function prepareSystematicReview(
-    provider: OpenAlexGraphProvider,
-    seedPapers: string[],
-    researchQuestion: string,
+    _provider: OpenAlexGraphProvider,
+    _seedPapers: string[],
+    _researchQuestion: string,
   ) {
-    const works = await Promise.all(
-      seedPapers.map((id) => provider.fetchEntity(id)),
+    const _works = await Promise.all(
+      _seedPapers.map((id) => _provider.fetchEntity(id)),
     );
 
     return {
@@ -1102,9 +1102,9 @@ describe("Example: Work-Centered Research Workflows", () => {
   }
 
   async function analyzeLiteratureGaps(
-    provider: OpenAlexGraphProvider,
-    researchArea: string,
-    knownWorks: string[],
+    _provider: OpenAlexGraphProvider,
+    _researchArea: string,
+    _knownWorks: string[],
   ) {
     return {
       coverage_analysis: {

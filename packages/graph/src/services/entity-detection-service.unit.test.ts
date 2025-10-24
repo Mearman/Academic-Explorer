@@ -12,8 +12,7 @@ import {
   normalizeIdentifier,
   isValidIdentifier,
   detectEntity,
-  type DetectionResult,
-} from './entity-detection-service';
+  } from './entity-detection-service';
 import type { EntityType } from '../types/core';
 
 describe('EntityDetectionService', () => {

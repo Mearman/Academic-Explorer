@@ -34,17 +34,19 @@ export class EventTestHelper {
    * Start tracking events from an emitter
    */
   track(emitter: EventEmitter, events?: string[], sourceLabel?: string): void {
-    if (!this.state.listeners.has(emitter)) {
-      this.state.listeners.set(emitter, new Map());
+    let emitterListeners = this.state.listeners.get(emitter);
+    if (!emitterListeners) {
+      emitterListeners = new Map();
+      this.state.listeners.set(emitter, emitterListeners);
     }
-
-    const emitterListeners = this.state.listeners.get(emitter)!;
 
     const eventsToTrack = events || ['*']; // Track all events if none specified
 
     for (const eventType of eventsToTrack) {
-      if (!emitterListeners.has(eventType)) {
-        emitterListeners.set(eventType, new Set());
+      let eventListeners = emitterListeners.get(eventType);
+      if (!eventListeners) {
+        eventListeners = new Set();
+        emitterListeners.set(eventType, eventListeners);
       }
 
       const listener = (...args: unknown[]) => {
@@ -56,7 +58,7 @@ export class EventTestHelper {
         });
       };
 
-      emitterListeners.get(eventType)!.add(listener);
+      eventListeners.add(listener);
 
       if (eventType === '*') {
         // For tracking all events, we need to monkey-patch emit
@@ -66,8 +68,8 @@ export class EventTestHelper {
 
         emitter.emit = function(this: EventEmitter, event: string, ...args: unknown[]) {
           listener(event, ...args);
-          return (emitter as any).originalEmit.call(this, event, ...args);
-        } as any;
+          return (emitter as { originalEmit?: typeof EventEmitter.prototype.emit }).originalEmit?.call(this, event, ...args);
+        } as typeof EventEmitter.prototype.emit;
       } else {
         emitter.on(eventType, listener);
       }
@@ -355,7 +357,7 @@ export const eventPatterns = {
  */
 export function createEventAssertions(helper: EventTestHelper) {
   return {
-    expectProviderRequest: (providerId?: string) => {
+    expectProviderRequest: (_providerId?: string) => {
       helper.expectEventCount('requestStart', 1);
       helper.expectEventCount('requestSuccess', 1);
     },

@@ -3,17 +3,17 @@
  * No artificial metadata properties - all data extracted directly from entityData
  */
 
-import type { GraphNode } from "../types";
+import type { GraphNode } from "../types"
 
 /**
  * Get display name for a node - extracted on-demand from entity data
  */
 export function getNodeDisplayName(node: GraphNode): string {
-	const displayName = node.entityData?.["display_name"];
+	const displayName = node.entityData?.["display_name"]
 	if (displayName && typeof displayName === "string") {
-		return displayName;
+		return displayName
 	}
-	return node.label;
+	return node.label
 }
 
 /**
@@ -21,9 +21,9 @@ export function getNodeDisplayName(node: GraphNode): string {
  */
 export function getNodeCitationCount(node: GraphNode): number | undefined {
 	if (node.entityData?.["cited_by_count"] !== undefined) {
-		return Number(node.entityData["cited_by_count"]);
+		return Number(node.entityData["cited_by_count"])
 	}
-	return undefined;
+	return undefined
 }
 
 /**
@@ -31,9 +31,9 @@ export function getNodeCitationCount(node: GraphNode): number | undefined {
  */
 export function getNodeYear(node: GraphNode): number | undefined {
 	if (node.entityData?.["publication_year"] !== undefined) {
-		return Number(node.entityData["publication_year"]);
+		return Number(node.entityData["publication_year"])
 	}
-	return undefined;
+	return undefined
 }
 
 /**
@@ -41,14 +41,14 @@ export function getNodeYear(node: GraphNode): number | undefined {
  */
 export function getNodeOpenAccess(node: GraphNode): boolean | undefined {
 	function isOpenAccessRecord(value: unknown): value is Record<string, unknown> {
-		return value !== null && typeof value === "object";
+		return value !== null && typeof value === "object"
 	}
 
-	const openAccess = node.entityData?.["open_access"];
+	const openAccess = node.entityData?.["open_access"]
 	if (isOpenAccessRecord(openAccess) && openAccess["is_oa"] !== undefined) {
-		return Boolean(openAccess["is_oa"]);
+		return Boolean(openAccess["is_oa"])
 	}
-	return undefined;
+	return undefined
 }
 
 /**
@@ -56,9 +56,9 @@ export function getNodeOpenAccess(node: GraphNode): boolean | undefined {
  */
 export function getNodeWorksCount(node: GraphNode): number | undefined {
 	if (node.entityType === "authors" && node.entityData?.["works_count"] !== undefined) {
-		return Number(node.entityData["works_count"]);
+		return Number(node.entityData["works_count"])
 	}
-	return undefined;
+	return undefined
 }
 
 /**
@@ -67,15 +67,15 @@ export function getNodeWorksCount(node: GraphNode): number | undefined {
 export function getNodeHIndex(node: GraphNode): number | undefined {
 	if (node.entityType === "authors") {
 		function isSummaryStatsRecord(value: unknown): value is Record<string, unknown> {
-			return value !== null && typeof value === "object";
+			return value !== null && typeof value === "object"
 		}
 
-		const summaryStats = node.entityData?.["summary_stats"];
+		const summaryStats = node.entityData?.["summary_stats"]
 		if (isSummaryStatsRecord(summaryStats) && summaryStats["h_index"] !== undefined) {
-			return Number(summaryStats["h_index"]);
+			return Number(summaryStats["h_index"])
 		}
 	}
-	return undefined;
+	return undefined
 }
 
 /**
@@ -83,12 +83,12 @@ export function getNodeHIndex(node: GraphNode): number | undefined {
  */
 export function getNodeOrcid(node: GraphNode): string | undefined {
 	if (node.entityType === "authors") {
-		const orcid = node.entityData?.["orcid"];
+		const orcid = node.entityData?.["orcid"]
 		if (orcid && typeof orcid === "string") {
-			return orcid;
+			return orcid
 		}
 	}
-	return undefined;
+	return undefined
 }
 
 /**
@@ -96,12 +96,12 @@ export function getNodeOrcid(node: GraphNode): string | undefined {
  */
 export function getNodeInstitutionName(node: GraphNode): string | undefined {
 	if (node.entityType === "institutions") {
-		const displayName = node.entityData?.["display_name"];
+		const displayName = node.entityData?.["display_name"]
 		if (displayName && typeof displayName === "string") {
-			return displayName;
+			return displayName
 		}
 	}
-	return undefined;
+	return undefined
 }
 
 /**
@@ -109,12 +109,12 @@ export function getNodeInstitutionName(node: GraphNode): string | undefined {
  */
 export function getNodeCountryCode(node: GraphNode): string | undefined {
 	if (node.entityType === "institutions") {
-		const countryCode = node.entityData?.["country_code"];
+		const countryCode = node.entityData?.["country_code"]
 		if (countryCode && typeof countryCode === "string") {
-			return countryCode;
+			return countryCode
 		}
 	}
-	return undefined;
+	return undefined
 }
 
 /**
@@ -122,52 +122,52 @@ export function getNodeCountryCode(node: GraphNode): string | undefined {
  */
 export function getNodeSourceType(node: GraphNode): string | undefined {
 	if (node.entityType === "sources") {
-		const sourceType = node.entityData?.["type"];
+		const sourceType = node.entityData?.["type"]
 		if (sourceType && typeof sourceType === "string") {
-			return sourceType;
+			return sourceType
 		}
 	}
-	return undefined;
+	return undefined
 }
 
 /**
  * Check if node has specific field in entity data
  */
 export function nodeHasField(node: GraphNode, field: string): boolean {
-	return node.entityData?.[field] !== undefined;
+	return node.entityData?.[field] !== undefined
 }
 
 /**
  * Get any field value from node entity data with type safety
  */
 export function getNodeField(node: GraphNode, field: string): unknown {
-	return node.entityData?.[field];
+	return node.entityData?.[field]
 }
 
 /**
  * Get nested field value from node entity data
  */
 export function getNodeNestedField(node: GraphNode, path: string): unknown {
-	if (!node.entityData) return undefined;
+	if (!node.entityData) return undefined
 
 	function isRecord(value: unknown): value is Record<string, unknown> {
-		return value !== null && typeof value === "object";
+		return value !== null && typeof value === "object"
 	}
 
-	const keys = path.split(".");
-	let current: Record<string, unknown> = node.entityData;
+	const keys = path.split(".")
+	let current: Record<string, unknown> = node.entityData
 
 	for (const key of keys) {
-		if (current[key] === undefined) return undefined;
-		const nextValue = current[key];
+		if (current[key] === undefined) return undefined
+		const nextValue = current[key]
 		if (!isRecord(nextValue)) {
 			// If this is the last key, return the value, otherwise return undefined
-			return keys[keys.length - 1] === key ? nextValue : undefined;
+			return keys[keys.length - 1] === key ? nextValue : undefined
 		}
-		current = nextValue;
+		current = nextValue
 	}
 
-	return current;
+	return current
 }
 
 /**
@@ -176,7 +176,7 @@ export function getNodeNestedField(node: GraphNode, path: string): unknown {
 export function isNodeLoading(): boolean {
 	// In true on-demand system, we don't track loading state artificially
 	// Loading is handled at the component/hook level when data is actually needed
-	return false;
+	return false
 }
 
 /**
@@ -184,29 +184,29 @@ export function isNodeLoading(): boolean {
  */
 export function nodeHasError(): boolean {
 	// Errors are handled at the component/hook level, not stored in node
-	return false;
+	return false
 }
 
 /**
  * Get a summary of available data fields for debugging
  */
 export function getNodeDataSummary(node: GraphNode): {
-	hasEntityData: boolean;
-	fieldCount: number;
-	availableFields: string[];
+	hasEntityData: boolean
+	fieldCount: number
+	availableFields: string[]
 } {
 	if (!node.entityData) {
 		return {
 			hasEntityData: false,
 			fieldCount: 0,
-			availableFields: []
-		};
+			availableFields: [],
+		}
 	}
 
-	const fields = Object.keys(node.entityData);
+	const fields = Object.keys(node.entityData)
 	return {
 		hasEntityData: true,
 		fieldCount: fields.length,
-		availableFields: fields
-	};
+		availableFields: fields,
+	}
 }

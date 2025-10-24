@@ -3,101 +3,101 @@
  * Replaces Node.js events module for browser compatibility
  */
 
-import { logger } from "@academic-explorer/utils";
+import { logger } from "@academic-explorer/utils"
 
-type EventListener = (...args: unknown[]) => void;
+type EventListener = (...args: unknown[]) => void
 
 export class EventEmitter {
-  private events = new Map<string | symbol, Set<EventListener>>();
-  private maxListeners = 10;
+	private events = new Map<string | symbol, Set<EventListener>>()
+	private maxListeners = 10
 
-  on(event: string | symbol, listener: EventListener): this {
-    // Ensure the event has a listeners set
-    let listeners = this.events.get(event);
-    if (!listeners) {
-      listeners = new Set();
-      this.events.set(event, listeners);
-    }
+	on(event: string | symbol, listener: EventListener): this {
+		// Ensure the event has a listeners set
+		let listeners = this.events.get(event)
+		if (!listeners) {
+			listeners = new Set()
+			this.events.set(event, listeners)
+		}
 
-    listeners.add(listener);
+		listeners.add(listener)
 
-    // Warn if too many listeners (like Node.js EventEmitter)
-    if (listeners.size > this.maxListeners) {
-      logger.warn(
-        "event-emitter",
-        `Possible EventEmitter memory leak detected. ${listeners.size} listeners added to event "${String(event)}". Use setMaxListeners() to increase limit.`,
-      );
-    }
+		// Warn if too many listeners (like Node.js EventEmitter)
+		if (listeners.size > this.maxListeners) {
+			logger.warn(
+				"event-emitter",
+				`Possible EventEmitter memory leak detected. ${listeners.size} listeners added to event "${String(event)}". Use setMaxListeners() to increase limit.`
+			)
+		}
 
-    return this;
-  }
+		return this
+	}
 
-  off(event: string | symbol, listener: EventListener): this {
-    const listeners = this.events.get(event);
-    if (listeners) {
-      listeners.delete(listener);
-      if (listeners.size === 0) {
-        this.events.delete(event);
-      }
-    }
-    return this;
-  }
+	off(event: string | symbol, listener: EventListener): this {
+		const listeners = this.events.get(event)
+		if (listeners) {
+			listeners.delete(listener)
+			if (listeners.size === 0) {
+				this.events.delete(event)
+			}
+		}
+		return this
+	}
 
-  // Alias for Node.js compatibility
-  removeListener(event: string | symbol, listener: EventListener): this {
-    return this.off(event, listener);
-  }
+	// Alias for Node.js compatibility
+	removeListener(event: string | symbol, listener: EventListener): this {
+		return this.off(event, listener)
+	}
 
-  emit(event: string | symbol, ...args: unknown[]): boolean {
-    const listeners = this.events.get(event);
-    if (!listeners || listeners.size === 0) {
-      return false;
-    }
+	emit(event: string | symbol, ...args: unknown[]): boolean {
+		const listeners = this.events.get(event)
+		if (!listeners || listeners.size === 0) {
+			return false
+		}
 
-    for (const listener of listeners) {
-      try {
-        listener(...args);
-      } catch (error) {
-        logger.error("event-emitter", "EventEmitter listener error", { error });
-      }
-    }
+		for (const listener of listeners) {
+			try {
+				listener(...args)
+			} catch (error) {
+				logger.error("event-emitter", "EventEmitter listener error", { error })
+			}
+		}
 
-    return true;
-  }
+		return true
+	}
 
-  once(event: string | symbol, listener: EventListener): this {
-    const onceWrapper = (...args: unknown[]) => {
-      this.off(event, onceWrapper);
-      listener(...args);
-    };
+	once(event: string | symbol, listener: EventListener): this {
+		const onceWrapper = (...args: unknown[]) => {
+			this.off(event, onceWrapper)
+			listener(...args)
+		}
 
-    return this.on(event, onceWrapper);
-  }
+		return this.on(event, onceWrapper)
+	}
 
-  removeAllListeners(event?: string | symbol): this {
-    if (event) {
-      this.events.delete(event);
-    } else {
-      this.events.clear();
-    }
-    return this;
-  }
+	removeAllListeners(event?: string | symbol): this {
+		if (event) {
+			this.events.delete(event)
+		} else {
+			this.events.clear()
+		}
+		return this
+	}
 
-  listenerCount(event: string | symbol): number {
-    const listeners = this.events.get(event);
-    return listeners ? listeners.size : 0;
-  }
+	listenerCount(event: string | symbol): number {
+		const listeners = this.events.get(event)
+		return listeners ? listeners.size : 0
+	}
 
-  setMaxListeners(max: number): this {
-    this.maxListeners = max;
-    return this;
-  }
+	setMaxListeners(max: number): this {
+		this.maxListeners = max
+		return this
+	}
 
-  getMaxListeners(): number {
-    return this.maxListeners;
-  }
+	getMaxListeners(): number {
+		return this.maxListeners
+	}
 
-  eventNames(): (string | symbol)[] {
-    return Array.from(this.events.keys());
-  }
+	eventNames(): (string | symbol)[] {
+		return Array.from(this.events.keys())
+	}
 }

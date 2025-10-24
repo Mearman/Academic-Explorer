@@ -85,11 +85,13 @@ export function trackEventListener(
   initializeTestGlobals();
   const state = globalThis.__TEST_GLOBAL_STATE__;
 
-  if (!state.eventListeners.has(event)) {
-    state.eventListeners.set(event, []);
+  let eventListeners = state.eventListeners.get(event);
+  if (!eventListeners) {
+    eventListeners = [];
+    state.eventListeners.set(event, eventListeners);
   }
 
-  state.eventListeners.get(event)!.push(listener);
+  eventListeners.push(listener);
 }
 
 /**

@@ -10,7 +10,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { EntityType } from '../types/core';
-import { SmartEntityCache, type EntityDataProvider, type CacheContext, type FieldRequest } from './smart-entity-cache';
+import { SmartEntityCache, type EntityDataProvider, type FieldRequest } from './smart-entity-cache';
 import { logger } from '@academic-explorer/utils';
 
 // Mock entity data provider for testing

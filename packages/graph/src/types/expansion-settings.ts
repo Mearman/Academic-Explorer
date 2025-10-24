@@ -3,101 +3,95 @@
  * Supports arbitrary sorting and filtering for entity/edge type expansions
  */
 
-import { EntityType, RelationType } from "./core";
+import { EntityType, RelationType } from "./core"
 
-export type ExpansionTarget = EntityType | RelationType;
+export type ExpansionTarget = EntityType | RelationType
 
 export interface ExpansionOptions {
-  depth?: number;
-  limit?: number;
-  force?: boolean;
+	depth?: number
+	limit?: number
+	force?: boolean
 }
 
 export interface SortCriteria {
-  /** The property to sort by (e.g., "publication_year", "cited_by_count") */
-  property: string;
-  /** Sort direction */
-  direction: "asc" | "desc";
-  /** Priority for multiple sorts (1 = primary, 2 = secondary, etc.) */
-  priority: number;
-  /** Optional display label for the property */
-  label?: string;
+	/** The property to sort by (e.g., "publication_year", "cited_by_count") */
+	property: string
+	/** Sort direction */
+	direction: "asc" | "desc"
+	/** Priority for multiple sorts (1 = primary, 2 = secondary, etc.) */
+	priority: number
+	/** Optional display label for the property */
+	label?: string
 }
 
 export type FilterOperator =
-  | "eq"        // equals
-  | "ne"        // not equals
-  | "gt"        // greater than
-  | "lt"        // less than
-  | "gte"       // greater than or equal
-  | "lte"       // less than or equal
-  | "contains"  // string contains
-  | "startswith" // string starts with
-  | "endswith"  // string ends with
-  | "between"   // between two values (value should be [min, max])
-  | "in"        // value in array
-  | "notin";    // value not in array
+	| "eq" // equals
+	| "ne" // not equals
+	| "gt" // greater than
+	| "lt" // less than
+	| "gte" // greater than or equal
+	| "lte" // less than or equal
+	| "contains" // string contains
+	| "startswith" // string starts with
+	| "endswith" // string ends with
+	| "between" // between two values (value should be [min, max])
+	| "in" // value in array
+	| "notin" // value not in array
 
 export interface FilterCriteria {
-  /** The property to filter by */
-  property: string;
-  /** Filter operator */
-  operator: FilterOperator;
-  /** Filter value(s) - can be primitive, array, or [min, max] for between */
-  value: unknown;
-  /** Whether this filter is currently enabled */
-  enabled: boolean;
-  /** Optional display label for the property */
-  label?: string;
+	/** The property to filter by */
+	property: string
+	/** Filter operator */
+	operator: FilterOperator
+	/** Filter value(s) - can be primitive, array, or [min, max] for between */
+	value: unknown
+	/** Whether this filter is currently enabled */
+	enabled: boolean
+	/** Optional display label for the property */
+	label?: string
 }
 
 export interface ExpansionSettings extends Record<string, unknown> {
-  /** The target type (entity or edge type) these settings apply to */
-  target: ExpansionTarget;
-  /** Maximum number of results to return (0 = no limit) */
-  limit?: number;
-  /** Sort criteria in priority order */
-  sorts?: SortCriteria[];
-  /** Filter criteria */
-  filters?: FilterCriteria[];
-  /** Whether expansion is enabled for this target */
-  enabled?: boolean;
-  /** Optional custom name for this configuration */
-  name?: string;
+	/** The target type (entity or edge type) these settings apply to */
+	target: ExpansionTarget
+	/** Maximum number of results to return (0 = no limit) */
+	limit?: number
+	/** Sort criteria in priority order */
+	sorts?: SortCriteria[]
+	/** Filter criteria */
+	filters?: FilterCriteria[]
+	/** Whether expansion is enabled for this target */
+	enabled?: boolean
+	/** Optional custom name for this configuration */
+	name?: string
 }
 
-export type PropertyType =
-  | "string"
-  | "number"
-  | "boolean"
-  | "date"
-  | "year"
-  | "enum";
+export type PropertyType = "string" | "number" | "boolean" | "date" | "year" | "enum"
 
 export interface PropertyDefinition {
-  /** Property name as used in API */
-  property: string;
-  /** Human-readable label */
-  label: string;
-  /** Data type of the property */
-  type: PropertyType;
-  /** Whether this property can be used for sorting */
-  sortable: boolean;
-  /** Whether this property can be used for filtering */
-  filterable: boolean;
-  /** For enum types, the possible values */
-  enumValues?: Array<{ value: string; label: string }>;
-  /** Optional description */
-  description?: string;
-  /** Example values for documentation */
-  examples?: string[];
+	/** Property name as used in API */
+	property: string
+	/** Human-readable label */
+	label: string
+	/** Data type of the property */
+	type: PropertyType
+	/** Whether this property can be used for sorting */
+	sortable: boolean
+	/** Whether this property can be used for filtering */
+	filterable: boolean
+	/** For enum types, the possible values */
+	enumValues?: Array<{ value: string; label: string }>
+	/** Optional description */
+	description?: string
+	/** Example values for documentation */
+	examples?: string[]
 }
 
 export interface EntityTypeProperties {
-  /** Entity or relation type */
-  target: ExpansionTarget;
-  /** Available properties for this type */
-  properties: PropertyDefinition[];
+	/** Entity or relation type */
+	target: ExpansionTarget
+	/** Available properties for this type */
+	properties: PropertyDefinition[]
 }
 
 // Predefined property definitions for different entity types
@@ -110,7 +104,7 @@ export const ENTITY_PROPERTIES: Record<string, PropertyDefinition[]> = {
 			sortable: true,
 			filterable: true,
 			description: "Year the work was published",
-			examples: ["2023", "2020"]
+			examples: ["2023", "2020"],
 		},
 		{
 			property: "cited_by_count",
@@ -119,7 +113,7 @@ export const ENTITY_PROPERTIES: Record<string, PropertyDefinition[]> = {
 			sortable: true,
 			filterable: true,
 			description: "Number of times this work has been cited",
-			examples: ["150", "23"]
+			examples: ["150", "23"],
 		},
 		{
 			property: "is_oa",
@@ -128,7 +122,7 @@ export const ENTITY_PROPERTIES: Record<string, PropertyDefinition[]> = {
 			sortable: false,
 			filterable: true,
 			description: "Whether the work is open access",
-			examples: ["true", "false"]
+			examples: ["true", "false"],
 		},
 		{
 			property: "type",
@@ -142,10 +136,10 @@ export const ENTITY_PROPERTIES: Record<string, PropertyDefinition[]> = {
 				{ value: "book", label: "Book" },
 				{ value: "dataset", label: "Dataset" },
 				{ value: "thesis", label: "Thesis" },
-				{ value: "preprint", label: "Preprint" }
+				{ value: "preprint", label: "Preprint" },
 			],
 			description: "Type of publication",
-			examples: ["journal-article", "book"]
+			examples: ["journal-article", "book"],
 		},
 		{
 			property: "language",
@@ -154,7 +148,7 @@ export const ENTITY_PROPERTIES: Record<string, PropertyDefinition[]> = {
 			sortable: false,
 			filterable: true,
 			description: "Primary language of the work",
-			examples: ["en", "es", "fr"]
+			examples: ["en", "es", "fr"],
 		},
 		{
 			property: "referenced_works_count",
@@ -163,8 +157,8 @@ export const ENTITY_PROPERTIES: Record<string, PropertyDefinition[]> = {
 			sortable: true,
 			filterable: true,
 			description: "Number of works this work references",
-			examples: ["45", "12"]
-		}
+			examples: ["45", "12"],
+		},
 	],
 	authors: [
 		{
@@ -174,7 +168,7 @@ export const ENTITY_PROPERTIES: Record<string, PropertyDefinition[]> = {
 			sortable: true,
 			filterable: true,
 			description: "Total number of works by this author",
-			examples: ["150", "23"]
+			examples: ["150", "23"],
 		},
 		{
 			property: "cited_by_count",
@@ -183,7 +177,7 @@ export const ENTITY_PROPERTIES: Record<string, PropertyDefinition[]> = {
 			sortable: true,
 			filterable: true,
 			description: "Total citations across all works",
-			examples: ["2500", "145"]
+			examples: ["2500", "145"],
 		},
 		{
 			property: "last_known_institution.country_code",
@@ -192,8 +186,8 @@ export const ENTITY_PROPERTIES: Record<string, PropertyDefinition[]> = {
 			sortable: false,
 			filterable: true,
 			description: "Country code of last known institution",
-			examples: ["US", "GB", "DE"]
-		}
+			examples: ["US", "GB", "DE"],
+		},
 	],
 	sources: [
 		{
@@ -203,7 +197,7 @@ export const ENTITY_PROPERTIES: Record<string, PropertyDefinition[]> = {
 			sortable: true,
 			filterable: true,
 			description: "Number of works published in this source",
-			examples: ["5000", "250"]
+			examples: ["5000", "250"],
 		},
 		{
 			property: "cited_by_count",
@@ -212,7 +206,7 @@ export const ENTITY_PROPERTIES: Record<string, PropertyDefinition[]> = {
 			sortable: true,
 			filterable: true,
 			description: "Total citations for works in this source",
-			examples: ["50000", "1200"]
+			examples: ["50000", "1200"],
 		},
 		{
 			property: "is_oa",
@@ -221,7 +215,7 @@ export const ENTITY_PROPERTIES: Record<string, PropertyDefinition[]> = {
 			sortable: false,
 			filterable: true,
 			description: "Whether this is an open access source",
-			examples: ["true", "false"]
+			examples: ["true", "false"],
 		},
 		{
 			property: "type",
@@ -233,11 +227,11 @@ export const ENTITY_PROPERTIES: Record<string, PropertyDefinition[]> = {
 				{ value: "journal", label: "Journal" },
 				{ value: "book-series", label: "Book Series" },
 				{ value: "conference", label: "Conference" },
-				{ value: "repository", label: "Repository" }
+				{ value: "repository", label: "Repository" },
 			],
 			description: "Type of source",
-			examples: ["journal", "conference"]
-		}
+			examples: ["journal", "conference"],
+		},
 	],
 	institutions: [
 		{
@@ -247,7 +241,7 @@ export const ENTITY_PROPERTIES: Record<string, PropertyDefinition[]> = {
 			sortable: true,
 			filterable: true,
 			description: "Number of works affiliated with this institution",
-			examples: ["15000", "500"]
+			examples: ["15000", "500"],
 		},
 		{
 			property: "cited_by_count",
@@ -256,7 +250,7 @@ export const ENTITY_PROPERTIES: Record<string, PropertyDefinition[]> = {
 			sortable: true,
 			filterable: true,
 			description: "Total citations for affiliated works",
-			examples: ["250000", "12000"]
+			examples: ["250000", "12000"],
 		},
 		{
 			property: "country_code",
@@ -265,7 +259,7 @@ export const ENTITY_PROPERTIES: Record<string, PropertyDefinition[]> = {
 			sortable: false,
 			filterable: true,
 			description: "Country where institution is located",
-			examples: ["US", "GB", "DE"]
+			examples: ["US", "GB", "DE"],
 		},
 		{
 			property: "type",
@@ -281,41 +275,41 @@ export const ENTITY_PROPERTIES: Record<string, PropertyDefinition[]> = {
 				{ value: "nonprofit", label: "Nonprofit" },
 				{ value: "government", label: "Government" },
 				{ value: "facility", label: "Facility" },
-				{ value: "other", label: "Other" }
+				{ value: "other", label: "Other" },
 			],
 			description: "Type of institution",
-			examples: ["education", "company"]
-		}
-	]
-};
+			examples: ["education", "company"],
+		},
+	],
+}
 
 // Default expansion settings for different targets - no filters, sorting, or limits by default
 export const DEFAULT_EXPANSION_SETTINGS: Record<string, ExpansionSettings> = {
 	[RelationType.REFERENCES]: {
 		target: RelationType.REFERENCES,
-		name: "References"
+		name: "References",
 	},
 	[RelationType.AUTHORED]: {
 		target: RelationType.AUTHORED,
-		name: "Works"
+		name: "Works",
 	},
 	[RelationType.AFFILIATED]: {
 		target: RelationType.AFFILIATED,
-		name: "Institutions"
+		name: "Institutions",
 	},
 	[RelationType.PUBLISHED_IN]: {
 		target: RelationType.PUBLISHED_IN,
-		name: "Sources"
+		name: "Sources",
 	},
 	[RelationType.FUNDED_BY]: {
 		target: RelationType.FUNDED_BY,
-		name: "Funders"
+		name: "Funders",
 	},
 	[RelationType.RELATED_TO]: {
 		target: RelationType.RELATED_TO,
-		name: "Related"
-	}
-};
+		name: "Related",
+	},
+}
 
 /**
  * Helper function to get property definitions for a given target
@@ -324,30 +318,32 @@ export function getPropertiesForTarget(target: ExpansionTarget): PropertyDefinit
 	// For relation types, use properties of the target entity type
 	// This is a simplified mapping - in practice you might want more sophisticated logic
 	function isRelationType(value: ExpansionTarget): value is RelationType {
-		return Object.values(RelationType).some(relType => relType === value);
+		return Object.values(RelationType).some((relType) => relType === value)
 	}
 
 	if (isRelationType(target)) {
 		// For now, return work properties as most relations involve works
-		return ENTITY_PROPERTIES["works"] ?? [];
+		return ENTITY_PROPERTIES["works"] ?? []
 	}
 
 	function isEntityType(value: ExpansionTarget): value is EntityType {
-		return typeof value === "string" && !Object.values(RelationType).some(relType => relType === value);
+		return (
+			typeof value === "string" && !Object.values(RelationType).some((relType) => relType === value)
+		)
 	}
 
 	if (isEntityType(target)) {
-		return ENTITY_PROPERTIES[target] ?? [];
+		return ENTITY_PROPERTIES[target] ?? []
 	}
 
-	return [];
+	return []
 }
 
 /**
  * Helper function to get default settings for a target
  */
 export function getDefaultSettingsForTarget(target: ExpansionTarget): ExpansionSettings {
-	const defaultSettings = DEFAULT_EXPANSION_SETTINGS[target] ?? { target };
+	const defaultSettings = DEFAULT_EXPANSION_SETTINGS[target] ?? { target }
 
 	// Return settings with proper defaults for optional properties
 	const result: ExpansionSettings = {
@@ -355,34 +351,39 @@ export function getDefaultSettingsForTarget(target: ExpansionTarget): ExpansionS
 		limit: defaultSettings.limit ?? 0, // 0 means no limit
 		sorts: defaultSettings.sorts ?? [],
 		filters: defaultSettings.filters ?? [],
-		enabled: defaultSettings.enabled ?? true
-	};
-
-	if (defaultSettings.name) {
-		result.name = defaultSettings.name;
+		enabled: defaultSettings.enabled ?? true,
 	}
 
-	return result;
+	if (defaultSettings.name) {
+		result.name = defaultSettings.name
+	}
+
+	return result
 }
 
 /**
  * Helper function to validate filter criteria
  */
-export function validateFilterCriteria(filter: FilterCriteria, property: PropertyDefinition): boolean {
+export function validateFilterCriteria(
+	filter: FilterCriteria,
+	property: PropertyDefinition
+): boolean {
 	// Check if operator is valid for property type
 	switch (property.type) {
 		case "number":
 		case "year":
-			return ["eq", "ne", "gt", "lt", "gte", "lte", "between", "in", "notin"].includes(filter.operator);
+			return ["eq", "ne", "gt", "lt", "gte", "lte", "between", "in", "notin"].includes(filter.operator)
 		case "string":
-			return ["eq", "ne", "contains", "startswith", "endswith", "in", "notin"].includes(filter.operator);
+			return ["eq", "ne", "contains", "startswith", "endswith", "in", "notin"].includes(
+				filter.operator
+			)
 		case "boolean":
-			return ["eq", "ne"].includes(filter.operator);
+			return ["eq", "ne"].includes(filter.operator)
 		case "enum":
-			return ["eq", "ne", "in", "notin"].includes(filter.operator);
+			return ["eq", "ne", "in", "notin"].includes(filter.operator)
 		case "date":
-			return ["eq", "ne", "gt", "lt", "gte", "lte", "between"].includes(filter.operator);
+			return ["eq", "ne", "gt", "lt", "gte", "lte", "between"].includes(filter.operator)
 		default:
-			return false;
+			return false
 	}
 }

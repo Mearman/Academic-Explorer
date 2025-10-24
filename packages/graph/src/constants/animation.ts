@@ -34,7 +34,7 @@ export const GRAPH_ANIMATION = {
 	 * Used when manual centering needs to wait for automatic layout fitView to complete
 	 */
 	FIT_VIEW_CONFLICT_DELAY: 900,
-} as const;
+} as const
 
 /**
  * Helper function to create consistent fitView options
@@ -46,11 +46,11 @@ export const GRAPH_ANIMATION = {
  */
 export const createFitViewOptions = (
 	padding: number = GRAPH_ANIMATION.FIT_VIEW_PADDING.DEFAULT,
-	duration: number = GRAPH_ANIMATION.FIT_VIEW_DURATION,
+	duration: number = GRAPH_ANIMATION.FIT_VIEW_DURATION
 ) => ({
 	padding,
 	duration,
-});
+})
 
 /**
  * Predefined fitView configurations for common use cases
@@ -65,4 +65,4 @@ export const FIT_VIEW_PRESETS = {
 	 * Neighborhood fitView for showing connected nodes with extra padding
 	 */
 	NEIGHBORHOOD: createFitViewOptions(GRAPH_ANIMATION.FIT_VIEW_PADDING.NEIGHBORHOOD),
-} as const;
+} as const

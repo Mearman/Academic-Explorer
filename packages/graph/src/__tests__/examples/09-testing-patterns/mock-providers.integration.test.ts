@@ -6,7 +6,7 @@
  * Prerequisites: Understanding of testing patterns and mocking frameworks
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi as _vi } from "vitest";
 import { GraphDataProvider, ProviderRegistry } from "../../../providers";
 import type {
   SearchQuery,
@@ -127,7 +127,7 @@ class ResearchAnalysisService {
     return Math.min(edgeCount / workCount, 5); // Cap at 5 for normalization
   }
 
-  private extractResearchTopics(nodes: GraphNode[]): string[] {
+  private extractResearchTopics(_nodes: GraphNode[]): string[] {
     // Mock topic extraction - in real implementation would analyze entity data
     return [
       "machine learning",
@@ -570,7 +570,7 @@ describe("Example: Mock Provider Testing Patterns", () => {
         try {
           const primaryService = new ResearchAnalysisService(primaryProvider);
           return await primaryService.generateResearchReport([entityId]);
-        } catch (primaryError) {
+        } catch (_primaryError) {
           console.log("Primary failed, trying fallback...");
           const fallbackService = new ResearchAnalysisService(fallbackProvider);
           return await fallbackService.generateResearchReport([entityId]);

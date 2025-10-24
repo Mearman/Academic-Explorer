@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { EventEmitter } from 'events';
+import { _EventEmitter } from 'events';
 import {
   GraphDataProvider,
   ProviderRegistry,
@@ -55,7 +55,7 @@ class MockProvider extends GraphDataProvider {
     })());
   }
 
-  async searchEntities(query: SearchQuery): Promise<GraphNode[]> {
+  async searchEntities(_query: SearchQuery): Promise<GraphNode[]> {
     return this.trackRequest((async () => {
       this.requestCount++;
 
@@ -110,29 +110,33 @@ class MockProvider extends GraphDataProvider {
 
   private async simulateFailure(): Promise<never> {
     switch (this.failureMode) {
-      case 'network':
+      case 'network': {
         const networkError = new Error('Network connection failed');
         (networkError as any).code = 'ECONNREFUSED';
         throw networkError;
+      }
 
-      case 'timeout':
+      case 'timeout': {
         const timeoutError = new Error('Request timeout');
         (timeoutError as any).code = 'ETIMEDOUT';
         throw timeoutError;
+      }
 
-      case 'rate-limit':
+      case 'rate-limit': {
         const rateLimitError = new Error('Rate limit exceeded');
         (rateLimitError as any).status = 429;
         (rateLimitError as any).headers = { 'retry-after': '60' };
         throw rateLimitError;
+      }
 
       case 'malformed':
         throw new SyntaxError('Unexpected token in JSON at position 0');
 
-      case 'memory':
+      case 'memory': {
         const memoryError = new Error('JavaScript heap out of memory');
-        (memoryError as any).code = 'ENOSPC';
+        (memoryError as { code: string }).code = 'ENOSPC';
         throw memoryError;
+      }
 
       default:
         throw new Error('Unknown failure mode');

@@ -6,7 +6,7 @@
  * Prerequisites: Understanding of async operations and error types
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi as _vi } from 'vitest';
 import { OpenAlexGraphProvider } from '../../../providers/openalex-provider';
 import type { EntityIdentifier } from '../../../types/core';
 
@@ -120,7 +120,7 @@ class NetworkErrorMockClient {
     }), `get-${endpoint}`);
   }
 
-  async works(params: Record<string, unknown>): Promise<{ results: Record<string, unknown>[] }> {
+  async works(_params: Record<string, unknown>): Promise<{ results: Record<string, unknown>[] }> {
     return this.simulateNetworkCall(async () => ({
       results: [
         {
@@ -274,7 +274,7 @@ describe('Example: Network Error Handling', () => {
 
       // Then: Should handle partial failures gracefully
       const failures = results.filter(result => result.status === 'rejected');
-      const successes = results.filter(result => result.status === 'fulfilled');
+      const _successes = results.filter(result => result.status === 'fulfilled');
 
       expect(failures.length).toBeGreaterThan(0);
       expect(failures.length).toBeLessThanOrEqual(entityIds.length);
@@ -415,7 +415,7 @@ describe('Example: Network Error Handling', () => {
       const startTime = Date.now();
       try {
         await backoffProvider.fetchEntity('A5017898742');
-      } catch (error) {
+      } catch (_error) {
         const duration = Date.now() - startTime;
 
         // Then: Should have appropriate delay patterns

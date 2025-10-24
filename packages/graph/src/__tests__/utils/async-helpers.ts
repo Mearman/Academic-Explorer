@@ -81,10 +81,10 @@ export async function waitForAll<T extends Record<string, () => unknown | Promis
         const result = await conditions[key as keyof T]();
 
         if (typeof result === 'boolean' ? result : !!result) {
-          results[key as keyof T] = result as any;
+          results[key as keyof T] = result as Awaited<ReturnType<T[keyof T]>>;
           pending.delete(key);
         }
-      } catch (error) {
+      } catch (_error) {
         // Continue trying
       }
     }
@@ -118,7 +118,6 @@ export function waitForEvent<T = unknown>(
 
   return new Promise<T>((resolve, reject) => {
     const results: T[] = [];
-    let timeoutHandle: NodeJS.Timeout;
 
     const listener = (data: T) => {
       if (filter && !filter(data)) {
@@ -129,7 +128,7 @@ export function waitForEvent<T = unknown>(
         results.push(data);
         if (results.length >= count) {
           cleanup();
-          resolve(results as any);
+          resolve(results as T extends unknown[] ? T : T[]);
         }
       } else {
         cleanup();
@@ -138,9 +137,6 @@ export function waitForEvent<T = unknown>(
     };
 
     const cleanup = () => {
-      if (timeoutHandle) {
-        clearTimeout(timeoutHandle);
-      }
       if (emitter.off) {
         emitter.off(event, listener);
       }
@@ -148,7 +144,7 @@ export function waitForEvent<T = unknown>(
 
     emitter.on(event, listener);
 
-    timeoutHandle = setTimeout(() => {
+    const timeoutHandle = setTimeout(() => {
       cleanup();
       reject(new Error(`Timeout waiting for event "${event}"`));
     }, timeout);
@@ -281,13 +277,13 @@ export function withTimeout<T>(
 /**
  * Debounce an async function
  */
-export function debounceAsync<T extends (...args: any[]) => Promise<any>>(
+export function debounceAsync<T extends (...args: unknown[]) => Promise<unknown>>(
   fn: T,
   delay: number
 ): T {
   let timeoutHandle: NodeJS.Timeout;
   let pendingResolve: ((value: Awaited<ReturnType<T>>) => void) | null = null;
-  let pendingReject: ((error: any) => void) | null = null;
+  let pendingReject: ((error: unknown) => void) | null = null;
 
   return ((...args: Parameters<T>) => {
     return new Promise<Awaited<ReturnType<T>>>((resolve, reject) => {
@@ -326,7 +322,7 @@ export function debounceAsync<T extends (...args: any[]) => Promise<any>>(
 /**
  * Throttle an async function
  */
-export function throttleAsync<T extends (...args: any[]) => Promise<any>>(
+export function throttleAsync<T extends (...args: unknown[]) => Promise<unknown>>(
   fn: T,
   delay: number
 ): T {

@@ -240,7 +240,7 @@ export class ProviderTestHelper {
    * Register a provider with a registry
    */
   registerProvider(registry: ProviderRegistry, provider: TestGraphProvider): void {
-    (registry as any).register(provider);
+    (registry as { register: (provider: TestGraphProvider) => void }).register(provider);
     this.registries.add(registry);
   }
 
@@ -278,7 +278,7 @@ export class ProviderTestHelper {
   unregisterProvider(name: string): void {
     this.registries.forEach(registry => {
       try {
-        (registry as any).unregister(name);
+        (registry as { unregister: (name: string) => void }).unregister(name);
       } catch {
         // Ignore errors during cleanup
       }
@@ -301,7 +301,7 @@ export class ProviderTestHelper {
 
     // Destroy all registries
     for (const registry of this.registries) {
-      (registry as any).destroy();
+      (registry as { destroy?: () => void }).destroy?.();
     }
 
     // Clear collections
@@ -354,8 +354,8 @@ export class ProviderTestHelper {
   /**
    * Get statistics for all providers
    */
-  getStatistics(): Record<string, any> {
-    const stats: Record<string, any> = {};
+  getStatistics(): Record<string, unknown> {
+    const stats: Record<string, unknown> = {};
 
     for (const [name, provider] of this.providers) {
       stats[name] = {

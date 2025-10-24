@@ -120,14 +120,14 @@ class ComprehensiveMockClient {
 describe("Example: Modern Entity Detection with EntityDetectionService", () => {
   let provider: OpenAlexGraphProvider;
   let mockClient: ComprehensiveMockClient;
-  let detectionService: EntityDetectionService;
+  let _detectionService: EntityDetectionService;
 
   beforeEach(async () => {
     mockClient = new ComprehensiveMockClient();
     provider = new OpenAlexGraphProvider(mockClient, {
       name: "entity-detection-test",
     });
-    detectionService = new EntityDetectionService();
+    _detectionService = new EntityDetectionService();
   });
 
   afterEach(() => {
@@ -319,7 +319,7 @@ describe("Example: Modern Entity Detection with EntityDetectionService", () => {
           );
           expect(doiIdentifier).toBeDefined();
           expect(doiIdentifier?.url).toContain("doi.org");
-        } catch (error) {
+        } catch (_error) {
           // Some formats might not be supported - document this
           console.warn(`DOI format not supported: ${doi}`);
         }
@@ -349,7 +349,7 @@ describe("Example: Modern Entity Detection with EntityDetectionService", () => {
           );
           expect(orcidIdentifier).toBeDefined();
           expect(orcidIdentifier?.value).toContain("orcid.org");
-        } catch (error) {
+        } catch (_error) {
           console.warn(`ORCID format not supported: ${orcid}`);
         }
       }
@@ -377,7 +377,7 @@ describe("Example: Modern Entity Detection with EntityDetectionService", () => {
           );
           expect(rorIdentifier).toBeDefined();
           expect(rorIdentifier?.url).toContain("ror.org");
-        } catch (error) {
+        } catch (_error) {
           console.warn(`ROR format not supported: ${ror}`);
         }
       }
@@ -402,7 +402,7 @@ describe("Example: Modern Entity Detection with EntityDetectionService", () => {
           // Best Practice: Label should be meaningful journal name
           expect(entity.label).toBeTruthy();
           expect(entity.label).not.toBe("Unknown Source");
-        } catch (error) {
+        } catch (_error) {
           console.warn(`ISSN format not supported: ${issn}`);
         }
       }
@@ -505,7 +505,7 @@ describe("Example: Modern Entity Detection with EntityDetectionService", () => {
 
           // Best Practice: Should preserve original URL context
           expect(entity.entityData).toBeDefined();
-        } catch (error) {
+        } catch (_error) {
           console.warn(`URL format not supported: ${url}`);
         }
       }
@@ -543,7 +543,7 @@ describe("Example: Modern Entity Detection with EntityDetectionService", () => {
               "concepts",
             ]).toContain(entity.entityType);
           }
-        } catch (error) {
+        } catch (_error) {
           console.warn(`Route format processing failed: ${route}`);
         }
       }
@@ -590,7 +590,7 @@ describe("Example: Modern Entity Detection with EntityDetectionService", () => {
         try {
           const entity = await provider.fetchEntity(variation);
           entities.push(entity);
-        } catch (error) {
+        } catch (_error) {
           // Some formats might not be supported
           console.warn(`Format not supported: ${variation}`);
         }
