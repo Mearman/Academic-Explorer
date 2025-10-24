@@ -3,43 +3,6 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/graph/src",
   "projectType": "library",
-  "targets": {
-    "build": {
-      "dependsOn": ["^build"],
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsc -b",
-        "cwd": "{projectRoot}"
-      },
-      "inputs": [
-        "production",
-        "^production",
-        "{workspaceRoot}/vite.config.base.ts",
-        "{workspaceRoot}/config/**/*"
-      ],
-      "outputs": ["{projectRoot}/dist"],
-      "cache": true
-    },
-
-    "test": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "vitest run",
-        "cwd": "{projectRoot}"
-      },
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/vite.config.base.ts",
-        "{projectRoot}/vitest.config.ts"
-      ],
-      "outputs": ["{projectRoot}/coverage"],
-      "cache": true
-    },
-    "test:watch": "test:watch",
-    "clean": "clean",
-    "dev": "dev:lib",
-    "validate": {}
-  },
+  "targets": {},
   "tags": ["type:library", "scope:graph", "layer:core"]
 }

@@ -5,11 +5,8 @@
     "outDir": "./dist",
     "tsBuildInfoFile": "./dist/.tsbuildinfo"
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "vitest.config.ts"],
   "exclude": [
-    "**/*.test.*",
-    "**/*.spec.*",
-    "src/__tests__/**/*",
     "dist",
     "node_modules"
   ],

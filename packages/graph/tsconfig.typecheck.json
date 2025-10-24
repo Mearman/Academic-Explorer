@@ -4,8 +4,7 @@
     "declaration": false,
     "outDir": "./dist",
     "composite": false,
-    "noEmit": true,
-    "types": ["vitest/globals"]
+    "noEmit": true
   },
   "include": ["src/**/*"],
   "exclude": ["dist", "**/*.test.*", "**/*.spec.*", "src/__tests__"],

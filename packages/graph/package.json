@@ -57,11 +57,10 @@
   "scripts": {
     "build": "tsc -b",
     "clean": "rm -rf dist coverage",
-    "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "verify": "pnpm typecheck && pnpm lint && pnpm test:coverage && pnpm build",
+    "verify": "nx typecheck graph && pnpm lint && pnpm test:coverage && pnpm build",
     "dev": "tsc -b --watch"
   },
   "dependencies": {
