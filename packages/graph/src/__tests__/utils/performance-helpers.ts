@@ -61,8 +61,11 @@ export class PerformanceTestHelper {
     const { memoryTracking = true, cpuTracking = false, metadata = {} } = options;
 
     // Force garbage collection if available (for more accurate memory measurements)
-    if (typeof global !== 'undefined' && (global as any).gc) {
-      (global as any).gc();
+    if (typeof global !== 'undefined' && (global as Record<string, unknown>).gc) {
+      const gc = (global as Record<string, unknown>).gc;
+      if (typeof gc === 'function') {
+        gc();
+      }
     }
 
     const startTime = performance.now();
@@ -320,8 +323,11 @@ export class PerformanceTestHelper {
     let baselineMemory: number | undefined;
 
     for (let i = 0; i < iterations; i++) {
-      if (gcBetweenIterations && typeof global !== 'undefined' && (global as any).gc) {
-        (global as any).gc();
+      if (gcBetweenIterations && typeof global !== 'undefined' && (global as Record<string, unknown>).gc) {
+        const gc = (global as Record<string, unknown>).gc;
+        if (typeof gc === 'function') {
+          gc();
+        }
         await this.sleep(100); // Allow GC to complete
       }
 
@@ -517,12 +523,16 @@ export class PerformanceTestHelper {
     if (!this.metrics.has(operationName)) {
       this.metrics.set(operationName, []);
     }
-    this.metrics.get(operationName)!.push(metrics);
+    const operationMetrics = this.metrics.get(operationName);
+    if (operationMetrics) {
+      operationMetrics.push(metrics);
+    }
   }
 
   private getMemoryUsage(): number {
-    if (typeof performance !== 'undefined' && (performance as any).memory) {
-      return (performance as any).memory.usedJSHeapSize;
+    if (typeof performance !== 'undefined' && (performance as Record<string, unknown>).memory) {
+      const memory = (performance as Record<string, unknown>).memory;
+      return (memory as Record<string, unknown>).usedJSHeapSize as number;
     }
     if (typeof process !== 'undefined' && process.memoryUsage) {
       return process.memoryUsage().heapUsed;

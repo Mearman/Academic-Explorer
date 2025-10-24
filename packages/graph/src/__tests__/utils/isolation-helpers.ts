@@ -172,6 +172,7 @@ export class TestIsolationHelper {
         options,
       });
     }
+  }
 
   /**
    * Set a global variable with automatic cleanup

@@ -3,7 +3,8 @@
  * Provides pre-configured test scenarios and reusable patterns
  */
 
-import type { GraphNode, GraphEdge, GraphData } from '../../types/core';
+import type { GraphNode, GraphEdge, GraphData, EntityType } from '../../types/core';
+import { RelationType } from '../../types/core';
 import { TestGraphProvider, getProviderHelper, type ProviderTestHelper } from './provider-helpers';
 import { getEventHelper, type EventTestHelper } from './event-helpers';
 import { getPerformanceHelper, type PerformanceTestHelper } from './performance-helpers';
@@ -468,7 +469,7 @@ async function createRealAcademicData(config: TestScenarioConfig['fixtures'] = {
 
   // Create realistic academic entities
   for (let i = 0; i < nodeCount; i++) {
-    const entityType = entityTypes[i % entityTypes.length] as any;
+    const entityType = entityTypes[i % entityTypes.length] as EntityType;
     const node = createNodeFixture(entityType, undefined, {
       includeExternalIds: true,
       includeEntityData: true,
@@ -502,12 +503,12 @@ async function createRealAcademicData(config: TestScenarioConfig['fixtures'] = {
     const target = nodes[i + 1];
 
     const relationType = source.entityType === 'authors' && target.entityType === 'works'
-      ? 'authored'
+      ? RelationType.AUTHORED
       : source.entityType === 'works' && target.entityType === 'works'
-      ? 'references'
-      : 'related_to';
+      ? RelationType.REFERENCES
+      : RelationType.RELATED_TO;
 
-    const edge = createEdgeFixture(source.id, target.id, relationType as any, {
+    const edge = createEdgeFixture(source.id, target.id, relationType, {
       weight: Math.random() * 2 + 0.5,
       metadata: { confidence: Math.random() * 0.5 + 0.5 },
     });

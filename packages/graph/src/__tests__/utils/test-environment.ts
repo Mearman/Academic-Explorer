@@ -70,14 +70,14 @@ export class MockProvider extends EventEmitter {
     return entity;
   }
 
-  async searchEntities(query: any): Promise<GraphNode[]> {
+  async searchEntities(query: { query: string; limit?: number }): Promise<GraphNode[]> {
     const results = Array.from(this.entities.values()).filter(entity =>
       entity.label.toLowerCase().includes(query.query.toLowerCase())
     );
     return results.slice(0, query.limit || 10);
   }
 
-  async expandEntity(nodeId: string, options: any) {
+  async expandEntity(nodeId: string, options: Record<string, unknown>) {
     const node = this.entities.get(nodeId);
     if (!node) {
       throw new Error(`Node ${nodeId} not found`);
@@ -165,8 +165,9 @@ export function setupTestEnvironment(config: TestEnvironmentConfig = {}): TestEn
   const state = globalThis.__TEST_ENV_STATE__;
 
   // Setup memory tracking baseline
-  if (config.memoryTracking && typeof performance !== 'undefined' && (performance as any).memory) {
-    state.memoryBaseline = (performance as any).memory.usedJSHeapSize;
+  if (config.memoryTracking && typeof performance !== 'undefined' && (performance as Record<string, unknown>).memory) {
+    const memory = (performance as Record<string, unknown>).memory;
+    state.memoryBaseline = (memory as Record<string, unknown>).usedJSHeapSize as number;
   }
 
   // Setup mock timers
@@ -181,7 +182,18 @@ export function setupTestEnvironment(config: TestEnvironmentConfig = {}): TestEn
       status: 200,
       json: vi.fn().mockResolvedValue({}),
       text: vi.fn().mockResolvedValue(''),
-    } as any);
+      headers: new Headers(),
+      redirected: false,
+      statusText: 'OK',
+      type: 'basic' as ResponseType,
+      url: '',
+      clone: vi.fn(),
+      body: null,
+      bodyUsed: false,
+      arrayBuffer: vi.fn().mockResolvedValue(new ArrayBuffer(0)),
+      blob: vi.fn().mockResolvedValue(new Blob()),
+      formData: vi.fn().mockResolvedValue(new FormData()),
+    } as unknown as Response);
   }
 
   // Setup mock console (suppress noise)
@@ -281,7 +293,7 @@ export function createMockProviderRegistry(providers: MockProvider[] = []): Prov
     }
 
     getStats() {
-      const stats: Record<string, any> = {};
+      const stats: Record<string, unknown> = {};
       for (const [name, provider] of this.providers) {
         stats[name] = provider.getProviderInfo().stats;
       }
@@ -310,7 +322,7 @@ export function createMockProviderRegistry(providers: MockProvider[] = []): Prov
   })() as unknown as ProviderRegistry;
 
   // Register provided mock providers
-  providers.forEach(provider => (registry as any).register(provider));
+  providers.forEach(provider => (registry as { register: (provider: unknown) => void }).register(provider));
 
   return registry;
 }
@@ -328,8 +340,9 @@ export function trackTimer(timerId: number): void {
  * Get current memory usage (if available)
  */
 export function getCurrentMemoryUsage(): number {
-  if (typeof performance !== 'undefined' && (performance as any).memory) {
-    return (performance as any).memory.usedJSHeapSize;
+  if (typeof performance !== 'undefined' && (performance as Record<string, unknown>).memory) {
+    const memory = (performance as Record<string, unknown>).memory;
+    return (memory as Record<string, unknown>).usedJSHeapSize as number;
   }
   return 0;
 }

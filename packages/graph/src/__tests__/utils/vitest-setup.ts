@@ -112,8 +112,9 @@ export function takeMemorySnapshot(name: string): void {
 
   // Basic memory usage estimation (in environments where available)
   let usage = 0;
-  if (typeof performance !== 'undefined' && (performance as any).memory) {
-    usage = (performance as any).memory.usedJSHeapSize;
+  if (typeof performance !== 'undefined' && (performance as Record<string, unknown>).memory) {
+    const memory = (performance as Record<string, unknown>).memory;
+    usage = (memory as Record<string, unknown>).usedJSHeapSize as number;
   }
 
   state.memorySnapshots.push({
@@ -206,7 +207,7 @@ afterEach(() => {
  * Custom matchers for graph testing
  */
 declare module 'vitest' {
-  interface Assertion<T = any> {
+  interface Assertion<T = unknown> {
     toBeValidGraphNode(): T;
     toBeValidGraphEdge(): T;
     toHavePosition(): T;
@@ -315,5 +316,5 @@ export const testEnvironment = {
   isNode: typeof window === 'undefined',
   isBrowser: typeof window !== 'undefined',
   hasPerformanceAPI: typeof performance !== 'undefined',
-  hasMemoryAPI: typeof performance !== 'undefined' && !!(performance as any).memory,
+  hasMemoryAPI: typeof performance !== 'undefined' && !!(performance as Record<string, unknown>).memory,
 };
