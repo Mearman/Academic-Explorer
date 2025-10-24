@@ -4,7 +4,7 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "tsBuildInfoFile": "./dist/.tsbuildinfo",
-    "lib": ["ES2022"],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "strict": false,
@@ -14,7 +14,12 @@
   "include": ["src/**/*", "../../types/**/*"],
   "exclude": [
     "dist",
-    "node_modules"
+    "node_modules",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "src/**/*.unit.test.ts",
+    "src/**/*.integration.test.ts",
+    "**/__tests__/**/*"
   ],
   "references": [{ "path": "../utils" }]
 }

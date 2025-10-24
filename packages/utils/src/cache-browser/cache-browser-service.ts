@@ -4,7 +4,8 @@
  * Simplified from hybrid approach - no localStorage scanning
  */
 
-import Dexie from "dexie"
+import { Dexie, type Table } from "dexie"
+type DexieInstance = InstanceType<typeof Dexie>
 import type { GenericLogger } from "../logger.js"
 import type {
 	CachedEntityMetadata,
@@ -73,7 +74,7 @@ const ALL_ENTITY_TYPES: readonly EntityType[] = [
 export class CacheBrowserService {
 	private config: CacheBrowserConfig
 	private logger?: GenericLogger
-	private dbCache?: Dexie
+	private dbCache?: DexieInstance
 
 	constructor(config: Partial<CacheBrowserConfig> = {}, logger?: GenericLogger) {
 		this.config = { ...DEFAULT_CONFIG, ...config }
@@ -219,7 +220,15 @@ export class CacheBrowserService {
 			const entities: CachedEntityMetadata[] = []
 
 			// Get all table names from the Dexie database
-			const tableNames = db.tables.map((table) => table.name)
+			// Note: Dexie doesn't expose tables directly, so we'll get them from the schema
+			const tableNames: string[] = []
+			// Try to access table names through the internal schema
+			if ('tables' in db && Array.isArray((db as any).tables)) {
+				tableNames.push(...(db as any).tables.map((table: any) => table.name))
+			} else {
+				// Fallback: try common OpenAlex table names
+				tableNames.push('works', 'authors', 'sources', 'institutions', 'topics', 'publishers', 'funders', 'keywords', 'concepts', 'autocomplete')
+			}
 
 			for (const tableName of tableNames) {
 				try {
@@ -287,7 +296,6 @@ export class CacheBrowserService {
 			// Extract basic info from parsed data
 			const basicInfo = this.extractBasicInfo({
 				value: parsedValue,
-				_type: entityType,
 			})
 			const dataSize = this.calculateDataSize(value)
 
@@ -573,13 +581,13 @@ export class CacheBrowserService {
 		return 0
 	}
 
-	private async getDB(): Promise<Dexie> {
+	private async getDB(): Promise<DexieInstance> {
 		if (!this.dbCache) {
 			// Create a Dexie instance for the database
 			// We'll use dynamic table access since we need to scan arbitrary stores
 			this.dbCache = new Dexie(this.config.dbName)
 			// Open the database without schema definition to allow dynamic access
-			await this.dbCache.open()
+			await (this.dbCache as any).open()
 		}
 		return this.dbCache
 	}

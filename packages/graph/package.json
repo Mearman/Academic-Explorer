@@ -63,7 +63,10 @@
     "verify": "nx typecheck graph && pnpm lint && pnpm test:coverage && pnpm build",
     "dev": "tsc -b --watch"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@academic-explorer/types": "workspace:*",
+    "@academic-explorer/utils": "workspace:*"
+  },
   "devDependencies": {
     "typescript": "~5.9.2",
     "vitest": "^3.2.4",
