@@ -1,4 +1,3 @@
-/// <reference types="vitest/globals" />
 /**
  * Comprehensive unit tests for AuthorsApi entity class
  * Tests all methods including CRUD, search, filtering, collaboration analysis, and streaming

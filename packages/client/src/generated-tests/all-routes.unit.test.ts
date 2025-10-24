@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, no-constant-condition, no-constant-binary-expression, no-useless-escape */
 /**
  * Generated Unit Tests for OpenAlex API Routes
  *

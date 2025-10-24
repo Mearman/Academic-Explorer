@@ -154,7 +154,7 @@ export class TestUtils {
 
   static mockErrorResponse(statusCode: number, message: string) {
     const error = new Error(message);
-    (error as any).statusCode = statusCode;
+    (error as Error & { statusCode?: number }).statusCode = statusCode;
     return error;
   }
 }

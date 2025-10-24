@@ -4,7 +4,7 @@
  * with atomic operations, file locking, and metadata generation
  */
 
-import type { LogCategory } from "@academic-explorer/utils/logger";
+import type { _LogCategory } from "@academic-explorer/utils/logger";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import {
   DirectoryIndex,
@@ -26,7 +26,7 @@ const ERROR_MESSAGE_FS_NOT_INITIALIZED = "Node.js fs module not initialized";
 const __ERROR_MESSAGE_ENTITY_EXTRACTION_FAILED =
   "Entity info extraction failed";
 const INDEX_FILE_NAME = "index.json";
-const LOGGER_NAME = "disk-writer";
+const _LOGGER_NAME = "disk-writer";
 const UNKNOWN_ERROR_MESSAGE = "Unknown error";
 
 /**

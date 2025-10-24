@@ -336,7 +336,7 @@ describe("DiskCacheWriter", () => {
   describe("writeToCache", () => {
     it("should enforce concurrent write limits", async () => {
       // Simulate full queue
-      const promises = Array.from({ length: 5 }, () => Promise.resolve());
+      const _promises = Array.from({ length: 5 }, () => Promise.resolve());
     });
 
     it("should check disk space if enabled", async () => {

@@ -16,7 +16,7 @@ import {
   normalizeExternalId,
   normalizeToUrl,
   type ExternalIdType,
-  type IdValidationResult
+  type _IdValidationResult
 } from './id-resolver';
 
 describe('IdResolver', () => {

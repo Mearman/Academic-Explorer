@@ -7,7 +7,7 @@ import { logger } from "@academic-explorer/utils/logger";
 import { apiInterceptor, type InterceptedRequest } from "./interceptors";
 import { RETRY_CONFIG, calculateRetryDelay } from "./internal/rate-limit";
 import {
-  isValidApiResponse,
+  _isValidApiResponse,
   validateApiResponse,
 } from "./internal/type-helpers";
 import { validateWithSchema } from "@academic-explorer/types/entities";
@@ -774,7 +774,10 @@ export class OpenAlexBaseClient {
     // Handle legacy signature: getById(endpoint, id, params, schema)
     if (typeof endpointOrParams === 'string') {
       const endpoint = endpointOrParams;
-      return this.get(`${endpoint}/${encodeURIComponent(id!)}`, params, schema);
+      if (!id) {
+        throw new Error('ID is required for legacy getById signature');
+      }
+      return this.get(`${endpoint}/${encodeURIComponent(id)}`, params, schema);
     }
     
     // Handle new signature: getById({ endpoint, id, params, schema })

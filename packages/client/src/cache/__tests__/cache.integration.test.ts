@@ -40,10 +40,10 @@ vi.mock("../../client", () => ({
       this.config = config;
     }
     config: any;
-    async getById<T>({ endpoint, id, params = {} }: { endpoint: string; id: string; params?: any }): Promise<T> {
+    async getById<T>({ _endpoint, _id, _params = {} }: { endpoint: string; id: string; params?: any }): Promise<T> {
       throw new Error("API call failed");
     }
-    updateConfig(config: any): void {
+    updateConfig(_config: any): void {
       // Mock implementation
     }
   },
@@ -236,7 +236,7 @@ describe("Cache Integration - CachedOpenAlexClient", () => {
       });
 
       // Mock API success
-      const getByIdSpy = vi
+      const _getByIdSpy = vi
         .spyOn(cachedClient, "getById")
         .mockResolvedValue(testData);
 
@@ -350,7 +350,7 @@ describe("Cache Integration - CachedOpenAlexClient", () => {
       });
 
       // Mock API error
-      const getByIdSpy = vi
+      const _getByIdSpy = vi
         .spyOn(cachedClient, "getById")
         .mockRejectedValue(new Error("API error"));
 
@@ -376,7 +376,7 @@ describe("Cache Integration - CachedOpenAlexClient", () => {
       });
 
       // Mock API error
-      const getByIdSpy = vi
+      const _getByIdSpy = vi
         .spyOn(cachedClient, "getById")
         .mockRejectedValue(new Error("API error"));
 

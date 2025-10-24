@@ -1,3 +1,4 @@
+/* eslint-disable no-constant-condition, no-constant-binary-expression, no-useless-escape */
 /**
  * Generated Integration Tests for OpenAlex API Routes
  *

@@ -20,7 +20,7 @@ function isString(value: unknown): value is string {
   return typeof value === "string";
 }
 
-function isKeywordSortOption(value: unknown): value is KeywordSortOption {
+function _isKeywordSortOption(value: unknown): value is KeywordSortOption {
   if (!isString(value)) {
     return false;
   }

@@ -32,7 +32,7 @@ global.Worker = class MockWorker {
   onmessage: ((event: MessageEvent) => void) | null = null;
   onerror: ((event: ErrorEvent) => void) | null = null;
 
-  constructor(scriptURL: string | URL) {
+  constructor(_scriptURL: string | URL) {
     // Mock worker initialization
   }
 
@@ -439,7 +439,7 @@ class MockHighPerformanceCache {
   private initializeBackgroundWorker(): void {
     try {
       this.backgroundWorker = new Worker("/cache-worker.js");
-      this.backgroundWorker.onmessage = (event) => {
+      this.backgroundWorker.onmessage = (_event) => {
         // Handle background sync results
       };
     } catch {
@@ -492,7 +492,7 @@ function generateLargeDataset(
 
 describe("Cache Performance Tests", () => {
   let performanceCache: MockHighPerformanceCache;
-  const originalPerformanceNow = performance.now;
+  const _originalPerformanceNow = performance.now;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -611,7 +611,7 @@ describe("Cache Performance Tests", () => {
       ];
 
       const startTime = Date.now();
-      const promises = datasets.map((dataset, index) =>
+      const promises = datasets.map((dataset, _index) =>
         performanceCache.writeBatch(dataset),
       );
 
@@ -813,7 +813,7 @@ describe("Cache Performance Tests", () => {
       expect(stats.memoryUsage).toBeLessThanOrEqual(256 * 1024);
 
       // Cache should still be functional
-      const testRead = await recoveryCache.read(
+      const _testRead = await recoveryCache.read(
         Array.from(massiveDataset.keys())[0],
       );
       // Should either have the data or return null, but not throw

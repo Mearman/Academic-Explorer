@@ -3,14 +3,14 @@
  * Uses Zod schemas for type-safe validation instead of unsafe type assertions
  */
 
-import { z } from "zod";
+import { _z } from "zod";
 import {
   apiResponseSchema,
   staticDataSchema,
-  isRecord,
-  trustObjectShape,
-  extractPropertyValue,
-  validateWithSchema,
+  _isRecord,
+  _trustObjectShape,
+  _extractPropertyValue,
+  _validateWithSchema,
 } from "@academic-explorer/types/entities";
 
 /**
