@@ -3,7 +3,7 @@
  * Uses proxy configuration to intercept requests to api.openalex.org and caches responses to disk during development
  */
 
-import type { Plugin } from "vite";
+// import type { Plugin } from "vite";
 
 // Import from new modular structure
 import type { OpenAlexCachePluginOptions } from "./types";
@@ -11,7 +11,6 @@ import {
   createLogVerbose,
   shouldEnablePlugin,
   isTest,
-  isDevelopment,
 } from "./utils";
 import { PluginState } from "./state";
 import { createRedirectMiddleware, createCacheMiddleware } from "./middleware";
@@ -79,7 +78,7 @@ export function openalexCachePlugin(
         createCacheMiddleware(
           pluginState.getContext(),
           pluginState.getDebounceManager(),
-          pluginState.getStaticDataDir()!,
+          pluginState.getStaticDataDir(),
         ),
       );
 
@@ -149,7 +148,7 @@ function setupTestCacheInterception(
         if (!isMocked) {
           const cachePath = await getCacheFilePath({
             url,
-            staticDataRoot: pluginState.getStaticDataDir()!,
+            staticDataRoot: pluginState.getStaticDataDir(),
           });
           if (cachePath) {
             // Simple directory index update for testing
@@ -165,7 +164,7 @@ function setupTestCacheInterception(
                   cachePath,
                   url,
                   fileName,
-                  pluginState.getStaticDataDir()!,
+                  pluginState.getStaticDataDir(),
                   pluginState.getContext(),
                   retrieved_at,
                   contentHash,

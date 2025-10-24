@@ -1,9 +1,8 @@
 import { existsSync } from "fs";
-import { readFile, writeFile, mkdir } from "fs/promises";
+import { readFile, writeFile } from "fs/promises";
 import { join, relative } from "path";
 import {
   generateContentHash,
-  parseOpenAlexUrl,
   decodeFilename,
   filenameToQuery,
   hasCollision,
@@ -86,7 +85,7 @@ export const aggregateFromChildren = async (
 
     // Aggregate from subdirectories
     if (index.directories) {
-      for (const [dirName, dirInfo] of Object.entries(index.directories)) {
+      for (const [dirName] of Object.entries(index.directories)) {
         const childDirPath = join(dir, dirName);
         const childIndexPath = join(childDirPath, "index.json");
 
@@ -399,7 +398,7 @@ export const updateDirectoryIndexWithAggregation = async (
         }
 
         if (fileEntry.url) {
-          index.files![baseName] = fileEntry;
+          index.files?.[baseName] = fileEntry;
         }
       }
     }
@@ -460,7 +459,6 @@ export const updateDirectoryIndexWithAggregation = async (
     }
 
     // Update timestamp and apply aggregated data
-    const originalLastUpdated = index.lastUpdated;
     index.lastUpdated = new Date().toISOString();
 
     // Apply aggregated data if provided

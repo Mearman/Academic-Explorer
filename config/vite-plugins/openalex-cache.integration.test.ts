@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { openalexCachePlugin, type OpenAlexCachePluginOptions } from './openalex-cache.js';
+import { openalexCachePlugin } from './openalex-cache.js';
 import { readFile, writeFile, mkdir, rm, access } from 'node:fs/promises';
 import { mkdtemp, join } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -167,11 +167,11 @@ describe('OpenAlex Cache Plugin Integration Tests', () => {
       mockPathJoin.mockReturnValueOnce(legacyFilePath); // For readdir simulation
 
       // Mock readdir to include legacy file
-      const mockReaddir = vi.fn().mockResolvedValue(['legacy-query.json', 'index.json']);
+      vi.fn().mockResolvedValue(['legacy-query.json', 'index.json']);
       // Override for integration, but since plugin uses fs directly, mock globally
 
       // Trigger index update by simulating a cache save
-      const mockSaveToCache = vi.spyOn(plugin, 'saveToCache' as any).mockImplementation(async () => {
+      vi.spyOn(plugin, 'saveToCache' as any).mockImplementation(async () => {
         // Simulate calling updateDirectoryIndexes
         const updateSpy = vi.spyOn(plugin, 'updateDirectoryIndexes' as any);
         await updateSpy(join(staticDataDir, 'works', 'queries', 'new.json'), 'https://api.openalex.org/works?filter=new', 'new', '2023-01-02T00:00:00Z', 'new-hash');
@@ -220,10 +220,10 @@ describe('OpenAlex Cache Plugin Integration Tests', () => {
       });
 
       // Trigger reconstruction via update
-      const mockUpdate = vi.spyOn(plugin, 'updateDirectoryIndexWithAggregation' as any).mockImplementation(async () => {
+      vi.spyOn(plugin, 'updateDirectoryIndexWithAggregation' as any).mockImplementation(async () => {
         // Simulate scanning
-        const readdirSpy = vi.spyOn(fs, 'readdirSync').mockReturnValue(['multi-query.json', 'index.json']);
-        const statSpy = vi.spyOn(fs, 'statSync').mockReturnValue({ isDirectory: () => false, mtime: new Date() });
+        vi.spyOn(fs, 'readdirSync').mockReturnValue(['multi-query.json', 'index.json']);
+        vi.spyOn(fs, 'statSync').mockReturnValue({ isDirectory: () => false, mtime: new Date() });
         // Call internal logic
       });
 
@@ -296,7 +296,7 @@ describe('OpenAlex Cache Plugin Integration Tests', () => {
       });
 
       // Mock directories structure
-      const mockReaddirChild = vi.fn().mockResolvedValue(['index.json', 'file.json']);
+      vi.fn().mockResolvedValue(['index.json', 'file.json']);
       // Assume plugin scans
 
       await plugin['aggregateFromChildren'](join(staticDataDir, 'works/subdir'));
