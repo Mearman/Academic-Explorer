@@ -143,7 +143,7 @@
   },
   "devDependencies": {
         "@types/react": "^19.0.0",
-    "@mantine/core": "^7.15.4",
+    "@mantine/core": "^8.3.5",
     "@tabler/icons-react": "^3.28.0",
     "@tanstack/react-query": "^5.67.3",
     "@tanstack/react-router": "^1.132.47",
