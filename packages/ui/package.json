@@ -43,9 +43,7 @@
     "dev:vite": "vite --configLoader runner",
     "build-storybook": "storybook build"
   },
-  "dependencies": {
-    "@tanstack/react-table": "^8.21.3"
-  },
+  "dependencies": {},
   "peerDependencies": {
     "@mantine/core": "^8.3.1",
     "@mantine/hooks": "^8.3.1",
