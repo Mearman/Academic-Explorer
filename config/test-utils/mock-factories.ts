@@ -3,7 +3,8 @@
  * in the Academic Explorer workspace.
  */
 
-import { vi, type Mock } from "vitest";
+import { vi, type Mock as _Mock } from "vitest";
+import React from "react";
 import type { GraphNode, SearchOptions } from "@academic-explorer/graph";
 import type { QueryClient } from "@tanstack/react-query";
 
@@ -19,7 +20,8 @@ export const GraphNodeFactory = {
     label: "Test Work",
     entityType: "works",
     entityId: "W123456789",
-    position: { x: 100, y: 100 },
+    x: 100,
+    y: 100,
     externalIds: [],
     ...overrides,
   }),
@@ -32,10 +34,11 @@ export const GraphNodeFactory = {
     label: "Test Author",
     entityType: "authors",
     entityId: "A123456789",
-    position: { x: 200, y: 200 },
+    x: 200,
+    y: 200,
     externalIds: [
       {
-        entityType: "orcid",
+        type: "orcid",
         value: "0000-0000-0000-0000",
         url: "https://orcid.org/0000-0000-0000-0000",
       },
@@ -51,10 +54,11 @@ export const GraphNodeFactory = {
     label: "Test Institution",
     entityType: "institutions",
     entityId: "I123456789",
-    position: { x: 300, y: 300 },
+    x: 300,
+    y: 300,
     externalIds: [
       {
-        entityType: "ror",
+        type: "ror",
         value: "01abc23de",
         url: "https://ror.org/01abc23de",
       },
@@ -70,15 +74,16 @@ export const GraphNodeFactory = {
     label: "Complex Node",
     entityType: "works",
     entityId: "W987654321",
-    position: { x: 0, y: 0 },
+    x: 0,
+    y: 0,
     externalIds: [
       {
-        entityType: "doi",
+        type: "doi",
         value: "10.1234/test.123",
         url: "https://doi.org/10.1234/test.123",
       },
       {
-        entityType: "pmid",
+        type: "pmid",
         value: "12345678",
         url: "https://pubmed.ncbi.nlm.nih.gov/12345678",
       },
@@ -102,10 +107,8 @@ export const GraphNodeFactory = {
         label: `${type.slice(0, -1)} ${index + 1}`,
         entityType: type,
         entityId,
-        position: {
-          x: Math.random() * 1000,
-          y: Math.random() * 1000,
-        },
+        x: Math.random() * 1000,
+        y: Math.random() * 1000,
         externalIds: [],
       };
     });

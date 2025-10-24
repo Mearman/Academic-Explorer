@@ -5,6 +5,7 @@ import { mkdtemp, join } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import * as pathModule from 'node:path';
 import { execSync } from 'child_process';
+import * as fs from 'fs';
 import {
   generateContentHash,
   parseOpenAlexUrl,
@@ -221,8 +222,8 @@ describe('OpenAlex Cache Plugin Integration Tests', () => {
       // Trigger reconstruction via update
       const mockUpdate = vi.spyOn(plugin, 'updateDirectoryIndexWithAggregation' as any).mockImplementation(async () => {
         // Simulate scanning
-        const readdirSpy = vi.spyOn(require('fs'), 'readdirSync').mockReturnValue(['multi-query.json', 'index.json']);
-        const statSpy = vi.spyOn(require('fs'), 'statSync').mockReturnValue({ isDirectory: () => false, mtime: new Date() });
+        const readdirSpy = vi.spyOn(fs, 'readdirSync').mockReturnValue(['multi-query.json', 'index.json']);
+        const statSpy = vi.spyOn(fs, 'statSync').mockReturnValue({ isDirectory: () => false, mtime: new Date() });
         // Call internal logic
       });
 

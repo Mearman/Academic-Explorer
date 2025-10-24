@@ -1,43 +1,43 @@
 #!/usr/bin/env npx tsx
 
-import { exec } from "child_process";
-import { promisify } from "util";
-import { Octokit } from "@octokit/rest";
+import { exec } from "child_process"
+import { promisify } from "util"
+import { Octokit } from "@octokit/rest"
 
-const execAsync = promisify(exec);
+const execAsync = promisify(exec)
 
 async function main(): Promise<void> {
-  const token = process.env['GITHUB_TOKEN'];
-  const prNumber = process.env['PR_NUMBER'];
-  const owner = process.env['REPO_OWNER'];
-  const repo = process.env['REPO_NAME'];
+	const token = process.env["GITHUB_TOKEN"]
+	const prNumber = process.env["PR_NUMBER"]
+	const owner = process.env["REPO_OWNER"]
+	const repo = process.env["REPO_NAME"]
 
-  if (!token || !prNumber || !owner || !repo) {
-    console.error("Missing required environment variables");
-    process.exit(1);
-  }
+	if (!token || !prNumber || !owner || !repo) {
+		console.error("Missing required environment variables")
+		process.exit(1)
+	}
 
-  const octokit = new Octokit({ auth: token });
+	const octokit = new Octokit({ auth: token })
 
-  try {
-    // Get new coverage report
-    const { stdout } = await execAsync("npx tsx tools/scripts/generate-coverage-report.ts pr-comment");
+	try {
+		// Get new coverage report
+		const { stdout } = await execAsync("npx tsx tools/scripts/generate-coverage-report.ts pr-comment")
 
-    // Find existing coverage comments
-    const { data: comments } = await octokit.rest.issues.listComments({
-      owner,
-      repo,
-      issue_number: parseInt(prNumber, 10),
-    });
+		// Find existing coverage comments
+		const { data: comments } = await octokit.rest.issues.listComments({
+			owner,
+			repo,
+			issue_number: parseInt(prNumber, 10),
+		})
 
-    const coverageComments = comments.filter(comment =>
-      comment.body?.includes("## Coverage Report") &&
-      comment.user?.type === "Bot"
-    );
+		const coverageComments = comments.filter(
+			(comment) => comment.body?.includes("## Coverage Report") && comment.user?.type === "Bot"
+		)
 
-    // Minimize previous coverage comments
-    for (const comment of coverageComments) {
-      await octokit.graphql(`
+		// Minimize previous coverage comments
+		for (const comment of coverageComments) {
+			await octokit.graphql(
+				`
         mutation minimizeComment($commentId: ID!) {
           minimizeComment(input: {subjectId: $commentId, classifier: OUTDATED}) {
             minimizedComment {
@@ -45,26 +45,28 @@ async function main(): Promise<void> {
             }
           }
         }
-      `, {
-        commentId: comment.node_id
-      });
-    }
+      `,
+				{
+					commentId: comment.node_id,
+				}
+			)
+		}
 
-    // Add new coverage comment
-    await octokit.rest.issues.createComment({
-      owner,
-      repo,
-      issue_number: parseInt(prNumber, 10),
-      body: stdout
-    });
+		// Add new coverage comment
+		await octokit.rest.issues.createComment({
+			owner,
+			repo,
+			issue_number: parseInt(prNumber, 10),
+			body: stdout,
+		})
 
-    console.log("Coverage comment updated successfully");
-  } catch (error) {
-    console.error("Failed to manage coverage comments:", error);
-    process.exit(1);
-  }
+		console.log("Coverage comment updated successfully")
+	} catch (error) {
+		console.error("Failed to manage coverage comments:", error)
+		process.exit(1)
+	}
 }
 
 if (require.main === module) {
-  void main();
+	void main()
 }

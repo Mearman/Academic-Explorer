@@ -5,8 +5,9 @@
  * @vitest-environment jsdom
  */
 
-import { vi, beforeEach, afterEach } from "vitest";
-import type { Mock } from "vitest";
+import { vi, type Mock, type MockInstance } from "vitest";
+// Test lifecycle hooks available for future use
+// import { beforeEach, afterEach } from "vitest";
 
 /**
  * Environment detection utilities
@@ -204,11 +205,11 @@ export const LoggerMocks = {
    * Mock console methods
    */
   mockConsole: (): {
-    log: Mock;
-    warn: Mock;
-    error: Mock;
-    info: Mock;
-    debug: Mock;
+    log: MockInstance<typeof console.log>;
+    warn: MockInstance<typeof console.warn>;
+    error: MockInstance<typeof console.error>;
+    info: MockInstance<typeof console.info>;
+    debug: MockInstance<typeof console.debug>;
   } => {
     const consoleMethods = {
       log: vi.spyOn(console, "log").mockImplementation(() => {}),
@@ -292,7 +293,7 @@ export const createMockResponse = (
 ): Response => {
   const { status = 200, statusText = "OK", headers = {} } = options;
 
-  return new Response(JSON.stringify(data), {
+  const response = new Response(JSON.stringify(data), {
     status,
     statusText,
     headers: new Headers({
@@ -300,6 +301,8 @@ export const createMockResponse = (
       ...headers,
     }),
   });
+
+  return response;
 };
 
 /**

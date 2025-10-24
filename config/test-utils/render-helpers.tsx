@@ -4,9 +4,9 @@
  */
 
 import React, { ReactElement } from "react";
-import { render, renderHook, RenderOptions, RenderHookOptions } from "@testing-library/react";
+import { render, renderHook, RenderOptions, RenderHookOptions, screen, fireEvent, waitFor, act, userEvent } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { vi, type Mock } from "vitest";
+import { vi, type Mock, expect, test } from "vitest";
 import type { GraphNode } from "@academic-explorer/graph";
 
 /**
@@ -382,7 +382,7 @@ export const PerformanceHelpers = {
   /**
    * Measure component render time
    */
-  measureRenderTime: async <T>(
+  measureRenderTime: <T>(
     renderFn: () => T,
     iterations = 10
   ): Promise<number> => {
@@ -401,7 +401,7 @@ export const PerformanceHelpers = {
   /**
    * Test component with large datasets
    */
-  testWithLargeDataset: async <T>(
+  testWithLargeDataset: <T>(
     component: ReactElement,
     dataGenerator: (size: number) => any,
     sizes: number[] = [100, 1000, 10000]
@@ -590,5 +590,6 @@ export {
   fireEvent,
   waitFor,
   act,
+  userEvent,
 } from "@testing-library/react";
-export { default as userEvent } from "@testing-library/user-event";
+export { expect, test, vi } from "vitest";

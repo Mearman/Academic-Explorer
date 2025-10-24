@@ -341,7 +341,9 @@ export const updateDirectoryIndexWithAggregation = async (
             }
 
             // Ensure equivalentUrls[0] === url for consistency (primary URL first)
-            fileEntry.equivalentUrls![0] = primaryUrl;
+            if (fileEntry.equivalentUrls && fileEntry.equivalentUrls.length > 0) {
+              fileEntry.equivalentUrls[0] = primaryUrl;
+            }
           } else {
             // Non-query: single entity or collection (e.g., /authors/A123.json)
             // Reconstruction is simpler: just prepend entity type and ID to base URL.

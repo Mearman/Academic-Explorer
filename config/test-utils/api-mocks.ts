@@ -3,10 +3,30 @@
  * in the Academic Explorer workspace.
  */
 
-import { vi, type Mock } from "vitest";
-import { rest } from "msw";
-import { setupServer, SetupServerApi } from "msw/node";
-import type { OpenAlexResponse } from "@/client/src/types";
+import { vi, type Mock as _Mock } from "vitest";
+import { http, HttpResponse } from "msw";
+import { setupServer } from "msw/node";
+import type { SetupServerApi as _SetupServerApi } from "msw/node";
+
+// Define OpenAlexResponse locally to avoid import issues
+export interface OpenAlexResponse<T = any> {
+  results: T[];
+  meta: {
+    count: number;
+    db_response_time_ms: number;
+    page: number;
+    per_page: number;
+    groups_count?: number;
+  };
+  group_by?: Array<{
+    key: string;
+    key_display_name: string;
+    count: number;
+    cited_by_count?: number;
+    works_count?: number;
+    h_index?: number;
+  }>;
+}
 
 /**
  * Fetch API mocking utilities
@@ -59,20 +79,27 @@ export const FetchMocks = {
       status?: number;
       statusText?: string;
       headers?: Record<string, string>;
-      url?: string;
     } = {}
   ): Response => {
-    const { status = 200, statusText = "OK", headers = {}, url } = options;
+    const { status = 200, statusText = "OK", headers = {} } = options;
 
-    return new Response(JSON.stringify(data), {
+    const responseInit: ResponseInit = {
       status,
       statusText,
       headers: new Headers({
         "content-type": "application/json",
         ...headers,
       }),
-      url,
-    });
+    };
+
+    const response = new Response(JSON.stringify(data), responseInit);
+
+    // Add url property if needed (as a custom property)
+    if (options.url) {
+      (response as any).url = options.url;
+    }
+
+    return response;
   },
 
   /**
@@ -123,44 +150,32 @@ export const OpenAlexMocks = {
   /**
    * Create OpenAlex API server for MSW
    */
-  createServer: (): SetupServerApi => {
+  createServer: (): SetupServer => {
     return setupServer(
       // Default handlers that return empty responses
-      rest.get("https://api.openalex.org/works", (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            results: [],
-            meta: { count: 0, db_response_time_ms: 10, page: 1, per_page: 25 },
-          })
-        );
+      http.get("https://api.openalex.org/works", () => {
+        return HttpResponse.json({
+          results: [],
+          meta: { count: 0, db_response_time_ms: 10, page: 1, per_page: 25 },
+        });
       }),
-      rest.get("https://api.openalex.org/authors", (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            results: [],
-            meta: { count: 0, db_response_time_ms: 10, page: 1, per_page: 25 },
-          })
-        );
+      http.get("https://api.openalex.org/authors", () => {
+        return HttpResponse.json({
+          results: [],
+          meta: { count: 0, db_response_time_ms: 10, page: 1, per_page: 25 },
+        });
       }),
-      rest.get("https://api.openalex.org/institutions", (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            results: [],
-            meta: { count: 0, db_response_time_ms: 10, page: 1, per_page: 25 },
-          })
-        );
+      http.get("https://api.openalex.org/institutions", () => {
+        return HttpResponse.json({
+          results: [],
+          meta: { count: 0, db_response_time_ms: 10, page: 1, per_page: 25 },
+        });
       }),
-      rest.get("https://api.openalex.org/sources", (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            results: [],
-            meta: { count: 0, db_response_time_ms: 10, page: 1, per_page: 25 },
-          })
-        );
+      http.get("https://api.openalex.org/sources", () => {
+        return HttpResponse.json({
+          results: [],
+          meta: { count: 0, db_response_time_ms: 10, page: 1, per_page: 25 },
+        });
       }),
     );
   },
@@ -417,7 +432,7 @@ export const InterceptorMocks = {
       interceptedResponses.push({
         url: url.toString(),
         status: response.status,
-        headers: Object.fromEntries(response.headers.entries()),
+        headers: Object.fromEntries(Array.from(response.headers.entries())),
         data,
       });
 
@@ -451,7 +466,7 @@ export const RateLimitMocks = {
   createRateLimitScenario: (requestsToTriggerLimit = 3) => {
     let requestCount = 0;
 
-    const mockFetch = vi.fn().mockImplementation(async (url: string) => {
+    const mockFetch = vi.fn().mockImplementation(async (_url: string) => {
       requestCount++;
 
       if (requestCount <= requestsToTriggerLimit) {
@@ -482,7 +497,7 @@ export const RateLimitMocks = {
   ) => {
     let attemptCount = 0;
 
-    const mockFetch = vi.fn().mockImplementation(async (url: string) => {
+    const mockFetch = vi.fn().mockImplementation(async (_url: string) => {
       attemptCount++;
 
       if (attemptCount <= failureCount) {
@@ -634,25 +649,25 @@ export const MockServerHelpers = {
    * Create handler for specific endpoint
    */
   createEndpointHandler: (
-    method: "get" | "post" | "put" | "delete",
+    method: "get" | "post" | "put" | "delete" | "patch",
     urlPattern: string,
     response: (req: any, res: any, ctx: any) => any
   ) => {
-    return rest[method](urlPattern, response);
+    return http[method](urlPattern, response);
   },
 
   /**
    * Create handler that returns data with delay
    */
   createDelayedHandler: (
-    method: "get" | "post" | "put" | "delete",
+    method: "get" | "post" | "put" | "delete" | "patch",
     urlPattern: string,
     responseData: any,
     delay = 1000
   ) => {
-    return rest[method](urlPattern, async (req, res, ctx) => {
+    return http[method](urlPattern, async () => {
       await new Promise(resolve => setTimeout(resolve, delay));
-      return res(ctx.json(responseData));
+      return HttpResponse.json(responseData);
     });
   },
 
@@ -660,13 +675,13 @@ export const MockServerHelpers = {
    * Create handler that simulates errors
    */
   createErrorHandler: (
-    method: "get" | "post" | "put" | "delete",
+    method: "get" | "post" | "put" | "delete" | "patch",
     urlPattern: string,
     status = 500,
     errorMessage = "Internal Server Error"
   ) => {
-    return rest[method](urlPattern, (req, res, ctx) => {
-      return res(ctx.status(status), ctx.json({ error: errorMessage }));
+    return http[method](urlPattern, () => {
+      return HttpResponse.json({ error: errorMessage }, { status });
     });
   },
 };
@@ -819,7 +834,7 @@ export const ApiPerformanceMocks = {
   createPerformanceScenario: (responseTimes: number[] = [100, 500, 1000]) => {
     let callIndex = 0;
 
-    const mockFetch = vi.fn().mockImplementation(async (url: string) => {
+    const mockFetch = vi.fn().mockImplementation(async (_url: string) => {
       const delay = responseTimes[callIndex % responseTimes.length] || 100;
       callIndex++;
 
