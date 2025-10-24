@@ -20,15 +20,31 @@
   },
   "plugins": [
     {
+      "plugin": "@nx/js",
+      "options": {
+        "buildTargetName": "build",
+        "testTargetName": "test"
+      }
+    },
+    {
+      "plugin": "@nx/react",
+      "options": {
+        "bundler": "vite"
+      }
+    },
+    {
       "plugin": "@nx/vite/plugin",
       "options": {
-        "targetName": "build"
+        "buildTargetName": "build",
+        "previewTargetName": "preview",
+        "serveTargetName": "serve",
+        "testTargetName": "test"
       }
     },
     {
       "plugin": "@nx/playwright/plugin",
       "options": {
-        "targetName": "test"
+        "targetName": "e2e"
       }
     },
     {
@@ -78,25 +94,6 @@
       ],
       "outputs": ["{projectRoot}/dist"],
       "cache": true
-    },
-    "build:bundle": {
-      "executor": "nx:run-commands",
-      "dependsOn": ["build:compile"],
-      "options": {
-        "command": "tsup",
-        "cwd": "{projectRoot}"
-      },
-      "inputs": [
-        "production",
-        "{projectRoot}/tsup.config.ts",
-        "{projectRoot}/tsconfig.json",
-        "{projectRoot}/package.json"
-      ],
-      "outputs": ["{projectRoot}/dist"],
-      "cache": true
-    },
-    "build:lib-with-bundle": {
-      "dependsOn": ["build:bundle"]
     },
     "build:ui": {
       "executor": "nx:run-commands",
@@ -150,35 +147,6 @@
       "outputs": ["{projectRoot}/**/*.{js,jsx,ts,tsx}"],
       "cache": true
     },
-    "test:unit": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "project": "unit",
-        "coverage": true
-      },
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/vite.config.base.ts",
-        "{projectRoot}/vitest.config.ts"
-      ],
-      "outputs": ["{projectRoot}/coverage"],
-      "cache": true
-    },
-    "test:integration": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "project": "integration"
-      },
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/vite.config.base.ts",
-        "{projectRoot}/vitest.config.ts"
-      ],
-      "outputs": ["{projectRoot}/coverage"],
-      "cache": true
-    },
     "test:aggregate": {
       "executor": "nx:run-commands",
       "dependsOn": ["test:unit"],
@@ -194,12 +162,6 @@
       ],
       "outputs": ["{projectRoot}/coverage"],
       "cache": true
-    },
-    "validate": {
-      "cache": true,
-      "dependsOn": ["build", "test", "lint", "typecheck"],
-      "inputs": [],
-      "outputs": []
     },
     "typecheck": {
       "executor": "nx:run-commands",
@@ -219,134 +181,73 @@
     }
   },
   "targetDefaults": {
+    "build": {
+      "cache": true,
+      "dependsOn": ["^build", "typecheck"],
+      "inputs": [
+        "production",
+        "^production",
+        "{workspaceRoot}/tsconfig.base.json",
+        "{workspaceRoot}/vite.config.base.ts",
+        "{workspaceRoot}/vitest.config.base.ts",
+        "{projectRoot}/tsconfig.json",
+        "{projectRoot}/vite.config.ts"
+      ],
+      "outputs": [
+        "{projectRoot}/dist"
+      ]
+    },
+    "serve": {
+      "cache": false
+    },
+    "preview": {
+      "cache": true,
+      "dependsOn": ["build"]
+    },
+    "test": {
+      "cache": true,
+      "dependsOn": ["^build", "typecheck"],
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/vitest.config.base.ts",
+        "{projectRoot}/vitest.config.ts",
+        "{projectRoot}/src/test/**/*",
+        "{projectRoot}/src/**/*.test.{ts,tsx}",
+        "{projectRoot}/src/**/*.spec.{ts,tsx}"
+      ],
+      "outputs": [
+        "{projectRoot}/coverage",
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ]
+    },
+    "dev": {
+      "cache": false,
+      "dependsOn": ["^build"]
+    },
+    "e2e": {
+      "cache": true,
+      "dependsOn": ["^build"]
+    },
     "lint": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/eslint:lint",
+      "cache": true,
       "options": {
-        "command": "NODE_OPTIONS='--import tsx' eslint --no-warn-ignored src/**/*.ts --fix",
-        "cwd": "{projectRoot}"
+        "lintFilePatterns": ["{sourceRoot}/**/*.{ts,tsx,js,jsx}"]
       },
       "inputs": [
         "source",
         "configs",
         "{workspaceRoot}/eslint.config.ts",
-        "{workspaceRoot}/eslint.config.*.ts"
+        "{workspaceRoot}/eslint.config.*.ts",
+        "{workspaceRoot}/eslint-rules/**/*",
+        "{workspaceRoot}/package.json",
+        "{workspaceRoot}/tsconfig.base.json"
       ],
       "outputs": [
-        "{workspaceRoot}/.nx/cache/lint-results/{projectName}.json",
-        "{projectRoot}/**/*.{js,jsx,ts,tsx}"
-      ],
-      "cache": true
+        "{options.outputFile}"
+      ]
     },
-
-    "build": {
-      "executor": "nx:run-commands",
-      "dependsOn": ["^build"],
-      "options": {
-        "command": "tsc -b",
-        "cwd": "{projectRoot}"
-      },
-      "inputs": [
-        "production",
-        "^production",
-        "^outputs",
-        "{workspaceRoot}/vite.config.base.ts",
-        "{workspaceRoot}/config/**/*"
-      ],
-      "outputs": ["{projectRoot}/dist"],
-      "cache": true
-    },
-    "test": {
-      "cache": true,
-      "dependsOn": ["typecheck"],
-      "inputs": [
-        "source",
-        "tests",
-        "configs",
-        "^production",
-        "{workspaceRoot}/config/**/*",
-        "{workspaceRoot}/tsconfig*.json"
-      ],
-      "outputs": ["{projectRoot}/coverage"]
-    },
-    "test:unit:run": {
-      "cache": true,
-      "dependsOn": ["typecheck"],
-      "inputs": [
-        "source",
-        "tests",
-        "configs",
-        "^production",
-        "{workspaceRoot}/config/**/*",
-        "{workspaceRoot}/tsconfig*.json"
-      ],
-      "outputs": ["{projectRoot}/coverage"],
-      "cache": true
-    },
-    "test:component:run": {
-      "executor": "@nx/vite:test",
-      "options": {
-        "config": "{workspaceRoot}/vite.config.base.ts",
-        "include": "src/**/*.component.test.{ts,tsx}"
-      },
-      "dependsOn": ["typecheck"],
-      "inputs": [
-        "source",
-        "tests",
-        "configs",
-        "^production",
-        "{workspaceRoot}/config/**/*",
-        "{workspaceRoot}/tsconfig*.json"
-      ],
-      "outputs": ["{projectRoot}/coverage"],
-      "cache": true
-    },
-    "test:integration:run": {
-      "cache": true,
-      "dependsOn": ["typecheck", "test:unit:run"],
-      "inputs": [
-        "source",
-        "tests",
-        "configs",
-        "^production",
-        "{workspaceRoot}/config/**/*",
-        "{workspaceRoot}/tsconfig*.json"
-      ],
-      "outputs": ["{projectRoot}/coverage"],
-      "cache": true
-    },
-    "test:e2e:run": {
-      "executor": "@nx/playwright:playwright",
-      "options": {
-        "config": "{projectRoot}/playwright.config.ts"
-      },
-      "configurations": {
-        "ci": {
-          "ci": true
-        }
-      },
-      "dependsOn": ["typecheck"],
-      "inputs": [
-        "source",
-        "tests",
-        "configs",
-        "^production",
-        "{workspaceRoot}/config/**/*",
-        "{workspaceRoot}/playwright.config.ts",
-        "{workspaceRoot}/tsconfig*.json"
-      ],
-      "outputs": ["{projectRoot}/coverage"],
-      "cache": true
-    },
-    "preview": {
-      "cache": true,
-      "inputs": [
-        "^production",
-        "{workspaceRoot}/vite.config.base.ts",
-        "{workspaceRoot}/config/**/*"
-      ],
-      "dependsOn": ["build"]
-    },
-
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
@@ -360,10 +261,56 @@
         "{workspaceRoot}/tsconfig*.json",
         "{workspaceRoot}/config/**/*"
       ],
-      "outputs": ["{projectRoot}/dist/tsc"],
       "cache": true
     },
-
+    "format": {
+      "cache": true
+    },
+    "update": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["default", "^production", "workspace"]
+    },
+    "extract": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["default", "^production", "workspace"]
+    },
+    "test:unit": {
+      "cache": true,
+      "dependsOn": ["typecheck"],
+      "inputs": ["default", "^production"],
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}/unit"]
+    },
+    "test:component": {
+      "cache": true,
+      "dependsOn": ["typecheck", "test:unit"],
+      "inputs": ["default", "^production"],
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}/component"]
+    },
+    "test:integration": {
+      "cache": true,
+      "dependsOn": ["typecheck", "test:unit"],
+      "inputs": ["default", "^production"],
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}/integration"]
+    },
+    "validate": {
+      "cache": true,
+      "dependsOn": ["typecheck", "lint", "test", "build"],
+      "inputs": ["default", "^production"],
+      "outputs": []
+    },
+    "clean": {
+      "cache": false,
+      "inputs": [],
+      "outputs": []
+    },
+    "coverage:report": {
+      "cache": false,
+      "dependsOn": ["test"],
+      "inputs": ["default", "^production"],
+      "outputs": ["{workspaceRoot}/coverage"]
+    },
     "knip": {
       "cache": true,
       "inputs": [
@@ -460,26 +407,6 @@
     },
     "build-storybook": {
       "cache": true
-    },
-    "validate": {
-      "cache": true,
-      "dependsOn": ["build", "test", "lint", "typecheck"],
-      "inputs": [
-        "production",
-        "^production",
-        "{workspaceRoot}/vite.config.base.ts",
-        "{projectRoot}/vite.config.base.ts",
-        "{projectRoot}/index.html",
-        "{projectRoot}/public/**/*",
-        "source",
-        "tests",
-        "configs",
-        "{workspaceRoot}/eslint.config.ts",
-        "{workspaceRoot}/eslint.config.*.ts",
-        "{workspaceRoot}/tsconfig*.json",
-        "{workspaceRoot}/config/**/*"
-      ],
-      "outputs": []
     }
   },
   "namedInputs": {
@@ -538,6 +465,29 @@
         "bundler": "vite",
         "unitTestRunner": "vitest",
         "linter": "eslint"
+      },
+      "@academic-explorer/generators:library": {
+        "type": "utility",
+        "unitTestRunner": "vitest",
+        "bundler": "tsc",
+        "description": "A new library package"
+      },
+      "@academic-explorer/generators:component": {
+        "skipTests": false,
+        "skipStorybook": false,
+        "export": true,
+        "styled": true,
+        "withHooks": false,
+        "withTypes": false
+      },
+      "@academic-explorer/generators:entity-view": {
+        "project": "web",
+        "withMocks": true,
+        "withIntegration": true,
+        "withE2E": true,
+        "withLazyLoading": true,
+        "withErrorHandling": true,
+        "skipTests": false
       }
     }
   },
@@ -583,6 +533,23 @@
   },
   "parallel": 3,
   "cacheDirectory": ".nx/cache",
-  "maxCacheSize": "10GB",
-  "compression": true
+  "maxCacheSize": "15GB",
+  "compression": true,
+  "useDaemonProcess": false,
+  "defaultIteration": "prod",
+  "flaky": [],
+  "parallelTasks": 3,
+  "taskDependencies": {
+    "build": [
+      {
+        "target": "^build"
+      }
+    ],
+    "test": [
+      {
+        "target": "build",
+        "projects": "self"
+      }
+    ]
+  }
 }
