@@ -156,11 +156,11 @@ export const testUtils = {
   createCleanup: () => import('./isolation-helpers').then(m => m.createCleanupScope()),
 
   // Scenarios
-  setupAcademic: (config?: any) =>
+  setupAcademic: (config?: Record<string, unknown>) =>
     import('./setup-teardown').then(m => m.setupAcademicPaperScenario(config)),
-  setupPerformance: (config?: any) =>
+  setupPerformance: (config?: Record<string, unknown>) =>
     import('./setup-teardown').then(m => m.setupPerformanceScenario(config)),
-  teardown: (config?: any) =>
+  teardown: (config?: Record<string, unknown>) =>
     import('./setup-teardown').then(m => m.teardownScenario(config)),
 };
 
@@ -239,8 +239,8 @@ export const assertions = {
   isValidNode: (node: unknown) => import('./assertion-helpers').then(m => { m.expectValidGraphNode(node); }),
   isValidEdge: (edge: unknown) => import('./assertion-helpers').then(m => { m.expectValidGraphEdge(edge); }),
   isValidGraph: (data: unknown) => import('./assertion-helpers').then(m => { m.expectValidGraphData(data); }),
-  hasPosition: (node: any) => import('./assertion-helpers').then(m => { m.expectPositionInBounds(node, { minX: -Infinity, maxX: Infinity, minY: -Infinity, maxY: Infinity }); }),
-  hasMoved: (before: any[], after: any[]) => import('./assertion-helpers').then(m => { m.expectNodesHaveMoved(before, after); }),
+  hasPosition: (node: Record<string, unknown>) => import('./assertion-helpers').then(m => { m.expectPositionInBounds(node, { minX: -Infinity, maxX: Infinity, minY: -Infinity, maxY: Infinity }); }),
+  hasMoved: (before: Record<string, unknown>[], after: Record<string, unknown>[]) => import('./assertion-helpers').then(m => { m.expectNodesHaveMoved(before, after); }),
   noErrors: () => import('./event-helpers').then(m => {
     const events = m.getEventHelper().getEvents().filter(e => e.type.includes('error'));
     if (events.length > 0) {
