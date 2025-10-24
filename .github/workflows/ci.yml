@@ -88,7 +88,7 @@ jobs:
       - name: Determine quality gates run
         id: quality-gates
         run: |
-          if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ github.event.inputs.run_quality_gates }}" = "true" ]; then
+          if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ github.event.inputs.run_quality_gates }}" = "true" ] || ([ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]); then
             echo "quality-gates=true" >> $GITHUB_OUTPUT
           else
             echo "quality-gates=false" >> $GITHUB_OUTPUT
