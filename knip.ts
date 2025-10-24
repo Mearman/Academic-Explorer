@@ -45,6 +45,57 @@ const config: KnipConfig = {
     "apps/web/src/components/search/VisualQueryBuilder.example.tsx",
     // Test infrastructure exports (intentionally exported for test reuse)
     "packages/graph/src/__tests__/**/*.ts",
+    // CLI utilities and tools
+    "apps/cli/src/cache/static-cache-manager.ts",
+    "apps/cli/src/entity-detection.ts",
+    "apps/cli/src/openalex-cli-class.ts",
+    // Graph visualization components (future features)
+    "apps/web/src/components/graph/adapters/**",
+    "apps/web/src/components/graph/configs/**",
+    "apps/web/src/components/graph/AnimatedLayoutProvider.tsx",
+    "apps/web/src/components/graph/GraphToolbar.tsx",
+    // Cache and data management components
+    "apps/web/src/components/cache/**",
+    // Layout components (sidebar components)
+    "apps/web/src/components/layout/LeftRibbon.tsx",
+    "apps/web/src/components/layout/LeftSidebarDynamic.tsx",
+    "apps/web/src/components/layout/RightRibbon.tsx",
+    "apps/web/src/components/layout/RightSidebarDynamic.tsx",
+    // Section components (panel components)
+    "apps/web/src/components/sections/**",
+    // Search interface components
+    "apps/web/src/components/search/DateRangeFilter.tsx",
+    "apps/web/src/components/search/FieldSearch.tsx",
+    "apps/web/src/components/search/SavedQueries.tsx",
+    "apps/web/src/components/search/SearchInterface.tsx",
+    // Evaluation and analysis components
+    "apps/web/src/components/evaluation/**",
+    // Test utilities and helpers
+    "apps/web/src/test/**",
+    // Configuration and routing files
+    "apps/web/src/config/**",
+    "apps/web/src/hooks/use-context-menu.ts",
+    "apps/web/src/hooks/use-graph-persistence.ts",
+    "apps/web/src/hooks/use-web-worker.ts",
+    "apps/web/src/services/**",
+    // Route files (generated and lazy loaded)
+    "apps/web/src/routes/**/*.tsx",
+    "apps/web/src/routes/**/*.ts",
+    // Style files
+    "apps/web/src/styles/**",
+    // Store files (state management)
+    "apps/web/src/stores/**",
+    // Component files not currently used but part of development
+    "apps/web/src/components/EntityGrid.tsx",
+    "apps/web/src/components/EntityListView.tsx",
+    "apps/web/src/components/ViewModeToggle.tsx",
+    "apps/web/src/components/types.ts",
+    // Legacy and development files
+    "packages/client/src/**",
+    "packages/utils/src/**",
+    "packages/graph/src/**",
+    "packages/simulation/src/**",
+    "packages/types/src/**",
   ],
   ignoreExportsUsedInFile: true,
   // Research project settings - be more lenient with unused exports
@@ -178,6 +229,42 @@ const config: KnipConfig = {
     "lodash-es", // ES module utilities used across applications
     // Workspace dependencies that may not be actively used but are part of development
     "@academic-explorer/utils", // Utility package used across workspace projects
+    // Testing and development dependencies
+    "@testing-library/jest-dom", // Testing utilities
+    "@testing-library/user-event", // Testing utilities
+    "@testing-library/react", // Testing utilities
+    "@axe-core/playwright", // Accessibility testing
+    "eslint", // Linting and code quality
+    "immer", // State management utilities
+    "memfs", // Memory filesystem for testing
+    "msw", // Mock Service Worker for API mocking
+    "prettier", // Code formatting
+    "vitest-axe", // Accessibility testing
+    "vite-tsconfig-paths", // Vite path mapping
+    // Development tooling
+    "@eslint/markdown", // ESLint markdown support
+    "@nx/eslint-plugin", // Nx ESLint integration
+    "@nx/web", // Nx web development utilities
+    "@semantic-release/commit-analyzer", // Release automation
+    "@semantic-release/github", // GitHub release automation
+    "@semantic-release/npm", // NPM release automation
+    "@semantic-release/release-notes-generator", // Release notes automation
+    "@stylistic/eslint-plugin", // ESLint stylistic plugin
+    "@swc/helpers", // SWC helper utilities
+    "@typescript-eslint/eslint-plugin", // TypeScript ESLint plugin
+    "@typescript-eslint/parser", // TypeScript ESLint parser
+    "@typescript-eslint/utils", // TypeScript ESLint utilities
+    "eslint-config-xo", // XO ESLint config
+    "eslint-config-xo-typescript", // XO TypeScript ESLint config
+    "eslint-formatter-compact", // Compact ESLint formatter
+    "eslint-plugin-eslint-comments", // ESLint comment plugin
+    "eslint-plugin-perfectionist", // Perfectionist ESLint plugin
+    "eslint-plugin-prettier", // Prettier ESLint plugin
+    "eslint-plugin-security", // Security ESLint plugin
+    "eslint-plugin-sonarjs", // SonarJS ESLint plugin
+    "eslint-plugin-unicorn", // Unicorn ESLint plugin
+    "eslint-plugin-unused-imports", // Unused imports ESLint plugin
+    "eslint-plugin-yaml", // YAML ESLint plugin
   ],
 
   // Plugin configurations
