@@ -102,15 +102,16 @@ class CIMonitor {
 			})
 			return JSON.parse(output)
 		} catch (error: unknown) {
-			if (error instanceof Error && (error as any).status === 1 && (error as any).stderr?.includes("no runs found")) {
+			const execError = error as { status?: number; stderr?: string; message?: string }
+			if (execError.status === 1 && execError.stderr?.includes("no runs found")) {
 				return []
 			}
 			console.error(`Error executing: gh ${command}`)
 			if (error instanceof Error) {
 				console.error("Error:", error.message)
 			}
-			if ((error as any).stderr) {
-				console.error("Stderr:", (error as any).stderr)
+			if (execError.stderr) {
+				console.error("Stderr:", execError.stderr)
 			}
 			throw error
 		}
@@ -130,7 +131,7 @@ class CIMonitor {
 				`run list --workflow=${workflowName} --limit=${limit} --json=id,name,headBranch,headSha,status,conclusion,workflowId,createdAt,updatedAt,htmlUrl,runNumber,event,actor`
 			)
 
-			return (runs as any[]).map((run: any) => ({
+			return (runs as Array<Record<string, unknown>>).map((run: Record<string, unknown>) => ({
 				id: run.id,
 				name: run.name,
 				head_branch: run.headBranch,
