@@ -36,10 +36,10 @@ function generateWorkspaceCoverage(): void {
   }
 
   const projects: CoverageReport['projects'] = [];
-  let totalLines = { total: 0, covered: 0, percentage: 0 };
-  let totalFunctions = { total: 0, covered: 0, percentage: 0 };
-  let totalBranches = { total: 0, covered: 0, percentage: 0 };
-  let totalStatements = { total: 0, covered: 0, percentage: 0 };
+  const totalLines = { total: 0, covered: 0, percentage: 0 };
+  const totalFunctions = { total: 0, covered: 0, percentage: 0 };
+  const totalBranches = { total: 0, covered: 0, percentage: 0 };
+  const totalStatements = { total: 0, covered: 0, percentage: 0 };
 
   // List of projects to include in workspace coverage
   const projectList = [
