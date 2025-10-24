@@ -7,15 +7,12 @@ import { QueryClient } from "@tanstack/react-query";
 import { GraphDataService } from "./graph-data-service";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { graphStore } from "../stores/graph-store";
-import type { EntityType, SearchOptions } from "@academic-explorer/graph";
+import type { SearchOptions } from "@academic-explorer/graph";
 import type {
   Work,
   PartialWork,
   Author,
-  Institution,
-  Source,
   OpenAlexEntity,
-  OpenAlexResponse,
 } from "@academic-explorer/client";
 
 // Mock client

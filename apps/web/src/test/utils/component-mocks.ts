@@ -26,27 +26,27 @@ export const mockXYFlow = () => {
   };
 
   vi.doMock("@xyflow/react", () => ({
-    ReactFlow: ({ children, ...props }: any) =>
+    ReactFlow: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) =>
       React.createElement(
         "div",
-        { "data-testid": "react-flow", ...props },
+        { "data-testid": "@xyflow/react", ...props },
         children,
       ),
-    MiniMap: (props: any) =>
+    MiniMap: (props: Record<string, unknown>) =>
       React.createElement("div", { "data-testid": "minimap", ...props }),
-    Controls: (props: any) =>
+    Controls: (props: Record<string, unknown>) =>
       React.createElement("div", { "data-testid": "controls", ...props }),
-    Background: (props: any) =>
+    Background: (props: Record<string, unknown>) =>
       React.createElement("div", { "data-testid": "background", ...props }),
-    Panel: ({ children, ...props }: any) =>
+    Panel: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) =>
       React.createElement(
         "div",
         { "data-testid": "panel", ...props },
         children,
       ),
-    Handle: (props: any) =>
+    Handle: (props: Record<string, unknown>) =>
       React.createElement("div", { "data-testid": "handle", ...props }),
-    NodeResizer: (props: any) =>
+    NodeResizer: (props: Record<string, unknown>) =>
       React.createElement("div", { "data-testid": "node-resizer", ...props }),
 
     // Hooks
@@ -92,7 +92,7 @@ export const mockXYFlow = () => {
     isNode: vi.fn(),
 
     // Provider
-    ReactFlowProvider: ({ children }: any) => children,
+    ReactFlowProvider: ({ children }: React.PropsWithChildren<Record<string, unknown>>) => children,
 
     // Types and constants
     Position: {
@@ -254,7 +254,7 @@ export const mockCanvas = () => {
     createPattern: vi.fn(),
   };
 
-  HTMLCanvasElement.prototype.getContext = vi.fn(() => mockContext as any);
+  HTMLCanvasElement.prototype.getContext = vi.fn(() => mockContext as unknown);
   HTMLCanvasElement.prototype.toDataURL = vi.fn(
     () => "data:image/png;base64,test",
   );
@@ -306,7 +306,7 @@ export const mockIndexedDB = () => {
     deleteDatabase: vi.fn(() => mockRequest),
     databases: vi.fn(() => Promise.resolve([])),
     cmp: vi.fn(),
-  } as any;
+  } as Record<string, unknown>;
 
   return { mockDB, mockRequest };
 };

@@ -3,8 +3,8 @@
  * Provides consistent mocking patterns for router-dependent components
  */
 
-import { vi } from 'vitest';
-import React from 'react';
+import { vi } from "vitest";
+import React from "react";
 
 /**
  * Mock router with commonly used methods and properties
@@ -22,33 +22,33 @@ export const createMockRouter = (overrides: Record<string, unknown> = {}) => ({
   buildHref: vi.fn(),
   state: {
     location: {
-      pathname: '/',
-      search: '',
-      hash: '',
-      href: '/',
+      pathname: "/",
+      search: "",
+      hash: "",
+      href: "/",
       state: undefined,
-      maskedLocation: undefined
+      maskedLocation: undefined,
     },
     resolvedLocation: {
-      pathname: '/',
-      search: '',
-      hash: '',
-      href: '/'
+      pathname: "/",
+      search: "",
+      hash: "",
+      href: "/",
     },
-    status: 'idle' as const,
+    status: "idle" as const,
     isFetching: false,
     isLoading: false,
-    isTransitioning: false
+    isTransitioning: false,
   },
   history: {
     length: 1,
-    action: 'POP' as const,
+    action: "POP" as const,
     location: {
-      pathname: '/',
-      search: '',
-      hash: '',
+      pathname: "/",
+      search: "",
+      hash: "",
       state: undefined,
-      key: 'default'
+      key: "default",
     },
     listen: vi.fn(),
     push: vi.fn(),
@@ -56,24 +56,29 @@ export const createMockRouter = (overrides: Record<string, unknown> = {}) => ({
     go: vi.fn(),
     back: vi.fn(),
     forward: vi.fn(),
-    createHref: vi.fn()
+    createHref: vi.fn(),
   },
-  ...overrides
+  ...overrides,
 });
 
 /**
  * Mock navigation context for TanStack Router
  */
-export const createMockNavigation = (overrides: Record<string, unknown> = {}) => ({
+export const createMockNavigation = (
+  overrides: Record<string, unknown> = {},
+) => ({
   navigate: vi.fn(),
   buildLocation: vi.fn(),
-  ...overrides
+  ...overrides,
 });
 
 /**
  * Mock route context for specific routes
  */
-export const createMockRouteContext = (routeId: string, params: Record<string, string> = {}) => ({
+export const createMockRouteContext = (
+  routeId: string,
+  params: Record<string, string> = {},
+) => ({
   routeId,
   params,
   search: {},
@@ -81,30 +86,30 @@ export const createMockRouteContext = (routeId: string, params: Record<string, s
   actionData: undefined,
   routeSearch: {},
   routeParams: params,
-  pathname: `/${Object.values(params).join('/')}`,
-  href: `/${Object.values(params).join('/')}`
+  pathname: `/${Object.values(params).join("/")}`,
+  href: `/${Object.values(params).join("/")}`,
 });
 
 /**
  * Mock match object for route matching
  */
 export const createMockMatch = (overrides: Record<string, unknown> = {}) => ({
-  id: 'test-route',
+  id: "test-route",
   params: {},
-  pathname: '/',
+  pathname: "/",
   search: {},
-  hash: '',
-  fullPath: '/',
+  hash: "",
+  fullPath: "/",
   state: undefined,
   staticData: undefined,
   loaderData: undefined,
   actionData: undefined,
   error: undefined,
-  status: 'success' as const,
+  status: "success" as const,
   isFetching: false,
   invalidAt: Infinity,
   preload: vi.fn(),
-  ...overrides
+  ...overrides,
 });
 
 /**
@@ -117,31 +122,33 @@ export function withMockRouter<P extends Record<string, unknown>>(
     search?: string;
     params?: Record<string, string>;
     navigate?: typeof vi.fn;
-  }
+  },
 ) {
   return function MockedRouterComponent(props: P) {
     const mockRouter = createMockRouter({
       state: {
         location: {
-          pathname: routerOptions?.pathname || '/',
-          search: routerOptions?.search || '',
-          hash: '',
-          href: (routerOptions?.pathname || '/') + (routerOptions?.search || ''),
+          pathname: routerOptions?.pathname || "/",
+          search: routerOptions?.search || "",
+          hash: "",
+          href:
+            (routerOptions?.pathname || "/") + (routerOptions?.search || ""),
           state: undefined,
-          maskedLocation: undefined
+          maskedLocation: undefined,
         },
         resolvedLocation: {
-          pathname: routerOptions?.pathname || '/',
-          search: routerOptions?.search || '',
-          hash: '',
-          href: (routerOptions?.pathname || '/') + (routerOptions?.search || '')
+          pathname: routerOptions?.pathname || "/",
+          search: routerOptions?.search || "",
+          hash: "",
+          href:
+            (routerOptions?.pathname || "/") + (routerOptions?.search || ""),
         },
-        status: 'idle' as const,
+        status: "idle" as const,
         isFetching: false,
         isLoading: false,
-        isTransitioning: false
+        isTransitioning: false,
       },
-      navigate: routerOptions?.navigate || vi.fn()
+      navigate: routerOptions?.navigate || vi.fn(),
     });
 
     // Mock the router context
@@ -158,12 +165,12 @@ export const mockRouterHooks = {
   useRouter: () => createMockRouter(),
   useNavigate: () => vi.fn(),
   useLocation: () => ({
-    pathname: '/',
-    search: '',
-    hash: '',
-    href: '/',
+    pathname: "/",
+    search: "",
+    hash: "",
+    href: "/",
     state: undefined,
-    maskedLocation: undefined
+    maskedLocation: undefined,
   }),
   useParams: () => ({}),
   useSearch: () => ({}),
@@ -172,25 +179,25 @@ export const mockRouterHooks = {
   useRouteContext: () => ({}),
   useLoaderData: () => undefined,
   useRouterState: () => ({
-    status: 'idle' as const,
+    status: "idle" as const,
     isFetching: false,
     isLoading: false,
     isTransitioning: false,
     location: {
-      pathname: '/',
-      search: '',
-      hash: '',
-      href: '/',
+      pathname: "/",
+      search: "",
+      hash: "",
+      href: "/",
       state: undefined,
-      maskedLocation: undefined
+      maskedLocation: undefined,
     },
     resolvedLocation: {
-      pathname: '/',
-      search: '',
-      hash: '',
-      href: '/'
-    }
-  })
+      pathname: "/",
+      search: "",
+      hash: "",
+      href: "/",
+    },
+  }),
 };
 
 /**
@@ -199,63 +206,69 @@ export const mockRouterHooks = {
  */
 export function setupRouterMocks() {
   // Mock @tanstack/react-router with vi.mock (top-level mocking)
-  vi.mock('@tanstack/react-router', async () => {
-    const actual = await vi.importActual('@tanstack/react-router');
+  vi.mock("@tanstack/react-router", async () => {
+    const actual = await vi.importActual("@tanstack/react-router");
     return {
       ...actual,
       ...mockRouterHooks,
-      Link: ({ children, to, ...props }: any) =>
-        React.createElement('a', { href: to, ...props }, children),
-      Outlet: ({ ...props }: any) =>
-        React.createElement('div', { 'data-testid': 'router-outlet', ...props }),
-      Navigate: ({ to }: any) =>
-        React.createElement('div', { 'data-testid': 'navigate', 'data-to': to }),
+      Link: ({ children, to, ...props }: React.PropsWithChildren<{ to: string } & Record<string, unknown>>) =>
+        React.createElement("a", { href: to, ...props }, children),
+      Outlet: ({ ...props }: Record<string, unknown>) =>
+        React.createElement("div", {
+          "data-testid": "router-outlet",
+          ...props,
+        }),
+      Navigate: ({ to }: { to: string }) =>
+        React.createElement("div", {
+          "data-testid": "navigate",
+          "data-to": to,
+        }),
       createRouter: vi.fn(() => createMockRouter()),
       createRootRoute: vi.fn(),
       createRoute: vi.fn(),
-      RouterProvider: ({ children }: any) => children,
+      RouterProvider: ({ children }: React.PropsWithChildren<Record<string, unknown>>) => children,
       useRouterState: () => ({
-        status: 'idle' as const,
+        status: "idle" as const,
         isFetching: false,
         isLoading: false,
         isTransitioning: false,
         location: {
-          pathname: '/',
-          search: '',
-          hash: '',
-          href: '/',
+          pathname: "/",
+          search: "",
+          hash: "",
+          href: "/",
           state: undefined,
-          maskedLocation: undefined
+          maskedLocation: undefined,
         },
         resolvedLocation: {
-          pathname: '/',
-          search: '',
-          hash: '',
-          href: '/'
-        }
+          pathname: "/",
+          search: "",
+          hash: "",
+          href: "/",
+        },
       }),
       useRouter: () => createMockRouter(),
       useNavigate: () => vi.fn(),
       useLocation: () => ({
-        pathname: '/',
-        search: '',
-        hash: '',
-        href: '/',
+        pathname: "/",
+        search: "",
+        hash: "",
+        href: "/",
         state: undefined,
-        maskedLocation: undefined
+        maskedLocation: undefined,
       }),
       useParams: () => ({}),
       useSearch: () => ({}),
       useMatches: () => [createMockMatch()],
       useMatch: () => createMockMatch(),
       useRouteContext: () => ({}),
-      useLoaderData: () => undefined
+      useLoaderData: () => undefined,
     };
   });
 
   // Mock specific router components used in the app
-  vi.mock('@/lib/router', () => ({
-    router: createMockRouter()
+  vi.mock("@/lib/router", () => ({
+    router: createMockRouter(),
   }));
 }
 
@@ -263,9 +276,9 @@ export function setupRouterMocks() {
  * Reset all router mocks to their initial state
  */
 export function resetRouterMocks() {
-  Object.values(mockRouterHooks).forEach(hook => {
-    if (typeof hook === 'function' && 'mockReset' in hook) {
-      (hook as any).mockReset();
+  Object.values(mockRouterHooks).forEach((hook) => {
+    if (typeof hook === "function" && "mockReset" in hook) {
+      (hook as { mockReset: () => void }).mockReset();
     }
   });
 }

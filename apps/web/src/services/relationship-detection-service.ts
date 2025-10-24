@@ -94,7 +94,7 @@ export class RelationshipDetectionService {
     );
 
     // Log the node types being processed
-    const store = graphStore.getState();
+    const store = graphStore;
     const nodeTypes = nodeIds.map((id) => {
       const node = store.getNode(id);
       return node ? `${id}(${node.entityType})` : `${id}(not found)`;
@@ -177,7 +177,7 @@ export class RelationshipDetectionService {
    * Fetches minimal data and analyzes relationships with existing nodes
    */
   async detectRelationshipsForNode(nodeId: string): Promise<GraphEdge[]> {
-    const store = graphStore.getState();
+    const store = graphStore;
     const existingNodes = Object.values(store.nodes) as GraphNode[];
 
     // Get the node from the store
@@ -240,7 +240,7 @@ export class RelationshipDetectionService {
    * Check if existing entity data has sufficient fields for relationship detection
    */
   private hasSufficientEntityData(
-    entityData: any,
+    entityData: Record<string, unknown>,
     entityType: EntityType,
   ): boolean {
     if (!entityData || typeof entityData !== "object") return false;
@@ -270,13 +270,13 @@ export class RelationshipDetectionService {
    * Convert existing node entity data to minimal format for relationship detection
    */
   private convertNodeEntityDataToMinimal(
-    entityData: any,
+    entityData: Record<string, unknown>,
     entityType: EntityType,
   ): MinimalEntityData {
     return {
-      id: entityData.id,
+      id: entityData.id as string,
       entityType,
-      display_name: entityData.display_name,
+      display_name: entityData.display_name as string,
       authorships: entityData.authorships,
       primary_location: entityData.primary_location,
       referenced_works: entityData.referenced_works,
@@ -400,7 +400,9 @@ export class RelationshipDetectionService {
               ...(entityWithId.primary_location && {
                 primary_location: entityWithId.primary_location,
               }),
-              referenced_works: entityWithId.referenced_works,
+              ...(entityWithId.referenced_works && {
+                referenced_works: entityWithId.referenced_works,
+              }),
             });
           }
           break;
@@ -427,18 +429,19 @@ export class RelationshipDetectionService {
           const normalizedAffiliations = Array.isArray(
             entityWithId.affiliations,
           )
-            ? entityWithId.affiliations.filter((affiliation) =>
+            ? entityWithId.affiliations.filter((affiliation: Record<string, unknown>) =>
                 Boolean(
-                  affiliation?.institution?.id &&
-                    typeof affiliation.institution.id === "string",
+                  (affiliation?.institution as Record<string, unknown>)?.id &&
+                    typeof (affiliation.institution as Record<string, unknown>).id === "string",
                 ),
               )
             : [];
 
           const normalizedLastKnown = Array.isArray(
-            entityWithId.last_known_institutions,
+            (entityWithId as Record<string, unknown>).last_known_institutions,
           )
-            ? entityWithId.last_known_institutions.filter((institution) =>
+            ? ((entityWithId as Record<string, unknown>).last_known_institutions as Record<string, unknown>[])
+                .filter((institution: Record<string, unknown>) =>
                 Boolean(institution?.id && typeof institution.id === "string"),
               )
             : [];
@@ -459,8 +462,8 @@ export class RelationshipDetectionService {
         case "sources": {
           if (isSource(entityWithId)) {
             Object.assign(minimalData, {
-              ...(entityWithId.publisher && {
-                publisher: entityWithId.publisher,
+              ...("publisher" in entityWithId && (entityWithId as Record<string, unknown>).publisher && {
+                publisher: (entityWithId as Record<string, unknown>).publisher,
               }),
             });
           }
@@ -469,7 +472,7 @@ export class RelationshipDetectionService {
         case "institutions": {
           if (isInstitution(entityWithId)) {
             Object.assign(minimalData, {
-              ...(entityWithId.lineage && { lineage: entityWithId.lineage }),
+              ...("lineage" in entityWithId && entityWithId.lineage && { lineage: entityWithId.lineage }),
             });
           }
           break;
@@ -724,10 +727,10 @@ export class RelationshipDetectionService {
 
     // Get referenced_works from the graph node data if not present
     if (!referencedWorks) {
-      const store = graphStore.getState();
+      const store = graphStore;
       const graphNode = Object.values(store.nodes).find(
         (node: GraphNode) => node.entityId === workData.id,
-      );
+      ) as GraphNode | undefined;
       const referencedWorksFromNode =
         graphNode?.entityData &&
         (graphNode.entityData as { referenced_works?: string[] })
@@ -901,7 +904,7 @@ export class RelationshipDetectionService {
     const relationships: DetectedRelationship[] = [];
 
     // Check for parent institution relationships
-    if (institutionData.lineage) {
+    if ("lineage" in institutionData && institutionData.lineage) {
       for (const parentId of institutionData.lineage) {
         if (parentId !== institutionData.id) {
           const parentNode = existingNodes.find(
@@ -1006,7 +1009,7 @@ export class RelationshipDetectionService {
     nodeId: string;
     batchNodeIds: string[];
   }): Promise<GraphEdge[]> {
-    const store = graphStore.getState();
+    const store = graphStore;
     const sourceNode = store.getNode(nodeId);
 
     if (!sourceNode) {

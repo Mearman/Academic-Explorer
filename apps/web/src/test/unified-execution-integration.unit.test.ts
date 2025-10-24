@@ -3,7 +3,7 @@
  * Tests the complete integration of both worker and non-worker execution paths
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { describe, it, expect, _beforeEach, _afterEach, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useUnifiedExecutionWorker } from "../hooks/use-unified-execution-worker";
 import type { ForceSimulationNode } from "@academic-explorer/graph";

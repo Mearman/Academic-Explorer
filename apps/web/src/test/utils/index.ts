@@ -43,7 +43,7 @@ import React from "react";
 import { render, type RenderOptions } from "@testing-library/react";
 import { MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { vi } from "vitest";
+import { vi as _vi } from "vitest";
 
 /**
  * Test wrapper component that provides common providers

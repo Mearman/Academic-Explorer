@@ -510,7 +510,7 @@ describe("RequestDeduplicationService", () => {
       mockFetcher.mockResolvedValue(mockEntity);
 
       // First call should fetch
-      const result1 = await service.getEntity({
+      await service.getEntity({
         entityId: "W123456789",
         fetcher: mockFetcher,
       });

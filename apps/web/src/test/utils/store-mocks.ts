@@ -1,10 +1,9 @@
 /**
  * Shared store mocking utilities for testing
- * Provides consistent mocking patterns for Zustand stores
+ * Provides consistent mocking patterns for React Context stores
  */
 
 import { vi } from "vitest";
-import type { StateCreator } from "zustand";
 import React from "react";
 
 /**
@@ -24,7 +23,7 @@ export function createMockStore<T extends Record<string, unknown>>(
       if (prop === "__mockReset") {
         return () => {
           Object.keys(target).forEach((key) => {
-            delete (target as any)[key];
+            delete (target as Record<string, unknown>)[key];
           });
           Object.assign(target, initialState);
         };
@@ -39,7 +38,7 @@ export function createMockStore<T extends Record<string, unknown>>(
       return target[prop as keyof T];
     },
     set(target, prop, value) {
-      (target as any)[prop] = value;
+      (target as Record<string, unknown>)[prop as string] = value;
       return true;
     },
   });

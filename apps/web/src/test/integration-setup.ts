@@ -3,24 +3,27 @@
  * Provides mocks for dependencies used in integration tests that run in Node environment
  */
 
-import { vi } from 'vitest';
+import { vi } from "vitest";
+import { mockRouterHooks } from "./utils/router-mocks";
 
 // Mock createFileRoute for TanStack Router
-vi.mock('@tanstack/react-router', async () => {
-  const actual = await vi.importActual('@tanstack/react-router');
+vi.mock("@tanstack/react-router", async () => {
+  const actual = await vi.importActual("@tanstack/react-router");
   return {
     ...actual,
-    createFileRoute: vi.fn(() => vi.fn(() => ({
-      useParams: vi.fn(() => ({})),
-      useSearch: vi.fn(() => ({})),
-    }))),
+    createFileRoute: vi.fn(() =>
+      vi.fn(() => ({
+        useParams: vi.fn(() => ({})),
+        useSearch: vi.fn(() => ({})),
+      })),
+    ),
     // Include other mocks from router-mocks if needed
-    ...require('./utils/router-mocks').mockRouterHooks,
+    ...mockRouterHooks,
   };
 });
 
 // Mock stores/graph-store
-vi.mock('@/stores/graph-store', () => ({
+vi.mock("@/stores/graph-store", () => ({
   useGraphStore: vi.fn(() => ({
     // Provide minimal implementation for integration tests
     totalNodeCount: 0,

@@ -6,7 +6,7 @@
 
 import { expansionSettingsActions } from "../stores/expansion-settings-store";
 import { graphStore } from "../stores/graph-store";
-import { useRepositoryStore } from "../stores/repository-store";
+import { repositoryStore } from "../stores/repository-store";
 import type {
   Author,
   InstitutionEntity,
@@ -44,11 +44,8 @@ import {
 } from "./request-deduplication-service";
 
 // Detection method constants
-const DETECTION_METHOD_OPENALEX_ID = "OpenAlex ID";
-const DETECTION_METHOD_OPENALEX_URL = "OpenAlex URL";
 const _ENTITY_TYPE_CITED_BY_API_URL = "cited_by_api_url";
 const ERROR_MESSAGE_UNKNOWN = "Unknown error";
-const LOGGER_CATEGORY_GRAPH_DATA = "graph-data";
 const OPENALEX_URL_PREFIX = "https://openalex.org/";
 
 /**
@@ -424,23 +421,6 @@ export class GraphDataService {
       throw new Error(`Unable to detect entity type for: ${entityId}`);
     }
 
-    // Fetch entity with deduplication service and cache-first strategy
-    const apiEntityId = detection.normalizedId;
-
-    const entity = await this.deduplicationService.getEntity({
-      entityId: apiEntityId,
-      fetcher: async () => {
-        const result = await fetchEntityViaPipeline({
-          entityType: detection.entityType,
-          entityId: apiEntityId,
-        });
-        if (!result) {
-          throw new Error(`Entity not found: ${apiEntityId}`);
-        }
-        return result;
-      },
-    });
-
     const currentStore = graphStore.getState();
 
     try {
@@ -565,8 +545,7 @@ export class GraphDataService {
    * Used for repository mode when building a collection before adding to graph
    */
   async loadEntityIntoRepository(entityId: string): Promise<void> {
-    const repositoryStore = useRepositoryStore();
-
+    
     try {
       // Detect entity type
       const detection = EntityDetectionService.detectEntity(entityId);

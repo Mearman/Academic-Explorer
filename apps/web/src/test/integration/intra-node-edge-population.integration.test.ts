@@ -211,14 +211,6 @@ vi.mock("../../stores/graph-store", () => ({
 
 // Mock the cached client with proper nested structure
 const {
-  mockWorks,
-  mockAuthors,
-  mockSources,
-  mockInstitutions,
-  mockTopics,
-  mockPublishers,
-  mockFunders,
-  mockKeywords,
   mockClient,
 } = vi.hoisted(() => ({
   mockWorks: { getWork: vi.fn() },
@@ -346,7 +338,7 @@ const createMockWork = (
   ({
     id,
     display_name: `Test Work ${id}`,
-    authorships: authorIds.map((authorId, index) => ({
+    authorships: authorIds.map((authorId, _index) => ({
       author: {
         id: authorId,
         display_name: `Test Author ${authorId}`,
@@ -574,7 +566,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       // Mock API responses - ensure the API returns the same work data
       // Handle both with and without select parameters
       mockClient.works.getWork.mockImplementation(
-        (id: string, params?: any) => {
+        (id: string, _params?: unknown) => {
           if (id === workId) {
             return Promise.resolve(work);
           }
@@ -666,7 +658,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 
       // Mock API responses - ensure the API returns the correct work data
       mockClient.works.getWork.mockImplementation(
-        (id: string, params?: any) => {
+        (id: string, _params?: unknown) => {
           if (id === citingWorkId) {
             return Promise.resolve({
               ...citingWork,
@@ -696,8 +688,8 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       store.addNode(citingNode);
 
       // Check if node exists in store
-      const graphStore = useGraphStore as any;
-      const foundNode = graphStore.getNode(citingNode.id);
+      const graphStore = useGraphStore as unknown;
+      const _foundNode = graphStore.getNode(citingNode.id);
 
       // Detect relationships for the citing work
       const detectedEdges =

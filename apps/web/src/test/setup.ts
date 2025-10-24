@@ -1,15 +1,15 @@
 // Ensure TextEncoder/TextDecoder are available synchronously before any other code
 // This is critical for esbuild to work properly in test environments
-try {
-  const util = require("util");
-  global.TextEncoder = util.TextEncoder;
-  global.TextDecoder = util.TextDecoder;
-  globalThis.TextEncoder = util.TextEncoder;
-  globalThis.TextDecoder = util.TextDecoder;
-} catch (err) {
-  // If util import fails, create minimal implementations
-  const Buffer = require("buffer").Buffer;
+import { Buffer } from "buffer";
+import { TextEncoder as NodeTextEncoder, TextDecoder as NodeTextDecoder } from "util";
 
+try {
+  global.TextEncoder = NodeTextEncoder;
+  global.TextDecoder = NodeTextDecoder;
+  globalThis.TextEncoder = NodeTextEncoder;
+  globalThis.TextDecoder = NodeTextDecoder;
+} catch (_err) {
+  // If util import fails, create minimal implementations
   global.TextEncoder = class {
     encoding = "utf-8";
     encode(input = "") {
@@ -49,13 +49,12 @@ export {};
 if (typeof process !== "undefined" && process.env.VITEST) {
   const { vi } = await import("vitest");
 
-  if (typeof (global as any).TextDecoder === "undefined") {
-    (global as any).TextDecoder = class {
-      decode(input: Uint8Array | Buffer) {
-        const Buffer = require("buffer").Buffer;
-        return Buffer.from(input as any).toString("utf-8");
+  if (typeof (global as unknown as { TextDecoder?: unknown }).TextDecoder === "undefined") {
+    (global as unknown as { TextDecoder: typeof TextDecoder }).TextDecoder = class {
+      decode(input: Uint8Array | Buffer): string {
+        return Buffer.from(input as Uint8Array | Buffer).toString("utf-8");
       }
-    } as any;
+    };
   }
 
   // Import jest-dom for Vitest - extends expect with DOM matchers
@@ -69,7 +68,7 @@ if (typeof process !== "undefined" && process.env.VITEST) {
   );
 
   // Configure test environment globals
-  (globalThis as any).__DEV__ = true;
+  (globalThis as Record<string, unknown>).__DEV__ = true;
 
   // Increase process event listener limits to prevent MaxListenersExceededWarning
   // This is common in test environments with multiple parallel operations
@@ -122,10 +121,10 @@ if (typeof process !== "undefined" && process.env.VITEST) {
   };
 
   // Mock IntersectionObserver for components that use visibility detection
-  (global as any).IntersectionObserver = class IntersectionObserver {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
+  (global as unknown as { IntersectionObserver: typeof IntersectionObserver }).IntersectionObserver = class IntersectionObserver {
+    observe(): void {}
+    unobserve(): void {}
+    disconnect(): void {}
   };
 
   // Setup MSW server for API mocking
@@ -177,7 +176,7 @@ if (typeof process !== "undefined" && process.env.VITEST) {
       });
 
     // Make QueryClient available globally for tests
-    (global as any).testQueryClient = createTestQueryClient();
+    (global as Record<string, unknown>).testQueryClient = createTestQueryClient();
   }
 
   // Partial module mocks to protect integration tests that expect
@@ -193,13 +192,13 @@ if (typeof process !== "undefined" && process.env.VITEST) {
         // Provide a minimal createFileRoute if it's not exported by the real module
         const createFileRoute =
           actual.createFileRoute ??
-          ((path: string) => (opts: any) => ({ path, ...opts }));
+          ((path: string) => (opts: Record<string, unknown>) => ({ path, ...opts }));
         return {
           ...actual,
           createFileRoute,
         };
       });
-    } catch (e) {
+    } catch (_e) {
       // If mocking fails (for e.g. running in an environment without vi), ignore
     }
 
@@ -209,7 +208,7 @@ if (typeof process !== "undefined" && process.env.VITEST) {
         createBrowserHistory: () => ({ listen: () => {}, push: () => {} }),
         createMemoryHistory: () => ({ listen: () => {}, push: () => {} }),
       }));
-    } catch (e) {
+    } catch (_e) {
       // ignore
     }
   }
