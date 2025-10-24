@@ -76,7 +76,6 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@academic-explorer/client": "workspace:*",
     "@academic-explorer/graph": "workspace:*",
     "@academic-explorer/types": "workspace:*",
     "@tanstack/react-table": "^8.21.3"
@@ -86,6 +85,7 @@
     "@mantine/hooks": "^8.3.1",
     "@mantine/notifications": "^8.3.1",
     "@tabler/icons-react": "^3.35.0",
+    "@tanstack/react-router": "^1.105.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },

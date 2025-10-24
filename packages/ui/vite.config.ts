@@ -16,6 +16,10 @@ const uiConfig = defineConfig({
       formats: ["es", "cjs"],
       fileName: (format) => `index.${format}.js`,
     },
+    sourcemap: true,
+    copyPublicDir: false,
+    emptyOutDir: true,
+    target: "esnext",
     rollupOptions: {
       external: [
         // React ecosystem
@@ -41,7 +45,6 @@ const uiConfig = defineConfig({
         // Internal workspace dependencies
         "@academic-explorer/types",
         "@academic-explorer/utils",
-        "@academic-explorer/client",
         "@academic-explorer/graph",
       ],
       output: {
@@ -56,16 +59,13 @@ const uiConfig = defineConfig({
           "@mantine/spotlight": "MantineSpotlight",
           "@tabler/icons-react": "TablerIcons",
           "@tanstack/react-table": "ReactTable",
+          "@tanstack/react-router": "ReactRouter",
           "@xyflow/react": "XYFlow",
           "date-fns": "dateFns",
           immer: "immer",
         },
       },
     },
-    sourcemap: true,
-    copyPublicDir: false,
-    emptyOutDir: true,
-    target: "esnext",
   },
 
   resolve: {
