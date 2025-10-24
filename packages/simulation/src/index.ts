@@ -9,40 +9,37 @@
  */
 
 // Core types and configuration
-export * from './types/index.js';
+export * from "./types/index.js"
 
 // Event system
-export * from './events/index.js';
+export * from "./events/index.js"
 
 // Utilities
-export * from './utils/index.js';
+export * from "./utils/index.js"
 
 // Simulation engines
-export * from './engines/index.js';
+export * from "./engines/index.js"
 
 // Re-export key types for convenience
 export type {
-  SimulationNode,
-  SimulationLink,
-  NodePosition,
-  ForceSimulationConfig,
-} from './types/index.js';
+	SimulationNode,
+	SimulationLink,
+	NodePosition,
+	ForceSimulationConfig,
+} from "./types/index.js"
 
 export type {
-  SimulationEvent,
-  SimulationProgressEvent,
-  SimulationCompleteEvent,
-  SimulationErrorEvent,
-  SimulationEventHandler,
-} from './events/index.js';
+	SimulationEvent,
+	SimulationProgressEvent,
+	SimulationCompleteEvent,
+	SimulationErrorEvent,
+	SimulationEventHandler,
+} from "./events/index.js"
+
+export type { Logger, ForceSimulationEngineOptions } from "./engines/force-simulation-engine.js"
 
 export type {
-  Logger,
-  ForceSimulationEngineOptions,
-} from './engines/force-simulation-engine.js';
-
-export type {
-  AutoSimulationState,
-  AutoSimulationDecision,
-  AutoSimulationManagerOptions,
-} from './engines/auto-simulation-manager.js';
+	AutoSimulationState,
+	AutoSimulationDecision,
+	AutoSimulationManagerOptions,
+} from "./engines/auto-simulation-manager.js"
