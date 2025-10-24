@@ -8,10 +8,14 @@
     "paths": {
       "@/ui/section-kit": ["./src/components/section-kit"]
     },
-    "declaration": false,
-    "composite": false
+    "declaration": true,
+    "composite": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["**/*.test.*", "**/*.spec.*"],
-  "references": []
+  "include": ["src/**/*", "*.config.ts", "vitest.config.ts", ".storybook/**/*"],
+  "references": [
+    { "path": "../types" },
+    { "path": "../utils" },
+    { "path": "../client" },
+    { "path": "../graph" }
+  ]
 }

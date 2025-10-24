@@ -3,10 +3,10 @@ import { resolve } from "path";
 import { defineConfig, mergeConfig } from "vite";
 import baseConfig from "../../vite.config.base";
 
-const uiOverrides = defineConfig({
-  plugins: [],
+// UI library-specific Vite configuration
+// Optimized for library distribution with proper externals
+const uiConfig = defineConfig({
   build: {
-    emptyOutDir: true,
     lib: {
       entry: resolve(
         fileURLToPath(new URL(".", import.meta.url)),
@@ -18,20 +18,28 @@ const uiOverrides = defineConfig({
     },
     rollupOptions: {
       external: [
+        // React ecosystem
         "react",
         "react-dom",
         "react/jsx-runtime",
+
+        // Mantine UI library
         "@mantine/core",
         "@mantine/hooks",
         "@mantine/dates",
         "@mantine/notifications",
         "@mantine/spotlight",
+
+        // Icons and utilities
         "@tabler/icons-react",
         "@tanstack/react-table",
         "@xyflow/react",
         "date-fns",
         "immer",
+
+        // Internal workspace dependencies
         "@academic-explorer/types",
+        "@academic-explorer/utils",
       ],
       output: {
         globals: {
@@ -53,7 +61,10 @@ const uiOverrides = defineConfig({
     },
     sourcemap: true,
     copyPublicDir: false,
+    emptyOutDir: true,
+    target: "esnext",
   },
+
   resolve: {
     alias: {
       "@": resolve(fileURLToPath(new URL(".", import.meta.url)), "src"),
@@ -61,7 +72,5 @@ const uiOverrides = defineConfig({
   },
 });
 
-// Debug logging for external dependencies
-console.log("UI Package externals:", uiOverrides.build.rollupOptions.external);
-
-export default mergeConfig(baseConfig, uiOverrides);
+// Type assertion to handle mergeConfig compatibility between different Vite versions
+export default mergeConfig(baseConfig, uiConfig) as any;
