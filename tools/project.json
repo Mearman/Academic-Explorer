@@ -7,8 +7,19 @@
     "typecheck": "typecheck",
     "lint": {
       "options": {
-        "command": "NODE_OPTIONS='--import tsx' eslint --no-warn-ignored scripts/**/*.ts"
+        "command": "NODE_OPTIONS='--import tsx' eslint --no-warn-ignored scripts/**/*.ts generators/**/*.ts"
+      }
+    },
+    "generators": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "echo 'Academic Explorer Generators Available:' && echo '  - library: Create new packages with proper structure' && echo '  - component: Generate React components with testing and Storybook' && echo '  - entity-view: Generate OpenAlex entity views with routing'"
       }
     }
-  }
+  },
+  "generators": [
+    "generators/library",
+    "generators/component",
+    "generators/entity-view"
+  ]
 }
