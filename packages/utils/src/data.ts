@@ -36,8 +36,17 @@ function sortBy<T>(array: T[], key: keyof T | ((item: T) => unknown)): T[] {
 	return [...array].sort((a, b) => {
 		const aVal = typeof key === 'function' ? key(a) : a[key]
 		const bVal = typeof key === 'function' ? key(b) : b[key]
-		if (aVal < bVal) return -1
-		if (aVal > bVal) return 1
+
+		// Handle unknown types with proper comparison
+		if (aVal == null && bVal == null) return 0
+		if (aVal == null) return -1
+		if (bVal == null) return 1
+
+		const aStr = String(aVal)
+		const bStr = String(bVal)
+
+		if (aStr < bStr) return -1
+		if (aStr > bStr) return 1
 		return 0
 	})
 }
@@ -58,7 +67,7 @@ function groupBy<T>(array: T[], key: keyof T | ((item: T) => unknown)): Record<s
 /**
  * Create a new object without specified keys
  */
-function omit<T, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
+function omit<T extends Record<string, unknown>, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
 	const result = { ...obj }
 	keys.forEach(key => delete result[key])
 	return result
@@ -67,7 +76,7 @@ function omit<T, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
 /**
  * Create a new object with only specified keys
  */
-function pick<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
+function pick<T extends Record<string, unknown>, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
 	const result = {} as Pick<T, K>
 	keys.forEach(key => {
 		if (key in obj) result[key] = obj[key]

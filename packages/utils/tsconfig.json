@@ -16,7 +16,8 @@
   "include": ["src/**/*", "../../types/**/*"],
   "exclude": [
     "dist",
-    "node_modules"
+    "node_modules",
+    "src/storage/**/*"
   ],
   "references": [
     { "path": "../types" }

@@ -176,7 +176,7 @@ export function parseSTARFile(file: File): Promise<ParseResult> { // eslint-disa
  * Stub implementation - applications should provide their own
  */
 export function createSTARDatasetFromParseResult({
-	_file,
+	file,
 	reviewTopic,
 }: {
 	file: File
@@ -189,7 +189,7 @@ export function createSTARDatasetFromParseResult({
 	)
 	return {
 		id: `dataset-${Date.now()}`,
-		name: _file.name,
+		name: file.name,
 		papers: [],
 		includedPapers: [],
 		metadata: {},
