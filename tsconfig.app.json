@@ -5,40 +5,22 @@
     "target": "ES2022",
     "useDefineForClassFields": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "types": ["vitest/globals"],
-    "module": "ESNext",
+      "module": "ESNext",
     "skipLibCheck": true,
     "incremental": true,
     "assumeChangesOnlyAffectDirectDependencies": true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
+    "allowImportingTsExtensions": false,
     "verbatimModuleSyntax": false,
     "moduleDetection": "force",
-    "noEmit": true,
     "jsx": "react-jsx",
 
-    /* Path mapping */
+    /* Path mapping - @/* is for app-internal paths */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@academic-explorer/graph": ["../../packages/graph/src/index.ts"],
-      "@academic-explorer/graph/*": ["../../packages/graph/src/*"],
-      "@academic-explorer/utils": ["../../packages/utils/src/index.ts"],
-      "@academic-explorer/utils/*": ["../../packages/utils/src/*"],
-      "@academic-explorer/simulation": [
-        "../../packages/simulation/src/index.ts"
-      ],
-      "@academic-explorer/simulation/*": ["../../packages/simulation/src/*"],
-      "@academic-explorer/ui": ["../../packages/ui/src/index.ts"],
-      "@academic-explorer/ui/*": ["../../packages/ui/src/*"],
-      "@academic-explorer/ui/components/ViewToggle": [
-        "../../packages/ui/src/components/ViewToggle/index.ts"
-      ],
-      "@academic-explorer/ui/components/entity-views": [
-        "../../packages/ui/src/components/entity-views/index.ts"
-      ]
+      "@/*": ["src/*"]
     },
 
     /* Linting */

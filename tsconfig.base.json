@@ -3,7 +3,6 @@
   "compilerOptions": {
     "rootDir": ".",
     "sourceMap": true,
-    "declaration": false,
     "moduleDetection": "force",
     "experimentalDecorators": true,
     "importHelpers": true,
@@ -12,21 +11,11 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
+    "noImplicitAny": false,
     "incremental": true,
     "assumeChangesOnlyAffectDirectDependencies": true,
-    "baseUrl": ".",
-    "paths": {
-      "@academic-explorer/client": ["packages/client/dist/index.d.ts"],
-      "@academic-explorer/client/*": ["packages/client/dist/*"],
-      "@academic-explorer/graph": ["packages/graph/src/index.ts"],
-      "@academic-explorer/graph/*": ["packages/graph/src/*"],
-      "@academic-explorer/simulation": ["packages/simulation/src/index.ts"],
-      "@academic-explorer/simulation/*": ["packages/simulation/src/*"],
-      "@academic-explorer/ui": ["packages/ui/src/index.ts"],
-      "@academic-explorer/ui/*": ["packages/ui/src/*"],
-      "@academic-explorer/utils": ["packages/utils/src/index.ts"],
-      "@academic-explorer/utils/*": ["packages/utils/src/*"]
-    },
+    "composite": true,
+    "declaration": true,
     "allowJs": false,
     "strict": true,
     "strictNullChecks": true,
@@ -35,7 +24,6 @@
     "noImplicitReturns": false,
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
-    "noImplicitAny": false,
     "exactOptionalPropertyTypes": false,
     "noUncheckedIndexedAccess": false,
     "useDefineForClassFields": true,
@@ -47,8 +35,8 @@
     "isolatedModules": true,
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
-    "noEmit": true,
-    "types": ["vitest/globals"]
+    "typeRoots": ["node_modules/@types", "types"],
   },
+  "include": ["types/**/*"],
   "exclude": ["node_modules", "tmp"]
 }
