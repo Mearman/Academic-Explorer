@@ -4,9 +4,9 @@
  */
 
 import React, { ReactElement } from "react";
-import { render, renderHook, RenderOptions, RenderHookOptions, screen, fireEvent, waitFor, act, userEvent } from "@testing-library/react";
+import { render, renderHook, RenderOptions, RenderHookOptions } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { vi, type Mock, expect, test } from "vitest";
+import { vi } from "vitest";
 import type { GraphNode } from "@academic-explorer/graph";
 
 /**
@@ -334,7 +334,7 @@ export const ComponentHelpers = {
    */
   createMockComponent: <TProps = any>(
     name: string,
-    defaultProps: TProps = {} as TProps
+    _defaultProps: TProps = {} as TProps
   ): React.FC<TProps> => {
     return ({ children, ...props }: TProps & { children?: React.ReactNode }) => (
       <div data-testid={`mock-${name}`} {...(props as any)}>
@@ -382,7 +382,7 @@ export const PerformanceHelpers = {
   /**
    * Measure component render time
    */
-  measureRenderTime: <T>(
+  measureRenderTime: <T = any>(
     renderFn: () => T,
     iterations = 10
   ): Promise<number> => {
@@ -401,7 +401,7 @@ export const PerformanceHelpers = {
   /**
    * Test component with large datasets
    */
-  testWithLargeDataset: <T>(
+  testWithLargeDataset: (
     component: ReactElement,
     dataGenerator: (size: number) => any,
     sizes: number[] = [100, 1000, 10000]
@@ -448,7 +448,7 @@ export const TestPatterns = {
 
     return {
       queryClient,
-      renderHook: <TResult>(
+      renderHook: <TResult = any>(
         hook: (initialProps: TProps) => TResult,
         options: CustomRenderHookOptions<TProps> = {}
       ) => customRenderHook(hook, { ...options, queryClient }),
