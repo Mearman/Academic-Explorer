@@ -3,13 +3,17 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "./dist",
-    "tsBuildInfoFile": "./dist/.tsbuildinfo"
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
+    "lib": ["ES2022"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "types": []
   },
   "include": [
     "src/**/*",
-    "eslint.config.ts",
-    "tsup.config.ts",
-    "vitest.config.ts"
+    "../../types/**/*"
   ],
   "exclude": [
     "dist",

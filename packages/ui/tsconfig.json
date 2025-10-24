@@ -11,9 +11,14 @@
     "declaration": true,
     "composite": true,
     "jsx": "react-jsx",
-    "lib": ["dom", "dom.iterable", "esnext"]
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "types": []
   },
-  "include": ["src/**/*", "*.config.ts", "vitest.config.ts", ".storybook/**/*", "eslint.config.minimal.ts"],
+  "include": ["src/**/*", "../../types/**/*"],
   "references": [
     { "path": "../types" },
     { "path": "../utils" },

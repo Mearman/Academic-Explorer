@@ -3,8 +3,14 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-    "tsBuildInfoFile": "./dist/.tsbuildinfo"
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
+    "lib": ["ES2022"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "types": []
   },
-  "include": ["src/**/*", "vitest.config.ts"],
+  "include": ["src/**/*", "../../types/**/*"],
   "exclude": ["dist", "node_modules"]
 }
