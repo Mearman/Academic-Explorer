@@ -72,7 +72,7 @@ export interface FieldRequest {
  * Optimized batch request combining multiple field requests
  * Reduces API calls through intelligent field merging
  */
-export interface BatchRequest {
+interface BatchRequest {
 	/** Target entity type for the batch */
 	entityType: EntityType
 
