@@ -4,8 +4,8 @@ export * from "./state"
 // Cache utilities
 export * from "./cache"
 
-// Cache browser utilities - temporarily excluded due to complex dependencies
-// export * from "./cache-browser"
+// Cache browser utilities
+export * from "./cache-browser"
 
 // Logger
 export { logger } from "./logger"
@@ -20,13 +20,13 @@ export {
 	type ExpansionTarget,
 } from "./validation"
 
-// Data utilities - temporarily excluded due to complex type issues
-// export {
-// 	debouncedSearch,
-// 	isValidSearchQuery,
-// 	normalizeSearchQuery,
-// 	formatLargeNumber,
-// } from "./data"
+// Data utilities
+export {
+	debouncedSearch,
+	isValidSearchQuery,
+	normalizeSearchQuery,
+	formatLargeNumber,
+} from "./data"
 
 // Worker message schemas and types
 export * from "./workers/messages"
