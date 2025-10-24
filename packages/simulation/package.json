@@ -43,7 +43,6 @@
   "scripts": {
     "build": "tsc -b",
     "clean": "rm -rf dist",
-    "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "dev": "tsc -b --watch"

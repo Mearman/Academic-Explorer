@@ -3,52 +3,6 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/simulation/src",
   "projectType": "library",
-  "targets": {
-    "build": {
-      "executor": "nx:run-commands",
-      "dependsOn": ["^build"],
-      "options": {
-        "command": "tsc -b",
-        "cwd": "{projectRoot}"
-      },
-      "outputs": ["{projectRoot}/dist"],
-      "cache": true
-    },
-
-    "lint": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "NODE_OPTIONS='--import tsx' eslint --no-warn-ignored 'src/**/*.{ts,tsx}' --ignore-pattern 'src/**/*.{test,spec}.{ts,tsx}' --fix",
-        "cwd": "{projectRoot}"
-      },
-      "inputs": [
-        "default",
-        "{workspaceRoot}/eslint.config.ts",
-        "{workspaceRoot}/eslint.config.*.ts"
-      ],
-      "outputs": ["{workspaceRoot}/.nx/cache/lint-results/{projectName}.json"],
-      "cache": true
-    },
-
-    "test": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "vitest run",
-        "cwd": "{projectRoot}"
-      },
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/vite.config.base.ts",
-        "{projectRoot}/vitest.config.ts"
-      ],
-      "outputs": ["{projectRoot}/coverage"],
-      "cache": true
-    },
-    "test:watch": "test:watch",
-    "clean": "clean",
-    "dev": "dev:lib",
-    "validate": {}
-  },
+  "targets": {},
   "tags": ["type:library", "scope:simulation", "layer:core"]
 }
