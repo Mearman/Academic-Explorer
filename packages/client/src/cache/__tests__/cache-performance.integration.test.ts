@@ -5,7 +5,7 @@
  * load conditions, large datasets, and stress scenarios.
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 
 // Mock performance measurement APIs
 let mockTime = 0;
