@@ -1,4 +1,5 @@
 import type { Preview } from "@storybook/react";
+import React from "react";
 import { MantineProvider } from "@mantine/core";
 import { theme } from "../src/theme";
 

@@ -73,4 +73,4 @@ const uiConfig = defineConfig({
 });
 
 // Type assertion to handle mergeConfig compatibility between different Vite versions
-export default mergeConfig(baseConfig, uiConfig) as any;
+export default mergeConfig(baseConfig, uiConfig) as ReturnType<typeof mergeConfig>;

@@ -9,9 +9,11 @@
       "@/ui/section-kit": ["./src/components/section-kit"]
     },
     "declaration": true,
-    "composite": true
+    "composite": true,
+    "jsx": "react-jsx",
+    "lib": ["dom", "dom.iterable", "esnext"]
   },
-  "include": ["src/**/*", "*.config.ts", "vitest.config.ts", ".storybook/**/*"],
+  "include": ["src/**/*", "*.config.ts", "vitest.config.ts", ".storybook/**/*", "eslint.config.minimal.ts"],
   "references": [
     { "path": "../types" },
     { "path": "../utils" },
