@@ -31,38 +31,6 @@
     ".": {
       "import": "./dist/index.es.js",
       "require": "./dist/index.cjs.js"
-    },
-    "./graph": {
-      "import": "./dist/graph/index.js",
-      "types": "./dist/graph/index.d.ts"
-    },
-    "./tables": {
-      "import": "./dist/tables/index.js",
-      "types": "./dist/tables/index.d.ts"
-    },
-    "./forms": {
-      "import": "./dist/forms/index.js",
-      "types": "./dist/forms/index.d.ts"
-    },
-    "./layout": {
-      "import": "./dist/layout/index.js",
-      "types": "./dist/layout/index.d.ts"
-    },
-    "./theme": {
-      "import": "./dist/theme/index.js",
-      "types": "./dist/theme/index.d.ts"
-    },
-    "./components/entity-views": {
-      "import": "./dist/components/entity-views/index.js",
-      "types": "./dist/components/entity-views/index.d.ts"
-    },
-    "./components/ViewToggle": {
-      "import": "./dist/components/ViewToggle/index.js",
-      "types": "./dist/components/ViewToggle/index.d.ts"
-    },
-    "./components/entity-views/matchers": {
-      "import": "./dist/components/entity-views/matchers/index.js",
-      "types": "./dist/components/entity-views/matchers/index.d.ts"
     }
   },
   "scripts": {
@@ -76,8 +44,6 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@academic-explorer/graph": "workspace:*",
-    "@academic-explorer/types": "workspace:*",
     "@tanstack/react-table": "^8.21.3"
   },
   "peerDependencies": {
