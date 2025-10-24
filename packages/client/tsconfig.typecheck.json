@@ -24,8 +24,7 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "noEmit": true,
-    "types": ["vitest/globals", "@types/node"],
-    "baseUrl": ".",
+        "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
       "@academic-explorer/client": ["src/index.ts"],

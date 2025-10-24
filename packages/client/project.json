@@ -4,72 +4,57 @@
   "sourceRoot": "packages/client/src",
   "projectType": "library",
   "targets": {
-    "build": {
-      "dependsOn": ["build:bundle"]
-    },
-    "build:compile": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsc -b",
-        "cwd": "{projectRoot}"
-      },
-      "inputs": [
-        "production",
-        "^production",
-        "^outputs",
-        "{workspaceRoot}/vite.config.base.ts",
-        "{workspaceRoot}/config/**/*"
-      ],
-      "outputs": ["{projectRoot}/dist"],
-      "cache": true
-    },
     "build:bundle": {
-      "executor": "nx:run-commands",
-      "dependsOn": ["build:compile"],
+      "executor": "@nx/rollup:rollup",
+      "outputs": ["{options.outputPath}"],
+      "dependsOn": [],
       "options": {
-        "command": "tsup",
-        "cwd": "{projectRoot}"
-      },
-      "inputs": [
-        "production",
-        "{projectRoot}/tsup.config.ts",
-        "{projectRoot}/tsconfig.json",
-        "{projectRoot}/package.json"
-      ],
-      "outputs": ["{projectRoot}/dist"],
-      "cache": true
+        "main": "packages/client/src/index.ts",
+        "outputPath": "packages/client/dist",
+        "tsConfig": "packages/client/tsconfig.json",
+        "format": ["esm", "cjs"],
+        "compiler": "tsc",
+        "generateExportsField": false,
+        "project": "packages/client/package.json",
+        "additionalEntryPoints": [
+          "packages/client/src/client.ts",
+          "packages/client/src/types.ts"
+        ]
+      }
     },
-
-    "test": {
-      "dependsOn": ["test:aggregate"]
+    "build:fix-paths": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build:bundle"],
+      "options": {
+        "command": "node packages/client/scripts/fix-dist-paths.cjs"
+      }
     },
-
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{options.outputPath}"],
+      "dependsOn": ["build:fix-paths"],
+      "options": {
+        "commands": [],
+        "outputPath": "packages/client/dist"
+      }
+    },
     "dev": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/rollup:rollup",
       "options": {
-        "command": "tsup --watch",
-        "cwd": "{projectRoot}"
+        "main": "packages/client/src/index.ts",
+        "outputPath": "packages/client/dist",
+        "tsConfig": "packages/client/tsconfig.json",
+        "format": ["esm", "cjs"],
+        "compiler": "tsc",
+        "generateExportsField": false,
+        "project": "packages/client/package.json",
+        "watch": true,
+        "additionalEntryPoints": [
+          "packages/client/src/client.ts",
+          "packages/client/src/types.ts"
+        ]
       },
       "cache": false
-    },
-    "validate": {},
-    "lint": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "NODE_OPTIONS='--import tsx' eslint --no-warn-ignored 'src/**/*.{ts,tsx}' --ignore-pattern 'src/**/*.{test,spec}.{ts,tsx}' --fix",
-        "cwd": "{projectRoot}"
-      },
-      "inputs": [
-        "source",
-        "configs",
-        "{workspaceRoot}/eslint.config.ts",
-        "{workspaceRoot}/eslint.config.*.ts"
-      ],
-      "outputs": [
-        "{workspaceRoot}/.nx/cache/lint-results/{projectName}.json",
-        "{projectRoot}/**/*.{js,jsx,ts,tsx}"
-      ],
-      "cache": true
     }
   },
   "tags": ["type:library", "scope:openalex", "layer:core"]

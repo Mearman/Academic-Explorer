@@ -17,44 +17,24 @@
   "author": "Academic Explorer",
   "license": "MIT",
   "type": "module",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
+  "main": "./dist/index.cjs.js",
+  "module": "./dist/index.esm.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.cjs.js"
     },
     "./client": {
       "types": "./dist/client.d.ts",
-      "import": "./dist/client.js",
-      "require": "./dist/client.cjs"
-    },
-    "./entities": {
-      "types": "./dist/entities/index.d.ts",
-      "import": "./dist/entities/index.js",
-      "require": "./dist/entities/index.cjs"
-    },
-    "./entities/*": {
-      "types": "./dist/entities/*.d.ts",
-      "import": "./dist/entities/*.js",
-      "require": "./dist/entities/*.cjs"
-    },
-    "./utils": {
-      "types": "./dist/utils/index.d.ts",
-      "import": "./dist/utils/index.js",
-      "require": "./dist/utils/index.cjs"
-    },
-    "./utils/*": {
-      "types": "./dist/utils/*.d.ts",
-      "import": "./dist/utils/*.js",
-      "require": "./dist/utils/*.cjs"
+      "import": "./dist/client.esm.js",
+      "require": "./dist/client.cjs.js"
     },
     "./types": {
       "types": "./dist/types.d.ts",
-      "import": "./dist/types.js",
-      "require": "./dist/types.cjs"
+      "import": "./dist/types.esm.js",
+      "require": "./dist/types.cjs.js"
     }
   },
   "files": [
@@ -67,11 +47,10 @@
   "scripts": {
     "build": "nx build",
     "build:types": "tsc --emitDeclarationOnly",
-    "dev": "tsup --watch",
+    "dev": "nx dev",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
     "prepublishOnly": "pnpm run clean && pnpm run build && pnpm run test"
   },
@@ -80,13 +59,17 @@
     "@academic-explorer/utils": "workspace:*"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^24.5.2",
     "@vitest/coverage-v8": "^3.2.4",
     "eslint": "^9.36.0",
+    "immer": "^10.1.3",
     "memfs": "^4.47.0",
-    "tsup": "^8.5.0",
+    "msw": "^2.11.6",
     "typescript": "^5.9.2",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "vitest-axe": "^0.1.0"
   },
   "engines": {
     "node": ">=18.0.0"

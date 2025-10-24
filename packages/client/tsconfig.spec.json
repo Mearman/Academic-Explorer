@@ -16,7 +16,6 @@
     "incremental": true,
     "tsBuildInfoFile": "../../dist/out-tsc/.tsbuildinfo",
     "types": [
-      "vitest/globals",
       "vitest/importMeta",
       "vite/client",
       "node",

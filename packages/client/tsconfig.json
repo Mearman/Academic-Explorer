@@ -14,11 +14,10 @@
   "exclude": [
     "dist",
     "node_modules",
-    "**/*.test.ts",
-    "**/*.spec.ts",
-    "src/test-generator/**/*",
-    "vitest.config.ts",
-    "eslint.config.ts"
+    "src/test-generator/**/*"
   ],
-  "references": [{ "path": "../utils" }]
+  "references": [
+    { "path": "../types" },
+    { "path": "../utils" }
+  ]
 }
