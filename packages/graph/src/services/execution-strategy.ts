@@ -4,7 +4,8 @@
  */
 
 import { createLocalEventBus, type Event } from "../events"
-import { logger } from "@academic-explorer/utils"
+// TODO: Fix @academic-explorer/utils import - temporarily using console
+const logger = console
 
 // Execution modes
 export enum ExecutionMode {

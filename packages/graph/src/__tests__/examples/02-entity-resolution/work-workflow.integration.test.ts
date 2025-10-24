@@ -9,7 +9,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { OpenAlexGraphProvider } from "../../../providers/openalex-provider";
 import { RelationType } from "../../../types/core";
-import type { _GraphNode, _GraphEdge } from "../../../types/core";
+import type { GraphNode, GraphEdge } from "../../../types/core";
 
 // Enhanced mock client with citation and reference data
 class PublicationMockClient {

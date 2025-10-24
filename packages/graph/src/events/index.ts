@@ -2,7 +2,8 @@
  * Event System Types and Utilities
  * Exports for the unified event bus system
  */
-import { logger } from "@academic-explorer/utils"
+// TODO: Fix @academic-explorer/utils import - temporarily using console
+const logger = console
 
 // Event types enum
 export enum GraphEventType {

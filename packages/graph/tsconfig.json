@@ -20,6 +20,5 @@
     "src/**/*.unit.test.ts",
     "src/**/*.integration.test.ts",
     "**/__tests__/**/*"
-  ],
-  "references": [{ "path": "../utils" }]
+  ]
 }

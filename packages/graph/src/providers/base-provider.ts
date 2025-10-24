@@ -4,7 +4,8 @@
  */
 
 import { EventEmitter } from "../utils/event-emitter"
-import { logger } from "@academic-explorer/utils"
+// TODO: Fix @academic-explorer/utils import - temporarily using console
+const logger = console
 import type { GraphNode, EntityType, EntityIdentifier } from "../types/core"
 
 export interface SearchQuery {

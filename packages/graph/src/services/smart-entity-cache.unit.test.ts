@@ -11,7 +11,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { EntityType } from '../types/core';
 import { SmartEntityCache, type EntityDataProvider, type FieldRequest } from './smart-entity-cache';
-import { logger } from '@academic-explorer/utils';
+// TODO: Fix @academic-explorer/utils import - temporarily using console
+const logger = console;
 
 // Mock entity data provider for testing
 class MockEntityDataProvider implements EntityDataProvider {

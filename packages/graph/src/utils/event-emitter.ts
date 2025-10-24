@@ -3,7 +3,8 @@
  * Replaces Node.js events module for browser compatibility
  */
 
-import { logger } from "@academic-explorer/utils"
+// TODO: Fix @academic-explorer/utils import - temporarily using console
+const logger = console
 
 type EventListener = (...args: unknown[]) => void
 
