@@ -11,5 +11,5 @@ interface DynamicSidebarProps {
 }
 
 export const DynamicSidebar: React.FC<DynamicSidebarProps> = ({ side }) => {
-	return <VerticalStackSidebar side={side} />;
+  return <VerticalStackSidebar side={side} />;
 };

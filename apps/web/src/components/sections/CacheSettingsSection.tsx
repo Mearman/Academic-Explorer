@@ -41,15 +41,14 @@ export const CacheSettingsSection: React.FC<CacheSettingsSectionProps> = ({
   const [clearModalOpen, setClearModalOpen] = useState(false);
 
   // Get cache and traversal settings from store
-  const showAllCachedNodes = useGraphStore((state) => state.showAllCachedNodes);
-  const setShowAllCachedNodes = useGraphStore(
-    (state) => state.setShowAllCachedNodes,
-  );
-  const traversalDepth = useGraphStore((state) => state.traversalDepth);
-  const setTraversalDepth = useGraphStore((state) => state.setTraversalDepth);
-  const clear = useGraphStore((state) => state.clear);
-  const totalNodeCount = useGraphStore((state) => state.totalNodeCount);
-  const totalEdgeCount = useGraphStore((state) => state.totalEdgeCount);
+  const graphStore = useGraphStore();
+  const showAllCachedNodes = graphStore.showAllCachedNodes;
+  const setShowAllCachedNodes = graphStore.setShowAllCachedNodes;
+  const traversalDepth = graphStore.traversalDepth;
+  const setTraversalDepth = graphStore.setTraversalDepth;
+  const clear = graphStore.clear;
+  const totalNodeCount = graphStore.totalNodeCount;
+  const totalEdgeCount = graphStore.totalEdgeCount;
 
   // Mock cache stats - in a real implementation, these would come from a cache management store
   const cacheStats = {

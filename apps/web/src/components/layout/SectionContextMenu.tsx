@@ -11,7 +11,7 @@ import {
   IconArrowLeft,
   IconRefresh,
 } from "@tabler/icons-react";
-import { useLayoutStore } from "@/stores/layout-store";
+import { useLayoutStore, useLayoutActions } from "@/stores/layout-store";
 import { getSectionById } from "@/stores/section-registry";
 import { logger } from "@academic-explorer/utils/logger";
 
@@ -27,7 +27,6 @@ export const SectionContextMenu: React.FC<SectionContextMenuProps> = ({
   trigger,
 }) => {
   const layoutStore = useLayoutStore();
-  const { moveSectionToSidebar } = layoutStore;
   const { resetSectionPlacements } = layoutStore;
 
   const section = getSectionById(sectionId);
@@ -42,7 +41,13 @@ export const SectionContextMenu: React.FC<SectionContextMenuProps> = ({
         toSidebar: sidebar,
       },
     );
-    moveSectionToSidebar({ sectionId, targetSidebar: sidebar });
+    // Add section to existing group or create new one in target sidebar
+    const layoutActions = useLayoutActions();
+    layoutActions.addSectionToGroup({
+      sidebar: sidebar as "left" | "right",
+      groupId: "tools", // Default to "tools" group when moved via context menu
+      sectionKey: sectionId,
+    });
   };
 
   const handleResetPlacements = () => {

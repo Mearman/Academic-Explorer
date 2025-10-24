@@ -31,10 +31,10 @@ export const LeftRibbon: React.FC = () => {
   const { colors } = themeColors;
   const layoutStore = useLayoutStore();
   // const expandSidebarToSection = layoutStore.expandSidebarToSection; // Not used in group-based layout
-  const { getToolGroupsForSidebar } = layoutStore;
-  const { getActiveGroup } = layoutStore;
-  const { setActiveGroup } = layoutStore;
-  const { addSectionToGroup } = layoutStore;
+  const getToolGroupsForSidebar = layoutStore.getToolGroupsForSidebar;
+  const getActiveGroup = layoutStore.getActiveGroup;
+  const setActiveGroup = layoutStore.setActiveGroup;
+  const addSectionToGroup = layoutStore.addSectionToGroup;
 
   // State for drag and drop visual feedback
   const [isDragging, setIsDragging] = React.useState(false);
@@ -46,8 +46,19 @@ export const LeftRibbon: React.FC = () => {
   >(null);
 
   // Get tool groups for left sidebar
-  const toolGroups = getToolGroupsForSidebar("left");
-  const activeGroupId = getActiveGroup("left");
+  const toolGroupsList = getToolGroupsForSidebar("left");
+  const activeGroup = getActiveGroup("left");
+
+  // Convert tool groups list to record format for easier access
+  const toolGroups = toolGroupsList.reduce((acc, group) => {
+    acc[group.id] = {
+      id: group.id,
+      sections: group.sections,
+      activeSection: group.isActive ? group.sections.find(s => s === group.sections[0]) || null : null
+    };
+    return acc;
+  }, {} as Record<string, { id: string; sections: string[]; activeSection: string | null }>);
+  const activeGroupId = activeGroup?.id ?? null;
   const registryVersion = getRegistryVersion();
   const groupDefinitions = useMemo(() => {
     const definitions = Object.keys(toolGroups)
@@ -81,8 +92,8 @@ export const LeftRibbon: React.FC = () => {
     });
 
     // Check if group exists before activating
-    const currentToolGroups = getToolGroupsForSidebar("left");
-    const groupExists = Boolean(currentToolGroups[groupId]);
+    const currentToolGroupsList = getToolGroupsForSidebar("left");
+    const groupExists = currentToolGroupsList.some(g => g.id === groupId);
 
     logger.debug(
       "ui",
@@ -90,7 +101,7 @@ export const LeftRibbon: React.FC = () => {
       {
         groupId,
         groupExists,
-        currentGroups: Object.keys(currentToolGroups),
+        currentGroups: currentToolGroupsList.map(g => g.id),
       },
     );
 
@@ -100,7 +111,7 @@ export const LeftRibbon: React.FC = () => {
         `Cannot activate group ${groupId} - it does not exist`,
         {
           groupId,
-          availableGroups: Object.keys(currentToolGroups),
+          availableGroups: currentToolGroupsList.map(g => g.id),
         },
       );
       return;
@@ -143,12 +154,10 @@ export const LeftRibbon: React.FC = () => {
     sourceGroupId,
     targetGroupId,
     insertBefore,
-    _event,
   }: {
     sourceGroupId: string;
     targetGroupId: string;
     insertBefore: boolean;
-    _event: React.DragEvent;
   }) => {
     logger.debug(
       "ui",
@@ -165,11 +174,33 @@ export const LeftRibbon: React.FC = () => {
       },
     );
 
+    // Get current groups and reorder them
+    const currentGroupsList = getToolGroupsForSidebar("left");
+    const currentOrder = currentGroupsList.map(g => g.id);
+    const sourceIndex = currentOrder.indexOf(sourceGroupId);
+    const targetIndex = currentOrder.indexOf(targetGroupId);
+
+    if (sourceIndex === -1 || targetIndex === -1) {
+      logger.warn("ui", "Cannot reorder - group not found", {
+        sourceGroupId,
+        targetGroupId,
+        currentOrder,
+        sourceIndex,
+        targetIndex,
+      });
+      return;
+    }
+
+    // Remove source from current position
+    const newOrder = currentOrder.filter(id => id !== sourceGroupId);
+
+    // Insert source at target position
+    const insertIndex = insertBefore ? targetIndex : targetIndex + 1;
+    newOrder.splice(insertIndex, 0, sourceGroupId);
+
     layoutStore.reorderGroups({
       sidebar: "left",
-      sourceGroupId,
-      targetGroupId,
-      insertBefore,
+      groupIds: newOrder,
     });
 
     // Reset drag state
@@ -270,22 +301,20 @@ export const LeftRibbon: React.FC = () => {
       targetSidebar: "left",
     });
 
-    const leftGroups = getToolGroupsForSidebar("left");
-    const isFromSameSidebar = Boolean(leftGroups[groupReorderData]);
+    const leftGroupsList = getToolGroupsForSidebar("left");
+    const isFromSameSidebar = leftGroupsList.some(g => g.id === groupReorderData);
 
     if (index === 0) {
       handleDropAtBeginning({
         groupReorderData,
         groupDefinitions,
         isFromSameSidebar,
-        e,
       });
     } else if (index === groupDefinitions.length) {
       handleDropAtEnd({
         groupReorderData,
         groupDefinitions,
         isFromSameSidebar,
-        e,
       });
     } else {
       handleDropBetweenGroups({
@@ -293,7 +322,6 @@ export const LeftRibbon: React.FC = () => {
         index,
         groupDefinitions,
         isFromSameSidebar,
-        e,
       });
     }
   };
@@ -303,12 +331,10 @@ export const LeftRibbon: React.FC = () => {
     groupReorderData,
     groupDefinitions,
     isFromSameSidebar,
-    e,
   }: {
     groupReorderData: string;
     groupDefinitions: ToolGroupDefinition[];
     isFromSameSidebar: boolean;
-    e: React.DragEvent;
   }) => {
     const firstGroup = groupDefinitions[0];
     if (firstGroup.id !== groupReorderData) {
@@ -317,15 +343,29 @@ export const LeftRibbon: React.FC = () => {
           sourceGroupId: groupReorderData,
           targetGroupId: firstGroup.id,
           insertBefore: true,
-          _event: e,
         });
       } else {
+        // Determine source sidebar - check if group exists in left or right
+        const leftGroupsList = getToolGroupsForSidebar("left");
+        const fromSidebar = leftGroupsList.some(g => g.id === groupReorderData) ? "left" : "right";
+
         layoutStore.moveGroupToSidebar({
-          sourceGroupId: groupReorderData,
-          targetSidebar: "left",
-          targetGroupId: firstGroup.id,
-          insertBefore: true,
+          fromSidebar,
+          toSidebar: "left",
+          groupId: groupReorderData,
         });
+
+        // After moving, need to reorder to position at beginning
+        setTimeout(() => {
+          const updatedLeftGroupsList = getToolGroupsForSidebar("left");
+          const currentOrder = updatedLeftGroupsList.map(g => g.id);
+          const newOrder = [groupReorderData, ...currentOrder.filter(id => id !== groupReorderData)];
+
+          layoutStore.reorderGroups({
+            sidebar: "left",
+            groupIds: newOrder,
+          });
+        }, 0);
       }
     }
   };
@@ -334,12 +374,10 @@ export const LeftRibbon: React.FC = () => {
     groupReorderData,
     groupDefinitions,
     isFromSameSidebar,
-    e,
   }: {
     groupReorderData: string;
     groupDefinitions: ToolGroupDefinition[];
     isFromSameSidebar: boolean;
-    e: React.DragEvent;
   }) => {
     const lastGroup = groupDefinitions[groupDefinitions.length - 1];
     if (lastGroup.id !== groupReorderData) {
@@ -348,20 +386,39 @@ export const LeftRibbon: React.FC = () => {
           sourceGroupId: groupReorderData,
           targetGroupId: lastGroup.id,
           insertBefore: false,
-          _event: e,
         });
       } else {
+        // Determine source sidebar - check if group exists in left or right
+        const leftGroupsList = getToolGroupsForSidebar("left");
+        const fromSidebar = leftGroupsList.some(g => g.id === groupReorderData) ? "left" : "right";
+
         layoutStore.moveGroupToSidebar({
-          sourceGroupId: groupReorderData,
-          targetSidebar: "left",
-          targetGroupId: lastGroup.id,
-          insertBefore: false,
+          fromSidebar,
+          toSidebar: "left",
+          groupId: groupReorderData,
         });
+
+        // After moving, need to reorder to position at end
+        setTimeout(() => {
+          const updatedLeftGroupsList = getToolGroupsForSidebar("left");
+          const currentOrder = updatedLeftGroupsList.map(g => g.id);
+          const newOrder = [...currentOrder.filter(id => id !== groupReorderData), groupReorderData];
+
+          layoutStore.reorderGroups({
+            sidebar: "left",
+            groupIds: newOrder,
+          });
+        }, 0);
       }
     } else if (!isFromSameSidebar) {
+      // Determine source sidebar
+      const leftGroupsList = getToolGroupsForSidebar("left");
+      const fromSidebar = leftGroupsList.some(g => g.id === groupReorderData) ? "left" : "right";
+
       layoutStore.moveGroupToSidebar({
-        sourceGroupId: groupReorderData,
-        targetSidebar: "left",
+        fromSidebar,
+        toSidebar: "left",
+        groupId: groupReorderData,
       });
     }
   };
@@ -371,13 +428,11 @@ export const LeftRibbon: React.FC = () => {
     index,
     groupDefinitions,
     isFromSameSidebar,
-    e,
   }: {
     groupReorderData: string;
     index: number;
     groupDefinitions: ToolGroupDefinition[];
     isFromSameSidebar: boolean;
-    e: React.DragEvent;
   }) => {
     const targetGroup = groupDefinitions[index - 1];
     if (targetGroup.id !== groupReorderData) {
@@ -386,15 +441,34 @@ export const LeftRibbon: React.FC = () => {
           sourceGroupId: groupReorderData,
           targetGroupId: targetGroup.id,
           insertBefore: false,
-          _event: e,
         });
       } else {
+        // Determine source sidebar - check if group exists in left or right
+        const leftGroupsList = getToolGroupsForSidebar("left");
+        const fromSidebar = leftGroupsList.some(g => g.id === groupReorderData) ? "left" : "right";
+
         layoutStore.moveGroupToSidebar({
-          sourceGroupId: groupReorderData,
-          targetSidebar: "left",
-          targetGroupId: targetGroup.id,
-          insertBefore: false,
+          fromSidebar,
+          toSidebar: "left",
+          groupId: groupReorderData,
         });
+
+        // After moving, need to reorder to position after target group
+        setTimeout(() => {
+          const updatedLeftGroupsList = getToolGroupsForSidebar("left");
+          const currentOrder = updatedLeftGroupsList.map(g => g.id);
+          const targetIndex = currentOrder.indexOf(targetGroup.id);
+          const newOrder = [
+            ...currentOrder.filter(id => id !== groupReorderData).slice(0, targetIndex + 1),
+            groupReorderData,
+            ...currentOrder.filter(id => id !== groupReorderData).slice(targetIndex + 1),
+          ];
+
+          layoutStore.reorderGroups({
+            sidebar: "left",
+            groupIds: newOrder,
+          });
+        }, 0);
       }
     }
   };
@@ -469,11 +543,9 @@ export const LeftRibbon: React.FC = () => {
   const handleDrop = ({
     draggedSectionId,
     targetGroupId,
-    event,
   }: {
     draggedSectionId: string;
     targetGroupId: string;
-    event: React.DragEvent;
   }) => {
     logger.debug(
       "ui",
@@ -506,7 +578,7 @@ export const LeftRibbon: React.FC = () => {
         layoutStore.removeSectionFromGroup({
           sidebar: "left",
           groupId,
-          sectionId: draggedSectionId,
+          sectionKey: draggedSectionId,
         });
       }
     });
@@ -521,7 +593,7 @@ export const LeftRibbon: React.FC = () => {
         layoutStore.removeSectionFromGroup({
           sidebar: "right",
           groupId,
-          sectionId: draggedSectionId,
+          sectionKey: draggedSectionId,
         });
       }
     });
@@ -538,7 +610,7 @@ export const LeftRibbon: React.FC = () => {
     addSectionToGroup({
       sidebar: "left",
       groupId: targetGroupId,
-      sectionId: draggedSectionId,
+      sectionKey: draggedSectionId,
     });
   };
 
@@ -605,7 +677,7 @@ export const LeftRibbon: React.FC = () => {
         layoutStore.removeSectionFromGroup({
           sidebar: "left",
           groupId: existingGroupId,
-          sectionId: draggedSectionId,
+          sectionKey: draggedSectionId,
         });
       }
     });
@@ -615,7 +687,7 @@ export const LeftRibbon: React.FC = () => {
         layoutStore.removeSectionFromGroup({
           sidebar: "right",
           groupId: existingGroupId,
-          sectionId: draggedSectionId,
+          sectionKey: draggedSectionId,
         });
       }
     });
@@ -624,7 +696,7 @@ export const LeftRibbon: React.FC = () => {
     addSectionToGroup({
       sidebar: "left",
       groupId,
-      sectionId: draggedSectionId,
+      sectionKey: draggedSectionId,
     });
     setActiveGroup({ sidebar: "left", groupId });
 

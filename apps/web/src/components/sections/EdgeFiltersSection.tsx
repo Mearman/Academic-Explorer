@@ -55,15 +55,12 @@ export const EdgeFiltersSection: React.FC<EdgeFiltersSectionProps> = ({
   const { colors } = themeColors;
 
   // Get edge state from store
-  const visibleEdgeTypes = useGraphStore((state) => state.visibleEdgeTypes);
-  const toggleEdgeTypeVisibility = useGraphStore(
-    (state) => state.toggleEdgeTypeVisibility,
-  );
-  const edgeTypeStats = useGraphStore((state) => state.edgeTypeStats);
+  const graphStore = useGraphStore();
+  const { visibleEdgeTypes, edgeTypeStats, toggleEdgeTypeVisibility } = graphStore;
 
   // Calculate visibility stats with proper types
-  const totalVisibleEdges = edgeTypeStats.visible;
-  const totalEdges = edgeTypeStats.total;
+  const totalVisibleEdges = edgeTypeStats.visible || 0;
+  const totalEdges = edgeTypeStats.total || 0;
   const visibleTypesCount =
     Object.values(visibleEdgeTypes).filter(Boolean).length;
   const totalTypesCount = Object.keys(RELATION_TYPE_CONFIG).length;

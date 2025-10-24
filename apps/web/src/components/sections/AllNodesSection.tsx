@@ -88,7 +88,8 @@ const NodeItem: React.FC<NodeItemProps> = ({
 }) => {
   const themeColors = useThemeColors();
   const { colors } = themeColors;
-  const pinnedNodes = useGraphStore((state) => state.pinnedNodes);
+  const graphStore = useGraphStore();
+  const pinnedNodes = graphStore.pinnedNodes;
   const isPinned = pinnedNodes[node.id] ?? false;
   const navigate = useNavigate();
 
@@ -222,14 +223,15 @@ export const AllNodesSection: React.FC = () => {
   );
 
   // Use stable selectors to avoid React 19 infinite loops
-  const nodes = useGraphStore((state) => state.nodes);
-  const visibleEntityTypes = useGraphStore((state) => state.visibleEntityTypes);
-  const entityTypeStats = useGraphStore((state) => state.entityTypeStats);
-  const removeNode = useGraphStore((state) => state.removeNode);
-  const pinNode = useGraphStore((state) => state.pinNode);
-  const unpinNode = useGraphStore((state) => state.unpinNode);
-  const addToSelection = useGraphStore((state) => state.addToSelection);
-  const selectNode = useGraphStore((state) => state.selectNode);
+  const graphStore = useGraphStore();
+  const nodes = graphStore.nodes;
+  const visibleEntityTypes = graphStore.visibleEntityTypes;
+  const entityTypeStats = graphStore.entityTypeStats;
+  const removeNode = graphStore.removeNode;
+  const pinNode = graphStore.pinNode;
+  const unpinNode = graphStore.unpinNode;
+  const addToSelection = graphStore.addToSelection;
+  const selectNode = graphStore.selectNode;
 
   const { expandNode } = useGraphData();
 
@@ -301,14 +303,13 @@ export const AllNodesSection: React.FC = () => {
 
   const handleTogglePin = useCallback(
     (nodeId: string) => {
-      const { pinnedNodes } = useGraphStore.getState();
-      if (pinnedNodes[nodeId]) {
+      if (graphStore.pinnedNodes[nodeId]) {
         unpinNode(nodeId);
       } else {
         pinNode(nodeId);
       }
     },
-    [pinNode, unpinNode],
+    [graphStore.pinnedNodes, pinNode, unpinNode],
   );
 
   const handleExpandNode = useCallback(
@@ -531,7 +532,8 @@ export const AllNodesSection: React.FC = () => {
           <Stack gap="md">
             {entityTypeOptions.map(({ type, label, icon: IconComponent }) => {
               const typeNodes = nodesByType[type] ?? [];
-              const totalCount = entityTypeStats[type];
+              const typeStats = entityTypeStats[type];
+              const totalCount = typeStats?.total || 0;
               const visibleCount = typeNodes.length; // Use actual visible count from filtered nodes
               const isTypeVisible = visibleEntityTypes[type];
 

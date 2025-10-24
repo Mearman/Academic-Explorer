@@ -6,7 +6,7 @@
 import React, { Suspense } from "react";
 import { Stack, Divider, Text, Collapse, ActionIcon } from "@mantine/core";
 import { IconChevronDown, IconGripVertical } from "@tabler/icons-react";
-import { useLayoutStore } from "@/stores/layout-store";
+import { useLayoutState, useLayoutActions } from "@/stores/layout-store";
 import { getSectionById } from "@/stores/section-registry";
 import { getGroupDefinition } from "@/stores/group-registry";
 import { SectionContextMenu } from "@/components/layout/SectionContextMenu";
@@ -23,21 +23,22 @@ interface VerticalStackSidebarProps {
 export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({
   side,
 }) => {
-  const layoutStore = useLayoutStore();
-  const { getActiveGroup } = layoutStore;
-  const { getToolGroupsForSidebar } = layoutStore;
-  const { addSectionToGroup } = layoutStore;
-  const { removeSectionFromGroup } = layoutStore;
-  const { setSectionCollapsed } = layoutStore;
-  const { collapsedSections } = layoutStore;
-  const { setLeftSidebarOpen } = layoutStore;
-  const { setRightSidebarOpen } = layoutStore;
+  const layoutState = useLayoutState();
+  const layoutActions = useLayoutActions();
+  const { getActiveGroup } = layoutActions;
+  const { getToolGroupsForSidebar } = layoutActions;
+  const { addSectionToGroup } = layoutActions;
+  const { removeSectionFromGroup } = layoutActions;
+  const { setSectionCollapsed } = layoutActions;
+  const { collapsedSections } = layoutState;
+  const { setLeftSidebarOpen } = layoutActions;
+  const { setRightSidebarOpen } = layoutActions;
   const themeColors = useThemeColors();
   const { colors } = themeColors;
 
   const activeGroupId = getActiveGroup(side);
   const toolGroups = getToolGroupsForSidebar(side);
-  const activeGroup = activeGroupId ? toolGroups[activeGroupId] : null;
+  const activeGroup = activeGroupId ? toolGroups.find(group => group.id === activeGroupId) : null;
 
   const groupDefinition = activeGroupId
     ? getGroupDefinition(activeGroupId)
@@ -65,23 +66,23 @@ export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({
     const rightGroups = getToolGroupsForSidebar("right");
 
     // Remove from left sidebar groups
-    Object.entries(leftGroups).forEach(([groupId, group]) => {
+    leftGroups.forEach((group) => {
       if (group.sections.includes(draggedSectionId)) {
         removeSectionFromGroup({
           sidebar: "left",
-          groupId,
-          sectionId: draggedSectionId,
+          groupId: group.id,
+          sectionKey: draggedSectionId,
         });
       }
     });
 
     // Remove from right sidebar groups
-    Object.entries(rightGroups).forEach(([groupId, group]) => {
+    rightGroups.forEach((group) => {
       if (group.sections.includes(draggedSectionId)) {
         removeSectionFromGroup({
           sidebar: "right",
-          groupId,
-          sectionId: draggedSectionId,
+          groupId: group.id,
+          sectionKey: draggedSectionId,
         });
       }
     });
@@ -89,8 +90,8 @@ export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({
     // Then add to the target group
     addSectionToGroup({
       sidebar: side,
-      groupId: activeGroupId,
-      sectionId: draggedSectionId,
+      groupId: activeGroupId || undefined,
+      sectionKey: draggedSectionId,
     });
   };
 
@@ -134,23 +135,23 @@ export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({
     const rightGroups = getToolGroupsForSidebar("right");
 
     // Remove from left sidebar groups
-    Object.entries(leftGroups).forEach(([groupId, group]) => {
+    leftGroups.forEach((group) => {
       if (group.sections.includes(draggedSectionId)) {
         removeSectionFromGroup({
           sidebar: "left",
-          groupId,
-          sectionId: draggedSectionId,
+          groupId: group.id,
+          sectionKey: draggedSectionId,
         });
       }
     });
 
     // Remove from right sidebar groups
-    Object.entries(rightGroups).forEach(([groupId, group]) => {
+    rightGroups.forEach((group) => {
       if (group.sections.includes(draggedSectionId)) {
         removeSectionFromGroup({
           sidebar: "right",
-          groupId,
-          sectionId: draggedSectionId,
+          groupId: group.id,
+          sectionKey: draggedSectionId,
         });
       }
     });
@@ -158,8 +159,8 @@ export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({
     // Then add to the target group
     addSectionToGroup({
       sidebar: side,
-      groupId: activeGroupId,
-      sectionId: draggedSectionId,
+      groupId: activeGroupId || undefined,
+      sectionKey: draggedSectionId,
     });
   };
 

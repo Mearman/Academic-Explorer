@@ -31,7 +31,7 @@ import {
 } from "@tabler/icons-react";
 import { useNavigate } from "@tanstack/react-router";
 import { type ColumnDef } from "@tanstack/react-table";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 const LOGGER_CATEGORY = "entity-browser";
 
@@ -79,11 +79,7 @@ export function EntityBrowser({ className }: EntityBrowserProps) {
     totalMatching: 0,
   });
 
-  // Accessibility state for screen reader announcements
-  const [_announcement, _setAnnouncement] = useState("");
-  const _statusRegionRef = useRef<HTMLDivElement>(null);
-  const _resultRegionRef = useRef<HTMLDivElement>(null);
-
+  
   // Filter state - simplified for browsing
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([

@@ -56,7 +56,6 @@ const NetworkActivitySection: React.FC = () => {
   const state = useNetworkActivityStore();
 
   const {
-    requests,
     filters,
     setStatusFilter,
     setTypeFilter,
@@ -337,7 +336,7 @@ const NetworkActivitySection: React.FC = () => {
     );
   };
 
-  const renderRequestGroup = ({ title, requests, color }) => {
+  const renderRequestGroup = ({ title, requests }: { title: string; requests: NetworkRequest[] }) => {
     if (requests.length === 0) return null;
 
     return (
@@ -346,10 +345,7 @@ const NetworkActivitySection: React.FC = () => {
           <Text fw={500} size="sm">
             {title} ({requests.length})
           </Text>
-          <Badge color={color} variant="light" size="sm">
-            {requests.length}
-          </Badge>
-        </Group>
+          </Group>
         <Stack gap="xs">{requests.map(renderRequest)}</Stack>
       </div>
     );
@@ -553,28 +549,24 @@ const NetworkActivitySection: React.FC = () => {
               {renderRequestGroup({
                 title: "Active Requests",
                 requests: requestGroups.pending,
-                color: "blue",
               })}
               {requestGroups.pending.length > 0 && <Divider />}
 
               {renderRequestGroup({
                 title: "Failed Requests",
                 requests: requestGroups.failed,
-                color: "red",
               })}
               {requestGroups.failed.length > 0 && <Divider />}
 
               {renderRequestGroup({
                 title: "Cached Requests",
                 requests: requestGroups.cached,
-                color: "purple",
               })}
               {requestGroups.cached.length > 0 && <Divider />}
 
               {renderRequestGroup({
                 title: "Completed Requests",
                 requests: requestGroups.completed,
-                color: "green",
               })}
             </>
           )}

@@ -275,14 +275,15 @@ export const AllEdgesSection: React.FC = () => {
     new Set(),
   );
 
-  // Use stable selectors to avoid React 19 infinite loops
-  const edges = useGraphStore((state) => state.edges);
-  const nodes = useGraphStore((state) => state.nodes);
-  const edgeTypeStats = useGraphStore((state) => state.edgeTypeStats);
-  const removeEdge = useGraphStore((state) => state.removeEdge);
-  const selectNode = useGraphStore((state) => state.selectNode);
-  const addToSelection = useGraphStore((state) => state.addToSelection);
-  const clearSelection = useGraphStore((state) => state.clearSelection);
+  // Use React Context hooks to avoid React 19 infinite loops
+  const graphStore = useGraphStore();
+  const edges = graphStore.edges;
+  const nodes = graphStore.nodes;
+  const edgeTypeStats = graphStore.edgeTypeStats;
+  const removeEdge = graphStore.removeEdge;
+  const selectNode = graphStore.selectNode;
+  const addToSelection = graphStore.addToSelection;
+  const clearSelection = graphStore.clearSelection;
 
   // Convert edges record to array
   const edgeArray = useMemo(() => {
@@ -325,9 +326,8 @@ export const AllEdgesSection: React.FC = () => {
     if (showOnlyVisible) {
       filtered = filtered.filter((edge) => {
         // Check if this edge type has visible edges
-        // Since edgeTypeStats.visible is a total number, check per-type stats
-        const typeCount = edgeTypeStats[edge.type] || 0;
-        return typeCount > 0;
+        const typeStats = edgeTypeStats[edge.type];
+        return typeStats ? typeStats.visible > 0 : false;
       });
     }
 
@@ -399,7 +399,7 @@ export const AllEdgesSection: React.FC = () => {
       // Set primary selection to source node
       selectNode(edge.source);
     },
-    [edges, clearSelection, addToSelection, selectNode],
+    [graphStore, clearSelection, addToSelection, selectNode],
   );
 
   const handleRemoveEdge = useCallback(

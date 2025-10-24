@@ -50,10 +50,14 @@ const AppActivitySection: React.FC = () => {
   const [expandedEvents, setExpandedEvents] = useState<Set<string>>(new Set());
   const [showFilters, setShowFilters] = useState(false);
 
+  const appActivityStore = useAppActivityStore();
+  const { state } = appActivityStore;
   const {
     filteredEvents,
     activityStats,
     filters,
+  } = state;
+  const {
     setTypeFilter,
     setCategoryFilter,
     setSeverityFilter,
@@ -62,7 +66,7 @@ const AppActivitySection: React.FC = () => {
     clearFilters,
     clearAllEvents,
     clearOldEvents,
-  } = useAppActivityStore();
+  } = appActivityStore;
 
   const themeColors = useThemeColors();
   const { colors } = themeColors;

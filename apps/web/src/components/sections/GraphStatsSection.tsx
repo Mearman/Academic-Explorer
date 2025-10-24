@@ -3,7 +3,7 @@
  * Displays comprehensive graph statistics and metrics
  */
 
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo } from "react";
 import {
   IconChartBar,
   IconCircle,
@@ -12,7 +12,7 @@ import {
   IconDownload,
 } from "@tabler/icons-react";
 import { Button, Badge, Progress, Divider } from "@mantine/core";
-import { graphStore } from "@/stores/graph-store";
+import { useGraphStore } from "@/stores/graph-store";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { CollapsibleSection } from "@/components/molecules/CollapsibleSection";
 import { logger } from "@academic-explorer/utils/logger";
@@ -31,33 +31,15 @@ export const GraphStatsSection: React.FC<GraphStatsSectionProps> = ({
   const themeColors = useThemeColors();
   const { colors } = themeColors;
 
-  // Get stats from graph store
-  const [totalNodeCount, setTotalNodeCount] = useState(
-    (graphStore.getState() as any).totalNodeCount,
-  );
-  const [totalEdgeCount, setTotalEdgeCount] = useState(
-    (graphStore.getState() as any).totalEdgeCount,
-  );
-  const [entityTypeStats, setEntityTypeStats] = useState(
-    (graphStore.getState() as any).entityTypeStats,
-  );
-  const [edgeTypeStats, setEdgeTypeStats] = useState(
-    (graphStore.getState() as any).edgeTypeStats,
-  );
-  const [lastSearchStats, setLastSearchStats] = useState(
-    (graphStore.getState() as any).lastSearchStats,
-  );
-
-  useEffect(() => {
-    const unsubscribe = (graphStore as any).subscribe((state: any) => {
-      setTotalNodeCount(state.totalNodeCount);
-      setTotalEdgeCount(state.totalEdgeCount);
-      setEntityTypeStats(state.entityTypeStats);
-      setEdgeTypeStats(state.edgeTypeStats);
-      setLastSearchStats(state.lastSearchStats);
-    });
-    return unsubscribe;
-  }, []);
+  // Get stats from graph store using proper React Context pattern
+  const graphStore = useGraphStore();
+  const {
+    totalNodeCount,
+    totalEdgeCount,
+    entityTypeStats,
+    edgeTypeStats,
+    lastSearchStats,
+  } = graphStore;
 
   // Calculate derived metrics
   const networkMetrics = useMemo(() => {

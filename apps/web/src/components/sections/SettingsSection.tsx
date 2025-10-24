@@ -28,7 +28,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { clearAllCacheLayers } from "@academic-explorer/utils/cache";
 import { clearAppMetadata } from "@academic-explorer/utils/cache";
 import { useLayoutStore } from "@/stores/layout-store";
-import { settingsStore } from "@/stores/settings-store";
+import { useSettingsStore, usePolitePoolEmail } from "@/stores/settings-store";
 import { updateOpenAlexEmail } from "@academic-explorer/client";
 import { logger } from "@academic-explorer/utils/logger";
 
@@ -43,19 +43,10 @@ export const SettingsSection: React.FC = () => {
     resettingPreferences: false,
   });
 
-  // Settings store - using direct store access
-  const [politePoolEmail, setPolitePoolEmailState] = React.useState(
-    (settingsStore.getState() as any).politePoolEmail,
-  );
-  const setPolitePoolEmail = (settingsStore as any).setPolitePoolEmail;
-  const isValidEmail = (settingsStore as any).isValidEmail;
-
-  React.useEffect(() => {
-    const unsubscribe = (settingsStore as any).subscribe((state: any) => {
-      setPolitePoolEmailState(state.politePoolEmail);
-    });
-    return unsubscribe;
-  }, []);
+  // Settings store - using proper React hooks
+  const politePoolEmail = usePolitePoolEmail();
+  const settingsStore = useSettingsStore();
+  const { setPolitePoolEmail, isValidEmail } = settingsStore;
 
   // Local state for email editing
   const [localEmail, setLocalEmail] = React.useState(politePoolEmail);
@@ -191,7 +182,13 @@ export const SettingsSection: React.FC = () => {
       }
 
       // Reset layout store to defaults
-      (useLayoutStore as any).persist.clearStorage();
+      const layoutStore = useLayoutStore.getState();
+      if (layoutStore && typeof layoutStore === "object" && "persist" in layoutStore) {
+        const persist = (layoutStore as { persist: { clearStorage: () => void } }).persist;
+        if (persist && typeof persist.clearStorage === "function") {
+          persist.clearStorage();
+        }
+      }
 
       // Clear app metadata
       await clearAppMetadata();

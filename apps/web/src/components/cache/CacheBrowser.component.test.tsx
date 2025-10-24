@@ -3,7 +3,7 @@
  */
 
 import { MantineProvider } from "@mantine/core";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { CacheBrowser } from "./CacheBrowser";
 
@@ -47,7 +47,7 @@ vi.mock("@tanstack/react-router", () => ({
 
 // Mock BaseTable component
 vi.mock("@/components/tables/BaseTable", () => ({
-  BaseTable: ({ data, columns }: any) => (
+  BaseTable: ({ data }: any) => (
     <div data-testid="base-table">{data?.length || 0} rows</div>
   ),
 }));

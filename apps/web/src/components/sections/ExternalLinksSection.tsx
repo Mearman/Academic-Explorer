@@ -3,7 +3,7 @@
  * Provides links to external resources and services
  */
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   IconExternalLink,
   IconLink,
@@ -13,8 +13,8 @@ import {
 import { Button, Divider, Text } from "@mantine/core";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { CollapsibleSection } from "@/components/molecules/CollapsibleSection";
-import { layoutStore } from "@/stores/layout-store";
-import { graphStore } from "@/stores/graph-store";
+import { useLayoutState } from "@/stores/layout-store";
+import { useGraphStore } from "@/stores/graph-store";
 import { logger } from "@academic-explorer/utils/logger";
 import type { GraphNode } from "@academic-explorer/graph";
 
@@ -29,37 +29,14 @@ export const ExternalLinksSection: React.FC<ExternalLinksSectionProps> = ({
   const { colors } = themeColors;
 
   // Get entity to display - priority: hovered > selected > preview
-  const [hoveredNodeId, setHoveredNodeId] = useState(
-    (graphStore.getState() as any).hoveredNodeId,
-  );
-  const [selectedNodeId, setSelectedNodeId] = useState(
-    (graphStore.getState() as any).selectedNodeId,
-  );
-  const [nodesMap, setNodesMap] = useState(
-    (graphStore.getState() as any).nodes,
-  );
-  const [previewEntityId, setPreviewEntityId] = useState(
-    (layoutStore.getState() as any).previewEntityId,
-  );
+  const graphStore = useGraphStore();
+  const { hoveredNodeId, selectedNodeId, nodes } = graphStore;
 
-  useEffect(() => {
-    const unsubscribeGraph = (graphStore as any).subscribe((state: any) => {
-      setHoveredNodeId(state.hoveredNodeId);
-      setSelectedNodeId(state.selectedNodeId);
-      setNodesMap(state.nodes);
-    });
-    const unsubscribeLayout = (layoutStore as any).subscribe((state: any) => {
-      setPreviewEntityId(state.previewEntityId);
-    });
-    return () => {
-      unsubscribeGraph();
-      unsubscribeLayout();
-    };
-  }, []);
+  const { previewEntityId } = useLayoutState();
 
   // Determine which entity to show
   const displayEntityId = hoveredNodeId ?? selectedNodeId ?? previewEntityId;
-  const entityNode = displayEntityId ? nodesMap[displayEntityId] : undefined;
+  const entityNode = displayEntityId ? nodes[displayEntityId] : undefined;
 
   const handleLinkClick = ({ url, linkType }) => {
     logger.debug("ui", `Opening external link: ${linkType}`, {

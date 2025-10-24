@@ -25,7 +25,7 @@ import { LeftSidebarDynamic } from "./LeftSidebarDynamic";
 import { RightSidebarDynamic } from "./RightSidebarDynamic";
 import { LeftRibbon } from "./LeftRibbon";
 import { RightRibbon } from "./RightRibbon";
-import { useLayoutStore } from "@/stores/layout-store";
+import { useLayoutStore, useLayoutActions } from "@/stores/layout-store";
 
 interface MainLayoutProps {
   children?: React.ReactNode;
@@ -35,6 +35,8 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const { colorScheme, setColorScheme } = useMantineColorScheme();
 
   // Layout store for sidebar state management
+  const layoutStore = useLayoutStore();
+  const layoutActions = useLayoutActions();
   const {
     leftSidebarOpen,
     rightSidebarOpen,
@@ -44,28 +46,25 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     toggleRightSidebar,
     pinLeftSidebar,
     pinRightSidebar,
-    setActiveGroup,
-    getToolGroupsForSidebar,
-    getActiveGroup,
-  } = useLayoutStore();
+  } = layoutStore;
 
   // Helper to activate default groups if none are active
   const activateDefaultGroups = useCallback(() => {
-    const leftGroups = getToolGroupsForSidebar("left");
-    const rightGroups = getToolGroupsForSidebar("right");
-    const leftActiveGroup = getActiveGroup("left");
-    const rightActiveGroup = getActiveGroup("right");
+    const leftGroups = layoutActions.getToolGroupsForSidebar("left");
+    const rightGroups = layoutActions.getToolGroupsForSidebar("right");
+    const leftActiveGroup = layoutActions.getActiveGroup("left");
+    const rightActiveGroup = layoutActions.getActiveGroup("right");
 
     if (!leftActiveGroup && Object.keys(leftGroups).length > 0) {
-      setActiveGroup({ sidebar: "left", groupId: Object.keys(leftGroups)[0] });
+      layoutActions.setActiveGroup({ sidebar: "left", groupId: Object.keys(leftGroups)[0] });
     }
     if (!rightActiveGroup && Object.keys(rightGroups).length > 0) {
-      setActiveGroup({
+      layoutActions.setActiveGroup({
         sidebar: "right",
         groupId: Object.keys(rightGroups)[0],
       });
     }
-  }, [getToolGroupsForSidebar, getActiveGroup, setActiveGroup]);
+  }, [layoutActions.getToolGroupsForSidebar, layoutActions.getActiveGroup, layoutActions.setActiveGroup]);
 
   // Width state for dragging (using React state for immediate visual feedback)
   const [leftSidebarWidth, setLeftSidebarWidth] = useState(300);
@@ -297,9 +296,9 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   <Group gap="xs">
                     {/* Debug info */}
                     <Text size="xs" c="red">
-                      Active: {getActiveGroup("left") ?? "none"}
+                      Active: {layoutActions.getActiveGroup("left")?.id ?? "none"}
                     </Text>
-                    {!getActiveGroup("left") && (
+                    {!layoutActions.getActiveGroup("left") && (
                       <ActionIcon
                         onClick={activateDefaultGroups}
                         variant="light"
@@ -456,9 +455,9 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   <Group gap="xs">
                     {/* Debug info */}
                     <Text size="xs" c="red">
-                      Active: {getActiveGroup("right") ?? "none"}
+                      Active: {layoutActions.getActiveGroup("right")?.id ?? "none"}
                     </Text>
-                    {!getActiveGroup("right") && (
+                    {!layoutActions.getActiveGroup("right") && (
                       <ActionIcon
                         onClick={activateDefaultGroups}
                         variant="light"

@@ -3,8 +3,8 @@
  * Extracted from LeftSidebar for dynamic section system
  */
 
-import React, { useMemo, useState, useEffect } from "react";
-import { graphStore } from "@/stores/graph-store";
+import React, { useMemo } from "react";
+import { useGraphStore } from "@/stores/graph-store";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { logger } from "@academic-explorer/utils/logger";
 import type { EntityType } from "@academic-explorer/types";
@@ -42,26 +42,13 @@ const entityTypeOptions: Array<{
 export const EntityFiltersSection: React.FC = () => {
   const themeColors = useThemeColors();
   const { colors } = themeColors;
-  const state = graphStore.getState() as any;
-  const [nodesMap, setNodesMap] = useState(state.nodes);
-  const [visibleEntityTypes, setVisibleEntityTypes] = useState(
-    state.visibleEntityTypes,
-  );
-
-  useEffect(() => {
-    const unsubscribe = (graphStore as any).subscribe((state: any) => {
-      setNodesMap(state.nodes);
-      setVisibleEntityTypes(state.visibleEntityTypes);
-    });
-    return unsubscribe;
-  }, []);
-
-  const setEntityTypeVisibility = state.setEntityTypeVisibility;
+  const graphStore = useGraphStore();
+  const { nodes, visibleEntityTypes, setEntityTypeVisibility } = graphStore;
 
   const entityStats = useMemo(() => {
     try {
-      const nodeValues = Object.values(nodesMap) as GraphNode[];
-      const nodes = Array.isArray(nodeValues) ? nodeValues : [];
+      const nodeValues = Object.values(nodes) as GraphNode[];
+      const nodeList = Array.isArray(nodeValues) ? nodeValues : [];
 
       // Initialize counters for all entity types
       const total: Record<EntityType, number> = {
@@ -88,7 +75,7 @@ export const EntityFiltersSection: React.FC = () => {
       };
 
       // Count nodes by type
-      for (const node of nodes) {
+      for (const node of nodeList) {
         if (node.entityType in total) {
           const nodeType = node.entityType as EntityType;
           total[nodeType]++;
@@ -129,7 +116,7 @@ export const EntityFiltersSection: React.FC = () => {
         visible: emptyVisible,
       };
     }
-  }, [nodesMap]);
+  }, [nodes]);
 
   const handleToggleEntityType = (entityType: EntityType) => {
     const currentVisibility = visibleEntityTypes[entityType];

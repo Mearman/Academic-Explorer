@@ -11,7 +11,6 @@ import {
   getGroupDefinition,
   getRegistryVersion,
   updateGroupDefinition,
-  type ToolGroupDefinition,
 } from "@/stores/group-registry";
 import { useLayoutStore } from "@/stores/layout-store";
 import { getSectionById } from "@/stores/section-registry";
@@ -20,16 +19,14 @@ import React, { useMemo } from "react";
 
 const GROUP_REORDER_DRAG_TYPE = "application/group-reorder";
 
-type ThemeColors = ReturnType<typeof useThemeColors>["colors"];
-
 export const RightRibbon: React.FC = () => {
   const layoutStore = useLayoutStore();
   const { previewEntityId } = layoutStore;
   // const expandSidebarToSection = layoutStore.expandSidebarToSection; // Not used in group-based layout
-  const { getToolGroupsForSidebar } = layoutStore;
-  const { getActiveGroup } = layoutStore;
-  const { setActiveGroup } = layoutStore;
-  const { addSectionToGroup } = layoutStore;
+  const getToolGroupsForSidebar = layoutStore.getToolGroupsForSidebar;
+  const getActiveGroup = layoutStore.getActiveGroup;
+  const setActiveGroup = layoutStore.setActiveGroup;
+  const addSectionToGroup = layoutStore.addSectionToGroup;
 
   // State for drag and drop visual feedback
   const [isDragging, setIsDragging] = React.useState(false);
@@ -39,9 +36,10 @@ export const RightRibbon: React.FC = () => {
   const [dropInsertionIndex, setDropInsertionIndex] = React.useState<
     number | null
   >(null);
-  const selectedNodeId = useGraphStore((state) => state.selectedNodeId);
-  const hoveredNodeId = useGraphStore((state) => state.hoveredNodeId);
-  const nodesMap = useGraphStore((state) => state.nodes);
+  const graphStore = useGraphStore();
+  const selectedNodeId = graphStore.selectedNodeId;
+  const hoveredNodeId = graphStore.hoveredNodeId;
+  const nodesMap = graphStore.nodes;
   const nodes = useMemo(() => {
     try {
       // Safe conversion of object values to array with type checking
@@ -90,7 +88,7 @@ export const RightRibbon: React.FC = () => {
     });
 
     // Check if this group is already active and sidebar is open - if so, toggle sidebar
-    const isCurrentlyActive = activeGroupId === groupId;
+    const isCurrentlyActive = activeGroupId?.id === groupId;
     const isCurrentlyOpen = layoutStore.rightSidebarOpen;
 
     if (isCurrentlyActive && isCurrentlyOpen) {
@@ -124,12 +122,10 @@ export const RightRibbon: React.FC = () => {
     sourceGroupId,
     targetGroupId,
     insertBefore,
-    _event,
   }: {
     sourceGroupId: string;
     targetGroupId: string;
     insertBefore: boolean;
-    _event: React.DragEvent;
   }) => {
     logger.debug(
       "ui",
@@ -142,11 +138,33 @@ export const RightRibbon: React.FC = () => {
       },
     );
 
+    // Convert source-target parameters to groupIds array for reorderGroups
+    const currentGroups = getToolGroupsForSidebar("right");
+    const currentOrder = currentGroups.map(g => g.id);
+    const sourceIndex = currentOrder.indexOf(sourceGroupId);
+    const targetIndex = currentOrder.indexOf(targetGroupId);
+
+    if (sourceIndex === -1 || targetIndex === -1) {
+      logger.warn("ui", "Cannot reorder - group not found", {
+        sourceGroupId,
+        targetGroupId,
+        currentOrder,
+        sourceIndex,
+        targetIndex,
+      });
+      return;
+    }
+
+    // Remove source from current position
+    const newOrder = currentOrder.filter(id => id !== sourceGroupId);
+
+    // Insert source at target position
+    const insertIndex = insertBefore ? targetIndex : targetIndex + 1;
+    newOrder.splice(insertIndex, 0, sourceGroupId);
+
     layoutStore.reorderGroups({
       sidebar: "right",
-      sourceGroupId,
-      targetGroupId,
-      insertBefore,
+      groupIds: newOrder,
     });
 
     // Reset drag state
@@ -231,14 +249,12 @@ export const RightRibbon: React.FC = () => {
         groupReorderData,
         groupDefinitions,
         isFromSameSidebar,
-        e,
       });
     } else if (index === groupDefinitions.length) {
       handleDropAtEnd({
         groupReorderData,
         groupDefinitions,
         isFromSameSidebar,
-        e,
       });
     } else {
       handleDropBetweenGroups({
@@ -246,7 +262,6 @@ export const RightRibbon: React.FC = () => {
         groupDefinitions,
         index,
         isFromSameSidebar,
-        e,
       });
     }
   };
@@ -256,7 +271,6 @@ export const RightRibbon: React.FC = () => {
     groupReorderData,
     groupDefinitions,
     isFromSameSidebar,
-    e,
   }) => {
     const firstGroup = groupDefinitions[0];
     if (firstGroup.id !== groupReorderData) {
@@ -265,14 +279,12 @@ export const RightRibbon: React.FC = () => {
           sourceGroupId: groupReorderData,
           targetGroupId: firstGroup.id,
           insertBefore: true,
-          _event: e,
         });
       } else {
         layoutStore.moveGroupToSidebar({
-          sourceGroupId: groupReorderData,
-          targetSidebar: "right",
-          targetGroupId: firstGroup.id,
-          insertBefore: true,
+          fromSidebar: isFromSameSidebar ? "right" : "left", // Determine from sidebar based on boolean
+          toSidebar: "right",
+          groupId: groupReorderData,
         });
       }
     }
@@ -282,7 +294,6 @@ export const RightRibbon: React.FC = () => {
     groupReorderData,
     groupDefinitions,
     isFromSameSidebar,
-    e,
   }) => {
     const lastGroup = groupDefinitions[groupDefinitions.length - 1];
     if (lastGroup.id !== groupReorderData) {
@@ -291,20 +302,19 @@ export const RightRibbon: React.FC = () => {
           sourceGroupId: groupReorderData,
           targetGroupId: lastGroup.id,
           insertBefore: false,
-          _event: e,
         });
       } else {
         layoutStore.moveGroupToSidebar({
-          sourceGroupId: groupReorderData,
-          targetSidebar: "right",
-          targetGroupId: lastGroup.id,
-          insertBefore: false,
+          fromSidebar: isFromSameSidebar ? "right" : "left",
+          toSidebar: "right",
+          groupId: groupReorderData,
         });
       }
     } else if (!isFromSameSidebar) {
       layoutStore.moveGroupToSidebar({
-        sourceGroupId: groupReorderData,
-        targetSidebar: "right",
+        fromSidebar: isFromSameSidebar ? "right" : "left",
+        toSidebar: "right",
+        groupId: groupReorderData,
       });
     }
   };
@@ -314,7 +324,6 @@ export const RightRibbon: React.FC = () => {
     groupDefinitions,
     index,
     isFromSameSidebar,
-    e,
   }) => {
     const targetGroup = groupDefinitions[index - 1];
     if (targetGroup.id !== groupReorderData) {
@@ -323,14 +332,12 @@ export const RightRibbon: React.FC = () => {
           sourceGroupId: groupReorderData,
           targetGroupId: targetGroup.id,
           insertBefore: false,
-          _event: e,
         });
       } else {
         layoutStore.moveGroupToSidebar({
-          sourceGroupId: groupReorderData,
-          targetSidebar: "right",
-          targetGroupId: targetGroup.id,
-          insertBefore: false,
+          fromSidebar: isFromSameSidebar ? "right" : "left",
+          toSidebar: "right",
+          groupId: groupReorderData,
         });
       }
     }
@@ -406,11 +413,9 @@ export const RightRibbon: React.FC = () => {
   const handleDrop = ({
     draggedSectionId,
     targetGroupId,
-    event,
   }: {
     draggedSectionId: string;
     targetGroupId: string;
-    event: React.DragEvent;
   }) => {
     logger.debug(
       "ui",
@@ -443,7 +448,7 @@ export const RightRibbon: React.FC = () => {
         layoutStore.removeSectionFromGroup({
           sidebar: "left",
           groupId,
-          sectionId: draggedSectionId,
+          sectionKey: draggedSectionId,
         });
       }
     });
@@ -458,7 +463,7 @@ export const RightRibbon: React.FC = () => {
         layoutStore.removeSectionFromGroup({
           sidebar: "right",
           groupId,
-          sectionId: draggedSectionId,
+          sectionKey: draggedSectionId,
         });
       }
     });
@@ -475,7 +480,7 @@ export const RightRibbon: React.FC = () => {
     addSectionToGroup({
       sidebar: "right",
       groupId: targetGroupId,
-      sectionId: draggedSectionId,
+      sectionKey: draggedSectionId,
     });
   };
 
@@ -542,7 +547,7 @@ export const RightRibbon: React.FC = () => {
         layoutStore.removeSectionFromGroup({
           sidebar: "left",
           groupId: existingGroupId,
-          sectionId: draggedSectionId,
+          sectionKey: draggedSectionId,
         });
       }
     });
@@ -552,7 +557,7 @@ export const RightRibbon: React.FC = () => {
         layoutStore.removeSectionFromGroup({
           sidebar: "right",
           groupId: existingGroupId,
-          sectionId: draggedSectionId,
+          sectionKey: draggedSectionId,
         });
       }
     });
@@ -561,7 +566,7 @@ export const RightRibbon: React.FC = () => {
     addSectionToGroup({
       sidebar: "right",
       groupId,
-      sectionId: draggedSectionId,
+      sectionKey: draggedSectionId,
     });
     setActiveGroup({ sidebar: "right", groupId });
 
@@ -615,7 +620,7 @@ export const RightRibbon: React.FC = () => {
       >
         {groupDefinitions.map((group, index) => {
           const badge = getGroupBadge(group.id);
-          const isActive = activeGroupId === group.id;
+          const isActive = activeGroupId?.id === group.id;
 
           return (
             <React.Fragment key={group.id}>
