@@ -16,8 +16,6 @@ function ApiOpenAlexRoute() {
   const { _splat: splat } = useParams({ from: "/api-openalex-org/$" });
   const externalId = splat || "";
   const routeSearch = useSearch({ from: "/api-openalex-org/$" });
-  // Serialize routeSearch to avoid infinite loop from object reference changes
-  const routeSearchKey = JSON.stringify(routeSearch);
 
   useEffect(() => {
     const resolveExternalId = async () => {

@@ -1,7 +1,11 @@
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { IconSearch } from "@tabler/icons-react";
-import { useNavigate, useParams, useSearch, createLazyFileRoute } from "@tanstack/react-router";
+import {
+  useNavigate,
+  useParams,
+  createLazyFileRoute,
+} from "@tanstack/react-router";
 import { useEffect } from "react";
 
 export const Route = createLazyFileRoute("/https/$")({
@@ -11,10 +15,7 @@ export const Route = createLazyFileRoute("/https/$")({
 function HttpsRoute() {
   const { _splat: splat } = useParams({ from: "/https/$" });
   const externalId = splat || "";
-  const routeSearch = useSearch({ from: "/https/$" });
   const navigate = useNavigate();
-  // Serialize routeSearch to avoid infinite loop from object reference changes
-  const routeSearchKey = JSON.stringify(routeSearch);
 
   useEffect(() => {
     const resolveExternalId = async () => {
@@ -48,7 +49,6 @@ function HttpsRoute() {
               "HttpsRoute",
             );
             // Load the entity
-            const graphData = { loadEntity: () => {}, loadEntityIntoGraph: () => {} };
             return;
           }
         }
@@ -61,7 +61,13 @@ function HttpsRoute() {
           "HttpsRoute",
         );
       } catch (error) {
-        logError(logger, "Error resolving https URL", error, "HttpsRoute", "routing");
+        logError(
+          logger,
+          "Error resolving https URL",
+          error,
+          "HttpsRoute",
+          "routing",
+        );
       }
     };
 

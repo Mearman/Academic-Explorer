@@ -3,10 +3,10 @@ export const Route = createLazyFileRoute("/explore")({
   component: GraphExplorer,
 });
 
-import { MainLayout } from "@/components/layout/MainLayout"
+import { MainLayout } from "@/components/layout/MainLayout";
 
 function GraphExplorer() {
-	return <MainLayout />
+  return <MainLayout />;
 }
 
 export default GraphExplorer;

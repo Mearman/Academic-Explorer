@@ -1,9 +1,12 @@
 import { EntityDetectionService } from "@academic-explorer/graph";
-import { useNavigate, useParams, createLazyFileRoute } from "@tanstack/react-router";
+import {
+  useNavigate,
+  useParams,
+  createLazyFileRoute,
+} from "@tanstack/react-router";
 import { useEffect } from "react";
 // Temporarily remove logger import to avoid potential issues
 import { logger } from "@/lib/logger";
-
 
 function parseSearchParams(params: URLSearchParams): Record<string, unknown> {
   const obj: Record<string, unknown> = {};
@@ -42,23 +45,25 @@ function OpenAlexUrlComponent() {
     try {
       // Validate and parse the splat as a full URL
       const url = new URL(
-        decodedSplat.startsWith("http") ? decodedSplat : `https://api.openalex.org/${decodedSplat}`,
+        decodedSplat.startsWith("http")
+          ? decodedSplat
+          : `https://api.openalex.org/${decodedSplat}`,
       );
       logger.debug("routing", `Parsed URL: ${url.toString()}`);
 
       if (url.origin !== "https://api.openalex.org") {
         logger.debug("routing", `Invalid origin: ${url.origin}`);
-        logger.warn(
-          "routing",
-          `Invalid OpenAlex URL origin: ${url.origin}`,
-        );
+        logger.warn("routing", `Invalid OpenAlex URL origin: ${url.origin}`);
         return;
       }
 
       // Extract path and query parameters
       const path = url.pathname;
       const searchParams = new URLSearchParams(url.search);
-      logger.debug("routing", `Path: ${path}, Search params: ${JSON.stringify(Object.fromEntries(searchParams.entries()))}`);
+      logger.debug(
+        "routing",
+        `Path: ${path}, Search params: ${JSON.stringify(Object.fromEntries(searchParams.entries()))}`,
+      );
 
       logger.debug(
         "routing",
@@ -67,7 +72,10 @@ function OpenAlexUrlComponent() {
 
       // Check for single entity pattern: /entityType/id or just /id
       const pathParts = path.split("/").filter((p) => p);
-      logger.debug("routing", `Path parts: ${JSON.stringify(pathParts)}, Length: ${pathParts.length}`);
+      logger.debug(
+        "routing",
+        `Path parts: ${JSON.stringify(pathParts)}, Length: ${pathParts.length}`,
+      );
       if (pathParts.length === 2) {
         const id = pathParts[1];
         const detection = EntityDetectionService.detectEntity(id);
@@ -86,10 +94,16 @@ function OpenAlexUrlComponent() {
         logger.debug("routing", `Length 1, treating as ID: ${id}`);
 
         const detection = EntityDetectionService.detectEntity(id);
-        logger.debug("routing", `Detection for length 1 ID: ${JSON.stringify(detection)}`);
+        logger.debug(
+          "routing",
+          `Detection for length 1 ID: ${JSON.stringify(detection)}`,
+        );
         if (detection?.entityType) {
           const targetPath = `/${detection.entityType}/${id}`;
-          logger.debug("routing", `Navigating to (length 1 ID): ${targetPath} with search: ${JSON.stringify(Object.fromEntries(searchParams))}`);
+          logger.debug(
+            "routing",
+            `Navigating to (length 1 ID): ${targetPath} with search: ${JSON.stringify(Object.fromEntries(searchParams))}`,
+          );
           logger.debug("routing", `About to navigate for length 1 ID`);
           navigate({
             to: targetPath,
@@ -103,11 +117,17 @@ function OpenAlexUrlComponent() {
       }
 
       // Handle autocomplete
-      logger.debug("routing", `Checking autocomplete, path starts with /autocomplete/: ${path.startsWith("/autocomplete/")}`);
+      logger.debug(
+        "routing",
+        `Checking autocomplete, path starts with /autocomplete/: ${path.startsWith("/autocomplete/")}`,
+      );
       if (path.startsWith("/autocomplete/")) {
         const subPath = path.substring("/autocomplete/".length);
         const targetPath = `/autocomplete/${subPath}`;
-        logger.debug("routing", `Autocomplete match, navigating to: ${targetPath} with search: ${JSON.stringify(Object.fromEntries(searchParams))}`);
+        logger.debug(
+          "routing",
+          `Autocomplete match, navigating to: ${targetPath} with search: ${JSON.stringify(Object.fromEntries(searchParams))}`,
+        );
         logger.debug("routing", `About to navigate for autocomplete`);
         navigate({
           to: targetPath,

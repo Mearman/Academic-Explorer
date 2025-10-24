@@ -3,10 +3,10 @@ export const Route = createLazyFileRoute("/cache")({
   component: CacheBrowserPage,
 });
 
-import { CacheBrowser } from '@/components/cache'
+import { CacheBrowser } from "@/components/cache";
 
 function CacheBrowserPage() {
-  return <CacheBrowser />
+  return <CacheBrowser />;
 }
 
 export default CacheBrowserPage;

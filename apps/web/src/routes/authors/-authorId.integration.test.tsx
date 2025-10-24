@@ -11,7 +11,8 @@ import { useGraphData } from "@/hooks/use-graph-data";
 import { useEntityDocumentTitle } from "@/hooks/use-document-title";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { setupRouterMocks } from "@/test/utils/router-mocks";
-import { renderWithProviders } from "@/test/utils";
+import { useParams, useNavigate } from "@tanstack/react-router";
+import { useGraphStore } from "@/stores/graph-store";
 
 // Mock the route for testing
 vi.mock("./$authorId", () => ({
@@ -82,11 +83,10 @@ describe("AuthorRoute Integration Tests", () => {
     setupRouterMocks();
 
     // Mock useParams
-    const mockUseParams = require("@tanstack/react-router").useParams;
-    mockUseParams.mockReturnValue({ authorId: "A123" });
+    vi.mocked(useParams).mockReturnValue({ authorId: "A123" });
 
     // Mock useNavigate
-    const mockUseNavigate = require("@tanstack/react-router").useNavigate;
+    const mockUseNavigate = vi.mocked(useNavigate);
     mockUseNavigate.mockReturnValue(vi.fn());
 
     // Mock EntityDetectionService
@@ -272,7 +272,7 @@ describe("AuthorRoute Integration Tests", () => {
       refetch: mockRefetch,
     });
 
-    const { rerender } = render(
+    render(
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
           <AuthorRouteComponent />
@@ -322,8 +322,7 @@ describe("AuthorRoute Integration Tests", () => {
 
   it("handles normalization and redirect", async () => {
     const mockNavigate = vi.fn();
-    const mockUseNavigate = require("@tanstack/react-router").useNavigate;
-    mockUseNavigate.mockReturnValue(mockNavigate);
+    vi.mocked(useNavigate).mockReturnValue(mockNavigate);
 
     vi.mocked(EntityDetectionService.detectEntity).mockReturnValue({
       entityType: "authors",
@@ -361,8 +360,7 @@ describe("AuthorRoute Integration Tests", () => {
     });
 
     // Mock nodeCount = 0
-    const mockUseGraphStore = require("@/stores/graph-store").useGraphStore;
-    mockUseGraphStore.mockImplementation((selector) =>
+    vi.mocked(useGraphStore).mockImplementation((selector) =>
       selector({ totalNodeCount: 0 }),
     );
 
@@ -389,8 +387,7 @@ describe("AuthorRoute Integration Tests", () => {
     });
 
     // Mock nodeCount > 0
-    const mockUseGraphStore = require("@/stores/graph-store").useGraphStore;
-    mockUseGraphStore.mockImplementation((selector) =>
+    vi.mocked(useGraphStore).mockImplementation((selector) =>
       selector({ totalNodeCount: 5 }),
     );
 

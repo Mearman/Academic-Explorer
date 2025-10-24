@@ -13,6 +13,7 @@ import { useEntityDocumentTitle } from "@/hooks/use-document-title";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { useParams } from "@tanstack/react-router";
 import { setupRouterMocks } from "@/test/utils/router-mocks";
+import { useGraphStore } from "@/stores/graph-store";
 
 // Mock hooks
 vi.mock("@/hooks/use-raw-entity-data", () => ({
@@ -123,8 +124,7 @@ describe("TopicRouteComponent Integration Tests", () => {
     });
 
     // Mock useGraphStore
-    const mockUseGraphStore = require("@/stores/graph-store").useGraphStore;
-    mockUseGraphStore.mockImplementation((selector) =>
+    vi.mocked(useGraphStore).mockImplementation((selector) =>
       selector({ totalNodeCount: 0 }),
     );
   });
@@ -346,8 +346,7 @@ describe("TopicRouteComponent Integration Tests", () => {
       error: null,
     });
 
-    const mockUseGraphStore = require("@/stores/graph-store").useGraphStore;
-    mockUseGraphStore.mockImplementation((selector) =>
+    vi.mocked(useGraphStore).mockImplementation((selector) =>
       selector({ totalNodeCount: 0 }),
     );
 
@@ -373,8 +372,7 @@ describe("TopicRouteComponent Integration Tests", () => {
       error: null,
     });
 
-    const mockUseGraphStore = require("@/stores/graph-store").useGraphStore;
-    mockUseGraphStore.mockImplementation((selector) =>
+    vi.mocked(useGraphStore).mockImplementation((selector) =>
       selector({ totalNodeCount: 5 }),
     );
 

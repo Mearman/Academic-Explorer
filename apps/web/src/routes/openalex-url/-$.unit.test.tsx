@@ -1,7 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, act } from "@testing-library/react";
-import { createMemoryHistory } from "history";
-import { createRouter, RouterProvider } from "@tanstack/react-router";
+import { describe, it, expect, vi } from "vitest";
+import { renderHook } from "@testing-library/react";
 import { Route as OpenAlexUrlRoute } from "./$.tsx";
 import { EntityDetectionService } from "@academic-explorer/graph";
 
@@ -18,7 +16,7 @@ vi.mock("@academic-explorer/graph", () => ({
 const mockDetectEntity = EntityDetectionService.detectEntity as any;
 
 describe("OpenAlexUrl Route Unit Tests", () => {
-  const renderComponent = (splat: string) => {
+  const renderComponent = (_splat: string) => {
     return renderHook(() => <OpenAlexUrlComponent />, {
       wrapper: ({ children }: any) => <div>{children}</div>,
     });
@@ -94,10 +92,9 @@ describe("OpenAlexUrl Route Unit Tests", () => {
 
   it.each(testUrls)(
     "should handle $url correctly",
-    async ({ url, expected }) => {
+    async ({ url, _expected }) => {
       const pathParts = url.replace("https://api.openalex.org/", "").split("?");
       const path = pathParts[0];
-      const search = pathParts[1] ? `?${pathParts[1]}` : "";
 
       renderComponent(url);
 

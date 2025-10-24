@@ -1,16 +1,16 @@
 import { cachedOpenAlex } from "@academic-explorer/client";
 import { logger } from "@academic-explorer/utils";
 import {
-    Alert,
-    Anchor,
-    Badge,
-    Card,
-    Container,
-    Group,
-    Stack,
-    Text,
-    Textarea,
-    Title,
+  Alert,
+  Anchor,
+  Badge,
+  Card,
+  Container,
+  Group,
+  Stack,
+  Text,
+  Textarea,
+  Title,
 } from "@mantine/core";
 import { IconInfoCircle } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
@@ -80,7 +80,9 @@ function TextKeywordsRoute() {
     if (value) {
       params.set("title", value);
     }
-    const newHash = params.toString() ? `#/text/keywords?${params.toString()}` : "#/text/keywords";
+    const newHash = params.toString()
+      ? `#/text/keywords?${params.toString()}`
+      : "#/text/keywords";
     window.history.replaceState(null, "", newHash);
   };
 
@@ -170,7 +172,11 @@ function TextKeywordsRoute() {
                     </Badge>
                   </Group>
 
-                  <Text size="xs" c="dimmed" style={{ fontFamily: "monospace" }}>
+                  <Text
+                    size="xs"
+                    c="dimmed"
+                    style={{ fontFamily: "monospace" }}
+                  >
                     {keyword.id}
                   </Text>
                 </Stack>

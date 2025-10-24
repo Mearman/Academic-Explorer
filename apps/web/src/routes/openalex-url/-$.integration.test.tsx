@@ -1,7 +1,4 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor, act } from "@testing-library/react";
-import { createMemoryHistory } from "history";
-import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { Route as OpenAlexUrlRoute } from "./$.tsx";
 import { EntityDetectionService } from "@academic-explorer/graph";
 
@@ -30,18 +27,11 @@ vi.mock("@tanstack/react-router", async () => {
 const mockDetectEntity = EntityDetectionService.detectEntity as any;
 
 describe("OpenAlexUrl Route Integration Tests", () => {
-  let router: any;
-  let history: any;
-
   beforeEach(() => {
     vi.clearAllMocks();
-    history = createMemoryHistory();
-    router = createRouter({ history });
-    // Note: This test approach needs to be updated for TanStack Router v1
-    // For now, we'll focus on component-level testing
   });
 
-  const renderComponent = (splat: string) => {
+  const renderComponent = (_splat: string) => {
     // For now, skip the full component test since it requires router context
     // Just test that the component can be imported and basic structure exists
     expect(OpenAlexUrlComponent).toBeDefined();
@@ -120,7 +110,7 @@ describe("OpenAlexUrl Route Integration Tests", () => {
 
   it.each(testCases)(
     "should handle URL correctly for $url",
-    async ({ url, setup, expectedPath }) => {
+    async ({ url, setup, _expectedPath }) => {
       setup();
       renderComponent(url);
 

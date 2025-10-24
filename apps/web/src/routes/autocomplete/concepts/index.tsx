@@ -1,19 +1,19 @@
 import {
-    cachedOpenAlex,
-    type AutocompleteResult,
+  cachedOpenAlex,
+  type AutocompleteResult,
 } from "@academic-explorer/client";
 import { logger } from "@academic-explorer/utils";
 import {
-    Alert,
-    Anchor,
-    Badge,
-    Card,
-    Container,
-    Group,
-    Stack,
-    Text,
-    TextInput,
-    Title,
+  Alert,
+  Anchor,
+  Badge,
+  Card,
+  Container,
+  Group,
+  Stack,
+  Text,
+  TextInput,
+  Title,
 } from "@mantine/core";
 import { IconInfoCircle, IconSearch } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
@@ -85,7 +85,9 @@ function AutocompleteConceptsRoute() {
     if (urlSearch.filter) {
       params.set("filter", urlSearch.filter);
     }
-    const newHash = params.toString() ? `#/autocomplete/concepts?${params.toString()}` : "#/autocomplete/concepts";
+    const newHash = params.toString()
+      ? `#/autocomplete/concepts?${params.toString()}`
+      : "#/autocomplete/concepts";
     window.history.replaceState(null, "", newHash);
   };
 
@@ -95,7 +97,8 @@ function AutocompleteConceptsRoute() {
         <div>
           <Title order={1}>Autocomplete Concepts</Title>
           <Text c="dimmed" size="sm" mt="xs">
-            Search for concepts with real-time suggestions from the OpenAlex database
+            Search for concepts with real-time suggestions from the OpenAlex
+            database
           </Text>
         </div>
 
@@ -120,7 +123,8 @@ function AutocompleteConceptsRoute() {
                 Enter a search term to see suggestions
               </Text>
               <Text size="sm" c="dimmed" ta="center">
-                Start typing to get real-time autocomplete suggestions for concepts
+                Start typing to get real-time autocomplete suggestions for
+                concepts
               </Text>
             </Stack>
           </Card>
@@ -143,7 +147,9 @@ function AutocompleteConceptsRoute() {
               <Text size="sm">
                 {(() => {
                   if (error instanceof Error) {
-                    const match = error.message.match(/(?:Concepts|Concept) autocomplete failed: (.+)/);
+                    const match = error.message.match(
+                      /(?:Concepts|Concept) autocomplete failed: (.+)/,
+                    );
                     if (match) {
                       return match[1];
                     }
@@ -164,7 +170,8 @@ function AutocompleteConceptsRoute() {
             variant="light"
           >
             <Text size="sm">
-              No concepts found matching &quot;{query}&quot;. Try different search terms.
+              No concepts found matching &quot;{query}&quot;. Try different
+              search terms.
             </Text>
           </Alert>
         )}
@@ -197,19 +204,25 @@ function AutocompleteConceptsRoute() {
                   )}
 
                   <Group gap="md">
-                    {result.cited_by_count !== undefined && result.cited_by_count !== null && (
-                      <Text size="xs" c="dimmed">
-                        Citations: {result.cited_by_count.toLocaleString()}
-                      </Text>
-                    )}
-                    {result.works_count !== undefined && result.works_count !== null && (
-                      <Text size="xs" c="dimmed">
-                        Works: {result.works_count.toLocaleString()}
-                      </Text>
-                    )}
+                    {result.cited_by_count !== undefined &&
+                      result.cited_by_count !== null && (
+                        <Text size="xs" c="dimmed">
+                          Citations: {result.cited_by_count.toLocaleString()}
+                        </Text>
+                      )}
+                    {result.works_count !== undefined &&
+                      result.works_count !== null && (
+                        <Text size="xs" c="dimmed">
+                          Works: {result.works_count.toLocaleString()}
+                        </Text>
+                      )}
                   </Group>
 
-                  <Text size="xs" c="dimmed" style={{ fontFamily: "monospace" }}>
+                  <Text
+                    size="xs"
+                    c="dimmed"
+                    style={{ fontFamily: "monospace" }}
+                  >
                     {result.id}
                   </Text>
                 </Stack>

@@ -1,318 +1,106 @@
 import { FieldSelector } from "@/components/FieldSelector";
 import { EntityMiniGraph } from "@/components/graph/EntityMiniGraph";
-import { useEntityDocumentTitle } from "@/hooks/use-document-title";
-import { useEntityMiniGraphData } from "@/hooks/use-entity-mini-graph-data";
-import { useGraphData } from "@/hooks/use-graph-data";
-import { useRawEntityData } from "@/hooks/use-raw-entity-data";
-import { useUserInteractions } from "@/hooks/use-user-interactions";
-import { useGraphStore } from "@/stores/graph-store";
-import { decodeUrlQueryParams } from "@/utils/url-helpers";
-import {
-  WORK_FIELDS,
-  cachedOpenAlex,
-} from "@academic-explorer/client";
-import type { Work } from "@academic-explorer/types";
-import { EntityDetectionService } from "@academic-explorer/graph";
-import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
 import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
-import { logError, logger } from "@academic-explorer/utils/logger";
-import { IconBookmark, IconBookmarkOff } from "@tabler/icons-react";
-import {
-  useNavigate,
-  useParams,
-  useSearch,
-  createLazyFileRoute,
-} from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
+import { useEntityRoute, NavigationHelper } from "@academic-explorer/utils";
+import { WORK_FIELDS, cachedOpenAlex } from "@academic-explorer/client";
+import type { Work } from "@academic-explorer/types";
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 const WORK_ROUTE_PATH = "/works/$workId";
 
+// Configuration for the shared entity route hook
+const WORK_ENTITY_CONFIG = {
+  entityType: "work" as const,
+  routePath: "/works/$workId",
+  paramKey: "workId",
+  fields: WORK_FIELDS,
+  randomApiCall: cachedOpenAlex.client.works.getRandomWorks.bind(cachedOpenAlex.client.works),
+  logContext: "WorkRoute",
+};
+
 function WorkRoute() {
-  const { workId } = useParams({ from: "/works/$workId" });
-  const routeSearch = useSearch({ from: "/works/$workId" });
-  const navigate = useNavigate();
+  // Use our shared hook - this replaces ~100 lines of duplicated code!
+  const entityRoute = useEntityRoute<Work>(WORK_ENTITY_CONFIG);
 
-  // Strip query parameters from workId if present (defensive programming)
-  const cleanWorkId = workId.split("?")[0];
+  const {
+    cleanEntityId: workId,
+    viewMode,
+    setViewMode,
+    isLoadingRandom,
+    graphData,
+    miniGraphData,
+    rawEntityData,
+    nodeCount,
+    loadEntity,
+    loadEntityIntoGraph,
+    routeSearch,
+  } = entityRoute;
 
-  const entityType = "work" as const;
-  const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
-  const hasDecodedUrlRef = useRef(false);
-  const [isLoadingRandom, setIsLoadingRandom] = useState(false);
-
-  // Decode URL-encoded query parameters on mount
+  // Handle URL cleanup for malformed OpenAlex URLs using shared utility
   useEffect(() => {
-    if (hasDecodedUrlRef.current) return;
-    hasDecodedUrlRef.current = true;
-    decodeUrlQueryParams();
-  }, []);
-
-  // Handle "random" keyword - fetch a random work and redirect
-  useEffect(() => {
-    if (cleanWorkId?.toLowerCase() !== "random" || isLoadingRandom) return;
-
-    const loadRandomWork = async () => {
-      setIsLoadingRandom(true);
-      try {
-        logger.debug("routing", "Fetching random work", undefined, "WorkRoute");
-
-        const response = await cachedOpenAlex.client.works.getRandomWorks(1);
-
-        if (response.length > 0) {
-          const randomWork = response[0];
-          const cleanId = randomWork.id.replace("https://openalex.org/", "");
-
-          logger.debug(
-            "routing",
-            "Redirecting to random work",
-            {
-              workId: cleanId,
-              title: randomWork.title,
-            },
-            "WorkRoute",
-          );
-
-          void navigate({
-            to: WORK_ROUTE_PATH,
-            params: { workId: cleanId },
-            search: (prev) => prev,
-            replace: true,
-          });
-        }
-      } catch (error) {
-        logError(
-          logger,
-          "Failed to fetch random work",
-          error,
-          "WorkRoute",
-          "routing",
-        );
-        setIsLoadingRandom(false);
-      }
-    };
-
-    void loadRandomWork();
-  }, [cleanWorkId, navigate, isLoadingRandom]);
-
-  const graphData = useGraphData();
-  const { loadEntity } = graphData;
-  const { loadEntityIntoGraph } = graphData;
-  const nodeCount = useGraphStore((state) => state.totalNodeCount);
-
-  // Mini graph data for the top of the page
-  const miniGraphData = useEntityMiniGraphData({
-    entityId: cleanWorkId,
-    entityType: "works",
-  });
-
-  // Check if ID needs normalization and redirect if necessary
-  useEffect(() => {
-    if (!workId) return;
-
-    const detection = EntityDetectionService.detectEntity(workId);
-
-    // If ID was normalized and is different from input, redirect
-    if (detection?.normalizedId && detection.normalizedId !== workId) {
-      logger.debug(
-        "routing",
-        "Redirecting to normalized work ID",
-        {
-          originalId: workId,
-          normalizedId: detection.normalizedId,
-        },
-        "WorkRoute",
-      );
-
-      // Replace current URL with normalized version, preserving query params
-      void navigate({
-        to: "/works/$workId",
-        params: { workId: detection.normalizedId },
-        search: (prev) => prev, // Preserve existing search params
-        replace: true,
-      });
-    }
-  }, [workId, navigate]);
-
-  // Fetch entity data for title
-  const rawEntityData = useRawEntityData({
-    options: {
-      entityId: workId,
-      enabled: !!workId,
-    },
-  });
-  const work = rawEntityData.data as Work | undefined;
-
-  // Update document title with work name
-  useEntityDocumentTitle(work);
-
-  // Track user interactions (visits and bookmarks)
-  const userInteractions = useUserInteractions({
-    entityId: workId,
-    entityType: "works",
-    autoTrackVisits: true,
-  });
-
-  useEffect(() => {
-    const loadWork = async () => {
-      try {
-        // If graph already has nodes, use incremental loading to preserve existing entities
-        // This prevents clearing the graph when clicking on nodes or navigating
-        if (nodeCount > 0) {
-          await loadEntityIntoGraph(workId);
-        } else {
-          // If graph is empty, use full loading (clears graph for initial load)
-          await loadEntity(workId);
-        }
-      } catch (error) {
-        logError(logger, "Failed to load work", error, "WorkRoute", "routing");
-      }
-    };
-
-    // Don't try to load if we're resolving "random"
-    if (cleanWorkId?.toLowerCase() !== "random") {
-      void loadWork();
-    }
-  }, [workId, loadEntity, loadEntityIntoGraph, nodeCount, cleanWorkId]);
-
-  // Parse selected fields from URL
-  const selectedFields =
-    typeof routeSearch?.select === "string"
-      ? routeSearch.select.split(",").map((f) => f.trim())
-      : [];
-
-  // Handler for field selection changes
-  const handleFieldsChange = (fields: readonly string[]) => {
-    void navigate({
-      to: WORK_ROUTE_PATH,
-      params: { workId: cleanWorkId },
-      search: { select: fields.length > 0 ? fields.join(",") : undefined },
-      replace: true,
+    const navigator = NavigationHelper.createEntityNavigator({
+      entityType: "work",
+      routePath: WORK_ROUTE_PATH,
+      logContext: "WorkRoute",
     });
-  };
 
-  // Show loading state
-  if (rawEntityData.isLoading || isLoadingRandom) {
-    return (
-      <div className="p-4 text-center">
-        <h2>
-          {isLoadingRandom ? "Finding Random Work..." : "Loading Work..."}
-        </h2>
-        <p>Work ID: {workId}</p>
-      </div>
-    );
-  }
+    navigator.handleMalformedUrl(workId, ({ to, params, replace }) => {
+      // Import navigate dynamically to avoid circular dependencies
+      import("@tanstack/react-router").then(({ navigate }) => {
+        navigate({ to, params, replace });
+      });
+    });
+  }, [workId]);
 
-  // Show error state
-  if (rawEntityData.error) {
-    return (
-      <div className="p-4 text-center text-red-500">
-        <h2>Error Loading Work</h2>
-        <p>Work ID: {workId}</p>
-        <p>Error: {String(rawEntityData.error)}</p>
-        <button
-          onClick={() => rawEntityData.refetch?.()}
-          className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Retry
-        </button>
-      </div>
-    );
-  }
+  const work = rawEntityData.data;
 
-  // Show error if no data available
-  if (!rawEntityData.data) {
-    return (
-      <div className="p-4 text-center text-red-500">
-        <h2>No Work Data Available</h2>
-        <p>Work ID: {workId}</p>
-        <button
-          onClick={() => rawEntityData.refetch?.()}
-          className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Retry
-        </button>
-      </div>
-    );
-  }
-
-  // Show content based on view mode
   return (
-    <div className="p-4 max-w-full overflow-auto">
-      {/* Mini Graph View */}
-      {miniGraphData.entity && (
-        <div className="mb-6 flex justify-center">
-          <EntityMiniGraph
-            entity={miniGraphData.entity}
-            relatedEntities={miniGraphData.relatedEntities}
-          />
-        </div>
-      )}
+    <>
+      <FieldSelector
+        entityType="work"
+        entityId={workId}
+        fields={WORK_FIELDS}
+        viewMode={viewMode}
+      />
 
-      <div className="flex items-center justify-between mb-4">
-        <ViewToggle
-          viewMode={viewMode}
-          onToggle={setViewMode}
-          entityType={entityType}
-        />
+      <EntityMiniGraph
+        entityType="work"
+        entityId={workId}
+        graphData={graphData}
+        miniGraphData={miniGraphData}
+        loadEntity={loadEntity}
+        loadEntityIntoGraph={loadEntityIntoGraph}
+        nodeCount={nodeCount}
+      />
 
-        <button
-          onClick={async () => {
-            if (userInteractions.isBookmarked) {
-              await userInteractions.unbookmarkEntity();
-            } else {
-              const title = work?.title || `Work ${workId}`;
-              await userInteractions.bookmarkEntity({ title });
-            }
-          }}
-          className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-            userInteractions.isBookmarked
-              ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
-              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-          }`}
-          title={
-            userInteractions.isBookmarked
-              ? "Remove bookmark"
-              : "Bookmark this work"
-          }
-        >
-          {userInteractions.isBookmarked ? (
-            <IconBookmark size={16} fill="currentColor" />
-          ) : (
-            <IconBookmarkOff size={16} />
-          )}
-          {userInteractions.isBookmarked ? "Bookmarked" : "Bookmark"}
-        </button>
-      </div>
+      <ViewToggle
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        entityType="work"
+        entityId={workId}
+        routeSearch={routeSearch}
+        isLoadingRandom={isLoadingRandom}
+      />
 
-      {/* Field Selector */}
-      <div className="mb-4">
-        <FieldSelector
-          availableFields={WORK_FIELDS}
-          selectedFields={selectedFields}
-          onFieldsChange={handleFieldsChange}
-        />
-      </div>
-
-      {viewMode === "raw" ? (
-        <pre className="json-view p-4 bg-gray-100 overflow-auto mt-4">
-          {JSON.stringify(rawEntityData.data, null, 2)}
-        </pre>
-      ) : (
-        <RichEntityView
-          entity={rawEntityData.data}
-          entityType={entityType}
-          onNavigate={(path: string) => {
-            // Handle paths with query parameters for hash-based routing
-            window.location.hash = path;
-          }}
-        />
-      )}
-    </div>
+      <RichEntityView
+        entityType="work"
+        entity={work}
+        viewMode={viewMode}
+        isLoading={rawEntityData.isLoading}
+        error={rawEntityData.error}
+        fields={WORK_FIELDS}
+        extraActions={
+          <div className="flex gap-2">
+            {/* Work-specific actions can be added here */}
+          </div>
+        }
+      />
+    </>
   );
 }
 
 export const Route = createLazyFileRoute(WORK_ROUTE_PATH)({
   component: WorkRoute,
 });
-
-export default WorkRoute;

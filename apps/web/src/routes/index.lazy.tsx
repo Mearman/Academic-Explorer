@@ -31,7 +31,6 @@ function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const graphData = useGraphData();
   const { search } = graphData;
-  const { isLoading: graphIsLoading } = graphData;
   // Don't disable search input based on graph loading state
   const isLoading = false;
   const themeColors = useThemeColors();

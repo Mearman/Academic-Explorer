@@ -1,16 +1,16 @@
 import { cachedOpenAlex } from "@academic-explorer/client";
 import { logger } from "@academic-explorer/utils";
 import {
-    Alert,
-    Anchor,
-    Badge,
-    Card,
-    Container,
-    Group,
-    Stack,
-    Text,
-    Textarea,
-    Title,
+  Alert,
+  Anchor,
+  Badge,
+  Card,
+  Container,
+  Group,
+  Stack,
+  Text,
+  Textarea,
+  Title,
 } from "@mantine/core";
 import { IconInfoCircle } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
@@ -80,7 +80,9 @@ function TextTopicsRoute() {
     if (value) {
       params.set("title", value);
     }
-    const newHash = params.toString() ? `#/text/topics?${params.toString()}` : "#/text/topics";
+    const newHash = params.toString()
+      ? `#/text/topics?${params.toString()}`
+      : "#/text/topics";
     window.history.replaceState(null, "", newHash);
   };
 
@@ -143,8 +145,8 @@ function TextTopicsRoute() {
             variant="light"
           >
             <Text size="sm">
-              No topics could be extracted from the provided text. Try a
-              longer or more specific text.
+              No topics could be extracted from the provided text. Try a longer
+              or more specific text.
             </Text>
           </Alert>
         )}
@@ -185,7 +187,11 @@ function TextTopicsRoute() {
                     </Group>
                   )}
 
-                  <Text size="xs" c="dimmed" style={{ fontFamily: "monospace" }}>
+                  <Text
+                    size="xs"
+                    c="dimmed"
+                    style={{ fontFamily: "monospace" }}
+                  >
                     {topic.id}
                   </Text>
                 </Stack>

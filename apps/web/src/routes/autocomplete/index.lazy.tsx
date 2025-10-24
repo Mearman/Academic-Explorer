@@ -20,13 +20,6 @@ import { IconInfoCircle, IconSearch } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearch, createLazyFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { z } from "zod";
-
-const autocompleteSearchSchema = z.object({
-  filter: z.string().optional().catch(undefined),
-  search: z.string().optional().catch(undefined),
-  q: z.string().optional().catch(undefined),
-});
 
 export const Route = createLazyFileRoute("/autocomplete/")({
   component: AutocompleteGeneralRoute,

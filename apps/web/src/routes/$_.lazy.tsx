@@ -1,7 +1,12 @@
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { IconSearch } from "@tabler/icons-react";
-import { useNavigate, useParams, useSearch, createLazyFileRoute } from "@tanstack/react-router";
+import {
+  useNavigate,
+  useParams,
+  useSearch,
+  createLazyFileRoute,
+} from "@tanstack/react-router";
 import { useEffect } from "react";
 
 export const Route = createLazyFileRoute("/$_")({
@@ -234,7 +239,6 @@ function ExternalIdRoute() {
     };
 
     void resolveExternalId();
-     
   }, [externalId, routeSearchKey, navigate]);
 
   return (

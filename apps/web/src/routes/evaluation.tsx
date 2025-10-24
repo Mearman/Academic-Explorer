@@ -5,9 +5,9 @@ import { LazyRoute } from "@/components/routing/LazyRoute";
 const EvaluationDashboard = lazy(() => import("./evaluation.lazy"));
 
 export const Route = createFileRoute("/evaluation")({
-	component: () => (
+  component: () => (
     <LazyRoute>
       <EvaluationDashboard />
     </LazyRoute>
   ),
-})
+});

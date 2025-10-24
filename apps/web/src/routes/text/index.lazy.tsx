@@ -1,28 +1,21 @@
 import { cachedOpenAlex } from "@academic-explorer/client";
 import { logger } from "@academic-explorer/utils";
 import {
-    Alert,
-    Anchor,
-    Badge,
-    Card,
-    Container,
-    Group,
-    Stack,
-    Text,
-    Textarea,
-    Title,
+  Alert,
+  Anchor,
+  Badge,
+  Card,
+  Container,
+  Group,
+  Stack,
+  Text,
+  Textarea,
+  Title,
 } from "@mantine/core";
 import { IconInfoCircle } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearch, createLazyFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { z } from "zod";
-
-const textSearchSchema = z.object({
-  title: z.string().optional().catch(undefined),
-  abstract: z.string().optional().catch(undefined),
-  text: z.string().optional().catch(undefined),
-});
 
 export const Route = createLazyFileRoute("/text/")({
   component: TextAnalysisRoute,
@@ -81,7 +74,9 @@ function TextAnalysisRoute() {
     if (value) {
       params.set("title", value);
     }
-    const newHash = params.toString() ? `#/text?${params.toString()}` : "#/text";
+    const newHash = params.toString()
+      ? `#/text?${params.toString()}`
+      : "#/text";
     window.history.replaceState(null, "", newHash);
   };
 

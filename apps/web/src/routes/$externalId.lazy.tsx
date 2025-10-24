@@ -3,9 +3,12 @@ import { useGraphStore } from "@/stores/graph-store";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { IconSearch } from "@tabler/icons-react";
-import { useNavigate, useParams, createLazyFileRoute } from "@tanstack/react-router";
+import {
+  useNavigate,
+  useParams,
+  createLazyFileRoute,
+} from "@tanstack/react-router";
 import { useEffect } from "react";
-
 
 export const Route = createLazyFileRoute("/$externalId")({
   component: ExternalIdRoute,
@@ -18,7 +21,8 @@ function ExternalIdRoute() {
   const graphData = useGraphData();
   const { loadEntity } = graphData;
   const { loadEntityIntoGraph } = graphData;
-  const nodeCount = useGraphStore((state) => state.totalNodeCount);
+  const graphStore = useGraphStore();
+  const nodeCount = graphStore.totalNodeCount;
 
   useEffect(() => {
     const resolveExternalId = async () => {

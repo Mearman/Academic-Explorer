@@ -1,19 +1,19 @@
 import {
-    cachedOpenAlex,
-    type AutocompleteResult,
+  cachedOpenAlex,
+  type AutocompleteResult,
 } from "@academic-explorer/client";
 import { logger } from "@academic-explorer/utils";
 import {
-    Alert,
-    Anchor,
-    Badge,
-    Card,
-    Container,
-    Group,
-    Stack,
-    Text,
-    TextInput,
-    Title,
+  Alert,
+  Anchor,
+  Badge,
+  Card,
+  Container,
+  Group,
+  Stack,
+  Text,
+  TextInput,
+  Title,
 } from "@mantine/core";
 import { IconInfoCircle, IconSearch } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
@@ -85,7 +85,9 @@ function AutocompleteFundersRoute() {
     if (urlSearch.filter) {
       params.set("filter", urlSearch.filter);
     }
-    const newHash = params.toString() ? `#/autocomplete/funders?${params.toString()}` : "#/autocomplete/funders";
+    const newHash = params.toString()
+      ? `#/autocomplete/funders?${params.toString()}`
+      : "#/autocomplete/funders";
     window.history.replaceState(null, "", newHash);
   };
 
@@ -95,7 +97,8 @@ function AutocompleteFundersRoute() {
         <div>
           <Title order={1}>Autocomplete Funders</Title>
           <Text c="dimmed" size="sm" mt="xs">
-            Search for funders with real-time suggestions from the OpenAlex database
+            Search for funders with real-time suggestions from the OpenAlex
+            database
           </Text>
         </div>
 
@@ -120,7 +123,8 @@ function AutocompleteFundersRoute() {
                 Enter a search term to see suggestions
               </Text>
               <Text size="sm" c="dimmed" ta="center">
-                Start typing to get real-time autocomplete suggestions for funders
+                Start typing to get real-time autocomplete suggestions for
+                funders
               </Text>
             </Stack>
           </Card>
@@ -143,7 +147,9 @@ function AutocompleteFundersRoute() {
               <Text size="sm">
                 {(() => {
                   if (error instanceof Error) {
-                    const match = error.message.match(/(?:Funders|Funder) autocomplete failed: (.+)/);
+                    const match = error.message.match(
+                      /(?:Funders|Funder) autocomplete failed: (.+)/,
+                    );
                     if (match) {
                       return match[1];
                     }
@@ -164,7 +170,8 @@ function AutocompleteFundersRoute() {
             variant="light"
           >
             <Text size="sm">
-              No funders found matching &quot;{query}&quot;. Try different search terms.
+              No funders found matching &quot;{query}&quot;. Try different
+              search terms.
             </Text>
           </Alert>
         )}
@@ -197,19 +204,25 @@ function AutocompleteFundersRoute() {
                   )}
 
                   <Group gap="md">
-                    {result.cited_by_count !== undefined && result.cited_by_count !== null && (
-                      <Text size="xs" c="dimmed">
-                        Citations: {result.cited_by_count.toLocaleString()}
-                      </Text>
-                    )}
-                    {result.works_count !== undefined && result.works_count !== null && (
-                      <Text size="xs" c="dimmed">
-                        Works: {result.works_count.toLocaleString()}
-                      </Text>
-                    )}
+                    {result.cited_by_count !== undefined &&
+                      result.cited_by_count !== null && (
+                        <Text size="xs" c="dimmed">
+                          Citations: {result.cited_by_count.toLocaleString()}
+                        </Text>
+                      )}
+                    {result.works_count !== undefined &&
+                      result.works_count !== null && (
+                        <Text size="xs" c="dimmed">
+                          Works: {result.works_count.toLocaleString()}
+                        </Text>
+                      )}
                   </Group>
 
-                  <Text size="xs" c="dimmed" style={{ fontFamily: "monospace" }}>
+                  <Text
+                    size="xs"
+                    c="dimmed"
+                    style={{ fontFamily: "monospace" }}
+                  >
                     {result.id}
                   </Text>
                 </Stack>

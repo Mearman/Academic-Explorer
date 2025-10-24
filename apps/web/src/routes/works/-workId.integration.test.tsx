@@ -13,6 +13,7 @@ import { useEntityDocumentTitle } from "@/hooks/use-document-title";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { useParams } from "@tanstack/react-router";
 import { setupRouterMocks } from "@/test/utils/router-mocks";
+import { useGraphStore } from "@/stores/graph-store";
 
 // Mock hooks
 vi.mock("@/hooks/use-raw-entity-data", () => ({
@@ -25,6 +26,12 @@ vi.mock("@/hooks/use-graph-data", () => ({
 
 vi.mock("@/hooks/use-document-title", () => ({
   useEntityDocumentTitle: vi.fn(),
+}));
+
+vi.mock("@/stores/graph-store", () => ({
+  useGraphStore: vi.fn((selector) =>
+    selector({ totalNodeCount: 0 }),
+  ),
 }));
 
 vi.mock("@academic-explorer/graph", () => ({
@@ -122,12 +129,7 @@ describe("WorkRouteComponent Integration Tests", () => {
         : "Academic Explorer";
     });
 
-    // Mock useGraphStore
-    const mockUseGraphStore = require("@/stores/graph-store").useGraphStore;
-    mockUseGraphStore.mockImplementation((selector) =>
-      selector({ totalNodeCount: 0 }),
-    );
-  });
+    });
 
   afterEach(() => {
     queryClient.clear();
@@ -346,8 +348,7 @@ describe("WorkRouteComponent Integration Tests", () => {
       error: null,
     });
 
-    const mockUseGraphStore = require("@/stores/graph-store").useGraphStore;
-    mockUseGraphStore.mockImplementation((selector) =>
+    vi.mocked(useGraphStore).mockImplementation((selector) =>
       selector({ totalNodeCount: 0 }),
     );
 
@@ -373,8 +374,7 @@ describe("WorkRouteComponent Integration Tests", () => {
       error: null,
     });
 
-    const mockUseGraphStore = require("@/stores/graph-store").useGraphStore;
-    mockUseGraphStore.mockImplementation((selector) =>
+    vi.mocked(useGraphStore).mockImplementation((selector) =>
       selector({ totalNodeCount: 5 }),
     );
 

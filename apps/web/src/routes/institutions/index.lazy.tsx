@@ -7,7 +7,6 @@ export const Route = createLazyFileRoute("/institutions/")({
   component: InstitutionsListRoute,
 });
 
-
 const institutionsColumns: ColumnConfig[] = [
   { key: "display_name", header: "Name" },
   { key: "country_code", header: "Country" },

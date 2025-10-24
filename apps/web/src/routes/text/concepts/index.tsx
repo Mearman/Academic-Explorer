@@ -1,16 +1,16 @@
 import { cachedOpenAlex } from "@academic-explorer/client";
 import { logger } from "@academic-explorer/utils";
 import {
-    Alert,
-    Anchor,
-    Badge,
-    Card,
-    Container,
-    Group,
-    Stack,
-    Text,
-    Textarea,
-    Title,
+  Alert,
+  Anchor,
+  Badge,
+  Card,
+  Container,
+  Group,
+  Stack,
+  Text,
+  Textarea,
+  Title,
 } from "@mantine/core";
 import { IconInfoCircle } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
@@ -80,7 +80,9 @@ function TextConceptsRoute() {
     if (value) {
       params.set("title", value);
     }
-    const newHash = params.toString() ? `#/text/concepts?${params.toString()}` : "#/text/concepts";
+    const newHash = params.toString()
+      ? `#/text/concepts?${params.toString()}`
+      : "#/text/concepts";
     window.history.replaceState(null, "", newHash);
   };
 

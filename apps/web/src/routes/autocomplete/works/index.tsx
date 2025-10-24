@@ -1,19 +1,19 @@
 import {
-    cachedOpenAlex,
-    type AutocompleteResult,
+  cachedOpenAlex,
+  type AutocompleteResult,
 } from "@academic-explorer/client";
 import { logger } from "@academic-explorer/utils";
 import {
-    Alert,
-    Anchor,
-    Badge,
-    Card,
-    Container,
-    Group,
-    Stack,
-    Text,
-    TextInput,
-    Title,
+  Alert,
+  Anchor,
+  Badge,
+  Card,
+  Container,
+  Group,
+  Stack,
+  Text,
+  TextInput,
+  Title,
 } from "@mantine/core";
 import { IconInfoCircle, IconSearch } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
@@ -151,13 +151,15 @@ function AutocompleteWorksRoute() {
                   // Handle Error instances with message property
                   if (error instanceof Error) {
                     // Extract OpenAlex error message if wrapped
-                    const match = error.message.match(/Works autocomplete failed: (.+)/);
+                    const match = error.message.match(
+                      /Works autocomplete failed: (.+)/,
+                    );
                     if (match) {
                       return match[1];
                     }
                     return error.message;
                   }
-                  
+
                   // Fallback for non-Error objects
                   return String(error);
                 })()}
@@ -208,19 +210,25 @@ function AutocompleteWorksRoute() {
                   )}
 
                   <Group gap="md">
-                    {result.cited_by_count !== undefined && result.cited_by_count !== null && (
-                      <Text size="xs" c="dimmed">
-                        Citations: {result.cited_by_count.toLocaleString()}
-                      </Text>
-                    )}
-                    {result.works_count !== undefined && result.works_count !== null && (
-                      <Text size="xs" c="dimmed">
-                        Works: {result.works_count.toLocaleString()}
-                      </Text>
-                    )}
+                    {result.cited_by_count !== undefined &&
+                      result.cited_by_count !== null && (
+                        <Text size="xs" c="dimmed">
+                          Citations: {result.cited_by_count.toLocaleString()}
+                        </Text>
+                      )}
+                    {result.works_count !== undefined &&
+                      result.works_count !== null && (
+                        <Text size="xs" c="dimmed">
+                          Works: {result.works_count.toLocaleString()}
+                        </Text>
+                      )}
                   </Group>
 
-                  <Text size="xs" c="dimmed" style={{ fontFamily: "monospace" }}>
+                  <Text
+                    size="xs"
+                    c="dimmed"
+                    style={{ fontFamily: "monospace" }}
+                  >
                     {result.id}
                   </Text>
                 </Stack>

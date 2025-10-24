@@ -1,9 +1,12 @@
-import { useNavigate, useParams, createLazyFileRoute } from "@tanstack/react-router";
+import {
+  useNavigate,
+  useParams,
+  createLazyFileRoute,
+} from "@tanstack/react-router";
 import { useEffect } from "react";
 import { IconSearch } from "@tabler/icons-react";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { logError, logger } from "@academic-explorer/utils/logger";
-
 
 export const Route = createLazyFileRoute("/openalex/org/$")({
   component: OpenAlexRoute,
