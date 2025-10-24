@@ -2,7 +2,7 @@
  * Entity type detection utilities for CLI
  */
 
-import type { EntityType } from "@academic-explorer/types";
+import type { EntityType } from "@academic-explorer/types"
 
 /**
  * Map OpenAlex ID prefixes to entity types
@@ -10,23 +10,23 @@ import type { EntityType } from "@academic-explorer/types";
 function prefixToEntityType(prefix: string): EntityType {
 	switch (prefix) {
 		case "W":
-			return "works";
+			return "works"
 		case "A":
-			return "authors";
+			return "authors"
 		case "S":
-			return "sources";
+			return "sources"
 		case "I":
-			return "institutions";
+			return "institutions"
 		case "T":
-			return "topics";
+			return "topics"
 		case "C":
-			return "concepts";
+			return "concepts"
 		case "P":
-			return "publishers";
+			return "publishers"
 		case "F":
-			return "funders";
+			return "funders"
 		default:
-			throw new Error(`Unknown entity prefix: ${prefix}`);
+			throw new Error(`Unknown entity prefix: ${prefix}`)
 	}
 }
 
@@ -35,20 +35,20 @@ function prefixToEntityType(prefix: string): EntityType {
  */
 export function detectEntityType(entityId: string): EntityType {
 	// Detect from ID format (W123456789, A123456789, etc.)
-	const match = entityId.match(/^https:\/\/openalex\.org\/([WASITPF])\d+$/);
+	const match = entityId.match(/^https:\/\/openalex\.org\/([WASITPF])\d+$/)
 	if (match?.[1]) {
-		const prefix = match[1];
-		return prefixToEntityType(prefix);
+		const prefix = match[1]
+		return prefixToEntityType(prefix)
 	}
 
 	// Handle bare IDs
-	const bareMatch = entityId.match(/^([WASITPF])\d+$/);
+	const bareMatch = entityId.match(/^([WASITPF])\d+$/)
 	if (bareMatch?.[1]) {
-		const prefix = bareMatch[1];
-		return prefixToEntityType(prefix);
+		const prefix = bareMatch[1]
+		return prefixToEntityType(prefix)
 	}
 
-	throw new Error(`Cannot detect entity type from ID: ${entityId}`);
+	throw new Error(`Cannot detect entity type from ID: ${entityId}`)
 }
 
 /**
@@ -60,17 +60,17 @@ export const SUPPORTED_ENTITIES = [
 	"institutions",
 	"topics",
 	"publishers",
-	"funders"
-] as const;
+	"funders",
+] as const
 
-export type StaticEntityType = typeof SUPPORTED_ENTITIES[number];
+export type StaticEntityType = (typeof SUPPORTED_ENTITIES)[number]
 
 /**
  * Convert EntityType to StaticEntityType
  */
 export function toStaticEntityType(entityType: EntityType): StaticEntityType {
 	if (SUPPORTED_ENTITIES.includes(entityType as StaticEntityType)) {
-		return entityType as StaticEntityType;
+		return entityType as StaticEntityType
 	}
-	throw new Error(`Unsupported entity type for CLI: ${entityType}`);
+	throw new Error(`Unsupported entity type for CLI: ${entityType}`)
 }
