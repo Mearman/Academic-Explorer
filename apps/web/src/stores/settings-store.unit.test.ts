@@ -9,7 +9,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import "fake-indexeddb/auto";
 import {
-  useSettingsStore,
   settingsStore,
   settingsActions,
 } from "./settings-store";

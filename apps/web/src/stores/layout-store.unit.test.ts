@@ -15,11 +15,11 @@ vi.mock("dexie", () => {
   };
 
   const DexieMock = vi.fn().mockImplementation(function (
-    this: any,
-    name?: string,
+    this: unknown,
+    _name?: string,
   ) {
-    this.version = vi.fn().mockImplementation((version: number) => {
-      const versionObj = {
+    this.version = vi.fn().mockImplementation((_version: number) => {
+      return {
         stores: vi.fn().mockImplementation((schema: any) => {
           // Set up the table properties based on the schema
           Object.keys(schema).forEach((tableName) => {
@@ -28,7 +28,6 @@ vi.mock("dexie", () => {
           return this;
         }),
       };
-      return versionObj;
     });
     return this;
   });
@@ -55,7 +54,7 @@ vi.mock("./group-registry", () => ({
   registerGroupDefinition: vi.fn(),
 }));
 
-import { useLayoutStore, layoutStore, layoutActions } from "./layout-store";
+import { layoutStore, layoutActions } from "./layout-store";
 
 // Mock localStorage for Zustand persistence
 const localStorageMock = (() => {

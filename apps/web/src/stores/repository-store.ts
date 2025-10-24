@@ -710,7 +710,8 @@ if (typeof window !== "undefined") {
 // Zustand-compatible API for backward compatibility
 // This provides the same interface as the old Zustand store
 
-interface RepositoryStoreState extends RepositoryState {}
+// RepositoryStoreState is aliased to RepositoryState for backward compatibility
+type RepositoryStoreState = RepositoryState
 
 interface RepositoryStoreActions {
   setRepositoryMode: (enabled: boolean) => void;
