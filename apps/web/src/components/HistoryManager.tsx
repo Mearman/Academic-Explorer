@@ -127,7 +127,7 @@ export function HistoryManager({ onNavigate }: HistoryManagerProps) {
         </Card>
       ) : (
         <Stack gap="sm">
-          {filteredEntries.map((entry, index) => (
+          {filteredEntries.map((entry) => (
             <Card
               key={`${entry.route}-${entry.visitedAt}`}
               withBorder

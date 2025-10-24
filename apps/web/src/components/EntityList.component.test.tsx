@@ -4,8 +4,6 @@
  */
 
 import type {
-  Author,
-  Concept,
   Funder,
   OpenAlexResponse,
   Publisher,
@@ -15,6 +13,7 @@ import { cachedOpenAlex } from "@academic-explorer/client";
 import { MantineProvider } from "@mantine/core";
 import { act, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import "@testing-library/jest-dom";
 import { EntityList, type ColumnConfig } from "./EntityList";
 
 // Mock the cached OpenAlex client

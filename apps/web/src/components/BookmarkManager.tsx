@@ -3,7 +3,6 @@
  */
 
 import { useUserInteractions } from "@/hooks/use-user-interactions";
-import { logger } from "@academic-explorer/utils/logger";
 import {
   IconBookmark,
   IconBookmarkOff,
@@ -28,7 +27,7 @@ interface BookmarkManagerProps {
 }
 
 export function BookmarkManager({ onNavigate }: BookmarkManagerProps) {
-  const { bookmarks, unbookmarkEntity, isLoadingBookmarks } =
+  const { bookmarks, isLoadingBookmarks } =
     useUserInteractions();
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -37,26 +36,11 @@ export function BookmarkManager({ onNavigate }: BookmarkManagerProps) {
         (bookmark) =>
           bookmark.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
           bookmark.notes?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          bookmark.tags?.some((tag) =>
+          bookmark.tags?.some((tag: string) =>
             tag.toLowerCase().includes(searchQuery.toLowerCase()),
           ),
       )
     : bookmarks;
-
-  const handleUnbookmark = async (bookmarkId: number) => {
-    try {
-      // Find the bookmark to get entity info for unbookmarking
-      const bookmark = bookmarks.find((b) => b.id === bookmarkId);
-      if (bookmark) {
-        await unbookmarkEntity();
-      }
-    } catch (error) {
-      logger.error("bookmark-manager", "Failed to remove bookmark", {
-        bookmarkId,
-        error,
-      });
-    }
-  };
 
   const handleNavigate = (url: string) => {
     if (onNavigate) {
@@ -122,7 +106,7 @@ export function BookmarkManager({ onNavigate }: BookmarkManagerProps) {
                 <a
                   href={`#${bookmark.request.cacheKey.replace(
                     /^\/(author|work|institution|source|funder|topic|concept)\//,
-                    (_match, type) => {
+                    (_match: string, type: string) => {
                       const pluralMap: Record<string, string> = {
                         author: "authors",
                         work: "works",
@@ -173,7 +157,7 @@ export function BookmarkManager({ onNavigate }: BookmarkManagerProps) {
 
               {bookmark.tags && bookmark.tags.length > 0 && (
                 <Group gap="xs" mb="xs">
-                  {bookmark.tags.map((tag, index) => (
+                  {bookmark.tags.map((tag: string, index: number) => (
                     <Badge key={index} size="xs" variant="light">
                       {tag}
                     </Badge>

@@ -13,7 +13,9 @@ import {
 import { IconX } from "@tabler/icons-react";
 import { useState } from "react";
 
-export interface FieldSelectorProps<T extends readonly string[] = readonly string[]> {
+export interface FieldSelectorProps<
+  T extends readonly string[] = readonly string[],
+> {
   availableFields: T;
   selectedFields: readonly string[];
   onFieldsChange: (fields: readonly string[]) => void;
@@ -118,9 +120,7 @@ export function FieldSelector<T extends readonly string[] = readonly string[]>({
           <Combobox.DropdownTarget>
             <PillsInput
               onClick={() => combobox.openDropdown()}
-              rightSection={
-                <Combobox.Chevron />
-              }
+              rightSection={<Combobox.Chevron />}
             >
               <Pill.Group>
                 {values}
@@ -168,8 +168,8 @@ export function FieldSelector<T extends readonly string[] = readonly string[]>({
         {selectedFields.length > 0 && (
           <Group gap="xs">
             <Badge size="sm" variant="light">
-              {selectedFields.length} field{selectedFields.length !== 1 ? "s" : ""}{" "}
-              selected
+              {selectedFields.length} field
+              {selectedFields.length !== 1 ? "s" : ""} selected
             </Badge>
           </Group>
         )}
