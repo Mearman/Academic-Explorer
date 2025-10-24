@@ -139,11 +139,11 @@ export async function generateAllIndexes(
 export async function generateIndexWithAutoDownload({
   entityDir,
   entityType,
-  staticDataDir: _staticDataDir,
+  staticDataDir,
 }: {
   entityDir: string;
   entityType: EntityType;
-  _staticDataDir: string;
+  staticDataDir: string;
 }): Promise<void> {
   await initializeNodeModules();
   try {
@@ -405,7 +405,7 @@ async function processJsonFiles({
 async function processSubdirectories({
   entityDir,
   entityType,
-  _recursive,
+  recursive,
 }: {
   entityDir: string;
   entityType: EntityType;
@@ -508,7 +508,7 @@ async function validateIndexFiles({
 
   if (index.files) {
     for (const [_key, fileEntry] of Object.entries(index.files)) {
-      const fileName = fileEntry.$ref.replace("./", "");
+      const fileName = (fileEntry as FileEntry).$ref.replace("./", "");
       const filePath = path.join(entityDir, fileName);
       if (!(await fileExists(filePath))) {
         console.warn(`⚠️  Referenced file not found: ${fileName}`);
