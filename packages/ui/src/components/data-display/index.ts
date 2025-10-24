@@ -1,0 +1,1 @@
+export { BaseTable, type BaseTableProps } from "./BaseTable"

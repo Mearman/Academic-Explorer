@@ -10,6 +10,7 @@ export default defineConfig(
 		plugins: [nxViteTsPaths()],
 		test: {
 			environment: "jsdom",
+			setupFiles: ["./src/test/setup.ts"],
 			coverage: {
 				reportsDirectory: "../../coverage/packages/ui",
 			},
