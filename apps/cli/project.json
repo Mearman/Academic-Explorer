@@ -7,7 +7,7 @@
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
-      "dependsOn": ["client:build", "utils:build"],
+      "dependsOn": ["^build"],
       "outputs": ["{options.outputPath}"],
       "inputs": [
         "production",
@@ -18,52 +18,31 @@
       "cache": true,
       "options": {
         "outputPath": "apps/cli/dist",
-        "main": "apps/cli/src/simple-cli.ts",
+        "main": "apps/cli/src/openalex-cli.ts",
         "tsConfig": "apps/cli/tsconfig.json",
         "assets": []
       }
     },
-
-    "test": {
-      "dependsOn": ["test:aggregate"]
-    },
     "test:unit": {
       "executor": "@nx/vite:test",
       "options": {
-        "project": "unit",
+        "config": "apps/cli/vitest.config.ts",
+        "include": ["src/**/*.unit.test.ts"],
+        "passWithNoTests": true,
         "coverage": {
           "enabled": true,
-          "reportsDirectory": "coverage/apps/cli"
+          "reportsDirectory": "coverage/apps/cli/unit"
         }
-      },
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/vite.config.base.ts",
-        "{projectRoot}/vitest.config.ts"
-      ],
-      "cache": true
+      }
     },
     "test:integration": {
       "executor": "@nx/vite:test",
       "options": {
-        "project": "integration"
-      },
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/vite.config.base.ts",
-        "{projectRoot}/vitest.config.ts"
-      ],
-      "cache": true
-    },
-    "test:component": {
-      "executor": "nx:noop",
-      "options": {},
-      "cache": false
-    },
-    "clean": "clean",
-    "validate": {},
-    "lint": {}
+        "config": "apps/cli/vitest.config.ts",
+        "include": ["src/**/*.integration.test.ts"],
+        "passWithNoTests": true,
+        "reportsDirectory": "coverage/apps/cli/integration"
+      }
+    }
   }
 }
