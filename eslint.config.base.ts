@@ -36,53 +36,8 @@ export default tseslint.config([
                 ...globals.node,
             },
             parserOptions: {
-                projectService: true,
+                projectService: false,
                 tsconfigRootDir: import.meta.dirname,
-                allowDefaultProject: [
-                    // All TypeScript files in packages
-                    "packages/**/*.ts",
-                    "packages/**/*.tsx",
-                    // All test files
-                    "**/*.test.ts",
-                    "**/*.test.tsx",
-                    "**/*.spec.ts",
-                    "**/*.spec.tsx",
-                    "**/*.e2e.test.ts",
-                    "**/*.e2e.test.tsx",
-                    "**/*.component.test.tsx",
-                    "**/*.integration.test.ts",
-                    "**/*.integration.test.tsx",
-                    // Build and config files
-                    "**/build-plugins/**",
-                    "**/*.config.ts",
-                    "**/*.config.js",
-                    "**/*.config.mjs",
-                    // Source files that might not be in tsconfig
-                    "src/**/*.ts",
-                    "src/**/*.tsx",
-                    "src/**/*.js",
-                    "src/**/*.jsx",
-                    // Scripts and tools
-                    "scripts/**/*.ts",
-                    "tools/**/*.ts",
-                    // Test files excluded from tsconfig but need linting
-                    "apps/web/test.ts",
-                    // Storybook and config files
-                    "**/.storybook/**/*",
-                    "**/eslint.config.*.ts",
-                    "**/vite.config.*.ts",
-                    "apps/web/src/test/**/*",
-                    // Root level config files that were missing
-                    ".commitlintrc.ts",
-                    "apps/cli/vitest.config.ts",
-                    "apps/web/vite.config.minimal.ts",
-                    "apps/web/test.ts",
-                    "config/test-utils/render-helpers.tsx",
-                    "eslint.config.base.ts",
-                    "eslint.config.react.ts",
-                    "eslint.config.ts",
-                    "knip.ts"
-                ],
             },
         },
         plugins: {
