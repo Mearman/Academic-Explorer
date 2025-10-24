@@ -1,4 +1,4 @@
-name: "CI Pipeline"
+name: CI/CD Pipeline
 
 on:
   push:
@@ -6,7 +6,16 @@ on:
     tags: ["v*"]
   pull_request:
     branches: [main]
+  schedule:
+    # Run quality gates daily at 2 AM UTC
+    - cron: "0 2 * * *"
   workflow_dispatch:
+    inputs:
+      run_quality_gates:
+        description: "Run comprehensive quality gates"
+        required: false
+        default: false
+        type: boolean
 
 # Cancel in-progress runs for same workflow + branch/PR
 concurrency:
@@ -16,468 +25,375 @@ concurrency:
 env:
   NODE_VERSION: "20"
   PNPM_VERSION: "10.18.3"
+  NODE_OPTIONS: "--max-old-space-size=8192"
   # Disable Nx daemon in CI to prevent hanging issues
   NX_DAEMON: false
-  # Optional: Add Nx Cloud tokens for distributed caching
-  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-  NX_CLOUD_ENCRYPTION_KEY: ${{ secrets.NX_CLOUD_ENCRYPTION_KEY }}
 
 jobs:
-  # Main CI job following Nx best practices
-  ci:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          # Use tree:0 filter for optimal performance with full git history for Nx affected
-          filter: tree:0
-          fetch-depth: 0
-
-      - name: Setup Node.js and dependencies
-        uses: ./.github/actions/setup-node-pnpm
-
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-modules-${{ env.NODE_VERSION }}-${{ env.PNPM_VERSION }}-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-node-modules-${{ env.NODE_VERSION }}-${{ env.PNPM_VERSION }}-
-            ${{ runner.os }}-node-modules-${{ env.NODE_VERSION }}-
-            ${{ runner.os }}-node-modules-
-
-      - name: Setup Nx SHAs
-        uses: nrwl/nx-set-shas@v4
-        with:
-          main-branch-name: "main"
-
-      - name: Clean up any lingering Nx processes
-        run: |
-          echo "🧹 Cleaning up any lingering Nx daemon processes..."
-          # Kill any existing Nx processes
-          pkill -f "nx daemon" || true
-          pkill -f "@nx/daemon" || true
-          # Clean up Nx cache and temp files
-          rm -rf .nx/cache/daemon
-          rm -rf /tmp/nx-daemon* || true
-          echo "✅ Nx cleanup completed"
-
-      - name: Restore Nx cache
-        uses: actions/cache@v4
-        with:
-          path: .nx/cache
-          key: ${{ runner.os }}-nx-${{ env.NODE_VERSION }}-${{ env.PNPM_VERSION }}-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
-          restore-keys: |
-            ${{ runner.os }}-nx-${{ env.NODE_VERSION }}-${{ env.PNPM_VERSION }}-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml') }}-
-            ${{ runner.os }}-nx-${{ env.NODE_VERSION }}-${{ env.PNPM_VERSION }}-${{ hashFiles('nx.json', '**/project.json') }}-
-            ${{ runner.os }}-nx-${{ env.NODE_VERSION }}-${{ env.PNPM_VERSION }}-
-            ${{ runner.os }}-nx-
-
-      - name: Build affected projects
-        run: |
-          echo "🔨 Building affected projects with Nx orchestration..."
-          
-          # Use Nx affected to build only changed projects, excluding problematic web app
-          echo "📋 Checking for affected packages (excluding web app)..."
-          
-          # Check if there are any affected projects (excluding web and apps to focus on libraries)
-          AFFECTED_PROJECTS=$(pnpm nx affected -t build --type=lib --exclude=web --exclude=apps --plain 2>/dev/null || echo "")
-          
-          if [ -z "$AFFECTED_PROJECTS" ]; then
-            echo "✅ No affected projects found - no builds needed for this commit"
-            echo "📋 This is normal for refactoring, documentation, or configuration changes"
-          else
-            echo "📊 Found affected projects: $AFFECTED_PROJECTS"
-            echo "🏗️ Building affected packages with proper dependency graph..."
-            
-            # Use Nx affected to build changed projects with full functionality
-            if ! pnpm nx affected -t build --parallel=3 --maxParallel=3; then
-              echo "❌ Nx affected build failed"
-              echo "🔍 Running diagnostic to understand failure..."
-              
-              # Show what projects are affected
-              echo "📋 Affected projects:"
-              echo "$AFFECTED_PROJECTS"
-              
-              # Show dependency graph for affected projects
-              echo "📊 Dependency graph for affected projects:"
-              pnpm nx affected -t build --type=app --type=lib --graph || echo "  No affected projects"
-              
-              exit 1
-            fi
-          fi
-          
-          echo "✅ Build step completed successfully"
-
-            echo "🛠️ Building CLI..."
-            pnpm --filter @academic-explorer/cli build
-          fi
-
-          echo "✅ All builds completed successfully"
-        env:
-          NODE_OPTIONS: "--max-old-space-size=8192"
-
-      - name: Lint affected projects
-        run: |
-          echo "🔧 Linting affected projects with Nx orchestration..."
-
-          # Use Nx affected linting with proper caching
-          if ! pnpm nx affected -t lint --parallel=3 --maxParallel=3; then
-            echo "❌ Nx lint failed, falling back to manual linting..."
-
-            # Get affected projects safely
-            affected_output=$(pnpm nx show projects --affected --json 2>/dev/null | tail -n 1 || echo '[]')
-            affected_projects=$(echo "$affected_output" | jq -r '.[]' 2>/dev/null || echo "")
-            echo "📋 Affected projects: $affected_projects"
-
-            # Initialize success tracking
-            lint_success=true
-
-            # Lint web app with zero warnings tolerance
-            if echo "$affected_projects" | grep -q "web" 2>/dev/null; then
-              echo "🔧 Linting web app (allow up to 15 warnings)..."
-              cd apps/web
-              if ! timeout 4m pnpm eslint . --max-warnings=15; then
-                echo "❌ Web app lint failed with warnings/errors"
-                lint_success=false
-              else
-                echo "✅ Web app lint passed with acceptable warnings"
-              fi
-              cd ../..
-            fi
-
-            # Lint packages with selective warnings tolerance
-            for project in client utils graph simulation ui; do
-              if echo "$affected_projects" | grep -q "$project" 2>/dev/null && [ -d "packages/$project" ]; then
-                # Client package gets higher tolerance temporarily due to legacy TypeScript any types
-                if [ "$project" = "client" ]; then
-                  echo "🔧 Linting package: $project (allow up to 100 warnings)..."
-                  cd "packages/$project"
-                  if ! timeout 2m pnpm eslint . --max-warnings=100; then
-                    echo "❌ Package $project lint failed with warnings/errors"
-                    lint_success=false
-                  else
-                    echo "✅ Package $project lint passed with acceptable warnings"
-                  fi
-                else
-                  echo "🔧 Linting package: $project (zero warnings tolerance)..."
-                  cd "packages/$project"
-                  if ! timeout 2m pnpm eslint . --max-warnings=0; then
-                    echo "❌ Package $project lint failed with warnings/errors"
-                    lint_success=false
-                  else
-                    echo "✅ Package $project lint passed with zero warnings"
-                  fi
-                fi
-                cd ../..
-              fi
-            done
-
-            # Always lint critical packages regardless of affected status
-            if ! echo "$affected_projects" | grep -E "(client|utils)" > /dev/null 2>&1; then
-              echo "🛡️ Linting critical packages (client, utils) regardless of affected status..."
-              for project in client utils; do
-                if [ -d "packages/$project" ]; then
-                  # Client package gets higher tolerance temporarily due to legacy TypeScript any types
-                  if [ "$project" = "client" ]; then
-                    echo "🔧 Linting critical package: $project (allow up to 100 warnings)..."
-                    cd "packages/$project"
-                    if ! timeout 2m pnpm eslint . --max-warnings=100; then
-                      echo "❌ Critical package $project lint failed"
-                      lint_success=false
-                    else
-                      echo "✅ Critical package $project lint passed with acceptable warnings"
-                    fi
-                  else
-                    echo "🔧 Linting critical package: $project (zero warnings tolerance)..."
-                    cd "packages/$project"
-                    if ! timeout 2m pnpm eslint . --max-warnings=0; then
-                      echo "❌ Critical package $project lint failed"
-                      lint_success=false
-                    else
-                      echo "✅ Critical package $project lint passed with zero warnings"
-                    fi
-                  fi
-                  cd ../..
-                fi
-              done
-            fi
-
-            # Check final result and exit appropriately
-            if [ "$lint_success" = true ]; then
-              echo "🎉 All linting passed with zero warnings!"
-            else
-              echo "💥 Linting failed - fix all warnings and errors before proceeding"
-              exit 1
-            fi
-          fi
-        env:
-          NODE_OPTIONS: "--max-old-space-size=8192"
-
-      - name: Type check affected projects
-        run: |
-          echo "🔍 Running TypeScript type checking with Nx orchestration..."
-
-          # Use Nx affected typecheck with proper caching
-          if ! pnpm nx affected -t typecheck --parallel=3 --maxParallel=3; then
-            echo "❌ Nx typecheck failed, falling back to direct typecheck..."
-
-            # Fallback to direct typecheck command
-            if ! pnpm typecheck; then
-              echo "❌ TypeScript type checking failed"
-              exit 1
-            fi
-          fi
-
-          echo "✅ TypeScript type checking passed with zero errors"
-        env:
-          NODE_OPTIONS: "--max-old-space-size=8192"
-
-      - name: Test affected projects
-        run: |
-          # Create cache directory to prevent ENOENT errors in disk cache writer
-          echo "📁 Creating cache directories for tests..."
-          mkdir -p apps/web/public/data/openalex
-
-          echo "🧪 Running affected project tests with Nx orchestration..."
-
-          # Use Nx affected testing with proper caching
-          if ! pnpm nx affected -t test --parallel=2 --maxParallel=2; then
-            echo "❌ Nx test failed, falling back to manual testing..."
-
-            # Fallback to manual testing
-            test_success=true
-            total_tests=0
-            passed_tests=0
-
-            # Test client package
-            if [ -d "packages/client" ]; then
-              echo "🔬 Testing client package..."
-              if timeout 5m pnpm --filter=client test; then
-                echo "✅ Client package tests passed"
-                passed_tests=$((passed_tests + 1))
-              else
-                echo "❌ Client package tests failed"
-                test_success=false
-              fi
-              total_tests=$((total_tests + 1))
-            fi
-
-            # Test utils package
-            if [ -d "packages/utils" ]; then
-              echo "🔬 Testing utils package..."
-              if timeout 2m pnpm --filter=utils test; then
-                echo "✅ Utils package tests passed"
-                passed_tests=$((passed_tests + 1))
-              else
-                echo "❌ Utils package tests failed"
-                test_success=false
-              fi
-              total_tests=$((total_tests + 1))
-            fi
-
-            # Test other affected packages if they exist
-            affected_output=$(pnpm nx show projects --affected --json 2>/dev/null | tail -n 1 || echo '[]')
-            affected_projects=$(echo "$affected_output" | jq -r '.[]' 2>/dev/null || echo "")
-
-            for project in graph simulation ui; do
-              if echo "$affected_projects" | grep -q "$project" 2>/dev/null && [ -d "packages/$project" ] && [ -f "packages/$project/package.json" ]; then
-                if grep -q '"test"' "packages/$project/package.json" 2>/dev/null; then
-                  echo "🔬 Testing affected package: $project..."
-                  if timeout 3m pnpm --filter="$project" test; then
-                    echo "✅ Package $project tests passed"
-                    passed_tests=$((passed_tests + 1))
-                  else
-                    echo "❌ Package $project tests failed"
-                    test_success=false
-                  fi
-                  total_tests=$((total_tests + 1))
-                fi
-              fi
-            done
-
-            # Report results
-            echo ""
-            echo "📊 Test Summary:"
-            echo "   Total packages tested: $total_tests"
-            echo "   Packages passed: $passed_tests"
-            echo "   Packages failed: $((total_tests - passed_tests))"
-
-            if [ "$test_success" = true ]; then
-              echo "🎉 All tests passed successfully!"
-            else
-              echo "💥 Some tests failed - fix failing tests before proceeding"
-              exit 1
-            fi
-          fi
-        env:
-          NODE_OPTIONS: "--max-old-space-size=8192"
-
-      - name: Upload build artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-artifacts-${{ github.sha }}
-          path: |
-            apps/*/dist
-            packages/*/dist
-          retention-days: 1
-
-  # Workspace quality checks (run always)
-  workspace-quality:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          filter: tree:0
-          fetch-depth: 0
-
-      - name: Setup Node.js and dependencies
-        uses: ./.github/actions/setup-node-pnpm
-
-      - name: Check for unused dependencies (Research Mode)
-        run: |
-          echo "🔍 Running knip analysis for research project..."
-          timeout 60s pnpm knip || {
-            echo "⚠️  Knip found issues or timed out - this is acceptable for research projects"
-            echo "Unused dependencies and exports are expected during active development"
-            exit 0
-          }
-          echo "✅ No unused dependencies detected"
-
-      - name: Verify licenses (Research Mode)
-        run: timeout 45s pnpm licenses:check || { echo "License check timed out or failed - acceptable for research project"; exit 0; }
-
-      - name: Verify workspace structure
-        run: pnpm nx graph --file=graph.json && echo "✅ Workspace graph generated successfully"
-
-  # E2E and accessibility tests (only if build succeeded)
-  extended-checks:
-    needs: ci
-    if: success()
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        check: [test:e2e, test:a11y]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          filter: tree:0
-          fetch-depth: 0
-
-      - name: Setup Node.js and dependencies
-        uses: ./.github/actions/setup-node-pnpm
-
-      - name: Setup Nx SHAs
-        uses: nrwl/nx-set-shas@v4
-        with:
-          main-branch-name: "main"
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-artifacts-${{ github.sha }}
-
-      - name: Install Playwright browsers
-        if: matrix.check == 'test:e2e'
-        run: pnpm exec playwright install --with-deps
-
-      - name: Run ${{ matrix.check }}
-        run: pnpm nx affected -t ${{ matrix.check }} --parallel=2
-        env:
-          NODE_OPTIONS: "--max-old-space-size=8192"
-
-  # Release automation (main branch only)
-  release:
-    needs: [ci, workspace-quality]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && success()
+  # Job to determine what changed and set up matrix
+  changes:
     runs-on: ubuntu-latest
     outputs:
-      workspace_released: ${{ steps.check-workspace-release.outputs.released }}
-      workspace_version: ${{ steps.check-workspace-release.outputs.version }}
-    permissions:
-      contents: write
-      pull-requests: write
-      id-token: write
+      affected: ${{ steps.affected.outputs.affected }}
+      quality-gates: ${{ steps.quality-gates.outputs.quality-gates }}
+      cache-key: ${{ steps.cache-key.outputs.cache-key }}
+      should-deploy: ${{ steps.deploy.outputs.should-deploy }}
+      should-release: ${{ steps.release.outputs.should-release }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup Node.js and dependencies
-        uses: ./.github/actions/setup-node-pnpm
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
 
-      - name: Setup Git user
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        shell: bash
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-      - name: Release packages with Nx
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-store-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Nx
+        run: pnpm add -g nx@latest
+
+      - name: Detect affected projects
+        id: affected
         run: |
-          echo "📦 Releasing individual packages with independent versioning..."
-          pnpm nx release --skip-publish || {
-            echo "ℹ️ No package releases needed"
-          }
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NODE_OPTIONS: "--max-old-space-size=8192"
-
-      - name: Install semantic-release
-        run: |
-          npm install -g \
-            semantic-release \
-            @semantic-release/commit-analyzer \
-            @semantic-release/release-notes-generator \
-            @semantic-release/changelog \
-            @semantic-release/npm \
-            @semantic-release/github
-
-      - name: Run semantic-release for workspace
-        id: semantic-release
-        run: |
-          echo "� Running semantic-release to create workspace release if needed..."
-          npx semantic-release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Check if workspace release was created
-        id: check-workspace-release
-        if: always()
-        run: |
-          # Check if semantic-release created a new workspace tag on this commit
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          echo "Latest tag: $LATEST_TAG"
-
-          if [ -n "$LATEST_TAG" ] && [[ "$LATEST_TAG" =~ ^academic-explorer-monorepo@[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            # Check if this tag points to the current commit
-            if git tag --points-at ${{ github.sha }} | grep -q "$LATEST_TAG"; then
-              echo "released=true" >> $GITHUB_OUTPUT
-              echo "version=${LATEST_TAG#academic-explorer-monorepo@}" >> $GITHUB_OUTPUT
-              echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
-              echo "✅ Workspace release created: $LATEST_TAG against commit ${{ github.sha }}"
-            else
-              echo "released=false" >> $GITHUB_OUTPUT
-              echo "ℹ️ Tag $LATEST_TAG exists but does not point to current commit"
-            fi
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            AFFECTED=$(nx show projects --affected --type=lib,app --base=origin/main --head=HEAD | tr '\n' ',' | sed 's/,$//')
+            echo "affected=$AFFECTED" >> $GITHUB_OUTPUT
+            echo "Affected projects: $AFFECTED"
           else
-            echo "released=false" >> $GITHUB_OUTPUT
-            echo "ℹ️ No workspace release tag found or created"
+            echo "affected=web,utils,ui,client,graph,simulation,types,cli" >> $GITHUB_OUTPUT
           fi
 
-  # Deploy to GitHub Pages (main branch only)
-  deploy:
-    needs: [ci, workspace-quality, release]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && success()
+      - name: Determine quality gates run
+        id: quality-gates
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ github.event.inputs.run_quality_gates }}" = "true" ]; then
+            echo "quality-gates=true" >> $GITHUB_OUTPUT
+          else
+            echo "quality-gates=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate cache key
+        id: cache-key
+        run: |
+          CACHE_KEY="${{ runner.os }}-nx-cache-v1-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}"
+          echo "cache-key=$CACHE_KEY" >> $GITHUB_OUTPUT
+
+      - name: Determine deployment
+        id: deploy
+        run: |
+          if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "should-deploy=true" >> $GITHUB_OUTPUT
+          else
+            echo "should-deploy=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Determine release
+        id: release
+        run: |
+          if [ "${{ github.event_name }}" = "push" ] && startsWith("${{ github.ref }}", "refs/tags/v"); then
+            echo "should-release=true" >> $GITHUB_OUTPUT
+          else
+            echo "should-release=false" >> $GITHUB_OUTPUT
+          fi
+
+  # Main build and test job
+  build-and-test:
     runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.affected != ''
+    strategy:
+      matrix:
+        project: ${{ fromJson(needs.changes.outputs.affected) }}
+      fail-fast: false
+    outputs:
+      coverage-reports: ${{ steps.coverage.outputs.coverage-reports }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-store-${{ runner.os }}-
+
+      - name: Setup Nx cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .nx/cache
+            **/node_modules/.cache
+            **/.vite
+          key: ${{ needs.changes.outputs.cache-key }}
+          restore-keys: |
+            ${{ runner.os }}-nx-cache-v1-
+            ${{ runner.os }}-nx-cache-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check
+        run: nx typecheck ${{ matrix.project }}
+
+      - name: Lint
+        run: nx lint ${{ matrix.project }}
+
+      - name: Build
+        run: nx build ${{ matrix.project }}
+
+      - name: Test
+        run: nx test ${{ matrix.project }} --coverage --reporter=json --reporter=text --outputFile=coverage.json
+
+      - name: Upload coverage reports
+        id: coverage
+        run: |
+          COVERAGE_DIR="coverage/${{ matrix.project }}"
+          mkdir -p $COVERAGE_DIR
+          find . -name "coverage.json" -exec cp {} $COVERAGE_DIR/ \;
+          echo "coverage-reports=${COVERAGE_DIR}" >> $GITHUB_OUTPUT
+
+      - name: Upload coverage artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.project }}
+          path: ${{ steps.coverage.outputs.coverage-reports }}
+          retention-days: 7
+
+  # Comprehensive quality gates
+  quality-gates:
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.quality-gates == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Security audit
+        run: pnpm audit --audit-level moderate
+
+      - name: Check dependencies
+        run: pnpm deps:check
+
+      - name: Run Knip (unused code detection)
+        run: pnpm knip
+
+      - name: License check
+        run: pnpm licenses:check
+
+      - name: Build all projects
+        run: pnpm build
+
+      - name: Run all tests with coverage
+        run: pnpm test
+
+      - name: Generate workspace coverage report
+        run: pnpm coverage:report
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: coverage/
+          retention-days: 30
+
+  # E2E tests
+  e2e:
+    runs-on: ubuntu-latest
+    needs: [changes, build-and-test]
+    if: needs.changes.outputs.affected != '' && contains(needs.changes.outputs.affected, 'web')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps
+
+      - name: Build application
+        run: nx build web
+
+      - name: Run E2E tests
+        run: nx e2e web
+
+      - name: Upload E2E artifacts
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+  # Aggregate coverage and generate reports
+  coverage:
+    runs-on: ubuntu-latest
+    needs: [build-and-test]
+    if: always() && needs.build-and-test.result == 'success'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download all coverage artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: coverage-*
+          merge-multiple: true
+          path: coverage-aggregated/
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate workspace coverage report
+        run: pnpm coverage:report
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage/workspace-coverage.json
+          flags: unittests
+          name: codecov-umbrella
+
+      - name: Upload final coverage reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-coverage-reports
+          path: coverage/
+          retention-days: 30
+
+  # Performance and accessibility tests
+  performance:
+    runs-on: ubuntu-latest
+    needs: [changes, build-and-test]
+    if: needs.changes.outputs.affected != '' && contains(needs.changes.outputs.affected, 'web')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build application
+        run: nx build web
+
+      - name: Start application
+        run: |
+          nx preview web &
+          sleep 10
+
+      - name: Run Lighthouse CI
+        run: |
+          npm install -g @lhci/cli@0.13.x
+          lhci autorun
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+      - name: Run accessibility tests
+        run: |
+          npm install -g pa11y-ci
+          pa11y-ci --sitemap http://localhost:4173/sitemap.xml --exclude http://localhost:4173/static
+
+  # Deployment
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [changes, build-and-test, e2e, coverage]
+    if: needs.changes.outputs.should-deploy == 'true' && github.ref == 'refs/heads/main'
     environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      name: production
+      url: https://mearman.github.io/Academic-Explorer/
     permissions:
       contents: read
       pages: write
@@ -485,219 +401,122 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          filter: tree:0
-          fetch-depth: 0
+          node-version: ${{ env.NODE_VERSION }}
 
-      - name: Setup Node.js and dependencies
-        uses: ./.github/actions/setup-node-pnpm
-
-      - name: Build production app
-        run: |
-          echo "🔨 Building production app with Nx orchestration..."
-
-          # Use Nx to build all projects with proper dependency management
-          if ! pnpm nx run-many -t build --parallel=3 --maxParallel=3; then
-            echo "❌ Nx build failed, falling back to manual builds..."
-
-            # Fallback to manual builds
-            pnpm --filter @academic-explorer/utils build
-            pnpm --filter @academic-explorer/client build
-            pnpm --filter @academic-explorer/graph build
-            pnpm --filter @academic-explorer/simulation build
-            pnpm --filter @academic-explorer/ui build
-
-            # Build web app with Vite directly
-            cd apps/web && pnpm vite build && cd ../..
-          fi
-
-          echo "✅ Production build completed"
-        env:
-          NODE_OPTIONS: "--max-old-space-size=8192"
-
-      - name: Add CNAME file
-        run: echo "academic-explorer.joenash.uk" > ./apps/web/dist/CNAME
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      - name: Upload pages artifact
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build application
+        run: nx build web
+
+      - name: Upload build artifacts
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./apps/web/dist
+          path: apps/web/dist
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
 
-  # Production smoke tests (runs after GitHub Pages deployment)
-  production-smoke-tests:
-    needs: [deploy]
-    # Only run if deploy job actually ran and succeeded (not skipped)
-    if: needs.deploy.result == 'success'
+      - name: Run smoke tests
+        run: |
+          sleep 30
+          curl -f ${{ steps.deployment.outputs.url }} || exit 1
+
+  # Release automation
+  release:
     runs-on: ubuntu-latest
+    needs: [changes, deploy]
+    if: needs.changes.outputs.should-release == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          filter: tree:0
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup Node.js and dependencies
-        uses: ./.github/actions/setup-node-pnpm
-
-      - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps
-
-      - name: Wait for GitHub Pages deployment to propagate
-        run: |
-          echo "⏳ Waiting 30 seconds for GitHub Pages deployment to propagate..."
-          sleep 30
-
-      - name: Run production smoke tests
-        run: |
-          echo "🧪 Running E2E tests against production site..."
-          pnpm --filter @academic-explorer/web vitest run --project=e2e --reporter=verbose
-        env:
-          E2E_BASE_URL: https://academic-explorer.joenash.uk
-          NODE_OPTIONS: "--max-old-space-size=8192"
-        timeout-minutes: 15
-
-      - name: Upload test artifacts on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          name: production-smoke-test-results-${{ github.sha }}
-          path: |
-            apps/web/test-results/
-            apps/web/playwright-report/
-          retention-days: 7
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: 'https://registry.npmjs.org'
 
-  # Aggregate status check for branch protection
-  ci-success:
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Release
+        run: pnpm release:workspace
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # Results and notifications
+  results:
     runs-on: ubuntu-latest
-    needs:
-      [
-        ci,
-        workspace-quality,
-        extended-checks,
-        release,
-        deploy,
-        production-smoke-tests,
-      ]
+    needs: [changes, build-and-test, quality-gates, e2e, coverage, performance, deploy, release]
     if: always()
     steps:
-      - name: Check CI status
+      - name: Download coverage reports
+        if: needs.coverage.result == 'success'
+        uses: actions/download-artifact@v4
+        with:
+          name: final-coverage-reports
+          path: coverage/
+
+      - name: Generate results summary
         run: |
-          echo "🏁 =========================================="
-          echo "🔍         CI PIPELINE STATUS REPORT      "
-          echo "🏁 =========================================="
-          echo ""
+          echo "# 📊 CI/CD Pipeline Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Job | Status | Details |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|---------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 📋 Changes | ${{ needs.changes.result }} | Affected: ${{ needs.changes.outputs.affected }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔨 Build & Test | ${{ needs.build-and-test.result }} | All projects built and tested |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔍 Quality Gates | ${{ needs.quality-gates.result }} | ${{ needs.changes.outputs.quality-gates == 'true' && 'Comprehensive checks' || 'Skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🎭 E2E Tests | ${{ needs.e2e.result }} | ${{ contains(needs.changes.outputs.affected, 'web') && 'Full E2E suite' || 'Skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📈 Coverage | ${{ needs.coverage.result }} | Workspace coverage report |" >> $GITHUB_STEP_SUMMARY
+          echo "| ⚡ Performance | ${{ needs.performance.result }} | ${{ contains(needs.changes.outputs.affected, 'web') && 'Lighthouse + a11y' || 'Skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🚀 Deploy | ${{ needs.deploy.result }} | ${{ needs.changes.outputs.should-deploy == 'true' && 'GitHub Pages' || 'Skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📦 Release | ${{ needs.release.result }} | ${{ needs.changes.outputs.should-release == 'true' && 'Automated release' || 'Skipped' }} |" >> $GITHUB_STEP_SUMMARY
 
-          # Job status summary with emojis
-          echo "📋 Job Status Summary:"
-          echo "   🔧 Main CI:           ${{ needs.ci.result }}"
-          echo "   🔍 Workspace Quality: ${{ needs.workspace-quality.result }}"
-          echo "   🧪 Extended Checks:   ${{ needs.extended-checks.result }}"
-          echo "   🚀 Release:           ${{ needs.release.result }}"
-          echo "   🌐 Deploy:            ${{ needs.deploy.result }}"
-          echo ""
+      - name: Coverage summary
+        if: needs.coverage.result == 'success'
+        run: |
+          if [ -f coverage/workspace-coverage.json ]; then
+            OVERALL=$(jq -r '.overall' coverage/workspace-coverage.json)
+            LINES=$(jq -r '.totals.lines.percentage' coverage/workspace-coverage.json)
+            FUNCTIONS=$(jq -r '.totals.functions.percentage' coverage/workspace-coverage.json)
 
-          # Initialize counters
-          required_passed=0
-          required_total=0
-          optional_passed=0
-          optional_total=0
-          failed_required=false
-
-          # Check REQUIRED jobs (must succeed)
-          echo "🛡️  REQUIRED JOBS VALIDATION:"
-
-          # Main CI
-          required_total=$((required_total + 1))
-          if [[ "${{ needs.ci.result }}" == "success" ]]; then
-            echo "   ✅ Main CI job passed"
-            required_passed=$((required_passed + 1))
-          else
-            echo "   ❌ Main CI job failed (CRITICAL FAILURE)"
-            failed_required=true
+            echo "## 📈 Coverage Summary" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "- **Overall Coverage**: ${OVERALL}%" >> $GITHUB_STEP_SUMMARY
+            echo "- **Lines Coverage**: ${LINES}%" >> $GITHUB_STEP_SUMMARY
+            echo "- **Functions Coverage**: ${FUNCTIONS}%" >> $GITHUB_STEP_SUMMARY
           fi
 
-          # Workspace Quality
-          required_total=$((required_total + 1))
-          if [[ "${{ needs.workspace-quality.result }}" == "success" ]]; then
-            echo "   ✅ Workspace quality checks passed"
-            required_passed=$((required_passed + 1))
-          else
-            echo "   ❌ Workspace quality checks failed (CRITICAL FAILURE)"
-            failed_required=true
-          fi
+      - name: Notification on failure
+        if: failure()
+        run: |
+          echo "❌ Pipeline failed! Check the individual job logs for details." >> $GITHUB_STEP_SUMMARY
+          exit 1
 
-          # Release (only on main branch)
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            required_total=$((required_total + 1))
-            if [[ "${{ needs.release.result }}" == "success" ]]; then
-              echo "   ✅ Release job passed"
-              required_passed=$((required_passed + 1))
-            elif [[ "${{ needs.release.result }}" == "failure" ]]; then
-              echo "   ❌ Release job failed (CRITICAL FAILURE)"
-              failed_required=true
-            elif [[ "${{ needs.release.result }}" == "skipped" ]]; then
-              echo "   ⏭️  Release job skipped (conditional)"
-              required_passed=$((required_passed + 1))
-            fi
-          fi
-
-          echo ""
-          echo "📊 OPTIONAL JOBS STATUS:"
-
-          # Extended Checks
-          optional_total=$((optional_total + 1))
-          if [[ "${{ needs.extended-checks.result }}" == "success" ]]; then
-            echo "   ✅ Extended checks passed"
-            optional_passed=$((optional_passed + 1))
-          elif [[ "${{ needs.extended-checks.result }}" == "failure" ]]; then
-            echo "   ⚠️  Extended checks failed (non-blocking)"
-          elif [[ "${{ needs.extended-checks.result }}" == "skipped" ]]; then
-            echo "   ⏭️  Extended checks skipped (conditional)"
-            optional_passed=$((optional_passed + 1))
-          fi
-
-          # Deploy
-          optional_total=$((optional_total + 1))
-          if [[ "${{ needs.deploy.result }}" == "success" ]]; then
-            echo "   ✅ Deploy job passed"
-            optional_passed=$((optional_passed + 1))
-          elif [[ "${{ needs.deploy.result }}" == "failure" ]]; then
-            echo "   ⚠️  Deploy job failed (non-blocking)"
-          elif [[ "${{ needs.deploy.result }}" == "skipped" ]]; then
-            echo "   ⏭️  Deploy skipped (main branch only)"
-            optional_passed=$((optional_passed + 1))
-          fi
-
-          echo ""
-          echo "📈 FINAL SUMMARY:"
-          echo "   Required jobs: $required_passed/$required_total passed"
-          echo "   Optional jobs: $optional_passed/$optional_total passed"
-          echo ""
-
-          # Exit with failure only if required jobs failed
-          if [[ "$failed_required" == "true" ]]; then
-            echo "💥 =========================================="
-            echo "❌         CI PIPELINE FAILED              "
-            echo "💥 =========================================="
-            echo "🚨 One or more REQUIRED jobs failed"
-            echo "🔧 Fix the issues above and try again"
-            echo ""
-            exit 1
-          fi
-
-          echo "🎉 =========================================="
-          echo "✅         CI PIPELINE SUCCESSFUL          "
-          echo "🎉 =========================================="
-          echo "🚀 All required checks passed!"
-
-          if [[ "$optional_passed" -lt "$optional_total" ]]; then
-            echo "ℹ️  Note: Some optional jobs failed but pipeline is successful"
-          fi
-          echo ""
+      - name: Success notification
+        if: success()
+        run: |
+          echo "🎉 All checks passed! Ready for merge/deployment." >> $GITHUB_STEP_SUMMARY
