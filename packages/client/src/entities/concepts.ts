@@ -4,19 +4,19 @@
  */
 
 import { logger } from "@academic-explorer/utils/logger";
-import { _conceptSchema } from "@academic-explorer/types/entities";
+import { conceptSchema } from "@academic-explorer/types/entities";
 import type { OpenAlexBaseClient } from "../client";
-import type { _ZodType } from "zod";
+import type { ZodType } from "zod";
 
 import type {
   AutocompleteResult,
-  _Concept,
+  Concept,
   ConceptsFilters,
   OpenAlexResponse,
   QueryParams,
   ConceptsQueryParams,
-  _ConceptSortOption,
-  _ConceptSelectField,
+  ConceptSortOption,
+  ConceptSelectField,
   SearchConceptsOptions,
   AutocompleteOptions,
 } from "../types";
