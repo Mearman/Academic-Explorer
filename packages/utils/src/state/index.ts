@@ -1,35 +1,24 @@
 /**
- * State management utilities and helpers
+ * React Context-based state management utilities
  */
 
-// Core utilities
-export { generateSequentialId } from "./createTrackedStore.js";
 export {
-  createFilterManager,
-  type FilterManager,
-} from "./createTrackedStore.js";
-export {
-  computePagedItems,
-  type PaginationState,
-  type PagedResult,
-} from "./createTrackedStore.js";
+	createContextStore,
+	createCombinedContext,
+	createSimpleContext,
+	createAsyncAction,
+	type ContextStore,
+	type ActionCreator,
+} from "./react-context-store.js"
 
-// Store factory
-export {
-  createStore,
-  createTrackedStore,
-  type TrackedStoreConfig,
-  type TrackedStoreResult,
-  type StateCreator,
-  type StoreApi,
-} from "./createTrackedStore.js";
+// Pagination utilities
+export { computePagedItems, type PaginationState, type PagedResult } from "./react-context-store.js"
 
-// Common patterns
-export {
-  createLoadingState,
-  type LoadingState,
-  createAsyncAction,
-} from "./createTrackedStore.js";
+// Filter manager
+export { createFilterManager, type FilterManager } from "./react-context-store.js"
 
-// Type helpers
-export { assertStoreHook } from "./createTrackedStore.js";
+// Sequential ID generator
+export function generateSequentialId(prefix = "id"): () => string {
+	let counter = 0
+	return () => `${prefix}-${++counter}`
+}
