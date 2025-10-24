@@ -91,3 +91,13 @@ vite.config.*.timestamp*
 vitest.config.*.timestamp*
 
 output.json
+
+# ESLint cache files
+**/.eslintcache/
+
+# Nx local cache files
+nx-local-cache.json
+
+# Backup files
+*.backup
+**/*.backup
