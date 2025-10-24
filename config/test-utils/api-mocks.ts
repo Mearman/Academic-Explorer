@@ -4,12 +4,12 @@
  */
 
 import { vi, type Mock as _Mock } from "vitest";
-import { http, HttpResponse } from "msw";
+import { http, HttpResponse, type RequestHandler, type _DefaultRequestMultipartBody, type _JsonBodyType } from "msw";
 import { setupServer } from "msw/node";
 import type { SetupServerApi as _SetupServerApi } from "msw/node";
 
 // Define OpenAlexResponse locally to avoid import issues
-export interface OpenAlexResponse<T = any> {
+export interface OpenAlexResponse<T = unknown> {
   results: T[];
   meta: {
     count: number;
@@ -74,7 +74,7 @@ export const FetchMocks = {
    * Create common HTTP response mocks
    */
   createResponse: (
-    data: any,
+    data: unknown,
     options: {
       status?: number;
       statusText?: string;
@@ -96,7 +96,7 @@ export const FetchMocks = {
 
     // Add url property if needed (as a custom property)
     if (options.url) {
-      (response as any).url = options.url;
+      (response as Response & { url?: string }).url = options.url;
     }
 
     return response;
@@ -183,7 +183,7 @@ export const OpenAlexMocks = {
   /**
    * Create work API response
    */
-  createWorkResponse: (works: any[] = []): OpenAlexResponse<any> => ({
+  createWorkResponse: (works: unknown[] = []): OpenAlexResponse<unknown> => ({
     results: works,
     meta: {
       count: works.length,
@@ -196,7 +196,7 @@ export const OpenAlexMocks = {
   /**
    * Create author API response
    */
-  createAuthorResponse: (authors: any[] = []): OpenAlexResponse<any> => ({
+  createAuthorResponse: (authors: unknown[] = []): OpenAlexResponse<unknown> => ({
     results: authors,
     meta: {
       count: authors.length,
@@ -209,7 +209,7 @@ export const OpenAlexMocks = {
   /**
    * Create institution API response
    */
-  createInstitutionResponse: (institutions: any[] = []): OpenAlexResponse<any> => ({
+  createInstitutionResponse: (institutions: unknown[] = []): OpenAlexResponse<unknown> => ({
     results: institutions,
     meta: {
       count: institutions.length,
@@ -222,7 +222,7 @@ export const OpenAlexMocks = {
   /**
    * Create realistic work data
    */
-  createRealisticWork: (overrides: Partial<any> = {}) => ({
+  createRealisticWork: (overrides: Partial<Record<string, unknown>> = {}) => ({
     id: "https://openalex.org/W123456789",
     doi: "https://doi.org/10.1234/test.123",
     title: "Machine Learning in Academic Research: A Comprehensive Study",
@@ -298,7 +298,7 @@ export const OpenAlexMocks = {
   /**
    * Create realistic author data
    */
-  createRealisticAuthor: (overrides: Partial<any> = {}) => ({
+  createRealisticAuthor: (overrides: Partial<Record<string, unknown>> = {}) => ({
     id: "https://openalex.org/A123456789",
     orcid: "https://orcid.org/0000-0000-0000-0000",
     display_name: "Dr. Jane Smith",
@@ -336,7 +336,7 @@ export const OpenAlexMocks = {
   /**
    * Create realistic institution data
    */
-  createRealisticInstitution: (overrides: Partial<any> = {}) => ({
+  createRealisticInstitution: (overrides: Partial<Record<string, unknown>> = {}) => ({
     id: "https://openalex.org/I123456789",
     ror: "https://ror.org/01abc23de",
     display_name: "Test University",
@@ -381,7 +381,7 @@ export const InterceptorMocks = {
       url: string;
       method: string;
       headers: Record<string, string>;
-      body?: any;
+      body?: unknown;
     }> = [];
 
     const originalFetch = global.fetch;
@@ -418,7 +418,7 @@ export const InterceptorMocks = {
       url: string;
       status: number;
       headers: Record<string, string>;
-      data: any;
+      data: unknown;
     }> = [];
 
     const originalFetch = global.fetch;
@@ -584,7 +584,7 @@ export const QueryParamMocks = {
   /**
    * Create URL with query parameters for testing
    */
-  createUrlWithParams: (baseUrl: string, params: Record<string, any>): string => {
+  createUrlWithParams: (baseUrl: string, params: Record<string, unknown>): string => {
     const url = new URL(baseUrl);
 
     Object.entries(params).forEach(([key, value]) => {
@@ -641,7 +641,7 @@ export const MockServerHelpers = {
   /**
    * Create MSW server with custom handlers
    */
-  createServerWithHandlers: (handlers: any[]) => {
+  createServerWithHandlers: (handlers: RequestHandler[]) => {
     return setupServer(...handlers);
   },
 
@@ -651,7 +651,7 @@ export const MockServerHelpers = {
   createEndpointHandler: (
     method: "get" | "post" | "put" | "delete" | "patch",
     urlPattern: string,
-    response: (req: any, res: any, ctx: any) => any
+    response: (req: unknown, res: unknown, ctx: unknown) => unknown
   ) => {
     return http[method](urlPattern, response);
   },
@@ -662,7 +662,7 @@ export const MockServerHelpers = {
   createDelayedHandler: (
     method: "get" | "post" | "put" | "delete" | "patch",
     urlPattern: string,
-    responseData: any,
+    responseData: unknown,
     delay = 1000
   ) => {
     return http[method](urlPattern, async () => {
@@ -694,7 +694,7 @@ export const CacheMocks = {
    * Mock cache storage for testing
    */
   createCacheMock: () => {
-    const cache = new Map<string, { data: any; timestamp: number; ttl: number }>();
+    const cache = new Map<string, { data: unknown; timestamp: number; ttl: number }>();
 
     return {
       get: vi.fn().mockImplementation((key: string) => {
@@ -709,7 +709,7 @@ export const CacheMocks = {
         return entry.data;
       }),
 
-      set: vi.fn().mockImplementation((key: string, data: any, ttl = 300000) => {
+      set: vi.fn().mockImplementation((key: string, data: unknown, ttl = 300000) => {
         cache.set(key, { data, timestamp: Date.now(), ttl });
       }),
 
@@ -771,7 +771,7 @@ export const DeduplicationMocks = {
    * Create request deduplication scenario
    */
   createDeduplicationScenario: () => {
-    const pendingRequests = new Map<string, Promise<any>>();
+    const pendingRequests = new Map<string, Promise<unknown>>();
     let networkCallCount = 0;
 
     const mockFetch = vi.fn().mockImplementation(async (url: string) => {
@@ -813,7 +813,7 @@ export const ApiPerformanceMocks = {
    * Measure API call performance
    */
   measureApiPerformance: async (
-    apiCall: () => Promise<any>,
+    apiCall: () => Promise<unknown>,
     iterations = 10
   ): Promise<number> => {
     const times: number[] = [];
