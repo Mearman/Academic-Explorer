@@ -2,6 +2,11 @@ import {
   GeneratorCallback,
   ProjectConfiguration,
   Tree,
+  addProjectConfiguration,
+  generateFiles,
+  offsetFromRoot,
+  formatFiles,
+  join,
 } from '@nx/devkit'
 // Nx generators available for future use
 // import { libraryGenerator as nxLibraryGenerator } from '@nx/js'
@@ -11,7 +16,7 @@ import {
  * Abstract base class for all Academic Explorer generators
  * Provides common functionality and standardized patterns
  */
-export abstract class BaseGenerator<TSchema extends Record<string, any>> {
+export abstract class BaseGenerator<TSchema extends Record<string, unknown>> {
   protected tree: Tree
   protected options: TSchema
   protected normalizedOptions: NormalizedOptions
@@ -49,7 +54,7 @@ export abstract class BaseGenerator<TSchema extends Record<string, any>> {
   protected async generateFiles(
     templatePath: string,
     targetPath: string,
-    templateVars: Record<string, any> = {}
+    templateVars: Record<string, unknown> = {}
   ): Promise<void> {
     const templateOptions = {
       ...templateVars,
@@ -69,7 +74,7 @@ export abstract class BaseGenerator<TSchema extends Record<string, any>> {
   /**
    * Get common template variables
    */
-  protected getTemplateVars(): Record<string, any> {
+  protected getTemplateVars(): Record<string, unknown> {
     return {
       projectName: this.normalizedOptions.projectName,
       className: this.normalizedOptions.className,
@@ -126,7 +131,7 @@ export abstract class BaseGenerator<TSchema extends Record<string, any>> {
    */
   protected createTsConfig(
     extendsConfig: string[] = ['../../tsconfig.base.json'],
-    compilerOptions: Record<string, any> = {}
+    compilerOptions: Record<string, unknown> = {}
   ): void {
     const tsConfig = {
       extends: extendsConfig,

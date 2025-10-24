@@ -3,7 +3,7 @@
 
 export interface ConfigBuilderOptions {
   extends?: string[]
-  compilerOptions?: Record<string, any>
+  compilerOptions?: Record<string, unknown>
   include?: string[]
   exclude?: string[]
   references?: Array<{ path: string }>
@@ -38,8 +38,8 @@ export class ConfigBuilder {
   /**
    * Build TypeScript configuration
    */
-  build(): Record<string, any> {
-    const config: Record<string, any> = {}
+  build(): Record<string, unknown> {
+    const config: Record<string, unknown> = {}
 
     if (this.options.extends) {
       config.extends = this.options.extends
@@ -87,7 +87,7 @@ export class ConfigBuilder {
   /**
    * Set compiler options
    */
-  setCompilerOptions(options: Record<string, any>): this {
+  setCompilerOptions(options: Record<string, unknown>): this {
     this.options.compilerOptions = { ...this.options.compilerOptions, ...options }
     return this
   }
@@ -95,7 +95,7 @@ export class ConfigBuilder {
   /**
    * Add compiler option
    */
-  addCompilerOption(key: string, value: any): this {
+  addCompilerOption(key: string, value: unknown): this {
     this.options.compilerOptions = {
       ...this.options.compilerOptions,
       [key]: value,
@@ -238,7 +238,7 @@ export class VitestConfigBuilder {
   private setupFiles: string[] = []
   private testTimeout: number = 10000
   private hookTimeout: number = 10000
-  private coverageOptions: Record<string, any>
+  private coverageOptions: Record<string, unknown>
 
   constructor(testEnvironment: 'node' | 'jsdom' | 'happy-dom' = 'node') {
     this.testEnvironment = testEnvironment
@@ -340,7 +340,7 @@ export default defineConfig({
   /**
    * Set coverage options
    */
-  setCoverage(options: Record<string, any>): this {
+  setCoverage(options: Record<string, unknown>): this {
     this.coverageOptions = { ...this.coverageOptions, ...options }
     return this
   }
@@ -370,10 +370,10 @@ export default defineConfig({
  * Builder for creating ESLint configurations
  */
 export class EslintConfigBuilder {
-  private rules: Record<string, any> = {}
+  private rules: Record<string, unknown> = {}
   private ignores: string[] = ['dist/**/*']
 
-  constructor(rules: Record<string, any> = {}) {
+  constructor(rules: Record<string, unknown> = {}) {
     this.rules = rules
   }
 
@@ -403,7 +403,7 @@ export default tseslint.config(
   /**
    * Add rule
    */
-  addRule(rule: string, value: any): this {
+  addRule(rule: string, value: unknown): this {
     this.rules[rule] = value
     return this
   }
@@ -411,7 +411,7 @@ export default tseslint.config(
   /**
    * Add rules
    */
-  addRules(rules: Record<string, any>): this {
+  addRules(rules: Record<string, unknown>): this {
     this.rules = { ...this.rules, ...rules }
     return this
   }

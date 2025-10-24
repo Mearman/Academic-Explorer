@@ -100,7 +100,7 @@ export abstract class LibraryBase extends BaseGenerator<unknown> {
    * Create library-specific TypeScript configuration
    */
   protected createTsConfig(): void {
-    const compilerOptions: Record<string, any> = {
+    const compilerOptions: Record<string, unknown> = {
       target: 'es2022',
       module: 'esnext',
       moduleResolution: 'bundler',
