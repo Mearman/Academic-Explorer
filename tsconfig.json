@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.base.json",
   "files": [],
-  "include": ["eslint-rules/**/*", "vitest.config.base.ts", "scripts/**/*", "tools/**/*"],
+  "include": ["eslint-rules/**/*", "vitest.config.base.ts", "scripts/**/*", "tools/**/*", ".commitlintrc.ts", "workspace-coverage.config.ts"],
   "references": [
     { "path": "./apps/cli" },
     { "path": "./apps/web" },

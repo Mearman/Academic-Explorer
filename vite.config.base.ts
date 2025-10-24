@@ -36,6 +36,51 @@ export default defineConfig({
         if (warning.code === "THIS_IS_UNDEFINED") return;
         warn(warning);
       },
+      // External dependencies for library builds
+      external: [
+        // React ecosystem
+        "react",
+        "react-dom",
+        "react/jsx-runtime",
+
+        // Mantine UI library
+        "@mantine/core",
+        "@mantine/hooks",
+        "@mantine/dates",
+        "@mantine/notifications",
+        "@mantine/spotlight",
+
+        // Icons and utilities
+        "@tabler/icons-react",
+        "@tanstack/react-table",
+        "@tanstack/react-router",
+        "@xyflow/react",
+        "date-fns",
+        "immer",
+
+        // Internal workspace dependencies
+        "@academic-explorer/types",
+        "@academic-explorer/utils",
+        "@academic-explorer/graph",
+      ],
+      output: {
+        globals: {
+          react: "React",
+          "react-dom": "ReactDOM",
+          "react/jsx-runtime": "jsxRuntime",
+          "@mantine/core": "MantineCore",
+          "@mantine/hooks": "MantineHooks",
+          "@mantine/dates": "MantineDates",
+          "@mantine/notifications": "MantineNotifications",
+          "@mantine/spotlight": "MantineSpotlight",
+          "@tabler/icons-react": "TablerIcons",
+          "@tanstack/react-table": "ReactTable",
+          "@tanstack/react-router": "ReactRouter",
+          "@xyflow/react": "XYFlow",
+          "date-fns": "dateFns",
+          immer: "immer",
+        },
+      },
     },
   },
 
