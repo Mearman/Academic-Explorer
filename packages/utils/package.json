@@ -81,12 +81,31 @@
     "./static-data/cache-utilities": {
       "import": "./dist/static-data/cache-utilities.js",
       "types": "./dist/static-data/cache-utilities.d.ts"
+    },
+    "./normalize-route": {
+      "import": "./dist/normalize-route.js",
+      "types": "./dist/normalize-route.d.ts"
+    },
+    "./storage/user-interactions-db": {
+      "import": "./dist/storage/user-interactions-db.js",
+      "types": "./dist/storage/user-interactions-db.d.ts"
+    },
+    "./ui/filter-base": {
+      "import": "./dist/ui/filter-base.js",
+      "types": "./dist/ui/filter-base.d.ts"
+    },
+    "./ui": {
+      "import": "./dist/ui/index.js",
+      "types": "./dist/ui/index.d.ts"
+    },
+    "./workers/messages": {
+      "import": "./dist/workers/messages.js",
+      "types": "./dist/workers/messages.d.ts"
     }
   },
   "scripts": {
     "build": "tsc -b",
     "clean": "rm -rf dist",
-    "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "dev": "tsc -b --watch"
@@ -94,14 +113,42 @@
   "dependencies": {
     "@academic-explorer/types": "workspace:*",
     "dexie": "^4.2.1",
-    "immer": "^10.1.3",
-    "lodash-es": "^4.17.21",
     "qs": "^6.14.0",
-    "zod": "^3.23.8",
-    "zustand": "^5.0.0"
+    "zod": "^3.23.8"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "@mantine/core": "^7.0.0",
+    "@tabler/icons-react": "^3.0.0",
+    "@tanstack/react-query": "^5.0.0",
+    "@tanstack/react-router": "^1.0.0",
+    "@academic-explorer/client": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@mantine/core": {
+      "optional": true
+    },
+    "@tabler/icons-react": {
+      "optional": true
+    },
+    "@tanstack/react-query": {
+      "optional": true
+    },
+    "@tanstack/react-router": {
+      "optional": true
+    },
+    "@academic-explorer/client": {
+      "optional": true
+    }
   },
   "devDependencies": {
-    "@types/lodash-es": "^4.17.12",
+        "@types/react": "^19.0.0",
+    "@mantine/core": "^7.15.4",
+    "@tabler/icons-react": "^3.28.0",
+    "@tanstack/react-query": "^5.67.3",
+    "@tanstack/react-router": "^1.132.47",
+    "@academic-explorer/client": "workspace:*",
+    "react": "^19.2.0",
     "eslint": "^9.36.0",
     "typescript": "~5.9.2",
     "vitest": "^3.2.4"
