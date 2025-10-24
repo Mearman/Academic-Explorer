@@ -5,12 +5,12 @@
  * when no actual integration tests are implemented yet.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from "vitest"
 
-describe('Utils Package Integration', () => {
-  it('should have integration test capability', () => {
-    // Placeholder test that always passes
-    // Replace with actual integration tests when needed
-    expect(true).toBe(true);
-  });
-});
+describe("Utils Package Integration", () => {
+	it("should have integration test capability", () => {
+		// Placeholder test that always passes
+		// Replace with actual integration tests when needed
+		expect(true).toBe(true)
+	})
+})

@@ -44,54 +44,53 @@
 
 // Environment Detection
 export {
-  EnvironmentDetector,
-  EnvironmentMode,
-  getCurrentEnvironmentMode,
-  isDevelopment,
-  isProduction,
-  isTest,
-  getBuildContext,
-  type BuildContext
-} from './environment-detector.js';
+	EnvironmentDetector,
+	EnvironmentMode,
+	getCurrentEnvironmentMode,
+	isDevelopment,
+	isProduction,
+	isTest,
+	getBuildContext,
+	type BuildContext,
+} from "./environment-detector.js"
 
 // Cache Configuration
 export {
-  CacheConfigFactory,
-  getCurrentCacheConfig,
-  getOptimizedCacheConfig,
-  getStaticDataUrl,
-  getOpenAlexDataUrl,
-  type StaticDataPaths,
-  type CacheStorageConfig,
-  type NetworkConfig,
-  type CacheConfig
-} from './cache-config.js';
+	CacheConfigFactory,
+	getCurrentCacheConfig,
+	getOptimizedCacheConfig,
+	getStaticDataUrl,
+	getOpenAlexDataUrl,
+	type StaticDataPaths,
+	type CacheStorageConfig,
+	type NetworkConfig,
+	type CacheConfig,
+} from "./cache-config.js"
 
 // Cache Strategies
 export {
-  CacheStrategySelector,
-  getCurrentCacheStrategy,
-  getCacheStrategyConfig,
-  CacheStrategy,
-  CacheOperation,
-  CachePriority,
-  CacheStorageType,
-  type CacheStrategyConfig
-} from './cache-strategies.js';
+	CacheStrategySelector,
+	getCurrentCacheStrategy,
+	getCacheStrategyConfig,
+	CacheStrategy,
+	CacheOperation,
+	CachePriority,
+	CacheStorageType,
+	type CacheStrategyConfig,
+} from "./cache-strategies.js"
 
 // Mode Switching
 export {
-  ModeSwitcher,
-  getCurrentCacheConfiguration,
-  getCurrentStrategyConfiguration,
-  isCacheOperationSupported,
-  getDefaultCachePriority,
-  isDebugMode,
-  getEnvironmentDescription,
-  initializeResearchEnvironment,
-  initializeProductionEnvironment,
-  initializeDevelopmentEnvironment,
-  type ModeOptions,
-  type RuntimeEnvironmentConfig
-} from './mode-switcher.js';
-
+	ModeSwitcher,
+	getCurrentCacheConfiguration,
+	getCurrentStrategyConfiguration,
+	isCacheOperationSupported,
+	getDefaultCachePriority,
+	isDebugMode,
+	getEnvironmentDescription,
+	initializeResearchEnvironment,
+	initializeProductionEnvironment,
+	initializeDevelopmentEnvironment,
+	type ModeOptions,
+	type RuntimeEnvironmentConfig,
+} from "./mode-switcher.js"

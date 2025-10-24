@@ -3,8 +3,8 @@
  */
 
 export {
-  createIndexedDBStorage,
-  defaultStorageConfig,
-  type StorageConfig,
-  type StateStorage,
-} from "./indexeddb-storage";
+	createIndexedDBStorage,
+	defaultStorageConfig,
+	type StorageConfig,
+	type StateStorage,
+} from "./indexeddb-storage"
