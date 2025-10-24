@@ -27,10 +27,27 @@ Object.defineProperty(global, "performance", {
 // Mock Date.now to be consistent with performance.now
 vi.spyOn(Date, "now").mockImplementation(() => mockTime);
 
+// Mock Worker types
+interface MockMessageEvent {
+  data: any;
+  origin: string;
+  lastEventId?: string;
+  ports: MessagePort[];
+  source: MessageEventSource | ServiceWorker | null;
+}
+
+interface MockErrorEvent {
+  error: Error | string;
+  filename?: string;
+  lineno?: number;
+  colno?: number;
+  message?: string;
+}
+
 // Mock Worker for background processing
 global.Worker = class MockWorker {
-  onmessage: ((event: MessageEvent) => void) | null = null;
-  onerror: ((event: ErrorEvent) => void) | null = null;
+  onmessage: ((event: MockMessageEvent) => void) | null = null;
+  onerror: ((event: MockErrorEvent) => void) | null = null;
 
   constructor(_scriptURL: string | URL) {
     // Mock worker initialization
