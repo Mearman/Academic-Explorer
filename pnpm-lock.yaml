@@ -25,8 +25,8 @@ importers:
         specifier: ^7.3.0
         version: 7.5.0
       '@nx/eslint':
-        specifier: 21.5.3
-        version: 21.5.3(@babel/traverse@7.28.5)(@swc-node/register@1.11.1(@swc/core@1.13.21(@swc/helpers@0.5.17))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.13.21(@swc/helpers@0.5.17))(@zkochan/js-yaml@0.0.7)(eslint@9.38.0(jiti@2.6.1))(nx@21.5.3(@swc-node/register@1.11.1(@swc/core@1.13.21(@swc/helpers@0.5.17))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.13.21(@swc/helpers@0.5.17)))
+        specifier: 22.0.1
+        version: 22.0.1(@babel/traverse@7.28.5)(@swc-node/register@1.11.1(@swc/core@1.13.21(@swc/helpers@0.5.17))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.13.21(@swc/helpers@0.5.17))(@zkochan/js-yaml@0.0.7)(eslint@9.38.0(jiti@2.6.1))(nx@21.5.3(@swc-node/register@1.11.1(@swc/core@1.13.21(@swc/helpers@0.5.17))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.13.21(@swc/helpers@0.5.17)))
       '@nx/eslint-plugin':
         specifier: 21.5.3
         version: 21.5.3(@babel/traverse@7.28.5)(@swc-node/register@1.11.1(@swc/core@1.13.21(@swc/helpers@0.5.17))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.13.21(@swc/helpers@0.5.17))(@typescript-eslint/parser@8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.38.0(jiti@2.6.1))(nx@21.5.3(@swc-node/register@1.11.1(@swc/core@1.13.21(@swc/helpers@0.5.17))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.13.21(@swc/helpers@0.5.17)))(typescript@5.9.3)
@@ -2171,6 +2171,15 @@ packages:
 
   '@nx/eslint@21.6.6':
     resolution: {integrity: sha512-L1bVZAjyeWjwKRI13hJhxAhB1xItFhJ5Nji1JkabvF/2GgPjuB10PuGFwQPrkMzS2vXiABtRTNbUFirmG2kSdw==}
+    peerDependencies:
+      '@zkochan/js-yaml': 0.0.7
+      eslint: ^8.0.0 || ^9.0.0
+    peerDependenciesMeta:
+      '@zkochan/js-yaml':
+        optional: true
+
+  '@nx/eslint@22.0.1':
+    resolution: {integrity: sha512-6FnalNF+l3XXVoelnBc5STXehiAMy4L6afWWYGlpdnxersLoemFLbE/cdelo2pTqyqOTsoe+qdfeGphnao7MaA==}
     peerDependencies:
       '@zkochan/js-yaml': 0.0.7
       eslint: ^8.0.0 || ^9.0.0
@@ -11583,6 +11592,25 @@ snapshots:
       - supports-color
       - verdaccio
 
+  '@nx/eslint@22.0.1(@babel/traverse@7.28.5)(@swc-node/register@1.11.1(@swc/core@1.13.21(@swc/helpers@0.5.17))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.13.21(@swc/helpers@0.5.17))(@zkochan/js-yaml@0.0.7)(eslint@9.38.0(jiti@2.6.1))(nx@21.5.3(@swc-node/register@1.11.1(@swc/core@1.13.21(@swc/helpers@0.5.17))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.13.21(@swc/helpers@0.5.17)))':
+    dependencies:
+      '@nx/devkit': 22.0.1(nx@21.5.3(@swc-node/register@1.11.1(@swc/core@1.13.21(@swc/helpers@0.5.17))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.13.21(@swc/helpers@0.5.17)))
+      '@nx/js': 22.0.1(@babel/traverse@7.28.5)(@swc-node/register@1.11.1(@swc/core@1.13.21(@swc/helpers@0.5.17))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.13.21(@swc/helpers@0.5.17))(nx@21.5.3(@swc-node/register@1.11.1(@swc/core@1.13.21(@swc/helpers@0.5.17))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.13.21(@swc/helpers@0.5.17)))
+      eslint: 9.38.0(jiti@2.6.1)
+      semver: 7.7.3
+      tslib: 2.8.1
+      typescript: 5.9.3
+    optionalDependencies:
+      '@zkochan/js-yaml': 0.0.7
+    transitivePeerDependencies:
+      - '@babel/traverse'
+      - '@swc-node/register'
+      - '@swc/core'
+      - debug
+      - nx
+      - supports-color
+      - verdaccio
+
   '@nx/js@21.5.3(@babel/traverse@7.28.5)(@swc-node/register@1.11.1(@swc/core@1.13.21(@swc/helpers@0.5.17))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.13.21(@swc/helpers@0.5.17))(nx@21.5.3(@swc-node/register@1.11.1(@swc/core@1.13.21(@swc/helpers@0.5.17))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.13.21(@swc/helpers@0.5.17)))':
     dependencies:
       '@babel/core': 7.28.5
@@ -12397,7 +12425,7 @@ snapshots:
     dependencies:
       '@types/estree': 1.0.8
       estree-walker: 2.0.2
-      picomatch: 4.0.2
+      picomatch: 4.0.3
     optionalDependencies:
       rollup: 2.79.2
 
@@ -12405,7 +12433,7 @@ snapshots:
     dependencies:
       '@types/estree': 1.0.8
       estree-walker: 2.0.2
-      picomatch: 4.0.2
+      picomatch: 4.0.3
     optionalDependencies:
       rollup: 4.52.5
 
