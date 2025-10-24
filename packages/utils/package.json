@@ -151,7 +151,7 @@
     "react": "^19.2.0",
     "eslint": "^9.36.0",
     "typescript": "~5.9.2",
-    "vitest": "^3.2.4"
+    "vitest": "^4.0.2"
   },
   "publishConfig": {
     "access": "public"
