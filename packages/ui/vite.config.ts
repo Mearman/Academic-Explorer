@@ -33,6 +33,7 @@ const uiConfig = defineConfig({
         // Icons and utilities
         "@tabler/icons-react",
         "@tanstack/react-table",
+        "@tanstack/react-router",
         "@xyflow/react",
         "date-fns",
         "immer",
@@ -40,6 +41,8 @@ const uiConfig = defineConfig({
         // Internal workspace dependencies
         "@academic-explorer/types",
         "@academic-explorer/utils",
+        "@academic-explorer/client",
+        "@academic-explorer/graph",
       ],
       output: {
         globals: {

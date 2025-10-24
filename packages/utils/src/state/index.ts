@@ -1,21 +1,9 @@
 /**
- * React Context-based state management utilities
+ * State management utilities
+ *
+ * Note: React Context-based utilities have been moved to @academic-explorer/ui
+ * This module now only contains non-React state utilities.
  */
-
-export {
-	createContextStore,
-	createCombinedContext,
-	createSimpleContext,
-	createAsyncAction,
-	type ContextStore,
-	type ActionCreator,
-} from "./react-context-store.js"
-
-// Pagination utilities
-export { computePagedItems, type PaginationState, type PagedResult } from "./react-context-store.js"
-
-// Filter manager
-export { createFilterManager, type FilterManager } from "./react-context-store.js"
 
 // Sequential ID generator
 export function generateSequentialId(prefix = "id"): () => string {
