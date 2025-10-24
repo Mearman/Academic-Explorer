@@ -1,6 +1,7 @@
-import React from "react";
-import { NumberInput, Select } from "@mantine/core";
-import type { FilterFieldConfig, FilterOperator } from "../types/filter-ui";
+import { NumberInput } from "@mantine/core";
+import { BaseFilter } from "@academic-explorer/utils/ui/filter-base";
+import type { FilterFieldConfig } from "@academic-explorer/utils/ui";
+import type { FilterOperator } from "@academic-explorer/utils/ui";
 
 interface NumericFilterProps {
   value: number;
@@ -23,34 +24,28 @@ export function NumericFilter({
   compact = false,
   fieldId,
 }: NumericFilterProps) {
-  const operatorOptions = config.operators.map((op) => ({
-    value: op,
-    label: op,
-  }));
-
   return (
-    <div style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
-      {config.operators.length > 1 && (
-        <Select
-          data={operatorOptions}
-          value={operator}
-          onChange={(val) => val && onOperatorChange(val as FilterOperator)}
+    <BaseFilter
+      value={value}
+      operator={operator}
+      config={config}
+      onValueChange={onValueChange}
+      onOperatorChange={onOperatorChange}
+      disabled={disabled}
+      compact={compact}
+      fieldId={fieldId}
+    >
+      {({ value, onChange, disabled, compact, fieldId }) => (
+        <NumberInput
+          id={fieldId}
+          value={value || 0}
+          onChange={(val) => onChange(typeof val === "number" ? val : 0)}
+          placeholder={config.placeholder}
           disabled={disabled}
           size={compact ? "xs" : "sm"}
-          style={{ minWidth: "80px" }}
+          style={{ flex: 1 }}
         />
       )}
-      <NumberInput
-        id={fieldId}
-        value={value || 0}
-        onChange={(val) => onValueChange(typeof val === "number" ? val : 0)}
-        placeholder={config.placeholder}
-        disabled={disabled}
-        size={compact ? "xs" : "sm"}
-        style={{ flex: 1 }}
-        min={config.validation?.min}
-        max={config.validation?.max}
-      />
-    </div>
+    </BaseFilter>
   );
 }

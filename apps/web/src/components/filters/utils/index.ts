@@ -12,5 +12,5 @@ export {
   filtersToQueryString,
   validateFilters,
   type FilterBuilderOptions,
-  type FilterValidationResult
+  type FilterValidationResult,
 } from "./FilterBuilder";

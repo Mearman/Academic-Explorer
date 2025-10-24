@@ -1,6 +1,8 @@
 import React from "react";
-import { TextInput, Select } from "@mantine/core";
-import type { FilterFieldConfig, FilterOperator } from "../types/filter-ui";
+import { TextInput } from "@mantine/core";
+import { BaseFilter } from "@academic-explorer/utils/ui/filter-base";
+import type { FilterFieldConfig } from "@academic-explorer/utils/ui";
+import type { FilterOperator } from "@academic-explorer/utils/ui";
 
 interface DateFilterProps {
   value: string | [string, string] | null;
@@ -23,14 +25,9 @@ export function DateFilter({
   compact = false,
   fieldId,
 }: DateFilterProps) {
-  const operatorOptions = config.operators.map((op) => ({
-    value: op,
-    label: op,
-  }));
-
   const isRange = config.type === "dateRange";
 
-  const handleValueChange = (newValue: string) => {
+  const handleValueChange = React.useCallback((newValue: string) => {
     if (isRange) {
       // For range, expect format like "2023-01-01 to 2023-12-31"
       const parts = newValue.split(" to ");
@@ -42,7 +39,7 @@ export function DateFilter({
     } else {
       onValueChange(newValue || null);
     }
-  };
+  }, [isRange, onValueChange]);
 
   const displayValue = React.useMemo(() => {
     if (!value) return "";
@@ -56,27 +53,32 @@ export function DateFilter({
   }, [value, isRange]);
 
   return (
-    <div style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
-      {config.operators.length > 1 && (
-        <Select
-          data={operatorOptions}
-          value={operator}
-          onChange={(val) => val && onOperatorChange(val as FilterOperator)}
+    <BaseFilter
+      value={value}
+      operator={operator}
+      config={config}
+      onValueChange={(val) => {
+        // Convert the callback value back to the expected format
+        if (typeof val === "string") {
+          handleValueChange(val);
+        }
+      }}
+      onOperatorChange={onOperatorChange}
+      disabled={disabled}
+      compact={compact}
+      fieldId={fieldId}
+    >
+      {({ disabled, compact, fieldId }) => (
+        <TextInput
+          id={fieldId}
+          value={displayValue}
+          onChange={(event) => handleValueChange(event.currentTarget.value)}
+          placeholder={config.placeholder || (isRange ? "2023-01-01 to 2023-12-31" : "YYYY-MM-DD")}
           disabled={disabled}
           size={compact ? "xs" : "sm"}
-          style={{ minWidth: "80px" }}
+          style={{ flex: 1 }}
         />
       )}
-      <TextInput
-        id={fieldId}
-        type="date"
-        value={displayValue}
-        onChange={(event) => handleValueChange(event.currentTarget.value)}
-        placeholder={config.placeholder}
-        disabled={disabled}
-        size={compact ? "xs" : "sm"}
-        style={{ flex: 1 }}
-      />
-    </div>
+    </BaseFilter>
   );
 }

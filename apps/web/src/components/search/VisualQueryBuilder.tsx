@@ -395,7 +395,6 @@ export function VisualQueryBuilder({
   onQueryChange,
   onApply,
   disabled = false,
-  compact: _compact = false,
 }: VisualQueryBuilderProps) {
   // Initialize with empty query or provided initial query
   const [query, setQuery] = useState<VisualQuery>(() => {
@@ -419,7 +418,7 @@ export function VisualQueryBuilder({
   const [availableChips] = useState<QueryFilterChip[]>(() =>
     getAvailableChips(entityType),
   );
-  const [_draggedChip, setDraggedChip] = useState<QueryFilterChip | null>(null);
+  const [, setDraggedChip] = useState<QueryFilterChip | null>(null);
 
   // DnD sensors
   const sensors = useSensors(

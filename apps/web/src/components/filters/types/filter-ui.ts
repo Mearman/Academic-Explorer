@@ -3,13 +3,27 @@
  * Extends the core OpenAlex types with UI state and interactions
  */
 
-import type { EntityFilters, WorksFilters, AuthorsFilters, EntityType } from "@academic-explorer/types";
+import type {
+  EntityFilters,
+  WorksFilters,
+  AuthorsFilters,
+  EntityType,
+} from "@academic-explorer/types";
 
 // Re-export core types for convenience
 export type { EntityFilters, WorksFilters, AuthorsFilters, EntityType };
 
 // Core filter operator types
-export type FilterOperator = "=" | "!=" | ">" | ">=" | "<" | "<=" | "contains" | "search" | "between";
+export type FilterOperator =
+  | "="
+  | "!="
+  | ">"
+  | ">="
+  | "<"
+  | "<="
+  | "contains"
+  | "search"
+  | "between";
 export type LogicalOperator = "AND" | "OR" | "NOT";
 
 // UI-specific filter condition
@@ -183,10 +197,11 @@ export type WorksFilterField = keyof WorksFilters;
 export type AuthorsFilterField = keyof AuthorsFilters;
 
 // Entity-specific filter configurations
-export type EntityFilterConfig<T extends EntityType> =
-  T extends "works" ? FilterFieldConfig[] :
-  T extends "authors" ? FilterFieldConfig[] :
-  FilterFieldConfig[];
+export type EntityFilterConfig<T extends EntityType> = T extends "works"
+  ? FilterFieldConfig[]
+  : T extends "authors"
+    ? FilterFieldConfig[]
+    : FilterFieldConfig[];
 
 // Filter validation results
 export interface FilterValidationResult {

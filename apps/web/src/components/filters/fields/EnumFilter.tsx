@@ -1,6 +1,7 @@
-import React from "react";
 import { MultiSelect, Select } from "@mantine/core";
-import type { FilterFieldConfig, FilterOperator } from "../types/filter-ui";
+import { BaseFilter, createEnumOptions } from "@academic-explorer/utils/ui/filter-base";
+import type { FilterFieldConfig } from "@academic-explorer/utils/ui";
+import type { FilterOperator } from "@academic-explorer/utils/ui";
 
 interface EnumFilterProps {
   value: string | string[];
@@ -23,55 +24,48 @@ export function EnumFilter({
   compact = false,
   fieldId,
 }: EnumFilterProps) {
-  const operatorOptions = config.operators.map((op) => ({
-    value: op,
-    label: op,
-  }));
-
-  const selectOptions = (config.options || []).map((option) => ({
-    value: String(option.value),
-    label: option.label,
-  }));
-
+  const selectOptions = createEnumOptions(config);
   const isMulti = config.type === "multiSelect";
 
   return (
-    <div style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
-      {config.operators.length > 1 && (
-        <Select
-          data={operatorOptions}
-          value={operator}
-          onChange={(val) => val && onOperatorChange(val as FilterOperator)}
-          disabled={disabled}
-          size={compact ? "xs" : "sm"}
-          style={{ minWidth: "80px" }}
-        />
+    <BaseFilter
+      value={value}
+      operator={operator}
+      config={config}
+      onValueChange={onValueChange}
+      onOperatorChange={onOperatorChange}
+      disabled={disabled}
+      compact={compact}
+      fieldId={fieldId}
+    >
+      {({ value, onChange, disabled, compact, fieldId }) => (
+        <>
+          {isMulti ? (
+            <MultiSelect
+              id={fieldId}
+              data={selectOptions}
+              value={Array.isArray(value) ? value : []}
+              onChange={(val) => onChange(val)}
+              disabled={disabled}
+              size={compact ? "xs" : "sm"}
+              placeholder={config.placeholder}
+              style={{ flex: 1 }}
+            />
+          ) : (
+            <Select
+              id={fieldId}
+              data={selectOptions}
+              value={Array.isArray(value) ? value[0] : value || ""}
+              onChange={(val) => onChange(val as string)}
+              disabled={disabled}
+              size={compact ? "xs" : "sm"}
+              placeholder={config.placeholder}
+              style={{ flex: 1 }}
+              searchable
+            />
+          )}
+        </>
       )}
-      {isMulti ? (
-        <MultiSelect
-          id={fieldId}
-          data={selectOptions}
-          value={Array.isArray(value) ? value : []}
-          onChange={onValueChange}
-          placeholder={config.placeholder}
-          disabled={disabled}
-          size={compact ? "xs" : "sm"}
-          style={{ flex: 1 }}
-          searchable
-        />
-      ) : (
-        <Select
-          id={fieldId}
-          data={selectOptions}
-          value={typeof value === "string" ? value : ""}
-          onChange={(val) => onValueChange(val || "")}
-          placeholder={config.placeholder}
-          disabled={disabled}
-          size={compact ? "xs" : "sm"}
-          style={{ flex: 1 }}
-          searchable
-        />
-      )}
-    </div>
+    </BaseFilter>
   );
 }

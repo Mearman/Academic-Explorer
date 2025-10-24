@@ -37,7 +37,6 @@ export function OpenAlexFilters({
   disabled = false,
   compact = false,
 }: OpenAlexFiltersProps) {
-
   // Publication date range handlers
   const handleFromDateChange = (value: string | null) => {
     onFiltersChange({
@@ -126,7 +125,11 @@ export function OpenAlexFilters({
               onChange={handleMinCitationChange}
               leftSection={<IconHash size={16} />}
               min={0}
-              max={typeof filters.maxCitationCount === 'number' ? filters.maxCitationCount : undefined}
+              max={
+                typeof filters.maxCitationCount === "number"
+                  ? filters.maxCitationCount
+                  : undefined
+              }
               disabled={disabled}
               allowNegative={false}
               allowDecimal={false}
@@ -144,7 +147,11 @@ export function OpenAlexFilters({
               value={filters.maxCitationCount}
               onChange={handleMaxCitationChange}
               leftSection={<IconHash size={16} />}
-              min={typeof filters.minCitationCount === 'number' ? filters.minCitationCount : 0}
+              min={
+                typeof filters.minCitationCount === "number"
+                  ? filters.minCitationCount
+                  : 0
+              }
               disabled={disabled}
               allowNegative={false}
               allowDecimal={false}

@@ -76,9 +76,7 @@ export function VisualQueryBuilderExample() {
           <Title order={3} mb="md">
             Current Query Structure
           </Title>
-          <Code block>
-            {JSON.stringify(currentQuery, null, 2)}
-          </Code>
+          <Code block>{JSON.stringify(currentQuery, null, 2)}</Code>
         </div>
       )}
 
@@ -89,9 +87,7 @@ export function VisualQueryBuilderExample() {
           <Title order={3} mb="md">
             Applied Query (Ready for API Execution)
           </Title>
-          <Code block>
-            {JSON.stringify(appliedQuery, null, 2)}
-          </Code>
+          <Code block>{JSON.stringify(appliedQuery, null, 2)}</Code>
         </div>
       )}
     </Container>

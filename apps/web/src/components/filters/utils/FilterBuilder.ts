@@ -213,7 +213,6 @@ export class FilterBuilder {
    */
   validateFilters({
     filters,
-    entityType: _entityType,
   }: {
     filters: EntityFilters | Partial<EntityFilters>;
     entityType: EntityType;

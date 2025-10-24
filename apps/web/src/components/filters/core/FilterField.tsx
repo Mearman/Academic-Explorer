@@ -78,16 +78,6 @@ export function FilterField<T extends EntityFilters = EntityFilters>({
 
   // Render the appropriate field component based on type
   const renderFieldComponent = () => {
-    const _fieldProps = {
-      value: condition.value,
-      operator: condition.operator,
-      config,
-      onValueChange: handleValueChange,
-      onOperatorChange: handleOperatorChange,
-      disabled: disabled || !condition.enabled,
-      compact,
-      fieldId,
-    };
 
     switch (config.type) {
       case "text":
