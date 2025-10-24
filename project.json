@@ -1,0 +1,41 @@
+{
+  "name": "academic-explorer",
+  "$schema": "./node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": ".",
+  "projectType": "application",
+  "targets": {
+    "coverage:report": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["test"],
+      "options": {
+        "command": "tsx workspace-coverage.config.ts",
+        "cwd": "{workspaceRoot}"
+      },
+      "inputs": ["default", "^production"],
+      "outputs": ["{workspaceRoot}/coverage"]
+    },
+    "coverage:ci": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["test"],
+      "options": {
+        "command": "tsx workspace-coverage.config.ts",
+        "cwd": "{workspaceRoot}"
+      },
+      "configurations": {
+        "ci": {
+          "command": "tsx workspace-coverage.config.ts"
+        }
+      }
+    },
+    "deps:check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsx tools/scripts/check-dependencies.ts",
+        "cwd": "{workspaceRoot}"
+      },
+      "inputs": ["default", "^production"],
+      "outputs": ["{workspaceRoot}/dependency-report.json"]
+    }
+  },
+  "tags": ["scope:workspace", "type:root"]
+}
