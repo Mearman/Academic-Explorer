@@ -144,7 +144,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                 {work.type}
               </Badge>
             )}
-            {work.open_access.is_oa && (
+            {work.open_access?.is_oa && (
               <Badge size="lg" variant="light" color="green">
                 Open Access
               </Badge>
@@ -223,21 +223,21 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
         </Card>
 
         {/* Authors */}
-        {work.authorships.length > 0 && (
+        {work.authorships && work.authorships.length > 0 && (
           <Card padding="md" radius="md" withBorder>
             <Group gap="xs" mb="sm">
               <ThemeIcon variant="light" size="sm" color="blue">
                 <IconUsers size={16} />
               </ThemeIcon>
               <Text size="sm" fw={600}>
-                Authors ({work.authorships.length})
+                Authors ({work.authorships?.length || 0})
               </Text>
             </Group>
 
             <ScrollArea.Autosize mah={120}>
               <Stack gap="xs">
                 {work.authorships
-                  .slice(0, 10)
+                  ?.slice(0, 10)
                   .map((authorship: Authorship, index: number) => (
                     <Group
                       key={
@@ -284,7 +284,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                       )}
                     </Group>
                   ))}
-                {work.authorships.length > 10 && (
+                {work.authorships && work.authorships.length > 10 && (
                   <Text size="xs" c="dimmed" ta="center">
                     ... and {work.authorships.length - 10} more
                   </Text>
@@ -407,7 +407,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                 <IconStar size={16} color={colors.text.secondary} />
                 <Stack gap={0} align="center">
                   <Text fw={700} size="lg">
-                    {author.summary_stats.h_index || 0}
+                    {author.summary_stats?.h_index || 0}
                   </Text>
                   <Text size="xs" c="dimmed">
                     H-Index
@@ -421,7 +421,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                 <IconBolt size={16} color={colors.text.secondary} />
                 <Stack gap={0} align="center">
                   <Text fw={700} size="lg">
-                    {author.summary_stats.i10_index || 0}
+                    {author.summary_stats?.i10_index || 0}
                   </Text>
                   <Text size="xs" c="dimmed">
                     i10-Index
@@ -433,7 +433,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
         </Card>
 
         {/* Affiliations Timeline */}
-        {author.affiliations.length > 0 && (
+        {author.affiliations && author.affiliations.length > 0 && (
           <Card padding="md" radius="md" withBorder>
             <Group gap="xs" mb="sm">
               <ThemeIcon variant="light" size="sm" color="orange">
@@ -446,7 +446,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
 
             <Timeline active={0} bulletSize={20} lineWidth={2}>
               {author.affiliations
-                .slice(0, 5)
+                ?.slice(0, 5)
                 .map((affiliation, index: number) => (
                   <Timeline.Item
                     key={

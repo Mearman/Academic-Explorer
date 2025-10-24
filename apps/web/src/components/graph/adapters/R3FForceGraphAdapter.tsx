@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, Html } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
 import R3fForceGraph, { GraphMethods } from "r3f-forcegraph";
 import SpriteText from "three-spritetext";
 import * as THREE from "three";
@@ -54,14 +54,12 @@ function CameraController({
   fgRef,
   controlsRef,
   cameraDistance,
-  enableControls,
   nodeCount,
   linkCount,
 }: {
   fgRef: React.RefObject<GraphMethods | undefined>;
-  controlsRef: React.RefObject<any>;
+  controlsRef: React.RefObject<OrbitControls>;
   cameraDistance: number;
-  enableControls: boolean;
   nodeCount: number;
   linkCount: number;
 }) {
@@ -174,12 +172,9 @@ function R3FForceGraphScene({
   fitViewTriggerRef: React.RefObject<(() => void) | null>;
 }) {
   const fgRef = useRef<GraphMethods | undefined>(undefined);
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<OrbitControls | null>(null);
   const { camera } = useThree();
-  const [currentNodes, setCurrentNodes] = useState<
-    Array<{ id: string; name?: string; x?: number; y?: number; z?: number }>
-  >([]);
-
+  
   // Call tickFrame on every frame to update the simulation
   useFrame(() => {
     if (fgRef.current) {
@@ -208,45 +203,23 @@ function R3FForceGraphScene({
     };
   }, [data, config.themeColors]);
 
-  // State to track node positions for labels
-  const [nodePositions, setNodePositions] = useState<
-    Map<string, { x: number; y: number; z: number }>
-  >(new Map());
-
-  // Callback to update node positions for labels
+  
+  // Callback to update node positions for labels (no-op for now)
   const nodePositionUpdate = useCallback(
     (
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       nodeObject: unknown,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       coords: { x: number; y: number; z: number },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       node: { id?: string | number | undefined },
     ) => {
-      // Update the position for this specific node
-      if (node.id !== undefined) {
-        setNodePositions((prev) => {
-          const newMap = new Map(prev);
-          newMap.set(String(node.id), coords);
-          return newMap;
-        });
-      }
+      // No-op - node position tracking disabled for now
     },
     [],
   );
 
-  // Update currentNodes whenever nodePositions changes
-  useEffect(() => {
-    const updatedNodes = data.nodes.map((node) => {
-      const pos = nodePositions.get(node.id);
-      return {
-        id: node.id,
-        name: node.label || node.id,
-        x: pos?.x,
-        y: pos?.y,
-        z: pos?.z,
-      };
-    });
-    setCurrentNodes(updatedNodes);
-  }, [data.nodes, nodePositions]);
-
+  
   // Fit view handler
   const handleFitView = useCallback(() => {
     try {
@@ -342,7 +315,6 @@ function R3FForceGraphScene({
         fgRef={fgRef}
         controlsRef={controlsRef}
         cameraDistance={adapterConfig?.cameraDistance || 5000}
-        enableControls={enableControls}
         nodeCount={data.nodes.length}
         linkCount={data.links.length}
       />
@@ -375,7 +347,7 @@ function R3FForceGraphScene({
         cooldownTicks={100}
         warmupTicks={30}
         nodePositionUpdate={nodePositionUpdate}
-        nodeThreeObject={(node: any) => {
+        nodeThreeObject={(node: GraphNode) => {
           // Create a group containing both the node sphere and its label
           const group = new THREE.Group();
 
@@ -427,9 +399,6 @@ function R3FForceGraphComponent({
   adapterConfig?: R3FForceGraphConfig;
   registerFitViewCallback: (callback: () => void) => () => void;
 }) {
-  const fgRef = useRef<GraphMethods | undefined>(undefined);
-  const controlsRef = useRef<any>(null);
-
   // Create a fit view trigger that will be called from the scene
   const fitViewTriggerRef = useRef<(() => void) | null>(null);
 

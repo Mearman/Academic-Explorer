@@ -8,11 +8,8 @@ import {
   GraphAdapterFactory,
   type GraphAdapterType,
 } from "./adapters/GraphAdapterFactory";
-import {
-  getConfigsForAdapter,
-  getDefaultConfigForAdapter,
-} from "./configs/registry";
-import type { GraphAdapterConfig, GraphConfigOption } from "./configs";
+import { getConfigsForAdapter } from "./configs/registry";
+import type { GraphAdapterConfig } from "./configs";
 
 // Loading fallback component
 function GraphLoadingFallback() {

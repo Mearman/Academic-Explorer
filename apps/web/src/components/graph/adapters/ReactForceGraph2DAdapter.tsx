@@ -29,7 +29,7 @@ export function ReactForceGraph2DAdapterComponent({
   adapterConfig?: ReactForceGraph2DConfig;
   registerFitViewCallback: (callback: () => void) => () => void;
 }) {
-  const fgRef = useRef<any>(null);
+  const fgRef = useRef<ForceGraph2DMethods | null>(null);
   const resolveCssVarColor = useCallback(
     (color: string, fallbackColor: string) => {
       if (!color) {

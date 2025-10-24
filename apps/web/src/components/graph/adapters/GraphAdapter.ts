@@ -1,6 +1,4 @@
 import type { OpenAlexEntity } from "@academic-explorer/types";
-import type { MantineTheme } from "@mantine/core";
-import type { GraphAdapterConfig as AdapterSpecificConfig } from "../configs";
 
 export interface GraphNode {
   id: string;

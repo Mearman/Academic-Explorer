@@ -79,7 +79,7 @@ vi.mock("@academic-explorer/utils", () => ({
 // Mock ReactFlow hooks
 vi.mock("@xyflow/react", () => ({
   ReactFlowProvider: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="react-flow-provider">{children}</div>
+    <div data-testid="@xyflow/react-provider">{children}</div>
   ),
   useReactFlow: vi.fn(() => ({
     getNodes: vi.fn(() => []),

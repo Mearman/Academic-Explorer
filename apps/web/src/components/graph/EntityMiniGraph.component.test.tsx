@@ -31,8 +31,6 @@ Object.defineProperty(window, "matchMedia", {
 import { MantineProvider } from "@mantine/core";
 import { EntityMiniGraph } from "./EntityMiniGraph";
 import type { OpenAlexEntity } from "@academic-explorer/types";
-import type { GraphAdapterType } from "./adapters/GraphAdapterFactory";
-import { GraphAdapterFactory } from "./adapters/GraphAdapterFactory";
 
 // Mock the theme colors hook
 vi.mock("@/hooks/use-theme-colors", () => ({

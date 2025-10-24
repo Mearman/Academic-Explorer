@@ -6,9 +6,9 @@
 
 import React, { useEffect, useMemo, useRef, useCallback } from "react";
 import {
-  animatedGraphStore,
   useRestartRequested,
   useClearRestartRequest,
+  useAnimatedGraphStore,
 } from "@/stores/animated-graph-store";
 import { logger } from "@academic-explorer/utils/logger";
 import { AnimatedLayoutContext } from "./animated-layout-context";
@@ -40,7 +40,8 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
   const eventBus = useEventBus();
 
   // Use stable selector to prevent infinite loops in React 19
-  const useAnimation = animatedGraphStore((state) => state.useAnimatedLayout);
+  const animatedGraph = useAnimatedGraphStore();
+  const useAnimation = animatedGraph.state.useAnimatedLayout;
 
   // ReactFlow hooks for node tracking
   const { getNodes, getEdges } = useReactFlow();
@@ -71,12 +72,9 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
     linkCount: number;
   };
   const isWorkerReady = unifiedWorker.isWorkerReady as boolean;
-  const _startAnimation = unifiedWorker.startAnimation;
   const { stopAnimation } = unifiedWorker;
   const { pauseAnimation } = unifiedWorker;
   const { resumeAnimation } = unifiedWorker;
-  const _reheatAnimation = unifiedWorker.reheatAnimation;
-  const _updateSimulationParameters = unifiedWorker.updateParameters;
   const { canPause } = unifiedWorker;
   const { canResume } = unifiedWorker;
   const { canStop } = unifiedWorker;
@@ -293,7 +291,7 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
     const _listenerId = eventBus.on(eventType, handler);
 
     return () => {
-      eventBus.off(eventType, handler);
+      eventBus.off(eventType, _listenerId);
     };
   }, [
     autoStartOnNodeChange,
@@ -395,8 +393,8 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
     );
 
     return () => {
-      eventBus.off(EVENT_BULK_NODES_ADDED, bulkNodesHandler);
-      eventBus.off(EVENT_BULK_EDGES_ADDED, bulkEdgesHandler);
+      eventBus.off(EVENT_BULK_NODES_ADDED, _bulkNodesListenerId);
+      eventBus.off(EVENT_BULK_EDGES_ADDED, _bulkEdgesListenerId);
     };
   }, [
     enabled,
@@ -478,7 +476,7 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const animatedStoreState = animatedGraphStore.getState();
+      const animatedStoreState = animatedGraph.state;
       (
         window as Window & { __animatedGraphDebug?: unknown }
       ).__animatedGraphDebug = {

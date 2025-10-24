@@ -23,13 +23,11 @@ import type { OpenAlexEntity } from "@academic-explorer/types";
 // Hierarchical left-to-right layout algorithm for better node positioning
 function applyHierarchicalLayout({
   nodes,
-  edges,
   width,
   height,
   config,
 }: {
   nodes: Node[];
-  edges: Edge[];
   width: number;
   height: number;
   config?: ReactFlowConfig;
@@ -256,7 +254,6 @@ export function ReactFlowAdapterComponent({
     // Apply hierarchical layout for better node positioning
     applyHierarchicalLayout({
       nodes: rfNodes,
-      edges: rfEdges,
       width: dimensions.width,
       height: dimensions.height,
       config: adapterConfig,

@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useEffect, useCallback } from "react";
-import ForceGraph3D, { ForceGraphMethods } from "react-force-graph-3d";
+import ForceGraph3D from "react-force-graph-3d";
 import * as THREE from "three";
 
 import type {
@@ -14,13 +14,10 @@ import type { ReactForceGraph3DConfig } from "../configs";
 import { detectEntityType } from "@academic-explorer/graph";
 import { logError, logger } from "@academic-explorer/utils/logger";
 
-// Type for ForceGraph3D ref with camera controls
-interface ForceGraph3DRef {
-  cameraPosition: (
-    position: { x: number; y: number; z: number },
-    lookAt: unknown,
-    transitionDuration?: number,
-  ) => void;
+interface ForceGraph3DMethods {
+  zoomToFit: (duration?: number) => void;
+  centerAt: (x: number, y: number, z?: number, duration?: number) => void;
+  zoom: (scale: number, duration?: number) => void;
 }
 
 export function ReactForceGraph3DAdapterComponent({
@@ -34,7 +31,7 @@ export function ReactForceGraph3DAdapterComponent({
   adapterConfig?: ReactForceGraph3DConfig;
   registerFitViewCallback: (callback: () => void) => () => void;
 }) {
-  const fgRef = useRef<any>(null);
+  const fgRef = useRef<ForceGraph3DMethods | null>(null);
   const resolveCssVarColor = useCallback(
     (color: string, fallbackColor: string) => {
       if (!color) {
@@ -248,9 +245,9 @@ export function ReactForceGraph3DAdapterComponent({
               height={config.height}
               backgroundColor={graphBackgroundColor}
               nodeColor={nodeColor}
-              nodeLabel={nodeLabelFn as any}
+              nodeLabel={nodeLabelFn as (node: GraphNode) => string}
               nodeVal={(node) =>
-                Number(node.val || adapterConfig?.nodeSize || 4) as any
+                Number(node.val || adapterConfig?.nodeSize || 4)
               }
               linkColor={() => config.themeColors.colors.border.secondary}
               linkWidth={adapterConfig?.linkWidth || 2}
@@ -270,7 +267,7 @@ export function ReactForceGraph3DAdapterComponent({
                       y: Number(node.y) * 2,
                       z: Number(node.z) * 2,
                     },
-                    node as any,
+                    node,
                     1000,
                   );
                 }

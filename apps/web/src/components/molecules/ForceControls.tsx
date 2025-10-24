@@ -80,8 +80,9 @@ const constrainValue = ({ value, min, max }): number => {
 };
 
 export const ForceControls: React.FC = () => {
-  const currentLayout = useGraphStore((state) => state.currentLayout);
-  const setLayout = useGraphStore((state) => state.setLayout);
+  const graphStore = useGraphStore();
+  const currentLayout = graphStore.currentLayout;
+  const setLayout = graphStore.setLayout;
   const setUseAnimatedLayout = useSetUseAnimatedLayout();
   const isAnimating = useIsAnimating();
   const requestRestart = useRequestRestart();
@@ -91,7 +92,7 @@ export const ForceControls: React.FC = () => {
 
   // Initialize force parameters from current layout or defaults
   const [forceParams, setForceParams] = useState<ForceParameters>(() => {
-    const current = currentLayout.options ?? {};
+    const current = currentLayout.options || {};
     return {
       linkDistance: current.linkDistance ?? DEFAULT_FORCE_PARAMS.linkDistance,
       linkStrength: current.linkStrength ?? DEFAULT_FORCE_PARAMS.linkStrength,
@@ -121,7 +122,7 @@ export const ForceControls: React.FC = () => {
       const updatedLayout = {
         ...currentLayout,
         options: {
-          ...currentLayout.options,
+          ...(currentLayout.options || {}),
           [param]: value,
         },
       };
@@ -286,7 +287,7 @@ export const ForceControls: React.FC = () => {
       const updatedLayout = {
         ...currentLayout,
         options: {
-          ...currentLayout.options,
+          ...(currentLayout.options || {}),
           ...DEFAULT_FORCE_PARAMS,
         },
       };
@@ -338,7 +339,7 @@ export const ForceControls: React.FC = () => {
   };
 
   // Only show if using D3 force layout
-  if (currentLayout.type !== "d3-force") {
+  if (currentLayout?.type !== "d3-force") {
     return (
       <Text
         size="sm"

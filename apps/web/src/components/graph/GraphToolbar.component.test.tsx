@@ -7,6 +7,7 @@
  */
 
 import React from "react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 
 // Mock ResizeObserver before importing Mantine
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
@@ -45,7 +46,7 @@ import { GraphToolbar } from "./GraphToolbar";
 // Mock XYFlow ReactFlowProvider and useReactFlow
 vi.mock("@xyflow/react", () => ({
   ReactFlowProvider: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="react-flow-provider">{children}</div>
+    <div data-testid="@xyflow/react-provider">{children}</div>
   ),
   useReactFlow: vi.fn(),
 }));
@@ -74,7 +75,7 @@ vi.mock("@academic-explorer/utils/logger", () => ({
 
 // Test wrapper component
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return <div data-testid="react-flow-provider">{children}</div>;
+  return <div data-testid="@xyflow/react-provider">{children}</div>;
 };
 
 describe("GraphToolbar", () => {

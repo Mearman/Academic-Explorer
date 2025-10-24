@@ -69,12 +69,11 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
   const { getNodes } = reactFlow;
   const { getEdges } = reactFlow;
   const { setNodes } = reactFlow;
-  const pinNode = useGraphStore((state) => state.pinNode);
-  const clearAllPinnedNodes = useGraphStore(
-    (state) => state.clearAllPinnedNodes,
-  );
+  const graphStore = useGraphStore();
+  const pinNode = graphStore.pinNode;
+  const clearAllPinnedNodes = graphStore.clearAllPinnedNodes;
   // Use stable selectors to avoid getSnapshot infinite loops (React 19 + Zustand + Immer pattern)
-  const pinnedNodes = useGraphStore((state) => state.pinnedNodes);
+  const pinnedNodes = graphStore.pinnedNodes;
   const pinnedNodesCount = React.useMemo(
     () => Object.keys(pinnedNodes).length,
     [pinnedNodes],
