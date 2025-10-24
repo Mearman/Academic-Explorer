@@ -149,7 +149,7 @@
     "@tanstack/react-router": "^1.132.47",
     "@academic-explorer/client": "workspace:*",
     "react": "^19.2.0",
-    "eslint": "^9.36.0",
+    "eslint": "^9.38.0",
     "typescript": "~5.9.2",
     "vitest": "^3.2.4"
   },
