@@ -573,9 +573,6 @@ importers:
 
   packages/ui:
     dependencies:
-      '@academic-explorer/client':
-        specifier: workspace:*
-        version: link:../client
       '@academic-explorer/graph':
         specifier: workspace:*
         version: link:../graph
@@ -594,6 +591,9 @@ importers:
       '@tabler/icons-react':
         specifier: ^3.35.0
         version: 3.35.0(react@19.2.0)
+      '@tanstack/react-router':
+        specifier: ^1.105.1
+        version: 1.133.27(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@tanstack/react-table':
         specifier: ^8.21.3
         version: 8.21.3(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
