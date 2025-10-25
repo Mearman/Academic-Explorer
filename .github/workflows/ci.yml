@@ -82,7 +82,7 @@ jobs:
             echo "affected=[$AFFECTED]" >> $GITHUB_OUTPUT
             echo "Affected projects: $AFFECTED"
           else
-            echo "affected=[\"web\",\"utils\",\"ui\",\"client\",\"graph\",\"simulation\",\"types\",\"cli\"]" >> $GITHUB_OUTPUT
+            echo "affected=[\"utils\",\"client\",\"graph\",\"types\"]" >> $GITHUB_OUTPUT
           fi
 
       - name: Determine quality gates run
