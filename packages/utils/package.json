@@ -105,6 +105,7 @@
   },
   "scripts": {
     "build": "cd ../../packages/types && pnpm build && cd ../../packages/utils && tsc -b",
+    "typecheck": "cd ../../packages/types && pnpm build && cd ../../packages/utils && tsc --noEmit -p tsconfig.json",
     "clean": "rm -rf dist",
     "test": "vitest run",
     "test:watch": "vitest",
