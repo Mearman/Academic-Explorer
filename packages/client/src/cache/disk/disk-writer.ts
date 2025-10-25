@@ -17,9 +17,9 @@ import {
 import type { EntityType, OpenAlexEntity, OpenAlexResponse } from "../../types";
 
 // Dynamic imports for Node.js modules to avoid browser bundling issues
-let fs: typeof import("fs/promises") | undefined;
-let path: typeof import("path") | undefined;
-let crypto: typeof import("crypto") | undefined;
+let fs: any;
+let path: any;
+let crypto: any;
 
 // Constants for error messages and file names
 const ERROR_MESSAGE_FS_NOT_INITIALIZED = "Node.js fs module not initialized";
@@ -56,9 +56,9 @@ async function initializeNodeModules(): Promise<void> {
       import("node:path"),
       import("node:crypto"),
     ]);
-    fs = fsModule;
-    path = pathModule;
-    crypto = cryptoModule;
+    fs = fsModule.default || fsModule;
+    path = pathModule.default || pathModule;
+    crypto = cryptoModule.default || cryptoModule;
   }
 }
 
@@ -66,9 +66,9 @@ async function initializeNodeModules(): Promise<void> {
  * Get initialized Node modules (throws if not initialized)
  */
 function getNodeModules(): {
-  fs: typeof import("fs/promises");
-  path: typeof import("path");
-  crypto: typeof import("crypto");
+  fs: any;
+  path: any;
+  crypto: any;
 } {
   if (!fs || !path || !crypto) {
     throw new Error(

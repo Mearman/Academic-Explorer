@@ -5,7 +5,14 @@ export * from "./state"
 export * from "./cache"
 
 // Cache browser utilities
-export * from "./cache-browser"
+export type { CachedEntityMetadata, CacheBrowserStats } from "./cache-browser"
+
+// Static data utilities - only export what's needed to avoid conflicts
+export type {
+	EntityType as StaticEntityType,
+	DirectoryIndex,
+	FileEntry,
+} from "./static-data/cache-utilities"
 
 // Logger
 export { logger } from "./logger"
@@ -119,27 +126,27 @@ export {
 // Network tracking store disabled (React-dependent, moved to UI package)
 // The network tracking functionality has been moved to the UI package since it relies on React Context
 
-// Data evaluation utilities - temporarily excluded due to complex dependencies
-// export {
-// 	parseSTARFile,
-// 	createSTARDatasetFromParseResult,
-// 	compareAcademicExplorerResults,
-// 	searchBasedOnSTARDataset,
-// 	calculateSearchCoverage,
-// 	detectMissingPapers,
-// 	DEFAULT_COLUMN_MAPPINGS,
-// 	DEFAULT_MATCHING_CONFIG,
-// 	DEFAULT_SEARCH_CONFIG,
-// 	type STARDataset,
-// 	type ParseResult,
-// 	type WorkReference,
-// 	type ComparisonResults,
-// 	type ComparisonProgress,
-// 	type SearchCoverage,
-// 	type MissingPaperDetectionConfig,
-// 	type DetectionProgress,
-// 	type MissingPaperDetectionResults,
-// } from "./data-evaluation"
+// Data evaluation utilities
+export {
+	parseSTARFile,
+	createSTARDatasetFromParseResult,
+	compareAcademicExplorerResults,
+	searchBasedOnSTARDataset,
+	calculateSearchCoverage,
+	detectMissingPapers,
+	DEFAULT_COLUMN_MAPPINGS,
+	DEFAULT_MATCHING_CONFIG,
+	DEFAULT_SEARCH_CONFIG,
+	type STARDataset,
+	type ParseResult,
+	type WorkReference,
+	type ComparisonResults,
+	type ComparisonProgress,
+	type SearchCoverage,
+	type MissingPaperDetectionConfig,
+	type DetectionProgress,
+	type MissingPaperDetectionResults,
+} from "./data-evaluation"
 
 // Entity type inference utilities
 export {

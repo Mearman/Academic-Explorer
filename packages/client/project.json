@@ -22,9 +22,19 @@
         ]
       }
     },
+    "build:types": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "main": "packages/client/src/index.ts",
+        "outputPath": "packages/client/dist",
+        "tsConfig": "packages/client/tsconfig.json",
+        "skipLibCheck": true
+      }
+    },
     "build:fix-paths": {
       "executor": "nx:run-commands",
-      "dependsOn": ["build:bundle"],
+      "dependsOn": ["build:bundle", "build:types"],
       "options": {
         "command": "node packages/client/scripts/fix-dist-paths.cjs"
       }
