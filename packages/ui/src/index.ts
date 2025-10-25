@@ -30,6 +30,17 @@ export type {
 // Feedback Components
 export { ErrorBoundary, type ErrorBoundaryProps } from "./components/feedback/ErrorBoundary"
 
+// Data Components
+export { DataState, type DataStateProps } from "./components/DataState"
+
+// Hooks
+export {
+	useAsyncOperation,
+	type AsyncOperationState,
+	type AsyncOperationResult,
+	type UseAsyncOperationOptions,
+} from "./hooks/use-async-operation"
+
 // Component category exports for tree-shaking
 export * as DataDisplay from "./components/data-display"
 export * as Feedback from "./components/feedback"

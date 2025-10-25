@@ -16,7 +16,7 @@
     "skipDefaultLibCheck": true,
     "strict": false,
     "noImplicitAny": false,
-    "types": []
+    "types": ["react"]
   },
   "include": ["src/**/*", "../../types/**/*"],
   "references": [

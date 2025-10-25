@@ -1410,6 +1410,7 @@ async function updateUnifiedIndex(
           }
 
           const metadata: UnifiedIndexEntry = {
+            $ref: `file://${filePath}`,
             lastModified: fileStat.mtime.toISOString(),
             contentHash,
           };

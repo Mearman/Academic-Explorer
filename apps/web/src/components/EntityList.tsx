@@ -15,7 +15,8 @@ import {
   buildFilterString,
   cachedOpenAlex as openAlex,
 } from "@academic-explorer/client";
-import { logger, DataState, useAsyncOperation } from "@academic-explorer/utils";
+import { logger } from "@academic-explorer/utils";
+import { DataState, useAsyncOperation } from "@academic-explorer/ui";
 import { transformEntityToGridItem, transformEntityToListItem } from "../utils/entity-mappers";
 import { Group, Pagination, Text } from "@mantine/core";
 import type { ColumnDef } from "@tanstack/react-table";
