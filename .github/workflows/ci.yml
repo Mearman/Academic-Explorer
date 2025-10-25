@@ -157,10 +157,10 @@ jobs:
             .nx/cache
             **/node_modules/.cache
             **/.vite
-          key: ${{ needs.changes.outputs.cache-key }}
+          key: ${{ runner.os }}-nx-cache-v2-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}
           restore-keys: |
+            ${{ runner.os }}-nx-cache-v2-
             ${{ runner.os }}-nx-cache-v1-
-            ${{ runner.os }}-nx-cache-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
