@@ -3,7 +3,7 @@
  * This shows how to use the various test helpers and patterns
  */
 
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import {
   testPatterns,
   testUtils,
@@ -17,6 +17,7 @@ import {
   setupAcademicPaperScenario,
   type TestScenarioResult,
 } from "./utils";
+import { RelationType } from "../types/core";
 
 describe("Test Utilities Examples", () => {
   describe("Basic Fixture Usage", () => {
@@ -33,7 +34,7 @@ describe("Test Utilities Examples", () => {
     });
 
     it("creates valid graph edges", async () => {
-      const edge = createEdgeFixture("W2741809807", "A5017898742", "authored", {
+      const edge = createEdgeFixture("W2741809807", "A5017898742", RelationType.AUTHORED, {
         weight: 1.5,
         metadata: { confidence: 0.9 },
       });
@@ -90,9 +91,12 @@ describe("Test Utilities Examples", () => {
       "uses graph test pattern",
       testPatterns.graph(async (graphData) => {
         // This test is provided with pre-configured graph data
-        expect(graphData.nodes).toBeDefined();
-        expect(graphData.edges).toBeDefined();
-        expect(graphData.nodes.length).toBeGreaterThan(0);
+        const nodes = graphData.nodes as Array<any>;
+        const edges = graphData.edges as Array<any>;
+
+        expect(nodes).toBeDefined();
+        expect(edges).toBeDefined();
+        expect(nodes.length).toBeGreaterThan(0);
       }),
     );
   });

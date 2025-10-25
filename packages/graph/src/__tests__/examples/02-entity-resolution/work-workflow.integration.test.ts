@@ -6,7 +6,7 @@
  * Prerequisites: Understanding of work entities and citation relationships
  */
 
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { OpenAlexGraphProvider } from "../../../providers/openalex-provider";
 import { RelationType } from "../../../types/core";
 import type { GraphNode, GraphEdge } from "../../../types/core";
@@ -969,14 +969,17 @@ describe("Example: Work-Centered Research Workflows", () => {
     provider: OpenAlexGraphProvider,
     workIds: string[],
   ) {
-    const nodes = [];
-    const edges = [];
+    const nodes: Array<GraphNode> = [];
+    const edges: Array<GraphEdge> = [];
 
     for (const workId of workIds) {
       const work = await provider.fetchEntity(workId);
       nodes.push({
         ...work,
-        cocitation_strength: 0.8,
+        metadata: {
+          ...work.metadata,
+          cocitation_strength: 0.8,
+        },
       });
     }
 
@@ -987,7 +990,9 @@ describe("Example: Work-Centered Research Workflows", () => {
         source: workIds[i],
         target: workIds[i + 1],
         type: RelationType.REFERENCES,
-        cocitation_frequency: 5,
+        metadata: {
+          cocitation_frequency: 5,
+        },
       });
     }
 
@@ -1085,7 +1090,7 @@ describe("Example: Work-Centered Research Workflows", () => {
         ],
       },
       literature_landscape: {
-        core_papers: seedPapers,
+        core_papers: _seedPapers,
         peripheral_papers: [],
         temporal_coverage: { start: 2017, end: 2024 },
       },

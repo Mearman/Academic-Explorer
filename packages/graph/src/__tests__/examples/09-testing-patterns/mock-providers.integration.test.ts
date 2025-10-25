@@ -6,7 +6,7 @@
  * Prerequisites: Understanding of testing patterns and mocking frameworks
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi as _vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { GraphDataProvider, ProviderRegistry } from "../../../providers";
 import type {
   SearchQuery,
@@ -14,6 +14,7 @@ import type {
   GraphExpansion,
 } from "../../../providers/base-provider";
 import type { GraphNode, EntityIdentifier } from "../../../types/core";
+import { RelationType } from "../../../types/core";
 
 // Example consumer service that uses the provider system
 class ResearchAnalysisService {
@@ -59,7 +60,7 @@ class ResearchAnalysisService {
     const topics = this.extractResearchTopics(expansion.nodes);
 
     // Search for authors with similar topics
-    const similarAuthors = [];
+    const similarAuthors: Array<GraphNode> = [];
     for (const topic of topics.slice(0, 3)) {
       // Check top 3 topics
       const results = await this.provider.searchEntities({
@@ -335,7 +336,7 @@ describe("Example: Mock Provider Testing Patterns", () => {
             id: "edge1",
             source: "A5017898742",
             target: "W2741809807",
-            type: "authored" as any,
+            type: RelationType.AUTHORED,
           },
         ],
         metadata: {
@@ -726,7 +727,7 @@ describe("Example: Mock Provider Testing Patterns", () => {
 
       // When: Processing large dataset
       const batchSize = 10;
-      const batches = [];
+      const batches: Array<Promise<any>> = [];
 
       for (let i = 0; i < largeDataset.length; i += batchSize) {
         const batchIds = largeDataset.slice(i, i + batchSize).map((e) => e.id);

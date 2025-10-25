@@ -6,7 +6,7 @@
  * Prerequisites: Understanding of EntityDetectionService and EntityType enum
  */
 
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { OpenAlexGraphProvider } from "../../../providers/openalex-provider";
 import { EntityDetectionService } from "../../../services/entity-detection-service";
 import type { EntityType } from "../../../types/core";
@@ -130,10 +130,7 @@ describe("Example: Modern Entity Detection with EntityDetectionService", () => {
     _detectionService = new EntityDetectionService();
   });
 
-  afterEach(() => {
-    provider.destroy();
-  });
-
+  
   describe("EntityDetectionService Direct Usage", () => {
     it("demonstrates static entity type detection", () => {
       // Given: Various identifier formats
@@ -203,11 +200,13 @@ describe("Example: Modern Entity Detection with EntityDetectionService", () => {
         expect(normalizedId).toBeTruthy();
 
         // Step 3: Validate the result
-        const isValid = EntityDetectionService.isValidIdentifier(normalizedId);
-        expect(isValid).toBe(true);
+        if (normalizedId) {
+          const isValid = EntityDetectionService.isValidIdentifier(normalizedId);
+          expect(isValid).toBe(true);
+        }
 
         console.log(
-          `✓ "${rawId}" → ${entityType} : ${normalizedId} (valid: ${isValid})`,
+          `✓ "${rawId}" → ${entityType} : ${normalizedId} (valid: ${normalizedId ? EntityDetectionService.isValidIdentifier(normalizedId) : false})`,
         );
       });
     });
@@ -425,7 +424,7 @@ describe("Example: Modern Entity Detection with EntityDetectionService", () => {
           const entity = await provider.fetchEntity(numericId);
 
           // Then: Should have a valid entity type
-          expect([
+          const validEntityTypes = [
             "works",
             "authors",
             "sources",
@@ -434,7 +433,8 @@ describe("Example: Modern Entity Detection with EntityDetectionService", () => {
             "publishers",
             "funders",
             "concepts",
-          ]).toContain(entity.entityType);
+          ] as const;
+          expect(validEntityTypes).toContain(entity.entityType);
 
           // Best Practice: Should generate consistent results for same input
           const entity2 = await provider.fetchEntity(numericId);
@@ -532,7 +532,7 @@ describe("Example: Modern Entity Detection with EntityDetectionService", () => {
 
             // Then: Should handle extracted IDs correctly
             expect(entity.id).toBe(entityId.toUpperCase());
-            expect([
+            const validTypes = [
               "works",
               "authors",
               "sources",
@@ -541,7 +541,8 @@ describe("Example: Modern Entity Detection with EntityDetectionService", () => {
               "publishers",
               "funders",
               "concepts",
-            ]).toContain(entity.entityType);
+            ] as const;
+            expect(validTypes).toContain(entity.entityType);
           }
         } catch (_error) {
           console.warn(`Route format processing failed: ${route}`);
@@ -585,7 +586,7 @@ describe("Example: Modern Entity Detection with EntityDetectionService", () => {
       const startTime = Date.now();
 
       // When: Fetching same entity in different formats
-      const entities = [];
+      const entities: Array<any> = [];
       for (const variation of variations) {
         try {
           const entity = await provider.fetchEntity(variation);
@@ -639,17 +640,18 @@ describe("Example: Modern Entity Detection with EntityDetectionService", () => {
       const results = await Promise.all(testIds.map(processEntity));
 
       // Then: Should provide type-safe information
+      const validResultTypes = [
+        "works",
+        "authors",
+        "sources",
+        "institutions",
+        "topics",
+        "publishers",
+        "funders",
+        "concepts",
+      ] as const;
       results.forEach((result, index) => {
-        expect([
-          "works",
-          "authors",
-          "sources",
-          "institutions",
-          "topics",
-          "publishers",
-          "funders",
-          "concepts",
-        ]).toContain(result.type);
+        expect(validResultTypes).toContain(result.type);
         expect(typeof result.label).toBe("string");
         expect(typeof result.hasExternalIds).toBe("boolean");
 
@@ -662,5 +664,8 @@ describe("Example: Modern Entity Detection with EntityDetectionService", () => {
       expect(results.some((r) => r.hasExternalIds)).toBe(true);
       expect(results.every((r) => r.label.length > 0)).toBe(true);
     });
+
+    // Cleanup
+    provider.destroy();
   });
 });

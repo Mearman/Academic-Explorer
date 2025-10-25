@@ -392,7 +392,7 @@ export class EventTimingMock {
   private originalDateNow = Date.now;
 
   start(): void {
-    Date.now = vi.fn(() => this.mockDate);
+    Date.now = vi.fn().mockImplementation(() => this.mockDate);
   }
 
   advance(ms: number): void {

@@ -101,7 +101,7 @@ export async function setupAcademicPaperScenario(
 
   // Setup event tracking
   if (config.events?.trackProviderEvents) {
-    eventHelper.track(primaryProvider, ['entityFetched', 'requestSuccess', 'requestError'], 'academic-provider');
+    eventHelper.track(primaryProvider as any, ['entityFetched', 'requestSuccess', 'requestError'], 'academic-provider');
   }
 
   // Setup performance monitoring
@@ -161,7 +161,7 @@ export async function setupCollaborationScenario(
   providerHelper.registerProvider(registry, primaryProvider);
 
   if (config.events?.trackProviderEvents) {
-    eventHelper.track(primaryProvider, undefined, 'collaboration-provider');
+    eventHelper.track(primaryProvider as any, undefined, 'collaboration-provider');
   }
 
   if (config.performance?.enableHealthMonitoring) {
@@ -221,7 +221,7 @@ export async function setupPerformanceScenario(
   providerHelper.registerProvider(registry, primaryProvider);
 
   if (config.events?.trackProviderEvents) {
-    eventHelper.track(primaryProvider, ['requestStart', 'requestSuccess', 'requestError'], 'performance-provider');
+    eventHelper.track(primaryProvider as any, ['requestStart', 'requestSuccess', 'requestError'], 'performance-provider');
   }
 
   if (config.performance?.enableHealthMonitoring) {
@@ -281,7 +281,7 @@ export async function setupErrorHandlingScenario(
   providerHelper.registerProvider(registry, primaryProvider);
 
   // Track all events for error analysis
-  eventHelper.track(primaryProvider, undefined, 'error-provider');
+  eventHelper.track(primaryProvider as any, undefined, 'error-provider');
 
   // Monitor health with error conditions
   performanceHelper.startHealthMonitoring(primaryProvider, 'error-provider', {
@@ -331,7 +331,7 @@ export async function setupMultiProviderScenario(
     graphData.nodes.filter(n => n.entityType === 'works'),
     [{
       nodeId: graphData.nodes.filter(n => n.entityType === 'works')[0]?.id || 'works-default',
-      edges: graphData.edges.filter(e => e.type === 'references'),
+      edges: graphData.edges.filter(e => e.type === RelationType.REFERENCES),
     }],
     { simulateLatency: 50 }
   );
@@ -341,7 +341,7 @@ export async function setupMultiProviderScenario(
     graphData.nodes.filter(n => n.entityType === 'authors'),
     [{
       nodeId: graphData.nodes.filter(n => n.entityType === 'authors')[0]?.id || 'authors-default',
-      edges: graphData.edges.filter(e => e.type === 'authored'),
+      edges: graphData.edges.filter(e => e.type === RelationType.AUTHORED),
     }],
     { simulateLatency: 30 }
   );
@@ -351,7 +351,7 @@ export async function setupMultiProviderScenario(
     graphData.nodes.filter(n => n.entityType === 'institutions'),
     [{
       nodeId: graphData.nodes.filter(n => n.entityType === 'institutions')[0]?.id || 'institutions-default',
-      edges: graphData.edges.filter(e => e.type === 'affiliated'),
+      edges: graphData.edges.filter(e => e.type === RelationType.AFFILIATED),
     }],
     { simulateLatency: 20 }
   );
@@ -363,9 +363,9 @@ export async function setupMultiProviderScenario(
 
   // Track events from all providers
   if (config.events?.trackProviderEvents) {
-    eventHelper.track(primaryProvider, undefined, 'primary-provider');
-    eventHelper.track(authorProvider, undefined, 'author-provider');
-    eventHelper.track(institutionProvider, undefined, 'institution-provider');
+    eventHelper.track(primaryProvider as any, undefined, 'primary-provider');
+    eventHelper.track(authorProvider as any, undefined, 'author-provider');
+    eventHelper.track(institutionProvider as any, undefined, 'institution-provider');
   }
 
   // Monitor health of all providers

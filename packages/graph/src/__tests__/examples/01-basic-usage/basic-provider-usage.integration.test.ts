@@ -6,9 +6,10 @@
  * Prerequisites: Understanding of EntityType and GraphNode concepts
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi as _vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { OpenAlexGraphProvider } from "../../../providers/openalex-provider";
 import type { EntityType, GraphNode } from "../../../types/core";
+import { RelationType } from "../../../types/core";
 
 // Mock OpenAlex client for testing
 class MockOpenAlexClient {
@@ -425,7 +426,7 @@ describe("Example: Basic Provider Usage", () => {
 
       // Best Practice: Verify authorship edges
       const authorshipEdges = expansion.edges.filter(
-        (e) => e.type === "authored",
+        (e) => e.type === RelationType.AUTHORED,
       );
       expect(authorshipEdges.length).toEqual(workNodes.length);
 

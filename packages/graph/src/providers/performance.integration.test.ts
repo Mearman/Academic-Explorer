@@ -3,7 +3,7 @@
  * Tests scalability, memory usage, and performance characteristics under various loads
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import {
   GraphDataProvider,
   ProviderRegistry,
@@ -251,7 +251,7 @@ class MockGraphProvider extends GraphDataProvider {
           edges,
           metadata: {
             expandedFrom: nodeId,
-            depth: options.depth || options.maxDepth || 1,
+            depth: options.maxDepth || 1,
             totalFound: nodes.length,
             options,
           },

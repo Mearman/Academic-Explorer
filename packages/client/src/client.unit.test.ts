@@ -27,8 +27,6 @@ describe("OpenAlexBaseClient", () => {
   let mockResponse: Response;
 
   beforeEach(() => {
-    vi.clearAllMocks();
-
     // Create a factory function for mock responses to avoid reuse issues
     const createMockResponse = (
       data = {

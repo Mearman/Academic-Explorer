@@ -1,9 +1,10 @@
+/// <reference types="vitest" />
 /**
  * Comprehensive unit tests for OpenAlexGraphProvider
  * Tests all functionality including initialization, entity fetching, search, expansion, and error handling
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { OpenAlexGraphProvider } from './openalex-provider';
 import type { SearchQuery, ProviderExpansionOptions } from './base-provider';
 import { RelationType } from '../types/core';

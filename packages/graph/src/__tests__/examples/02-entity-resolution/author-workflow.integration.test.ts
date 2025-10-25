@@ -6,7 +6,7 @@
  * Prerequisites: Understanding of author entities and academic relationships
  */
 
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { OpenAlexGraphProvider } from "../../../providers/openalex-provider";
 import { RelationType } from "../../../types/core";
 import type { GraphNode, GraphEdge } from "../../../types/core";

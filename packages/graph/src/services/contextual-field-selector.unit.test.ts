@@ -7,7 +7,7 @@
  * with the Academic Explorer caching and graph systems.
  */
 
-import { describe, it, expect, beforeEach, vi as _vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { ContextualFieldSelector } from './contextual-field-selector';
 import { CacheContext } from './cache-types';
 import type { EntityType } from '../types/core';
@@ -16,7 +16,7 @@ describe('ContextualFieldSelector', () => {
   let fieldSelector: ContextualFieldSelector;
 
   beforeEach(() => {
-    fieldSelector = new ContextualFieldSelector();
+    fieldSelector = ContextualFieldSelector.getInstance();
   });
 
   describe('Context-Based Field Selection', () => {
@@ -523,7 +523,7 @@ describe('ContextualFieldSelector', () => {
       }).not.toThrow();
 
       expect(() => {
-        fieldSelector.getRequiredFields('', CacheContext.UI_DISPLAY);
+        fieldSelector.getRequiredFields('' as any, CacheContext.UI_DISPLAY);
       }).not.toThrow();
     });
   });

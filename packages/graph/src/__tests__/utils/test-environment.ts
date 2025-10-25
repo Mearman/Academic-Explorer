@@ -2,8 +2,6 @@
  * Test environment initialization and cleanup utilities
  * Provides consistent test environment setup across all graph package tests
  */
-
-import { vi } from 'vitest';
 import { EventEmitter } from 'events';
 import type { GraphNode } from '../../types/core';
 import type { ProviderRegistry } from '../../providers/base-provider';
@@ -88,7 +86,7 @@ export class MockProvider extends EventEmitter {
       edges: [],
       metadata: {
         expandedFrom: nodeId,
-        depth: options.depth || 1,
+        depth: (options as any).maxDepth || (options as any).depth || 1,
         totalFound: 1,
         options,
       },
@@ -165,8 +163,8 @@ export function setupTestEnvironment(config: TestEnvironmentConfig = {}): TestEn
   const state = globalThis.__TEST_ENV_STATE__;
 
   // Setup memory tracking baseline
-  if (config.memoryTracking && typeof performance !== 'undefined' && (performance as Record<string, unknown>).memory) {
-    const memory = (performance as Record<string, unknown>).memory;
+  if (config.memoryTracking && typeof performance !== 'undefined' && (performance as unknown as Record<string, unknown>).memory) {
+    const memory = (performance as unknown as Record<string, unknown>).memory;
     state.memoryBaseline = (memory as Record<string, unknown>).usedJSHeapSize as number;
   }
 
@@ -340,8 +338,8 @@ export function trackTimer(timerId: number): void {
  * Get current memory usage (if available)
  */
 export function getCurrentMemoryUsage(): number {
-  if (typeof performance !== 'undefined' && (performance as Record<string, unknown>).memory) {
-    const memory = (performance as Record<string, unknown>).memory;
+  if (typeof performance !== 'undefined' && (performance as unknown as Record<string, unknown>).memory) {
+    const memory = (performance as unknown as Record<string, unknown>).memory;
     return (memory as Record<string, unknown>).usedJSHeapSize as number;
   }
   return 0;

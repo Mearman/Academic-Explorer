@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 /**
  * SmartEntityCache Test Suite
  *
@@ -8,7 +9,7 @@
  * - Batch operations and performance
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import type { EntityType } from '../types/core';
 import { SmartEntityCache, type EntityDataProvider, type FieldRequest } from './smart-entity-cache';
 // TODO: Fix @academic-explorer/utils import - temporarily using console

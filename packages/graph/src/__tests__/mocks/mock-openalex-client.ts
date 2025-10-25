@@ -160,7 +160,7 @@ export class MockOpenAlexClient {
       mockData = { ...mockData, id: actualId };
     }
 
-    return this.makeRequest('getWork', { id }, undefined, mockData);
+    return this.makeRequest('getWork', { id }, undefined, mockData) as unknown as Record<string, unknown>;
   }
 
   async getAuthor(id: string): Promise<Record<string, unknown>> {
@@ -187,7 +187,7 @@ export class MockOpenAlexClient {
       mockData = { ...mockData, id: actualId };
     }
 
-    return this.makeRequest('getAuthor', { id }, undefined, mockData);
+    return this.makeRequest('getAuthor', { id }, undefined, mockData) as unknown as Record<string, unknown>;
   }
 
   async getSource(id: string): Promise<Record<string, unknown>> {
@@ -214,7 +214,7 @@ export class MockOpenAlexClient {
       mockData = { ...mockData, id: actualId };
     }
 
-    return this.makeRequest('getSource', { id }, undefined, mockData);
+    return this.makeRequest('getSource', { id }, undefined, mockData) as unknown as Record<string, unknown>;
   }
 
   async getInstitution(id: string): Promise<Record<string, unknown>> {
@@ -241,7 +241,7 @@ export class MockOpenAlexClient {
       mockData = { ...mockData, id: actualId };
     }
 
-    return this.makeRequest('getInstitution', { id }, undefined, mockData);
+    return this.makeRequest('getInstitution', { id }, undefined, mockData) as unknown as Record<string, unknown>;
   }
 
   async get(endpoint: string, id: string): Promise<Record<string, unknown>> {
@@ -275,7 +275,7 @@ export class MockOpenAlexClient {
       mockData = { ...mockData, id: actualId };
     }
 
-    return this.makeRequest('get', { endpoint, id }, undefined, mockData);
+    return this.makeRequest('get', { endpoint, id }, undefined, mockData) as unknown as Record<string, unknown>;
   }
 
   // Search methods - these MUST return { results: [...] } format
@@ -284,15 +284,15 @@ export class MockOpenAlexClient {
 
     // If we're returning malformed data for testing purposes, return it as-is
     if (this.options.failureMode === 'malformed' && this.options.customResponseData) {
-      return this.options.customResponseData;
+      return this.options.customResponseData as { results: Record<string, unknown>[] };
     }
 
     // Ensure it's in the correct format even if makeRequest returns something else
     if (Array.isArray(results)) {
       return { results };
     }
-    if (results && Array.isArray(results.results)) {
-      return results;
+    if (results && typeof results === 'object' && 'results' in results && Array.isArray(results.results)) {
+      return results as { results: Record<string, unknown>[] };
     }
 
     // Default search results for works with proper OpenAlex IDs
@@ -309,14 +309,14 @@ export class MockOpenAlexClient {
 
     // If we're returning malformed data for testing purposes, return it as-is
     if (this.options.failureMode === 'malformed' && this.options.customResponseData) {
-      return this.options.customResponseData;
+      return this.options.customResponseData as { results: Record<string, unknown>[] };
     }
 
     if (Array.isArray(results)) {
       return { results };
     }
-    if (results && Array.isArray(results.results)) {
-      return results;
+    if (results && typeof results === 'object' && 'results' in results && Array.isArray(results.results)) {
+      return results as { results: Record<string, unknown>[] };
     }
 
     return {

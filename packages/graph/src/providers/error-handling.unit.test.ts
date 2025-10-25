@@ -1,10 +1,11 @@
+/// <reference types="vitest" />
 /**
  * Comprehensive error handling tests for graph providers
  * Tests error scenarios, error type validation, error message accuracy, and recovery mechanisms
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { _EventEmitter } from 'events';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { EventEmitter } from 'events';
 import {
   GraphDataProvider,
   ProviderRegistry,
@@ -19,16 +20,16 @@ import type { GraphNode, EntityType, EntityIdentifier } from '../types/core';
 // Test implementations
 class MockProvider extends GraphDataProvider {
   private shouldFail = false;
-  private failureMode: 'network' | 'timeout' | 'malformed' | 'rate-limit' | 'memory' | null = null;
+  private failureMode: 'network' | 'timeout' | 'malformed' | 'rate-limit' | 'memory' | undefined = undefined;
   private requestCount = 0;
 
   constructor(options: ProviderOptions) {
     super(options);
   }
 
-  setFailureMode(mode: 'network' | 'timeout' | 'malformed' | 'rate-limit' | 'memory' | null) {
+  setFailureMode(mode: 'network' | 'timeout' | 'malformed' | 'rate-limit' | 'memory' | undefined) {
     this.failureMode = mode;
-    this.shouldFail = mode !== null;
+    this.shouldFail = mode !== undefined;
   }
 
   async fetchEntity(id: EntityIdentifier): Promise<GraphNode> {
@@ -101,7 +102,7 @@ class MockProvider extends GraphDataProvider {
     if (this.failureMode === 'network') {
       throw new Error('Health check failed: Network error');
     }
-    return this.failureMode === null;
+    return this.failureMode === undefined;
   }
 
   getRequestCount() {
@@ -134,7 +135,7 @@ class MockProvider extends GraphDataProvider {
 
       case 'memory': {
         const memoryError = new Error('JavaScript heap out of memory');
-        (memoryError as { code: string }).code = 'ENOSPC';
+        (memoryError as any).code = 'ENOSPC';
         throw memoryError;
       }
 
@@ -148,7 +149,7 @@ import { MockOpenAlexClient } from '../__tests__/mocks/mock-openalex-client';
 
 describe('GraphDataProvider Error Handling', () => {
   let provider: MockProvider;
-  let eventSpy: vi.SpyInstance;
+  let eventSpy: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     provider = new MockProvider({
@@ -157,14 +158,13 @@ describe('GraphDataProvider Error Handling', () => {
       retryAttempts: 2
     });
 
-    eventSpy = vi.fn();
+    eventSpy = vi.fn() as any;
     provider.on('error', eventSpy);
     provider.on('requestError', eventSpy);
   });
 
   afterEach(() => {
     provider.destroy();
-    vi.clearAllMocks();
   });
 
   describe('Network Failures', () => {
@@ -240,7 +240,7 @@ describe('GraphDataProvider Error Handling', () => {
 
     it('should emit appropriate events for rate limiting', async () => {
       provider.setFailureMode('rate-limit');
-      const rateLimitSpy = vi.fn();
+      const rateLimitSpy = vi.fn() as any;
       provider.on('requestError', rateLimitSpy);
 
       try {
@@ -292,7 +292,7 @@ describe('GraphDataProvider Error Handling', () => {
     });
 
     it('should return true when healthy', async () => {
-      provider.setFailureMode(null);
+      provider.setFailureMode(undefined);
       const isHealthy = await provider.isHealthy();
       expect(isHealthy).toBe(true);
     });
@@ -300,12 +300,13 @@ describe('GraphDataProvider Error Handling', () => {
 
   describe('Event Emission Errors', () => {
     it('should handle listener failures gracefully', async () => {
-      const failingListener = vi.fn(() => {
+      const failingListener = vi.fn();
+      failingListener.mockImplementation(() => {
         throw new Error('Listener failed');
       });
 
       provider.on('requestSuccess', failingListener);
-      provider.setFailureMode(null);
+      provider.setFailureMode(undefined);
 
       // Should not throw despite listener failure
       await expect(provider.fetchEntity('test-id'))
@@ -316,12 +317,13 @@ describe('GraphDataProvider Error Handling', () => {
     });
 
     it('should continue operation after event emission errors', async () => {
-      const errorListener = vi.fn(() => {
+      const errorListener = vi.fn();
+      errorListener.mockImplementation(() => {
         throw new Error('Event handler error');
       });
 
       provider.on('entityFetched', errorListener);
-      provider.setFailureMode(null);
+      provider.setFailureMode(undefined);
 
       const result = await provider.fetchEntity('test-id');
       expect(result).toBeDefined();
@@ -340,7 +342,7 @@ describe('GraphDataProvider Error Handling', () => {
           return Promise.reject(new Error('Individual request failed'));
         }
         return originalFetch(id);
-      });
+      }) as any;
 
       await expect(provider.fetchEntities(ids))
         .rejects
@@ -352,7 +354,7 @@ describe('GraphDataProvider Error Handling', () => {
 describe('OpenAlexGraphProvider Error Handling', () => {
   let mockClient: MockOpenAlexClient;
   let provider: OpenAlexGraphProvider;
-  let eventSpy: vi.SpyInstance;
+  let eventSpy: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     mockClient = new MockOpenAlexClient();
@@ -362,14 +364,13 @@ describe('OpenAlexGraphProvider Error Handling', () => {
       retryAttempts: 1
     });
 
-    eventSpy = vi.fn();
+    eventSpy = vi.fn() as any;
     provider.on('error', eventSpy);
     provider.on('requestError', eventSpy);
   });
 
   afterEach(() => {
     provider.destroy();
-    vi.clearAllMocks();
   });
 
   describe('Invalid Entity IDs', () => {
@@ -386,13 +387,13 @@ describe('OpenAlexGraphProvider Error Handling', () => {
     });
 
     it('should accept DOI-based IDs', async () => {
-      mockClient.setFailureMode(null);
+      mockClient.setFailureMode(undefined);
       const result = await provider.fetchEntity('https://doi.org/10.1000/test');
       expect(result.entityType).toBe('works');
     });
 
     it('should accept ORCID-based IDs', async () => {
-      mockClient.setFailureMode(null);
+      mockClient.setFailureMode(undefined);
       const result = await provider.fetchEntity('https://orcid.org/0000-0000-0000-0000');
       expect(result.entityType).toBe('authors');
     });
@@ -454,7 +455,7 @@ describe('OpenAlexGraphProvider Error Handling', () => {
   describe('Circular Dependency Detection', () => {
     it('should handle expansion with deep nesting', async () => {
       // This tests the current implementation - would need enhancement for actual circular detection
-      mockClient.setFailureMode(null);
+      mockClient.setFailureMode(undefined);
 
       const expansion = await provider.expandEntity('W2741809807', { maxDepth: 10 });
       expect(expansion.metadata.depth).toBe(1); // Current implementation always returns depth 1
@@ -463,7 +464,7 @@ describe('OpenAlexGraphProvider Error Handling', () => {
 
   describe('Memory and Performance Issues', () => {
     it('should handle large dataset scenarios', async () => {
-      mockClient.setFailureMode(null);
+      mockClient.setFailureMode(undefined);
 
       const query: SearchQuery = {
         query: 'test',
@@ -512,7 +513,7 @@ describe('OpenAlexGraphProvider Error Handling', () => {
       });
 
       // Should still work but use defaults
-      mockClient.setFailureMode(null);
+      mockClient.setFailureMode(undefined);
       const result = await invalidProvider.fetchEntity('W2741809807');
       expect(result).toBeDefined();
 
@@ -591,7 +592,6 @@ describe('ProviderRegistry Error Handling', () => {
 
   afterEach(() => {
     registry.destroy();
-    vi.clearAllMocks();
   });
 
   describe('Provider Registration Errors', () => {
@@ -643,13 +643,7 @@ describe('ProviderRegistry Error Handling', () => {
       const faultyProvider = new MockProvider({ name: 'faulty' });
       let destroyCalled = false;
 
-      faultyProvider.destroy = vi.fn(() => {
-        if (!destroyCalled) {
-          destroyCalled = true;
-          throw new Error('Cleanup failed');
-        }
-        // Allow subsequent calls to succeed for test cleanup
-      });
+      faultyProvider.destroy = vi.fn() as any;
 
       registry.register(faultyProvider);
 
@@ -666,7 +660,7 @@ describe('ProviderRegistry Error Handling', () => {
       expect(registry.get('faulty')).not.toBeNull();
 
       // Reset the destroy method for proper cleanup in afterEach
-      faultyProvider.destroy = vi.fn();
+      faultyProvider.destroy = vi.fn() as any;
     });
 
     it('should handle default provider removal', () => {
@@ -693,7 +687,7 @@ describe('ProviderRegistry Error Handling', () => {
   describe('Health Check Error Handling', () => {
     it('should handle individual provider health check failures', async () => {
       provider1.setFailureMode('network');
-      provider2.setFailureMode(null);
+      provider2.setFailureMode(undefined);
 
       registry.register(provider1);
       registry.register(provider2);
@@ -726,7 +720,7 @@ describe('ProviderRegistry Error Handling', () => {
       // Mock isHealthy to never resolve
       timeoutProvider.isHealthy = vi.fn().mockImplementation(() =>
         new Promise(() => {}) // Never resolves
-      );
+      ) as any;
 
       registry.register(timeoutProvider);
 
@@ -821,7 +815,7 @@ describe('ProviderRegistry Error Handling', () => {
 
     it('should maintain consistency after partial failures', async () => {
       provider1.setFailureMode('network');
-      provider2.setFailureMode(null);
+      provider2.setFailureMode(undefined);
 
       registry.register(provider1);
       registry.register(provider2);

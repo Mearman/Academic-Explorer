@@ -11,13 +11,13 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 let mockTime = 0;
 Object.defineProperty(global, "performance", {
   value: {
-    now: vi.fn(() => {
+    now: vi.fn().mockImplementation(() => {
       mockTime += Math.random() * 5 + 1; // 1-6ms increment per call
       return mockTime;
     }),
     mark: vi.fn(),
     measure: vi.fn(),
-    getEntriesByName: vi.fn(() => []),
+    getEntriesByName: vi.fn().mockReturnValue([]),
     clearMarks: vi.fn(),
     clearMeasures: vi.fn(),
   },
@@ -25,7 +25,8 @@ Object.defineProperty(global, "performance", {
 });
 
 // Mock Date.now to be consistent with performance.now
-vi.spyOn(Date, "now").mockImplementation(() => mockTime);
+const originalDateNow = Date.now;
+Date.now = () => mockTime;
 
 // Mock Worker types
 interface MockMessageEvent {
@@ -59,7 +60,11 @@ global.Worker = class MockWorker {
       if (this.onmessage) {
         this.onmessage({
           data: { result: "processed", original: message },
-        } as MessageEvent);
+          ports: [],
+          origin: "mock://test",
+          lastEventId: "",
+          source: null,
+        } as any);
       }
     }, 10);
   }
@@ -512,8 +517,6 @@ describe("Cache Performance Tests", () => {
   const _originalPerformanceNow = performance.now;
 
   beforeEach(() => {
-    vi.clearAllMocks();
-
     // Setup performance.now mock with realistic timing
     let currentTime = 0;
     (performance.now as any).mockImplementation(() => {
@@ -529,11 +532,7 @@ describe("Cache Performance Tests", () => {
     });
   });
 
-  afterEach(() => {
-    performanceCache.destroy();
-    vi.clearAllMocks();
-  });
-
+  
   describe("Single Operation Performance", () => {
     it("should complete read operations within performance thresholds", async () => {
       const testData = generateTestData(10); // 10KB

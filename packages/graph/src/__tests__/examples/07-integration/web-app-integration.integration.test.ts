@@ -6,9 +6,10 @@
  * Prerequisites: Understanding of React patterns and web application architecture
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi as _vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { OpenAlexGraphProvider, ProviderRegistry } from '../../../providers';
 import type { GraphNode, GraphEdge } from '../../../types/core';
+import { RelationType } from '../../../types/core';
 
 // Mock React-like hooks and state management
 interface WebAppState {
@@ -22,12 +23,12 @@ interface WebAppState {
 
 class MockWebAppStateManager {
   private state: WebAppState = {
-    nodes: [],
-    edges: [],
+    nodes: [] as GraphNode[],
+    edges: [] as GraphEdge[],
     selectedNode: null,
     loading: false,
     error: null,
-    searchResults: []
+    searchResults: [] as GraphNode[]
   };
 
   private listeners = new Set<(state: WebAppState) => void>();
@@ -92,7 +93,14 @@ class MockGraphDataHook {
       expansion.nodes.forEach(node => nodeMap.set(node.id, node));
 
       const edgeMap = new Map(currentState.edges.map(e => [e.id, e]));
-      expansion.edges.forEach(edge => edgeMap.set(edge.id, edge));
+      expansion.edges.forEach(edge => {
+        // Ensure edge type is properly typed as RelationType
+        const typedEdge: GraphEdge = {
+          ...edge,
+          type: edge.type as RelationType
+        };
+        edgeMap.set(edge.id, typedEdge);
+      });
 
       this.stateManager.setState({
         nodes: Array.from(nodeMap.values()),

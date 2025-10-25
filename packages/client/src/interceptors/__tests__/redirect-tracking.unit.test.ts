@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ApiInterceptor, type InterceptedRequest, type _InterceptedResponse } from '../api-interceptor';
+import { ApiInterceptor, type InterceptedRequest, type InterceptedResponse } from '../api-interceptor';
 
 // Mock the logger
 vi.mock('../../internal/logger', () => ({

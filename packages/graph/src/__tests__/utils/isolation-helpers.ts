@@ -2,8 +2,6 @@
  * Test isolation and cleanup utilities
  * Provides comprehensive test isolation, cleanup, and state management
  */
-
-import { vi } from 'vitest';
 import { EventEmitter } from 'events';
 import {
   resetProviderHelper
@@ -285,9 +283,8 @@ export class TestIsolationHelper {
     this.restoreFetch();
 
     // Reset Vitest state
-    vi.clearAllMocks();
-    vi.useRealTimers();
     vi.restoreAllMocks();
+    vi.useRealTimers();
   }
 
   // Private methods
@@ -343,7 +340,7 @@ export class TestIsolationHelper {
     }
 
     if (config.resetMocks) {
-      vi.clearAllMocks();
+      vi.restoreAllMocks();
     }
 
     if (config.resetGlobalState) {

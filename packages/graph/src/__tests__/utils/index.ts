@@ -133,7 +133,7 @@ export const testUtils = {
   getProviderHelper: () => import('./provider-helpers').then(m => m.getProviderHelper()),
 
   // Events
-  trackEvents: (emitter: { on: (event: string, listener: (...args: unknown[]) => void) => void }, events?: string[], label?: string) =>
+  trackEvents: (emitter: any, events?: string[], label?: string) =>
     import('./event-helpers').then(m => { m.getEventHelper().track(emitter, events, label); }),
   getEventHelper: () => import('./event-helpers').then(m => m.getEventHelper()),
 
@@ -147,7 +147,7 @@ export const testUtils = {
   // Async utilities
   waitFor: (condition: () => unknown, options?: Record<string, unknown>) =>
     import('./async-helpers').then(m => m.waitFor(condition, options)),
-  retry: (operation: () => unknown, options?: Record<string, unknown>) =>
+  retry: (operation: () => Promise<unknown>, options?: Record<string, unknown>) =>
     import('./async-helpers').then(m => m.retry(operation, options)),
 
   // Isolation
@@ -224,7 +224,7 @@ export const testPatterns = {
       const scenario = await m.setupAcademicPaperScenario();
 
       try {
-        await testFn(scenario.data);
+        await testFn(scenario.data as any);
       } finally {
         await scenario.cleanup();
       }
@@ -236,11 +236,11 @@ export const testPatterns = {
  * Common assertion shortcuts
  */
 export const assertions = {
-  isValidNode: (node: unknown) => import('./assertion-helpers').then(m => { m.expectValidGraphNode(node); }),
-  isValidEdge: (edge: unknown) => import('./assertion-helpers').then(m => { m.expectValidGraphEdge(edge); }),
-  isValidGraph: (data: unknown) => import('./assertion-helpers').then(m => { m.expectValidGraphData(data); }),
-  hasPosition: (node: Record<string, unknown>) => import('./assertion-helpers').then(m => { m.expectPositionInBounds(node, { minX: -Infinity, maxX: Infinity, minY: -Infinity, maxY: Infinity }); }),
-  hasMoved: (before: Record<string, unknown>[], after: Record<string, unknown>[]) => import('./assertion-helpers').then(m => { m.expectNodesHaveMoved(before, after); }),
+  isValidNode: (node: any) => import('./assertion-helpers').then(m => m.expectValidGraphNode(node)),
+  isValidEdge: (edge: any) => import('./assertion-helpers').then(m => m.expectValidGraphEdge(edge)),
+  isValidGraph: (data: any) => import('./assertion-helpers').then(m => m.expectValidGraphData(data)),
+  hasPosition: (node: any) => import('./assertion-helpers').then(m => { m.expectPositionInBounds(node, { minX: -Infinity, maxX: Infinity, minY: -Infinity, maxY: Infinity }); }),
+  hasMoved: (before: any[], after: any[]) => import('./assertion-helpers').then(m => { m.expectNodesHaveMoved(before, after); }),
   noErrors: () => import('./event-helpers').then(m => {
     const events = m.getEventHelper().getEvents().filter(e => e.type.includes('error'));
     if (events.length > 0) {

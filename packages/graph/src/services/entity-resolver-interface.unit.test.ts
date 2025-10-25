@@ -1,10 +1,11 @@
+/// <reference types="vitest" />
 /**
  * Comprehensive Unit Tests for EntityResolver
  * Tests provider dependency injection, entity resolution, expansion, caching,
  * error handling, and provider management functionality
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { EventEmitter as _ } from '../utils/event-emitter';
 import {
   EntityResolver,
@@ -116,7 +117,7 @@ class MockGraphDataProvider extends GraphDataProvider {
           edges: [],
           metadata: {
             expandedFrom: nodeId,
-            depth: options.maxDepth || options.depth || 1,
+            depth: options.maxDepth || 1,
             totalFound: 0,
             options,
           },
@@ -812,7 +813,7 @@ describe("EntityResolver", () => {
       mockProvider.setSearchResults("test", [sampleNode]);
 
       const entityResult = await resolver.resolveEntity("A5017898742");
-      expect(entityResult).toMatchObject<GraphNode>({
+      expect(entityResult).toMatchObject({
         id: expect.any(String),
         entityType: expect.any(String),
         label: expect.any(String),
@@ -823,7 +824,7 @@ describe("EntityResolver", () => {
       });
 
       const expansionResult = await resolver.expandEntity("A5017898742");
-      expect(expansionResult).toMatchObject<ExpansionResult>({
+      expect(expansionResult).toMatchObject({
         nodes: expect.any(Array),
         edges: expect.any(Array),
         expandedFrom: expect.any(String),
@@ -832,7 +833,7 @@ describe("EntityResolver", () => {
 
       const searchResult = await resolver.searchEntities("test", ["authors"]);
       expect(searchResult).toEqual(expect.arrayContaining([
-        expect.objectContaining<Partial<GraphNode>>({
+        expect.objectContaining({
           id: expect.any(String),
           entityType: expect.any(String),
           label: expect.any(String)

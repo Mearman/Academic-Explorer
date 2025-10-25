@@ -4,8 +4,8 @@
  * and cross-provider functionality with realistic usage patterns.
  */
 
-import { describe, it, expect, beforeEach, afterEach, _vi, _beforeAll, _afterAll } from 'vitest';
-import { _EventEmitter } from 'events';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { EventEmitter } from 'events';
 import {
   GraphDataProvider,
   ProviderRegistry,
@@ -16,7 +16,7 @@ import {
 } from './base-provider';
 import { OpenAlexGraphProvider } from './openalex-provider';
 import { EntityResolver } from '../services/entity-resolver-interface';
-import type { GraphNode, _EntityType, EntityIdentifier, GraphEdge } from '../types/core';
+import type { GraphNode, EntityType, EntityIdentifier, GraphEdge } from '../types/core';
 import { RelationType } from '../types/core';
 
 // Mock OpenAlex Client for testing
@@ -619,29 +619,46 @@ describe('Provider System Integration Tests', () => {
   describe('Memory Management and Cleanup', () => {
     it('should clean up provider resources on unregister', () => {
       const provider = new MockGraphDataProvider('cleanup-test');
-      const destroySpy = vi.spyOn(provider, 'destroy');
+      const destroySpy = { called: false };
+      const originalDestroy = provider.destroy.bind(provider);
+      provider.destroy = () => {
+        destroySpy.called = true;
+        return originalDestroy();
+      };
 
       registry.register(provider);
       expect(registry.listProviders()).toContain('cleanup-test');
 
       registry.unregister('cleanup-test');
-      expect(destroySpy).toHaveBeenCalled();
+      expect(destroySpy.called).toBe(true);
       expect(registry.listProviders()).not.toContain('cleanup-test');
     });
 
     it('should handle registry destruction', () => {
       const provider1 = new MockGraphDataProvider('cleanup-1');
       const provider2 = new MockGraphDataProvider('cleanup-2');
-      const destroy1Spy = vi.spyOn(provider1, 'destroy');
-      const destroy2Spy = vi.spyOn(provider2, 'destroy');
+      const destroy1Spy = { called: false };
+      const destroy2Spy = { called: false };
+
+      const originalDestroy1 = provider1.destroy.bind(provider1);
+      provider1.destroy = () => {
+        destroy1Spy.called = true;
+        return originalDestroy1();
+      };
+
+      const originalDestroy2 = provider2.destroy.bind(provider2);
+      provider2.destroy = () => {
+        destroy2Spy.called = true;
+        return originalDestroy2();
+      };
 
       registry.register(provider1);
       registry.register(provider2);
 
       registry.destroy();
 
-      expect(destroy1Spy).toHaveBeenCalled();
-      expect(destroy2Spy).toHaveBeenCalled();
+      expect(destroy1Spy.called).toBe(true);
+      expect(destroy2Spy.called).toBe(true);
       expect(registry.listProviders()).toHaveLength(0);
     });
 
@@ -730,7 +747,7 @@ describe('Provider System Integration Tests', () => {
       const startTime = Date.now();
 
       // Mix of different operations
-      const promises = Array.from({ length: operationCount }, (_, i) => {
+      const promises: Array<any> = Array.from({ length: operationCount }, (_, i) => {
         const operation = i % 3;
         switch (operation) {
           case 0:
@@ -908,7 +925,7 @@ describe('Provider System Integration Tests', () => {
       expect(providerNames).toContain('mock2');
 
       // Make requests to different providers and aggregate results
-      const aggregatedData = [];
+      const aggregatedData: Array<GraphNode> = [];
 
       for (const providerName of providerNames) {
         try {

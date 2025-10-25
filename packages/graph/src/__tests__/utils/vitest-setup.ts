@@ -3,12 +3,11 @@
  * Provides comprehensive test environment initialization and global utilities
  */
 
-import { beforeAll, afterAll, beforeEach, afterEach, expect } from 'vitest';
-import type { MockInstance } from 'vitest';
+import { expect, vi } from 'vitest';
 
 // Global test state
 export interface TestGlobalState {
-  mockInstances: Set<MockInstance>;
+  mockInstances: Set<ReturnType<typeof vi.fn>>;
   eventListeners: Map<string, EventListenerOrEventListenerObject[]>;
   timers: Set<number>;
   providers: Set<string>;
@@ -69,7 +68,7 @@ export function cleanupTestGlobals(): void {
 /**
  * Track a mock instance for cleanup
  */
-export function trackMock(mock: MockInstance): MockInstance {
+export function trackMock(mock: ReturnType<typeof vi.fn>): ReturnType<typeof vi.fn> {
   initializeTestGlobals();
   globalThis.__TEST_GLOBAL_STATE__.mockInstances.add(mock);
   return mock;
@@ -112,8 +111,8 @@ export function takeMemorySnapshot(name: string): void {
 
   // Basic memory usage estimation (in environments where available)
   let usage = 0;
-  if (typeof performance !== 'undefined' && (performance as Record<string, unknown>).memory) {
-    const memory = (performance as Record<string, unknown>).memory;
+  if (typeof performance !== 'undefined' && (performance as unknown as Record<string, unknown>).memory) {
+    const memory = (performance as unknown as Record<string, unknown>).memory;
     usage = (memory as Record<string, unknown>).usedJSHeapSize as number;
   }
 
@@ -171,7 +170,7 @@ beforeAll(() => {
       console.error = originalError;
       console.warn = originalWarn;
     }
-  } as MockInstance);
+  } as ReturnType<typeof vi.fn>);
 });
 
 /**
@@ -316,5 +315,5 @@ export const testEnvironment = {
   isNode: typeof window === 'undefined',
   isBrowser: typeof window !== 'undefined',
   hasPerformanceAPI: typeof performance !== 'undefined',
-  hasMemoryAPI: typeof performance !== 'undefined' && !!(performance as Record<string, unknown>).memory,
+  hasMemoryAPI: typeof performance !== 'undefined' && !!(performance as unknown as Record<string, unknown>).memory,
 };

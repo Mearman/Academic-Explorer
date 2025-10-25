@@ -6,7 +6,7 @@
  * Prerequisites: Understanding of GraphDataProvider interface
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { ProviderRegistry, GraphDataProvider } from '../../../providers/base-provider';
 import { OpenAlexGraphProvider } from '../../../providers/openalex-provider';
 import type { EntityIdentifier, GraphNode } from '../../../types/core';

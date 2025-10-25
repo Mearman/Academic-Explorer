@@ -3,8 +3,6 @@
  * Provides utilities for testing async operations with timeouts, retries, and waiting
  */
 
-import { vi } from 'vitest';
-
 /**
  * Wait for a condition to be true with timeout and polling
  */
@@ -128,7 +126,7 @@ export function waitForEvent<T = unknown>(
         results.push(data);
         if (results.length >= count) {
           cleanup();
-          resolve(results as T extends unknown[] ? T : T[]);
+          resolve(results as any);
         }
       } else {
         cleanup();
@@ -294,7 +292,7 @@ export function debounceAsync<T extends (...args: unknown[]) => Promise<unknown>
 
       // Reject previous pending promise if exists
       if (pendingReject) {
-        pendingReject(new Error('Debounced'));
+        pendingReject(new Error('Debounced') as any);
       }
 
       pendingResolve = resolve;
@@ -304,7 +302,7 @@ export function debounceAsync<T extends (...args: unknown[]) => Promise<unknown>
         try {
           const result = await fn(...args);
           if (pendingResolve === resolve) { // Ensure this is still the current promise
-            resolve(result);
+            resolve(result as any);
           }
         } catch (error) {
           if (pendingReject === reject) { // Ensure this is still the current promise
@@ -337,7 +335,7 @@ export function throttleAsync<T extends (...args: unknown[]) => Promise<unknown>
     isThrottled = true;
 
     try {
-      lastResult = await fn(...args);
+      lastResult = await fn(...args) as any;
       return lastResult;
     } finally {
       setTimeout(() => {

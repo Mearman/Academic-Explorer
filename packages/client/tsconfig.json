@@ -18,14 +18,7 @@
   "exclude": [
     "dist",
     "node_modules",
-    "src/test-generator/**/*",
-    "src/**/*.test.ts",
-    "src/**/*.test.tsx",
-    "src/**/*.unit.test.ts",
-    "src/**/*.integration.test.ts",
-    "src/**/*.spec.ts",
-    "src/**/*.spec.tsx",
-    "**/__tests__/**/*"
+    "src/test-generator/**/*"
   ],
   "references": [
     { "path": "../types" },

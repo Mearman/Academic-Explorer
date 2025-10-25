@@ -1,10 +1,11 @@
+/// <reference types="vitest" />
 /**
  * Comprehensive Unit Tests for GraphDataProvider Base Class
  * Tests abstract class instantiation, EventEmitter functionality, statistics tracking,
  * provider registry system, request tracking, and health check contracts
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { EventEmitter } from "../utils/event-emitter";
 import {
   GraphDataProvider,
@@ -87,7 +88,7 @@ class MockGraphDataProvider extends GraphDataProvider {
           reject(this.errorToThrow);
           return;
         }
-        const depth = options.depth || options.maxDepth || 1;
+        const depth = options.maxDepth || 1;
         const limit = options.limit || 5;
 
         const nodes = Array.from({ length: Math.min(limit, 3) }, (_, i) => ({
@@ -542,7 +543,7 @@ describe("GraphDataProvider", () => {
 
     it("should handle expandEntity with depth alias", async () => {
       const options: ProviderExpansionOptions = {
-        depth: 3, // Using depth instead of maxDepth
+        maxDepth: 3, // Using maxDepth instead of depth
         limit: 2,
       };
 
@@ -961,7 +962,7 @@ describe("ProviderRegistry", () => {
 
       const retrieved = registry.get("provider-1");
       expect(retrieved).toBe(duplicateProvider);
-      expect(retrieved.getProviderInfo().version).toBe("3.0.0");
+      expect(retrieved?.getProviderInfo().version).toBe("3.0.0");
 
       duplicateProvider.destroy();
     });

@@ -530,8 +530,8 @@ export class PerformanceTestHelper {
   }
 
   private getMemoryUsage(): number {
-    if (typeof performance !== 'undefined' && (performance as Record<string, unknown>).memory) {
-      const memory = (performance as Record<string, unknown>).memory;
+    if (typeof performance !== 'undefined' && (performance as unknown as Record<string, unknown>).memory) {
+      const memory = (performance as unknown as Record<string, unknown>).memory;
       return (memory as Record<string, unknown>).usedJSHeapSize as number;
     }
     if (typeof process !== 'undefined' && process.memoryUsage) {
