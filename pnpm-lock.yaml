@@ -627,9 +627,6 @@ importers:
 
   packages/utils:
     dependencies:
-      '@academic-explorer/client':
-        specifier: workspace:*
-        version: link:../client
       '@academic-explorer/types':
         specifier: workspace:*
         version: link:../types
