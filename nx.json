@@ -41,12 +41,13 @@
         "testTargetName": "test"
       }
     },
-    {
-      "plugin": "@nx/playwright/plugin",
-      "options": {
-        "targetName": "e2e"
-      }
-    },
+      // Temporarily disabled due to @swc/core native binding issue
+    // {
+    //   "plugin": "@nx/playwright/plugin",
+    //   "options": {
+    //     "targetName": "e2e"
+    //   }
+    // },
     {
       "plugin": "@nx/eslint/plugin",
       "options": {
