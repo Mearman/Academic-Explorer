@@ -34,8 +34,8 @@
       "types": "./dist/index.d.ts"
     },
     "./entities": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "import": "./dist/entities/index.js",
+      "types": "./dist/entities/index.d.ts"
     },
     "./entities/schemas": {
       "import": "./dist/schemas.js",
