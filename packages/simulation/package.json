@@ -55,7 +55,7 @@
     "@types/d3-force": "^3.0.10",
     "@types/d3-random": "^3.0.3",
     "typescript": "~5.9.2",
-    "vitest": "^3.2.4",
+    "vitest": "^4.0.3",
     "eslint": "^9.36.0"
   },
   "publishConfig": {
