@@ -72,13 +72,13 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Install Nx
-        run: pnpm add -g nx@latest
+        run: pnpm add -D nx@latest
 
       - name: Detect affected projects
         id: affected
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            AFFECTED=$(nx show projects --affected --type=lib,app --base=origin/main --head=HEAD | tr '\n' ',' | sed 's/,$//' | sed 's/^/["/' | sed 's/$/"]/' | sed 's/,/","/g')
+            AFFECTED=$(npx nx show projects --affected --type=lib,app --base=origin/main --head=HEAD | tr '\n' ',' | sed 's/,$//' | sed 's/^/["/' | sed 's/$/"]/' | sed 's/,/","/g')
             echo "affected=[$AFFECTED]" >> $GITHUB_OUTPUT
             echo "Affected projects: $AFFECTED"
           else
@@ -166,16 +166,16 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Type check
-        run: nx typecheck --parallel=4
+        run: npx nx typecheck --parallel=4
 
       - name: Lint
-        run: nx lint --parallel=4
+        run: npx nx lint --parallel=4
 
       - name: Build
-        run: nx build --parallel=4
+        run: npx nx build --parallel=4
 
       - name: Test
-        run: nx test --parallel=4 --coverage --reporter=json --reporter=text --outputFile=coverage.json
+        run: npx nx test --parallel=4 --coverage --reporter=json --reporter=text --outputFile=coverage.json
 
       - name: Upload coverage reports
         id: coverage
