@@ -82,7 +82,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: npx nx build --parallel=4
+        run: npx nx run-many -t build --parallel=4
 
       - name: Type check
         run: npx nx typecheck --parallel=4
