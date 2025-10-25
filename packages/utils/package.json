@@ -120,8 +120,7 @@
     "@mantine/core": "^7.0.0",
     "@tabler/icons-react": "^3.0.0",
     "@tanstack/react-query": "^5.0.0",
-    "@tanstack/react-router": "^1.0.0",
-    "@academic-explorer/client": "workspace:*"
+    "@tanstack/react-router": "^1.0.0"
   },
   "peerDependenciesMeta": {
     "@mantine/core": {
@@ -134,9 +133,6 @@
       "optional": true
     },
     "@tanstack/react-router": {
-      "optional": true
-    },
-    "@academic-explorer/client": {
       "optional": true
     }
   },
