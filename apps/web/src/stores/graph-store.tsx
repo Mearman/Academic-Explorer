@@ -743,3 +743,110 @@ export const useGraphSelector = <T,>(selector: (state: GraphState) => T): T => {
   const state = useGraphState();
   return selector(state);
 };
+
+// Store object for non-react usage (provides getState method)
+// This creates a store interface that can be used outside of React components
+export const graphStore = (() => {
+  let currentState: GraphState;
+  let listeners: Array<(state: GraphState) => void> = [];
+
+  const notifyListeners = () => {
+    listeners.forEach(listener => listener(currentState));
+  };
+
+  const getState = (): GraphState => ({ ...currentState });
+
+  const setState = (updater: GraphState | ((state: GraphState) => GraphState)) => {
+    const newState = typeof updater === 'function' ? updater(currentState) : updater;
+    currentState = newState;
+    notifyListeners();
+  };
+
+  const subscribe = (listener: (state: GraphState) => void) => {
+    listeners.push(listener);
+    return () => {
+      listeners = listeners.filter(l => l !== listener);
+    };
+  };
+
+  // Initialize state
+  currentState = getInitialState();
+
+  return {
+    getState,
+    setState,
+    subscribe,
+    // Essential methods that components expect directly on store
+    setGraphData: (nodes: GraphNode[], edges: GraphEdge[]) =>
+      setState(state => graphReducer(state, { type: "SET_GRAPH_DATA", payload: { nodes, edges } })),
+    setLoading: (loading: boolean) => setState(state => graphReducer(state, { type: "SET_LOADING", payload: loading })),
+    setError: (error: string | null) => setState(state => graphReducer(state, { type: "SET_ERROR", payload: error })),
+    clear: () => setState(getInitialState()),
+    selectNode: (nodeId: string | null) => setState(state => graphReducer(state, { type: "SELECT_NODE", payload: nodeId })),
+    pinNode: (nodeId: string) => setState(state => graphReducer(state, { type: "PIN_NODE", payload: nodeId })),
+    unpinNode: (nodeId: string) => setState(state => graphReducer(state, { type: "UNPIN_NODE", payload: nodeId })),
+    clearAllPinnedNodes: () => setState(state => graphReducer(state, { type: "CLEAR_ALL_PINNED_NODES" })),
+    // Additional methods
+    getActions: () => ({
+      addNode: (node: GraphNode) => setState(state => graphReducer(state, { type: "ADD_NODE", payload: node })),
+      addNodes: (nodes: GraphNode[]) => setState(state => graphReducer(state, { type: "ADD_NODES", payload: nodes })),
+      addEdge: (edge: GraphEdge) => setState(state => graphReducer(state, { type: "ADD_EDGE", payload: edge })),
+      addEdges: (edges: GraphEdge[]) => setState(state => graphReducer(state, { type: "ADD_EDGES", payload: edges })),
+      removeNode: (nodeId: string) => setState(state => graphReducer(state, { type: "REMOVE_NODE", payload: nodeId })),
+      removeEdge: (edgeId: string) => setState(state => graphReducer(state, { type: "REMOVE_EDGE", payload: edgeId })),
+      updateNode: (nodeId: string, updates: Partial<GraphNode>) =>
+        setState(state => graphReducer(state, { type: "UPDATE_NODE", payload: { nodeId, updates } })),
+      setLoading: (loading: boolean) => setState(state => graphReducer(state, { type: "SET_LOADING", payload: loading })),
+      setError: (error: string | null) => setState(state => graphReducer(state, { type: "SET_ERROR", payload: error })),
+      clear: () => setState(getInitialState()),
+      setGraphData: (nodes: GraphNode[], edges: GraphEdge[]) =>
+        setState(state => graphReducer(state, { type: "SET_GRAPH_DATA", payload: { nodes, edges } })),
+
+      // Selection and interaction
+      selectNode: (nodeId: string | null) => setState(state => graphReducer(state, { type: "SELECT_NODE", payload: nodeId })),
+      hoverNode: (nodeId: string | null) => setState(state => graphReducer(state, { type: "HOVER_NODE", payload: nodeId })),
+      addToSelection: (nodeId: string) => setState(state => graphReducer(state, { type: "ADD_TO_SELECTION", payload: nodeId })),
+      removeFromSelection: (nodeId: string) => setState(state => graphReducer(state, { type: "REMOVE_FROM_SELECTION", payload: nodeId })),
+      clearSelection: () => setState(state => graphReducer(state, { type: "CLEAR_SELECTION" })),
+
+      // Pinning system
+      pinNode: (nodeId: string) => setState(state => graphReducer(state, { type: "PIN_NODE", payload: nodeId })),
+      unpinNode: (nodeId: string) => setState(state => graphReducer(state, { type: "UNPIN_NODE", payload: nodeId })),
+      clearAllPinnedNodes: () => setState(state => graphReducer(state, { type: "CLEAR_ALL_PINNED_NODES" })),
+
+      // Layout system
+      setLayout: (layout: GraphLayout) => setState(state => graphReducer(state, { type: "SET_LAYOUT", payload: layout })),
+
+      // Visibility state
+      toggleEntityTypeVisibility: (entityType: EntityType) =>
+        setState(state => graphReducer(state, { type: "TOGGLE_ENTITY_TYPE_VISIBILITY", payload: entityType })),
+      toggleEdgeTypeVisibility: (edgeType: RelationType) =>
+        setState(state => graphReducer(state, { type: "TOGGLE_EDGE_TYPE_VISIBILITY", payload: edgeType })),
+      setEntityTypeVisibility: (entityType: EntityType, visible: boolean) =>
+        setState(state => graphReducer(state, { type: "SET_ENTITY_TYPE_VISIBILITY", payload: { entityType, visible } })),
+      setEdgeTypeVisibility: (edgeType: RelationType, visible: boolean) =>
+        setState(state => graphReducer(state, { type: "SET_EDGE_TYPE_VISIBILITY", payload: { edgeType, visible } })),
+      setAllEntityTypesVisible: (visible: boolean) =>
+        setState(state => graphReducer(state, { type: "SET_ALL_ENTITY_TYPES_VISIBLE", payload: visible })),
+      resetEntityTypesToDefaults: () => setState(state => graphReducer(state, { type: "RESET_ENTITY_TYPES_TO_DEFAULTS" })),
+
+      // Cache settings
+      setShowAllCachedNodes: (show: boolean) => setState(state => graphReducer(state, { type: "SET_SHOW_ALL_CACHED_NODES", payload: show })),
+      setTraversalDepth: (depth: number) => setState(state => graphReducer(state, { type: "SET_TRAVERSAL_DEPTH", payload: depth })),
+
+      // Statistics
+      updateSearchStats: (stats: Record<EntityType, number>) =>
+        setState(state => graphReducer(state, { type: "UPDATE_SEARCH_STATS", payload: stats })),
+
+      // Node state management
+      markNodeAsLoading: (nodeId: string) => setState(state => graphReducer(state, { type: "MARK_NODE_AS_LOADING", payload: nodeId })),
+      markNodeAsLoaded: (nodeId: string) => setState(state => graphReducer(state, { type: "MARK_NODE_AS_LOADED", payload: nodeId })),
+      markNodeAsError: (nodeId: string) => setState(state => graphReducer(state, { type: "MARK_NODE_AS_ERROR", payload: nodeId })),
+      calculateNodeDepths: () => setState(state => graphReducer(state, { type: "CALCULATE_NODE_DEPTHS" })),
+
+      // Provider reference
+      setProvider: (provider: string) => setState(state => graphReducer(state, { type: "SET_PROVIDER", payload: provider })),
+      setProviderType: (providerType: string) => setState(state => graphReducer(state, { type: "SET_PROVIDER_TYPE", payload: providerType })),
+    })
+  };
+})();
