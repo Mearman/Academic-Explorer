@@ -1,13 +1,13 @@
-import React from "react"
+import React, { useState, type ReactNode, type FC } from "react"
 import { Paper, Title, Text, Box, Group, Button, Collapse } from "@mantine/core"
 import { IconChevronDown, IconChevronRight } from "@tabler/icons-react"
 
 export type SectionFrameProps = {
-	children: React.ReactNode
+	children: ReactNode
 	title?: string
 	subtitle?: string
-	icon?: React.ReactNode
-	actions?: React.ReactNode
+	icon?: ReactNode
+	actions?: ReactNode
 	defaultExpanded?: boolean
 	storageKey?: string
 	onToggle?: (expanded: boolean) => void
@@ -35,7 +35,7 @@ export type SectionFrameProps = {
  * </SectionFrame>
  * ```
  */
-export const SectionFrame: React.FC<SectionFrameProps> = ({
+export const SectionFrame: FC<SectionFrameProps> = ({
 	children,
 	title,
 	subtitle,
@@ -50,7 +50,7 @@ export const SectionFrame: React.FC<SectionFrameProps> = ({
 	className,
 	...restProps
 }) => {
-	const [isExpanded, setIsExpanded] = React.useState(() => {
+	const [isExpanded, setIsExpanded] = useState(() => {
 		if (storageKey && typeof window !== "undefined") {
 			try {
 				const stored = localStorage.getItem(`section-frame-${storageKey}`)

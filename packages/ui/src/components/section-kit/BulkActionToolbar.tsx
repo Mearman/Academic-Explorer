@@ -1,4 +1,4 @@
-import React from "react"
+import React, { type ReactNode } from "react"
 import { Group, Button, Checkbox, Text, ActionIcon, Tooltip, Menu } from "@mantine/core"
 import {
 	IconEye,
@@ -31,7 +31,7 @@ export type BulkActionToolbarProps = {
 	onExpandSelection?: () => void
 
 	// Additional actions
-	additionalActions?: React.ReactNode
+	additionalActions?: ReactNode
 
 	// Styling
 	className?: string

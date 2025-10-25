@@ -1,5 +1,4 @@
-import * as React from "react"
-import { type ErrorInfo, type ReactNode } from "react"
+import React, { Component, type ErrorInfo, type ReactNode } from "react"
 import {
 	Container,
 	Stack,
@@ -75,7 +74,7 @@ type DebugInfo = {
  * </ErrorBoundary>
  * ```
  */
-export class ErrorBoundary extends React.Component<ErrorBoundaryProps, State> {
+export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
 	private copyTimeout: NodeJS.Timeout | undefined = undefined
 
 	constructor(props: ErrorBoundaryProps) {

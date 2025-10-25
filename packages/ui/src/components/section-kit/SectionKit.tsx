@@ -1,11 +1,11 @@
-import React from "react"
+import React, { type ReactNode, type FC } from "react"
 
 export type SectionKitProps = {
-	children: React.ReactNode
+	children: ReactNode
 	title?: string
 }
 
-export const SectionKit: React.FC<SectionKitProps> = ({ children, title }) => (
+export const SectionKit: FC<SectionKitProps> = ({ children, title }) => (
 	<section>
 		{title && <h2>{title}</h2>}
 		{children}

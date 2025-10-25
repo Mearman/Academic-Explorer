@@ -16,7 +16,9 @@
     "skipDefaultLibCheck": true,
     "strict": false,
     "noImplicitAny": false,
-    "types": ["react"]
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "bundler"
   },
   "include": ["src/**/*", "../../types/**/*"],
   "references": [

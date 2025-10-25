@@ -1,5 +1,4 @@
-import React from "react"
-import type { ReactNode } from "react"
+import React, { type ComponentType, type ReactNode } from "react"
 
 export interface DataStateProps<T = unknown> {
   loading: boolean
@@ -10,9 +9,9 @@ export interface DataStateProps<T = unknown> {
   emptyMessage?: string
   children: (data: T) => ReactNode
   onRetry?: () => void
-  LoadingComponent?: React.ComponentType<{ message?: string }>
-  ErrorComponent?: React.ComponentType<{ error: Error; message?: string; onRetry?: () => void }>
-  EmptyComponent?: React.ComponentType<{ message?: string }>
+  LoadingComponent?: ComponentType<{ message?: string }>
+  ErrorComponent?: ComponentType<{ error: Error; message?: string; onRetry?: () => void }>
+  EmptyComponent?: ComponentType<{ message?: string }>
 }
 
 export function DataState<T = unknown>({

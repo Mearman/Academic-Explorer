@@ -3,19 +3,19 @@
  * Provides expandable sections with icons and state persistence
  */
 
-import React from "react";
+import React, { useState, type ReactNode, type FC } from "react";
 import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 export type CollapsibleSectionProps = {
 	title: string;
-	icon: React.ReactNode;
-	children: React.ReactNode;
+	icon: ReactNode;
+	children: ReactNode;
 	defaultExpanded?: boolean;
 	storageKey?: string;
 	onToggle?: (expanded: boolean) => void;
 };
 
-export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
+export const CollapsibleSection: FC<CollapsibleSectionProps> = ({
 	title,
 	icon,
 	children,
@@ -23,7 +23,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
 	storageKey,
 	onToggle,
 }) => {
-	const [isExpanded, setIsExpanded] = React.useState(() => {
+	const [isExpanded, setIsExpanded] = useState(() => {
 		if (storageKey && typeof window !== "undefined") {
 			try {
 				const stored = localStorage.getItem(`collapsible-section-${storageKey}`);

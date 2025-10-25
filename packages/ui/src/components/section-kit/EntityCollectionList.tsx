@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react"
+import React, { useState, useMemo, useEffect, type ReactNode } from "react"
 import { ScrollArea, TextInput, Group, Chip, Stack, Text, Box, Center, Loader } from "@mantine/core"
 import { IconSearch, IconX } from "@tabler/icons-react"
 
@@ -10,7 +10,7 @@ export type FilterChip = {
 
 export type EntityCollectionListProps<T = Record<string, unknown>> = {
 	items: T[]
-	renderItem: (item: T, index: number) => React.ReactNode
+	renderItem: (item: T, index: number) => ReactNode
 	searchPlaceholder?: string
 	searchKeys?: Array<keyof T>
 	filters?: FilterChip[]
@@ -19,7 +19,7 @@ export type EntityCollectionListProps<T = Record<string, unknown>> = {
 	emptyState?: {
 		title: string
 		description?: string
-		icon?: React.ReactNode
+		icon?: ReactNode
 	}
 	loading?: boolean
 	height?: number | string
