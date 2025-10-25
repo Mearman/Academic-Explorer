@@ -81,14 +81,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build
+        run: npx nx build --parallel=4
+
       - name: Type check
         run: npx nx typecheck --parallel=4
 
       - name: Lint
         run: npx nx lint --parallel=4
-
-      - name: Build
-        run: npx nx build --parallel=4
 
       - name: Test
         run: npx nx test --parallel=4 --coverage --reporter=json --reporter=text --outputFile=coverage.json
