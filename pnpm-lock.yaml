@@ -649,15 +649,12 @@ importers:
         specifier: ^4.2.1
         version: 4.2.1
       react:
-        specifier: ^19.1.1
+        specifier: ^19.0.0
         version: 19.2.0
       zod:
         specifier: ^3.23.8
         version: 3.25.76
     devDependencies:
-      '@types/react':
-        specifier: ^19.1.13
-        version: 19.2.2
       eslint:
         specifier: ^9.36.0
         version: 9.38.0(jiti@2.6.1)
