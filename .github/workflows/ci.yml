@@ -30,99 +30,15 @@ env:
   NX_DAEMON: false
 
 jobs:
-  # Job to determine what changed and set up matrix
-  changes:
-    runs-on: ubuntu-latest
-    outputs:
-      affected: ${{ steps.affected.outputs.affected }}
-      quality-gates: ${{ steps.quality-gates.outputs.quality-gates }}
-      cache-key: ${{ steps.cache-key.outputs.cache-key }}
-      should-deploy: ${{ steps.deploy.outputs.should-deploy }}
-      should-release: ${{ steps.release.outputs.should-release }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            pnpm-store-${{ runner.os }}-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Install Nx
-        run: pnpm add -D nx@latest
-
-      - name: Detect affected projects
-        id: affected
-        run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            AFFECTED=$(npx nx show projects --affected --type=lib,app --base=origin/main --head=HEAD | tr '\n' ',' | sed 's/,$//' | sed 's/^/["/' | sed 's/$/"]/' | sed 's/,/","/g')
-            echo "affected=[$AFFECTED]" >> $GITHUB_OUTPUT
-            echo "Affected projects: $AFFECTED"
-          else
-            echo "affected=[\"utils\",\"client\",\"graph\",\"types\"]" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Determine quality gates run
-        id: quality-gates
-        run: |
-          if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ github.event.inputs.run_quality_gates }}" = "true" ] || ([ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]); then
-            echo "quality-gates=true" >> $GITHUB_OUTPUT
-          else
-            echo "quality-gates=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Generate cache key
-        id: cache-key
-        run: |
-          CACHE_KEY="${{ runner.os }}-nx-cache-v1-${{ hashFiles('nx.json', '**/project.json', 'pnpm-lock.yaml', 'tsconfig*.json') }}"
-          echo "cache-key=$CACHE_KEY" >> $GITHUB_OUTPUT
-
-      - name: Determine deployment
-        id: deploy
-        run: |
-          if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "should-deploy=true" >> $GITHUB_OUTPUT
-          else
-            echo "should-deploy=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Determine release
-        id: release
-        run: |
-          if [ "${{ github.event_name }}" = "push" ] && [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-            echo "should-release=true" >> $GITHUB_OUTPUT
-          else
-            echo "should-release=false" >> $GITHUB_OUTPUT
-          fi
-
+  
   # Main build and test job
   build-and-test:
     runs-on: ubuntu-latest
     outputs:
       coverage-reports: ${{ steps.coverage.outputs.coverage-reports }}
+      quality-gates: ${{ steps.quality-gates.outputs.quality-gates }}
+      should-deploy: ${{ steps.deploy.outputs.should-deploy }}
+      should-release: ${{ steps.release.outputs.should-release }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -140,7 +56,7 @@ jobs:
       - name: Get pnpm store directory
         shell: bash
         run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(pnpm store path --silent)" >> "${GITHUB_ENV}"
 
       - name: Setup pnpm cache
         uses: actions/cache@v4
@@ -182,7 +98,7 @@ jobs:
         run: |
           mkdir -p coverage/all
           find . -name "coverage.json" -exec cp {} coverage/all/ \;
-          echo "coverage-reports=coverage/all" >> $GITHUB_OUTPUT
+          echo "coverage-reports=coverage/all" >> "${GITHUB_OUTPUT}"
 
       - name: Upload coverage artifacts
         uses: actions/upload-artifact@v4
@@ -191,11 +107,38 @@ jobs:
           path: ${{ steps.coverage.outputs.coverage-reports }}
           retention-days: 7
 
+      - name: Determine quality gates run
+        id: quality-gates
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ github.event.inputs.run_quality_gates }}" = "true" ] || { [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; }; then
+            echo "quality-gates=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "quality-gates=false" >> "${GITHUB_OUTPUT}"
+          fi
+
+      - name: Determine deployment
+        id: deploy
+        run: |
+          if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "should-deploy=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "should-deploy=false" >> "${GITHUB_OUTPUT}"
+          fi
+
+      - name: Determine release
+        id: release
+        run: |
+          if [ "${{ github.event_name }}" = "push" ] && echo "${{ github.ref }}" | grep -q "^refs/tags/v"; then
+            echo "should-release=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "should-release=false" >> "${GITHUB_OUTPUT}"
+          fi
+
   # Comprehensive quality gates
   quality-gates:
     runs-on: ubuntu-latest
-    needs: changes
-    if: needs.changes.outputs.quality-gates == 'true'
+    needs: build-and-test
+    if: needs.build-and-test.outputs.quality-gates == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -213,7 +156,7 @@ jobs:
       - name: Get pnpm store directory
         shell: bash
         run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(pnpm store path --silent)" >> "${GITHUB_ENV}"
 
       - name: Setup pnpm cache
         uses: actions/cache@v4
@@ -257,8 +200,8 @@ jobs:
   # E2E tests
   e2e:
     runs-on: ubuntu-latest
-    needs: [changes, build-and-test]
-    if: needs.changes.outputs.affected != '' && contains(needs.changes.outputs.affected, 'web')
+    needs: build-and-test
+    if: always() && needs.build-and-test.result == 'success'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -296,7 +239,7 @@ jobs:
   # Aggregate coverage and generate reports
   coverage:
     runs-on: ubuntu-latest
-    needs: [build-and-test]
+    needs: build-and-test
     if: always() && needs.build-and-test.result == 'success'
     steps:
       - name: Checkout
@@ -342,8 +285,8 @@ jobs:
   # Performance and accessibility tests
   performance:
     runs-on: ubuntu-latest
-    needs: [changes, build-and-test]
-    if: needs.changes.outputs.affected != '' && contains(needs.changes.outputs.affected, 'web')
+    needs: build-and-test
+    if: always() && needs.build-and-test.result == 'success'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -384,8 +327,8 @@ jobs:
   # Deployment
   deploy:
     runs-on: ubuntu-latest
-    needs: [changes, build-and-test, e2e, coverage]
-    if: needs.changes.outputs.should-deploy == 'true' && github.ref == 'refs/heads/main'
+    needs: [build-and-test, e2e, coverage]
+    if: needs.build-and-test.outputs.should-deploy == 'true' && github.ref == 'refs/heads/main'
     environment:
       name: production
       url: https://mearman.github.io/Academic-Explorer/
@@ -428,13 +371,13 @@ jobs:
       - name: Run smoke tests
         run: |
           sleep 30
-          curl -f ${{ steps.deployment.outputs.url }} || exit 1
+          curl -f ${{ steps.deployment.outputs.page_url }} || exit 1
 
   # Release automation
   release:
     runs-on: ubuntu-latest
-    needs: [changes, deploy]
-    if: needs.changes.outputs.should-release == 'true'
+    needs: [build-and-test, deploy]
+    if: needs.build-and-test.outputs.should-release == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -465,7 +408,7 @@ jobs:
   # Results and notifications
   results:
     runs-on: ubuntu-latest
-    needs: [changes, build-and-test, quality-gates, e2e, coverage, performance, deploy, release]
+    needs: [build-and-test, quality-gates, e2e, coverage, performance, deploy, release]
     if: always()
     steps:
       - name: Download coverage reports
@@ -477,18 +420,19 @@ jobs:
 
       - name: Generate results summary
         run: |
-          echo "# 📊 CI/CD Pipeline Results" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Job | Status | Details |" >> $GITHUB_STEP_SUMMARY
-          echo "|-----|--------|---------|" >> $GITHUB_STEP_SUMMARY
-          echo "| 📋 Changes | ${{ needs.changes.result }} | Affected: ${{ needs.changes.outputs.affected }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🔨 Build & Test | ${{ needs.build-and-test.result }} | All projects built and tested |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🔍 Quality Gates | ${{ needs.quality-gates.result }} | ${{ needs.changes.outputs.quality-gates == 'true' && 'Comprehensive checks' || 'Skipped' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🎭 E2E Tests | ${{ needs.e2e.result }} | ${{ contains(needs.changes.outputs.affected, 'web') && 'Full E2E suite' || 'Skipped' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| 📈 Coverage | ${{ needs.coverage.result }} | Workspace coverage report |" >> $GITHUB_STEP_SUMMARY
-          echo "| ⚡ Performance | ${{ needs.performance.result }} | ${{ contains(needs.changes.outputs.affected, 'web') && 'Lighthouse + a11y' || 'Skipped' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🚀 Deploy | ${{ needs.deploy.result }} | ${{ needs.changes.outputs.should-deploy == 'true' && 'GitHub Pages' || 'Skipped' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| 📦 Release | ${{ needs.release.result }} | ${{ needs.changes.outputs.should-release == 'true' && 'Automated release' || 'Skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "# 📊 CI/CD Pipeline Results"
+            echo ""
+            echo "| Job | Status | Details |"
+            echo "|-----|--------|---------|"
+            echo "| 🔨 Build & Test | ${{ needs.build-and-test.result }} | All projects built and tested |"
+            echo "| 🔍 Quality Gates | ${{ needs.quality-gates.result }} | ${{ needs.build-and-test.outputs.quality-gates == 'true' && 'Comprehensive checks' || 'Skipped' }} |"
+            echo "| 🎭 E2E Tests | ${{ needs.e2e.result }} | Full E2E suite |"
+            echo "| 📈 Coverage | ${{ needs.coverage.result }} | Workspace coverage report |"
+            echo "| ⚡ Performance | ${{ needs.performance.result }} | Lighthouse + a11y |"
+            echo "| 🚀 Deploy | ${{ needs.deploy.result }} | ${{ needs.build-and-test.outputs.should-deploy == 'true' && 'GitHub Pages' || 'Skipped' }} |"
+            echo "| 📦 Release | ${{ needs.release.result }} | ${{ needs.build-and-test.outputs.should-release == 'true' && 'Automated release' || 'Skipped' }} |"
+          } >> "${GITHUB_STEP_SUMMARY}"
 
       - name: Coverage summary
         if: needs.coverage.result == 'success'
@@ -498,20 +442,22 @@ jobs:
             LINES=$(jq -r '.totals.lines.percentage' coverage/workspace-coverage.json)
             FUNCTIONS=$(jq -r '.totals.functions.percentage' coverage/workspace-coverage.json)
 
-            echo "## 📈 Coverage Summary" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "- **Overall Coverage**: ${OVERALL}%" >> $GITHUB_STEP_SUMMARY
-            echo "- **Lines Coverage**: ${LINES}%" >> $GITHUB_STEP_SUMMARY
-            echo "- **Functions Coverage**: ${FUNCTIONS}%" >> $GITHUB_STEP_SUMMARY
+            {
+              echo "## 📈 Coverage Summary"
+              echo ""
+              echo "- **Overall Coverage**: ${OVERALL}%"
+              echo "- **Lines Coverage**: ${LINES}%"
+              echo "- **Functions Coverage**: ${FUNCTIONS}%"
+            } >> "${GITHUB_STEP_SUMMARY}"
           fi
 
       - name: Notification on failure
         if: failure()
         run: |
-          echo "❌ Pipeline failed! Check the individual job logs for details." >> $GITHUB_STEP_SUMMARY
+          echo "❌ Pipeline failed! Check the individual job logs for details." >> "${GITHUB_STEP_SUMMARY}"
           exit 1
 
       - name: Success notification
         if: success()
         run: |
-          echo "🎉 All checks passed! Ready for merge/deployment." >> $GITHUB_STEP_SUMMARY
+          echo "🎉 All checks passed! Ready for merge/deployment." >> "${GITHUB_STEP_SUMMARY}"
