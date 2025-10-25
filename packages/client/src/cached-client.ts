@@ -2,7 +2,7 @@
  * Cached Client - Integrated static data caching with multi-tier fallback
  */
 
-import { logger } from "@academic-explorer/utils/logger";
+import { logger } from "@academic-explorer/utils";
 import { validateStaticData } from "./internal/type-helpers";
 import { OpenAlexBaseClient, type OpenAlexClientConfig } from "./client";
 import type { QueryParams } from "./types";

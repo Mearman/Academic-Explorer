@@ -1,4 +1,4 @@
-import React, { type ReactNode, type FC } from "react"
+import type { ReactNode, FC } from "react"
 
 export type SectionKitProps = {
 	children: ReactNode

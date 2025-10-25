@@ -3,7 +3,7 @@
  * Provides methods for interacting with concept entities
  */
 
-import { logger } from "@academic-explorer/utils/logger";
+import { logger } from "@academic-explorer/utils";
 import { conceptSchema } from "@academic-explorer/types/entities";
 import type { OpenAlexBaseClient } from "../client";
 import type { ZodType } from "zod";

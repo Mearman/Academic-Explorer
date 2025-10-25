@@ -1,4 +1,4 @@
-import React, { type ReactNode } from "react"
+import type { ReactNode } from "react"
 import { Group, Button, Checkbox, Text, ActionIcon, Tooltip, Menu } from "@mantine/core"
 import {
 	IconEye,

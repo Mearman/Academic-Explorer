@@ -4,7 +4,7 @@
  */
 
 import { MemoryCache } from "@academic-explorer/utils/cache";
-import { logger } from "@academic-explorer/utils/logger";
+import { logger } from "@academic-explorer/utils";
 import { validateStaticData } from "../../internal/type-helpers";
 import type { OpenAlexEntity, OpenAlexResponse } from "../../types";
 

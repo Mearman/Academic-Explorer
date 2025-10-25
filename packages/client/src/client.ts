@@ -3,7 +3,7 @@
  * Handles requests, rate limiting, error handling, and response parsing
  */
 
-import { logger } from "@academic-explorer/utils/logger";
+import { logger } from "@academic-explorer/utils";
 import { apiInterceptor, type InterceptedRequest } from "./interceptors";
 import { RETRY_CONFIG, calculateRetryDelay } from "./internal/rate-limit";
 import {

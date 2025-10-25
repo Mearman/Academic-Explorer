@@ -4,8 +4,8 @@
  * with atomic operations, file locking, and metadata generation
  */
 
-import type { LogCategory } from "@academic-explorer/utils/logger";
-import { logError, logger } from "@academic-explorer/utils/logger";
+import type { LogCategory } from "@academic-explorer/utils";
+import { logError, logger } from "@academic-explorer/utils";
 import {
   DirectoryIndex,
   FileEntry,

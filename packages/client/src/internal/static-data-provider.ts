@@ -3,7 +3,7 @@
  * Implements multi-tier caching with environment detection and automatic fallback
  */
 
-import { logger } from "@academic-explorer/utils/logger";
+import { logger } from "@academic-explorer/utils";
 import type { StaticEntityType } from "./static-data-utils";
 
 export interface StaticDataResult {

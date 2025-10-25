@@ -23,7 +23,8 @@ export type {
 } from "./static-data/cache-utilities"
 
 // Logger
-export { logger } from "./logger"
+export { logger, logError } from "./logger"
+export type { LogCategory } from "./logger"
 
 // Utility functions
 export {

@@ -3,7 +3,7 @@
  * Provides cache lookup, deduplication, retry, logging, and error classification
  */
 
-import { logger } from "@academic-explorer/utils/logger";
+import { logger } from "@academic-explorer/utils";
 import { RETRY_CONFIG, calculateRetryDelay } from "../internal/rate-limit";
 
 /**

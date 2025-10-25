@@ -21,7 +21,7 @@ import type {
 } from "@academic-explorer/types/entities";
 import type { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";
-import { logger } from "@academic-explorer/utils/logger";
+import { logger } from "@academic-explorer/utils";
 
 /**
  * Authors API class providing comprehensive methods for author entity operations
