@@ -5,7 +5,15 @@ export * from "./state"
 export * from "./cache"
 
 // Cache browser utilities
-export type { CachedEntityMetadata, CacheBrowserStats } from "./cache-browser"
+export { cacheBrowserService } from "./cache-browser"
+export type {
+	CachedEntityMetadata,
+	CacheBrowserStats,
+	EntityType,
+	CacheBrowserFilters,
+	CacheBrowserOptions,
+	CacheBrowserResult,
+} from "./cache-browser"
 
 // Static data utilities - only export what's needed to avoid conflicts
 export type {

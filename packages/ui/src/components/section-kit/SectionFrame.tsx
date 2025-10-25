@@ -1,4 +1,5 @@
-import React, { useState, type ReactNode, type FC } from "react"
+import { useState } from "react"
+import type { ReactNode, FC } from "react"
 import { Paper, Title, Text, Box, Group, Button, Collapse } from "@mantine/core"
 import { IconChevronDown, IconChevronRight } from "@tabler/icons-react"
 

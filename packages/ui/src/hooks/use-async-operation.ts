@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react"
+import { useState, useCallback } from "react"
 
 export interface AsyncOperationState<T = unknown> {
   data: T | null

@@ -3,7 +3,8 @@
  * Provides expandable sections with icons and state persistence
  */
 
-import React, { useState, type ReactNode, type FC } from "react";
+import { useState } from "react";
+import type { ReactNode, FC } from "react";
 import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 export type CollapsibleSectionProps = {
