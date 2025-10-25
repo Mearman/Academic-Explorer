@@ -13,6 +13,10 @@
     "module": "ESNext",
     "jsx": "react",
     "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["react", "react-dom"],
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true
   },
