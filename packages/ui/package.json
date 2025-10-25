@@ -34,7 +34,8 @@
     }
   },
   "scripts": {
-    "build": "vite build --configLoader runner",
+    "build": "vite build --config vite.config.dev.ts",
+    "build:prod": "vite build --configLoader runner",
     "build:dev": "vite build --config vite.config.dev.ts",
     "clean": "rm -rf dist",
     "test": "vitest run",
