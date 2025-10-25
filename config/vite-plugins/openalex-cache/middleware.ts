@@ -99,12 +99,7 @@ export function createCacheMiddleware(
       try {
         await performDirectoryIndexUpdates(
           cachePath,
-          url,
-          fileName,
-          staticDataDir,
-          context,
-          retrieved_at,
-          contentHash,
+          context
         );
       } catch (error) {
         console.error(`[openalex-cache] Failed in debounced update: ${error}`);
@@ -162,10 +157,10 @@ export function createCacheMiddleware(
       // Save to cache
       await saveToCache(
         cachePath,
-        fullUrl,
         data,
-        context,
-        updateDirectoryIndexes,
+        {}, // Empty headers object for now
+        fullUrl,
+        context
       );
       logVerbose(`Cached response for ${req.url}`);
 

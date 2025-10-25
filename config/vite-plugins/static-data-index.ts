@@ -3,7 +3,7 @@ import { join, basename, resolve, dirname } from "path";
 import { watch } from "chokidar";
 import { existsSync } from "fs";
 import { fileURLToPath } from "url";
-import { type EntityType } from "@academic-explorer/utils/static-data/cache-utilities";
+import { type EntityType } from "../../packages/utils/src/static-data/cache-utilities";
 
 // Get absolute path to the index generator
 const __filename = fileURLToPath(import.meta.url);

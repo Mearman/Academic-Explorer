@@ -11,15 +11,10 @@
     "declaration": true,
     "composite": true,
     "module": "ESNext",
-    "jsx": "react-jsx",
+    "jsx": "react",
     "lib": ["dom", "dom.iterable", "esnext"],
     "skipLibCheck": true,
-    "skipDefaultLibCheck": true,
-    "strict": false,
-    "noImplicitAny": false,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "moduleResolution": "bundler"
+    "skipDefaultLibCheck": true
   },
   "include": ["src/**/*", "../../types/**/*"],
   "references": [
