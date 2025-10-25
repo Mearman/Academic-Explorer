@@ -505,6 +505,13 @@ importers:
         version: 0.1.0(vitest@3.2.4)
 
   packages/graph:
+    dependencies:
+      '@academic-explorer/types':
+        specifier: workspace:*
+        version: link:../types
+      '@academic-explorer/utils':
+        specifier: workspace:*
+        version: link:../utils
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^3.2.4
