@@ -29,7 +29,7 @@
     "useDefineForClassFields": true,
     "jsx": "react-jsx",
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": false,
+    "esModuleInterop": true,
     "allowImportingTsExtensions": false,
     "verbatimModuleSyntax": false,
     "isolatedModules": true,

@@ -1,4 +1,4 @@
-import React, { type ComponentType, type ReactNode } from "react"
+import { type ComponentType, type ReactNode } from "react"
 
 export interface DataStateProps<T = unknown> {
   loading: boolean

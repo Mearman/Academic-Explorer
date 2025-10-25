@@ -150,7 +150,7 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
 		this.emitProgress({
 			messageType: "started",
 			positions: this.collectPositions(),
-			alpha: this.currentSimulation.alpha(),
+			alpha: this.currentSimulation?.alpha() ?? 0,
 			iteration: this.iterationCount,
 			nodeCount: this.simulationNodes.length,
 			linkCount: this.simulationLinks.length,
@@ -673,7 +673,7 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
 			const seed = config.seed ?? DEFAULT_FORCE_PARAMS.seed
 			const rng = randomLcg(seed)
 
-			const simulation = forceSimulation<D3SimulationNode, D3SimulationLink>(d3Nodes)
+			const simulation = forceSimulation().nodes(d3Nodes)
 				.randomSource(rng)
 				.alphaDecay(config.alphaDecay ?? DEFAULT_FORCE_PARAMS.alphaDecay)
 				.velocityDecay(config.velocityDecay ?? DEFAULT_FORCE_PARAMS.velocityDecay)
