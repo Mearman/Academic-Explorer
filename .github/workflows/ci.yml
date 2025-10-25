@@ -78,11 +78,11 @@ jobs:
         id: affected
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            AFFECTED=$(nx show projects --affected --type=lib,app --base=origin/main --head=HEAD | tr '\n' ',' | sed 's/,$//')
-            echo "affected=$AFFECTED" >> $GITHUB_OUTPUT
+            AFFECTED=$(nx show projects --affected --type=lib,app --base=origin/main --head=HEAD | tr '\n' ',' | sed 's/,$//' | sed 's/^/["/' | sed 's/$/"]/' | sed 's/,/","/g')
+            echo "affected=[$AFFECTED]" >> $GITHUB_OUTPUT
             echo "Affected projects: $AFFECTED"
           else
-            echo "affected=web,utils,ui,client,graph,simulation,types,cli" >> $GITHUB_OUTPUT
+            echo "affected=[\"web\",\"utils\",\"ui\",\"client\",\"graph\",\"simulation\",\"types\",\"cli\"]" >> $GITHUB_OUTPUT
           fi
 
       - name: Determine quality gates run
