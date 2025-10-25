@@ -1558,8 +1558,8 @@ export class OpenAlexCLI {
 	/**
 	 * Find the most recent lastModified date from index entries
 	 */
-	private findLatestLastModified(entries: IndexEntry[]): string {
-		const lastModified = entries.reduce<string | null>((latest: string | null, entry: IndexEntry) => {
+	private findLatestLastModified(entries: UnifiedIndexEntry[]): string {
+		const lastModified = entries.reduce<string | null>((latest: string | null, entry: UnifiedIndexEntry) => {
 			const entryTime = entry.lastModified ? new Date(entry.lastModified).getTime() : 0
 			const latestTime = latest ? new Date(latest).getTime() : 0
 			return entryTime > latestTime ? entry.lastModified || latest : latest

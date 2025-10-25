@@ -68,6 +68,18 @@ const IndexEntrySchema = z.object({
   contentHash: z.string().optional(),
 });
 
+// Helper function to convert IndexEntry to UnifiedIndexEntry
+function indexEntryToUnified(
+  indexEntry: IndexEntry,
+  $ref?: string,
+): UnifiedIndexEntry {
+  return {
+    $ref: $ref || "",
+    lastModified: indexEntry.lastModified || "",
+    contentHash: indexEntry.contentHash || "",
+  };
+}
+
 const QueryParamsSchema = z.record(z.string(), z.unknown());
 
 const QueryDefinitionSchema = z.object({
@@ -690,10 +702,10 @@ export function openalexDataPlugin(): Plugin {
                   ) {
                     fixedMetadata.$ref = `./${urlToEncodedKey(redirectUpdate.newKey)}.json`;
                   }
-                  updatedIndex[redirectUpdate.newKey] = fixedMetadata;
+                  updatedIndex[redirectUpdate.newKey] = indexEntryToUnified(fixedMetadata, fixedMetadata.$ref);
                 } else {
                   // Keep existing key
-                  updatedIndex[key] = metadata;
+                  updatedIndex[key] = indexEntryToUnified(metadata);
                 }
               }
 
@@ -799,10 +811,10 @@ async function loadUnifiedIndex(
                 cleanEntry.lastModified >
                   (cleaned[canonicalKey].lastModified ?? ""))
             ) {
-              cleaned[canonicalKey] = cleanEntry;
+              cleaned[canonicalKey] = indexEntryToUnified(cleanEntry, `./${urlToEncodedKey(key)}.json`);
             }
           } else {
-            cleaned[canonicalKey] = cleanEntry;
+            cleaned[canonicalKey] = indexEntryToUnified(cleanEntry, `./${urlToEncodedKey(key)}.json`);
           }
         }
         // Skip query entries - they will be handled by the separate query index
@@ -844,10 +856,10 @@ async function loadUnifiedIndex(
                 cleanEntry.lastModified >
                   (cleaned[canonicalKey].lastModified ?? ""))
             ) {
-              cleaned[canonicalKey] = cleanEntry;
+              cleaned[canonicalKey] = indexEntryToUnified(cleanEntry, `./${urlToEncodedKey(key)}.json`);
             }
           } else {
-            cleaned[canonicalKey] = cleanEntry;
+            cleaned[canonicalKey] = indexEntryToUnified(cleanEntry, `./${urlToEncodedKey(key)}.json`);
           }
         }
       }
@@ -881,7 +893,10 @@ function convertOldIndexToUnified(oldIndex: unknown): UnifiedIndex {
 
       // Create canonical URL entry
       const canonicalKey = `https://api.openalex.org/${entityIndex.data.entityType}/${fullEntityId}`;
-      unified[canonicalKey] = {};
+      unified[canonicalKey] = indexEntryToUnified({
+        lastModified: new Date().toISOString(),
+        contentHash: "",
+      });
     }
   }
 
@@ -902,7 +917,7 @@ function convertOldIndexToUnified(oldIndex: unknown): UnifiedIndex {
             lastModified: queryEntry.lastModified,
             contentHash: queryEntry.contentHash,
           };
-          unified[canonicalKey] = cleanEntry;
+          unified[canonicalKey] = indexEntryToUnified(cleanEntry, `./${urlToEncodedKey(canonicalKey)}.json`);
         }
       }
     } else {
@@ -924,7 +939,7 @@ function convertOldIndexToUnified(oldIndex: unknown): UnifiedIndex {
             if (parsedEntry.data.contentHash) {
               cleanEntry.contentHash = parsedEntry.data.contentHash;
             }
-            unified[canonicalKey] = cleanEntry;
+            unified[canonicalKey] = indexEntryToUnified(cleanEntry, `./${urlToEncodedKey(canonicalKey)}.json`);
           }
         }
       }
@@ -1438,8 +1453,12 @@ async function updateUnifiedIndex(
             }
             // Use canonical URL as index key
 
-            index[canonicalUrl] ??= {};
-            Object.assign(index[canonicalUrl], metadata);
+            if (!index[canonicalUrl]) {
+              index[canonicalUrl] = metadata;
+            } else {
+              // Merge properties
+              index[canonicalUrl] = { ...index[canonicalUrl], ...metadata };
+            }
           } else {
             // This is a query file
             const canonicalQueryUrl = determineCanonicalQueryUrl(
@@ -1466,8 +1485,12 @@ async function updateUnifiedIndex(
               }
 
               if (!isDuplicate) {
-                index[canonicalQueryUrl] ??= {};
-                Object.assign(index[canonicalQueryUrl], metadata);
+                if (!index[canonicalQueryUrl]) {
+                  index[canonicalQueryUrl] = metadata;
+                } else {
+                  // Merge properties
+                  index[canonicalQueryUrl] = { ...index[canonicalQueryUrl], ...metadata };
+                }
                 logger.debug("general", "Added query to index", {
                   canonicalQueryUrl,
                 });

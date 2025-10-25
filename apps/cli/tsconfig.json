@@ -3,7 +3,7 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node16",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "declaration": true,
@@ -26,7 +26,8 @@
   },
   "include": [
     "src/**/*",
-    "vitest.config.ts"
+    "vitest.config.ts",
+    "../../vitest.config.base.ts"
   ],
   "exclude": ["dist", "node_modules"],
   "references": [
