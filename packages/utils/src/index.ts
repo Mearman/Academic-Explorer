@@ -57,25 +57,16 @@ export {
 	type BuildInfo,
 } from "./build-info"
 
-// Entity route hook (moved to UI package)
-// export {
-// 	useEntityRoute,
-// 	type EntityRouteConfig,
-// 	type UseEntityRouteOptions,
-// 	type UseEntityRouteResult,
-// } from "./hooks/use-entity-route"
+// Entity route hook
+export {
+	useEntityRoute,
+	type EntityRouteConfig,
+	type UseEntityRouteOptions,
+	type UseEntityRouteResult,
+} from "./hooks/use-entity-route"
 
-// Error handling utilities (moved to UI package)
-// export {
-// 	ErrorHandler,
-// 	createErrorHandler,
-// 	withErrorBoundary,
-// 	type ErrorContext,
-// 	type ErrorHandlerOptions,
-// } from "./error-handling"
-
-// Navigation utilities - temporarily excluded due to complex dependencies
-// export { NavigationHelper, type NavigationConfig } from "./navigation"
+// Navigation utilities
+export { NavigationHelper, type NavigationConfig } from "./navigation"
 
 // UI components and hooks moved to UI package
 // export {
@@ -88,8 +79,8 @@ export {
 // } from "./ui/loading-states"
 
 // UI components - base filters and form components
-// export type { FilterOperator, FilterFieldConfig } from "./ui/filter-base"
-// export { BaseFilter, createFilter, createEnumOptions, FILTER_WIDTHS } from "./ui/filter-base"
+export type { FilterOperator, FilterFieldConfig } from "./ui/filter-base"
+export { BaseFilter, createFilter, createEnumOptions, FILTER_WIDTHS } from "./ui/filter-base"
 
 // Async operation hook and Data state moved to UI package
 // These can be imported from @academic-explorer/ui
@@ -164,3 +155,15 @@ export {
 	inferEntityTypeFromExternalId,
 	getEntityTypeFromEntity,
 } from "./entity-type-inference"
+
+// Storage utilities
+export {
+	createIndexedDBStorage,
+	defaultStorageConfig,
+	userInteractionsService,
+	type StorageConfig,
+	type StateStorage,
+	type BookmarkRecord,
+	type PageVisitRecord,
+	type UserInteractionsService,
+} from "./storage"

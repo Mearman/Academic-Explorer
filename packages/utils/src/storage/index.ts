@@ -8,3 +8,10 @@ export {
 	type StorageConfig,
 	type StateStorage,
 } from "./indexeddb-storage"
+
+export {
+	userInteractionsService,
+	type BookmarkRecord,
+	type PageVisitRecord,
+	type UserInteractionsService,
+} from "./user-interactions-db"

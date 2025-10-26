@@ -3,6 +3,13 @@
  * Pure UI components built with Mantine and TypeScript
  */
 
+// Entity View Components
+export { RichEntityView } from "./components/entity-views";
+export type { RichEntityViewProps } from "./components/entity-views";
+
+// View Toggle Component
+export { ViewToggle, type ViewToggleProps } from "./components/ViewToggle";
+
 // Data Display Components
 export { BaseTable, type BaseTableProps } from "./components/data-display/BaseTable"
 
