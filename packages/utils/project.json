@@ -6,15 +6,20 @@
   "targets": {
     "build": {
       "executor": "nx:run-commands",
+      "outputs": ["{options.outputPath}"],
       "options": {
         "command": "pnpm build"
-      }
+      },
+      "dependsOn": ["types:build"]
     },
     "typecheck": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/js:tsc",
+      "outputs": [],
       "options": {
-        "command": "pnpm typecheck"
-      }
+        "tsConfig": "packages/utils/tsconfig.json",
+        "outputPath": "packages/utils/dist"
+      },
+      "dependsOn": ["types:build"]
     }
   },
   "tags": ["type:library", "scope:shared", "type:util"]

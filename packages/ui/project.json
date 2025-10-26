@@ -3,6 +3,22 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/ui/src",
   "projectType": "library",
-  "targets": {},
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "command": "pnpm build"
+      },
+      "dependsOn": ["types:build", "utils:build"]
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "echo 'UI package uses Vite for type checking during build'"
+      },
+      "dependsOn": ["build"]
+    }
+  },
   "tags": ["type:library", "scope:ui", "layer:ui"]
 }
