@@ -30,16 +30,17 @@ function createWebConfig(): UserConfig {
       ...base.build,
       outDir: 'dist',
       rollupOptions: {
-        ...base.build?.rollupOptions,
-        output: {
-          ...base.build?.rollupOptions?.output,
-          manualChunks: {
-            // Split vendor chunks for better caching
-            vendor: ['react', 'react-dom'],
-            router: ['@tanstack/react-router'],
-            ui: ['@mantine/core', '@mantine/hooks'],
-          },
-        },
+        // For web app, we don't want external dependencies
+        // Don't spread base.build.rollupOptions since it has external deps for library builds
+        onwarn: base.build?.rollupOptions?.onwarn,
+        // TODO: Re-enable manualChunks when external dependencies issue is resolved
+        // output: {
+        //   manualChunks: {
+        //     vendor: ['react', 'react-dom'],
+        //     router: ['@tanstack/react-router'],
+        //     ui: ['@mantine/core', '@mantine/hooks'],
+        //   },
+        // },
       },
     },
 
