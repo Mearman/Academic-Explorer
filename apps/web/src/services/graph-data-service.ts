@@ -17,12 +17,14 @@ import type {
 } from "@academic-explorer/types";
 import {
   cachedOpenAlex,
+  createRequestPipeline,
+} from "@academic-explorer/client";
+import {
   isAuthor,
   isInstitution,
   isSource,
   isWork,
-  createRequestPipeline,
-} from "@academic-explorer/client";
+} from "@academic-explorer/types";
 import type {
   EntityType,
   ExternalIdentifier,

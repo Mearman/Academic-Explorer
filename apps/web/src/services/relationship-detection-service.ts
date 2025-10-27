@@ -6,13 +6,15 @@
 import { graphStore } from "../stores/graph-store";
 import type { OpenAlexEntity } from "@academic-explorer/types";
 import {
-  ADVANCED_FIELD_SELECTIONS,
-  cachedOpenAlex,
   isAuthor,
   isInstitution,
   isNonNull,
   isSource,
   isWork,
+} from "@academic-explorer/types";
+import {
+  ADVANCED_FIELD_SELECTIONS,
+  cachedOpenAlex,
 } from "@academic-explorer/client";
 import type {
   EntityType,

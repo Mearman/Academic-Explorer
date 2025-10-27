@@ -1,7 +1,6 @@
 import { FieldSelector } from "@/components/FieldSelector";
 import { EntityMiniGraph } from "@/components/graph/EntityMiniGraph";
-import { RichEntityView } from "@academic-explorer/ui/components/entity-views";
-import { ViewToggle } from "@academic-explorer/ui/components/ViewToggle";
+import { RichEntityView, ViewToggle } from "@academic-explorer/ui";
 import { useEntityRoute, NavigationHelper } from "@academic-explorer/utils";
 import { AUTHOR_FIELDS, cachedOpenAlex } from "@academic-explorer/client";
 import type { Author } from "@academic-explorer/types";
