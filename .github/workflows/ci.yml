@@ -84,7 +84,7 @@ jobs:
 
       - name: Build
         timeout-minutes: 15
-        run: pnpm --filter @academic-explorer/web build
+        run: npx nx build web
 
       - name: Type check
         timeout-minutes: 10
