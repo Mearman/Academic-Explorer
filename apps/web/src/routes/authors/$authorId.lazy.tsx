@@ -93,3 +93,5 @@ function AuthorRoute() {
 export const Route = createLazyFileRoute(AUTHOR_ROUTE_PATH)({
   component: AuthorRoute,
 });
+
+export default AuthorRoute;
