@@ -24,6 +24,7 @@ export default defineConfig({
     alias: {
       "@": resolve(__dirname, "apps/web/src"),
     },
+    extensions: [".ts", ".tsx", ".js", ".jsx", ".json"],
   },
 
   // Common configuration that applies to all projects
