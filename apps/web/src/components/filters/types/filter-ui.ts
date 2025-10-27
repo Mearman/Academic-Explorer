@@ -10,20 +10,19 @@ import type {
   EntityType,
 } from "@academic-explorer/types";
 
+// Import filter base types from utils package for local use and re-export
+import type {
+  FilterOperator,
+  FilterFieldConfig,
+  FilterFieldOption,
+} from "@academic-explorer/utils/ui";
+
 // Re-export core types for convenience
 export type { EntityFilters, WorksFilters, AuthorsFilters, EntityType };
 
-// Core filter operator types
-export type FilterOperator =
-  | "="
-  | "!="
-  | ">"
-  | ">="
-  | "<"
-  | "<="
-  | "contains"
-  | "search"
-  | "between";
+// Re-export filter base types
+export type { FilterOperator, FilterFieldConfig, FilterFieldOption };
+
 export type LogicalOperator = "AND" | "OR" | "NOT";
 
 // UI-specific filter condition
@@ -43,48 +42,6 @@ export interface FilterGroup<T extends EntityFilters = EntityFilters> {
   conditions: Array<FilterCondition<T> | FilterGroup<T>>;
   enabled: boolean;
   label?: string;
-}
-
-// Filter field metadata for UI rendering
-export interface FilterFieldConfig {
-  field: string;
-  label: string;
-  type: FilterFieldType;
-  operators: FilterOperator[];
-  placeholder?: string;
-  helpText?: string;
-  options?: FilterFieldOption[];
-  validation?: FilterFieldValidation;
-}
-
-// Supported filter field types
-export type FilterFieldType =
-  | "text"
-  | "search"
-  | "number"
-  | "date"
-  | "dateRange"
-  | "boolean"
-  | "select"
-  | "multiSelect"
-  | "entity"
-  | "entityMulti";
-
-// Options for select-type fields
-export interface FilterFieldOption {
-  value: string | number | boolean;
-  label: string;
-  description?: string;
-  group?: string;
-}
-
-// Field validation rules
-export interface FilterFieldValidation {
-  required?: boolean;
-  min?: number;
-  max?: number;
-  pattern?: RegExp;
-  custom?: (value: unknown) => string | null;
 }
 
 // Filter preset for saving and sharing

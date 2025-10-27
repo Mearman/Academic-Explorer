@@ -1,25 +1,53 @@
 // @ts-nocheck - React types compatibility issues with TypeScript bundler mode
-export type FilterOperator =
-	| "eq"
-	| "ne"
-	| "gt"
-	| "gte"
-	| "lt"
-	| "lte"
-	| "contains"
-	| "starts_with"
-	| "ends_with"
-	| "in"
-	| "not_in";
 
-export interface FilterFieldConfig {
-	key: string;
+// Filter operator types - aligned with apps/web filter system
+export type FilterOperator =
+	| "="
+	| "!="
+	| ">"
+	| ">="
+	| "<"
+	| "<="
+	| "contains"
+	| "search"
+	| "between";
+
+// Options for select-type fields
+export interface FilterFieldOption {
+	value: string | number | boolean;
 	label: string;
-	type: "text" | "number" | "date" | "boolean" | "enum" | "entity";
+	description?: string;
+	group?: string;
+}
+
+// Filter field configuration for UI rendering
+export interface FilterFieldConfig {
+	field: string;
+	label: string;
+	type:
+		| "text"
+		| "search"
+		| "number"
+		| "date"
+		| "dateRange"
+		| "boolean"
+		| "select"
+		| "multiSelect"
+		| "entity"
+		| "entityMulti";
+	operators: FilterOperator[];
 	required?: boolean;
-	options?: Array<{ value: string; label: string }>;
+	options?: FilterFieldOption[];
 	placeholder?: string;
 	description?: string;
+	helpText?: string;
+	validation?: {
+		required?: boolean;
+		min?: number;
+		max?: number;
+		pattern?: RegExp;
+		custom?: (value: unknown) => string | null;
+	};
 }
 
 export interface BaseFilterProps<T = unknown> {
@@ -88,10 +116,12 @@ export function createFilter<T = unknown>(
 }
 
 export function createEnumOptions(
-	options: Array<{ value: string; label: string }>
-): Array<{ value: string; label: string }> {
+	options: FilterFieldOption[]
+): FilterFieldOption[] {
 	return options.map(option => ({
 		value: option.value,
 		label: option.label,
+		description: option.description,
+		group: option.group,
 	}));
 }

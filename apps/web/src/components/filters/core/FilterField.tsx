@@ -12,6 +12,7 @@ import type {
   FilterCondition,
   EntityFilters,
 } from "../types/filter-ui";
+import type { FilterFieldConfig as UtilsFilterFieldConfig } from "@academic-explorer/utils/ui";
 
 import { TextFilter } from "../fields/TextFilter";
 import { NumericFilter } from "../fields/NumericFilter";
@@ -78,6 +79,9 @@ export function FilterField<T extends EntityFilters = EntityFilters>({
 
   // Render the appropriate field component based on type
   const renderFieldComponent = () => {
+    // Type assertion needed because TypeScript treats re-exported types as distinct
+    // even though they're structurally identical. Cast to the utils type for compatibility.
+    const filterConfig = config as unknown as UtilsFilterFieldConfig;
 
     switch (config.type) {
       case "text":
@@ -86,7 +90,7 @@ export function FilterField<T extends EntityFilters = EntityFilters>({
           <TextFilter
             value={condition.value as string}
             operator={condition.operator}
-            config={config}
+            config={filterConfig}
             onValueChange={handleValueChange}
             onOperatorChange={handleOperatorChange}
             disabled={disabled || !condition.enabled}
@@ -100,7 +104,7 @@ export function FilterField<T extends EntityFilters = EntityFilters>({
           <NumericFilter
             value={condition.value as number}
             operator={condition.operator}
-            config={config}
+            config={filterConfig}
             onValueChange={handleValueChange}
             onOperatorChange={handleOperatorChange}
             disabled={disabled || !condition.enabled}
@@ -115,7 +119,7 @@ export function FilterField<T extends EntityFilters = EntityFilters>({
           <DateFilter
             value={condition.value as string | [string, string] | null}
             operator={condition.operator}
-            config={config}
+            config={filterConfig}
             onValueChange={handleValueChange}
             onOperatorChange={handleOperatorChange}
             disabled={disabled || !condition.enabled}
@@ -129,7 +133,7 @@ export function FilterField<T extends EntityFilters = EntityFilters>({
           <BooleanFilter
             value={condition.value as boolean}
             operator={condition.operator}
-            config={config}
+            config={filterConfig}
             onValueChange={handleValueChange}
             onOperatorChange={handleOperatorChange}
             disabled={disabled || !condition.enabled}
@@ -144,7 +148,7 @@ export function FilterField<T extends EntityFilters = EntityFilters>({
           <EnumFilter
             value={condition.value as string | string[]}
             operator={condition.operator}
-            config={config}
+            config={filterConfig}
             onValueChange={handleValueChange}
             onOperatorChange={handleOperatorChange}
             disabled={disabled || !condition.enabled}
@@ -159,7 +163,7 @@ export function FilterField<T extends EntityFilters = EntityFilters>({
           <EntityFilter
             value={condition.value as string | string[]}
             operator={condition.operator}
-            config={config}
+            config={filterConfig}
             onValueChange={handleValueChange}
             onOperatorChange={handleOperatorChange}
             disabled={disabled || !condition.enabled}

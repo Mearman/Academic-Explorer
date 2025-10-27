@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { Route as OpenAlexUrlRoute } from "./$.tsx";
+import { Route as OpenAlexUrlRoute } from "./$";
 import { EntityDetectionService } from "@academic-explorer/graph";
 
 // Extract the component from the route

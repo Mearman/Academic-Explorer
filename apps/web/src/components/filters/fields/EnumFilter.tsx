@@ -1,7 +1,10 @@
 import { MultiSelect, Select } from "@mantine/core";
-import { BaseFilter, createEnumOptions } from "@academic-explorer/utils/ui/filter-base";
-import type { FilterFieldConfig } from "@academic-explorer/utils/ui";
-import type { FilterOperator } from "@academic-explorer/utils/ui";
+import {
+  BaseFilter,
+  createEnumOptions,
+} from "@academic-explorer/utils/ui/filter-base";
+import type { FilterFieldConfig, FilterOperator } from "../types/filter-ui";
+import type { FilterFieldOption as UtilsFilterFieldOption } from "@academic-explorer/utils/ui";
 
 interface EnumFilterProps {
   value: string | string[];
@@ -24,7 +27,10 @@ export function EnumFilter({
   compact = false,
   fieldId,
 }: EnumFilterProps) {
-  const selectOptions = createEnumOptions(config);
+  // Cast to utils type for compatibility with createEnumOptions
+  const selectOptions = createEnumOptions(
+    (config.options || []) as UtilsFilterFieldOption[],
+  );
   const isMulti = config.type === "multiSelect";
 
   return (

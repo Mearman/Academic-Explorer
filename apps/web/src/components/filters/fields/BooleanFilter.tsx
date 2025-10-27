@@ -1,7 +1,6 @@
 import { Switch } from "@mantine/core";
 import { BaseFilter } from "@academic-explorer/utils/ui/filter-base";
-import type { FilterFieldConfig } from "@academic-explorer/utils/ui";
-import type { FilterOperator } from "@academic-explorer/utils/ui";
+import type { FilterFieldConfig, FilterOperator } from "../types/filter-ui";
 
 interface BooleanFilterProps {
   value: boolean;

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { renderHook } from "@testing-library/react";
-import { Route as OpenAlexUrlRoute } from "./$.tsx";
+import { Route as OpenAlexUrlRoute } from "./$";
 import { EntityDetectionService } from "@academic-explorer/graph";
 
 // Extract the component from the route

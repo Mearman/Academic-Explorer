@@ -30,7 +30,7 @@ Object.defineProperty(window, "matchMedia", {
 });
 
 import { MantineProvider } from "@mantine/core";
-import { VisualQueryBuilder, type VisualQuery } from "./VisualQueryBuilder.tsx";
+import { VisualQueryBuilder, type VisualQuery } from "./VisualQueryBuilder";
 
 // Mock DnD Kit
 vi.mock("@dnd-kit/core", () => ({

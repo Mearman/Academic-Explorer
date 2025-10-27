@@ -2,7 +2,7 @@
  * Navigation tracker component that logs route changes and page visits
  */
 
-import { historyDB } from "@/lib/history-db.ts";
+import { historyDB } from "@/lib/history-db";
 import { useAppActivityStore } from "@/stores/app-activity-store";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { useLocation } from "@tanstack/react-router";

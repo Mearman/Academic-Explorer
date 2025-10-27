@@ -325,11 +325,11 @@ jobs:
 
       - name: Build application
         timeout-minutes: 15
-        run: nx build web
+        run: pnpm nx build web
 
       - name: Start application
         run: |
-          nx preview web &
+          pnpm nx preview web &
           sleep 10
 
       - name: Run Lighthouse CI

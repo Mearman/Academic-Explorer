@@ -1,7 +1,6 @@
 import { MultiSelect, Select, TextInput } from "@mantine/core";
 import { BaseFilter } from "@academic-explorer/utils/ui/filter-base";
-import type { FilterFieldConfig } from "@academic-explorer/utils/ui";
-import type { FilterOperator } from "@academic-explorer/utils/ui";
+import type { FilterFieldConfig, FilterOperator } from "../types/filter-ui";
 
 interface EntityFilterProps {
   value: string | string[];
