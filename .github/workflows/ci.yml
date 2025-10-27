@@ -240,10 +240,10 @@ jobs:
 
       - name: Build application
         timeout-minutes: 15
-        run: nx build web
+        run: pnpm nx build web
 
       - name: Run E2E tests
-        run: nx e2e web
+        run: pnpm nx e2e web
 
       - name: Upload E2E artifacts
         uses: actions/upload-artifact@v4
@@ -380,7 +380,7 @@ jobs:
 
       - name: Build application
         timeout-minutes: 15
-        run: nx build web --verbose
+        run: pnpm nx build web --verbose
 
       - name: Upload build artifacts
         uses: actions/upload-pages-artifact@v3
