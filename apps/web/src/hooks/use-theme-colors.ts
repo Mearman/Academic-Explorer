@@ -47,16 +47,16 @@ export function useThemeColors() {
       // Text colors - using Mantine CSS variables for better theme integration
       text: {
         primary: "var(--mantine-color-text)",
-        secondary: isDark ? theme.colors.gray[3] : theme.colors.gray[6],
-        tertiary: isDark ? theme.colors.gray[4] : theme.colors.gray[5],
-        inverse: isDark ? theme.colors.gray[9] : theme.colors.gray[0],
+        secondary: isDark ? (theme.colors.gray?.[3] ?? "#d1d5db") : (theme.colors.gray?.[6] ?? "#4b5563"),
+        tertiary: isDark ? (theme.colors.gray?.[4] ?? "#9ca3af") : (theme.colors.gray?.[5] ?? "#6b7280"),
+        inverse: isDark ? (theme.colors.gray?.[9] ?? "#111827") : (theme.colors.gray?.[0] ?? "#f9fafb"),
       },
 
       // Background colors - using Mantine CSS variables for better theme integration
       background: {
         primary: "var(--mantine-color-body)",
-        secondary: isDark ? theme.colors.gray[8] : theme.colors.gray[0],
-        tertiary: isDark ? theme.colors.gray[7] : theme.colors.gray[1],
+        secondary: isDark ? (theme.colors.gray?.[8] ?? "#1f2937") : (theme.colors.gray?.[0] ?? "#f9fafb"),
+        tertiary: isDark ? (theme.colors.gray?.[7] ?? "#374151") : (theme.colors.gray?.[1] ?? "#f3f4f6"),
         overlay: isDark ? "rgba(0, 0, 0, 0.8)" : "rgba(255, 255, 255, 0.95)",
         blur: isDark ? "rgba(31, 41, 55, 0.95)" : "rgba(255, 255, 255, 0.95)",
       },
@@ -64,26 +64,26 @@ export function useThemeColors() {
       // Border colors - using Mantine CSS variables for better theme integration
       border: {
         primary: "var(--mantine-color-default-border)",
-        secondary: isDark ? theme.colors.gray[6] : theme.colors.gray[3],
+        secondary: isDark ? (theme.colors.gray?.[6] ?? "#4b5563") : (theme.colors.gray?.[3] ?? "#d1d5db"),
       },
 
       // Semantic colors
-      primary: theme.colors.blue[5],
-      success: theme.colors.green[5] || "#10b981",
-      warning: theme.colors.yellow[5] || "#f59e0b",
-      error: theme.colors.red[5] || "#ef4444",
-      info: theme.colors.blue[5],
+      primary: theme.colors.blue?.[5] ?? "#3b82f6",
+      success: theme.colors.green?.[5] ?? "#10b981",
+      warning: theme.colors.yellow?.[5] ?? "#f59e0b",
+      error: theme.colors.red?.[5] ?? "#ef4444",
+      info: theme.colors.blue?.[5] ?? "#3b82f6",
 
       // Academic entity colors
       entity: {
-        work: theme.colors.blue[5],
-        author: theme.colors.green[5] || "#51cf66",
-        source: theme.colors.purple[5] || "#c084fc",
-        institution: theme.colors.orange[5] || "#ea580c",
-        concept: theme.colors.pink[5] || "#f06595",
-        topic: theme.colors.red[5] || "#fa5252",
-        publisher: theme.colors.teal[5] || "#14b8a6",
-        funder: theme.colors.cyan[5] || "#22b8cf",
+        work: theme.colors.blue?.[5] ?? "#3b82f6",
+        author: theme.colors.green?.[5] ?? "#51cf66",
+        source: theme.colors.purple?.[5] ?? "#c084fc",
+        institution: theme.colors.orange?.[5] ?? "#ea580c",
+        concept: theme.colors.pink?.[5] ?? "#f06595",
+        topic: theme.colors.red?.[5] ?? "#fa5252",
+        publisher: theme.colors.teal?.[5] ?? "#14b8a6",
+        funder: theme.colors.cyan?.[5] ?? "#22b8cf",
       },
 
       // Entity to color name mapping for shade access

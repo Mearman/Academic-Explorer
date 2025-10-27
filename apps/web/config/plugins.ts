@@ -4,7 +4,7 @@ import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
 import { openalexCachePlugin } from "../../../config/vite-plugins/openalex-cache";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { writeFileSync } from "node:fs";
 import type { Plugin } from "vite";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -20,7 +20,6 @@ function githubPagesPlugin(): Plugin {
     apply: "build",
     closeBundle() {
       const outputDir = resolve(appRoot, "dist");
-      mkdirSync(outputDir, { recursive: true });
       const nojekyllPath = resolve(outputDir, ".nojekyll");
       writeFileSync(nojekyllPath, "");
     },
@@ -44,7 +43,7 @@ export const createPlugins = () => [
     routesDirectory: resolve(appRoot, "src/routes"),
     generatedRouteTree: resolve(appRoot, "src/routeTree.gen.ts"),
     routeFileIgnorePrefix: "-",
-    routeFileIgnorePattern: ".(test|spec).",
+    routeFileIgnorePattern: ".(test|spec|d.ts).",
   }),
 
   // Vanilla Extract Plugin for CSS-in-TypeScript

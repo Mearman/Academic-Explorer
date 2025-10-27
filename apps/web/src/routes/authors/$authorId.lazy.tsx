@@ -1,98 +1,89 @@
-import { FieldSelector } from "@/components/FieldSelector";
-import { EntityMiniGraph } from "@/components/graph/EntityMiniGraph";
-import { RichEntityView, ViewToggle } from "@academic-explorer/ui";
-import { NavigationHelper } from "@academic-explorer/utils";
-import { useEntityRoute } from "@/hooks/use-entity-route";
-import { AUTHOR_FIELDS, cachedOpenAlex } from "@academic-explorer/client";
-import type { Author } from "@academic-explorer/types";
-import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { useParams } from "@tanstack/react-router";
+import { useState } from "react";
+import { AUTHOR_FIELDS, cachedOpenAlex, type Author } from "@academic-explorer/client";
+import { useQuery } from "@tanstack/react-query";
 
 const AUTHOR_ROUTE_PATH = "/authors/$authorId";
 
-// Configuration for the shared entity route hook
-const AUTHOR_ENTITY_CONFIG = {
-  entityType: "author" as const,
-  routePath: "/authors/$authorId",
-  paramKey: "authorId",
-  fields: AUTHOR_FIELDS,
-  randomApiCall: cachedOpenAlex.client.authors.getRandomAuthors.bind(cachedOpenAlex.client.authors),
-  logContext: "AuthorRoute",
-};
-
 function AuthorRoute() {
-  const navigate = useNavigate();
-  // Use our shared hook - this replaces ~100 lines of duplicated code!
-  const entityRoute = useEntityRoute<Author>(AUTHOR_ENTITY_CONFIG);
+  const { authorId } = useParams({ from: AUTHOR_ROUTE_PATH });
+  const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
 
-  const {
-    cleanEntityId: authorId,
-    viewMode,
-    setViewMode,
-    isLoadingRandom,
-    graphData,
-    miniGraphData,
-    rawEntityData,
-    nodeCount,
-    loadEntity,
-    loadEntityIntoGraph,
-    routeSearch,
-  } = entityRoute;
+  // Fetch author data
+  const { data: author, isLoading, error } = useQuery({
+    queryKey: ["author", authorId],
+    queryFn: async () => {
+      const response = await cachedOpenAlex.client.authors.getAuthor(authorId, {
+        select: [...AUTHOR_FIELDS],
+      });
+      return response as Author;
+    },
+    enabled: !!authorId && authorId !== "random",
+  });
 
-  // Field selection state
-  const [selectedFields, setSelectedFields] = useState<readonly string[]>(AUTHOR_FIELDS);
+  if (isLoading) {
+    return (
+      <div className="p-4 text-center">
+        <h2>Loading Author...</h2>
+        <p>Author ID: {authorId}</p>
+      </div>
+    );
+  }
 
-  // Handle URL cleanup for malformed OpenAlex URLs using shared utility
-  useEffect(() => {
-    const navigator = NavigationHelper.createEntityNavigator({
-      entityType: "author",
-      routePath: AUTHOR_ROUTE_PATH,
-      logContext: "AuthorRoute",
-    });
-
-    navigator.handleMalformedUrl(authorId, ({ to, params, replace }) => {
-      // navigate is now imported from @tanstack/react-router
-      navigate({ to, params, replace });
-    });
-  }, [authorId]);
-
-  const author = rawEntityData.data;
-
-  // Extract entity and related entities from miniGraphData for EntityMiniGraph
-  const entity = miniGraphData.data as Author | undefined;
-  const relatedEntities = (miniGraphData.data ? [miniGraphData.data] : []) as Author[];
+  if (error) {
+    return (
+      <div className="p-4 text-center text-red-500">
+        <h2>Error Loading Author</h2>
+        <p>Author ID: {authorId}</p>
+        <p>Error: {String(error)}</p>
+      </div>
+    );
+  }
 
   return (
-    <>
-      <FieldSelector
-        availableFields={AUTHOR_FIELDS}
-        selectedFields={selectedFields}
-        onFieldsChange={setSelectedFields}
-        title="Select Author Fields"
-        description="Choose which fields to include in the author data"
-      />
+    <div className="p-4">
+      <div className="mb-4 flex justify-between items-center">
+        <h1 className="text-2xl font-bold">{author?.display_name || "Author"}</h1>
+        <button
+          onClick={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Toggle {viewMode === "raw" ? "Rich" : "Raw"} View
+        </button>
+      </div>
 
-      {entity && (
-        <EntityMiniGraph
-          entity={entity}
-          relatedEntities={relatedEntities}
-        />
+      {viewMode === "raw" ? (
+        <pre className="bg-gray-100 p-4 rounded overflow-auto max-h-[600px]">
+          {JSON.stringify(author, null, 2)}
+        </pre>
+      ) : (
+        <div className="space-y-4">
+          {author?.display_name && (
+            <div>
+              <strong>Name:</strong> {author.display_name}
+            </div>
+          )}
+          {author?.works_count && (
+            <div>
+              <strong>Works:</strong> {author.works_count}
+            </div>
+          )}
+          {author?.cited_by_count && (
+            <div>
+              <strong>Citations:</strong> {author.cited_by_count}
+            </div>
+          )}
+          {author?.summary_stats && (
+            <div>
+              <strong>H-index:</strong> {author.summary_stats.h_index}
+              <br />
+              <strong>i10-index:</strong> {author.summary_stats.i10_index}
+            </div>
+          )}
+        </div>
       )}
-
-      <ViewToggle
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-      />
-
-      <RichEntityView
-        entityType="author"
-        entity={author}
-        viewMode={viewMode}
-        isLoading={rawEntityData.isLoading}
-        error={rawEntityData.error}
-        fields={AUTHOR_FIELDS}
-      />
-    </>
+    </div>
   );
 }
 
