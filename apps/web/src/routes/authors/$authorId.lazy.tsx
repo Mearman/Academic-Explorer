@@ -22,6 +22,7 @@ function AuthorRoute() {
     enabled: !!authorId && authorId !== "random",
   });
 
+  // Render loading state
   if (isLoading) {
     return (
       <div className="p-4 text-center">
@@ -31,6 +32,7 @@ function AuthorRoute() {
     );
   }
 
+  // Render error state
   if (error) {
     return (
       <div className="p-4 text-center text-red-500">
@@ -41,6 +43,7 @@ function AuthorRoute() {
     );
   }
 
+  // Render author data
   return (
     <div className="p-4">
       <div className="mb-4 flex justify-between items-center">
