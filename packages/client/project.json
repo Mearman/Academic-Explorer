@@ -18,9 +18,9 @@
         "main": "packages/client/src/index.ts",
         "outputPath": "packages/client/dist",
         "tsConfig": "packages/client/tsconfig.json",
-        "format": ["esm", "cjs"],
+        "format": ["esm"],
         "compiler": "tsc",
-        "generateExportsField": true,
+        "generateExportsField": false,
         "project": "packages/client/package.json",
         "additionalEntryPoints": [
           "packages/client/src/client.ts",
@@ -47,10 +47,17 @@
         "command": "tsc --project packages/client/tsconfig.json --emitDeclarationOnly --declaration --declarationMap false --outDir packages/client/dist"
       }
     },
+    "build:copy-pkg": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build:bundle"],
+      "options": {
+        "command": "cp packages/client/package.json packages/client/dist/package.json"
+      }
+    },
     "build": {
       "executor": "nx:run-commands",
       "outputs": ["{options.outputPath}"],
-      "dependsOn": ["build:bundle"],
+      "dependsOn": ["build:copy-pkg"],
       "options": {
         "commands": [],
         "outputPath": "packages/client/dist"
