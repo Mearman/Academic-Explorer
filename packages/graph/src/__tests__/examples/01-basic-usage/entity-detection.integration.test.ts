@@ -664,8 +664,5 @@ describe("Example: Modern Entity Detection with EntityDetectionService", () => {
       expect(results.some((r) => r.hasExternalIds)).toBe(true);
       expect(results.every((r) => r.label.length > 0)).toBe(true);
     });
-
-    // Cleanup
-    provider.destroy();
   });
 });

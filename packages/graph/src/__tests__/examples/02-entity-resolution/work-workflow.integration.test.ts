@@ -553,13 +553,17 @@ describe("Example: Work-Centered Research Workflows", () => {
           expect.objectContaining({
             id: expect.any(String),
             entityType: "works",
-            cocitation_strength: expect.any(Number),
+            metadata: expect.objectContaining({
+              cocitation_strength: expect.any(Number),
+            }),
           }),
         ]),
         edges: expect.arrayContaining([
           expect.objectContaining({
             type: RelationType.REFERENCES,
-            cocitation_frequency: expect.any(Number),
+            metadata: expect.objectContaining({
+              cocitation_frequency: expect.any(Number),
+            }),
           }),
         ]),
         clusters: expect.any(Array),

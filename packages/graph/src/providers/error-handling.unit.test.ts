@@ -643,7 +643,9 @@ describe('ProviderRegistry Error Handling', () => {
       const faultyProvider = new MockProvider({ name: 'faulty' });
       let destroyCalled = false;
 
-      faultyProvider.destroy = vi.fn() as any;
+      faultyProvider.destroy = vi.fn(() => {
+        throw new Error('Cleanup failed');
+      }) as any;
 
       registry.register(faultyProvider);
 
