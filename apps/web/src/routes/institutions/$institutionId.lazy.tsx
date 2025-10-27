@@ -1,7 +1,8 @@
 import { FieldSelector } from "@/components/FieldSelector";
 import { EntityMiniGraph } from "@/components/graph/EntityMiniGraph";
 import { RichEntityView, ViewToggle } from "@academic-explorer/ui";
-import { useEntityRoute, NavigationHelper } from "@academic-explorer/utils";
+import { NavigationHelper } from "@academic-explorer/utils";
+import { useEntityRoute } from "@/hooks/use-entity-route";
 import { INSTITUTION_FIELDS, cachedOpenAlex, type InstitutionEntity } from "@academic-explorer/client";
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
