@@ -1,4 +1,3 @@
-import { STATIC_DATA_CACHE_PATH } from "@academic-explorer/utils/static-data/cache-utilities";
 import { tanstackRouter } from "@tanstack/router-vite-plugin";
 import react from "@vitejs/plugin-react";
 import { openalexCachePlugin } from "../../../config/vite-plugins/openalex-cache";
@@ -14,8 +13,10 @@ const appRoot = resolve(__dirname, "..");
  */
 export const createPlugins = () => [
   // OpenAlex Cache Plugin for development caching with validation
+  // Note: Using inline path constant to avoid importing from workspace packages
+  // during Nx project graph generation (before dependencies are built)
   openalexCachePlugin({
-    staticDataPath: STATIC_DATA_CACHE_PATH,
+    staticDataPath: "apps/web/public/data/openalex",
     verbose: true,
   }),
 
