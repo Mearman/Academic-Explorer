@@ -8,7 +8,8 @@
       "executor": "nx:run-commands",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "command": "pnpm build"
+        "command": "vite build --config vite.config.dev.ts",
+        "cwd": "packages/ui"
       },
       "dependsOn": ["types:build", "utils:build"]
     },

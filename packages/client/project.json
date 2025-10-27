@@ -4,16 +4,10 @@
   "sourceRoot": "packages/client/src",
   "projectType": "library",
   "targets": {
-    "build:clean": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "rm -rf packages/client/dist && mkdir -p packages/client/dist"
-      }
-    },
-    "build:bundle": {
+    "build": {
       "executor": "@nx/rollup:rollup",
-      "outputs": ["{options.outputPath}"],
-      "dependsOn": ["build:clean", "types:build", "utils:build"],
+      "outputs": ["{workspaceRoot}/packages/client/dist"],
+      "dependsOn": ["^build"],
       "options": {
         "main": "packages/client/src/index.ts",
         "outputPath": "packages/client/dist",
@@ -22,46 +16,13 @@
         "compiler": "tsc",
         "generateExportsField": false,
         "project": "packages/client/package.json",
+        "declaration": true,
         "additionalEntryPoints": [
           "packages/client/src/client.ts",
           "packages/client/src/types.ts"
         ]
-      }
-    },
-    "build:types": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "dependsOn": ["types:build", "utils:build"],
-      "options": {
-        "main": "packages/client/src/index.ts",
-        "outputPath": "packages/client/dist",
-        "tsConfig": "packages/client/tsconfig.json",
-        "skipLibCheck": true
-      }
-    },
-    "build:types-gen": {
-      "executor": "nx:run-commands",
-      "outputs": ["{projectRoot}/dist"],
-      "dependsOn": ["build:bundle"],
-      "options": {
-        "command": "tsc --project packages/client/tsconfig.json --emitDeclarationOnly --declaration --declarationMap false --outDir packages/client/dist"
-      }
-    },
-    "build:copy-pkg": {
-      "executor": "nx:run-commands",
-      "dependsOn": ["build:bundle"],
-      "options": {
-        "command": "cp packages/client/package.json packages/client/dist/package.json"
-      }
-    },
-    "build": {
-      "executor": "nx:run-commands",
-      "outputs": ["{options.outputPath}"],
-      "dependsOn": ["build:copy-pkg"],
-      "options": {
-        "commands": [],
-        "outputPath": "packages/client/dist"
-      }
+      },
+      "cache": true
     },
     "dev": {
       "executor": "@nx/rollup:rollup",
@@ -71,9 +32,10 @@
         "tsConfig": "packages/client/tsconfig.json",
         "format": ["esm", "cjs"],
         "compiler": "tsc",
-        "generateExportsField": true,
+        "generateExportsField": false,
         "project": "packages/client/package.json",
         "watch": true,
+        "skipTypeCheck": true,
         "additionalEntryPoints": [
           "packages/client/src/client.ts",
           "packages/client/src/types.ts"

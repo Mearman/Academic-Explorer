@@ -89,8 +89,8 @@ jobs:
         run: npx nx reset
 
       - name: Build
-        timeout-minutes: 15
-        run: npx nx build web
+        timeout-minutes: 20
+        run: npx nx run-many -t build --parallel=3
 
       - name: Type check
         timeout-minutes: 10
@@ -239,6 +239,7 @@ jobs:
         run: pnpm exec playwright install --with-deps
 
       - name: Build application
+        timeout-minutes: 15
         run: nx build web
 
       - name: Run E2E tests
@@ -323,6 +324,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build application
+        timeout-minutes: 15
         run: nx build web
 
       - name: Start application
@@ -377,7 +379,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build application
-        timeout-minutes: 10
+        timeout-minutes: 15
         run: nx build web --verbose
 
       - name: Upload build artifacts
