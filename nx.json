@@ -4,7 +4,7 @@
     "enabled": false,
     "autoExit": true
   },
-  "useDaemonProcess": true,
+  "useDaemonProcess": false,
   "daemon": {
     "options": {
       "shutdownTimeoutMs": 10000,
@@ -41,13 +41,6 @@
         "testTargetName": "test"
       }
     },
-      // Temporarily disabled due to @swc/core native binding issue
-    // {
-    //   "plugin": "@nx/playwright/plugin",
-    //   "options": {
-    //     "targetName": "e2e"
-    //   }
-    // },
     {
       "plugin": "@nx/eslint/plugin",
       "options": {
@@ -77,7 +70,9 @@
         "{workspaceRoot}/vite.config.base.ts",
         "{workspaceRoot}/config/**/*"
       ],
-      "outputs": ["{projectRoot}/dist"],
+      "outputs": [
+        "{projectRoot}/dist"
+      ],
       "cache": true
     },
     "build:compile": {
@@ -93,13 +88,18 @@
         "{workspaceRoot}/vite.config.base.ts",
         "{workspaceRoot}/config/**/*"
       ],
-      "outputs": ["{projectRoot}/dist"],
+      "outputs": [
+        "{projectRoot}/dist"
+      ],
       "cache": true
     },
     "build:ui": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["tsc --emitDeclarationOnly", "vite build"],
+        "commands": [
+          "tsc --emitDeclarationOnly",
+          "vite build"
+        ],
         "cwd": "{projectRoot}"
       },
       "inputs": [
@@ -108,7 +108,9 @@
         "{workspaceRoot}/vite.config.base.ts",
         "{workspaceRoot}/config/**/*"
       ],
-      "outputs": ["{projectRoot}/dist"],
+      "outputs": [
+        "{projectRoot}/dist"
+      ],
       "cache": true
     },
     "dev:lib": {
@@ -122,7 +124,9 @@
     "lint": {
       "executor": "@nx/eslint:lint",
       "options": {
-        "lintFilePatterns": ["{sourceRoot}/**/*.{ts,tsx}"]
+        "lintFilePatterns": [
+          "{sourceRoot}/**/*.{ts,tsx}"
+        ]
       },
       "inputs": [
         "source",
@@ -130,13 +134,17 @@
         "{workspaceRoot}/eslint.config.ts",
         "{workspaceRoot}/eslint.config.*.ts"
       ],
-      "outputs": ["{workspaceRoot}/.nx/cache/lint-results/{projectName}.json"],
+      "outputs": [
+        "{workspaceRoot}/.nx/cache/lint-results/{projectName}.json"
+      ],
       "cache": true
     },
     "lint:fix": {
       "executor": "@nx/eslint:lint",
       "options": {
-        "lintFilePatterns": ["{sourceRoot}/**/*.{ts,tsx}"],
+        "lintFilePatterns": [
+          "{sourceRoot}/**/*.{ts,tsx}"
+        ],
         "fix": true
       },
       "inputs": [
@@ -145,12 +153,16 @@
         "{workspaceRoot}/eslint.config.ts",
         "{workspaceRoot}/eslint.config.*.ts"
       ],
-      "outputs": ["{projectRoot}/**/*.{js,jsx,ts,tsx}"],
+      "outputs": [
+        "{projectRoot}/**/*.{js,jsx,ts,tsx}"
+      ],
       "cache": true
     },
     "test:aggregate": {
       "executor": "nx:run-commands",
-      "dependsOn": ["test:unit"],
+      "dependsOn": [
+        "test:unit"
+      ],
       "options": {
         "command": "echo 'All tests completed successfully'",
         "cwd": "{projectRoot}"
@@ -161,7 +173,9 @@
         "{workspaceRoot}/vite.config.base.ts",
         "{projectRoot}/vitest.config.ts"
       ],
-      "outputs": ["{projectRoot}/coverage"],
+      "outputs": [
+        "{projectRoot}/coverage"
+      ],
       "cache": true
     },
     "typecheck": {
@@ -177,14 +191,19 @@
         "{workspaceRoot}/tsconfig*.json",
         "{workspaceRoot}/config/**/*"
       ],
-      "outputs": ["{projectRoot}/dist/tsc"],
+      "outputs": [
+        "{projectRoot}/dist/tsc"
+      ],
       "cache": true
     }
   },
   "targetDefaults": {
     "build": {
       "cache": true,
-      "dependsOn": ["^build", "typecheck"],
+      "dependsOn": [
+        "^build",
+        "typecheck"
+      ],
       "inputs": [
         "production",
         "^production",
@@ -203,11 +222,16 @@
     },
     "preview": {
       "cache": true,
-      "dependsOn": ["build"]
+      "dependsOn": [
+        "build"
+      ]
     },
     "test": {
       "cache": true,
-      "dependsOn": ["^build", "typecheck"],
+      "dependsOn": [
+        "^build",
+        "typecheck"
+      ],
       "inputs": [
         "default",
         "^production",
@@ -224,17 +248,23 @@
     },
     "dev": {
       "cache": false,
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ]
     },
     "e2e": {
       "cache": true,
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ]
     },
     "lint": {
       "executor": "@nx/eslint:lint",
       "cache": true,
       "options": {
-        "lintFilePatterns": ["{sourceRoot}/**/*.{ts,tsx,js,jsx}"]
+        "lintFilePatterns": [
+          "{sourceRoot}/**/*.{ts,tsx,js,jsx}"
+        ]
       },
       "inputs": [
         "source",
@@ -269,36 +299,79 @@
     },
     "update": {
       "cache": true,
-      "dependsOn": ["^build"],
-      "inputs": ["default", "^production", "workspace"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "default",
+        "^production",
+        "workspace"
+      ]
     },
     "extract": {
       "cache": true,
-      "dependsOn": ["^build"],
-      "inputs": ["default", "^production", "workspace"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "default",
+        "^production",
+        "workspace"
+      ]
     },
     "test:unit": {
       "cache": true,
-      "dependsOn": ["typecheck"],
-      "inputs": ["default", "^production"],
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}/unit"]
+      "dependsOn": [
+        "typecheck"
+      ],
+      "inputs": [
+        "default",
+        "^production"
+      ],
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}/unit"
+      ]
     },
     "test:component": {
       "cache": true,
-      "dependsOn": ["typecheck", "test:unit"],
-      "inputs": ["default", "^production"],
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}/component"]
+      "dependsOn": [
+        "typecheck",
+        "test:unit"
+      ],
+      "inputs": [
+        "default",
+        "^production"
+      ],
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}/component"
+      ]
     },
     "test:integration": {
       "cache": true,
-      "dependsOn": ["typecheck", "test:unit"],
-      "inputs": ["default", "^production"],
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}/integration"]
+      "dependsOn": [
+        "typecheck",
+        "test:unit"
+      ],
+      "inputs": [
+        "default",
+        "^production"
+      ],
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}/integration"
+      ]
     },
     "validate": {
       "cache": true,
-      "dependsOn": ["typecheck", "lint", "test", "build"],
-      "inputs": ["default", "^production"],
+      "dependsOn": [
+        "typecheck",
+        "lint",
+        "test",
+        "build"
+      ],
+      "inputs": [
+        "default",
+        "^production"
+      ],
       "outputs": []
     },
     "clean": {
@@ -308,9 +381,16 @@
     },
     "coverage:report": {
       "cache": false,
-      "dependsOn": ["test"],
-      "inputs": ["default", "^production"],
-      "outputs": ["{workspaceRoot}/coverage"]
+      "dependsOn": [
+        "test"
+      ],
+      "inputs": [
+        "default",
+        "^production"
+      ],
+      "outputs": [
+        "{workspaceRoot}/coverage"
+      ]
     },
     "knip": {
       "cache": true,
@@ -347,11 +427,15 @@
         "{workspaceRoot}/tsconfig*.json",
         "{workspaceRoot}/package.json"
       ],
-      "outputs": ["{projectRoot}/**/*.{js,jsx,ts,tsx}"]
+      "outputs": [
+        "{projectRoot}/**/*.{js,jsx,ts,tsx}"
+      ]
     },
     "a11y:test": {
       "cache": false,
-      "dependsOn": ["build"],
+      "dependsOn": [
+        "build"
+      ],
       "inputs": [
         "^production",
         "{workspaceRoot}/.pa11yci.json",
@@ -360,7 +444,9 @@
     },
     "a11y:lighthouse": {
       "cache": false,
-      "dependsOn": ["build"],
+      "dependsOn": [
+        "build"
+      ],
       "inputs": [
         "^production",
         "{workspaceRoot}/.lighthouserc.js",
@@ -369,11 +455,18 @@
     },
     "a11y:dev": {
       "cache": false,
-      "inputs": ["source", "configs", "{workspaceRoot}/.pa11yci-dev.json"]
+      "inputs": [
+        "source",
+        "configs",
+        "{workspaceRoot}/.pa11yci-dev.json"
+      ]
     },
     "a11y:ci": {
       "cache": false,
-      "dependsOn": ["a11y:test", "a11y:lighthouse"],
+      "dependsOn": [
+        "a11y:test",
+        "a11y:lighthouse"
+      ],
       "inputs": []
     },
     "test:a11y": {
@@ -385,11 +478,15 @@
         "^production",
         "{workspaceRoot}/config/**/*"
       ],
-      "outputs": ["{projectRoot}/coverage"]
+      "outputs": [
+        "{projectRoot}/coverage"
+      ]
     },
     "test:a11y:e2e": {
       "cache": true,
-      "dependsOn": ["build"],
+      "dependsOn": [
+        "build"
+      ],
       "inputs": [
         "source",
         "tests",
@@ -398,11 +495,17 @@
         "{workspaceRoot}/config/**/*",
         "{workspaceRoot}/playwright.config.ts"
       ],
-      "outputs": ["{projectRoot}/coverage"]
+      "outputs": [
+        "{projectRoot}/coverage"
+      ]
     },
     "verify:a11y": {
       "cache": true,
-      "dependsOn": ["lint", "test:a11y", "a11y:ci"],
+      "dependsOn": [
+        "lint",
+        "test:a11y",
+        "a11y:ci"
+      ],
       "inputs": [],
       "outputs": []
     },
@@ -411,8 +514,14 @@
     }
   },
   "namedInputs": {
-    "default": ["{projectRoot}/**/*", "sharedGlobals"],
-    "source": ["{projectRoot}/src/**/*", "sharedGlobals"],
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals"
+    ],
+    "source": [
+      "{projectRoot}/src/**/*",
+      "sharedGlobals"
+    ],
     "tests": [
       "{projectRoot}/**/*.{spec,test}.{js,jsx,ts,tsx}",
       "{projectRoot}/**/*.snap",
@@ -495,7 +604,10 @@
   "tasksRunnerOptions": {
     "default": {
       "options": {
-        "runtimeCacheInputs": ["node -v", "pnpm -v"],
+        "runtimeCacheInputs": [
+          "node -v",
+          "pnpm -v"
+        ],
         "processTimeout": 600000,
         "lifeCycle": {
           "onProcessSignal": "cleanup",
@@ -507,7 +619,11 @@
   "defaultProject": "web",
   "release": {
     "projectsRelationship": "independent",
-    "projects": ["packages/*", "apps/*", "tools/*"],
+    "projects": [
+      "packages/*",
+      "apps/*",
+      "tools/*"
+    ],
     "version": {
       "conventionalCommits": true,
       "currentVersionResolverMetadata": {
@@ -536,7 +652,6 @@
   "cacheDirectory": ".nx/cache",
   "maxCacheSize": "15GB",
   "compression": true,
-  "useDaemonProcess": false,
   "defaultIteration": "prod",
   "flaky": [],
   "parallelTasks": 3,

@@ -660,7 +660,7 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
 		links: SimulationLink[],
 		config: ForceSimulationConfig,
 		pinnedNodes: string[]
-	) {
+	): Simulation<D3SimulationNode, D3SimulationLink> {
 		try {
 			const d3Nodes = this.mergeNodesIntoSimulation({ nodes, pinnedNodes })
 			const d3Links = this.mapLinksToSimulation({
@@ -673,13 +673,14 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
 			const seed = config.seed ?? DEFAULT_FORCE_PARAMS.seed
 			const rng = randomLcg(seed)
 
-			const simulation = forceSimulation().nodes(d3Nodes)
+			const simulation = forceSimulation()
+				.nodes(d3Nodes)
 				.randomSource(rng)
 				.alphaDecay(config.alphaDecay ?? DEFAULT_FORCE_PARAMS.alphaDecay)
-				.velocityDecay(config.velocityDecay ?? DEFAULT_FORCE_PARAMS.velocityDecay)
+				.velocityDecay(config.velocityDecay ?? DEFAULT_FORCE_PARAMS.velocityDecay) as Simulation<D3SimulationNode, D3SimulationLink>
 
-			const linkForce = forceLink<D3SimulationNode, D3SimulationLink>(d3Links)
-				.id((d) => d.id)
+			const linkForce = forceLink(d3Links)
+				.id((d: D3SimulationNode) => d.id)
 				.distance(config.linkDistance ?? DEFAULT_FORCE_PARAMS.linkDistance)
 				.strength(config.linkStrength ?? DEFAULT_FORCE_PARAMS.linkStrength)
 			simulation.force("link", linkForce)
