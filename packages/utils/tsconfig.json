@@ -5,13 +5,15 @@
     "outDir": "./dist",
     "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "lib": ["ES2022", "DOM"],
-    "moduleResolution": "node",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "verbatimModuleSyntax": false,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "strict": false,
-    "noImplicitAny": false,
-    "types": []
+    "noImplicitAny": false
   },
   "include": ["src/**/*", "../../types/**/*"],
   "exclude": [
