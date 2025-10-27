@@ -19,9 +19,9 @@
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@academic-explorer/client": ["../../packages/client/dist/index"],
-      "@academic-explorer/types": ["../../packages/types/dist"],
-      "@academic-explorer/utils": ["../../packages/utils/dist"]
+      "@academic-explorer/client": ["../../packages/client/src/index.ts"],
+      "@academic-explorer/types": ["../../packages/types/src/index.ts"],
+      "@academic-explorer/utils": ["../../packages/utils/src/index.ts"]
     }
   },
   "include": [
