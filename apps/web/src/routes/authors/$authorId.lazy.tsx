@@ -14,6 +14,9 @@ function AuthorRoute() {
   const { data: author, isLoading, error } = useQuery({
     queryKey: ["author", authorId],
     queryFn: async () => {
+      if (!authorId) {
+        throw new Error("Author ID is required");
+      }
       const response = await cachedOpenAlex.client.authors.getAuthor(authorId, {
         select: [...AUTHOR_FIELDS],
       });
