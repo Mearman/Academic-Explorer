@@ -2,15 +2,28 @@ import {
   GeneratorCallback,
   ProjectConfiguration,
 } from '@nx/devkit'
+import { join } from 'path'
 import { BaseGenerator } from './BaseGenerator'
 // Nx library generator available for future use
 // import { libraryGenerator as nxLibraryGenerator } from '@nx/js'
+
+export interface LibraryGeneratorOptions extends Record<string, unknown> {
+  name: string
+  type?: 'utility' | 'feature' | 'data' | 'ui' | 'shared'
+  directory?: string
+  tags?: string[]
+  importPath?: string
+  description?: string
+  unitTestRunner?: 'vitest' | 'none'
+  bundler?: 'tsc' | 'vite' | 'esbuild'
+  skipFormat?: boolean
+}
 
 /**
  * Base class for library generators
  * Provides standardized library creation patterns
  */
-export abstract class LibraryBase extends BaseGenerator<unknown> {
+export abstract class LibraryBase extends BaseGenerator<LibraryGeneratorOptions> {
   protected abstract libraryType: 'utility' | 'feature' | 'data' | 'ui'
 
   /**
@@ -69,7 +82,10 @@ export abstract class LibraryBase extends BaseGenerator<unknown> {
   /**
    * Create library-specific package.json
    */
-  protected createPackageJson(): void {
+  protected createPackageJson(
+    additionalDependencies?: Record<string, string>,
+    additionalDevDependencies?: Record<string, string>
+  ): void {
     const baseDependencies: Record<string, string> = {}
 
     // Add specific dependencies based on library type
@@ -87,11 +103,12 @@ export abstract class LibraryBase extends BaseGenerator<unknown> {
     }
 
     super.createPackageJson(
-      baseDependencies,
+      { ...baseDependencies, ...additionalDependencies },
       {
         vitest: '^3.2.4',
         '@vitest/coverage-v8': '^3.2.4',
         'typescript-eslint': '^8.44.1',
+        ...additionalDevDependencies,
       }
     )
   }
@@ -99,7 +116,10 @@ export abstract class LibraryBase extends BaseGenerator<unknown> {
   /**
    * Create library-specific TypeScript configuration
    */
-  protected createTsConfig(): void {
+  protected createTsConfig(
+    extendsConfig?: string[],
+    additionalCompilerOptions?: Record<string, unknown>
+  ): void {
     const compilerOptions: Record<string, unknown> = {
       target: 'es2022',
       module: 'esnext',
@@ -120,15 +140,18 @@ export abstract class LibraryBase extends BaseGenerator<unknown> {
       compilerOptions.lib = ['dom', 'dom.iterable', 'esnext']
     }
 
-    super.createTsConfig(['../../tsconfig.base.json'], compilerOptions)
+    super.createTsConfig(
+      extendsConfig || ['../../tsconfig.base.json'],
+      { ...compilerOptions, ...additionalCompilerOptions }
+    )
   }
 
   /**
    * Create library-specific Vitest configuration
    */
-  protected createVitestConfig(): void {
-    const testEnvironment = this.libraryType === 'ui' ? 'jsdom' : 'node'
-    super.createVitestConfig(testEnvironment)
+  protected createVitestConfig(testEnvironment?: 'node' | 'jsdom'): void {
+    const env = testEnvironment || (this.libraryType === 'ui' ? 'jsdom' : 'node')
+    super.createVitestConfig(env)
   }
 
   /**

@@ -36,7 +36,7 @@ export class ProjectBuilder {
       projectType: this.options.type,
       sourceRoot: this.options.sourceRoot || `${this.options.root}/src`,
       tags: this.options.tags || [],
-      targets: this.options.targets || this.getDefaultTargets(),
+      targets: (this.options.targets || this.getDefaultTargets()) as ProjectConfiguration['targets'],
     }
 
     return config

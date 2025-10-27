@@ -1,7 +1,8 @@
 {
   "extends": "./tsconfig.base.json",
   "files": [],
-  "include": ["eslint-rules/**/*", "vitest.config.base.ts", "scripts/**/*", "tools/**/*", ".commitlintrc.ts", "workspace-coverage.config.ts"],
+  "include": ["eslint-rules/**/*", "vitest.config.base.ts", "scripts/**/*", "tools/**/*", ".commitlintrc.ts", "workspace-coverage.config.ts", "eslint.config.base.ts"],
+  "exclude": ["tools/generators/**/*"],
   "references": [
     { "path": "./apps/cli" },
     { "path": "./apps/web" },
@@ -11,6 +12,7 @@
     { "path": "./packages/types" },
     { "path": "./packages/ui" },
     { "path": "./packages/utils" },
-    { "path": "./tools" }
+    { "path": "./tools" },
+    { "path": "./tools/generators" }
   ]
 }

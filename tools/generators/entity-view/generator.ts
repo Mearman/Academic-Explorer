@@ -1,24 +1,33 @@
 import { Tree, readProjectConfiguration, updateProjectConfiguration } from '@nx/devkit'
-import { EntityViewBase } from '../base/EntityViewBase'
-import { EntityViewGeneratorSchema } from './schema'
+import { EntityViewBase, NormalizedEntityViewOptions, EntityViewGeneratorOptions } from '../base/EntityViewBase'
+
+interface OpenAlexEntityViewNormalizedOptions extends NormalizedEntityViewOptions {
+  entityCamel: string
+  routesDirectory: string
+  componentsDirectory: string
+  hooksDirectory: string
+  testsDirectory: string
+  mocksDirectory: string
+}
 
 /**
  * OpenAlex entity view generator
  */
 class OpenAlexEntityView extends EntityViewBase {
-  protected normalizeOptions() {
+  declare protected normalizedOptions: OpenAlexEntityViewNormalizedOptions
+
+  protected normalizeOptions(): OpenAlexEntityViewNormalizedOptions {
+    const baseOptions = super.normalizeOptions()
     const entityNames = this.names
-    const entityName = entityNames.fileName
     const entityPlural = entityNames.propertyName + "s"
-    const entityPascal = entityNames.className
-    const entityCamel = entityNames.camelName
+    const entityCamel = entityNames.propertyName
 
     const projectRoot =
       this.options.project === "web"
         ? "apps/web"
-        : this.options.project.startsWith("@")
+        : this.options.project?.startsWith("@")
         ? `packages/${this.options.project.replace("@academic-explorer/", "")}`
-        : `packages/${this.options.project}`
+        : `packages/${this.options.project || "web"}`
 
     const routesDirectory = `${projectRoot}/src/routes/${entityPlural}`
     const componentsDirectory = `${projectRoot}/src/components/entities/${entityPlural}`
@@ -27,12 +36,8 @@ class OpenAlexEntityView extends EntityViewBase {
     const mocksDirectory = `${projectRoot}/src/mocks/${entityPlural}`
 
     return {
-      ...this.options,
-      entityName,
-      entityPlural,
-      entityPascal,
+      ...baseOptions,
       entityCamel,
-      projectRoot,
       routesDirectory,
       componentsDirectory,
       hooksDirectory,
@@ -41,8 +46,12 @@ class OpenAlexEntityView extends EntityViewBase {
     }
   }
 
+  protected generateMainViewComponent(): string {
+    return this.generateDetailViewComponent()
+  }
+
   protected generateEntityHook(): string {
-    const { entityName, entityPascal } = this.normalizedOptions
+    const { entityName, entityNameCapitalized } = this.normalizedOptions
 
     return `import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import { cachedOpenAlex } from '@academic-explorer/client'
@@ -51,7 +60,7 @@ import { logger } from '@/lib/logger'
 /**
  * Hook for fetching single ${entityName} by ID
  */
-export function use${entityPascal}(id: string, options?: { enabled?: boolean }) {
+export function use${entityNameCapitalized}(id: string, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: ['${entityName}', id],
     queryFn: async () => {
@@ -75,7 +84,7 @@ export function use${entityPascal}(id: string, options?: { enabled?: boolean }) 
 /**
  * Suspense version for use in route loaders
  */
-export function use${entityPascal}Suspense(id: string) {
+export function use${entityNameCapitalized}Suspense(id: string) {
   return useSuspenseQuery({
     queryKey: ['${entityName}', id],
     queryFn: async () => {
@@ -98,7 +107,7 @@ export function use${entityPascal}Suspense(id: string) {
 /**
  * Hook for searching ${entityName}s
  */
-export function use${entityPascal}Search(params: {
+export function use${entityNameCapitalized}Search(params: {
   query?: string
   page?: number
   per_page?: number
@@ -133,7 +142,7 @@ export function use${entityPascal}Search(params: {
   }
 
   protected generateEntityTypes(): string {
-    const { entityName, entityPascal } = this.normalizedOptions
+    const { entityName, entityNameCapitalized } = this.normalizedOptions
 
     return `import { z } from 'zod'
 
@@ -149,13 +158,13 @@ export const ${entityName}Schema = z.object({
 /**
  * Type for OpenAlex ${entityName}
  */
-export type ${entityPascal} = z.infer<typeof ${entityName}Schema>
+export type ${entityNameCapitalized} = z.infer<typeof ${entityName}Schema>
 
 /**
- * ${entityPascal} search results
+ * ${entityNameCapitalized} search results
  */
-export interface ${entityPascal}SearchResult {
-  results: ${entityPascal}[]
+export interface ${entityNameCapitalized}SearchResult {
+  results: ${entityNameCapitalized}[]
   meta: {
     count: number
     page: number
@@ -165,17 +174,17 @@ export interface ${entityPascal}SearchResult {
 }
 
 /**
- * ${entityPascal} view props
+ * ${entityNameCapitalized} view props
  */
-export interface ${entityPascal}ViewProps {
+export interface ${entityNameCapitalized}ViewProps {
   id: string
   className?: string
 }
 
 /**
- * ${entityPascal} list view props
+ * ${entityNameCapitalized} list view props
  */
-export interface ${entityPascal}ListViewProps {
+export interface ${entityNameCapitalized}ListViewProps {
   query?: string
   page?: number
   className?: string
@@ -184,42 +193,42 @@ export interface ${entityPascal}ListViewProps {
   }
 
   protected generateIndexRoute(): string {
-    const { entityPlural, entityPascal } = this.normalizedOptions
+    const { entityPlural, entityPluralCapitalized } = this.normalizedOptions
 
     return `import { createFileRoute } from '@tanstack/react-router'
-import { ${entityPascal}ListView } from '../../components/entities/${entityPlural}/${entityPlural}-list-view'
+import { ${entityPluralCapitalized}ListView } from '../../components/entities/${entityPlural}/${entityPlural}-list-view'
 
 export const Route = createFileRoute('/entity-views/${entityPlural}/')({
-  component: ${entityPascal}ListView,
+  component: ${entityPluralCapitalized}ListView,
 })
 `
   }
 
   protected generateDetailRoute(): string {
-    const { entityName, entityPascal } = this.normalizedOptions
+    const { entityName, entityNameCapitalized } = this.normalizedOptions
 
     return `import { createFileRoute } from '@tanstack/react-router'
-import { ${entityPascal}View } from '../../components/entities/${entityName}s/${entityName}-view'
+import { ${entityNameCapitalized}View } from '../../components/entities/${entityName}s/${entityName}-view'
 
 export const Route = createFileRoute('/entity-views/${entityName}s/$entityId')({
-  component: ${entityPascal}View,
+  component: ${entityNameCapitalized}View,
   loader: ({ params }) => ({
-    crumb: \`${entityPascal}: \${params.entityId}\`,
+    crumb: \`${entityNameCapitalized}: \${params.entityId}\`,
   }),
 })
 `
   }
 
   protected generateListViewComponent(): string {
-    const { entityPlural, entityPascal } = this.normalizedOptions
+    const { entityPlural, entityPluralCapitalized } = this.normalizedOptions
 
     return `import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { ${entityPascal}SearchResult } from '../types/${entityPlural}.types'
-import { use${entityPascal}Search } from '../hooks/${entityPlural}/${entityPlural}-hooks'
+import { ${entityPluralCapitalized}SearchResult } from '../types/${entityPlural}.types'
+import { use${entityPluralCapitalized}Search } from '../hooks/${entityPlural}/${entityPlural}-hooks'
 import { logger } from '@/lib/logger'
 
-export function ${entityPascal}ListView({
+export function ${entityPluralCapitalized}ListView({
   query = '',
   page = 1,
   className
@@ -231,7 +240,7 @@ export function ${entityPascal}ListView({
   const [searchQuery, setSearchQuery] = useState(query)
   const [currentPage, setCurrentPage] = useState(page)
 
-  const { data, isLoading, error } = use${entityPascal}Search({
+  const { data, isLoading, error } = use${entityPluralCapitalized}Search({
     query: searchQuery,
     page: currentPage,
     per_page: 25,
@@ -250,7 +259,7 @@ export function ${entityPascal}ListView({
     logger.error('ui', 'Error loading ${entityPlural}', { error })
     return (
       <div className={className}>
-        <h2>${entityPascal} List</h2>
+        <h2>${entityPluralCapitalized} List</h2>
         <p>Error loading ${entityPlural}. Please try again.</p>
       </div>
     )
@@ -259,7 +268,7 @@ export function ${entityPascal}ListView({
   return (
     <div className={className}>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">${entityPascal}s</h1>
+        <h1 className="text-2xl font-bold">${entityPluralCapitalized}</h1>
       </div>
 
       {/* Search UI */}
@@ -345,19 +354,19 @@ export function ${entityPascal}ListView({
   }
 
   protected generateDetailViewComponent(): string {
-    const { entityName, entityPascal } = this.normalizedOptions
+    const { entityName, entityNameCapitalized } = this.normalizedOptions
 
-    return `import { use${entityPascal} } from '../hooks/${entityName}s/${entityName}-hooks'
+    return `import { use${entityNameCapitalized} } from '../hooks/${entityName}s/${entityName}-hooks'
 import { logger } from '@/lib/logger'
 
-export function ${entityPascal}View({ id, className }: { id: string; className?: string }) {
-  const { data: entity, isLoading, error } = use${entityPascal}(id)
+export function ${entityNameCapitalized}View({ id, className }: { id: string; className?: string }) {
+  const { data: entity, isLoading, error } = use${entityNameCapitalized}(id)
 
   if (error) {
     logger.error('ui', \`Error loading ${entityName} \${id}\`, { error })
     return (
       <div className={className}>
-        <h2>${entityPascal}</h2>
+        <h2>${entityNameCapitalized}</h2>
         <p>Error loading ${entityName}. Please try again.</p>
       </div>
     )
@@ -366,7 +375,7 @@ export function ${entityPascal}View({ id, className }: { id: string; className?:
   if (isLoading) {
     return (
       <div className={className}>
-        <h2>${entityPascal}</h2>
+        <h2>${entityNameCapitalized}</h2>
         <p>Loading ${entityName}...</p>
       </div>
     )
@@ -375,8 +384,8 @@ export function ${entityPascal}View({ id, className }: { id: string; className?:
   if (!entity) {
     return (
       <div className={className}>
-        <h2>${entityPascal}</h2>
-        <p>${entityPascal} not found.</p>
+        <h2>${entityNameCapitalized}</h2>
+        <p>${entityNameCapitalized} not found.</p>
       </div>
     )
   }
@@ -428,12 +437,12 @@ export function ${entityPascal}View({ id, className }: { id: string; className?:
   }
 
   protected generateUnitTests(): string {
-    const { entityName, entityPlural, entityPascal } = this.normalizedOptions
+    const { entityName, entityPlural, entityNameCapitalized } = this.normalizedOptions
 
     return `import { renderHook, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { use${entityPascal}, use${entityPascal}Search } from '../hooks/${entityPlural}/${entityPlural}-hooks'
-import { ${entityPascal}Schema } from '../types/${entityPlural}.types'
+import { use${entityNameCapitalized}, use${entityNameCapitalized}Search } from '../hooks/${entityPlural}/${entityPlural}-hooks'
+import { ${entityNameCapitalized}Schema } from '../types/${entityPlural}.types'
 
 // Mock the OpenAlex client
 jest.mock('@academic-explorer/client', () => ({
@@ -469,25 +478,25 @@ describe('${entityPlural} Hooks', () => {
     jest.clearAllMocks()
   })
 
-  describe('use${entityPascal}', () => {
+  describe('use${entityNameCapitalized}', () => {
     it('should fetch ${entityName} by ID', async () => {
-      const mock${entityPascal} = ${entityPascal}Schema.parse({
+      const mock${entityNameCapitalized} = ${entityNameCapitalized}Schema.parse({
         id: 'A123456789',
-        display_name: 'Test ${entityPascal}',
+        display_name: 'Test ${entityNameCapitalized}',
         created_date: '2023-01-01',
       })
 
       const { cachedOpenAlex } = require('@academic-explorer/client')
       cachedOpenAlex.${entityName}s.mockResolvedValue({
-        results: [mock${entityPascal}],
+        results: [mock${entityNameCapitalized}],
       })
 
-      const { result } = renderHook(() => use${entityPascal}('A123456789'), {
+      const { result } = renderHook(() => use${entityNameCapitalized}('A123456789'), {
         wrapper: createWrapper(),
       })
 
       await waitFor(() => {
-        expect(result.current.data).toEqual(mock${entityPascal})
+        expect(result.current.data).toEqual(mock${entityNameCapitalized})
       })
 
       expect(cachedOpenAlex.${entityName}s).toHaveBeenCalledWith({
@@ -502,7 +511,7 @@ describe('${entityPlural} Hooks', () => {
         results: [],
       })
 
-      const { result } = renderHook(() => use${entityPascal}('nonexistent'), {
+      const { result } = renderHook(() => use${entityNameCapitalized}('nonexistent'), {
         wrapper: createWrapper(),
       })
 
@@ -514,16 +523,16 @@ describe('${entityPlural} Hooks', () => {
     })
   })
 
-  describe('use${entityPascal}Search', () => {
+  describe('use${entityNameCapitalized}Search', () => {
     it('should search ${entityName}s', async () => {
       const mockResults = [
-        ${entityPascal}Schema.parse({
+        ${entityNameCapitalized}Schema.parse({
           id: 'A123456789',
-          display_name: 'Test ${entityPascal} 1',
+          display_name: 'Test ${entityNameCapitalized} 1',
         }),
-        ${entityPascal}Schema.parse({
+        ${entityNameCapitalized}Schema.parse({
           id: 'A987654321',
-          display_name: 'Test ${entityPascal} 2',
+          display_name: 'Test ${entityNameCapitalized} 2',
         }),
       ]
 
@@ -539,7 +548,7 @@ describe('${entityPlural} Hooks', () => {
       })
 
       const { result } = renderHook(
-        () => use${entityPascal}Search({ query: 'test' }),
+        () => use${entityNameCapitalized}Search({ query: 'test' }),
         {
           wrapper: createWrapper(),
         }
@@ -564,7 +573,7 @@ describe('${entityPlural} Hooks', () => {
       })
 
       renderHook(
-        () => use${entityPascal}Search({ query: 'test', page: 2 }),
+        () => use${entityNameCapitalized}Search({ query: 'test', page: 2 }),
         {
           wrapper: createWrapper(),
         }
@@ -585,36 +594,36 @@ describe('${entityPlural} Hooks', () => {
   }
 
   protected generateMockData(): string {
-    const { entityName, entityPascal } = this.normalizedOptions
+    const { entityName, entityNameCapitalized } = this.normalizedOptions
 
-    return `import { ${entityPascal} } from '../types/${entityName}s/${entityName}s.types'
+    return `import { ${entityNameCapitalized} } from '../types/${entityName}s/${entityName}s.types'
 
 /**
  * Mock ${entityName} data for testing
  */
-export const mock${entityPascal}: ${entityPascal} = {
+export const mock${entityNameCapitalized}: ${entityNameCapitalized} = {
   id: 'A5017898742',
-  display_name: 'Test ${entityPascal}',
+  display_name: 'Test ${entityNameCapitalized}',
   created_date: '2023-01-15T00:00:00Z',
 }
 
 /**
  * Array of mock ${entityName}s
  */
-export const mock${entityName}s: ${entityPascal}[] = [
+export const mock${entityName}s: ${entityNameCapitalized}[] = [
   {
     id: 'A5017898742',
-    display_name: 'Test ${entityPascal} 1',
+    display_name: 'Test ${entityNameCapitalized} 1',
     created_date: '2023-01-15T00:00:00Z',
   },
   {
     id: 'A1234567890',
-    display_name: 'Test ${entityPascal} 2',
+    display_name: 'Test ${entityNameCapitalized} 2',
     created_date: '2023-02-20T00:00:00Z',
   },
   {
     id: 'A9876543210',
-    display_name: 'Test ${entityPascal} 3',
+    display_name: 'Test ${entityNameCapitalized} 3',
     created_date: '2023-03-25T00:00:00Z',
   },
 ]
@@ -678,7 +687,7 @@ export const mock${entityName}SearchResult = {
  */
 export default async function entityViewGenerator(
   tree: Tree,
-  options: EntityViewGeneratorSchema
+  options: EntityViewGeneratorOptions
 ) {
   const generator = new OpenAlexEntityView(tree, options)
   return generator.generate()

@@ -1,11 +1,12 @@
 import {
   GeneratorCallback,
 } from '@nx/devkit'
-import { BaseGenerator } from './BaseGenerator'
+import { join } from 'path'
+import { BaseGenerator, NormalizedOptions } from './BaseGenerator'
 // Nx component generator available for future use
 // import { componentGenerator as nxComponentGenerator } from '@nx/react'
 
-export interface ComponentGeneratorOptions {
+export interface ComponentGeneratorOptions extends Record<string, unknown> {
   name: string
   project?: string
   directory?: string
@@ -15,11 +16,14 @@ export interface ComponentGeneratorOptions {
   styled?: boolean
   withHooks?: boolean
   withTypes?: boolean
+  story?: boolean
+  withHook?: boolean
+  flat?: boolean
+  skipFormat?: boolean
 }
 
 export interface NormalizedComponentOptions extends NormalizedOptions {
   targetProject: string
-  projectRoot: string
   componentDirectory: string
   skipTests: boolean
   skipStorybook: boolean
@@ -34,7 +38,7 @@ export interface NormalizedComponentOptions extends NormalizedOptions {
  * Provides standardized component creation patterns
  */
 export abstract class ComponentBase extends BaseGenerator<ComponentGeneratorOptions> {
-  protected normalizedOptions!: NormalizedComponentOptions
+  declare protected normalizedOptions: NormalizedComponentOptions
 
   /**
    * Normalize component generator options
@@ -44,8 +48,8 @@ export abstract class ComponentBase extends BaseGenerator<ComponentGeneratorOpti
       this.options.project ||
       this.getDefaultProject()
 
-    const componentName = names(this.options.name).fileName
-    const className = names(this.options.name).className
+    const componentName = this.names.fileName
+    const className = this.names.className
 
     const componentDirectory = this.options.directory
       ? `${this.options.directory}/${componentName}`

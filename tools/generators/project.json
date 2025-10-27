@@ -7,13 +7,16 @@
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "tsc --noEmit"
+        "command": "tsc --noEmit",
+        "cwd": "tools/generators"
       }
     },
     "lint": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/eslint:lint",
       "options": {
-        "command": "NODE_OPTIONS='--import tsx' eslint **/*.ts --no-warn-ignored"
+        "lintFilePatterns": [
+          "tools/generators/**/*.ts"
+        ]
       }
     }
   }

@@ -6,8 +6,9 @@ import {
   generateFiles,
   offsetFromRoot,
   formatFiles,
-  join,
+  names,
 } from '@nx/devkit'
+import { join } from 'path'
 // Nx generators available for future use
 // import { libraryGenerator as nxLibraryGenerator } from '@nx/js'
 // import { componentGenerator as nxComponentGenerator } from '@nx/react'
@@ -20,10 +21,14 @@ export abstract class BaseGenerator<TSchema extends Record<string, unknown>> {
   protected tree: Tree
   protected options: TSchema
   protected normalizedOptions: NormalizedOptions
+  protected names: ReturnType<typeof names>
 
   constructor(tree: Tree, options: TSchema) {
     this.tree = tree
     this.options = options
+    // Initialize names from options if 'name' property exists
+    const optionsWithName = options as { name?: string }
+    this.names = names(optionsWithName.name || 'default')
     this.normalizedOptions = this.normalizeOptions()
   }
 
@@ -35,7 +40,7 @@ export abstract class BaseGenerator<TSchema extends Record<string, unknown>> {
   /**
    * Main generator execution method
    */
-  abstract generate(): GeneratorCallback
+  abstract generate(): Promise<GeneratorCallback>
 
   /**
    * Add project configuration to workspace
@@ -84,6 +89,13 @@ export abstract class BaseGenerator<TSchema extends Record<string, unknown>> {
       parsedTags: this.normalizedOptions.parsedTags,
       importPath: this.normalizedOptions.importPath,
     }
+  }
+
+  /**
+   * Create a file in the tree
+   */
+  protected createFile(path: string, content: string): void {
+    this.tree.write(join(this.normalizedOptions.projectRoot, path), content)
   }
 
   /**

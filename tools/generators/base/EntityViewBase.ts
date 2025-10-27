@@ -1,11 +1,13 @@
 import {
   GeneratorCallback,
-  join,
+  names,
 } from '@nx/devkit'
-import { BaseGenerator } from './BaseGenerator'
+import { join } from 'path'
+import { BaseGenerator, NormalizedOptions } from './BaseGenerator'
 
-export interface EntityViewGeneratorOptions {
+export interface EntityViewGeneratorOptions extends Record<string, unknown> {
   entity: string
+  name?: string
   project?: string
   withMocks?: boolean
   withIntegration?: boolean
@@ -13,6 +15,7 @@ export interface EntityViewGeneratorOptions {
   withLazyLoading?: boolean
   withErrorHandling?: boolean
   skipTests?: boolean
+  skipFormat?: boolean
 }
 
 export interface NormalizedEntityViewOptions extends NormalizedOptions {
@@ -36,7 +39,7 @@ export interface NormalizedEntityViewOptions extends NormalizedOptions {
  * Provides standardized entity view creation patterns
  */
 export abstract class EntityViewBase extends BaseGenerator<EntityViewGeneratorOptions> {
-  protected normalizedOptions!: NormalizedEntityViewOptions
+  declare protected normalizedOptions: NormalizedEntityViewOptions
 
   // OpenAlex entity configurations
   private readonly entityConfigs = {
@@ -60,8 +63,9 @@ export abstract class EntityViewBase extends BaseGenerator<EntityViewGeneratorOp
       throw new Error(`Unsupported entity type: ${entity}. Supported types: ${Object.keys(this.entityConfigs).join(', ')}`)
     }
 
-    const entityName = names(entity).fileName
-    const entityNameCapitalized = names(entity).className
+    const entityNames = names(entity)
+    const entityName = entityNames.fileName
+    const entityNameCapitalized = entityNames.className
     const entityPlural = entityConfig.plural
     const entityPluralCapitalized = names(entityPlural).className
 

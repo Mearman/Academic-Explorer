@@ -1,16 +1,10 @@
 import { Tree } from '@nx/devkit'
-import { LibraryBase } from '../base/LibraryBase'
-import { LibraryGeneratorSchema } from './schema'
-import { names } from '@nx/devkit'
+import { LibraryBase, LibraryGeneratorOptions } from '../base/LibraryBase'
+import { NormalizedOptions } from '../base/BaseGenerator'
 
-export interface NormalizedLibraryGeneratorSchema extends LibraryGeneratorSchema {
+export interface NormalizedLibraryGeneratorSchema extends NormalizedOptions {
+  // Library-specific normalized options
   projectName: string
-  projectRoot: string
-  projectDirectory: string
-  parsedTags: string[]
-  importPath: string
-  className: string
-  fileName: string
 }
 
 /**
@@ -20,7 +14,7 @@ class UtilityLibrary extends LibraryBase {
   protected libraryType = 'utility' as const
 
   protected normalizeOptions(): NormalizedLibraryGeneratorSchema {
-    const name = names(this.options.name).fileName
+    const name = this.names.fileName
     const projectDirectory = this.options.directory || name
     const projectName = name.replace(/-/g, '')
     const projectRoot = `packages/${projectDirectory}`
@@ -28,17 +22,16 @@ class UtilityLibrary extends LibraryBase {
     const parsedTags = [
       'type:lib',
       'scope:utility',
-      ...(this.options.tags ? this.options.tags.map(tag => tag.startsWith('@') ? tag : `@${tag}`) : []),
+      ...(this.options.tags ? this.options.tags.map(tag => typeof tag === 'string' && tag.startsWith('@') ? tag : `@${tag}`) : []),
     ]
 
     const importPath =
       this.options.importPath || `@academic-explorer/${projectDirectory}`
 
-    const className = names(this.options.name).className
-    const fileName = names(this.options.name).fileName
+    const className = this.names.className
+    const fileName = this.names.fileName
 
     return {
-      ...this.options,
       projectName,
       projectRoot,
       projectDirectory,
@@ -78,7 +71,7 @@ class FeatureLibrary extends LibraryBase {
   protected libraryType = 'feature' as const
 
   protected normalizeOptions(): NormalizedLibraryGeneratorSchema {
-    const name = names(this.options.name).fileName
+    const name = this.names.fileName
     const projectDirectory = this.options.directory || name
     const projectName = name.replace(/-/g, '')
     const projectRoot = `packages/${projectDirectory}`
@@ -86,17 +79,16 @@ class FeatureLibrary extends LibraryBase {
     const parsedTags = [
       'type:lib',
       'scope:feature',
-      ...(this.options.tags ? this.options.tags.map(tag => tag.startsWith('@') ? tag : `@${tag}`) : []),
+      ...(this.options.tags ? this.options.tags.map(tag => typeof tag === 'string' && tag.startsWith('@') ? tag : `@${tag}`) : []),
     ]
 
     const importPath =
       this.options.importPath || `@academic-explorer/${projectDirectory}`
 
-    const className = names(this.options.name).className
-    const fileName = names(this.options.name).fileName
+    const className = this.names.className
+    const fileName = this.names.fileName
 
     return {
-      ...this.options,
       projectName,
       projectRoot,
       projectDirectory,
@@ -136,7 +128,7 @@ class DataLibrary extends LibraryBase {
   protected libraryType = 'data' as const
 
   protected normalizeOptions(): NormalizedLibraryGeneratorSchema {
-    const name = names(this.options.name).fileName
+    const name = this.names.fileName
     const projectDirectory = this.options.directory || name
     const projectName = name.replace(/-/g, '')
     const projectRoot = `packages/${projectDirectory}`
@@ -144,17 +136,16 @@ class DataLibrary extends LibraryBase {
     const parsedTags = [
       'type:lib',
       'scope:data',
-      ...(this.options.tags ? this.options.tags.map(tag => tag.startsWith('@') ? tag : `@${tag}`) : []),
+      ...(this.options.tags ? this.options.tags.map(tag => typeof tag === 'string' && tag.startsWith('@') ? tag : `@${tag}`) : []),
     ]
 
     const importPath =
       this.options.importPath || `@academic-explorer/${projectDirectory}`
 
-    const className = names(this.options.name).className
-    const fileName = names(this.options.name).fileName
+    const className = this.names.className
+    const fileName = this.names.fileName
 
     return {
-      ...this.options,
       projectName,
       projectRoot,
       projectDirectory,
@@ -219,7 +210,7 @@ class UILibrary extends LibraryBase {
   protected libraryType = 'ui' as const
 
   protected normalizeOptions(): NormalizedLibraryGeneratorSchema {
-    const name = names(this.options.name).fileName
+    const name = this.names.fileName
     const projectDirectory = this.options.directory || name
     const projectName = name.replace(/-/g, '')
     const projectRoot = `packages/${projectDirectory}`
@@ -227,17 +218,16 @@ class UILibrary extends LibraryBase {
     const parsedTags = [
       'type:lib',
       'scope:ui',
-      ...(this.options.tags ? this.options.tags.map(tag => tag.startsWith('@') ? tag : `@${tag}`) : []),
+      ...(this.options.tags ? this.options.tags.map(tag => typeof tag === 'string' && tag.startsWith('@') ? tag : `@${tag}`) : []),
     ]
 
     const importPath =
       this.options.importPath || `@academic-explorer/${projectDirectory}`
 
-    const className = names(this.options.name).className
-    const fileName = names(this.options.name).fileName
+    const className = this.names.className
+    const fileName = this.names.fileName
 
     return {
-      ...this.options,
       projectName,
       projectRoot,
       projectDirectory,
@@ -327,7 +317,7 @@ export function ${this.normalizedOptions.className}({
  */
 export default async function libraryGenerator(
   tree: Tree,
-  options: LibraryGeneratorSchema
+  options: LibraryGeneratorOptions
 ) {
   // Select appropriate generator class based on type
   let generator: LibraryBase

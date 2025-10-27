@@ -1,45 +1,51 @@
 import { Tree } from '@nx/devkit'
-import { ComponentBase } from '../base/ComponentBase'
-import { ComponentGeneratorSchema } from './schema'
+import { ComponentBase, NormalizedComponentOptions, ComponentGeneratorOptions } from '../base/ComponentBase'
+
+interface ReactComponentNormalizedOptions extends NormalizedComponentOptions {
+  componentPath: string
+  isUiPackage: boolean
+  useMantine: boolean
+}
 
 /**
  * React component generator
  */
 class ReactComponent extends ComponentBase {
-  protected normalizeOptions() {
+  declare protected normalizedOptions: ReactComponentNormalizedOptions
+
+  protected normalizeOptions(): ReactComponentNormalizedOptions {
+    const baseOptions = super.normalizeOptions()
     const name = this.names.fileName
-    const className = this.names.className
-    const fileName = this.names.fileName
 
     // Determine project root
     const projectRoot =
       this.options.project === "web"
         ? "apps/web"
-        : this.options.project.startsWith("@")
+        : this.options.project?.startsWith("@")
         ? `packages/${this.options.project.replace("@academic-explorer/", "")}`
-        : `packages/${this.options.project}`
+        : `packages/${this.options.project || "web"}`
 
-    const isUiPackage = this.options.project === "ui" || this.options.project.includes("ui")
+    const isUiPackage = this.options.project === "ui" || (this.options.project?.includes("ui") ?? false)
 
     // Determine component directory
     const baseDirectory = this.options.directory || "components"
-    const componentDirectory = this.options.flat
+    const flat = (this.options as { flat?: boolean }).flat
+    const componentDirectory = flat
       ? baseDirectory
       : `${baseDirectory}/${name}`
 
     const componentPath = `${projectRoot}/src/${componentDirectory}`
 
     return {
-      ...this.options,
-      name,
-      className,
-      fileName,
-      projectRoot,
+      ...baseOptions,
       componentPath,
-      componentDirectory,
       isUiPackage,
       useMantine: this.options.project === "web" || isUiPackage,
     }
+  }
+
+  protected generateComponentFile(): string {
+    return this.generateComponentContent()
   }
 
   protected generateComponentContent(): string {
@@ -286,7 +292,7 @@ export type { ${className}Props } from './${fileName}'
  */
 export default async function componentGenerator(
   tree: Tree,
-  options: ComponentGeneratorSchema
+  options: ComponentGeneratorOptions
 ) {
   const generator = new ReactComponent(tree, options)
   return generator.generate()
