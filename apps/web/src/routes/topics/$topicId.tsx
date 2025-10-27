@@ -3,7 +3,9 @@ import { lazy } from "react";
 import { LazyRoute } from "@/components/routing/LazyRoute";
 import { z } from "zod";
 
-const TopicRoute = lazy(() => import("./$topicId.lazy"));
+const TopicRoute = lazy(() =>
+  import("./$topicId.lazy").then((m) => ({ default: m.default })),
+);
 
 export const Route = createFileRoute("/topics/$topicId")({
   component: () => (

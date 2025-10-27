@@ -129,7 +129,11 @@ describe("WorkRouteComponent Integration Tests", () => {
         : "Academic Explorer";
     });
 
-    });
+    // Mock useGraphStore
+    vi.mocked(useGraphStore).mockImplementation((selector?) =>
+      selector ? selector({ totalNodeCount: 0 }) : { totalNodeCount: 0 },
+    );
+  });
 
   afterEach(() => {
     queryClient.clear();
@@ -348,8 +352,8 @@ describe("WorkRouteComponent Integration Tests", () => {
       error: null,
     });
 
-    vi.mocked(useGraphStore).mockImplementation((selector) =>
-      selector({ totalNodeCount: 0 }),
+    vi.mocked(useGraphStore).mockImplementation((selector?) =>
+      selector ? selector({ totalNodeCount: 0 }) : { totalNodeCount: 0 },
     );
 
     render(
@@ -374,8 +378,8 @@ describe("WorkRouteComponent Integration Tests", () => {
       error: null,
     });
 
-    vi.mocked(useGraphStore).mockImplementation((selector) =>
-      selector({ totalNodeCount: 5 }),
+    vi.mocked(useGraphStore).mockImplementation((selector?) =>
+      selector ? selector({ totalNodeCount: 5 }) : { totalNodeCount: 5 },
     );
 
     render(

@@ -296,7 +296,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   <Group gap="xs">
                     {/* Debug info */}
                     <Text size="xs" c="red">
-                      Active: {layoutActions.getActiveGroup("left")?.id ?? "none"}
+                      Active: {layoutActions.getActiveGroup("left") ?? "none"}
                     </Text>
                     {!layoutActions.getActiveGroup("left") && (
                       <ActionIcon
@@ -455,7 +455,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   <Group gap="xs">
                     {/* Debug info */}
                     <Text size="xs" c="red">
-                      Active: {layoutActions.getActiveGroup("right")?.id ?? "none"}
+                      Active: {layoutActions.getActiveGroup("right") ?? "none"}
                     </Text>
                     {!layoutActions.getActiveGroup("right") && (
                       <ActionIcon

@@ -112,7 +112,9 @@ export function transformEntityToGridItem<T extends Work | Author | InstitutionE
   if (!mapper) {
     throw new Error(`Unsupported entity type: ${entityType}`)
   }
-  return mapper(entity as Work | Author | InstitutionEntity | Source | Publisher | Funder | Topic | Concept)
+  // Use type assertion with `any` as intermediate to avoid type mismatch
+  // The mapper functions are properly typed but TypeScript can't narrow the union type
+  return mapper(entity as never)
 }
 
 /**

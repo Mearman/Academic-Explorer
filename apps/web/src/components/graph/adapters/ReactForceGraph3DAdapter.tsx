@@ -18,6 +18,11 @@ interface ForceGraph3DMethods {
   zoomToFit: (duration?: number) => void;
   centerAt: (x: number, y: number, z?: number, duration?: number) => void;
   zoom: (scale: number, duration?: number) => void;
+  cameraPosition: (
+    position: { x: number; y: number; z: number },
+    lookAt?: Record<string, unknown> | { x: number; y: number; z: number },
+    duration?: number,
+  ) => void;
 }
 
 export function ReactForceGraph3DAdapterComponent({
@@ -31,7 +36,9 @@ export function ReactForceGraph3DAdapterComponent({
   adapterConfig?: ReactForceGraph3DConfig;
   registerFitViewCallback: (callback: () => void) => () => void;
 }) {
-  const fgRef = useRef<ForceGraph3DMethods | null>(null);
+  const fgRef = useRef<ForceGraph3DMethods | undefined>(
+    undefined,
+  ) as React.MutableRefObject<ForceGraph3DMethods | undefined>;
   const resolveCssVarColor = useCallback(
     (color: string, fallbackColor: string) => {
       if (!color) {
@@ -125,6 +132,7 @@ export function ReactForceGraph3DAdapterComponent({
 
       return {
         id: node.id,
+        label: node.label,
         name: node.label,
         color: convertedColor,
         val: node.size || 4,
@@ -239,7 +247,7 @@ export function ReactForceGraph3DAdapterComponent({
         try {
           return (
             <ForceGraph3D
-              ref={fgRef}
+              ref={fgRef as React.MutableRefObject<ForceGraph3DMethods | undefined> as React.MutableRefObject<never>}
               graphData={graphData}
               width={config.width}
               height={config.height}

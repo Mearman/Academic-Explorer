@@ -88,7 +88,7 @@ export const RightRibbon: React.FC = () => {
     });
 
     // Check if this group is already active and sidebar is open - if so, toggle sidebar
-    const isCurrentlyActive = activeGroupId?.id === groupId;
+    const isCurrentlyActive = activeGroupId === groupId;
     const isCurrentlyOpen = layoutStore.rightSidebarOpen;
 
     if (isCurrentlyActive && isCurrentlyOpen) {
@@ -620,7 +620,7 @@ export const RightRibbon: React.FC = () => {
       >
         {groupDefinitions.map((group, index) => {
           const badge = getGroupBadge(group.id);
-          const isActive = activeGroupId?.id === group.id;
+          const isActive = activeGroupId === group.id;
 
           return (
             <React.Fragment key={group.id}>

@@ -5,11 +5,7 @@
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { createForceSimulationExecutor } from "@academic-explorer/graph";
-import type { ForceSimulationTask } from "@academic-explorer/graph";
-import type {
-  ForceSimulationNode,
-  ForceSimulationLink,
-} from "@academic-explorer/graph";
+import type { ForceSimulationTask, ForceSimulationNode, ForceLink } from "@academic-explorer/graph";
 
 describe("ForceSimulationExecutor", () => {
   let executor: ReturnType<typeof createForceSimulationExecutor>;
@@ -26,7 +22,7 @@ describe("ForceSimulationExecutor", () => {
     { id: "node3", x: -50, y: 50 },
   ];
 
-  const createTestLinks = (): ForceSimulationLink[] => [
+  const createTestLinks = (): ForceLink[] => [
     { id: "link1", source: "node1", target: "node2" },
     { id: "link2", source: "node2", target: "node3" },
   ];
@@ -202,7 +198,7 @@ describe("ForceSimulationExecutor", () => {
     emitSpy.mockClear();
 
     // Update links
-    const newLinks: ForceSimulationLink[] = [
+    const newLinks: ForceLink[] = [
       { id: "link1", source: "node1", target: "node2" },
       { id: "link3", source: "node1", target: "node3" },
     ];

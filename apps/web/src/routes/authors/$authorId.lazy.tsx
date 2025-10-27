@@ -5,7 +5,7 @@ import { useEntityRoute, NavigationHelper } from "@academic-explorer/utils";
 import { AUTHOR_FIELDS, cachedOpenAlex } from "@academic-explorer/client";
 import type { Author } from "@academic-explorer/types";
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const AUTHOR_ROUTE_PATH = "/authors/$authorId";
 
@@ -38,6 +38,9 @@ function AuthorRoute() {
     routeSearch,
   } = entityRoute;
 
+  // Field selection state
+  const [selectedFields, setSelectedFields] = useState<readonly string[]>(AUTHOR_FIELDS);
+
   // Handle URL cleanup for malformed OpenAlex URLs using shared utility
   useEffect(() => {
     const navigator = NavigationHelper.createEntityNavigator({
@@ -54,32 +57,30 @@ function AuthorRoute() {
 
   const author = rawEntityData.data;
 
+  // Extract entity and related entities from miniGraphData for EntityMiniGraph
+  const entity = miniGraphData.data as Author | undefined;
+  const relatedEntities = (miniGraphData.data ? [miniGraphData.data] : []) as Author[];
+
   return (
     <>
       <FieldSelector
-        entityType="author"
-        entityId={authorId}
-        fields={AUTHOR_FIELDS}
-        viewMode={viewMode}
+        availableFields={AUTHOR_FIELDS}
+        selectedFields={selectedFields}
+        onFieldsChange={setSelectedFields}
+        title="Select Author Fields"
+        description="Choose which fields to include in the author data"
       />
 
-      <EntityMiniGraph
-        entityType="author"
-        entityId={authorId}
-        graphData={graphData}
-        miniGraphData={miniGraphData}
-        loadEntity={loadEntity}
-        loadEntityIntoGraph={loadEntityIntoGraph}
-        nodeCount={nodeCount}
-      />
+      {entity && (
+        <EntityMiniGraph
+          entity={entity}
+          relatedEntities={relatedEntities}
+        />
+      )}
 
       <ViewToggle
         viewMode={viewMode}
         onViewModeChange={setViewMode}
-        entityType="author"
-        entityId={authorId}
-        routeSearch={routeSearch}
-        isLoadingRandom={isLoadingRandom}
       />
 
       <RichEntityView
@@ -97,3 +98,5 @@ function AuthorRoute() {
 export const Route = createLazyFileRoute(AUTHOR_ROUTE_PATH)({
   component: AuthorRoute,
 });
+
+export default AuthorRoute;

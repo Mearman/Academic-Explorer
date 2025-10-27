@@ -615,7 +615,7 @@ export const expansionSettingsActions = (() => {
     updateSettings: (target: ExpansionTarget, updates: Partial<ExpansionSettings>) => {
       setState(state => expansionSettingsReducer(state, {
         type: "UPDATE_SETTINGS",
-        payload: { target, settings: updates }
+        payload: { target, settingsUpdate: updates }
       }));
     },
     resetSettings: (target: ExpansionTarget) => {

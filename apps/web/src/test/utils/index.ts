@@ -79,7 +79,7 @@ const TestProviders: React.FC<{
 export const renderWithProviders = (
   ui: React.ReactElement,
   options: RenderOptions & { queryClient?: QueryClient } = {},
-) => {
+): ReturnType<typeof render> => {
   const { queryClient, ...renderOptions } = options;
 
   const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
@@ -107,7 +107,11 @@ export const createTestQueryClient = () =>
 /**
  * Common test utilities object for easy destructuring
  */
-export const testUtils = {
+export const testUtils: {
+  renderWithProviders: typeof renderWithProviders;
+  createTestQueryClient: typeof createTestQueryClient;
+  TestProviders: typeof TestProviders;
+} = {
   renderWithProviders,
   createTestQueryClient,
   TestProviders,

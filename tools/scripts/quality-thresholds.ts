@@ -142,7 +142,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 		case "validate": {
 			const isValid = validateThresholds()
 			process.exit(isValid ? 0 : 1)
-			// No break needed due to process.exit
+			break
 		}
 		case "print": {
 			printThresholds()

@@ -28,7 +28,7 @@ export const preferDestructuredParamsRule = createRule<[], MessageIds>({
 	defaultOptions: [],
 
 	create(context) {
-		function isCallbackFunction(node: { parent?: { type?: string; init?: unknown } }): boolean {
+		function isCallbackFunction(node: any): boolean {
 			// Check if this function is directly passed as an argument
 			if (node.parent && node.parent.type === "CallExpression") {
 				return true
@@ -56,7 +56,7 @@ export const preferDestructuredParamsRule = createRule<[], MessageIds>({
 
 			return false
 		}
-		function checkFunction(node: { params: Array<{ type: string }> }): void {
+		function checkFunction(node: any): void {
 			const params = node.params
 
 			// Skip if function has 1 or fewer parameters
@@ -71,19 +71,19 @@ export const preferDestructuredParamsRule = createRule<[], MessageIds>({
 			}
 
 			// Check if function has rest parameters (...args) - this is acceptable
-			const hasRestParam = params.some((param: { type: string }) => param.type === "RestElement")
+			const hasRestParam = params.some((param: any) => param.type === "RestElement")
 			if (hasRestParam) {
 				return
 			}
 
 			// Skip if any parameter is an ObjectPattern (partial destructuring)
-			const hasObjectPattern = params.some((param: { type: string }) => param.type === "ObjectPattern")
+			const hasObjectPattern = params.some((param: any) => param.type === "ObjectPattern")
 			if (hasObjectPattern) {
 				return
 			}
 
 			// Skip if any parameter has a default value - these are often acceptable
-			const hasDefaultValue = params.some((param: { type: string }) => param.type === "AssignmentPattern")
+			const hasDefaultValue = params.some((param: any) => param.type === "AssignmentPattern")
 			if (hasDefaultValue) {
 				return
 			}

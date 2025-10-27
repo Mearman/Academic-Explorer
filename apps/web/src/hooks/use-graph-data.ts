@@ -5,7 +5,7 @@
  */
 
 import { createGraphDataService } from "../services/graph-data-service";
-import { useGraphStore } from "@/stores/graph-store";
+import { useGraphStore, graphStore } from "@/stores/graph-store";
 import type {
   EntityType,
   ExpansionOptions,
@@ -21,8 +21,7 @@ export function useGraphData() {
     () => createGraphDataService(queryClient),
     [queryClient],
   );
-  const graphStore = useGraphStore();
-  const { isLoading, error } = graphStore;
+  const { isLoading, error } = useGraphStore();
 
   // CRITICAL: No worker dependency to prevent infinite loops
   // All operations use the service directly for maximum stability
@@ -92,7 +91,7 @@ export function useGraphData() {
       });
 
       try {
-        const store = useGraphStore.getState();
+        const store = graphStore.getState();
 
         // Get the node to expand
         const node = store.nodes[nodeId];
@@ -102,7 +101,7 @@ export function useGraphData() {
         });
 
         // Direct service call - no worker dependency
-        store.setLoading(true);
+        graphStore.setLoading(true);
         try {
           await service.expandNode({ nodeId, options });
 
@@ -110,7 +109,7 @@ export function useGraphData() {
           const pinnedNodes = Object.keys(store.pinnedNodes);
           const firstPinnedNodeId = pinnedNodes[0];
           if (firstPinnedNodeId) {
-            store.calculateNodeDepths();
+            graphStore.calculateNodeDepths();
           }
 
           logger.debug(
@@ -136,11 +135,11 @@ export function useGraphData() {
             "useGraphData",
             "graph",
           );
-          store.setError(
+          graphStore.setError(
             err instanceof Error ? err.message : "Failed to expand node",
           );
         } finally {
-          store.setLoading(false);
+          graphStore.setLoading(false);
         }
       } catch (error) {
         logger.error(
@@ -169,8 +168,8 @@ export function useGraphData() {
         force?: boolean;
       };
     }) => {
-      const store = useGraphStore.getState();
-      store.setLoading(true);
+      const store = graphStore.getState();
+      graphStore.setLoading(true);
 
       // Use default depth if store doesn't have traversalDepth
       const depth = options?.depth ?? (store.traversalDepth || 2);
@@ -195,7 +194,7 @@ export function useGraphData() {
         const pinnedNodes = Object.keys(store.pinnedNodes);
         const firstPinnedNodeId = pinnedNodes[0];
         if (firstPinnedNodeId) {
-          store.calculateNodeDepths();
+          graphStore.calculateNodeDepths();
         }
 
         // logger.debug("graph", "expandAllNodesOfType completed successfully", {
@@ -207,13 +206,13 @@ export function useGraphData() {
         // 	error: err instanceof Error ? err.message : "Unknown error"
         // }, "useGraphData");
         // logError(logger, "Failed to expand all nodes of type in graph data hook", err, "useGraphData", "graph");
-        store.setError(
+        graphStore.setError(
           err instanceof Error
             ? err.message
             : `Failed to expand all ${entityType} nodes`,
         );
       } finally {
-        store.setLoading(false);
+        graphStore.setLoading(false);
       }
     },
     [service],
@@ -264,8 +263,7 @@ export function useGraphData() {
   }, [service]);
 
   const clearGraph = useCallback(() => {
-    const { clear } = useGraphStore.getState();
-    clear();
+    graphStore.clear();
   }, []);
 
   const hydrateNode = useCallback(

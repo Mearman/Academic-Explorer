@@ -1,4 +1,4 @@
-import baseConfig from "../eslint.config.base.ts";
+import baseConfig from "../eslint.config.base.js";
 
 /**
  * ESLint configuration for tools package

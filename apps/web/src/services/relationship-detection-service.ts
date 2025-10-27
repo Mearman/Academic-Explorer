@@ -279,13 +279,13 @@ export class RelationshipDetectionService {
       id: entityData.id as string,
       entityType,
       display_name: entityData.display_name as string,
-      authorships: entityData.authorships,
-      primary_location: entityData.primary_location,
-      referenced_works: entityData.referenced_works,
-      affiliations: entityData.affiliations,
-      last_known_institutions: entityData.last_known_institutions,
-      lineage: entityData.lineage,
-      publisher: entityData.publisher,
+      authorships: entityData.authorships as MinimalEntityData["authorships"],
+      primary_location: entityData.primary_location as MinimalEntityData["primary_location"],
+      referenced_works: entityData.referenced_works as string[] | undefined,
+      affiliations: entityData.affiliations as MinimalEntityData["affiliations"],
+      last_known_institutions: entityData.last_known_institutions as MinimalEntityData["last_known_institutions"],
+      lineage: entityData.lineage as string[] | undefined,
+      publisher: entityData.publisher as string | undefined,
     };
   }
 
@@ -463,11 +463,12 @@ export class RelationshipDetectionService {
         }
         case "sources": {
           if (isSource(entityWithId)) {
-            Object.assign(minimalData, {
-              ...("publisher" in entityWithId && (entityWithId as Record<string, unknown>).publisher && {
-                publisher: (entityWithId as Record<string, unknown>).publisher,
-              }),
-            });
+            const sourceRecord = entityWithId as Record<string, unknown>;
+            if ("publisher" in sourceRecord && sourceRecord.publisher) {
+              Object.assign(minimalData, {
+                publisher: sourceRecord.publisher,
+              });
+            }
           }
           break;
         }

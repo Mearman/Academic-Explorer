@@ -110,7 +110,7 @@ describe("OpenAlexUrl Route Integration Tests", () => {
 
   it.each(testCases)(
     "should handle URL correctly for $url",
-    async ({ url, setup, _expectedPath }) => {
+    async ({ url, setup }) => {
       setup();
       renderComponent(url);
 

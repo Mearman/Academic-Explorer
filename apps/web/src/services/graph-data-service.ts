@@ -247,9 +247,8 @@ export class GraphDataService {
    * Load initial graph for an entity with related entities
    */
   async loadEntityGraph(entityId: string): Promise<void> {
-    const store = graphStore.getState();
-    store.setLoading(true);
-    store.setError(null);
+    graphStore.setLoading(true);
+    graphStore.setError(null);
 
     try {
       // Detect entity type
@@ -285,13 +284,13 @@ export class GraphDataService {
       });
 
       // Clear existing graph and expansion cache
-      store.clear();
+      graphStore.clear();
       this.cache.expandedNodes = new Set();
       this.cache.fetchedRelationships = new Map();
 
       // Add new data to store
-      store.addNodes(nodes);
-      store.addEdges(edges);
+      graphStore.addNodes(nodes);
+      graphStore.addEdges(edges);
 
       // Cache the graph data in TanStack Query for persistence
       setCachedGraphNodes({ queryClient: this.queryClient, nodes });
@@ -301,10 +300,10 @@ export class GraphDataService {
       const primaryNodeId = nodes[0]?.id;
       if (primaryNodeId) {
         // Calculate node depths from the primary node
-        store.calculateNodeDepths();
+        graphStore.calculateNodeDepths();
 
         // Pin the primary node as the origin for traversal depth calculation
-        store.pinNode(primaryNodeId);
+        graphStore.pinNode(primaryNodeId);
       }
 
       logger.debug(
@@ -346,10 +345,11 @@ export class GraphDataService {
             "GraphDataService",
           );
 
-          store.addEdges(detectedEdges);
+          graphStore.addEdges(detectedEdges);
 
           // Update cached edges
-          const allEdges = Object.values(store.edges);
+          const state = graphStore.getState();
+          const allEdges = Object.values(state.edges);
           setCachedGraphEdges({
             queryClient: this.queryClient,
             edges: allEdges,
@@ -370,7 +370,7 @@ export class GraphDataService {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : ERROR_MESSAGE_UNKNOWN;
-      store.setError(errorMessage);
+      graphStore.setError(errorMessage);
       logError(
         logger,
         "Failed to load entity graph",
@@ -379,7 +379,7 @@ export class GraphDataService {
         "graph",
       );
     } finally {
-      store.setLoading(false);
+      graphStore.setLoading(false);
     }
   }
 
@@ -389,8 +389,7 @@ export class GraphDataService {
    */
   async loadEntityIntoGraph(entityId: string): Promise<void> {
     // Check if entity is already in graph
-    const store = graphStore.getState();
-    const existingNode = store.getNode?.(entityId);
+    const existingNode = graphStore.getNode(entityId);
 
     if (existingNode) {
       // Check if the existing node is minimal and needs upgrading
@@ -400,7 +399,7 @@ export class GraphDataService {
       }
 
       // Select the node (whether it was upgraded or already full)
-      store.selectNode(existingNode.id);
+      graphStore.selectNode(existingNode.id);
 
       logger.debug(
         "graph",
@@ -423,17 +422,17 @@ export class GraphDataService {
       throw new Error(`Unable to detect entity type for: ${entityId}`);
     }
 
-    const currentStore = graphStore.getState();
+    const state = graphStore.getState();
 
     try {
       // Check if the node already exists (regardless of hydration level)
-      const existingNode = Object.values(currentStore.nodes).find(
+      const existingNode = Object.values(state.nodes).find(
         (node) => node.entityId === entityId,
       );
 
       if (existingNode) {
         // Node already exists, select it and optionally hydrate if needed
-        currentStore.selectNode(existingNode.id);
+        graphStore.selectNode(existingNode.id);
 
         // Node will be hydrated on-demand when specific fields are needed
 
@@ -483,13 +482,13 @@ export class GraphDataService {
       });
 
       // Add new data to existing graph (do NOT clear)
-      currentStore.addNodes(nodes);
-      currentStore.addEdges(edges);
+      graphStore.addNodes(nodes);
+      graphStore.addEdges(edges);
 
       // Select the newly added primary node
       const primaryNodeId = nodes[0]?.id;
       if (primaryNodeId) {
-        currentStore.selectNode(primaryNodeId);
+        graphStore.selectNode(primaryNodeId);
 
         // Detect relationships for newly added node
         this.relationshipDetectionService
@@ -507,11 +506,11 @@ export class GraphDataService {
                 "GraphDataService",
               );
 
-              const currentStore = graphStore.getState();
-              currentStore.addEdges(detectedEdges);
+              graphStore.addEdges(detectedEdges);
 
               // Update cached edges
-              const allEdges = Object.values(currentStore.edges);
+              const currentState = graphStore.getState();
+              const allEdges = Object.values(currentState.edges);
               setCachedGraphEdges({
                 queryClient: this.queryClient,
                 edges: allEdges,
@@ -531,7 +530,7 @@ export class GraphDataService {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : ERROR_MESSAGE_UNKNOWN;
-      store.setError(errorMessage);
+      graphStore.setError(errorMessage);
       logError(
         logger,
         "Failed to load entity into graph",
@@ -612,7 +611,7 @@ export class GraphDataService {
    * Shows all available cached data up to the specified traversal depth
    */
   loadAllCachedNodes(): void {
-    const store = graphStore.getState();
+    const state = graphStore.getState();
 
     try {
       // Get all cached OpenAlex entities from TanStack Query
@@ -684,20 +683,20 @@ export class GraphDataService {
       const finalNodes = Object.values(uniqueNodes);
       const finalEdges = Object.values(uniqueEdges);
 
-      store.addNodes(finalNodes);
-      store.addEdges(finalEdges);
+      graphStore.addNodes(finalNodes);
+      graphStore.addEdges(finalEdges);
 
       // Update cached graph data
       setCachedGraphNodes({ queryClient: this.queryClient, nodes: finalNodes });
       setCachedGraphEdges({ queryClient: this.queryClient, edges: finalEdges });
 
       // If there are pinned nodes, recalculate depths from the first one
-      const pinnedNodes = Object.keys(store.pinnedNodes).filter(
-        (nodeId) => store.pinnedNodes[nodeId],
+      const pinnedNodes = Object.keys(state.pinnedNodes).filter(
+        (nodeId) => state.pinnedNodes[nodeId],
       );
       const firstPinnedNodeId = pinnedNodes[0];
       if (firstPinnedNodeId) {
-        store.calculateNodeDepths();
+        graphStore.calculateNodeDepths();
       }
 
       logger.debug(
@@ -727,8 +726,7 @@ export class GraphDataService {
    * This method uses selective field loading to minimize API payload while providing rich metadata
    */
   async hydrateNodeToFull(nodeId: string): Promise<void> {
-    const store = graphStore.getState();
-    const node = store.getNode(nodeId);
+    const node = graphStore.getNode(nodeId);
 
     if (!node) {
       logger.warn(
@@ -745,7 +743,7 @@ export class GraphDataService {
 
     try {
       // Mark node as loading
-      store.markNodeAsLoading(nodeId);
+      graphStore.markNodeAsLoading(nodeId);
 
       logger.debug(
         "graph",
@@ -790,7 +788,7 @@ export class GraphDataService {
         });
 
         // Update the node with full data
-        store.updateNode(nodeId, {
+        graphStore.updateNode(nodeId, {
           ...fullNodeData,
           metadata: {
             ...node.metadata,
@@ -801,7 +799,7 @@ export class GraphDataService {
         });
 
         // Mark node as loaded
-        store.markNodeAsLoaded(nodeId);
+        graphStore.markNodeAsLoaded(nodeId);
 
         logger.debug(
           "graph",
@@ -857,7 +855,7 @@ export class GraphDataService {
         });
 
         // Update the node with full data
-        store.updateNode(nodeId, {
+        graphStore.updateNode(nodeId, {
           ...fullNodeData,
           metadata: {
             ...node.metadata,
@@ -868,10 +866,10 @@ export class GraphDataService {
         });
 
         // Mark node as loaded
-        store.markNodeAsLoaded(nodeId);
+        graphStore.markNodeAsLoaded(nodeId);
       }
     } catch (error) {
-      store.markNodeAsError(nodeId);
+      graphStore.markNodeAsError(nodeId);
       logError(
         logger,
         "Failed to hydrate node to full",
@@ -907,8 +905,8 @@ export class GraphDataService {
    * This can be useful to retroactively detect relationships after loading cached data
    */
   async detectRelationshipsForAllNodes(): Promise<void> {
-    const store = graphStore.getState();
-    const allNodes = Object.values(store.nodes);
+    const state = graphStore.getState();
+    const allNodes = Object.values(state.nodes);
 
     logger.debug(
       "graph",
@@ -974,11 +972,11 @@ export class GraphDataService {
           "GraphDataService",
         );
 
-        const currentStore = graphStore.getState();
-        currentStore.addEdges(allDetectedEdges);
+        graphStore.addEdges(allDetectedEdges);
 
         // Update cached edges
-        const updatedEdges = Object.values(currentStore.edges) as GraphEdge[];
+        const currentState = graphStore.getState();
+        const updatedEdges = Object.values(currentState.edges) as GraphEdge[];
         setCachedGraphEdges({
           queryClient: this.queryClient,
           edges: updatedEdges,
@@ -1022,8 +1020,7 @@ export class GraphDataService {
    * This method processes minimal nodes in the background without blocking the UI
    */
   async hydrateAllMinimalNodes(): Promise<void> {
-    const store = graphStore.getState();
-    const minimalNodes = store.getMinimalNodes();
+    const minimalNodes = graphStore.getMinimalNodes();
 
     if (minimalNodes.length === 0) {
       logger.debug(
@@ -1114,8 +1111,7 @@ export class GraphDataService {
    * Recommended for use when the graph is first loaded to proactively hydrate all minimal node data
    */
   async hydrateAllMinimalNodesImmediate(): Promise<void> {
-    const store = graphStore.getState();
-    const minimalNodes = store.getMinimalNodes();
+    const minimalNodes = graphStore.getMinimalNodes();
 
     if (minimalNodes.length === 0) {
       logger.debug(
@@ -1217,8 +1213,8 @@ export class GraphDataService {
 
       // Even if node is already expanded, run relationship detection
       // in case new nodes were added since last expansion
-      const store = graphStore.getState();
-      const allNodeIds = Object.keys(store.nodes);
+      const state = graphStore.getState();
+      const allNodeIds = Object.keys(state.nodes);
 
       if (allNodeIds.length > 1) {
         logger.debug(
@@ -1253,7 +1249,7 @@ export class GraphDataService {
               "GraphDataService",
             );
 
-            store.addEdges(detectedEdges);
+            graphStore.addEdges(detectedEdges);
           } else {
             logger.debug(
               "graph",
@@ -1276,17 +1272,17 @@ export class GraphDataService {
       return;
     }
 
-    const store = graphStore.getState();
+    const state = graphStore.getState();
 
     // DON'T set loading state for incremental expansions to avoid showing "Loading graph..."
     // Individual expansions should be seamless and not disrupt the existing graph
 
     try {
       // Get the node to expand - use "in" operator to avoid ESLint false positive
-      if (!(nodeId in store.nodes)) {
+      if (!(nodeId in state.nodes)) {
         return;
       }
-      const node = store.nodes[nodeId];
+      const node = state.nodes[nodeId];
 
       // Check if entity type is supported
       if (!EntityFactory.isSupported(node.entityType)) {
@@ -1303,7 +1299,7 @@ export class GraphDataService {
       }
 
       // Mark the node as loading to provide visual feedback
-      store.markNodeAsLoading(nodeId);
+      graphStore.markNodeAsLoading(nodeId);
 
       // Log expansion attempt
       logger.debug(
@@ -1367,8 +1363,8 @@ export class GraphDataService {
       const relatedData = await entity.expand(context, enhancedOptions);
 
       // First: Add nodes and initial edges to the store
-      const currentNodes = Object.values(store.nodes);
-      const currentEdges = Object.values(store.edges);
+      const currentNodes = Object.values(state.nodes);
+      const currentEdges = Object.values(state.edges);
       const finalNodes = [...currentNodes, ...relatedData.nodes];
       const finalEdges = [...currentEdges, ...relatedData.edges];
 
@@ -1386,7 +1382,7 @@ export class GraphDataService {
       );
 
       // Single atomic update to add nodes and initial edges
-      store.setGraphData(finalNodes, finalEdges);
+      graphStore.setGraphData(finalNodes, finalEdges);
 
       // Second: Detect relationships for newly added nodes AFTER adding to graph
       let detectedEdges: GraphEdge[] = [];
@@ -1443,7 +1439,7 @@ export class GraphDataService {
             );
 
             // Update store with relationship edges
-            store.setGraphData(finalNodes, finalEdgesWithRelationships);
+            graphStore.setGraphData(finalNodes, finalEdgesWithRelationships);
           }
         } catch (error) {
           logError(
@@ -1471,7 +1467,8 @@ export class GraphDataService {
       // If force is true, run relationship detection on all nodes in the graph
       // This ensures relationships are detected even when no new nodes are added
       if (force) {
-        const allNodeIds = Object.keys(store.nodes);
+        const forceState = graphStore.getState();
+        const allNodeIds = Object.keys(forceState.nodes);
         if (allNodeIds.length > 1) {
           // Only run if there are multiple nodes
           logger.debug(
@@ -1507,15 +1504,16 @@ export class GraphDataService {
               );
 
               // Get current graph state
-              const currentNodes = Object.values(store.nodes);
-              const currentEdges = Object.values(store.edges);
+              const currentState = graphStore.getState();
+              const currentNodes = Object.values(currentState.nodes);
+              const currentEdges = Object.values(currentState.edges);
 
               // Add the force-detected edges
               const finalEdgesWithForceRelationships = [
                 ...currentEdges,
                 ...forceDetectedEdges,
               ];
-              store.setGraphData(
+              graphStore.setGraphData(
                 currentNodes,
                 finalEdgesWithForceRelationships,
               );
@@ -1546,12 +1544,12 @@ export class GraphDataService {
       });
 
       // Mark the node as loaded (expansion completed successfully)
-      store.markNodeAsLoaded(nodeId);
+      graphStore.markNodeAsLoaded(nodeId);
 
       // Layout is automatically handled by the provider when nodes/edges are added
     } catch (error) {
       // Mark the node as error if expansion failed
-      store.markNodeAsError(nodeId);
+      graphStore.markNodeAsError(nodeId);
 
       logError(
         logger,
@@ -1573,9 +1571,8 @@ export class GraphDataService {
     query: string;
     options: SearchOptions;
   }): Promise<void> {
-    const store = graphStore.getState();
-    store.setLoading(true);
-    store.setError(null);
+    graphStore.setLoading(true);
+    graphStore.setError(null);
 
     try {
       // Search each entity type using the client API
@@ -1607,8 +1604,7 @@ export class GraphDataService {
             }
             case "sources": {
               const sourcesResponse =
-                await cachedOpenAlex.client.sources.getSources({
-                  search: query,
+                await cachedOpenAlex.client.sources.searchSources(query, {
                   per_page: limit,
                 });
               entityResults = sourcesResponse.results;
@@ -1681,17 +1677,17 @@ export class GraphDataService {
       const { nodes, edges } = this.transformSearchResults(flatResults);
 
       // Clear existing graph and add search results
-      store.clear();
-      store.addNodes(nodes);
-      store.addEdges(edges);
-      store.updateSearchStats(searchStats);
+      graphStore.clear();
+      graphStore.addNodes(nodes);
+      graphStore.addEdges(edges);
+      graphStore.updateSearchStats(searchStats);
 
       // Layout is now handled by the ReactFlow component's useLayout hook
       // No need for explicit layout application here
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : ERROR_MESSAGE_UNKNOWN;
-      store.setError(errorMessage);
+      graphStore.setError(errorMessage);
       logError(
         logger,
         "Failed to search and visualize",
@@ -1700,7 +1696,7 @@ export class GraphDataService {
         "graph",
       );
     } finally {
-      store.setLoading(false);
+      graphStore.setLoading(false);
     }
   }
 
@@ -1814,12 +1810,12 @@ export class GraphDataService {
     entityId: string;
     entityType: EntityType;
   }): Promise<void> {
-    const store = graphStore.getState();
+    const state = graphStore.getState();
 
-    if (!(entityId in store.nodes)) {
+    if (!(entityId in state.nodes)) {
       return;
     }
-    const node = store.nodes[entityId];
+    const node = state.nodes[entityId];
 
     try {
       // Create minimal node with selective field loading
@@ -1829,7 +1825,7 @@ export class GraphDataService {
       });
       if (minimalNode) {
         // Update only the label and entityData, preserve position
-        store.updateNode(entityId, {
+        graphStore.updateNode(entityId, {
           ...node,
           label: minimalNode.label,
           ...(minimalNode.entityData && { entityData: minimalNode.entityData }),
@@ -1865,19 +1861,19 @@ export class GraphDataService {
    * Hydrate a node with full data when needed (e.g., when user interacts with it)
    */
   async hydrateNode(nodeId: string): Promise<void> {
-    const store = graphStore.getState();
+    const state = graphStore.getState();
 
-    if (!(nodeId in store.nodes)) {
+    if (!(nodeId in state.nodes)) {
       logger.warn("graph", "Cannot hydrate non-existent node", { nodeId });
       return;
     }
-    const node = store.nodes[nodeId];
+    const node = state.nodes[nodeId];
 
     // No artificial hydration checks - proceed with field-level hydration as needed
 
     try {
       // Mark node as loading during hydration
-      store.markNodeAsLoading(nodeId);
+      graphStore.markNodeAsLoading(nodeId);
 
       // Fetch full entity data without field restrictions
       const fullEntity = await this.deduplicationService.getEntity({
@@ -1903,7 +1899,7 @@ export class GraphDataService {
       });
 
       // Update node with full data
-      store.updateNode(nodeId, {
+      graphStore.updateNode(nodeId, {
         ...fullNodeData,
         x: node.x, // Preserve current position
         y: node.y,
@@ -1922,7 +1918,7 @@ export class GraphDataService {
         "GraphDataService",
         "graph",
       );
-      store.markNodeAsError(nodeId); // Set error state
+      graphStore.markNodeAsError(nodeId); // Set error state
     }
   }
 
@@ -1940,9 +1936,9 @@ export class GraphDataService {
       { entityType, options },
       "GraphDataService",
     );
-    const store = graphStore.getState();
+    const state = graphStore.getState();
     // Use direct selectors instead of unstable getter function to avoid infinite loops
-    const { nodes, visibleEntityTypes } = store;
+    const { nodes, visibleEntityTypes } = state;
     const allVisibleNodes = Object.values(nodes).filter(
       (node) => node.entityType in visibleEntityTypes,
     );
@@ -1969,7 +1965,7 @@ export class GraphDataService {
     );
 
     // Set loading state for the bulk operation
-    store.setLoading(true);
+    graphStore.setLoading(true);
 
     try {
       const newNodes: GraphNode[] = [];
@@ -2012,7 +2008,8 @@ export class GraphDataService {
             options.limit ?? relatedEntityIds.length,
           )) {
             // Skip if we already have this node
-            if (entityId in store.nodes) {
+            const checkState = graphStore.getState();
+            if (entityId in checkState.nodes) {
               continue;
             }
 
@@ -2070,7 +2067,7 @@ export class GraphDataService {
 
       // Add new nodes and edges to the graph
       if (newNodes.length > 0) {
-        store.addNodes(newNodes);
+        graphStore.addNodes(newNodes);
         logger.debug(
           "graph",
           `Added ${newNodes.length.toString()} new ${entityType} nodes to graph`,
@@ -2083,7 +2080,7 @@ export class GraphDataService {
       }
 
       if (newEdges.length > 0) {
-        store.addEdges(newEdges);
+        graphStore.addEdges(newEdges);
         logger.debug(
           "graph",
           `Added ${newEdges.length.toString()} new edges to graph`,
@@ -2117,10 +2114,10 @@ export class GraphDataService {
         },
         "GraphDataService",
       );
-      store.setError(errorMessage);
+      graphStore.setError(errorMessage);
       logError(logger, errorMessage, error, "GraphDataService", "graph");
     } finally {
-      store.setLoading(false);
+      graphStore.setLoading(false);
     }
   }
 
@@ -2361,19 +2358,23 @@ export class GraphDataService {
   } {
     const nodes: GraphNode[] = [];
     const edges: GraphEdge[] = [];
-    const store = graphStore.getState();
 
     // Only create edges to authors that already exist in the graph
     // Do NOT automatically create author nodes - they should only be created during explicit expansion
     if (Array.isArray(work.authorships)) {
       work.authorships.forEach((authorship) => {
-        const existingAuthorNode = store.getNode(authorship.author.id);
+        const authorId = authorship.author.id;
+        if (!authorId) {
+          return;
+        }
+
+        const existingAuthorNode = graphStore.getNode(authorId);
 
         // Only create edge if the author node already exists in the graph
         if (existingAuthorNode) {
           edges.push({
-            id: `${authorship.author.id}-authored-${work.id}`,
-            source: authorship.author.id,
+            id: `${authorId}-authored-${work.id}`,
+            source: authorId,
             target: work.id,
             type: RelationType.AUTHORED,
             label:
@@ -2389,7 +2390,7 @@ export class GraphDataService {
     // Only create edges to sources that already exist in the graph
     // Do NOT automatically create source nodes - they should only be created during explicit expansion
     if (work.primary_location?.source) {
-      const existingSourceNode = store.getNode(work.primary_location.source.id);
+      const existingSourceNode = graphStore.getNode(work.primary_location.source.id);
 
       // Only create edge if the source node already exists in the graph
       if (existingSourceNode) {
@@ -2407,7 +2408,7 @@ export class GraphDataService {
     // Do NOT automatically create referenced work nodes - they should only be created during explicit expansion
     if (Array.isArray(work.referenced_works)) {
       work.referenced_works.forEach((citedWorkId) => {
-        const existingCitedNode = store.getNode(citedWorkId);
+        const existingCitedNode = graphStore.getNode(citedWorkId);
 
         // Only create edge if the referenced work node already exists in the graph
         if (existingCitedNode) {
@@ -2435,13 +2436,12 @@ export class GraphDataService {
   } {
     const nodes: GraphNode[] = [];
     const edges: GraphEdge[] = [];
-    const store = graphStore.getState();
 
     // Only create edges to institutions that already exist in the graph
     // Do NOT automatically create institution nodes - they should only be created during explicit expansion
     if (Array.isArray(author.affiliations)) {
       author.affiliations.forEach((affiliation) => {
-        const existingInstitutionNode = store.getNode(
+        const existingInstitutionNode = graphStore.getNode(
           affiliation.institution.id,
         );
 
@@ -2470,12 +2470,11 @@ export class GraphDataService {
   } {
     const nodes: GraphNode[] = [];
     const edges: GraphEdge[] = [];
-    const store = graphStore.getState();
 
     // Only create edges to publishers that already exist in the graph
     // Do NOT automatically create publisher nodes - they should only be created during explicit expansion
     if (source.publisher) {
-      const existingPublisherNode = store.getNode(source.publisher);
+      const existingPublisherNode = graphStore.getNode(source.publisher);
 
       // Only create edge if the publisher node already exists in the graph
       if (existingPublisherNode) {
@@ -2501,13 +2500,12 @@ export class GraphDataService {
   } {
     const nodes: GraphNode[] = [];
     const edges: GraphEdge[] = [];
-    const store = graphStore.getState();
 
     // Only create edges to parent institutions that already exist in the graph
     // Do NOT automatically create parent institution nodes - they should only be created during explicit expansion
     institution.lineage?.forEach((parentId) => {
       if (parentId !== institution.id) {
-        const existingParentNode = store.getNode(parentId);
+        const existingParentNode = graphStore.getNode(parentId);
 
         // Only create edge if the parent institution node already exists in the graph
         if (existingParentNode) {

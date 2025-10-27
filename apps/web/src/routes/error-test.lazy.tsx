@@ -107,3 +107,5 @@ function ErrorTestComponent() {
 export const Route = createLazyFileRoute("/error-test")({
   component: ErrorTestComponent,
 });
+
+export default ErrorTestComponent;

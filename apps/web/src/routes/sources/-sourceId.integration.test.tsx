@@ -123,8 +123,8 @@ describe("SourceRouteComponent Integration Tests", () => {
     });
 
     // Mock useGraphStore
-    vi.mocked(useGraphStore).mockImplementation((selector) =>
-      selector({ totalNodeCount: 0 }),
+    vi.mocked(useGraphStore).mockImplementation((selector?) =>
+      selector ? selector({ totalNodeCount: 0 }) : { totalNodeCount: 0 },
     );
   });
 
@@ -345,8 +345,8 @@ describe("SourceRouteComponent Integration Tests", () => {
       error: null,
     });
 
-    vi.mocked(useGraphStore).mockImplementation((selector) =>
-      selector({ totalNodeCount: 0 }),
+    vi.mocked(useGraphStore).mockImplementation((selector?) =>
+      selector ? selector({ totalNodeCount: 0 }) : { totalNodeCount: 0 },
     );
 
     render(
@@ -371,8 +371,8 @@ describe("SourceRouteComponent Integration Tests", () => {
       error: null,
     });
 
-    vi.mocked(useGraphStore).mockImplementation((selector) =>
-      selector({ totalNodeCount: 5 }),
+    vi.mocked(useGraphStore).mockImplementation((selector?) =>
+      selector ? selector({ totalNodeCount: 5 }) : { totalNodeCount: 5 },
     );
 
     render(

@@ -78,6 +78,7 @@ export function createCacheMiddleware(
       fn: (...args: any[]) => any,
       ...args: any[]
     ) => void;
+    clear: (key: string) => void;
   },
   staticDataDir: string,
 ): Connect.NextHandleFunction {
@@ -99,7 +100,7 @@ export function createCacheMiddleware(
       try {
         await performDirectoryIndexUpdates(
           cachePath,
-          context
+          { ...context, debounceManager }
         );
       } catch (error) {
         console.error(`[openalex-cache] Failed in debounced update: ${error}`);

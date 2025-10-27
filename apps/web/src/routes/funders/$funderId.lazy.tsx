@@ -5,7 +5,7 @@ import { useEntityRoute, NavigationHelper } from "@academic-explorer/utils";
 import { FUNDER_FIELDS, cachedOpenAlex } from "@academic-explorer/client";
 import type { Funder } from "@academic-explorer/types";
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const FUNDER_ROUTE_PATH = "/funders/$funderId";
 
@@ -15,7 +15,7 @@ const FUNDER_ENTITY_CONFIG = {
   routePath: "/funders/$funderId",
   paramKey: "funderId",
   fields: FUNDER_FIELDS,
-  randomApiCall: cachedOpenAlex.client.funders.getRandomFunders.bind(cachedOpenAlex.client.funders),
+  randomApiCall: cachedOpenAlex.client.funders.randomSample.bind(cachedOpenAlex.client.funders),
   logContext: "FunderRoute",
 };
 
@@ -39,6 +39,9 @@ function FunderRoute() {
     routeSearch,
   } = entityRoute;
 
+  // Field selection state
+  const [selectedFields, setSelectedFields] = useState<readonly string[]>(FUNDER_FIELDS);
+
   // Handle URL cleanup for malformed OpenAlex URLs using shared utility
   useEffect(() => {
     const navigator = NavigationHelper.createEntityNavigator({
@@ -54,32 +57,30 @@ function FunderRoute() {
 
   const funder = rawEntityData.data;
 
+  // Extract entity and related entities from miniGraphData for EntityMiniGraph
+  const entity = miniGraphData.data as Funder | undefined;
+  const relatedEntities = (miniGraphData.data ? [miniGraphData.data] : []) as Funder[];
+
   return (
     <>
       <FieldSelector
-        entityType="funder"
-        entityId={funderId}
-        fields={FUNDER_FIELDS}
-        viewMode={viewMode}
+        availableFields={FUNDER_FIELDS}
+        selectedFields={selectedFields}
+        onFieldsChange={setSelectedFields}
+        title="Select Funder Fields"
+        description="Choose which fields to include in the funder data"
       />
 
-      <EntityMiniGraph
-        entityType="funder"
-        entityId={funderId}
-        graphData={graphData}
-        miniGraphData={miniGraphData}
-        loadEntity={loadEntity}
-        loadEntityIntoGraph={loadEntityIntoGraph}
-        nodeCount={nodeCount}
-      />
+      {entity && (
+        <EntityMiniGraph
+          entity={entity}
+          relatedEntities={relatedEntities}
+        />
+      )}
 
       <ViewToggle
         viewMode={viewMode}
         onViewModeChange={setViewMode}
-        entityType="funder"
-        entityId={funderId}
-        routeSearch={routeSearch}
-        isLoadingRandom={isLoadingRandom}
       />
 
       <RichEntityView
@@ -97,3 +98,5 @@ function FunderRoute() {
 export const Route = createLazyFileRoute(FUNDER_ROUTE_PATH)({
   component: FunderRoute,
 });
+
+export default FunderRoute;

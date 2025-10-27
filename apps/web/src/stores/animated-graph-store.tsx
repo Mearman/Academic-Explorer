@@ -490,8 +490,16 @@ export const useApplyPositionsToGraphStore = () => {
 
 export const useSyncWithGraphStore = () => {
   const dispatch = useAnimatedGraphActions();
+  const graphStore = _useGraphStore();
   return () => {
-    dispatch({ type: "SYNC_WITH_GRAPH_STORE" });
+    dispatch({
+      type: "SYNC_WITH_GRAPH_STORE",
+      payload: {
+        nodes: graphStore.nodes,
+        currentLayout: graphStore.currentLayout,
+        pinnedNodes: graphStore.pinnedNodes,
+      },
+    });
   };
 };
 

@@ -1,41 +1,84 @@
-import { useParams, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { useParams, useSearch } from "@tanstack/react-router";
+import type { EntityType } from "@academic-explorer/types";
 
 export interface EntityRouteConfig {
 	entityType: string;
 	routePath: string;
+	paramKey: string;
+	fields: unknown;
+	randomApiCall: (count: number) => Promise<unknown>;
+	logContext: string;
 }
 
 export interface UseEntityRouteOptions {
-	enableUrlCleanup?: boolean;
+	skipRandomEntity?: boolean;
+	skipUrlDecoding?: boolean;
 }
 
-export interface UseEntityRouteResult {
-	entityId: string;
+export interface UseEntityRouteResult<T = unknown> {
+	// Clean entity ID and type
+	cleanEntityId: string;
 	entityType: string;
-	isLoading: boolean;
-	error: string | null;
+
+	// Navigation state
+	viewMode: "raw" | "rich";
+	setViewMode: (mode: "raw" | "rich") => void;
+
+	// Loading states
+	isLoadingRandom: boolean;
+
+	// Data hooks - stubs for now, should be properly implemented
+	graphData: { data: unknown; isLoading: boolean; error: Error | null };
+	miniGraphData: { data: unknown; isLoading: boolean; error: Error | null };
+	rawEntityData: { data: T | undefined; isLoading: boolean; error: Error | null };
+	userInteractions: unknown;
+
+	// Graph state
+	nodeCount: number;
+	loadEntity: (entity: unknown) => void;
+	loadEntityIntoGraph: (entity: unknown) => void;
+
+	// Route search params
+	routeSearch: Record<string, unknown>;
 }
 
 /**
- * Hook for handling entity routes with common functionality
+ * STUB IMPLEMENTATION
+ * This hook needs to be properly implemented with real dependencies.
+ * Currently stubbed to allow the utils package to build.
+ *
+ * TODO: Implement with proper app-specific hooks or move to apps/web
  */
-export function useEntityRoute(
+export function useEntityRoute<T = unknown>(
 	config: EntityRouteConfig,
-	options: UseEntityRouteOptions = {}
-): UseEntityRouteResult {
-	const { entityType, routePath } = config;
-	const { enableUrlCleanup = true } = options;
+	_options: UseEntityRouteOptions = {}
+): UseEntityRouteResult<T> {
+	const params = useParams({ strict: false }) as Record<string, string>;
+	const search = useSearch({ strict: false }) as Record<string, unknown>;
+	const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
 
-	const params = useParams({ from: routePath });
-	const navigate = useNavigate();
-
-	// Extract entity ID from params (this will need to be adapted based on actual param structure)
-	const entityId = Object.values(params)[0] as string;
+	// Extract entity ID from params using the config's paramKey
+	const rawId = params[config.paramKey] || "";
+	const cleanEntityId = rawId.replace(/^https?:\/\/(.*?)openalex\.org\//, "");
 
 	return {
-		entityId,
-		entityType,
-		isLoading: false,
-		error: null,
+		cleanEntityId,
+		entityType: config.entityType,
+		viewMode,
+		setViewMode,
+		isLoadingRandom: false,
+		graphData: { data: null, isLoading: false, error: null },
+		miniGraphData: { data: null, isLoading: false, error: null },
+		rawEntityData: { data: undefined, isLoading: false, error: null },
+		userInteractions: null,
+		nodeCount: 0,
+		loadEntity: () => {
+			console.warn("useEntityRoute: loadEntity not implemented");
+		},
+		loadEntityIntoGraph: () => {
+			console.warn("useEntityRoute: loadEntityIntoGraph not implemented");
+		},
+		routeSearch: search,
 	};
 }

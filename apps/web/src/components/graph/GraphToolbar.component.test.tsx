@@ -33,13 +33,7 @@ Object.defineProperty(window, "matchMedia", {
 
 import type { GraphEdge } from "@academic-explorer/graph";
 import { RelationType } from "@academic-explorer/graph";
-import {
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { cleanup } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { GraphToolbar } from "./GraphToolbar";
 
@@ -167,14 +161,14 @@ describe("GraphToolbar", () => {
       expandNode: mockExpandNode,
     } as any);
 
-    vi.mocked(useGraphStore).mockImplementation((selector: any) => {
+    vi.mocked(useGraphStore).mockImplementation((selector?) => {
       const state = {
         pinnedNodes: { W1: true },
         pinNode: mockPinNode,
         clearAllPinnedNodes: mockClearAllPinnedNodes,
       };
 
-      if (typeof selector === "function") {
+      if (selector && typeof selector === "function") {
         return selector(state);
       }
       return state;
@@ -575,14 +569,14 @@ describe("GraphToolbar", () => {
       const { useGraphStore } = await import("@/stores/graph-store");
 
       // Mock no pinned nodes
-      vi.mocked(useGraphStore).mockImplementation((selector: any) => {
+      vi.mocked(useGraphStore).mockImplementation((selector?) => {
         const state = {
           pinnedNodes: {},
           pinNode: mockPinNode,
           clearAllPinnedNodes: mockClearAllPinnedNodes,
         };
 
-        if (typeof selector === "function") {
+        if (selector && typeof selector === "function") {
           return selector(state);
         }
         return state;

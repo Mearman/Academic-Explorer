@@ -4,10 +4,10 @@ import { Buffer } from "buffer";
 import { TextEncoder as NodeTextEncoder, TextDecoder as NodeTextDecoder } from "util";
 
 try {
-  global.TextEncoder = NodeTextEncoder;
-  global.TextDecoder = NodeTextDecoder;
-  globalThis.TextEncoder = NodeTextEncoder;
-  globalThis.TextDecoder = NodeTextDecoder;
+  global.TextEncoder = NodeTextEncoder as typeof TextEncoder;
+  global.TextDecoder = NodeTextDecoder as typeof TextDecoder;
+  globalThis.TextEncoder = NodeTextEncoder as typeof TextEncoder;
+  globalThis.TextDecoder = NodeTextDecoder as typeof TextDecoder;
 } catch (_err) {
   // If util import fails, create minimal implementations
   global.TextEncoder = class {
@@ -50,16 +50,20 @@ if (typeof process !== "undefined" && process.env.VITEST) {
   const { vi } = await import("vitest");
 
   if (typeof (global as unknown as { TextDecoder?: unknown }).TextDecoder === "undefined") {
-    (global as unknown as { TextDecoder: typeof TextDecoder }).TextDecoder = class {
-      decode(input: Uint8Array | Buffer): string {
+    (global as unknown as { TextDecoder: typeof TextDecoder }).TextDecoder = class TextDecoder {
+      encoding = "utf-8" as const;
+      fatal = false;
+      ignoreBOM = false;
+      decode(input?: Uint8Array | Buffer): string {
+        if (!input) return "";
         return Buffer.from(input as Uint8Array | Buffer).toString("utf-8");
       }
-    };
+    } as typeof TextDecoder;
   }
 
   // Import jest-dom for Vitest - extends expect with DOM matchers
   // The vitest environment should be set to jsdom for component tests
-  await import("@testing-library/jest-dom");
+  await import("@testing-library/jest-dom/vitest");
 
   const { enableMapSet } = await import("immer");
   await import("vitest-axe/extend-expect");
@@ -122,10 +126,14 @@ if (typeof process !== "undefined" && process.env.VITEST) {
 
   // Mock IntersectionObserver for components that use visibility detection
   (global as unknown as { IntersectionObserver: typeof IntersectionObserver }).IntersectionObserver = class IntersectionObserver {
+    root = null;
+    rootMargin = "";
+    thresholds: ReadonlyArray<number> = [];
     observe(): void {}
     unobserve(): void {}
     disconnect(): void {}
-  };
+    takeRecords(): IntersectionObserverEntry[] { return []; }
+  } as typeof IntersectionObserver;
 
   // Setup MSW server for API mocking
   // Only in test environments with proper globals

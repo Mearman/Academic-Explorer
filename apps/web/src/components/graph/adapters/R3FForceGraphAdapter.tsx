@@ -58,7 +58,7 @@ function CameraController({
   linkCount,
 }: {
   fgRef: React.RefObject<GraphMethods | undefined>;
-  controlsRef: React.RefObject<OrbitControls>;
+  controlsRef: React.RefObject<React.ElementRef<typeof OrbitControls> | null>;
   cameraDistance: number;
   nodeCount: number;
   linkCount: number;
@@ -172,7 +172,7 @@ function R3FForceGraphScene({
   fitViewTriggerRef: React.RefObject<(() => void) | null>;
 }) {
   const fgRef = useRef<GraphMethods | undefined>(undefined);
-  const controlsRef = useRef<OrbitControls | null>(null);
+  const controlsRef = useRef<React.ElementRef<typeof OrbitControls> | null>(null);
   const { camera } = useThree();
   
   // Call tickFrame on every frame to update the simulation
@@ -347,19 +347,22 @@ function R3FForceGraphScene({
         cooldownTicks={100}
         warmupTicks={30}
         nodePositionUpdate={nodePositionUpdate}
-        nodeThreeObject={(node: GraphNode) => {
+        nodeThreeObject={(node) => {
+          // Cast node to access our properties
+          const typedNode = node as Record<string, unknown> & { id?: string | number; label?: string; val?: number; color?: string; entityType?: string | null };
+
           // Create a group containing both the node sphere and its label
           const group = new THREE.Group();
 
           // Create the node sphere
           const nodeGeometry = new THREE.SphereGeometry(
-            node.val || adapterConfig?.nodeSize || 4,
+            typedNode.val || adapterConfig?.nodeSize || 4,
             8,
             8,
           );
           const nodeMaterial = new THREE.MeshLambertMaterial({
             color:
-              node.color || config.themeColors.getEntityColor(node.entityType),
+              typedNode.color || config.themeColors.getEntityColor(typedNode.entityType),
             transparent: true,
             opacity: 1.0,
           });
@@ -367,8 +370,9 @@ function R3FForceGraphScene({
           group.add(nodeMesh);
 
           // Create the label as a sprite
-          if (node.name || node.id) {
-            const sprite = new SpriteText(node.name || node.id);
+          if (typedNode.label || typedNode.id) {
+            const labelText = typeof typedNode.label === "string" ? typedNode.label : String(typedNode.id || "");
+            const sprite = new SpriteText(labelText);
             sprite.color = "white";
             sprite.backgroundColor = "rgba(255, 0, 0, 0.9)";
             sprite.padding = [6, 12];

@@ -22,8 +22,9 @@ export function setupNavigationTracking(router: {
       if (fromLocation) {
         if (typeof fromLocation === "string") {
           fromPath = fromLocation;
-        } else if (fromLocation.pathname) {
-          fromPath = fromLocation.pathname + (fromLocation.search || "");
+        } else if (typeof fromLocation === "object" && fromLocation !== null && "pathname" in fromLocation) {
+          const loc = fromLocation as { pathname?: string; search?: string };
+          fromPath = (loc.pathname || "") + (loc.search || "");
         } else {
           fromPath = String(fromLocation);
         }

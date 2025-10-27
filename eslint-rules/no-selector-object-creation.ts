@@ -22,14 +22,14 @@ const ruleMessages = {
 		"Avoid object literals in selectors. Split into multiple selectors or use cached state.",
 }
 
-function isZustandSelector(node: { type: string; callee?: { type?: string; name?: string }; arguments?: Array<{ type: string }> }): boolean {
+function isZustandSelector(node: any): boolean {
 	// Check if this is a useStore call: useStore(state => ...)
 	if (
 		node.type === "CallExpression" &&
 		node.callee &&
 		node.callee.type === "Identifier" &&
 		(node.callee.name === "useStore" || node.callee.name.endsWith("Store")) && // matches useGraphStore, useLayoutStore, etc.
-		node.arguments.length > 0
+		node.arguments?.length > 0
 	) {
 		const firstArg = node.arguments[0]
 		return firstArg.type === "ArrowFunctionExpression" || firstArg.type === "FunctionExpression"
@@ -37,7 +37,7 @@ function isZustandSelector(node: { type: string; callee?: { type?: string; name?
 	return false
 }
 
-function hasArrayMethods(node: { type: string; callee?: { property?: { name?: string } } }): boolean {
+function hasArrayMethods(node: any): boolean {
 	const problematicMethods = [
 		"filter",
 		"map",
@@ -59,7 +59,7 @@ function hasArrayMethods(node: { type: string; callee?: { property?: { name?: st
 		node.callee &&
 		node.callee.type === "MemberExpression" &&
 		node.callee.property &&
-		problematicMethods.includes(node.callee.property.name)
+		problematicMethods.includes(node.callee.property?.name)
 	) {
 		return true
 	}
@@ -67,7 +67,7 @@ function hasArrayMethods(node: { type: string; callee?: { property?: { name?: st
 	return false
 }
 
-function hasObjectMethods(node: { type: string; callee?: { type?: string; object?: { name?: string }; property?: { name?: string } } }): boolean {
+function hasObjectMethods(node: any): boolean {
 	// Check for Object.values(), Object.keys(), Object.entries()
 	if (
 		node.type === "CallExpression" &&
@@ -75,25 +75,25 @@ function hasObjectMethods(node: { type: string; callee?: { type?: string; object
 		node.callee.type === "MemberExpression" &&
 		node.callee.object &&
 		node.callee.object.name === "Object" &&
-		["values", "keys", "entries"].includes(node.callee.property.name)
+		["values", "keys", "entries"].includes(node.callee.property?.name)
 	) {
 		return true
 	}
 	return false
 }
 
-function hasSpreadOperator(node: { type: string; properties?: Array<{ type: string }>; elements?: Array<{ type: string } | null> }): boolean {
+function hasSpreadOperator(node: any): boolean {
 	if (node.type === "ObjectExpression") {
-		return node.properties?.some((prop: { type: string }) => prop.type === "SpreadElement") ?? false
+		return node.properties?.some((prop: any) => prop.type === "SpreadElement") ?? false
 	}
 	if (node.type === "ArrayExpression") {
-		return node.elements?.some((elem: { type: string } | null) => elem && elem.type === "SpreadElement") ?? false
+		return node.elements?.some((elem: any) => elem && elem.type === "SpreadElement") ?? false
 	}
 	return false
 }
 
-function checkSelectorFunction(context: { report: (data: { node: unknown; messageId: string }) => void }, selectorFunction: { body?: { body?: unknown } }): void {
-	function traverse(node: unknown): void {
+function checkSelectorFunction(context: any, selectorFunction: any): void {
+	function traverse(node: any): void {
 		if (!node) return
 
 		// Check for array methods

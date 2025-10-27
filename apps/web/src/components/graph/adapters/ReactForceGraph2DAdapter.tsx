@@ -29,7 +29,9 @@ export function ReactForceGraph2DAdapterComponent({
   adapterConfig?: ReactForceGraph2DConfig;
   registerFitViewCallback: (callback: () => void) => () => void;
 }) {
-  const fgRef = useRef<ForceGraph2DMethods | null>(null);
+  const fgRef = useRef<ForceGraph2DMethods | undefined>(
+    undefined,
+  ) as React.MutableRefObject<ForceGraph2DMethods | undefined>;
   const resolveCssVarColor = useCallback(
     (color: string, fallbackColor: string) => {
       if (!color) {
@@ -205,7 +207,7 @@ export function ReactForceGraph2DAdapterComponent({
       }}
     >
       <ForceGraph2D
-        ref={fgRef}
+        ref={fgRef as React.MutableRefObject<ForceGraph2DMethods | undefined> as React.MutableRefObject<never>}
         graphData={
           graphData as {
             nodes: Record<string, unknown>[];

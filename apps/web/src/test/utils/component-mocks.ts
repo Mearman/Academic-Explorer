@@ -254,7 +254,7 @@ export const mockCanvas = () => {
     createPattern: vi.fn(),
   };
 
-  HTMLCanvasElement.prototype.getContext = vi.fn(() => mockContext as unknown);
+  HTMLCanvasElement.prototype.getContext = vi.fn(() => mockContext) as unknown as typeof HTMLCanvasElement.prototype.getContext;
   HTMLCanvasElement.prototype.toDataURL = vi.fn(
     () => "data:image/png;base64,test",
   );
@@ -306,7 +306,7 @@ export const mockIndexedDB = () => {
     deleteDatabase: vi.fn(() => mockRequest),
     databases: vi.fn(() => Promise.resolve([])),
     cmp: vi.fn(),
-  } as Record<string, unknown>;
+  } as unknown as IDBFactory;
 
   return { mockDB, mockRequest };
 };

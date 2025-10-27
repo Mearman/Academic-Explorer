@@ -186,8 +186,9 @@ export const EdgeFiltersSection: React.FC<EdgeFiltersSectionProps> = ({
             const parsedType = safeParseRelationType(edgeTypeKey);
             if (!parsedType) return null;
             const edgeType = edgeTypeKey as RelationType;
-            const visibleCount = edgeTypeStats[edgeType] || 0; // Use the individual type count
-            const totalCount = edgeTypeStats[edgeType] || 0; // Use the individual type count
+            const typeStats = edgeTypeStats[edgeType];
+            const visibleCount = typeof typeStats === "object" ? typeStats.visible : 0;
+            const totalCount = typeof typeStats === "object" ? typeStats.total : 0;
             const isVisible = visibleEdgeTypes[edgeType] || false;
 
             return (

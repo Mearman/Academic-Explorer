@@ -693,43 +693,34 @@ export const networkActivityStore = (() => {
 
   return {
     addRequest: (request: Omit<NetworkRequest, "id" | "startTime">) => {
-      const id = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      const newRequest: NetworkRequest = {
-        ...request,
-        id,
-        startTime: Date.now(),
-        status: "pending" as const,
-        duration: null,
-        statusCode: null,
-        error: null,
-      };
+      const id = createRequestIdGenerator("req");
       setState(state => networkActivityReducer(state, {
         type: "ADD_REQUEST",
-        payload: newRequest
+        payload: { request, id }
       }));
       return id;
     },
-    completeRequest: (id: string, statusCode: number, response?: unknown, metadata?: NetworkRequest["metadata"]) => {
+    completeRequest: (id: string, statusCode?: number, size?: number) => {
       setState(state => networkActivityReducer(state, {
         type: "COMPLETE_REQUEST",
-        payload: { id, statusCode, response, metadata }
+        payload: { id, statusCode, size }
       }));
     },
-    failRequest: (id: string, error: string) => {
+    failRequest: (id: string, error: string, statusCode?: number) => {
       setState(state => networkActivityReducer(state, {
         type: "FAIL_REQUEST",
-        payload: { id, error }
+        payload: { id, error, statusCode }
       }));
     },
-    clearRequest: (id: string) => {
+    removeRequest: (id: string) => {
       setState(state => networkActivityReducer(state, {
-        type: "CLEAR_REQUEST",
+        type: "REMOVE_REQUEST",
         payload: id
       }));
     },
     clearAll: () => {
       setState(state => networkActivityReducer(state, {
-        type: "CLEAR_ALL"
+        type: "CLEAR_ALL_REQUESTS"
       }));
     },
   };

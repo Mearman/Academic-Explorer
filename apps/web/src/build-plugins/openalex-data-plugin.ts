@@ -696,13 +696,14 @@ export function openalexDataPlugin(): Plugin {
                   // Use new key with updated metadata
                   const fixedMetadata = { ...redirectUpdate.metadata };
                   // Fix $ref if it exists and needs updating
+                  let $ref: string | undefined;
                   if (
                     "$ref" in fixedMetadata &&
                     typeof fixedMetadata.$ref === "string"
                   ) {
-                    fixedMetadata.$ref = `./${urlToEncodedKey(redirectUpdate.newKey)}.json`;
+                    $ref = `./${urlToEncodedKey(redirectUpdate.newKey)}.json`;
                   }
-                  updatedIndex[redirectUpdate.newKey] = indexEntryToUnified(fixedMetadata, fixedMetadata.$ref);
+                  updatedIndex[redirectUpdate.newKey] = indexEntryToUnified(fixedMetadata, $ref);
                 } else {
                   // Keep existing key
                   updatedIndex[key] = indexEntryToUnified(metadata);

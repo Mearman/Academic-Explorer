@@ -37,7 +37,7 @@ export const TestWrapper: React.FC<{
 export const renderWithQueryClient = (
   ui: React.ReactElement,
   options?: Omit<RenderOptions, "wrapper"> & { queryClient?: QueryClient },
-) => {
+): ReturnType<typeof render> => {
   const { queryClient, ...renderOptions } = options || {};
   return render(ui, {
     wrapper: (props) => <TestWrapper {...props} queryClient={queryClient} />,
@@ -51,7 +51,7 @@ export const renderHookWithQueryClient = <T, P>(
   options?: Omit<RenderHookOptions<P>, "wrapper"> & {
     queryClient?: QueryClient;
   },
-) => {
+): ReturnType<typeof renderHook<T, P>> => {
   const { queryClient, ...renderHookOptions } = options || {};
   return renderHook(hook, {
     wrapper: (props) => <TestWrapper {...props} queryClient={queryClient} />,

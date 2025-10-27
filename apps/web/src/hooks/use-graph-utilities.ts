@@ -50,19 +50,14 @@ function hasDataProperty(
 
 export const useGraphUtilities = () => {
   // Get current graph state - using direct store access with reactivity
-  const [nodesMap, setNodesMap] = useState(
-    (graphStore.getState() as unknown).nodes,
-  );
-  const [edgesMap, setEdgesMap] = useState(
-    (graphStore.getState() as unknown).edges,
-  );
-  const store = graphStore.getState() as unknown;
-  const setGraphData = store.setGraphData;
-  const setLoading = store.setLoading;
-  const setError = store.setError;
+  const [nodesMap, setNodesMap] = useState(graphStore.getState().nodes);
+  const [edgesMap, setEdgesMap] = useState(graphStore.getState().edges);
+  const setGraphData = graphStore.setGraphData;
+  const setLoading = graphStore.setLoading;
+  const setError = graphStore.setError;
 
   useEffect(() => {
-    return (graphStore as unknown).subscribe((state: unknown) => {
+    return graphStore.subscribe((state) => {
       setNodesMap(state.nodes);
       setEdgesMap(state.edges);
     });
@@ -162,7 +157,6 @@ export const useGraphUtilities = () => {
       const result = callServiceMethod({
         methodName: "trimLeafNodes",
         args: [nodes, edges],
-        operationName: "trimLeafNodes",
       });
       applyUtilityResult(result);
       return result;
@@ -192,7 +186,6 @@ export const useGraphUtilities = () => {
       const result = callServiceMethod({
         methodName: "trimRootNodes",
         args: [nodes, edges],
-        operationName: "trimRootNodes",
       });
       applyUtilityResult(result);
       return result;
@@ -222,7 +215,6 @@ export const useGraphUtilities = () => {
       const result = callServiceMethod({
         methodName: "trimDegree1Nodes",
         args: [nodes, edges],
-        operationName: "trimDegree1Nodes",
       });
       applyUtilityResult(result);
       return result;
@@ -254,7 +246,6 @@ export const useGraphUtilities = () => {
       const result = callServiceMethod({
         methodName: "removeIsolatedNodes",
         args: [nodes, edges],
-        operationName: "removeIsolatedNodes",
       });
       applyUtilityResult(result);
       return result;
@@ -287,7 +278,6 @@ export const useGraphUtilities = () => {
         const result = callServiceMethod({
           methodName: "filterByPublicationYear",
           args: [nodes, edges, minYear, maxYear],
-          operationName: "filterByPublicationYear",
         });
         applyUtilityResult(result);
         return result;
@@ -317,7 +307,6 @@ export const useGraphUtilities = () => {
         const result = callServiceMethod({
           methodName: "extractEgoNetwork",
           args: [nodes, edges, centerNodeId, hops],
-          operationName: "extractEgoNetwork",
         });
         applyUtilityResult(result);
         return result;
@@ -346,7 +335,6 @@ export const useGraphUtilities = () => {
       const result = callServiceMethod({
         methodName: "getLargestConnectedComponent",
         args: [nodes, edges],
-        operationName: "getLargestConnectedComponent",
       });
       applyUtilityResult(result);
       return result;
@@ -376,7 +364,6 @@ export const useGraphUtilities = () => {
       const result = callServiceMethod({
         methodName: "findConnectedComponents",
         args: [nodes, edges],
-        operationName: "findConnectedComponents",
       });
 
       // Handle direct array result
@@ -419,7 +406,6 @@ export const useGraphUtilities = () => {
       const result = callServiceMethod({
         methodName: "findConnectedComponents",
         args: [nodes, edges],
-        operationName: "findConnectedComponents",
       });
 
       // Handle direct array result

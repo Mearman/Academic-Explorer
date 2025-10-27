@@ -30,7 +30,10 @@ export function EnumFilter({
   // Cast to utils type for compatibility with createEnumOptions
   const selectOptions = createEnumOptions(
     (config.options || []) as UtilsFilterFieldOption[],
-  );
+  ).map(option => ({
+    ...option,
+    value: String(option.value),
+  }));
   const isMulti = config.type === "multiSelect";
 
   return (

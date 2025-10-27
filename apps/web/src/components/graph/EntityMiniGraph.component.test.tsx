@@ -81,32 +81,24 @@ vi.mock("@/hooks/use-theme-colors", () => ({
 vi.mock("./adapters/GraphAdapterFactory", () => ({
   GraphAdapterFactory: {
     createAdapter: vi.fn().mockResolvedValue({
-      convertEntitiesToGraphData: vi
-        .fn(() => ({
-          nodes: [
-            { id: "test-entity", label: "Test Entity", color: "primary" },
-            { id: "related-1", label: "Related 1", color: "secondary" },
-          ],
-          links: [{ source: "test-entity", target: "related-1" }],
-        }))
-        .mockImplementation(({ mainEntity, relatedEntities }) => ({
-          nodes: [
-            {
-              id: mainEntity.id,
-              label: mainEntity.display_name || "Test Entity",
-              color: "primary",
-            },
-            ...relatedEntities.map((entity, index) => ({
-              id: entity.id,
-              label: entity.display_name || `Related ${index + 1}`,
-              color: "secondary",
-            })),
-          ],
-          links: relatedEntities.map((entity) => ({
-            source: mainEntity.id,
-            target: entity.id,
+      convertEntitiesToGraphData: vi.fn(({ mainEntity, relatedEntities }) => ({
+        nodes: [
+          {
+            id: mainEntity.id,
+            label: mainEntity.display_name || "Test Entity",
+            color: "primary",
+          },
+          ...relatedEntities.map((entity, index) => ({
+            id: entity.id,
+            label: entity.display_name || `Related ${index + 1}`,
+            color: "secondary",
           })),
+        ],
+        links: relatedEntities.map((entity) => ({
+          source: mainEntity.id,
+          target: entity.id,
         })),
+      })),
       render: vi.fn(() => <div data-testid="mock-graph">Mock Graph</div>),
     }),
     getDefaultAdapter: vi.fn(() => "reactflow-hierarchical"),

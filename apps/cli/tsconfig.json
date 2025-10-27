@@ -17,12 +17,7 @@
     "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "assumeChangesOnlyAffectDirectDependencies": true,
     "composite": true,
-    "baseUrl": ".",
-    "paths": {
-      "@academic-explorer/client": ["../../packages/client/src/index.ts"],
-      "@academic-explorer/types": ["../../packages/types/src/index.ts"],
-      "@academic-explorer/utils": ["../../packages/utils/src/index.ts"]
-    }
+    "baseUrl": "."
   },
   "include": [
     "src/**/*"

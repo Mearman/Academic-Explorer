@@ -71,9 +71,9 @@ const router = createRouter({
 
 // Register the router instance for type safety
 declare module "@tanstack/react-router" {
-  type Register = {
+  interface Register {
     router: typeof router;
-  };
+  }
 }
 
 // Navigation tracking is now handled by NavigationTracker component in MainLayout

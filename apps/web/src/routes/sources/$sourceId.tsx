@@ -3,7 +3,9 @@ import { lazy } from "react";
 import { LazyRoute } from "@/components/routing/LazyRoute";
 import { z } from "zod";
 
-const SourceRoute = lazy(() => import("./$sourceId.lazy"));
+const SourceRoute = lazy(() =>
+  import("./$sourceId.lazy").then((m) => ({ default: m.default })),
+);
 
 export const Route = createFileRoute("/sources/$sourceId")({
   component: () => (

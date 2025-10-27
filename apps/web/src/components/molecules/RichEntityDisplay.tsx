@@ -238,7 +238,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
               <Stack gap="xs">
                 {work.authorships
                   ?.slice(0, 10)
-                  .map((authorship: Authorship, index: number) => (
+                  .map((authorship, index: number) => (
                     <Group
                       key={
                         authorship.author.id || `authorship-${String(index)}`
@@ -264,14 +264,14 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                       >
                         {authorship.author.display_name || "Unknown Author"}
                       </Anchor>
-                      {authorship.institutions[0] && (
+                      {authorship.institutions?.[0] && (
                         <Anchor
                           size="xs"
                           c={getEntityColor("institutions")}
                           truncate
                           style={{ maxWidth: 150, cursor: "pointer" }}
                           onClick={() => {
-                            if (authorship.institutions[0]?.id) {
+                            if (authorship.institutions?.[0]?.id) {
                               handleEntityClick({
                                 entityId: authorship.institutions[0].id,
                                 entityType: "institution",

@@ -4,8 +4,8 @@ import { RichEntityView, ViewToggle } from "@academic-explorer/ui";
 import { useEntityRoute, NavigationHelper } from "@academic-explorer/utils";
 import { WORK_FIELDS, cachedOpenAlex } from "@academic-explorer/client";
 import type { Work } from "@academic-explorer/types";
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 
 const WORK_ROUTE_PATH = "/works/$workId";
 
@@ -20,6 +20,8 @@ const WORK_ENTITY_CONFIG = {
 };
 
 function WorkRoute() {
+  const navigate = useNavigate();
+
   // Use our shared hook - this replaces ~100 lines of duplicated code!
   const entityRoute = useEntityRoute<Work>(WORK_ENTITY_CONFIG);
 
@@ -37,6 +39,9 @@ function WorkRoute() {
     routeSearch,
   } = entityRoute;
 
+  // Field selection state
+  const [selectedFields, setSelectedFields] = useState<readonly string[]>(WORK_FIELDS);
+
   // Handle URL cleanup for malformed OpenAlex URLs using shared utility
   useEffect(() => {
     const navigator = NavigationHelper.createEntityNavigator({
@@ -46,41 +51,36 @@ function WorkRoute() {
     });
 
     navigator.handleMalformedUrl(workId, ({ to, params, replace }) => {
-      // Import navigate dynamically to avoid circular dependencies
-      import("@tanstack/react-router").then(({ navigate }) => {
-        navigate({ to, params, replace });
-      });
+      navigate({ to, params, replace });
     });
-  }, [workId]);
+  }, [workId, navigate]);
 
   const work = rawEntityData.data;
+
+  // Extract entity and related entities from miniGraphData for EntityMiniGraph
+  const entity = miniGraphData.data as Work | undefined;
+  const relatedEntities = (miniGraphData.data ? [miniGraphData.data] : []) as Work[];
 
   return (
     <>
       <FieldSelector
-        entityType="work"
-        entityId={workId}
-        fields={WORK_FIELDS}
-        viewMode={viewMode}
+        availableFields={WORK_FIELDS}
+        selectedFields={selectedFields}
+        onFieldsChange={setSelectedFields}
+        title="Select Work Fields"
+        description="Choose which fields to include in the work data"
       />
 
-      <EntityMiniGraph
-        entityType="work"
-        entityId={workId}
-        graphData={graphData}
-        miniGraphData={miniGraphData}
-        loadEntity={loadEntity}
-        loadEntityIntoGraph={loadEntityIntoGraph}
-        nodeCount={nodeCount}
-      />
+      {entity && (
+        <EntityMiniGraph
+          entity={entity}
+          relatedEntities={relatedEntities}
+        />
+      )}
 
       <ViewToggle
         viewMode={viewMode}
         onViewModeChange={setViewMode}
-        entityType="work"
-        entityId={workId}
-        routeSearch={routeSearch}
-        isLoadingRandom={isLoadingRandom}
       />
 
       <RichEntityView
@@ -103,3 +103,5 @@ function WorkRoute() {
 export const Route = createLazyFileRoute(WORK_ROUTE_PATH)({
   component: WorkRoute,
 });
+
+export default WorkRoute;

@@ -6,8 +6,11 @@
   "targets": {
     "typecheck": "typecheck",
     "lint": {
+      "executor": "@nx/eslint:lint",
       "options": {
-        "command": "NODE_OPTIONS='--import tsx' eslint --no-warn-ignored scripts/**/*.ts generators/**/*.ts"
+        "lintFilePatterns": [
+          "tools/scripts/**/*.ts"
+        ]
       }
     },
     "generators": {

@@ -92,7 +92,7 @@ describe("OpenAlexUrl Route Unit Tests", () => {
 
   it.each(testUrls)(
     "should handle $url correctly",
-    async ({ url, _expected }) => {
+    async ({ url }) => {
       const pathParts = url.replace("https://api.openalex.org/", "").split("?");
       const path = pathParts[0];
 

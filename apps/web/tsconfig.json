@@ -20,7 +20,9 @@
     "playwright.config.ts",
     "config/**/*",
     "../../config/**/*",
-    "../../vite.config.base.ts"
+    "../../vite.config.base.ts",
+    "../../vitest.config.base.ts",
+    "../../scripts/extract-openalex-paths.ts"
   ],
   "exclude": [
     "../../config/test-utils/render-helpers.tsx"

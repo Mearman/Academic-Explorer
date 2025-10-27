@@ -5,7 +5,7 @@ import { useEntityRoute, NavigationHelper } from "@academic-explorer/utils";
 import { TOPIC_FIELDS, cachedOpenAlex } from "@academic-explorer/client";
 import type { Topic } from "@academic-explorer/types";
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const TOPIC_ROUTE_PATH = "/topics/$topicId";
 
@@ -15,7 +15,7 @@ const TOPIC_ENTITY_CONFIG = {
   routePath: "/topics/$topicId",
   paramKey: "topicId",
   fields: TOPIC_FIELDS,
-  randomApiCall: cachedOpenAlex.client.topics.getRandomTopics.bind(cachedOpenAlex.client.topics),
+  randomApiCall: cachedOpenAlex.client.topics.randomSample.bind(cachedOpenAlex.client.topics),
   logContext: "TopicRoute",
 };
 
@@ -39,6 +39,9 @@ function TopicRoute() {
     routeSearch,
   } = entityRoute;
 
+  // Field selection state
+  const [selectedFields, setSelectedFields] = useState<readonly string[]>(TOPIC_FIELDS);
+
   // Handle URL cleanup for malformed OpenAlex URLs using shared utility
   useEffect(() => {
     const navigator = NavigationHelper.createEntityNavigator({
@@ -54,32 +57,30 @@ function TopicRoute() {
 
   const topic = rawEntityData.data;
 
+  // Extract entity and related entities from miniGraphData for EntityMiniGraph
+  const entity = miniGraphData.data as Topic | undefined;
+  const relatedEntities = (miniGraphData.data ? [miniGraphData.data] : []) as Topic[];
+
   return (
     <>
       <FieldSelector
-        entityType="topic"
-        entityId={topicId}
-        fields={TOPIC_FIELDS}
-        viewMode={viewMode}
+        availableFields={TOPIC_FIELDS}
+        selectedFields={selectedFields}
+        onFieldsChange={setSelectedFields}
+        title="Select Topic Fields"
+        description="Choose which fields to include in the topic data"
       />
 
-      <EntityMiniGraph
-        entityType="topic"
-        entityId={topicId}
-        graphData={graphData}
-        miniGraphData={miniGraphData}
-        loadEntity={loadEntity}
-        loadEntityIntoGraph={loadEntityIntoGraph}
-        nodeCount={nodeCount}
-      />
+      {entity && (
+        <EntityMiniGraph
+          entity={entity}
+          relatedEntities={relatedEntities}
+        />
+      )}
 
       <ViewToggle
         viewMode={viewMode}
         onViewModeChange={setViewMode}
-        entityType="topic"
-        entityId={topicId}
-        routeSearch={routeSearch}
-        isLoadingRandom={isLoadingRandom}
       />
 
       <RichEntityView
@@ -97,3 +98,5 @@ function TopicRoute() {
 export const Route = createLazyFileRoute(TOPIC_ROUTE_PATH)({
   component: TopicRoute,
 });
+
+export default TopicRoute;

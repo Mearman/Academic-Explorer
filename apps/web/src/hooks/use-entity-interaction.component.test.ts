@@ -84,15 +84,10 @@ vi.mock("@/stores/graph-store", () => {
     markNodeAsLoaded: vi.fn(),
     markNodeAsError: vi.fn(),
     getMinimalNodes: vi.fn(() => []),
-    getState: vi.fn(function (this: any) {
-      return this;
-    }),
   };
 
   return {
-    useGraphStore: {
-      getState: vi.fn(() => mockStore),
-    },
+    useGraphStore: vi.fn(() => mockStore),
     graphStore: mockStore,
   };
 });
@@ -123,6 +118,29 @@ const mockLayoutStore = {
     }
   }),
   autoPinOnLayoutStabilization: false,
+  // Required layout store methods
+  toggleLeftSidebar: vi.fn(),
+  toggleRightSidebar: vi.fn(),
+  setLeftSidebarOpen: vi.fn(),
+  setRightSidebarOpen: vi.fn(),
+  pinLeftSidebar: vi.fn(),
+  pinRightSidebar: vi.fn(),
+  setLeftSidebarAutoHidden: vi.fn(),
+  setRightSidebarAutoHidden: vi.fn(),
+  setLeftSidebarHovered: vi.fn(),
+  setRightSidebarHovered: vi.fn(),
+  setSectionCollapsed: vi.fn(),
+  expandSidebarToSection: vi.fn(),
+  setActiveGroup: vi.fn(),
+  setGraphProvider: vi.fn(),
+  setAutoPinOnLayoutStabilization: vi.fn(),
+  resetSectionPlacements: vi.fn(),
+  getToolGroupsForSidebar: vi.fn(() => []),
+  getActiveGroup: vi.fn(() => null),
+  addSectionToGroup: vi.fn(),
+  removeSectionFromGroup: vi.fn(),
+  reorderGroups: vi.fn(),
+  moveGroupToSidebar: vi.fn(),
 };
 
 const mockGraphData = {
@@ -189,9 +207,26 @@ describe("useEntityInteraction", () => {
 
     // Reset layout store state
     mockLayoutStore.previewEntityId = null;
+    mockLayoutStore.autoPinOnLayoutStabilization = false;
 
-    vi.mocked(useGraphStore.getState).mockReturnValue(mockGraphStore);
-    vi.mocked(useLayoutStore).mockReturnValue(mockLayoutStore);
+    vi.mocked(useGraphStore).mockReturnValue(mockGraphStore);
+    vi.mocked(useLayoutStore).mockReturnValue({
+      ...mockLayoutStore,
+      // Add all required LayoutState properties
+      leftSidebarOpen: true,
+      leftSidebarPinned: false,
+      rightSidebarOpen: true,
+      rightSidebarPinned: false,
+      leftSidebarAutoHidden: false,
+      rightSidebarAutoHidden: false,
+      leftSidebarHovered: false,
+      rightSidebarHovered: false,
+      collapsedSections: {},
+      sectionPlacements: {},
+      activeGroups: { left: null, right: null },
+      toolGroups: { left: {}, right: {} },
+      graphProvider: "xyflow" as const,
+    });
     vi.mocked(useGraphData).mockReturnValue(mockGraphData);
 
     // Reset and setup mock functions
@@ -390,6 +425,20 @@ describe("useEntityInteraction", () => {
       const autoPinLayoutStore = {
         ...mockLayoutStore,
         autoPinOnLayoutStabilization: true,
+        // Add all required LayoutState properties
+        leftSidebarOpen: true,
+        leftSidebarPinned: false,
+        rightSidebarOpen: true,
+        rightSidebarPinned: false,
+        leftSidebarAutoHidden: false,
+        rightSidebarAutoHidden: false,
+        leftSidebarHovered: false,
+        rightSidebarHovered: false,
+        collapsedSections: {},
+        sectionPlacements: {},
+        activeGroups: { left: null, right: null },
+        toolGroups: { left: {}, right: {} },
+        graphProvider: "xyflow" as const,
       };
       const { useLayoutStore } = await import("../stores/layout-store");
       vi.mocked(useLayoutStore).mockReturnValue(autoPinLayoutStore);

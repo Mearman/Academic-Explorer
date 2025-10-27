@@ -110,7 +110,7 @@ export const noEmojiRule = createRule<[], MessageIds>({
 	},
 	defaultOptions: [],
 	create(context) {
-		function checkForEmojis(node: { type: string; loc?: unknown }, text: string): void {
+		function checkForEmojis(node: any, text: string): void {
 			if (!text) return
 
 			const matches = Array.from(text.matchAll(EMOJI_REGEX))

@@ -88,11 +88,13 @@ export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({
     });
 
     // Then add to the target group
-    addSectionToGroup({
-      sidebar: side,
-      groupId: activeGroupId || undefined,
-      sectionKey: draggedSectionId,
-    });
+    if (activeGroupId) {
+      addSectionToGroup({
+        sidebar: side,
+        groupId: activeGroupId,
+        sectionKey: draggedSectionId,
+      });
+    }
   };
 
   const handleDragOver = (event: React.DragEvent) => {
@@ -157,11 +159,13 @@ export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({
     });
 
     // Then add to the target group
-    addSectionToGroup({
-      sidebar: side,
-      groupId: activeGroupId || undefined,
-      sectionKey: draggedSectionId,
-    });
+    if (activeGroupId) {
+      addSectionToGroup({
+        sidebar: side,
+        groupId: activeGroupId,
+        sectionKey: draggedSectionId,
+      });
+    }
   };
 
   const handleToggleCollapse = (sectionId: string) => {

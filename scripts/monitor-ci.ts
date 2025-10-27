@@ -132,19 +132,19 @@ class CIMonitor {
 			)
 
 			return (runs as Array<Record<string, unknown>>).map((run: Record<string, unknown>) => ({
-				id: run.id,
-				name: run.name,
-				head_branch: run.headBranch,
-				head_sha: run.headSha,
-				status: run.status,
-				conclusion: run.conclusion,
-				workflow_id: run.workflowId,
-				created_at: run.createdAt,
-				updated_at: run.updatedAt,
-				html_url: run.htmlUrl,
-				run_number: run.runNumber,
-				event: run.event,
-				actor: run.actor,
+				id: run.id as number,
+				name: run.name as string,
+				head_branch: run.headBranch as string,
+				head_sha: run.headSha as string,
+				status: run.status as string,
+				conclusion: run.conclusion as string | null,
+				workflow_id: run.workflowId as number,
+				created_at: run.createdAt as string,
+				updated_at: run.updatedAt as string,
+				html_url: run.htmlUrl as string,
+				run_number: run.runNumber as number,
+				event: run.event as string,
+				actor: run.actor as { login: string },
 			}))
 		} catch (error) {
 			console.error("Failed to fetch workflow runs:", error)
@@ -157,9 +157,9 @@ class CIMonitor {
 	 */
 	async getRunJobs(runId: number): Promise<Job[]> {
 		try {
-			const jobs = this.execGhCommand(`run view ${runId} --json=jobs`)
+			const result = this.execGhCommand(`run view ${runId} --json=jobs`) as { jobs?: Job[] }
 
-			return jobs.jobs || []
+			return result.jobs || []
 		} catch (error) {
 			console.error(`Failed to fetch jobs for run ${runId}:`, error)
 			return []

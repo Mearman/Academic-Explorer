@@ -224,8 +224,8 @@ describe("LayoutControls", () => {
       },
       setLayout: mockSetLayout,
     });
-    mockUseGraphStore.mockImplementation((selector) => {
-      if (selector) {
+    mockUseGraphStore.mockImplementation((selector?) => {
+      if (selector && typeof selector === "function") {
         return selector(mockState as any);
       }
       return mockState as any;
@@ -250,8 +250,8 @@ describe("LayoutControls", () => {
       },
       setLayout: mockSetLayout,
     });
-    mockUseGraphStore.mockImplementation((selector) => {
-      if (selector) {
+    mockUseGraphStore.mockImplementation((selector?) => {
+      if (selector && typeof selector === "function") {
         return selector(mockState as any);
       }
       return mockState as any;
@@ -282,8 +282,8 @@ describe("LayoutControls", () => {
       },
       setLayout: mockSetLayout,
     });
-    mockUseGraphStore.mockImplementation((selector) => {
-      if (selector) {
+    mockUseGraphStore.mockImplementation((selector?) => {
+      if (selector && typeof selector === "function") {
         return selector(mockState as any);
       }
       return mockState as any;
@@ -318,8 +318,8 @@ describe("LayoutControls", () => {
       },
       setLayout: mockSetLayout,
     });
-    mockUseGraphStore.mockImplementation((selector) => {
-      if (selector) {
+    mockUseGraphStore.mockImplementation((selector?) => {
+      if (selector && typeof selector === "function") {
         return selector(mockState as any);
       }
       return mockState as any;
@@ -357,14 +357,14 @@ describe("LayoutControls", () => {
       },
       setLayout: mockSetLayout,
     });
-    mockUseGraphStore.mockImplementation((selector) => {
-      if (selector) {
+    mockUseGraphStore.mockImplementation((selector?) => {
+      if (selector && typeof selector === "function") {
         return selector(mockState as any);
       }
       return mockState as any;
     });
-    mockUseGraphStore.mockImplementation((selector) => {
-      if (selector) {
+    mockUseGraphStore.mockImplementation((selector?) => {
+      if (selector && typeof selector === "function") {
         return selector(mockState as any);
       }
       return mockState as any;

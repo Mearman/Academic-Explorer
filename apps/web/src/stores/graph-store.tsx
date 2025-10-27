@@ -851,6 +851,119 @@ export const graphStore = (() => {
       const state = getState();
       return Object.values(state.nodes);
     },
+    // Graph query methods
+    getNeighbors: (nodeId: string): GraphNode[] => {
+      const state = getState();
+      const edges = Object.values(state.edges);
+      const neighbors: GraphNode[] = [];
+
+      edges.forEach((edge) => {
+        if (edge.source === nodeId && state.nodes[edge.target]) {
+          neighbors.push(state.nodes[edge.target]);
+        } else if (edge.target === nodeId && state.nodes[edge.source]) {
+          neighbors.push(state.nodes[edge.source]);
+        }
+      });
+
+      return neighbors;
+    },
+    getConnectedEdges: (nodeId: string): GraphEdge[] => {
+      const state = getState();
+      return Object.values(state.edges).filter(
+        (edge) => edge.source === nodeId || edge.target === nodeId
+      );
+    },
+    getVisibleNodes: (): GraphNode[] => {
+      const state = getState();
+      return Object.values(state.nodes).filter((node) =>
+        state.visibleEntityTypes[node.entityType]
+      );
+    },
+    getEntityTypeStats: () => {
+      const state = getState();
+      const stats = {
+        total: {} as Record<EntityType, number>,
+        visible: {} as Record<EntityType, number>,
+        searchResults: {} as Record<EntityType, number>,
+      };
+
+      Object.values(state.nodes).forEach((node) => {
+        stats.total[node.entityType] = (stats.total[node.entityType] || 0) + 1;
+        if (state.visibleEntityTypes[node.entityType]) {
+          stats.visible[node.entityType] = (stats.visible[node.entityType] || 0) + 1;
+        }
+      });
+
+      return stats;
+    },
+    isPinned: (nodeId: string): boolean => {
+      const state = getState();
+      return Boolean(state.pinnedNodes[nodeId]);
+    },
+    getNodesWithinDepth: (depth: number): GraphNode[] => {
+      const state = getState();
+      return Object.values(state.nodes).filter(
+        (node) => (state.nodeDepths[node.id] || 0) <= depth
+      );
+    },
+    findShortestPath: (sourceId: string, targetId: string): string[] => {
+      const state = getState();
+      if (sourceId === targetId) return [sourceId];
+      if (!state.nodes[sourceId] || !state.nodes[targetId]) return [];
+
+      const visited = new Set<string>();
+      const queue: Array<{ id: string; path: string[] }> = [];
+      const edges = Object.values(state.edges);
+
+      queue.push({ id: sourceId, path: [sourceId] });
+      visited.add(sourceId);
+
+      while (queue.length > 0) {
+        const current = queue.shift();
+        if (!current) break;
+
+        const nextIds = findNeighborIds({ edges, nodeId: current.id });
+        for (const nextId of nextIds) {
+          if (!visited.has(nextId)) {
+            const newPath = [...current.path, nextId];
+
+            if (nextId === targetId) {
+              return newPath;
+            }
+
+            visited.add(nextId);
+            queue.push({ id: nextId, path: newPath });
+          }
+        }
+      }
+
+      return [];
+    },
+    getConnectedComponent: (nodeId: string): string[] => {
+      const state = getState();
+      if (!state.nodes[nodeId]) return [nodeId];
+
+      const visited = new Set<string>();
+      const stack = [nodeId];
+      const edges = Object.values(state.edges);
+
+      while (stack.length > 0) {
+        const popped = stack.pop();
+        if (!popped) break;
+        const current = popped;
+        if (visited.has(current)) continue;
+        visited.add(current);
+
+        const neighbors = findNeighborIds({ edges, nodeId: current });
+        neighbors.forEach((neighbor) => {
+          if (!visited.has(neighbor) && state.nodes[neighbor]) {
+            stack.push(neighbor);
+          }
+        });
+      }
+
+      return Array.from(visited);
+    },
     // Property getter for nodes
     get nodes(): Record<string, GraphNode> {
       return getState().nodes;

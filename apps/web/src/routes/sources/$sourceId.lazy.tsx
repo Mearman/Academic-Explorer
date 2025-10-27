@@ -5,7 +5,7 @@ import { useEntityRoute, NavigationHelper } from "@academic-explorer/utils";
 import { SOURCE_FIELDS, cachedOpenAlex } from "@academic-explorer/client";
 import type { Source } from "@academic-explorer/types";
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const SOURCE_ROUTE_PATH = "/sources/$sourceId";
 
@@ -39,6 +39,9 @@ function SourceRoute() {
     routeSearch,
   } = entityRoute;
 
+  // Field selection state
+  const [selectedFields, setSelectedFields] = useState<readonly string[]>(SOURCE_FIELDS);
+
   // Handle URL cleanup for malformed OpenAlex URLs using shared utility
   useEffect(() => {
     const navigator = NavigationHelper.createEntityNavigator({
@@ -54,32 +57,30 @@ function SourceRoute() {
 
   const source = rawEntityData.data;
 
+  // Extract entity and related entities from miniGraphData for EntityMiniGraph
+  const entity = miniGraphData.data as Source | undefined;
+  const relatedEntities = (miniGraphData.data ? [miniGraphData.data] : []) as Source[];
+
   return (
     <>
       <FieldSelector
-        entityType="source"
-        entityId={sourceId}
-        fields={SOURCE_FIELDS}
-        viewMode={viewMode}
+        availableFields={SOURCE_FIELDS}
+        selectedFields={selectedFields}
+        onFieldsChange={setSelectedFields}
+        title="Select Source Fields"
+        description="Choose which fields to include in the source data"
       />
 
-      <EntityMiniGraph
-        entityType="source"
-        entityId={sourceId}
-        graphData={graphData}
-        miniGraphData={miniGraphData}
-        loadEntity={loadEntity}
-        loadEntityIntoGraph={loadEntityIntoGraph}
-        nodeCount={nodeCount}
-      />
+      {entity && (
+        <EntityMiniGraph
+          entity={entity}
+          relatedEntities={relatedEntities}
+        />
+      )}
 
       <ViewToggle
         viewMode={viewMode}
         onViewModeChange={setViewMode}
-        entityType="source"
-        entityId={sourceId}
-        routeSearch={routeSearch}
-        isLoadingRandom={isLoadingRandom}
       />
 
       <RichEntityView
@@ -97,3 +98,5 @@ function SourceRoute() {
 export const Route = createLazyFileRoute(SOURCE_ROUTE_PATH)({
   component: SourceRoute,
 });
+
+export default SourceRoute;

@@ -4,7 +4,7 @@ import { RichEntityView, ViewToggle } from "@academic-explorer/ui";
 import { useEntityRoute, NavigationHelper } from "@academic-explorer/utils";
 import { INSTITUTION_FIELDS, cachedOpenAlex, type InstitutionEntity } from "@academic-explorer/client";
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const INSTITUTION_ROUTE_PATH = "/institutions/$institutionId";
 
@@ -38,6 +38,9 @@ function InstitutionRoute() {
     routeSearch,
   } = entityRoute;
 
+  // Field selection state
+  const [selectedFields, setSelectedFields] = useState<readonly string[]>(INSTITUTION_FIELDS);
+
   // Handle URL cleanup for malformed OpenAlex URLs using shared utility
   useEffect(() => {
     const navigator = NavigationHelper.createEntityNavigator({
@@ -53,32 +56,30 @@ function InstitutionRoute() {
 
   const institution = rawEntityData.data;
 
+  // Extract entity and related entities from miniGraphData for EntityMiniGraph
+  const entity = miniGraphData.data as InstitutionEntity | undefined;
+  const relatedEntities = (miniGraphData.data ? [miniGraphData.data] : []) as InstitutionEntity[];
+
   return (
     <>
       <FieldSelector
-        entityType="institution"
-        entityId={institutionId}
-        fields={INSTITUTION_FIELDS}
-        viewMode={viewMode}
+        availableFields={INSTITUTION_FIELDS}
+        selectedFields={selectedFields}
+        onFieldsChange={setSelectedFields}
+        title="Select Institution Fields"
+        description="Choose which fields to include in the institution data"
       />
 
-      <EntityMiniGraph
-        entityType="institution"
-        entityId={institutionId}
-        graphData={graphData}
-        miniGraphData={miniGraphData}
-        loadEntity={loadEntity}
-        loadEntityIntoGraph={loadEntityIntoGraph}
-        nodeCount={nodeCount}
-      />
+      {entity && (
+        <EntityMiniGraph
+          entity={entity}
+          relatedEntities={relatedEntities}
+        />
+      )}
 
       <ViewToggle
         viewMode={viewMode}
         onViewModeChange={setViewMode}
-        entityType="institution"
-        entityId={institutionId}
-        routeSearch={routeSearch}
-        isLoadingRandom={isLoadingRandom}
       />
 
       <RichEntityView
@@ -96,3 +97,5 @@ function InstitutionRoute() {
 export const Route = createLazyFileRoute(INSTITUTION_ROUTE_PATH)({
   component: InstitutionRoute,
 });
+
+export default InstitutionRoute;

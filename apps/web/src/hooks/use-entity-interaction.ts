@@ -42,26 +42,28 @@ export const useEntityInteraction = (
 ) => {
   const { loadEntityIntoGraph, expandNode } = useGraphData();
   const { setPreviewEntity, autoPinOnLayoutStabilization } = useLayoutStore();
-  const store = useGraphStore();
+  const { nodes, selectNode, clearAllPinnedNodes, pinNode } = useGraphStore();
 
   // Helper functions to reduce cognitive complexity
   const findOrLoadTargetNode = async ({
     entityId,
     loadEntityIntoGraph,
+    nodes,
   }: {
     entityId: string;
     loadEntityIntoGraph: (entityId: string) => Promise<void>;
+    nodes: Record<string, GraphNode>;
   }): Promise<GraphNode | undefined> => {
     // First check if a minimal node already exists
-    let targetNode = (Object.values(store.nodes) as GraphNode[]).find(
+    let targetNode = (Object.values(nodes) as GraphNode[]).find(
       (node) => node.entityId === entityId,
     );
 
     if (!targetNode) {
       // No existing node, load entity into graph
       await loadEntityIntoGraph(entityId);
-      // Find the newly loaded node
-      targetNode = (Object.values(store.nodes) as GraphNode[]).find(
+      // Find the newly loaded node - use the hook's nodes directly
+      targetNode = (Object.values(nodes) as GraphNode[]).find(
         (node) => node.entityId === entityId,
       );
     }
@@ -73,7 +75,9 @@ export const useEntityInteraction = (
     targetNode,
     entityId,
     options,
-    store,
+    selectNode,
+    clearAllPinnedNodes,
+    pinNode,
     setPreviewEntity,
     expandNode,
     autoPinOnLayoutStabilization,
@@ -83,7 +87,9 @@ export const useEntityInteraction = (
     entityId: string;
     entityType: string;
     options: EntityInteractionOptions;
-    store: GraphState;
+    selectNode: (nodeId: string | null) => void;
+    clearAllPinnedNodes: () => void;
+    pinNode: (nodeId: string) => void;
     setPreviewEntity: (entityId: string) => void;
     expandNode: (params: {
       nodeId: string;
@@ -96,7 +102,7 @@ export const useEntityInteraction = (
     ) => void;
   }): Promise<void> => {
     // Select the node
-    store.selectNode(targetNode.id);
+    selectNode(targetNode.id);
 
     // Update sidebar preview if requested
     if (options.updatePreview) {
@@ -107,9 +113,9 @@ export const useEntityInteraction = (
     if (options.pinNode) {
       // Only clear pinned nodes if auto-pin is disabled
       if (!autoPinOnLayoutStabilization) {
-        store.clearAllPinnedNodes();
+        clearAllPinnedNodes();
       }
-      store.pinNode(targetNode.id);
+      pinNode(targetNode.id);
     }
 
     // Center viewport on node if requested
@@ -139,8 +145,6 @@ export const useEntityInteraction = (
       existingNode?: GraphNode;
     }) => {
       try {
-        const store = useGraphStore();
-
         logger.debug("graph", "Entity interaction started", {
           ...(entityId && { entityId }),
           entityType,
@@ -155,6 +159,7 @@ export const useEntityInteraction = (
           targetNode = await findOrLoadTargetNode({
             entityId,
             loadEntityIntoGraph,
+            nodes,
           });
         }
 
@@ -175,7 +180,9 @@ export const useEntityInteraction = (
           entityId,
           entityType,
           options,
-          store,
+          selectNode,
+          clearAllPinnedNodes,
+          pinNode,
           setPreviewEntity,
           expandNode,
           autoPinOnLayoutStabilization,
@@ -201,6 +208,10 @@ export const useEntityInteraction = (
       }
     },
     [
+      nodes,
+      selectNode,
+      clearAllPinnedNodes,
+      pinNode,
       loadEntityIntoGraph,
       expandNode,
       setPreviewEntity,

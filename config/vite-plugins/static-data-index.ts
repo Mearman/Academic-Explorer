@@ -199,7 +199,7 @@ export function staticDataIndexPlugin(
           type: "error",
           err: {
             message: `Static data index generation failed for ${entityType}`,
-            stack: error instanceof Error ? error.stack : String(error),
+            stack: error instanceof Error ? (error.stack ?? String(error)) : String(error),
           },
         });
       }

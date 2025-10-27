@@ -58,7 +58,7 @@ export const LeftRibbon: React.FC = () => {
     };
     return acc;
   }, {} as Record<string, { id: string; sections: string[]; activeSection: string | null }>);
-  const activeGroupId = activeGroup?.id ?? null;
+  const activeGroupId = activeGroup ?? null;
   const registryVersion = getRegistryVersion();
   const groupDefinitions = useMemo(() => {
     const definitions = Object.keys(toolGroups)

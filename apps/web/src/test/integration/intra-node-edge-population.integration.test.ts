@@ -688,8 +688,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       store.addNode(citingNode);
 
       // Check if node exists in store
-      const graphStore = useGraphStore as unknown;
-      const _foundNode = graphStore.getNode(citingNode.id);
+      const _foundNode = (useGraphStore as unknown as typeof mockStore).getNode(citingNode.id);
 
       // Detect relationships for the citing work
       const detectedEdges =

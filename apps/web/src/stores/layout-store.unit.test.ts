@@ -15,12 +15,12 @@ vi.mock("dexie", () => {
   };
 
   const DexieMock = vi.fn().mockImplementation(function (
-    this: unknown,
+    this: Record<string, unknown>,
     _name?: string,
   ) {
     this.version = vi.fn().mockImplementation((_version: number) => {
       return {
-        stores: vi.fn().mockImplementation((schema: any) => {
+        stores: vi.fn().mockImplementation((schema: Record<string, unknown>) => {
           // Set up the table properties based on the schema
           Object.keys(schema).forEach((tableName) => {
             this[tableName] = mockTable;
@@ -54,7 +54,7 @@ vi.mock("./group-registry", () => ({
   registerGroupDefinition: vi.fn(),
 }));
 
-import { layoutStore, layoutActions } from "./layout-store";
+import { useLayoutStore, useLayoutActions } from "./layout-store";
 
 // Mock localStorage for Zustand persistence
 const localStorageMock = (() => {
@@ -84,15 +84,14 @@ describe("Layout Store", () => {
     localStorageMock.clear();
     vi.clearAllMocks();
 
-    // Reset store to initial state
-    layoutStore.setState({
-      leftSidebarOpen: true,
-      leftSidebarPinned: false,
-      rightSidebarOpen: true,
-      rightSidebarPinned: false,
-      graphProvider: "xyflow",
-      previewEntityId: null,
-    });
+    // Reset store to initial state by setting defaults
+    const actions = useLayoutActions();
+    actions.setLeftSidebarOpen(true);
+    actions.pinLeftSidebar(false);
+    actions.setRightSidebarOpen(true);
+    actions.pinRightSidebar(false);
+    actions.setGraphProvider("xyflow");
+    actions.setPreviewEntity(null);
   });
 
   afterEach(() => {
@@ -101,7 +100,7 @@ describe("Layout Store", () => {
 
   describe("Initial State", () => {
     it("should have correct default values", () => {
-      const state = layoutStore.getState();
+      const state = useLayoutStore();
 
       expect(state.leftSidebarOpen).toBe(true);
       expect(state.leftSidebarPinned).toBe(false);
@@ -111,59 +110,59 @@ describe("Layout Store", () => {
       expect(state.previewEntityId).toBeNull();
     });
 
-    it("should have all required action methods available through layoutActions", () => {
-      expect(typeof layoutActions.toggleLeftSidebar).toBe("function");
-      expect(typeof layoutActions.toggleRightSidebar).toBe("function");
-      expect(typeof layoutActions.setLeftSidebarOpen).toBe("function");
-      expect(typeof layoutActions.setRightSidebarOpen).toBe("function");
-      expect(typeof layoutActions.pinLeftSidebar).toBe("function");
-      expect(typeof layoutActions.pinRightSidebar).toBe("function");
-      expect(typeof layoutActions.setGraphProvider).toBe("function");
-      expect(typeof layoutActions.setPreviewEntity).toBe("function");
+    it("should have all required action methods available through useLayoutActions()", () => {
+      expect(typeof useLayoutActions().toggleLeftSidebar).toBe("function");
+      expect(typeof useLayoutActions().toggleRightSidebar).toBe("function");
+      expect(typeof useLayoutActions().setLeftSidebarOpen).toBe("function");
+      expect(typeof useLayoutActions().setRightSidebarOpen).toBe("function");
+      expect(typeof useLayoutActions().pinLeftSidebar).toBe("function");
+      expect(typeof useLayoutActions().pinRightSidebar).toBe("function");
+      expect(typeof useLayoutActions().setGraphProvider).toBe("function");
+      expect(typeof useLayoutActions().setPreviewEntity).toBe("function");
     });
   });
 
   describe("Left Sidebar Actions", () => {
     it("should toggle left sidebar open state", () => {
-      const { toggleLeftSidebar } = layoutActions;
+      const { toggleLeftSidebar } = useLayoutActions();
 
       // Initially true, should become false
       toggleLeftSidebar();
-      expect(layoutStore.getState().leftSidebarOpen).toBe(false);
+      expect(useLayoutStore().leftSidebarOpen).toBe(false);
 
       // Should toggle back to true
       toggleLeftSidebar();
-      expect(layoutStore.getState().leftSidebarOpen).toBe(true);
+      expect(useLayoutStore().leftSidebarOpen).toBe(true);
     });
 
     it("should set left sidebar open state directly", () => {
-      const { setLeftSidebarOpen } = layoutActions;
+      const { setLeftSidebarOpen } = useLayoutActions();
 
       setLeftSidebarOpen(false);
-      expect(layoutStore.getState().leftSidebarOpen).toBe(false);
+      expect(useLayoutStore().leftSidebarOpen).toBe(false);
 
       setLeftSidebarOpen(true);
-      expect(layoutStore.getState().leftSidebarOpen).toBe(true);
+      expect(useLayoutStore().leftSidebarOpen).toBe(true);
     });
 
     it("should set left sidebar pinned state", () => {
-      const { pinLeftSidebar } = layoutActions;
+      const { pinLeftSidebar } = useLayoutActions();
 
       pinLeftSidebar(true);
-      expect(layoutStore.getState().leftSidebarPinned).toBe(true);
+      expect(useLayoutStore().leftSidebarPinned).toBe(true);
 
       pinLeftSidebar(false);
-      expect(layoutStore.getState().leftSidebarPinned).toBe(false);
+      expect(useLayoutStore().leftSidebarPinned).toBe(false);
     });
 
     it("should maintain other state when updating left sidebar", () => {
-      const { toggleLeftSidebar, pinLeftSidebar } = layoutActions;
-      const initialState = layoutStore.getState();
+      const { toggleLeftSidebar, pinLeftSidebar } = useLayoutActions();
+      const initialState = useLayoutStore();
 
       toggleLeftSidebar();
       pinLeftSidebar(true);
 
-      const newState = layoutStore.getState();
+      const newState = useLayoutStore();
 
       // Left sidebar state should change
       expect(newState.leftSidebarOpen).toBe(false);
@@ -179,45 +178,45 @@ describe("Layout Store", () => {
 
   describe("Right Sidebar Actions", () => {
     it("should toggle right sidebar open state", () => {
-      const { toggleRightSidebar } = layoutActions;
+      const { toggleRightSidebar } = useLayoutActions();
 
       // Initially true, should become false
       toggleRightSidebar();
-      expect(layoutStore.getState().rightSidebarOpen).toBe(false);
+      expect(useLayoutStore().rightSidebarOpen).toBe(false);
 
       // Should toggle back to true
       toggleRightSidebar();
-      expect(layoutStore.getState().rightSidebarOpen).toBe(true);
+      expect(useLayoutStore().rightSidebarOpen).toBe(true);
     });
 
     it("should set right sidebar open state directly", () => {
-      const { setRightSidebarOpen } = layoutActions;
+      const { setRightSidebarOpen } = useLayoutActions();
 
       setRightSidebarOpen(false);
-      expect(layoutStore.getState().rightSidebarOpen).toBe(false);
+      expect(useLayoutStore().rightSidebarOpen).toBe(false);
 
       setRightSidebarOpen(true);
-      expect(layoutStore.getState().rightSidebarOpen).toBe(true);
+      expect(useLayoutStore().rightSidebarOpen).toBe(true);
     });
 
     it("should set right sidebar pinned state", () => {
-      const { pinRightSidebar } = layoutActions;
+      const { pinRightSidebar } = useLayoutActions();
 
       pinRightSidebar(true);
-      expect(layoutStore.getState().rightSidebarPinned).toBe(true);
+      expect(useLayoutStore().rightSidebarPinned).toBe(true);
 
       pinRightSidebar(false);
-      expect(layoutStore.getState().rightSidebarPinned).toBe(false);
+      expect(useLayoutStore().rightSidebarPinned).toBe(false);
     });
 
     it("should maintain other state when updating right sidebar", () => {
-      const { toggleRightSidebar, pinRightSidebar } = layoutActions;
-      const initialState = layoutStore.getState();
+      const { toggleRightSidebar, pinRightSidebar } = useLayoutActions();
+      const initialState = useLayoutStore();
 
       toggleRightSidebar();
       pinRightSidebar(true);
 
-      const newState = layoutStore.getState();
+      const newState = useLayoutStore();
 
       // Right sidebar state should change
       expect(newState.rightSidebarOpen).toBe(false);
@@ -233,26 +232,26 @@ describe("Layout Store", () => {
 
   describe("Graph Provider Actions", () => {
     it("should set graph provider to xyflow", () => {
-      const { setGraphProvider } = layoutActions;
+      const { setGraphProvider } = useLayoutActions();
 
       setGraphProvider("xyflow");
-      expect(layoutStore.getState().graphProvider).toBe("xyflow");
+      expect(useLayoutStore().graphProvider).toBe("xyflow");
     });
 
     it("should set graph provider to cytoscape", () => {
-      const { setGraphProvider } = layoutActions;
+      const { setGraphProvider } = useLayoutActions();
 
       setGraphProvider("cytoscape");
-      expect(layoutStore.getState().graphProvider).toBe("cytoscape");
+      expect(useLayoutStore().graphProvider).toBe("cytoscape");
     });
 
     it("should maintain other state when updating graph provider", () => {
-      const { setGraphProvider } = layoutActions;
-      const initialState = layoutStore.getState();
+      const { setGraphProvider } = useLayoutActions();
+      const initialState = useLayoutStore();
 
       setGraphProvider("cytoscape");
 
-      const newState = layoutStore.getState();
+      const newState = useLayoutStore();
 
       // Graph provider should change
       expect(newState.graphProvider).toBe("cytoscape");
@@ -268,26 +267,26 @@ describe("Layout Store", () => {
 
   describe("Preview Entity Actions", () => {
     it("should set preview entity ID", () => {
-      const { setPreviewEntity } = layoutActions;
+      const { setPreviewEntity } = useLayoutActions();
 
       setPreviewEntity("W123456789");
-      expect(layoutStore.getState().previewEntityId).toBe("W123456789");
+      expect(useLayoutStore().previewEntityId).toBe("W123456789");
     });
 
     it("should clear preview entity ID", () => {
-      const { setPreviewEntity } = layoutActions;
+      const { setPreviewEntity } = useLayoutActions();
 
       // Set an entity first
       setPreviewEntity("W123456789");
-      expect(layoutStore.getState().previewEntityId).toBe("W123456789");
+      expect(useLayoutStore().previewEntityId).toBe("W123456789");
 
       // Clear it
       setPreviewEntity(null);
-      expect(layoutStore.getState().previewEntityId).toBeNull();
+      expect(useLayoutStore().previewEntityId).toBeNull();
     });
 
     it("should handle multiple preview entity changes", () => {
-      const { setPreviewEntity } = layoutActions;
+      const { setPreviewEntity } = useLayoutActions();
 
       const entityIds = [
         "W123456789",
@@ -299,17 +298,17 @@ describe("Layout Store", () => {
 
       for (const entityId of entityIds) {
         setPreviewEntity(entityId);
-        expect(layoutStore.getState().previewEntityId).toBe(entityId);
+        expect(useLayoutStore().previewEntityId).toBe(entityId);
       }
     });
 
     it("should maintain other state when updating preview entity", () => {
-      const { setPreviewEntity } = layoutActions;
-      const initialState = layoutStore.getState();
+      const { setPreviewEntity } = useLayoutActions();
+      const initialState = useLayoutStore();
 
       setPreviewEntity("W123456789");
 
-      const newState = layoutStore.getState();
+      const newState = useLayoutStore();
 
       // Preview entity should change
       expect(newState.previewEntityId).toBe("W123456789");
@@ -326,14 +325,14 @@ describe("Layout Store", () => {
   describe("Complex State Updates", () => {
     it("should handle multiple simultaneous updates", () => {
       // Update multiple properties
-      layoutActions.setLeftSidebarOpen(false);
-      layoutActions.pinLeftSidebar(true);
-      layoutActions.setRightSidebarOpen(false);
-      layoutActions.pinRightSidebar(true);
-      layoutActions.setGraphProvider("cytoscape");
-      layoutActions.setPreviewEntity("W123456789");
+      useLayoutActions().setLeftSidebarOpen(false);
+      useLayoutActions().pinLeftSidebar(true);
+      useLayoutActions().setRightSidebarOpen(false);
+      useLayoutActions().pinRightSidebar(true);
+      useLayoutActions().setGraphProvider("cytoscape");
+      useLayoutActions().setPreviewEntity("W123456789");
 
-      const finalState = layoutStore.getState();
+      const finalState = useLayoutStore();
 
       expect(finalState.leftSidebarOpen).toBe(false);
       expect(finalState.leftSidebarPinned).toBe(true);
@@ -346,11 +345,11 @@ describe("Layout Store", () => {
     it("should handle rapid state changes", () => {
       // Rapid toggles
       for (let i = 0; i < 10; i++) {
-        layoutActions.toggleLeftSidebar();
-        layoutActions.toggleRightSidebar();
+        useLayoutActions().toggleLeftSidebar();
+        useLayoutActions().toggleRightSidebar();
       }
 
-      const finalState = layoutStore.getState();
+      const finalState = useLayoutStore();
 
       // After 10 toggles, both should be back to their original state
       expect(finalState.leftSidebarOpen).toBe(true);
@@ -358,12 +357,12 @@ describe("Layout Store", () => {
     });
 
     it("should handle all provider types", () => {
-      const { setGraphProvider } = layoutActions;
+      const { setGraphProvider } = useLayoutActions();
       const providers: ProviderType[] = ["xyflow", "cytoscape"];
 
       for (const provider of providers) {
         setGraphProvider(provider);
-        expect(layoutStore.getState().graphProvider).toBe(provider);
+        expect(useLayoutStore().graphProvider).toBe(provider);
       }
     });
   });
@@ -371,14 +370,14 @@ describe("Layout Store", () => {
   describe("Persistence Behavior", () => {
     it("should work with localStorage persistence (mock test)", () => {
       // Test that persistence functions are available and state changes work
-      layoutActions.pinLeftSidebar(true);
-      expect(layoutStore.getState().leftSidebarPinned).toBe(true);
+      useLayoutActions().pinLeftSidebar(true);
+      expect(useLayoutStore().leftSidebarPinned).toBe(true);
 
-      layoutActions.pinRightSidebar(true);
-      expect(layoutStore.getState().rightSidebarPinned).toBe(true);
+      useLayoutActions().pinRightSidebar(true);
+      expect(useLayoutStore().rightSidebarPinned).toBe(true);
 
-      layoutActions.setGraphProvider("cytoscape");
-      expect(layoutStore.getState().graphProvider).toBe("cytoscape");
+      useLayoutActions().setGraphProvider("cytoscape");
+      expect(useLayoutStore().graphProvider).toBe("cytoscape");
 
       // Verify localStorage mock methods exist (testing infrastructure)
       expect(localStorageMock.setItem).toBeDefined();
@@ -387,12 +386,12 @@ describe("Layout Store", () => {
 
     it("should update non-persisted state correctly", () => {
       // These should update state but are not persisted according to partialize config
-      layoutActions.setLeftSidebarOpen(false);
-      layoutActions.setRightSidebarOpen(false);
-      layoutActions.setPreviewEntity("W123456789");
+      useLayoutActions().setLeftSidebarOpen(false);
+      useLayoutActions().setRightSidebarOpen(false);
+      useLayoutActions().setPreviewEntity("W123456789");
 
       // Verify state changes work
-      const state = layoutStore.getState();
+      const state = useLayoutStore();
       expect(state.leftSidebarOpen).toBe(false);
       expect(state.rightSidebarOpen).toBe(false);
       expect(state.previewEntityId).toBe("W123456789");
@@ -400,12 +399,12 @@ describe("Layout Store", () => {
 
     it("should handle persistence configuration properly", () => {
       // Update persisted state according to partialize config
-      layoutActions.pinLeftSidebar(true);
-      layoutActions.pinRightSidebar(true);
-      layoutActions.setGraphProvider("cytoscape");
+      useLayoutActions().pinLeftSidebar(true);
+      useLayoutActions().pinRightSidebar(true);
+      useLayoutActions().setGraphProvider("cytoscape");
 
       // Verify state changes work
-      const state = layoutStore.getState();
+      const state = useLayoutStore();
       expect(state.leftSidebarPinned).toBe(true);
       expect(state.rightSidebarPinned).toBe(true);
       expect(state.graphProvider).toBe("cytoscape");
@@ -414,7 +413,7 @@ describe("Layout Store", () => {
 
   describe("Type Safety", () => {
     it("should maintain correct TypeScript types for all state properties", () => {
-      const state = layoutStore.getState();
+      const state = useLayoutStore();
 
       // Boolean properties
       expect(typeof state.leftSidebarOpen).toBe("boolean");
@@ -434,102 +433,74 @@ describe("Layout Store", () => {
     });
 
     it("should maintain correct TypeScript types for all action functions", () => {
-      expect(typeof layoutActions.toggleLeftSidebar).toBe("function");
-      expect(typeof layoutActions.toggleRightSidebar).toBe("function");
-      expect(typeof layoutActions.setLeftSidebarOpen).toBe("function");
-      expect(typeof layoutActions.setRightSidebarOpen).toBe("function");
-      expect(typeof layoutActions.pinLeftSidebar).toBe("function");
-      expect(typeof layoutActions.pinRightSidebar).toBe("function");
-      expect(typeof layoutActions.setGraphProvider).toBe("function");
-      expect(typeof layoutActions.setPreviewEntity).toBe("function");
+      expect(typeof useLayoutActions().toggleLeftSidebar).toBe("function");
+      expect(typeof useLayoutActions().toggleRightSidebar).toBe("function");
+      expect(typeof useLayoutActions().setLeftSidebarOpen).toBe("function");
+      expect(typeof useLayoutActions().setRightSidebarOpen).toBe("function");
+      expect(typeof useLayoutActions().pinLeftSidebar).toBe("function");
+      expect(typeof useLayoutActions().pinRightSidebar).toBe("function");
+      expect(typeof useLayoutActions().setGraphProvider).toBe("function");
+      expect(typeof useLayoutActions().setPreviewEntity).toBe("function");
     });
   });
 
   describe("Edge Cases", () => {
     it("should handle setting the same state value multiple times", () => {
-      const { setLeftSidebarOpen, pinLeftSidebar } = layoutActions;
+      const { setLeftSidebarOpen, pinLeftSidebar } = useLayoutActions();
 
       setLeftSidebarOpen(true);
       setLeftSidebarOpen(true);
       setLeftSidebarOpen(true);
 
-      expect(layoutStore.getState().leftSidebarOpen).toBe(true);
+      expect(useLayoutStore().leftSidebarOpen).toBe(true);
 
       pinLeftSidebar(false);
       pinLeftSidebar(false);
       pinLeftSidebar(false);
 
-      expect(layoutStore.getState().leftSidebarPinned).toBe(false);
+      expect(useLayoutStore().leftSidebarPinned).toBe(false);
     });
 
     it("should handle setting preview entity to the same value multiple times", () => {
-      const { setPreviewEntity } = layoutActions;
+      const { setPreviewEntity } = useLayoutActions();
 
       setPreviewEntity("W123456789");
       setPreviewEntity("W123456789");
       setPreviewEntity("W123456789");
 
-      expect(layoutStore.getState().previewEntityId).toBe("W123456789");
+      expect(useLayoutStore().previewEntityId).toBe("W123456789");
 
       setPreviewEntity(null);
       setPreviewEntity(null);
       setPreviewEntity(null);
 
-      expect(layoutStore.getState().previewEntityId).toBeNull();
+      expect(useLayoutStore().previewEntityId).toBeNull();
     });
 
     it("should handle setting graph provider to the same value multiple times", () => {
-      const { setGraphProvider } = layoutActions;
+      const { setGraphProvider } = useLayoutActions();
 
       setGraphProvider("cytoscape");
       setGraphProvider("cytoscape");
       setGraphProvider("cytoscape");
 
-      expect(layoutStore.getState().graphProvider).toBe("cytoscape");
+      expect(useLayoutStore().graphProvider).toBe("cytoscape");
     });
   });
 
   describe("Store Integration", () => {
-    it("should allow subscribing to state changes", () => {
-      const mockCallback = vi.fn();
-      const unsubscribe = layoutStore.subscribe(mockCallback);
-
-      const { toggleLeftSidebar } = layoutActions;
-      toggleLeftSidebar();
-
-      expect(mockCallback).toHaveBeenCalled();
-
-      unsubscribe();
-    });
-
-    it("should allow manual state updates via setState", () => {
-      layoutStore.setState({
-        leftSidebarOpen: false,
-        rightSidebarOpen: false,
-        graphProvider: "cytoscape",
-        previewEntityId: "W123456789",
-      });
-
-      const state = layoutStore.getState();
-
-      expect(state.leftSidebarOpen).toBe(false);
-      expect(state.rightSidebarOpen).toBe(false);
-      expect(state.graphProvider).toBe("cytoscape");
-      expect(state.previewEntityId).toBe("W123456789");
-    });
-
-    it("should maintain consistent state across multiple getState calls", () => {
-      const { setPreviewEntity, setGraphProvider } = layoutActions;
+    it("should maintain consistent state across multiple calls", () => {
+      const { setPreviewEntity, setGraphProvider } = useLayoutActions();
 
       setPreviewEntity("W123456789");
       setGraphProvider("cytoscape");
 
-      const state1 = layoutStore.getState();
-      const state2 = layoutStore.getState();
+      const store1 = useLayoutStore();
+      const store2 = useLayoutStore();
 
-      expect(state1.previewEntityId).toBe(state2.previewEntityId);
-      expect(state1.graphProvider).toBe(state2.graphProvider);
-      expect(state1.leftSidebarOpen).toBe(state2.leftSidebarOpen);
+      expect(store1.previewEntityId).toBe(store2.previewEntityId);
+      expect(store1.graphProvider).toBe(store2.graphProvider);
+      expect(store1.leftSidebarOpen).toBe(store2.leftSidebarOpen);
     });
   });
 });

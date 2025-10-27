@@ -95,11 +95,11 @@ export const useRawEntityData = ({
 
       try {
         // Use the cached client which provides multi-tier caching
-        const result = await cachedOpenAlex.getById<OpenAlexEntity>(
-          entityType,
-          detectedEntityId,
-          queryParams,
-        );
+        const result = await cachedOpenAlex.getById<OpenAlexEntity>({
+          endpoint: entityType,
+          id: detectedEntityId,
+          params: queryParams,
+        });
 
         logger.debug(
           "api",

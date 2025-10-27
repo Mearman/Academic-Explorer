@@ -16,7 +16,6 @@ vi.mock("@academic-explorer/utils", async () => {
   >("@academic-explorer/utils");
   return {
     ...actual,
-    useOpenAlexEntity: vi.fn(),
   };
 });
 
@@ -86,10 +85,8 @@ describe("useRawEntityData", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
 
-    const { useOpenAlexEntity } = await import("@academic-explorer/utils");
     const { EntityDetectionService } = await import("@academic-explorer/graph");
 
-    vi.mocked(useOpenAlexEntity).mockReturnValue(mockUseQueryResult);
     vi.mocked(EntityDetectionService.detectEntity).mockReturnValue({
       entityType: "works",
       normalizedId: "W123456789",

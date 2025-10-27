@@ -230,7 +230,7 @@ describe("Entity Data Storage Integration", () => {
     graphDataService = createGraphDataService(queryClient);
 
     // Reset store state properly
-    const store = useGraphStore.getState();
+    const store = (useGraphStore as unknown as typeof mockStore).getState();
 
     // Clear nodes and edges properly
     for (const nodeId of Object.keys(store.nodes)) {
@@ -316,7 +316,7 @@ describe("Entity Data Storage Integration", () => {
         // Give a small delay for potential async state updates to complete
         await new Promise((resolve) => setTimeout(resolve, 10));
 
-        const store = useGraphStore.getState();
+        const store = (useGraphStore as unknown as typeof mockStore).getState();
 
         // Verify the main work was added with entity data
         expect("https://openalex.org/W123456789" in store.nodes).toBe(true);
@@ -424,7 +424,7 @@ describe("Entity Data Storage Integration", () => {
         // Give a small delay for potential async state updates to complete
         await new Promise((resolve) => setTimeout(resolve, 10));
 
-        const store = useGraphStore.getState();
+        const store = (useGraphStore as unknown as typeof mockStore).getState();
 
         // Verify only the primary work was loaded
         expect(Object.keys(store.nodes).length).toBe(1);
@@ -460,7 +460,7 @@ describe("Entity Data Storage Integration", () => {
     // TODO: Fix test environment issue where manually added nodes don't persist in Zustand store
     // This test validates functionality that works in the other 3 passing tests
     it("should transition from minimal to full hydration when fully loaded", async () => {
-      const store = useGraphStore.getState();
+      const store = (useGraphStore as unknown as typeof mockStore).getState();
 
       // Create a minimal node first
       const testNode = {
@@ -582,7 +582,7 @@ describe("Entity Data Storage Integration", () => {
 
   describe("Store integration", () => {
     it("should return false for hasPlaceholderOrLoadingNodes function", async () => {
-      const store = useGraphStore.getState();
+      const store = (useGraphStore as unknown as typeof mockStore).getState();
 
       // Test hasPlaceholderOrLoadingNodes function - should always return false
       // since we no longer have artificial hydration levels

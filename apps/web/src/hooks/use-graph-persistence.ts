@@ -4,7 +4,7 @@
  */
 
 import { useCallback } from "react";
-import { useGraphStore } from "@/stores/graph-store";
+import { graphStore } from "@/stores/graph-store";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import type { GraphSnapshot } from "@academic-explorer/graph";
 
@@ -126,7 +126,7 @@ export function useGraphPersistence() {
   // Save current graph as new session
   const saveSession = useCallback(
     ({ name, description }: { name: string; description?: string }): string => {
-      const store = useGraphStore.getState();
+      const store = graphStore.getState();
 
       if (Object.keys(store.nodes).length === 0) {
         throw new Error("Cannot save empty graph");
@@ -149,24 +149,16 @@ export function useGraphPersistence() {
         },
       };
 
-      // Try to get additional snapshot data from provider (like viewport)
-      let snapshot: GraphSnapshot & {
+      // Add default viewport (provider snapshot functionality not yet implemented)
+      const snapshot: GraphSnapshot & {
         viewport?: { zoom: number; center: { x: number; y: number } };
+      } = {
+        ...baseSnapshot,
+        viewport: {
+          zoom: 1,
+          center: { x: 0, y: 0 },
+        },
       };
-      if (store.provider?.getSnapshot) {
-        const providerSnapshot = store.provider.getSnapshot();
-        // Merge provider snapshot data with base snapshot
-        snapshot = { ...baseSnapshot, ...providerSnapshot };
-      } else {
-        // Add default viewport when no provider
-        snapshot = {
-          ...baseSnapshot,
-          viewport: {
-            zoom: 1,
-            center: { x: 0, y: 0 },
-          },
-        };
-      }
 
       // Calculate metadata
       const entityCounts = {
@@ -245,27 +237,16 @@ export function useGraphPersistence() {
           throw new Error("Session not found");
         }
 
-        const store = useGraphStore.getState();
-
         // Clear existing graph
-        store.clear();
+        graphStore.clear();
 
         // Load nodes and edges
-        store.addNodes(session.snapshot.nodes);
-        store.addEdges(session.snapshot.edges);
+        graphStore.addNodes(session.snapshot.nodes);
+        graphStore.addEdges(session.snapshot.edges);
 
-        // Apply layout and restore view state
-        if (store.provider) {
-          store.provider.applyLayout(store.currentLayout);
-
-          if (hasViewport(session.snapshot)) {
-            // Load provider snapshot if viewport is available
-            store.provider.loadSnapshot(session.snapshot);
-          } else {
-            // Only fit view if no viewport available (fallback)
-            store.provider.fitView();
-          }
-        }
+        // Layout and view state restoration not yet implemented
+        // Future implementation will apply layout based on store.currentLayout
+        // and restore viewport if available in session.snapshot
 
         // Update last modified
         session.lastModified = new Date();

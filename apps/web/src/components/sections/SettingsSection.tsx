@@ -45,8 +45,9 @@ export const SettingsSection: React.FC = () => {
 
   // Settings store - using proper React hooks
   const politePoolEmail = usePolitePoolEmail();
-  const settingsStore = useSettingsStore();
-  const { setPolitePoolEmail, isValidEmail } = settingsStore;
+  const { setPolitePoolEmail, isValidEmail } = useSettingsStore(
+    (state) => state,
+  );
 
   // Local state for email editing
   const [localEmail, setLocalEmail] = React.useState(politePoolEmail);
@@ -181,14 +182,8 @@ export const SettingsSection: React.FC = () => {
         }
       }
 
-      // Reset layout store to defaults
-      const layoutStore = useLayoutStore.getState();
-      if (layoutStore && typeof layoutStore === "object" && "persist" in layoutStore) {
-        const persist = (layoutStore as { persist: { clearStorage: () => void } }).persist;
-        if (persist && typeof persist.clearStorage === "function") {
-          persist.clearStorage();
-        }
-      }
+      // Layout store state is automatically cleared via localStorage removal
+      // The Dexie database will be cleared when the browser is refreshed
 
       // Clear app metadata
       await clearAppMetadata();

@@ -360,8 +360,8 @@ describe("AuthorRoute Integration Tests", () => {
     });
 
     // Mock nodeCount = 0
-    vi.mocked(useGraphStore).mockImplementation((selector) =>
-      selector({ totalNodeCount: 0 }),
+    vi.mocked(useGraphStore).mockImplementation((selector?) =>
+      selector ? selector({ totalNodeCount: 0 }) : { totalNodeCount: 0 },
     );
 
     render(
@@ -387,8 +387,8 @@ describe("AuthorRoute Integration Tests", () => {
     });
 
     // Mock nodeCount > 0
-    vi.mocked(useGraphStore).mockImplementation((selector) =>
-      selector({ totalNodeCount: 5 }),
+    vi.mocked(useGraphStore).mockImplementation((selector?) =>
+      selector ? selector({ totalNodeCount: 5 }) : { totalNodeCount: 5 },
     );
 
     render(

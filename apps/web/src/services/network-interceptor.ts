@@ -217,7 +217,6 @@ export class NetworkInterceptor {
           networkActivityStore.failRequest(
             requestId,
             error instanceof Error ? error.message : String(error),
-            undefined,
           );
 
           logger.error(
@@ -330,7 +329,6 @@ export class NetworkInterceptor {
                 networkActivityStore.failRequest(
                   finalRequestId,
                   this.statusText || "Request failed",
-                  this.status,
                 );
 
                 logger.error(

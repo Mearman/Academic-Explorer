@@ -291,7 +291,7 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
     const _listenerId = eventBus.on(eventType, handler);
 
     return () => {
-      eventBus.off(eventType, _listenerId);
+      eventBus.off(eventType, handler);
     };
   }, [
     autoStartOnNodeChange,
@@ -393,8 +393,8 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
     );
 
     return () => {
-      eventBus.off(EVENT_BULK_NODES_ADDED, _bulkNodesListenerId);
-      eventBus.off(EVENT_BULK_EDGES_ADDED, _bulkEdgesListenerId);
+      eventBus.off(EVENT_BULK_NODES_ADDED, bulkNodesHandler);
+      eventBus.off(EVENT_BULK_EDGES_ADDED, bulkEdgesHandler);
     };
   }, [
     enabled,

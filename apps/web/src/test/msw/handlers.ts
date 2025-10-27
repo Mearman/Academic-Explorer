@@ -4,14 +4,15 @@
  */
 
 import { http, HttpResponse } from "msw";
-import type { Work, Author, Institution } from "@academic-explorer/types";
+import type { Work, Author, Institution, Authorship } from "@academic-explorer/types";
 
 const API_BASE = "https://api.openalex.org";
 
 /**
  * Mock data factories for OpenAlex entities
  */
-const createMockWork = (id: string): Work => ({
+const createMockWork = (id: string): Work => {
+  const mockWork: Work = {
   id: `https://openalex.org/${id}`,
   doi: `https://doi.org/10.1000/${id.toLowerCase()}`,
   title: `Mock Work ${id}`,
@@ -22,7 +23,6 @@ const createMockWork = (id: string): Work => ({
   ids: {
     openalex: `https://openalex.org/${id}`,
     doi: `https://doi.org/10.1000/${id.toLowerCase()}`,
-    mag: undefined,
     pmid: undefined,
     pmcid: undefined,
   },
@@ -56,7 +56,7 @@ const createMockWork = (id: string): Work => ({
       is_corresponding: true,
       raw_author_name: `Mock Author for ${id}`,
       raw_affiliation_strings: [`Mock Institution for ${id}`],
-    },
+    } as Authorship,
   ],
   countries_distinct_count: 1,
   institutions_distinct_count: 1,
@@ -152,25 +152,24 @@ const createMockWork = (id: string): Work => ({
     {
       year: 2023,
       cited_by_count: 5,
-      works_count: undefined,
-      oa_works_count: undefined,
+      works_count: 2,
     },
     {
       year: 2022,
       cited_by_count: 3,
-      works_count: undefined,
-      oa_works_count: undefined,
+      works_count: 1,
     },
     {
       year: 2021,
       cited_by_count: 2,
-      works_count: undefined,
-      oa_works_count: undefined,
+      works_count: 1,
     },
   ],
   updated_date: "2023-01-01",
   created_date: "2023-01-01",
-});
+  };
+  return mockWork;
+};
 
 const createMockAuthor = (id: string): Author => ({
   id: `https://openalex.org/${id}`,
@@ -182,15 +181,10 @@ const createMockAuthor = (id: string): Author => ({
   ids: {
     openalex: `https://openalex.org/${id}`,
     orcid: undefined,
-    scopus: undefined,
-    twitter: undefined,
-    wikipedia: undefined,
-    mag: undefined,
   },
   last_known_institutions: [],
   affiliations: [],
   x_concepts: [],
-  works_api_url: `https://api.openalex.org/works?filter=author.id:${id}`,
   updated_date: "2023-01-01",
   created_date: "2023-01-01",
   summary_stats: {

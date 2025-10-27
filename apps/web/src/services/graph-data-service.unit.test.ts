@@ -13,6 +13,7 @@ import type {
   PartialWork,
   Author,
   OpenAlexEntity,
+  Authorship,
 } from "@academic-explorer/client";
 
 // Mock client
@@ -85,8 +86,9 @@ vi.mock("@academic-explorer/graph", () => ({
 // Mock will be set up in beforeEach
 
 vi.mock("../stores/expansion-settings-store", () => ({
-  useExpansionSettingsStore: {
-    getState: vi.fn(),
+  useExpansionSettingsStore: vi.fn(),
+  expansionSettingsActions: {
+    getSettings: vi.fn(),
   },
 }));
 
@@ -113,7 +115,7 @@ import { cachedOpenAlex } from "@academic-explorer/client";
 import { logger, logError } from "@academic-explorer/utils/logger";
 import { createRequestDeduplicationService } from "./request-deduplication-service";
 import { createRelationshipDetectionService } from "./relationship-detection-service";
-import { useExpansionSettingsStore } from "../stores/expansion-settings-store";
+import { expansionSettingsActions } from "../stores/expansion-settings-store";
 
 describe("GraphDataService", () => {
   let service: GraphDataService;
@@ -124,6 +126,25 @@ describe("GraphDataService", () => {
   let mockExpansionSettingsStore: any;
 
   // Test data fixtures
+  const mockAuthorship: Authorship = {
+    author: {
+      id: "A123456789",
+      display_name: "Test Author",
+      orcid: "0000-0000-0000-0000",
+    },
+    author_position: "first",
+    institutions: [
+      {
+        id: "I123456789",
+        display_name: "Test Institution",
+        ror: "01abc23de",
+        type: "education",
+      },
+    ],
+    countries: [],
+    is_corresponding: false,
+  };
+
   const mockWorkEntity: PartialWork = {
     id: "W123456789",
     display_name: "Test Work",
@@ -136,26 +157,7 @@ describe("GraphDataService", () => {
     },
     locations: [],
     locations_count: 1,
-    authorships: [
-      {
-        author: {
-          id: "A123456789",
-          display_name: "Test Author",
-          orcid: "0000-0000-0000-0000",
-        },
-        author_position: "first",
-        institutions: [
-          {
-            id: "I123456789",
-            display_name: "Test Institution",
-            ror: "01abc23de",
-            type: "education",
-          },
-        ],
-        countries: [],
-        is_corresponding: false,
-      },
-    ],
+    authorships: [mockAuthorship],
     countries_distinct_count: 1,
     institutions_distinct_count: 1,
     corresponding_author_ids: [],
@@ -168,7 +170,6 @@ describe("GraphDataService", () => {
     indexed_in: [],
     open_access: {
       is_oa: true,
-      oa_date: "2023-01-01",
       oa_url: "https://example.com/open-access-url",
       any_repository_has_fulltext: false,
     },
@@ -272,16 +273,14 @@ describe("GraphDataService", () => {
 
     // Mock expansion settings store
     mockExpansionSettingsStore = {
-      getSettings: vi.fn().mockReturnValue({
-        target: "works",
-        limit: 25,
-        sorts: [],
-        filters: [],
-        enabled: true,
-        name: "Default Settings",
-      }),
+      target: "works",
+      limit: 25,
+      sorts: [],
+      filters: [],
+      enabled: true,
+      name: "Default Settings",
     };
-    vi.mocked(useExpansionSettingsStore.getState).mockReturnValue(
+    vi.mocked(expansionSettingsActions.getSettings).mockReturnValue(
       mockExpansionSettingsStore,
     );
 
@@ -431,7 +430,8 @@ describe("GraphDataService", () => {
 
       mockStore.nodes = { "node-1": existingNode };
       mockStore.getNode = vi.fn().mockImplementation((entityId: string) => {
-        return Object.values(mockStore.nodes).find(
+        const nodes = Object.values(mockStore.nodes) as typeof existingNode[];
+        return nodes.find(
           (node) => node.entityId === entityId,
         );
       });
