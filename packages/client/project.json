@@ -47,9 +47,16 @@
         "command": "tsc --project packages/client/tsconfig.json --emitDeclarationOnly --declaration --declarationMap false --outDir packages/client/dist"
       }
     },
-    "build:fix-paths": {
+    "build:copy-pkg": {
       "executor": "nx:run-commands",
       "dependsOn": ["build:types-gen"],
+      "options": {
+        "command": "cp packages/client/package.json packages/client/dist/package.json"
+      }
+    },
+    "build:fix-paths": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build:copy-pkg"],
       "options": {
         "command": "node packages/client/scripts/fix-dist-paths.cjs"
       }
