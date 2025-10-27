@@ -44,6 +44,7 @@ export const createPlugins = () => [
     routesDirectory: resolve(appRoot, "src/routes"),
     generatedRouteTree: resolve(appRoot, "src/routeTree.gen.ts"),
     routeFileIgnorePrefix: "-",
+    routeFileIgnorePattern: ".(test|spec).",
   }),
 
   // Vanilla Extract Plugin for CSS-in-TypeScript
