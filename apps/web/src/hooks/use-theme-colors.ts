@@ -125,7 +125,7 @@ export function useThemeColors() {
       ];
       return validKeys.includes(key);
     },
-    [colors],
+    [], // No dependencies needed - validKeys is static
   );
 
   // Entity color utilities - memoized to prevent React 19 infinite loops
