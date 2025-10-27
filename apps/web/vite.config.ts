@@ -1,5 +1,6 @@
 import { defineConfig, type UserConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { TanStackRouterVite } from '@tanstack/router-vite-plugin';
 import baseConfig from '../../vite.config.base';
 
 // Type-safe configuration creation
@@ -22,6 +23,7 @@ function createWebConfig(): UserConfig {
 
     plugins: [
       ...(base.plugins || []),
+      TanStackRouterVite(),
       react(),
     ],
 

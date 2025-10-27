@@ -7,7 +7,6 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MantineProvider, createTheme } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
-import { colors, typography } from "@academic-explorer/ui";
 // DEBUGGING: Temporarily disable potentially problematic imports
 // import { setupGlobalErrorHandling, logger } from "@academic-explorer/utils/logger"
 // import { initializeNetworkMonitoring } from "./services/network-interceptor"
@@ -30,12 +29,9 @@ import { AppActivityProvider } from "@/stores/app-activity-store";
 // Create Mantine theme using design tokens
 const theme = createTheme({
   primaryColor: "blue",
-  fontFamily: typography.fontFamily,
   defaultRadius: "md",
   respectReducedMotion: true,
   autoContrast: true,
-
-  colors,
 
   components: {
     Card: {

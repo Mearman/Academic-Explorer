@@ -3,7 +3,7 @@ import { EntityList } from "@/components/EntityList";
 import type { ColumnConfig } from "@/components/types";
 import type { Work } from "@academic-explorer/client";
 import { createFilterBuilder } from "@academic-explorer/client";
-import { convertToRelativeUrl } from "@academic-explorer/ui/components/entity-views/matchers/index";
+import { convertToRelativeUrl } from "@academic-explorer/ui";
 import { Anchor } from "@mantine/core";
 export const Route = createLazyFileRoute("/works/")({
   component: WorksListRoute,

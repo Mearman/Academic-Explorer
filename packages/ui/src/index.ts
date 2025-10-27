@@ -7,6 +7,14 @@
 export { RichEntityView } from "./components/entity-views";
 export type { RichEntityViewProps } from "./components/entity-views";
 
+// Entity View Matchers
+export {
+	createMatcher,
+	defaultMatchers,
+	convertToRelativeUrl,
+	type EntityMatcher,
+} from "./components/entity-views/matchers";
+
 // View Toggle Component
 export { ViewToggle, type ViewToggleProps } from "./components/ViewToggle";
 
