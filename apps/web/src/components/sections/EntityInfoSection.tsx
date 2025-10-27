@@ -104,17 +104,9 @@ const getEntitySource = ({
   return "route";
 };
 
-// Dummy entity for maintaining hook consistency
-const DUMMY_ENTITY: GraphNode = {
-  id: "__dummy__",
-  entityType: "works",
-  label: "",
-  entityId: "__dummy__",
-  x: 0,
-  y: 0,
-  externalIds: [],
-  entityData: {},
-};
+// Note: Early returns are safe here because all the state components
+// (LoadingState, ErrorState, NoEntityState) have the same hook structure,
+// so returning different components doesn't cause hook ordering issues.
 
 // Helper function to convert raw entity to GraphNode
 const convertRawEntityToGraphNode = (
@@ -308,47 +300,50 @@ export const EntityInfoSection: React.FC<EntityInfoSectionProps> = ({
   const hasNoEntity = !displayEntityId || (!entityNode && !rawEntityData.data);
   const shouldShowEntity = !isLoading && !hasError && !hasNoEntity && !!entity;
 
-  // CRITICAL: Always render RichEntityDisplay to maintain consistent hook calls
-  // Use dummy entity when not showing to ensure hooks are always called in the same order
-  const entityToRender = shouldShowEntity ? entity : DUMMY_ENTITY;
+  // Determine which component to show
+  // IMPORTANT: We cannot use conditional rendering for components with hooks,
+  // but we CAN conditionally render between LoadingState/ErrorState/NoEntityState
+  // since they don't have internal hooks that would change the count
+
+  if (isLoading) {
+    return <LoadingState className={className} colors={colors} />;
+  }
+
+  if (hasError) {
+    return (
+      <ErrorState
+        className={className}
+        colors={colors}
+        error={rawEntityData.error}
+      />
+    );
+  }
+
+  if (hasNoEntity) {
+    return <NoEntityState className={className} colors={colors} />;
+  }
+
+  if (!entity) {
+    return <NoEntityState className={className} colors={colors} />;
+  }
 
   return (
-    <>
-      {/* CRITICAL: Always render ALL components to maintain consistent hook calls and component tree */}
-      <div style={{ display: shouldShowEntity ? "block" : "none" }}>
-        <div className={className} style={{ padding: "16px" }}>
-          <div
-            style={{
-              fontSize: "14px",
-              fontWeight: 600,
-              marginBottom: "12px",
-              color: colors.text.primary,
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-            }}
-          >
-            <IconInfoCircle size={16} />
-            Entity Information
-          </div>
-          <RichEntityDisplay entity={entityToRender} />
-        </div>
+    <div className={className} style={{ padding: "16px" }}>
+      <div
+        style={{
+          fontSize: "14px",
+          fontWeight: 600,
+          marginBottom: "12px",
+          color: colors.text.primary,
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+        }}
+      >
+        <IconInfoCircle size={16} />
+        Entity Information
       </div>
-
-      {/* Always render all state components but hide with CSS to maintain consistent component tree */}
-      <div style={{ display: isLoading ? "block" : "none" }}>
-        <LoadingState className={className} colors={colors} />
-      </div>
-      <div style={{ display: hasError ? "block" : "none" }}>
-        <ErrorState
-          className={className}
-          colors={colors}
-          error={rawEntityData.error}
-        />
-      </div>
-      <div style={{ display: hasNoEntity && !isLoading && !hasError ? "block" : "none" }}>
-        <NoEntityState className={className} colors={colors} />
-      </div>
-    </>
+      <RichEntityDisplay entity={entity} />
+    </div>
   );
 };
