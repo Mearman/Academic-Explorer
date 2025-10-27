@@ -28,6 +28,9 @@ env:
   NODE_OPTIONS: "--max-old-space-size=8192"
   # Disable Nx daemon in CI to prevent hanging issues
   NX_DAEMON: false
+  # Skip Husky hooks in CI to prevent build loops
+  HUSKY: 0
+  CI: true
 
 jobs:
   
