@@ -8,16 +8,18 @@
       "executor": "nx:run-commands",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "command": "pnpm build"
+        "command": "pnpm build",
+        "cwd": "packages/utils",
+        "outputPath": "packages/utils/dist"
       },
       "dependsOn": ["types:build"]
     },
     "typecheck": {
-      "executor": "@nx/js:tsc",
+      "executor": "nx:run-commands",
       "outputs": [],
       "options": {
-        "tsConfig": "packages/utils/tsconfig.json",
-        "outputPath": "packages/utils/dist"
+        "command": "tsc --noEmit -p tsconfig.json",
+        "cwd": "packages/utils"
       },
       "dependsOn": ["types:build"]
     }

@@ -11,6 +11,6 @@
     "noImplicitAny": false,
     "types": []
   },
-  "include": ["src/**/*", "../../types/**/*"],
+  "include": ["src/**/*"],
   "exclude": ["dist", "node_modules"]
 }

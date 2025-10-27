@@ -85,13 +85,13 @@ jobs:
         run: npx nx run-many -t build --parallel=4
 
       - name: Type check
-        run: npx nx typecheck --parallel=4
+        run: npx nx run-many -t typecheck --parallel=4
 
       - name: Lint
-        run: npx nx lint --parallel=4
+        run: npx nx run-many -t lint --parallel=4
 
       - name: Test
-        run: npx nx test --parallel=4 --coverage --reporter=json --reporter=text --outputFile=coverage.json
+        run: npx nx run-many -t test --parallel=4 --coverage --reporter=json --reporter=text --outputFile=coverage.json
 
       - name: Upload coverage reports
         id: coverage
