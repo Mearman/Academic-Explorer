@@ -82,6 +82,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Reset Nx cache
+        run: npx nx reset
+
       - name: Build
         timeout-minutes: 15
         run: npx nx build web
