@@ -206,11 +206,17 @@ afterEach(() => {
  * Custom matchers for graph testing
  */
 declare module 'vitest' {
-  interface Assertion<T = unknown> {
-    toBeValidGraphNode(): T;
-    toBeValidGraphEdge(): T;
-    toHavePosition(): T;
-    toBeWithinBounds(bounds: { minX: number; maxX: number; minY: number; maxY: number }): T;
+  interface Assertion {
+    toBeValidGraphNode(): void;
+    toBeValidGraphEdge(): void;
+    toHavePosition(): void;
+    toBeWithinBounds(bounds: { minX: number; maxX: number; minY: number; maxY: number }): void;
+  }
+  interface AsymmetricMatchersContaining {
+    toBeValidGraphNode(): void;
+    toBeValidGraphEdge(): void;
+    toHavePosition(): void;
+    toBeWithinBounds(bounds: { minX: number; maxX: number; minY: number; maxY: number }): void;
   }
 }
 

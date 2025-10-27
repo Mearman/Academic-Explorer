@@ -210,14 +210,14 @@ export class TestIsolationHelper {
    * Mock fetch globally
    */
   mockFetch(implementation?: typeof fetch): void {
-    const mockFetch = implementation || vi.fn().mockResolvedValue({
+    const mockFetch = implementation || (vi.fn().mockResolvedValue({
       ok: true,
       status: 200,
       json: vi.fn().mockResolvedValue({}),
       text: vi.fn().mockResolvedValue(''),
       blob: vi.fn().mockResolvedValue(new Blob()),
       arrayBuffer: vi.fn().mockResolvedValue(new ArrayBuffer(0)),
-    } as ReturnType<typeof vi.fn>);
+    }) as unknown as typeof fetch);
 
     globalThis.fetch = mockFetch;
   }

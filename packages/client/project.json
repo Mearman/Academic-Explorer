@@ -7,7 +7,7 @@
     "build:bundle": {
       "executor": "@nx/rollup:rollup",
       "outputs": ["{options.outputPath}"],
-      "dependsOn": [],
+      "dependsOn": ["types:build", "utils:build"],
       "options": {
         "main": "packages/client/src/index.ts",
         "outputPath": "packages/client/dist",
@@ -35,7 +35,7 @@
     },
     "build:fix-paths": {
       "executor": "nx:run-commands",
-      "dependsOn": ["build:bundle", "build:types"],
+      "dependsOn": ["build:bundle"],
       "options": {
         "command": "node packages/client/scripts/fix-dist-paths.cjs"
       }
