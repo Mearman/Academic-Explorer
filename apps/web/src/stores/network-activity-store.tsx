@@ -680,3 +680,57 @@ export const selectFilteredRequests = (state: NetworkActivityState) => {
     })
     .sort((a, b) => b.startTime - a.startTime);
 };
+
+// Standalone store object for non-React usage
+export const networkActivityStore = (() => {
+  let currentState: NetworkActivityState = getInitialState();
+
+  const getState = (): NetworkActivityState => ({ ...currentState });
+
+  const setState = (updater: NetworkActivityState | ((state: NetworkActivityState) => NetworkActivityState)) => {
+    currentState = typeof updater === 'function' ? updater(currentState) : updater;
+  };
+
+  return {
+    addRequest: (request: Omit<NetworkRequest, "id" | "startTime">) => {
+      const id = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const newRequest: NetworkRequest = {
+        ...request,
+        id,
+        startTime: Date.now(),
+        status: "pending" as const,
+        duration: null,
+        statusCode: null,
+        error: null,
+      };
+      setState(state => networkActivityReducer(state, {
+        type: "ADD_REQUEST",
+        payload: newRequest
+      }));
+      return id;
+    },
+    completeRequest: (id: string, statusCode: number, response?: unknown, metadata?: NetworkRequest["metadata"]) => {
+      setState(state => networkActivityReducer(state, {
+        type: "COMPLETE_REQUEST",
+        payload: { id, statusCode, response, metadata }
+      }));
+    },
+    failRequest: (id: string, error: string) => {
+      setState(state => networkActivityReducer(state, {
+        type: "FAIL_REQUEST",
+        payload: { id, error }
+      }));
+    },
+    clearRequest: (id: string) => {
+      setState(state => networkActivityReducer(state, {
+        type: "CLEAR_REQUEST",
+        payload: id
+      }));
+    },
+    clearAll: () => {
+      setState(state => networkActivityReducer(state, {
+        type: "CLEAR_ALL"
+      }));
+    },
+  };
+})();

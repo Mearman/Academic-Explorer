@@ -772,22 +772,8 @@ export const graphStore = (() => {
   // Initialize state
   currentState = getInitialState();
 
-  return {
-    getState,
-    setState,
-    subscribe,
-    // Essential methods that components expect directly on store
-    setGraphData: (nodes: GraphNode[], edges: GraphEdge[]) =>
-      setState(state => graphReducer(state, { type: "SET_GRAPH_DATA", payload: { nodes, edges } })),
-    setLoading: (loading: boolean) => setState(state => graphReducer(state, { type: "SET_LOADING", payload: loading })),
-    setError: (error: string | null) => setState(state => graphReducer(state, { type: "SET_ERROR", payload: error })),
-    clear: () => setState(getInitialState()),
-    selectNode: (nodeId: string | null) => setState(state => graphReducer(state, { type: "SELECT_NODE", payload: nodeId })),
-    pinNode: (nodeId: string) => setState(state => graphReducer(state, { type: "PIN_NODE", payload: nodeId })),
-    unpinNode: (nodeId: string) => setState(state => graphReducer(state, { type: "UNPIN_NODE", payload: nodeId })),
-    clearAllPinnedNodes: () => setState(state => graphReducer(state, { type: "CLEAR_ALL_PINNED_NODES" })),
-    // Additional methods
-    getActions: () => ({
+  // Create actions object once
+  const actions = {
       addNode: (node: GraphNode) => setState(state => graphReducer(state, { type: "ADD_NODE", payload: node })),
       addNodes: (nodes: GraphNode[]) => setState(state => graphReducer(state, { type: "ADD_NODES", payload: nodes })),
       addEdge: (edge: GraphEdge) => setState(state => graphReducer(state, { type: "ADD_EDGE", payload: edge })),
@@ -847,6 +833,30 @@ export const graphStore = (() => {
       // Provider reference
       setProvider: (provider: string) => setState(state => graphReducer(state, { type: "SET_PROVIDER", payload: provider })),
       setProviderType: (providerType: string) => setState(state => graphReducer(state, { type: "SET_PROVIDER_TYPE", payload: providerType })),
-    })
+  };
+
+  return {
+    getState,
+    setState,
+    subscribe,
+    // Expose all actions directly on the store
+    ...actions,
+    getActions: () => actions,
+    // Getter methods for computed values
+    getNode: (nodeId: string): GraphNode | undefined => {
+      const state = getState();
+      return state.nodes[nodeId];
+    },
+    getMinimalNodes: (): GraphNode[] => {
+      const state = getState();
+      return Object.values(state.nodes);
+    },
+    // Property getter for nodes
+    get nodes(): Record<string, GraphNode> {
+      return getState().nodes;
+    },
   };
 })();
+
+// Export internal hook for animated graph store
+export const _useGraphStore = useGraphStore;

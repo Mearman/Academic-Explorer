@@ -596,3 +596,47 @@ export const useExpansionSettingsSummary = (target: ExpansionTarget) => {
   const actions = useExpansionSettingsActions();
   return actions.getSettingsSummary(target);
 };
+
+// Standalone store object for non-React usage
+export const expansionSettingsActions = (() => {
+  let currentState: ExpansionSettingsState = getInitialState();
+
+  const getState = (): ExpansionSettingsState => ({ ...currentState });
+
+  const setState = (updater: ExpansionSettingsState | ((state: ExpansionSettingsState) => ExpansionSettingsState)) => {
+    currentState = typeof updater === 'function' ? updater(currentState) : updater;
+  };
+
+  return {
+    getSettings: (target: ExpansionTarget) => {
+      const state = getState();
+      return state.settings[target];
+    },
+    updateSettings: (target: ExpansionTarget, updates: Partial<ExpansionSettings>) => {
+      setState(state => expansionSettingsReducer(state, {
+        type: "UPDATE_SETTINGS",
+        payload: { target, settings: updates }
+      }));
+    },
+    resetSettings: (target: ExpansionTarget) => {
+      setState(state => expansionSettingsReducer(state, {
+        type: "RESET_SETTINGS",
+        payload: target
+      }));
+    },
+    getSettingsSummary: (target: ExpansionTarget) => {
+      const state = getState();
+      const settings = state.settings[target];
+      return {
+        maxWorks: settings.maxWorks,
+        maxAuthors: settings.maxAuthors,
+        maxInstitutions: settings.maxInstitutions,
+        maxSources: settings.maxSources,
+        maxConcepts: settings.maxConcepts,
+        maxTopics: settings.maxTopics,
+        maxFunders: settings.maxFunders,
+        maxPublishers: settings.maxPublishers,
+      };
+    },
+  };
+})();
