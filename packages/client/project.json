@@ -20,7 +20,7 @@
         "tsConfig": "packages/client/tsconfig.json",
         "format": ["esm", "cjs"],
         "compiler": "tsc",
-        "generateExportsField": false,
+        "generateExportsField": true,
         "project": "packages/client/package.json",
         "additionalEntryPoints": [
           "packages/client/src/client.ts",
@@ -47,24 +47,10 @@
         "command": "tsc --project packages/client/tsconfig.json --emitDeclarationOnly --declaration --declarationMap false --outDir packages/client/dist"
       }
     },
-    "build:copy-pkg": {
-      "executor": "nx:run-commands",
-      "dependsOn": ["build:types-gen"],
-      "options": {
-        "command": "cp packages/client/package.json packages/client/dist/package.json"
-      }
-    },
-    "build:fix-paths": {
-      "executor": "nx:run-commands",
-      "dependsOn": ["build:copy-pkg"],
-      "options": {
-        "command": "node packages/client/scripts/fix-dist-paths.cjs"
-      }
-    },
     "build": {
       "executor": "nx:run-commands",
       "outputs": ["{options.outputPath}"],
-      "dependsOn": ["build:fix-paths"],
+      "dependsOn": ["build:bundle"],
       "options": {
         "commands": [],
         "outputPath": "packages/client/dist"
@@ -78,7 +64,7 @@
         "tsConfig": "packages/client/tsconfig.json",
         "format": ["esm", "cjs"],
         "compiler": "tsc",
-        "generateExportsField": false,
+        "generateExportsField": true,
         "project": "packages/client/package.json",
         "watch": true,
         "additionalEntryPoints": [

@@ -20,8 +20,13 @@ const devConfig = defineConfig({
     emptyOutDir: true,
     target: "esnext",
     rollupOptions: {
-      // Externalize heavy dependencies but keep React for transformation
+      // Externalize all dependencies including React (peer dependencies)
       external: [
+        // React (peer dependency - must be externalized)
+        "react",
+        "react-dom",
+        "react/jsx-runtime",
+
         // Mantine UI library (heavy)
         "@mantine/core",
         "@mantine/hooks",
@@ -46,6 +51,9 @@ const devConfig = defineConfig({
       ],
       output: {
         globals: {
+          react: "React",
+          "react-dom": "ReactDOM",
+          "react/jsx-runtime": "jsxRuntime",
           "@mantine/core": "MantineCore",
           "@mantine/hooks": "MantineHooks",
           "@mantine/dates": "MantineDates",
@@ -72,12 +80,6 @@ const devConfig = defineConfig({
     alias: {
       "@": resolve(fileURLToPath(new URL(".", import.meta.url)), "src"),
     },
-  },
-
-  // Include React in optimize deps for proper transformation
-  optimizeDeps: {
-    include: ["react", "react-dom"],
-    force: true,
   },
 });
 
