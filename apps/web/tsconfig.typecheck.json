@@ -4,23 +4,23 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@academic-explorer/graph": ["../../packages/graph/src/index.ts"],
-      "@academic-explorer/graph/*": ["../../packages/graph/src/*"],
-      "@academic-explorer/utils": ["../../packages/utils/src/index.ts"],
-      "@academic-explorer/utils/*": ["../../packages/utils/src/*"],
+      "@academic-explorer/graph": ["../../packages/graph/dist/index.d.ts"],
+      "@academic-explorer/graph/*": ["../../packages/graph/dist/*"],
+      "@academic-explorer/utils": ["../../packages/utils/dist/index.d.ts"],
+      "@academic-explorer/utils/*": ["../../packages/utils/dist/*"],
       "@academic-explorer/simulation": [
-        "../../packages/simulation/src/index.ts"
+        "../../packages/simulation/dist/index.d.ts"
       ],
-      "@academic-explorer/simulation/*": ["../../packages/simulation/src/*"],
+      "@academic-explorer/simulation/*": ["../../packages/simulation/dist/*"],
       "@academic-explorer/client": ["../../packages/client/dist/index.d.ts"],
       "@academic-explorer/client/*": ["../../packages/client/dist/*"],
-      "@academic-explorer/ui": ["../../packages/ui/src/index.ts"],
-      "@academic-explorer/ui/*": ["../../packages/ui/src/*"],
+      "@academic-explorer/ui": ["../../packages/ui/dist/index.d.ts"],
+      "@academic-explorer/ui/*": ["../../packages/ui/dist/*"],
       "@academic-explorer/ui/components/ViewToggle": [
-        "../../packages/ui/src/components/ViewToggle/index.ts"
+        "../../packages/ui/dist/components/ViewToggle/index.d.ts"
       ],
       "@academic-explorer/ui/components/entity-views": [
-        "../../packages/ui/src/components/entity-views/index.ts"
+        "../../packages/ui/dist/components/entity-views/index.d.ts"
       ]
     }
   },

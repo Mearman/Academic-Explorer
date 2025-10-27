@@ -31,6 +31,18 @@
     ".": {
       "import": "./dist/index.es.js",
       "require": "./dist/index.cjs.js"
+    },
+    "./components/ViewToggle": {
+      "types": "./dist/components/ViewToggle.d.ts",
+      "import": "./dist/components/ViewToggle.js"
+    },
+    "./components/entity-views": {
+      "types": "./dist/components/entity-views/index.d.ts",
+      "import": "./dist/components/entity-views/index.js"
+    },
+    "./components/entity-views/matchers/index": {
+      "types": "./dist/components/entity-views/matchers/index.d.ts",
+      "import": "./dist/components/entity-views/matchers/index.js"
     }
   },
   "scripts": {
