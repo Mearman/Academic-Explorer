@@ -18,7 +18,11 @@
   "include": ["src/**/*", "../../types/**/*"],
   "exclude": [
     "dist",
-    "node_modules"
+    "node_modules",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "src/**/*.spec.ts",
+    "src/**/*.spec.tsx"
   ],
   "references": [
     { "path": "../types" }

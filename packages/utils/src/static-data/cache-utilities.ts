@@ -354,7 +354,7 @@ export function normalizeQueryForFilename(queryString: string): string {
 
 		// Sort parameters alphabetically for consistent ordering
 		const sortedParams = new URLSearchParams()
-		const keys = Array.from(params.keys()).sort()
+		const keys: string[] = [...params.keys()].sort()
 		for (const key of keys) {
 			const value = params.get(key)
 			if (value !== null) {
