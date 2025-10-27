@@ -5,9 +5,6 @@ import type { Work } from "@academic-explorer/client";
 import { createFilterBuilder } from "@academic-explorer/client";
 import { convertToRelativeUrl } from "@academic-explorer/ui";
 import { Anchor } from "@mantine/core";
-export const Route = createLazyFileRoute("/works/")({
-  component: WorksListRoute,
-});
 
 import { useEffect, useState } from "react";
 import type { ViewMode } from "@/components/ViewModeToggle";
@@ -154,5 +151,9 @@ function WorksListRoute() {
     />
   );
 }
+
+export const Route = createLazyFileRoute("/works/")({
+  component: WorksListRoute,
+});
 
 export default WorksListRoute;

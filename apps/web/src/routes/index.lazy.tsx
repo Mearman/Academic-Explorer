@@ -20,9 +20,6 @@ import { useGraphData } from "@/hooks/use-graph-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useDocumentTitle } from "@/hooks/use-document-title";
 // import { pageTitle } from "../styles/layout.css"
-export const Route = createLazyFileRoute("/")({
-  component: HomePage,
-});
 
 import { logError, logger } from "@academic-explorer/utils/logger";
 
@@ -192,5 +189,9 @@ function HomePage() {
     </Card>
   );
 }
+
+export const Route = createLazyFileRoute("/")({
+  component: HomePage,
+});
 
 export default HomePage;

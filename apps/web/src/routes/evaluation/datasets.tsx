@@ -14,9 +14,6 @@ import type { STARDataset } from "@academic-explorer/utils";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { BORDER_DEFAULT } from "@/constants/styles";
 
-export const Route = createFileRoute("/evaluation/datasets")({
-  component: DatasetsManagement,
-});
 
 // Types are imported from @academic-explorer/utils
 
@@ -604,3 +601,7 @@ function DatasetsManagement() {
     </div>
   );
 }
+
+export const Route = createFileRoute("/evaluation/datasets")({
+  component: DatasetsManagement,
+});

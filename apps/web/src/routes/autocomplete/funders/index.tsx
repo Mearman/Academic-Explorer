@@ -27,10 +27,6 @@ const autocompleteFundersSearchSchema = z.object({
   q: z.string().optional().catch(undefined),
 });
 
-export const Route = createFileRoute("/autocomplete/funders/")({
-  component: AutocompleteFundersRoute,
-  validateSearch: autocompleteFundersSearchSchema,
-});
 
 function AutocompleteFundersRoute() {
   const urlSearch = Route.useSearch();
@@ -234,3 +230,8 @@ function AutocompleteFundersRoute() {
     </Container>
   );
 }
+
+export const Route = createFileRoute("/autocomplete/funders/")({
+  component: AutocompleteFundersRoute,
+  validateSearch: autocompleteFundersSearchSchema,
+});

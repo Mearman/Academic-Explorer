@@ -9,10 +9,6 @@ import {
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 
-export const Route = createLazyFileRoute("/$_")({
-  component: ExternalIdRoute,
-});
-
 function ExternalIdRoute() {
   const { _splat: splat } = useParams({ from: "/$_" });
   const externalId = splat || "";
@@ -272,4 +268,9 @@ function ExternalIdRoute() {
     </div>
   );
 }
+
+export const Route = createLazyFileRoute("/$_")({
+  component: ExternalIdRoute,
+});
+
 export default ExternalIdRoute;

@@ -8,9 +8,6 @@ import { IconSearch } from "@tabler/icons-react";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { logError, logger } from "@academic-explorer/utils/logger";
 
-export const Route = createLazyFileRoute("/openalex/org/$")({
-  component: OpenAlexRoute,
-});
 
 function OpenAlexRoute() {
   const { _splat } = useParams({ from: "/openalex/org/$" });
@@ -100,4 +97,8 @@ function OpenAlexRoute() {
     </div>
   );
 }
+export const Route = createLazyFileRoute("/openalex/org/$")({
+  component: OpenAlexRoute,
+});
+
 export default OpenAlexRoute;

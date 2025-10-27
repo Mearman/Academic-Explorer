@@ -39,12 +39,13 @@ export const createPlugins = () => [
   }),
 
   // TanStack Router Plugin with correct routes directory (absolute path for Nx compatibility)
-  tanstackRouter({
-    routesDirectory: resolve(appRoot, "src/routes"),
-    generatedRouteTree: resolve(appRoot, "src/routeTree.gen.ts"),
-    routeFileIgnorePrefix: "-",
-    routeFileIgnorePattern: ".(test|spec|d.ts).",
-  }),
+  // TEMPORARILY DISABLED: Using static routeTree.gen.ts until generator is fixed
+  // tanstackRouter({
+  //   routesDirectory: resolve(appRoot, "src/routes"),
+  //   generatedRouteTree: resolve(appRoot, "src/routeTree.gen.ts"),
+  //   routeFileIgnorePrefix: "-",
+  //   routeFileIgnorePattern: ".(test|spec|d.ts).",
+  // }),
 
   // Vanilla Extract Plugin for CSS-in-TypeScript
   vanillaExtractPlugin(),

@@ -8,10 +8,6 @@ import {
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 
-export const Route = createLazyFileRoute("/https/$")({
-  component: HttpsRoute,
-});
-
 function HttpsRoute() {
   const { _splat: splat } = useParams({ from: "/https/$" });
   const externalId = splat || "";
@@ -100,5 +96,9 @@ function HttpsRoute() {
     </div>
   );
 }
+
+export const Route = createLazyFileRoute("/https/$")({
+  component: HttpsRoute,
+});
 
 export default HttpsRoute;

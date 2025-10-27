@@ -27,11 +27,6 @@ const autocompleteInstitutionsSearchSchema = z.object({
   q: z.string().optional().catch(undefined),
 });
 
-export const Route = createFileRoute("/autocomplete/institutions/")({
-  component: AutocompleteInstitutionsRoute,
-  validateSearch: autocompleteInstitutionsSearchSchema,
-});
-
 function AutocompleteInstitutionsRoute() {
   const urlSearch = Route.useSearch();
   const [query, setQuery] = useState(urlSearch.q || urlSearch.search || "");
@@ -237,3 +232,8 @@ function AutocompleteInstitutionsRoute() {
     </Container>
   );
 }
+
+export const Route = createFileRoute("/autocomplete/institutions/")({
+  component: AutocompleteInstitutionsRoute,
+  validateSearch: autocompleteInstitutionsSearchSchema,
+});

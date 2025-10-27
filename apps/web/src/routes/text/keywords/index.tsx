@@ -23,10 +23,6 @@ const textKeywordsSearchSchema = z.object({
   abstract: z.string().optional().catch(undefined),
 });
 
-export const Route = createFileRoute("/text/keywords/")({
-  component: TextKeywordsRoute,
-  validateSearch: textKeywordsSearchSchema,
-});
 
 function TextKeywordsRoute() {
   const urlSearch = Route.useSearch();
@@ -188,3 +184,8 @@ function TextKeywordsRoute() {
     </Container>
   );
 }
+
+export const Route = createFileRoute("/text/keywords/")({
+  component: TextKeywordsRoute,
+  validateSearch: textKeywordsSearchSchema,
+});

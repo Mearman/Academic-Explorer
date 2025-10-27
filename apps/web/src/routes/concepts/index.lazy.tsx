@@ -3,9 +3,6 @@ import { useSearch } from "@tanstack/react-router";
 import { EntityList } from "@/components/EntityList";
 import type { ColumnConfig } from "@/components/types";
 import { createFilterBuilder } from "@academic-explorer/client";
-export const Route = createLazyFileRoute("/concepts/")({
-  component: ConceptsListRoute,
-});
 
 const conceptsColumns: ColumnConfig[] = [
   { key: "display_name", header: "Name" },
@@ -31,5 +28,9 @@ function ConceptsListRoute() {
     />
   );
 }
+
+export const Route = createLazyFileRoute("/concepts/")({
+  component: ConceptsListRoute,
+});
 
 export default ConceptsListRoute;

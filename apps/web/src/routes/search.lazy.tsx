@@ -23,9 +23,6 @@ import {
 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
-export const Route = createLazyFileRoute("/search")({
-  component: SearchPage,
-});
 
 import { useEffect, useMemo, useState } from "react";
 import { SearchInterface } from "../components/search/SearchInterface";
@@ -467,5 +464,9 @@ function SearchPage() {
     </Container>
   );
 }
+
+export const Route = createLazyFileRoute("/search")({
+  component: SearchPage,
+});
 
 export default SearchPage;

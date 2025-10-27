@@ -17,9 +17,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useSearch, createLazyFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
-export const Route = createLazyFileRoute("/text/")({
-  component: TextAnalysisRoute,
-});
 
 function TextAnalysisRoute() {
   const urlSearch = useSearch({ from: "/text/" });
@@ -192,4 +189,8 @@ function TextAnalysisRoute() {
     </Container>
   );
 }
+export const Route = createLazyFileRoute("/text/")({
+  component: TextAnalysisRoute,
+});
+
 export default TextAnalysisRoute;

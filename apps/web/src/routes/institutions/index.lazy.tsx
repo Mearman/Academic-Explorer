@@ -3,9 +3,6 @@ import { useSearch } from "@tanstack/react-router";
 import { EntityList } from "@/components/EntityList";
 import type { ColumnConfig } from "@/components/types";
 import { createFilterBuilder } from "@academic-explorer/client";
-export const Route = createLazyFileRoute("/institutions/")({
-  component: InstitutionsListRoute,
-});
 
 const institutionsColumns: ColumnConfig[] = [
   { key: "display_name", header: "Name" },
@@ -31,5 +28,9 @@ function InstitutionsListRoute() {
     />
   );
 }
+
+export const Route = createLazyFileRoute("/institutions/")({
+  component: InstitutionsListRoute,
+});
 
 export default InstitutionsListRoute;

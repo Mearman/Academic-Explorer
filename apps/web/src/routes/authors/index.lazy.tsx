@@ -5,9 +5,6 @@ import type { ColumnConfig } from "@/components/types";
 import type { Author } from "@academic-explorer/client";
 import { createFilterBuilder } from "@academic-explorer/client";
 import type { ViewMode } from "@/components/ViewModeToggle";
-export const Route = createLazyFileRoute("/authors/")({
-  component: AuthorsListRoute,
-});
 
 import { useState } from "react";
 
@@ -45,5 +42,9 @@ function AuthorsListRoute() {
     />
   );
 }
+
+export const Route = createLazyFileRoute("/authors/")({
+  component: AuthorsListRoute,
+});
 
 export default AuthorsListRoute;

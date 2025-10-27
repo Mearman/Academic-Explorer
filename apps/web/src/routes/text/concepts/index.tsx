@@ -23,10 +23,6 @@ const textConceptsSearchSchema = z.object({
   abstract: z.string().optional().catch(undefined),
 });
 
-export const Route = createFileRoute("/text/concepts/")({
-  component: TextConceptsRoute,
-  validateSearch: textConceptsSearchSchema,
-});
 
 function TextConceptsRoute() {
   const urlSearch = Route.useSearch();
@@ -196,3 +192,8 @@ function TextConceptsRoute() {
     </Container>
   );
 }
+
+export const Route = createFileRoute("/text/concepts/")({
+  component: TextConceptsRoute,
+  validateSearch: textConceptsSearchSchema,
+});

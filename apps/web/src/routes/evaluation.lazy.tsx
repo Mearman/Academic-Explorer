@@ -16,9 +16,6 @@ import { useNavigate } from "@tanstack/react-router";
 // Style constants
 const BORDER_COLOR_GRAY = "#e5e7eb";
 const BORDER_STYLE = `1px solid ${BORDER_COLOR_GRAY}`;
-export const Route = createLazyFileRoute("/evaluation")({
-  component: EvaluationDashboard,
-});
 
 const BOX_SHADOW =
   "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)";
@@ -444,5 +441,9 @@ function EvaluationDashboard() {
     </div>
   );
 }
+
+export const Route = createLazyFileRoute("/evaluation")({
+  component: EvaluationDashboard,
+});
 
 export default EvaluationDashboard;

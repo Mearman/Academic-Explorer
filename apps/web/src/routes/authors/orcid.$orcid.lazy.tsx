@@ -10,9 +10,6 @@ import { useGraphData } from "@/hooks/use-graph-data";
 import { useGraphStore } from "@/stores/graph-store";
 import { logError, logger } from "@academic-explorer/utils/logger";
 
-export const Route = createLazyFileRoute("/authors/orcid/$orcid")({
-  component: ORCIDAuthorRoute,
-});
 
 function ORCIDAuthorRoute() {
   const { orcid } = useParams({ from: "/authors/orcid/$orcid" });
@@ -101,5 +98,9 @@ function ORCIDAuthorRoute() {
     </div>
   );
 }
+
+export const Route = createLazyFileRoute("/authors/orcid/$orcid")({
+  component: ORCIDAuthorRoute,
+});
 
 export default ORCIDAuthorRoute;

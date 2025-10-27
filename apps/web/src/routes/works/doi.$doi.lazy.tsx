@@ -10,9 +10,6 @@ import { useGraphData } from "@/hooks/use-graph-data";
 import { useGraphStore } from "@/stores/graph-store";
 import { logError, logger } from "@academic-explorer/utils/logger";
 
-export const Route = createLazyFileRoute("/works/doi/$doi")({
-  component: DOIWorkRoute,
-});
 
 function DOIWorkRoute() {
   const { doi } = useParams({ from: "/works/doi/$doi" });
@@ -96,5 +93,9 @@ function DOIWorkRoute() {
     </div>
   );
 }
+
+export const Route = createLazyFileRoute("/works/doi/$doi")({
+  component: DOIWorkRoute,
+});
 
 export default DOIWorkRoute;

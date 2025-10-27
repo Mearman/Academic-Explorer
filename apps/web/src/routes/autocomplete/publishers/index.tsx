@@ -27,10 +27,6 @@ const autocompletePublishersSearchSchema = z.object({
   q: z.string().optional().catch(undefined),
 });
 
-export const Route = createFileRoute("/autocomplete/publishers/")({
-  component: AutocompletePublishersRoute,
-  validateSearch: autocompletePublishersSearchSchema,
-});
 
 function AutocompletePublishersRoute() {
   const urlSearch = Route.useSearch();
@@ -237,3 +233,8 @@ function AutocompletePublishersRoute() {
     </Container>
   );
 }
+
+export const Route = createFileRoute("/autocomplete/publishers/")({
+  component: AutocompletePublishersRoute,
+  validateSearch: autocompletePublishersSearchSchema,
+});

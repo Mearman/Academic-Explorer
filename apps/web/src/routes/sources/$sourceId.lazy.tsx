@@ -20,9 +20,6 @@ const SOURCE_ENTITY_CONFIG = {
   logContext: "SourceRoute",
 };
 
-export const Route = createLazyFileRoute(SOURCE_ROUTE_PATH)({
-  component: SourceRoute,
-});
 
 function SourceRoute() {
   const navigate = useNavigate();
@@ -99,5 +96,9 @@ function SourceRoute() {
     </>
   );
 }
+
+export const Route = createLazyFileRoute(SOURCE_ROUTE_PATH)({
+  component: SourceRoute,
+});
 
 export default SourceRoute;

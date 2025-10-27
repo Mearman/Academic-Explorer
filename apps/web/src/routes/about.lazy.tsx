@@ -10,9 +10,6 @@ import {
   Divider,
 } from "@mantine/core";
 import { useThemeColors } from "@/hooks/use-theme-colors";
-export const Route = createLazyFileRoute("/about")({
-  component: AboutPage,
-});
 
 import { pageTitle, pageDescription } from "../styles/layout.css";
 
@@ -150,5 +147,9 @@ function AboutPage() {
     </Card>
   );
 }
+
+export const Route = createLazyFileRoute("/about")({
+  component: AboutPage,
+});
 
 export default AboutPage;

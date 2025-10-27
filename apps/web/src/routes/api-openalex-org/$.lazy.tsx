@@ -8,9 +8,6 @@ import {
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 
-export const Route = createLazyFileRoute("/api-openalex-org/$")({
-  component: ApiOpenAlexRoute,
-});
 
 function ApiOpenAlexRoute() {
   const { _splat: splat } = useParams({ from: "/api-openalex-org/$" });
@@ -148,5 +145,9 @@ function ApiOpenAlexRoute() {
     </div>
   );
 }
+
+export const Route = createLazyFileRoute("/api-openalex-org/$")({
+  component: ApiOpenAlexRoute,
+});
 
 export default ApiOpenAlexRoute;

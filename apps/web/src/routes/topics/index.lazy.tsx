@@ -5,9 +5,6 @@ import type { ColumnConfig } from "@/components/types";
 import type { Topic } from "@academic-explorer/types";
 import { createFilterBuilder } from "@academic-explorer/client";
 
-export const Route = createLazyFileRoute("/topics/")({
-  component: TopicsListRoute,
-});
 
 const topicsColumns: ColumnConfig[] = [
   { key: "display_name", header: "Name" },
@@ -40,5 +37,9 @@ function TopicsListRoute() {
     />
   );
 }
+
+export const Route = createLazyFileRoute("/topics/")({
+  component: TopicsListRoute,
+});
 
 export default TopicsListRoute;

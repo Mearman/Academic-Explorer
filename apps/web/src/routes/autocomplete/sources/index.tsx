@@ -27,10 +27,6 @@ const autocompleteSourcesSearchSchema = z.object({
   q: z.string().optional().catch(undefined),
 });
 
-export const Route = createFileRoute("/autocomplete/sources/")({
-  component: AutocompleteSourcesRoute,
-  validateSearch: autocompleteSourcesSearchSchema,
-});
 
 function AutocompleteSourcesRoute() {
   const urlSearch = Route.useSearch();
@@ -234,3 +230,8 @@ function AutocompleteSourcesRoute() {
     </Container>
   );
 }
+
+export const Route = createFileRoute("/autocomplete/sources/")({
+  component: AutocompleteSourcesRoute,
+  validateSearch: autocompleteSourcesSearchSchema,
+});

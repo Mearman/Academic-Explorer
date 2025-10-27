@@ -10,9 +10,6 @@ import { useGraphData } from "@/hooks/use-graph-data";
 import { useGraphStore } from "@/stores/graph-store";
 import { logError, logger } from "@academic-explorer/utils/logger";
 
-export const Route = createLazyFileRoute("/sources/issn/$issn")({
-  component: ISSNSourceRoute,
-});
 
 function ISSNSourceRoute() {
   const { issn } = useParams({ from: "/sources/issn/$issn" });
@@ -93,5 +90,9 @@ function ISSNSourceRoute() {
     </div>
   );
 }
+
+export const Route = createLazyFileRoute("/sources/issn/$issn")({
+  component: ISSNSourceRoute,
+});
 
 export default ISSNSourceRoute;

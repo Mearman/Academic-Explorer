@@ -27,10 +27,6 @@ const autocompleteWorksSearchSchema = z.object({
   q: z.string().optional().catch(undefined),
 });
 
-export const Route = createFileRoute("/autocomplete/works/")({
-  component: AutocompleteWorksRoute,
-  validateSearch: autocompleteWorksSearchSchema,
-});
 
 function AutocompleteWorksRoute() {
   const urlSearch = Route.useSearch();
@@ -240,3 +236,8 @@ function AutocompleteWorksRoute() {
     </Container>
   );
 }
+
+export const Route = createFileRoute("/autocomplete/works/")({
+  component: AutocompleteWorksRoute,
+  validateSearch: autocompleteWorksSearchSchema,
+});

@@ -11,9 +11,6 @@ const keywordsColumns: ColumnConfig[] = [
   { key: "cited_by_count", header: "Citations" },
 ];
 
-export const Route = createLazyFileRoute("/keywords/")({
-  component: KeywordsListRoute,
-});
 
 function KeywordsListRoute() {
   const search = useSearch({ from: "/keywords/" }) as { filter?: string };
@@ -31,5 +28,9 @@ function KeywordsListRoute() {
     />
   );
 }
+
+export const Route = createLazyFileRoute("/keywords/")({
+  component: KeywordsListRoute,
+});
 
 export default KeywordsListRoute;

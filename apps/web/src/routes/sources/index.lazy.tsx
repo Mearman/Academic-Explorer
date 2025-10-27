@@ -1,8 +1,5 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { EntityList, type ColumnConfig } from "@/components/EntityList";
-export const Route = createLazyFileRoute("/sources/")({
-  component: SourcesRoute,
-});
 
 const sourcesColumns: ColumnConfig[] = [
   { key: "id", header: "ID" },
@@ -15,5 +12,9 @@ function SourcesRoute() {
     <EntityList entityType="sources" columns={sourcesColumns} title="Sources" />
   );
 }
+
+export const Route = createLazyFileRoute("/sources/")({
+  component: SourcesRoute,
+});
 
 export default SourcesRoute;

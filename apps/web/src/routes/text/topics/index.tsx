@@ -23,10 +23,6 @@ const textTopicsSearchSchema = z.object({
   abstract: z.string().optional().catch(undefined),
 });
 
-export const Route = createFileRoute("/text/topics/")({
-  component: TextTopicsRoute,
-  validateSearch: textTopicsSearchSchema,
-});
 
 function TextTopicsRoute() {
   const urlSearch = Route.useSearch();
@@ -203,3 +199,8 @@ function TextTopicsRoute() {
     </Container>
   );
 }
+
+export const Route = createFileRoute("/text/topics/")({
+  component: TextTopicsRoute,
+  validateSearch: textTopicsSearchSchema,
+});

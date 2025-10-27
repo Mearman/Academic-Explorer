@@ -1,7 +1,4 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-export const Route = createLazyFileRoute("/history")({
-  component: HistoryPage,
-});
 
 import { HistoryManager } from "@/components/HistoryManager";
 
@@ -19,5 +16,9 @@ function HistoryPage() {
     </div>
   );
 }
+
+export const Route = createLazyFileRoute("/history")({
+  component: HistoryPage,
+});
 
 export default HistoryPage;

@@ -1,8 +1,5 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { EntityList, type ColumnConfig } from "@/components/EntityList";
-export const Route = createLazyFileRoute("/funders/")({
-  component: FundersRoute,
-});
 
 const fundersColumns: ColumnConfig[] = [
   { key: "id", header: "ID" },
@@ -16,5 +13,9 @@ function FundersRoute() {
     <EntityList entityType="funders" columns={fundersColumns} title="Funders" />
   );
 }
+
+export const Route = createLazyFileRoute("/funders/")({
+  component: FundersRoute,
+});
 
 export default FundersRoute;

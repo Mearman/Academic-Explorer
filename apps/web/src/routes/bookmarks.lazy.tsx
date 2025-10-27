@@ -1,8 +1,5 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { BookmarkManager } from "@/components/BookmarkManager";
-export const Route = createLazyFileRoute("/bookmarks")({
-  component: BookmarksPage,
-});
 
 import { useNavigate } from "@tanstack/react-router";
 
@@ -26,5 +23,9 @@ function BookmarksPage() {
     </div>
   );
 }
+
+export const Route = createLazyFileRoute("/bookmarks")({
+  component: BookmarksPage,
+});
 
 export default BookmarksPage;

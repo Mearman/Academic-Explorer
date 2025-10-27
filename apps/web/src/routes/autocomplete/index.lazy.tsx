@@ -21,9 +21,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useSearch, createLazyFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
-export const Route = createLazyFileRoute("/autocomplete/")({
-  component: AutocompleteGeneralRoute,
-});
 
 function AutocompleteGeneralRoute() {
   const urlSearch = useSearch({ from: "/autocomplete/" });
@@ -253,4 +250,8 @@ function AutocompleteGeneralRoute() {
     </Container>
   );
 }
+export const Route = createLazyFileRoute("/autocomplete/")({
+  component: AutocompleteGeneralRoute,
+});
+
 export default AutocompleteGeneralRoute;
