@@ -19,6 +19,10 @@ const FUNDER_ENTITY_CONFIG = {
   logContext: "FunderRoute",
 };
 
+export const Route = createLazyFileRoute(FUNDER_ROUTE_PATH)({
+  component: FunderRoute,
+});
+
 function FunderRoute() {
   const navigate = useNavigate();
 
@@ -94,9 +98,5 @@ function FunderRoute() {
     </>
   );
 }
-
-export const Route = createLazyFileRoute(FUNDER_ROUTE_PATH)({
-  component: FunderRoute,
-});
 
 export default FunderRoute;

@@ -19,6 +19,10 @@ const WORK_ENTITY_CONFIG = {
   logContext: "WorkRoute",
 };
 
+export const Route = createLazyFileRoute(WORK_ROUTE_PATH)({
+  component: WorkRoute,
+});
+
 function WorkRoute() {
   const navigate = useNavigate();
 
@@ -99,9 +103,5 @@ function WorkRoute() {
     </>
   );
 }
-
-export const Route = createLazyFileRoute(WORK_ROUTE_PATH)({
-  component: WorkRoute,
-});
 
 export default WorkRoute;

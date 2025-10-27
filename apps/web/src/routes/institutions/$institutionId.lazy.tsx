@@ -18,6 +18,10 @@ const INSTITUTION_ENTITY_CONFIG = {
   logContext: "InstitutionRoute",
 };
 
+export const Route = createLazyFileRoute(INSTITUTION_ROUTE_PATH)({
+  component: InstitutionRoute,
+});
+
 function InstitutionRoute() {
   const navigate = useNavigate();
 
@@ -93,9 +97,5 @@ function InstitutionRoute() {
     </>
   );
 }
-
-export const Route = createLazyFileRoute(INSTITUTION_ROUTE_PATH)({
-  component: InstitutionRoute,
-});
 
 export default InstitutionRoute;

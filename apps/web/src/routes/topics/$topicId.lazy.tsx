@@ -19,6 +19,10 @@ const TOPIC_ENTITY_CONFIG = {
   logContext: "TopicRoute",
 };
 
+export const Route = createLazyFileRoute(TOPIC_ROUTE_PATH)({
+  component: TopicRoute,
+});
+
 function TopicRoute() {
   const navigate = useNavigate();
 
@@ -94,9 +98,5 @@ function TopicRoute() {
     </>
   );
 }
-
-export const Route = createLazyFileRoute(TOPIC_ROUTE_PATH)({
-  component: TopicRoute,
-});
 
 export default TopicRoute;
