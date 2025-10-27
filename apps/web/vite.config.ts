@@ -17,6 +17,9 @@ function createWebConfig(): UserConfig {
   const base = baseConfig;
 
   return {
+    // Base path for GitHub Pages deployment
+    base: process.env.GITHUB_PAGES === 'true' ? '/Academic-Explorer/' : '/',
+
     // Inherit base configuration properties safely
     ...base,
 

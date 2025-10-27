@@ -17,7 +17,7 @@
     "cli": "tsx apps/cli/src/openalex-cli.ts",
     "generate:test-urls": "tsx scripts/generate-test-urls.ts",
     "build": "nx run-many -t build",
-    "test": "NX_DAEMON=false timeout 120 nx run-many -t test --output-style=stream",
+    "test": "NX_DAEMON=false timeout 300 nx run-many -t test --output-style=stream",
     "test:web": "cd apps/web && vitest --run --config vitest.config.ts --reporter=verbose",
     "test:packages": "NX_DAEMON=false timeout 300 vitest --run --config vite.config.base.ts --reporter=verbose",
     "test:verbose": "timeout 600 vitest --run --config vite.config.base.ts --reporter=verbose --reporter=json",

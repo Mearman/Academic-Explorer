@@ -9,6 +9,14 @@
       "options": {
         "command": "nx serve web --watch"
       }
+    },
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "playwright test",
+        "cwd": "apps/web"
+      },
+      "dependsOn": ["build"]
     }
   },
   "tags": ["type:app", "scope:web", "layer:app"]
