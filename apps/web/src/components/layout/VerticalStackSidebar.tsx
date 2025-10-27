@@ -319,12 +319,12 @@ export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({
                 </ActionIcon>
               </div>
 
-              {/* Collapsible section content */}
-              <Collapse in={!isCollapsed}>
+              {/* Collapsible section content - CRITICAL: Always render to maintain hook consistency */}
+              <div style={{ display: isCollapsed ? "none" : "block" }}>
                 <div
                   style={{
                     padding: "16px",
-                    minHeight: isCollapsed ? 0 : "200px",
+                    minHeight: "200px",
                   }}
                 >
                   <Suspense
@@ -343,7 +343,7 @@ export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({
                     <SectionComponent />
                   </Suspense>
                 </div>
-              </Collapse>
+              </div>
 
               {/* Divider between tools (except for last one) */}
               {!isLast && (

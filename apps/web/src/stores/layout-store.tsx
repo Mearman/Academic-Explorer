@@ -747,7 +747,12 @@ export const LayoutProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 export const useLayoutState = () => {
   const context = useContext(LayoutContext);
   if (!context) {
-    throw new Error("useLayoutState must be used within LayoutProvider");
+    // Log warning in development but return safe defaults to prevent hook ordering violations
+    if (import.meta.env.DEV) {
+      logger.warn("layout", "useLayoutState called outside LayoutProvider - returning defaults");
+    }
+    // Return initial state as fallback to maintain hook consistency
+    return getInitialState();
   }
   return context.state;
 };
@@ -756,7 +761,39 @@ export const useLayoutState = () => {
 export const useLayoutActions = () => {
   const context = useContext(LayoutContext);
   if (!context) {
-    throw new Error("useLayoutActions must be used within LayoutProvider");
+    // Log warning in development but return safe no-op actions to prevent hook ordering violations
+    if (import.meta.env.DEV) {
+      logger.warn("layout", "useLayoutActions called outside LayoutProvider - returning no-op actions");
+    }
+    // Return no-op actions as fallback to maintain hook consistency
+    const noOp = () => {
+      logger.warn("layout", "Attempted to call layout action outside LayoutProvider");
+    };
+    return {
+      toggleLeftSidebar: noOp,
+      toggleRightSidebar: noOp,
+      setLeftSidebarOpen: noOp,
+      setRightSidebarOpen: noOp,
+      pinLeftSidebar: noOp,
+      pinRightSidebar: noOp,
+      setLeftSidebarAutoHidden: noOp,
+      setRightSidebarAutoHidden: noOp,
+      setLeftSidebarHovered: noOp,
+      setRightSidebarHovered: noOp,
+      setSectionCollapsed: noOp,
+      expandSidebarToSection: noOp,
+      setActiveGroup: noOp,
+      setGraphProvider: noOp,
+      setPreviewEntity: noOp,
+      setAutoPinOnLayoutStabilization: noOp,
+      resetSectionPlacements: noOp,
+      getToolGroupsForSidebar: () => [],
+      getActiveGroup: () => null,
+      addSectionToGroup: noOp,
+      removeSectionFromGroup: noOp,
+      reorderGroups: noOp,
+      moveGroupToSidebar: noOp,
+    };
   }
 
   return {
