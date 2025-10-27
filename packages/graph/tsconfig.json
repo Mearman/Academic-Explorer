@@ -9,7 +9,7 @@
     "skipDefaultLibCheck": true,
     "strict": false,
     "noImplicitAny": false,
-    "types": ["vitest/globals"]
+    "types": []
   },
   "include": ["src/**/*", "../../types/**/*"],
   "exclude": [
