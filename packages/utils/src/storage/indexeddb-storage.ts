@@ -3,7 +3,8 @@
  * Simplified IndexedDB-only implementation replacing hybrid localStorage + IndexedDB approach
  */
 
-import Dexie, { type Table } from "dexie"
+import Dexie from "dexie"
+import type { Table } from "dexie"
 import { GenericLogger } from "../logger.js"
 
 // Generic storage interface compatible with various state management libraries

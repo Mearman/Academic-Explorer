@@ -3,7 +3,8 @@
  * Unified tracking of page visits and bookmarks with normalized OpenAlex requests
  */
 
-import Dexie, { type Table } from "dexie"
+import Dexie from "dexie"
+import type { Table } from "dexie"
 import { GenericLogger } from "../logger.js"
 
 // Constants for logging and database operations
