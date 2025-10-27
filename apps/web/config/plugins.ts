@@ -1,5 +1,6 @@
 import { tanstackRouter } from "@tanstack/router-vite-plugin";
 import react from "@vitejs/plugin-react";
+import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
 import { openalexCachePlugin } from "../../../config/vite-plugins/openalex-cache";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
@@ -43,6 +44,9 @@ export const createPlugins = () => [
     generatedRouteTree: resolve(appRoot, "src/routeTree.gen.ts"),
     routeFileIgnorePrefix: "-",
   }),
+
+  // Vanilla Extract Plugin for CSS-in-TypeScript
+  vanillaExtractPlugin(),
 
   // React Plugin
   react(),
