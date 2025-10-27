@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 const AUTHOR_ROUTE_PATH = "/authors/$authorId";
 
 function AuthorRoute() {
-  const { authorId } = useParams({ from: AUTHOR_ROUTE_PATH });
+  const { authorId } = useParams({ strict: false });
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
 
   // Fetch author data
