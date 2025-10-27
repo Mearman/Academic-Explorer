@@ -101,3 +101,4 @@ nx-local-cache.json
 # Backup files
 *.backup
 **/*.backup
+apps/web/src/routeTree.gen.ts

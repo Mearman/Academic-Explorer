@@ -1,6 +1,11 @@
 /// <reference types="vitest" />
 import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin";
 import { defineConfig } from "vite";
+import { fileURLToPath } from "node:url";
+import { dirname, resolve } from "node:path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Workspace-level Vite configuration with Nx best practices
 // This provides common configuration for all projects in the monorepo
@@ -14,9 +19,10 @@ export default defineConfig({
   },
 
   // Path aliases for absolute imports
+  // Note: This is resolved dynamically relative to this config file
   resolve: {
     alias: {
-      "@": "/Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src",
+      "@": resolve(__dirname, "apps/web/src"),
     },
   },
 
