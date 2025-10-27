@@ -11,4 +11,6 @@ export type {
 	Publisher,
 	Funder,
 	OpenAlexEntity,
+	EntityType,
+	EntityTypeMap,
 } from "./entities"

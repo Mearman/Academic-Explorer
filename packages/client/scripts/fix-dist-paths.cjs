@@ -13,7 +13,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const distPackageJsonPath = path.join(__dirname, '../dist/package.json');
+const distDir = path.join(__dirname, '../dist');
+const distPackageJsonPath = path.join(distDir, 'package.json');
 
 try {
   const pkg = JSON.parse(fs.readFileSync(distPackageJsonPath, 'utf8'));
@@ -55,7 +56,20 @@ try {
   fs.writeFileSync(distPackageJsonPath, JSON.stringify(pkg, null, 2) + '\n', 'utf8');
 
   console.log('✅ Fixed dist/package.json paths for publishing');
+
+  // Fix stub .d.ts files that reference ./src/
+  const stubFiles = ['index.d.ts', 'client.d.ts', 'types.d.ts'];
+  for (const stubFile of stubFiles) {
+    const stubPath = path.join(distDir, stubFile);
+    if (fs.existsSync(stubPath)) {
+      const content = fs.readFileSync(stubPath, 'utf8');
+      // Remove ./src/ from export paths
+      const fixedContent = content.replace(/from ["']\.\/src\//g, 'from "./');
+      fs.writeFileSync(stubPath, fixedContent, 'utf8');
+      console.log(`✅ Fixed ${stubFile} stub references`);
+    }
+  }
 } catch (error) {
-  console.error('❌ Error fixing dist package.json:', error.message);
+  console.error('❌ Error fixing dist files:', error.message);
   process.exit(1);
 }

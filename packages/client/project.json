@@ -33,9 +33,17 @@
         "skipLibCheck": true
       }
     },
+    "build:types-gen": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/dist"],
+      "dependsOn": ["build:bundle"],
+      "options": {
+        "command": "tsc --project packages/client/tsconfig.json --emitDeclarationOnly --declaration --declarationMap false --outDir packages/client/dist"
+      }
+    },
     "build:fix-paths": {
       "executor": "nx:run-commands",
-      "dependsOn": ["build:bundle"],
+      "dependsOn": ["build:types-gen"],
       "options": {
         "command": "node packages/client/scripts/fix-dist-paths.cjs"
       }

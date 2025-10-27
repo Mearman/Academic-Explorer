@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { Container, Stack, Button, Alert, Text, Group } from "@mantine/core";
 import { IconBug, IconAlertTriangle } from "@tabler/icons-react";
+import { createLazyFileRoute } from "@tanstack/react-router";
 
 /**
  * Error Test Component
  * Used to verify that GlobalErrorBoundary is working correctly
  * Only available in development mode
  */
-const ErrorTestComponent: React.FC = () => {
+function ErrorTestComponent() {
   const [shouldThrow, setShouldThrow] = useState(false);
 
   // Throw an error when shouldThrow is true
@@ -101,6 +102,8 @@ const ErrorTestComponent: React.FC = () => {
       </Stack>
     </Container>
   );
-};
+}
 
-export default ErrorTestComponent;
+export const Route = createLazyFileRoute("/error-test")({
+  component: ErrorTestComponent,
+});
