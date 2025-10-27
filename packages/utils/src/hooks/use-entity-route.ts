@@ -60,7 +60,8 @@ export function useEntityRoute<T = unknown>(
 
 	// Extract entity ID from params using the config's paramKey
 	const rawId = params[config.paramKey] || "";
-	const cleanEntityId = rawId.replace(/^https?:\/\/(.*?)openalex\.org\//, "");
+	// Safely clean the entity ID - handle undefined/null cases
+	const cleanEntityId = rawId ? rawId.replace(/^https?:\/\/(?:.*?)openalex\.org\//, "") : "";
 
 	return {
 		cleanEntityId,
