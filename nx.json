@@ -201,8 +201,7 @@
     "build": {
       "cache": true,
       "dependsOn": [
-        "^build",
-        "typecheck"
+        "^build"
       ],
       "inputs": [
         "production",
@@ -229,8 +228,7 @@
     "test": {
       "cache": true,
       "dependsOn": [
-        "^build",
-        "typecheck"
+        "^build"
       ],
       "inputs": [
         "default",
@@ -321,9 +319,7 @@
     },
     "test:unit": {
       "cache": true,
-      "dependsOn": [
-        "typecheck"
-      ],
+      "dependsOn": [],
       "inputs": [
         "default",
         "^production"
@@ -335,7 +331,6 @@
     "test:component": {
       "cache": true,
       "dependsOn": [
-        "typecheck",
         "test:unit"
       ],
       "inputs": [
@@ -349,7 +344,6 @@
     "test:integration": {
       "cache": true,
       "dependsOn": [
-        "typecheck",
         "test:unit"
       ],
       "inputs": [
