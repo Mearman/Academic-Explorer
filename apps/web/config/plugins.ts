@@ -2,6 +2,12 @@ import { STATIC_DATA_CACHE_PATH } from "@academic-explorer/utils/static-data/cac
 import { tanstackRouter } from "@tanstack/router-vite-plugin";
 import react from "@vitejs/plugin-react";
 import { openalexCachePlugin } from "../../../config/vite-plugins/openalex-cache";
+import { fileURLToPath } from "node:url";
+import { dirname, resolve } from "node:path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const appRoot = resolve(__dirname, "..");
 
 /**
  * Plugin configuration for the web app
@@ -13,10 +19,10 @@ export const createPlugins = () => [
     verbose: true,
   }),
 
-  // TanStack Router Plugin with correct routes directory
+  // TanStack Router Plugin with correct routes directory (absolute path for Nx compatibility)
   tanstackRouter({
-    routesDirectory: "./src/routes",
-    generatedRouteTree: "./src/routeTree.gen.ts",
+    routesDirectory: resolve(appRoot, "src/routes"),
+    generatedRouteTree: resolve(appRoot, "src/routeTree.gen.ts"),
     routeFileIgnorePrefix: "-",
   }),
 

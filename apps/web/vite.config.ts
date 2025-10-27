@@ -1,7 +1,6 @@
 import { defineConfig, type UserConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import { TanStackRouterVite } from '@tanstack/router-vite-plugin';
 import baseConfig from '../../vite.config.base';
+import { createPlugins, serverConfig, previewConfig } from './config/plugins';
 
 // Type-safe configuration creation
 function createWebConfig(): UserConfig {
@@ -21,10 +20,10 @@ function createWebConfig(): UserConfig {
     // Inherit base configuration properties safely
     ...base,
 
+    // Use configured plugins from config/plugins.ts
     plugins: [
       ...(base.plugins || []),
-      TanStackRouterVite(),
-      react(),
+      ...createPlugins(),
     ],
 
     build: {
@@ -47,14 +46,14 @@ function createWebConfig(): UserConfig {
     // Development server configuration for the web app
     server: {
       ...base.server,
-      port: 5173,
+      ...serverConfig(),
       open: true,
     },
 
     // Preview server configuration
     preview: {
       ...base.preview,
-      port: 4173,
+      ...previewConfig,
       open: true,
     },
   };
