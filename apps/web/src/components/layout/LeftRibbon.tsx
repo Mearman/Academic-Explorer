@@ -24,6 +24,107 @@ const GROUP_REORDER_DRAG_TYPE = "application/group-reorder";
 
 type ThemeColors = ReturnType<typeof useThemeColors>["colors"];
 
+// DropZone component for insertion indicators
+const DropZone: React.FC<{
+  index: number;
+  isActive: boolean;
+  isDragging: boolean;
+  colors: ThemeColors;
+  isGroupReorderDrag: (dataTransfer: DataTransfer) => boolean;
+  shouldShowDropZone: (args: {
+    isDragging: boolean;
+    hasGroupDrag: boolean;
+    isActive: boolean;
+  }) => boolean;
+  getDropZoneStyle: (args: {
+    shouldShow: boolean;
+    colors: ThemeColors;
+  }) => React.CSSProperties;
+  handleDropZoneHover: (args: {
+    insertionIndex: number;
+    hasGroupDrag?: boolean;
+  }) => void;
+  handleDropZoneLeave: () => void;
+  handleDropLogic: (args: {
+    e: React.DragEvent;
+    index: number;
+    groupDefinitions: ToolGroupDefinition[];
+  }) => void;
+  groupDefinitions: ToolGroupDefinition[];
+}> = ({
+  index,
+  isActive,
+  isDragging,
+  colors,
+  isGroupReorderDrag,
+  shouldShowDropZone,
+  getDropZoneStyle,
+  handleDropZoneHover,
+  handleDropZoneLeave,
+  handleDropLogic,
+  groupDefinitions,
+}) => {
+  const [hasGroupDrag, setHasGroupDrag] = React.useState(false);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+
+    const isGroupReorder = isGroupReorderDrag(e.dataTransfer);
+    if (isGroupReorder) {
+      setHasGroupDrag(true);
+      logger.debug(
+        "ui",
+        `LeftRibbon DropZone ${String(index)} detected group drag`,
+        {
+          index,
+          hasGroupDrag,
+          isDragging,
+        },
+      );
+    }
+
+    handleDropZoneHover({
+      insertionIndex: index,
+      hasGroupDrag: isGroupReorder,
+    });
+  };
+
+  const handleDragLeave = () => {
+    setHasGroupDrag(false);
+    handleDropZoneLeave();
+  };
+
+  const showDropZone = shouldShowDropZone({
+    isDragging,
+    hasGroupDrag,
+    isActive,
+  });
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      aria-label={`Drop zone ${index} - Drop group here to reorder`}
+      style={getDropZoneStyle({ shouldShow: showDropZone, colors })}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={(e) => {
+        e.preventDefault();
+        logger.debug(
+          "ui",
+          `LeftRibbon drop zone ${String(index)} received drop`,
+          {
+            index,
+            types: Array.from(e.dataTransfer.types),
+            isDragging,
+          },
+        );
+        handleDropLogic({ e, index, groupDefinitions });
+      }}
+    />
+  );
+};
+
 export const LeftRibbon: React.FC = () => {
   const graphData = useGraphData();
   const { clearGraph } = graphData;
@@ -473,72 +574,6 @@ export const LeftRibbon: React.FC = () => {
     }
   };
 
-  // DropZone component for insertion indicators
-  const DropZone: React.FC<{ index: number; isActive: boolean }> = ({
-    index,
-    isActive,
-  }) => {
-    const [hasGroupDrag, setHasGroupDrag] = React.useState(false);
-
-    const handleDragOver = (e: React.DragEvent) => {
-      e.preventDefault();
-
-      const isGroupReorder = isGroupReorderDrag(e.dataTransfer);
-      if (isGroupReorder) {
-        setHasGroupDrag(true);
-        logger.debug(
-          "ui",
-          `LeftRibbon DropZone ${String(index)} detected group drag`,
-          {
-            index,
-            hasGroupDrag,
-            isDragging,
-          },
-        );
-      }
-
-      handleDropZoneHover({
-        insertionIndex: index,
-        hasGroupDrag: isGroupReorder,
-      });
-    };
-
-    const handleDragLeave = () => {
-      setHasGroupDrag(false);
-      handleDropZoneLeave();
-    };
-
-    const showDropZone = shouldShowDropZone({
-      isDragging,
-      hasGroupDrag,
-      isActive,
-    });
-
-    return (
-      <div
-        role="button"
-        tabIndex={0}
-        aria-label={`Drop zone ${index} - Drop group here to reorder`}
-        style={getDropZoneStyle({ shouldShow: showDropZone, colors })}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={(e) => {
-          e.preventDefault();
-          logger.debug(
-            "ui",
-            `LeftRibbon drop zone ${String(index)} received drop`,
-            {
-              index,
-              types: Array.from(e.dataTransfer.types),
-              isDragging,
-              draggedGroupId,
-            },
-          );
-          handleDropLogic({ e, index, groupDefinitions });
-        }}
-      />
-    );
-  };
 
   const handleDrop = ({
     draggedSectionId,
@@ -741,7 +776,19 @@ export const LeftRibbon: React.FC = () => {
         {groupDefinitions.map((group, index) => (
           <React.Fragment key={group.id}>
             {/* Drop zone before first item or between items */}
-            <DropZone index={index} isActive={dropInsertionIndex === index} />
+            <DropZone
+              index={index}
+              isActive={dropInsertionIndex === index}
+              isDragging={isDragging}
+              colors={colors}
+              isGroupReorderDrag={isGroupReorderDrag}
+              shouldShowDropZone={shouldShowDropZone}
+              getDropZoneStyle={getDropZoneStyle}
+              handleDropZoneHover={handleDropZoneHover}
+              handleDropZoneLeave={handleDropZoneLeave}
+              handleDropLogic={handleDropLogic}
+              groupDefinitions={groupDefinitions}
+            />
 
             <GroupRibbonButton
               group={group}
@@ -761,6 +808,15 @@ export const LeftRibbon: React.FC = () => {
         <DropZone
           index={groupDefinitions.length}
           isActive={dropInsertionIndex === groupDefinitions.length}
+          isDragging={isDragging}
+          colors={colors}
+          isGroupReorderDrag={isGroupReorderDrag}
+          shouldShowDropZone={shouldShowDropZone}
+          getDropZoneStyle={getDropZoneStyle}
+          handleDropZoneHover={handleDropZoneHover}
+          handleDropZoneLeave={handleDropZoneLeave}
+          handleDropLogic={handleDropLogic}
+          groupDefinitions={groupDefinitions}
         />
       </div>
 
