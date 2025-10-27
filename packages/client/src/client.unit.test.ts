@@ -27,6 +27,9 @@ describe("OpenAlexBaseClient", () => {
   let mockResponse: Response;
 
   beforeEach(() => {
+    // Clear all mock calls and instances before each test
+    mockFetch.mockClear();
+
     // Create a factory function for mock responses to avoid reuse issues
     const createMockResponse = (
       data = {
