@@ -17,24 +17,21 @@
   "author": "Academic Explorer",
   "license": "MIT",
   "type": "module",
-  "main": "./dist/index.cjs.js",
+  "main": "./dist/index.esm.js",
   "module": "./dist/index.esm.js",
-  "types": "./dist/index.d.ts",
+  "types": "./dist/src/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/src/index.d.ts",
-      "import": "./dist/index.esm.js",
-      "require": "./dist/index.cjs.js"
+      "import": "./dist/index.esm.js"
     },
     "./client": {
       "types": "./dist/src/client.d.ts",
-      "import": "./dist/client.esm.js",
-      "require": "./dist/client.cjs.js"
+      "import": "./dist/client.esm.js"
     },
     "./types": {
       "types": "./dist/src/types.d.ts",
-      "import": "./dist/types.esm.js",
-      "require": "./dist/types.cjs.js"
+      "import": "./dist/types.esm.js"
     }
   },
   "files": [
