@@ -26,6 +26,11 @@ function createWebConfig(): UserConfig {
       ...createPlugins(),
     ],
 
+    // Ensure resolve configuration is properly inherited
+    resolve: {
+      ...(base.resolve || {}),
+    },
+
     build: {
       ...base.build,
       outDir: 'dist',
