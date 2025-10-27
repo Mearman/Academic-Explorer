@@ -13,7 +13,10 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "strict": false,
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "paths": {
+      "@academic-explorer/types": ["../types/dist/index.d.ts"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": [

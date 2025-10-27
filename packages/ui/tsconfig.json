@@ -6,7 +6,11 @@
     "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "baseUrl": ".",
     "paths": {
-      "@/ui/section-kit": ["./src/components/section-kit"]
+      "@/ui/section-kit": ["./src/components/section-kit"],
+      "@academic-explorer/types": ["../types/dist/index.d.ts"],
+      "@academic-explorer/utils": ["../utils/dist/index.d.ts"],
+      "@academic-explorer/client": ["../client/dist/index.d.ts"],
+      "@academic-explorer/graph": ["../graph/dist/index.d.ts"]
     },
     "declaration": true,
     "composite": true,
@@ -19,7 +23,7 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true
   },
-  "include": ["src/**/*", "../../types/**/*"],
+  "include": ["src/**/*"],
   "references": [
     { "path": "../types" },
     { "path": "../utils" },
