@@ -2,7 +2,7 @@
  * History manager component for displaying navigation history
  */
 
-import { historyDB } from "@/lib/history-db";
+import { historyDB } from "@/lib/history-db.ts";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import {
   IconHistory,
