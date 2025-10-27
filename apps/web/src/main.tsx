@@ -26,6 +26,7 @@ import { routeTree } from "./routeTree.gen";
 // Load persisted app activity events on app start
 import { AppActivityProvider } from "@/stores/app-activity-store";
 import { LayoutProvider } from "@/stores/layout-store";
+import { GraphProvider } from "@/stores/graph-store";
 
 // Create Mantine theme using design tokens
 const theme = createTheme({
@@ -100,11 +101,13 @@ createRoot(rootElement).render(
   <QueryClientProvider client={queryClient}>
     <MantineProvider theme={theme} defaultColorScheme="auto">
       <Notifications />
-      <LayoutProvider>
-        <AppActivityProvider>
-          <RouterProvider router={router} />
-        </AppActivityProvider>
-      </LayoutProvider>
+      <GraphProvider>
+        <LayoutProvider>
+          <AppActivityProvider>
+            <RouterProvider router={router} />
+          </AppActivityProvider>
+        </LayoutProvider>
+      </GraphProvider>
     </MantineProvider>
   </QueryClientProvider>,
 );
