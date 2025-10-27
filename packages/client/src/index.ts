@@ -12,8 +12,8 @@ export {
   OpenAlexApiError,
   OpenAlexBaseClient,
   OpenAlexRateLimitError,
-  type OpenAlexClientConfig,
 } from "./client";
+export type { OpenAlexClientConfig } from "./client";
 
 // Entity APIs
 export { AuthorsApi } from "./entities/authors";

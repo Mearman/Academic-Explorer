@@ -3,10 +3,27 @@ import react from "@vitejs/plugin-react";
 import { openalexCachePlugin } from "../../../config/vite-plugins/openalex-cache";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
+import { writeFileSync } from "node:fs";
+import type { Plugin } from "vite";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const appRoot = resolve(__dirname, "..");
+
+/**
+ * GitHub Pages plugin - creates .nojekyll file for proper asset serving
+ */
+function githubPagesPlugin(): Plugin {
+  return {
+    name: "github-pages",
+    apply: "build",
+    closeBundle() {
+      const outputDir = resolve(appRoot, "dist");
+      const nojekyllPath = resolve(outputDir, ".nojekyll");
+      writeFileSync(nojekyllPath, "");
+    },
+  };
+}
 
 /**
  * Plugin configuration for the web app
@@ -29,6 +46,9 @@ export const createPlugins = () => [
 
   // React Plugin
   react(),
+
+  // GitHub Pages Plugin
+  githubPagesPlugin(),
 ];
 
 export const previewConfig = {

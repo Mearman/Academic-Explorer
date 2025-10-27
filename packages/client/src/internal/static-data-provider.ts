@@ -490,14 +490,21 @@ class GitHubPagesCacheTier implements CacheTierInterface {
 
     const attemptFetch = async (attempt: number): Promise<StaticDataResult> => {
       try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => {
+          controller.abort();
+        }, 10000); // 10 second timeout
+
         const response = await fetch(url, {
           method: "GET",
           headers: {
             Accept: "application/json",
             "Cache-Control": "max-age=3600", // 1 hour cache
           },
-          signal: AbortSignal.timeout(10000), // 10 second timeout
+          signal: controller.signal,
         });
+
+        clearTimeout(timeoutId);
 
         if (!response.ok) {
           if (response.status === 404) {
@@ -528,10 +535,17 @@ class GitHubPagesCacheTier implements CacheTierInterface {
   async has(entityType: StaticEntityType, id: string): Promise<boolean> {
     try {
       const url = this.getUrl(entityType, id);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+      }, 5000); // 5 second timeout for HEAD request
+
       const response = await fetch(url, {
         method: "HEAD",
-        signal: AbortSignal.timeout(5000), // 5 second timeout for HEAD request
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
       return response.ok;
     } catch {
       return false;
