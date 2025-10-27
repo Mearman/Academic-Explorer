@@ -4,10 +4,16 @@
   "sourceRoot": "packages/client/src",
   "projectType": "library",
   "targets": {
+    "build:clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rm -rf packages/client/dist && mkdir -p packages/client/dist"
+      }
+    },
     "build:bundle": {
       "executor": "@nx/rollup:rollup",
       "outputs": ["{options.outputPath}"],
-      "dependsOn": ["types:build", "utils:build"],
+      "dependsOn": ["build:clean", "types:build", "utils:build"],
       "options": {
         "main": "packages/client/src/index.ts",
         "outputPath": "packages/client/dist",
