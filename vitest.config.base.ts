@@ -15,9 +15,9 @@ export const baseVitestConfig = defineConfig({
     hookTimeout: 10000,
     teardownTimeout: 5000,
 
-    // Concurrency configuration
-    maxConcurrency: 4,
-    maxWorkers: 4,
+    // Concurrency configuration - MUST BE SERIAL to prevent OOM
+    maxConcurrency: 1,
+    maxWorkers: 1,
 
     // Reporting configuration
     reporters: ["default"],

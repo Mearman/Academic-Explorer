@@ -22,6 +22,22 @@ export default defineConfig(
 			environment: "jsdom",
 			setupFiles: [path.resolve(__dirname, "src/test/setup.ts")],
 
+			// Pool options for better memory management
+			pool: "forks",
+			poolOptions: {
+				forks: {
+					singleFork: true,
+					maxForks: 1,
+					minForks: 1,
+				},
+			},
+
+			// Aggressive cleanup between tests
+			isolate: true,
+
+			// File-level serial execution to prevent OOM
+			fileParallelism: false,
+
 			coverage: {
 				reportsDirectory: "../../coverage/apps/web",
 			},
