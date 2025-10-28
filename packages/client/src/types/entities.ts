@@ -628,7 +628,6 @@ export const FUNDER_FIELDS = keysOf<Funder>()([
   "ids",
   "roles",
   "summary_stats",
-  "topics",
 ]);
 
 export type FunderField = (typeof FUNDER_FIELDS)[number];
