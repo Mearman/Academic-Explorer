@@ -1,101 +1,104 @@
-import { FieldSelector } from "@/components/FieldSelector";
-import { EntityMiniGraph } from "@/components/graph/EntityMiniGraph";
-import { RichEntityView, ViewToggle } from "@academic-explorer/ui";
-import { NavigationHelper } from "@academic-explorer/utils";
-import { useEntityRoute } from "@/hooks/use-entity-route";
-import { INSTITUTION_FIELDS, cachedOpenAlex, type InstitutionEntity } from "@academic-explorer/client";
-import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-
-const INSTITUTION_ROUTE_PATH = "/institutions/$institutionId";
-
-// Configuration for the shared entity route hook
-const INSTITUTION_ENTITY_CONFIG = {
-  entityType: "institution" as const,
-  routePath: "/institutions/$institutionId",
-  paramKey: "institutionId",
-  fields: INSTITUTION_FIELDS,
-  randomApiCall: cachedOpenAlex.client.institutions.getRandomInstitutions.bind(cachedOpenAlex.client.institutions),
-  logContext: "InstitutionRoute",
-};
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { useParams } from "@tanstack/react-router";
+import { useState } from "react";
+import { INSTITUTION_FIELDS, cachedOpenAlex, type Institution } from "@academic-explorer/client";
+import { useQuery } from "@tanstack/react-query";
 
 function InstitutionRoute() {
-  const navigate = useNavigate();
+  const { institutionId } = useParams({ strict: false });
+  const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
 
-  // Use our shared hook - this replaces ~100 lines of duplicated code!
-  const entityRoute = useEntityRoute<InstitutionEntity>(INSTITUTION_ENTITY_CONFIG);
+  // Fetch institution data
+  const { data: institution, isLoading, error } = useQuery({
+    queryKey: ["institution", institutionId],
+    queryFn: async () => {
+      if (!institutionId) {
+        throw new Error("Institution ID is required");
+      }
+      const response = await cachedOpenAlex.client.institutions.getInstitution(institutionId, {
+        select: [...INSTITUTION_FIELDS],
+      });
+      return response as Institution;
+    },
+    enabled: !!institutionId && institutionId !== "random",
+  });
 
-  const {
-    cleanEntityId: institutionId,
-    viewMode,
-    setViewMode,
-    isLoadingRandom,
-    graphData,
-    miniGraphData,
-    rawEntityData,
-    nodeCount,
-    loadEntity,
-    loadEntityIntoGraph,
-    routeSearch,
-  } = entityRoute;
+  // Render content based on state
+  let content;
+  if (isLoading) {
+    content = (
+      <div className="p-4 text-center">
+        <h2>Loading Institution...</h2>
+        <p>Institution ID: {institutionId}</p>
+      </div>
+    );
+  } else if (error) {
+    content = (
+      <div className="p-4 text-center text-red-500">
+        <h2>Error Loading Institution</h2>
+        <p>Institution ID: {institutionId}</p>
+        <p>Error: {String(error)}</p>
+      </div>
+    );
+  } else {
+    content = (
+      <div className="p-4">
+        <div className="mb-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold">{institution?.display_name || "Institution"}</h1>
+          <button
+            onClick={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Toggle {viewMode === "raw" ? "Rich" : "Raw"} View
+          </button>
+        </div>
 
-  // Field selection state
-  const [selectedFields, setSelectedFields] = useState<readonly string[]>(INSTITUTION_FIELDS);
+        {viewMode === "raw" ? (
+          <pre className="bg-gray-100 p-4 rounded overflow-auto max-h-[600px]">
+            {JSON.stringify(institution, null, 2)}
+          </pre>
+        ) : (
+          <div className="space-y-4">
+            {institution?.display_name && (
+              <div>
+                <strong>Name:</strong> {institution.display_name}
+              </div>
+            )}
+            {institution?.works_count !== undefined && (
+              <div>
+                <strong>Works:</strong> {institution.works_count}
+              </div>
+            )}
+            {institution?.cited_by_count !== undefined && (
+              <div>
+                <strong>Citations:</strong> {institution.cited_by_count}
+              </div>
+            )}
+            {institution?.type && (
+              <div>
+                <strong>Type:</strong> {institution.type}
+              </div>
+            )}
+            {institution?.country_code && (
+              <div>
+                <strong>Country:</strong> {institution.country_code}
+              </div>
+            )}
+            {institution?.ror && (
+              <div>
+                <strong>ROR:</strong> {institution.ror}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
 
-  // Handle URL cleanup for malformed OpenAlex URLs using shared utility
-  useEffect(() => {
-    const navigator = NavigationHelper.createEntityNavigator({
-      entityType: "institution",
-      routePath: INSTITUTION_ROUTE_PATH,
-      logContext: "InstitutionRoute",
-    });
-
-    navigator.handleMalformedUrl(institutionId, ({ to, params, replace }) => {
-      navigate({ to, params, replace });
-    });
-  }, [institutionId]);
-
-  const institution = rawEntityData.data;
-
-  // Extract entity and related entities from miniGraphData for EntityMiniGraph
-  const entity = miniGraphData.data as InstitutionEntity | undefined;
-  const relatedEntities = (miniGraphData.data ? [miniGraphData.data] : []) as InstitutionEntity[];
-
-  return (
-    <>
-      <FieldSelector
-        availableFields={INSTITUTION_FIELDS}
-        selectedFields={selectedFields}
-        onFieldsChange={setSelectedFields}
-        title="Select Institution Fields"
-        description="Choose which fields to include in the institution data"
-      />
-
-      {entity && (
-        <EntityMiniGraph
-          entity={entity}
-          relatedEntities={relatedEntities}
-        />
-      )}
-
-      <ViewToggle
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-      />
-
-      <RichEntityView
-        entityType="institution"
-        entity={institution}
-        viewMode={viewMode}
-        isLoading={rawEntityData.isLoading}
-        error={rawEntityData.error}
-        fields={INSTITUTION_FIELDS}
-      />
-    </>
-  );
+  return content;
 }
 
-export const Route = createLazyFileRoute(INSTITUTION_ROUTE_PATH)({
+export const Route = createLazyFileRoute("/institutions/$institutionId")({
   component: InstitutionRoute,
 });
 

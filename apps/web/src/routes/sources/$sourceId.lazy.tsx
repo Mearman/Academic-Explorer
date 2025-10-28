@@ -1,103 +1,99 @@
-import { FieldSelector } from "@/components/FieldSelector";
-import { EntityMiniGraph } from "@/components/graph/EntityMiniGraph";
-import { RichEntityView, ViewToggle } from "@academic-explorer/ui";
-import { NavigationHelper } from "@academic-explorer/utils";
-import { useEntityRoute } from "@/hooks/use-entity-route";
-import { SOURCE_FIELDS, cachedOpenAlex } from "@academic-explorer/client";
-import type { Source } from "@academic-explorer/types";
-import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-
-const SOURCE_ROUTE_PATH = "/sources/$sourceId";
-
-// Configuration for the shared entity route hook
-const SOURCE_ENTITY_CONFIG = {
-  entityType: "source" as const,
-  routePath: "/sources/$sourceId",
-  paramKey: "sourceId",
-  fields: SOURCE_FIELDS,
-  randomApiCall: cachedOpenAlex.client.sources.getRandomSources.bind(cachedOpenAlex.client.sources),
-  logContext: "SourceRoute",
-};
-
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { useParams } from "@tanstack/react-router";
+import { useState } from "react";
+import { SOURCE_FIELDS, cachedOpenAlex, type Source } from "@academic-explorer/client";
+import { useQuery } from "@tanstack/react-query";
 
 function SourceRoute() {
-  const navigate = useNavigate();
+  const { sourceId } = useParams({ strict: false });
+  const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
 
-  // Use our shared hook - this replaces ~100 lines of duplicated code!
-  const entityRoute = useEntityRoute<Source>(SOURCE_ENTITY_CONFIG);
+  // Fetch source data
+  const { data: source, isLoading, error } = useQuery({
+    queryKey: ["source", sourceId],
+    queryFn: async () => {
+      if (!sourceId) {
+        throw new Error("Source ID is required");
+      }
+      const response = await cachedOpenAlex.client.sources.getSource(sourceId, {
+        select: [...SOURCE_FIELDS],
+      });
+      return response as Source;
+    },
+    enabled: !!sourceId && sourceId !== "random",
+  });
 
-  const {
-    cleanEntityId: sourceId,
-    viewMode,
-    setViewMode,
-    isLoadingRandom,
-    graphData,
-    miniGraphData,
-    rawEntityData,
-    nodeCount,
-    loadEntity,
-    loadEntityIntoGraph,
-    routeSearch,
-  } = entityRoute;
+  // Render content based on state
+  let content;
+  if (isLoading) {
+    content = (
+      <div className="p-4 text-center">
+        <h2>Loading Source...</h2>
+        <p>Source ID: {sourceId}</p>
+      </div>
+    );
+  } else if (error) {
+    content = (
+      <div className="p-4 text-center text-red-500">
+        <h2>Error Loading Source</h2>
+        <p>Source ID: {sourceId}</p>
+        <p>Error: {String(error)}</p>
+      </div>
+    );
+  } else {
+    content = (
+      <div className="p-4">
+        <div className="mb-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold">{source?.display_name || "Source"}</h1>
+          <button
+            onClick={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Toggle {viewMode === "raw" ? "Rich" : "Raw"} View
+          </button>
+        </div>
 
-  // Field selection state
-  const [selectedFields, setSelectedFields] = useState<readonly string[]>(SOURCE_FIELDS);
+        {viewMode === "raw" ? (
+          <pre className="bg-gray-100 p-4 rounded overflow-auto max-h-[600px]">
+            {JSON.stringify(source, null, 2)}
+          </pre>
+        ) : (
+          <div className="space-y-4">
+            {source?.display_name && (
+              <div>
+                <strong>Name:</strong> {source.display_name}
+              </div>
+            )}
+            {source?.works_count !== undefined && (
+              <div>
+                <strong>Works:</strong> {source.works_count}
+              </div>
+            )}
+            {source?.cited_by_count !== undefined && (
+              <div>
+                <strong>Citations:</strong> {source.cited_by_count}
+              </div>
+            )}
+            {source?.type && (
+              <div>
+                <strong>Type:</strong> {source.type}
+              </div>
+            )}
+            {source?.issn_l && (
+              <div>
+                <strong>ISSN-L:</strong> {source.issn_l}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
 
-  // Handle URL cleanup for malformed OpenAlex URLs using shared utility
-  useEffect(() => {
-    const navigator = NavigationHelper.createEntityNavigator({
-      entityType: "source",
-      routePath: SOURCE_ROUTE_PATH,
-      logContext: "SourceRoute",
-    });
-
-    navigator.handleMalformedUrl(sourceId, ({ to, params, replace }) => {
-      navigate({ to, params, replace });
-    });
-  }, [sourceId]);
-
-  const source = rawEntityData.data;
-
-  // Extract entity and related entities from miniGraphData for EntityMiniGraph
-  const entity = miniGraphData.data as Source | undefined;
-  const relatedEntities = (miniGraphData.data ? [miniGraphData.data] : []) as Source[];
-
-  return (
-    <>
-      <FieldSelector
-        availableFields={SOURCE_FIELDS}
-        selectedFields={selectedFields}
-        onFieldsChange={setSelectedFields}
-        title="Select Source Fields"
-        description="Choose which fields to include in the source data"
-      />
-
-      {entity && (
-        <EntityMiniGraph
-          entity={entity}
-          relatedEntities={relatedEntities}
-        />
-      )}
-
-      <ViewToggle
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-      />
-
-      <RichEntityView
-        entityType="source"
-        entity={source}
-        viewMode={viewMode}
-        isLoading={rawEntityData.isLoading}
-        error={rawEntityData.error}
-        fields={SOURCE_FIELDS}
-      />
-    </>
-  );
+  return content;
 }
 
-export const Route = createLazyFileRoute(SOURCE_ROUTE_PATH)({
+export const Route = createLazyFileRoute("/sources/$sourceId")({
   component: SourceRoute,
 });
 
