@@ -27,6 +27,10 @@ vi.mock("@/stores/graph-store", () => ({
         subscriptionCallback = null;
       });
     }),
+    // Delegate to currentStoreState (mockGraphStore) methods
+    setLoading: (...args: any[]) => currentStoreState?.setLoading(...args),
+    setError: (...args: any[]) => currentStoreState?.setError(...args),
+    setGraphData: (...args: any[]) => currentStoreState?.setGraphData(...args),
   },
 }));
 
