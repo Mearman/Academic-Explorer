@@ -232,7 +232,6 @@ export type PartialAuthor = PartialExceptId<Author>;
 export interface Source extends EntityWithWorks {
   issn_l?: string;
   issn?: string[];
-  publisher?: string;
   is_oa: boolean;
   is_in_doaj: boolean;
   ids: SourceIds;
@@ -544,7 +543,6 @@ export const SOURCE_FIELDS = keysOf<Source>()([
   ...ENTITY_WITH_WORKS_FIELDS,
   "issn_l",
   "issn",
-  "publisher",
   "is_oa",
   "is_in_doaj",
   "ids",
