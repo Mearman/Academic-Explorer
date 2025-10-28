@@ -7,23 +7,22 @@ import { expect, test } from "@playwright/test";
 
 test.describe("Homepage E2E Tests", () => {
   test("should load homepage without infinite loops", async ({ page }) => {
+    // Set up error tracking before navigation
+    const errors: string[] = [];
+    page.on("pageerror", (error) => {
+      errors.push(error.message);
+    });
+
     // Navigate to homepage with a reasonable timeout
     await page.goto("/", {
       waitUntil: "networkidle",
       timeout: 30000,
     });
 
-    // Check that page loaded successfully - header title should be visible
-    const headerTitle = page
-      .locator("header")
-      .locator("text=Academic Explorer");
-    await expect(headerTitle).toBeVisible();
-
-    // Verify no JavaScript errors occurred
-    const errors: string[] = [];
-    page.on("pageerror", (error) => {
-      errors.push(error.message);
-    });
+    // Check that page loaded successfully - h1 title should be visible
+    // Homepage is a Card component, not MainLayout with header
+    const title = page.locator('h1:has-text("Academic Explorer")');
+    await expect(title).toBeVisible({ timeout: 15000 });
 
     // Wait a bit to ensure no delayed errors
     await page.waitForTimeout(2000);
