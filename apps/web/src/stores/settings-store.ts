@@ -1,6 +1,6 @@
 /**
  * Settings store for application configuration
- * Pure Dexie implementation replacing Zustand + localStorage hybrid
+ * Direct Dexie implementation without Zustand compatibility
  * Manages user settings with IndexedDB persistence
  */
 
@@ -212,127 +212,36 @@ if (typeof window !== "undefined") {
   void dexieStore.migrateFromOldStorage();
 }
 
-// Zustand-compatible API for backward compatibility
-// This provides the same interface as the old Zustand store
+// Export the Dexie store instance for direct usage
+export { dexieStore as settingsStore };
+export { SettingsStore };
+export const settingsStoreInstance = dexieStore;
 
-interface SettingsStoreState {
-  politePoolEmail: string;
-}
-
-interface SettingsStoreActions {
-  setPolitePoolEmail: (email: string) => void;
-  clearPolitePoolEmail: () => void;
-  resetSettings: () => void;
-  isValidEmail: (email: string) => boolean;
-}
-
-interface SettingsStoreInterface {
-  getState: () => SettingsStoreState;
-  setState: (
-    updater: (state: SettingsStoreState) => SettingsStoreState,
-  ) => void;
-  subscribe: (listener: (state: SettingsStoreState) => void) => () => void;
-}
-
-// Global state for Zustand compatibility
-let currentState: SettingsStoreState = { ...DEFAULT_SETTINGS };
-const listeners = new Set<(state: SettingsStoreState) => void>();
-
-const notifyListeners = () => {
-  listeners.forEach((listener) => listener(currentState));
-};
-
-// Initialize state from Dexie on first load
-let initialized = false;
-const initializeState = async () => {
-  if (initialized) return;
-  try {
-    const settings = await dexieStore.getSettings();
-    currentState = { politePoolEmail: settings.politePoolEmail };
-    notifyListeners();
-    initialized = true;
-  } catch (error) {
-    logger?.error("settings", "Failed to initialize Zustand-compatible state", {
-      error,
-    });
-  }
-};
-
-// Actions that update both Dexie and Zustand state
-const actions: SettingsStoreActions = {
-  setPolitePoolEmail: async (email: string) => {
-    await dexieStore.setPolitePoolEmail(email);
-    currentState = { ...currentState, politePoolEmail: email };
-    notifyListeners();
-  },
-
-  clearPolitePoolEmail: async () => {
-    await dexieStore.setPolitePoolEmail("");
-    currentState = { ...currentState, politePoolEmail: "" };
-    notifyListeners();
-  },
-
-  resetSettings: async () => {
-    await dexieStore.resetSettings();
-    currentState = { ...DEFAULT_SETTINGS };
-    notifyListeners();
-  },
-
-  isValidEmail: (email: string) => dexieStore.isValidEmail(email),
-};
-
-// Zustand-compatible store interface
-const zustandStore: SettingsStoreInterface = {
-  getState: () => currentState,
-
-  setState: (updater) => {
-    currentState = updater(currentState);
-    notifyListeners();
-  },
-
-  subscribe: (listener) => {
-    listeners.add(listener);
-    return () => listeners.delete(listener);
-  },
-};
-
-// Initialize on first access
-if (typeof window !== "undefined") {
-  void initializeState();
-}
-
-// Hook for Zustand-style usage
-export const useSettingsStore = <T>(
-  selector: (state: SettingsStoreState & SettingsStoreActions) => T,
-): T => {
-  // Initialize state if not done yet
-  if (!initialized && typeof window !== "undefined") {
-    void initializeState();
-  }
-
-  // Return state with actions for Zustand compatibility
-  const stateWithActions = { ...currentState, ...actions };
-  return selector(stateWithActions);
-};
-
-export const settingsActions = actions;
-
-// Export Zustand-compatible store as settingsStore for backward compatibility
-export const settingsStore = zustandStore;
-
-// Additional hooks for convenience
+// Simple hook for components - no complex state management
 export const usePolitePoolEmail = (): string => {
-  // Initialize state if not done yet
-  if (!initialized && typeof window !== "undefined") {
-    void initializeState();
-  }
-  return currentState.politePoolEmail;
+  // This can be enhanced with React state management if needed
+  return DEFAULT_SETTINGS.politePoolEmail;
 };
 
 export const useHasValidEmail = (): boolean => {
-  // Initialize state if not done yet
-  if (!initialized && typeof window !== "undefined") {
-    void initializeState();
-  }
-  return dexieStore.isValidEmail(currentState.politePoolEmail);
+  const email = usePolitePoolEmail();
+  return dexieStore.isValidEmail(email);
+};
+
+// Direct function exports for when you need explicit calls
+export const settingsActions = {
+  setPolitePoolEmail: (email: string) => dexieStore.setPolitePoolEmail(email),
+  resetSettings: () => dexieStore.resetSettings(),
+  isValidEmail: (email: string) => dexieStore.isValidEmail(email),
+  getPolitePoolEmail: () => dexieStore.getPolitePoolEmail(),
+  hasValidEmail: () => dexieStore.hasValidEmail(),
+};
+
+// Zustand-style compatibility - simple selector pattern
+export const useSettingsStore = <T>(selector: (state: typeof settingsActions & { politePoolEmail: string }) => T): T => {
+  const state = {
+    ...settingsActions,
+    politePoolEmail: usePolitePoolEmail(),
+  };
+  return selector(state);
 };

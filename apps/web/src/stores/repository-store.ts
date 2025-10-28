@@ -86,17 +86,6 @@ interface RepositoryState {
 }
 
 // Default values and helpers
-const createInitialNodeTypeFilter = (): Record<EntityType, boolean> => ({
-  works: true,
-  authors: true,
-  sources: true,
-  institutions: true,
-  topics: true,
-  concepts: true,
-  publishers: true,
-  funders: true,
-  keywords: true,
-});
 
 const createInitialEdgeTypeFilter = (): Record<RelationType, boolean> => ({
   [RelationType.AUTHORED]: true,
@@ -707,260 +696,22 @@ if (typeof window !== "undefined") {
   void repositoryStore.migrateFromOldStorage();
 }
 
-// Zustand-compatible API for backward compatibility
-// This provides the same interface as the old Zustand store
 
-// RepositoryStoreState is aliased to RepositoryState for backward compatibility
-type RepositoryStoreState = RepositoryState
+// Export helper functions for components
+export const createInitialNodeTypeFilter = (): Record<EntityType, boolean> => ({
+  works: true,
+  authors: true,
+  sources: true,
+  institutions: true,
+  topics: true,
+  concepts: true,
+  publishers: true,
+  funders: true,
+  keywords: true,
+});
 
-interface RepositoryStoreActions {
-  setRepositoryMode: (enabled: boolean) => void;
-  addToRepository: (nodes: GraphNode[], edges?: GraphEdge[]) => void;
-  removeFromRepository: (nodeIds: string[], edgeIds?: string[]) => void;
-  clearRepository: () => void;
-  setSearchQuery: (query: string) => void;
-  setNodeTypeFilter: (entityType: EntityType, enabled: boolean) => void;
-  setEdgeTypeFilter: (relationType: RelationType, enabled: boolean) => void;
-  resetFilters: () => void;
-  selectRepositoryNode: (nodeId: string, selected: boolean) => void;
-  selectRepositoryEdge: (edgeId: string, selected: boolean) => void;
-  selectAllNodes: () => void;
-  selectAllEdges: () => void;
-  clearAllSelections: () => void;
-  // Computed getters
-  getFilteredNodes: () => GraphNode[];
-  getFilteredEdges: () => GraphEdge[];
-  getSelectedNodes: () => GraphNode[];
-  getSelectedEdges: () => GraphEdge[];
-  recomputeFilteredNodes: () => void;
-  recomputeFilteredEdges: () => void;
-}
+// Export the existing helper functions
+export { createInitialEdgeTypeFilter };
 
-interface RepositoryStoreInterface
-  extends RepositoryStoreState,
-    RepositoryStoreActions {
-  getState: () => RepositoryStoreState;
-  setState: (
-    updater: (state: RepositoryStoreState) => RepositoryStoreState,
-  ) => void;
-  subscribe: (listener: (state: RepositoryStoreState) => void) => () => void;
-}
-
-// Global state for Zustand compatibility
-let currentState: RepositoryStoreState = { ...DEFAULT_REPOSITORY_STATE };
-const listeners = new Set<(state: RepositoryStoreState) => void>();
-
-const notifyListeners = () => {
-  listeners.forEach((listener) => listener(currentState));
-};
-
-// Initialize state from Dexie on first load
-let initialized = false;
-const initializeState = async () => {
-  if (initialized) return;
-  try {
-    const state = await repositoryStore.getRepositoryState();
-    currentState = { ...state };
-    notifyListeners();
-    initialized = true;
-  } catch (error) {
-    logger?.error(
-      "repository",
-      "Failed to initialize Zustand-compatible state",
-      { error },
-    );
-  }
-};
-
-// Computed getters (cached to avoid recomputation)
-let filteredNodesCache: GraphNode[] = [];
-let filteredEdgesCache: GraphEdge[] = [];
-let cacheValid = false;
-
-const recomputeCache = () => {
-  if (!cacheValid) {
-    filteredNodesCache = repositoryStore.computeFilteredNodes(currentState);
-    filteredEdgesCache = repositoryStore.computeFilteredEdges(currentState);
-    cacheValid = true;
-  }
-};
-
-// Actions that update both Dexie and Zustand state
-const actions: RepositoryStoreActions = {
-  setRepositoryMode: async (enabled: boolean) => {
-    await repositoryStore.setRepositoryMode(enabled);
-    currentState = { ...currentState, repositoryMode: enabled };
-    notifyListeners();
-  },
-
-  addToRepository: async (nodes: GraphNode[], edges: GraphEdge[] = []) => {
-    await repositoryStore.addToRepository(nodes, edges);
-    // Re-fetch state to get updated data
-    const state = await repositoryStore.getRepositoryState();
-    currentState = { ...state };
-    cacheValid = false;
-    notifyListeners();
-  },
-
-  removeFromRepository: async (nodeIds: string[], edgeIds: string[] = []) => {
-    await repositoryStore.removeFromRepository(nodeIds, edgeIds);
-    // Re-fetch state to get updated data
-    const state = await repositoryStore.getRepositoryState();
-    currentState = { ...state };
-    cacheValid = false;
-    notifyListeners();
-  },
-
-  clearRepository: async () => {
-    await repositoryStore.clearRepository();
-    // Re-fetch state to get updated data
-    const state = await repositoryStore.getRepositoryState();
-    currentState = { ...state };
-    cacheValid = false;
-    notifyListeners();
-  },
-
-  setSearchQuery: async (query: string) => {
-    await repositoryStore.setSearchQuery(query);
-    currentState = { ...currentState, searchQuery: query };
-    cacheValid = false;
-    notifyListeners();
-  },
-
-  setNodeTypeFilter: async (entityType: EntityType, enabled: boolean) => {
-    await repositoryStore.setNodeTypeFilter(entityType, enabled);
-    currentState = {
-      ...currentState,
-      nodeTypeFilter: { ...currentState.nodeTypeFilter, [entityType]: enabled },
-    };
-    cacheValid = false;
-    notifyListeners();
-  },
-
-  setEdgeTypeFilter: async (relationType: RelationType, enabled: boolean) => {
-    await repositoryStore.setEdgeTypeFilter(relationType, enabled);
-    currentState = {
-      ...currentState,
-      edgeTypeFilter: {
-        ...currentState.edgeTypeFilter,
-        [relationType]: enabled,
-      },
-    };
-    cacheValid = false;
-    notifyListeners();
-  },
-
-  resetFilters: async () => {
-    await repositoryStore.resetFilters();
-    currentState = {
-      ...currentState,
-      searchQuery: "",
-      nodeTypeFilter: createInitialNodeTypeFilter(),
-      edgeTypeFilter: createInitialEdgeTypeFilter(),
-    };
-    cacheValid = false;
-    notifyListeners();
-  },
-
-  selectRepositoryNode: async (nodeId: string, selected: boolean) => {
-    await repositoryStore.selectRepositoryNode(nodeId, selected);
-    // Re-fetch state to get updated selections
-    const state = await repositoryStore.getRepositoryState();
-    currentState = { ...state };
-    notifyListeners();
-  },
-
-  selectRepositoryEdge: async (edgeId: string, selected: boolean) => {
-    await repositoryStore.selectRepositoryEdge(edgeId, selected);
-    // Re-fetch state to get updated selections
-    const state = await repositoryStore.getRepositoryState();
-    currentState = { ...state };
-    notifyListeners();
-  },
-
-  selectAllNodes: async () => {
-    await repositoryStore.selectAllNodes();
-    // Re-fetch state to get updated selections
-    const state = await repositoryStore.getRepositoryState();
-    currentState = { ...state };
-    notifyListeners();
-  },
-
-  selectAllEdges: async () => {
-    await repositoryStore.selectAllEdges();
-    // Re-fetch state to get updated selections
-    const state = await repositoryStore.getRepositoryState();
-    currentState = { ...state };
-    notifyListeners();
-  },
-
-  clearAllSelections: async () => {
-    await repositoryStore.clearAllSelections();
-    // Re-fetch state to get updated selections
-    const state = await repositoryStore.getRepositoryState();
-    currentState = { ...state };
-    notifyListeners();
-  },
-
-  // Computed getters
-  getFilteredNodes: () => {
-    recomputeCache();
-    return filteredNodesCache;
-  },
-
-  getFilteredEdges: () => {
-    recomputeCache();
-    return filteredEdgesCache;
-  },
-
-  getSelectedNodes: () => {
-    return Object.keys(currentState.selectedRepositoryNodes)
-      .filter((id) => currentState.selectedRepositoryNodes[id])
-      .map((id) => currentState.repositoryNodes[id])
-      .filter(Boolean);
-  },
-
-  getSelectedEdges: () => {
-    return Object.keys(currentState.selectedRepositoryEdges)
-      .filter((id) => currentState.selectedRepositoryEdges[id])
-      .map((id) => currentState.repositoryEdges[id])
-      .filter(Boolean);
-  },
-
-  recomputeFilteredNodes: () => {
-    cacheValid = false;
-    recomputeCache();
-  },
-
-  recomputeFilteredEdges: () => {
-    cacheValid = false;
-    recomputeCache();
-  },
-};
-
-// Zustand-compatible store interface
-const zustandStore: RepositoryStoreInterface = {
-  ...currentState,
-  ...actions,
-
-  getState: () => currentState,
-
-  setState: (updater) => {
-    currentState = updater(currentState);
-    cacheValid = false;
-    notifyListeners();
-  },
-
-  subscribe: (listener) => {
-    listeners.add(listener);
-    return () => listeners.delete(listener);
-  },
-};
-
-// Initialize on first access
-if (typeof window !== "undefined") {
-  void initializeState();
-}
-
-// Export Zustand-compatible store
-export const useRepositoryStore = () => zustandStore;
+// Simple Zustand-style compatibility
+export const useRepositoryStore = () => repositoryStore;

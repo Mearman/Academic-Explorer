@@ -43,7 +43,7 @@ export const SettingsSection: React.FC = () => {
     resettingPreferences: false,
   });
 
-  // Settings store - using proper React hooks
+  // Settings store - using simplified API
   const politePoolEmail = usePolitePoolEmail();
   const { setPolitePoolEmail, isValidEmail } = useSettingsStore(
     (state) => state,
@@ -72,8 +72,8 @@ export const SettingsSection: React.FC = () => {
 
   // Helper function to update email configuration
   const updateEmailConfig = React.useCallback(
-    (email: string) => {
-      setPolitePoolEmail(email);
+    async (email: string) => {
+      await setPolitePoolEmail(email);
       updateOpenAlexEmail(email);
     },
     [setPolitePoolEmail],
@@ -104,10 +104,10 @@ export const SettingsSection: React.FC = () => {
     [isValidEmail],
   );
 
-  const handleEmailSave = React.useCallback(() => {
+  const handleEmailSave = React.useCallback(async () => {
     const trimmedEmail = localEmail.trim();
     if (trimmedEmail === "" || isValidEmail(trimmedEmail)) {
-      updateEmailConfig(trimmedEmail);
+      await updateEmailConfig(trimmedEmail);
       setIsEditingEmail(false);
       setShowEmailValidation(false);
       logEmailSave(trimmedEmail);

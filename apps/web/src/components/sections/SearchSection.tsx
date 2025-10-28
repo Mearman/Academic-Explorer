@@ -17,22 +17,39 @@ export const SearchSection: React.FC = () => {
   const themeColors = useThemeColors();
   const { colors } = themeColors;
 
-  // Repository store
+  // Repository store - use direct store methods
   const repositoryStore = useRepositoryStore();
-  const { repositoryMode, setRepositoryMode } = repositoryStore;
+  const [repositoryMode, setRepositoryModeState] = React.useState(false);
+
+  // Initialize repository mode from store
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const state = await repositoryStore.getRepositoryState();
+        setRepositoryModeState(state.repositoryMode);
+      } catch (error) {
+        logger?.error("ui", "Failed to get repository state", { error });
+      }
+    })();
+  }, [repositoryStore]);
 
   const handleRepositoryModeToggle = useCallback(
-    (checked: boolean) => {
-      setRepositoryMode(checked);
-      logger.debug(
-        "ui",
-        `Repository mode ${checked ? "enabled" : "disabled"}`,
-        {
-          repositoryMode: checked,
-        },
-      );
+    async (checked: boolean) => {
+      try {
+        await repositoryStore.setRepositoryMode(checked);
+        setRepositoryModeState(checked);
+        logger.debug(
+          "ui",
+          `Repository mode ${checked ? "enabled" : "disabled"}`,
+          {
+            repositoryMode: checked,
+          },
+        );
+      } catch (error) {
+        logger?.error("ui", "Failed to set repository mode", { error });
+      }
     },
-    [setRepositoryMode],
+    [repositoryStore],
   );
 
   const handleSearch = (e: React.FormEvent) => {

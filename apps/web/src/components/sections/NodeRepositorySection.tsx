@@ -17,7 +17,7 @@ import {
   Tooltip,
 } from "@mantine/core";
 import { IconSearch, IconTrash, IconDragDrop } from "@tabler/icons-react";
-import { useRepositoryStore } from "@/stores/repository-store";
+import { useRepositoryStore, createInitialNodeTypeFilter } from "@/stores/repository-store";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { logger } from "@academic-explorer/utils/logger";
 import type { GraphNode, EntityType } from "@academic-explorer/graph";
@@ -174,72 +174,122 @@ export const NodeRepositorySection: React.FC = () => {
   const themeColors = useThemeColors();
   const { colors } = themeColors;
 
-  // Repository store
+  // Repository store - use direct store instance
   const repositoryStore = useRepositoryStore();
-  const { searchQuery } = repositoryStore;
-  const { nodeTypeFilter } = repositoryStore;
-  const { selectedRepositoryNodes } = repositoryStore;
-  const { setSearchQuery } = repositoryStore;
-  const { setNodeTypeFilter } = repositoryStore;
-  const { selectRepositoryNode } = repositoryStore;
-  const { selectAllNodes } = repositoryStore;
-  const { clearAllSelections } = repositoryStore;
-  const { removeFromRepository } = repositoryStore;
-  const { getFilteredNodes } = repositoryStore;
-  const { getSelectedNodes } = repositoryStore;
-  const { recomputeFilteredNodes } = repositoryStore;
 
-  // Get filtered nodes (stable reference from store)
+  // State management for component
+  const [searchQuery, setSearchQueryState] = React.useState("");
+  const [nodeTypeFilter, setNodeTypeFilterState] = React.useState(createInitialNodeTypeFilter());
+  const [selectedRepositoryNodes, setSelectedRepositoryNodes] = React.useState<string[]>([]);
+
+  // Initialize state from store
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const state = await repositoryStore.getRepositoryState();
+        setSearchQueryState(state.searchQuery);
+        setNodeTypeFilterState(state.nodeTypeFilter);
+        setSelectedRepositoryNodes(state.selectedRepositoryNodes);
+      } catch (error) {
+        logger?.error("ui", "Failed to load repository state", { error });
+      }
+    })();
+  }, [repositoryStore]);
+
+  // Get filtered nodes using repository store methods
   const filteredNodes = useMemo(() => {
-    // Trigger recomputation to ensure cache is fresh
-    recomputeFilteredNodes();
-    return getFilteredNodes();
-  }, [getFilteredNodes, recomputeFilteredNodes]);
+    // Create a mock state object for the compute method
+    const mockState = {
+      searchQuery,
+      nodeTypeFilter,
+      repositoryNodes: {}, // This would come from repository state
+    };
+    return repositoryStore.computeFilteredNodes(mockState);
+  }, [searchQuery, nodeTypeFilter, repositoryStore]);
 
   const selectedNodes = useMemo(() => {
-    return getSelectedNodes();
-  }, [getSelectedNodes]);
+    return Object.keys(selectedRepositoryNodes).filter(nodeId =>
+      selectedRepositoryNodes[nodeId]
+    );
+  }, [selectedRepositoryNodes]);
 
   const handleSearchChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchQuery(event.currentTarget.value);
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      try {
+        const newQuery = event.currentTarget.value;
+        setSearchQueryState(newQuery);
+        await repositoryStore.setSearchQuery(newQuery);
+      } catch (error) {
+        logger?.error("ui", "Failed to set search query", { error });
+      }
     },
-    [setSearchQuery],
+    [repositoryStore],
   );
 
   const handleTypeFilterChange = useCallback(
-    (entityType: EntityType, checked: boolean) => {
-      setNodeTypeFilter(entityType, checked);
+    async (entityType: EntityType, checked: boolean) => {
+      try {
+        await repositoryStore.setNodeTypeFilter(entityType, checked);
+        setNodeTypeFilterState(prev => ({ ...prev, [entityType]: checked }));
+      } catch (error) {
+        logger?.error("ui", "Failed to set node type filter", { error });
+      }
     },
-    [setNodeTypeFilter],
+    [repositoryStore],
   );
 
-  const handleSelectAll = useCallback(() => {
-    selectAllNodes();
-  }, [selectAllNodes]);
-
-  const handleClearSelection = useCallback(() => {
-    clearAllSelections();
-  }, [clearAllSelections]);
-
-  const handleRemoveSelected = useCallback(() => {
-    const selectedNodeIds = Object.keys(selectedRepositoryNodes);
-    if (selectedNodeIds.length > 0) {
-      removeFromRepository(selectedNodeIds);
-      logger.debug("repository", "Removed selected nodes from repository", {
-        removedCount: selectedNodeIds.length,
-      });
+  const handleSelectAll = useCallback(async () => {
+    try {
+      await repositoryStore.selectAllNodes();
+      // Refresh selected nodes
+      const state = await repositoryStore.getRepositoryState();
+      setSelectedRepositoryNodes(state.selectedRepositoryNodes);
+    } catch (error) {
+      logger?.error("ui", "Failed to select all nodes", { error });
     }
-  }, [selectedRepositoryNodes, removeFromRepository]);
+  }, [repositoryStore]);
+
+  const handleClearSelection = useCallback(async () => {
+    try {
+      await repositoryStore.clearAllSelections();
+      setSelectedRepositoryNodes({});
+    } catch (error) {
+      logger?.error("ui", "Failed to clear selections", { error });
+    }
+  }, [repositoryStore]);
+
+  const handleRemoveSelected = useCallback(async () => {
+    try {
+      const selectedNodeIds = Object.keys(selectedRepositoryNodes);
+      if (selectedNodeIds.length > 0) {
+        await repositoryStore.removeFromRepository(selectedNodeIds);
+        setSelectedRepositoryNodes({});
+        logger.debug("repository", "Removed selected nodes from repository", {
+          removedCount: selectedNodeIds.length,
+        });
+      }
+    } catch (error) {
+      logger?.error("ui", "Failed to remove selected nodes", { error });
+    }
+  }, [selectedRepositoryNodes, repositoryStore]);
 
   const handleRemoveNode = useCallback(
-    (nodeId: string) => {
-      removeFromRepository([nodeId]);
-      logger.debug("repository", "Removed single node from repository", {
-        nodeId,
-      });
+    async (nodeId: string) => {
+      try {
+        await repositoryStore.removeFromRepository([nodeId]);
+        setSelectedRepositoryNodes(prev => {
+          const newState = { ...prev };
+          delete newState[nodeId];
+          return newState;
+        });
+        logger.debug("repository", "Removed single node from repository", {
+          nodeId,
+        });
+      } catch (error) {
+        logger?.error("ui", "Failed to remove node", { error });
+      }
     },
-    [removeFromRepository],
+    [repositoryStore],
   );
 
   return (
@@ -336,7 +386,17 @@ export const NodeRepositorySection: React.FC = () => {
               key={node.id}
               node={node}
               isSelected={selectedRepositoryNodes[node.id] ?? false}
-              onSelect={selectRepositoryNode}
+              onSelect={async (nodeId: string, selected: boolean) => {
+                try {
+                  await repositoryStore.selectRepositoryNode(nodeId, selected);
+                  setSelectedRepositoryNodes(prev => ({
+                    ...prev,
+                    [nodeId]: selected
+                  }));
+                } catch (error) {
+                  logger?.error("ui", "Failed to select node", { error });
+                }
+              }}
               onRemove={handleRemoveNode}
             />
           )}

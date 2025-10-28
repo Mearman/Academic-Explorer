@@ -8,7 +8,7 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import {
-  settingsStore,
+  settingsStoreInstance,
   settingsActions,
 } from "./settings-store";
 
@@ -24,10 +24,13 @@ Object.defineProperty(window, "localStorage", {
   value: localStorageMock,
 });
 
+// Use the existing store instance for testing
+const testStoreInstance = settingsStoreInstance;
+
 describe("SettingsStore", () => {
   beforeEach(async () => {
     // Clear store state before each test
-    await settingsActions.resetSettings();
+    await testStoreInstance.resetSettings();
     // Clear localStorage mock calls
     localStorageMock.getItem.mockClear();
     localStorageMock.setItem.mockClear();
@@ -42,25 +45,25 @@ describe("SettingsStore", () => {
   });
 
   describe("politePoolEmail", () => {
-    it("should have empty email initially", () => {
-      expect(settingsStore.getState().politePoolEmail).toBe("");
+    it("should have empty email initially", async () => {
+      const settings = await testStoreInstance.getSettings();
+      expect(settings.politePoolEmail).toBe("");
     });
 
     it("should set polite pool email", async () => {
-      const { setPolitePoolEmail } = settingsActions;
-
-      await setPolitePoolEmail("test@example.com");
-      expect(settingsStore.getState().politePoolEmail).toBe("test@example.com");
+      await testStoreInstance.setPolitePoolEmail("test@example.com");
+      const settings = await testStoreInstance.getSettings();
+      expect(settings.politePoolEmail).toBe("test@example.com");
     });
 
     it("should clear polite pool email", async () => {
-      const { setPolitePoolEmail, clearPolitePoolEmail } = settingsActions;
+      await testStoreInstance.setPolitePoolEmail("test@example.com");
+      let settings = await testStoreInstance.getSettings();
+      expect(settings.politePoolEmail).toBe("test@example.com");
 
-      await setPolitePoolEmail("test@example.com");
-      expect(settingsStore.getState().politePoolEmail).toBe("test@example.com");
-
-      await clearPolitePoolEmail();
-      expect(settingsStore.getState().politePoolEmail).toBe("");
+      await testStoreInstance.setPolitePoolEmail("");
+      settings = await testStoreInstance.getSettings();
+      expect(settings.politePoolEmail).toBe("");
     });
   });
 
@@ -83,22 +86,21 @@ describe("SettingsStore", () => {
 
   describe("resetSettings", () => {
     it("should reset email to empty", async () => {
-      const { setPolitePoolEmail, resetSettings } = settingsActions;
+      await testStoreInstance.setPolitePoolEmail("test@example.com");
+      let settings = await testStoreInstance.getSettings();
+      expect(settings.politePoolEmail).toBe("test@example.com");
 
-      await setPolitePoolEmail("test@example.com");
-      expect(settingsStore.getState().politePoolEmail).toBe("test@example.com");
-
-      await resetSettings();
-      expect(settingsStore.getState().politePoolEmail).toBe("");
+      await testStoreInstance.resetSettings();
+      settings = await testStoreInstance.getSettings();
+      expect(settings.politePoolEmail).toBe("");
     });
   });
 
   describe("state access", () => {
     it("should provide polite pool email through state", async () => {
-      const { setPolitePoolEmail } = settingsActions;
-
-      await setPolitePoolEmail("test@example.com");
-      expect(settingsStore.getState().politePoolEmail).toBe("test@example.com");
+      await testStoreInstance.setPolitePoolEmail("test@example.com");
+      const settings = await testStoreInstance.getSettings();
+      expect(settings.politePoolEmail).toBe("test@example.com");
     });
 
     it("should provide valid email check through actions", () => {
