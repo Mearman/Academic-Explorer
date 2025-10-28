@@ -16,8 +16,8 @@ export default {
     // Require scope for better organization
     'scope-empty': [2, 'never'],
 
-    // Subject formatting
-    'subject-case': [2, 'always', 'lower-case'],
+    // Subject formatting - disabled to allow technical terms and function names
+    'subject-case': [0],
     'subject-empty': [2, 'never'],
     'subject-max-length': [2, 'always', 72],
 
