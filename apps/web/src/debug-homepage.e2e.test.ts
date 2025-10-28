@@ -4,8 +4,7 @@
 
 import { expect, test } from "@playwright/test";
 
-// Skipped: Requires Playwright browser context. Run separately with E2E test runner.
-test.describe.skip("Debug Homepage", () => {
+test.describe("Debug Homepage", () => {
   test("should log page content and check for errors", async ({ page }) => {
     const errors: string[] = [];
     const consoleMessages: string[] = [];

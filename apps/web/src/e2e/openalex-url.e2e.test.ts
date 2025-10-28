@@ -1,7 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 
-// Skipped: Requires Playwright browser context. Run separately with E2E test runner.
-test.describe.skip("OpenAlex URL Routing E2E Tests", () => {
+test.describe("OpenAlex URL Routing E2E Tests", () => {
   const testScenarios = [
     // 1. Single entity redirect
     {

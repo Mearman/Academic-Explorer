@@ -5,8 +5,7 @@
 
 import { expect, test } from "@playwright/test";
 
-// Skipped: Requires Playwright browser context. Run separately with E2E test runner.
-test.describe.skip("Homepage E2E Tests", () => {
+test.describe("Homepage E2E Tests", () => {
   test("should load homepage without infinite loops", async ({ page }) => {
     // Set up error tracking before navigation
     const errors: string[] = [];

@@ -5,8 +5,7 @@
 
 import { expect, test } from "@playwright/test";
 
-// Skipped: Requires Playwright browser context. Run separately with E2E test runner.
-test.describe.skip("Author Routes E2E Tests", () => {
+test.describe("Author Routes E2E Tests", () => {
   const TEST_AUTHOR_ID = "A5017898742"; // Known test author from requirements
   const BASE_URL = "http://localhost:5173";
 
