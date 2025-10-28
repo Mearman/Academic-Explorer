@@ -27,8 +27,9 @@ import {
 import { useRepositoryStore, createInitialEdgeTypeFilter } from "@/stores/repository-store";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { logger } from "@academic-explorer/utils/logger";
-import type { GraphEdge } from "@academic-explorer/graph";
+import type { GraphEdge, EntityType } from "@academic-explorer/graph";
 import { RelationType, getRelationColor } from "@academic-explorer/graph";
+import type { RepositoryState } from "@/stores/repository-store";
 
 const edgeTypeOptions = [
   {
@@ -236,7 +237,7 @@ export const EdgeRepositorySection: React.FC = () => {
 
   // State management for component
   const [edgeTypeFilter, setEdgeTypeFilterState] = React.useState(createInitialEdgeTypeFilter());
-  const [selectedRepositoryEdges, setSelectedRepositoryEdges] = React.useState<string[]>([]);
+  const [selectedRepositoryEdges, setSelectedRepositoryEdges] = React.useState<Record<string, boolean>>({});
 
   // Initialize state from store
   React.useEffect(() => {
@@ -253,25 +254,42 @@ export const EdgeRepositorySection: React.FC = () => {
 
   // Get filtered edges using repository store methods
   const filteredEdges = useMemo(() => {
-    // Create a mock state object for the compute method
-    const mockState = {
+    // Create a complete mock state object for the compute method
+    const mockState: RepositoryState = {
+      repositoryMode: false,
+      repositoryNodes: {},
+      repositoryEdges: {}, // Empty for now
+      searchQuery: "",
+      nodeTypeFilter: {
+        works: true,
+        authors: true,
+        sources: true,
+        institutions: true,
+        topics: true,
+        concepts: true,
+        publishers: true,
+        funders: true,
+        keywords: true,
+      },
       edgeTypeFilter,
+      selectedRepositoryNodes: {},
       selectedRepositoryEdges,
-      edges: [], // This would come from repository state
+      filteredNodes: [],
+      filteredEdges: [],
+      totalNodeCount: 0,
+      totalEdgeCount: 0,
+      selectedNodeCount: 0,
+      selectedEdgeCount: 0,
     };
     return repositoryStore.computeFilteredEdges(mockState);
   }, [edgeTypeFilter, selectedRepositoryEdges, repositoryStore]);
 
   const selectedEdges = useMemo(() => {
-    // Create a mock state object for selection computation
-    const mockState = {
-      selectedRepositoryEdges,
-      edges: [], // This would come from repository state
-    };
-    return repositoryStore.computeFilteredEdges(mockState).filter(edge =>
-      selectedRepositoryEdges.includes(edge.id)
+    // Get selected edge IDs from the record
+    return Object.keys(selectedRepositoryEdges).filter(edgeId =>
+      selectedRepositoryEdges[edgeId]
     );
-  }, [selectedRepositoryEdges, repositoryStore]);
+  }, [selectedRepositoryEdges]);
 
   const handleTypeFilterChange = useCallback(
     async ({ relationType, checked }) => {
@@ -299,7 +317,7 @@ export const EdgeRepositorySection: React.FC = () => {
   const handleClearSelection = useCallback(async () => {
     try {
       await repositoryStore.clearAllSelections();
-      setSelectedRepositoryEdges([]);
+      setSelectedRepositoryEdges({});
     } catch (error) {
       logger?.error("ui", "Failed to clear selections", { error });
     }
@@ -310,7 +328,7 @@ export const EdgeRepositorySection: React.FC = () => {
       const selectedEdgeIds = Object.keys(selectedRepositoryEdges);
       if (selectedEdgeIds.length > 0) {
         await repositoryStore.removeFromRepository([], selectedEdgeIds);
-        setSelectedRepositoryEdges([]);
+        setSelectedRepositoryEdges({});
         logger.debug("repository", "Removed selected edges from repository", {
           removedCount: selectedEdgeIds.length,
         });
@@ -324,7 +342,11 @@ export const EdgeRepositorySection: React.FC = () => {
     async (edgeId: string) => {
       try {
         await repositoryStore.removeFromRepository([], [edgeId]);
-        setSelectedRepositoryEdges(prev => prev.filter(id => id !== edgeId));
+        setSelectedRepositoryEdges(prev => {
+          const newState = { ...prev };
+          delete newState[edgeId];
+          return newState;
+        });
         logger.debug("repository", "Removed single edge from repository", {
           edgeId,
         });
@@ -339,11 +361,10 @@ export const EdgeRepositorySection: React.FC = () => {
     async (edgeId: string, selected: boolean) => {
       try {
         await repositoryStore.selectRepositoryEdge(edgeId, selected);
-        setSelectedRepositoryEdges(prev =>
-          selected
-            ? [...prev, edgeId]
-            : prev.filter(id => id !== edgeId)
-        );
+        setSelectedRepositoryEdges(prev => ({
+          ...prev,
+          [edgeId]: selected
+        }));
       } catch (error) {
         logger?.error("ui", "Failed to select edge", { error });
       }

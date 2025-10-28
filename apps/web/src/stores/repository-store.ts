@@ -59,7 +59,7 @@ const getDB = (): RepositoryDB => {
 };
 
 // Repository state interface
-interface RepositoryState {
+export interface RepositoryState {
   // Repository mode toggle
   repositoryMode: boolean;
 
@@ -86,6 +86,19 @@ interface RepositoryState {
 }
 
 // Default values and helpers
+
+// Export helper functions for components - moved before DEFAULT_REPOSITORY_STATE
+export const createInitialNodeTypeFilter = (): Record<EntityType, boolean> => ({
+  works: true,
+  authors: true,
+  sources: true,
+  institutions: true,
+  topics: true,
+  concepts: true,
+  publishers: true,
+  funders: true,
+  keywords: true,
+});
 
 const createInitialEdgeTypeFilter = (): Record<RelationType, boolean> => ({
   [RelationType.AUTHORED]: true,
@@ -696,19 +709,6 @@ if (typeof window !== "undefined") {
   void repositoryStore.migrateFromOldStorage();
 }
 
-
-// Export helper functions for components
-export const createInitialNodeTypeFilter = (): Record<EntityType, boolean> => ({
-  works: true,
-  authors: true,
-  sources: true,
-  institutions: true,
-  topics: true,
-  concepts: true,
-  publishers: true,
-  funders: true,
-  keywords: true,
-});
 
 // Export the existing helper functions
 export { createInitialEdgeTypeFilter };

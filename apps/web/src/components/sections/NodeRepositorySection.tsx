@@ -21,6 +21,8 @@ import { useRepositoryStore, createInitialNodeTypeFilter } from "@/stores/reposi
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { logger } from "@academic-explorer/utils/logger";
 import type { GraphNode, EntityType } from "@academic-explorer/graph";
+import { RelationType } from "@academic-explorer/graph";
+import type { RepositoryState } from "@/stores/repository-store";
 import {
   SectionFrame,
   BulkActionToolbar,
@@ -180,7 +182,7 @@ export const NodeRepositorySection: React.FC = () => {
   // State management for component
   const [searchQuery, setSearchQueryState] = React.useState("");
   const [nodeTypeFilter, setNodeTypeFilterState] = React.useState(createInitialNodeTypeFilter());
-  const [selectedRepositoryNodes, setSelectedRepositoryNodes] = React.useState<string[]>([]);
+  const [selectedRepositoryNodes, setSelectedRepositoryNodes] = React.useState<Record<string, boolean>>({});
 
   // Initialize state from store
   React.useEffect(() => {
@@ -198,14 +200,41 @@ export const NodeRepositorySection: React.FC = () => {
 
   // Get filtered nodes using repository store methods
   const filteredNodes = useMemo(() => {
-    // Create a mock state object for the compute method
-    const mockState = {
+    // Create a complete mock state object for the compute method
+    const mockState: RepositoryState = {
+      repositoryMode: false,
+      repositoryNodes: {}, // Empty for now
+      repositoryEdges: {},
       searchQuery,
       nodeTypeFilter,
-      repositoryNodes: {}, // This would come from repository state
+      edgeTypeFilter: {
+        [RelationType.AUTHORED]: true,
+        [RelationType.AFFILIATED]: true,
+        [RelationType.PUBLISHED_IN]: true,
+        [RelationType.FUNDED_BY]: true,
+        [RelationType.REFERENCES]: true,
+        [RelationType.RELATED_TO]: true,
+        [RelationType.SOURCE_PUBLISHED_BY]: true,
+        [RelationType.INSTITUTION_CHILD_OF]: true,
+        [RelationType.PUBLISHER_CHILD_OF]: true,
+        [RelationType.WORK_HAS_TOPIC]: true,
+        [RelationType.WORK_HAS_KEYWORD]: true,
+        [RelationType.AUTHOR_RESEARCHES]: true,
+        [RelationType.INSTITUTION_LOCATED_IN]: true,
+        [RelationType.FUNDER_LOCATED_IN]: true,
+        [RelationType.TOPIC_PART_OF_FIELD]: true,
+      },
+      selectedRepositoryNodes,
+      selectedRepositoryEdges: {},
+      filteredNodes: [],
+      filteredEdges: [],
+      totalNodeCount: 0,
+      totalEdgeCount: 0,
+      selectedNodeCount: 0,
+      selectedEdgeCount: 0,
     };
     return repositoryStore.computeFilteredNodes(mockState);
-  }, [searchQuery, nodeTypeFilter, repositoryStore]);
+  }, [searchQuery, nodeTypeFilter, selectedRepositoryNodes, repositoryStore]);
 
   const selectedNodes = useMemo(() => {
     return Object.keys(selectedRepositoryNodes).filter(nodeId =>
