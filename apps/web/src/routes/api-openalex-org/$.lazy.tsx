@@ -70,7 +70,13 @@ function ApiOpenAlexRoute() {
           pathWithQuery.startsWith("publishers") ||
           pathWithQuery.startsWith("sources")
         ) {
+          // Preserve query parameters by directly setting the full path
           const targetPath = `/${pathWithQuery}`;
+          logger.debug(
+            "routing",
+            `Navigating to list endpoint: ${targetPath}`,
+            "ApiOpenAlexRoute",
+          );
           window.location.hash = targetPath;
           return;
         }
