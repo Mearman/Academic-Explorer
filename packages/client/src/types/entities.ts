@@ -565,7 +565,14 @@ export type SourceField = (typeof SOURCE_FIELDS)[number];
  * Fields that can be selected for Institution entities.
  */
 export const INSTITUTION_FIELDS = keysOf<InstitutionEntity>()([
-  ...ENTITY_WITH_WORKS_FIELDS,
+  "id",
+  "display_name",
+  "cited_by_count",
+  "counts_by_year",
+  "updated_date",
+  "created_date",
+  "works_count",
+  "works_api_url",
   "ror",
   "country_code",
   "type",
