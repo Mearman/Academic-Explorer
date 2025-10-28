@@ -1,0 +1,26 @@
+{
+  "data": {
+    "id": "https://openalex.org/A5006060960",
+    "display_name": "Mock Author A5006060960",
+    "display_name_alternatives": [],
+    "works_count": 50,
+    "cited_by_count": 500,
+    "ids": {
+      "openalex": "https://openalex.org/A5006060960"
+    },
+    "last_known_institutions": [],
+    "affiliations": [],
+    "x_concepts": [],
+    "updated_date": "2023-01-01",
+    "created_date": "2023-01-01",
+    "summary_stats": {
+      "2yr_mean_citedness": 5,
+      "h_index": 10,
+      "i10_index": 5
+    },
+    "counts_by_year": []
+  },
+  "headers": {},
+  "timestamp": "2025-10-28T14:12:02.269Z",
+  "url": "https://api.openalex.org/authors/A5006060960"
+}

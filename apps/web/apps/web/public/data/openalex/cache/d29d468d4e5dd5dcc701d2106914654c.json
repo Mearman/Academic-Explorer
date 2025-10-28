@@ -1,0 +1,174 @@
+{
+  "data": {
+    "id": "https://openalex.org/W123456789",
+    "doi": "https://doi.org/10.1000/w123456789",
+    "title": "Mock Work W123456789",
+    "display_name": "Mock Work W123456789",
+    "publication_year": 2023,
+    "publication_date": "2023-01-01",
+    "type": "article",
+    "ids": {
+      "openalex": "https://openalex.org/W123456789",
+      "doi": "https://doi.org/10.1000/w123456789"
+    },
+    "language": "en",
+    "type_crossref": "journal-article",
+    "indexed_in": [],
+    "open_access": {
+      "is_oa": true,
+      "any_repository_has_fulltext": false
+    },
+    "authorships": [
+      {
+        "author_position": "first",
+        "author": {
+          "id": "https://openalex.org/A123456789",
+          "display_name": "Mock Author for W123456789"
+        },
+        "institutions": [
+          {
+            "id": "https://openalex.org/I123456789",
+            "display_name": "Mock Institution for W123456789",
+            "country_code": "US",
+            "type": "education"
+          }
+        ],
+        "countries": [
+          "US"
+        ],
+        "is_corresponding": true,
+        "raw_author_name": "Mock Author for W123456789",
+        "raw_affiliation_strings": [
+          "Mock Institution for W123456789"
+        ]
+      }
+    ],
+    "countries_distinct_count": 1,
+    "institutions_distinct_count": 1,
+    "corresponding_author_ids": [
+      "https://openalex.org/A123456789"
+    ],
+    "corresponding_institution_ids": [
+      "https://openalex.org/I123456789"
+    ],
+    "fwci": 1,
+    "has_fulltext": false,
+    "cited_by_count": 10,
+    "cited_by_percentile_year": {
+      "min": 75,
+      "max": 85
+    },
+    "biblio": {
+      "volume": "1",
+      "issue": "1",
+      "first_page": "1",
+      "last_page": "10"
+    },
+    "is_retracted": false,
+    "is_paratext": false,
+    "topics": [],
+    "keywords": [],
+    "concepts": [],
+    "mesh": [],
+    "locations_count": 1,
+    "locations": [
+      {
+        "source": {
+          "id": "https://openalex.org/S123456789",
+          "display_name": "Mock Source for W123456789",
+          "issn_l": "1234-5678",
+          "issn": [
+            "1234-5678",
+            "5678-1234"
+          ],
+          "is_oa": true,
+          "is_in_doaj": false,
+          "host_organization_lineage": [],
+          "type": "journal"
+        },
+        "landing_page_url": "https://example.com/W123456789",
+        "is_oa": true,
+        "version": "publishedVersion",
+        "license": "cc-by"
+      }
+    ],
+    "best_oa_location": {
+      "source": {
+        "id": "https://openalex.org/S123456789",
+        "display_name": "Mock Source for W123456789",
+        "issn_l": "1234-5678",
+        "issn": [
+          "1234-5678",
+          "5678-1234"
+        ],
+        "is_oa": true,
+        "is_in_doaj": false,
+        "host_organization_lineage": [],
+        "type": "journal"
+      },
+      "landing_page_url": "https://example.com/W123456789",
+      "is_oa": true,
+      "version": "publishedVersion",
+      "license": "cc-by"
+    },
+    "sustainable_development_goals": [],
+    "grants": [],
+    "datasets": [],
+    "versions": [],
+    "referenced_works_count": 2,
+    "referenced_works": [
+      "https://openalex.org/W123457789",
+      "https://openalex.org/W123458789"
+    ],
+    "related_works": [
+      "https://openalex.org/W123459789",
+      "https://openalex.org/W123460789"
+    ],
+    "abstract_inverted_index": {
+      "This": [
+        0
+      ],
+      "is": [
+        1
+      ],
+      "a": [
+        2
+      ],
+      "mock": [
+        3
+      ],
+      "abstract": [
+        4
+      ],
+      "for": [
+        5
+      ],
+      "testing": [
+        6
+      ]
+    },
+    "cited_by_api_url": "https://api.openalex.org/works?filter=cites:W123456789",
+    "counts_by_year": [
+      {
+        "year": 2023,
+        "cited_by_count": 5,
+        "works_count": 2
+      },
+      {
+        "year": 2022,
+        "cited_by_count": 3,
+        "works_count": 1
+      },
+      {
+        "year": 2021,
+        "cited_by_count": 2,
+        "works_count": 1
+      }
+    ],
+    "updated_date": "2023-01-01",
+    "created_date": "2023-01-01"
+  },
+  "headers": {},
+  "timestamp": "2025-10-28T14:12:07.906Z",
+  "url": "https://api.openalex.org/works/W123456789"
+}

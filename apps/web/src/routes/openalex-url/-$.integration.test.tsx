@@ -16,12 +16,6 @@ vi.mock("./$", async (importOriginal) => {
   };
 });
 
-import { Route as OpenAlexUrlRoute } from "./$";
-import { EntityDetectionService } from "@academic-explorer/graph";
-
-// Extract the component from the route
-const OpenAlexUrlComponent = OpenAlexUrlRoute.options.component!;
-
 // Mock EntityDetectionService
 vi.mock("@academic-explorer/graph", async (importOriginal) => {
   const actual = await importOriginal();
@@ -31,19 +25,24 @@ vi.mock("@academic-explorer/graph", async (importOriginal) => {
       detectEntity: vi.fn(),
     },
   };
-}));
+});
 
 // Mock TanStack Router
-vi.mock("@tanstack/react-router", async () => {
-  const actual = await vi.importActual("@tanstack/react-router");
+vi.mock("@tanstack/react-router", async (importOriginal) => {
+  const actual = await importOriginal();
   return {
     ...actual,
-    createFileRoute: vi.fn(() => ({
-      useParams: vi.fn(),
-    })),
+    useParams: vi.fn(),
     useNavigate: vi.fn(),
   };
 });
+
+// Import after mocks
+import { Route as OpenAlexUrlRoute } from "./$";
+import { EntityDetectionService } from "@academic-explorer/graph";
+
+// Extract the component from the route
+const OpenAlexUrlComponent = OpenAlexUrlRoute.options.component!;
 
 const mockDetectEntity = EntityDetectionService.detectEntity as any;
 
