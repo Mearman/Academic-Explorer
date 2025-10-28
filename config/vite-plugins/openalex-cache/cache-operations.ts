@@ -2,12 +2,23 @@ import type { CacheContext, CachedResponse } from "./types";
 import { createLogVerbose } from "./utils";
 import { writeFileSync, readFileSync, existsSync, mkdirSync } from "fs";
 import { join, dirname } from "path";
+import { createHash } from "crypto";
+
+/**
+ * Creates a short hash from a URL for use as a filename
+ * Uses SHA-256 hash truncated to 32 characters for reasonable uniqueness
+ */
+function createUrlHash(url: string): string {
+  const hash = createHash("sha256").update(url).digest("hex");
+  return hash.substring(0, 32); // 32 chars is enough for uniqueness
+}
 
 /**
  * Gets the cache path for a given URL
+ * Uses a hash-based filename to avoid ENAMETOOLONG errors with long URLs
  */
 export function getCachePath(url: string, context: CacheContext): string {
-  const urlHash = Buffer.from(url).toString("base64").replace(/[+/=]/g, "");
+  const urlHash = createUrlHash(url);
   return join(context.staticDataDir, "cache", `${urlHash}.json`);
 }
 
