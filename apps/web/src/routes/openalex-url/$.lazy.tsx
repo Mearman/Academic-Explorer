@@ -22,6 +22,13 @@ function parseSearchParams(params: URLSearchParams): Record<string, unknown> {
   return obj;
 }
 
+function buildPathWithSearch(path: string, params: URLSearchParams): string {
+  if (params.toString()) {
+    return `${path}?${params.toString()}`;
+  }
+  return path;
+}
+
 export const Route = createLazyFileRoute("/openalex-url/$")({
   component: OpenAlexUrlComponent,
 });
@@ -80,10 +87,9 @@ function OpenAlexUrlComponent() {
         const id = pathParts[1];
         const detection = EntityDetectionService.detectEntity(id);
         if (detection?.entityType) {
-          const targetPath = `/${detection.entityType}/${id}`;
+          const targetPath = buildPathWithSearch(`/${detection.entityType}/${id}`, searchParams);
           navigate({
             to: targetPath,
-            search: parseSearchParams(searchParams),
             replace: true,
           });
           return;
@@ -99,7 +105,7 @@ function OpenAlexUrlComponent() {
           `Detection for length 1 ID: ${JSON.stringify(detection)}`,
         );
         if (detection?.entityType) {
-          const targetPath = `/${detection.entityType}/${id}`;
+          const targetPath = buildPathWithSearch(`/${detection.entityType}/${id}`, searchParams);
           logger.debug(
             "routing",
             `Navigating to (length 1 ID): ${targetPath} with search: ${JSON.stringify(Object.fromEntries(searchParams))}`,
@@ -107,7 +113,6 @@ function OpenAlexUrlComponent() {
           logger.debug("routing", `About to navigate for length 1 ID`);
           navigate({
             to: targetPath,
-            search: parseSearchParams(searchParams),
             replace: true,
           });
           logger.debug("routing", `Navigation called for length 1 ID`);
@@ -123,7 +128,7 @@ function OpenAlexUrlComponent() {
       );
       if (path.startsWith("/autocomplete/")) {
         const subPath = path.substring("/autocomplete/".length);
-        const targetPath = `/autocomplete/${subPath}`;
+        const targetPath = buildPathWithSearch(`/autocomplete/${subPath}`, searchParams);
         logger.debug(
           "routing",
           `Autocomplete match, navigating to: ${targetPath} with search: ${JSON.stringify(Object.fromEntries(searchParams))}`,
@@ -131,7 +136,6 @@ function OpenAlexUrlComponent() {
         logger.debug("routing", `About to navigate for autocomplete`);
         navigate({
           to: targetPath,
-          search: parseSearchParams(searchParams),
           replace: true,
         });
         logger.debug("routing", `Navigation called for autocomplete`);
@@ -152,10 +156,9 @@ function OpenAlexUrlComponent() {
 
       const entityType = entityMap[pathParts[0]];
       if (entityType && pathParts.length === 1) {
-        const targetPath = `/${entityType}`;
+        const targetPath = buildPathWithSearch(`/${entityType}`, searchParams);
         navigate({
           to: targetPath,
-          search: parseSearchParams(searchParams),
           replace: true,
         });
         return;
