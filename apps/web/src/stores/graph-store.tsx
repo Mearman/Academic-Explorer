@@ -585,151 +585,150 @@ export const useGraphStore = () => {
   const state = useGraphState();
   const actions = useGraphActions();
 
-  // Memoized computed values
-  const computedValues = useMemo(() => {
-    const getNeighbors = useCallback((nodeId: string): GraphNode[] => {
-      const edges = Object.values(state.edges);
-      const neighbors: GraphNode[] = [];
+  // Move all useCallback hooks to top level - cannot be inside useMemo!
+  const getNeighbors = useCallback((nodeId: string): GraphNode[] => {
+    const edges = Object.values(state.edges);
+    const neighbors: GraphNode[] = [];
 
-      edges.forEach((edge) => {
-        if (edge.source === nodeId) {
-          neighbors.push(state.nodes[edge.target]);
-        } else if (edge.target === nodeId) {
-          neighbors.push(state.nodes[edge.source]);
-        }
-      });
-
-      return neighbors;
-    }, [state.nodes, state.edges]);
-
-    const getConnectedEdges = useCallback((nodeId: string): GraphEdge[] => {
-      return Object.values(state.edges).filter(
-        (edge) => edge.source === nodeId || edge.target === nodeId
-      );
-    }, [state.edges]);
-
-    const getVisibleNodes = useCallback((): GraphNode[] => {
-      return Object.values(state.nodes).filter((node) =>
-        state.visibleEntityTypes[node.entityType]
-      );
-    }, [state.nodes, state.visibleEntityTypes]);
-
-    const getEntityTypeStats = useCallback(() => {
-      const stats = {
-        total: {} as Record<EntityType, number>,
-        visible: {} as Record<EntityType, number>,
-        searchResults: {} as Record<EntityType, number>,
-      };
-
-      Object.values(state.nodes).forEach((node) => {
-        stats.total[node.entityType] = (stats.total[node.entityType] || 0) + 1;
-        if (state.visibleEntityTypes[node.entityType]) {
-          stats.visible[node.entityType] = (stats.visible[node.entityType] || 0) + 1;
-        }
-      });
-
-      return stats;
-    }, [state.nodes, state.visibleEntityTypes]);
-
-    const getNode = useCallback((nodeId: string): GraphNode | undefined => {
-      return state.nodes[nodeId];
-    }, [state.nodes]);
-
-    const isPinned = useCallback((nodeId: string): boolean => {
-      return Boolean(state.pinnedNodes[nodeId]);
-    }, [state.pinnedNodes]);
-
-    const hasPlaceholderOrLoadingNodes = useCallback((): boolean => {
-      return Object.values(state.nodes).some(
-        (node) => node.loading || node.error
-      );
-    }, [state.nodes]);
-
-    const getMinimalNodes = useCallback((): GraphNode[] => {
-      // Return nodes with depth 0 (root nodes)
-      return Object.values(state.nodes).filter(
-        (node) => state.nodeDepths[node.id] === 0
-      );
-    }, [state.nodes, state.nodeDepths]);
-
-    const getNodesWithinDepth = useCallback((depth: number): GraphNode[] => {
-      return Object.values(state.nodes).filter(
-        (node) => (state.nodeDepths[node.id] || 0) <= depth
-      );
-    }, [state.nodes, state.nodeDepths]);
-
-    const findShortestPath = useCallback((sourceId: string, targetId: string): string[] => {
-      if (sourceId === targetId) return [sourceId];
-      if (!state.nodes[sourceId] || !state.nodes[targetId]) return [];
-
-      const visited = new Set<string>();
-      const queue: Array<{ id: string; path: string[] }> = [];
-      const edges = Object.values(state.edges);
-
-      queue.push({ id: sourceId, path: [sourceId] });
-      visited.add(sourceId);
-
-      while (queue.length > 0) {
-        const current = queue.shift();
-        if (!current) break;
-
-        const nextIds = findNeighborIds({ edges, nodeId: current.id });
-        for (const nextId of nextIds) {
-          if (!visited.has(nextId)) {
-            const newPath = [...current.path, nextId];
-
-            if (nextId === targetId) {
-              return newPath;
-            }
-
-            visited.add(nextId);
-            queue.push({ id: nextId, path: newPath });
-          }
-        }
+    edges.forEach((edge) => {
+      if (edge.source === nodeId) {
+        neighbors.push(state.nodes[edge.target]);
+      } else if (edge.target === nodeId) {
+        neighbors.push(state.nodes[edge.source]);
       }
+    });
 
-      return [];
-    }, [state.nodes, state.edges]);
+    return neighbors;
+  }, [state.nodes, state.edges]);
 
-    const getConnectedComponent = useCallback((nodeId: string): string[] => {
-      if (!state.nodes[nodeId]) return [];
+  const getConnectedEdges = useCallback((nodeId: string): GraphEdge[] => {
+    return Object.values(state.edges).filter(
+      (edge) => edge.source === nodeId || edge.target === nodeId
+    );
+  }, [state.edges]);
 
-      const visited = new Set<string>();
-      const stack = [nodeId];
-      const edges = Object.values(state.edges);
+  const getVisibleNodes = useCallback((): GraphNode[] => {
+    return Object.values(state.nodes).filter((node) =>
+      state.visibleEntityTypes[node.entityType]
+    );
+  }, [state.nodes, state.visibleEntityTypes]);
 
-      while (stack.length > 0) {
-        const popped = stack.pop();
-        if (!popped) break;
-        const current = popped;
-        if (visited.has(current)) continue;
-        visited.add(current);
-
-        const neighbors = findNeighborIds({ edges, nodeId: current });
-        neighbors.forEach((neighbor) => {
-          if (!visited.has(neighbor) && state.nodes[neighbor]) {
-            stack.push(neighbor);
-          }
-        });
-      }
-
-      return Array.from(visited);
-    }, [state.nodes, state.edges]);
-
-    return {
-      getNeighbors,
-      getConnectedEdges,
-      getVisibleNodes,
-      getEntityTypeStats,
-      getNode,
-      isPinned,
-      hasPlaceholderOrLoadingNodes,
-      getMinimalNodes,
-      getNodesWithinDepth,
-      findShortestPath,
-      getConnectedComponent,
+  const getEntityTypeStats = useCallback(() => {
+    const stats = {
+      total: {} as Record<EntityType, number>,
+      visible: {} as Record<EntityType, number>,
+      searchResults: {} as Record<EntityType, number>,
     };
-  }, [state, state.nodes, state.edges, state.visibleEntityTypes, state.nodeDepths, state.pinnedNodes]);
+
+    Object.values(state.nodes).forEach((node) => {
+      stats.total[node.entityType] = (stats.total[node.entityType] || 0) + 1;
+      if (state.visibleEntityTypes[node.entityType]) {
+        stats.visible[node.entityType] = (stats.visible[node.entityType] || 0) + 1;
+      }
+    });
+
+    return stats;
+  }, [state.nodes, state.visibleEntityTypes]);
+
+  const getNode = useCallback((nodeId: string): GraphNode | undefined => {
+    return state.nodes[nodeId];
+  }, [state.nodes]);
+
+  const isPinned = useCallback((nodeId: string): boolean => {
+    return Boolean(state.pinnedNodes[nodeId]);
+  }, [state.pinnedNodes]);
+
+  const hasPlaceholderOrLoadingNodes = useCallback((): boolean => {
+    return Object.values(state.nodes).some(
+      (node) => node.loading || node.error
+    );
+  }, [state.nodes]);
+
+  const getMinimalNodes = useCallback((): GraphNode[] => {
+    // Return nodes with depth 0 (root nodes)
+    return Object.values(state.nodes).filter(
+      (node) => state.nodeDepths[node.id] === 0
+    );
+  }, [state.nodes, state.nodeDepths]);
+
+  const getNodesWithinDepth = useCallback((depth: number): GraphNode[] => {
+    return Object.values(state.nodes).filter(
+      (node) => (state.nodeDepths[node.id] || 0) <= depth
+    );
+  }, [state.nodes, state.nodeDepths]);
+
+  const findShortestPath = useCallback((sourceId: string, targetId: string): string[] => {
+    if (sourceId === targetId) return [sourceId];
+    if (!state.nodes[sourceId] || !state.nodes[targetId]) return [];
+
+    const visited = new Set<string>();
+    const queue: Array<{ id: string; path: string[] }> = [];
+    const edges = Object.values(state.edges);
+
+    queue.push({ id: sourceId, path: [sourceId] });
+    visited.add(sourceId);
+
+    while (queue.length > 0) {
+      const current = queue.shift();
+      if (!current) break;
+
+      const nextIds = findNeighborIds({ edges, nodeId: current.id });
+      for (const nextId of nextIds) {
+        if (!visited.has(nextId)) {
+          const newPath = [...current.path, nextId];
+
+          if (nextId === targetId) {
+            return newPath;
+          }
+
+          visited.add(nextId);
+          queue.push({ id: nextId, path: newPath });
+        }
+      }
+    }
+
+    return [];
+  }, [state.nodes, state.edges]);
+
+  const getConnectedComponent = useCallback((nodeId: string): string[] => {
+    if (!state.nodes[nodeId]) return [];
+
+    const visited = new Set<string>();
+    const stack = [nodeId];
+    const edges = Object.values(state.edges);
+
+    while (stack.length > 0) {
+      const popped = stack.pop();
+      if (!popped) break;
+      const current = popped;
+      if (visited.has(current)) continue;
+      visited.add(current);
+
+      const neighbors = findNeighborIds({ edges, nodeId: current });
+      neighbors.forEach((neighbor) => {
+        if (!visited.has(neighbor) && state.nodes[neighbor]) {
+          stack.push(neighbor);
+        }
+      });
+    }
+
+    return Array.from(visited);
+  }, [state.nodes, state.edges]);
+
+  // Simple object with already-memoized functions - no hooks inside useMemo
+  const computedValues = useMemo(() => ({
+    getNeighbors,
+    getConnectedEdges,
+    getVisibleNodes,
+    getEntityTypeStats,
+    getNode,
+    isPinned,
+    hasPlaceholderOrLoadingNodes,
+    getMinimalNodes,
+    getNodesWithinDepth,
+    findShortestPath,
+    getConnectedComponent,
+  }), [getNeighbors, getConnectedEdges, getVisibleNodes, getEntityTypeStats, getNode, isPinned, hasPlaceholderOrLoadingNodes, getMinimalNodes, getNodesWithinDepth, findShortestPath, getConnectedComponent]);
 
   return {
     ...state,
