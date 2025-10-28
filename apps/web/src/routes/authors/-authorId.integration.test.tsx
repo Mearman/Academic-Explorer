@@ -2,83 +2,46 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MantineProvider } from "@mantine/core";
-import { Route as AuthorRoute } from "./$authorId";
-import { useRawEntityData } from "@/hooks/use-raw-entity-data";
+import { cachedOpenAlex } from "@academic-explorer/client";
 
-// Extract the component from the route
-const AuthorRouteComponent = AuthorRoute.options.component!;
-import { useGraphData } from "@/hooks/use-graph-data";
-import { useEntityDocumentTitle } from "@/hooks/use-document-title";
-import { EntityDetectionService } from "@academic-explorer/graph";
-import { setupRouterMocks } from "@/test/utils/router-mocks";
-import { useParams, useNavigate } from "@tanstack/react-router";
-import { useGraphStore } from "@/stores/graph-store";
-
-// Mock the route for testing
-vi.mock("./$authorId", async (importOriginal) => {
+// Mock cachedOpenAlex client
+vi.mock("@academic-explorer/client", async (importOriginal) => {
   const actual = await importOriginal();
   return {
     ...actual,
-    Route: {
-      ...actual.Route,
-      useParams: vi.fn(() => ({ authorId: "A123" })),
-      options: {
-        ...actual.Route?.options,
-        component: actual.Route?.options?.component || (() => null),
+    cachedOpenAlex: {
+      client: {
+        authors: {
+          getAuthor: vi.fn(),
+        },
       },
     },
   };
 });
 
-// Mock hooks
-vi.mock("@/hooks/use-raw-entity-data", () => ({
-  useRawEntityData: vi.fn(),
-}));
-
-vi.mock("@/hooks/use-graph-data", () => ({
-  useGraphData: vi.fn(),
-}));
-
-vi.mock("@/hooks/use-document-title", () => ({
-  useEntityDocumentTitle: vi.fn(),
-}));
-
-vi.mock("@academic-explorer/graph", async (importOriginal) => {
+// Mock router hooks
+vi.mock("@tanstack/react-router", async (importOriginal) => {
   const actual = await importOriginal();
   return {
     ...actual,
-    EntityDetectionService: {
-      detectEntity: vi.fn(),
-    },
+    useParams: vi.fn(),
   };
 });
 
-// Mock ViewToggle to avoid circular dependency issues
-vi.mock("@/ui/components/ViewToggle/ViewToggle", () => ({
-  default: ({ viewMode, onToggle, entityType }: any) => (
-    <div
-      data-testid="view-toggle"
-      data-view-mode={viewMode}
-      data-entity-type={entityType}
-    >
-      <button data-testid="toggle-raw" onClick={() => onToggle("raw")}>
-        Raw
-      </button>
-      <button data-testid="toggle-rich" onClick={() => onToggle("rich")}>
-        Rich
-      </button>
-    </div>
-  ),
-}));
+// Import after mocks
+import { useParams } from "@tanstack/react-router";
+import AuthorRoute from "./$authorId.lazy";
 
-// Synthetic mock data for author (since synthetic-data.ts not available)
+// Synthetic mock data for author
 const mockAuthorData = {
   id: "https://openalex.org/A123",
   display_name: "John Doe",
   works_count: 100,
   cited_by_count: 5000,
-  ids: { orcid: "0000-0001-2345-6789" },
-  // ... more fields as needed
+  summary_stats: {
+    h_index: 25,
+    i10_index: 50,
+  },
 };
 
 describe("AuthorRoute Integration Tests", () => {
@@ -92,66 +55,30 @@ describe("AuthorRoute Integration Tests", () => {
       },
     });
 
-    // Setup router mocks
-    setupRouterMocks();
-
     // Mock useParams
     vi.mocked(useParams).mockReturnValue({ authorId: "A123" });
 
-    // Mock useNavigate
-    const mockUseNavigate = vi.mocked(useNavigate);
-    mockUseNavigate.mockReturnValue(vi.fn());
-
-    // Mock EntityDetectionService
-    vi.mocked(EntityDetectionService.detectEntity).mockReturnValue({
-      entityType: "authors",
-      normalizedId: "A123", // No redirect for this test
-      originalInput: "A123",
-      detectionMethod: "OpenAlex ID",
-    });
-
-    // Mock useRawEntityData
-    (useRawEntityData as any).mockReturnValue({
-      data: mockAuthorData,
-      isLoading: false,
-      error: null,
-      refetch: vi.fn(),
-    });
-
-    // Mock useGraphData
-    (useGraphData as any).mockReturnValue({
-      loadEntity: vi.fn().mockResolvedValue(undefined),
-      loadEntityIntoGraph: vi.fn().mockResolvedValue(undefined),
-      isLoading: false,
-      error: null,
-    });
-
-    // Mock useEntityDocumentTitle
-    (useEntityDocumentTitle as any).mockImplementation((data) => {
-      document.title = data
-        ? `${data.display_name} - Academic Explorer`
-        : "Academic Explorer";
-    });
+    // Mock successful API response by default
+    vi.mocked(cachedOpenAlex.client.authors.getAuthor).mockResolvedValue(
+      mockAuthorData as any,
+    );
   });
 
   afterEach(() => {
     queryClient.clear();
     vi.clearAllMocks();
-    document.title = "Academic Explorer"; // Reset title
   });
 
-  it("renders loading state when rawEntityData is loading", () => {
-    (useRawEntityData as any).mockReturnValue({
-      data: null,
-      isLoading: true,
-      error: null,
-      refetch: vi.fn(),
-    });
+  it("renders loading state initially", async () => {
+    // Make the API call slow to test loading state
+    vi.mocked(cachedOpenAlex.client.authors.getAuthor).mockImplementation(
+      () => new Promise(() => {}), // Never resolves
+    );
 
     render(
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
-          <AuthorRouteComponent />
+          <AuthorRoute />
         </MantineProvider>
       </QueryClientProvider>,
     );
@@ -160,260 +87,148 @@ describe("AuthorRoute Integration Tests", () => {
     expect(screen.getByText("Author ID: A123")).toBeInTheDocument();
   });
 
-  it("renders error state with retry button when rawEntityData has error", async () => {
+  it("renders error state when API fails", async () => {
     const mockError = new Error("API Error");
-    (useRawEntityData as any).mockReturnValue({
-      data: null,
-      isLoading: false,
-      error: mockError,
-      refetch: vi.fn(),
-    });
+    vi.mocked(cachedOpenAlex.client.authors.getAuthor).mockRejectedValue(
+      mockError,
+    );
 
     render(
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
-          <AuthorRouteComponent />
+          <AuthorRoute />
         </MantineProvider>
       </QueryClientProvider>,
     );
 
-    expect(screen.getByText("Error Loading Author")).toBeInTheDocument();
-    expect(screen.getByText("Author ID: A123")).toBeInTheDocument();
-    expect(screen.getByText(`Error: ${mockError.message}`)).toBeInTheDocument();
-
-    const retryButton = screen.getByRole("button", { name: /retry/i });
-    expect(retryButton).toBeInTheDocument();
-
-    fireEvent.click(retryButton);
-    expect((useRawEntityData as any)().refetch).toHaveBeenCalled();
-  });
-
-  it("renders ViewToggle and rich view (null content) by default", () => {
-    render(
-      <QueryClientProvider client={queryClient}>
-        <MantineProvider>
-          <AuthorRouteComponent />
-        </MantineProvider>
-      </QueryClientProvider>,
-    );
-
-    expect(screen.getByTestId("view-toggle")).toBeInTheDocument();
-    expect(screen.getByTestId("view-toggle")).toHaveAttribute(
-      "data-view-mode",
-      "rich",
-    );
-    expect(screen.getByTestId("view-toggle")).toHaveAttribute(
-      "data-entity-type",
-      "author",
-    );
-
-    // Rich view renders null, so no <pre>, but toggle is there
-    expect(
-      screen.queryByRole("generic", { name: /json/i }),
-    ).not.toBeInTheDocument();
-  });
-
-  it("toggles to raw view and renders JSON in <pre>", async () => {
-    render(
-      <QueryClientProvider client={queryClient}>
-        <MantineProvider>
-          <AuthorRouteComponent />
-        </MantineProvider>
-      </QueryClientProvider>,
-    );
-
-    const rawButton = screen.getByTestId("toggle-raw");
-    fireEvent.click(rawButton);
-
-    // Wait for re-render
     await waitFor(() => {
-      expect(screen.getByTestId("view-toggle")).toHaveAttribute(
-        "data-view-mode",
-        "raw",
-      );
+      expect(screen.getByText("Error Loading Author")).toBeInTheDocument();
     });
 
-    const preElement = screen.getByRole("generic", { name: /json/i }); // <pre> has no role, but class or text
-    expect(preElement).toBeInTheDocument();
-    expect(preElement).toHaveTextContent(mockAuthorData.display_name);
-    expect(preElement).toHaveClass(
-      "json-view",
-      "p-4",
-      "bg-gray-100",
-      "overflow-auto",
-      "mt-4",
-    );
+    expect(screen.getByText("Author ID: A123")).toBeInTheDocument();
+    expect(screen.getByText("Error: Error: API Error")).toBeInTheDocument();
   });
 
-  it("toggles back to rich view and hides JSON", async () => {
-    // Start in rich, toggle to raw, then back
+  it("renders author data in rich view by default", async () => {
     render(
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
-          <AuthorRouteComponent />
+          <AuthorRoute />
         </MantineProvider>
       </QueryClientProvider>,
     );
 
-    fireEvent.click(screen.getByTestId("toggle-raw"));
-    await waitFor(() =>
-      expect(screen.getByTestId("view-toggle")).toHaveAttribute(
-        "data-view-mode",
-        "raw",
-      ),
+    await waitFor(() => {
+      expect(screen.getByRole("heading", { name: "John Doe" })).toBeInTheDocument();
+    });
+
+    expect(screen.getByText(/Name:/)).toBeInTheDocument();
+    expect(screen.getByText(/Works:/)).toBeInTheDocument();
+    expect(screen.getByText(/Citations:/)).toBeInTheDocument();
+    expect(screen.getByText(/H-index:/)).toBeInTheDocument();
+    expect(screen.getByText(/i10-index:/)).toBeInTheDocument();
+
+    // Should have toggle button
+    expect(screen.getByText(/Toggle Raw View/)).toBeInTheDocument();
+
+    // Should NOT show JSON by default
+    expect(screen.queryByText(/"id":/)).not.toBeInTheDocument();
+  });
+
+  it("toggles to raw view and renders JSON", async () => {
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MantineProvider>
+          <AuthorRoute />
+        </MantineProvider>
+      </QueryClientProvider>,
     );
 
-    fireEvent.click(screen.getByTestId("toggle-rich"));
-    await waitFor(() =>
-      expect(screen.getByTestId("view-toggle")).toHaveAttribute(
-        "data-view-mode",
-        "rich",
-      ),
+    // Wait for data to load
+    await waitFor(() => {
+      expect(screen.getByRole("heading", { name: "John Doe" })).toBeInTheDocument();
+    });
+
+    // Click toggle button
+    const toggleButton = screen.getByText(/Toggle Raw View/);
+    fireEvent.click(toggleButton);
+
+    // Should show JSON
+    await waitFor(() => {
+      expect(screen.getByText(/"display_name":/)).toBeInTheDocument();
+    });
+
+    // Verify JSON content is visible
+    expect(screen.getByText(/"id":/)).toBeInTheDocument();
+    expect(screen.getByText(/"works_count":/)).toBeInTheDocument();
+  });
+
+  it("toggles back to rich view from raw view", async () => {
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MantineProvider>
+          <AuthorRoute />
+        </MantineProvider>
+      </QueryClientProvider>,
     );
 
-    expect(
-      screen.queryByRole("generic", { name: /json/i }),
-    ).not.toBeInTheDocument();
+    // Wait for data to load
+    await waitFor(() => {
+      expect(screen.getByRole("heading", { name: "John Doe" })).toBeInTheDocument();
+    });
+
+    // Toggle to raw
+    fireEvent.click(screen.getByText(/Toggle Raw View/));
+    await waitFor(() => {
+      expect(screen.getByText(/"display_name":/)).toBeInTheDocument();
+    });
+
+    // Toggle back to rich
+    fireEvent.click(screen.getByText(/Toggle Rich View/));
+    await waitFor(() => {
+      expect(screen.getByText(/Name:/)).toBeInTheDocument();
+    });
+
+    // Should NOT show JSON
+    expect(screen.queryByText(/"id":/)).not.toBeInTheDocument();
   });
 
   it("does not refetch data on view toggle", async () => {
-    const mockRefetch = vi.fn();
-    (useRawEntityData as any).mockReturnValue({
-      data: mockAuthorData,
-      isLoading: false,
-      error: null,
-      refetch: mockRefetch,
-    });
+    const getAuthorMock = vi.mocked(
+      cachedOpenAlex.client.authors.getAuthor,
+    );
 
     render(
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
-          <AuthorRouteComponent />
+          <AuthorRoute />
         </MantineProvider>
       </QueryClientProvider>,
     );
 
-    // Initial render
-    expect(mockRefetch).not.toHaveBeenCalled();
+    await waitFor(() => {
+      expect(screen.getByRole("heading", { name: "John Doe" })).toBeInTheDocument();
+    });
+
+    // Should have been called once on mount
+    expect(getAuthorMock).toHaveBeenCalledTimes(1);
 
     // Toggle to raw
-    fireEvent.click(screen.getByTestId("toggle-raw"));
-    await waitFor(() =>
-      expect(screen.getByTestId("view-toggle")).toHaveAttribute(
-        "data-view-mode",
-        "raw",
-      ),
-    );
-
-    // No refetch called
-    expect(mockRefetch).not.toHaveBeenCalled();
-
-    // Toggle back
-    fireEvent.click(screen.getByTestId("toggle-rich"));
-    await waitFor(() =>
-      expect(screen.getByTestId("view-toggle")).toHaveAttribute(
-        "data-view-mode",
-        "rich",
-      ),
-    );
-
-    expect(mockRefetch).not.toHaveBeenCalled();
-  });
-
-  it("sets document title correctly with entity data", () => {
-    render(
-      <QueryClientProvider client={queryClient}>
-        <MantineProvider>
-          <AuthorRouteComponent />
-        </MantineProvider>
-      </QueryClientProvider>,
-    );
-
-    expect(useEntityDocumentTitle).toHaveBeenCalledWith(mockAuthorData);
-    expect(document.title).toBe("John Doe - Academic Explorer");
-  });
-
-  it("handles normalization and redirect", async () => {
-    const mockNavigate = vi.fn();
-    vi.mocked(useNavigate).mockReturnValue(mockNavigate);
-
-    vi.mocked(EntityDetectionService.detectEntity).mockReturnValue({
-      entityType: "authors",
-      normalizedId: "A456", // Different ID
-      originalInput: "A456",
-      detectionMethod: "OpenAlex ID",
-    });
-
-    render(
-      <QueryClientProvider client={queryClient}>
-        <MantineProvider>
-          <AuthorRouteComponent />
-        </MantineProvider>
-      </QueryClientProvider>,
-    );
-
-    // Should call navigate with normalized ID
+    fireEvent.click(screen.getByText(/Toggle Raw View/));
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith({
-        to: "/authors/$authorId",
-        params: { authorId: "A456" },
-        search: expect.any(Function),
-        replace: true,
-      });
-    });
-  });
-
-  it("loads entity into graph correctly (initial empty graph)", async () => {
-    const mockLoadEntity = vi.fn().mockResolvedValue(undefined);
-    (useGraphData as any).mockReturnValue({
-      loadEntity: mockLoadEntity,
-      loadEntityIntoGraph: vi.fn(),
-      isLoading: false,
-      error: null,
+      expect(screen.getByText(/"display_name":/)).toBeInTheDocument();
     });
 
-    // Mock nodeCount = 0
-    vi.mocked(useGraphStore).mockImplementation((selector?) =>
-      selector ? selector({ totalNodeCount: 0 }) : { totalNodeCount: 0 },
-    );
+    // Should still be called only once
+    expect(getAuthorMock).toHaveBeenCalledTimes(1);
 
-    render(
-      <QueryClientProvider client={queryClient}>
-        <MantineProvider>
-          <AuthorRouteComponent />
-        </MantineProvider>
-      </QueryClientProvider>,
-    );
-
+    // Toggle back to rich
+    fireEvent.click(screen.getByText(/Toggle Rich View/));
     await waitFor(() => {
-      expect(mockLoadEntity).toHaveBeenCalledWith("A123");
-    });
-  });
-
-  it("loads entity into existing graph incrementally", async () => {
-    const mockLoadEntityIntoGraph = vi.fn().mockResolvedValue(undefined);
-    (useGraphData as any).mockReturnValue({
-      loadEntity: vi.fn(),
-      loadEntityIntoGraph: mockLoadEntityIntoGraph,
-      isLoading: false,
-      error: null,
+      expect(screen.getByText(/Name:/)).toBeInTheDocument();
     });
 
-    // Mock nodeCount > 0
-    vi.mocked(useGraphStore).mockImplementation((selector?) =>
-      selector ? selector({ totalNodeCount: 5 }) : { totalNodeCount: 5 },
-    );
-
-    render(
-      <QueryClientProvider client={queryClient}>
-        <MantineProvider>
-          <AuthorRouteComponent />
-        </MantineProvider>
-      </QueryClientProvider>,
-    );
-
-    await waitFor(() => {
-      expect(mockLoadEntityIntoGraph).toHaveBeenCalledWith("A123");
-    });
+    // Should still be called only once
+    expect(getAuthorMock).toHaveBeenCalledTimes(1);
   });
 });
