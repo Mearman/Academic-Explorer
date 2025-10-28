@@ -1,4 +1,21 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+
+// Mock the route for testing
+vi.mock("./$", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    Route: {
+      ...actual.Route,
+      useParams: vi.fn(() => ({ _splat: "https://api.openalex.org/W2741809807" })),
+      options: {
+        ...actual.Route?.options,
+        component: actual.Route?.options?.component || (() => null),
+      },
+    },
+  };
+});
+
 import { Route as OpenAlexUrlRoute } from "./$";
 import { EntityDetectionService } from "@academic-explorer/graph";
 
@@ -6,10 +23,14 @@ import { EntityDetectionService } from "@academic-explorer/graph";
 const OpenAlexUrlComponent = OpenAlexUrlRoute.options.component!;
 
 // Mock EntityDetectionService
-vi.mock("@academic-explorer/graph", () => ({
-  EntityDetectionService: {
-    detectEntity: vi.fn(),
-  },
+vi.mock("@academic-explorer/graph", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    EntityDetectionService: {
+      detectEntity: vi.fn(),
+    },
+  };
 }));
 
 // Mock TanStack Router

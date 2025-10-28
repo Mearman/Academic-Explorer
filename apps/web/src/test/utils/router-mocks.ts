@@ -226,6 +226,14 @@ export function setupRouterMocks() {
       createRouter: vi.fn(() => createMockRouter()),
       createRootRoute: vi.fn(),
       createRoute: vi.fn(),
+      createFileRoute: vi.fn((path: string) => (opts?: Record<string, unknown>) => {
+        const route = {
+          path,
+          options: opts || {},
+          ...opts,
+        };
+        return route;
+      }),
       RouterProvider: ({ children }: React.PropsWithChildren<Record<string, unknown>>) => children,
       useRouterState: () => ({
         status: "idle" as const,

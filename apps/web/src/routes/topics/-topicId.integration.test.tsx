@@ -3,6 +3,23 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { MantineProvider } from "@mantine/core";
+
+// Mock the route for testing
+vi.mock("./$topicId", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    Route: {
+      ...actual.Route,
+      useParams: vi.fn(() => ({ topicId: "T123" })),
+      options: {
+        ...actual.Route?.options,
+        component: actual.Route?.options?.component || (() => null),
+      },
+    },
+  };
+});
+
 import { Route as TopicRouteComponent } from "./$topicId";
 
 // Extract the component from the route
@@ -12,7 +29,6 @@ import { useGraphData } from "@/hooks/use-graph-data";
 import { useEntityDocumentTitle } from "@/hooks/use-document-title";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { useParams } from "@tanstack/react-router";
-import { setupRouterMocks } from "@/test/utils/router-mocks";
 import { useGraphStore } from "@/stores/graph-store";
 
 // Mock hooks
@@ -28,18 +44,25 @@ vi.mock("@/hooks/use-document-title", () => ({
   useEntityDocumentTitle: vi.fn(),
 }));
 
-vi.mock("@academic-explorer/graph", () => ({
-  EntityDetectionService: {
-    detectEntity: vi.fn(),
-  },
+vi.mock("@academic-explorer/graph", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    EntityDetectionService: {
+      detectEntity: vi.fn(),
+    },
+  };
 }));
 
 // Mock router hooks
-vi.mock("@tanstack/react-router", () => ({
-  useParams: vi.fn(),
-  useNavigate: vi.fn(),
-  createFileRoute: vi.fn(() => vi.fn((options) => options)),
-}));
+vi.mock("@tanstack/react-router", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    useParams: vi.fn(),
+    useNavigate: vi.fn(),
+  };
+});
 
 // Mock ViewToggle
 vi.mock("@/ui/components/ViewToggle/ViewToggle", () => ({
@@ -81,10 +104,8 @@ describe("TopicRouteComponent Integration Tests", () => {
       defaultOptions: {
         queries: { retry: false, staleTime: Infinity },
         mutations: { retry: false },
-      },
+        },
     });
-
-    setupRouterMocks();
 
     // Mock useParams
     (useParams as any).mockReturnValue({ topicId: "T123" });

@@ -15,11 +15,20 @@ import { useParams, useNavigate } from "@tanstack/react-router";
 import { useGraphStore } from "@/stores/graph-store";
 
 // Mock the route for testing
-vi.mock("./$authorId", () => ({
-  Route: {
-    useParams: vi.fn(() => ({ authorId: "A123" })),
-  },
-}));
+vi.mock("./$authorId", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    Route: {
+      ...actual.Route,
+      useParams: vi.fn(() => ({ authorId: "A123" })),
+      options: {
+        ...actual.Route?.options,
+        component: actual.Route?.options?.component || (() => null),
+      },
+    },
+  };
+});
 
 // Mock hooks
 vi.mock("@/hooks/use-raw-entity-data", () => ({
@@ -34,11 +43,15 @@ vi.mock("@/hooks/use-document-title", () => ({
   useEntityDocumentTitle: vi.fn(),
 }));
 
-vi.mock("@academic-explorer/graph", () => ({
-  EntityDetectionService: {
-    detectEntity: vi.fn(),
-  },
-}));
+vi.mock("@academic-explorer/graph", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    EntityDetectionService: {
+      detectEntity: vi.fn(),
+    },
+  };
+});
 
 // Mock ViewToggle to avoid circular dependency issues
 vi.mock("@/ui/components/ViewToggle/ViewToggle", () => ({
