@@ -10,6 +10,23 @@ import { RelationType } from "@academic-explorer/graph";
 import type { GraphNode, EntityType } from "@academic-explorer/graph";
 import { cachedOpenAlex } from "@academic-explorer/client";
 
+// Mock type guards from @academic-explorer/types
+vi.mock("@academic-explorer/types", () => ({
+  isWork: vi.fn((entity) => {
+    return entity && typeof entity === "object" && "publication_year" in entity;
+  }),
+  isAuthor: vi.fn((entity) => {
+    return entity && typeof entity === "object" && "works_count" in entity;
+  }),
+  isSource: vi.fn((entity) => {
+    return entity && typeof entity === "object" && ("issn_l" in entity || "publisher" in entity);
+  }),
+  isInstitution: vi.fn((entity) => {
+    return entity && typeof entity === "object" && "country_code" in entity;
+  }),
+  isNonNull: vi.fn((value) => value != null),
+}));
+
 // Mock the external dependencies
 vi.mock("@academic-explorer/client", () => ({
   ADVANCED_FIELD_SELECTIONS: {
@@ -53,21 +70,6 @@ vi.mock("@academic-explorer/client", () => ({
       minimal: ["id", "display_name", "works_count"],
     },
   },
-  isWork: vi.fn(
-    (entity) =>
-      entity && typeof entity === "object" && "publication_year" in entity,
-  ),
-  isAuthor: vi.fn(
-    (entity) => entity && typeof entity === "object" && "works_count" in entity,
-  ),
-  isSource: vi.fn(
-    (entity) => entity && typeof entity === "object" && "issn_l" in entity,
-  ),
-  isInstitution: vi.fn(
-    (entity) =>
-      entity && typeof entity === "object" && "country_code" in entity,
-  ),
-  isNonNull: vi.fn((value) => value != null),
   cachedOpenAlex: {
     client: {
       works: {
@@ -100,6 +102,11 @@ vi.mock("@academic-explorer/client", () => ({
 // Mock graph store
 vi.mock("../stores/graph-store", () => ({
   graphStore: {
+    nodes: {},
+    edges: {},
+    getNode: vi.fn(),
+    getPlaceholderNodes: vi.fn().mockReturnValue([]),
+    addEdges: vi.fn(),
     getState: vi.fn(() => ({
       nodes: {},
       edges: {},
@@ -132,6 +139,17 @@ describe("RelationshipDetectionService", () => {
       addEdges: vi.fn(),
     };
     vi.mocked(graphStore.getState).mockReturnValue(mockStore);
+
+    // Configure graphStore to delegate to mockStore
+    vi.mocked(graphStore.getNode).mockImplementation(mockStore.getNode);
+    vi.mocked(graphStore.addEdges).mockImplementation(mockStore.addEdges);
+    vi.mocked(graphStore.getPlaceholderNodes).mockReturnValue([]);
+
+    // Make graphStore.nodes dynamically reference mockStore.nodes
+    Object.defineProperty(graphStore, 'nodes', {
+      get: () => mockStore.nodes,
+      configurable: true,
+    });
 
     // Mock the deduplication service to prevent undefined access
     const mockDeduplicationService = {
