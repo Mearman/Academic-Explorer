@@ -33,9 +33,9 @@ export function toStaticEntityType(entityType: string): StaticEntityType {
  * Clean OpenAlex ID by removing URL prefix if present
  */
 export function cleanOpenAlexId(id: string): string {
-	// Handle null/undefined
-	if (!id) {
-		return '';
+	// Handle null/undefined/empty - return as-is to preserve for error handling
+	if (!id || typeof id !== 'string') {
+		return id;
 	}
 	// Remove https://openalex.org/ prefix if present
 	if (id.startsWith('https://openalex.org/')) {
