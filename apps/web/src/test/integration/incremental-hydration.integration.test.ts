@@ -308,10 +308,10 @@ describe("Entity Data Storage Integration", () => {
         );
 
         // Verify the mock was called with normalized ID
-        expect(mockGetEntity).toHaveBeenCalledWith(
-          "W123456789",
-          expect.any(Function),
-        );
+        expect(mockGetEntity).toHaveBeenCalledWith({
+          entityId: "W123456789",
+          fetcher: expect.any(Function),
+        });
 
         // Give a small delay for potential async state updates to complete
         await new Promise((resolve) => setTimeout(resolve, 10));
@@ -416,10 +416,10 @@ describe("Entity Data Storage Integration", () => {
         );
 
         // Verify the mock was called with normalized ID
-        expect(mockGetEntity).toHaveBeenCalledWith(
-          "W123456789",
-          expect.any(Function),
-        );
+        expect(mockGetEntity).toHaveBeenCalledWith({
+          entityId: "W123456789",
+          fetcher: expect.any(Function),
+        });
 
         // Give a small delay for potential async state updates to complete
         await new Promise((resolve) => setTimeout(resolve, 10));
