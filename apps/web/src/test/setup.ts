@@ -1,3 +1,7 @@
+// Ensure fake-indexeddb is loaded first before any Dexie usage
+// This must be imported synchronously at the top of the file
+import "fake-indexeddb/auto";
+
 // Ensure TextEncoder/TextDecoder are available synchronously before any other code
 // This is critical for esbuild to work properly in test environments
 import { Buffer } from "buffer";

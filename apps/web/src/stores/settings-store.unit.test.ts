@@ -7,7 +7,6 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import "fake-indexeddb/auto";
 import {
   settingsStore,
   settingsActions,
