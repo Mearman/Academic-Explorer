@@ -41,6 +41,7 @@ const worksColumns: ColumnConfig[] = [
         <>
           {authorships.map((authorship, index) => {
             const { author } = authorship;
+            if (!author?.id) return null;
             const authorUrl = convertToRelativeUrl(author.id);
 
             return (

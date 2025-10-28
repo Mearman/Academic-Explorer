@@ -350,11 +350,14 @@ export const AllEdgesSection: React.FC = () => {
     // Create group items for EntityCollectionList
     const groups = Object.entries(grouped)
       .filter(([, edges]) => edges && edges.length > 0)
-      .map(([type, edges]) => ({
-        type: type as RelationType,
-        edges: edges || [],
-        totalCount: edgeTypeStats[type as RelationType] || 0,
-      }));
+      .map(([type, edges]) => {
+        const stats = edgeTypeStats[type as RelationType];
+        return {
+          type: type as RelationType,
+          edges: edges || [],
+          totalCount: stats?.total || 0,
+        };
+      });
 
     return {
       filteredEdges: filtered,

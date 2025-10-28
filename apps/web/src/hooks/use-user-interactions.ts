@@ -101,11 +101,15 @@ export function useUserInteractions(
 
   // Helper to parse search params
   const getSearchParams = useCallback((): Record<string, string> => {
-    const params = new URLSearchParams(location.search);
     const result: Record<string, string> = {};
-    params.forEach((value, key) => {
-      result[key] = value;
-    });
+    // TanStack Router's location.search is already an object, not a query string
+    const search = location.search as Record<string, unknown>;
+    for (const [key, value] of Object.entries(search)) {
+      // Convert values to strings
+      if (value !== undefined && value !== null) {
+        result[key] = String(value);
+      }
+    }
     return result;
   }, [location.search]);
 
