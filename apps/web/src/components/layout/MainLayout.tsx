@@ -49,7 +49,8 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   } = layoutStore;
 
   // Helper to activate default groups if none are active
-  const activateDefaultGroups = useCallback(() => {
+  // Don't use useCallback to avoid React Hook dependency issues with context methods
+  const activateDefaultGroups = () => {
     const leftGroups = layoutActions.getToolGroupsForSidebar("left");
     const rightGroups = layoutActions.getToolGroupsForSidebar("right");
     const leftActiveGroup = layoutActions.getActiveGroup("left");
@@ -64,7 +65,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         groupId: Object.keys(rightGroups)[0],
       });
     }
-  }, [layoutActions.getToolGroupsForSidebar, layoutActions.getActiveGroup, layoutActions.setActiveGroup]);
+  };
 
   // Width state for dragging (using React state for immediate visual feedback)
   const [leftSidebarWidth, setLeftSidebarWidth] = useState(300);

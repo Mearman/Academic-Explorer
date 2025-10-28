@@ -8,10 +8,13 @@ import { themeClass } from "../styles/theme.css";
 function RootLayout() {
   logger.debug("routing", "RootLayout: Rendering", {}, "RootLayout");
 
-  // TEMPORARY: Bypass MainLayout for ALL routes to avoid React Hook #311 error
-  // TODO: Fix MainLayout hook violations and re-enable full layout
+  // TEMPORARY: MainLayout has React Hook #311 violations with React 19
+  // The issue is that layout-store is Context-based and returns method objects
+  // that cause React 19's strict hook rules to trigger errors
+  // TODO: Refactor layout-store to use Zustand with stable method references
   return (
     <div className={themeClass}>
+      <NavigationTracker />
       <Outlet />
     </div>
   );
