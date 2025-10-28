@@ -2599,12 +2599,13 @@ export class GraphDataService {
           typeof entity.orcid === "string" &&
           entity.orcid
         ) {
+          const orcidValue = entity.orcid;
           externalIds.push({
             type: "orcid",
-            value: entity.orcid,
-            url: entity.orcid.startsWith("http")
-              ? entity.orcid
-              : `https://orcid.org/${entity.orcid}`,
+            value: orcidValue,
+            url: orcidValue.startsWith("http")
+              ? orcidValue
+              : `https://orcid.org/${orcidValue}`,
           });
         }
         break;
@@ -2627,12 +2628,13 @@ export class GraphDataService {
 
       case "institutions": {
         if ("ror" in entity && typeof entity.ror === "string" && entity.ror) {
+          const rorValue = entity.ror;
           externalIds.push({
             type: "ror",
-            value: entity.ror,
-            url: entity.ror.startsWith("http")
-              ? entity.ror
-              : `https://ror.org/${entity.ror}`,
+            value: rorValue,
+            url: rorValue.startsWith("http")
+              ? rorValue
+              : `https://ror.org/${rorValue}`,
           });
         }
         break;

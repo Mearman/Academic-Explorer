@@ -1,7 +1,7 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useParams } from "@tanstack/react-router";
 import { useState } from "react";
-import { INSTITUTION_FIELDS, cachedOpenAlex, type Institution } from "@academic-explorer/client";
+import { INSTITUTION_FIELDS, cachedOpenAlex, type InstitutionEntity } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
 
 function InstitutionRoute() {
@@ -18,7 +18,7 @@ function InstitutionRoute() {
       const response = await cachedOpenAlex.client.institutions.getInstitution(institutionId, {
         select: [...INSTITUTION_FIELDS],
       });
-      return response as Institution;
+      return response as InstitutionEntity;
     },
     enabled: !!institutionId && institutionId !== "random",
   });
