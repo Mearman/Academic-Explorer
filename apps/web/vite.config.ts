@@ -48,7 +48,6 @@ function createWebConfig(): UserConfig {
             router: ['@tanstack/react-router'],
             ui: ['@mantine/core', '@mantine/hooks', '@mantine/dates', '@mantine/notifications', '@tabler/icons-react'],
             table: ['@tanstack/react-table', '@tanstack/react-virtual'],
-            state: ['zustand', 'immer'],
             query: ['@tanstack/react-query'],
             graph: ['@academic-explorer/simulation', '@react-three/fiber', '@react-three/drei', 'react-force-graph-2d', 'react-force-graph-3d', 'r3f-forcegraph', 'three', 'three-spritetext'],
             xyflow: ['@xyflow/react', '@dnd-kit/core', '@dnd-kit/sortable', '@dnd-kit/utilities'],
