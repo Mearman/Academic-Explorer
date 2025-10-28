@@ -1,23 +1,29 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
-import { useParams } from "@tanstack/react-router";
+import { useParams, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
-import { WORK_FIELDS, cachedOpenAlex, type Work } from "@academic-explorer/client";
+import { WORK_FIELDS, cachedOpenAlex, type Work, type WorkField } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
 
 function WorkRoute() {
   const { workId } = useParams({ strict: false });
+  const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+
+  // Parse select parameter - if not provided, use all WORK_FIELDS (default behavior)
+  const selectFields = selectParam && typeof selectParam === 'string'
+    ? selectParam.split(',').map(field => field.trim()) as WorkField[]
+    : [...WORK_FIELDS];
 
   // Fetch work data
   const { data: work, isLoading, error } = useQuery({
-    queryKey: ["work", workId],
+    queryKey: ["work", workId, selectParam],
     queryFn: async () => {
       if (!workId) {
         throw new Error("Work ID is required");
       }
       const response = await cachedOpenAlex.client.works.getWork(workId, {
-        select: [...WORK_FIELDS],
+        select: selectFields,
       });
       return response as Work;
     },
@@ -44,8 +50,12 @@ function WorkRoute() {
   } else {
     content = (
       <div className="p-4">
-        <div className="mb-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">{work?.display_name || work?.title || "Work"}</h1>
+        <div className="mb-4">
+          <h1 className="text-2xl font-bold mb-2">{work?.display_name || work?.title || "Work"}</h1>
+          <div className="text-sm text-gray-600 mb-4">
+            <strong>Work ID:</strong> {workId}<br />
+            <strong>Select fields:</strong> {selectParam && typeof selectParam === 'string' ? selectParam : `default (${selectFields.join(", ")})`}
+          </div>
           <button
             onClick={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"

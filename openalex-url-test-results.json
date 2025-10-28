@@ -1,0 +1,167 @@
+{
+  "authors": [
+    {
+      "url": "https://api.openalex.org/authors/A5023888391",
+      "status": 200,
+      "contentType": "application/json",
+      "dataSize": 25037,
+      "fieldCount": 17,
+      "isArray": false,
+      "id": "https://openalex.org/A5023888391",
+      "display_name": "Jason Priem",
+      "hasSelect": false,
+      "selectFields": []
+    },
+    {
+      "url": "https://api.openalex.org/authors/A5023888391?select=id,display_name,orcid",
+      "status": 200,
+      "contentType": "application/json",
+      "dataSize": 118,
+      "fieldCount": 3,
+      "isArray": false,
+      "id": "https://openalex.org/A5023888391",
+      "display_name": "Jason Priem",
+      "hasSelect": true,
+      "selectFields": [
+        "id",
+        "display_name",
+        "orcid"
+      ]
+    },
+    {
+      "url": "https://api.openalex.org/authors/https://orcid.org/0000-0002-1298-3089",
+      "status": 200,
+      "contentType": "application/json",
+      "dataSize": 25763,
+      "fieldCount": 17,
+      "isArray": false,
+      "id": "https://openalex.org/A5042522694",
+      "display_name": "David Tarragó",
+      "hasSelect": false,
+      "selectFields": []
+    }
+  ],
+  "works": [
+    {
+      "url": "https://api.openalex.org/works/W2741809807",
+      "status": 200,
+      "contentType": "application/json",
+      "dataSize": 27126,
+      "fieldCount": 50,
+      "isArray": false,
+      "id": "https://openalex.org/W2741809807",
+      "display_name": "The state of OA: a large-scale analysis of the prevalence and impact of Open Access articles",
+      "hasSelect": false,
+      "selectFields": []
+    },
+    {
+      "url": "https://api.openalex.org/works/W2741809807?select=id,display_name",
+      "status": 200,
+      "contentType": "application/json",
+      "dataSize": 151,
+      "fieldCount": 2,
+      "isArray": false,
+      "id": "https://openalex.org/W2741809807",
+      "display_name": "The state of OA: a large-scale analysis of the prevalence and impact of Open Access articles",
+      "hasSelect": true,
+      "selectFields": [
+        "id",
+        "display_name"
+      ]
+    },
+    {
+      "url": "https://api.openalex.org/works/https://doi.org/10.7717/peerj.4375",
+      "status": 200,
+      "contentType": "application/json",
+      "dataSize": 27126,
+      "fieldCount": 50,
+      "isArray": false,
+      "id": "https://openalex.org/W2741809807",
+      "display_name": "The state of OA: a large-scale analysis of the prevalence and impact of Open Access articles",
+      "hasSelect": false,
+      "selectFields": []
+    }
+  ],
+  "institutions": [
+    {
+      "url": "https://api.openalex.org/institutions/I27837315",
+      "status": 200,
+      "contentType": "application/json",
+      "dataSize": 28062,
+      "fieldCount": 29,
+      "isArray": false,
+      "id": "https://openalex.org/I27837315",
+      "display_name": "University of Michigan",
+      "hasSelect": false,
+      "selectFields": []
+    },
+    {
+      "url": "https://api.openalex.org/institutions/I27837315?select=id,display_name",
+      "status": 200,
+      "contentType": "application/json",
+      "dataSize": 79,
+      "fieldCount": 2,
+      "isArray": false,
+      "id": "https://openalex.org/I27837315",
+      "display_name": "University of Michigan",
+      "hasSelect": true,
+      "selectFields": [
+        "id",
+        "display_name"
+      ]
+    },
+    {
+      "url": "https://api.openalex.org/institutions/ror:https://ror.org/02y3ad647",
+      "status": 200,
+      "contentType": "application/json",
+      "dataSize": 28302,
+      "fieldCount": 29,
+      "isArray": false,
+      "id": "https://openalex.org/I33213144",
+      "display_name": "University of Florida",
+      "hasSelect": false,
+      "selectFields": []
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://api.openalex.org/sources/S137773608",
+      "status": 200,
+      "contentType": "application/json",
+      "dataSize": 23223,
+      "fieldCount": 30,
+      "isArray": false,
+      "id": "https://openalex.org/S137773608",
+      "display_name": "Nature",
+      "hasSelect": false,
+      "selectFields": []
+    },
+    {
+      "url": "https://api.openalex.org/sources/S137773608?select=id,display_name",
+      "status": 200,
+      "contentType": "application/json",
+      "dataSize": 64,
+      "fieldCount": 2,
+      "isArray": false,
+      "id": "https://openalex.org/S137773608",
+      "display_name": "Nature",
+      "hasSelect": true,
+      "selectFields": [
+        "id",
+        "display_name"
+      ]
+    },
+    {
+      "url": "https://api.openalex.org/sources/issn:2041-1723",
+      "status": 200,
+      "contentType": "application/json",
+      "dataSize": 24786,
+      "fieldCount": 30,
+      "isArray": false,
+      "id": "https://openalex.org/S64187185",
+      "display_name": "Nature Communications",
+      "hasSelect": false,
+      "selectFields": []
+    }
+  ]
+}

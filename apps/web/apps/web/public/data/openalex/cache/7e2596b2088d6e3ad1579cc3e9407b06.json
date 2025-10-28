@@ -1,0 +1,939 @@
+{
+  "data": {
+    "id": "https://openalex.org/W4387186989",
+    "display_name": "Study on Ground Settlement Patterns and Prediction Methods in Super-Large-Diameter Shield Tunnels Constructed in Composite Strata",
+    "cited_by_count": 6,
+    "counts_by_year": [
+      {
+        "year": 2025,
+        "cited_by_count": 4
+      },
+      {
+        "year": 2024,
+        "cited_by_count": 1
+      }
+    ],
+    "updated_date": "2025-10-27T15:50:53.460377",
+    "created_date": "2023-09-30",
+    "doi": "https://doi.org/10.3390/app131910820",
+    "title": "Study on Ground Settlement Patterns and Prediction Methods in Super-Large-Diameter Shield Tunnels Constructed in Composite Strata",
+    "publication_year": 2023,
+    "publication_date": "2023-09-29",
+    "ids": {
+      "openalex": "https://openalex.org/W4387186989",
+      "doi": "https://doi.org/10.3390/app131910820"
+    },
+    "primary_location": {
+      "is_oa": true,
+      "landing_page_url": "https://doi.org/10.3390/app131910820",
+      "pdf_url": "https://www.mdpi.com/2076-3417/13/19/10820/pdf?version=1695979561",
+      "source": {
+        "id": "https://openalex.org/S4210205812",
+        "display_name": "Applied Sciences",
+        "issn_l": "2076-3417",
+        "issn": [
+          "2076-3417"
+        ],
+        "is_oa": true,
+        "is_in_doaj": true,
+        "is_indexed_in_scopus": true,
+        "is_core": true,
+        "host_organization": "https://openalex.org/P4310310987",
+        "host_organization_name": "Multidisciplinary Digital Publishing Institute",
+        "host_organization_lineage": [
+          "https://openalex.org/P4310310987"
+        ],
+        "host_organization_lineage_names": [
+          "Multidisciplinary Digital Publishing Institute"
+        ],
+        "type": "journal"
+      },
+      "license": "cc-by",
+      "license_id": "https://openalex.org/licenses/cc-by",
+      "version": "publishedVersion",
+      "is_accepted": true,
+      "is_published": true
+    },
+    "best_oa_location": {
+      "is_oa": true,
+      "landing_page_url": "https://doi.org/10.3390/app131910820",
+      "pdf_url": "https://www.mdpi.com/2076-3417/13/19/10820/pdf?version=1695979561",
+      "source": {
+        "id": "https://openalex.org/S4210205812",
+        "display_name": "Applied Sciences",
+        "issn_l": "2076-3417",
+        "issn": [
+          "2076-3417"
+        ],
+        "is_oa": true,
+        "is_in_doaj": true,
+        "is_indexed_in_scopus": true,
+        "is_core": true,
+        "host_organization": "https://openalex.org/P4310310987",
+        "host_organization_name": "Multidisciplinary Digital Publishing Institute",
+        "host_organization_lineage": [
+          "https://openalex.org/P4310310987"
+        ],
+        "host_organization_lineage_names": [
+          "Multidisciplinary Digital Publishing Institute"
+        ],
+        "type": "journal"
+      },
+      "license": "cc-by",
+      "license_id": "https://openalex.org/licenses/cc-by",
+      "version": "publishedVersion",
+      "is_accepted": true,
+      "is_published": true
+    },
+    "locations": [
+      {
+        "is_oa": true,
+        "landing_page_url": "https://doi.org/10.3390/app131910820",
+        "pdf_url": "https://www.mdpi.com/2076-3417/13/19/10820/pdf?version=1695979561",
+        "source": {
+          "id": "https://openalex.org/S4210205812",
+          "display_name": "Applied Sciences",
+          "issn_l": "2076-3417",
+          "issn": [
+            "2076-3417"
+          ],
+          "is_oa": true,
+          "is_in_doaj": true,
+          "is_indexed_in_scopus": true,
+          "is_core": true,
+          "host_organization": "https://openalex.org/P4310310987",
+          "host_organization_name": "Multidisciplinary Digital Publishing Institute",
+          "host_organization_lineage": [
+            "https://openalex.org/P4310310987"
+          ],
+          "host_organization_lineage_names": [
+            "Multidisciplinary Digital Publishing Institute"
+          ],
+          "type": "journal"
+        },
+        "license": "cc-by",
+        "license_id": "https://openalex.org/licenses/cc-by",
+        "version": "publishedVersion",
+        "is_accepted": true,
+        "is_published": true
+      }
+    ],
+    "locations_count": 1,
+    "authorships": [
+      {
+        "author_position": "first",
+        "author": {
+          "id": "https://openalex.org/A5005685261",
+          "display_name": "Jinlan Li",
+          "orcid": "https://orcid.org/0009-0007-9482-4172"
+        },
+        "institutions": [
+          {
+            "id": "https://openalex.org/I74525822",
+            "display_name": "Hubei University of Technology",
+            "ror": "https://ror.org/02d3fj342",
+            "country_code": "CN",
+            "type": "funder",
+            "lineage": [
+              "https://openalex.org/I74525822"
+            ]
+          }
+        ],
+        "countries": [
+          "CN"
+        ],
+        "is_corresponding": true,
+        "raw_author_name": "Jinlan Li",
+        "raw_affiliation_strings": [
+          "School of Civil Architecture and Environment, Hubei University of Technology, Wuhan 430068, China;"
+        ],
+        "affiliations": [
+          {
+            "raw_affiliation_string": "School of Civil Architecture and Environment, Hubei University of Technology, Wuhan 430068, China;",
+            "institution_ids": [
+              "https://openalex.org/I74525822"
+            ]
+          }
+        ]
+      },
+      {
+        "author_position": "middle",
+        "author": {
+          "id": "https://openalex.org/A5091702075",
+          "display_name": "Anyu Liu",
+          "orcid": null
+        },
+        "institutions": [
+          {
+            "id": "https://openalex.org/I74525822",
+            "display_name": "Hubei University of Technology",
+            "ror": "https://ror.org/02d3fj342",
+            "country_code": "CN",
+            "type": "funder",
+            "lineage": [
+              "https://openalex.org/I74525822"
+            ]
+          }
+        ],
+        "countries": [
+          "CN"
+        ],
+        "is_corresponding": false,
+        "raw_author_name": "Anyu Liu",
+        "raw_affiliation_strings": [
+          "School of Civil Architecture and Environment, Hubei University of Technology, Wuhan 430068, China;"
+        ],
+        "affiliations": [
+          {
+            "raw_affiliation_string": "School of Civil Architecture and Environment, Hubei University of Technology, Wuhan 430068, China;",
+            "institution_ids": [
+              "https://openalex.org/I74525822"
+            ]
+          }
+        ]
+      },
+      {
+        "author_position": "last",
+        "author": {
+          "id": "https://openalex.org/A5110062097",
+          "display_name": "Huang Xing",
+          "orcid": null
+        },
+        "institutions": [
+          {
+            "id": "https://openalex.org/I4210140379",
+            "display_name": "Institute of Rock and Soil Mechanics",
+            "ror": "https://ror.org/0366c6s65",
+            "country_code": "CN",
+            "type": "funder",
+            "lineage": [
+              "https://openalex.org/I19820366",
+              "https://openalex.org/I4210140379"
+            ]
+          }
+        ],
+        "countries": [
+          "CN"
+        ],
+        "is_corresponding": false,
+        "raw_author_name": "Huang Xing",
+        "raw_affiliation_strings": [
+          "State Key Laboratory of Geomechanics and Geotechnical Engineering, Institute of Rock and Soil Mechanics, Chinese Academy of Sciences, Wuhan 430071, China"
+        ],
+        "affiliations": [
+          {
+            "raw_affiliation_string": "State Key Laboratory of Geomechanics and Geotechnical Engineering, Institute of Rock and Soil Mechanics, Chinese Academy of Sciences, Wuhan 430071, China",
+            "institution_ids": [
+              "https://openalex.org/I4210140379"
+            ]
+          }
+        ]
+      }
+    ],
+    "countries_distinct_count": 1,
+    "institutions_distinct_count": 2,
+    "corresponding_author_ids": [
+      "https://openalex.org/A5005685261"
+    ],
+    "corresponding_institution_ids": [
+      "https://openalex.org/I74525822"
+    ],
+    "apc_list": {
+      "value": 2300,
+      "currency": "CHF",
+      "value_usd": 2490
+    },
+    "apc_paid": {
+      "value": 2300,
+      "currency": "CHF",
+      "value_usd": 2490
+    },
+    "fwci": 1.186,
+    "has_fulltext": true,
+    "fulltext_origin": "pdf",
+    "cited_by_api_url": "https://api.openalex.org/works?filter=cites:W4387186989",
+    "type": "article",
+    "type_crossref": "journal-article",
+    "indexed_in": [
+      "crossref"
+    ],
+    "open_access": {
+      "is_oa": true,
+      "oa_status": "gold",
+      "oa_url": "https://www.mdpi.com/2076-3417/13/19/10820/pdf?version=1695979561",
+      "any_repository_has_fulltext": false
+    },
+    "cited_by_percentile_year": {
+      "min": 87,
+      "max": 89
+    },
+    "concepts": [
+      {
+        "id": "https://openalex.org/C138081364",
+        "wikidata": "https://www.wikidata.org/wiki/Q852013",
+        "display_name": "Shield",
+        "level": 2,
+        "score": 0.8242975
+      },
+      {
+        "id": "https://openalex.org/C189338036",
+        "wikidata": "https://www.wikidata.org/wiki/Q351646",
+        "display_name": "Peck (Imperial)",
+        "level": 2,
+        "score": 0.77504027
+      },
+      {
+        "id": "https://openalex.org/C187320778",
+        "wikidata": "https://www.wikidata.org/wiki/Q1349130",
+        "display_name": "Geotechnical engineering",
+        "level": 1,
+        "score": 0.66250116
+      },
+      {
+        "id": "https://openalex.org/C127313418",
+        "wikidata": "https://www.wikidata.org/wiki/Q1069",
+        "display_name": "Geology",
+        "level": 0,
+        "score": 0.65753496
+      },
+      {
+        "id": "https://openalex.org/C2777063073",
+        "wikidata": "https://www.wikidata.org/wiki/Q1553237",
+        "display_name": "Settlement (finance)",
+        "level": 3,
+        "score": 0.63873273
+      },
+      {
+        "id": "https://openalex.org/C32239851",
+        "wikidata": "https://www.wikidata.org/wiki/Q7846538",
+        "display_name": "Trough (economics)",
+        "level": 2,
+        "score": 0.48439437
+      },
+      {
+        "id": "https://openalex.org/C104779481",
+        "wikidata": "https://www.wikidata.org/wiki/Q50707",
+        "display_name": "Composite number",
+        "level": 2,
+        "score": 0.4830128
+      },
+      {
+        "id": "https://openalex.org/C2524010",
+        "wikidata": "https://www.wikidata.org/wiki/Q8087",
+        "display_name": "Geometry",
+        "level": 1,
+        "score": 0.2292586
+      },
+      {
+        "id": "https://openalex.org/C5900021",
+        "wikidata": "https://www.wikidata.org/wiki/Q163082",
+        "display_name": "Petrology",
+        "level": 1,
+        "score": 0.1369676
+      },
+      {
+        "id": "https://openalex.org/C192562407",
+        "wikidata": "https://www.wikidata.org/wiki/Q228736",
+        "display_name": "Materials science",
+        "level": 0,
+        "score": 0.10873917
+      },
+      {
+        "id": "https://openalex.org/C33923547",
+        "wikidata": "https://www.wikidata.org/wiki/Q395",
+        "display_name": "Mathematics",
+        "level": 0,
+        "score": 0.07607758
+      },
+      {
+        "id": "https://openalex.org/C159985019",
+        "wikidata": "https://www.wikidata.org/wiki/Q181790",
+        "display_name": "Composite material",
+        "level": 1,
+        "score": 0.060281515
+      },
+      {
+        "id": "https://openalex.org/C136764020",
+        "wikidata": "https://www.wikidata.org/wiki/Q466",
+        "display_name": "World Wide Web",
+        "level": 1,
+        "score": 0
+      },
+      {
+        "id": "https://openalex.org/C41008148",
+        "wikidata": "https://www.wikidata.org/wiki/Q21198",
+        "display_name": "Computer science",
+        "level": 0,
+        "score": 0
+      },
+      {
+        "id": "https://openalex.org/C162324750",
+        "wikidata": "https://www.wikidata.org/wiki/Q8134",
+        "display_name": "Economics",
+        "level": 0,
+        "score": 0
+      },
+      {
+        "id": "https://openalex.org/C145097563",
+        "wikidata": "https://www.wikidata.org/wiki/Q1148747",
+        "display_name": "Payment",
+        "level": 2,
+        "score": 0
+      },
+      {
+        "id": "https://openalex.org/C139719470",
+        "wikidata": "https://www.wikidata.org/wiki/Q39680",
+        "display_name": "Macroeconomics",
+        "level": 1,
+        "score": 0
+      }
+    ],
+    "mesh": [],
+    "referenced_works": [
+      "https://openalex.org/W2357280374",
+      "https://openalex.org/W2357885684",
+      "https://openalex.org/W2365186479",
+      "https://openalex.org/W2366972845",
+      "https://openalex.org/W2382133321",
+      "https://openalex.org/W2922446090",
+      "https://openalex.org/W2979567774",
+      "https://openalex.org/W3034262111",
+      "https://openalex.org/W3185271818",
+      "https://openalex.org/W4223925555",
+      "https://openalex.org/W4224995740",
+      "https://openalex.org/W4372291483"
+    ],
+    "referenced_works_count": 12,
+    "related_works": [
+      "https://openalex.org/W4302278301",
+      "https://openalex.org/W2393177486",
+      "https://openalex.org/W2381807132",
+      "https://openalex.org/W2375905008",
+      "https://openalex.org/W2369008869",
+      "https://openalex.org/W2365186479",
+      "https://openalex.org/W2360925029",
+      "https://openalex.org/W2352869321",
+      "https://openalex.org/W2352196502",
+      "https://openalex.org/W2055761199"
+    ],
+    "sustainable_development_goals": [
+      {
+        "display_name": "Sustainable cities and communities",
+        "score": 0.45,
+        "id": "https://metadata.un.org/sdg/11"
+      }
+    ],
+    "grants": [],
+    "datasets": [],
+    "versions": [],
+    "is_retracted": false,
+    "is_paratext": false,
+    "abstract_inverted_index": {
+      "This": [
+        0
+      ],
+      "study": [
+        1,
+        85
+      ],
+      "focuses": [
+        2
+      ],
+      "on": [
+        3,
+        51,
+        139,
+        148
+      ],
+      "investigating": [
+        4
+      ],
+      "the": [
+        5,
+        11,
+        32,
+        38,
+        52,
+        60,
+        70,
+        77,
+        84,
+        87,
+        95,
+        99,
+        116,
+        126,
+        140,
+        149,
+        158,
+        163,
+        175,
+        178,
+        182,
+        190
+      ],
+      "surface": [
+        6,
+        33
+      ],
+      "settlement": [
+        7,
+        34,
+        92,
+        111,
+        142,
+        150
+      ],
+      "characteristics": [
+        8
+      ],
+      "induced": [
+        9
+      ],
+      "by": [
+        10
+      ],
+      "construction": [
+        12,
+        39
+      ],
+      "of": [
+        13,
+        25,
+        63,
+        83,
+        109,
+        136
+      ],
+      "a": [
+        14,
+        23,
+        154
+      ],
+      "super-large-diameter": [
+        15,
+        55
+      ],
+      "shield": [
+        16,
+        56,
+        100
+      ],
+      "tunnel": [
+        17,
+        57,
+        117,
+        127
+      ],
+      "in": [
+        18,
+        41,
+        59,
+        66,
+        120,
+        130
+      ],
+      "composite": [
+        19,
+        46,
+        105,
+        137,
+        183
+      ],
+      "strata.": [
+        20,
+        106
+      ],
+      "By": [
+        21
+      ],
+      "utilizing": [
+        22
+      ],
+      "combination": [
+        24
+      ],
+      "field": [
+        26
+      ],
+      "monitoring": [
+        27,
+        179
+      ],
+      "and": [
+        28,
+        123,
+        181
+      ],
+      "numerical": [
+        29
+      ],
+      "simulation": [
+        30
+      ],
+      "analysis,": [
+        31
+      ],
+      "patterns": [
+        35
+      ],
+      "encountered": [
+        36
+      ],
+      "during": [
+        37
+      ],
+      "process": [
+        40
+      ],
+      "horizontally": [
+        42
+      ],
+      "distributed": [
+        43
+      ],
+      "typical": [
+        44
+      ],
+      "soil–rock": [
+        45,
+        104
+      ],
+      "strata": [
+        47,
+        138
+      ],
+      "were": [
+        48,
+        73
+      ],
+      "summarized": [
+        49
+      ],
+      "based": [
+        50
+      ],
+      "16.03": [
+        53
+      ],
+      "m": [
+        54
+      ],
+      "project": [
+        58
+      ],
+      "southerly": [
+        61
+      ],
+      "extension": [
+        62
+      ],
+      "He’ping": [
+        64
+      ],
+      "Avenue": [
+        65
+      ],
+      "Wuhan.": [
+        67
+      ],
+      "In": [
+        68
+      ],
+      "addition,": [
+        69
+      ],
+      "collected": [
+        71
+      ],
+      "data": [
+        72
+      ],
+      "used": [
+        74
+      ],
+      "to": [
+        75,
+        162
+      ],
+      "enhance": [
+        76
+      ],
+      "Peck": [
+        78,
+        168,
+        192
+      ],
+      "empirical": [
+        79,
+        193
+      ],
+      "formula.": [
+        80,
+        194
+      ],
+      "The": [
+        81,
+        107,
+        134,
+        167
+      ],
+      "results": [
+        82
+      ],
+      "show": [
+        86
+      ],
+      "following:": [
+        88
+      ],
+      "(1)": [
+        89
+      ],
+      "Significant": [
+        90
+      ],
+      "non-uniform": [
+        91,
+        110
+      ],
+      "occurs": [
+        93
+      ],
+      "along": [
+        94
+      ],
+      "tunneling": [
+        96
+      ],
+      "direction": [
+        97
+      ],
+      "when": [
+        98
+      ],
+      "machine": [
+        101
+      ],
+      "passes": [
+        102
+      ],
+      "through": [
+        103
+      ],
+      "range": [
+        108
+      ],
+      "is": [
+        112,
+        143
+      ],
+      "approximately": [
+        113
+      ],
+      "3.1": [
+        114
+      ],
+      "times": [
+        115,
+        125
+      ],
+      "diameter": [
+        118,
+        128
+      ],
+      "(D)": [
+        119,
+        129
+      ],
+      "soil": [
+        121,
+        159
+      ],
+      "sections": [
+        122,
+        160
+      ],
+      "1.9": [
+        124
+      ],
+      "rock": [
+        131,
+        164
+      ],
+      "sections.": [
+        132,
+        165
+      ],
+      "(2)": [
+        133
+      ],
+      "impact": [
+        135,
+        156
+      ],
+      "maximum": [
+        141
+      ],
+      "greater": [
+        144
+      ],
+      "than": [
+        145,
+        189
+      ],
+      "its": [
+        146
+      ],
+      "effect": [
+        147
+      ],
+      "trough": [
+        151
+      ],
+      "width,": [
+        152
+      ],
+      "with": [
+        153
+      ],
+      "larger": [
+        155
+      ],
+      "within": [
+        157
+      ],
+      "compared": [
+        161
+      ],
+      "(3)": [
+        166
+      ],
+      "correction": [
+        169
+      ],
+      "formula,": [
+        170
+      ],
+      "which": [
+        171
+      ],
+      "takes": [
+        172
+      ],
+      "into": [
+        173
+      ],
+      "account": [
+        174
+      ],
+      "distance": [
+        176
+      ],
+      "between": [
+        177
+      ],
+      "cross-section": [
+        180
+      ],
+      "interface,": [
+        184
+      ],
+      "provides": [
+        185
+      ],
+      "more": [
+        186
+      ],
+      "accurate": [
+        187
+      ],
+      "predictions": [
+        188
+      ],
+      "original": [
+        191
+      ]
+    },
+    "biblio": {
+      "volume": "13",
+      "issue": "19",
+      "first_page": "10820",
+      "last_page": "10820"
+    },
+    "language": "en",
+    "topics": [
+      {
+        "id": "https://openalex.org/T11046",
+        "display_name": "Geotechnical Engineering and Analysis",
+        "score": 0.9999,
+        "subfield": {
+          "id": "https://openalex.org/subfields/2213",
+          "display_name": "Safety, Risk, Reliability and Quality"
+        },
+        "field": {
+          "id": "https://openalex.org/fields/22",
+          "display_name": "Engineering"
+        },
+        "domain": {
+          "id": "https://openalex.org/domains/3",
+          "display_name": "Physical Sciences"
+        }
+      },
+      {
+        "id": "https://openalex.org/T12233",
+        "display_name": "Geotechnical Engineering and Underground Structures",
+        "score": 0.9988,
+        "subfield": {
+          "id": "https://openalex.org/subfields/2205",
+          "display_name": "Civil and Structural Engineering"
+        },
+        "field": {
+          "id": "https://openalex.org/fields/22",
+          "display_name": "Engineering"
+        },
+        "domain": {
+          "id": "https://openalex.org/domains/3",
+          "display_name": "Physical Sciences"
+        }
+      },
+      {
+        "id": "https://openalex.org/T13596",
+        "display_name": "Grouting, Rheology, and Soil Mechanics",
+        "score": 0.9977,
+        "subfield": {
+          "id": "https://openalex.org/subfields/2205",
+          "display_name": "Civil and Structural Engineering"
+        },
+        "field": {
+          "id": "https://openalex.org/fields/22",
+          "display_name": "Engineering"
+        },
+        "domain": {
+          "id": "https://openalex.org/domains/3",
+          "display_name": "Physical Sciences"
+        }
+      }
+    ],
+    "keywords": [
+      {
+        "id": "https://openalex.org/keywords/peck",
+        "display_name": "Peck (Imperial)",
+        "score": 0.77504027
+      },
+      {
+        "id": "https://openalex.org/keywords/settlement",
+        "display_name": "Settlement (finance)",
+        "score": 0.63873273
+      },
+      {
+        "id": "https://openalex.org/keywords/trough",
+        "display_name": "Trough (economics)",
+        "score": 0.48439437
+      }
+    ]
+  },
+  "headers": {},
+  "timestamp": "2025-10-28T19:57:40.094Z",
+  "url": "https://api.openalex.org/works/W4387186989?select=id,display_name,cited_by_count,counts_by_year,updated_date,created_date,doi,title,publication_year,publication_date,ids,primary_location,best_oa_location,locations,locations_count,authorships,countries_distinct_count,institutions_distinct_count,corresponding_author_ids,corresponding_institution_ids,apc_list,apc_paid,fwci,has_fulltext,fulltext_origin,cited_by_api_url,type,type_crossref,indexed_in,open_access,cited_by_percentile_year,concepts,mesh,referenced_works,referenced_works_count,related_works,sustainable_development_goals,grants,datasets,versions,is_retracted,is_paratext,abstract_inverted_index,biblio,language,topics,keywords"
+}

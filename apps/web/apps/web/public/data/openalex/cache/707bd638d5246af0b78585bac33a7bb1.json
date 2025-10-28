@@ -1,0 +1,125 @@
+{
+  "data": {
+    "meta": {
+      "count": 881667,
+      "db_response_time_ms": 889,
+      "page": 1,
+      "per_page": 10
+    },
+    "results": [
+      {
+        "id": "https://openalex.org/W2100317431",
+        "short_id": "works/W2100317431",
+        "display_name": "deepBase: a database for deeply annotating and mining deep sequencing data",
+        "hint": "Jianhua Yang, Peng Shao, Hui Zhou, et al.",
+        "cited_by_count": 158,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.1093/nar/gkp943",
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W4399584733",
+        "short_id": "works/W4399584733",
+        "display_name": "deepregression: Fitting Deep Distributional Regression",
+        "hint": "David Ruegamer",
+        "cited_by_count": 1,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.32614/cran.package.deepregression",
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W2972240883",
+        "short_id": "works/W2972240883",
+        "display_name": "deepCR: Cosmic Ray Rejection with Deep Learning",
+        "hint": "Keming Zhang, J. S. Bloom",
+        "cited_by_count": 4,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.21105/joss.01651",
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W4246808820",
+        "short_id": "works/W4246808820",
+        "display_name": "deemphasis",
+        "hint": "authors unknown",
+        "cited_by_count": 0,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.1007/springerreference_11970",
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W2158789637",
+        "short_id": "works/W2158789637",
+        "display_name": "deepTools: a flexible platform for exploring deep-sequencing data",
+        "hint": "Fidel Ramírez, Friederike Dündar, Sarah Diehl, et al.",
+        "cited_by_count": 3294,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.1093/nar/gku365",
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W2951422523",
+        "short_id": "works/W2951422523",
+        "display_name": "deepNF: deep network fusion for protein function prediction",
+        "hint": "Vladimir Gligorijević, Meet Barot, Richard Bonneau",
+        "cited_by_count": 223,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.1093/bioinformatics/bty440",
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W4384877083",
+        "short_id": "works/W4384877083",
+        "display_name": "deeded, adj.",
+        "hint": "authors unknown",
+        "cited_by_count": 0,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.1093/oed/1077114765",
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W4384877174",
+        "short_id": "works/W4384877174",
+        "display_name": "deedful, adj.",
+        "hint": "authors unknown",
+        "cited_by_count": 0,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.1093/oed/3950713492",
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W4399650654",
+        "short_id": "works/W4399650654",
+        "display_name": "deepdep: Visualise and Explore the Deep Dependencies of R Packages",
+        "hint": "Dominik Rafacz, Hubert Baniecki, Szymon Maksymiuk, et al.",
+        "cited_by_count": 1,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.32614/cran.package.deepdep",
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W1595338997",
+        "short_id": "works/W1595338997",
+        "display_name": "deegree Free Software",
+        "hint": "Markus Lupp",
+        "cited_by_count": 2,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.1007/978-3-319-23519-6_275-2",
+        "filter_key": "id"
+      }
+    ]
+  },
+  "headers": {},
+  "timestamp": "2025-10-28T20:01:19.876Z",
+  "url": "https://api.openalex.org/autocomplete/works?q=dee"
+}

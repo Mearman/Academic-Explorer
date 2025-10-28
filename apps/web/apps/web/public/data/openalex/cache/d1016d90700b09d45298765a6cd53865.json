@@ -1,0 +1,125 @@
+{
+  "data": {
+    "meta": {
+      "count": 6539485,
+      "db_response_time_ms": 811,
+      "page": 1,
+      "per_page": 10
+    },
+    "results": [
+      {
+        "id": "https://openalex.org/A5103649056",
+        "short_id": "authors/A5103649056",
+        "display_name": "mustafa mohamed",
+        "hint": "Zagazig University, Egypt",
+        "cited_by_count": 1,
+        "works_count": 1,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5074360052",
+        "short_id": "authors/A5074360052",
+        "display_name": "makram M. waiz",
+        "hint": "Baghdad Medical City, Iraq",
+        "cited_by_count": 86,
+        "works_count": 3,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5103950345",
+        "short_id": "authors/A5103950345",
+        "display_name": "manuel martin",
+        "hint": "Infosys (India), India",
+        "cited_by_count": 0,
+        "works_count": 1,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5009672456",
+        "short_id": "authors/A5009672456",
+        "display_name": "mingxiang ye",
+        "hint": "Nanjing University, China",
+        "cited_by_count": 0,
+        "works_count": 1,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5051772389",
+        "short_id": "authors/A5051772389",
+        "display_name": "m. Mathieu",
+        "hint": null,
+        "cited_by_count": 0,
+        "works_count": 1,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5050555051",
+        "short_id": "authors/A5050555051",
+        "display_name": "mercier",
+        "hint": null,
+        "cited_by_count": 0,
+        "works_count": 2,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5026916683",
+        "short_id": "authors/A5026916683",
+        "display_name": "meysam moradi",
+        "hint": null,
+        "cited_by_count": 1,
+        "works_count": 3,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5069745538",
+        "short_id": "authors/A5069745538",
+        "display_name": "masoume Motamedi",
+        "hint": "Lorestan University of Medical Sciences, Iran, Islamic Republic of",
+        "cited_by_count": 5,
+        "works_count": 1,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5045910517",
+        "short_id": "authors/A5045910517",
+        "display_name": "mansoureh rezaei",
+        "hint": "University of Sistan and Baluchestan, Iran, Islamic Republic of",
+        "cited_by_count": 2,
+        "works_count": 1,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5098514498",
+        "short_id": "authors/A5098514498",
+        "display_name": "mh",
+        "hint": null,
+        "cited_by_count": 0,
+        "works_count": 1,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      }
+    ]
+  },
+  "headers": {},
+  "timestamp": "2025-10-28T20:00:53.960Z",
+  "url": "https://api.openalex.org/autocomplete/authors?q=m"
+}

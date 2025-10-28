@@ -1,0 +1,125 @@
+{
+  "data": {
+    "meta": {
+      "count": 2057,
+      "db_response_time_ms": 296,
+      "page": 1,
+      "per_page": 10
+    },
+    "results": [
+      {
+        "id": "https://openalex.org/A5026019890",
+        "short_id": "authors/A5026019890",
+        "display_name": "machin",
+        "hint": null,
+        "cited_by_count": 0,
+        "works_count": 1,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5113873401",
+        "short_id": "authors/A5113873401",
+        "display_name": "machine man",
+        "hint": null,
+        "cited_by_count": 0,
+        "works_count": 1,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5056029221",
+        "short_id": "authors/A5056029221",
+        "display_name": "machine man",
+        "hint": null,
+        "cited_by_count": 0,
+        "works_count": 4,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5110544536",
+        "short_id": "authors/A5110544536",
+        "display_name": "machine man",
+        "hint": "John Innes Centre, UK",
+        "cited_by_count": 1,
+        "works_count": 462,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5097363517",
+        "short_id": "authors/A5097363517",
+        "display_name": "Machinami",
+        "hint": "The University of Tokyo, Japan",
+        "cited_by_count": 59,
+        "works_count": 1,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5095666710",
+        "short_id": "authors/A5095666710",
+        "display_name": "Machinlst",
+        "hint": null,
+        "cited_by_count": 0,
+        "works_count": 1,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5087669289",
+        "short_id": "authors/A5087669289",
+        "display_name": "MachinSJ",
+        "hint": null,
+        "cited_by_count": 0,
+        "works_count": 1,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5003917749",
+        "short_id": "authors/A5003917749",
+        "display_name": "Machinists",
+        "hint": null,
+        "cited_by_count": 0,
+        "works_count": 1,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5087958454",
+        "short_id": "authors/A5087958454",
+        "display_name": "MachineAge",
+        "hint": null,
+        "cited_by_count": 0,
+        "works_count": 1,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5020542403",
+        "short_id": "authors/A5020542403",
+        "display_name": "MachineGames",
+        "hint": null,
+        "cited_by_count": 0,
+        "works_count": 3,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      }
+    ]
+  },
+  "headers": {},
+  "timestamp": "2025-10-28T20:00:54.176Z",
+  "url": "https://api.openalex.org/autocomplete/authors?q=machin"
+}

@@ -1,0 +1,2230 @@
+{
+  "works": [
+    {
+      "original": "https://api.openalex.org/autocomplete/works?filter=publication\\_year:2010\\&search=frogs\\&q=greenhou",
+      "entityType": "works",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": true
+    },
+    {
+      "original": "https://api.openalex.org/autocomplete/works?q=neural+networks",
+      "entityType": "works",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/autocomplete/works?q=tigers",
+      "entityType": "works",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works/W2138270253?select=id,display_name",
+      "entityType": "works",
+      "isSingleEntity": true,
+      "hasSelect": true,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works/W2168909179",
+      "entityType": "works",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works/W2741809807",
+      "entityType": "works",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works/W2741809807?select=id,display\\_name",
+      "entityType": "works",
+      "isSingleEntity": true,
+      "hasSelect": true,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works/https://doi.org/10.7717/peerj.4375",
+      "entityType": "works",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works/pmid:14907713",
+      "entityType": "works",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    }
+  ],
+  "authors": [
+    {
+      "original": "https://api.openalex.org/authors/A2798520857",
+      "entityType": "authors",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/authors/A5006060960",
+      "entityType": "authors",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/authors/A5023888391",
+      "entityType": "authors",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/authors/A5023888391?select=id,display\\_name,orcid",
+      "entityType": "authors",
+      "isSingleEntity": true,
+      "hasSelect": true,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/authors/A5092938886",
+      "entityType": "authors",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/authors/https://orcid.org/0000-0002-1298-3089",
+      "entityType": "authors",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/authors/https://orcid.org/0000-0003-1613-5981",
+      "entityType": "authors",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/authors/orcid:0000-0002-1298-3089",
+      "entityType": "authors",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/authors/orcid:0000-0003-1613-5981",
+      "entityType": "authors",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/autocomplete/authors?q=einst",
+      "entityType": "authors",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/autocomplete/authors?q=ronald%20sw",
+      "entityType": "authors",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    }
+  ],
+  "institutions": [
+    {
+      "original": "https://api.openalex.org/autocomplete/institutions?q=Florida",
+      "entityType": "institutions",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/autocomplete/institutions?q=flori",
+      "entityType": "institutions",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/autocomplete/institutions?q=harv",
+      "entityType": "institutions",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/autocomplete/institutions?q=stanford",
+      "entityType": "institutions",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/institutions/I27837315",
+      "entityType": "institutions",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/institutions/I27837315?select=id,display\\_name",
+      "entityType": "institutions",
+      "isSingleEntity": true,
+      "hasSelect": true,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/institutions/https://ror.org/02y3ad647",
+      "entityType": "institutions",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/institutions/random",
+      "entityType": "institutions",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/institutions/ror:02y3ad647",
+      "entityType": "institutions",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/institutions/ror:https://ror.org/00cvxb145",
+      "entityType": "institutions",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    }
+  ],
+  "sources": [
+    {
+      "original": "https://api.openalex.org/autocomplete/sources?q=S49861241",
+      "entityType": "sources",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/autocomplete/sources?q=neuro",
+      "entityType": "sources",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/sources/S137773608",
+      "entityType": "sources",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/sources/S137773608?select=id,display\\_name",
+      "entityType": "sources",
+      "isSingleEntity": true,
+      "hasSelect": true,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/sources/issn:2041-1723",
+      "entityType": "sources",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    }
+  ],
+  "publishers": [
+    {
+      "original": "https://api.openalex.org/autocomplete/publishers?q=els",
+      "entityType": "publishers",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/publishers/P4310319965",
+      "entityType": "publishers",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/publishers/P4310319965?select=id,display\\_name",
+      "entityType": "publishers",
+      "isSingleEntity": true,
+      "hasSelect": true,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/publishers/wikidata:Q1479654",
+      "entityType": "publishers",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    }
+  ],
+  "funders": [
+    {
+      "original": "https://api.openalex.org/autocomplete/funders?q=national+sci",
+      "entityType": "funders",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/funders/F4320332161",
+      "entityType": "funders",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/funders/F4320332161?select=id,display_name",
+      "entityType": "funders",
+      "isSingleEntity": true,
+      "hasSelect": true,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/funders/wikidata:Q390551",
+      "entityType": "funders",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    }
+  ],
+  "concepts": [
+    {
+      "original": "https://api.openalex.org/autocomplete/concepts?q=comp",
+      "entityType": "concepts",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/concepts/C71924100",
+      "entityType": "concepts",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/concepts/C71924100?select=id,display\\_name",
+      "entityType": "concepts",
+      "isSingleEntity": true,
+      "hasSelect": true,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/concepts/random",
+      "entityType": "concepts",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/concepts/wikidata:Q11190",
+      "entityType": "concepts",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/text/concepts?title=type%201%20diabetes%20research%20for%20children",
+      "entityType": "concepts",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    }
+  ],
+  "topics": [
+    {
+      "original": "https://api.openalex.org/text/topics?title=type%201%20diabetes%20research%20for%20children",
+      "entityType": "topics",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/topics/T11636",
+      "entityType": "topics",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/topics/T11636?select=id,display\\_name",
+      "entityType": "topics",
+      "isSingleEntity": true,
+      "hasSelect": true,
+      "hasFilter": false,
+      "hasSearch": false
+    }
+  ],
+  "keywords": [
+    {
+      "original": "https://api.openalex.org/keywords/cardiac-imaging",
+      "entityType": "keywords",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/keywords/cardiac-imaging?select=id,display_name",
+      "entityType": "keywords",
+      "isSingleEntity": true,
+      "hasSelect": true,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/text/keywords?title=type%201%20diabetes%20research%20for%20children",
+      "entityType": "keywords",
+      "isSingleEntity": true,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    }
+  ],
+  "other": [
+    {
+      "original": "https://api.openalex.org/W2741809807",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/authors",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/authors?filter=display\\_name.search:einstein",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/authors?filter=display\\_name.search:john%20smith",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/authors?filter=display\\_name.search:tupolev",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/authors?filter=has\\_orcid:true",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/authors?filter=last\\_known\\_institution.continent:africa",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/authors?filter=last\\_known\\_institution.is\\_global\\_south:true",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/authors?filter=last\\_known\\_institution.is\\_global\\_south:true\\&group-by=last\\_known\\_institution.country\\_code",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/authors?group-by=last\\_known\\_institution.continent\\&filter=cited\\_by\\_count:%3E100",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/authors?group\\_by=last\\_known\\_institution.continent",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/authors?per-page=50\\&page=2",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/authors?sample=25",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/authors?search=Heather+Piwowar",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": true
+    },
+    {
+      "original": "https://api.openalex.org/authors?search=carl%20sagan",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": true
+    },
+    {
+      "original": "https://api.openalex.org/authors?select=id,display\\_name,orcid",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": true,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/authors?sort=cited\\_by\\_count:desc",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/autocomplete?q=https://orcid.org/0000-0002-7436-3176",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/concepts",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/concepts?filter=display\\_name.search:electrodynamics",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/concepts?filter=display\\_name.search:medical",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/concepts?filter=has\\_wikidata:false",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/concepts?filter=level:0",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/concepts?group\\_by=level",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/concepts?per-page=50\\&page=2",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/concepts?sample=10",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/concepts?search=artificial%20intelligence",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": true
+    },
+    {
+      "original": "https://api.openalex.org/concepts?select=id,display\\_name,description",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": true,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/concepts?sort=cited\\_by\\_count:desc",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/funders",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/funders?filter=continent:south\\_america",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/funders?filter=country\\_code:ca",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/funders?filter=description.search:health",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/funders?filter=display_name.search:florida",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/funders?filter=display_name.search:health",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/funders?filter=is\\_global\\_south:true",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/funders?group_by=country_code",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/funders?per-page=50\\&page=2",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/funders?sample=10",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/funders?search=health",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": true
+    },
+    {
+      "original": "https://api.openalex.org/funders?select=id,display\\_name,alternate\\_titles",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": true,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/funders?sort=display\\_name:desc",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/institutions",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/institutions?filter=continent:south\\_america",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/institutions?filter=country\\_code:!us",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/institutions?filter=country\\_code:ca",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/institutions?filter=display\\_name.search:florida",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/institutions?filter=display\\_name.search:technology",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/institutions?filter=has\\_ror:false",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/institutions?filter=is\\_global\\_south:true",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/institutions?group-by=continent",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/institutions?group\\_by=country\\_code",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/institutions?per-page=50\\&page=2",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/institutions?sample=50\\&per-page=50",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/institutions?search=MIT",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": true
+    },
+    {
+      "original": "https://api.openalex.org/institutions?search=nyu",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": true
+    },
+    {
+      "original": "https://api.openalex.org/institutions?search=san%20diego%20state%20university",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": true
+    },
+    {
+      "original": "https://api.openalex.org/institutions?search=stanford",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": true
+    },
+    {
+      "original": "https://api.openalex.org/institutions?select=id,display\\_name,ror",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": true,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/institutions?sort=cited\\_by\\_count:desc",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/keywords",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/keywords?filter=display_name.search:artificial+intelligence",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/keywords?filter=subfield.id:2713",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/keywords?group_by=cited_by_count",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/keywords?search=artificial%20intelligence",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": true
+    },
+    {
+      "original": "https://api.openalex.org/publishers",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/publishers?filter=continent:south\\_america",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/publishers?filter=display\\_name.search:elsevier",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/publishers?filter=hierarchy\\_level:0",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/publishers?group\\_by=country\\_codes",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/publishers?per-page=50\\&page=2",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/publishers?sample=10",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/publishers?search=springer",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": true
+    },
+    {
+      "original": "https://api.openalex.org/publishers?select=id,display\\_name,alternate\\_titles",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": true,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/publishers?sort=display\\_name:desc",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/sources",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/sources?filter=continent:asia",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/sources?filter=display\\_name.search:Neurology",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/sources?filter=display\\_name.search:nature",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/sources?filter=has\\_issn:false",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/sources?filter=has\\_issn:true",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/sources?filter=host_organization.id:P4310319965",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/sources?filter=is\\_global\\_south:true",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/sources?filter=works\\_count:%3E1000",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/sources?group\\_by=publisher",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/sources?per-page=50\\&page=2",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/sources?sample=10",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/sources?sample=20\\&seed=123",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/sources?search=Nature",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": true
+    },
+    {
+      "original": "https://api.openalex.org/sources?search=jacs",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": true
+    },
+    {
+      "original": "https://api.openalex.org/sources?select=id,display\\_name,issn",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": true,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/sources?sort=cited\\_by\\_count:desc",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/sources?sort=display\\_name",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/text?title=Machine+learning+for+drug+discovery",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/text?title=type%201%20diabetes%20research%20for%20children",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/topics",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/topics?filter=display_name.search:artificial+intelligence",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/topics?filter=display_name.search:medical",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/topics?filter=subfield.id:2713",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/topics?group_by=domain.id",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/topics?per-page=50\\&page=2",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/topics?sample=10",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/topics?search=artificial%20intelligence",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": true
+    },
+    {
+      "original": "https://api.openalex.org/topics?select=id,display\\_name,description",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": true,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/topics?sort=cited\\_by\\_count:desc",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?api_key=424242",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=abstract.search.no_stem:surgery",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=abstract.search:artificial%20intelligence",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=author.id:A5023888391",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=authors\\_count:%3E100",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=authors\\_count:1",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=authorships.author.id:A5023888391",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=authorships.author.id:https://orcid.org/0000-0003-1613-5981",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=authorships.institutions.continent:europe",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=authorships.institutions.id:I136199984",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=authorships.institutions.id:https://ror.org/042nb2s44",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=authorships.institutions.is\\_global\\_south:true",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=best\\_open\\_version:any",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=cited\\_by:W2766808518",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=cited\\_by\\_count:%3E1,is\\_oa:true",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=cites:W2741809807",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=concept.id:C2778407487",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=concepts\\_count:%3E2",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=display\\_name.search:bioplastics\\&sort=publication\\_year:desc,relevance\\_score:desc",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=display_name.search.no_stem:surgery",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=doi:https://doi.org/10.1371/journal.pone.0266781|https://doi.org/10.1371/journal.pone.0267149",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=doi:https://doi.org/10.1371/journal.pone.0266781|https://doi.org/10.1371/journal.pone.0267149|https://doi.org/10.1371/journal.pone.0267890&per-page=50",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=from\\_created\\_date:2023-01-12\\&api\\_key=myapikey",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=from\\_publication\\_date:2001-03-14",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=from\\_publication\\_date:2022-01-01,to\\_publication\\_date:2022-01-26",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=from\\_updated\\_date:2023-01-12\\&api\\_key=myapikey",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=fulltext.search:climate%20change",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=has\\_abstract:true",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=has\\_doi:false",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=has\\_ngrams:true",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=has\\_oa\\_accepted\\_or\\_published\\_version:true",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=has\\_oa\\_submitted\\_version:true",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=has\\_orcid:true",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=has\\_pmcid:true",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=has\\_pmid:true",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=has\\_references:true",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=has_oa_published_version:true",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=institutions.country\\_code:fr+gb",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=institutions.country\\_code:fr,institutions.country\\_code:gb",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=institutions.country\\_code:fr|gb",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=institutions.country\\_code:fr|primary\\_location.source.issn:0957-1558",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=institutions.id:I114027177",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=institutions.id:I27837315,repository:!S4306400393",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=institutions.id:I57206974",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=institutions.id:https://openalex.org/I97018004",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=institutions.id:https://openalex.org/I97018004,publication\\_year:2010-2020\\&group-by=publication\\_year",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=institutions.id:https://openalex.org/I97018004,publication\\_year:2010-2020\\&sort=publication\\_date:desc",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=institutions.is\\_global\\_south:true",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=is\\_oa:true\\&group\\_by=repository",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=is_oa:true",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=locations.source.host\\_institution\\_lineage:https://openalex.org/I205783295",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=locations.source.publisher\\_lineage:https://openalex.org/P4310320547",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=mag_only:true",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=open\\_access.is\\_oa:true,publication\\_year:2021\\&sample=50\\&per-page=50",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=open_access.oa_status:gold",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=primary\\_location.source.has\\_issn:true",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=primary\\_location.source.publisher\\_lineage:https://openalex.org/P4310320547",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=primary_location.source.id:S137773608",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=primary_location.source.id:S1983995261",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=publication\\_year:2020",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=publication\\_year:2020\\&per-page=100\\&cursor=IlsxNjA5MzcyODAwMDAwLCAnaHR0cHM6Ly9vcGVuYWxleC5vcmcvVzI0ODg0OTk3NjQnXSI=",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=publication\\_year:2020\\&per-page=100\\&cursor=\\*",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=publication_year:2022,is_oa:true,title.search:covid,authorships.institutions.id:I136199984|I27837315",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=publication_year:2023&per-page=200",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=publication_year:2023&per-page=200&page=2",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=publication_year:2023&per-page=200&page=3",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=publication_year:>2020&group_by=topics.id",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=publication_year:>2020&sort=cited_by_count:desc&per-page=200",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=raw\\_affiliation\\_strings.search:department%20of%20political%20science%20university%20of%20amsterdam",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=related\\_to:W2486144666",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=repository:S4306400393",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=title.search.no_stem:surgery",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=title.search:CRISPR",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=title.search:cubist",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=title.search:wombat",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=title\\_and\\_abstract.search:gum%20disease",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=title_and_abstract.search.no_stem:surgery",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=to\\_publication\\_date:2001-03-14",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=to\\_updated\\_date:2023-01-12\\&api\\_key=myapikey",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=to_created_date:2024-01-12&api_key=myapikey",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=type:book",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?filter=version:publishedVersion",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?group\\_by=authorships.countries",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?group\\_by=authorships.countries:include\\_unknown",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?group\\_by=authorships.institutions.id",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?group\\_by=oa\\_status",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?group\\_by=type",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?group_by=authorships.institutions.id",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?group_by=publication_year",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?group_by=topics.id",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?group_by=type",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?mailto=you@example.com",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?mailto=yourname@example.edu",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?page=2",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?page=2\\&per-page=200",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?per-page=50\\&page=2",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?sample=100&seed=42",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?sample=1000&seed=1",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?sample=1000&seed=2",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?sample=1000&seed=3",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?sample=100\\&per-page=100",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?sample=20",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?sample=20&seed=42",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?search=%22fierce%20creatures%22",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": true
+    },
+    {
+      "original": "https://api.openalex.org/works?search=%28elmo%20AND%20%22sesame%20street%22%29%20NOT%20%28cookie%20OR%20monster%29",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": true
+    },
+    {
+      "original": "https://api.openalex.org/works?search=climate&filter=publication_year:2023",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": true,
+      "hasSearch": true
+    },
+    {
+      "original": "https://api.openalex.org/works?search=dna",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": true
+    },
+    {
+      "original": "https://api.openalex.org/works?search=fierce%20creatures",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": true
+    },
+    {
+      "original": "https://api.openalex.org/works?search=machine+learning",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": true
+    },
+    {
+      "original": "https://api.openalex.org/works?select=id,display\\_name",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": true,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?select=id,doi,display\\_name",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": true,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?select=id,title&per-page=200",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": true,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?select=id,title,publication_year,cited_by_count",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": true,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?sort=cited\\_by\\_count:desc",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    },
+    {
+      "original": "https://api.openalex.org/works?sort=publication\\_year",
+      "entityType": "other",
+      "isSingleEntity": false,
+      "hasSelect": false,
+      "hasFilter": false,
+      "hasSearch": false
+    }
+  ]
+}

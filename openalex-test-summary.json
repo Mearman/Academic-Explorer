@@ -1,0 +1,46 @@
+{
+  "authors": {
+    "total": 11,
+    "singleEntity": 11,
+    "sampleUrls": [
+      "https://api.openalex.org/authors/A2798520857",
+      "https://api.openalex.org/authors/A5006060960",
+      "https://api.openalex.org/authors/A5023888391",
+      "https://api.openalex.org/authors/A5023888391?select=id,display\\_name,orcid",
+      "https://api.openalex.org/authors/A5092938886"
+    ]
+  },
+  "works": {
+    "total": 9,
+    "singleEntity": 9,
+    "sampleUrls": [
+      "https://api.openalex.org/autocomplete/works?filter=publication\\_year:2010\\&search=frogs\\&q=greenhou",
+      "https://api.openalex.org/autocomplete/works?q=neural+networks",
+      "https://api.openalex.org/autocomplete/works?q=tigers",
+      "https://api.openalex.org/works/W2138270253?select=id,display_name",
+      "https://api.openalex.org/works/W2168909179"
+    ]
+  },
+  "institutions": {
+    "total": 10,
+    "singleEntity": 10,
+    "sampleUrls": [
+      "https://api.openalex.org/autocomplete/institutions?q=Florida",
+      "https://api.openalex.org/autocomplete/institutions?q=flori",
+      "https://api.openalex.org/autocomplete/institutions?q=harv",
+      "https://api.openalex.org/autocomplete/institutions?q=stanford",
+      "https://api.openalex.org/institutions/I27837315"
+    ]
+  },
+  "sources": {
+    "total": 5,
+    "singleEntity": 5,
+    "sampleUrls": [
+      "https://api.openalex.org/autocomplete/sources?q=S49861241",
+      "https://api.openalex.org/autocomplete/sources?q=neuro",
+      "https://api.openalex.org/sources/S137773608",
+      "https://api.openalex.org/sources/S137773608?select=id,display\\_name",
+      "https://api.openalex.org/sources/issn:2041-1723"
+    ]
+  }
+}

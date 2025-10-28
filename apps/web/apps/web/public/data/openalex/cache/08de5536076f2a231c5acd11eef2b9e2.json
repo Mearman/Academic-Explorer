@@ -1,0 +1,125 @@
+{
+  "data": {
+    "meta": {
+      "count": 53740,
+      "db_response_time_ms": 307,
+      "page": 1,
+      "per_page": 10
+    },
+    "results": [
+      {
+        "id": "https://openalex.org/A5065236117",
+        "short_id": "authors/A5065236117",
+        "display_name": "machmud Machmud Sugandi",
+        "hint": null,
+        "cited_by_count": 9,
+        "works_count": 1,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5026019890",
+        "short_id": "authors/A5026019890",
+        "display_name": "machin",
+        "hint": null,
+        "cited_by_count": 0,
+        "works_count": 1,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5056029221",
+        "short_id": "authors/A5056029221",
+        "display_name": "machine man",
+        "hint": null,
+        "cited_by_count": 0,
+        "works_count": 4,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5024280405",
+        "short_id": "authors/A5024280405",
+        "display_name": "machiko Miyahara",
+        "hint": null,
+        "cited_by_count": 0,
+        "works_count": 3,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5109519284",
+        "short_id": "authors/A5109519284",
+        "display_name": "machmud Muslimin",
+        "hint": null,
+        "cited_by_count": 1,
+        "works_count": 2,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5067463820",
+        "short_id": "authors/A5067463820",
+        "display_name": "Petr Macháč",
+        "hint": "Masaryk University, Czechia",
+        "cited_by_count": 542,
+        "works_count": 110,
+        "entity_type": "author",
+        "external_id": "https://orcid.org/0000-0002-2259-9056",
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5091297190",
+        "short_id": "authors/A5091297190",
+        "display_name": "Anna Machalińska",
+        "hint": "Pomeranian Medical University, Poland",
+        "cited_by_count": 1529,
+        "works_count": 115,
+        "entity_type": "author",
+        "external_id": "https://orcid.org/0000-0003-1190-717X",
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5047628825",
+        "short_id": "authors/A5047628825",
+        "display_name": "Robert S. Machang’u",
+        "hint": "St. Francis Referral Hospital, Tanzania, United Republic of",
+        "cited_by_count": 1709,
+        "works_count": 65,
+        "entity_type": "author",
+        "external_id": "https://orcid.org/0000-0001-7274-8243",
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5013781414",
+        "short_id": "authors/A5013781414",
+        "display_name": "Kateřina Macháčová",
+        "hint": "Charles University, Czechia",
+        "cited_by_count": 259,
+        "works_count": 9,
+        "entity_type": "author",
+        "external_id": "https://orcid.org/0000-0002-8588-5228",
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5058866816",
+        "short_id": "authors/A5058866816",
+        "display_name": "Jan Macháč",
+        "hint": "Czech Technical University in Prague, Czechia",
+        "cited_by_count": 1509,
+        "works_count": 217,
+        "entity_type": "author",
+        "external_id": "https://orcid.org/0000-0003-1297-0277",
+        "filter_key": "authorships.author.id"
+      }
+    ]
+  },
+  "headers": {},
+  "timestamp": "2025-10-28T20:00:54.349Z",
+  "url": "https://api.openalex.org/autocomplete/authors?q=mach"
+}

@@ -1,0 +1,125 @@
+{
+  "data": {
+    "meta": {
+      "count": 259098,
+      "db_response_time_ms": 177,
+      "page": 1,
+      "per_page": 10
+    },
+    "results": [
+      {
+        "id": "https://openalex.org/W3210592339",
+        "short_id": "works/W3210592339",
+        "display_name": "deep learning; pr",
+        "hint": "Sacha Kwik Allan",
+        "cited_by_count": 0,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": null,
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W2595740094",
+        "short_id": "works/W2595740094",
+        "display_name": "deep learning for face recognition in surveillance videos",
+        "hint": "Paul-Darius Sarmadi",
+        "cited_by_count": 0,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": null,
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W2997161146",
+        "short_id": "works/W2997161146",
+        "display_name": "deep learning techniques for riverine bathymetry and flow velocity estimation",
+        "hint": "Hojat Ghorbanidehno, Jonghyun Harry Lee, Matthew W. Farthing, et al.",
+        "cited_by_count": 0,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": null,
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W3184079026",
+        "short_id": "works/W3184079026",
+        "display_name": "deep learningを活用したリアルタイム内視鏡システムの開発と臨床応用 (特集 人工知能(AI)技術のヘルスケア利活用)",
+        "hint": "裕子 近藤, 滋美 山田, 真善 山田",
+        "cited_by_count": 0,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": null,
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W4319452886",
+        "short_id": "works/W4319452886",
+        "display_name": "deep learning of segment-level feature representation for speech emotion recognition in conversations",
+        "hint": "Jiachen Luo, Huy P. Phan, Joshua D. Reiss",
+        "cited_by_count": 1,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.48550/arxiv.2302.02419",
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W4321502142",
+        "short_id": "works/W4321502142",
+        "display_name": "deep learning based sferics recognition for AMT dataprocessing in the dead band",
+        "hint": "Enhua Jiang, rujun chen, xinmin wu, et al.",
+        "cited_by_count": 1,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.5194/egusphere-egu23-4381",
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W4410999275",
+        "short_id": "works/W4410999275",
+        "display_name": "deep learning approach for multimodal biometric recognition system based on face, iris and finger vein traits",
+        "hint": "K. Nagamani, Khadavilli Ramya Geethika, P Snehith -, et al.",
+        "cited_by_count": 1,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.71097/ijsat.v16.i2.5843",
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W3127406329",
+        "short_id": "works/W3127406329",
+        "display_name": "Comparison of Fundamental Learning Strategies for CBIR using Deep Learning Methods",
+        "hint": "Garg Meenakshi, Manisha Malhotra, Harpal Singh",
+        "cited_by_count": 0,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": null,
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W2090079425",
+        "short_id": "works/W2090079425",
+        "display_name": "Deep learning? What deep learning?",
+        "hint": "Cornelius Fourie",
+        "cited_by_count": 17,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.4314/sajhe.v17i1.25201",
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W4415378951",
+        "short_id": "works/W4415378951",
+        "display_name": "Applied Statistical and Deep Learning Methods for Multi-Environment Genomic Prediction in Maize",
+        "hint": "Carlos Barrón, Lorena Benfica, Doug Crabill, et al.",
+        "cited_by_count": 0,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.5703/1288284318195",
+        "filter_key": "id"
+      }
+    ]
+  },
+  "headers": {},
+  "timestamp": "2025-10-28T20:01:20.705Z",
+  "url": "https://api.openalex.org/autocomplete/works?q=deep+lear"
+}

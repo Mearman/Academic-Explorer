@@ -1,0 +1,125 @@
+{
+  "data": {
+    "meta": {
+      "count": 823919,
+      "db_response_time_ms": 546,
+      "page": 1,
+      "per_page": 10
+    },
+    "results": [
+      {
+        "id": "https://openalex.org/W4399570666",
+        "short_id": "works/W4399570666",
+        "display_name": "deeplr: Interface to the 'DeepL' Translation API",
+        "hint": "David Zumbach, Paul Cornelius Bauer",
+        "cited_by_count": 4,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.32614/cran.package.deeplr",
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W2100317431",
+        "short_id": "works/W2100317431",
+        "display_name": "deepBase: a database for deeply annotating and mining deep sequencing data",
+        "hint": "Jianhua Yang, Peng Shao, Hui Zhou, et al.",
+        "cited_by_count": 158,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.1093/nar/gkp943",
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W4399591290",
+        "short_id": "works/W4399591290",
+        "display_name": "deepnet: Deep Learning Toolkit in R",
+        "hint": "authors unknown",
+        "cited_by_count": 3,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.32614/cran.package.deepnet",
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W2346276919",
+        "short_id": "works/W2346276919",
+        "display_name": "deepMiRGene: Deep Neural Network based Precursor microRNA Prediction",
+        "hint": "Seunghyun Park, Seonwoo Min, Hyun-Soo Choi, et al.",
+        "cited_by_count": 43,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.48550/arxiv.1605.00017",
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W4399584733",
+        "short_id": "works/W4399584733",
+        "display_name": "deepregression: Fitting Deep Distributional Regression",
+        "hint": "David Ruegamer",
+        "cited_by_count": 1,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.32614/cran.package.deepregression",
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W2777863841",
+        "short_id": "works/W2777863841",
+        "display_name": "deepNF: Deep network fusion for protein function prediction",
+        "hint": "Vladimir Gligorijević, Meet Barot, Richard Bonneau",
+        "cited_by_count": 13,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.1101/223339",
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W2972240883",
+        "short_id": "works/W2972240883",
+        "display_name": "deepCR: Cosmic Ray Rejection with Deep Learning",
+        "hint": "Keming Zhang, J. S. Bloom",
+        "cited_by_count": 4,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.21105/joss.01651",
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W4248733139",
+        "short_id": "works/W4248733139",
+        "display_name": "deepSAGE",
+        "hint": "authors unknown",
+        "cited_by_count": 0,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.1002/9783527678679.dg02851",
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W2158789637",
+        "short_id": "works/W2158789637",
+        "display_name": "deepTools: a flexible platform for exploring deep-sequencing data",
+        "hint": "Fidel Ramírez, Friederike Dündar, Sarah Diehl, et al.",
+        "cited_by_count": 3294,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.1093/nar/gku365",
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/W2333207005",
+        "short_id": "works/W2333207005",
+        "display_name": "deepTarget",
+        "hint": "Byunghan Lee, Junghwan Baek, Seunghyun Park, et al.",
+        "cited_by_count": 97,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.1145/2975167.2975212",
+        "filter_key": "id"
+      }
+    ]
+  },
+  "headers": {},
+  "timestamp": "2025-10-28T20:01:20.469Z",
+  "url": "https://api.openalex.org/autocomplete/works?q=deep"
+}

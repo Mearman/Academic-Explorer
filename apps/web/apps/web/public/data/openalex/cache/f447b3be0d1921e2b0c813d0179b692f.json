@@ -1,0 +1,125 @@
+{
+  "data": {
+    "meta": {
+      "count": 1870139,
+      "db_response_time_ms": 451,
+      "page": 1,
+      "per_page": 10
+    },
+    "results": [
+      {
+        "id": "https://openalex.org/A5001468838",
+        "short_id": "authors/A5001468838",
+        "display_name": "ma",
+        "hint": null,
+        "cited_by_count": 0,
+        "works_count": 1,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5118192227",
+        "short_id": "authors/A5118192227",
+        "display_name": "marwa m mahmoud",
+        "hint": null,
+        "cited_by_count": 0,
+        "works_count": 1,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5103950345",
+        "short_id": "authors/A5103950345",
+        "display_name": "manuel martin",
+        "hint": "Infosys (India), India",
+        "cited_by_count": 0,
+        "works_count": 1,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5060689113",
+        "short_id": "authors/A5060689113",
+        "display_name": "manish manish",
+        "hint": "Lovely Professional University, India",
+        "cited_by_count": 26,
+        "works_count": 3,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5007440705",
+        "short_id": "authors/A5007440705",
+        "display_name": "marta san martin",
+        "hint": null,
+        "cited_by_count": 0,
+        "works_count": 1,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5086475720",
+        "short_id": "authors/A5086475720",
+        "display_name": "magalie Saguitaah",
+        "hint": "Hôpital Arnaud de Villeneuve, France",
+        "cited_by_count": 1,
+        "works_count": 1,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5045910517",
+        "short_id": "authors/A5045910517",
+        "display_name": "mansoureh rezaei",
+        "hint": "University of Sistan and Baluchestan, Iran, Islamic Republic of",
+        "cited_by_count": 2,
+        "works_count": 1,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5057971266",
+        "short_id": "authors/A5057971266",
+        "display_name": "madoka Kayanoki",
+        "hint": null,
+        "cited_by_count": 0,
+        "works_count": 2,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5074360052",
+        "short_id": "authors/A5074360052",
+        "display_name": "makram M. waiz",
+        "hint": "Baghdad Medical City, Iraq",
+        "cited_by_count": 86,
+        "works_count": 3,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5065147738",
+        "short_id": "authors/A5065147738",
+        "display_name": "mahin shafikhani",
+        "hint": null,
+        "cited_by_count": 0,
+        "works_count": 22,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      }
+    ]
+  },
+  "headers": {},
+  "timestamp": "2025-10-28T20:00:53.603Z",
+  "url": "https://api.openalex.org/autocomplete/authors?q=ma"
+}

@@ -1,0 +1,9 @@
+{
+  "data": {
+    "id": "https://openalex.org/W2741809807",
+    "display_name": "The state of OA: a large-scale analysis of the prevalence and impact of Open Access articles"
+  },
+  "headers": {},
+  "timestamp": "2025-10-28T21:30:43.129Z",
+  "url": "https://api.openalex.org/works/W2741809807?select=id,display_name"
+}
