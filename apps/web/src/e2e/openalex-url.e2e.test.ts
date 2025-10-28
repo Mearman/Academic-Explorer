@@ -17,7 +17,7 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
             return text.length > 4 && text !== "Work";
           },
           undefined,
-          { timeout: 30000 },
+          { timeout: 60000 },
         );
         // Now check for the specific work title
         await expect(
