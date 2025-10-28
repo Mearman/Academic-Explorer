@@ -8,7 +8,17 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
       expectedUrl: "/works/W2741809807",
       assertUI: async (page: Page) => {
         // Should show work details, not the search page
-        // The work title is in an h1, not h2
+        // First wait for the h1 to have actual content (not the fallback "Work")
+        await page.waitForFunction(
+          () => {
+            const h1 = document.querySelector("h1");
+            const text = h1?.textContent || "";
+            // Wait until the h1 contains more than just "Work" (the fallback)
+            return text.length > 4 && text !== "Work";
+          },
+          { timeout: 30000 },
+        );
+        // Now check for the specific work title
         await expect(
           page.locator("h1").filter({ hasText: "The state of OA" }),
         ).toBeVisible({ timeout: 30000 }); // Work title with extended timeout
