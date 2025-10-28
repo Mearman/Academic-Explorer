@@ -47,14 +47,15 @@ export const baseVitestConfig = defineConfig({
       },
     },
 
-    // Include/exclude patterns
-    include: ["src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+    // Include/exclude patterns - only run TypeScript source files, not compiled .js
+    include: ["src/**/*.{test,spec}.{ts,mts,cts,tsx}"],
     exclude: [
       "node_modules/",
       "dist/",
       "coverage/",
       "**/*.d.ts",
       "**/*.config.{js,ts}",
+      "**/*.{test,spec}.{js,mjs,cjs,jsx}", // Exclude compiled JavaScript test files
     ],
   },
 });
