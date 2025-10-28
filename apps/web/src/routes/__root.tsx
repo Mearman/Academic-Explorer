@@ -8,14 +8,14 @@ import { themeClass } from "../styles/theme.css";
 function RootLayout() {
   logger.debug("routing", "RootLayout: Rendering", {}, "RootLayout");
 
-  // TEMPORARY: MainLayout has React Hook #311 violations with React 19
-  // The issue is that layout-store is Context-based and returns method objects
-  // that cause React 19's strict hook rules to trigger errors
-  // TODO: Refactor layout-store to use Zustand with stable method references
+  // MainLayout re-enabled after fixing React 19 hook violations
+  // The layout-store was refactored to ensure stable method references
   return (
     <div className={themeClass}>
       <NavigationTracker />
-      <Outlet />
+      <MainLayout>
+        <Outlet />
+      </MainLayout>
     </div>
   );
 }
