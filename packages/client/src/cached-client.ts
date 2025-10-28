@@ -310,21 +310,62 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   /**
    * Enhanced getById with static cache integration
    */
-  async getById<T = unknown>({
-    endpoint,
-    id,
-    params = {},
-    schema,
-  }: {
-    endpoint: string;
-    id: string;
-    params?: QueryParams;
-    schema?: z.ZodType<T>;
-  }): Promise<T> {
-    const cleanId = cleanOpenAlexId(id);
+  async getById<T = unknown>(
+    endpointOrParams: string | { endpoint: string; id: string; params?: QueryParams; schema?: z.ZodType<T> },
+    id?: string,
+    params?: QueryParams,
+    schema?: z.ZodType<T>
+  ): Promise<T> {
+    // Handle legacy signature: getById(endpoint, id, params, schema)
+    if (typeof endpointOrParams === 'string') {
+      const endpoint = endpointOrParams;
+      if (!id) {
+        throw new Error('ID is required for legacy getById signature');
+      }
+      const cleanId = cleanOpenAlexId(id);
+
+      // Try static cache first for simple requests without parameters
+      if (!params) {
+        const staticResult = await this.tryStaticCacheForGetById<T>(
+          endpoint,
+          cleanId,
+        );
+        if (staticResult !== null) {
+          return staticResult;
+        }
+      }
+
+      // Fallback to parent implementation
+      try {
+        return await super.getById(endpoint, cleanId, params, schema);
+      } catch (apiError: unknown) {
+        logger.warn(
+          "client",
+          "API getById failed, attempting static cache fallback",
+          { endpoint, id: cleanId, error: apiError },
+        );
+
+        // Try static cache as fallback
+        const fallbackResult = await this.tryStaticCacheForGetById<T>(
+          endpoint,
+          cleanId,
+          true,
+        );
+        if (fallbackResult !== null) {
+          return fallbackResult;
+        }
+
+        // Re-throw the original API error if nothing else works
+        throw apiError;
+      }
+    }
+
+    // Handle new signature: getById({ endpoint, id, params, schema })
+    const { endpoint, id: entityId, params: newParams = {}, schema: newSchema } = endpointOrParams;
+    const cleanId = cleanOpenAlexId(entityId);
 
     // Try static cache first for simple requests without parameters
-    if (!params) {
+    if (!newParams || Object.keys(newParams).length === 0) {
       const staticResult = await this.tryStaticCacheForGetById<T>(
         endpoint,
         cleanId,
@@ -336,7 +377,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
 
     // Fallback to parent implementation
     try {
-      return await super.getById({ endpoint, id: cleanId, params, schema });
+      return await super.getById({ endpoint, id: cleanId, params: newParams, schema: newSchema });
     } catch (apiError: unknown) {
       logger.warn(
         "client",
