@@ -782,11 +782,13 @@ export class DiskCacheWriter {
         requiredBytes: this.config.minDiskSpaceBytes,
       });
     } catch (error) {
-      // If statfs is not available, skip the check
-      if (error instanceof Error && error.message.includes("ENOSYS")) {
+      // If statfs is not available or directory doesn't exist yet, skip the check
+      if (error instanceof Error && (error.message.includes("ENOSYS") || error.message.includes("ENOENT"))) {
         logger.warn(
           "LOGGER_NAME",
-          "Disk space checking not available on this platform",
+          error.message.includes("ENOSYS")
+            ? "Disk space checking not available on this platform"
+            : "Base path does not exist yet, skipping disk space check",
         );
         return;
       }
