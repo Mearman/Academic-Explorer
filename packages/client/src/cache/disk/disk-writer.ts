@@ -611,14 +611,31 @@ export class DiskCacheWriter {
 
   /**
    * Sanitize filename to be filesystem-safe
+   * Uses hash for very long filenames to avoid ENAMETOOLONG errors
    */
   private sanitizeFilename(filename: string): string {
-    return filename
+    const sanitized = filename
       .replace(/[<>:"/\\|?*]/g, "_") // Replace invalid characters
       .replace(/\s+/g, "_") // Replace spaces with underscores
       .replace(/_{2,}/g, "_") // Replace multiple underscores with single
-      .replace(/^_|_$/g, "") // Remove leading/trailing underscores
-      .substring(0, 200); // Limit length
+      .replace(/^_|_$/g, ""); // Remove leading/trailing underscores
+
+    // If filename is too long, use a hash to ensure it fits filesystem limits
+    // Keep it under 100 chars to leave room for directory path and .json extension
+    if (sanitized.length > 100) {
+      // Create a simple hash from the filename
+      let hash = 0;
+      for (let i = 0; i < filename.length; i++) {
+        const char = filename.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32-bit integer
+      }
+      const hashStr = Math.abs(hash).toString(36);
+      // Return first 50 chars + hash to make it somewhat readable
+      return `${sanitized.substring(0, 50)}_${hashStr}`;
+    }
+
+    return sanitized;
   }
 
   /**
