@@ -39,6 +39,7 @@ import { Route as OpenalexUrlSplatRouteImport } from './routes/openalex-url/$'
 import { Route as InstitutionsInstitutionIdRouteImport } from './routes/institutions/$institutionId'
 import { Route as HttpsSplatRouteImport } from './routes/https/$'
 import { Route as FundersFunderIdRouteImport } from './routes/funders/$funderId'
+import { Route as PublishersPublisherIdRouteImport } from './routes/publishers/$publisherId'
 import { Route as ExploreGraphRouteImport } from './routes/explore/graph'
 import { Route as EvaluationResultsRouteImport } from './routes/evaluation/results'
 import { Route as EvaluationDatasetsRouteImport } from './routes/evaluation/datasets'
@@ -231,6 +232,13 @@ const FundersFunderIdRoute = FundersFunderIdRouteImport.update({
 } as any).lazy(() =>
   import('./routes/funders/$funderId.lazy').then((d) => d.Route),
 )
+const PublishersPublisherIdRoute = PublishersPublisherIdRouteImport.update({
+  id: '/publishers/$publisherId',
+  path: '/publishers/$publisherId',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/publishers/$publisherId.lazy').then((d) => d.Route),
+)
 const ExploreGraphRoute = ExploreGraphRouteImport.update({
   id: '/graph',
   path: '/graph',
@@ -374,6 +382,7 @@ export interface FileRoutesByFullPath {
   '/https/$': typeof HttpsSplatRoute
   '/institutions/$institutionId': typeof InstitutionsInstitutionIdRoute
   '/openalex-url/$': typeof OpenalexUrlSplatRoute
+  '/publishers/$publisherId': typeof PublishersPublisherIdRoute
   '/sources/$sourceId': typeof SourcesSourceIdRoute
   '/topics/$topicId': typeof TopicsTopicIdRoute
   '/works/$workId': typeof WorksWorkIdRoute
@@ -426,6 +435,7 @@ export interface FileRoutesByTo {
   '/https/$': typeof HttpsSplatRoute
   '/institutions/$institutionId': typeof InstitutionsInstitutionIdRoute
   '/openalex-url/$': typeof OpenalexUrlSplatRoute
+  '/publishers/$publisherId': typeof PublishersPublisherIdRoute
   '/sources/$sourceId': typeof SourcesSourceIdRoute
   '/topics/$topicId': typeof TopicsTopicIdRoute
   '/works/$workId': typeof WorksWorkIdRoute
@@ -479,6 +489,7 @@ export interface FileRoutesById {
   '/https/$': typeof HttpsSplatRoute
   '/institutions/$institutionId': typeof InstitutionsInstitutionIdRoute
   '/openalex-url/$': typeof OpenalexUrlSplatRoute
+  '/publishers/$publisherId': typeof PublishersPublisherIdRoute
   '/sources/$sourceId': typeof SourcesSourceIdRoute
   '/topics/$topicId': typeof TopicsTopicIdRoute
   '/works/$workId': typeof WorksWorkIdRoute
@@ -533,6 +544,7 @@ export interface FileRouteTypes {
     | '/https/$'
     | '/institutions/$institutionId'
     | '/openalex-url/$'
+    | '/publishers/$publisherId'
     | '/sources/$sourceId'
     | '/topics/$topicId'
     | '/works/$workId'
@@ -585,6 +597,7 @@ export interface FileRouteTypes {
     | '/https/$'
     | '/institutions/$institutionId'
     | '/openalex-url/$'
+    | '/publishers/$publisherId'
     | '/sources/$sourceId'
     | '/topics/$topicId'
     | '/works/$workId'
@@ -637,6 +650,7 @@ export interface FileRouteTypes {
     | '/https/$'
     | '/institutions/$institutionId'
     | '/openalex-url/$'
+    | '/publishers/$publisherId'
     | '/sources/$sourceId'
     | '/topics/$topicId'
     | '/works/$workId'
@@ -687,6 +701,7 @@ export interface RootRouteChildren {
   HttpsSplatRoute: typeof HttpsSplatRoute
   InstitutionsInstitutionIdRoute: typeof InstitutionsInstitutionIdRoute
   OpenalexUrlSplatRoute: typeof OpenalexUrlSplatRoute
+  PublishersPublisherIdRoute: typeof PublishersPublisherIdRoute
   SourcesSourceIdRoute: typeof SourcesSourceIdRoute
   TopicsTopicIdRoute: typeof TopicsTopicIdRoute
   WorksWorkIdRoute: typeof WorksWorkIdRoute
@@ -930,6 +945,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FundersFunderIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/publishers/$publisherId': {
+      id: '/publishers/$publisherId'
+      path: '/publishers/$publisherId'
+      fullPath: '/publishers/$publisherId'
+      preLoaderRoute: typeof PublishersPublisherIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/explore/graph': {
       id: '/explore/graph'
       path: '/graph'
@@ -1117,6 +1139,7 @@ const rootRouteChildren: RootRouteChildren = {
   HttpsSplatRoute: HttpsSplatRoute,
   InstitutionsInstitutionIdRoute: InstitutionsInstitutionIdRoute,
   OpenalexUrlSplatRoute: OpenalexUrlSplatRoute,
+  PublishersPublisherIdRoute: PublishersPublisherIdRoute,
   SourcesSourceIdRoute: SourcesSourceIdRoute,
   TopicsTopicIdRoute: TopicsTopicIdRoute,
   WorksWorkIdRoute: WorksWorkIdRoute,

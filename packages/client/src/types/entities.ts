@@ -624,3 +624,26 @@ export const FUNDER_FIELDS = keysOf<Funder>()([
 ]);
 
 export type FunderField = (typeof FUNDER_FIELDS)[number];
+
+/**
+ * Fields that can be selected for Publisher entities.
+ */
+export const PUBLISHER_FIELDS = keysOf<Publisher>()([
+  "id",
+  "display_name",
+  "cited_by_count",
+  "counts_by_year",
+  "updated_date",
+  "created_date",
+  "works_count",
+  "alternate_titles",
+  "country_codes",
+  "hierarchy_level",
+  "parent_publisher",
+  "lineage",
+  "sources_count",
+  "ids",
+  "sources_api_url",
+]);
+
+export type PublisherField = (typeof PUBLISHER_FIELDS)[number];
