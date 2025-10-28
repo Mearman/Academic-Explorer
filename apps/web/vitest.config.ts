@@ -22,6 +22,13 @@ export default defineConfig(
 			environment: "jsdom",
 			setupFiles: [path.resolve(__dirname, "src/test/setup.ts")],
 
+			// Exclude E2E tests from Vitest - they use Playwright
+			exclude: [
+				...(baseVitestConfig.test?.exclude || []),
+				"**/*.e2e.test.ts",
+				"**/*.e2e.test.tsx",
+			],
+
 			// Pool options for better memory management
 			pool: "forks",
 			poolOptions: {
