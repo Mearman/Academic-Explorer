@@ -41,20 +41,30 @@ vi.mock("@/stores/animated-graph-store", () => {
     useAnimatedLayout: true,
     animationHistory: [],
     restartRequested: false,
+    isAnimating: false,
+    isPaused: false,
+    alpha: 1,
+    iteration: 0,
+    progress: 0,
+    fps: 0,
+    animatedPositions: {},
+    staticPositions: {},
+    _cachedAnimatedPositionsArray: [],
+    _cachedStaticPositionsArray: [],
+    animationConfig: {},
   };
 
-  const mockStore = Object.assign(
-    vi.fn((selector) => {
-      return selector ? selector(mockState) : mockState;
-    }),
-    {
-      getState: vi.fn(() => mockState),
-    },
-  );
+  const mockDispatch = vi.fn();
+
+  const mockContextValue = {
+    state: mockState,
+    dispatch: mockDispatch,
+  };
 
   return {
-    useAnimatedGraphStore: mockStore,
-    animatedGraphStore: mockStore,
+    useAnimatedGraphStore: vi.fn(() => mockContextValue),
+    useAnimatedGraphState: vi.fn(() => mockState),
+    useAnimatedGraphActions: vi.fn(() => mockDispatch),
     useRestartRequested: vi.fn(() => false),
     useClearRestartRequest: vi.fn(() => vi.fn()),
   };
