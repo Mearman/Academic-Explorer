@@ -236,6 +236,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
    * Detect OpenAlex entity type from ID prefix
    */
   private detectEntityTypeFromId(id: string): string | null {
+    if (!id) return null;
     if (id.startsWith("W")) return "works";
     if (id.startsWith("A")) return "authors";
     if (id.startsWith("S")) return "sources";
