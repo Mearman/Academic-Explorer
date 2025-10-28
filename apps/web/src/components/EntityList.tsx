@@ -167,7 +167,7 @@ export function EntityList({
 
   React.useEffect(() => {
     asyncOperation.execute(fetchData);
-  }, [fetchData, asyncOperation]);
+  }, [fetchData, asyncOperation.execute]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
