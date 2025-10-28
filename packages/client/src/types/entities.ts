@@ -589,7 +589,13 @@ export type InstitutionField = (typeof INSTITUTION_FIELDS)[number];
  * Fields that can be selected for Topic entities.
  */
 export const TOPIC_FIELDS = keysOf<Topic>()([
-  ...ENTITY_WITH_WORKS_FIELDS,
+  "id",
+  "display_name",
+  "cited_by_count",
+  "updated_date",
+  "created_date",
+  "works_count",
+  "works_api_url",
   "description",
   "keywords",
   "ids",
@@ -605,7 +611,13 @@ export type TopicField = (typeof TOPIC_FIELDS)[number];
  * Fields that can be selected for Funder entities.
  */
 export const FUNDER_FIELDS = keysOf<Funder>()([
-  ...ENTITY_WITH_WORKS_FIELDS,
+  "id",
+  "display_name",
+  "cited_by_count",
+  "counts_by_year",
+  "updated_date",
+  "created_date",
+  "works_count",
   "alternate_titles",
   "country_code",
   "description",
