@@ -140,10 +140,7 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
       const finalHash = await page.evaluate(() => window.location.hash);
       console.log("Final hash:", finalHash);
 
-      // Wait for React Query to settle - reduced wait since production is working
-      await page.waitForTimeout(3000);
-
-      // Run the UI assertion with extended timeout
+      // Run the UI assertion - assertions have their own timeouts
       await assertUI(page);
 
       // Print console messages for debugging
