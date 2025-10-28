@@ -67,12 +67,14 @@ export function EntityList({
 }: EntityListProps) {
   const [currentPage, setCurrentPage] = useState(1);
 
+  const onError = React.useCallback((error: Error) => {
+    logger.error("EntityList", `Failed to fetch ${entityType}`, { error });
+  }, [entityType]);
+
   const asyncOperation = useAsyncOperation<Entity[]>({
     retryCount: 2,
     retryDelay: 1000,
-    onError: (error) => {
-      logger.error("EntityList", `Failed to fetch ${entityType}`, { error });
-    }
+    onError
   });
 
   const [paginationInfo, setPaginationInfo] = useState({
