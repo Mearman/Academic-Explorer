@@ -163,15 +163,6 @@ export interface Work extends BaseEntity {
     qualifier_name?: string;
     is_major_topic: boolean;
   }>;
-  alternate_host_venues?: Array<{
-    id?: OpenAlexId;
-    display_name: string;
-    type: string;
-    url?: string;
-    is_oa: boolean;
-    version?: string;
-    license?: string;
-  }>;
   referenced_works: OpenAlexId[];
   referenced_works_count: number;
   related_works: OpenAlexId[];
@@ -528,7 +519,6 @@ export const WORK_FIELDS = keysOf<Work>()([
   "cited_by_percentile_year",
   "concepts",
   "mesh",
-  "alternate_host_venues",
   "referenced_works",
   "referenced_works_count",
   "related_works",
