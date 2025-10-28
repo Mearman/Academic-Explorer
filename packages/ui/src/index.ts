@@ -20,6 +20,7 @@ export { ViewToggle, type ViewToggleProps } from "./components/ViewToggle";
 
 // Data Display Components
 export { BaseTable, type BaseTableProps } from "./components/data-display/BaseTable"
+export { EntityCard, type EntityCardProps } from "./components/data-display/EntityCard"
 
 // Layout Components
 export {

@@ -21,10 +21,8 @@ import { transformEntityToGridItem, transformEntityToListItem } from "../utils/e
 import { Group, Pagination, Text } from "@mantine/core";
 import type { ColumnDef } from "@tanstack/react-table";
 import React, { useMemo, useState } from "react";
-// TODO: EntityGrid requires EntityCard component which doesn't exist yet
-// import { EntityGrid } from "./EntityGrid";
-// TODO: EntityListView requires EntityCard component which doesn't exist yet
-// import { EntityListView } from "./EntityListView";
+import { EntityGrid } from "./EntityGrid";
+import { EntityListView } from "./EntityListView";
 import { BaseTable } from "./tables/BaseTable";
 import { ViewModeToggle, type ViewMode } from "./ViewModeToggle";
 
@@ -223,10 +221,8 @@ export function EntityList({
             {viewMode === "table" && (
               <BaseTable data={tableData} columns={tableColumns} />
             )}
-            {/* TODO: Re-enable list view when EntityCard component is implemented */}
-            {/* {viewMode === "list" && <EntityListView items={listItems} />} */}
-            {/* TODO: Re-enable grid view when EntityCard component is implemented */}
-            {/* {viewMode === "grid" && <EntityGrid items={gridItems} />} */}
+            {viewMode === "list" && <EntityListView items={listItems} />}
+            {viewMode === "grid" && <EntityGrid items={gridItems} />}
             {paginationInfo.totalPages > 1 && (
               <Group justify="space-between" mt="md">
                 <Text size="sm" c="dimmed">

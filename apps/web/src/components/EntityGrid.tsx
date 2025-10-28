@@ -1,6 +1,5 @@
 import type { EntityType } from "@academic-explorer/types";
-// FIXME: EntityCard not exported from @academic-explorer/ui - this file is unused
-// import { EntityCard } from "@academic-explorer/ui";
+import { EntityCard } from "@academic-explorer/ui";
 import { SimpleGrid, Stack, Text } from "@mantine/core";
 
 export interface EntityGridItem {
@@ -41,10 +40,17 @@ export function EntityGrid({
   return (
     <SimpleGrid cols={cols} spacing={spacing}>
       {items.map((item) => (
-        <div key={item.id}>
-          {/* FIXME: EntityCard not available - this component is unused */}
-          <Text>{item.displayName}</Text>
-        </div>
+        <EntityCard
+          key={item.id}
+          id={item.id}
+          displayName={item.displayName}
+          entityType={item.entityType}
+          worksCount={item.worksCount}
+          citedByCount={item.citedByCount}
+          description={item.description}
+          tags={item.tags}
+          onNavigate={onNavigate}
+        />
       ))}
     </SimpleGrid>
   );
