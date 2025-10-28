@@ -8,33 +8,11 @@ import { themeClass } from "../styles/theme.css";
 function RootLayout() {
   logger.debug("routing", "RootLayout: Rendering", {}, "RootLayout");
 
-  // Check if current route is the author route - if so, skip MainLayout wrapper
-  // to avoid React Hook #311 error
-  // IMPORTANT: This check must happen before any conditional hook usage
-  const isAuthorRoute = typeof window !== 'undefined' && window.location.hash.includes('/authors/');
-
-  if (isAuthorRoute) {
-    return (
-      <div className={themeClass}>
-        <Outlet />
-      </div>
-    );
-  }
-
+  // TEMPORARY: Bypass MainLayout for ALL routes to avoid React Hook #311 error
+  // TODO: Fix MainLayout hook violations and re-enable full layout
   return (
-    <div
-      className={themeClass}
-      style={{
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-      }}
-    >
-      <NavigationTracker />
-      <MainLayout>
-        <Outlet />
-      </MainLayout>
+    <div className={themeClass}>
+      <Outlet />
     </div>
   );
 }
