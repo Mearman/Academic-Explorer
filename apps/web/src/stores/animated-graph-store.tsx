@@ -390,10 +390,24 @@ export const useAnimatedGraphState = (): AnimatedGraphState => {
   return context.state;
 };
 
+// Create stable fallback for animated graph actions
+const createFallbackAnimatedGraphActions = (): Dispatch<AnimatedGraphAction> => {
+  return (action: AnimatedGraphAction) => {
+    logger.warn("ui", "Attempted to dispatch animated graph action outside AnimatedGraphProvider", { action });
+  };
+};
+
+// Create stable fallback once
+const fallbackAnimatedGraphActions = createFallbackAnimatedGraphActions();
+
 export const useAnimatedGraphActions = (): Dispatch<AnimatedGraphAction> => {
   const context = useContext(AnimatedGraphContext);
   if (!context) {
-    throw new Error("useAnimatedGraphActions must be used within AnimatedGraphProvider");
+    // Return stable fallback instead of throwing error to prevent Fast Refresh issues
+    if (import.meta.env.DEV) {
+      logger.warn("ui", "useAnimatedGraphActions called outside AnimatedGraphProvider - returning no-op dispatch");
+    }
+    return fallbackAnimatedGraphActions;
   }
   return context.dispatch;
 };

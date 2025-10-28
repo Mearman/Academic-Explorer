@@ -757,6 +757,44 @@ export const useLayoutState = () => {
   return context.state;
 };
 
+// Stable no-op function for fallback
+const createNoOpFunction = () => () => {
+  logger.warn("layout", "Attempted to call layout action outside LayoutProvider");
+};
+
+// Create stable fallback objects once to maintain consistency
+const createFallbackActions = () => {
+  const noOp = createNoOpFunction();
+  return {
+    toggleLeftSidebar: noOp,
+    toggleRightSidebar: noOp,
+    setLeftSidebarOpen: noOp,
+    setRightSidebarOpen: noOp,
+    pinLeftSidebar: noOp,
+    pinRightSidebar: noOp,
+    setLeftSidebarAutoHidden: noOp,
+    setRightSidebarAutoHidden: noOp,
+    setLeftSidebarHovered: noOp,
+    setRightSidebarHovered: noOp,
+    setSectionCollapsed: noOp,
+    expandSidebarToSection: noOp,
+    setActiveGroup: noOp,
+    setGraphProvider: noOp,
+    setPreviewEntity: noOp,
+    setAutoPinOnLayoutStabilization: noOp,
+    resetSectionPlacements: noOp,
+    getToolGroupsForSidebar: () => [],
+    getActiveGroup: () => null,
+    addSectionToGroup: noOp,
+    removeSectionFromGroup: noOp,
+    reorderGroups: noOp,
+    moveGroupToSidebar: noOp,
+  };
+};
+
+// Create stable fallback once
+const fallbackActions = createFallbackActions();
+
 // Hook for using layout actions
 export const useLayoutActions = () => {
   const context = useContext(LayoutContext);
@@ -765,35 +803,8 @@ export const useLayoutActions = () => {
     if (import.meta.env.DEV) {
       logger.warn("layout", "useLayoutActions called outside LayoutProvider - returning no-op actions");
     }
-    // Return no-op actions as fallback to maintain hook consistency
-    const noOp = () => {
-      logger.warn("layout", "Attempted to call layout action outside LayoutProvider");
-    };
-    return {
-      toggleLeftSidebar: noOp,
-      toggleRightSidebar: noOp,
-      setLeftSidebarOpen: noOp,
-      setRightSidebarOpen: noOp,
-      pinLeftSidebar: noOp,
-      pinRightSidebar: noOp,
-      setLeftSidebarAutoHidden: noOp,
-      setRightSidebarAutoHidden: noOp,
-      setLeftSidebarHovered: noOp,
-      setRightSidebarHovered: noOp,
-      setSectionCollapsed: noOp,
-      expandSidebarToSection: noOp,
-      setActiveGroup: noOp,
-      setGraphProvider: noOp,
-      setPreviewEntity: noOp,
-      setAutoPinOnLayoutStabilization: noOp,
-      resetSectionPlacements: noOp,
-      getToolGroupsForSidebar: () => [],
-      getActiveGroup: () => null,
-      addSectionToGroup: noOp,
-      removeSectionFromGroup: noOp,
-      reorderGroups: noOp,
-      moveGroupToSidebar: noOp,
-    };
+    // Return stable fallback object to maintain hook consistency
+    return fallbackActions;
   }
 
   return {

@@ -934,10 +934,56 @@ export const useAppActivityState = (): AppActivityState => {
   return context.state;
 };
 
+// Create stable fallback functions and objects
+const createFallbackAppActivityActions = () => {
+  const createNoOp = () => () => {
+    logger.warn("ui", "Attempted to call app activity action outside AppActivityProvider");
+  };
+
+  const createNoOpAsync = () => async () => {
+    logger.warn("ui", "Attempted to call async app activity action outside AppActivityProvider");
+  };
+
+  const createNoOpWithString = () => () => {
+    logger.warn("ui", "Attempted to call app activity action outside AppActivityProvider");
+    return "";
+  };
+
+  return {
+    addEvent: createNoOpWithString(),
+    updateEvent: createNoOp(),
+    removeEvent: createNoOp(),
+    clearOldEvents: createNoOp(),
+    clearAllEvents: createNoOp(),
+    loadEvents: createNoOpAsync(),
+    logUserInteraction: createNoOp(),
+    logNavigation: createNoOp(),
+    logComponentMount: createNoOp(),
+    logComponentUnmount: createNoOp(),
+    logPerformanceMetric: createNoOp(),
+    logError: createNoOp(),
+    logWarning: createNoOp(),
+    logApiCall: createNoOp(),
+    setTypeFilter: createNoOp(),
+    setCategoryFilter: createNoOp(),
+    setSeverityFilter: createNoOp(),
+    setSearchTerm: createNoOp(),
+    setTimeRange: createNoOp(),
+    clearFilters: createNoOp(),
+  };
+};
+
+// Create stable fallback once
+const fallbackAppActivityActions = createFallbackAppActivityActions();
+
 export const useAppActivityActions = () => {
   const context = useContext(AppActivityContext);
   if (!context) {
-    throw new Error("useAppActivityActions must be used within an AppActivityProvider");
+    // Return stable fallback instead of throwing error to prevent Fast Refresh issues
+    if (import.meta.env.DEV) {
+      logger.warn("ui", "useAppActivityActions called outside AppActivityProvider - returning no-op actions");
+    }
+    return fallbackAppActivityActions;
   }
 
   return {
