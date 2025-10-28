@@ -83,7 +83,27 @@ vi.mock("@academic-explorer/graph", () => ({
   },
 }));
 
-// Mock will be set up in beforeEach
+// Mock graphStore - will be configured in beforeEach
+vi.mock("../stores/graph-store", () => ({
+  graphStore: {
+    getState: vi.fn(),
+    setLoading: vi.fn(),
+    setError: vi.fn(),
+    clear: vi.fn(),
+    addNodes: vi.fn(),
+    addEdges: vi.fn(),
+    calculateNodeDepths: vi.fn(),
+    pinNode: vi.fn(),
+    selectNode: vi.fn(),
+    updateSearchStats: vi.fn(),
+    getNode: vi.fn(),
+    getPlaceholderNodes: vi.fn(),
+    markNodeAsLoading: vi.fn(),
+    markNodeAsLoaded: vi.fn(),
+    markNodeAsError: vi.fn(),
+    setGraphData: vi.fn(),
+  },
+}));
 
 vi.mock("../stores/expansion-settings-store", () => ({
   useExpansionSettingsStore: vi.fn(),
@@ -268,8 +288,23 @@ describe("GraphDataService", () => {
       },
     );
 
-    // Mock graphStore
-    vi.spyOn(graphStore, "getState").mockReturnValue(mockStore);
+    // Configure graphStore mock
+    vi.mocked(graphStore.getState).mockReturnValue(mockStore);
+    vi.mocked(graphStore.setLoading).mockImplementation(mockStore.setLoading);
+    vi.mocked(graphStore.setError).mockImplementation(mockStore.setError);
+    vi.mocked(graphStore.clear).mockImplementation(mockStore.clear);
+    vi.mocked(graphStore.addNodes).mockImplementation(mockStore.addNodes);
+    vi.mocked(graphStore.addEdges).mockImplementation(mockStore.addEdges);
+    vi.mocked(graphStore.calculateNodeDepths).mockImplementation(mockStore.calculateNodeDepths);
+    vi.mocked(graphStore.pinNode).mockImplementation(mockStore.pinNode);
+    vi.mocked(graphStore.selectNode).mockImplementation(mockStore.selectNode);
+    vi.mocked(graphStore.updateSearchStats).mockImplementation(mockStore.updateSearchStats);
+    vi.mocked(graphStore.getNode).mockImplementation(mockStore.getNode);
+    vi.mocked(graphStore.getPlaceholderNodes).mockImplementation(mockStore.getPlaceholderNodes);
+    vi.mocked(graphStore.markNodeAsLoading).mockImplementation(mockStore.markNodeAsLoading);
+    vi.mocked(graphStore.markNodeAsLoaded).mockImplementation(mockStore.markNodeAsLoaded);
+    vi.mocked(graphStore.markNodeAsError).mockImplementation(mockStore.markNodeAsError);
+    vi.mocked(graphStore.setGraphData).mockImplementation(mockStore.setGraphData);
 
     // Mock expansion settings store
     mockExpansionSettingsStore = {
