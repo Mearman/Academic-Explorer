@@ -13,6 +13,7 @@
       "@academic-explorer/graph": ["../graph/dist/index.d.ts"]
     },
     "declaration": true,
+    "declarationMap": true,
     "composite": true,
     "module": "ESNext",
     "jsx": "react-jsx",
