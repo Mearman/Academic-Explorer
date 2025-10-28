@@ -1,24 +1,30 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { useParams } from "@tanstack/react-router";
+import { useParams, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
-import { AUTHOR_FIELDS, cachedOpenAlex, type Author } from "@academic-explorer/client";
+import { AUTHOR_FIELDS, cachedOpenAlex, type Author, type AuthorField } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
 
 const AUTHOR_ROUTE_PATH = "/authors/$authorId";
 
 function AuthorRoute() {
   const { authorId } = useParams({ strict: false });
+  const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+
+  // Parse select parameter - if not provided, use all AUTHOR_FIELDS (default behavior)
+  const selectFields = selectParam && typeof selectParam === 'string'
+    ? selectParam.split(',').map(field => field.trim()) as AuthorField[]
+    : [...AUTHOR_FIELDS];
 
   // Fetch author data
   const { data: author, isLoading, error } = useQuery({
-    queryKey: ["author", authorId],
+    queryKey: ["author", authorId, selectParam],
     queryFn: async () => {
       if (!authorId) {
         throw new Error("Author ID is required");
       }
       const response = await cachedOpenAlex.client.authors.getAuthor(authorId, {
-        select: [...AUTHOR_FIELDS],
+        select: selectFields,
       });
       return response as Author;
     },
@@ -45,8 +51,12 @@ function AuthorRoute() {
   } else {
     content = (
       <div className="p-4">
-        <div className="mb-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">{author?.display_name || "Author"}</h1>
+        <div className="mb-4">
+          <h1 className="text-2xl font-bold mb-2">{author?.display_name || "Author"}</h1>
+          <div className="text-sm text-gray-600 mb-4">
+            <strong>Author ID:</strong> {authorId}<br />
+            <strong>Select fields:</strong> {selectParam && typeof selectParam === 'string' ? selectParam : `default (${selectFields.join(", ")})`}
+          </div>
           <button
             onClick={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
