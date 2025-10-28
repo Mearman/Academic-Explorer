@@ -151,7 +151,6 @@ export interface Work extends BaseEntity {
     oa_url?: string;
     any_repository_has_fulltext: boolean;
   };
-  authorships_count?: number;
   cited_by_percentile_year?: {
     min: number;
     max: number;
@@ -526,7 +525,6 @@ export const WORK_FIELDS = keysOf<Work>()([
   "type_crossref",
   "indexed_in",
   "open_access",
-  "authorships_count",
   "cited_by_percentile_year",
   "concepts",
   "mesh",
