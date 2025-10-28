@@ -5,7 +5,7 @@
 
 import { useCallback } from "react";
 import { useLayoutStore } from "@/stores/layout-store";
-import { useGraphStore } from "@/stores/graph-store";
+import { graphStore, useGraphStore } from "@/stores/graph-store";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { logger } from "@academic-explorer/utils/logger";
 import type { GraphNode } from "@academic-explorer/graph";
@@ -42,28 +42,29 @@ export const useEntityInteraction = (
 ) => {
   const { loadEntityIntoGraph, expandNode } = useGraphData();
   const { setPreviewEntity, autoPinOnLayoutStabilization } = useLayoutStore();
-  const { nodes, selectNode, clearAllPinnedNodes, pinNode } = useGraphStore();
+  const { selectNode, clearAllPinnedNodes, pinNode } = useGraphStore();
 
   // Helper functions to reduce cognitive complexity
   const findOrLoadTargetNode = async ({
     entityId,
     loadEntityIntoGraph,
-    nodes,
+    getNodes,
   }: {
     entityId: string;
     loadEntityIntoGraph: (entityId: string) => Promise<void>;
-    nodes: Record<string, GraphNode>;
+    getNodes: () => Record<string, GraphNode>;
   }): Promise<GraphNode | undefined> => {
     // First check if a minimal node already exists
-    let targetNode = (Object.values(nodes) as GraphNode[]).find(
+    let targetNode = (Object.values(getNodes()) as GraphNode[]).find(
       (node) => node.entityId === entityId,
     );
 
     if (!targetNode) {
       // No existing node, load entity into graph
       await loadEntityIntoGraph(entityId);
-      // Find the newly loaded node - use the hook's nodes directly
-      targetNode = (Object.values(nodes) as GraphNode[]).find(
+
+      // Re-query the store to get the newly loaded node
+      targetNode = (Object.values(getNodes()) as GraphNode[]).find(
         (node) => node.entityId === entityId,
       );
     }
@@ -159,7 +160,7 @@ export const useEntityInteraction = (
           targetNode = await findOrLoadTargetNode({
             entityId,
             loadEntityIntoGraph,
-            nodes,
+            getNodes: () => graphStore.getState().nodes,
           });
         }
 
@@ -208,7 +209,6 @@ export const useEntityInteraction = (
       }
     },
     [
-      nodes,
       selectNode,
       clearAllPinnedNodes,
       pinNode,
