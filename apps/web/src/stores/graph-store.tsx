@@ -653,7 +653,7 @@ export const useGraphStore = () => {
 
   const getNodesWithinDepth = useCallback((depth: number): GraphNode[] => {
     return Object.values(state.nodes).filter(
-      (node) => (state.nodeDepths[node.id] || 0) <= depth
+      (node) => state.nodeDepths[node.id] !== undefined && state.nodeDepths[node.id] <= depth
     );
   }, [state.nodes, state.nodeDepths]);
 
@@ -902,7 +902,7 @@ export const graphStore = (() => {
     getNodesWithinDepth: (depth: number): GraphNode[] => {
       const state = getState();
       return Object.values(state.nodes).filter(
-        (node) => (state.nodeDepths[node.id] || 0) <= depth
+        (node) => state.nodeDepths[node.id] !== undefined && state.nodeDepths[node.id] <= depth
       );
     },
     findShortestPath: (sourceId: string, targetId: string): string[] => {
