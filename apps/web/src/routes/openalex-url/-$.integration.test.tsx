@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Mock the route for testing
 vi.mock("./$", async (importOriginal) => {
-  const actual = await importOriginal();
+  const actual = await importOriginal<typeof import("./$")>();
   return {
     ...actual,
     Route: {
@@ -18,7 +18,7 @@ vi.mock("./$", async (importOriginal) => {
 
 // Mock EntityDetectionService
 vi.mock("@academic-explorer/graph", async (importOriginal) => {
-  const actual = await importOriginal();
+  const actual = await importOriginal<typeof import("@academic-explorer/graph")>();
   return {
     ...actual,
     EntityDetectionService: {
@@ -29,7 +29,7 @@ vi.mock("@academic-explorer/graph", async (importOriginal) => {
 
 // Mock TanStack Router
 vi.mock("@tanstack/react-router", async (importOriginal) => {
-  const actual = await importOriginal();
+  const actual = await importOriginal<typeof import("@tanstack/react-router")>();
   return {
     ...actual,
     useParams: vi.fn(),

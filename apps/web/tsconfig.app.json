@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.app.json",
   "compilerOptions": {
+    "baseUrl": ".",
     "moduleResolution": "bundler",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,

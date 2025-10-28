@@ -6,7 +6,7 @@ import { cachedOpenAlex } from "@academic-explorer/client";
 
 // Mock cachedOpenAlex client
 vi.mock("@academic-explorer/client", async (importOriginal) => {
-  const actual = await importOriginal();
+  const actual = await importOriginal<typeof import("@academic-explorer/client")>();
   return {
     ...actual,
     cachedOpenAlex: {
@@ -21,7 +21,7 @@ vi.mock("@academic-explorer/client", async (importOriginal) => {
 
 // Mock router hooks
 vi.mock("@tanstack/react-router", async (importOriginal) => {
-  const actual = await importOriginal();
+  const actual = await importOriginal<typeof import("@tanstack/react-router")>();
   return {
     ...actual,
     useParams: vi.fn(),

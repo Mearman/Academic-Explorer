@@ -196,7 +196,7 @@ if (typeof process !== "undefined" && process.env.VITEST) {
     // factory. If the real module is present, we preserve it via importOriginal.
     try {
       vi.mock("@tanstack/react-router", async (importOriginal) => {
-        const actual = await importOriginal();
+        const actual = await importOriginal<typeof import("@tanstack/react-router")>();
         // Provide a minimal createFileRoute if it's not exported by the real module
         const createFileRoute =
           actual.createFileRoute ??
