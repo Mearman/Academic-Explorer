@@ -80,11 +80,11 @@ const searchWorks = async (filters: SearchFilters): Promise<Work[]> => {
     );
 
     logger.debug("search", "Search completed", {
-      resultsCount: response.results.length,
-      total: response.meta.count,
+      resultsCount: response.results?.length ?? 0,
+      total: response.meta?.count ?? 0,
     });
 
-    return response.results;
+    return response.results ?? [];
   } catch (error) {
     logger.error("search", "Search failed", { error, filters });
     throw error;
