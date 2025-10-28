@@ -69,7 +69,14 @@ const getInitialState = (): GraphState => ({
   hoveredNodeId: null,
   selectedNodes: {},
   pinnedNodes: {},
-  currentLayout: { type: "force", options: {} },
+  currentLayout: {
+    type: "force",
+    options: {
+      iterations: 100,
+      strength: -200,
+      distance: 150
+    }
+  },
   visibleEntityTypes: {
     works: true,
     authors: true,
@@ -220,11 +227,28 @@ const graphReducer = (state: GraphState, action: GraphAction): GraphState => {
     }
 
     case "REMOVE_NODE": {
-      const { [action.payload]: _removedNode, ...remainingNodes } = state.nodes;
+      const nodeId = action.payload;
+      const { [nodeId]: _removedNode, ...remainingNodes } = state.nodes;
+
+      // Remove connected edges
+      const remainingEdges = Object.fromEntries(
+        Object.entries(state.edges).filter(
+          ([, edge]) => edge.source !== nodeId && edge.target !== nodeId
+        )
+      );
+
+      // Clear selection states if the removed node was selected/hovered
+      const { [nodeId]: _removedFromSelection, ...remainingSelectedNodes } = state.selectedNodes;
+
       return {
         ...state,
         nodes: remainingNodes,
+        edges: remainingEdges,
         totalNodeCount: Math.max(0, state.totalNodeCount - 1),
+        totalEdgeCount: Object.keys(remainingEdges).length,
+        selectedNodeId: state.selectedNodeId === nodeId ? null : state.selectedNodeId,
+        hoveredNodeId: state.hoveredNodeId === nodeId ? null : state.hoveredNodeId,
+        selectedNodes: remainingSelectedNodes,
       };
     }
 
@@ -364,7 +388,7 @@ const graphReducer = (state: GraphState, action: GraphAction): GraphState => {
       return { ...state, showAllCachedNodes: action.payload };
 
     case "SET_TRAVERSAL_DEPTH":
-      return { ...state, traversalDepth: action.payload };
+      return { ...state, traversalDepth: Math.max(1, action.payload) };
 
     case "UPDATE_SEARCH_STATS":
       return { ...state, lastSearchStats: action.payload };
@@ -442,11 +466,12 @@ function calculateNodeDepths(
     (nodeId) => !nodesWithIncomingEdges.has(nodeId)
   );
 
-  // Start BFS from root nodes
-  rootNodes.forEach((rootId) => {
-    queue.push({ nodeId: rootId, depth: 0 });
-    visited.add(rootId);
-  });
+  // Start BFS from ONLY the first root node to avoid assigning depths to disconnected graphs
+  if (rootNodes.length > 0) {
+    const firstRoot = rootNodes[0];
+    queue.push({ nodeId: firstRoot, depth: 0 });
+    visited.add(firstRoot);
+  }
 
   while (queue.length > 0) {
     const shifted = queue.shift();
@@ -617,18 +642,21 @@ export const useGraphStore = () => {
     const stats = {
       total: {} as Record<EntityType, number>,
       visible: {} as Record<EntityType, number>,
-      searchResults: {} as Record<EntityType, number>,
+      searchResults: state.lastSearchStats as Record<EntityType, number>,
     };
 
     Object.values(state.nodes).forEach((node) => {
       stats.total[node.entityType] = (stats.total[node.entityType] || 0) + 1;
       if (state.visibleEntityTypes[node.entityType]) {
         stats.visible[node.entityType] = (stats.visible[node.entityType] || 0) + 1;
+      } else {
+        // Initialize to 0 for entity types that have nodes but are not visible
+        stats.visible[node.entityType] = stats.visible[node.entityType] || 0;
       }
     });
 
     return stats;
-  }, [state.nodes, state.visibleEntityTypes]);
+  }, [state.nodes, state.visibleEntityTypes, state.lastSearchStats]);
 
   const getNode = useCallback((nodeId: string): GraphNode | undefined => {
     return state.nodes[nodeId];
@@ -883,13 +911,16 @@ export const graphStore = (() => {
       const stats = {
         total: {} as Record<EntityType, number>,
         visible: {} as Record<EntityType, number>,
-        searchResults: {} as Record<EntityType, number>,
+        searchResults: state.lastSearchStats as Record<EntityType, number>,
       };
 
       Object.values(state.nodes).forEach((node) => {
         stats.total[node.entityType] = (stats.total[node.entityType] || 0) + 1;
         if (state.visibleEntityTypes[node.entityType]) {
           stats.visible[node.entityType] = (stats.visible[node.entityType] || 0) + 1;
+        } else {
+          // Initialize to 0 for entity types that have nodes but are not visible
+          stats.visible[node.entityType] = stats.visible[node.entityType] || 0;
         }
       });
 
