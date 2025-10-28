@@ -4,7 +4,7 @@
 
 import { useUnifiedExecutionWorker } from "@/hooks/use-unified-execution-worker";
 import { createGraphDataService } from "@/services/graph-data-service";
-import { useGraphStore } from "@/stores/graph-store";
+import { graphStore, useGraphStore } from "@/stores/graph-store";
 import type { SearchOptions } from "@academic-explorer/graph";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -26,7 +26,16 @@ vi.mock("@/services/graph-data-service", () => ({
   createGraphDataService: vi.fn(),
   GraphDataService: vi.fn(),
 }));
-vi.mock("@/stores/graph-store");
+vi.mock("@/stores/graph-store", () => ({
+  useGraphStore: vi.fn(),
+  graphStore: {
+    getState: vi.fn(),
+    setLoading: vi.fn(),
+    setError: vi.fn(),
+    calculateNodeDepths: vi.fn(),
+    clear: vi.fn(),
+  },
+}));
 vi.mock("@/hooks/use-unified-execution-worker");
 vi.mock("@academic-explorer/utils/logger", () => ({
   logger: {
@@ -139,6 +148,19 @@ describe("useGraphData", () => {
       error: null,
       ...mockStore,
     });
+
+    // Mock graphStore methods to delegate to mockStore
+    vi.mocked(graphStore.getState).mockReturnValue({
+      isLoading: false,
+      error: null,
+      ...mockStore,
+    } as any);
+    vi.mocked(graphStore.setLoading).mockImplementation(mockStore.setLoading);
+    vi.mocked(graphStore.setError).mockImplementation(mockStore.setError);
+    vi.mocked(graphStore.calculateNodeDepths).mockImplementation(
+      mockStore.calculateNodeDepths,
+    );
+    vi.mocked(graphStore.clear).mockImplementation(mockStore.clear);
 
     // Mock animated force simulation (not ready to force fallback to service)
     mockUseUnifiedExecutionWorker.mockReturnValue({
@@ -391,6 +413,7 @@ describe("useGraphData", () => {
       // Override the getState mock for this test to return empty pinnedNodes
       const localMockStore = { ...mockStore, pinnedNodes: {} };
       mockUseGraphStore.getState = vi.fn().mockReturnValue(localMockStore);
+      vi.mocked(graphStore.getState).mockReturnValue(localMockStore as any);
 
       const { result } = renderHook(() => useGraphData(), {
         wrapper: createWrapper(),
