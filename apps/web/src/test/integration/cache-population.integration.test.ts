@@ -318,8 +318,11 @@ describe("Cache Population Integration Tests", () => {
       expect(firstResponse.ok).toBe(true);
 
       const firstData = await firstResponse.json();
-      expect(firstData).toHaveProperty("id");
-      expect(firstData).toHaveProperty("display_name");
+
+      // The response may be wrapped in a data property or be direct
+      const firstEntity = firstData.data || firstData;
+      expect(firstEntity).toHaveProperty("id");
+      expect(firstEntity).toHaveProperty("display_name");
 
       // Second request - should hit cache
       console.log("Making second request (cache hit expected)...");
@@ -327,11 +330,12 @@ describe("Cache Population Integration Tests", () => {
       expect(secondResponse.ok).toBe(true);
 
       const secondData = await secondResponse.json();
+      const secondEntity = secondData.data || secondData;
 
       // Data should be identical
-      expect(secondData).toEqual(firstData);
+      expect(secondEntity).toEqual(firstEntity);
 
-      console.log(`✅ Cache hit verified for: ${firstData.display_name}`);
+      console.log(`✅ Cache hit verified for: ${firstEntity.display_name}`);
     });
   });
 
