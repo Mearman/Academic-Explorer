@@ -41,14 +41,15 @@ function createWebConfig(): UserConfig {
         // For web app, we don't want external dependencies
         // Don't spread base.build.rollupOptions since it has external deps for library builds
         onwarn: base.build?.rollupOptions?.onwarn,
-        // TODO: Re-enable manualChunks when external dependencies issue is resolved
-        // output: {
-        //   manualChunks: {
-        //     vendor: ['react', 'react-dom'],
-        //     router: ['@tanstack/react-router'],
-        //     ui: ['@mantine/core', '@mantine/hooks'],
-        //   },
-        // },
+        // Enable manual chunking to improve bundle size
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom'],
+            router: ['@tanstack/react-router'],
+            ui: ['@mantine/core', '@mantine/hooks', '@tabler/icons-react'],
+            utils: ['d3', 'zustand', 'immer'],
+          },
+        },
       },
     },
 
