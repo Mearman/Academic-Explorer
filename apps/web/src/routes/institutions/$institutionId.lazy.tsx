@@ -1,22 +1,28 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { useParams } from "@tanstack/react-router";
+import { useParams, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
-import { INSTITUTION_FIELDS, cachedOpenAlex, type InstitutionEntity } from "@academic-explorer/client";
+import { INSTITUTION_FIELDS, cachedOpenAlex, type InstitutionEntity, type InstitutionField } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
 
 function InstitutionRoute() {
   const { institutionId } = useParams({ strict: false });
+  const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+
+  // Parse select parameter - if not provided, use all INSTITUTION_FIELDS (default behavior)
+  const selectFields = selectParam && typeof selectParam === 'string'
+    ? selectParam.split(',').map(field => field.trim()) as InstitutionField[]
+    : [...INSTITUTION_FIELDS];
 
   // Fetch institution data
   const { data: institution, isLoading, error } = useQuery({
-    queryKey: ["institution", institutionId],
+    queryKey: ["institution", institutionId, selectParam],
     queryFn: async () => {
       if (!institutionId) {
         throw new Error("Institution ID is required");
       }
       const response = await cachedOpenAlex.client.institutions.getInstitution(institutionId, {
-        select: [...INSTITUTION_FIELDS],
+        select: selectFields,
       });
       return response as InstitutionEntity;
     },
@@ -43,8 +49,12 @@ function InstitutionRoute() {
   } else {
     content = (
       <div className="p-4">
-        <div className="mb-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">{institution?.display_name || "Institution"}</h1>
+        <div className="mb-4">
+          <h1 className="text-2xl font-bold mb-2">{institution?.display_name || "Institution"}</h1>
+          <div className="text-sm text-gray-600 mb-4">
+            <strong>Institution ID:</strong> {institutionId}<br />
+            <strong>Select fields:</strong> {selectParam && typeof selectParam === 'string' ? selectParam : `default (${selectFields.join(", ")})`}
+          </div>
           <button
             onClick={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"

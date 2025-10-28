@@ -1,22 +1,28 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { useParams } from "@tanstack/react-router";
+import { useParams, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
-import { FUNDER_FIELDS, cachedOpenAlex, type Funder } from "@academic-explorer/client";
+import { FUNDER_FIELDS, cachedOpenAlex, type Funder, type FunderField } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
 
 function FunderRoute() {
   const { funderId } = useParams({ strict: false });
+  const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+
+  // Parse select parameter - if not provided, use all FUNDER_FIELDS (default behavior)
+  const selectFields = selectParam && typeof selectParam === 'string'
+    ? selectParam.split(',').map(field => field.trim()) as FunderField[]
+    : [...FUNDER_FIELDS];
 
   // Fetch funder data
   const { data: funder, isLoading, error } = useQuery({
-    queryKey: ["funder", funderId],
+    queryKey: ["funder", funderId, selectParam],
     queryFn: async () => {
       if (!funderId) {
         throw new Error("Funder ID is required");
       }
       const response = await cachedOpenAlex.client.funders.getFunder(funderId, {
-        select: [...FUNDER_FIELDS],
+        select: selectFields,
       });
       return response as Funder;
     },
@@ -43,8 +49,12 @@ function FunderRoute() {
   } else {
     content = (
       <div className="p-4">
-        <div className="mb-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">{funder?.display_name || "Funder"}</h1>
+        <div className="mb-4">
+          <h1 className="text-2xl font-bold mb-2">{funder?.display_name || "Funder"}</h1>
+          <div className="text-sm text-gray-600 mb-4">
+            <strong>Funder ID:</strong> {funderId}<br />
+            <strong>Select fields:</strong> {selectParam && typeof selectParam === 'string' ? selectParam : `default (${selectFields.join(", ")})`}
+          </div>
           <button
             onClick={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
