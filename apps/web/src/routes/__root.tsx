@@ -10,6 +10,7 @@ function RootLayout() {
 
   // Check if current route is the author route - if so, skip MainLayout wrapper
   // to avoid React Hook #311 error
+  // IMPORTANT: This check must happen before any conditional hook usage
   const isAuthorRoute = typeof window !== 'undefined' && window.location.hash.includes('/authors/');
 
   if (isAuthorRoute) {
