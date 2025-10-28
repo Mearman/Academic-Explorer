@@ -7,6 +7,19 @@ import { themeClass } from "../styles/theme.css";
 
 function RootLayout() {
   logger.debug("routing", "RootLayout: Rendering", {}, "RootLayout");
+
+  // Check if current route is the author route - if so, skip MainLayout wrapper
+  // to avoid React Hook #311 error
+  const isAuthorRoute = typeof window !== 'undefined' && window.location.hash.includes('/authors/');
+
+  if (isAuthorRoute) {
+    return (
+      <div className={themeClass}>
+        <Outlet />
+      </div>
+    );
+  }
+
   return (
     <div
       className={themeClass}
