@@ -9,20 +9,6 @@
 declare const __DEV__: boolean | undefined
 declare const __BUILD_INFO__: Record<string, unknown> | undefined
 
-// Extend import.meta for Vite environment
-declare global {
-	interface ImportMetaEnv {
-		MODE?: string
-		DEV?: boolean
-		PROD?: boolean
-		[key: string]: unknown
-	}
-
-	interface ImportMeta {
-		env: ImportMetaEnv
-	}
-}
-
 /**
  * Environment mode enumeration
  */
