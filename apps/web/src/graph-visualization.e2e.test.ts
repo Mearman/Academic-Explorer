@@ -40,11 +40,11 @@ test.describe("Graph Visualization E2E Tests", () => {
 
     // Check for XYFlow/ReactFlow containers
     const graphSelectors = [
-      ".@xyflow/react",
       ".xyflow",
+      ".react-flow",
       '[data-testid="rf__wrapper"]',
-      ".@xyflow/react__renderer",
-      ".@xyflow/react__container",
+      ".react-flow__renderer",
+      ".react-flow__container",
     ];
 
     for (const selector of graphSelectors) {

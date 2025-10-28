@@ -78,7 +78,7 @@ test.describe("Author Routes E2E Tests", () => {
 
     // Look for graph container elements (XYFlow uses these classes)
     const graphContainer = page.locator(
-      '.@xyflow/react, [data-testid="rf__wrapper"], .xyflow',
+      '[data-testid="rf__wrapper"], .xyflow, .react-flow',
     );
 
     // Graph might be loading or might need data - check if container exists
