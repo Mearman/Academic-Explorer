@@ -37,7 +37,9 @@ export function useEntityRoute<T = unknown>(
   const { loadEntity, loadEntityIntoGraph } = useGraphData();
 
   // Get user interactions
-  const userInteractions = useUserInteractions();
+  // TEMPORARY: Disabled to isolate hasValue error
+  // const userInteractions = useUserInteractions();
+  const userInteractions = null as any;
 
   // Graph data - stub for now, will be implemented when needed
   const graphData = {
