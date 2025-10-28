@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MantineProvider } from "@mantine/core";
 import { cachedOpenAlex } from "@academic-explorer/client";
@@ -63,6 +63,7 @@ describe("SourceRoute Integration Tests", () => {
   });
 
   afterEach(() => {
+    cleanup();
     queryClient.clear();
     vi.clearAllMocks();
   });
