@@ -300,7 +300,7 @@ describe("GraphDataService", () => {
     vi.mocked(graphStore.selectNode).mockImplementation(mockStore.selectNode);
     vi.mocked(graphStore.updateSearchStats).mockImplementation(mockStore.updateSearchStats);
     vi.mocked(graphStore.getNode).mockImplementation(mockStore.getNode);
-    vi.mocked(graphStore.getPlaceholderNodes).mockImplementation(mockStore.getPlaceholderNodes);
+    (vi.mocked(graphStore) as any).getPlaceholderNodes.mockImplementation(mockStore.getPlaceholderNodes);
     vi.mocked(graphStore.markNodeAsLoading).mockImplementation(mockStore.markNodeAsLoading);
     vi.mocked(graphStore.markNodeAsLoaded).mockImplementation(mockStore.markNodeAsLoaded);
     vi.mocked(graphStore.markNodeAsError).mockImplementation(mockStore.markNodeAsError);

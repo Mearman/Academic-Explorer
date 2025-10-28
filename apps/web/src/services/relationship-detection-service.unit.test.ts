@@ -143,7 +143,7 @@ describe("RelationshipDetectionService", () => {
     // Configure graphStore to delegate to mockStore
     vi.mocked(graphStore.getNode).mockImplementation(mockStore.getNode);
     vi.mocked(graphStore.addEdges).mockImplementation(mockStore.addEdges);
-    vi.mocked(graphStore.getPlaceholderNodes).mockReturnValue([]);
+    (vi.mocked(graphStore) as any).getPlaceholderNodes.mockReturnValue([]);
 
     // Make graphStore.nodes dynamically reference mockStore.nodes
     Object.defineProperty(graphStore, 'nodes', {

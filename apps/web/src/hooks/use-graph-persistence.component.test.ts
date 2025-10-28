@@ -183,8 +183,8 @@ describe("useGraphPersistence", () => {
       viewport: { zoom: 1, center: { x: 0, y: 0 } },
     });
 
-    mockUseGraphStore.getState = vi.fn().mockReturnValue(mockStore);
-    vi.mocked(graphStore.getState).mockReturnValue(mockStore);
+    mockUseGraphStore.getState = vi.fn().mockReturnValue(mockStore as any);
+    vi.mocked(graphStore.getState).mockReturnValue(mockStore as any);
 
     // Mock Date.now for consistent session IDs
     vi.spyOn(Date, "now").mockReturnValue(1234567890);
