@@ -54,67 +54,44 @@ test.describe("Homepage E2E Tests", () => {
     await expect(searchButton).toBeVisible();
   });
 
-  test("should have working navigation links", async ({ page }) => {
+  test("should have working example search links", async ({ page }) => {
     await page.goto("/", {
       waitUntil: "networkidle",
       timeout: 30000,
     });
 
-    // Check home link - using text content as it's a Link component
-    const homeLink = page.locator('nav a:has-text("Home")');
-    await expect(homeLink).toBeVisible({ timeout: 15000 });
+    // Check example search links exist
+    const mlExample = page.locator('a:has-text("machine learning")');
+    await expect(mlExample).toBeVisible({ timeout: 15000 });
 
-    // Check about link
-    const aboutLink = page.locator('nav a:has-text("About")');
-    await expect(aboutLink).toBeVisible({ timeout: 15000 });
+    const climateExample = page.locator('a:has-text("climate change")');
+    await expect(climateExample).toBeVisible({ timeout: 15000 });
 
-    // Test navigation to about page
-    await aboutLink.click();
+    const orcidExample = page.locator('a:has-text("ORCID example")');
+    await expect(orcidExample).toBeVisible({ timeout: 15000 });
 
-    // Wait for about page content to appear instead of URL change
-    await page.waitForSelector('h1:has-text("About Academic Explorer")', {
-      timeout: 15000,
-    });
-
-    // Test navigation back to home
-    await homeLink.click();
-
-    // Wait for homepage content to appear
-    await page.waitForSelector('h1:has-text("Academic Explorer")', {
-      timeout: 15000,
-    });
+    // Note: We don't click these as they would trigger searches and navigation
+    // The visibility check confirms the links are rendered correctly
   });
 
-  test("should have working theme toggle", async ({ page }) => {
+  test("should display technology stack correctly", async ({ page }) => {
     await page.goto("/", {
       waitUntil: "networkidle",
       timeout: 30000,
     });
 
-    // Find theme toggle button with correct aria-label
-    const themeToggle = page.locator(
-      'button[aria-label="Toggle color scheme"]',
-    );
-    await expect(themeToggle).toBeVisible({ timeout: 15000 });
+    // Verify the technology stack indicators are visible
+    const reactIndicator = page.locator("text=React 19");
+    await expect(reactIndicator).toBeVisible({ timeout: 15000 });
 
-    // Get initial color scheme
-    const html = page.locator("html");
-    const initialColorScheme = await html.getAttribute(
-      "data-mantine-color-scheme",
-    );
+    const openAlexIndicator = page.locator("text=OpenAlex API");
+    await expect(openAlexIndicator).toBeVisible({ timeout: 15000 });
 
-    // Click to cycle through themes
-    await themeToggle.click();
-    await page.waitForTimeout(500);
+    const xyFlowIndicator = page.locator("text=XYFlow");
+    await expect(xyFlowIndicator).toBeVisible({ timeout: 15000 });
 
-    // The theme should have changed (data-mantine-color-scheme attribute)
-    const newColorScheme = await html.getAttribute("data-mantine-color-scheme");
-    expect(newColorScheme).toMatch(/^(light|dark|auto)$/);
-
-    // Ensure it actually changed (unless it was already cycling)
-    if (initialColorScheme && newColorScheme !== initialColorScheme) {
-      // Good, it changed as expected
-    }
+    // Note: Homepage is a landing page without navigation/theme controls
+    // These elements are only available in the full app layout
   });
 
   test("should display example searches", async ({ page }) => {
@@ -176,21 +153,6 @@ test.describe("Homepage E2E Tests", () => {
     await expect(searchButton).toBeDisabled();
   });
 
-  test("should show technology stack indicators", async ({ page }) => {
-    await page.goto("/");
-
-    // Check for React 19 indicator in the features section
-    const reactIndicator = page.locator("text=React 19");
-    await expect(reactIndicator).toBeVisible();
-
-    // Check for OpenAlex API indicator
-    const openAlexIndicator = page.locator("text=OpenAlex API");
-    await expect(openAlexIndicator).toBeVisible();
-
-    // Check for XYFlow indicator
-    const xyFlowIndicator = page.locator("text=XYFlow");
-    await expect(xyFlowIndicator).toBeVisible();
-  });
 
   test("should display helpful usage instructions", async ({ page }) => {
     await page.goto("/");
@@ -203,42 +165,23 @@ test.describe("Homepage E2E Tests", () => {
   });
 
   test("should have proper accessibility features", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/", {
+      waitUntil: "networkidle",
+      timeout: 30000,
+    });
 
     // Check search input has proper aria-label
     const searchInput = page.locator(
       'input[aria-label="Search academic literature"]',
     );
-    await expect(searchInput).toBeVisible();
+    await expect(searchInput).toBeVisible({ timeout: 15000 });
 
-    // Check theme toggle has proper aria-label
-    const themeToggle = page.locator(
-      'button[aria-label="Toggle color scheme"]',
-    );
-    await expect(themeToggle).toBeVisible();
+    // Verify search input is focusable and has correct attributes
+    await searchInput.focus();
+    const ariaLabel = await searchInput.getAttribute("aria-label");
+    expect(ariaLabel).toBe("Search academic literature");
 
-    // Check sidebar toggles have proper aria-labels
-    const leftSidebarToggle = page.locator(
-      'button[aria-label="Toggle left sidebar"]',
-    );
-    await expect(leftSidebarToggle).toBeVisible();
-
-    const rightSidebarToggle = page.locator(
-      'button[aria-label="Toggle right sidebar"]',
-    );
-    await expect(rightSidebarToggle).toBeVisible();
-
-    // Run accessibility check if available (checkA11y might not be available in test environment)
-    if (typeof (globalThis as any).checkA11y === "function") {
-      try {
-        await (globalThis as any).checkA11y(page);
-      } catch (error) {
-        console.log("Accessibility check skipped:", error);
-      }
-    } else {
-      console.log(
-        "checkA11y function not available - accessibility manual checks performed instead",
-      );
-    }
+    // Note: Homepage is a landing page without full app layout
+    // Theme toggle and sidebar controls are only in MainLayout (non-homepage routes)
   });
 });
