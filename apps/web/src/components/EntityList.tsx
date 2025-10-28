@@ -157,11 +157,21 @@ export function EntityList({
     }
 
     if (response) {
-      setPaginationInfo({
-        totalCount: response.meta.count,
-        totalPages: Math.ceil(response.meta.count / response.meta.per_page)
-      });
-      return response.results;
+      // Handle response with or without meta field (static cache may not include meta)
+      if (response.meta) {
+        setPaginationInfo({
+          totalCount: response.meta.count,
+          totalPages: Math.ceil(response.meta.count / response.meta.per_page)
+        });
+      } else {
+        // Fallback for responses without meta (e.g. from static cache)
+        logger.warn("EntityList", `Response missing meta field for ${entityType}, using defaults`);
+        setPaginationInfo({
+          totalCount: response.results?.length || 0,
+          totalPages: 1 // Assume single page if no meta
+        });
+      }
+      return response.results || [];
     }
 
     throw new Error(`No response received for ${entityType}`);

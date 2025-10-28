@@ -110,17 +110,17 @@ test.describe("Author Routes E2E Tests", () => {
 
     // Check for any loading states or data display
     const possibleStates = await Promise.all([
-      page.locator("text=Loading").count(),
-      page.locator("text=Error").count(),
+      page.locator("text=Loading Author").count(), // Updated to match actual text
+      page.locator("text=Error Loading Author").count(), // Updated to match actual error text
       page.locator('[role="progressbar"]').count(),
-      page.locator("text=Author Profile").count(),
+      page.locator("h1").count(), // Check for any h1 (author name)
     ]);
 
-    const [loadingCount, errorCount, progressCount, authorCount] =
+    const [loadingCount, errorCount, progressCount, h1Count] =
       possibleStates;
 
     console.log(
-      `Author page states - Loading: ${loadingCount}, Errors: ${errorCount}, Progress: ${progressCount}, Author content: ${authorCount}`,
+      `Author page states - Loading: ${loadingCount}, Errors: ${errorCount}, Progress: ${progressCount}, H1 elements: ${h1Count}`,
     );
 
     // Page should be in some reasonable state (loading, error, or showing data)
@@ -128,7 +128,7 @@ test.describe("Author Routes E2E Tests", () => {
       loadingCount > 0 ||
       errorCount > 0 ||
       progressCount > 0 ||
-      authorCount > 0;
+      h1Count > 0;
 
     // Page should be in some reasonable state (loading, error, or showing data)
     expect(hasReasonableState).toBe(true);
