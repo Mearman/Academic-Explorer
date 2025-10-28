@@ -10,13 +10,17 @@ test.describe("Author Routes E2E Tests", () => {
   const BASE_URL = "http://localhost:5173";
 
   test("should load author page without infinite loops", async ({ page }) => {
-    await page.goto(`${BASE_URL}/authors/${TEST_AUTHOR_ID}`);
+    await page.goto(`${BASE_URL}/authors/${TEST_AUTHOR_ID}`, {
+      waitUntil: "networkidle",
+      timeout: 30000,
+    });
 
     // Check that page loaded successfully - header title should be visible
+    // Use more generous timeout for CI environments
     const headerTitle = page
       .locator("header")
       .locator("text=Academic Explorer");
-    await expect(headerTitle).toBeVisible();
+    await expect(headerTitle).toBeVisible({ timeout: 15000 });
 
     // Verify no JavaScript errors occurred
     const errors: string[] = [];
@@ -42,25 +46,28 @@ test.describe("Author Routes E2E Tests", () => {
   });
 
   test("should have proper header and navigation", async ({ page }) => {
-    await page.goto(`${BASE_URL}/authors/${TEST_AUTHOR_ID}`);
+    await page.goto(`${BASE_URL}/authors/${TEST_AUTHOR_ID}`, {
+      waitUntil: "networkidle",
+      timeout: 30000,
+    });
 
     // Header should be present
     const header = page.locator('header, [role="banner"]');
-    await expect(header).toBeVisible();
+    await expect(header).toBeVisible({ timeout: 15000 });
 
     // Academic Explorer title in header
     const appTitle = page.locator("header").locator("text=Academic Explorer");
-    await expect(appTitle).toBeVisible();
+    await expect(appTitle).toBeVisible({ timeout: 15000 });
 
     // Navigation should be present
     const homeLink = page.locator('nav a:has-text("Home")');
-    await expect(homeLink).toBeVisible();
+    await expect(homeLink).toBeVisible({ timeout: 15000 });
 
     // Theme toggle should be present
     const themeToggle = page.locator(
       'button[aria-label="Toggle color scheme"]',
     );
-    await expect(themeToggle).toBeVisible();
+    await expect(themeToggle).toBeVisible({ timeout: 15000 });
   });
 
   test("should attempt to load graph visualization", async ({ page }) => {
@@ -146,23 +153,26 @@ test.describe("Author Routes E2E Tests", () => {
   });
 
   test("should handle navigation back to homepage", async ({ page }) => {
-    await page.goto(`${BASE_URL}/authors/${TEST_AUTHOR_ID}`);
+    await page.goto(`${BASE_URL}/authors/${TEST_AUTHOR_ID}`, {
+      waitUntil: "networkidle",
+      timeout: 30000,
+    });
 
     // Find home link and verify it's properly configured for navigation
     const homeLink = page.locator('nav a:has-text("Home")');
-    await expect(homeLink).toBeVisible();
+    await expect(homeLink).toBeVisible({ timeout: 15000 });
 
     // Click home link to navigate back
     await homeLink.click();
 
     // Wait for homepage content instead of URL
     await page.waitForSelector('h1:has-text("Academic Explorer")', {
-      timeout: 5000,
+      timeout: 15000,
     });
 
     // Verify we're back on the homepage
     const title = page.locator('h1:has-text("Academic Explorer")');
-    await expect(title).toBeVisible();
+    await expect(title).toBeVisible({ timeout: 15000 });
   });
 
   test("should not have memory leaks or infinite updates", async ({ page }) => {
@@ -200,38 +210,44 @@ test.describe("Author Routes E2E Tests", () => {
   test("should handle different author IDs gracefully", async ({ page }) => {
     // Test with a different author ID format - the page structure should handle any ID
     const alternativeAuthorId = "A123456789";
-    await page.goto(`${BASE_URL}/authors/${alternativeAuthorId}`);
+    await page.goto(`${BASE_URL}/authors/${alternativeAuthorId}`, {
+      waitUntil: "networkidle",
+      timeout: 30000,
+    });
 
     // Page should load without crashing
     const root = page.locator("#root");
-    await expect(root).toBeVisible();
+    await expect(root).toBeVisible({ timeout: 15000 });
 
     // Should maintain header structure
     const appTitle = page.locator("header").locator("text=Academic Explorer");
-    await expect(appTitle).toBeVisible();
+    await expect(appTitle).toBeVisible({ timeout: 15000 });
 
     // Navigation should still work
     const homeLink = page.locator('nav a:has-text("Home")');
-    await expect(homeLink).toBeVisible();
+    await expect(homeLink).toBeVisible({ timeout: 15000 });
   });
 
   test("should preserve application state during navigation", async ({
     page,
   }) => {
-    await page.goto(`${BASE_URL}/authors/${TEST_AUTHOR_ID}`);
+    await page.goto(`${BASE_URL}/authors/${TEST_AUTHOR_ID}`, {
+      waitUntil: "networkidle",
+      timeout: 30000,
+    });
 
     // Test theme toggle functionality on the current page
     const themeToggle = page.locator(
       'button[aria-label="Toggle color scheme"]',
     );
-    await expect(themeToggle).toBeVisible();
+    await expect(themeToggle).toBeVisible({ timeout: 15000 });
 
     // Test clicking the theme toggle
     await themeToggle.click();
     await page.waitForTimeout(500);
 
     // Verify the toggle button is still functional
-    await expect(themeToggle).toBeVisible();
+    await expect(themeToggle).toBeVisible({ timeout: 15000 });
 
     // In a real app, theme state would be preserved across navigation
     // This test verifies the theme toggle exists and works

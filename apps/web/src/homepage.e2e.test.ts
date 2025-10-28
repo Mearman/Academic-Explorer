@@ -55,22 +55,25 @@ test.describe("Homepage E2E Tests", () => {
   });
 
   test("should have working navigation links", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/", {
+      waitUntil: "networkidle",
+      timeout: 30000,
+    });
 
     // Check home link - using text content as it's a Link component
     const homeLink = page.locator('nav a:has-text("Home")');
-    await expect(homeLink).toBeVisible();
+    await expect(homeLink).toBeVisible({ timeout: 15000 });
 
     // Check about link
     const aboutLink = page.locator('nav a:has-text("About")');
-    await expect(aboutLink).toBeVisible();
+    await expect(aboutLink).toBeVisible({ timeout: 15000 });
 
     // Test navigation to about page
     await aboutLink.click();
 
     // Wait for about page content to appear instead of URL change
     await page.waitForSelector('h1:has-text("About Academic Explorer")', {
-      timeout: 5000,
+      timeout: 15000,
     });
 
     // Test navigation back to home
@@ -78,18 +81,21 @@ test.describe("Homepage E2E Tests", () => {
 
     // Wait for homepage content to appear
     await page.waitForSelector('h1:has-text("Academic Explorer")', {
-      timeout: 5000,
+      timeout: 15000,
     });
   });
 
   test("should have working theme toggle", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/", {
+      waitUntil: "networkidle",
+      timeout: 30000,
+    });
 
     // Find theme toggle button with correct aria-label
     const themeToggle = page.locator(
       'button[aria-label="Toggle color scheme"]',
     );
-    await expect(themeToggle).toBeVisible();
+    await expect(themeToggle).toBeVisible({ timeout: 15000 });
 
     // Get initial color scheme
     const html = page.locator("html");

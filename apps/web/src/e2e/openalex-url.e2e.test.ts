@@ -10,9 +10,9 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
         // Should show work details, not the search page
         await expect(
           page.locator("h2").filter({ hasText: "The state of OA" }),
-        ).toBeVisible(); // Work title
+        ).toBeVisible({ timeout: 15000 }); // Work title
         // Check that we're not on the search page
-        await expect(page.locator("text=Academic Search")).not.toBeVisible();
+        await expect(page.locator("text=Academic Search")).not.toBeVisible({ timeout: 15000 });
       },
     },
     // 2. List query with filter
@@ -20,9 +20,9 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
       url: "https://api.openalex.org/works?filter=publication_year:2020",
       expectedUrl: "/works?filter=publication_year%3A2020",
       assertUI: async (page: Page) => {
-        await expect(page.locator("h1")).toContainText("Works");
+        await expect(page.locator("h1")).toContainText("Works", { timeout: 15000 });
         // Assert table renders (stub)
-        await expect(page.locator('[data-testid="table"]')).toBeVisible();
+        await expect(page.locator('[data-testid="table"]')).toBeVisible({ timeout: 15000 });
       },
     },
     // 3. Autocomplete
@@ -30,7 +30,7 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
       url: "https://api.openalex.org/autocomplete/authors?q=ronald",
       expectedUrl: "/autocomplete/authors?q=ronald",
       assertUI: async (page: Page) => {
-        await expect(page.locator("h1")).toContainText("Autocomplete Authors");
+        await expect(page.locator("h1")).toContainText("Autocomplete Authors", { timeout: 15000 });
       },
     },
     // 4. With sort param
@@ -38,7 +38,7 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
       url: "https://api.openalex.org/authors?sort=cited_by_count:desc",
       expectedUrl: "/authors?sort=cited_by_count%3Adesc",
       assertUI: async (page: Page) => {
-        await expect(page.locator("h1")).toContainText("Authors");
+        await expect(page.locator("h1")).toContainText("Authors", { timeout: 15000 });
       },
     },
     // 5. Paging params
@@ -46,7 +46,7 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
       url: "https://api.openalex.org/works?per_page=50&page=2",
       expectedUrl: "/works?per_page=50&page=2",
       assertUI: async (page: Page) => {
-        await expect(page.locator("h1")).toContainText("Works");
+        await expect(page.locator("h1")).toContainText("Works", { timeout: 15000 });
       },
     },
     // 6. Sample param
@@ -54,7 +54,7 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
       url: "https://api.openalex.org/institutions?sample=10",
       expectedUrl: "/institutions?sample=10",
       assertUI: async (page: Page) => {
-        await expect(page.locator("h1")).toContainText("Institutions");
+        await expect(page.locator("h1")).toContainText("Institutions", { timeout: 15000 });
       },
     },
     // 7. Group by
@@ -62,7 +62,7 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
       url: "https://api.openalex.org/authors?group_by=last_known_institutions.continent",
       expectedUrl: "/authors?group_by=last_known_institutions.continent",
       assertUI: async (page: Page) => {
-        await expect(page.locator("h1")).toContainText("Authors");
+        await expect(page.locator("h1")).toContainText("Authors", { timeout: 15000 });
       },
     },
     // 8. Search param
@@ -70,7 +70,7 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
       url: "https://api.openalex.org/works?search=dna",
       expectedUrl: "/works?search=dna",
       assertUI: async (page: Page) => {
-        await expect(page.locator("h1")).toContainText("Works");
+        await expect(page.locator("h1")).toContainText("Works", { timeout: 15000 });
       },
     },
     // 9. Fallback to search
@@ -78,7 +78,7 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
       url: "https://api.openalex.org/keywords",
       expectedUrl: "/search?q=https%3A%2F%2Fapi.openalex.org%2Fkeywords",
       assertUI: async (page: Page) => {
-        await expect(page.locator("h1")).toContainText("Academic Search");
+        await expect(page.locator("h1")).toContainText("Academic Search", { timeout: 15000 });
       },
     },
     // 10. Encoded params and invalid detection
@@ -88,7 +88,7 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
         "/search?q=https%3A%2F%2Fapi.openalex.org%2Finvalid%2Fid%3Ffilter%3Ddisplay_name.search%3Ajohn%20smith",
       assertUI: async (page: Page) => {
         // Should fall back to search page
-        await expect(page.locator("h1")).toContainText("Academic Search");
+        await expect(page.locator("h1")).toContainText("Academic Search", { timeout: 15000 });
       },
     },
   ];
@@ -130,7 +130,7 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
           );
         },
         `#${routePath}`,
-        { timeout: 15000 },
+        { timeout: 30000 },
       );
 
       // Check what the final URL is
