@@ -69,7 +69,6 @@ if (typeof process !== "undefined" && process.env.VITEST) {
   // The vitest environment should be set to jsdom for component tests
   await import("@testing-library/jest-dom/vitest");
 
-  const { enableMapSet } = await import("immer");
   await import("vitest-axe/extend-expect");
   const { resetMockServer, startMockServer, stopMockServer } = await import(
     "./msw/server"
@@ -84,8 +83,7 @@ if (typeof process !== "undefined" && process.env.VITEST) {
     process.setMaxListeners(50);
   }
 
-  // Enable Immer plugins for test environment
-  enableMapSet();
+  // Immer enableMapSet() removed - not needed since we're not using Zustand/Immer anymore
 
   // Environment-aware DOM mocking (only for jsdom environment)
   if (typeof window !== "undefined") {
