@@ -95,10 +95,7 @@ export const createIndexedDBStorage = (
 		getItem: async (name: string): Promise<string | null> => {
 			if (!useIndexedDB) {
 				const value = memoryStorage.get(name) ?? null
-				logger?.debug("storage", "Retrieved item from memory storage", {
-					name,
-					hasValue: value !== null,
-				})
+				logger?.debug("storage", "Retrieved item from memory storage", { name })
 				return value
 			}
 
@@ -106,10 +103,7 @@ export const createIndexedDBStorage = (
 				const db = await getDB(config)
 				const item = await db.keyValueStore.get({ key: name })
 				const value = item?.value ?? null
-				logger?.debug("storage", "Retrieved item from IndexedDB", {
-					name,
-					hasValue: value !== null,
-				})
+				logger?.debug("storage", "Retrieved item from IndexedDB", { name })
 				return value
 			} catch (error) {
 				logger?.error("storage", "Failed to get item from IndexedDB", {
