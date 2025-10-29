@@ -30,6 +30,7 @@ import { Route as KeywordsIndexRouteImport } from './routes/keywords/index'
 import { Route as InstitutionsIndexRouteImport } from './routes/institutions/index'
 import { Route as FundersIndexRouteImport } from './routes/funders/index'
 import { Route as ConceptsIndexRouteImport } from './routes/concepts/index'
+import { Route as ConceptsConceptIdRouteImport } from './routes/concepts/$conceptId'
 import { Route as AutocompleteIndexRouteImport } from './routes/autocomplete/index'
 import { Route as AuthorsIndexRouteImport } from './routes/authors/index'
 import { Route as WorksWorkIdRouteImport } from './routes/works/$workId'
@@ -173,6 +174,13 @@ const ConceptsIndexRoute = ConceptsIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/concepts/index.lazy').then((d) => d.Route),
+)
+const ConceptsConceptIdRoute = ConceptsConceptIdRouteImport.update({
+  id: '/concepts/$conceptId',
+  path: '/concepts/$conceptId',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/concepts/$conceptId.lazy').then((d) => d.Route),
 )
 const AutocompleteIndexRoute = AutocompleteIndexRouteImport.update({
   id: '/autocomplete/',
@@ -375,6 +383,7 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/api-openalex-org/$': typeof ApiOpenalexOrgSplatRoute
   '/authors/$authorId': typeof AuthorsAuthorIdRoute
+  '/concepts/$conceptId': typeof ConceptsConceptIdRoute
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
   '/evaluation/results': typeof EvaluationResultsRoute
   '/explore/graph': typeof ExploreGraphRoute
@@ -428,6 +437,7 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/api-openalex-org/$': typeof ApiOpenalexOrgSplatRoute
   '/authors/$authorId': typeof AuthorsAuthorIdRoute
+  '/concepts/$conceptId': typeof ConceptsConceptIdRoute
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
   '/evaluation/results': typeof EvaluationResultsRoute
   '/explore/graph': typeof ExploreGraphRoute
@@ -482,6 +492,7 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/api-openalex-org/$': typeof ApiOpenalexOrgSplatRoute
   '/authors/$authorId': typeof AuthorsAuthorIdRoute
+  '/concepts/$conceptId': typeof ConceptsConceptIdRoute
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
   '/evaluation/results': typeof EvaluationResultsRoute
   '/explore/graph': typeof ExploreGraphRoute
@@ -537,6 +548,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/api-openalex-org/$'
     | '/authors/$authorId'
+    | '/concepts/$conceptId'
     | '/evaluation/datasets'
     | '/evaluation/results'
     | '/explore/graph'
@@ -590,6 +602,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/api-openalex-org/$'
     | '/authors/$authorId'
+    | '/concepts/$conceptId'
     | '/evaluation/datasets'
     | '/evaluation/results'
     | '/explore/graph'
@@ -643,6 +656,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/api-openalex-org/$'
     | '/authors/$authorId'
+    | '/concepts/$conceptId'
     | '/evaluation/datasets'
     | '/evaluation/results'
     | '/explore/graph'
@@ -697,6 +711,7 @@ export interface RootRouteChildren {
   SearchRoute: typeof SearchRoute
   ApiOpenalexOrgSplatRoute: typeof ApiOpenalexOrgSplatRoute
   AuthorsAuthorIdRoute: typeof AuthorsAuthorIdRoute
+  ConceptsConceptIdRoute: typeof ConceptsConceptIdRoute
   FundersFunderIdRoute: typeof FundersFunderIdRoute
   HttpsSplatRoute: typeof HttpsSplatRoute
   InstitutionsInstitutionIdRoute: typeof InstitutionsInstitutionIdRoute
@@ -980,6 +995,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthorsAuthorIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/concepts/$conceptId': {
+      id: '/concepts/$conceptId'
+      path: '/concepts/$conceptId'
+      fullPath: '/concepts/$conceptId'
+      preLoaderRoute: typeof ConceptsConceptIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api-openalex-org/$': {
       id: '/api-openalex-org/$'
       path: '/api-openalex-org/$'
@@ -1135,6 +1157,7 @@ const rootRouteChildren: RootRouteChildren = {
   SearchRoute: SearchRoute,
   ApiOpenalexOrgSplatRoute: ApiOpenalexOrgSplatRoute,
   AuthorsAuthorIdRoute: AuthorsAuthorIdRoute,
+  ConceptsConceptIdRoute: ConceptsConceptIdRoute,
   FundersFunderIdRoute: FundersFunderIdRoute,
   HttpsSplatRoute: HttpsSplatRoute,
   InstitutionsInstitutionIdRoute: InstitutionsInstitutionIdRoute,
