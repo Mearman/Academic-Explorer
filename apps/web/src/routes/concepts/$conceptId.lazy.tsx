@@ -57,11 +57,7 @@ function ConceptRoute() {
           <h1 className="text-2xl font-bold mb-2">{concept?.display_name || "Concept"}</h1>
           <div className="text-sm text-gray-600 mb-4">
             <strong>Concept ID:</strong> {conceptId}<br />
-            {selectParam && (
-              <>
-                <strong>Select fields:</strong> {selectParam}
-              </>
-            )}
+            <strong>Select fields:</strong> {selectParam && typeof selectParam === 'string' ? selectParam : 'default (all fields)'}
           </div>
           <button
             onClick={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}

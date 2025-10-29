@@ -150,6 +150,18 @@ export function EntityList({
           filters: urlFilters as InstitutionsFilters | undefined,
         });
         break;
+      case "concepts":
+        response = await openAlex.client.concepts.getConcepts({
+          per_page: perPage,
+          page: currentPage,
+        });
+        break;
+      case "topics":
+        response = await openAlex.client.topics.getMultiple({
+          per_page: perPage,
+          page: currentPage,
+        });
+        break;
       default:
         throw new Error(`Unsupported entity type: ${entityType}`);
     }
