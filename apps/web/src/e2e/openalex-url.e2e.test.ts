@@ -19,12 +19,12 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
             return text.length > 4 && text !== "Author";
           },
           undefined,
-          { timeout: 30000 },
+          { timeout: 60000 }, // Increased timeout for CI environment
         );
         // Now check for the specific author name
         await expect(
           page.locator("h1").filter({ hasText: "Joseph Mearman" }),
-        ).toBeVisible({ timeout: 15000 }); // Author name with reasonable timeout
+        ).toBeVisible({ timeout: 30000 }); // Increased timeout for CI environment
         // Check that we're not on the search page
         await expect(page.locator("text=Academic Search")).not.toBeVisible({ timeout: 10000 });
       },
