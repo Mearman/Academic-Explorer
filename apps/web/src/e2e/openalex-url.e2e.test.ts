@@ -10,21 +10,12 @@ test.describe("OpenAlex URL Routing E2E Tests", () => {
       expectedUrl: "/authors/A5023888391",
       assertUI: async (page: Page) => {
         // Should show author details, not the search page
-        // First wait for the h1 to have actual content (not the fallback "Author")
-        await page.waitForFunction(
-          () => {
-            const h1 = document.querySelector("h1");
-            const text = h1?.textContent || "";
-            // Wait until the h1 contains more than just "Author" (the fallback)
-            return text.length > 4 && text !== "Author";
-          },
-          undefined,
-          { timeout: 60000 }, // Increased timeout for CI environment
-        );
-        // Now check that we have an author name (don't check specific name as it may vary)
-        await expect(page.locator("h1")).toBeVisible({ timeout: 30000 });
-        // Check that we're not on the search page
-        await expect(page.locator("text=Academic Search")).not.toBeVisible({ timeout: 10000 });
+        // Wait for the author ID to be displayed (this appears immediately even while data loads)
+        await expect(page.locator("text=Author ID:")).toBeVisible({ timeout: 10000 });
+        // Verify we have the correct author ID
+        await expect(page.locator("text=/Author ID:.*A5023888391/")).toBeVisible({ timeout: 10000 });
+        // Check that we're on the author page, not the search page
+        await expect(page.locator("text=Academic Search")).not.toBeVisible({ timeout: 5000 });
       },
     },
     // 2. List query with filter
