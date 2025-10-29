@@ -25,11 +25,12 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
   return {
     ...actual,
     useParams: vi.fn(),
+    useSearch: vi.fn(),
   };
 });
 
 // Import after mocks
-import { useParams } from "@tanstack/react-router";
+import { useParams, useSearch } from "@tanstack/react-router";
 import InstitutionRoute from "./$institutionId.lazy";
 
 // Synthetic mock data for institution
@@ -56,6 +57,9 @@ describe("InstitutionRoute Integration Tests", () => {
 
     // Mock useParams
     vi.mocked(useParams).mockReturnValue({ institutionId: "I123" });
+
+    // Mock useSearch
+    vi.mocked(useSearch).mockReturnValue({});
 
     // Mock successful API response by default
     vi.mocked(cachedOpenAlex.client.institutions.getInstitution).mockResolvedValue(

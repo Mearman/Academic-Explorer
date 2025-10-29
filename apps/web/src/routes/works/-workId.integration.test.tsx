@@ -25,11 +25,12 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
   return {
     ...actual,
     useParams: vi.fn(),
+    useSearch: vi.fn(),
   };
 });
 
 // Import after mocks
-import { useParams } from "@tanstack/react-router";
+import { useParams, useSearch } from "@tanstack/react-router";
 import { Route as WorkRouteExport } from "./$workId.lazy";
 
 // Extract the component from the lazy route
@@ -58,6 +59,9 @@ describe("WorkRoute Integration Tests", () => {
 
     // Mock useParams
     vi.mocked(useParams).mockReturnValue({ workId: "W123" });
+
+    // Mock useSearch
+    vi.mocked(useSearch).mockReturnValue({});
 
     // Mock successful API response by default
     vi.mocked(cachedOpenAlex.client.works.getWork).mockResolvedValue(
