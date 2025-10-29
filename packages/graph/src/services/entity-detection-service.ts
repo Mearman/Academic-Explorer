@@ -123,7 +123,11 @@ export class EntityDetectionService {
 		{
 			name: "ISSN",
 			entityType: "sources",
-			patterns: [/^(\d{4}-\d{3}[0-9X])$/i, /^ISSN\s*:?\s*(\d{4}-\d{3}[0-9X])$/i],
+			patterns: [
+			/^issn:(\d{4}-\d{3}[0-9X])$/i, // issn: prefix format
+			/^(\d{4}-\d{3}[0-9X])$/i, // bare format
+			/^ISSN\s*:?\s*(\d{4}-\d{3}[0-9X])$/i, // ISSN: label format
+		],
 			normalize: (match: string): string | null => {
 				const issnMatch = match.match(/(\d{4}-\d{3}[0-9X])/i)
 				if (issnMatch) {

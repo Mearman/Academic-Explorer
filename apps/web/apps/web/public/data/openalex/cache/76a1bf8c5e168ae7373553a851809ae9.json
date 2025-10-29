@@ -1,0 +1,722 @@
+{
+  "data": {
+    "id": "https://openalex.org/C71924100",
+    "wikidata": "https://www.wikidata.org/wiki/Q11190",
+    "display_name": "Medicine",
+    "level": 0,
+    "description": "field of study for diagnosing, treating and preventing disease",
+    "works_count": 66049309,
+    "cited_by_count": 877058607,
+    "summary_stats": {
+      "2yr_mean_citedness": 1.7852312704381614,
+      "h_index": 3335,
+      "i10_index": 14554132
+    },
+    "ids": {
+      "openalex": "https://openalex.org/C71924100",
+      "wikidata": "https://www.wikidata.org/wiki/Q11190",
+      "mag": "71924100",
+      "wikipedia": "https://en.wikipedia.org/wiki/Medicine",
+      "umls_cui": [
+        "C0013227"
+      ]
+    },
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/d2/Asklepios.3.jpg",
+    "image_thumbnail_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Asklepios.3.jpg/66px-Asklepios.3.jpg",
+    "international": {
+      "display_name": {
+        "aeb-arab": "طب",
+        "af": "geneeskunde",
+        "am": "ሕክምና",
+        "an": "medecina",
+        "ar": "طب",
+        "arc": "ܐܣܝܘܬܐ",
+        "arz": "طب",
+        "as": "চিকিৎসা বিজ্ঞান",
+        "ast": "medicina",
+        "ay": "Qulla",
+        "az": "tibb",
+        "ba": "Медицина",
+        "bcl": "Pagbulong",
+        "be": "медыцына",
+        "be-tarask": "мэдыцына",
+        "bg": "медицина",
+        "bho": "डाक्टरी (बिद्या)",
+        "bi": "Medisin",
+        "bm": "Dɔkɔtɔrɔya",
+        "bn": "চিকিৎসা বিজ্ঞান",
+        "bo": "སྨན།",
+        "bpy": "চিকিৎসা বিজ্ঞান",
+        "br": "Mezegiezh",
+        "bs": "Medicina",
+        "bxr": "Анагааха ухаан",
+        "ca": "medicina",
+        "cdo": "Ĭ-hŏk",
+        "ce": "Медицина",
+        "ceb": "Medisina",
+        "chr": "ᏅᏬᏘ",
+        "ckb": "پزیشکی",
+        "co": "Medicina",
+        "crh": "tibbiyet",
+        "cs": "lékařství",
+        "csb": "Medicëna",
+        "cv": "Медицина",
+        "cy": "Meddygaeth",
+        "da": "lægevidenskab",
+        "de": "Medizin",
+        "de-ch": "Medizin",
+        "diq": "Tıb",
+        "el": "ιατρική",
+        "en": "medicine",
+        "en-ca": "Medicine",
+        "en-gb": "medicine",
+        "eo": "medicino",
+        "es": "medicina",
+        "et": "meditsiin",
+        "eu": "medikuntza",
+        "ext": "medecina",
+        "fa": "پزشکی",
+        "fi": "lääketiede",
+        "fo": "Læknafrøði",
+        "fr": "médecine",
+        "frc": "médecine",
+        "frp": "Mèdecina",
+        "fur": "Midisine",
+        "fy": "genêskunde",
+        "ga": "míochaine",
+        "gcr": "Médsin",
+        "gd": "Eòlas-leighis",
+        "gl": "medicina",
+        "gsw": "Medizin",
+        "gv": "Lheeys",
+        "hak": "Yî-ho̍k",
+        "he": "רפואה",
+        "hi": "आयुर्विज्ञान",
+        "hif": "Dawai",
+        "hr": "medicina",
+        "hsb": "medicina",
+        "ht": "Medsin",
+        "hu": "orvostudomány",
+        "hy": "բժշկություն",
+        "hyw": "Բժշկութիւն",
+        "ia": "medicina",
+        "id": "kedokteran",
+        "ie": "Medicina",
+        "ilo": "medisina",
+        "inh": "Лорал",
+        "io": "medicino",
+        "is": "Læknisfræði",
+        "it": "medicina",
+        "iu": "ᑖᒃᑎ",
+        "ja": "医学",
+        "jam": "Medisn",
+        "jv": "Kedhokteran",
+        "ka": "მედიცინა",
+        "kaa": "Meditsina",
+        "kab": "Tasnujjya",
+        "kk": "Медицина",
+        "kn": "ವೈದ್ಯವಿಜ್ಞಾನ",
+        "ko": "의학",
+        "ku": "bijîşkî",
+        "ku-latn": "bijîşkî",
+        "kw": "Medhegneth",
+        "ky": "Медицина",
+        "la": "Medicina",
+        "lad": "Medisina",
+        "lb": "Medezin",
+        "lfn": "medica",
+        "li": "Genaeskónde",
+        "lij": "Mëxinn-a",
+        "lo": "ແພດສາດ",
+        "lt": "Medicina",
+        "lv": "medicīna",
+        "min": "Kadokteran",
+        "mk": "медицина",
+        "ml": "വൈദ്യം",
+        "mn": "Анагаах ухаан",
+        "mni": "ꯍꯤꯗꯥꯛꯂꯣꯟ",
+        "mr": "वैद्यकशास्त्र",
+        "ms": "perubatan",
+        "ms-arab": "ڤراوبتن",
+        "mt": "mediċina",
+        "mwl": "Medecina",
+        "my": "ဆေးပညာ",
+        "nah": "Tīciyōtl",
+        "nan": "I-ha̍k",
+        "nap": "Mericina",
+        "nb": "medisin",
+        "nds": "Medizin",
+        "nds-nl": "Genaeskeunde",
+        "ne": "चिकित्साशास्त्र",
+        "new": "वासः",
+        "nl": "geneeskunde",
+        "nn": "medisin",
+        "nov": "medisine",
+        "oc": "Medecina",
+        "or": "ଚିକିତ୍ସା ବିଜ୍ଞାନ",
+        "os": "медицинæ",
+        "pa": "ਔਸ਼ਧੀ ਵਿਗਿਆਨ",
+        "pcd": "Médecinne",
+        "pih": "medisin",
+        "pl": "medycyna",
+        "pnb": "دوائی",
+        "ps": "درملګري",
+        "pt": "medicina",
+        "pt-br": "medicina",
+        "qu": "Hampi yachay",
+        "rm": "Medischina",
+        "ro": "medicină",
+        "ru": "медицина",
+        "rue": "Медіціна",
+        "sa": "आयुर्विज्ञान",
+        "sah": "Медицина",
+        "sat": "ᱛᱷᱚᱠ:ᱛᱤᱠᱪᱷᱟᱹ ᱥᱟᱬᱮᱥ",
+        "sc": "Meighina",
+        "scn": "Midicina",
+        "sco": "medicin",
+        "sd": "طب",
+        "sgs": "Medėcėna",
+        "sh": "medicina",
+        "shi": "amjjay",
+        "si": "වෛද්‍ය විද්‍යාව",
+        "sk": "Medicína",
+        "sl": "medicina",
+        "so": "Daawo",
+        "sq": "mjekësi",
+        "sr": "медицина",
+        "sr-ec": "медицина",
+        "sr-el": "medicina",
+        "stq": "Heelkunde",
+        "su": "Tatamba",
+        "sv": "medicinsk vetenskap",
+        "sw": "Tiba",
+        "ta": "மருத்துவம்",
+        "te": "వైద్యశాస్త్రము",
+        "tg": "пизишкӣ",
+        "th": "แพทยศาสตร์",
+        "ti": "ሕክምና",
+        "tl": "Panggagamot",
+        "tr": "tıp",
+        "ts": "Vutshunguri",
+        "tt": "Медицина",
+        "uk": "медицина",
+        "ur": "طب",
+        "uz": "Tibbiyot",
+        "vec": "medezina",
+        "vi": "y học",
+        "vo": "sanav",
+        "vro": "Arstitiidüs",
+        "wa": "Medcene",
+        "war": "Medisina",
+        "wo": "Paj",
+        "wuu": "醫學",
+        "xmf": "მედიცინა",
+        "yi": "מעדיצין",
+        "yue": "醫學",
+        "za": "Ywhag",
+        "zh": "医学",
+        "zh-cn": "医学",
+        "zh-hant": "醫學",
+        "zh-hk": "醫學"
+      },
+      "description": {
+        "aeb-arab": "علم و صنعة تطليع المرض و مداويته",
+        "ar": "مجال لدراسة التشخيص والعلاج والوقاية من المرض",
+        "ast": "campu d'estudios pa diagnosticar, tratar y prevenir les enfermedaes humanes",
+        "be": "Навука пра лячэнне хвароб",
+        "be-tarask": "навука па выяўленьні, пазьбяганьні і лячэньні хваробаў",
+        "bg": "наука за диагностициране, лечение и предотвратяване на болести и наранявания",
+        "ca": "camp d'estudi per diagnosticar, tractar i prevenir la malaltia",
+        "cs": "věda, zabývající se diagnostikou, léčením a prevencí vzniku nemocí",
+        "da": "videnskaben og praksis afsat til at forebygge, diagnosticere og behandle sygdomme, og for at bevare menneskers sundhed og for at undgå døden",
+        "de": "Lehre der Vorbeugung, Erkennung und Behandlung von Krankheiten",
+        "el": "επιστήμη και τέχνη που ασχολείται με την έρευνα και την εφαρμογή μεθόδων και τεχνικών για την πρόληψη, τη διάγνωση και τη θεραπεία των ασθενειών του ανθρώπου",
+        "en": "field of study for diagnosing, treating and preventing disease",
+        "eo": "scienco kaj arto pri la sano de homoj kaj bestoj",
+        "es": "estudio de la vida, la salud, las enfermedades y la muerte del ser humano",
+        "fa": "شاخه مطالعاتی در مورد تشخیص، درمان و پیشگیری بیماری",
+        "fi": "tieteen ja terveydenhuollon ala, joka tutkii ja hoitaa ihmisen terveysongelmia",
+        "fr": "science et pratique étudiant l'organisation du corps humain, son fonctionnement normal et cherchant à soigner et prévenir ses pathologies",
+        "gl": "ciencia dedicada ao estudo da vida, a saúde, as enfermidades e a morte do ser humano",
+        "he": "תחום ידע כללי המאגד דרכים בכדי לשמר את הבריאות מפני מחלות הפוגעות בגוף",
+        "hi": "मानव शरीर के अध्ययन व उसकी व्याधियों के निदान का विज्ञान",
+        "hr": "znanost o sprječavanju, otkrivanju i liječenju bolesti",
+        "hsb": "wědomosć profylaksy, spóznawanja a lěkowanja chorosćow",
+        "hu": "tudományág",
+        "id": "kajian atau praktik diagnosis, pengobatan, dan pencegahan penyakit",
+        "ilo": "arte iti panangagas",
+        "it": "scienza che si occupa della salute delle persone",
+        "ja": "生体（人体）の構造や機能、疾病について研究し、疾病を診断・治療・予防する方法を開発する学問",
+        "ko": "질병의 진료와 치료를 목적으로 하는 학문",
+        "la": "scientia",
+        "ms": "sains tentang pengesanan, rawatan dan pencegahan penyakit",
+        "nl": "wetenschap die zich bezighoudt met voorkomen, diagnosticeren en behandelen van ziekten",
+        "pl": "nauka empiryczna o diagnozowaniu, leczeniu i zapobieganiu chorobom",
+        "pt": "ciência que busca a prevenção e cura de enfermidades",
+        "pt-br": "ciência ou prática do diagnóstico, tratamento e prevenção das doenças",
+        "ro": "domeniul de studiu pentru diagnosticarea, tratarea și prevenirea bolilor",
+        "ru": "область деятельности и знаний о лечении болезней",
+        "sk": "veda, ktorá sa zaoberá rozpoznávaním, liečením a prevenciou chorôb",
+        "sq": "fushë e studimit për diagnostifikimin, trajtimin dhe parandalimin e sëmundjeve",
+        "sv": "den vetenskap och praktik som ägnar sig åt att förhindra, diagnostisera och behandla sjukdomar, samt att upprätthålla mänsklig hälsa och att undvika död",
+        "tr": "hastalıkların teşhisi, tedavisi ve önlenmesi için çalışma alanı",
+        "uk": "галузь діяльності, наука чи практика діагностики, лікування, запобігання хвороб, переважно людини",
+        "uz": "aperatsiya",
+        "vec": "Siensa che ła se ocupa de ła sałute dei esari viventi",
+        "zh": "診斷，治療和預防疾病的研究領域"
+      }
+    },
+    "ancestors": [],
+    "related_concepts": [
+      {
+        "id": "https://openalex.org/C141071460",
+        "wikidata": null,
+        "display_name": "Surgery",
+        "level": 1,
+        "score": 104.96226
+      },
+      {
+        "id": "https://openalex.org/C159110408",
+        "wikidata": null,
+        "display_name": "Nursing",
+        "level": 1,
+        "score": 79.02369
+      },
+      {
+        "id": "https://openalex.org/C127413603",
+        "wikidata": null,
+        "display_name": "Engineering",
+        "level": 0,
+        "score": 69.63139
+      },
+      {
+        "id": "https://openalex.org/C199539241",
+        "wikidata": null,
+        "display_name": "Law",
+        "level": 1,
+        "score": 67.21371
+      },
+      {
+        "id": "https://openalex.org/C86803240",
+        "wikidata": null,
+        "display_name": "Biology",
+        "level": 0,
+        "score": 66.43467
+      },
+      {
+        "id": "https://openalex.org/C138885662",
+        "wikidata": null,
+        "display_name": "Philosophy",
+        "level": 0,
+        "score": 61.929935
+      },
+      {
+        "id": "https://openalex.org/C187212893",
+        "wikidata": null,
+        "display_name": "Pediatrics",
+        "level": 1,
+        "score": 57.680614
+      },
+      {
+        "id": "https://openalex.org/C142724271",
+        "wikidata": null,
+        "display_name": "Pathology",
+        "level": 1,
+        "score": 55.289818
+      },
+      {
+        "id": "https://openalex.org/C118552586",
+        "wikidata": null,
+        "display_name": "Psychiatry",
+        "level": 1,
+        "score": 54.235756
+      },
+      {
+        "id": "https://openalex.org/C185592680",
+        "wikidata": null,
+        "display_name": "Chemistry",
+        "level": 0,
+        "score": 52.84301
+      },
+      {
+        "id": "https://openalex.org/C15744967",
+        "wikidata": null,
+        "display_name": "Psychology",
+        "level": 0,
+        "score": 52.07612
+      },
+      {
+        "id": "https://openalex.org/C199343813",
+        "wikidata": null,
+        "display_name": "Dentistry",
+        "level": 1,
+        "score": 51.967052
+      },
+      {
+        "id": "https://openalex.org/C33923547",
+        "wikidata": null,
+        "display_name": "Mathematics",
+        "level": 0,
+        "score": 50.313683
+      },
+      {
+        "id": "https://openalex.org/C121332964",
+        "wikidata": null,
+        "display_name": "Physics",
+        "level": 0,
+        "score": 49.542545
+      },
+      {
+        "id": "https://openalex.org/C42407357",
+        "wikidata": null,
+        "display_name": "Physiology",
+        "level": 1,
+        "score": 43.246902
+      },
+      {
+        "id": "https://openalex.org/C126322002",
+        "wikidata": null,
+        "display_name": "Internal medicine",
+        "level": 1,
+        "score": 38.005802
+      },
+      {
+        "id": "https://openalex.org/C42972112",
+        "wikidata": null,
+        "display_name": "Veterinary medicine",
+        "level": 1,
+        "score": 37.586826
+      },
+      {
+        "id": "https://openalex.org/C1862650",
+        "wikidata": null,
+        "display_name": "Physical therapy",
+        "level": 1,
+        "score": 35.260742
+      },
+      {
+        "id": "https://openalex.org/C105702510",
+        "wikidata": null,
+        "display_name": "Anatomy",
+        "level": 1,
+        "score": 34.528137
+      },
+      {
+        "id": "https://openalex.org/C118487528",
+        "wikidata": null,
+        "display_name": "Ophthalmology",
+        "level": 1,
+        "score": 34.469727
+      },
+      {
+        "id": "https://openalex.org/C36289849",
+        "wikidata": null,
+        "display_name": "Social science",
+        "level": 1,
+        "score": 32.23799
+      },
+      {
+        "id": "https://openalex.org/C29456083",
+        "wikidata": null,
+        "display_name": "Gynecology",
+        "level": 1,
+        "score": 30.138542
+      },
+      {
+        "id": "https://openalex.org/C98274493",
+        "wikidata": null,
+        "display_name": "Pharmacology",
+        "level": 1,
+        "score": 28.947195
+      },
+      {
+        "id": "https://openalex.org/C131872663",
+        "wikidata": null,
+        "display_name": "Obstetrics",
+        "level": 1,
+        "score": 28.515833
+      },
+      {
+        "id": "https://openalex.org/C15708023",
+        "wikidata": null,
+        "display_name": "Humanities",
+        "level": 1,
+        "score": 25.8888
+      },
+      {
+        "id": "https://openalex.org/C150903083",
+        "wikidata": null,
+        "display_name": "Biotechnology",
+        "level": 1,
+        "score": 25.69762
+      },
+      {
+        "id": "https://openalex.org/C169760540",
+        "wikidata": null,
+        "display_name": "Neuroscience",
+        "level": 1,
+        "score": 21.594986
+      },
+      {
+        "id": "https://openalex.org/C126838900",
+        "wikidata": null,
+        "display_name": "Radiology",
+        "level": 1,
+        "score": 19.822334
+      },
+      {
+        "id": "https://openalex.org/C556039675",
+        "wikidata": null,
+        "display_name": "Traditional medicine",
+        "level": 1,
+        "score": 19.685818
+      },
+      {
+        "id": "https://openalex.org/C512399662",
+        "wikidata": null,
+        "display_name": "Family medicine",
+        "level": 1,
+        "score": 18.738947
+      },
+      {
+        "id": "https://openalex.org/C143998085",
+        "wikidata": null,
+        "display_name": "Oncology",
+        "level": 1,
+        "score": 18.646305
+      },
+      {
+        "id": "https://openalex.org/C42219234",
+        "wikidata": null,
+        "display_name": "Anesthesia",
+        "level": 1,
+        "score": 18.243666
+      },
+      {
+        "id": "https://openalex.org/C89423630",
+        "wikidata": null,
+        "display_name": "Microbiology",
+        "level": 1,
+        "score": 17.219149
+      },
+      {
+        "id": "https://openalex.org/C16005928",
+        "wikidata": null,
+        "display_name": "Dermatology",
+        "level": 1,
+        "score": 17.12297
+      },
+      {
+        "id": "https://openalex.org/C194828623",
+        "wikidata": null,
+        "display_name": "Emergency medicine",
+        "level": 1,
+        "score": 16.548315
+      },
+      {
+        "id": "https://openalex.org/C203014093",
+        "wikidata": null,
+        "display_name": "Immunology",
+        "level": 1,
+        "score": 15.333414
+      },
+      {
+        "id": "https://openalex.org/C136229726",
+        "wikidata": null,
+        "display_name": "Biomedical engineering",
+        "level": 1,
+        "score": 13.724577
+      },
+      {
+        "id": "https://openalex.org/C177713679",
+        "wikidata": null,
+        "display_name": "Intensive care medicine",
+        "level": 1,
+        "score": 11.984015
+      },
+      {
+        "id": "https://openalex.org/C509550671",
+        "wikidata": null,
+        "display_name": "Medical education",
+        "level": 1,
+        "score": 10.960836
+      },
+      {
+        "id": "https://openalex.org/C99508421",
+        "wikidata": null,
+        "display_name": "Physical medicine and rehabilitation",
+        "level": 1,
+        "score": 10.425153
+      },
+      {
+        "id": "https://openalex.org/C39432304",
+        "wikidata": null,
+        "display_name": "Environmental science",
+        "level": 0,
+        "score": 8.721579
+      },
+      {
+        "id": "https://openalex.org/C33070731",
+        "wikidata": null,
+        "display_name": "Toxicology",
+        "level": 1,
+        "score": 7.1652966
+      },
+      {
+        "id": "https://openalex.org/C19417346",
+        "wikidata": null,
+        "display_name": "Pedagogy",
+        "level": 1,
+        "score": 7.150355
+      },
+      {
+        "id": "https://openalex.org/C119767625",
+        "wikidata": null,
+        "display_name": "Optometry",
+        "level": 1,
+        "score": 5.244981
+      },
+      {
+        "id": "https://openalex.org/C74909509",
+        "wikidata": null,
+        "display_name": "Gerontology",
+        "level": 1,
+        "score": 4.942619
+      },
+      {
+        "id": "https://openalex.org/C155647269",
+        "wikidata": null,
+        "display_name": "Medicinal chemistry",
+        "level": 1,
+        "score": 4.4052873
+      },
+      {
+        "id": "https://openalex.org/C37621935",
+        "wikidata": null,
+        "display_name": "Agricultural science",
+        "level": 1,
+        "score": 4.359523
+      },
+      {
+        "id": "https://openalex.org/C548259974",
+        "wikidata": null,
+        "display_name": "Audiology",
+        "level": 1,
+        "score": 3.0096674
+      },
+      {
+        "id": "https://openalex.org/C545542383",
+        "wikidata": null,
+        "display_name": "Medical emergency",
+        "level": 1,
+        "score": 2.987898
+      },
+      {
+        "id": "https://openalex.org/C186060115",
+        "wikidata": null,
+        "display_name": "Biological system",
+        "level": 1,
+        "score": 2.4660628
+      },
+      {
+        "id": "https://openalex.org/C16685009",
+        "wikidata": null,
+        "display_name": "Andrology",
+        "level": 1,
+        "score": 1.6032703
+      }
+    ],
+    "counts_by_year": [
+      {
+        "year": 2025,
+        "works_count": 1949483,
+        "oa_works_count": 460425,
+        "cited_by_count": 41723603
+      },
+      {
+        "year": 2024,
+        "works_count": 2508485,
+        "oa_works_count": 1088444,
+        "cited_by_count": 56491720
+      },
+      {
+        "year": 2023,
+        "works_count": 2675726,
+        "oa_works_count": 1660946,
+        "cited_by_count": 57570207
+      },
+      {
+        "year": 2022,
+        "works_count": 2462823,
+        "oa_works_count": 1498911,
+        "cited_by_count": 56583415
+      },
+      {
+        "year": 2021,
+        "works_count": 2673589,
+        "oa_works_count": 1465231,
+        "cited_by_count": 56998669
+      },
+      {
+        "year": 2020,
+        "works_count": 2770202,
+        "oa_works_count": 1372538,
+        "cited_by_count": 51005817
+      },
+      {
+        "year": 2019,
+        "works_count": 2369991,
+        "oa_works_count": 1009255,
+        "cited_by_count": 40693311
+      },
+      {
+        "year": 2018,
+        "works_count": 2284490,
+        "oa_works_count": 905032,
+        "cited_by_count": 36536380
+      },
+      {
+        "year": 2017,
+        "works_count": 2173153,
+        "oa_works_count": 819540,
+        "cited_by_count": 34720741
+      },
+      {
+        "year": 2016,
+        "works_count": 2150239,
+        "oa_works_count": 745079,
+        "cited_by_count": 33013162
+      },
+      {
+        "year": 2015,
+        "works_count": 2122056,
+        "oa_works_count": 662902,
+        "cited_by_count": 32602503
+      },
+      {
+        "year": 2014,
+        "works_count": 2052128,
+        "oa_works_count": 585615,
+        "cited_by_count": 31308545
+      },
+      {
+        "year": 2013,
+        "works_count": 1987218,
+        "oa_works_count": 534338,
+        "cited_by_count": 29280194
+      },
+      {
+        "year": 2012,
+        "works_count": 1892002,
+        "oa_works_count": 469543,
+        "cited_by_count": 27362357
+      }
+    ],
+    "works_api_url": "https://api.openalex.org/works?filter=concepts.id:C71924100",
+    "updated_date": "2025-10-28T02:58:13.478295",
+    "created_date": "2016-06-24"
+  },
+  "headers": {},
+  "timestamp": "2025-10-29T09:06:12.960Z",
+  "url": "https://api.openalex.org/concepts/C71924100"
+}
