@@ -62,6 +62,8 @@ packages/*/coverage
 # Allow third-party and build outputs only
 !**/dist/**
 !**/node_modules/**
+# Allow Vite environment type definitions
+!**/vite-env.d.ts
 
 # TypeScript build info files
 *.tsbuildinfo
