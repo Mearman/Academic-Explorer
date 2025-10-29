@@ -11,3 +11,6 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+// Global constant injected by Vite's define config
+declare const __GITHUB_PAGES__: boolean;

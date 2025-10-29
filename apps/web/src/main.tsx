@@ -55,7 +55,8 @@ initializeNetworkMonitoring();
 initWebVitals();
 
 // Configure static cache URL for GitHub Pages deployment
-if (import.meta.env.VITE_GITHUB_PAGES === "true") {
+// __GITHUB_PAGES__ is defined by Vite's define config (see vite.config.ts)
+if (__GITHUB_PAGES__) {
   cachedOpenAlex.updateConfig({
     staticCacheGitHubPagesUrl:
       "https://mearman.github.io/Academic-Explorer/data/openalex/",

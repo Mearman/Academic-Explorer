@@ -22,9 +22,11 @@ function createWebConfig(): UserConfig {
     // Base path for GitHub Pages deployment
     base: isGitHubPages ? '/Academic-Explorer/' : '/',
 
-    // Define environment variables for the app
+    // Pass GITHUB_PAGES to client code via import.meta.env
+    // Vite automatically exposes env vars as import.meta.env.* if in client code
+    // But we need to manually define this since GITHUB_PAGES doesn't start with VITE_
     define: {
-      'import.meta.env.VITE_GITHUB_PAGES': JSON.stringify(isGitHubPages ? 'true' : 'false'),
+      '__GITHUB_PAGES__': JSON.stringify(isGitHubPages),
     },
 
     // Inherit base configuration properties safely
