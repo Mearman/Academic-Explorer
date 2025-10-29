@@ -64,7 +64,6 @@
     "dev": "tsc -b --watch"
   },
   "dependencies": {
-    "@academic-explorer/types": "workspace:*",
     "@academic-explorer/utils": "workspace:*"
   },
   "devDependencies": {
