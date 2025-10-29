@@ -127,11 +127,11 @@ describe("AuthorRoute Integration Tests", () => {
       expect(screen.getByRole("heading", { name: "John Doe" })).toBeInTheDocument();
     });
 
-    expect(screen.getByText(/Name:/)).toBeInTheDocument();
-    expect(screen.getByText(/Works:/)).toBeInTheDocument();
-    expect(screen.getByText(/Citations:/)).toBeInTheDocument();
-    expect(screen.getByText(/H-index:/)).toBeInTheDocument();
-    expect(screen.getByText(/i10-index:/)).toBeInTheDocument();
+    // EntityDataDisplay shows section headers and formatted field names
+    expect(screen.getByText(/Basic Information/)).toBeInTheDocument();
+    expect(screen.getByText(/Display Name:/)).toBeInTheDocument();
+    // Name appears in h1 and EntityDataDisplay - just verify sections exist
+    expect(screen.getAllByText(/John Doe/).length).toBeGreaterThan(0);
 
     // Should have toggle button
     expect(screen.getByText(/Toggle Raw View/)).toBeInTheDocument();

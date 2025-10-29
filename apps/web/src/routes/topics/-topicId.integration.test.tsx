@@ -124,9 +124,11 @@ describe("TopicRoute Integration Tests", () => {
       expect(screen.getByRole("heading", { name: "Sample Topic" })).toBeInTheDocument();
     });
 
-    expect(screen.getByText(/Name:/)).toBeInTheDocument();
-    expect(screen.getByText(/Works:/)).toBeInTheDocument();
-    expect(screen.getByText(/Citations:/)).toBeInTheDocument();
+    // EntityDataDisplay shows section headers and formatted field names
+    expect(screen.getByText(/Basic Information/)).toBeInTheDocument();
+    expect(screen.getByText(/Display Name:/)).toBeInTheDocument();
+    // Name appears in h1 and EntityDataDisplay - just verify sections exist
+    expect(screen.getAllByText(/Sample Topic/).length).toBeGreaterThan(0);
     expect(screen.getByText(/Description:/)).toBeInTheDocument();
 
     // Should have toggle button

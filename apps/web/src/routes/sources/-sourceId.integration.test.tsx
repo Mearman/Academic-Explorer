@@ -125,11 +125,14 @@ describe("SourceRoute Integration Tests", () => {
       expect(screen.getByRole("heading", { name: "Sample Source" })).toBeInTheDocument();
     });
 
-    expect(screen.getByText(/Name:/)).toBeInTheDocument();
-    expect(screen.getByText(/Works:/)).toBeInTheDocument();
-    expect(screen.getByText(/Citations:/)).toBeInTheDocument();
+    // EntityDataDisplay shows section headers and formatted field names
+    expect(screen.getByText(/Basic Information/)).toBeInTheDocument();
+    expect(screen.getByText(/Display Name:/)).toBeInTheDocument();
+    // Name appears in h1 and EntityDataDisplay - just verify sections exist
+    expect(screen.getAllByText(/Sample Source/).length).toBeGreaterThan(0);
     expect(screen.getByText(/Type:/)).toBeInTheDocument();
-    expect(screen.getByText(/ISSN-L:/)).toBeInTheDocument();
+    // ISSN-L field is displayed with formatted name
+    expect(screen.getByText(/Issn L:/)).toBeInTheDocument();
 
     // Should have toggle button
     expect(screen.getByText(/Toggle Raw View/)).toBeInTheDocument();

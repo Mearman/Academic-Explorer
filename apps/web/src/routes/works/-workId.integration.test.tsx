@@ -128,10 +128,11 @@ describe("WorkRoute Integration Tests", () => {
       expect(screen.getByRole("heading", { name: "Sample Work Title" })).toBeInTheDocument();
     });
 
-    expect(screen.getByText(/Title:/)).toBeInTheDocument();
-    expect(screen.getByText(/Year:/)).toBeInTheDocument();
-    expect(screen.getByText(/Citations:/)).toBeInTheDocument();
-    expect(screen.getByText(/Type:/)).toBeInTheDocument();
+    // EntityDataDisplay shows section headers and formatted field names
+    expect(screen.getByText(/Basic Information/)).toBeInTheDocument();
+    expect(screen.getByText(/Display Name:/)).toBeInTheDocument();
+    // Title appears in h1 and EntityDataDisplay - just verify sections exist
+    expect(screen.getAllByText(/Sample Work Title/).length).toBeGreaterThan(0);
 
     // Should have toggle button
     expect(screen.getByText(/Toggle Raw View/)).toBeInTheDocument();

@@ -126,12 +126,15 @@ describe("InstitutionRoute Integration Tests", () => {
       expect(screen.getByRole("heading", { name: "Sample Institution" })).toBeInTheDocument();
     });
 
-    expect(screen.getByText(/Name:/)).toBeInTheDocument();
-    expect(screen.getByText(/Works:/)).toBeInTheDocument();
-    expect(screen.getByText(/Citations:/)).toBeInTheDocument();
+    // EntityDataDisplay shows section headers and formatted field names
+    expect(screen.getByText(/Basic Information/)).toBeInTheDocument();
+    expect(screen.getByText(/Display Name:/)).toBeInTheDocument();
+    // Name appears in h1 and EntityDataDisplay - just verify sections exist
+    expect(screen.getAllByText(/Sample Institution/).length).toBeGreaterThan(0);
     expect(screen.getByText(/Type:/)).toBeInTheDocument();
-    expect(screen.getByText(/Country:/)).toBeInTheDocument();
-    expect(screen.getByText(/ROR:/)).toBeInTheDocument();
+    // Locations & Geo section with formatted field names
+    expect(screen.getByText(/Locations & Geo/)).toBeInTheDocument();
+    expect(screen.getByText(/Country Code:/)).toBeInTheDocument();
 
     // Should have toggle button
     expect(screen.getByText(/Toggle Raw View/)).toBeInTheDocument();

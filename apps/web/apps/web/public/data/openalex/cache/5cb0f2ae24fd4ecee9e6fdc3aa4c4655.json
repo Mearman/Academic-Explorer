@@ -2,7 +2,7 @@
   "data": {
     "meta": {
       "count": 0,
-      "db_response_time_ms": 1370,
+      "db_response_time_ms": 726,
       "page": 1,
       "per_page": 20,
       "groups_count": null
@@ -11,6 +11,6 @@
     "group_by": []
   },
   "headers": {},
-  "timestamp": "2025-10-28T11:11:22.544Z",
+  "timestamp": "2025-10-29T15:07:07.197Z",
   "url": "https://api.openalex.org/works?search=https%3A%2F%2Fapi.openalex.org%2Finvalid%2Fid&sort=relevance_score%3Adesc&per_page=20&filter=display_name.search%3A%22%5C%22https%3A%2F%2Fapi.openalex.org%2Finvalid%2Fid%5C%22%22&select=id,display_name,authorships,publication_year,cited_by_count,primary_location,open_access,doi"
 }
