@@ -6,19 +6,12 @@ import {
 import { useEffect } from "react";
 import { IconUser } from "@tabler/icons-react";
 import { EntityDetectionService } from "@academic-explorer/graph";
-import { useGraphData } from "@/hooks/use-graph-data";
-import { useGraphStore } from "@/stores/graph-store";
 import { logError, logger } from "@academic-explorer/utils/logger";
 
 
 function ORCIDAuthorRoute() {
   const { orcid } = useParams({ from: "/authors/orcid/$orcid" });
   const navigate = useNavigate();
-  const graphData = useGraphData();
-  const { loadEntity } = graphData;
-  const { loadEntityIntoGraph } = graphData;
-  const graphStore = useGraphStore();
-  const nodeCount = graphStore.totalNodeCount;
 
   useEffect(() => {
     const resolveORCID = async () => {
@@ -36,15 +29,12 @@ function ORCIDAuthorRoute() {
         }
 
         if (detection.entityType === "authors") {
-          // If graph already has nodes, use incremental loading to preserve existing entities
-          if (nodeCount > 0) {
-            await loadEntityIntoGraph(detection.normalizedId);
-          } else {
-            // If graph is empty, use full loading (clears graph for initial load)
-            await loadEntity(detection.normalizedId);
-          }
-
-          // No navigation needed - graph is always visible
+          // Navigate to the standard author route with the resolved OpenAlex ID
+          void navigate({
+            to: "/authors/$authorId",
+            params: { authorId: detection.normalizedId },
+            replace: true,
+          });
         } else {
           throw new Error(
             `Expected author entity but detected ${detection.entityType}: ${decodedORCID}`,
@@ -68,7 +58,7 @@ function ORCIDAuthorRoute() {
     };
 
     void resolveORCID();
-  }, [orcid, navigate, loadEntity, loadEntityIntoGraph, nodeCount]);
+  }, [orcid, navigate]);
 
   return (
     <div
