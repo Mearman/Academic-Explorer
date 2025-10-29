@@ -1,0 +1,30 @@
+{
+  "data": {
+    "id": "https://openalex.org/A5317838346",
+    "orcid": null,
+    "display_name": "Deleted Author ID",
+    "display_name_alternatives": [],
+    "works_count": 0,
+    "cited_by_count": 0,
+    "summary_stats": {
+      "2yr_mean_citedness": 0,
+      "h_index": 0,
+      "i10_index": 0
+    },
+    "ids": {
+      "openalex": "https://openalex.org/A5317838346"
+    },
+    "affiliations": [],
+    "last_known_institutions": [],
+    "topics": [],
+    "topic_share": [],
+    "x_concepts": [],
+    "counts_by_year": [],
+    "works_api_url": "https://api.openalex.org/works?filter=author.id:A5317838346",
+    "updated_date": "2025-07-08T03:05:39.271954",
+    "created_date": "2023-01-24"
+  },
+  "headers": {},
+  "timestamp": "2025-10-29T07:48:31.802Z",
+  "url": "https://api.openalex.org/authors/A5092938886"
+}

@@ -307,8 +307,9 @@ class GitHubPagesCacheTier implements CacheTierInterface {
   private baseUrl: string;
 
   constructor(baseUrl?: string) {
-    this.baseUrl =
-      baseUrl ?? "https://username.github.io/academic-explorer-cache/";
+    // Don't set a default URL - require explicit configuration
+    // This prevents attempting to fetch from non-existent placeholder URLs
+    this.baseUrl = baseUrl ?? "";
   }
   // Track recent failures per URL to avoid repeated bursts against remote
   private recentFailures: Map<
@@ -399,6 +400,12 @@ class GitHubPagesCacheTier implements CacheTierInterface {
   ): Promise<StaticDataResult> {
     const startTime = Date.now();
     this.stats.requests++;
+
+    // Skip if no base URL configured
+    if (!this.baseUrl) {
+      return { found: false };
+    }
+
     const url = this.getUrl(entityType, id);
 
     // If we recently hit repeated failures for this URL, respect cooldown
@@ -533,6 +540,11 @@ class GitHubPagesCacheTier implements CacheTierInterface {
   }
 
   async has(entityType: StaticEntityType, id: string): Promise<boolean> {
+    // Skip if no base URL configured
+    if (!this.baseUrl) {
+      return false;
+    }
+
     try {
       const url = this.getUrl(entityType, id);
       const controller = new AbortController();

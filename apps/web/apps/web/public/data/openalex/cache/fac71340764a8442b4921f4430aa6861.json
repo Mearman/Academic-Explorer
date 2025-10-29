@@ -1,0 +1,16 @@
+{
+  "data": {
+    "meta": {
+      "count": 0,
+      "db_response_time_ms": 31,
+      "page": 1,
+      "per_page": 50,
+      "groups_count": null
+    },
+    "results": [],
+    "group_by": []
+  },
+  "headers": {},
+  "timestamp": "2025-10-29T07:55:31.654Z",
+  "url": "https://api.openalex.org/works?per_page=50&page=1&filter=display_name.search.no_stem%3Asurgery"
+}

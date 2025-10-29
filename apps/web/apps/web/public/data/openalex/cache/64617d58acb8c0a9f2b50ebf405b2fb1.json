@@ -1,0 +1,16 @@
+{
+  "data": {
+    "meta": {
+      "count": 0,
+      "db_response_time_ms": 40,
+      "page": 1,
+      "per_page": 50,
+      "groups_count": null
+    },
+    "results": [],
+    "group_by": []
+  },
+  "headers": {},
+  "timestamp": "2025-10-29T07:54:41.441Z",
+  "url": "https://api.openalex.org/works?per_page=50&page=1&filter=authorships.institutions.id%3A%22https%3A%2F%2Fror.org%2F042nb2s44%22"
+}
