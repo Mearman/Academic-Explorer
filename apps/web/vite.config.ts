@@ -24,7 +24,7 @@ function createWebConfig(): UserConfig {
 
     // Define environment variables for the app
     define: {
-      'import.meta.env.VITE_GITHUB_PAGES': JSON.stringify(isGitHubPages ? 'true' : 'false'),
+      'import.meta.env.VITE_GITHUB_PAGES': isGitHubPages ? 'true' : 'false',
     },
 
     // Inherit base configuration properties safely
