@@ -1,8 +1,8 @@
 /**
- * All 276 URLs Load Test
+ * All OpenAlex URLs Load Test
  *
  * Simplified test that verifies:
- * 1. All 276 URLs from openalex-urls.json load without errors
+ * 1. All URLs from openalex-test-urls.json load without errors
  * 2. Pages display actual content (not error pages)
  * 3. No JavaScript errors in console
  *
@@ -14,8 +14,9 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 // Load all URLs from the JSON file
-const urlsPath = join(process.cwd(), '../../openalex-urls.json');
-const urls: string[] = JSON.parse(readFileSync(urlsPath, 'utf-8'));
+const urlsPath = join(__dirname, '../data/openalex-test-urls.json');
+const urlsData: { urls: string[]; totalUrls: number } = JSON.parse(readFileSync(urlsPath, 'utf-8'));
+const urls: string[] = urlsData.urls;
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:5173';
 const API_BASE = 'https://api.openalex.org';
@@ -35,7 +36,7 @@ function getEntityType(url: string): string | null {
   return match ? match[1] : null;
 }
 
-test.describe('All 276 URLs - Load Test', () => {
+test.describe('All OpenAlex URLs - Load Test', () => {
   test.setTimeout(600000); // 10 minutes for all URLs
 
   // Group URLs by type for better organization
@@ -107,8 +108,8 @@ test.describe('All 276 URLs - Load Test', () => {
 
 // Summary test to verify overall results
 test.describe('Summary', () => {
-  test('should have loaded all 276 URLs', () => {
-    expect(urls.length).toBe(276);
+  test('should have loaded all URLs', () => {
+    expect(urls.length).toBe(urlsData.totalUrls);
     console.log(`✅ Tested ${urls.length} URLs`);
   });
 });
