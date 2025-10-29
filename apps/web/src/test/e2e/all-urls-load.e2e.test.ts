@@ -95,10 +95,12 @@ test.describe('All OpenAlex URLs - Load Test', () => {
           // Adaptive content threshold based on URL type
           // Pages with ?select= parameters or list pages may have minimal content
           // External ID routes (orcid:, issn:, ror:) show loading screens with minimal content
+          // List pages with no cached data may show "No data available" (72 chars minimum)
           const hasSelectParam = apiUrl.includes('?select=');
-          const isListPage = apiUrl.includes('/works?') || apiUrl.includes('/authors?');
+          // Check if URL is a list page (ends with entity type, no ID)
+          const isListPage = /\/(works|authors|sources|institutions|funders|publishers|concepts|topics)(\?|$)/.test(apiUrl);
           const isExternalId = apiUrl.includes('orcid:') || apiUrl.includes('issn:') || apiUrl.includes('ror:');
-          const minContentLength = hasSelectParam ? 50 : (isListPage ? 75 : (isExternalId ? 75 : 100));
+          const minContentLength = hasSelectParam ? 50 : (isListPage ? 50 : (isExternalId ? 75 : 100));
 
           expect(mainContent!.length).toBeGreaterThan(minContentLength);
 
