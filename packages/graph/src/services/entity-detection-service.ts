@@ -130,7 +130,8 @@ export class EntityDetectionService {
 					const issn = issnMatch[1].toUpperCase()
 					// Basic ISSN format validation
 					if (this.validateIssnFormat(issn)) {
-						return issn
+						// Return in issn: prefix format expected by OpenAlex API
+						return `issn:${issn}`
 					}
 				}
 				return null

@@ -31,11 +31,12 @@ function ISSNSourceRoute() {
 
         if (detection?.entityType === "sources") {
           // If graph already has nodes, use incremental loading to preserve existing entities
+          // normalizedId already includes issn: prefix from EntityDetectionService
           if (nodeCount > 0) {
-            await loadEntityIntoGraph(`issn:${detection.normalizedId}`);
+            await loadEntityIntoGraph(detection.normalizedId);
           } else {
             // If graph is empty, use full loading (clears graph for initial load)
-            await loadEntity(`issn:${detection.normalizedId}`);
+            await loadEntity(detection.normalizedId);
           }
 
           // No navigation needed - graph is always visible
