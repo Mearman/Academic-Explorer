@@ -217,18 +217,23 @@ describe('EntityDetectionService', () => {
     describe('Valid ISSN formats', () => {
       const validIssns = [
         // Basic ISSN format
-        { input: '2049-3630', expected: 'sources', normalized: '2049-3630' },
-        { input: '1234-567X', expected: 'sources', normalized: '1234-567X' },
-        { input: '0028-0836', expected: 'sources', normalized: '0028-0836' },
+        { input: '2049-3630', expected: 'sources', normalized: 'issn:2049-3630' },
+        { input: '1234-567X', expected: 'sources', normalized: 'issn:1234-567X' },
+        { input: '0028-0836', expected: 'sources', normalized: 'issn:0028-0836' },
 
         // ISSN with prefix
-        { input: 'ISSN: 2049-3630', expected: 'sources', normalized: '2049-3630' },
-        { input: 'ISSN:1234-567X', expected: 'sources', normalized: '1234-567X' },
-        { input: 'ISSN 0028-0836', expected: 'sources', normalized: '0028-0836' },
+        { input: 'ISSN: 2049-3630', expected: 'sources', normalized: 'issn:2049-3630' },
+        { input: 'ISSN:1234-567X', expected: 'sources', normalized: 'issn:1234-567X' },
+        { input: 'ISSN 0028-0836', expected: 'sources', normalized: 'issn:0028-0836' },
 
         // Mixed case
-        { input: '1234-567x', expected: 'sources', normalized: '1234-567X' },
-        { input: 'issn: 1234-567x', expected: 'sources', normalized: '1234-567X' },
+        { input: '1234-567x', expected: 'sources', normalized: 'issn:1234-567X' },
+        { input: 'issn: 1234-567x', expected: 'sources', normalized: 'issn:1234-567X' },
+
+        // With issn: prefix (OpenAlex API format)
+        { input: 'issn:2049-3630', expected: 'sources', normalized: 'issn:2049-3630' },
+        { input: 'issn:1234-567X', expected: 'sources', normalized: 'issn:1234-567X' },
+        { input: 'issn:2041-1723', expected: 'sources', normalized: 'issn:2041-1723' },
       ];
 
       validIssns.forEach(({ input, expected, normalized }) => {
