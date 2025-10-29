@@ -18,7 +18,7 @@
     "directory": "apps/cli"
   },
   "bin": {
-    "openalex-cli": "./dist/openalex-cli.js"
+    "openalex-cli": "./dist/src/openalex-cli.js"
   },
   "files": [
     "dist",

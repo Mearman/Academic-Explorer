@@ -31,10 +31,6 @@
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./worker": {
-      "import": "./dist/worker.js",
-      "types": "./dist/worker.d.ts"
-    },
     "./engines": {
       "import": "./dist/engines/index.js",
       "types": "./dist/engines/index.d.ts"

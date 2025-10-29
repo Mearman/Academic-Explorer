@@ -36,14 +36,6 @@
     "./entities": {
       "import": "./dist/entities/index.js",
       "types": "./dist/entities/index.d.ts"
-    },
-    "./entities/schemas": {
-      "import": "./dist/schemas.js",
-      "types": "./dist/schemas.d.ts"
-    },
-    "./entities/type-guards": {
-      "import": "./dist/type-guards.js",
-      "types": "./dist/type-guards.d.ts"
     }
   },
   "scripts": {

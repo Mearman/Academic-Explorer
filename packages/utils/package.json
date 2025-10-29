@@ -34,10 +34,6 @@
       "import": "./dist/logger.js",
       "types": "./dist/logger.d.ts"
     },
-    "./type-guards": {
-      "import": "./dist/type-guards.js",
-      "types": "./dist/type-guards.d.ts"
-    },
     "./cache": {
       "import": "./dist/cache/index.js",
       "types": "./dist/cache/index.d.ts"
