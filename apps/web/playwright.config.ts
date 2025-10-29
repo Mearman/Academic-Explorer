@@ -10,7 +10,9 @@ export default defineConfig({
   testDir: "./src",
 
   // Test files pattern for E2E tests
+  // Excludes *-full.e2e.test.ts files by default (use for local/manual testing only)
   testMatch: "**/*.e2e.test.ts",
+  testIgnore: process.env.E2E_FULL_SUITE ? [] : ["**/*-full.e2e.test.ts"],
 
   // Run tests in serial to prevent memory issues and API rate limiting
   fullyParallel: false,

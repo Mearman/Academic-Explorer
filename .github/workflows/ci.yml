@@ -215,7 +215,7 @@ jobs:
   # E2E tests
   e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 20
     needs: build-and-test
     if: always() && needs.build-and-test.result == 'success'
     steps:
