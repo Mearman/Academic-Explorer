@@ -16,9 +16,16 @@ function createWebConfig(): UserConfig {
 
   const base = baseConfig;
 
+  const isGitHubPages = process.env.GITHUB_PAGES === 'true';
+
   return {
     // Base path for GitHub Pages deployment
-    base: process.env.GITHUB_PAGES === 'true' ? '/Academic-Explorer/' : '/',
+    base: isGitHubPages ? '/Academic-Explorer/' : '/',
+
+    // Define environment variables for the app
+    define: {
+      'import.meta.env.VITE_GITHUB_PAGES': JSON.stringify(isGitHubPages ? 'true' : 'false'),
+    },
 
     // Inherit base configuration properties safely
     ...base,

@@ -10,6 +10,7 @@ import { Notifications } from "@mantine/notifications";
 import { setupGlobalErrorHandling, logger } from "@academic-explorer/utils/logger";
 import { initializeNetworkMonitoring } from "./services/network-interceptor";
 import { initWebVitals } from "@/utils/web-vitals";
+import { cachedOpenAlex } from "@academic-explorer/client";
 
 // Import Mantine core styles
 import "@mantine/core/styles.css";
@@ -52,6 +53,15 @@ const theme = createTheme({
 setupGlobalErrorHandling(logger);
 initializeNetworkMonitoring();
 initWebVitals();
+
+// Configure static cache URL for GitHub Pages deployment
+if (import.meta.env.VITE_GITHUB_PAGES === "true") {
+  cachedOpenAlex.updateConfig({
+    staticCacheGitHubPagesUrl:
+      "https://mearman.github.io/Academic-Explorer/data/openalex/",
+  });
+  logger.debug("main", "Configured GitHub Pages static cache URL");
+}
 
 // Create QueryClient for TanStack Query
 const queryClient = new QueryClient({
