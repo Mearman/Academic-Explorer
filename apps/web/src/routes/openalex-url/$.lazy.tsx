@@ -83,11 +83,21 @@ function OpenAlexUrlComponent() {
         "routing",
         `Path parts: ${JSON.stringify(pathParts)}, Length: ${pathParts.length}`,
       );
-      if (pathParts.length === 2) {
-        const id = pathParts[1];
+      if (pathParts.length >= 2) {
+        // Entity type is the first part, ID is everything after (joined back with /)
+        const entityType = pathParts[0];
+        const id = pathParts.slice(1).join("/");
+
+        logger.debug(
+          "routing",
+          `Extracted entity type: ${entityType}, id: ${id}`,
+        );
+
         const detection = EntityDetectionService.detectEntity(id);
         if (detection?.entityType) {
-          const targetPath = buildPathWithSearch(`/${detection.entityType}/${id}`, searchParams);
+          // URL-encode the ID to handle external IDs with special characters (slashes, colons)
+          const encodedId = encodeURIComponent(id);
+          const targetPath = buildPathWithSearch(`/${detection.entityType}/${encodedId}`, searchParams);
           navigate({
             to: targetPath,
             replace: true,

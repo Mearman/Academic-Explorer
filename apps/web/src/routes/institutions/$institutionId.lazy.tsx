@@ -5,9 +5,12 @@ import { INSTITUTION_FIELDS, cachedOpenAlex, type InstitutionEntity, type Instit
 import { useQuery } from "@tanstack/react-query";
 
 function InstitutionRoute() {
-  const { institutionId } = useParams({ strict: false });
+  const { institutionId: rawInstitutionId } = useParams({ strict: false });
   const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+
+  // Decode the institution ID in case it's URL-encoded (for external IDs with special characters)
+  const institutionId = rawInstitutionId ? decodeURIComponent(rawInstitutionId) : rawInstitutionId;
 
   // Parse select parameter - if not provided, use all INSTITUTION_FIELDS (default behavior)
   const selectFields = selectParam && typeof selectParam === 'string'

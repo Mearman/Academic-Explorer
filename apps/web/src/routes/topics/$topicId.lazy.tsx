@@ -5,9 +5,12 @@ import { TOPIC_FIELDS, cachedOpenAlex, type Topic, type TopicField } from "@acad
 import { useQuery } from "@tanstack/react-query";
 
 function TopicRoute() {
-  const { topicId } = useParams({ strict: false });
+  const { topicId: rawTopicId } = useParams({ strict: false });
   const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+
+  // Decode the topic ID in case it's URL-encoded (for external IDs with special characters)
+  const topicId = rawTopicId ? decodeURIComponent(rawTopicId) : rawTopicId;
 
   // Parse select parameter - if not provided, use all TOPIC_FIELDS (default behavior)
   const selectFields = selectParam && typeof selectParam === 'string'

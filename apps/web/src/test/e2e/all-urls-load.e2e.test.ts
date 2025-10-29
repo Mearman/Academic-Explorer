@@ -21,9 +21,12 @@ const BASE_URL = process.env.BASE_URL || 'http://localhost:5173';
 const API_BASE = 'https://api.openalex.org';
 
 // Helper to convert API URL to app URL
+// Uses the /openalex-url/ route which handles API URL conversion internally
 function toAppUrl(apiUrl: string): string {
+  // Remove API base and use the openalex-url route which handles all conversions
+  // The openalex-url route will detect entity types, normalize IDs, and route appropriately
   const relativePath = apiUrl.replace(API_BASE, '');
-  return `${BASE_URL}/#${relativePath}`;
+  return `${BASE_URL}/#/openalex-url${relativePath}`;
 }
 
 // Helper to get entity type from URL

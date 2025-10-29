@@ -35,16 +35,24 @@ function HttpsRoute() {
 
         // Check if this is a full URL that should be handled
         if (decodedId.match(/^https?:\/\//i)) {
-          // Try to detect entity type
-          const entityType = EntityDetectionService.detectEntityType(decodedId);
-          if (entityType) {
+          // Try to detect entity type and normalize ID
+          const detection = EntityDetectionService.detectEntity(decodedId);
+          if (detection?.entityType && detection?.normalizedId) {
             logger.debug(
               "routing",
-              "Detected entity type from https URL",
-              { externalId: decodedId, entityType },
+              "Detected entity from https URL, navigating",
+              {
+                externalId: decodedId,
+                entityType: detection.entityType,
+                normalizedId: detection.normalizedId
+              },
               "HttpsRoute",
             );
-            // Load the entity
+            // Navigate to the proper entity route with encoded ID
+            navigate({
+              to: `/${detection.entityType}/${encodeURIComponent(detection.normalizedId)}`,
+              replace: true,
+            });
             return;
           }
         }

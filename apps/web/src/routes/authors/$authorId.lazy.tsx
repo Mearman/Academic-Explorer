@@ -7,9 +7,12 @@ import { useQuery } from "@tanstack/react-query";
 const AUTHOR_ROUTE_PATH = "/authors/$authorId";
 
 function AuthorRoute() {
-  const { authorId } = useParams({ strict: false });
+  const { authorId: rawAuthorId } = useParams({ strict: false });
   const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+
+  // Decode the author ID in case it's URL-encoded (for external IDs with special characters)
+  const authorId = rawAuthorId ? decodeURIComponent(rawAuthorId) : rawAuthorId;
 
   // Parse select parameter - if not provided, use all AUTHOR_FIELDS (default behavior)
   const selectFields = selectParam && typeof selectParam === 'string'

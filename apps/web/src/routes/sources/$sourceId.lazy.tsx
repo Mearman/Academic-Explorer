@@ -5,9 +5,12 @@ import { SOURCE_FIELDS, cachedOpenAlex, type Source, type SourceField } from "@a
 import { useQuery } from "@tanstack/react-query";
 
 function SourceRoute() {
-  const { sourceId } = useParams({ strict: false });
+  const { sourceId: rawSourceId } = useParams({ strict: false });
   const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+
+  // Decode the source ID in case it's URL-encoded (for external IDs with special characters)
+  const sourceId = rawSourceId ? decodeURIComponent(rawSourceId) : rawSourceId;
 
   // Parse select parameter - if not provided, use all SOURCE_FIELDS (default behavior)
   const selectFields = selectParam && typeof selectParam === 'string'

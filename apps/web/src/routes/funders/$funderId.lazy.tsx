@@ -5,9 +5,12 @@ import { FUNDER_FIELDS, cachedOpenAlex, type Funder, type FunderField } from "@a
 import { useQuery } from "@tanstack/react-query";
 
 function FunderRoute() {
-  const { funderId } = useParams({ strict: false });
+  const { funderId: rawFunderId } = useParams({ strict: false });
   const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+
+  // Decode the funder ID in case it's URL-encoded (for external IDs with special characters)
+  const funderId = rawFunderId ? decodeURIComponent(rawFunderId) : rawFunderId;
 
   // Parse select parameter - if not provided, use all FUNDER_FIELDS (default behavior)
   const selectFields = selectParam && typeof selectParam === 'string'

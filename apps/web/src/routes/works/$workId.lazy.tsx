@@ -6,9 +6,12 @@ import { WORK_FIELDS, cachedOpenAlex, type Work, type WorkField } from "@academi
 import { useQuery } from "@tanstack/react-query";
 
 function WorkRoute() {
-  const { workId } = useParams({ strict: false });
+  const { workId: rawWorkId } = useParams({ strict: false });
   const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+
+  // Decode the work ID in case it's URL-encoded (for external IDs with special characters)
+  const workId = rawWorkId ? decodeURIComponent(rawWorkId) : rawWorkId;
 
   // Parse select parameter - if not provided, use all WORK_FIELDS (default behavior)
   const selectFields = selectParam && typeof selectParam === 'string'

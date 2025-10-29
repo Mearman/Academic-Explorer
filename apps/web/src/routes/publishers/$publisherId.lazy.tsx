@@ -5,9 +5,12 @@ import { PUBLISHER_FIELDS, cachedOpenAlex, type Publisher, type PublisherField }
 import { useQuery } from "@tanstack/react-query";
 
 function PublisherRoute() {
-  const { publisherId } = useParams({ strict: false });
+  const { publisherId: rawPublisherId } = useParams({ strict: false });
   const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+
+  // Decode the publisher ID in case it's URL-encoded (for external IDs with special characters)
+  const publisherId = rawPublisherId ? decodeURIComponent(rawPublisherId) : rawPublisherId;
 
   // Parse select parameter - if not provided, use all PUBLISHER_FIELDS (default behavior)
   const selectFields = selectParam && typeof selectParam === 'string'
