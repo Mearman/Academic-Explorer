@@ -119,11 +119,9 @@ const config: KnipConfig = {
         "src/main.tsx",
         "src/test/setup.ts",
         "src/test/component-setup.ts",
-        "src/test/e2e-setup.ts",
         "src/test/msw/server.ts",
         "src/test/msw/handlers.ts",
         "src/build-plugins/openalex-data-plugin.ts",
-        "src/stores/data-fetching-progress-store.ts",
       ],
       project: ["src/**/*.{ts,tsx}"],
       ignore: [
@@ -168,7 +166,7 @@ const config: KnipConfig = {
 
     // UI components package
     "packages/ui": {
-      entry: ["src/index.ts", "src/test/setup.ts"],
+      entry: ["src/test/setup.ts"],
       project: ["src/**/*.{ts,tsx}"],
       ignore: [
         "src/**/*.stories.{ts,tsx}", // Storybook stories
@@ -218,17 +216,6 @@ const config: KnipConfig = {
   ignoreDependencies: [
     "@vanilla-extract/vite-plugin", // Used in vite.config.ts but knip doesn't detect it properly
     "@mantine/notifications", // Optional peerDependency for UI components
-    "@tanstack/react-table", // Used by BaseTable component in UI package
-    // Module resolution dependencies added for runtime and test environments
-    "@types/d3-force", // Type definitions for d3-force used in graph visualizations
-    "@types/d3-random", // Type definitions for d3-random used in force simulations
-    "@types/lodash-es", // Type definitions for lodash-es utility functions
-    "d3-force", // Force simulation library used in graph components
-    "d3-random", // Random number generation for deterministic layouts
-    "idb", // IndexedDB wrapper used for browser storage
-    "lodash-es", // ES module utilities used across applications
-    // Workspace dependencies that may not be actively used but are part of development
-    "@academic-explorer/utils", // Utility package used across workspace projects
     // Testing and development dependencies
     "@testing-library/jest-dom", // Testing utilities
     "@testing-library/user-event", // Testing utilities

@@ -426,11 +426,13 @@ export class OpenAlexBaseClient {
     options: RequestInit;
     retryCount: number;
   }): void {
-    if (
-      url.includes("api.openalex.org") &&
-      !url.includes("test") &&
-      !url.includes("localhost")
-    ) {
+    // Only warn if we're actually in a test environment (NODE_ENV=test or VITEST)
+    const isTestEnv = Boolean(
+      globalThis.process?.env?.VITEST ??
+        globalThis.process?.env?.NODE_ENV === "test",
+    );
+
+    if (isTestEnv && url.includes("api.openalex.org")) {
       logger.warn(
         "client",
         "Making real OpenAlex API call in test environment",
