@@ -106,8 +106,8 @@ const worksColumns: ColumnConfig[] = [
 
 function WorksListRoute() {
   const [urlFilters, setUrlFilters] = useState<
-    Record<string, unknown> | undefined
-  >();
+    Record<string, unknown> | undefined | null
+  >(null); // null = not yet parsed, undefined = no filters, object = parsed filters
   const [viewMode, setViewMode] = useState<ViewMode>("table");
 
   useEffect(() => {
@@ -140,6 +140,11 @@ function WorksListRoute() {
       window.removeEventListener("hashchange", parseHashFilters);
     };
   }, []);
+
+  // Wait for filters to be parsed before rendering EntityList
+  if (urlFilters === null) {
+    return null;
+  }
 
   return (
     <EntityList
