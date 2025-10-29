@@ -9,7 +9,7 @@ import { MantineProvider, createTheme } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { setupGlobalErrorHandling, logger } from "@academic-explorer/utils/logger";
 import { initializeNetworkMonitoring } from "./services/network-interceptor";
-import { initWebVitals } from "@/lib/web-vitals";
+import { initWebVitals } from "@/utils/web-vitals";
 
 // Import Mantine core styles
 import "@mantine/core/styles.css";
