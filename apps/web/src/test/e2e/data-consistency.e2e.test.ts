@@ -62,7 +62,7 @@ function isAutocomplete(url: string): boolean {
 }
 
 test.describe('Data Consistency - All 276 URLs', () => {
-  test.setTimeout(300000); // 5 minutes for all URLs
+  test.setTimeout(1800000); // 30 minutes for all URLs (276 URLs * ~6.5 seconds each)
 
   // Test a representative sample first for faster feedback
   const sampleUrls = [
