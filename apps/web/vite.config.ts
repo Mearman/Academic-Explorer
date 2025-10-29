@@ -23,11 +23,8 @@ function createWebConfig(): UserConfig {
     base: isGitHubPages ? '/Academic-Explorer/' : '/',
 
     // Pass GITHUB_PAGES to client code via import.meta.env
-    // Vite automatically exposes env vars as import.meta.env.* if in client code
-    // But we need to manually define this since GITHUB_PAGES doesn't start with VITE_
-    define: {
-      '__GITHUB_PAGES__': JSON.stringify(isGitHubPages),
-    },
+    // Use envPrefix to expose GITHUB_PAGES as import.meta.env.GITHUB_PAGES
+    envPrefix: ['VITE_', 'GITHUB_PAGES'],
 
     // Inherit base configuration properties safely
     ...base,
