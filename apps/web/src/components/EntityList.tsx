@@ -48,6 +48,18 @@ export interface EntityListProps {
   perPage?: number;
   title?: string;
   urlFilters?: unknown;
+  searchParams?: {
+    filter?: string;
+    search?: string;
+    sort?: string;
+    page?: number;
+    per_page?: number;
+    sample?: number;
+    group_by?: string;
+    cursor?: string;
+    seed?: number;
+    mailto?: string;
+  };
   viewMode?: ViewMode;
   onViewModeChange?: (viewMode: ViewMode) => void;
 }
@@ -62,6 +74,7 @@ export function EntityList({
   perPage = 50,
   title,
   urlFilters,
+  searchParams,
 }: EntityListProps) {
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -109,14 +122,24 @@ export function EntityList({
     switch (entityType) {
       case "funders":
         response = await openAlex.client.funders.getMultiple({
-          per_page: perPage,
-          page: currentPage,
+          per_page: searchParams?.per_page ?? perPage,
+          page: searchParams?.page ?? currentPage,
+          filter: searchParams?.filter,
+          search: searchParams?.search,
+          sort: searchParams?.sort,
+          sample: searchParams?.sample,
+          group_by: searchParams?.group_by,
         });
         break;
       case "publishers":
         response = await openAlex.client.publishers.getMultiple({
-          per_page: perPage,
-          page: currentPage,
+          per_page: searchParams?.per_page ?? perPage,
+          page: searchParams?.page ?? currentPage,
+          filter: searchParams?.filter,
+          search: searchParams?.search,
+          sort: searchParams?.sort,
+          sample: searchParams?.sample,
+          group_by: searchParams?.group_by,
         });
         break;
       case "sources":
@@ -152,8 +175,13 @@ export function EntityList({
         break;
       case "concepts":
         response = await openAlex.client.concepts.getConcepts({
-          per_page: perPage,
-          page: currentPage,
+          per_page: searchParams?.per_page ?? perPage,
+          page: searchParams?.page ?? currentPage,
+          filter: searchParams?.filter,
+          search: searchParams?.search,
+          sort: searchParams?.sort,
+          sample: searchParams?.sample,
+          group_by: searchParams?.group_by,
         });
         break;
       case "topics":
@@ -185,7 +213,7 @@ export function EntityList({
     }
 
     throw new Error(`No response received for ${entityType}`);
-  }, [entityType, perPage, urlFilters, currentPage]);
+  }, [entityType, perPage, urlFilters, searchParams, currentPage]);
 
   React.useEffect(() => {
     asyncOperation.execute(fetchData);
