@@ -1,4 +1,3 @@
-// @ts-nocheck - Dexie module resolution issues with TypeScript bundler mode
 /**
  * Pure Dexie storage adapter
  * Simplified IndexedDB-only implementation replacing hybrid localStorage + IndexedDB approach

@@ -1,5 +1,3 @@
-// @ts-nocheck - React types compatibility issues with TypeScript bundler mode
-
 import { logger } from "../logger"
 
 // Filter operator types - aligned with apps/web filter system
@@ -61,7 +59,8 @@ export interface BaseFilterProps<T = unknown> {
 	disabled?: boolean;
 	compact?: boolean;
 	fieldId: string;
-	children?: unknown;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	children?: any;
 }
 
 export const FILTER_WIDTHS = {
@@ -94,7 +93,7 @@ export function BaseFilter<T = unknown>({
 export function createFilter<T = unknown>(
 	config: FilterFieldConfig,
 	initialValue: T,
-	initialOperator: FilterOperator = "eq"
+	initialOperator: FilterOperator = "="
 ): {
 	value: T;
 	operator: FilterOperator;

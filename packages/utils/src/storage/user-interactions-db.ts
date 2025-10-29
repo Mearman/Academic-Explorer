@@ -1,4 +1,3 @@
-// @ts-nocheck - Dexie module resolution issues with TypeScript bundler mode
 /**
  * User interactions database using Dexie
  * Unified tracking of page visits and bookmarks with normalized OpenAlex requests
