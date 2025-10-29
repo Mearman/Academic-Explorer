@@ -1,8 +1,11 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { useSearch } from "@tanstack/react-router";
+import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
 import { EntityList } from "@/components/EntityList";
 import type { ColumnConfig } from "@/components/types";
-import { createFilterBuilder } from "@academic-explorer/client";
+import type { OpenAlexSearchParams } from "@/lib/route-schemas";
+import { useState } from "react";
+import type { ViewMode } from "@/components/ViewModeToggle";
+import { Alert } from "@mantine/core";
+import { IconAlertCircle } from "@tabler/icons-react";
 
 const conceptsColumns: ColumnConfig[] = [
   { key: "display_name", header: "Name" },
@@ -13,19 +16,30 @@ const conceptsColumns: ColumnConfig[] = [
 ];
 
 function ConceptsListRoute() {
-  const search = useSearch({ from: "/concepts/" }) as { filter?: string };
-  const filterBuilder = createFilterBuilder();
-  const urlFilters = search.filter
-    ? filterBuilder.parseFilterString(search.filter)
-    : undefined;
+  const search = useSearch({ from: "/concepts/" }) as OpenAlexSearchParams;
+  const [viewMode, setViewMode] = useState<ViewMode>("table");
 
   return (
-    <EntityList
-      entityType="concepts"
-      columns={conceptsColumns}
-      title="Concepts"
-      urlFilters={urlFilters}
-    />
+    <div>
+      <Alert
+        icon={<IconAlertCircle size={16} />}
+        title="Concepts Entity Deprecated"
+        color="yellow"
+        style={{ marginBottom: "1rem" }}
+      >
+        The OpenAlex Concepts entity has been deprecated by the OpenAlex API as of 2024.
+        Please use the Topics entity instead for hierarchical subject classification.
+        Existing concept data may be incomplete or outdated.
+      </Alert>
+      <EntityList
+        entityType="concepts"
+        columns={conceptsColumns}
+        title="Concepts (Deprecated)"
+        searchParams={search}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+      />
+    </div>
   );
 }
 

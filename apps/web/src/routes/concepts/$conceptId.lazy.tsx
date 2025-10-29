@@ -4,6 +4,8 @@ import { useState } from "react";
 import { cachedOpenAlex, type Concept } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
+import { Alert } from "@mantine/core";
+import { IconAlertCircle } from "@tabler/icons-react";
 
 function ConceptRoute() {
   const { conceptId: rawConceptId } = useParams({ strict: false });
@@ -117,7 +119,21 @@ function ConceptRoute() {
     );
   }
 
-  return content;
+  return (
+    <div>
+      <Alert
+        icon={<IconAlertCircle size={16} />}
+        title="Concepts Entity Deprecated"
+        color="yellow"
+        style={{ marginBottom: "1rem" }}
+      >
+        The OpenAlex Concepts entity has been deprecated by the OpenAlex API as of 2024.
+        Please use the Topics entity instead for hierarchical subject classification.
+        This concept data may be incomplete or outdated.
+      </Alert>
+      {content}
+    </div>
+  );
 }
 
 export const Route = createLazyFileRoute("/concepts/$conceptId")({
