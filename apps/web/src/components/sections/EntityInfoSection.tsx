@@ -5,6 +5,7 @@
  */
 
 import { RichEntityDisplay } from "@/components/molecules/RichEntityDisplay";
+import { ContentSkeleton } from "@/components/molecules/ContentSkeleton";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useGraphStore } from "@/stores/graph-store";
@@ -156,23 +157,12 @@ const convertRawEntityToGraphNode = (
 // Helper function to create loading state component
 const LoadingState = ({
   className,
-  colors,
 }: {
   className: string;
   colors: ThemeColors;
 }) => (
-  <div
-    className={className}
-    style={{
-      padding: "24px",
-      textAlign: "center",
-      color: colors.text.secondary,
-    }}
-  >
-    <IconInfoCircle size={48} style={{ opacity: 0.3, marginBottom: "12px" }} />
-    <div style={{ fontSize: "14px", fontWeight: 500, marginBottom: "8px" }}>
-      Loading Entity...
-    </div>
+  <div className={className} style={{ padding: "24px" }}>
+    <ContentSkeleton variant="detail" count={1} />
   </div>
 );
 

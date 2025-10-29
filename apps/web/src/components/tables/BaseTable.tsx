@@ -28,6 +28,7 @@ import {
 } from "@tabler/icons-react";
 import { logger } from "@academic-explorer/utils";
 import { BORDER_GRAY_LIGHT } from "@/constants/styles";
+import { TableSkeleton } from "@/components/molecules/TableSkeleton";
 
 interface BaseTableProps<T> {
   data: T[];
@@ -204,14 +205,7 @@ export function BaseTable<T>({
 
   // Helper function to render loading state
   const renderLoadingState = (colSpan: number) => (
-    <Table.Tr>
-      <Table.Td
-        colSpan={colSpan}
-        style={{ textAlign: "center", padding: "2rem" }}
-      >
-        <Text c="dimmed">Loading...</Text>
-      </Table.Td>
-    </Table.Tr>
+    <TableSkeleton columnCount={colSpan} rowCount={5} />
   );
 
   // Helper function to render empty state
@@ -343,9 +337,11 @@ export function BaseTable<T>({
         }}
       >
         {isLoading ? (
-          <div style={{ padding: "2rem", textAlign: "center" }}>
-            <Text c="dimmed">Loading...</Text>
-          </div>
+          <Table withTableBorder>
+            <Table.Tbody>
+              <TableSkeleton columnCount={columns.length} rowCount={10} />
+            </Table.Tbody>
+          </Table>
         ) : rows.length === 0 ? (
           <div style={{ padding: "2rem", textAlign: "center" }}>
             <Text c="dimmed">No data available</Text>

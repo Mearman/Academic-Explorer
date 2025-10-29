@@ -1,16 +1,16 @@
 {
-  "lastUpdated": "2025-10-29T02:25:01.398Z",
+  "lastUpdated": "2025-10-29T05:02:30.343Z",
   "files": {
     "works": {
       "url": "https://api.openalex.org/works",
       "$ref": "./works.json",
-      "lastRetrieved": "2025-10-29T02:25:01.398Z",
+      "lastRetrieved": "2025-10-29T05:02:30.343Z",
       "contentHash": "5021e624e752b001"
     },
     "authors": {
       "url": "https://api.openalex.org/authors",
       "$ref": "./authors.json",
-      "lastRetrieved": "2025-10-29T02:25:01.394Z",
+      "lastRetrieved": "2025-10-29T05:02:30.339Z",
       "contentHash": "5021e624e752b001"
     }
   }

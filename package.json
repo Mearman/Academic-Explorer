@@ -16,6 +16,7 @@
     "dev": "pnpm --filter @academic-explorer/web dev",
     "cli": "tsx apps/cli/src/openalex-cli.ts",
     "generate:test-urls": "tsx scripts/generate-test-urls.ts",
+    "test:urls": "tsx scripts/test-urls.ts",
     "build": "nx run-many -t build",
     "test": "NODE_OPTIONS='--max-old-space-size=8192' NX_DAEMON=false timeout 300 nx run-many -t test --output-style=stream",
     "test:web": "cd apps/web && vitest --run --config vitest.config.ts --reporter=verbose",

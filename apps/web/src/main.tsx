@@ -9,6 +9,7 @@ import { MantineProvider, createTheme } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { setupGlobalErrorHandling, logger } from "@academic-explorer/utils/logger";
 import { initializeNetworkMonitoring } from "./services/network-interceptor";
+import { initWebVitals } from "@/lib/web-vitals";
 
 // Import Mantine core styles
 import "@mantine/core/styles.css";
@@ -47,9 +48,10 @@ const theme = createTheme({
   },
 });
 
-// Initialize global error handling and network monitoring
+// Initialize global error handling, network monitoring, and performance tracking
 setupGlobalErrorHandling(logger);
 initializeNetworkMonitoring();
+initWebVitals();
 
 // Create QueryClient for TanStack Query
 const queryClient = new QueryClient({
