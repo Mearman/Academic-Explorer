@@ -7,11 +7,8 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MantineProvider, createTheme } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
-// DEBUGGING: Temporarily disable potentially problematic imports
-// import { setupGlobalErrorHandling, logger } from "@academic-explorer/utils/logger"
-// import { initializeNetworkMonitoring } from "./services/network-interceptor"
-// import { GlobalErrorBoundary } from "./components/error/GlobalErrorBoundary"
-// import { CacheInitializer } from "./components/cache/CacheInitializer"
+import { setupGlobalErrorHandling, logger } from "@academic-explorer/utils/logger";
+import { initializeNetworkMonitoring } from "./services/network-interceptor";
 
 // Import Mantine core styles
 import "@mantine/core/styles.css";
@@ -50,9 +47,9 @@ const theme = createTheme({
   },
 });
 
-// DEBUGGING: Temporarily disable global initializations
-// setupGlobalErrorHandling(logger)
-// initializeNetworkMonitoring()
+// Initialize global error handling and network monitoring
+setupGlobalErrorHandling(logger);
+initializeNetworkMonitoring();
 
 // Create QueryClient for TanStack Query
 const queryClient = new QueryClient({
