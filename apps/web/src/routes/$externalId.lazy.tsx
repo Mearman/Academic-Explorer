@@ -23,8 +23,10 @@ function ExternalIdRoute() {
   useEffect(() => {
     const resolveExternalId = async () => {
       try {
+        // Handle double-encoded slashes first (%252F -> %2F)
+        const processedId = externalId.replace(/%252F/gi, '%2F');
         // Decode the parameter
-        const decodedId = decodeURIComponent(externalId);
+        const decodedId = decodeURIComponent(processedId);
 
         // Skip known route prefixes that should be handled by other routes
         const knownRoutePrefixes = [

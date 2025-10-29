@@ -1,0 +1,16 @@
+{
+  "data": {
+    "meta": {
+      "count": 0,
+      "db_response_time_ms": 578,
+      "page": 1,
+      "per_page": 20,
+      "groups_count": null
+    },
+    "results": [],
+    "group_by": []
+  },
+  "headers": {},
+  "timestamp": "2025-10-29T08:09:57.351Z",
+  "url": "https://api.openalex.org/works?search=works%2Fhttps%3A%2Fdoi.org%2F10.7717%2Fpeerj.4375&sort=relevance_score%3Adesc&per_page=20&filter=display_name.search%3A%22%5C%22works%2Fhttps%3A%2Fdoi.org%2F10.7717%2Fpeerj.4375%5C%22%22&select=id,display_name,authorships,publication_year,cited_by_count,primary_location,open_access,doi"
+}

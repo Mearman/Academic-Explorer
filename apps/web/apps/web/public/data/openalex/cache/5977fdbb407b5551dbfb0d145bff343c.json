@@ -1,0 +1,16 @@
+{
+  "data": {
+    "meta": {
+      "count": 0,
+      "db_response_time_ms": 480,
+      "page": 1,
+      "per_page": 20,
+      "groups_count": null
+    },
+    "results": [],
+    "group_by": []
+  },
+  "headers": {},
+  "timestamp": "2025-10-29T08:10:49.261Z",
+  "url": "https://api.openalex.org/works?search=authors%2Forcid%3A0000-0002-1298-3089&sort=relevance_score%3Adesc&per_page=20&filter=display_name.search%3A%22%5C%22authors%2Forcid%3A0000-0002-1298-3089%5C%22%22&select=id,display_name,authorships,publication_year,cited_by_count,primary_location,open_access,doi"
+}

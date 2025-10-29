@@ -3,6 +3,7 @@ import { useParams, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 import { AUTHOR_FIELDS, cachedOpenAlex, type Author, type AuthorField } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
+import { decodeEntityId } from "@/utils/url-decoding";
 
 const AUTHOR_ROUTE_PATH = "/authors/$authorId";
 
@@ -11,8 +12,8 @@ function AuthorRoute() {
   const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
 
-  // Decode the author ID in case it's URL-encoded (for external IDs with special characters)
-  const authorId = rawAuthorId ? decodeURIComponent(rawAuthorId) : rawAuthorId;
+  // Decode the author ID and fix any collapsed protocol slashes
+  const authorId = decodeEntityId(rawAuthorId);
 
   // Parse select parameter - if not provided, use all AUTHOR_FIELDS (default behavior)
   const selectFields = selectParam && typeof selectParam === 'string'

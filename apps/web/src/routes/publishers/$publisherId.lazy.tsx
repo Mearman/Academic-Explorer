@@ -3,6 +3,7 @@ import { useParams, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 import { PUBLISHER_FIELDS, cachedOpenAlex, type Publisher, type PublisherField } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
+import { decodeEntityId } from "@/utils/url-decoding";
 
 function PublisherRoute() {
   const { publisherId: rawPublisherId } = useParams({ strict: false });
@@ -10,7 +11,7 @@ function PublisherRoute() {
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
 
   // Decode the publisher ID in case it's URL-encoded (for external IDs with special characters)
-  const publisherId = rawPublisherId ? decodeURIComponent(rawPublisherId) : rawPublisherId;
+  const publisherId = decodeEntityId(rawPublisherId);
 
   // Parse select parameter - if not provided, use all PUBLISHER_FIELDS (default behavior)
   const selectFields = selectParam && typeof selectParam === 'string'

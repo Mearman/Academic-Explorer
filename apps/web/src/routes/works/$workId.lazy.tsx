@@ -4,14 +4,15 @@ import { useParams, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 import { WORK_FIELDS, cachedOpenAlex, type Work, type WorkField } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
+import { decodeEntityId } from "@/utils/url-decoding";
 
 function WorkRoute() {
   const { workId: rawWorkId } = useParams({ strict: false });
   const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
 
-  // Decode the work ID in case it's URL-encoded (for external IDs with special characters)
-  const workId = rawWorkId ? decodeURIComponent(rawWorkId) : rawWorkId;
+  // Decode the work ID and fix any collapsed protocol slashes
+  const workId = decodeEntityId(rawWorkId);
 
   // Parse select parameter - if not provided, use all WORK_FIELDS (default behavior)
   const selectFields = selectParam && typeof selectParam === 'string'

@@ -78,13 +78,21 @@ function OpenAlexUrlComponent() {
       );
 
       // Check for single entity pattern: /entityType/id or just /id
-      const pathParts = path.split("/").filter((p) => p);
+      // Don't filter empty parts yet - we need to preserve protocol slashes like https://
+      const pathParts = path.split("/");
+      // Remove leading empty string from absolute path
+      if (pathParts[0] === "") {
+        pathParts.shift();
+      }
+
       logger.debug(
         "routing",
-        `Path parts: ${JSON.stringify(pathParts)}, Length: ${pathParts.length}`,
+        `Path parts (preserving protocol slashes): ${JSON.stringify(pathParts)}, Length: ${pathParts.length}`,
       );
+
       if (pathParts.length >= 2) {
-        // Entity type is the first part, ID is everything after (joined back with /)
+        // Entity type is the first part, ID is everything after
+        // Join with "/" to reconstruct, preserving double slashes in protocols
         const entityType = pathParts[0];
         const id = pathParts.slice(1).join("/");
 
@@ -95,8 +103,10 @@ function OpenAlexUrlComponent() {
 
         const detection = EntityDetectionService.detectEntity(id);
         if (detection?.entityType) {
-          // URL-encode the ID to handle external IDs with special characters (slashes, colons)
-          const encodedId = encodeURIComponent(id);
+          // URL-encode the ID to handle external IDs with special characters
+          // Use double-encoding for forward slashes to prevent TanStack Router from collapsing them
+          // First encode normally, then encode any %2F (forward slash) again
+          const encodedId = encodeURIComponent(id).replace(/%2F/g, '%252F');
           const targetPath = buildPathWithSearch(`/${detection.entityType}/${encodedId}`, searchParams);
           navigate({
             to: targetPath,

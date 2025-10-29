@@ -1,0 +1,16 @@
+{
+  "data": {
+    "id": "https://openalex.org/I33213144",
+    "display_name": "University of Florida",
+    "cited_by_count": 10440674,
+    "updated_date": "2025-10-25T13:52:42.277592",
+    "created_date": "2016-06-24",
+    "works_count": 325080,
+    "ror": "https://ror.org/02y3ad647",
+    "country_code": "US",
+    "type": "funder"
+  },
+  "headers": {},
+  "timestamp": "2025-10-29T08:11:12.490Z",
+  "url": "https://api.openalex.org/institutions/https%3A%2F%2Fror.org%2F02y3ad647?select=id,display_name,cited_by_count,updated_date,created_date,works_count,ror,country_code,type"
+}

@@ -20,8 +20,10 @@ function ExternalIdRoute() {
   useEffect(() => {
     const resolveExternalId = async () => {
       try {
+        // Handle double-encoded slashes first (%252F -> %2F)
+        const processedId = externalId.replace(/%252F/gi, '%2F');
         // Decode the parameter
-        let decodedId = decodeURIComponent(externalId);
+        let decodedId = decodeURIComponent(processedId);
 
         // Fix collapsed double slashes in protocol (https:/ -> https://)
         // This happens when URLs like https://api.openalex.org are used as route params

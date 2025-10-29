@@ -3,6 +3,7 @@ import { useParams, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 import { SOURCE_FIELDS, cachedOpenAlex, type Source, type SourceField } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
+import { decodeEntityId } from "@/utils/url-decoding";
 
 function SourceRoute() {
   const { sourceId: rawSourceId } = useParams({ strict: false });
@@ -10,7 +11,7 @@ function SourceRoute() {
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
 
   // Decode the source ID in case it's URL-encoded (for external IDs with special characters)
-  const sourceId = rawSourceId ? decodeURIComponent(rawSourceId) : rawSourceId;
+  const sourceId = decodeEntityId(rawSourceId);
 
   // Parse select parameter - if not provided, use all SOURCE_FIELDS (default behavior)
   const selectFields = selectParam && typeof selectParam === 'string'

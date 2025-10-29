@@ -7,6 +7,7 @@ import { useAppActivityStore } from "@/stores/app-activity-store";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { useLocation } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
+import { decodeEntityId } from "@/utils/url-decoding";
 
 export function NavigationTracker() {
   const location = useLocation();
@@ -119,7 +120,10 @@ export function NavigationTracker() {
       if (validEntityTypes.includes(pageType)) {
         if (parts.length >= 2 && parts[1]) {
           // Entity detail page
-          const entityId = parts[1];
+          // Decode and fix the entity ID (handles URL encoding and collapsed protocol slashes)
+          const entityId = decodeEntityId(parts[1]);
+          if (!entityId) return null;
+
           const detection = EntityDetectionService.detectEntity(entityId);
           if (detection?.entityType) {
             return {

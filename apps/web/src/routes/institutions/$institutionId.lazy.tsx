@@ -3,14 +3,15 @@ import { useParams, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 import { INSTITUTION_FIELDS, cachedOpenAlex, type InstitutionEntity, type InstitutionField } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
+import { decodeEntityId } from "@/utils/url-decoding";
 
 function InstitutionRoute() {
   const { institutionId: rawInstitutionId } = useParams({ strict: false });
   const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
 
-  // Decode the institution ID in case it's URL-encoded (for external IDs with special characters)
-  const institutionId = rawInstitutionId ? decodeURIComponent(rawInstitutionId) : rawInstitutionId;
+  // Decode the institution ID and fix any collapsed protocol slashes
+  const institutionId = decodeEntityId(rawInstitutionId);
 
   // Parse select parameter - if not provided, use all INSTITUTION_FIELDS (default behavior)
   const selectFields = selectParam && typeof selectParam === 'string'
