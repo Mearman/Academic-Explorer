@@ -1,0 +1,2990 @@
+{
+  "data": {
+    "meta": {
+      "count": 194,
+      "db_response_time_ms": 297,
+      "page": 1,
+      "per_page": 20,
+      "groups_count": null
+    },
+    "results": [
+      {
+        "id": "https://openalex.org/W2048060845",
+        "display_name": "Autocomplete painting repetitions",
+        "authorships": [
+          {
+            "author_position": "first",
+            "author": {
+              "id": "https://openalex.org/A5103814497",
+              "display_name": "Jun Xing",
+              "orcid": null
+            },
+            "institutions": [],
+            "countries": [
+              "CN"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Jun Xing",
+            "raw_affiliation_strings": [
+              "Univ. Hong Kong"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Univ. Hong Kong",
+                "institution_ids": []
+              }
+            ]
+          },
+          {
+            "author_position": "middle",
+            "author": {
+              "id": "https://openalex.org/A5036805602",
+              "display_name": "Hsiang‐Ting Chen",
+              "orcid": "https://orcid.org/0000-0003-0873-2698"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I143288331",
+                "display_name": "Hasso Plattner Institute",
+                "ror": "https://ror.org/058rn5r42",
+                "country_code": "DE",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I143288331",
+                  "https://openalex.org/I176453806"
+                ]
+              }
+            ],
+            "countries": [
+              "DE"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Hsiang-Ting Chen",
+            "raw_affiliation_strings": [
+              "Hasso Plattner Institute"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Hasso Plattner Institute",
+                "institution_ids": [
+                  "https://openalex.org/I143288331"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "last",
+            "author": {
+              "id": "https://openalex.org/A5100669427",
+              "display_name": "Li‐Yi Wei",
+              "orcid": "https://orcid.org/0000-0002-1076-6339"
+            },
+            "institutions": [],
+            "countries": [
+              "CN"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Li-Yi Wei",
+            "raw_affiliation_strings": [
+              "Univ. Hong Kong"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Univ. Hong Kong",
+                "institution_ids": []
+              }
+            ]
+          }
+        ],
+        "publication_year": 2014,
+        "cited_by_count": 58,
+        "primary_location": {
+          "is_oa": false,
+          "landing_page_url": "https://doi.org/10.1145/2661229.2661247",
+          "pdf_url": null,
+          "source": {
+            "id": "https://openalex.org/S185367456",
+            "display_name": "ACM Transactions on Graphics",
+            "issn_l": "0730-0301",
+            "issn": [
+              "0730-0301",
+              "1557-7368"
+            ],
+            "is_oa": false,
+            "is_in_doaj": false,
+            "is_indexed_in_scopus": true,
+            "is_core": true,
+            "host_organization": "https://openalex.org/P4310319798",
+            "host_organization_name": "Association for Computing Machinery",
+            "host_organization_lineage": [
+              "https://openalex.org/P4310319798"
+            ],
+            "host_organization_lineage_names": [
+              "Association for Computing Machinery"
+            ],
+            "type": "journal"
+          },
+          "license": null,
+          "license_id": null,
+          "version": null,
+          "is_accepted": false,
+          "is_published": false
+        },
+        "open_access": {
+          "is_oa": false,
+          "oa_status": "closed",
+          "oa_url": null,
+          "any_repository_has_fulltext": false
+        },
+        "doi": "https://doi.org/10.1145/2661229.2661247"
+      },
+      {
+        "id": "https://openalex.org/W2003745532",
+        "display_name": "Autocomplete hand-drawn animations",
+        "authorships": [
+          {
+            "author_position": "first",
+            "author": {
+              "id": "https://openalex.org/A5103814497",
+              "display_name": "Jun Xing",
+              "orcid": null
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I889458895",
+                "display_name": "University of Hong Kong",
+                "ror": "https://ror.org/02zhqgq86",
+                "country_code": "HK",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I889458895"
+                ]
+              }
+            ],
+            "countries": [
+              "HK"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Jun Xing",
+            "raw_affiliation_strings": [
+              "University of Hong Kong and Microsoft Research#TAB#"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "University of Hong Kong and Microsoft Research#TAB#",
+                "institution_ids": [
+                  "https://openalex.org/I889458895"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "middle",
+            "author": {
+              "id": "https://openalex.org/A5100669427",
+              "display_name": "Li‐Yi Wei",
+              "orcid": "https://orcid.org/0000-0002-1076-6339"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I889458895",
+                "display_name": "University of Hong Kong",
+                "ror": "https://ror.org/02zhqgq86",
+                "country_code": "HK",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I889458895"
+                ]
+              }
+            ],
+            "countries": [
+              "HK"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Li-Yi Wei",
+            "raw_affiliation_strings": [
+              "University of Hong Kong"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "University of Hong Kong",
+                "institution_ids": [
+                  "https://openalex.org/I889458895"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "middle",
+            "author": {
+              "id": "https://openalex.org/A5072453520",
+              "display_name": "Takaaki Shiratori",
+              "orcid": "https://orcid.org/0000-0002-1012-415X"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I1290206253",
+                "display_name": "Microsoft (United States)",
+                "ror": "https://ror.org/00d0nc645",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I1290206253"
+                ]
+              }
+            ],
+            "countries": [
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Takaaki Shiratori",
+            "raw_affiliation_strings": [
+              "Microsoft research#TAB#"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Microsoft research#TAB#",
+                "institution_ids": [
+                  "https://openalex.org/I1290206253"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "last",
+            "author": {
+              "id": "https://openalex.org/A5089292344",
+              "display_name": "Koji Yatani",
+              "orcid": "https://orcid.org/0000-0003-4192-0420"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I74801974",
+                "display_name": "The University of Tokyo",
+                "ror": "https://ror.org/057zh3y96",
+                "country_code": "JP",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I74801974"
+                ]
+              }
+            ],
+            "countries": [
+              "JP"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Koji Yatani",
+            "raw_affiliation_strings": [
+              "university of Tokyo;"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "university of Tokyo;",
+                "institution_ids": [
+                  "https://openalex.org/I74801974"
+                ]
+              }
+            ]
+          }
+        ],
+        "publication_year": 2015,
+        "cited_by_count": 67,
+        "primary_location": {
+          "is_oa": false,
+          "landing_page_url": "https://doi.org/10.1145/2816795.2818079",
+          "pdf_url": null,
+          "source": {
+            "id": "https://openalex.org/S185367456",
+            "display_name": "ACM Transactions on Graphics",
+            "issn_l": "0730-0301",
+            "issn": [
+              "0730-0301",
+              "1557-7368"
+            ],
+            "is_oa": false,
+            "is_in_doaj": false,
+            "is_indexed_in_scopus": true,
+            "is_core": true,
+            "host_organization": "https://openalex.org/P4310319798",
+            "host_organization_name": "Association for Computing Machinery",
+            "host_organization_lineage": [
+              "https://openalex.org/P4310319798"
+            ],
+            "host_organization_lineage_names": [
+              "Association for Computing Machinery"
+            ],
+            "type": "journal"
+          },
+          "license": null,
+          "license_id": null,
+          "version": null,
+          "is_accepted": false,
+          "is_published": false
+        },
+        "open_access": {
+          "is_oa": false,
+          "oa_status": "closed",
+          "oa_url": null,
+          "any_repository_has_fulltext": false
+        },
+        "doi": "https://doi.org/10.1145/2816795.2818079"
+      },
+      {
+        "id": "https://openalex.org/W2955792826",
+        "display_name": "Auditing Autocomplete",
+        "authorships": [
+          {
+            "author_position": "first",
+            "author": {
+              "id": "https://openalex.org/A5073774344",
+              "display_name": "Ronald E. Robertson",
+              "orcid": "https://orcid.org/0000-0003-4525-5050"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I12912129",
+                "display_name": "Northeastern University",
+                "ror": "https://ror.org/04t5xt781",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I12912129"
+                ]
+              }
+            ],
+            "countries": [
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Ronald E. Robertson",
+            "raw_affiliation_strings": [
+              "Northeastern University, Boston, MA, USA"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Northeastern University, Boston, MA, USA",
+                "institution_ids": [
+                  "https://openalex.org/I12912129"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "middle",
+            "author": {
+              "id": "https://openalex.org/A5086952347",
+              "display_name": "Shan Jiang",
+              "orcid": "https://orcid.org/0000-0003-1792-1503"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I12912129",
+                "display_name": "Northeastern University",
+                "ror": "https://ror.org/04t5xt781",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I12912129"
+                ]
+              }
+            ],
+            "countries": [
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Shan Jiang",
+            "raw_affiliation_strings": [
+              "Northeastern University, Boston, MA, USA"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Northeastern University, Boston, MA, USA",
+                "institution_ids": [
+                  "https://openalex.org/I12912129"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "middle",
+            "author": {
+              "id": "https://openalex.org/A5013670125",
+              "display_name": "David Lazer",
+              "orcid": "https://orcid.org/0000-0002-7991-9110"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I12912129",
+                "display_name": "Northeastern University",
+                "ror": "https://ror.org/04t5xt781",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I12912129"
+                ]
+              }
+            ],
+            "countries": [
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "David Lazer",
+            "raw_affiliation_strings": [
+              "Northeastern University, Boston, MA, USA"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Northeastern University, Boston, MA, USA",
+                "institution_ids": [
+                  "https://openalex.org/I12912129"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "last",
+            "author": {
+              "id": "https://openalex.org/A5072703507",
+              "display_name": "Christo Wilson",
+              "orcid": "https://orcid.org/0000-0002-5268-004X"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I12912129",
+                "display_name": "Northeastern University",
+                "ror": "https://ror.org/04t5xt781",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I12912129"
+                ]
+              }
+            ],
+            "countries": [
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Christo Wilson",
+            "raw_affiliation_strings": [
+              "Northeastern University, Boston, MA, USA"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Northeastern University, Boston, MA, USA",
+                "institution_ids": [
+                  "https://openalex.org/I12912129"
+                ]
+              }
+            ]
+          }
+        ],
+        "publication_year": 2019,
+        "cited_by_count": 27,
+        "primary_location": {
+          "is_oa": true,
+          "landing_page_url": "https://doi.org/10.1145/3292522.3326047",
+          "pdf_url": "https://dl.acm.org/doi/pdf/10.1145/3292522.3326047",
+          "source": null,
+          "license": null,
+          "license_id": null,
+          "version": "publishedVersion",
+          "is_accepted": true,
+          "is_published": true
+        },
+        "open_access": {
+          "is_oa": true,
+          "oa_status": "bronze",
+          "oa_url": "https://dl.acm.org/doi/pdf/10.1145/3292522.3326047",
+          "any_repository_has_fulltext": true
+        },
+        "doi": "https://doi.org/10.1145/3292522.3326047"
+      },
+      {
+        "id": "https://openalex.org/W2346270716",
+        "display_name": "Responsible epistemic technologies: A social-epistemological analysis of autocompleted web search",
+        "authorships": [
+          {
+            "author_position": "first",
+            "author": {
+              "id": "https://openalex.org/A5084220233",
+              "display_name": "Boaz Miller",
+              "orcid": "https://orcid.org/0000-0003-4329-1795"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I13955877",
+                "display_name": "Bar-Ilan University",
+                "ror": "https://ror.org/03kgsv495",
+                "country_code": "IL",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I13955877"
+                ]
+              }
+            ],
+            "countries": [
+              "IL"
+            ],
+            "is_corresponding": true,
+            "raw_author_name": "Boaz Miller",
+            "raw_affiliation_strings": [
+              "Bar-Ilan University, Israel"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Bar-Ilan University, Israel",
+                "institution_ids": [
+                  "https://openalex.org/I13955877"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "last",
+            "author": {
+              "id": "https://openalex.org/A5039936901",
+              "display_name": "Isaac Record",
+              "orcid": "https://orcid.org/0000-0001-6880-242X"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I87216513",
+                "display_name": "Michigan State University",
+                "ror": "https://ror.org/05hs6h993",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I87216513"
+                ]
+              }
+            ],
+            "countries": [
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Isaac Record",
+            "raw_affiliation_strings": [
+              "Michigan State University, USA"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Michigan State University, USA",
+                "institution_ids": [
+                  "https://openalex.org/I87216513"
+                ]
+              }
+            ]
+          }
+        ],
+        "publication_year": 2016,
+        "cited_by_count": 53,
+        "primary_location": {
+          "is_oa": false,
+          "landing_page_url": "https://doi.org/10.1177/1461444816644805",
+          "pdf_url": null,
+          "source": {
+            "id": "https://openalex.org/S88603889",
+            "display_name": "New Media & Society",
+            "issn_l": "1461-4448",
+            "issn": [
+              "1461-4448",
+              "1461-7315"
+            ],
+            "is_oa": false,
+            "is_in_doaj": false,
+            "is_indexed_in_scopus": true,
+            "is_core": true,
+            "host_organization": "https://openalex.org/P4310320017",
+            "host_organization_name": "SAGE Publishing",
+            "host_organization_lineage": [
+              "https://openalex.org/P4310320017"
+            ],
+            "host_organization_lineage_names": [
+              "SAGE Publishing"
+            ],
+            "type": "journal"
+          },
+          "license": null,
+          "license_id": null,
+          "version": null,
+          "is_accepted": false,
+          "is_published": false
+        },
+        "open_access": {
+          "is_oa": true,
+          "oa_status": "green",
+          "oa_url": "https://philpapers.org/archive/MILRET-2.pdf",
+          "any_repository_has_fulltext": true
+        },
+        "doi": "https://doi.org/10.1177/1461444816644805"
+      },
+      {
+        "id": "https://openalex.org/W4283322975",
+        "display_name": "Algorithmic power and African indigenous languages: search engine autocomplete and the global multilingual Internet",
+        "authorships": [
+          {
+            "author_position": "first",
+            "author": {
+              "id": "https://openalex.org/A5029688801",
+              "display_name": "Peter Chonka",
+              "orcid": "https://orcid.org/0000-0001-9871-1377"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I183935753",
+                "display_name": "King's College London",
+                "ror": "https://ror.org/0220mzb33",
+                "country_code": "GB",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I124357947",
+                  "https://openalex.org/I183935753"
+                ]
+              }
+            ],
+            "countries": [
+              "GB"
+            ],
+            "is_corresponding": true,
+            "raw_author_name": "Peter Chonka",
+            "raw_affiliation_strings": [
+              "King's College London, UK"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "King's College London, UK",
+                "institution_ids": [
+                  "https://openalex.org/I183935753"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "middle",
+            "author": {
+              "id": "https://openalex.org/A5063677027",
+              "display_name": "Stephanie Diepeveen",
+              "orcid": "https://orcid.org/0000-0002-5468-9312"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I241749",
+                "display_name": "University of Cambridge",
+                "ror": "https://ror.org/013meh722",
+                "country_code": "GB",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I241749"
+                ]
+              }
+            ],
+            "countries": [
+              "GB"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Stephanie Diepeveen",
+            "raw_affiliation_strings": [
+              "University of Cambridge, UK"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "University of Cambridge, UK",
+                "institution_ids": [
+                  "https://openalex.org/I241749"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "last",
+            "author": {
+              "id": "https://openalex.org/A5066477767",
+              "display_name": "Yidnekachew Haile",
+              "orcid": null
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I184558857",
+                "display_name": "Royal Holloway University of London",
+                "ror": "https://ror.org/04g2vpn86",
+                "country_code": "GB",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I124357947",
+                  "https://openalex.org/I184558857"
+                ]
+              }
+            ],
+            "countries": [
+              "GB"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Yidnekachew Haile",
+            "raw_affiliation_strings": [
+              "Royal Holloway University of London, UK"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Royal Holloway University of London, UK",
+                "institution_ids": [
+                  "https://openalex.org/I184558857"
+                ]
+              }
+            ]
+          }
+        ],
+        "publication_year": 2022,
+        "cited_by_count": 56,
+        "primary_location": {
+          "is_oa": true,
+          "landing_page_url": "https://doi.org/10.1177/01634437221104705",
+          "pdf_url": null,
+          "source": {
+            "id": "https://openalex.org/S18522216",
+            "display_name": "Media Culture & Society",
+            "issn_l": "0163-4437",
+            "issn": [
+              "0163-4437",
+              "1460-3675"
+            ],
+            "is_oa": false,
+            "is_in_doaj": false,
+            "is_indexed_in_scopus": true,
+            "is_core": true,
+            "host_organization": "https://openalex.org/P4310320017",
+            "host_organization_name": "SAGE Publishing",
+            "host_organization_lineage": [
+              "https://openalex.org/P4310320017"
+            ],
+            "host_organization_lineage_names": [
+              "SAGE Publishing"
+            ],
+            "type": "journal"
+          },
+          "license": "cc-by",
+          "license_id": "https://openalex.org/licenses/cc-by",
+          "version": "publishedVersion",
+          "is_accepted": true,
+          "is_published": true
+        },
+        "open_access": {
+          "is_oa": true,
+          "oa_status": "hybrid",
+          "oa_url": "https://doi.org/10.1177/01634437221104705",
+          "any_repository_has_fulltext": true
+        },
+        "doi": "https://doi.org/10.1177/01634437221104705"
+      },
+      {
+        "id": "https://openalex.org/W2118137100",
+        "display_name": "Autocomplete as Research Tool: A Study on Providing Search Suggestions",
+        "authorships": [
+          {
+            "author_position": "first",
+            "author": {
+              "id": "https://openalex.org/A5078305933",
+              "display_name": "David Ward",
+              "orcid": "https://orcid.org/0000-0003-2671-1700"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I157725225",
+                "display_name": "University of Illinois Urbana-Champaign",
+                "ror": "https://ror.org/047426m28",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I157725225"
+                ]
+              }
+            ],
+            "countries": [
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "David Ward",
+            "raw_affiliation_strings": [
+              "University of Illinois at Urbana Champaign"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "University of Illinois at Urbana Champaign",
+                "institution_ids": [
+                  "https://openalex.org/I157725225"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "middle",
+            "author": {
+              "id": "https://openalex.org/A5006021949",
+              "display_name": "Jim Hahn",
+              "orcid": "https://orcid.org/0000-0001-7924-5294"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I157725225",
+                "display_name": "University of Illinois Urbana-Champaign",
+                "ror": "https://ror.org/047426m28",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I157725225"
+                ]
+              }
+            ],
+            "countries": [
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Jim Hahn",
+            "raw_affiliation_strings": [
+              "#N# University of Illinois"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "#N# University of Illinois",
+                "institution_ids": [
+                  "https://openalex.org/I157725225"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "last",
+            "author": {
+              "id": "https://openalex.org/A5037439420",
+              "display_name": "Kirsten Feist",
+              "orcid": null
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I157725225",
+                "display_name": "University of Illinois Urbana-Champaign",
+                "ror": "https://ror.org/047426m28",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I157725225"
+                ]
+              }
+            ],
+            "countries": [
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Kirsten Feist",
+            "raw_affiliation_strings": [
+              "#N# University of Illinois"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "#N# University of Illinois",
+                "institution_ids": [
+                  "https://openalex.org/I157725225"
+                ]
+              }
+            ]
+          }
+        ],
+        "publication_year": 2012,
+        "cited_by_count": 39,
+        "primary_location": {
+          "is_oa": true,
+          "landing_page_url": "https://doi.org/10.6017/ital.v31i4.1930",
+          "pdf_url": "https://ejournals.bc.edu/index.php/ital/article/download/1930/pdf",
+          "source": {
+            "id": "https://openalex.org/S4210225942",
+            "display_name": "Information Technology and Libraries",
+            "issn_l": "0730-9295",
+            "issn": [
+              "0730-9295",
+              "2163-5226"
+            ],
+            "is_oa": true,
+            "is_in_doaj": true,
+            "is_indexed_in_scopus": true,
+            "is_core": true,
+            "host_organization": "https://openalex.org/P4310315903",
+            "host_organization_name": "American Library Association",
+            "host_organization_lineage": [
+              "https://openalex.org/P4310315903"
+            ],
+            "host_organization_lineage_names": [
+              "American Library Association"
+            ],
+            "type": "journal"
+          },
+          "license": "cc-by-nc",
+          "license_id": "https://openalex.org/licenses/cc-by-nc",
+          "version": "publishedVersion",
+          "is_accepted": true,
+          "is_published": true
+        },
+        "open_access": {
+          "is_oa": true,
+          "oa_status": "diamond",
+          "oa_url": "https://ejournals.bc.edu/index.php/ital/article/download/1930/pdf",
+          "any_repository_has_fulltext": true
+        },
+        "doi": "https://doi.org/10.6017/ital.v31i4.1930"
+      },
+      {
+        "id": "https://openalex.org/W3155981360",
+        "display_name": "You Autocomplete Me: Poisoning Vulnerabilities in Neural Code Completion",
+        "authorships": [
+          {
+            "author_position": "first",
+            "author": {
+              "id": "https://openalex.org/A5011769908",
+              "display_name": "Roei Schuster",
+              "orcid": "https://orcid.org/0000-0003-1669-6367"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I205783295",
+                "display_name": "Cornell University",
+                "ror": "https://ror.org/05bnh6r87",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I205783295"
+                ]
+              },
+              {
+                "id": "https://openalex.org/I16391192",
+                "display_name": "Tel Aviv University",
+                "ror": "https://ror.org/04mhzgx49",
+                "country_code": "IL",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I16391192"
+                ]
+              }
+            ],
+            "countries": [
+              "IL",
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Roei Schuster",
+            "raw_affiliation_strings": [
+              "Tel Aviv University and Cornell Tech"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Tel Aviv University and Cornell Tech",
+                "institution_ids": [
+                  "https://openalex.org/I205783295",
+                  "https://openalex.org/I16391192"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "middle",
+            "author": {
+              "id": "https://openalex.org/A5048446895",
+              "display_name": "Congzheng Song",
+              "orcid": "https://orcid.org/0000-0002-5076-7299"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I205783295",
+                "display_name": "Cornell University",
+                "ror": "https://ror.org/05bnh6r87",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I205783295"
+                ]
+              }
+            ],
+            "countries": [
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Congzheng Song",
+            "raw_affiliation_strings": [
+              "cornell University"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "cornell University",
+                "institution_ids": [
+                  "https://openalex.org/I205783295"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "middle",
+            "author": {
+              "id": "https://openalex.org/A5049555551",
+              "display_name": "Eran Tromer",
+              "orcid": "https://orcid.org/0000-0002-8884-9564"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I16391192",
+                "display_name": "Tel Aviv University",
+                "ror": "https://ror.org/04mhzgx49",
+                "country_code": "IL",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I16391192"
+                ]
+              },
+              {
+                "id": "https://openalex.org/I78577930",
+                "display_name": "Columbia University",
+                "ror": "https://ror.org/00hj8s172",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I78577930"
+                ]
+              }
+            ],
+            "countries": [
+              "IL",
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Eran Tromer",
+            "raw_affiliation_strings": [
+              "Tel Aviv University and Columbia University#TAB#"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Tel Aviv University and Columbia University#TAB#",
+                "institution_ids": [
+                  "https://openalex.org/I16391192",
+                  "https://openalex.org/I78577930"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "last",
+            "author": {
+              "id": "https://openalex.org/A5038206174",
+              "display_name": "Vitaly Shmatikov",
+              "orcid": "https://orcid.org/0009-0002-1336-5714"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I205783295",
+                "display_name": "Cornell University",
+                "ror": "https://ror.org/05bnh6r87",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I205783295"
+                ]
+              }
+            ],
+            "countries": [
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Vitaly Shmatikov",
+            "raw_affiliation_strings": [
+              "Cornell Tech;"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Cornell Tech;",
+                "institution_ids": [
+                  "https://openalex.org/I205783295"
+                ]
+              }
+            ]
+          }
+        ],
+        "publication_year": 2021,
+        "cited_by_count": 51,
+        "primary_location": {
+          "is_oa": false,
+          "landing_page_url": "https://arxiv.org/pdf/2007.02220",
+          "pdf_url": null,
+          "source": {
+            "id": "https://openalex.org/S4306400194",
+            "display_name": "arXiv (Cornell University)",
+            "issn_l": null,
+            "issn": null,
+            "is_oa": true,
+            "is_in_doaj": false,
+            "is_indexed_in_scopus": false,
+            "is_core": false,
+            "host_organization": "https://openalex.org/I205783295",
+            "host_organization_name": "Cornell University",
+            "host_organization_lineage": [
+              "https://openalex.org/I205783295"
+            ],
+            "host_organization_lineage_names": [
+              "Cornell University"
+            ],
+            "type": "repository"
+          },
+          "license": null,
+          "license_id": null,
+          "version": null,
+          "is_accepted": false,
+          "is_published": false
+        },
+        "open_access": {
+          "is_oa": false,
+          "oa_status": "closed",
+          "oa_url": null,
+          "any_repository_has_fulltext": false
+        },
+        "doi": null
+      },
+      {
+        "id": "https://openalex.org/W1782911723",
+        "display_name": "Do autocomplete functions reduce the impact of dyslexia on information‐searching behavior? The case of <scp>G</scp>oogle",
+        "authorships": [
+          {
+            "author_position": "first",
+            "author": {
+              "id": "https://openalex.org/A5065708672",
+              "display_name": "Gerd Berget",
+              "orcid": "https://orcid.org/0000-0002-1220-6239"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I184531372",
+                "display_name": "OsloMet – Oslo Metropolitan University",
+                "ror": "https://ror.org/04q12yn84",
+                "country_code": "NO",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I184531372"
+                ]
+              }
+            ],
+            "countries": [
+              "NO"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Gerd Berget",
+            "raw_affiliation_strings": [
+              "Oslo and Akershus University College of Applied Sciences Postboks 4 St. Olavs plass OSLO N‐0130 Norway"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Oslo and Akershus University College of Applied Sciences Postboks 4 St. Olavs plass OSLO N‐0130 Norway",
+                "institution_ids": [
+                  "https://openalex.org/I184531372"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "last",
+            "author": {
+              "id": "https://openalex.org/A5000723818",
+              "display_name": "Frode Eika Sandnes",
+              "orcid": "https://orcid.org/0000-0001-7781-748X"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I184531372",
+                "display_name": "OsloMet – Oslo Metropolitan University",
+                "ror": "https://ror.org/04q12yn84",
+                "country_code": "NO",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I184531372"
+                ]
+              },
+              {
+                "id": "https://openalex.org/I2801609477",
+                "display_name": "Westerdals Oslo School of Arts, Communication and Technology",
+                "ror": "https://ror.org/02re25503",
+                "country_code": "NO",
+                "type": "education",
+                "lineage": [
+                  "https://openalex.org/I2801609477"
+                ]
+              }
+            ],
+            "countries": [
+              "NO"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Frode Eika Sandnes",
+            "raw_affiliation_strings": [
+              "Faculty of Technology Westerdals Oslo School of Arts, Communication and Technology  OSLO Norway",
+              "Oslo and Akershus University College of Applied Sciences Postboks 4 St. Olavs plass OSLO N‐0130 Norway"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Oslo and Akershus University College of Applied Sciences Postboks 4 St. Olavs plass OSLO N‐0130 Norway",
+                "institution_ids": [
+                  "https://openalex.org/I184531372"
+                ]
+              },
+              {
+                "raw_affiliation_string": "Faculty of Technology Westerdals Oslo School of Arts, Communication and Technology  OSLO Norway",
+                "institution_ids": [
+                  "https://openalex.org/I2801609477"
+                ]
+              }
+            ]
+          }
+        ],
+        "publication_year": 2015,
+        "cited_by_count": 57,
+        "primary_location": {
+          "is_oa": false,
+          "landing_page_url": "https://doi.org/10.1002/asi.23572",
+          "pdf_url": null,
+          "source": {
+            "id": "https://openalex.org/S4210197613",
+            "display_name": "Journal of the Association for Information Science and Technology",
+            "issn_l": "2330-1635",
+            "issn": [
+              "2330-1635",
+              "2330-1643"
+            ],
+            "is_oa": false,
+            "is_in_doaj": false,
+            "is_indexed_in_scopus": true,
+            "is_core": true,
+            "host_organization": "https://openalex.org/P4310320595",
+            "host_organization_name": "Wiley",
+            "host_organization_lineage": [
+              "https://openalex.org/P4310320595"
+            ],
+            "host_organization_lineage_names": [
+              "Wiley"
+            ],
+            "type": "journal"
+          },
+          "license": null,
+          "license_id": null,
+          "version": null,
+          "is_accepted": false,
+          "is_published": false
+        },
+        "open_access": {
+          "is_oa": false,
+          "oa_status": "closed",
+          "oa_url": null,
+          "any_repository_has_fulltext": false
+        },
+        "doi": "https://doi.org/10.1002/asi.23572"
+      },
+      {
+        "id": "https://openalex.org/W2157898375",
+        "display_name": "Search engine liability for autocomplete suggestions: personality, privacy and the power of the algorithm",
+        "authorships": [
+          {
+            "author_position": "first",
+            "author": {
+              "id": "https://openalex.org/A5066160292",
+              "display_name": "Stavroula Karapapa",
+              "orcid": "https://orcid.org/0000-0001-5648-6140"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I71052956",
+                "display_name": "University of Reading",
+                "ror": "https://ror.org/05v62cm79",
+                "country_code": "GB",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I71052956"
+                ]
+              }
+            ],
+            "countries": [
+              "GB"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Stavroula Karapapa",
+            "raw_affiliation_strings": [
+              "University of Reading, UK."
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "University of Reading, UK.",
+                "institution_ids": [
+                  "https://openalex.org/I71052956"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "last",
+            "author": {
+              "id": "https://openalex.org/A5034914526",
+              "display_name": "Maurizio Borghi",
+              "orcid": "https://orcid.org/0000-0002-9912-4358"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I9300472",
+                "display_name": "Bournemouth University",
+                "ror": "https://ror.org/05wwcw481",
+                "country_code": "GB",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I9300472"
+                ]
+              }
+            ],
+            "countries": [
+              "GB"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Maurizio Borghi",
+            "raw_affiliation_strings": [
+              "Bournemouth University, UK."
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Bournemouth University, UK.",
+                "institution_ids": [
+                  "https://openalex.org/I9300472"
+                ]
+              }
+            ]
+          }
+        ],
+        "publication_year": 2015,
+        "cited_by_count": 48,
+        "primary_location": {
+          "is_oa": false,
+          "landing_page_url": "https://doi.org/10.1093/ijlit/eav009",
+          "pdf_url": null,
+          "source": {
+            "id": "https://openalex.org/S193514341",
+            "display_name": "International Journal of Law and Information Technology",
+            "issn_l": "0967-0769",
+            "issn": [
+              "0967-0769",
+              "1464-3693"
+            ],
+            "is_oa": false,
+            "is_in_doaj": false,
+            "is_indexed_in_scopus": true,
+            "is_core": false,
+            "host_organization": "https://openalex.org/P4310311648",
+            "host_organization_name": "Oxford University Press",
+            "host_organization_lineage": [
+              "https://openalex.org/P4310311647",
+              "https://openalex.org/P4310311648"
+            ],
+            "host_organization_lineage_names": [
+              "University of Oxford",
+              "Oxford University Press"
+            ],
+            "type": "journal"
+          },
+          "license": null,
+          "license_id": null,
+          "version": null,
+          "is_accepted": false,
+          "is_published": false
+        },
+        "open_access": {
+          "is_oa": true,
+          "oa_status": "green",
+          "oa_url": "http://eprints.bournemouth.ac.uk/22315/1/Int%20J%20Law%20Info%20Tech-2015-Karapapa-ijlit_eav009.pdf",
+          "any_repository_has_fulltext": true
+        },
+        "doi": "https://doi.org/10.1093/ijlit/eav009"
+      },
+      {
+        "id": "https://openalex.org/W2604804152",
+        "display_name": "Autocomplete 3D sculpting",
+        "authorships": [
+          {
+            "author_position": "first",
+            "author": {
+              "id": "https://openalex.org/A5074353769",
+              "display_name": "Mengqi Peng",
+              "orcid": null
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I889458895",
+                "display_name": "University of Hong Kong",
+                "ror": "https://ror.org/02zhqgq86",
+                "country_code": "HK",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I889458895"
+                ]
+              }
+            ],
+            "countries": [
+              "HK"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Mengqi Peng",
+            "raw_affiliation_strings": [
+              "University of Hong Kong"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "University of Hong Kong",
+                "institution_ids": [
+                  "https://openalex.org/I889458895"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "middle",
+            "author": {
+              "id": "https://openalex.org/A5103814497",
+              "display_name": "Jun Xing",
+              "orcid": null
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I889458895",
+                "display_name": "University of Hong Kong",
+                "ror": "https://ror.org/02zhqgq86",
+                "country_code": "HK",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I889458895"
+                ]
+              }
+            ],
+            "countries": [
+              "HK"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Jun Xing",
+            "raw_affiliation_strings": [
+              "University of Hong Kong and USC Institute for Creative Technologies"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "University of Hong Kong and USC Institute for Creative Technologies",
+                "institution_ids": [
+                  "https://openalex.org/I889458895"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "last",
+            "author": {
+              "id": "https://openalex.org/A5100669427",
+              "display_name": "Li‐Yi Wei",
+              "orcid": "https://orcid.org/0000-0002-1076-6339"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I1306409833",
+                "display_name": "Adobe Systems (United States)",
+                "ror": "https://ror.org/059tvcg64",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I1306409833"
+                ]
+              },
+              {
+                "id": "https://openalex.org/I889458895",
+                "display_name": "University of Hong Kong",
+                "ror": "https://ror.org/02zhqgq86",
+                "country_code": "HK",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I889458895"
+                ]
+              }
+            ],
+            "countries": [
+              "HK",
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Li-Yi Wei",
+            "raw_affiliation_strings": [
+              "University of Hong Kong and Adobe Research"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "University of Hong Kong and Adobe Research",
+                "institution_ids": [
+                  "https://openalex.org/I1306409833",
+                  "https://openalex.org/I889458895"
+                ]
+              }
+            ]
+          }
+        ],
+        "publication_year": 2018,
+        "cited_by_count": 24,
+        "primary_location": {
+          "is_oa": false,
+          "landing_page_url": "https://doi.org/10.1145/3197517.3201297",
+          "pdf_url": null,
+          "source": {
+            "id": "https://openalex.org/S185367456",
+            "display_name": "ACM Transactions on Graphics",
+            "issn_l": "0730-0301",
+            "issn": [
+              "0730-0301",
+              "1557-7368"
+            ],
+            "is_oa": false,
+            "is_in_doaj": false,
+            "is_indexed_in_scopus": true,
+            "is_core": true,
+            "host_organization": "https://openalex.org/P4310319798",
+            "host_organization_name": "Association for Computing Machinery",
+            "host_organization_lineage": [
+              "https://openalex.org/P4310319798"
+            ],
+            "host_organization_lineage_names": [
+              "Association for Computing Machinery"
+            ],
+            "type": "journal"
+          },
+          "license": null,
+          "license_id": null,
+          "version": null,
+          "is_accepted": false,
+          "is_published": false
+        },
+        "open_access": {
+          "is_oa": true,
+          "oa_status": "green",
+          "oa_url": "https://arxiv.org/pdf/1703.10405",
+          "any_repository_has_fulltext": true
+        },
+        "doi": "https://doi.org/10.1145/3197517.3201297"
+      },
+      {
+        "id": "https://openalex.org/W3117606449",
+        "display_name": "AutoMeTS: The Autocomplete for Medical Text Simplification",
+        "authorships": [
+          {
+            "author_position": "first",
+            "author": {
+              "id": "https://openalex.org/A5112923690",
+              "display_name": "Hoang Van",
+              "orcid": null
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I138006243",
+                "display_name": "University of Arizona",
+                "ror": "https://ror.org/03m2x1q45",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I138006243"
+                ]
+              }
+            ],
+            "countries": [
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Hoang Van",
+            "raw_affiliation_strings": [
+              "University of Arizona,"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "University of Arizona,",
+                "institution_ids": [
+                  "https://openalex.org/I138006243"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "middle",
+            "author": {
+              "id": "https://openalex.org/A5089892601",
+              "display_name": "David Kauchak",
+              "orcid": "https://orcid.org/0000-0002-5208-634X"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I177881444",
+                "display_name": "Pomona College",
+                "ror": "https://ror.org/0074grg94",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I177881444"
+                ]
+              }
+            ],
+            "countries": [
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "David Kauchak",
+            "raw_affiliation_strings": [
+              "Pomona College"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Pomona College",
+                "institution_ids": [
+                  "https://openalex.org/I177881444"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "last",
+            "author": {
+              "id": "https://openalex.org/A5070859841",
+              "display_name": "Gondy Leroy",
+              "orcid": "https://orcid.org/0000-0003-4751-6680"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I138006243",
+                "display_name": "University of Arizona",
+                "ror": "https://ror.org/03m2x1q45",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I138006243"
+                ]
+              }
+            ],
+            "countries": [
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Gondy Leroy",
+            "raw_affiliation_strings": [
+              "University of Arizona,"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "University of Arizona,",
+                "institution_ids": [
+                  "https://openalex.org/I138006243"
+                ]
+              }
+            ]
+          }
+        ],
+        "publication_year": 2020,
+        "cited_by_count": 22,
+        "primary_location": {
+          "is_oa": true,
+          "landing_page_url": "https://doi.org/10.18653/v1/2020.coling-main.122",
+          "pdf_url": "https://www.aclweb.org/anthology/2020.coling-main.122.pdf",
+          "source": {
+            "id": "https://openalex.org/S4363608852",
+            "display_name": "Proceedings of the 17th international conference on Computational linguistics -",
+            "issn_l": null,
+            "issn": null,
+            "is_oa": false,
+            "is_in_doaj": false,
+            "is_indexed_in_scopus": false,
+            "is_core": false,
+            "host_organization": null,
+            "host_organization_name": null,
+            "host_organization_lineage": [],
+            "host_organization_lineage_names": [],
+            "type": "conference"
+          },
+          "license": "cc-by",
+          "license_id": "https://openalex.org/licenses/cc-by",
+          "version": "publishedVersion",
+          "is_accepted": true,
+          "is_published": true
+        },
+        "open_access": {
+          "is_oa": true,
+          "oa_status": "hybrid",
+          "oa_url": "https://www.aclweb.org/anthology/2020.coling-main.122.pdf",
+          "any_repository_has_fulltext": true
+        },
+        "doi": "https://doi.org/10.18653/v1/2020.coling-main.122"
+      },
+      {
+        "id": "https://openalex.org/W2005838629",
+        "display_name": "Typing over autocomplete",
+        "authorships": [
+          {
+            "author_position": "first",
+            "author": {
+              "id": "https://openalex.org/A5075809192",
+              "display_name": "Wendy Doubé",
+              "orcid": "https://orcid.org/0000-0001-8066-1199"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I57093077",
+                "display_name": "Swinburne University of Technology",
+                "ror": "https://ror.org/031rekg67",
+                "country_code": "AU",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I57093077"
+                ]
+              }
+            ],
+            "countries": [
+              "AU"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Wendy Doubé",
+            "raw_affiliation_strings": [
+              "Swinburne University of Technology, Hawthorn, VIC#TAB#"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Swinburne University of Technology, Hawthorn, VIC#TAB#",
+                "institution_ids": [
+                  "https://openalex.org/I57093077"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "last",
+            "author": {
+              "id": "https://openalex.org/A5004128943",
+              "display_name": "Jeanie Beh",
+              "orcid": null
+            },
+            "institutions": [],
+            "countries": [],
+            "is_corresponding": false,
+            "raw_author_name": "Jeanie Beh",
+            "raw_affiliation_strings": [
+              "Hawthorn Community Education Centre, Hawthorn Municipal Offices"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Hawthorn Community Education Centre, Hawthorn Municipal Offices",
+                "institution_ids": []
+              }
+            ]
+          }
+        ],
+        "publication_year": 2012,
+        "cited_by_count": 15,
+        "primary_location": {
+          "is_oa": false,
+          "landing_page_url": "https://doi.org/10.1145/2414536.2414553",
+          "pdf_url": null,
+          "source": null,
+          "license": null,
+          "license_id": null,
+          "version": null,
+          "is_accepted": false,
+          "is_published": false
+        },
+        "open_access": {
+          "is_oa": false,
+          "oa_status": "closed",
+          "oa_url": null,
+          "any_repository_has_fulltext": false
+        },
+        "doi": "https://doi.org/10.1145/2414536.2414553"
+      },
+      {
+        "id": "https://openalex.org/W1979604129",
+        "display_name": "Development of autocompleting friction welding method",
+        "authorships": [
+          {
+            "author_position": "first",
+            "author": {
+              "id": "https://openalex.org/A5007011970",
+              "display_name": "Masao Kimura",
+              "orcid": "https://orcid.org/0000-0001-8645-2224"
+            },
+            "institutions": [],
+            "countries": [],
+            "is_corresponding": false,
+            "raw_author_name": "M. Kimura",
+            "raw_affiliation_strings": [],
+            "affiliations": []
+          },
+          {
+            "author_position": "middle",
+            "author": {
+              "id": "https://openalex.org/A5046932709",
+              "display_name": "Toshimitsu Fujii",
+              "orcid": "https://orcid.org/0000-0003-3048-7270"
+            },
+            "institutions": [],
+            "countries": [],
+            "is_corresponding": false,
+            "raw_author_name": "T. Fujii",
+            "raw_affiliation_strings": [],
+            "affiliations": []
+          },
+          {
+            "author_position": "middle",
+            "author": {
+              "id": "https://openalex.org/A5064497085",
+              "display_name": "D. Utsumi",
+              "orcid": null
+            },
+            "institutions": [],
+            "countries": [],
+            "is_corresponding": false,
+            "raw_author_name": "D. Utsumi",
+            "raw_affiliation_strings": [],
+            "affiliations": []
+          },
+          {
+            "author_position": "middle",
+            "author": {
+              "id": "https://openalex.org/A5058585609",
+              "display_name": "Masahiro KUSAKA",
+              "orcid": null
+            },
+            "institutions": [],
+            "countries": [],
+            "is_corresponding": false,
+            "raw_author_name": "M. Kusaka",
+            "raw_affiliation_strings": [],
+            "affiliations": []
+          },
+          {
+            "author_position": "last",
+            "author": {
+              "id": "https://openalex.org/A5110120773",
+              "display_name": "K. Seo",
+              "orcid": null
+            },
+            "institutions": [],
+            "countries": [],
+            "is_corresponding": false,
+            "raw_author_name": "K. Seo",
+            "raw_affiliation_strings": [],
+            "affiliations": []
+          }
+        ],
+        "publication_year": 2008,
+        "cited_by_count": 15,
+        "primary_location": {
+          "is_oa": false,
+          "landing_page_url": "https://doi.org/10.1179/174329308x283875",
+          "pdf_url": null,
+          "source": {
+            "id": "https://openalex.org/S140152165",
+            "display_name": "Science and Technology of Welding & Joining",
+            "issn_l": "1362-1718",
+            "issn": [
+              "1362-1718",
+              "1743-2936"
+            ],
+            "is_oa": false,
+            "is_in_doaj": false,
+            "is_indexed_in_scopus": true,
+            "is_core": true,
+            "host_organization": "https://openalex.org/P4310320442",
+            "host_organization_name": "Maney Publishing",
+            "host_organization_lineage": [
+              "https://openalex.org/P4310320442"
+            ],
+            "host_organization_lineage_names": [
+              "Maney Publishing"
+            ],
+            "type": "journal"
+          },
+          "license": null,
+          "license_id": null,
+          "version": null,
+          "is_accepted": false,
+          "is_published": false
+        },
+        "open_access": {
+          "is_oa": false,
+          "oa_status": "closed",
+          "oa_url": null,
+          "any_repository_has_fulltext": false
+        },
+        "doi": "https://doi.org/10.1179/174329308x283875"
+      },
+      {
+        "id": "https://openalex.org/W3032429952",
+        "display_name": "Autocomplete Element Fields",
+        "authorships": [
+          {
+            "author_position": "first",
+            "author": {
+              "id": "https://openalex.org/A5005779137",
+              "display_name": "Chen-Yuan Hsu",
+              "orcid": null
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I9300472",
+                "display_name": "Bournemouth University",
+                "ror": "https://ror.org/05wwcw481",
+                "country_code": "GB",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I9300472"
+                ]
+              }
+            ],
+            "countries": [
+              "GB"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Chen-Yuan Hsu",
+            "raw_affiliation_strings": [
+              "BU - Bournemouth University [Poole] (Fern Barrow, Poole, Dorset, BH12 5BB - United Kingdom)"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "BU - Bournemouth University [Poole] (Fern Barrow, Poole, Dorset, BH12 5BB - United Kingdom)",
+                "institution_ids": [
+                  "https://openalex.org/I9300472"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "middle",
+            "author": {
+              "id": "https://openalex.org/A5100669427",
+              "display_name": "Li‐Yi Wei",
+              "orcid": "https://orcid.org/0000-0002-1076-6339"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I1306409833",
+                "display_name": "Adobe Systems (United States)",
+                "ror": "https://ror.org/059tvcg64",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I1306409833"
+                ]
+              }
+            ],
+            "countries": [
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Li-Yi Wei",
+            "raw_affiliation_strings": [
+              "Adobe Research, San Jose, CA, USA"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Adobe Research, San Jose, CA, USA",
+                "institution_ids": [
+                  "https://openalex.org/I1306409833"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "middle",
+            "author": {
+              "id": "https://openalex.org/A5101850373",
+              "display_name": "Lihua You",
+              "orcid": "https://orcid.org/0000-0001-9738-4378"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I9300472",
+                "display_name": "Bournemouth University",
+                "ror": "https://ror.org/05wwcw481",
+                "country_code": "GB",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I9300472"
+                ]
+              }
+            ],
+            "countries": [
+              "GB"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Lihua You",
+            "raw_affiliation_strings": [
+              "BU - Bournemouth University [Poole] (Fern Barrow, Poole, Dorset, BH12 5BB - United Kingdom)"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "BU - Bournemouth University [Poole] (Fern Barrow, Poole, Dorset, BH12 5BB - United Kingdom)",
+                "institution_ids": [
+                  "https://openalex.org/I9300472"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "last",
+            "author": {
+              "id": "https://openalex.org/A5074858947",
+              "display_name": "Jianjun Zhang",
+              "orcid": "https://orcid.org/0000-0002-7069-5771"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I9300472",
+                "display_name": "Bournemouth University",
+                "ror": "https://ror.org/05wwcw481",
+                "country_code": "GB",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I9300472"
+                ]
+              }
+            ],
+            "countries": [
+              "GB"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Jian Jun Zhang",
+            "raw_affiliation_strings": [
+              "BU - Bournemouth University [Poole] (Fern Barrow, Poole, Dorset, BH12 5BB - United Kingdom)"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "BU - Bournemouth University [Poole] (Fern Barrow, Poole, Dorset, BH12 5BB - United Kingdom)",
+                "institution_ids": [
+                  "https://openalex.org/I9300472"
+                ]
+              }
+            ]
+          }
+        ],
+        "publication_year": 2020,
+        "cited_by_count": 13,
+        "primary_location": {
+          "is_oa": false,
+          "landing_page_url": "https://doi.org/10.1145/3313831.3376248",
+          "pdf_url": null,
+          "source": null,
+          "license": null,
+          "license_id": null,
+          "version": null,
+          "is_accepted": false,
+          "is_published": false
+        },
+        "open_access": {
+          "is_oa": true,
+          "oa_status": "green",
+          "oa_url": "https://hal.science/hal-02536205/document",
+          "any_repository_has_fulltext": true
+        },
+        "doi": "https://doi.org/10.1145/3313831.3376248"
+      },
+      {
+        "id": "https://openalex.org/W2790393363",
+        "display_name": "Game of Missuggestions: Semantic Analysis of Search-Autocomplete Manipulations",
+        "authorships": [
+          {
+            "author_position": "first",
+            "author": {
+              "id": "https://openalex.org/A5058176560",
+              "display_name": "Peng Wang",
+              "orcid": "https://orcid.org/0000-0001-8782-857X"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I4210119109",
+                "display_name": "Indiana University Bloomington",
+                "ror": "https://ror.org/02k40bc56",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I4210119109",
+                  "https://openalex.org/I592451"
+                ]
+              }
+            ],
+            "countries": [
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Peng Wang",
+            "raw_affiliation_strings": [
+              "Indiana University Bloomington,"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Indiana University Bloomington,",
+                "institution_ids": [
+                  "https://openalex.org/I4210119109"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "middle",
+            "author": {
+              "id": "https://openalex.org/A5047482025",
+              "display_name": "Xianghang Mi",
+              "orcid": "https://orcid.org/0000-0002-8747-5601"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I4210119109",
+                "display_name": "Indiana University Bloomington",
+                "ror": "https://ror.org/02k40bc56",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I4210119109",
+                  "https://openalex.org/I592451"
+                ]
+              }
+            ],
+            "countries": [
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Xianghang Mi",
+            "raw_affiliation_strings": [
+              "Indiana University Bloomington,"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Indiana University Bloomington,",
+                "institution_ids": [
+                  "https://openalex.org/I4210119109"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "middle",
+            "author": {
+              "id": "https://openalex.org/A5084889167",
+              "display_name": "Xiaojing Liao",
+              "orcid": "https://orcid.org/0000-0001-7555-1673"
+            },
+            "institutions": [],
+            "countries": [],
+            "is_corresponding": false,
+            "raw_author_name": "Xiaojing Liao",
+            "raw_affiliation_strings": [],
+            "affiliations": []
+          },
+          {
+            "author_position": "middle",
+            "author": {
+              "id": "https://openalex.org/A5100333259",
+              "display_name": "Xiaofeng Wang",
+              "orcid": "https://orcid.org/0000-0003-0091-3865"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I4210119109",
+                "display_name": "Indiana University Bloomington",
+                "ror": "https://ror.org/02k40bc56",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I4210119109",
+                  "https://openalex.org/I592451"
+                ]
+              }
+            ],
+            "countries": [
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "XiaoFeng Wang",
+            "raw_affiliation_strings": [
+              "Indiana University Bloomington,"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Indiana University Bloomington,",
+                "institution_ids": [
+                  "https://openalex.org/I4210119109"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "middle",
+            "author": {
+              "id": "https://openalex.org/A5076623332",
+              "display_name": "Kan Yuan",
+              "orcid": null
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I4210119109",
+                "display_name": "Indiana University Bloomington",
+                "ror": "https://ror.org/02k40bc56",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I4210119109",
+                  "https://openalex.org/I592451"
+                ]
+              }
+            ],
+            "countries": [
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Kan Yuan",
+            "raw_affiliation_strings": [
+              "Indiana University Bloomington,"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Indiana University Bloomington,",
+                "institution_ids": [
+                  "https://openalex.org/I4210119109"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "middle",
+            "author": {
+              "id": "https://openalex.org/A5029813358",
+              "display_name": "Feng Qian",
+              "orcid": "https://orcid.org/0000-0002-9437-3021"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I4210119109",
+                "display_name": "Indiana University Bloomington",
+                "ror": "https://ror.org/02k40bc56",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I4210119109",
+                  "https://openalex.org/I592451"
+                ]
+              }
+            ],
+            "countries": [
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Feng Qian",
+            "raw_affiliation_strings": [
+              "Indiana University Bloomington,"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Indiana University Bloomington,",
+                "institution_ids": [
+                  "https://openalex.org/I4210119109"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "last",
+            "author": {
+              "id": "https://openalex.org/A5033073212",
+              "display_name": "Raheem Beyah",
+              "orcid": "https://orcid.org/0000-0002-9188-3464"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I130701444",
+                "display_name": "Georgia Institute of Technology",
+                "ror": "https://ror.org/01zkghx44",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I130701444"
+                ]
+              }
+            ],
+            "countries": [
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Raheem Beyah",
+            "raw_affiliation_strings": [
+              "Georgia Institute of Technology"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Georgia Institute of Technology",
+                "institution_ids": [
+                  "https://openalex.org/I130701444"
+                ]
+              }
+            ]
+          }
+        ],
+        "publication_year": 2018,
+        "cited_by_count": 16,
+        "primary_location": {
+          "is_oa": true,
+          "landing_page_url": "https://doi.org/10.14722/ndss.2018.23036",
+          "pdf_url": null,
+          "source": null,
+          "license": null,
+          "license_id": null,
+          "version": "publishedVersion",
+          "is_accepted": true,
+          "is_published": true
+        },
+        "open_access": {
+          "is_oa": true,
+          "oa_status": "bronze",
+          "oa_url": "https://doi.org/10.14722/ndss.2018.23036",
+          "any_repository_has_fulltext": true
+        },
+        "doi": "https://doi.org/10.14722/ndss.2018.23036"
+      },
+      {
+        "id": "https://openalex.org/W2996569155",
+        "display_name": "Age and Gender Stereotypes Reflected in Google’s “Autocomplete” Function: The Portrayal and Possible Spread of Societal Stereotypes",
+        "authorships": [
+          {
+            "author_position": "first",
+            "author": {
+              "id": "https://openalex.org/A5040144414",
+              "display_name": "Senjooti Roy",
+              "orcid": "https://orcid.org/0000-0003-0733-4014"
+            },
+            "institutions": [],
+            "countries": [],
+            "is_corresponding": false,
+            "raw_author_name": "Senjooti Roy",
+            "raw_affiliation_strings": [],
+            "affiliations": []
+          },
+          {
+            "author_position": "last",
+            "author": {
+              "id": "https://openalex.org/A5067336405",
+              "display_name": "Liat Ayalon",
+              "orcid": "https://orcid.org/0000-0003-3339-7879"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I13955877",
+                "display_name": "Bar-Ilan University",
+                "ror": "https://ror.org/03kgsv495",
+                "country_code": "IL",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I13955877"
+                ]
+              }
+            ],
+            "countries": [
+              "IL"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Liat Ayalon",
+            "raw_affiliation_strings": [
+              "Louis and Gabi Weisfeld School of Social Work, Bar-Ilan University, Ramat Gan, Israel"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Louis and Gabi Weisfeld School of Social Work, Bar-Ilan University, Ramat Gan, Israel",
+                "institution_ids": [
+                  "https://openalex.org/I13955877"
+                ]
+              }
+            ]
+          }
+        ],
+        "publication_year": 2019,
+        "cited_by_count": 20,
+        "primary_location": {
+          "is_oa": true,
+          "landing_page_url": "https://doi.org/10.1093/geront/gnz172",
+          "pdf_url": "https://academic.oup.com/gerontologist/article-pdf/60/6/1020/33653076/gnz172.pdf",
+          "source": {
+            "id": "https://openalex.org/S130337233",
+            "display_name": "The Gerontologist",
+            "issn_l": "0016-9013",
+            "issn": [
+              "0016-9013",
+              "1758-5341"
+            ],
+            "is_oa": false,
+            "is_in_doaj": false,
+            "is_indexed_in_scopus": true,
+            "is_core": true,
+            "host_organization": "https://openalex.org/P4310311648",
+            "host_organization_name": "Oxford University Press",
+            "host_organization_lineage": [
+              "https://openalex.org/P4310311647",
+              "https://openalex.org/P4310311648"
+            ],
+            "host_organization_lineage_names": [
+              "University of Oxford",
+              "Oxford University Press"
+            ],
+            "type": "journal"
+          },
+          "license": null,
+          "license_id": null,
+          "version": "publishedVersion",
+          "is_accepted": true,
+          "is_published": true
+        },
+        "open_access": {
+          "is_oa": true,
+          "oa_status": "bronze",
+          "oa_url": "https://academic.oup.com/gerontologist/article-pdf/60/6/1020/33653076/gnz172.pdf",
+          "any_repository_has_fulltext": false
+        },
+        "doi": "https://doi.org/10.1093/geront/gnz172"
+      },
+      {
+        "id": "https://openalex.org/W3135412377",
+        "display_name": "Deep Learning and Mixed Reality to Autocomplete Teleoperation",
+        "authorships": [
+          {
+            "author_position": "first",
+            "author": {
+              "id": "https://openalex.org/A5036544058",
+              "display_name": "Mohammad Kassem Zein",
+              "orcid": null
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I98635879",
+                "display_name": "American University of Beirut",
+                "ror": "https://ror.org/04pznsd21",
+                "country_code": "LB",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I98635879"
+                ]
+              }
+            ],
+            "countries": [
+              "LB"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Mohammad Kassem Zein",
+            "raw_affiliation_strings": [
+              "Vision and Robotics Lab, American University of Beirut, Beirut, Lebanon"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Vision and Robotics Lab, American University of Beirut, Beirut, Lebanon",
+                "institution_ids": [
+                  "https://openalex.org/I98635879"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "middle",
+            "author": {
+              "id": "https://openalex.org/A5032605161",
+              "display_name": "Majd Al Aawar",
+              "orcid": null
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I98635879",
+                "display_name": "American University of Beirut",
+                "ror": "https://ror.org/04pznsd21",
+                "country_code": "LB",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I98635879"
+                ]
+              }
+            ],
+            "countries": [
+              "LB"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Majd Al Aawar",
+            "raw_affiliation_strings": [
+              "Vision and Robotics Lab, American University of Beirut, Beirut, Lebanon"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Vision and Robotics Lab, American University of Beirut, Beirut, Lebanon",
+                "institution_ids": [
+                  "https://openalex.org/I98635879"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "middle",
+            "author": {
+              "id": "https://openalex.org/A5086667285",
+              "display_name": "Daniel Asmar",
+              "orcid": "https://orcid.org/0000-0002-4932-9777"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I98635879",
+                "display_name": "American University of Beirut",
+                "ror": "https://ror.org/04pznsd21",
+                "country_code": "LB",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I98635879"
+                ]
+              }
+            ],
+            "countries": [
+              "LB"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Daniel Asmar",
+            "raw_affiliation_strings": [
+              "Vision and Robotics Lab, American University of Beirut, Beirut, Lebanon"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Vision and Robotics Lab, American University of Beirut, Beirut, Lebanon",
+                "institution_ids": [
+                  "https://openalex.org/I98635879"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "last",
+            "author": {
+              "id": "https://openalex.org/A5061146388",
+              "display_name": "Imad H. Elhajj",
+              "orcid": "https://orcid.org/0000-0002-6461-4699"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I98635879",
+                "display_name": "American University of Beirut",
+                "ror": "https://ror.org/04pznsd21",
+                "country_code": "LB",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I98635879"
+                ]
+              }
+            ],
+            "countries": [
+              "LB"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Imad H. Elhajj",
+            "raw_affiliation_strings": [
+              "Vision and Robotics Lab, American University of Beirut, Beirut, Lebanon"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Vision and Robotics Lab, American University of Beirut, Beirut, Lebanon",
+                "institution_ids": [
+                  "https://openalex.org/I98635879"
+                ]
+              }
+            ]
+          }
+        ],
+        "publication_year": 2021,
+        "cited_by_count": 16,
+        "primary_location": {
+          "is_oa": false,
+          "landing_page_url": "https://doi.org/10.1109/icra48506.2021.9560887",
+          "pdf_url": null,
+          "source": null,
+          "license": null,
+          "license_id": null,
+          "version": null,
+          "is_accepted": false,
+          "is_published": false
+        },
+        "open_access": {
+          "is_oa": false,
+          "oa_status": "closed",
+          "oa_url": null,
+          "any_repository_has_fulltext": false
+        },
+        "doi": "https://doi.org/10.1109/icra48506.2021.9560887"
+      },
+      {
+        "id": "https://openalex.org/W3215744714",
+        "display_name": "Natural Language Processing: Practical Applications in Medicine and Investigation of Contextual Autocomplete",
+        "authorships": [
+          {
+            "author_position": "first",
+            "author": {
+              "id": "https://openalex.org/A5024470335",
+              "display_name": "Leah Voytovich",
+              "orcid": null
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I79576946",
+                "display_name": "University of Pennsylvania",
+                "ror": "https://ror.org/00b30xv10",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I79576946"
+                ]
+              }
+            ],
+            "countries": [
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Leah Voytovich",
+            "raw_affiliation_strings": [
+              "Department of Computer and Information Science, School of Engineering and Applied Science, University of Pennsylvania, Philadelphia, PA, USA"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Department of Computer and Information Science, School of Engineering and Applied Science, University of Pennsylvania, Philadelphia, PA, USA",
+                "institution_ids": [
+                  "https://openalex.org/I79576946"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "last",
+            "author": {
+              "id": "https://openalex.org/A5088612508",
+              "display_name": "Clayton Greenberg",
+              "orcid": null
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I79576946",
+                "display_name": "University of Pennsylvania",
+                "ror": "https://ror.org/00b30xv10",
+                "country_code": "US",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I79576946"
+                ]
+              }
+            ],
+            "countries": [
+              "US"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Clayton Greenberg",
+            "raw_affiliation_strings": [
+              "Department of Computer and Information Science, School of Engineering and Applied Science, University of Pennsylvania, Philadelphia, PA, USA"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Department of Computer and Information Science, School of Engineering and Applied Science, University of Pennsylvania, Philadelphia, PA, USA",
+                "institution_ids": [
+                  "https://openalex.org/I79576946"
+                ]
+              }
+            ]
+          }
+        ],
+        "publication_year": 2021,
+        "cited_by_count": 22,
+        "primary_location": {
+          "is_oa": false,
+          "landing_page_url": "https://doi.org/10.1007/978-3-030-85292-4_24",
+          "pdf_url": null,
+          "source": {
+            "id": "https://openalex.org/S4210232635",
+            "display_name": "Acta neurochirurgica. Supplementum",
+            "issn_l": "0065-1419",
+            "issn": [
+              "0065-1419",
+              "2197-8395"
+            ],
+            "is_oa": false,
+            "is_in_doaj": false,
+            "is_indexed_in_scopus": true,
+            "is_core": true,
+            "host_organization": "https://openalex.org/P4310319900",
+            "host_organization_name": "Springer Science+Business Media",
+            "host_organization_lineage": [
+              "https://openalex.org/P4310319965",
+              "https://openalex.org/P4310319900"
+            ],
+            "host_organization_lineage_names": [
+              "Springer Nature",
+              "Springer Science+Business Media"
+            ],
+            "type": "book series"
+          },
+          "license": null,
+          "license_id": null,
+          "version": null,
+          "is_accepted": false,
+          "is_published": false
+        },
+        "open_access": {
+          "is_oa": false,
+          "oa_status": "closed",
+          "oa_url": null,
+          "any_repository_has_fulltext": false
+        },
+        "doi": "https://doi.org/10.1007/978-3-030-85292-4_24"
+      },
+      {
+        "id": "https://openalex.org/W2509515359",
+        "display_name": "Autocomplete: Dr Google's \"helpful\" assistant?",
+        "authorships": [
+          {
+            "author_position": "first",
+            "author": {
+              "id": "https://openalex.org/A5055637970",
+              "display_name": "Lawrence C. Loh",
+              "orcid": "https://orcid.org/0000-0001-9210-3290"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I204722609",
+                "display_name": "Queen's University",
+                "ror": "https://ror.org/02y72wh86",
+                "country_code": "CA",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I204722609"
+                ]
+              },
+              {
+                "id": "https://openalex.org/I185261750",
+                "display_name": "University of Toronto",
+                "ror": "https://ror.org/03dbr7087",
+                "country_code": "CA",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I185261750"
+                ]
+              }
+            ],
+            "countries": [
+              "CA"
+            ],
+            "is_corresponding": true,
+            "raw_author_name": "Lawrence C. Loh",
+            "raw_affiliation_strings": [
+              "Associate Medical Officer of Health for Peel Region in Mississauga, Ont, Adjunct Professor in Clinical Public Health at the Dalla Lana School of Public Health at the University of Toronto in Ontario, and Lecturer in the Department of Family and Community Medicine at Queen's University in Kingston, Ont. lloh@jhsph.edu."
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Associate Medical Officer of Health for Peel Region in Mississauga, Ont, Adjunct Professor in Clinical Public Health at the Dalla Lana School of Public Health at the University of Toronto in Ontario, and Lecturer in the Department of Family and Community Medicine at Queen's University in Kingston, Ont. lloh@jhsph.edu.",
+                "institution_ids": [
+                  "https://openalex.org/I204722609",
+                  "https://openalex.org/I185261750"
+                ]
+              }
+            ]
+          }
+        ],
+        "publication_year": 2016,
+        "cited_by_count": 9,
+        "primary_location": {
+          "is_oa": false,
+          "landing_page_url": "https://pubmed.ncbi.nlm.nih.gov/27521382",
+          "pdf_url": null,
+          "source": {
+            "id": "https://openalex.org/S4306525036",
+            "display_name": "PubMed",
+            "issn_l": null,
+            "issn": null,
+            "is_oa": false,
+            "is_in_doaj": false,
+            "is_indexed_in_scopus": false,
+            "is_core": false,
+            "host_organization": "https://openalex.org/I1299303238",
+            "host_organization_name": "National Institutes of Health",
+            "host_organization_lineage": [
+              "https://openalex.org/I1299303238"
+            ],
+            "host_organization_lineage_names": [
+              "National Institutes of Health"
+            ],
+            "type": "repository"
+          },
+          "license": null,
+          "license_id": null,
+          "version": null,
+          "is_accepted": false,
+          "is_published": false
+        },
+        "open_access": {
+          "is_oa": false,
+          "oa_status": "closed",
+          "oa_url": null,
+          "any_repository_has_fulltext": false
+        },
+        "doi": null
+      },
+      {
+        "id": "https://openalex.org/W2883891107",
+        "display_name": "Autocomplete and Spell Checking Levenshtein Distance Algorithm To Getting Text Suggest Error Data Searching In Library",
+        "authorships": [
+          {
+            "author_position": "first",
+            "author": {
+              "id": "https://openalex.org/A5056612002",
+              "display_name": "Muhamad Maulana Yulianto",
+              "orcid": null
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I148158369",
+                "display_name": "State University of Semarang",
+                "ror": "https://ror.org/02fsk7e17",
+                "country_code": "ID",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I148158369"
+                ]
+              }
+            ],
+            "countries": [
+              "ID"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Muhamad Maulana Yulianto",
+            "raw_affiliation_strings": [
+              "Semarang State University"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Semarang State University",
+                "institution_ids": [
+                  "https://openalex.org/I148158369"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "middle",
+            "author": {
+              "id": "https://openalex.org/A5051282629",
+              "display_name": "Riza Arifudin",
+              "orcid": "https://orcid.org/0000-0002-8626-532X"
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I148158369",
+                "display_name": "State University of Semarang",
+                "ror": "https://ror.org/02fsk7e17",
+                "country_code": "ID",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I148158369"
+                ]
+              }
+            ],
+            "countries": [
+              "ID"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Riza Arifudin",
+            "raw_affiliation_strings": [
+              "Semarang state university"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Semarang state university",
+                "institution_ids": [
+                  "https://openalex.org/I148158369"
+                ]
+              }
+            ]
+          },
+          {
+            "author_position": "last",
+            "author": {
+              "id": "https://openalex.org/A5110720409",
+              "display_name": "Alamsyah Alamsyah",
+              "orcid": null
+            },
+            "institutions": [
+              {
+                "id": "https://openalex.org/I148158369",
+                "display_name": "State University of Semarang",
+                "ror": "https://ror.org/02fsk7e17",
+                "country_code": "ID",
+                "type": "funder",
+                "lineage": [
+                  "https://openalex.org/I148158369"
+                ]
+              }
+            ],
+            "countries": [
+              "ID"
+            ],
+            "is_corresponding": false,
+            "raw_author_name": "Alamsyah Alamsyah",
+            "raw_affiliation_strings": [
+              "Semarang state university"
+            ],
+            "affiliations": [
+              {
+                "raw_affiliation_string": "Semarang state university",
+                "institution_ids": [
+                  "https://openalex.org/I148158369"
+                ]
+              }
+            ]
+          }
+        ],
+        "publication_year": 2018,
+        "cited_by_count": 20,
+        "primary_location": {
+          "is_oa": true,
+          "landing_page_url": "https://doi.org/10.15294/sji.v5i1.14148",
+          "pdf_url": "https://journal.unnes.ac.id/nju/index.php/sji/article/download/67/pdf",
+          "source": {
+            "id": "https://openalex.org/S4210171202",
+            "display_name": "Scientific Journal of Informatics",
+            "issn_l": "2407-7658",
+            "issn": [
+              "2407-7658",
+              "2460-0040"
+            ],
+            "is_oa": true,
+            "is_in_doaj": true,
+            "is_indexed_in_scopus": false,
+            "is_core": false,
+            "host_organization": "https://openalex.org/P4310315212",
+            "host_organization_name": "Jurusan Ilmu Komputer Universitas Negeri Semarang",
+            "host_organization_lineage": [
+              "https://openalex.org/P4310315212"
+            ],
+            "host_organization_lineage_names": [
+              "Jurusan Ilmu Komputer Universitas Negeri Semarang"
+            ],
+            "type": "journal"
+          },
+          "license": "cc-by",
+          "license_id": "https://openalex.org/licenses/cc-by",
+          "version": "publishedVersion",
+          "is_accepted": true,
+          "is_published": true
+        },
+        "open_access": {
+          "is_oa": true,
+          "oa_status": "diamond",
+          "oa_url": "https://journal.unnes.ac.id/nju/index.php/sji/article/download/67/pdf",
+          "any_repository_has_fulltext": false
+        },
+        "doi": "https://doi.org/10.15294/sji.v5i1.14148"
+      }
+    ],
+    "group_by": []
+  },
+  "headers": {},
+  "timestamp": "2025-10-29T08:41:40.097Z",
+  "url": "https://api.openalex.org/works?search=autocomplete&sort=relevance_score%3Adesc&per_page=20&filter=display_name.search%3Aautocomplete&select=id,display_name,authorships,publication_year,cited_by_count,primary_location,open_access,doi"
+}
