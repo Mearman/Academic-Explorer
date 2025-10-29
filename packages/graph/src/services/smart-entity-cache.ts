@@ -15,8 +15,7 @@
  */
 
 import type { EntityType } from "../types/core"
-// TODO: Fix @academic-explorer/utils import - temporarily using console
-const logger = console
+import { logger } from "@academic-explorer/utils"
 
 /**
  * Context information for cache operations and decision making

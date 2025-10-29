@@ -5,8 +5,7 @@
  * This module supports continuous recalculation during force-directed layout simulation.
  */
 
-// TODO: Fix @academic-explorer/utils import - temporarily using console
-const logger = console
+import { logger } from "@academic-explorer/utils"
 
 // Local Position enum to avoid external dependency
 export enum Position {

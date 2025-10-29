@@ -11,8 +11,7 @@
  */
 
 import type { GraphNode, GraphEdge, GraphData, EntityType } from "../types/core"
-// TODO: Fix @academic-explorer/utils import - temporarily using console
-const logger = console
+import { logger } from "@academic-explorer/utils"
 import { RelationType } from "../types/core"
 import type { GraphDataProvider } from "../providers/base-provider"
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams, useSearch } from "@tanstack/react-router";
 import type { EntityType } from "@academic-explorer/types";
+import { logger } from "../logger";
 
 export interface EntityRouteConfig {
 	entityType: string;
@@ -75,10 +76,10 @@ export function useEntityRoute<T = unknown>(
 		userInteractions: null,
 		nodeCount: 0,
 		loadEntity: () => {
-			console.warn("useEntityRoute: loadEntity not implemented");
+			logger.warn("routing", "useEntityRoute: loadEntity not implemented");
 		},
 		loadEntityIntoGraph: () => {
-			console.warn("useEntityRoute: loadEntityIntoGraph not implemented");
+			logger.warn("routing", "useEntityRoute: loadEntityIntoGraph not implemented");
 		},
 		routeSearch: search,
 	};

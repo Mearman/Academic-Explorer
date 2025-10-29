@@ -1,5 +1,7 @@
 // @ts-nocheck - React types compatibility issues with TypeScript bundler mode
 
+import { logger } from "../logger"
+
 // Filter operator types - aligned with apps/web filter system
 export type FilterOperator =
 	| "="
@@ -106,11 +108,11 @@ export function createFilter<T = unknown>(
 		config,
 		setValue: (value: T) => {
 			// This would be implemented with actual state management
-			console.log("Setting filter value:", value);
+			logger.debug("ui", "Setting filter value", { value });
 		},
 		setOperator: (operator: FilterOperator) => {
 			// This would be implemented with actual state management
-			console.log("Setting filter operator:", operator);
+			logger.debug("ui", "Setting filter operator", { operator });
 		},
 	};
 }

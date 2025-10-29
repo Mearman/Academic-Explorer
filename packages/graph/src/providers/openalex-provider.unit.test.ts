@@ -8,8 +8,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { OpenAlexGraphProvider } from './openalex-provider';
 import type { SearchQuery, ProviderExpansionOptions } from './base-provider';
 import { RelationType } from '../types/core';
-// TODO: Fix @academic-explorer/utils import - temporarily using console
-const logger = console;
+import { logger } from "@academic-explorer/utils";
 
 // Mock OpenAlex client interface
 interface MockOpenAlexClient {

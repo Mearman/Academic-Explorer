@@ -4,8 +4,7 @@
  */
 
 import { DEFAULT_FORCE_PARAMS } from "../constants/force-params"
-// TODO: Fix @academic-explorer/utils import - temporarily using console
-const logger = console
+import { logger } from "@academic-explorer/utils"
 
 // Extended Navigator interface for device memory API
 interface NavigatorWithDeviceMemory extends Navigator {

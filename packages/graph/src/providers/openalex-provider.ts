@@ -10,8 +10,7 @@ import {
 	type ProviderExpansionOptions,
 	type GraphExpansion,
 } from "./base-provider"
-// TODO: Fix @academic-explorer/utils import - temporarily using console
-const logger = console
+import { logger } from "@academic-explorer/utils"
 import type {
 	GraphNode,
 	GraphEdge,
