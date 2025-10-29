@@ -101,6 +101,51 @@ function OpenAlexUrlComponent() {
           `Extracted entity type: ${entityType}, id: ${id}`,
         );
 
+        // Special handling for external IDs with colons (ror:, issn:, orcid:, etc.)
+        // These need to be routed to dedicated external ID routes
+        const rorPattern = /^ror:([a-z0-9]{9})$/i;
+        const issnPattern = /^issn:([0-9]{4}-[0-9]{3}[0-9X])$/i;
+        const orcidPattern = /^orcid:([0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[0-9X])$/i;
+
+        const rorMatch = id.match(rorPattern);
+        if (rorMatch && entityType === "institutions") {
+          logger.debug(
+            "routing",
+            "Detected ROR ID with colon, redirecting to ror route",
+            { rorId: rorMatch[1] },
+            "OpenAlexUrlComponent",
+          );
+          const targetPath = buildPathWithSearch(`/institutions/ror/${rorMatch[1]}`, searchParams);
+          navigate({ to: targetPath, replace: true });
+          return;
+        }
+
+        const issnMatch = id.match(issnPattern);
+        if (issnMatch && entityType === "sources") {
+          logger.debug(
+            "routing",
+            "Detected ISSN with colon, redirecting to issn route",
+            { issn: issnMatch[1] },
+            "OpenAlexUrlComponent",
+          );
+          const targetPath = buildPathWithSearch(`/sources/issn/${issnMatch[1]}`, searchParams);
+          navigate({ to: targetPath, replace: true });
+          return;
+        }
+
+        const orcidMatch = id.match(orcidPattern);
+        if (orcidMatch && entityType === "authors") {
+          logger.debug(
+            "routing",
+            "Detected ORCID with colon, redirecting to orcid route",
+            { orcid: orcidMatch[1] },
+            "OpenAlexUrlComponent",
+          );
+          const targetPath = buildPathWithSearch(`/authors/orcid/${orcidMatch[1]}`, searchParams);
+          navigate({ to: targetPath, replace: true });
+          return;
+        }
+
         const detection = EntityDetectionService.detectEntity(id);
         if (detection?.entityType) {
           // URL-encode the ID to handle external IDs with special characters

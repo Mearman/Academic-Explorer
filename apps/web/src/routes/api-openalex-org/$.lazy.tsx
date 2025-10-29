@@ -103,6 +103,48 @@ function ApiOpenAlexRoute() {
         // (when the test constructs /api-openalex-org/{path})
         const pathWithQuery = decodedId;
 
+        // Special handling for external IDs with colons (ror:, issn:, orcid:, etc.)
+        // These need to be routed to dedicated external ID routes
+        const rorPattern = /^institutions\/ror:([a-z0-9]{9})$/i;
+        const issnPattern = /^sources\/issn:([0-9]{4}-[0-9]{3}[0-9X])$/i;
+        const orcidPattern = /^authors\/orcid:([0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[0-9X])$/i;
+
+        const rorMatch = pathWithQuery.match(rorPattern);
+        if (rorMatch) {
+          logger.debug(
+            "routing",
+            "Detected ROR ID with colon, redirecting to ror route",
+            { rorId: rorMatch[1] },
+            "ApiOpenAlexRoute",
+          );
+          navigate({ to: `/institutions/ror/${rorMatch[1]}`, replace: true });
+          return;
+        }
+
+        const issnMatch = pathWithQuery.match(issnPattern);
+        if (issnMatch) {
+          logger.debug(
+            "routing",
+            "Detected ISSN with colon, redirecting to issn route",
+            { issn: issnMatch[1] },
+            "ApiOpenAlexRoute",
+          );
+          navigate({ to: `/sources/issn/${issnMatch[1]}`, replace: true });
+          return;
+        }
+
+        const orcidMatch = pathWithQuery.match(orcidPattern);
+        if (orcidMatch) {
+          logger.debug(
+            "routing",
+            "Detected ORCID with colon, redirecting to orcid route",
+            { orcid: orcidMatch[1] },
+            "ApiOpenAlexRoute",
+          );
+          navigate({ to: `/authors/orcid/${orcidMatch[1]}`, replace: true });
+          return;
+        }
+
         // Check if this looks like an OpenAlex path (starts with entity type or known endpoint)
         const entityType = EntityDetectionService.detectEntityType(
           pathWithQuery.split("?")[0],
