@@ -1,0 +1,44 @@
+{
+  "data": {
+    "id": "https://openalex.org/T11636",
+    "display_name": "Artificial Intelligence in Healthcare and Education",
+    "description": "This cluster of papers explores the intersection of artificial intelligence and medicine, focusing on applications in healthcare, medical imaging, clinical decision support, and the ethical challenges associated with AI implementation. It delves into topics such as machine learning, big data, precision medicine, and the potential impact of AI on health equity.",
+    "keywords": [
+      "Artificial Intelligence",
+      "Machine Learning",
+      "Healthcare",
+      "Medical Imaging",
+      "Clinical Decision Support",
+      "Ethical Challenges",
+      "Big Data",
+      "Precision Medicine",
+      "Radiology",
+      "Health Equity"
+    ],
+    "ids": {
+      "openalex": "https://openalex.org/T11636",
+      "wikipedia": "https://en.wikipedia.org/wiki/Artificial_intelligence_in_healthcare"
+    },
+    "subfield": {
+      "id": "https://openalex.org/subfields/2718",
+      "display_name": "Health Informatics"
+    },
+    "field": {
+      "id": "https://openalex.org/fields/27",
+      "display_name": "Medicine"
+    },
+    "domain": {
+      "id": "https://openalex.org/domains/4",
+      "display_name": "Health Sciences"
+    },
+    "siblings": [],
+    "works_count": 49915,
+    "cited_by_count": 573840,
+    "works_api_url": "https://api.openalex.org/works?filter=topics.id:T11636",
+    "updated_date": "2025-10-27T05:33:43.083673",
+    "created_date": "2024-01-23"
+  },
+  "headers": {},
+  "timestamp": "2025-10-29T12:45:36.238Z",
+  "url": "https://api.openalex.org/topics/T11636"
+}

@@ -1,8 +1,8 @@
 {
   "data": {
     "meta": {
-      "count": 272262158,
-      "db_response_time_ms": 307,
+      "count": 272324983,
+      "db_response_time_ms": 152,
       "page": 1,
       "per_page": 50,
       "groups_count": null
@@ -439,9 +439,9 @@
         },
         "sustainable_development_goals": [
           {
-            "display_name": "Clean water and sanitation",
             "score": 0.65,
-            "id": "https://metadata.un.org/sdg/6"
+            "id": "https://metadata.un.org/sdg/6",
+            "display_name": "Clean water and sanitation"
           }
         ],
         "grants": [],
@@ -1278,7 +1278,7 @@
         "apc_paid": null,
         "fwci": 39256.613,
         "has_fulltext": false,
-        "cited_by_count": 299761,
+        "cited_by_count": 299728,
         "citation_normalized_percentile": {
           "value": 0.999977,
           "is_in_top_1_percent": true,
@@ -1470,7 +1470,7 @@
             "cited_by_count": 6515
           }
         ],
-        "updated_date": "2025-10-17T06:44:01.065225",
+        "updated_date": "2025-10-28T16:41:06.351462",
         "created_date": "2017-02-03"
       },
       {
@@ -4616,9 +4616,9 @@
         "best_oa_location": null,
         "sustainable_development_goals": [
           {
-            "display_name": "Affordable and clean energy",
             "score": 0.91,
-            "id": "https://metadata.un.org/sdg/7"
+            "id": "https://metadata.un.org/sdg/7",
+            "display_name": "Affordable and clean energy"
           }
         ],
         "grants": [],
@@ -5976,9 +5976,9 @@
         },
         "sustainable_development_goals": [
           {
-            "display_name": "Quality education",
             "score": 0.53,
-            "id": "https://metadata.un.org/sdg/4"
+            "id": "https://metadata.un.org/sdg/4",
+            "display_name": "Quality education"
           }
         ],
         "grants": [],
@@ -8327,9 +8327,9 @@
         },
         "sustainable_development_goals": [
           {
-            "display_name": "Life on land",
             "score": 0.59,
-            "id": "https://metadata.un.org/sdg/15"
+            "id": "https://metadata.un.org/sdg/15",
+            "display_name": "Life on land"
           }
         ],
         "grants": [],
@@ -8824,9 +8824,9 @@
         "best_oa_location": null,
         "sustainable_development_goals": [
           {
-            "display_name": "Affordable and clean energy",
             "score": 0.63,
-            "id": "https://metadata.un.org/sdg/7"
+            "id": "https://metadata.un.org/sdg/7",
+            "display_name": "Affordable and clean energy"
           }
         ],
         "grants": [],
@@ -10173,9 +10173,9 @@
         "best_oa_location": null,
         "sustainable_development_goals": [
           {
-            "display_name": "Peace, justice, and strong institutions",
             "score": 0.59,
-            "id": "https://metadata.un.org/sdg/16"
+            "id": "https://metadata.un.org/sdg/16",
+            "display_name": "Peace, justice, and strong institutions"
           }
         ],
         "grants": [],
@@ -10997,9 +10997,9 @@
         },
         "sustainable_development_goals": [
           {
-            "display_name": "Affordable and clean energy",
             "score": 0.64,
-            "id": "https://metadata.un.org/sdg/7"
+            "id": "https://metadata.un.org/sdg/7",
+            "display_name": "Affordable and clean energy"
           }
         ],
         "grants": [],
@@ -11872,9 +11872,9 @@
         },
         "sustainable_development_goals": [
           {
-            "display_name": "Affordable and clean energy",
             "score": 0.9,
-            "id": "https://metadata.un.org/sdg/7"
+            "id": "https://metadata.un.org/sdg/7",
+            "display_name": "Affordable and clean energy"
           }
         ],
         "grants": [],
@@ -17409,9 +17409,9 @@
         },
         "sustainable_development_goals": [
           {
-            "display_name": "Industry, innovation and infrastructure",
             "score": 0.51,
-            "id": "https://metadata.un.org/sdg/9"
+            "id": "https://metadata.un.org/sdg/9",
+            "display_name": "Industry, innovation and infrastructure"
           }
         ],
         "grants": [],
@@ -23229,14 +23229,14 @@
         "best_oa_location": null,
         "sustainable_development_goals": [
           {
-            "display_name": "Reduced inequalities",
             "score": 0.51,
-            "id": "https://metadata.un.org/sdg/10"
+            "id": "https://metadata.un.org/sdg/10",
+            "display_name": "Reduced inequalities"
           },
           {
-            "display_name": "Peace, justice, and strong institutions",
             "score": 0.41,
-            "id": "https://metadata.un.org/sdg/16"
+            "id": "https://metadata.un.org/sdg/16",
+            "display_name": "Peace, justice, and strong institutions"
           }
         ],
         "grants": [],
@@ -25107,9 +25107,9 @@
         },
         "sustainable_development_goals": [
           {
-            "display_name": "Partnerships for the goals",
             "score": 0.43,
-            "id": "https://metadata.un.org/sdg/17"
+            "id": "https://metadata.un.org/sdg/17",
+            "display_name": "Partnerships for the goals"
           }
         ],
         "grants": [],
@@ -27288,9 +27288,9 @@
         "best_oa_location": null,
         "sustainable_development_goals": [
           {
-            "display_name": "Affordable and clean energy",
             "score": 0.92,
-            "id": "https://metadata.un.org/sdg/7"
+            "id": "https://metadata.un.org/sdg/7",
+            "display_name": "Affordable and clean energy"
           }
         ],
         "grants": [],
@@ -28135,9 +28135,9 @@
         "best_oa_location": null,
         "sustainable_development_goals": [
           {
-            "display_name": "Reduced inequalities",
             "score": 0.76,
-            "id": "https://metadata.un.org/sdg/10"
+            "id": "https://metadata.un.org/sdg/10",
+            "display_name": "Reduced inequalities"
           }
         ],
         "grants": [],
@@ -28836,9 +28836,9 @@
         },
         "sustainable_development_goals": [
           {
-            "display_name": "Industry, innovation and infrastructure",
             "score": 0.46,
-            "id": "https://metadata.un.org/sdg/9"
+            "id": "https://metadata.un.org/sdg/9",
+            "display_name": "Industry, innovation and infrastructure"
           }
         ],
         "grants": [],
@@ -30559,9 +30559,9 @@
         },
         "sustainable_development_goals": [
           {
-            "display_name": "Good health and well-being",
             "score": 0.71,
-            "id": "https://metadata.un.org/sdg/3"
+            "id": "https://metadata.un.org/sdg/3",
+            "display_name": "Good health and well-being"
           }
         ],
         "grants": [],
@@ -31459,9 +31459,9 @@
         },
         "sustainable_development_goals": [
           {
-            "display_name": "Clean water and sanitation",
             "score": 0.67,
-            "id": "https://metadata.un.org/sdg/6"
+            "id": "https://metadata.un.org/sdg/6",
+            "display_name": "Clean water and sanitation"
           }
         ],
         "grants": [],
@@ -33063,9 +33063,9 @@
         "best_oa_location": null,
         "sustainable_development_goals": [
           {
-            "display_name": "Sustainable cities and communities",
             "score": 0.54,
-            "id": "https://metadata.un.org/sdg/11"
+            "id": "https://metadata.un.org/sdg/11",
+            "display_name": "Sustainable cities and communities"
           }
         ],
         "grants": [],
@@ -34135,9 +34135,9 @@
         "best_oa_location": null,
         "sustainable_development_goals": [
           {
-            "display_name": "Quality education",
             "score": 0.65,
-            "id": "https://metadata.un.org/sdg/4"
+            "id": "https://metadata.un.org/sdg/4",
+            "display_name": "Quality education"
           }
         ],
         "grants": [],
@@ -35662,9 +35662,9 @@
         "best_oa_location": null,
         "sustainable_development_goals": [
           {
-            "display_name": "Reduced inequalities",
             "score": 0.42,
-            "id": "https://metadata.un.org/sdg/10"
+            "id": "https://metadata.un.org/sdg/10",
+            "display_name": "Reduced inequalities"
           }
         ],
         "grants": [],
@@ -37516,9 +37516,9 @@
         "best_oa_location": null,
         "sustainable_development_goals": [
           {
-            "display_name": "Peace, justice, and strong institutions",
             "score": 0.48,
-            "id": "https://metadata.un.org/sdg/16"
+            "id": "https://metadata.un.org/sdg/16",
+            "display_name": "Peace, justice, and strong institutions"
           }
         ],
         "grants": [],
@@ -38389,9 +38389,9 @@
         "best_oa_location": null,
         "sustainable_development_goals": [
           {
-            "display_name": "Affordable and clean energy",
             "score": 0.87,
-            "id": "https://metadata.un.org/sdg/7"
+            "id": "https://metadata.un.org/sdg/7",
+            "display_name": "Affordable and clean energy"
           }
         ],
         "grants": [],
@@ -38852,9 +38852,9 @@
         "best_oa_location": null,
         "sustainable_development_goals": [
           {
-            "display_name": "Good health and well-being",
             "score": 0.87,
-            "id": "https://metadata.un.org/sdg/3"
+            "id": "https://metadata.un.org/sdg/3",
+            "display_name": "Good health and well-being"
           }
         ],
         "grants": [],
@@ -39832,6 +39832,6 @@
     "group_by": []
   },
   "headers": {},
-  "timestamp": "2025-10-28T11:10:04.811Z",
+  "timestamp": "2025-10-29T12:46:25.969Z",
   "url": "https://api.openalex.org/works?per_page=50&page=1"
 }

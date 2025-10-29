@@ -1,8 +1,8 @@
 {
   "data": {
     "meta": {
-      "count": 105313562,
-      "db_response_time_ms": 307,
+      "count": 105335737,
+      "db_response_time_ms": 115,
       "page": 1,
       "per_page": 50,
       "groups_count": null
@@ -14325,7 +14325,7 @@
           "M. E. Monroe"
         ],
         "works_count": 64226,
-        "cited_by_count": 14990,
+        "cited_by_count": 15011,
         "summary_stats": {
           "2yr_mean_citedness": 0.005743092336162338,
           "h_index": 59,
@@ -15410,9 +15410,9 @@
         "counts_by_year": [
           {
             "year": 2025,
-            "works_count": 4,
+            "works_count": 5,
             "oa_works_count": 0,
-            "cited_by_count": 1674
+            "cited_by_count": 1749
           },
           {
             "year": 2024,
@@ -15494,7 +15494,7 @@
           }
         ],
         "works_api_url": "https://api.openalex.org/works?filter=author.id:A5005196385",
-        "updated_date": "2025-10-19T14:58:35.433796",
+        "updated_date": "2025-10-29T03:34:58.733155",
         "created_date": "2023-07-21"
       },
       {
@@ -27926,7 +27926,7 @@
           "Richard Smith"
         ],
         "works_count": 38567,
-        "cited_by_count": 2129,
+        "cited_by_count": 2137,
         "summary_stats": {
           "2yr_mean_citedness": 0.0023086269744835965,
           "h_index": 24,
@@ -28995,7 +28995,7 @@
             "year": 2025,
             "works_count": 6,
             "oa_works_count": 0,
-            "cited_by_count": 84
+            "cited_by_count": 94
           },
           {
             "year": 2024,
@@ -29077,7 +29077,7 @@
           }
         ],
         "works_api_url": "https://api.openalex.org/works?filter=author.id:A5034698904",
-        "updated_date": "2025-10-19T02:57:39.651871",
+        "updated_date": "2025-10-28T14:45:23.458180",
         "created_date": "2023-07-21"
       },
       {
@@ -33783,7 +33783,7 @@
           "Journals Iosr"
         ],
         "works_count": 28416,
-        "cited_by_count": 12047,
+        "cited_by_count": 12055,
         "summary_stats": {
           "2yr_mean_citedness": 0,
           "h_index": 27,
@@ -34907,13 +34907,13 @@
             "year": 2025,
             "works_count": 0,
             "oa_works_count": 0,
-            "cited_by_count": 279
+            "cited_by_count": 296
           },
           {
             "year": 2024,
             "works_count": 0,
             "oa_works_count": 0,
-            "cited_by_count": 854
+            "cited_by_count": 855
           },
           {
             "year": 2023,
@@ -34989,7 +34989,7 @@
           }
         ],
         "works_api_url": "https://api.openalex.org/works?filter=author.id:A5064812119",
-        "updated_date": "2025-10-19T15:38:55.823071",
+        "updated_date": "2025-10-29T04:25:16.055999",
         "created_date": "2023-07-21"
       },
       {
@@ -52813,6 +52813,6 @@
     "group_by": []
   },
   "headers": {},
-  "timestamp": "2025-10-28T11:10:12.205Z",
+  "timestamp": "2025-10-29T12:02:03.763Z",
   "url": "https://api.openalex.org/authors?per_page=50&page=1"
 }

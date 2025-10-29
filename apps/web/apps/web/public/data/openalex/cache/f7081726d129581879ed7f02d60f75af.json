@@ -2,7 +2,7 @@
   "data": {
     "id": "https://openalex.org/W2741809807",
     "display_name": "The state of OA: a large-scale analysis of the prevalence and impact of Open Access articles",
-    "cited_by_count": 1018,
+    "cited_by_count": 1021,
     "counts_by_year": [
       {
         "year": 2025,
@@ -41,7 +41,7 @@
         "cited_by_count": 9
       }
     ],
-    "updated_date": "2025-10-17T09:50:12.261111",
+    "updated_date": "2025-10-28T20:00:50.230399",
     "created_date": "2017-08-08",
     "doi": "https://doi.org/10.7717/peerj.4375",
     "title": "The state of OA: a large-scale analysis of the prevalence and impact of Open Access articles",
@@ -1658,6 +1658,6 @@
     ]
   },
   "headers": {},
-  "timestamp": "2025-10-28T11:09:44.093Z",
+  "timestamp": "2025-10-29T12:01:57.915Z",
   "url": "https://api.openalex.org/works/W2741809807?select=id,display_name,cited_by_count,counts_by_year,updated_date,created_date,doi,title,publication_year,publication_date,ids,primary_location,best_oa_location,locations,locations_count,authorships,countries_distinct_count,institutions_distinct_count,corresponding_author_ids,corresponding_institution_ids,apc_list,apc_paid,fwci,has_fulltext,fulltext_origin,cited_by_api_url,type,type_crossref,indexed_in,open_access,cited_by_percentile_year,concepts,mesh,referenced_works,referenced_works_count,related_works,sustainable_development_goals,grants,datasets,versions,is_retracted,is_paratext,abstract_inverted_index,biblio,language,topics,keywords"
 }

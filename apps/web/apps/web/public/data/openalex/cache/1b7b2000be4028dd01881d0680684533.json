@@ -1,8 +1,8 @@
 {
   "data": {
     "meta": {
-      "count": 117853,
-      "db_response_time_ms": 75,
+      "count": 118577,
+      "db_response_time_ms": 76,
       "page": 1,
       "per_page": 50,
       "groups_count": null
@@ -38,8 +38,8 @@
             ]
           }
         ],
-        "works_count": 1112957,
-        "cited_by_count": 36122113,
+        "works_count": 1113788,
+        "cited_by_count": 36165916,
         "summary_stats": {
           "2yr_mean_citedness": 3.4796317222726514,
           "h_index": 1184,
@@ -8223,104 +8223,104 @@
         "counts_by_year": [
           {
             "year": 2025,
-            "works_count": 23742,
-            "oa_works_count": 8952,
-            "cited_by_count": 1760080
+            "works_count": 24547,
+            "oa_works_count": 9323,
+            "cited_by_count": 1806393
           },
           {
             "year": 2024,
-            "works_count": 44337,
-            "oa_works_count": 23522,
-            "cited_by_count": 2546068
+            "works_count": 44352,
+            "oa_works_count": 23526,
+            "cited_by_count": 2546278
           },
           {
             "year": 2023,
-            "works_count": 54981,
+            "works_count": 54985,
             "oa_works_count": 37563,
-            "cited_by_count": 2593287
+            "cited_by_count": 2593518
           },
           {
             "year": 2022,
-            "works_count": 53342,
+            "works_count": 53345,
             "oa_works_count": 38625,
-            "cited_by_count": 2537382
+            "cited_by_count": 2537466
           },
           {
             "year": 2021,
-            "works_count": 54035,
-            "oa_works_count": 39169,
-            "cited_by_count": 2676221
+            "works_count": 54040,
+            "oa_works_count": 39173,
+            "cited_by_count": 2676286
           },
           {
             "year": 2020,
-            "works_count": 51117,
-            "oa_works_count": 36971,
-            "cited_by_count": 2379630
+            "works_count": 51118,
+            "oa_works_count": 36972,
+            "cited_by_count": 2379579
           },
           {
             "year": 2019,
-            "works_count": 46232,
+            "works_count": 46234,
             "oa_works_count": 31154,
-            "cited_by_count": 2048713
+            "cited_by_count": 2048698
           },
           {
             "year": 2018,
-            "works_count": 44114,
+            "works_count": 44115,
             "oa_works_count": 26750,
-            "cited_by_count": 1881334
+            "cited_by_count": 1881311
           },
           {
             "year": 2017,
-            "works_count": 42745,
-            "oa_works_count": 24300,
-            "cited_by_count": 1722242
+            "works_count": 42743,
+            "oa_works_count": 24299,
+            "cited_by_count": 1722245
           },
           {
             "year": 2016,
             "works_count": 42111,
             "oa_works_count": 22750,
-            "cited_by_count": 1627622
+            "cited_by_count": 1627610
           },
           {
             "year": 2015,
-            "works_count": 42491,
-            "oa_works_count": 21365,
+            "works_count": 42489,
+            "oa_works_count": 21363,
             "cited_by_count": 1536318
           },
           {
             "year": 2014,
-            "works_count": 41587,
-            "oa_works_count": 20074,
+            "works_count": 41586,
+            "oa_works_count": 20073,
             "cited_by_count": 1464718
           },
           {
             "year": 2013,
-            "works_count": 38525,
+            "works_count": 38526,
             "oa_works_count": 18079,
-            "cited_by_count": 1351738
+            "cited_by_count": 1351736
           },
           {
             "year": 2012,
-            "works_count": 38922,
+            "works_count": 38921,
             "oa_works_count": 17172,
-            "cited_by_count": 1206731
+            "cited_by_count": 1206745
           }
         ],
         "roles": [
-          {
-            "role": "funder",
-            "id": "https://openalex.org/F4320322892",
-            "works_count": 20930
-          },
           {
             "role": "publisher",
             "id": "https://openalex.org/P4310311411",
             "works_count": 12223
           },
           {
+            "role": "funder",
+            "id": "https://openalex.org/F4320322892",
+            "works_count": 20959
+          },
+          {
             "role": "institution",
             "id": "https://openalex.org/I1294671590",
-            "works_count": 1112957
+            "works_count": 1113788
           }
         ],
         "topics": [
@@ -9197,7 +9197,7 @@
             "wikidata": "https://www.wikidata.org/wiki/Q2329",
             "display_name": "Chemistry",
             "level": 0,
-            "score": 57.3
+            "score": 57.2
           },
           {
             "id": "https://openalex.org/C62520636",
@@ -9286,7 +9286,7 @@
         ],
         "is_super_system": false,
         "works_api_url": "https://api.openalex.org/works?filter=institutions.id:I1294671590",
-        "updated_date": "2025-10-21T15:06:31.405380",
+        "updated_date": "2025-10-28T14:53:58.309395",
         "created_date": "2016-06-24"
       },
       {
@@ -16090,8 +16090,8 @@
             ]
           }
         ],
-        "works_count": 496632,
-        "cited_by_count": 2104177,
+        "works_count": 496670,
+        "cited_by_count": 2107706,
         "summary_stats": {
           "2yr_mean_citedness": 0.11941372336551918,
           "h_index": 484,
@@ -16218,33 +16218,33 @@
         "counts_by_year": [
           {
             "year": 2025,
-            "works_count": 3470,
-            "oa_works_count": 380,
-            "cited_by_count": 137164
+            "works_count": 3508,
+            "oa_works_count": 394,
+            "cited_by_count": 140643
           },
           {
             "year": 2024,
             "works_count": 49828,
             "oa_works_count": 1441,
-            "cited_by_count": 191921
+            "cited_by_count": 191924
           },
           {
             "year": 2023,
             "works_count": 94301,
             "oa_works_count": 2240,
-            "cited_by_count": 189014
+            "cited_by_count": 189018
           },
           {
             "year": 2022,
             "works_count": 134600,
             "oa_works_count": 2443,
-            "cited_by_count": 187140
+            "cited_by_count": 187149
           },
           {
             "year": 2021,
             "works_count": 95731,
             "oa_works_count": 2361,
-            "cited_by_count": 181099
+            "cited_by_count": 181101
           },
           {
             "year": 2020,
@@ -16256,19 +16256,19 @@
             "year": 2019,
             "works_count": 14315,
             "oa_works_count": 1573,
-            "cited_by_count": 124976
+            "cited_by_count": 124981
           },
           {
             "year": 2018,
             "works_count": 4040,
             "oa_works_count": 1506,
-            "cited_by_count": 111545
+            "cited_by_count": 111546
           },
           {
             "year": 2017,
             "works_count": 2253,
             "oa_works_count": 1386,
-            "cited_by_count": 96535
+            "cited_by_count": 96536
           },
           {
             "year": 2016,
@@ -16280,7 +16280,7 @@
             "year": 2015,
             "works_count": 2061,
             "oa_works_count": 1197,
-            "cited_by_count": 83354
+            "cited_by_count": 83356
           },
           {
             "year": 2014,
@@ -16298,19 +16298,19 @@
             "year": 2012,
             "works_count": 1791,
             "oa_works_count": 735,
-            "cited_by_count": 60288
+            "cited_by_count": 60290
           }
         ],
         "roles": [
           {
-            "role": "funder",
-            "id": "https://openalex.org/F4320338354",
-            "works_count": 1576
-          },
-          {
             "role": "institution",
             "id": "https://openalex.org/I142606810",
-            "works_count": 496632
+            "works_count": 496670
+          },
+          {
+            "role": "funder",
+            "id": "https://openalex.org/F4320338354",
+            "works_count": 1577
           }
         ],
         "topics": [
@@ -17192,7 +17192,7 @@
         ],
         "is_super_system": false,
         "works_api_url": "https://api.openalex.org/works?filter=institutions.id:I142606810",
-        "updated_date": "2025-10-22T05:25:38.461569",
+        "updated_date": "2025-10-29T08:28:35.999955",
         "created_date": "2016-06-24"
       },
       {
@@ -29357,12 +29357,12 @@
           "INSERM"
         ],
         "display_name_alternatives": [
-          "Institut National de la Santé et de la Recherche Médicale",
-          "French Institute of Health and Medical Research"
+          "French Institute of Health and Medical Research",
+          "Institut National de la Santé et de la Recherche Médicale"
         ],
         "repositories": [],
-        "works_count": 405706,
-        "cited_by_count": 16958326,
+        "works_count": 406171,
+        "cited_by_count": 16982013,
         "summary_stats": {
           "2yr_mean_citedness": 4.402185691559265,
           "h_index": 1018,
@@ -29531,6 +29531,14 @@
             "id": "https://openalex.org/I4403386744",
             "ror": "https://ror.org/001br4864",
             "display_name": "Biomedtech Facilities",
+            "country_code": null,
+            "type": "facility",
+            "relationship": "child"
+          },
+          {
+            "id": "https://openalex.org/I4415634014",
+            "ror": "https://ror.org/02gezhp66",
+            "display_name": "BoRdeaux Institute of onCology",
             "country_code": null,
             "type": "facility",
             "relationship": "child"
@@ -31152,6 +31160,14 @@
             "relationship": "child"
           },
           {
+            "id": "https://openalex.org/I4415633503",
+            "ror": "https://ror.org/031j52y75",
+            "display_name": "Methods and Applied Research for Trial",
+            "country_code": null,
+            "type": "facility",
+            "relationship": "child"
+          },
+          {
             "id": "https://openalex.org/I4387153258",
             "ror": "https://ror.org/055nbmz93",
             "display_name": "Micro et Nanomédecines translationnelles",
@@ -31811,99 +31827,99 @@
         "counts_by_year": [
           {
             "year": 2025,
-            "works_count": 14826,
-            "oa_works_count": 5818,
-            "cited_by_count": 920660
+            "works_count": 15284,
+            "oa_works_count": 5995,
+            "cited_by_count": 943046
           },
           {
             "year": 2024,
-            "works_count": 19522,
+            "works_count": 19523,
             "oa_works_count": 10307,
-            "cited_by_count": 1261646
+            "cited_by_count": 1261726
           },
           {
             "year": 2023,
             "works_count": 22029,
             "oa_works_count": 15488,
-            "cited_by_count": 1263461
+            "cited_by_count": 1263467
           },
           {
             "year": 2022,
-            "works_count": 21364,
-            "oa_works_count": 15870,
-            "cited_by_count": 1244153
+            "works_count": 21363,
+            "oa_works_count": 15868,
+            "cited_by_count": 1244159
           },
           {
             "year": 2021,
-            "works_count": 22019,
-            "oa_works_count": 16220,
-            "cited_by_count": 1258294
+            "works_count": 22017,
+            "oa_works_count": 16218,
+            "cited_by_count": 1258305
           },
           {
             "year": 2020,
             "works_count": 20807,
-            "oa_works_count": 15270,
-            "cited_by_count": 1113819
+            "oa_works_count": 15269,
+            "cited_by_count": 1113846
           },
           {
             "year": 2019,
-            "works_count": 18053,
+            "works_count": 18054,
             "oa_works_count": 12487,
-            "cited_by_count": 877704
+            "cited_by_count": 877700
           },
           {
             "year": 2018,
-            "works_count": 17596,
-            "oa_works_count": 10511,
-            "cited_by_count": 785778
+            "works_count": 17597,
+            "oa_works_count": 10512,
+            "cited_by_count": 785775
           },
           {
             "year": 2017,
             "works_count": 16673,
             "oa_works_count": 9374,
-            "cited_by_count": 735296
+            "cited_by_count": 735301
           },
           {
             "year": 2016,
-            "works_count": 16103,
-            "oa_works_count": 8496,
-            "cited_by_count": 688073
+            "works_count": 16102,
+            "oa_works_count": 8495,
+            "cited_by_count": 688070
           },
           {
             "year": 2015,
             "works_count": 15340,
             "oa_works_count": 7950,
-            "cited_by_count": 661952
+            "cited_by_count": 661951
           },
           {
             "year": 2014,
-            "works_count": 14641,
+            "works_count": 14642,
             "oa_works_count": 7201,
-            "cited_by_count": 629261
+            "cited_by_count": 629257
           },
           {
             "year": 2013,
             "works_count": 14107,
             "oa_works_count": 6864,
-            "cited_by_count": 588534
+            "cited_by_count": 588531
           },
           {
             "year": 2012,
             "works_count": 12635,
             "oa_works_count": 6022,
-            "cited_by_count": 527841
+            "cited_by_count": 527838
           }
         ],
         "roles": [
           {
-            "role": "institution",
-            "id": "https://openalex.org/I154526488",
-            "works_count": 405706
-          },
-          {
             "role": "funder",
             "id": "https://openalex.org/F4320320893",
-            "works_count": 7778
+            "works_count": 7787
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I154526488",
+            "works_count": 406171
           }
         ],
         "topics": [
@@ -32787,7 +32803,7 @@
             "wikidata": "https://www.wikidata.org/wiki/Q7162",
             "display_name": "Genetics",
             "level": 1,
-            "score": 61.2
+            "score": 61.1
           },
           {
             "id": "https://openalex.org/C185592680",
@@ -32864,12 +32880,12 @@
             "wikidata": "https://www.wikidata.org/wiki/Q7141",
             "display_name": "Cell biology",
             "level": 1,
-            "score": 21.2
+            "score": 21.1
           }
         ],
         "is_super_system": false,
         "works_api_url": "https://api.openalex.org/works?filter=institutions.id:I154526488",
-        "updated_date": "2025-10-22T02:29:51.724353",
+        "updated_date": "2025-10-29T05:48:58.136100",
         "created_date": "2016-06-24"
       },
       {
@@ -38458,10 +38474,10 @@
           "CU"
         ],
         "display_name_alternatives": [
-          "Columbia University in the City of New York",
-          "Universidad de Columbia",
           "Columbia College",
-          "King's College"
+          "Columbia University in the City of New York",
+          "King's College",
+          "Universidad de Columbia"
         ],
         "repositories": [
           {
@@ -38474,8 +38490,8 @@
             ]
           }
         ],
-        "works_count": 361283,
-        "cited_by_count": 18043383,
+        "works_count": 361536,
+        "cited_by_count": 18065765,
         "summary_stats": {
           "2yr_mean_citedness": 4.679570797391121,
           "h_index": 1187,
@@ -38773,104 +38789,104 @@
         "counts_by_year": [
           {
             "year": 2025,
-            "works_count": 7709,
-            "oa_works_count": 2150,
-            "cited_by_count": 766885
+            "works_count": 7944,
+            "oa_works_count": 2231,
+            "cited_by_count": 785708
           },
           {
             "year": 2024,
             "works_count": 12222,
             "oa_works_count": 6091,
-            "cited_by_count": 1096470
+            "cited_by_count": 1096542
           },
           {
             "year": 2023,
-            "works_count": 14425,
+            "works_count": 14426,
             "oa_works_count": 9159,
-            "cited_by_count": 1133512
+            "cited_by_count": 1133538
           },
           {
             "year": 2022,
             "works_count": 14115,
             "oa_works_count": 9175,
-            "cited_by_count": 1114323
+            "cited_by_count": 1114341
           },
           {
             "year": 2021,
             "works_count": 14995,
             "oa_works_count": 9920,
-            "cited_by_count": 1195198
+            "cited_by_count": 1195233
           },
           {
             "year": 2020,
             "works_count": 16580,
             "oa_works_count": 9356,
-            "cited_by_count": 1087622
+            "cited_by_count": 1087621
           },
           {
             "year": 2019,
-            "works_count": 13661,
-            "oa_works_count": 7667,
-            "cited_by_count": 919043
+            "works_count": 13662,
+            "oa_works_count": 7668,
+            "cited_by_count": 919065
           },
           {
             "year": 2018,
             "works_count": 12460,
             "oa_works_count": 7078,
-            "cited_by_count": 824274
+            "cited_by_count": 824280
           },
           {
             "year": 2017,
             "works_count": 11643,
             "oa_works_count": 6461,
-            "cited_by_count": 771383
+            "cited_by_count": 771409
           },
           {
             "year": 2016,
             "works_count": 11342,
             "oa_works_count": 6331,
-            "cited_by_count": 731996
+            "cited_by_count": 732000
           },
           {
             "year": 2015,
             "works_count": 11205,
             "oa_works_count": 5828,
-            "cited_by_count": 719630
+            "cited_by_count": 719640
           },
           {
             "year": 2014,
             "works_count": 10854,
             "oa_works_count": 5460,
-            "cited_by_count": 693134
+            "cited_by_count": 693142
           },
           {
             "year": 2013,
             "works_count": 10974,
             "oa_works_count": 5282,
-            "cited_by_count": 648571
+            "cited_by_count": 648575
           },
           {
             "year": 2012,
             "works_count": 10050,
             "oa_works_count": 4830,
-            "cited_by_count": 594453
+            "cited_by_count": 594482
           }
         ],
         "roles": [
           {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310316010",
+            "works_count": 5251
+          },
+          {
             "role": "institution",
             "id": "https://openalex.org/I78577930",
-            "works_count": 361283
+            "works_count": 361536
           },
           {
             "role": "funder",
             "id": "https://openalex.org/F4320309111",
-            "works_count": 1266
-          },
-          {
-            "role": "publisher",
-            "id": "https://openalex.org/P4310316010",
-            "works_count": 5251
+            "works_count": 1267
           }
         ],
         "topics": [
@@ -39740,7 +39756,7 @@
             "wikidata": "https://www.wikidata.org/wiki/Q11190",
             "display_name": "Medicine",
             "level": 0,
-            "score": 54.5
+            "score": 54.6
           },
           {
             "id": "https://openalex.org/C121332964",
@@ -39820,17 +39836,17 @@
             "score": 22.1
           },
           {
-            "id": "https://openalex.org/C199539241",
-            "wikidata": "https://www.wikidata.org/wiki/Q7748",
-            "display_name": "Law",
-            "level": 1,
-            "score": 21.4
-          },
-          {
             "id": "https://openalex.org/C162324750",
             "wikidata": "https://www.wikidata.org/wiki/Q8134",
             "display_name": "Economics",
             "level": 0,
+            "score": 21.4
+          },
+          {
+            "id": "https://openalex.org/C199539241",
+            "wikidata": "https://www.wikidata.org/wiki/Q7748",
+            "display_name": "Law",
+            "level": 1,
             "score": 21.4
           },
           {
@@ -39850,7 +39866,7 @@
         ],
         "is_super_system": false,
         "works_api_url": "https://api.openalex.org/works?filter=institutions.id:I78577930",
-        "updated_date": "2025-10-22T01:59:35.762922",
+        "updated_date": "2025-10-29T04:03:12.520154",
         "created_date": "2016-06-24"
       },
       {
@@ -43810,8 +43826,8 @@
         "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Kyoto%20University.jpg&width=300",
         "display_name_acronyms": [],
         "display_name_alternatives": [
-          "Kyōto daigaku",
-          "京都大学"
+          "京都大学",
+          "Kyōto daigaku"
         ],
         "repositories": [
           {
@@ -43824,8 +43840,8 @@
             ]
           }
         ],
-        "works_count": 327242,
-        "cited_by_count": 9259554,
+        "works_count": 327446,
+        "cited_by_count": 9269190,
         "summary_stats": {
           "2yr_mean_citedness": 3.291785646297354,
           "h_index": 737,
@@ -43989,33 +44005,33 @@
         "counts_by_year": [
           {
             "year": 2025,
-            "works_count": 5927,
-            "oa_works_count": 1827,
-            "cited_by_count": 369071
+            "works_count": 6128,
+            "oa_works_count": 1898,
+            "cited_by_count": 379031
           },
           {
             "year": 2024,
-            "works_count": 8746,
+            "works_count": 8747,
             "oa_works_count": 4517,
-            "cited_by_count": 535881
+            "cited_by_count": 535897
           },
           {
             "year": 2023,
             "works_count": 10650,
             "oa_works_count": 6742,
-            "cited_by_count": 558264
+            "cited_by_count": 558277
           },
           {
             "year": 2022,
             "works_count": 10384,
             "oa_works_count": 6725,
-            "cited_by_count": 552747
+            "cited_by_count": 552754
           },
           {
             "year": 2021,
             "works_count": 11368,
             "oa_works_count": 7139,
-            "cited_by_count": 581461
+            "cited_by_count": 581476
           },
           {
             "year": 2020,
@@ -44027,19 +44043,19 @@
             "year": 2019,
             "works_count": 10202,
             "oa_works_count": 5799,
-            "cited_by_count": 457074
+            "cited_by_count": 457078
           },
           {
             "year": 2018,
             "works_count": 10924,
             "oa_works_count": 5726,
-            "cited_by_count": 420652
+            "cited_by_count": 420654
           },
           {
             "year": 2017,
             "works_count": 9994,
             "oa_works_count": 5290,
-            "cited_by_count": 391153
+            "cited_by_count": 391155
           },
           {
             "year": 2016,
@@ -44051,42 +44067,42 @@
             "year": 2015,
             "works_count": 9857,
             "oa_works_count": 5121,
-            "cited_by_count": 363423
+            "cited_by_count": 363426
           },
           {
             "year": 2014,
             "works_count": 10058,
             "oa_works_count": 4957,
-            "cited_by_count": 353412
+            "cited_by_count": 353419
           },
           {
             "year": 2013,
             "works_count": 9723,
             "oa_works_count": 4682,
-            "cited_by_count": 341330
+            "cited_by_count": 341331
           },
           {
             "year": 2012,
             "works_count": 9328,
             "oa_works_count": 4452,
-            "cited_by_count": 319413
+            "cited_by_count": 319421
           }
         ],
         "roles": [
           {
             "role": "institution",
             "id": "https://openalex.org/I22299242",
-            "works_count": 327242
-          },
-          {
-            "role": "funder",
-            "id": "https://openalex.org/F4320323365",
-            "works_count": 1907
+            "works_count": 327446
           },
           {
             "role": "publisher",
             "id": "https://openalex.org/P4310313424",
             "works_count": 20115
+          },
+          {
+            "role": "funder",
+            "id": "https://openalex.org/F4320323365",
+            "works_count": 1909
           }
         ],
         "topics": [
@@ -45052,7 +45068,7 @@
         ],
         "is_super_system": false,
         "works_api_url": "https://api.openalex.org/works?filter=institutions.id:I22299242",
-        "updated_date": "2025-10-21T23:43:04.839978",
+        "updated_date": "2025-10-29T01:36:20.964009",
         "created_date": "2016-06-24"
       },
       {
@@ -49136,8 +49152,8 @@
             ]
           }
         ],
-        "works_count": 322303,
-        "cited_by_count": 21424848,
+        "works_count": 322451,
+        "cited_by_count": 21445351,
         "summary_stats": {
           "2yr_mean_citedness": 6.403895087101194,
           "h_index": 1414,
@@ -49472,104 +49488,104 @@
         "counts_by_year": [
           {
             "year": 2025,
-            "works_count": 5003,
-            "oa_works_count": 1487,
-            "cited_by_count": 827313
+            "works_count": 5143,
+            "oa_works_count": 1551,
+            "cited_by_count": 849188
           },
           {
             "year": 2024,
-            "works_count": 8584,
+            "works_count": 8586,
             "oa_works_count": 4974,
-            "cited_by_count": 1223098
+            "cited_by_count": 1223146
           },
           {
             "year": 2023,
-            "works_count": 10616,
+            "works_count": 10617,
             "oa_works_count": 7007,
-            "cited_by_count": 1280280
+            "cited_by_count": 1280315
           },
           {
             "year": 2022,
             "works_count": 9835,
             "oa_works_count": 6969,
-            "cited_by_count": 1243727
+            "cited_by_count": 1243735
           },
           {
             "year": 2021,
             "works_count": 11709,
-            "oa_works_count": 7527,
-            "cited_by_count": 1377045
+            "oa_works_count": 7526,
+            "cited_by_count": 1377043
           },
           {
             "year": 2020,
             "works_count": 13268,
             "oa_works_count": 7558,
-            "cited_by_count": 1264981
+            "cited_by_count": 1264982
           },
           {
             "year": 2019,
             "works_count": 14601,
             "oa_works_count": 6373,
-            "cited_by_count": 1112959
+            "cited_by_count": 1112974
           },
           {
             "year": 2018,
             "works_count": 10665,
             "oa_works_count": 5948,
-            "cited_by_count": 1006228
+            "cited_by_count": 1006234
           },
           {
             "year": 2017,
             "works_count": 10045,
             "oa_works_count": 5506,
-            "cited_by_count": 923825
+            "cited_by_count": 923827
           },
           {
             "year": 2016,
             "works_count": 9814,
             "oa_works_count": 5498,
-            "cited_by_count": 875819
+            "cited_by_count": 875825
           },
           {
             "year": 2015,
             "works_count": 10032,
             "oa_works_count": 5213,
-            "cited_by_count": 848475
+            "cited_by_count": 848484
           },
           {
             "year": 2014,
             "works_count": 9950,
             "oa_works_count": 4841,
-            "cited_by_count": 810928
+            "cited_by_count": 810937
           },
           {
             "year": 2013,
             "works_count": 9803,
             "oa_works_count": 4607,
-            "cited_by_count": 760258
+            "cited_by_count": 760264
           },
           {
             "year": 2012,
-            "works_count": 9415,
+            "works_count": 9416,
             "oa_works_count": 4315,
-            "cited_by_count": 699669
+            "cited_by_count": 699654
           }
         ],
         "roles": [
           {
-            "role": "funder",
-            "id": "https://openalex.org/F4320309369",
-            "works_count": 2665
-          },
-          {
             "role": "institution",
             "id": "https://openalex.org/I63966007",
-            "works_count": 322303
+            "works_count": 322451
           },
           {
             "role": "publisher",
             "id": "https://openalex.org/P4310316440",
             "works_count": 831
+          },
+          {
+            "role": "funder",
+            "id": "https://openalex.org/F4320309369",
+            "works_count": 2670
           }
         ],
         "topics": [
@@ -50446,7 +50462,7 @@
             "wikidata": "https://www.wikidata.org/wiki/Q944",
             "display_name": "Quantum mechanics",
             "level": 1,
-            "score": 46.6
+            "score": 46.5
           },
           {
             "id": "https://openalex.org/C127413603",
@@ -50495,7 +50511,7 @@
             "wikidata": "https://www.wikidata.org/wiki/Q11190",
             "display_name": "Medicine",
             "level": 0,
-            "score": 25.3
+            "score": 25.4
           },
           {
             "id": "https://openalex.org/C55493867",
@@ -50528,7 +50544,7 @@
         ],
         "is_super_system": false,
         "works_api_url": "https://api.openalex.org/works?filter=institutions.id:I63966007",
-        "updated_date": "2025-10-21T21:44:13.321441",
+        "updated_date": "2025-10-28T22:42:11.938019",
         "created_date": "2016-06-24"
       },
       {
@@ -52046,7 +52062,7 @@
       {
         "id": "https://openalex.org/I36258959",
         "ror": "https://ror.org/0168r3w48",
-        "display_name": "University of California, San Diego",
+        "display_name": "University of California San Diego",
         "country_code": "US",
         "type": "funder",
         "type_id": "https://openalex.org/institution-types/funder",
@@ -52060,16 +52076,17 @@
           "UCSD"
         ],
         "display_name_alternatives": [
-          "Universidad de California en San Diego",
+          "University of California, San Diego",
+          "Université de Californie à San Diego",
           "UC San Diego",
-          "Université de Californie à San Diego"
+          "Universidad de California en San Diego"
         ],
         "repositories": [
           {
             "id": "https://openalex.org/S4306400863",
             "display_name": "Digital USD (University of San Diego)",
             "host_organization": "https://openalex.org/I36258959",
-            "host_organization_name": "University of California, San Diego",
+            "host_organization_name": "University of California San Diego",
             "host_organization_lineage": [
               "https://openalex.org/I36258959"
             ]
@@ -52078,14 +52095,14 @@
             "id": "https://openalex.org/S4306400061",
             "display_name": "Digital USD (University of San Diego)",
             "host_organization": "https://openalex.org/I36258959",
-            "host_organization_name": "University of California, San Diego",
+            "host_organization_name": "University of California San Diego",
             "host_organization_lineage": [
               "https://openalex.org/I36258959"
             ]
           }
         ],
-        "works_count": 315836,
-        "cited_by_count": 16923160,
+        "works_count": 316110,
+        "cited_by_count": 16944086,
         "summary_stats": {
           "2yr_mean_citedness": 5.069035070596656,
           "h_index": 1165,
@@ -52305,57 +52322,57 @@
         "counts_by_year": [
           {
             "year": 2025,
-            "works_count": 8570,
-            "oa_works_count": 2628,
-            "cited_by_count": 806783
+            "works_count": 8830,
+            "oa_works_count": 2713,
+            "cited_by_count": 826807
           },
           {
             "year": 2024,
-            "works_count": 13842,
+            "works_count": 13843,
             "oa_works_count": 6860,
-            "cited_by_count": 1150173
+            "cited_by_count": 1150229
           },
           {
             "year": 2023,
             "works_count": 15822,
             "oa_works_count": 9903,
-            "cited_by_count": 1167647
+            "cited_by_count": 1167672
           },
           {
             "year": 2022,
             "works_count": 14939,
             "oa_works_count": 10227,
-            "cited_by_count": 1141786
+            "cited_by_count": 1141797
           },
           {
             "year": 2021,
             "works_count": 15223,
             "oa_works_count": 10472,
-            "cited_by_count": 1185093
+            "cited_by_count": 1185092
           },
           {
             "year": 2020,
             "works_count": 16185,
             "oa_works_count": 10581,
-            "cited_by_count": 1061680
+            "cited_by_count": 1061677
           },
           {
             "year": 2019,
             "works_count": 13958,
             "oa_works_count": 8684,
-            "cited_by_count": 879625
+            "cited_by_count": 879635
           },
           {
             "year": 2018,
             "works_count": 12451,
             "oa_works_count": 7850,
-            "cited_by_count": 779553
+            "cited_by_count": 779561
           },
           {
             "year": 2017,
             "works_count": 11836,
             "oa_works_count": 7438,
-            "cited_by_count": 721085
+            "cited_by_count": 721088
           },
           {
             "year": 2016,
@@ -52367,37 +52384,37 @@
             "year": 2015,
             "works_count": 11022,
             "oa_works_count": 6371,
-            "cited_by_count": 659798
+            "cited_by_count": 659800
           },
           {
             "year": 2014,
             "works_count": 10642,
             "oa_works_count": 6057,
-            "cited_by_count": 632809
+            "cited_by_count": 632823
           },
           {
             "year": 2013,
             "works_count": 10475,
             "oa_works_count": 5806,
-            "cited_by_count": 589463
+            "cited_by_count": 589476
           },
           {
             "year": 2012,
             "works_count": 9856,
             "oa_works_count": 5177,
-            "cited_by_count": 535078
+            "cited_by_count": 535091
           }
         ],
         "roles": [
           {
             "role": "institution",
             "id": "https://openalex.org/I36258959",
-            "works_count": 315836
+            "works_count": 316110
           },
           {
             "role": "funder",
             "id": "https://openalex.org/F4320332603",
-            "works_count": 1593
+            "works_count": 1596
           }
         ],
         "topics": [
@@ -53267,7 +53284,7 @@
             "wikidata": "https://www.wikidata.org/wiki/Q11190",
             "display_name": "Medicine",
             "level": 0,
-            "score": 57
+            "score": 57.1
           },
           {
             "id": "https://openalex.org/C185592680",
@@ -53281,7 +53298,7 @@
             "wikidata": "https://www.wikidata.org/wiki/Q413",
             "display_name": "Physics",
             "level": 0,
-            "score": 42.5
+            "score": 42.4
           },
           {
             "id": "https://openalex.org/C126322002",
@@ -53349,7 +53366,7 @@
         ],
         "is_super_system": false,
         "works_api_url": "https://api.openalex.org/works?filter=institutions.id:I36258959",
-        "updated_date": "2025-10-22T08:52:07.148513",
+        "updated_date": "2025-10-29T10:58:09.633760",
         "created_date": "2016-06-24"
       },
       {
@@ -60374,8 +60391,8 @@
         ],
         "display_name_alternatives": [
           "Universidad de Illinois en Urbana-Champaign",
-          "University of Illinois",
-          "Université de l'Illinois à Urbana-Champaign"
+          "Université de l'Illinois à Urbana-Champaign",
+          "University of Illinois"
         ],
         "repositories": [
           {
@@ -60424,8 +60441,8 @@
             ]
           }
         ],
-        "works_count": 311524,
-        "cited_by_count": 13010697,
+        "works_count": 311721,
+        "cited_by_count": 13023832,
         "summary_stats": {
           "2yr_mean_citedness": 4.020546617561543,
           "h_index": 969,
@@ -60627,33 +60644,33 @@
         "counts_by_year": [
           {
             "year": 2025,
-            "works_count": 5729,
-            "oa_works_count": 1493,
-            "cited_by_count": 495675
+            "works_count": 5914,
+            "oa_works_count": 1544,
+            "cited_by_count": 509471
           },
           {
             "year": 2024,
-            "works_count": 9646,
+            "works_count": 9653,
             "oa_works_count": 4817,
-            "cited_by_count": 717929
+            "cited_by_count": 717966
           },
           {
             "year": 2023,
-            "works_count": 10668,
+            "works_count": 10669,
             "oa_works_count": 6327,
-            "cited_by_count": 750444
+            "cited_by_count": 750476
           },
           {
             "year": 2022,
             "works_count": 9976,
             "oa_works_count": 5935,
-            "cited_by_count": 743508
+            "cited_by_count": 743538
           },
           {
             "year": 2021,
             "works_count": 11086,
             "oa_works_count": 6291,
-            "cited_by_count": 811705
+            "cited_by_count": 811725
           },
           {
             "year": 2020,
@@ -60663,21 +60680,21 @@
           },
           {
             "year": 2019,
-            "works_count": 10282,
+            "works_count": 10283,
             "oa_works_count": 5350,
-            "cited_by_count": 674777
+            "cited_by_count": 674784
           },
           {
             "year": 2018,
             "works_count": 9883,
             "oa_works_count": 4911,
-            "cited_by_count": 609169
+            "cited_by_count": 609172
           },
           {
             "year": 2017,
             "works_count": 9464,
             "oa_works_count": 4508,
-            "cited_by_count": 564632
+            "cited_by_count": 564637
           },
           {
             "year": 2016,
@@ -60689,42 +60706,42 @@
             "year": 2015,
             "works_count": 9012,
             "oa_works_count": 3837,
-            "cited_by_count": 532087
+            "cited_by_count": 532091
           },
           {
             "year": 2014,
             "works_count": 8977,
             "oa_works_count": 3485,
-            "cited_by_count": 515432
+            "cited_by_count": 515445
           },
           {
             "year": 2013,
             "works_count": 8580,
             "oa_works_count": 3018,
-            "cited_by_count": 484627
+            "cited_by_count": 484628
           },
           {
             "year": 2012,
             "works_count": 8333,
             "oa_works_count": 2995,
-            "cited_by_count": 446813
+            "cited_by_count": 446821
           }
         ],
         "roles": [
           {
-            "role": "publisher",
-            "id": "https://openalex.org/P4310315930",
-            "works_count": 35
+            "role": "funder",
+            "id": "https://openalex.org/F4320332222",
+            "works_count": 2007
           },
           {
             "role": "institution",
             "id": "https://openalex.org/I157725225",
-            "works_count": 311524
+            "works_count": 311721
           },
           {
-            "role": "funder",
-            "id": "https://openalex.org/F4320332222",
-            "works_count": 2001
+            "role": "publisher",
+            "id": "https://openalex.org/P4310315930",
+            "works_count": 35
           }
         ],
         "topics": [
@@ -61690,7 +61707,7 @@
         ],
         "is_super_system": false,
         "works_api_url": "https://api.openalex.org/works?filter=institutions.id:I157725225",
-        "updated_date": "2025-10-21T22:34:43.685770",
+        "updated_date": "2025-10-28T23:42:11.335335",
         "created_date": "2016-06-24"
       },
       {
@@ -79423,8 +79440,8 @@
           "UCPH"
         ],
         "display_name_alternatives": [
-          "Københavns Universitet",
-          "Universität Kopenhagen"
+          "Universität Kopenhagen",
+          "Københavns Universitet"
         ],
         "repositories": [
           {
@@ -79437,8 +79454,8 @@
             ]
           }
         ],
-        "works_count": 272349,
-        "cited_by_count": 8941582,
+        "works_count": 272584,
+        "cited_by_count": 8957480,
         "summary_stats": {
           "2yr_mean_citedness": 4.303705387588089,
           "h_index": 810,
@@ -79756,57 +79773,57 @@
         "counts_by_year": [
           {
             "year": 2025,
-            "works_count": 8255,
-            "oa_works_count": 3238,
-            "cited_by_count": 577639
+            "works_count": 8486,
+            "oa_works_count": 3331,
+            "cited_by_count": 594180
           },
           {
             "year": 2024,
-            "works_count": 14212,
-            "oa_works_count": 7593,
-            "cited_by_count": 790628
+            "works_count": 14213,
+            "oa_works_count": 7594,
+            "cited_by_count": 790691
           },
           {
             "year": 2023,
             "works_count": 15826,
             "oa_works_count": 9740,
-            "cited_by_count": 786604
+            "cited_by_count": 786694
           },
           {
             "year": 2022,
             "works_count": 14984,
             "oa_works_count": 9123,
-            "cited_by_count": 747185
+            "cited_by_count": 747202
           },
           {
             "year": 2021,
-            "works_count": 15701,
-            "oa_works_count": 9179,
-            "cited_by_count": 757229
+            "works_count": 15700,
+            "oa_works_count": 9178,
+            "cited_by_count": 757220
           },
           {
             "year": 2020,
             "works_count": 15158,
-            "oa_works_count": 8122,
-            "cited_by_count": 653654
+            "oa_works_count": 8121,
+            "cited_by_count": 653645
           },
           {
             "year": 2019,
             "works_count": 14051,
             "oa_works_count": 6928,
-            "cited_by_count": 536096
+            "cited_by_count": 536106
           },
           {
             "year": 2018,
             "works_count": 13766,
             "oa_works_count": 6393,
-            "cited_by_count": 464004
+            "cited_by_count": 464008
           },
           {
             "year": 2017,
             "works_count": 13453,
             "oa_works_count": 5754,
-            "cited_by_count": 408745
+            "cited_by_count": 408752
           },
           {
             "year": 2016,
@@ -79818,37 +79835,37 @@
             "year": 2015,
             "works_count": 13160,
             "oa_works_count": 4900,
-            "cited_by_count": 337093
+            "cited_by_count": 337095
           },
           {
             "year": 2014,
             "works_count": 12497,
             "oa_works_count": 4310,
-            "cited_by_count": 302992
+            "cited_by_count": 303002
           },
           {
             "year": 2013,
             "works_count": 12308,
             "oa_works_count": 3812,
-            "cited_by_count": 267318
+            "cited_by_count": 267324
           },
           {
             "year": 2012,
             "works_count": 11365,
             "oa_works_count": 3194,
-            "cited_by_count": 230236
+            "cited_by_count": 230243
           }
         ],
         "roles": [
           {
             "role": "institution",
             "id": "https://openalex.org/I124055696",
-            "works_count": 272349
+            "works_count": 272584
           },
           {
             "role": "funder",
             "id": "https://openalex.org/F4320320945",
-            "works_count": 2431
+            "works_count": 2436
           },
           {
             "role": "publisher",
@@ -80716,7 +80733,7 @@
             "wikidata": "https://www.wikidata.org/wiki/Q420",
             "display_name": "Biology",
             "level": 0,
-            "score": 63
+            "score": 63.1
           },
           {
             "id": "https://openalex.org/C71924100",
@@ -80737,7 +80754,7 @@
             "wikidata": "https://www.wikidata.org/wiki/Q11180",
             "display_name": "Internal medicine",
             "level": 1,
-            "score": 33.6
+            "score": 33.7
           },
           {
             "id": "https://openalex.org/C121332964",
@@ -80791,7 +80808,7 @@
         ],
         "is_super_system": false,
         "works_api_url": "https://api.openalex.org/works?filter=institutions.id:I124055696",
-        "updated_date": "2025-10-22T00:29:55.503062",
+        "updated_date": "2025-10-29T02:04:47.015026",
         "created_date": "2016-06-24"
       },
       {
@@ -82086,6 +82103,6 @@
     "group_by": []
   },
   "headers": {},
-  "timestamp": "2025-10-28T11:10:36.151Z",
+  "timestamp": "2025-10-29T12:40:25.442Z",
   "url": "https://api.openalex.org/institutions?page=1&per_page=50"
 }

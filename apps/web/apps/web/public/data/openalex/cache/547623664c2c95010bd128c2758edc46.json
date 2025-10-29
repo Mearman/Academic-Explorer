@@ -1,0 +1,6440 @@
+{
+  "data": {
+    "meta": {
+      "count": 10741,
+      "db_response_time_ms": 161,
+      "page": 1,
+      "per_page": 50,
+      "groups_count": null
+    },
+    "results": [
+      {
+        "id": "https://openalex.org/P4310320990",
+        "display_name": "Elsevier BV",
+        "alternate_titles": [
+          "Elsevier",
+          "elsevier.com",
+          "Elsevier Science",
+          "Uitg. Elsevier",
+          "السفیر",
+          "السویر",
+          "انتشارات الزویر",
+          "لودویک السفیر",
+          "爱思唯尔"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310320990"
+        ],
+        "country_codes": [
+          "NL"
+        ],
+        "homepage_url": "https://www.relx.com",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Elsevier.svg",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Elsevier.svg&width=300",
+        "works_count": 19638060,
+        "cited_by_count": 602556624,
+        "summary_stats": {
+          "2yr_mean_citedness": 5.0182117675050675,
+          "h_index": 2916,
+          "i10_index": 9507721
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310320990",
+          "ror": "https://ror.org/02scfj030",
+          "wikidata": "https://www.wikidata.org/entity/Q746413"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 348936,
+            "oa_works_count": 76624,
+            "cited_by_count": 10972582
+          },
+          {
+            "year": 2022,
+            "works_count": 853008,
+            "oa_works_count": 303007,
+            "cited_by_count": 34794353
+          },
+          {
+            "year": 2021,
+            "works_count": 853971,
+            "oa_works_count": 324419,
+            "cited_by_count": 33715366
+          },
+          {
+            "year": 2020,
+            "works_count": 800886,
+            "oa_works_count": 288548,
+            "cited_by_count": 29524541
+          },
+          {
+            "year": 2019,
+            "works_count": 748621,
+            "oa_works_count": 242344,
+            "cited_by_count": 25247102
+          },
+          {
+            "year": 2018,
+            "works_count": 715810,
+            "oa_works_count": 216553,
+            "cited_by_count": 22448053
+          },
+          {
+            "year": 2017,
+            "works_count": 741141,
+            "oa_works_count": 220524,
+            "cited_by_count": 20648448
+          },
+          {
+            "year": 2016,
+            "works_count": 707866,
+            "oa_works_count": 218171,
+            "cited_by_count": 19913681
+          },
+          {
+            "year": 2015,
+            "works_count": 652543,
+            "oa_works_count": 192377,
+            "cited_by_count": 19545485
+          },
+          {
+            "year": 2014,
+            "works_count": 628755,
+            "oa_works_count": 172905,
+            "cited_by_count": 18609252
+          },
+          {
+            "year": 2013,
+            "works_count": 608486,
+            "oa_works_count": 157737,
+            "cited_by_count": 17374046
+          },
+          {
+            "year": 2012,
+            "works_count": 587406,
+            "oa_works_count": 148571,
+            "cited_by_count": 15786904
+          }
+        ],
+        "roles": [
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310320990",
+            "works_count": 19638060
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I1318003438",
+            "works_count": 2104
+          },
+          {
+            "role": "funder",
+            "id": "https://openalex.org/F4320308305",
+            "works_count": 102
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I4210160603",
+            "works_count": 798
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310320990",
+        "updated_date": "2025-10-29T12:01:43.103474",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310319965",
+        "display_name": "Springer Nature",
+        "alternate_titles": [
+          "エイプレス",
+          "Springer Nature Group",
+          "施普林格-自然出版集团"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310319965"
+        ],
+        "country_codes": [
+          "DE"
+        ],
+        "homepage_url": "https://www.springernature.com",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Springer Nature Logo.svg",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Springer Nature Logo.svg&width=300",
+        "works_count": 10535865,
+        "cited_by_count": 260519500,
+        "summary_stats": {
+          "2yr_mean_citedness": 2.4482290290869835,
+          "h_index": 2078,
+          "i10_index": 4319242
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310319965",
+          "ror": "https://ror.org/0117jxy09",
+          "wikidata": "https://www.wikidata.org/entity/Q21096327"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 137188,
+            "oa_works_count": 31946,
+            "cited_by_count": 3713193
+          },
+          {
+            "year": 2022,
+            "works_count": 591311,
+            "oa_works_count": 188593,
+            "cited_by_count": 13004211
+          },
+          {
+            "year": 2021,
+            "works_count": 637902,
+            "oa_works_count": 198406,
+            "cited_by_count": 12840277
+          },
+          {
+            "year": 2020,
+            "works_count": 586353,
+            "oa_works_count": 173303,
+            "cited_by_count": 11200288
+          },
+          {
+            "year": 2019,
+            "works_count": 536692,
+            "oa_works_count": 150999,
+            "cited_by_count": 9484225
+          },
+          {
+            "year": 2018,
+            "works_count": 531043,
+            "oa_works_count": 137371,
+            "cited_by_count": 8360485
+          },
+          {
+            "year": 2017,
+            "works_count": 497689,
+            "oa_works_count": 126444,
+            "cited_by_count": 7705998
+          },
+          {
+            "year": 2016,
+            "works_count": 483643,
+            "oa_works_count": 122036,
+            "cited_by_count": 7471295
+          },
+          {
+            "year": 2015,
+            "works_count": 486511,
+            "oa_works_count": 119180,
+            "cited_by_count": 7347462
+          },
+          {
+            "year": 2014,
+            "works_count": 595223,
+            "oa_works_count": 115132,
+            "cited_by_count": 7029755
+          },
+          {
+            "year": 2013,
+            "works_count": 574275,
+            "oa_works_count": 109496,
+            "cited_by_count": 6510117
+          },
+          {
+            "year": 2012,
+            "works_count": 434788,
+            "oa_works_count": 99421,
+            "cited_by_count": 5864915
+          }
+        ],
+        "roles": [
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I1313014049",
+            "works_count": 10365
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I4210131128",
+            "works_count": 36
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310319965",
+            "works_count": 10535865
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310319965",
+        "updated_date": "2025-10-29T11:49:12.283864",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310320595",
+        "display_name": "Wiley",
+        "alternate_titles": [
+          "ジョン・ワイリー&サンズ",
+          "ジョンワイリー＆サンズ",
+          "ブルームバーグ・プレス",
+          "ジョン・ワイリー・アンド・サンズ",
+          "John Wiley and Sons",
+          "John Wiley & Sons",
+          "John Wiley & Sons Inc",
+          "John Wiley & Sons, Inc.",
+          "John Wiley & Sons Incorporated",
+          "J.Wiley",
+          "J. Wiley",
+          "Wiley",
+          "wiley.com",
+          "Wiley Interscience",
+          "Wiley InterScience",
+          "Wiley-VCH",
+          "Wiley-VCH Verlag GmbH & Co. KGaA",
+          "Wiley (видавництво)",
+          "انتشارات جان وایلی",
+          "انتشارات جان وایلی و پسران",
+          "جان وایلی",
+          "جان وایلی و فرزندان",
+          "约翰威立国际出版公司"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310320595"
+        ],
+        "country_codes": [
+          "GB",
+          "AU"
+        ],
+        "homepage_url": "https://www.wiley.com/en-us",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Wiley logo old.svg",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Wiley logo old.svg&width=300",
+        "works_count": 10032777,
+        "cited_by_count": 238322355,
+        "summary_stats": {
+          "2yr_mean_citedness": 3.7812934748462954,
+          "h_index": 2320,
+          "i10_index": 3878814
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310320595",
+          "ror": "https://ror.org/02xe89706",
+          "wikidata": "https://www.wikidata.org/entity/Q1479654"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 67582,
+            "oa_works_count": 14949,
+            "cited_by_count": 3437945
+          },
+          {
+            "year": 2022,
+            "works_count": 268197,
+            "oa_works_count": 82823,
+            "cited_by_count": 11878149
+          },
+          {
+            "year": 2021,
+            "works_count": 289338,
+            "oa_works_count": 114416,
+            "cited_by_count": 12063718
+          },
+          {
+            "year": 2020,
+            "works_count": 281488,
+            "oa_works_count": 120235,
+            "cited_by_count": 11178831
+          },
+          {
+            "year": 2019,
+            "works_count": 263444,
+            "oa_works_count": 101610,
+            "cited_by_count": 9872612
+          },
+          {
+            "year": 2018,
+            "works_count": 265253,
+            "oa_works_count": 96368,
+            "cited_by_count": 9038071
+          },
+          {
+            "year": 2017,
+            "works_count": 257341,
+            "oa_works_count": 85501,
+            "cited_by_count": 8500899
+          },
+          {
+            "year": 2016,
+            "works_count": 265688,
+            "oa_works_count": 81699,
+            "cited_by_count": 8460245
+          },
+          {
+            "year": 2015,
+            "works_count": 255661,
+            "oa_works_count": 67351,
+            "cited_by_count": 8500020
+          },
+          {
+            "year": 2014,
+            "works_count": 243075,
+            "oa_works_count": 59592,
+            "cited_by_count": 8305844
+          },
+          {
+            "year": 2013,
+            "works_count": 246698,
+            "oa_works_count": 54723,
+            "cited_by_count": 7922250
+          },
+          {
+            "year": 2012,
+            "works_count": 239312,
+            "oa_works_count": 48793,
+            "cited_by_count": 7371135
+          }
+        ],
+        "roles": [
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I4210131007",
+            "works_count": 5741
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I4362561690",
+            "works_count": 46895
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310320595",
+            "works_count": 10032777
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I4210085863",
+            "works_count": 2191
+          },
+          {
+            "role": "funder",
+            "id": "https://openalex.org/F4320308248",
+            "works_count": 35
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310320595",
+        "updated_date": "2025-10-29T11:44:23.801201",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310319900",
+        "display_name": "Springer Science+Business Media",
+        "alternate_titles": [
+          "슈프링어 페를라그",
+          "シュプリンガー",
+          "シュプリンガー・サイエンス+ビジネスメディア",
+          "Kluwer Academic Publishers",
+          "Springer",
+          "Springer SBM",
+          "Springer Science & Business Media",
+          "Springer Science+Business Media S.A.",
+          "Springer-Verlag",
+          "Springer-Verlag Berlin Heidelberg",
+          "Verlag von Julius Springer",
+          "施普林格科学 商业媒体"
+        ],
+        "hierarchy_level": 1,
+        "parent_publisher": {
+          "id": "https://openalex.org/P4310319965",
+          "display_name": "Springer Nature"
+        },
+        "lineage": [
+          "https://openalex.org/P4310319900",
+          "https://openalex.org/P4310319965"
+        ],
+        "country_codes": [
+          "DE"
+        ],
+        "homepage_url": "https://www.springer.com",
+        "image_url": null,
+        "image_thumbnail_url": null,
+        "works_count": 6237795,
+        "cited_by_count": 135162306,
+        "summary_stats": {
+          "2yr_mean_citedness": 3.0156973027198926,
+          "h_index": 1729,
+          "i10_index": 3293144
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310319900",
+          "wikidata": "https://www.wikidata.org/entity/Q176916"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 89576,
+            "oa_works_count": 22713,
+            "cited_by_count": 2860364
+          },
+          {
+            "year": 2022,
+            "works_count": 393517,
+            "oa_works_count": 130320,
+            "cited_by_count": 9996572
+          },
+          {
+            "year": 2021,
+            "works_count": 399150,
+            "oa_works_count": 136790,
+            "cited_by_count": 9948880
+          },
+          {
+            "year": 2020,
+            "works_count": 372274,
+            "oa_works_count": 119889,
+            "cited_by_count": 8719164
+          },
+          {
+            "year": 2019,
+            "works_count": 363025,
+            "oa_works_count": 105796,
+            "cited_by_count": 7433915
+          },
+          {
+            "year": 2018,
+            "works_count": 341875,
+            "oa_works_count": 93914,
+            "cited_by_count": 6586684
+          },
+          {
+            "year": 2017,
+            "works_count": 328132,
+            "oa_works_count": 89422,
+            "cited_by_count": 6094325
+          },
+          {
+            "year": 2016,
+            "works_count": 320938,
+            "oa_works_count": 88256,
+            "cited_by_count": 5909725
+          },
+          {
+            "year": 2015,
+            "works_count": 309661,
+            "oa_works_count": 86147,
+            "cited_by_count": 5791924
+          },
+          {
+            "year": 2014,
+            "works_count": 305246,
+            "oa_works_count": 81105,
+            "cited_by_count": 5543659
+          },
+          {
+            "year": 2013,
+            "works_count": 302268,
+            "oa_works_count": 78137,
+            "cited_by_count": 5148491
+          },
+          {
+            "year": 2012,
+            "works_count": 295897,
+            "oa_works_count": 71239,
+            "cited_by_count": 4639326
+          }
+        ],
+        "roles": [
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310319900",
+            "works_count": 6237795
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310319900",
+        "updated_date": "2025-10-27T09:06:51.265701",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310320547",
+        "display_name": "Taylor & Francis",
+        "alternate_titles": [
+          "テイラー&フランシス",
+          "テイラー&フランシス・グループ",
+          "テイラーアンドフランシス・グループ",
+          "Erlbaum",
+          "Lawrence Erlbaum",
+          "Lawrence Erlbaum Associates",
+          "Taylor and Francis",
+          "Taylor et Francis",
+          "Taylor & Francis",
+          "Taylor&Francis",
+          "Taylor & Francis Group",
+          "Taylor & Francis, Ltd",
+          "Taylor & Francis集團",
+          "Westview Press出版公司",
+          "泰勒与弗朗西斯",
+          "泰勒及弗朗西斯出版公司",
+          "泰勒及弗朗西斯集團",
+          "泰勒及法蘭西斯",
+          "泰勒和弗朗西斯",
+          "泰勒和弗朗西斯集团",
+          "泰勒和弗朗西斯集團",
+          "泰勒弗朗西斯集团",
+          "泰勒與弗朗西斯",
+          "泰勒與法蘭西斯出版集團",
+          "西景出版社"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310320547"
+        ],
+        "country_codes": [
+          "GB"
+        ],
+        "homepage_url": "https://www.taylorfrancis.com",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Taylor and Francis logo, (The Ibis, 1900).jpg",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Taylor and Francis logo, (The Ibis, 1900).jpg&width=300",
+        "works_count": 4538800,
+        "cited_by_count": 77842737,
+        "summary_stats": {
+          "2yr_mean_citedness": 2.569201107159289,
+          "h_index": 1178,
+          "i10_index": 1219314
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310320547",
+          "wikidata": "https://www.wikidata.org/entity/Q880582"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 25854,
+            "oa_works_count": 5506,
+            "cited_by_count": 882340
+          },
+          {
+            "year": 2022,
+            "works_count": 107759,
+            "oa_works_count": 31460,
+            "cited_by_count": 3149389
+          },
+          {
+            "year": 2021,
+            "works_count": 117190,
+            "oa_works_count": 36785,
+            "cited_by_count": 3204543
+          },
+          {
+            "year": 2020,
+            "works_count": 116616,
+            "oa_works_count": 35674,
+            "cited_by_count": 2902321
+          },
+          {
+            "year": 2019,
+            "works_count": 114512,
+            "oa_works_count": 35137,
+            "cited_by_count": 2508069
+          },
+          {
+            "year": 2018,
+            "works_count": 104526,
+            "oa_works_count": 32304,
+            "cited_by_count": 2179517
+          },
+          {
+            "year": 2017,
+            "works_count": 110904,
+            "oa_works_count": 32583,
+            "cited_by_count": 1973561
+          },
+          {
+            "year": 2016,
+            "works_count": 121441,
+            "oa_works_count": 32225,
+            "cited_by_count": 1960269
+          },
+          {
+            "year": 2015,
+            "works_count": 108358,
+            "oa_works_count": 23548,
+            "cited_by_count": 1933194
+          },
+          {
+            "year": 2014,
+            "works_count": 111199,
+            "oa_works_count": 20692,
+            "cited_by_count": 1894368
+          },
+          {
+            "year": 2013,
+            "works_count": 122199,
+            "oa_works_count": 20147,
+            "cited_by_count": 1786556
+          },
+          {
+            "year": 2012,
+            "works_count": 105223,
+            "oa_works_count": 15834,
+            "cited_by_count": 1558490
+          }
+        ],
+        "roles": [
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310320547",
+            "works_count": 4538800
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310320547",
+        "updated_date": "2025-10-27T09:04:37.816614",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310311647",
+        "display_name": "University of Oxford",
+        "alternate_titles": [],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310311647"
+        ],
+        "country_codes": [
+          "GB"
+        ],
+        "homepage_url": "https://www.ox.ac.uk",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/University of Oxford.svg",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/University of Oxford.svg&width=300",
+        "works_count": 3707152,
+        "cited_by_count": 100994742,
+        "summary_stats": {
+          "2yr_mean_citedness": 2.33809456465375,
+          "h_index": 1865,
+          "i10_index": 1079256
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310311647",
+          "ror": "https://ror.org/052gg0110",
+          "wikidata": "https://www.wikidata.org/entity/Q34433"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 21992,
+            "oa_works_count": 5666,
+            "cited_by_count": 1018117
+          },
+          {
+            "year": 2022,
+            "works_count": 104890,
+            "oa_works_count": 47822,
+            "cited_by_count": 3764447
+          },
+          {
+            "year": 2021,
+            "works_count": 110684,
+            "oa_works_count": 57374,
+            "cited_by_count": 3903111
+          },
+          {
+            "year": 2020,
+            "works_count": 114271,
+            "oa_works_count": 63129,
+            "cited_by_count": 3651376
+          },
+          {
+            "year": 2019,
+            "works_count": 106432,
+            "oa_works_count": 54747,
+            "cited_by_count": 3267842
+          },
+          {
+            "year": 2018,
+            "works_count": 124609,
+            "oa_works_count": 60913,
+            "cited_by_count": 3016991
+          },
+          {
+            "year": 2017,
+            "works_count": 116759,
+            "oa_works_count": 64359,
+            "cited_by_count": 2809396
+          },
+          {
+            "year": 2016,
+            "works_count": 98269,
+            "oa_works_count": 54202,
+            "cited_by_count": 2814251
+          },
+          {
+            "year": 2015,
+            "works_count": 95332,
+            "oa_works_count": 50905,
+            "cited_by_count": 2850847
+          },
+          {
+            "year": 2014,
+            "works_count": 88980,
+            "oa_works_count": 44303,
+            "cited_by_count": 2802989
+          },
+          {
+            "year": 2013,
+            "works_count": 90373,
+            "oa_works_count": 41623,
+            "cited_by_count": 2676664
+          },
+          {
+            "year": 2012,
+            "works_count": 87467,
+            "oa_works_count": 37360,
+            "cited_by_count": 2488609
+          }
+        ],
+        "roles": [
+          {
+            "role": "funder",
+            "id": "https://openalex.org/F4320320290",
+            "works_count": 2276
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310311647",
+            "works_count": 3707152
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I40120149",
+            "works_count": 420882
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310311647",
+        "updated_date": "2025-10-29T12:04:09.342006",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310311648",
+        "display_name": "Oxford University Press",
+        "alternate_titles": [],
+        "hierarchy_level": 1,
+        "parent_publisher": {
+          "id": "https://openalex.org/P4310311647",
+          "display_name": "University of Oxford"
+        },
+        "lineage": [
+          "https://openalex.org/P4310311647",
+          "https://openalex.org/P4310311648"
+        ],
+        "country_codes": [
+          "GB"
+        ],
+        "homepage_url": "http://global.oup.com/?cc=gb",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/OUP logo.svg",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/OUP logo.svg&width=300",
+        "works_count": 3667110,
+        "cited_by_count": 100312409,
+        "summary_stats": {
+          "2yr_mean_citedness": 2.3563469110991293,
+          "h_index": 1862,
+          "i10_index": 1068929
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310311648",
+          "ror": "https://ror.org/0336mm561",
+          "wikidata": "https://www.wikidata.org/entity/Q217595"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 21761,
+            "oa_works_count": 5506,
+            "cited_by_count": 1001016
+          },
+          {
+            "year": 2022,
+            "works_count": 100301,
+            "oa_works_count": 44027,
+            "cited_by_count": 3702540
+          },
+          {
+            "year": 2021,
+            "works_count": 105672,
+            "oa_works_count": 52428,
+            "cited_by_count": 3843912
+          },
+          {
+            "year": 2020,
+            "works_count": 109387,
+            "oa_works_count": 58271,
+            "cited_by_count": 3601149
+          },
+          {
+            "year": 2019,
+            "works_count": 101711,
+            "oa_works_count": 50047,
+            "cited_by_count": 3227838
+          },
+          {
+            "year": 2018,
+            "works_count": 119666,
+            "oa_works_count": 56268,
+            "cited_by_count": 2983731
+          },
+          {
+            "year": 2017,
+            "works_count": 110394,
+            "oa_works_count": 58042,
+            "cited_by_count": 2779859
+          },
+          {
+            "year": 2016,
+            "works_count": 96239,
+            "oa_works_count": 52259,
+            "cited_by_count": 2787950
+          },
+          {
+            "year": 2015,
+            "works_count": 94300,
+            "oa_works_count": 49924,
+            "cited_by_count": 2828068
+          },
+          {
+            "year": 2014,
+            "works_count": 87991,
+            "oa_works_count": 43455,
+            "cited_by_count": 2784955
+          },
+          {
+            "year": 2013,
+            "works_count": 89444,
+            "oa_works_count": 40813,
+            "cited_by_count": 2662179
+          },
+          {
+            "year": 2012,
+            "works_count": 86905,
+            "oa_works_count": 36887,
+            "cited_by_count": 2477114
+          }
+        ],
+        "roles": [
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310311648",
+            "works_count": 3667110
+          },
+          {
+            "role": "funder",
+            "id": "https://openalex.org/F4320335273",
+            "works_count": 128
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I2802626578",
+            "works_count": 4419
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310311648",
+        "updated_date": "2025-10-29T12:00:51.745943",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310318547",
+        "display_name": "Wolters Kluwer",
+        "alternate_titles": [],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310318547"
+        ],
+        "country_codes": [
+          "NL"
+        ],
+        "homepage_url": "https://wolterskluwer.com",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Wolterskluwer neu.png",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Wolterskluwer neu.png&width=300",
+        "works_count": 3173789,
+        "cited_by_count": 71206433,
+        "summary_stats": {
+          "2yr_mean_citedness": 1.8023551477768218,
+          "h_index": 1260,
+          "i10_index": 889391
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310318547",
+          "ror": "https://ror.org/03qemwx69",
+          "wikidata": "https://www.wikidata.org/entity/Q249798"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 19545,
+            "oa_works_count": 5666,
+            "cited_by_count": 674718
+          },
+          {
+            "year": 2022,
+            "works_count": 84961,
+            "oa_works_count": 44434,
+            "cited_by_count": 2508442
+          },
+          {
+            "year": 2021,
+            "works_count": 93088,
+            "oa_works_count": 47261,
+            "cited_by_count": 2544507
+          },
+          {
+            "year": 2020,
+            "works_count": 102474,
+            "oa_works_count": 50953,
+            "cited_by_count": 2392138
+          },
+          {
+            "year": 2019,
+            "works_count": 93906,
+            "oa_works_count": 47812,
+            "cited_by_count": 2128518
+          },
+          {
+            "year": 2018,
+            "works_count": 91273,
+            "oa_works_count": 40948,
+            "cited_by_count": 2004592
+          },
+          {
+            "year": 2017,
+            "works_count": 84334,
+            "oa_works_count": 33182,
+            "cited_by_count": 2016085
+          },
+          {
+            "year": 2016,
+            "works_count": 88893,
+            "oa_works_count": 33165,
+            "cited_by_count": 2024891
+          },
+          {
+            "year": 2015,
+            "works_count": 85207,
+            "oa_works_count": 30227,
+            "cited_by_count": 2053299
+          },
+          {
+            "year": 2014,
+            "works_count": 85389,
+            "oa_works_count": 29114,
+            "cited_by_count": 1994499
+          },
+          {
+            "year": 2013,
+            "works_count": 72996,
+            "oa_works_count": 25623,
+            "cited_by_count": 1913041
+          },
+          {
+            "year": 2012,
+            "works_count": 76877,
+            "oa_works_count": 24674,
+            "cited_by_count": 1820504
+          }
+        ],
+        "roles": [
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310318547",
+            "works_count": 3173789
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I4210130036",
+            "works_count": 2242
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310318547",
+        "updated_date": "2025-10-29T11:49:07.401838",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310320017",
+        "display_name": "SAGE Publishing",
+        "alternate_titles": [
+          "セイジ・パブリッシング",
+          "セージ・パブリケーションズ",
+          "SAGE",
+          "SAGEパブリケーションズ",
+          "SAGE Publications",
+          "SAGE Publications Ltd",
+          "SAGE Publishing",
+          "SAGE出版",
+          "セイジ出版"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310320017"
+        ],
+        "country_codes": [
+          "US",
+          "GB"
+        ],
+        "homepage_url": "https://us.sagepub.com",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/SAGE Publishing logo.svg",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/SAGE Publishing logo.svg&width=300",
+        "works_count": 2907824,
+        "cited_by_count": 59257722,
+        "summary_stats": {
+          "2yr_mean_citedness": 2.448730511385135,
+          "h_index": 1515,
+          "i10_index": 909629
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310320017",
+          "ror": "https://ror.org/05534qc24",
+          "wikidata": "https://www.wikidata.org/entity/Q251266"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 19056,
+            "oa_works_count": 3419,
+            "cited_by_count": 723722
+          },
+          {
+            "year": 2022,
+            "works_count": 80381,
+            "oa_works_count": 28372,
+            "cited_by_count": 2699051
+          },
+          {
+            "year": 2021,
+            "works_count": 83329,
+            "oa_works_count": 33612,
+            "cited_by_count": 2760212
+          },
+          {
+            "year": 2020,
+            "works_count": 85054,
+            "oa_works_count": 34676,
+            "cited_by_count": 2604707
+          },
+          {
+            "year": 2019,
+            "works_count": 75805,
+            "oa_works_count": 33040,
+            "cited_by_count": 2303536
+          },
+          {
+            "year": 2018,
+            "works_count": 74436,
+            "oa_works_count": 29291,
+            "cited_by_count": 2073041
+          },
+          {
+            "year": 2017,
+            "works_count": 78780,
+            "oa_works_count": 26748,
+            "cited_by_count": 1916950
+          },
+          {
+            "year": 2016,
+            "works_count": 83008,
+            "oa_works_count": 25654,
+            "cited_by_count": 1965628
+          },
+          {
+            "year": 2015,
+            "works_count": 71057,
+            "oa_works_count": 19435,
+            "cited_by_count": 1949239
+          },
+          {
+            "year": 2014,
+            "works_count": 89262,
+            "oa_works_count": 18207,
+            "cited_by_count": 1919374
+          },
+          {
+            "year": 2013,
+            "works_count": 77770,
+            "oa_works_count": 16090,
+            "cited_by_count": 1805161
+          },
+          {
+            "year": 2012,
+            "works_count": 98474,
+            "oa_works_count": 14742,
+            "cited_by_count": 1630591
+          }
+        ],
+        "roles": [
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I4362561690",
+            "works_count": 46895
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310320017",
+            "works_count": 2907824
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I4210161027",
+            "works_count": 151
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310320017",
+        "updated_date": "2025-10-29T11:55:49.345411",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310315671",
+        "display_name": "Lippincott Williams & Wilkins",
+        "alternate_titles": [],
+        "hierarchy_level": 1,
+        "parent_publisher": {
+          "id": "https://openalex.org/P4310318547",
+          "display_name": "Wolters Kluwer"
+        },
+        "lineage": [
+          "https://openalex.org/P4310315671",
+          "https://openalex.org/P4310318547"
+        ],
+        "country_codes": [
+          "US"
+        ],
+        "homepage_url": "http://www.lww.com",
+        "image_url": null,
+        "image_thumbnail_url": null,
+        "works_count": 2678471,
+        "cited_by_count": 64294395,
+        "summary_stats": {
+          "2yr_mean_citedness": 2.25956775001361,
+          "h_index": 1245,
+          "i10_index": 747107
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310315671",
+          "wikidata": "https://www.wikidata.org/entity/Q2407351"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 12180,
+            "oa_works_count": 1705,
+            "cited_by_count": 566329
+          },
+          {
+            "year": 2022,
+            "works_count": 45448,
+            "oa_works_count": 14432,
+            "cited_by_count": 2106940
+          },
+          {
+            "year": 2021,
+            "works_count": 54458,
+            "oa_works_count": 19793,
+            "cited_by_count": 2164683
+          },
+          {
+            "year": 2020,
+            "works_count": 62560,
+            "oa_works_count": 21008,
+            "cited_by_count": 2068311
+          },
+          {
+            "year": 2019,
+            "works_count": 57212,
+            "oa_works_count": 18842,
+            "cited_by_count": 1882601
+          },
+          {
+            "year": 2018,
+            "works_count": 57706,
+            "oa_works_count": 16792,
+            "cited_by_count": 1800158
+          },
+          {
+            "year": 2017,
+            "works_count": 53948,
+            "oa_works_count": 11514,
+            "cited_by_count": 1830285
+          },
+          {
+            "year": 2016,
+            "works_count": 59298,
+            "oa_works_count": 10857,
+            "cited_by_count": 1852758
+          },
+          {
+            "year": 2015,
+            "works_count": 57355,
+            "oa_works_count": 10343,
+            "cited_by_count": 1892439
+          },
+          {
+            "year": 2014,
+            "works_count": 58733,
+            "oa_works_count": 12181,
+            "cited_by_count": 1849213
+          },
+          {
+            "year": 2013,
+            "works_count": 53917,
+            "oa_works_count": 12838,
+            "cited_by_count": 1796655
+          },
+          {
+            "year": 2012,
+            "works_count": 55990,
+            "oa_works_count": 13086,
+            "cited_by_count": 1719979
+          }
+        ],
+        "roles": [
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310315671",
+            "works_count": 2678471
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310315671",
+        "updated_date": "2025-10-27T08:52:07.001612",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310311702",
+        "display_name": "University of Cambridge",
+        "alternate_titles": [],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310311702"
+        ],
+        "country_codes": [
+          "GB"
+        ],
+        "homepage_url": "https://www.cam.ac.uk",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/University of Cambridge International Examinations.svg",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/University of Cambridge International Examinations.svg&width=300",
+        "works_count": 2288207,
+        "cited_by_count": 24296975,
+        "summary_stats": {
+          "2yr_mean_citedness": 1.0010320689242551,
+          "h_index": 1071,
+          "i10_index": 419535
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310311702",
+          "ror": "https://ror.org/013meh722",
+          "wikidata": "https://www.wikidata.org/entity/Q35794"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 11911,
+            "oa_works_count": 3174,
+            "cited_by_count": 251860
+          },
+          {
+            "year": 2022,
+            "works_count": 52943,
+            "oa_works_count": 18859,
+            "cited_by_count": 922691
+          },
+          {
+            "year": 2021,
+            "works_count": 65572,
+            "oa_works_count": 19881,
+            "cited_by_count": 1048953
+          },
+          {
+            "year": 2020,
+            "works_count": 60300,
+            "oa_works_count": 17770,
+            "cited_by_count": 1065171
+          },
+          {
+            "year": 2019,
+            "works_count": 65507,
+            "oa_works_count": 16690,
+            "cited_by_count": 1014971
+          },
+          {
+            "year": 2018,
+            "works_count": 72863,
+            "oa_works_count": 17033,
+            "cited_by_count": 859355
+          },
+          {
+            "year": 2017,
+            "works_count": 74510,
+            "oa_works_count": 16588,
+            "cited_by_count": 755372
+          },
+          {
+            "year": 2016,
+            "works_count": 70423,
+            "oa_works_count": 15819,
+            "cited_by_count": 768019
+          },
+          {
+            "year": 2015,
+            "works_count": 95682,
+            "oa_works_count": 14955,
+            "cited_by_count": 784923
+          },
+          {
+            "year": 2014,
+            "works_count": 86575,
+            "oa_works_count": 13652,
+            "cited_by_count": 791120
+          },
+          {
+            "year": 2013,
+            "works_count": 86852,
+            "oa_works_count": 14283,
+            "cited_by_count": 763921
+          },
+          {
+            "year": 2012,
+            "works_count": 100640,
+            "oa_works_count": 13190,
+            "cited_by_count": 705479
+          }
+        ],
+        "roles": [
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I241749",
+            "works_count": 386072
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310311702",
+            "works_count": 2288207
+          },
+          {
+            "role": "funder",
+            "id": "https://openalex.org/F4320320273",
+            "works_count": 2297
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310311702",
+        "updated_date": "2025-10-29T12:02:00.824544",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310311721",
+        "display_name": "Cambridge University Press",
+        "alternate_titles": [],
+        "hierarchy_level": 1,
+        "parent_publisher": {
+          "id": "https://openalex.org/P4310311702",
+          "display_name": "University of Cambridge"
+        },
+        "lineage": [
+          "https://openalex.org/P4310311721",
+          "https://openalex.org/P4310311702"
+        ],
+        "country_codes": [
+          "GB"
+        ],
+        "homepage_url": "http://www.cambridge.org",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Cambridge Press Cover Emblem.jpg",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Cambridge Press Cover Emblem.jpg&width=300",
+        "works_count": 2283802,
+        "cited_by_count": 23991321,
+        "summary_stats": {
+          "2yr_mean_citedness": 0.9989822492292034,
+          "h_index": 1060,
+          "i10_index": 417946
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310311721",
+          "ror": "https://ror.org/03jsdjx34",
+          "wikidata": "https://www.wikidata.org/entity/Q912887"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 11900,
+            "oa_works_count": 3171,
+            "cited_by_count": 249847
+          },
+          {
+            "year": 2022,
+            "works_count": 52916,
+            "oa_works_count": 18844,
+            "cited_by_count": 914798
+          },
+          {
+            "year": 2021,
+            "works_count": 65510,
+            "oa_works_count": 19863,
+            "cited_by_count": 1038295
+          },
+          {
+            "year": 2020,
+            "works_count": 60245,
+            "oa_works_count": 17739,
+            "cited_by_count": 1049310
+          },
+          {
+            "year": 2019,
+            "works_count": 65469,
+            "oa_works_count": 16674,
+            "cited_by_count": 1001157
+          },
+          {
+            "year": 2018,
+            "works_count": 72816,
+            "oa_works_count": 17010,
+            "cited_by_count": 847604
+          },
+          {
+            "year": 2017,
+            "works_count": 74450,
+            "oa_works_count": 16561,
+            "cited_by_count": 746433
+          },
+          {
+            "year": 2016,
+            "works_count": 70382,
+            "oa_works_count": 15802,
+            "cited_by_count": 758351
+          },
+          {
+            "year": 2015,
+            "works_count": 95637,
+            "oa_works_count": 14935,
+            "cited_by_count": 775947
+          },
+          {
+            "year": 2014,
+            "works_count": 86522,
+            "oa_works_count": 13632,
+            "cited_by_count": 781119
+          },
+          {
+            "year": 2013,
+            "works_count": 86808,
+            "oa_works_count": 14269,
+            "cited_by_count": 753879
+          },
+          {
+            "year": 2012,
+            "works_count": 100602,
+            "oa_works_count": 13175,
+            "cited_by_count": 696112
+          }
+        ],
+        "roles": [
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310311721",
+            "works_count": 2283802
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I4210135132",
+            "works_count": 5274
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310311721",
+        "updated_date": "2025-10-29T09:09:06.993084",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310320006",
+        "display_name": "American Chemical Society",
+        "alternate_titles": [
+          "ACS",
+          "Amerykańskie Towarzystwo Chemiczne",
+          "Société américaine de chimie",
+          "جمعية الكيميائيين الأمريكية",
+          "美国化学会",
+          "美國化學協會"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310320006"
+        ],
+        "country_codes": [
+          "US"
+        ],
+        "homepage_url": "http://www.acs.org/content/acs/en.html",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/American Chemical Society Building.JPG",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/American Chemical Society Building.JPG&width=300",
+        "works_count": 1909522,
+        "cited_by_count": 83330070,
+        "summary_stats": {
+          "2yr_mean_citedness": 7.112556878040033,
+          "h_index": 1525,
+          "i10_index": 1188635
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310320006",
+          "ror": "https://ror.org/059dqb057",
+          "wikidata": "https://www.wikidata.org/entity/Q247556"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 17664,
+            "oa_works_count": 3224,
+            "cited_by_count": 1564753
+          },
+          {
+            "year": 2022,
+            "works_count": 68179,
+            "oa_works_count": 14901,
+            "cited_by_count": 4842883
+          },
+          {
+            "year": 2021,
+            "works_count": 67402,
+            "oa_works_count": 19755,
+            "cited_by_count": 4803866
+          },
+          {
+            "year": 2020,
+            "works_count": 67223,
+            "oa_works_count": 22014,
+            "cited_by_count": 4349959
+          },
+          {
+            "year": 2019,
+            "works_count": 64300,
+            "oa_works_count": 19590,
+            "cited_by_count": 3961737
+          },
+          {
+            "year": 2018,
+            "works_count": 60738,
+            "oa_works_count": 18056,
+            "cited_by_count": 3707625
+          },
+          {
+            "year": 2017,
+            "works_count": 54069,
+            "oa_works_count": 15887,
+            "cited_by_count": 3436745
+          },
+          {
+            "year": 2016,
+            "works_count": 51311,
+            "oa_works_count": 12690,
+            "cited_by_count": 3291435
+          },
+          {
+            "year": 2015,
+            "works_count": 45223,
+            "oa_works_count": 10355,
+            "cited_by_count": 3149768
+          },
+          {
+            "year": 2014,
+            "works_count": 46908,
+            "oa_works_count": 9490,
+            "cited_by_count": 3046911
+          },
+          {
+            "year": 2013,
+            "works_count": 45248,
+            "oa_works_count": 7982,
+            "cited_by_count": 2851843
+          },
+          {
+            "year": 2012,
+            "works_count": 44122,
+            "oa_works_count": 7616,
+            "cited_by_count": 2615595
+          }
+        ],
+        "roles": [
+          {
+            "role": "funder",
+            "id": "https://openalex.org/F4320332454",
+            "works_count": 6271
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I190567190",
+            "works_count": 1115
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310320006",
+            "works_count": 1909522
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310320006",
+        "updated_date": "2025-10-29T11:46:13.966165",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310319808",
+        "display_name": "Institute of Electrical and Electronics Engineers",
+        "alternate_titles": [
+          "전기 전자 기술자협회",
+          "미국 전기전자공학회",
+          "전기전자공학자협회",
+          "สถาบันวิศวกรไฟฟ้าและอิเล็กทรอนิกส์",
+          "สถาบันวิศวกรรมไฟฟ้าและอิเล็กทรอนิกส์",
+          "AIEE",
+          "Elektrik ve Elektronik Mühendisleri Enstitüsü",
+          "Học viện các Kỹ sư điện và điện tử",
+          "Học Viện của các Kỹ Sư Điện và Điện Tử",
+          "Ieee",
+          "IEEE",
+          "I.E.E.E.",
+          "IEEE CT Society",
+          "ieee.org",
+          "IEEE半導体回路協議会",
+          "IEEE計算機學會",
+          "IEEE訊息論學會",
+          "IEEE计算机协会",
+          "IEEE计算机学会",
+          "IEEE電腦學會",
+          "Inštitut električnih in elektronskih inženirjev",
+          "Institute of Electrical and Electronics Engineers",
+          "Institute of Electrical and Electronics Engineers Inc",
+          "Institute of Electrical & Electronics Engineers",
+          "Institute of Radio Engineers",
+          "Institution of Electrical and Electronics Engineers",
+          "Instituto de Elektrikaj kaj Elektronikaj Inĝenieroj",
+          "Instituto de engenharia elétrica e eletrônica",
+          "Instituto de Ingenieros Electricos y Electronicos",
+          "Instituto de Ingenieros Eléctricos y Electronicos",
+          "Instituto de Ingenieros Electricos y Electrónicos",
+          "Instituto de Ingenieros Eléctricos y Electrónicos",
+          "IRE",
+          "I triple e",
+          "The Institute of Electrical and Electronics Engineers",
+          "The Institute of Electrical and Electronics Engineers, Incorporated",
+          "Viện kỹ nghệ Điện và Điện Tử",
+          "Viện Kỹ thuật Điện và Điện tử",
+          "آیایایای",
+          "آی تریپل ای",
+          "آی تریپل ایی",
+          "آیتریپلایی",
+          "ای تریپل ای",
+          "ای تریپل ایی",
+          "آیتریپلئی",
+          "ایتریپلئی",
+          "جمعية مهندسي الكهرباء و الإلكترونيات",
+          "جمعيه مهندسي الكهرباء والإلكترونيات",
+          "مؤسسهٔ مهندسان برق و الکترونیک",
+          "موسسه مهندسان برق و الکترونیک",
+          "איי טריפל-אי",
+          "Ај трипл и",
+          "ИЕЕЕ",
+          "Институт за инженери по електроника и електротехника",
+          "ஐ டிரிப்பிள் ஈ",
+          "மின்னியல், மின்னணுவியல் பொறியாளர் கழகம்",
+          "ইনস্টিটিউট অফ ইলেকট্রিক্যাল অ্যান্ড ইলেকট্রনিক ইঞ্জিনিয়ার্স",
+          "ඉතිහාසය IEEE",
+          "国际电子电器工程学会",
+          "国际电气与电子工程师学会",
+          "國際電機電子工程學會",
+          "國際電機電子工程師學會",
+          "电機电子工程师学会",
+          "电气和电子工程师协会",
+          "电气电子工程师协会",
+          "米国電気電子学会",
+          "電機暨電子工程師學會",
+          "電機電子工程師學會",
+          "電気電子学会",
+          "アメリカ電気電子学会"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310319808"
+        ],
+        "country_codes": [
+          "US"
+        ],
+        "homepage_url": "https://www.ieee.org",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/IEEE logo.svg",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/IEEE logo.svg&width=300",
+        "works_count": 1430409,
+        "cited_by_count": 49472283,
+        "summary_stats": {
+          "2yr_mean_citedness": 5.405911339917069,
+          "h_index": 1499,
+          "i10_index": 707412
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310319808",
+          "ror": "https://ror.org/01n002310",
+          "wikidata": "https://www.wikidata.org/entity/Q131566"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 31048,
+            "oa_works_count": 7333,
+            "cited_by_count": 833651
+          },
+          {
+            "year": 2022,
+            "works_count": 88119,
+            "oa_works_count": 36194,
+            "cited_by_count": 3076422
+          },
+          {
+            "year": 2021,
+            "works_count": 78530,
+            "oa_works_count": 39716,
+            "cited_by_count": 3086096
+          },
+          {
+            "year": 2020,
+            "works_count": 73883,
+            "oa_works_count": 41977,
+            "cited_by_count": 2795775
+          },
+          {
+            "year": 2019,
+            "works_count": 65972,
+            "oa_works_count": 37527,
+            "cited_by_count": 2532434
+          },
+          {
+            "year": 2018,
+            "works_count": 56186,
+            "oa_works_count": 24012,
+            "cited_by_count": 2202426
+          },
+          {
+            "year": 2017,
+            "works_count": 54876,
+            "oa_works_count": 14004,
+            "cited_by_count": 1944911
+          },
+          {
+            "year": 2016,
+            "works_count": 48800,
+            "oa_works_count": 9858,
+            "cited_by_count": 1847255
+          },
+          {
+            "year": 2015,
+            "works_count": 44123,
+            "oa_works_count": 8323,
+            "cited_by_count": 1777089
+          },
+          {
+            "year": 2014,
+            "works_count": 42295,
+            "oa_works_count": 9879,
+            "cited_by_count": 1716714
+          },
+          {
+            "year": 2013,
+            "works_count": 40937,
+            "oa_works_count": 9919,
+            "cited_by_count": 1573237
+          },
+          {
+            "year": 2012,
+            "works_count": 38497,
+            "oa_works_count": 4720,
+            "cited_by_count": 1418849
+          }
+        ],
+        "roles": [
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I3132238960",
+            "works_count": 5994
+          },
+          {
+            "role": "funder",
+            "id": "https://openalex.org/F4320309402",
+            "works_count": 74
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310319808",
+            "works_count": 1430409
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310319808",
+        "updated_date": "2025-10-29T11:47:44.002394",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310311669",
+        "display_name": "Institute of Physics",
+        "alternate_titles": [],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310311669"
+        ],
+        "country_codes": [
+          "GB"
+        ],
+        "homepage_url": "http://www.iop.org",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/IOP Institute of Physics.svg",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/IOP Institute of Physics.svg&width=300",
+        "works_count": 1277073,
+        "cited_by_count": 27324383,
+        "summary_stats": {
+          "2yr_mean_citedness": 2.191455542219483,
+          "h_index": 883,
+          "i10_index": 404281
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310311669",
+          "ror": "https://ror.org/04whb3988",
+          "wikidata": "https://www.wikidata.org/entity/Q513283"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 10514,
+            "oa_works_count": 4659,
+            "cited_by_count": 360106
+          },
+          {
+            "year": 2022,
+            "works_count": 50434,
+            "oa_works_count": 37383,
+            "cited_by_count": 1257794
+          },
+          {
+            "year": 2021,
+            "works_count": 106909,
+            "oa_works_count": 91815,
+            "cited_by_count": 1303576
+          },
+          {
+            "year": 2020,
+            "works_count": 100178,
+            "oa_works_count": 84141,
+            "cited_by_count": 1140893
+          },
+          {
+            "year": 2019,
+            "works_count": 91501,
+            "oa_works_count": 74693,
+            "cited_by_count": 1021191
+          },
+          {
+            "year": 2018,
+            "works_count": 65142,
+            "oa_works_count": 50852,
+            "cited_by_count": 996290
+          },
+          {
+            "year": 2017,
+            "works_count": 46776,
+            "oa_works_count": 34034,
+            "cited_by_count": 843206
+          },
+          {
+            "year": 2016,
+            "works_count": 35748,
+            "oa_works_count": 22257,
+            "cited_by_count": 818639
+          },
+          {
+            "year": 2015,
+            "works_count": 29589,
+            "oa_works_count": 17794,
+            "cited_by_count": 767909
+          },
+          {
+            "year": 2014,
+            "works_count": 27981,
+            "oa_works_count": 15774,
+            "cited_by_count": 733430
+          },
+          {
+            "year": 2013,
+            "works_count": 26856,
+            "oa_works_count": 14208,
+            "cited_by_count": 718155
+          },
+          {
+            "year": 2012,
+            "works_count": 27206,
+            "oa_works_count": 14046,
+            "cited_by_count": 665782
+          }
+        ],
+        "roles": [
+          {
+            "role": "funder",
+            "id": "https://openalex.org/F4320320208",
+            "works_count": 165
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I115925769",
+            "works_count": 699
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310311669",
+            "works_count": 1277073
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310311669",
+        "updated_date": "2025-10-29T12:05:15.176877",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310310987",
+        "display_name": "Multidisciplinary Digital Publishing Institute",
+        "alternate_titles": [
+          "Multidisciplinary Digital Publishing Institute",
+          "MDPI.com",
+          "Multidisciplinary Digital Publishing Institute (Switzerland)",
+          "MDPI AG",
+          "mdpi.com",
+          "MDPI"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310310987"
+        ],
+        "country_codes": [
+          "CH"
+        ],
+        "homepage_url": "https://www.mdpi.com",
+        "image_url": null,
+        "image_thumbnail_url": null,
+        "works_count": 1132878,
+        "cited_by_count": 24974416,
+        "summary_stats": {
+          "2yr_mean_citedness": 4.53072691739838,
+          "h_index": 688,
+          "i10_index": 633756
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310310987",
+          "wikidata": "https://www.wikidata.org/entity/Q6715186"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 87599,
+            "oa_works_count": 75039,
+            "cited_by_count": 1103662
+          },
+          {
+            "year": 2022,
+            "works_count": 296412,
+            "oa_works_count": 296097,
+            "cited_by_count": 3229605
+          },
+          {
+            "year": 2021,
+            "works_count": 238183,
+            "oa_works_count": 237511,
+            "cited_by_count": 2270869
+          },
+          {
+            "year": 2020,
+            "works_count": 165637,
+            "oa_works_count": 164649,
+            "cited_by_count": 1376935
+          },
+          {
+            "year": 2019,
+            "works_count": 110724,
+            "oa_works_count": 109484,
+            "cited_by_count": 776159
+          },
+          {
+            "year": 2018,
+            "works_count": 68177,
+            "oa_works_count": 67202,
+            "cited_by_count": 469830
+          },
+          {
+            "year": 2017,
+            "works_count": 38700,
+            "oa_works_count": 37996,
+            "cited_by_count": 312216
+          },
+          {
+            "year": 2016,
+            "works_count": 24564,
+            "oa_works_count": 24113,
+            "cited_by_count": 222793
+          },
+          {
+            "year": 2015,
+            "works_count": 18886,
+            "oa_works_count": 18044,
+            "cited_by_count": 164974
+          },
+          {
+            "year": 2014,
+            "works_count": 14608,
+            "oa_works_count": 13274,
+            "cited_by_count": 117925
+          },
+          {
+            "year": 2013,
+            "works_count": 12112,
+            "oa_works_count": 9889,
+            "cited_by_count": 79485
+          },
+          {
+            "year": 2012,
+            "works_count": 9755,
+            "oa_works_count": 7625,
+            "cited_by_count": 52916
+          }
+        ],
+        "roles": [
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310310987",
+            "works_count": 1132878
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310310987",
+        "updated_date": "2025-10-27T09:00:57.836473",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310320257",
+        "display_name": "American Institute of Physics",
+        "alternate_titles": [
+          "AIP",
+          "American institute of physics",
+          "American Institute of Physics",
+          "American Institute Of Physics",
+          "Instituto americano de fisica",
+          "Instituto Americano de Fisica",
+          "Instituto americano de física",
+          "Instituto Americano de Física",
+          "مؤسسه فیزیک ایالات متحده",
+          "موسسه فیزیک ایالات متحده",
+          "مؤسسهٔ فیزیک آمریکا",
+          "مؤسسه فیزیک امریکا",
+          "موسسه فیزیک آمریکا",
+          "Американский физический институт",
+          "Медали и премии Американского института физики"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310320257"
+        ],
+        "country_codes": [
+          "US"
+        ],
+        "homepage_url": "https://www.aip.org",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/AIP Logo.png",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/AIP Logo.png&width=300",
+        "works_count": 959916,
+        "cited_by_count": 31159365,
+        "summary_stats": {
+          "2yr_mean_citedness": 1.848086059083711,
+          "h_index": 1229,
+          "i10_index": 506239
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310320257",
+          "ror": "https://ror.org/02q8vys74",
+          "wikidata": "https://www.wikidata.org/entity/Q465230"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 8407,
+            "oa_works_count": 4217,
+            "cited_by_count": 308476
+          },
+          {
+            "year": 2022,
+            "works_count": 25268,
+            "oa_works_count": 7278,
+            "cited_by_count": 1030368
+          },
+          {
+            "year": 2021,
+            "works_count": 18742,
+            "oa_works_count": 8009,
+            "cited_by_count": 1115437
+          },
+          {
+            "year": 2020,
+            "works_count": 20188,
+            "oa_works_count": 8535,
+            "cited_by_count": 1062897
+          },
+          {
+            "year": 2019,
+            "works_count": 20103,
+            "oa_works_count": 8514,
+            "cited_by_count": 1018378
+          },
+          {
+            "year": 2018,
+            "works_count": 20647,
+            "oa_works_count": 9227,
+            "cited_by_count": 991352
+          },
+          {
+            "year": 2017,
+            "works_count": 19839,
+            "oa_works_count": 8880,
+            "cited_by_count": 970756
+          },
+          {
+            "year": 2016,
+            "works_count": 19675,
+            "oa_works_count": 8131,
+            "cited_by_count": 993062
+          },
+          {
+            "year": 2015,
+            "works_count": 20546,
+            "oa_works_count": 7811,
+            "cited_by_count": 975856
+          },
+          {
+            "year": 2014,
+            "works_count": 23353,
+            "oa_works_count": 7787,
+            "cited_by_count": 971947
+          },
+          {
+            "year": 2013,
+            "works_count": 22898,
+            "oa_works_count": 7032,
+            "cited_by_count": 958512
+          },
+          {
+            "year": 2012,
+            "works_count": 22584,
+            "oa_works_count": 6892,
+            "cited_by_count": 897734
+          }
+        ],
+        "roles": [
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I198694009",
+            "works_count": 1712
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310320257",
+            "works_count": 959916
+          },
+          {
+            "role": "funder",
+            "id": "https://openalex.org/F4320308768",
+            "works_count": 46
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310320257",
+        "updated_date": "2025-10-29T12:41:42.356472",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310319908",
+        "display_name": "Nature Portfolio",
+        "alternate_titles": [
+          "ネイチャー・リサーチ",
+          "ネイチャー・ポートフォリオ",
+          "ネイチャー・パブリッシング・グループ",
+          "Groupe NPG",
+          "Nature Publishing Group",
+          "natureresearch",
+          "Nature Research",
+          "NPG"
+        ],
+        "hierarchy_level": 1,
+        "parent_publisher": {
+          "id": "https://openalex.org/P4310319965",
+          "display_name": "Springer Nature"
+        },
+        "lineage": [
+          "https://openalex.org/P4310319908",
+          "https://openalex.org/P4310319965"
+        ],
+        "country_codes": [
+          "GB"
+        ],
+        "homepage_url": "https://www.springernature.com",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Nature Research logotype.svg",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Nature Research logotype.svg&width=300",
+        "works_count": 937389,
+        "cited_by_count": 68500358,
+        "summary_stats": {
+          "2yr_mean_citedness": 7.272463768115942,
+          "h_index": 72,
+          "i10_index": 449
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310319908",
+          "ror": "https://ror.org/03dsk4d59",
+          "wikidata": "https://www.wikidata.org/entity/Q180419"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 74,
+            "oa_works_count": 36,
+            "cited_by_count": 953
+          },
+          {
+            "year": 2022,
+            "works_count": 255,
+            "oa_works_count": 176,
+            "cited_by_count": 2940
+          },
+          {
+            "year": 2021,
+            "works_count": 199,
+            "oa_works_count": 121,
+            "cited_by_count": 1957
+          },
+          {
+            "year": 2020,
+            "works_count": 98,
+            "oa_works_count": 41,
+            "cited_by_count": 1154
+          },
+          {
+            "year": 2019,
+            "works_count": 86,
+            "oa_works_count": 31,
+            "cited_by_count": 750
+          },
+          {
+            "year": 2018,
+            "works_count": 68,
+            "oa_works_count": 38,
+            "cited_by_count": 416
+          },
+          {
+            "year": 2017,
+            "works_count": 50,
+            "oa_works_count": 38,
+            "cited_by_count": 191
+          },
+          {
+            "year": 2016,
+            "works_count": 172,
+            "oa_works_count": 20,
+            "cited_by_count": 66
+          },
+          {
+            "year": 2015,
+            "works_count": 189,
+            "oa_works_count": 16,
+            "cited_by_count": 9
+          },
+          {
+            "year": 2014,
+            "works_count": 211,
+            "oa_works_count": 0,
+            "cited_by_count": 4
+          },
+          {
+            "year": 2013,
+            "works_count": 312,
+            "oa_works_count": 1,
+            "cited_by_count": 4
+          },
+          {
+            "year": 2012,
+            "works_count": 271,
+            "oa_works_count": 0,
+            "cited_by_count": 4
+          }
+        ],
+        "roles": [
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I4362561690",
+            "works_count": 46895
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I4210126490",
+            "works_count": 461
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310319908",
+            "works_count": 937389
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310319908",
+        "updated_date": "2025-10-29T11:49:19.618531",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310319945",
+        "display_name": "BMJ",
+        "alternate_titles": [
+          "BMJ Group",
+          "BMJ Publishing Group",
+          "BMJ出版集团",
+          "BMJ出版集團公司"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310319945"
+        ],
+        "country_codes": [
+          "GB"
+        ],
+        "homepage_url": "http://bmj.com",
+        "image_url": null,
+        "image_thumbnail_url": null,
+        "works_count": 934460,
+        "cited_by_count": 17849906,
+        "summary_stats": {
+          "2yr_mean_citedness": 2.840019779133015,
+          "h_index": 896,
+          "i10_index": 271818
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310319945",
+          "wikidata": "https://www.wikidata.org/entity/Q2018873"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 4737,
+            "oa_works_count": 1781,
+            "cited_by_count": 249124
+          },
+          {
+            "year": 2022,
+            "works_count": 24932,
+            "oa_works_count": 16310,
+            "cited_by_count": 940774
+          },
+          {
+            "year": 2021,
+            "works_count": 26109,
+            "oa_works_count": 17150,
+            "cited_by_count": 928919
+          },
+          {
+            "year": 2020,
+            "works_count": 25980,
+            "oa_works_count": 17623,
+            "cited_by_count": 828081
+          },
+          {
+            "year": 2019,
+            "works_count": 22202,
+            "oa_works_count": 12975,
+            "cited_by_count": 708788
+          },
+          {
+            "year": 2018,
+            "works_count": 19949,
+            "oa_works_count": 11204,
+            "cited_by_count": 626102
+          },
+          {
+            "year": 2017,
+            "works_count": 20959,
+            "oa_works_count": 10279,
+            "cited_by_count": 602837
+          },
+          {
+            "year": 2016,
+            "works_count": 27687,
+            "oa_works_count": 10956,
+            "cited_by_count": 603872
+          },
+          {
+            "year": 2015,
+            "works_count": 27392,
+            "oa_works_count": 9740,
+            "cited_by_count": 609018
+          },
+          {
+            "year": 2014,
+            "works_count": 27694,
+            "oa_works_count": 10718,
+            "cited_by_count": 589907
+          },
+          {
+            "year": 2013,
+            "works_count": 32458,
+            "oa_works_count": 12376,
+            "cited_by_count": 566915
+          },
+          {
+            "year": 2012,
+            "works_count": 25137,
+            "oa_works_count": 11068,
+            "cited_by_count": 524001
+          }
+        ],
+        "roles": [
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310319945",
+            "works_count": 934460
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I71178462",
+            "works_count": 0
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310319945",
+        "updated_date": "2025-10-29T11:17:22.672910",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310313990",
+        "display_name": "De Gruyter",
+        "alternate_titles": [],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310313990"
+        ],
+        "country_codes": [
+          "DE"
+        ],
+        "homepage_url": "https://www.degruyterbrill.com",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Verlag Walter de Gruyter Logo.svg",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Verlag Walter de Gruyter Logo.svg&width=300",
+        "works_count": 874922,
+        "cited_by_count": 6073175,
+        "summary_stats": {
+          "2yr_mean_citedness": 0.6851755235894761,
+          "h_index": 500,
+          "i10_index": 171774
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310313990",
+          "ror": "https://ror.org/026xdv168",
+          "wikidata": "https://www.wikidata.org/entity/Q98818"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 10006,
+            "oa_works_count": 2966,
+            "cited_by_count": 90469
+          },
+          {
+            "year": 2022,
+            "works_count": 53510,
+            "oa_works_count": 24303,
+            "cited_by_count": 327897
+          },
+          {
+            "year": 2021,
+            "works_count": 59387,
+            "oa_works_count": 25891,
+            "cited_by_count": 329739
+          },
+          {
+            "year": 2020,
+            "works_count": 56923,
+            "oa_works_count": 23914,
+            "cited_by_count": 299407
+          },
+          {
+            "year": 2019,
+            "works_count": 51038,
+            "oa_works_count": 20385,
+            "cited_by_count": 260158
+          },
+          {
+            "year": 2018,
+            "works_count": 53591,
+            "oa_works_count": 17994,
+            "cited_by_count": 212512
+          },
+          {
+            "year": 2017,
+            "works_count": 48897,
+            "oa_works_count": 15782,
+            "cited_by_count": 181421
+          },
+          {
+            "year": 2016,
+            "works_count": 51450,
+            "oa_works_count": 16070,
+            "cited_by_count": 173592
+          },
+          {
+            "year": 2015,
+            "works_count": 64669,
+            "oa_works_count": 17023,
+            "cited_by_count": 173186
+          },
+          {
+            "year": 2014,
+            "works_count": 54532,
+            "oa_works_count": 14375,
+            "cited_by_count": 175459
+          },
+          {
+            "year": 2013,
+            "works_count": 62613,
+            "oa_works_count": 14191,
+            "cited_by_count": 152895
+          },
+          {
+            "year": 2012,
+            "works_count": 71142,
+            "oa_works_count": 10183,
+            "cited_by_count": 141187
+          }
+        ],
+        "roles": [
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I4210125361",
+            "works_count": 4783
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310313990",
+            "works_count": 874922
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310313990",
+        "updated_date": "2025-10-29T00:24:01.306537",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310320000",
+        "display_name": "Thieme Medical Publishers (Germany)",
+        "alternate_titles": [
+          "Georg Thieme Verlag",
+          "Georg Thieme Verlag KG",
+          "Hippokrates-Verlag",
+          "Thieme Verlag",
+          "Thieme-Verlag",
+          "Verlag Georg Thieme"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310320000"
+        ],
+        "country_codes": [
+          "BR"
+        ],
+        "homepage_url": "https://www.thieme.de/de/index.htm",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/ThiemeVerlagshaus.jpg",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/ThiemeVerlagshaus.jpg&width=300",
+        "works_count": 801001,
+        "cited_by_count": 5464719,
+        "summary_stats": {
+          "2yr_mean_citedness": 0.48973895912001314,
+          "h_index": 410,
+          "i10_index": 131698
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310320000",
+          "ror": "https://ror.org/01zg9j813",
+          "wikidata": "https://www.wikidata.org/entity/Q2420769"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 7038,
+            "oa_works_count": 689,
+            "cited_by_count": 62192
+          },
+          {
+            "year": 2022,
+            "works_count": 28335,
+            "oa_works_count": 4662,
+            "cited_by_count": 235776
+          },
+          {
+            "year": 2021,
+            "works_count": 23920,
+            "oa_works_count": 5385,
+            "cited_by_count": 236630
+          },
+          {
+            "year": 2020,
+            "works_count": 27749,
+            "oa_works_count": 6381,
+            "cited_by_count": 216736
+          },
+          {
+            "year": 2019,
+            "works_count": 28362,
+            "oa_works_count": 5866,
+            "cited_by_count": 193777
+          },
+          {
+            "year": 2018,
+            "works_count": 30086,
+            "oa_works_count": 6136,
+            "cited_by_count": 186271
+          },
+          {
+            "year": 2017,
+            "works_count": 28947,
+            "oa_works_count": 5773,
+            "cited_by_count": 183359
+          },
+          {
+            "year": 2016,
+            "works_count": 33327,
+            "oa_works_count": 5557,
+            "cited_by_count": 181181
+          },
+          {
+            "year": 2015,
+            "works_count": 35798,
+            "oa_works_count": 5536,
+            "cited_by_count": 185005
+          },
+          {
+            "year": 2014,
+            "works_count": 38462,
+            "oa_works_count": 4902,
+            "cited_by_count": 176719
+          },
+          {
+            "year": 2013,
+            "works_count": 36519,
+            "oa_works_count": 4154,
+            "cited_by_count": 170806
+          },
+          {
+            "year": 2012,
+            "works_count": 34621,
+            "oa_works_count": 3353,
+            "cited_by_count": 162582
+          }
+        ],
+        "roles": [
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310320000",
+            "works_count": 801001
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I4210110804",
+            "works_count": 315
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310320000",
+        "updated_date": "2025-10-29T11:42:17.329605",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310320083",
+        "display_name": "IOP Publishing",
+        "alternate_titles": [
+          "Institute of Physics Publishing",
+          "IOP Publishing Ltd.",
+          "IOP出版社"
+        ],
+        "hierarchy_level": 1,
+        "parent_publisher": {
+          "id": "https://openalex.org/P4310311669",
+          "display_name": "Institute of Physics"
+        },
+        "lineage": [
+          "https://openalex.org/P4310311669",
+          "https://openalex.org/P4310320083"
+        ],
+        "country_codes": [
+          "GB"
+        ],
+        "homepage_url": "https://iopscience.iop.org",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/IOP Publishing Red Logo.gif",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/IOP Publishing Red Logo.gif&width=300",
+        "works_count": 788769,
+        "cited_by_count": 18262916,
+        "summary_stats": {
+          "2yr_mean_citedness": 2.10173319417592,
+          "h_index": 839,
+          "i10_index": 353866
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310320083",
+          "wikidata": "https://www.wikidata.org/entity/Q2915886"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 9910,
+            "oa_works_count": 4323,
+            "cited_by_count": 325794
+          },
+          {
+            "year": 2022,
+            "works_count": 47903,
+            "oa_works_count": 35933,
+            "cited_by_count": 1137498
+          },
+          {
+            "year": 2021,
+            "works_count": 103842,
+            "oa_works_count": 90197,
+            "cited_by_count": 1167447
+          },
+          {
+            "year": 2020,
+            "works_count": 97104,
+            "oa_works_count": 82622,
+            "cited_by_count": 1023009
+          },
+          {
+            "year": 2019,
+            "works_count": 88809,
+            "oa_works_count": 73335,
+            "cited_by_count": 915722
+          },
+          {
+            "year": 2018,
+            "works_count": 62191,
+            "oa_works_count": 49465,
+            "cited_by_count": 897278
+          },
+          {
+            "year": 2017,
+            "works_count": 43487,
+            "oa_works_count": 32468,
+            "cited_by_count": 752530
+          },
+          {
+            "year": 2016,
+            "works_count": 32345,
+            "oa_works_count": 20811,
+            "cited_by_count": 728827
+          },
+          {
+            "year": 2015,
+            "works_count": 26589,
+            "oa_works_count": 16442,
+            "cited_by_count": 680463
+          },
+          {
+            "year": 2014,
+            "works_count": 25080,
+            "oa_works_count": 14448,
+            "cited_by_count": 647666
+          },
+          {
+            "year": 2013,
+            "works_count": 23610,
+            "oa_works_count": 12902,
+            "cited_by_count": 637447
+          },
+          {
+            "year": 2012,
+            "works_count": 23904,
+            "oa_works_count": 12701,
+            "cited_by_count": 591141
+          }
+        ],
+        "roles": [
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I4362561690",
+            "works_count": 46895
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310320083",
+            "works_count": 788769
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310320083",
+        "updated_date": "2025-10-29T09:03:44.382969",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310320556",
+        "display_name": "Royal Society of Chemistry",
+        "alternate_titles": [
+          "Burlington House",
+          "Royal Society of Chemistry",
+          "RSC",
+          "rsc.org",
+          "RSC Publishing",
+          "The Royal Society of Chemistry",
+          "Краљевско друштво хемије",
+          "வேதியியலுக்கான அரச சங்கம்",
+          "வேந்திய வேதியியல் கழகம்",
+          "皇家化学会",
+          "英国化学会",
+          "英国王立化学会",
+          "英国皇家化学会",
+          "英國皇家化學學會",
+          "英國皇家化學會",
+          "英國皇家化學院"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310320556"
+        ],
+        "country_codes": [
+          "GB"
+        ],
+        "homepage_url": "https://www.rsc.org",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/RSC-brand-guidelines-2019 tcm18-246471.svg",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/RSC-brand-guidelines-2019 tcm18-246471.svg&width=300",
+        "works_count": 758458,
+        "cited_by_count": 26446316,
+        "summary_stats": {
+          "2yr_mean_citedness": 5.099872855589747,
+          "h_index": 973,
+          "i10_index": 485474
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310320556",
+          "ror": "https://ror.org/025sbr097",
+          "wikidata": "https://www.wikidata.org/entity/Q905549"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 14430,
+            "oa_works_count": 2957,
+            "cited_by_count": 716615
+          },
+          {
+            "year": 2022,
+            "works_count": 40254,
+            "oa_works_count": 12275,
+            "cited_by_count": 2193876
+          },
+          {
+            "year": 2021,
+            "works_count": 43641,
+            "oa_works_count": 14505,
+            "cited_by_count": 2193651
+          },
+          {
+            "year": 2020,
+            "works_count": 44605,
+            "oa_works_count": 15194,
+            "cited_by_count": 1968119
+          },
+          {
+            "year": 2019,
+            "works_count": 43086,
+            "oa_works_count": 13641,
+            "cited_by_count": 1756388
+          },
+          {
+            "year": 2018,
+            "works_count": 40957,
+            "oa_works_count": 12440,
+            "cited_by_count": 1588413
+          },
+          {
+            "year": 2017,
+            "works_count": 46917,
+            "oa_works_count": 14302,
+            "cited_by_count": 1418605
+          },
+          {
+            "year": 2016,
+            "works_count": 49195,
+            "oa_works_count": 10274,
+            "cited_by_count": 1275624
+          },
+          {
+            "year": 2015,
+            "works_count": 49684,
+            "oa_works_count": 9505,
+            "cited_by_count": 1093489
+          },
+          {
+            "year": 2014,
+            "works_count": 41471,
+            "oa_works_count": 6275,
+            "cited_by_count": 907471
+          },
+          {
+            "year": 2013,
+            "works_count": 32528,
+            "oa_works_count": 4061,
+            "cited_by_count": 722983
+          },
+          {
+            "year": 2012,
+            "works_count": 28489,
+            "oa_works_count": 2735,
+            "cited_by_count": 570295
+          }
+        ],
+        "roles": [
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310320556",
+            "works_count": 758458
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I2751430930",
+            "works_count": 819
+          },
+          {
+            "role": "funder",
+            "id": "https://openalex.org/F4320320251",
+            "works_count": 1180
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310320556",
+        "updated_date": "2025-10-29T12:01:36.114845",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310320261",
+        "display_name": "American Physical Society",
+        "alternate_titles": [
+          "American physical society",
+          "American Physical Society",
+          "Americká fyzikální společnost",
+          "Amerikanische Physikalische Gesellschaft",
+          "APS",
+          "Sociedá Americana de Física",
+          "Sociedad Americana de Fisica",
+          "Sociedad Americana de Física",
+          "Sociedad Norteamericana de Fisica",
+          "Sociedad Norteamericana de Física",
+          "Societatea Americană de Fizică",
+          "انجمن فیزیک ایالات متحده",
+          "انجمن فیزیک امریکا",
+          "جامعه فیزیک ایالات متحده",
+          "جامعهٔ فیزیک ایالات متحده",
+          "جامعه فیزیک آمریکا",
+          "جامعهٔ فیزیک آمریکا",
+          "جامعه فیزیک امریکا",
+          "جامعهٔ فیزیک امریکا",
+          "החברה האמריקאית לפיזיקה",
+          "החברה הפיזיקלית האמריקאית",
+          "Медали и премии Американского физического общества",
+          "米国物理学会",
+          "美国物理学会"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310320261"
+        ],
+        "country_codes": [
+          "US"
+        ],
+        "homepage_url": "http://www.aps.org",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/APS.png",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/APS.png&width=300",
+        "works_count": 700026,
+        "cited_by_count": 37343830,
+        "summary_stats": {
+          "2yr_mean_citedness": 4.61054035543059,
+          "h_index": 1290,
+          "i10_index": 512236
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310320261",
+          "ror": "https://ror.org/05j8hg602",
+          "wikidata": "https://www.wikidata.org/entity/Q466113"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 5252,
+            "oa_works_count": 3242,
+            "cited_by_count": 444837
+          },
+          {
+            "year": 2022,
+            "works_count": 21700,
+            "oa_works_count": 16835,
+            "cited_by_count": 1618090
+          },
+          {
+            "year": 2021,
+            "works_count": 22652,
+            "oa_works_count": 18758,
+            "cited_by_count": 1843530
+          },
+          {
+            "year": 2020,
+            "works_count": 24391,
+            "oa_works_count": 20392,
+            "cited_by_count": 1723283
+          },
+          {
+            "year": 2019,
+            "works_count": 22444,
+            "oa_works_count": 18627,
+            "cited_by_count": 1528753
+          },
+          {
+            "year": 2018,
+            "works_count": 22277,
+            "oa_works_count": 18647,
+            "cited_by_count": 1461051
+          },
+          {
+            "year": 2017,
+            "works_count": 21410,
+            "oa_works_count": 17970,
+            "cited_by_count": 1397036
+          },
+          {
+            "year": 2016,
+            "works_count": 21044,
+            "oa_works_count": 17667,
+            "cited_by_count": 1414291
+          },
+          {
+            "year": 2015,
+            "works_count": 19045,
+            "oa_works_count": 15205,
+            "cited_by_count": 1357223
+          },
+          {
+            "year": 2014,
+            "works_count": 19471,
+            "oa_works_count": 14617,
+            "cited_by_count": 1316673
+          },
+          {
+            "year": 2013,
+            "works_count": 20051,
+            "oa_works_count": 14978,
+            "cited_by_count": 1275782
+          },
+          {
+            "year": 2012,
+            "works_count": 21302,
+            "oa_works_count": 15902,
+            "cited_by_count": 1212705
+          }
+        ],
+        "roles": [
+          {
+            "role": "funder",
+            "id": "https://openalex.org/F4320308501",
+            "works_count": 101
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310320261",
+            "works_count": 700026
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I1297244568",
+            "works_count": 1031
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310320261",
+        "updated_date": "2025-10-29T11:51:31.257916",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310320259",
+        "display_name": "American Medical Association",
+        "alternate_titles": [
+          "AMA",
+          "American Medical Association",
+          "Amerikan tıp derneği",
+          "Amerika Tıp Derneği",
+          "Asociacion Medica Americana",
+          "Asociación Médica Americana",
+          "Asociacion Medica Estadounidense",
+          "Asociación Medica Estadounidense",
+          "Asociacion Médica Estadounidense",
+          "Association Médicale Américaine",
+          "Journal of the American Medical Association",
+          "الاتحاد الطبي الأمريكي",
+          "АМА",
+          "Амерыканская медыцынская асацыяцыя",
+          "全米医師会",
+          "アメリカ医学会",
+          "アメリカ医師会",
+          "米国医師会<Eng>"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310320259"
+        ],
+        "country_codes": [
+          "US"
+        ],
+        "homepage_url": "http://www.ama-assn.org/ama",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/AMA logo.svg",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/AMA logo.svg&width=300",
+        "works_count": 644787,
+        "cited_by_count": 17568377,
+        "summary_stats": {
+          "2yr_mean_citedness": 7.242711021890833,
+          "h_index": 1165,
+          "i10_index": 205738
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310320259",
+          "ror": "https://ror.org/03p6gt485",
+          "wikidata": "https://www.wikidata.org/entity/Q465697"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 2494,
+            "oa_works_count": 963,
+            "cited_by_count": 187945
+          },
+          {
+            "year": 2022,
+            "works_count": 7953,
+            "oa_works_count": 4632,
+            "cited_by_count": 696107
+          },
+          {
+            "year": 2021,
+            "works_count": 8375,
+            "oa_works_count": 5558,
+            "cited_by_count": 713972
+          },
+          {
+            "year": 2020,
+            "works_count": 8010,
+            "oa_works_count": 5188,
+            "cited_by_count": 656709
+          },
+          {
+            "year": 2019,
+            "works_count": 7466,
+            "oa_works_count": 4161,
+            "cited_by_count": 522170
+          },
+          {
+            "year": 2018,
+            "works_count": 6783,
+            "oa_works_count": 3520,
+            "cited_by_count": 485300
+          },
+          {
+            "year": 2017,
+            "works_count": 6385,
+            "oa_works_count": 2650,
+            "cited_by_count": 480363
+          },
+          {
+            "year": 2016,
+            "works_count": 6381,
+            "oa_works_count": 2669,
+            "cited_by_count": 489317
+          },
+          {
+            "year": 2015,
+            "works_count": 5836,
+            "oa_works_count": 2532,
+            "cited_by_count": 492428
+          },
+          {
+            "year": 2014,
+            "works_count": 5730,
+            "oa_works_count": 2090,
+            "cited_by_count": 478967
+          },
+          {
+            "year": 2013,
+            "works_count": 5906,
+            "oa_works_count": 1998,
+            "cited_by_count": 475870
+          },
+          {
+            "year": 2012,
+            "works_count": 6072,
+            "oa_works_count": 1860,
+            "cited_by_count": 468524
+          }
+        ],
+        "roles": [
+          {
+            "role": "funder",
+            "id": "https://openalex.org/F4320311276",
+            "works_count": 188
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310320259",
+            "works_count": 644787
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I173654999",
+            "works_count": 3268
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310320259",
+        "updated_date": "2025-10-29T12:05:07.588528",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310320256",
+        "display_name": "BioMed Central",
+        "alternate_titles": [
+          "バイオメッドセントラル",
+          "BioMedセントラル",
+          "Bio Med Central",
+          "biomedcentral.com",
+          "BioMed Central Ltd",
+          "BMC",
+          "BM Central",
+          "现代生物出版集团",
+          "生物医学中心"
+        ],
+        "hierarchy_level": 1,
+        "parent_publisher": {
+          "id": "https://openalex.org/P4310319965",
+          "display_name": "Springer Nature"
+        },
+        "lineage": [
+          "https://openalex.org/P4310319965",
+          "https://openalex.org/P4310320256"
+        ],
+        "country_codes": [
+          "GB"
+        ],
+        "homepage_url": "http://www.biomedcentral.com",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/BioMed Central 2018.svg",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/BioMed Central 2018.svg&width=300",
+        "works_count": 567782,
+        "cited_by_count": 20346709,
+        "summary_stats": {
+          "2yr_mean_citedness": 5.640569105691057,
+          "h_index": 637,
+          "i10_index": 207215
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310320256",
+          "ror": "https://ror.org/0009s9p66",
+          "wikidata": "https://www.wikidata.org/entity/Q463494"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 6971,
+            "oa_works_count": 5268,
+            "cited_by_count": 296889
+          },
+          {
+            "year": 2022,
+            "works_count": 28582,
+            "oa_works_count": 27866,
+            "cited_by_count": 1042218
+          },
+          {
+            "year": 2021,
+            "works_count": 29252,
+            "oa_works_count": 28672,
+            "cited_by_count": 947067
+          },
+          {
+            "year": 2020,
+            "works_count": 25262,
+            "oa_works_count": 24207,
+            "cited_by_count": 774204
+          },
+          {
+            "year": 2019,
+            "works_count": 20393,
+            "oa_works_count": 20031,
+            "cited_by_count": 592067
+          },
+          {
+            "year": 2018,
+            "works_count": 18672,
+            "oa_works_count": 18292,
+            "cited_by_count": 498292
+          },
+          {
+            "year": 2017,
+            "works_count": 16564,
+            "oa_works_count": 16111,
+            "cited_by_count": 441866
+          },
+          {
+            "year": 2016,
+            "works_count": 16589,
+            "oa_works_count": 16076,
+            "cited_by_count": 390212
+          },
+          {
+            "year": 2015,
+            "works_count": 22331,
+            "oa_works_count": 21620,
+            "cited_by_count": 358325
+          },
+          {
+            "year": 2014,
+            "works_count": 21247,
+            "oa_works_count": 20490,
+            "cited_by_count": 307054
+          },
+          {
+            "year": 2013,
+            "works_count": 19250,
+            "oa_works_count": 18407,
+            "cited_by_count": 255374
+          },
+          {
+            "year": 2012,
+            "works_count": 16725,
+            "oa_works_count": 15945,
+            "cited_by_count": 204847
+          }
+        ],
+        "roles": [
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I150016208",
+            "works_count": 535
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310320256",
+            "works_count": 567782
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310320256",
+        "updated_date": "2025-10-29T11:45:14.266682",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310320267",
+        "display_name": "Pleiades Publishing",
+        "alternate_titles": [
+          "Pleiades Publishing, Ltd."
+        ],
+        "hierarchy_level": 2,
+        "parent_publisher": {
+          "id": "https://openalex.org/P4310319965",
+          "display_name": "Springer Nature"
+        },
+        "lineage": [
+          "https://openalex.org/P4310319965",
+          "https://openalex.org/P4310320267"
+        ],
+        "country_codes": [
+          "RU"
+        ],
+        "homepage_url": "http://pleiades.online",
+        "image_url": null,
+        "image_thumbnail_url": null,
+        "works_count": 556180,
+        "cited_by_count": 2844316,
+        "summary_stats": {
+          "2yr_mean_citedness": 0.75,
+          "h_index": 124,
+          "i10_index": 21305
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310320267",
+          "wikidata": "https://www.wikidata.org/entity/Q47161236"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 319,
+            "oa_works_count": 92,
+            "cited_by_count": 10877
+          },
+          {
+            "year": 2022,
+            "works_count": 5777,
+            "oa_works_count": 662,
+            "cited_by_count": 47601
+          },
+          {
+            "year": 2021,
+            "works_count": 9227,
+            "oa_works_count": 687,
+            "cited_by_count": 48496
+          },
+          {
+            "year": 2020,
+            "works_count": 9657,
+            "oa_works_count": 544,
+            "cited_by_count": 46041
+          },
+          {
+            "year": 2019,
+            "works_count": 10175,
+            "oa_works_count": 778,
+            "cited_by_count": 41836
+          },
+          {
+            "year": 2018,
+            "works_count": 9784,
+            "oa_works_count": 447,
+            "cited_by_count": 36903
+          },
+          {
+            "year": 2017,
+            "works_count": 9180,
+            "oa_works_count": 469,
+            "cited_by_count": 33759
+          },
+          {
+            "year": 2016,
+            "works_count": 9499,
+            "oa_works_count": 178,
+            "cited_by_count": 31249
+          },
+          {
+            "year": 2015,
+            "works_count": 9902,
+            "oa_works_count": 96,
+            "cited_by_count": 30113
+          },
+          {
+            "year": 2014,
+            "works_count": 9246,
+            "oa_works_count": 79,
+            "cited_by_count": 27284
+          },
+          {
+            "year": 2013,
+            "works_count": 9075,
+            "oa_works_count": 129,
+            "cited_by_count": 23770
+          },
+          {
+            "year": 2012,
+            "works_count": 5249,
+            "oa_works_count": 59,
+            "cited_by_count": 21029
+          }
+        ],
+        "roles": [
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310320267",
+            "works_count": 556180
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310320267",
+        "updated_date": "2025-10-27T08:57:07.039374",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310315690",
+        "display_name": "University of Chicago",
+        "alternate_titles": [],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310315690"
+        ],
+        "country_codes": [
+          "US"
+        ],
+        "homepage_url": "https://www.uchicago.edu",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/University of Chicago wordmark.svg",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/University of Chicago wordmark.svg&width=300",
+        "works_count": 466937,
+        "cited_by_count": 7223708,
+        "summary_stats": {
+          "2yr_mean_citedness": 1.2338193911486313,
+          "h_index": 889,
+          "i10_index": 85481
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310315690",
+          "ror": "https://ror.org/024mw5h28",
+          "wikidata": "https://www.wikidata.org/entity/Q131252"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 1635,
+            "oa_works_count": 196,
+            "cited_by_count": 66738
+          },
+          {
+            "year": 2022,
+            "works_count": 6141,
+            "oa_works_count": 1013,
+            "cited_by_count": 246481
+          },
+          {
+            "year": 2021,
+            "works_count": 7207,
+            "oa_works_count": 1491,
+            "cited_by_count": 291505
+          },
+          {
+            "year": 2020,
+            "works_count": 8253,
+            "oa_works_count": 2705,
+            "cited_by_count": 302937
+          },
+          {
+            "year": 2019,
+            "works_count": 7388,
+            "oa_works_count": 1590,
+            "cited_by_count": 302223
+          },
+          {
+            "year": 2018,
+            "works_count": 7437,
+            "oa_works_count": 1458,
+            "cited_by_count": 270099
+          },
+          {
+            "year": 2017,
+            "works_count": 7643,
+            "oa_works_count": 1297,
+            "cited_by_count": 242399
+          },
+          {
+            "year": 2016,
+            "works_count": 7444,
+            "oa_works_count": 1161,
+            "cited_by_count": 253489
+          },
+          {
+            "year": 2015,
+            "works_count": 7486,
+            "oa_works_count": 944,
+            "cited_by_count": 260552
+          },
+          {
+            "year": 2014,
+            "works_count": 6863,
+            "oa_works_count": 949,
+            "cited_by_count": 273878
+          },
+          {
+            "year": 2013,
+            "works_count": 10686,
+            "oa_works_count": 819,
+            "cited_by_count": 264835
+          },
+          {
+            "year": 2012,
+            "works_count": 6339,
+            "oa_works_count": 731,
+            "cited_by_count": 250483
+          }
+        ],
+        "roles": [
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310315690",
+            "works_count": 466937
+          },
+          {
+            "role": "funder",
+            "id": "https://openalex.org/F4320309626",
+            "works_count": 1990
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I40347166",
+            "works_count": 268223
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310315690",
+        "updated_date": "2025-10-29T11:58:57.816947",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310315672",
+        "display_name": "University of Chicago Press",
+        "alternate_titles": [],
+        "hierarchy_level": 1,
+        "parent_publisher": {
+          "id": "https://openalex.org/P4310315690",
+          "display_name": "University of Chicago"
+        },
+        "lineage": [
+          "https://openalex.org/P4310315672",
+          "https://openalex.org/P4310315690"
+        ],
+        "country_codes": [
+          "US"
+        ],
+        "homepage_url": "https://www.press.uchicago.edu",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/University of Chicago Press logo.jpg",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/University of Chicago Press logo.jpg&width=300",
+        "works_count": 461707,
+        "cited_by_count": 7143412,
+        "summary_stats": {
+          "2yr_mean_citedness": 1.2310175619834711,
+          "h_index": 888,
+          "i10_index": 84211
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310315672",
+          "wikidata": "https://www.wikidata.org/entity/Q1814982"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 1623,
+            "oa_works_count": 196,
+            "cited_by_count": 66120
+          },
+          {
+            "year": 2022,
+            "works_count": 6086,
+            "oa_works_count": 989,
+            "cited_by_count": 244015
+          },
+          {
+            "year": 2021,
+            "works_count": 7156,
+            "oa_works_count": 1476,
+            "cited_by_count": 288518
+          },
+          {
+            "year": 2020,
+            "works_count": 8188,
+            "oa_works_count": 2678,
+            "cited_by_count": 299705
+          },
+          {
+            "year": 2019,
+            "works_count": 7320,
+            "oa_works_count": 1557,
+            "cited_by_count": 298682
+          },
+          {
+            "year": 2018,
+            "works_count": 7379,
+            "oa_works_count": 1429,
+            "cited_by_count": 267285
+          },
+          {
+            "year": 2017,
+            "works_count": 7576,
+            "oa_works_count": 1268,
+            "cited_by_count": 239622
+          },
+          {
+            "year": 2016,
+            "works_count": 7376,
+            "oa_works_count": 1134,
+            "cited_by_count": 250366
+          },
+          {
+            "year": 2015,
+            "works_count": 7422,
+            "oa_works_count": 916,
+            "cited_by_count": 257485
+          },
+          {
+            "year": 2014,
+            "works_count": 6800,
+            "oa_works_count": 922,
+            "cited_by_count": 270861
+          },
+          {
+            "year": 2013,
+            "works_count": 10606,
+            "oa_works_count": 788,
+            "cited_by_count": 262017
+          },
+          {
+            "year": 2012,
+            "works_count": 6261,
+            "oa_works_count": 697,
+            "cited_by_count": 247863
+          }
+        ],
+        "roles": [
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310315672",
+            "works_count": 461707
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310315672",
+        "updated_date": "2025-10-27T08:42:24.233067",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310320527",
+        "display_name": "Frontiers Media",
+        "alternate_titles": [
+          "Frontiers",
+          "Frontiers Loop",
+          "Frontiers Media",
+          "Frontiers Media SA",
+          "Frontiers Media S.A."
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310320527"
+        ],
+        "country_codes": [
+          "CH"
+        ],
+        "homepage_url": "http://www.frontiersin.org",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Frontiers Logo 2.png",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Frontiers Logo 2.png&width=300",
+        "works_count": 458575,
+        "cited_by_count": 12117757,
+        "summary_stats": {
+          "2yr_mean_citedness": 4.3269207122128766,
+          "h_index": 594,
+          "i10_index": 266453
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310320527",
+          "wikidata": "https://www.wikidata.org/entity/Q80796"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 30341,
+            "oa_works_count": 25083,
+            "cited_by_count": 481506
+          },
+          {
+            "year": 2022,
+            "works_count": 127248,
+            "oa_works_count": 123956,
+            "cited_by_count": 1509135
+          },
+          {
+            "year": 2021,
+            "works_count": 86678,
+            "oa_works_count": 84894,
+            "cited_by_count": 1128338
+          },
+          {
+            "year": 2020,
+            "works_count": 49381,
+            "oa_works_count": 48267,
+            "cited_by_count": 763310
+          },
+          {
+            "year": 2019,
+            "works_count": 34692,
+            "oa_works_count": 34074,
+            "cited_by_count": 484733
+          },
+          {
+            "year": 2018,
+            "works_count": 29852,
+            "oa_works_count": 29491,
+            "cited_by_count": 331264
+          },
+          {
+            "year": 2017,
+            "works_count": 21451,
+            "oa_works_count": 21047,
+            "cited_by_count": 234417
+          },
+          {
+            "year": 2016,
+            "works_count": 20225,
+            "oa_works_count": 19626,
+            "cited_by_count": 177359
+          },
+          {
+            "year": 2015,
+            "works_count": 15384,
+            "oa_works_count": 14681,
+            "cited_by_count": 131750
+          },
+          {
+            "year": 2014,
+            "works_count": 12492,
+            "oa_works_count": 12017,
+            "cited_by_count": 77624
+          },
+          {
+            "year": 2013,
+            "works_count": 9671,
+            "oa_works_count": 9279,
+            "cited_by_count": 41304
+          },
+          {
+            "year": 2012,
+            "works_count": 6741,
+            "oa_works_count": 6228,
+            "cited_by_count": 18196
+          }
+        ],
+        "roles": [
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310320527",
+            "works_count": 458575
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310320527",
+        "updated_date": "2025-10-27T08:54:37.900306",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310319811",
+        "display_name": "Emerald Publishing Limited",
+        "alternate_titles": [
+          "Emerald Group Pub",
+          "Emerald Group Publishing Limited",
+          "Emerald Group Publishing (United Kingdom)",
+          "Emerald Publishing",
+          "Emerald (wydawca)",
+          "MCB University Press",
+          "MCB大学出版局",
+          "エメラルド・グループ出版 (イギリス)"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310319811"
+        ],
+        "country_codes": [
+          "GB"
+        ],
+        "homepage_url": "https://www.emeraldgrouppublishing.com",
+        "image_url": null,
+        "image_thumbnail_url": null,
+        "works_count": 456608,
+        "cited_by_count": 9013166,
+        "summary_stats": {
+          "2yr_mean_citedness": 3.6058461437176996,
+          "h_index": 639,
+          "i10_index": 165676
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310319811",
+          "ror": "https://ror.org/02avhnb77",
+          "wikidata": "https://www.wikidata.org/entity/Q1335379"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 5838,
+            "oa_works_count": 619,
+            "cited_by_count": 153003
+          },
+          {
+            "year": 2022,
+            "works_count": 23387,
+            "oa_works_count": 4104,
+            "cited_by_count": 551401
+          },
+          {
+            "year": 2021,
+            "works_count": 26694,
+            "oa_works_count": 4984,
+            "cited_by_count": 550224
+          },
+          {
+            "year": 2020,
+            "works_count": 25073,
+            "oa_works_count": 4505,
+            "cited_by_count": 466265
+          },
+          {
+            "year": 2019,
+            "works_count": 26720,
+            "oa_works_count": 4448,
+            "cited_by_count": 403986
+          },
+          {
+            "year": 2018,
+            "works_count": 21470,
+            "oa_works_count": 3491,
+            "cited_by_count": 329752
+          },
+          {
+            "year": 2017,
+            "works_count": 21495,
+            "oa_works_count": 3424,
+            "cited_by_count": 294513
+          },
+          {
+            "year": 2016,
+            "works_count": 19798,
+            "oa_works_count": 2632,
+            "cited_by_count": 301331
+          },
+          {
+            "year": 2015,
+            "works_count": 20150,
+            "oa_works_count": 1951,
+            "cited_by_count": 327708
+          },
+          {
+            "year": 2014,
+            "works_count": 15655,
+            "oa_works_count": 1585,
+            "cited_by_count": 327625
+          },
+          {
+            "year": 2013,
+            "works_count": 14221,
+            "oa_works_count": 1336,
+            "cited_by_count": 299172
+          },
+          {
+            "year": 2012,
+            "works_count": 15363,
+            "oa_works_count": 1282,
+            "cited_by_count": 263759
+          }
+        ],
+        "roles": [
+          {
+            "role": "funder",
+            "id": "https://openalex.org/F4320314359",
+            "works_count": 5
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310319811",
+            "works_count": 456608
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I1337397194",
+            "works_count": 979
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I4210122609",
+            "works_count": 0
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310319811",
+        "updated_date": "2025-10-29T09:41:22.498450",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310319847",
+        "display_name": "Routledge",
+        "alternate_titles": [
+          "ルートリッジ",
+          "Camden Publishing",
+          "Curzon",
+          "Curzon Press",
+          "Garland Publishing",
+          "George Routledge and Co.",
+          "George Routledge and Sons",
+          "George Routledge & Co.",
+          "George Routledge & Sons",
+          "Routledge",
+          "Routledge and Kegan Paul",
+          "Routledge and Kegan Paul Ltd.",
+          "RoutledgeCurzon",
+          "Routledge & Kegan Paul",
+          "Routledge Taylor and Francis Group",
+          "Warne and Routledge",
+          "ראוטלג",
+          "ראוטלדג",
+          "ראוטלדג'",
+          "רוטלג",
+          "רוטלג'",
+          "רוטלדג",
+          "רוטלדג'",
+          "Раутледж",
+          "劳特里奇",
+          "劳特里奇出版社",
+          "罗德里奇",
+          "羅德里奇"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310319847"
+        ],
+        "country_codes": [
+          "GB"
+        ],
+        "homepage_url": "https://www.routledge.com",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Routledge stand at Senate House History Day 2018.jpg",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Routledge stand at Senate House History Day 2018.jpg&width=300",
+        "works_count": 416491,
+        "cited_by_count": 6040964,
+        "summary_stats": {
+          "2yr_mean_citedness": 1.989994227438907,
+          "h_index": 567,
+          "i10_index": 109026
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310319847",
+          "ror": "https://ror.org/00c7rx184",
+          "wikidata": "https://www.wikidata.org/entity/Q1508259"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 2707,
+            "oa_works_count": 379,
+            "cited_by_count": 75508
+          },
+          {
+            "year": 2022,
+            "works_count": 12529,
+            "oa_works_count": 2560,
+            "cited_by_count": 289494
+          },
+          {
+            "year": 2021,
+            "works_count": 13981,
+            "oa_works_count": 2960,
+            "cited_by_count": 307352
+          },
+          {
+            "year": 2020,
+            "works_count": 14135,
+            "oa_works_count": 3047,
+            "cited_by_count": 296581
+          },
+          {
+            "year": 2019,
+            "works_count": 14800,
+            "oa_works_count": 3310,
+            "cited_by_count": 265821
+          },
+          {
+            "year": 2018,
+            "works_count": 14011,
+            "oa_works_count": 2860,
+            "cited_by_count": 225656
+          },
+          {
+            "year": 2017,
+            "works_count": 14724,
+            "oa_works_count": 3340,
+            "cited_by_count": 197231
+          },
+          {
+            "year": 2016,
+            "works_count": 15598,
+            "oa_works_count": 2773,
+            "cited_by_count": 203070
+          },
+          {
+            "year": 2015,
+            "works_count": 16400,
+            "oa_works_count": 1830,
+            "cited_by_count": 195622
+          },
+          {
+            "year": 2014,
+            "works_count": 16723,
+            "oa_works_count": 1608,
+            "cited_by_count": 194594
+          },
+          {
+            "year": 2013,
+            "works_count": 17600,
+            "oa_works_count": 1544,
+            "cited_by_count": 181678
+          },
+          {
+            "year": 2012,
+            "works_count": 16909,
+            "oa_works_count": 1047,
+            "cited_by_count": 153898
+          }
+        ],
+        "roles": [
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I4210091883",
+            "works_count": 703
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310319847",
+            "works_count": 416491
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310319847",
+        "updated_date": "2025-10-29T10:41:36.198710",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310315823",
+        "display_name": "American Association for the Advancement of Science",
+        "alternate_titles": [],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310315823"
+        ],
+        "country_codes": [
+          "US"
+        ],
+        "homepage_url": "http://www.aaas.org",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/American Assoc. for the Advancement of Science by Matthew Bisanz.JPG",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/American Assoc. for the Advancement of Science by Matthew Bisanz.JPG&width=300",
+        "works_count": 413516,
+        "cited_by_count": 23719948,
+        "summary_stats": {
+          "2yr_mean_citedness": 16.891483708572228,
+          "h_index": 1736,
+          "i10_index": 101359
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310315823",
+          "ror": "https://ror.org/05j0w0e76",
+          "wikidata": "https://www.wikidata.org/entity/Q40358"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 1367,
+            "oa_works_count": 603,
+            "cited_by_count": 343146
+          },
+          {
+            "year": 2022,
+            "works_count": 5521,
+            "oa_works_count": 3161,
+            "cited_by_count": 1178303
+          },
+          {
+            "year": 2021,
+            "works_count": 6813,
+            "oa_works_count": 3278,
+            "cited_by_count": 1226795
+          },
+          {
+            "year": 2020,
+            "works_count": 8024,
+            "oa_works_count": 3426,
+            "cited_by_count": 1102347
+          },
+          {
+            "year": 2019,
+            "works_count": 7048,
+            "oa_works_count": 2512,
+            "cited_by_count": 967028
+          },
+          {
+            "year": 2018,
+            "works_count": 6701,
+            "oa_works_count": 2076,
+            "cited_by_count": 893022
+          },
+          {
+            "year": 2017,
+            "works_count": 6757,
+            "oa_works_count": 1820,
+            "cited_by_count": 828464
+          },
+          {
+            "year": 2016,
+            "works_count": 6619,
+            "oa_works_count": 1608,
+            "cited_by_count": 802138
+          },
+          {
+            "year": 2015,
+            "works_count": 7237,
+            "oa_works_count": 1325,
+            "cited_by_count": 788219
+          },
+          {
+            "year": 2014,
+            "works_count": 5247,
+            "oa_works_count": 859,
+            "cited_by_count": 774200
+          },
+          {
+            "year": 2013,
+            "works_count": 5150,
+            "oa_works_count": 797,
+            "cited_by_count": 757332
+          },
+          {
+            "year": 2012,
+            "works_count": 5130,
+            "oa_works_count": 781,
+            "cited_by_count": 706125
+          }
+        ],
+        "roles": [
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310315823",
+            "works_count": 413516
+          },
+          {
+            "role": "funder",
+            "id": "https://openalex.org/F4320306220",
+            "works_count": 155
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I1311206647",
+            "works_count": 2354
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310315823",
+        "updated_date": "2025-10-29T11:51:24.641844",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310320561",
+        "display_name": "Brill",
+        "alternate_titles": [
+          "ブリル・パブリッシャーズ",
+          "Brill",
+          "BRILL",
+          "Brill Academic Publishers",
+          "Brill Academic Publishing",
+          "Brill Archive",
+          "Brill Boekhandel en drukkerij",
+          "Brill N.V.",
+          "Brill Online",
+          "Brill Publishers",
+          "Brill-Verlag",
+          "Brill出版社",
+          "Editions Brill",
+          "E. J. Brill",
+          "E.J.Brill",
+          "E.J. Brill",
+          "E.J. Brill Academic Publishers",
+          "IDC Publishers",
+          "Koninklijke Brill",
+          "Koninklijke Brill N.V.",
+          "Koninkljike Brill",
+          "Luchtmans",
+          "布裏爾出版社",
+          "布里尔出版社",
+          "布里爾出版社"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310320561"
+        ],
+        "country_codes": [
+          "NL"
+        ],
+        "homepage_url": "https://brill.com",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Brill in Leiden.JPG",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Brill in Leiden.JPG&width=300",
+        "works_count": 373315,
+        "cited_by_count": 1645730,
+        "summary_stats": {
+          "2yr_mean_citedness": 0.4020560692446309,
+          "h_index": 311,
+          "i10_index": 68188
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310320561",
+          "wikidata": "https://www.wikidata.org/entity/Q917031"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 4860,
+            "oa_works_count": 429,
+            "cited_by_count": 33485
+          },
+          {
+            "year": 2022,
+            "works_count": 27709,
+            "oa_works_count": 4339,
+            "cited_by_count": 112407
+          },
+          {
+            "year": 2021,
+            "works_count": 31938,
+            "oa_works_count": 4846,
+            "cited_by_count": 118165
+          },
+          {
+            "year": 2020,
+            "works_count": 29341,
+            "oa_works_count": 4298,
+            "cited_by_count": 128882
+          },
+          {
+            "year": 2019,
+            "works_count": 27873,
+            "oa_works_count": 3142,
+            "cited_by_count": 125415
+          },
+          {
+            "year": 2018,
+            "works_count": 30474,
+            "oa_works_count": 3010,
+            "cited_by_count": 90378
+          },
+          {
+            "year": 2017,
+            "works_count": 25183,
+            "oa_works_count": 2729,
+            "cited_by_count": 77597
+          },
+          {
+            "year": 2016,
+            "works_count": 27429,
+            "oa_works_count": 2575,
+            "cited_by_count": 74343
+          },
+          {
+            "year": 2015,
+            "works_count": 26245,
+            "oa_works_count": 2080,
+            "cited_by_count": 73185
+          },
+          {
+            "year": 2014,
+            "works_count": 28505,
+            "oa_works_count": 1716,
+            "cited_by_count": 73150
+          },
+          {
+            "year": 2013,
+            "works_count": 30792,
+            "oa_works_count": 1637,
+            "cited_by_count": 71670
+          },
+          {
+            "year": 2012,
+            "works_count": 29160,
+            "oa_works_count": 1561,
+            "cited_by_count": 63605
+          }
+        ],
+        "roles": [
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I4362561690",
+            "works_count": 46895
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310320561",
+            "works_count": 373315
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310320561",
+        "updated_date": "2025-10-29T09:05:58.885216",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4320800525",
+        "display_name": "Chinese Medical Association",
+        "alternate_titles": [
+          "CMA"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4320800525"
+        ],
+        "country_codes": [
+          "CN"
+        ],
+        "homepage_url": "http://en.cma.org.cn",
+        "image_url": null,
+        "image_thumbnail_url": null,
+        "works_count": 364897,
+        "cited_by_count": 57070,
+        "summary_stats": {
+          "2yr_mean_citedness": 0.41910631741140214,
+          "h_index": 95,
+          "i10_index": 3719
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4320800525",
+          "wikidata": "https://wikidata.org/entity/Q10872242"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 889,
+            "oa_works_count": 3,
+            "cited_by_count": 2900
+          },
+          {
+            "year": 2022,
+            "works_count": 4136,
+            "oa_works_count": 44,
+            "cited_by_count": 12951
+          },
+          {
+            "year": 2021,
+            "works_count": 4008,
+            "oa_works_count": 7,
+            "cited_by_count": 7987
+          },
+          {
+            "year": 2020,
+            "works_count": 7560,
+            "oa_works_count": 101,
+            "cited_by_count": 9407
+          },
+          {
+            "year": 2019,
+            "works_count": 15648,
+            "oa_works_count": 93,
+            "cited_by_count": 6452
+          },
+          {
+            "year": 2018,
+            "works_count": 15991,
+            "oa_works_count": 86,
+            "cited_by_count": 5835
+          },
+          {
+            "year": 2017,
+            "works_count": 16599,
+            "oa_works_count": 99,
+            "cited_by_count": 5997
+          },
+          {
+            "year": 2016,
+            "works_count": 17290,
+            "oa_works_count": 110,
+            "cited_by_count": 6133
+          },
+          {
+            "year": 2015,
+            "works_count": 15643,
+            "oa_works_count": 96,
+            "cited_by_count": 7529
+          },
+          {
+            "year": 2014,
+            "works_count": 25285,
+            "oa_works_count": 123,
+            "cited_by_count": 4571
+          },
+          {
+            "year": 2013,
+            "works_count": 29531,
+            "oa_works_count": 118,
+            "cited_by_count": 3414
+          },
+          {
+            "year": 2012,
+            "works_count": 30090,
+            "oa_works_count": 80,
+            "cited_by_count": 3115
+          }
+        ],
+        "roles": [
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4320800525",
+            "works_count": 364897
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4320800525",
+        "updated_date": "2025-10-27T08:48:57.919751",
+        "created_date": "2023-02-15"
+      },
+      {
+        "id": "https://openalex.org/P4310317820",
+        "display_name": "Karger Publishers",
+        "alternate_titles": [],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310317820"
+        ],
+        "country_codes": [
+          "CH"
+        ],
+        "homepage_url": "https://www.karger.com",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Logo Karger.svg",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Logo Karger.svg&width=300",
+        "works_count": 362914,
+        "cited_by_count": 6861291,
+        "summary_stats": {
+          "2yr_mean_citedness": 2.3661574966632064,
+          "h_index": 493,
+          "i10_index": 159885
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310317820",
+          "ror": "https://ror.org/0572q5a45",
+          "wikidata": "https://www.wikidata.org/entity/Q2204571"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 1291,
+            "oa_works_count": 542,
+            "cited_by_count": 94995
+          },
+          {
+            "year": 2022,
+            "works_count": 5218,
+            "oa_works_count": 3322,
+            "cited_by_count": 375216
+          },
+          {
+            "year": 2021,
+            "works_count": 7126,
+            "oa_works_count": 4589,
+            "cited_by_count": 339904
+          },
+          {
+            "year": 2020,
+            "works_count": 6311,
+            "oa_works_count": 3853,
+            "cited_by_count": 320655
+          },
+          {
+            "year": 2019,
+            "works_count": 6523,
+            "oa_works_count": 3572,
+            "cited_by_count": 309714
+          },
+          {
+            "year": 2018,
+            "works_count": 8086,
+            "oa_works_count": 4957,
+            "cited_by_count": 294051
+          },
+          {
+            "year": 2017,
+            "works_count": 7404,
+            "oa_works_count": 4353,
+            "cited_by_count": 292132
+          },
+          {
+            "year": 2016,
+            "works_count": 7575,
+            "oa_works_count": 4345,
+            "cited_by_count": 295272
+          },
+          {
+            "year": 2015,
+            "works_count": 26746,
+            "oa_works_count": 4500,
+            "cited_by_count": 301847
+          },
+          {
+            "year": 2014,
+            "works_count": 7640,
+            "oa_works_count": 4113,
+            "cited_by_count": 247057
+          },
+          {
+            "year": 2013,
+            "works_count": 8575,
+            "oa_works_count": 4562,
+            "cited_by_count": 228379
+          },
+          {
+            "year": 2012,
+            "works_count": 8690,
+            "oa_works_count": 4806,
+            "cited_by_count": 223935
+          }
+        ],
+        "roles": [
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I4210162602",
+            "works_count": 542
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310317820",
+            "works_count": 362914
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310317820",
+        "updated_date": "2025-10-29T12:40:17.612990",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310319869",
+        "display_name": "Hindawi Publishing Corporation",
+        "alternate_titles": [
+          "ヒンダウィ・パブリッシング・コーポレーション",
+          "hindawi.com",
+          "Hindawi Limited",
+          "Hindawi Ltd",
+          "Hindawi Publishing Corporation",
+          "Hindawi Publishing Group"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310319869"
+        ],
+        "country_codes": [
+          "GB"
+        ],
+        "homepage_url": "https://www.hindawi.com",
+        "image_url": null,
+        "image_thumbnail_url": null,
+        "works_count": 347827,
+        "cited_by_count": 6433418,
+        "summary_stats": {
+          "2yr_mean_citedness": 2.6079243193799195,
+          "h_index": 464,
+          "i10_index": 155973
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310319869",
+          "ror": "https://ror.org/02rt9z237",
+          "wikidata": "https://www.wikidata.org/entity/Q1619253"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 3076,
+            "oa_works_count": 2718,
+            "cited_by_count": 157570
+          },
+          {
+            "year": 2022,
+            "works_count": 37748,
+            "oa_works_count": 37247,
+            "cited_by_count": 583820
+          },
+          {
+            "year": 2021,
+            "works_count": 30012,
+            "oa_works_count": 29534,
+            "cited_by_count": 528820
+          },
+          {
+            "year": 2020,
+            "works_count": 24662,
+            "oa_works_count": 24062,
+            "cited_by_count": 433626
+          },
+          {
+            "year": 2019,
+            "works_count": 19022,
+            "oa_works_count": 18413,
+            "cited_by_count": 338783
+          },
+          {
+            "year": 2018,
+            "works_count": 21135,
+            "oa_works_count": 20512,
+            "cited_by_count": 284136
+          },
+          {
+            "year": 2017,
+            "works_count": 17357,
+            "oa_works_count": 16732,
+            "cited_by_count": 249455
+          },
+          {
+            "year": 2016,
+            "works_count": 19983,
+            "oa_works_count": 18807,
+            "cited_by_count": 227502
+          },
+          {
+            "year": 2015,
+            "works_count": 23648,
+            "oa_works_count": 22412,
+            "cited_by_count": 201454
+          },
+          {
+            "year": 2014,
+            "works_count": 30932,
+            "oa_works_count": 29162,
+            "cited_by_count": 156443
+          },
+          {
+            "year": 2013,
+            "works_count": 28180,
+            "oa_works_count": 26414,
+            "cited_by_count": 111290
+          },
+          {
+            "year": 2012,
+            "works_count": 25062,
+            "oa_works_count": 23076,
+            "cited_by_count": 71707
+          }
+        ],
+        "roles": [
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I4210126990",
+            "works_count": 43
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310319869",
+            "works_count": 347827
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310319869",
+        "updated_date": "2025-10-29T10:51:44.569805",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310319748",
+        "display_name": "EDP Sciences",
+        "alternate_titles": [
+          "EDITION DIFFUSION PRESSE SCIENCES",
+          "Édition Diffusion Presse Sciences",
+          "EDP Science",
+          "edpsciences.org"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310319748"
+        ],
+        "country_codes": [
+          "FR"
+        ],
+        "homepage_url": "https://publications.edpsciences.org",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/EDP Sciences logo 2021.svg",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/EDP Sciences logo 2021.svg&width=300",
+        "works_count": 342496,
+        "cited_by_count": 3923147,
+        "summary_stats": {
+          "2yr_mean_citedness": 1.5410537119397878,
+          "h_index": 429,
+          "i10_index": 90249
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310319748",
+          "ror": "https://ror.org/00b25kb57",
+          "wikidata": "https://www.wikidata.org/entity/Q114404"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 3849,
+            "oa_works_count": 1733,
+            "cited_by_count": 65053
+          },
+          {
+            "year": 2022,
+            "works_count": 11936,
+            "oa_works_count": 8949,
+            "cited_by_count": 229528
+          },
+          {
+            "year": 2021,
+            "works_count": 26178,
+            "oa_works_count": 24221,
+            "cited_by_count": 243290
+          },
+          {
+            "year": 2020,
+            "works_count": 42040,
+            "oa_works_count": 21547,
+            "cited_by_count": 225064
+          },
+          {
+            "year": 2019,
+            "works_count": 17883,
+            "oa_works_count": 16754,
+            "cited_by_count": 201373
+          },
+          {
+            "year": 2018,
+            "works_count": 22868,
+            "oa_works_count": 21831,
+            "cited_by_count": 188317
+          },
+          {
+            "year": 2017,
+            "works_count": 14452,
+            "oa_works_count": 13134,
+            "cited_by_count": 171100
+          },
+          {
+            "year": 2016,
+            "works_count": 13234,
+            "oa_works_count": 11921,
+            "cited_by_count": 166725
+          },
+          {
+            "year": 2015,
+            "works_count": 8354,
+            "oa_works_count": 6992,
+            "cited_by_count": 155384
+          },
+          {
+            "year": 2014,
+            "works_count": 8030,
+            "oa_works_count": 6680,
+            "cited_by_count": 150972
+          },
+          {
+            "year": 2013,
+            "works_count": 8095,
+            "oa_works_count": 6480,
+            "cited_by_count": 145241
+          },
+          {
+            "year": 2012,
+            "works_count": 7234,
+            "oa_works_count": 5619,
+            "cited_by_count": 132732
+          }
+        ],
+        "roles": [
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I142179503",
+            "works_count": 171
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310319748",
+            "works_count": 342496
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310319748",
+        "updated_date": "2025-10-29T10:46:09.413356",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310315706",
+        "display_name": "Public Library of Science",
+        "alternate_titles": [],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310315706"
+        ],
+        "country_codes": [
+          "US"
+        ],
+        "homepage_url": "https://www.plos.org",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/PLOS logo 2012.svg",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/PLOS logo 2012.svg&width=300",
+        "works_count": 337070,
+        "cited_by_count": 15513909,
+        "summary_stats": {
+          "2yr_mean_citedness": 4.1951953125,
+          "h_index": 702,
+          "i10_index": 257150
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310315706",
+          "ror": "https://ror.org/008zgvp64",
+          "wikidata": "https://www.wikidata.org/entity/Q233358"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 4831,
+            "oa_works_count": 4067,
+            "cited_by_count": 342644
+          },
+          {
+            "year": 2022,
+            "works_count": 19722,
+            "oa_works_count": 19587,
+            "cited_by_count": 1264872
+          },
+          {
+            "year": 2021,
+            "works_count": 19812,
+            "oa_works_count": 19768,
+            "cited_by_count": 1322237
+          },
+          {
+            "year": 2020,
+            "works_count": 19662,
+            "oa_works_count": 19629,
+            "cited_by_count": 1204031
+          },
+          {
+            "year": 2019,
+            "works_count": 18989,
+            "oa_works_count": 18919,
+            "cited_by_count": 1031778
+          },
+          {
+            "year": 2018,
+            "works_count": 21670,
+            "oa_works_count": 21602,
+            "cited_by_count": 937239
+          },
+          {
+            "year": 2017,
+            "works_count": 24017,
+            "oa_works_count": 23936,
+            "cited_by_count": 860880
+          },
+          {
+            "year": 2016,
+            "works_count": 26221,
+            "oa_works_count": 26119,
+            "cited_by_count": 787623
+          },
+          {
+            "year": 2015,
+            "works_count": 33020,
+            "oa_works_count": 32913,
+            "cited_by_count": 709671
+          },
+          {
+            "year": 2014,
+            "works_count": 34802,
+            "oa_works_count": 34706,
+            "cited_by_count": 588000
+          },
+          {
+            "year": 2013,
+            "works_count": 35936,
+            "oa_works_count": 35782,
+            "cited_by_count": 435359
+          },
+          {
+            "year": 2012,
+            "works_count": 26588,
+            "oa_works_count": 26472,
+            "cited_by_count": 292060
+          }
+        ],
+        "roles": [
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310315706",
+            "works_count": 337070
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I108652713",
+            "works_count": 788
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310315706",
+        "updated_date": "2025-10-29T12:01:27.436504",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310320262",
+        "display_name": "American Psychological Association",
+        "alternate_titles": [
+          "American psychological association",
+          "American Psychological Association",
+          "Americká psychologická společnost",
+          "APA",
+          "apa.org",
+          "Asociacion Americana de Psicologia",
+          "Asociación Americana de Psicologia",
+          "Asociacion Americana de Psicología",
+          "Asociación Americana de Psicología",
+          "Asociacion Estadounidense de Psicologia",
+          "Asociación Estadounidense de Psicologia",
+          "Asociacion Estadounidense de Psicología",
+          "Associação americana de psicologia",
+          "אגודת הפסיכולוגים האמריקאית",
+          "איגוד הפסיכולוגים האמריקאי",
+          "האגודה האמריקאית לפסיכולוגיה",
+          "האגודה הפסיכולוגית האמריקאית",
+          "האגודה הפסיכולוגית האמריקנית",
+          "Американска асоциация на психолозите",
+          "Американска асоциация по психология",
+          "Американска психологическа асоциация",
+          "Американската асоциация по психология",
+          "Американската психологическа асоциация",
+          "Американската психологична асоциация",
+          "Американская ассоциация психологов",
+          "АПА",
+          "米国心理学会",
+          "美國心理学联合会",
+          "美國心理學聯合會",
+          "美國精神科協會"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310320262"
+        ],
+        "country_codes": [
+          "US"
+        ],
+        "homepage_url": "http://www.apa.org",
+        "image_url": null,
+        "image_thumbnail_url": null,
+        "works_count": 332954,
+        "cited_by_count": 20076355,
+        "summary_stats": {
+          "2yr_mean_citedness": 2.3736197550692633,
+          "h_index": 1410,
+          "i10_index": 169195
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310320262",
+          "ror": "https://ror.org/00rt1d436",
+          "wikidata": "https://www.wikidata.org/entity/Q466587"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 2869,
+            "oa_works_count": 283,
+            "cited_by_count": 193398
+          },
+          {
+            "year": 2022,
+            "works_count": 8909,
+            "oa_works_count": 1846,
+            "cited_by_count": 751568
+          },
+          {
+            "year": 2021,
+            "works_count": 8619,
+            "oa_works_count": 2294,
+            "cited_by_count": 785200
+          },
+          {
+            "year": 2020,
+            "works_count": 7142,
+            "oa_works_count": 2109,
+            "cited_by_count": 857236
+          },
+          {
+            "year": 2019,
+            "works_count": 7053,
+            "oa_works_count": 2088,
+            "cited_by_count": 742928
+          },
+          {
+            "year": 2018,
+            "works_count": 6911,
+            "oa_works_count": 2043,
+            "cited_by_count": 719883
+          },
+          {
+            "year": 2017,
+            "works_count": 7112,
+            "oa_works_count": 1889,
+            "cited_by_count": 690839
+          },
+          {
+            "year": 2016,
+            "works_count": 6811,
+            "oa_works_count": 1922,
+            "cited_by_count": 711705
+          },
+          {
+            "year": 2015,
+            "works_count": 6729,
+            "oa_works_count": 1795,
+            "cited_by_count": 736318
+          },
+          {
+            "year": 2014,
+            "works_count": 6595,
+            "oa_works_count": 1623,
+            "cited_by_count": 712363
+          },
+          {
+            "year": 2013,
+            "works_count": 5967,
+            "oa_works_count": 1388,
+            "cited_by_count": 691694
+          },
+          {
+            "year": 2012,
+            "works_count": 5621,
+            "oa_works_count": 1251,
+            "cited_by_count": 648795
+          }
+        ],
+        "roles": [
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I161513276",
+            "works_count": 1785
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310320262",
+            "works_count": 332954
+          },
+          {
+            "role": "funder",
+            "id": "https://openalex.org/F4320306877",
+            "works_count": 628
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310320262",
+        "updated_date": "2025-10-29T11:53:08.605505",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310319982",
+        "display_name": "Science Press",
+        "alternate_titles": [
+          "China Science and Technology Publishing & Media",
+          "China Science Publishing & Media",
+          "China Science Publishing & Media Ltd.",
+          "Chinese Science Publishing and Media Ltd.",
+          "Chinese Science Publishing & Media",
+          "Chinese Science Publishing & Media Ltd.",
+          "CSPM",
+          "Kexue Chubanshe",
+          "Science Press Ltd, PR China",
+          "Science Press, PR China",
+          "中国科技出版传媒股份有限公司",
+          "科学出版社有限责任公司"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310319982"
+        ],
+        "country_codes": [
+          "CN"
+        ],
+        "homepage_url": "http://www.sciencep.com",
+        "image_url": null,
+        "image_thumbnail_url": null,
+        "works_count": 321717,
+        "cited_by_count": 870814,
+        "summary_stats": {
+          "2yr_mean_citedness": 2.56388046773495,
+          "h_index": 217,
+          "i10_index": 28669
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310319982",
+          "ror": "https://ror.org/04ww8nw62",
+          "wikidata": "https://www.wikidata.org/entity/Q22965025"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 2052,
+            "oa_works_count": 1037,
+            "cited_by_count": 24190
+          },
+          {
+            "year": 2022,
+            "works_count": 7191,
+            "oa_works_count": 4715,
+            "cited_by_count": 79235
+          },
+          {
+            "year": 2021,
+            "works_count": 8100,
+            "oa_works_count": 5081,
+            "cited_by_count": 61538
+          },
+          {
+            "year": 2020,
+            "works_count": 10165,
+            "oa_works_count": 4706,
+            "cited_by_count": 46407
+          },
+          {
+            "year": 2019,
+            "works_count": 6967,
+            "oa_works_count": 3530,
+            "cited_by_count": 36631
+          },
+          {
+            "year": 2018,
+            "works_count": 6787,
+            "oa_works_count": 2319,
+            "cited_by_count": 29924
+          },
+          {
+            "year": 2017,
+            "works_count": 7018,
+            "oa_works_count": 2684,
+            "cited_by_count": 25262
+          },
+          {
+            "year": 2016,
+            "works_count": 9915,
+            "oa_works_count": 2519,
+            "cited_by_count": 24538
+          },
+          {
+            "year": 2015,
+            "works_count": 12726,
+            "oa_works_count": 2845,
+            "cited_by_count": 24547
+          },
+          {
+            "year": 2014,
+            "works_count": 15617,
+            "oa_works_count": 3301,
+            "cited_by_count": 24608
+          },
+          {
+            "year": 2013,
+            "works_count": 23206,
+            "oa_works_count": 4502,
+            "cited_by_count": 22454
+          },
+          {
+            "year": 2012,
+            "works_count": 19773,
+            "oa_works_count": 4155,
+            "cited_by_count": 19574
+          }
+        ],
+        "roles": [
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I4210143794",
+            "works_count": 376
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310319982",
+            "works_count": 321717
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310319982",
+        "updated_date": "2025-10-29T11:45:12.190592",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310320448",
+        "display_name": "Medknow",
+        "alternate_titles": [
+          "medknow.com",
+          "Medknow Publications",
+          "Medknow Publications (India)",
+          "Wolters Kluwer Medknow Publications"
+        ],
+        "hierarchy_level": 1,
+        "parent_publisher": {
+          "id": "https://openalex.org/P4310318547",
+          "display_name": "Wolters Kluwer"
+        },
+        "lineage": [
+          "https://openalex.org/P4310318547",
+          "https://openalex.org/P4310320448"
+        ],
+        "country_codes": [
+          "IN"
+        ],
+        "homepage_url": "http://www.medknow.com",
+        "image_url": null,
+        "image_thumbnail_url": null,
+        "works_count": 296487,
+        "cited_by_count": 2708735,
+        "summary_stats": {
+          "2yr_mean_citedness": 1.1677020436600092,
+          "h_index": 322,
+          "i10_index": 96889
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310320448",
+          "ror": "https://ror.org/01qxk5g75",
+          "wikidata": "https://www.wikidata.org/entity/Q6807205"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 5639,
+            "oa_works_count": 2634,
+            "cited_by_count": 72718
+          },
+          {
+            "year": 2022,
+            "works_count": 27572,
+            "oa_works_count": 18874,
+            "cited_by_count": 271051
+          },
+          {
+            "year": 2021,
+            "works_count": 29902,
+            "oa_works_count": 19485,
+            "cited_by_count": 256357
+          },
+          {
+            "year": 2020,
+            "works_count": 29681,
+            "oa_works_count": 20528,
+            "cited_by_count": 219683
+          },
+          {
+            "year": 2019,
+            "works_count": 24089,
+            "oa_works_count": 17339,
+            "cited_by_count": 163752
+          },
+          {
+            "year": 2018,
+            "works_count": 24553,
+            "oa_works_count": 17487,
+            "cited_by_count": 136650
+          },
+          {
+            "year": 2017,
+            "works_count": 23452,
+            "oa_works_count": 16109,
+            "cited_by_count": 125536
+          },
+          {
+            "year": 2016,
+            "works_count": 23798,
+            "oa_works_count": 17343,
+            "cited_by_count": 116424
+          },
+          {
+            "year": 2015,
+            "works_count": 24279,
+            "oa_works_count": 17053,
+            "cited_by_count": 112157
+          },
+          {
+            "year": 2014,
+            "works_count": 22032,
+            "oa_works_count": 14975,
+            "cited_by_count": 94158
+          },
+          {
+            "year": 2013,
+            "works_count": 18096,
+            "oa_works_count": 12379,
+            "cited_by_count": 68949
+          },
+          {
+            "year": 2012,
+            "works_count": 17536,
+            "oa_works_count": 10593,
+            "cited_by_count": 51250
+          }
+        ],
+        "roles": [
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310320448",
+            "works_count": 296487
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I4210111709",
+            "works_count": 9
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310320448",
+        "updated_date": "2025-10-29T11:43:20.283785",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310320263",
+        "display_name": "American Society for Microbiology",
+        "alternate_titles": [
+          "American Society for Microbiology",
+          "American Society of Microbiology",
+          "ASM",
+          "asm.org",
+          "Society of American Bacteriologists",
+          "האגודה האמריקאית למיקרוביולוגיה",
+          "アメリカ微生物学アカデミー",
+          "米国微生物学会"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310320263"
+        ],
+        "country_codes": [
+          "US"
+        ],
+        "homepage_url": "http://www.asm.org",
+        "image_url": null,
+        "image_thumbnail_url": null,
+        "works_count": 293011,
+        "cited_by_count": 17721612,
+        "summary_stats": {
+          "2yr_mean_citedness": 4.3789769533445755,
+          "h_index": 843,
+          "i10_index": 265300
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310320263",
+          "ror": "https://ror.org/04xsjmh40",
+          "wikidata": "https://www.wikidata.org/entity/Q466809"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 2109,
+            "oa_works_count": 1235,
+            "cited_by_count": 193667
+          },
+          {
+            "year": 2022,
+            "works_count": 6969,
+            "oa_works_count": 5852,
+            "cited_by_count": 701108
+          },
+          {
+            "year": 2021,
+            "works_count": 6585,
+            "oa_works_count": 6201,
+            "cited_by_count": 775434
+          },
+          {
+            "year": 2020,
+            "works_count": 6243,
+            "oa_works_count": 5738,
+            "cited_by_count": 754724
+          },
+          {
+            "year": 2019,
+            "works_count": 6462,
+            "oa_works_count": 6228,
+            "cited_by_count": 678279
+          },
+          {
+            "year": 2018,
+            "works_count": 6451,
+            "oa_works_count": 6158,
+            "cited_by_count": 661231
+          },
+          {
+            "year": 2017,
+            "works_count": 6577,
+            "oa_works_count": 6449,
+            "cited_by_count": 644830
+          },
+          {
+            "year": 2016,
+            "works_count": 7482,
+            "oa_works_count": 6980,
+            "cited_by_count": 674056
+          },
+          {
+            "year": 2015,
+            "works_count": 7867,
+            "oa_works_count": 7400,
+            "cited_by_count": 713796
+          },
+          {
+            "year": 2014,
+            "works_count": 8163,
+            "oa_works_count": 7706,
+            "cited_by_count": 789396
+          },
+          {
+            "year": 2013,
+            "works_count": 8069,
+            "oa_works_count": 7632,
+            "cited_by_count": 725011
+          },
+          {
+            "year": 2012,
+            "works_count": 8035,
+            "oa_works_count": 7579,
+            "cited_by_count": 689922
+          }
+        ],
+        "roles": [
+          {
+            "role": "funder",
+            "id": "https://openalex.org/F4320308484",
+            "works_count": 86
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I61951971",
+            "works_count": 296
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310320263",
+            "works_count": 293011
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310320263",
+        "updated_date": "2025-10-29T11:50:47.164432",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310320330",
+        "display_name": "Adis, Springer Healthcare",
+        "alternate_titles": [
+          "Adis"
+        ],
+        "hierarchy_level": 1,
+        "parent_publisher": {
+          "id": "https://openalex.org/P4310319965",
+          "display_name": "Springer Nature"
+        },
+        "lineage": [
+          "https://openalex.org/P4310319965",
+          "https://openalex.org/P4310320330"
+        ],
+        "country_codes": [
+          "GB"
+        ],
+        "homepage_url": null,
+        "image_url": null,
+        "image_thumbnail_url": null,
+        "works_count": 285017,
+        "cited_by_count": 1902739,
+        "summary_stats": {
+          "2yr_mean_citedness": 5.309827456864216,
+          "h_index": 203,
+          "i10_index": 7848
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310320330",
+          "wikidata": "https://www.wikidata.org/entity/Q52636673"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 251,
+            "oa_works_count": 171,
+            "cited_by_count": 8500
+          },
+          {
+            "year": 2022,
+            "works_count": 1027,
+            "oa_works_count": 902,
+            "cited_by_count": 28889
+          },
+          {
+            "year": 2021,
+            "works_count": 1065,
+            "oa_works_count": 907,
+            "cited_by_count": 27191
+          },
+          {
+            "year": 2020,
+            "works_count": 785,
+            "oa_works_count": 610,
+            "cited_by_count": 25412
+          },
+          {
+            "year": 2019,
+            "works_count": 724,
+            "oa_works_count": 479,
+            "cited_by_count": 17495
+          },
+          {
+            "year": 2018,
+            "works_count": 605,
+            "oa_works_count": 391,
+            "cited_by_count": 14855
+          },
+          {
+            "year": 2017,
+            "works_count": 613,
+            "oa_works_count": 383,
+            "cited_by_count": 13583
+          },
+          {
+            "year": 2016,
+            "works_count": 543,
+            "oa_works_count": 295,
+            "cited_by_count": 12908
+          },
+          {
+            "year": 2015,
+            "works_count": 450,
+            "oa_works_count": 252,
+            "cited_by_count": 12283
+          },
+          {
+            "year": 2014,
+            "works_count": 338,
+            "oa_works_count": 133,
+            "cited_by_count": 12065
+          },
+          {
+            "year": 2013,
+            "works_count": 411,
+            "oa_works_count": 146,
+            "cited_by_count": 10953
+          },
+          {
+            "year": 2012,
+            "works_count": 377,
+            "oa_works_count": 45,
+            "cited_by_count": 10875
+          }
+        ],
+        "roles": [
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310320330",
+            "works_count": 285017
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310320330",
+        "updated_date": "2025-10-27T08:58:03.908355",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310317839",
+        "display_name": "Trans Tech Publications",
+        "alternate_titles": [],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310317839"
+        ],
+        "country_codes": [
+          "CH"
+        ],
+        "homepage_url": "https://www.scientific.net",
+        "image_url": null,
+        "image_thumbnail_url": null,
+        "works_count": 277266,
+        "cited_by_count": 435472,
+        "summary_stats": {
+          "2yr_mean_citedness": 0.518983884184649,
+          "h_index": 119,
+          "i10_index": 18378
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310317839",
+          "ror": "https://ror.org/02dkpwz86",
+          "wikidata": "https://www.wikidata.org/entity/Q30289413"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 430,
+            "oa_works_count": 1,
+            "cited_by_count": 14678
+          },
+          {
+            "year": 2022,
+            "works_count": 3077,
+            "oa_works_count": 437,
+            "cited_by_count": 54842
+          },
+          {
+            "year": 2021,
+            "works_count": 3158,
+            "oa_works_count": 46,
+            "cited_by_count": 56181
+          },
+          {
+            "year": 2020,
+            "works_count": 4041,
+            "oa_works_count": 86,
+            "cited_by_count": 51333
+          },
+          {
+            "year": 2019,
+            "works_count": 4290,
+            "oa_works_count": 135,
+            "cited_by_count": 45123
+          },
+          {
+            "year": 2018,
+            "works_count": 4594,
+            "oa_works_count": 250,
+            "cited_by_count": 40442
+          },
+          {
+            "year": 2017,
+            "works_count": 4725,
+            "oa_works_count": 130,
+            "cited_by_count": 36858
+          },
+          {
+            "year": 2016,
+            "works_count": 10085,
+            "oa_works_count": 273,
+            "cited_by_count": 34646
+          },
+          {
+            "year": 2015,
+            "works_count": 18531,
+            "oa_works_count": 554,
+            "cited_by_count": 37297
+          },
+          {
+            "year": 2014,
+            "works_count": 65767,
+            "oa_works_count": 675,
+            "cited_by_count": 36781
+          },
+          {
+            "year": 2013,
+            "works_count": 69465,
+            "oa_works_count": 548,
+            "cited_by_count": 30423
+          },
+          {
+            "year": 2012,
+            "works_count": 56646,
+            "oa_works_count": 363,
+            "cited_by_count": 23894
+          }
+        ],
+        "roles": [
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310317839",
+            "works_count": 277266
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I4210158262",
+            "works_count": 18
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310317839",
+        "updated_date": "2025-10-29T04:55:11.337801",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310313571",
+        "display_name": "Japan Society Mechanical Engineers",
+        "alternate_titles": [],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310313571"
+        ],
+        "country_codes": [
+          "JP"
+        ],
+        "homepage_url": "http://www.jsme.or.jp",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Rengakan sinanomachi 2014.JPG",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Rengakan sinanomachi 2014.JPG&width=300",
+        "works_count": 277229,
+        "cited_by_count": 239733,
+        "summary_stats": {
+          "2yr_mean_citedness": 0.11085751548744702,
+          "h_index": 92,
+          "i10_index": 5300
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310313571",
+          "ror": "https://ror.org/03r2bjn02",
+          "wikidata": "https://www.wikidata.org/entity/Q11086432"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 175,
+            "oa_works_count": 81,
+            "cited_by_count": 2590
+          },
+          {
+            "year": 2022,
+            "works_count": 2838,
+            "oa_works_count": 433,
+            "cited_by_count": 8000
+          },
+          {
+            "year": 2021,
+            "works_count": 4146,
+            "oa_works_count": 619,
+            "cited_by_count": 8200
+          },
+          {
+            "year": 2020,
+            "works_count": 5431,
+            "oa_works_count": 1054,
+            "cited_by_count": 7538
+          },
+          {
+            "year": 2019,
+            "works_count": 7090,
+            "oa_works_count": 750,
+            "cited_by_count": 7402
+          },
+          {
+            "year": 2018,
+            "works_count": 6951,
+            "oa_works_count": 679,
+            "cited_by_count": 7285
+          },
+          {
+            "year": 2017,
+            "works_count": 7249,
+            "oa_works_count": 779,
+            "cited_by_count": 8223
+          },
+          {
+            "year": 2016,
+            "works_count": 7334,
+            "oa_works_count": 804,
+            "cited_by_count": 7757
+          },
+          {
+            "year": 2015,
+            "works_count": 9426,
+            "oa_works_count": 958,
+            "cited_by_count": 7850
+          },
+          {
+            "year": 2014,
+            "works_count": 7663,
+            "oa_works_count": 4435,
+            "cited_by_count": 8038
+          },
+          {
+            "year": 2013,
+            "works_count": 8981,
+            "oa_works_count": 5446,
+            "cited_by_count": 7046
+          },
+          {
+            "year": 2012,
+            "works_count": 9466,
+            "oa_works_count": 5627,
+            "cited_by_count": 7441
+          }
+        ],
+        "roles": [
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I4210149841",
+            "works_count": 54
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310313571",
+            "works_count": 277229
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310313571",
+        "updated_date": "2025-10-29T11:57:07.559529",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310320239",
+        "display_name": "Massachusetts Medical Society",
+        "alternate_titles": [
+          "マサチューセッツ・メディカル・ソサエティ",
+          "マサチューセッツ・メディカル・ソサイエティ",
+          "マサチューセッツ医学会",
+          "马萨诸塞州医学会"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310320239"
+        ],
+        "country_codes": [
+          "US"
+        ],
+        "homepage_url": "http://www.massmed.org",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Massachusettsmedicalsocietyheadquarters.jpg",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Massachusettsmedicalsocietyheadquarters.jpg&width=300",
+        "works_count": 236682,
+        "cited_by_count": 11718130,
+        "summary_stats": {
+          "2yr_mean_citedness": 26.88389771941949,
+          "h_index": 1479,
+          "i10_index": 45703
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310320239",
+          "ror": "https://ror.org/00xyb8f56",
+          "wikidata": "https://www.wikidata.org/entity/Q4287779"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 303,
+            "oa_works_count": 41,
+            "cited_by_count": 141247
+          },
+          {
+            "year": 2022,
+            "works_count": 1123,
+            "oa_works_count": 402,
+            "cited_by_count": 540984
+          },
+          {
+            "year": 2021,
+            "works_count": 2109,
+            "oa_works_count": 559,
+            "cited_by_count": 577229
+          },
+          {
+            "year": 2020,
+            "works_count": 3143,
+            "oa_works_count": 619,
+            "cited_by_count": 535281
+          },
+          {
+            "year": 2019,
+            "works_count": 2927,
+            "oa_works_count": 374,
+            "cited_by_count": 429800
+          },
+          {
+            "year": 2018,
+            "works_count": 2910,
+            "oa_works_count": 348,
+            "cited_by_count": 416177
+          },
+          {
+            "year": 2017,
+            "works_count": 3000,
+            "oa_works_count": 354,
+            "cited_by_count": 419529
+          },
+          {
+            "year": 2016,
+            "works_count": 3248,
+            "oa_works_count": 385,
+            "cited_by_count": 421581
+          },
+          {
+            "year": 2015,
+            "works_count": 3372,
+            "oa_works_count": 379,
+            "cited_by_count": 418927
+          },
+          {
+            "year": 2014,
+            "works_count": 3566,
+            "oa_works_count": 378,
+            "cited_by_count": 401166
+          },
+          {
+            "year": 2013,
+            "works_count": 3617,
+            "oa_works_count": 395,
+            "cited_by_count": 388872
+          },
+          {
+            "year": 2012,
+            "works_count": 3321,
+            "oa_works_count": 387,
+            "cited_by_count": 369039
+          }
+        ],
+        "roles": [
+          {
+            "role": "funder",
+            "id": "https://openalex.org/F4320312761",
+            "works_count": 59
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310320239",
+            "works_count": 236682
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I4210098821",
+            "works_count": 132
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310320239",
+        "updated_date": "2025-10-29T11:58:51.368541",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310315679",
+        "display_name": "Optica Publishing Group",
+        "alternate_titles": [
+          "The Optical Society",
+          "Optica Publishing Group",
+          "OSA",
+          "Optical Society",
+          "Optical Society of America"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310315679"
+        ],
+        "country_codes": [
+          "US"
+        ],
+        "homepage_url": "https://www.optica.org",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Optica logo.png",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Optica logo.png&width=300",
+        "works_count": 230801,
+        "cited_by_count": 6819424,
+        "summary_stats": {
+          "2yr_mean_citedness": 3.4594256136249792,
+          "h_index": 548,
+          "i10_index": 133898
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310315679",
+          "ror": "https://ror.org/00jypd850",
+          "wikidata": "https://www.wikidata.org/entity/Q2027280"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 2921,
+            "oa_works_count": 1388,
+            "cited_by_count": 123303
+          },
+          {
+            "year": 2022,
+            "works_count": 9284,
+            "oa_works_count": 5511,
+            "cited_by_count": 399988
+          },
+          {
+            "year": 2021,
+            "works_count": 9716,
+            "oa_works_count": 5943,
+            "cited_by_count": 411304
+          },
+          {
+            "year": 2020,
+            "works_count": 9622,
+            "oa_works_count": 5821,
+            "cited_by_count": 398007
+          },
+          {
+            "year": 2019,
+            "works_count": 9411,
+            "oa_works_count": 5982,
+            "cited_by_count": 406255
+          },
+          {
+            "year": 2018,
+            "works_count": 8843,
+            "oa_works_count": 5425,
+            "cited_by_count": 363767
+          },
+          {
+            "year": 2017,
+            "works_count": 8446,
+            "oa_works_count": 5203,
+            "cited_by_count": 338377
+          },
+          {
+            "year": 2016,
+            "works_count": 8450,
+            "oa_works_count": 5043,
+            "cited_by_count": 329908
+          },
+          {
+            "year": 2015,
+            "works_count": 8691,
+            "oa_works_count": 5041,
+            "cited_by_count": 317330
+          },
+          {
+            "year": 2014,
+            "works_count": 8626,
+            "oa_works_count": 4830,
+            "cited_by_count": 306210
+          },
+          {
+            "year": 2013,
+            "works_count": 8115,
+            "oa_works_count": 4635,
+            "cited_by_count": 280059
+          },
+          {
+            "year": 2012,
+            "works_count": 8179,
+            "oa_works_count": 4495,
+            "cited_by_count": 255821
+          }
+        ],
+        "roles": [
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I59499333",
+            "works_count": 8580
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310315679",
+            "works_count": 230801
+          },
+          {
+            "role": "funder",
+            "id": "https://openalex.org/F4320311095",
+            "works_count": 8
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310315679",
+        "updated_date": "2025-10-29T12:41:41.759300",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310315903",
+        "display_name": "American Library Association",
+        "alternate_titles": [],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310315903"
+        ],
+        "country_codes": [
+          "US"
+        ],
+        "homepage_url": "http://www.ala.org",
+        "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/American Library Association logo stacked.svg",
+        "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/American Library Association logo stacked.svg&width=300",
+        "works_count": 223806,
+        "cited_by_count": 13015917,
+        "summary_stats": {
+          "2yr_mean_citedness": 0.7061538461538461,
+          "h_index": 1177,
+          "i10_index": 107332
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310315903",
+          "ror": "https://ror.org/03eg6ys02",
+          "wikidata": "https://www.wikidata.org/entity/Q465584"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 93,
+            "oa_works_count": 60,
+            "cited_by_count": 1299
+          },
+          {
+            "year": 2022,
+            "works_count": 422,
+            "oa_works_count": 373,
+            "cited_by_count": 9509
+          },
+          {
+            "year": 2021,
+            "works_count": 608,
+            "oa_works_count": 504,
+            "cited_by_count": 51938
+          },
+          {
+            "year": 2020,
+            "works_count": 1128,
+            "oa_works_count": 1014,
+            "cited_by_count": 72849
+          },
+          {
+            "year": 2019,
+            "works_count": 875,
+            "oa_works_count": 736,
+            "cited_by_count": 88103
+          },
+          {
+            "year": 2018,
+            "works_count": 778,
+            "oa_works_count": 595,
+            "cited_by_count": 106807
+          },
+          {
+            "year": 2017,
+            "works_count": 1049,
+            "oa_works_count": 738,
+            "cited_by_count": 114354
+          },
+          {
+            "year": 2016,
+            "works_count": 3809,
+            "oa_works_count": 846,
+            "cited_by_count": 159619
+          },
+          {
+            "year": 2015,
+            "works_count": 7202,
+            "oa_works_count": 1206,
+            "cited_by_count": 203742
+          },
+          {
+            "year": 2014,
+            "works_count": 7773,
+            "oa_works_count": 1117,
+            "cited_by_count": 225355
+          },
+          {
+            "year": 2013,
+            "works_count": 8474,
+            "oa_works_count": 1100,
+            "cited_by_count": 223549
+          },
+          {
+            "year": 2012,
+            "works_count": 8015,
+            "oa_works_count": 1143,
+            "cited_by_count": 212476
+          }
+        ],
+        "roles": [
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310315903",
+            "works_count": 223806
+          },
+          {
+            "role": "funder",
+            "id": "https://openalex.org/F4320332857",
+            "works_count": 135
+          },
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I1315289610",
+            "works_count": 873
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310315903",
+        "updated_date": "2025-10-29T11:59:43.807638",
+        "created_date": "2023-01-01"
+      },
+      {
+        "id": "https://openalex.org/P4310319815",
+        "display_name": "World Scientific",
+        "alternate_titles": [
+          "World Scientific",
+          "World Scientific Publishing",
+          "World Scientific Publishing Co Pte Ltd",
+          "世界科学出版社",
+          "世界科學出版社",
+          "世界科技出版公司",
+          "新加坡世界科技出版公司"
+        ],
+        "hierarchy_level": 0,
+        "parent_publisher": null,
+        "lineage": [
+          "https://openalex.org/P4310319815"
+        ],
+        "country_codes": [
+          "SG"
+        ],
+        "homepage_url": "https://www.worldscientific.com",
+        "image_url": null,
+        "image_thumbnail_url": null,
+        "works_count": 217234,
+        "cited_by_count": 2386016,
+        "summary_stats": {
+          "2yr_mean_citedness": 1.0949053857350801,
+          "h_index": 411,
+          "i10_index": 63271
+        },
+        "ids": {
+          "openalex": "https://openalex.org/P4310319815",
+          "ror": "https://ror.org/05e7tm136",
+          "wikidata": "https://www.wikidata.org/entity/Q1357666"
+        },
+        "counts_by_year": [
+          {
+            "year": 2023,
+            "works_count": 4334,
+            "oa_works_count": 499,
+            "cited_by_count": 42606
+          },
+          {
+            "year": 2022,
+            "works_count": 15615,
+            "oa_works_count": 2462,
+            "cited_by_count": 154020
+          },
+          {
+            "year": 2021,
+            "works_count": 16161,
+            "oa_works_count": 2696,
+            "cited_by_count": 165601
+          },
+          {
+            "year": 2020,
+            "works_count": 15421,
+            "oa_works_count": 2842,
+            "cited_by_count": 148914
+          },
+          {
+            "year": 2019,
+            "works_count": 14778,
+            "oa_works_count": 2891,
+            "cited_by_count": 132617
+          },
+          {
+            "year": 2018,
+            "works_count": 13771,
+            "oa_works_count": 2606,
+            "cited_by_count": 116312
+          },
+          {
+            "year": 2017,
+            "works_count": 12251,
+            "oa_works_count": 2809,
+            "cited_by_count": 107724
+          },
+          {
+            "year": 2016,
+            "works_count": 12003,
+            "oa_works_count": 2862,
+            "cited_by_count": 105132
+          },
+          {
+            "year": 2015,
+            "works_count": 11109,
+            "oa_works_count": 2426,
+            "cited_by_count": 103415
+          },
+          {
+            "year": 2014,
+            "works_count": 11828,
+            "oa_works_count": 2454,
+            "cited_by_count": 100237
+          },
+          {
+            "year": 2013,
+            "works_count": 11853,
+            "oa_works_count": 2168,
+            "cited_by_count": 95476
+          },
+          {
+            "year": 2012,
+            "works_count": 12411,
+            "oa_works_count": 2324,
+            "cited_by_count": 86119
+          }
+        ],
+        "roles": [
+          {
+            "role": "institution",
+            "id": "https://openalex.org/I4210163335",
+            "works_count": 138
+          },
+          {
+            "role": "publisher",
+            "id": "https://openalex.org/P4310319815",
+            "works_count": 217234
+          }
+        ],
+        "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310319815",
+        "updated_date": "2025-10-29T11:42:36.228332",
+        "created_date": "2023-01-01"
+      }
+    ],
+    "group_by": []
+  },
+  "headers": {},
+  "timestamp": "2025-10-29T12:42:33.090Z",
+  "url": "https://api.openalex.org/publishers?per_page=50&page=1"
+}

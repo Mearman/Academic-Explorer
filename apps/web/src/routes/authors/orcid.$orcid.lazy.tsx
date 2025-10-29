@@ -7,11 +7,17 @@ import { useEffect } from "react";
 import { IconUser } from "@tabler/icons-react";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { logError, logger } from "@academic-explorer/utils/logger";
+import { useGraphData } from "@/hooks/use-graph-data";
+import { useGraphStore } from "@/stores/graph-store";
 
 
 function ORCIDAuthorRoute() {
   const { orcid } = useParams({ from: "/authors/orcid/$orcid" });
   const navigate = useNavigate();
+  const graphData = useGraphData();
+  const { loadEntity, loadEntityIntoGraph } = graphData;
+  const graphStore = useGraphStore();
+  const nodeCount = graphStore.totalNodeCount;
 
   useEffect(() => {
     const resolveORCID = async () => {
@@ -19,27 +25,25 @@ function ORCIDAuthorRoute() {
         // Decode the ORCID parameter
         const decodedORCID = decodeURIComponent(orcid);
 
-        // Detect and normalize the ORCID
+        // Normalize the ORCID to full URL format
+        // EntityDetectionService will validate and normalize the format
         const detection = EntityDetectionService.detectEntity(decodedORCID);
 
-        if (!detection) {
+        if (!detection || detection.entityType !== "authors") {
           throw new Error(
-            `Unable to detect entity from ORCID: ${decodedORCID}`,
+            `Invalid ORCID format: ${decodedORCID}`,
           );
         }
 
-        if (detection.entityType === "authors") {
-          // Navigate to the standard author route with the resolved OpenAlex ID
-          void navigate({
-            to: "/authors/$authorId",
-            params: { authorId: detection.normalizedId },
-            replace: true,
-          });
+        // Load the author entity directly using the normalized ORCID URL
+        // The OpenAlex API accepts ORCID URLs as author IDs
+        // If graph already has nodes, use incremental loading
+        if (nodeCount > 0) {
+          await loadEntityIntoGraph(detection.normalizedId);
         } else {
-          throw new Error(
-            `Expected author entity but detected ${detection.entityType}: ${decodedORCID}`,
-          );
+          await loadEntity(detection.normalizedId);
         }
+        // No navigation needed - graph is always visible
       } catch (error) {
         logError(
           logger,
@@ -58,35 +62,12 @@ function ORCIDAuthorRoute() {
     };
 
     void resolveORCID();
-  }, [orcid, navigate]);
+  }, [orcid, navigate, loadEntity, loadEntityIntoGraph, nodeCount]);
 
-  return (
-    <div
-      style={{
-        padding: "40px 20px",
-        textAlign: "center",
-        fontSize: "16px",
-      }}
-    >
-      <div style={{ marginBottom: "20px", fontSize: "18px" }}>
-        <IconUser size={18} style={{ display: "inline", marginRight: "8px" }} />
-        Resolving ORCID...
-      </div>
-      <div
-        style={{
-          fontFamily: "monospace",
-          backgroundColor: "#f5f5f5",
-          padding: "10px",
-          borderRadius: "4px",
-        }}
-      >
-        {decodeURIComponent(orcid)}
-      </div>
-      <div style={{ marginTop: "20px", fontSize: "14px", color: "#666" }}>
-        Loading author details and building collaboration graph
-      </div>
-    </div>
-  );
+  // Return null to let the graph view show through
+  // The entity loading happens in the background via loadEntity/loadEntityIntoGraph
+  // The graph store will update and the graph view will re-render automatically
+  return null;
 }
 
 export const Route = createLazyFileRoute("/authors/orcid/$orcid")({

@@ -115,10 +115,14 @@ function OpenAlexUrlComponent() {
             { rorId: rorMatch[1] },
             "OpenAlexUrlComponent",
           );
+          // Build the path manually to avoid TanStack Router param expansion issues
+          const rorPath = `/institutions/ror/${rorMatch[1]}`;
+          const searchObj = parseSearchParams(searchParams);
+          const targetPath = Object.keys(searchObj).length > 0
+            ? buildPathWithSearch(rorPath, searchParams)
+            : rorPath;
           navigate({
-            to: "/institutions/ror/$ror",
-            params: { ror: rorMatch[1] },
-            search: parseSearchParams(searchParams),
+            to: targetPath,
             replace: true
           });
           return;
@@ -132,10 +136,14 @@ function OpenAlexUrlComponent() {
             { issn: issnMatch[1] },
             "OpenAlexUrlComponent",
           );
+          // Build the path manually to avoid TanStack Router param expansion issues
+          const issnPath = `/sources/issn/${issnMatch[1]}`;
+          const searchObj = parseSearchParams(searchParams);
+          const targetPath = Object.keys(searchObj).length > 0
+            ? buildPathWithSearch(issnPath, searchParams)
+            : issnPath;
           navigate({
-            to: "/sources/issn/$issn",
-            params: { issn: issnMatch[1] },
-            search: parseSearchParams(searchParams),
+            to: targetPath,
             replace: true
           });
           return;
@@ -149,10 +157,14 @@ function OpenAlexUrlComponent() {
             { orcid: orcidMatch[1] },
             "OpenAlexUrlComponent",
           );
+          // Build the path manually to avoid TanStack Router param expansion issues
+          const orcidPath = `/authors/orcid/${orcidMatch[1]}`;
+          const searchObj = parseSearchParams(searchParams);
+          const targetPath = Object.keys(searchObj).length > 0
+            ? buildPathWithSearch(orcidPath, searchParams)
+            : orcidPath;
           navigate({
-            to: "/authors/orcid/$orcid",
-            params: { orcid: orcidMatch[1] },
-            search: parseSearchParams(searchParams),
+            to: targetPath,
             replace: true
           });
           return;

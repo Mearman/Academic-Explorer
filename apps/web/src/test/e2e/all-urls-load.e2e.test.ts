@@ -32,7 +32,10 @@ function toAppUrl(apiUrl: string): string {
   // Remove API base and use the openalex-url route which handles all conversions
   // The openalex-url route will detect entity types, normalize IDs, and route appropriately
   const relativePath = apiUrl.replace(API_BASE, '');
-  return `${BASE_URL}/#/openalex-url${relativePath}`;
+  // URL-encode colons to prevent TanStack Router from misinterpreting them
+  // Colons in hash routes can be treated as delimiters
+  const encodedPath = relativePath.replace(/:/g, '%3A');
+  return `${BASE_URL}/#/openalex-url${encodedPath}`;
 }
 
 // Helper to get entity type from URL
@@ -59,10 +62,15 @@ test.describe('All OpenAlex URLs - Load Test', () => {
           const appUrl = toAppUrl(apiUrl);
           const errors: string[] = [];
 
-          // Listen for console errors
+          // Listen for console errors and routing logs
           page.on('console', msg => {
+            const text = msg.text();
             if (msg.type() === 'error') {
-              errors.push(msg.text());
+              errors.push(text);
+            }
+            // Log routing messages for debugging
+            if (text.includes('routing') || text.includes('splat') || text.includes('orcid') || text.includes('issn')) {
+              console.log(`[BROWSER ${msg.type()}]:`, text);
             }
           });
 
