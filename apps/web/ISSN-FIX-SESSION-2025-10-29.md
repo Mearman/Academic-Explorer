@@ -59,14 +59,22 @@ patterns: [
 
 ## Deployment Status
 
-**Workflow Run**: 18906655231
-**Status**: ⏳ In Progress
-**Commit**: `4eb400c7` - "fix(graph): add issn: prefix pattern to entity detection"
+### Workflow 18906655231 (Commit 4eb400c7 - Pattern Fix)
+**Status**: ⚠️ CACHE ISSUE - Deployed with old Nx cache
+- Deploy job: ✅ Completed (1m45s) at 11:47:31Z
+- **Problem**: Nx cache used old build from before fix
+- **Evidence**: Bundle hash unchanged (`graph-CoNoU69-.js`), no `issn:` pattern in deployed code
+- **Result**: Deployed site still shows "Unable to detect entity type for: issn"
+
+### Workflow 18906825386 (Commit 71b10732 - Test Updates)
+**Status**: ⏳ Pending (no jobs started yet)
+- Should trigger fresh build since test files modified
+- Expected to deploy correctly once it runs
 
 ### Previous Deployment
 - Workflow: 18906147674
 - Deploy job: ✅ Completed (1m42s)
-- Had Commit 1 but NOT Commit 2 (pattern fix)
+- Had Commit 1 (8539c1d9) but NOT Commit 2 (4eb400c7)
 
 ## Expected Outcome
 
@@ -109,7 +117,11 @@ Normalized: "issn:2041-1723" (always includes prefix)
 3. **11:30 AM** - Testing revealed pattern detection still failing
 4. **11:35 AM** - Identified root cause: missing `issn:` prefix pattern
 5. **11:40 AM** - Commit 4eb400c7 (pattern fix) pushed
-6. **11:40 AM** - New deployment started (18906655231)
+6. **11:40 AM** - Deployment started (18906655231)
+7. **11:47 AM** - Deploy job completed, but deployed with Nx cache from before fix
+8. **11:47 AM** - Commit 71b10732 (test updates) pushed, deployment started (18906825386)
+9. **11:55 AM** - Discovered Nx cache issue preventing fix deployment
+10. **12:00 PM** - Waiting for fresh build deployment (18906825386)
 
 ## Verification Steps
 
@@ -134,11 +146,17 @@ Once deployment completes:
 2. **Detection vs. Normalization**: Both must work together
 3. **Test Actual Formats**: Test the exact format routes will pass
 4. **Deployment Verification**: Always verify fixes on deployed site
+5. **Nx Cache Can Block Deployments**: CI/CD builds may use cached artifacts from before code changes
+   - **Symptom**: Bundle hash unchanged despite new commits
+   - **Solution**: Force rebuild by modifying test files or clearing Nx cache
+   - **Prevention**: Consider `--skip-nx-cache` flag in CI builds or ensure cache keys include source file hashes
 
 ---
 
 **Session Date**: 2025-10-29
-**Duration**: ~40 minutes
-**Commits**: 2 (8539c1d9, 4eb400c7)
-**Status**: ✅ FIX COMPLETE, awaiting deployment verification
-**Expected Impact**: 230/230 URLs passing (100% compatibility)
+**Duration**: ~1 hour 30 minutes
+**Commits**: 3 (8539c1d9, 4eb400c7, 71b10732)
+**Status**: ⏳ FIX COMPLETE IN CODE, awaiting cache-busted deployment
+**Blocker**: Nx cache issue - workflow 18906655231 deployed old cached build
+**Next**: Workflow 18906825386 should deploy fresh build with fix
+**Expected Impact**: 230/230 URLs passing (100% compatibility) once deployed
