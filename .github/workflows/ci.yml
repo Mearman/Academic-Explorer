@@ -42,7 +42,6 @@ jobs:
       coverage-reports: ${{ steps.coverage.outputs.coverage-reports }}
       quality-gates: ${{ steps.quality-gates.outputs.quality-gates }}
       should-deploy: ${{ steps.deploy.outputs.should-deploy }}
-      should-release: ${{ steps.release.outputs.should-release }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -139,15 +138,7 @@ jobs:
             echo "should-deploy=false" >> "${GITHUB_OUTPUT}"
           fi
 
-      - name: Determine release
-        id: release
-        run: |
-          if [ "${{ github.event_name }}" = "push" ] && echo "${{ github.ref }}" | grep -q "^refs/tags/v"; then
-            echo "should-release=true" >> "${GITHUB_OUTPUT}"
-          else
-            echo "should-release=false" >> "${GITHUB_OUTPUT}"
-          fi
-
+    
   # Comprehensive quality gates
   quality-gates:
     runs-on: ubuntu-latest
@@ -406,7 +397,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: [build-and-test, deploy]
-    if: needs.build-and-test.outputs.should-release == 'true'
+    if: needs.build-and-test.result == 'success' && github.ref == 'refs/heads/main'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -418,7 +409,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          registry-url: 'https://registry.npmjs.org'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
@@ -428,11 +418,24 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
       - name: Release
-        run: pnpm release:workspace
+        run: |
+          # Create a simple release without changelog generation
+          VERSION=$(npx nx show project web --json | jq -r '.version' || echo "0.0.1")
+          echo "Creating release for version $VERSION"
+
+          # Create GitHub release
+          gh release create "v$VERSION" \
+            --title "Release v$VERSION" \
+            --notes "Automated release from CI/CD pipeline" \
+            --target main || echo "Release already exists or failed"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   # Results and notifications
   results:
@@ -461,7 +464,7 @@ jobs:
             echo "| 📈 Coverage | ${{ needs.coverage.result }} | Workspace coverage report |"
             echo "| ⚡ Performance | ${{ needs.performance.result }} | Lighthouse + a11y |"
             echo "| 🚀 Deploy | ${{ needs.deploy.result }} | ${{ needs.build-and-test.outputs.should-deploy == 'true' && 'GitHub Pages' || 'Skipped' }} |"
-            echo "| 📦 Release | ${{ needs.release.result }} | ${{ needs.build-and-test.outputs.should-release == 'true' && 'Automated release' || 'Skipped' }} |"
+            echo "| 📦 Release | ${{ needs.release.result }} | Automated release on main success |"
           } >> "${GITHUB_STEP_SUMMARY}"
 
       - name: Coverage summary

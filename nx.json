@@ -612,31 +612,9 @@
   },
   "defaultProject": "web",
   "release": {
-    "projectsRelationship": "independent",
-    "projects": [
-      "packages/*",
-      "apps/*",
-      "tools/*"
-    ],
+    "projects": ["packages/*", "apps/*"],
     "version": {
-      "conventionalCommits": true,
-      "currentVersionResolverMetadata": {
-        "fallbackCurrentVersionResolver": "disk"
-      },
-      "fallbackCurrentVersionResolver": "disk",
-      "preserveLocalDependencyProtocols": true
-    },
-    "changelog": {
-      "projectChangelogs": {
-        "file": "{projectRoot}/CHANGELOG.md",
-        "renderOptions": {
-          "authors": false
-        }
-      }
-    },
-    "releaseTagPattern": "{projectName}@{version}",
-    "git": {
-      "commitMessage": "chore(release): version packages [skip ci]"
+      "conventionalCommits": true
     }
   },
   "cli": {
