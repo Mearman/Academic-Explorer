@@ -6,6 +6,7 @@
 import React from "react";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useLayoutStore } from "@/stores/layout-store";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 interface CollapsibleSectionProps {
@@ -28,6 +29,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
   const layoutStore = useLayoutStore();
   const { collapsedSections } = layoutStore;
   const { setSectionCollapsed } = layoutStore;
+  const prefersReducedMotion = useReducedMotion();
 
   // Get current expanded state from store or default (inverted from collapsed)
   const isExpanded = storageKey
@@ -58,7 +60,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
           fontWeight: 600,
           color: colors.text.primary,
           cursor: "pointer",
-          transition: "color 0.2s ease",
+          transition: prefersReducedMotion ? "none" : "color 0.2s ease",
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.color = colors.primary;
@@ -89,15 +91,16 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
           style={{
             paddingTop: "12px",
             paddingBottom: "20px",
-            animation: "fadeIn 0.2s ease-in-out",
+            animation: prefersReducedMotion ? "none" : "fadeIn 0.2s ease-in-out",
           }}
         >
           {children}
         </div>
       )}
 
-      {/* CSS for fade-in animation */}
-      <style>{`
+      {/* CSS for fade-in animation - only applies when animations are not reduced */}
+      {!prefersReducedMotion && (
+        <style>{`
 				@keyframes fadeIn {
 					from {
 						opacity: 0;
@@ -109,6 +112,7 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
 					}
 				}
 			`}</style>
+      )}
     </div>
   );
 };
