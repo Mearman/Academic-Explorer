@@ -12,7 +12,7 @@ import React, {
   type Dispatch,
   type Reducer,
 } from "react";
-import { _useGraphStore } from "./graph-store";
+import { useGraphStore } from "./graph-store";
 import type { GraphNode, GraphLayout } from "@academic-explorer/graph";
 import { logger } from "@academic-explorer/utils/logger";
 
@@ -504,7 +504,7 @@ export const useApplyPositionsToGraphStore = () => {
 
 export const useSyncWithGraphStore = () => {
   const dispatch = useAnimatedGraphActions();
-  const graphStore = _useGraphStore();
+  const graphStore = useGraphStore();
   return () => {
     dispatch({
       type: "SYNC_WITH_GRAPH_STORE",

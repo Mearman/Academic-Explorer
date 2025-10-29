@@ -13,12 +13,6 @@ export interface EntityNavigator {
 	) => void;
 }
 
-export interface MalformedUrlHandler {
-	to: string;
-	params: Record<string, string>;
-	replace: boolean;
-}
-
 /**
  * Navigation helper for handling entity routes and URL cleanup
  */

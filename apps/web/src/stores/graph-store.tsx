@@ -1000,6 +1000,3 @@ export const graphStore = (() => {
     },
   };
 })();
-
-// Export internal hook for animated graph store
-export const _useGraphStore = useGraphStore;
