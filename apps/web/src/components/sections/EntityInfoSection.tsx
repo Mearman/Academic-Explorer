@@ -56,6 +56,12 @@ interface EntityInfoSectionProps {
 
 // Helper function to extract entity ID from hash
 const extractEntityIdFromHash = (hash: string): string | null => {
+  // External ID routes (orcid, issn, ror) handle entity loading themselves
+  // and return null to show the graph view. Skip extraction for these routes.
+  if (hash.match(/\/(orcid|issn|ror)\//)) {
+    return null;
+  }
+
   const entityRouteMatch = hash.match(
     /\/(?:authors|works|sources|institutions|topics|publishers|funders)\/([^/?]+)/,
   );

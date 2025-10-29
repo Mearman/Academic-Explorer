@@ -64,10 +64,33 @@ function ORCIDAuthorRoute() {
     void resolveORCID();
   }, [orcid, navigate, loadEntity, loadEntityIntoGraph, nodeCount]);
 
-  // Return null to let the graph view show through
-  // The entity loading happens in the background via loadEntity/loadEntityIntoGraph
-  // The graph store will update and the graph view will re-render automatically
-  return null;
+  return (
+    <div
+      style={{
+        padding: "40px 20px",
+        textAlign: "center",
+        fontSize: "16px",
+      }}
+    >
+      <div style={{ marginBottom: "20px", fontSize: "18px" }}>
+        <IconUser size={18} style={{ display: "inline", marginRight: "8px" }} />
+        Resolving ORCID...
+      </div>
+      <div
+        style={{
+          fontFamily: "monospace",
+          backgroundColor: "#f5f5f5",
+          padding: "10px",
+          borderRadius: "4px",
+        }}
+      >
+        {decodeURIComponent(orcid)}
+      </div>
+      <div style={{ marginTop: "20px", fontSize: "14px", color: "#666" }}>
+        Loading author details and building citation graph
+      </div>
+    </div>
+  );
 }
 
 export const Route = createLazyFileRoute("/authors/orcid/$orcid")({
