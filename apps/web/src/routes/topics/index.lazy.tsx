@@ -1,10 +1,10 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { useSearch } from "@tanstack/react-router";
+import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
 import { EntityList } from "@/components/EntityList";
 import type { ColumnConfig } from "@/components/types";
 import type { Topic } from "@academic-explorer/types";
-import { createFilterBuilder } from "@academic-explorer/client";
-
+import type { OpenAlexSearchParams } from "@/lib/route-schemas";
+import { useState } from "react";
+import type { ViewMode } from "@/components/ViewModeToggle";
 
 const topicsColumns: ColumnConfig[] = [
   { key: "display_name", header: "Name" },
@@ -22,18 +22,17 @@ const topicsColumns: ColumnConfig[] = [
 ];
 
 function TopicsListRoute() {
-  const search = useSearch({ from: "/topics/" }) as { filter?: string };
-  const filterBuilder = createFilterBuilder();
-  const urlFilters = search.filter
-    ? filterBuilder.parseFilterString(search.filter)
-    : undefined;
+  const search = useSearch({ from: "/topics/" }) as OpenAlexSearchParams;
+  const [viewMode, setViewMode] = useState<ViewMode>("table");
 
   return (
     <EntityList
       entityType="topics"
       columns={topicsColumns}
       title="Topics"
-      urlFilters={urlFilters}
+      searchParams={search}
+      viewMode={viewMode}
+      onViewModeChange={setViewMode}
     />
   );
 }

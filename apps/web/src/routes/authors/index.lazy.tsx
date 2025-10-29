@@ -1,11 +1,9 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { useSearch } from "@tanstack/react-router";
+import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
 import { EntityList } from "@/components/EntityList";
 import type { ColumnConfig } from "@/components/types";
 import type { Author } from "@academic-explorer/client";
-import { createFilterBuilder } from "@academic-explorer/client";
 import type { ViewMode } from "@/components/ViewModeToggle";
-
+import type { OpenAlexSearchParams } from "@/lib/route-schemas";
 import { useState } from "react";
 
 const authorsColumns: ColumnConfig[] = [
@@ -24,11 +22,7 @@ const authorsColumns: ColumnConfig[] = [
 ];
 
 function AuthorsListRoute() {
-  const search = useSearch({ from: "/authors/" }) as { filter?: string };
-  const filterBuilder = createFilterBuilder();
-  const urlFilters = search.filter
-    ? filterBuilder.parseFilterString(search.filter)
-    : undefined;
+  const search = useSearch({ from: "/authors/" }) as OpenAlexSearchParams;
   const [viewMode, setViewMode] = useState<ViewMode>("table");
 
   return (
@@ -36,7 +30,7 @@ function AuthorsListRoute() {
       entityType="authors"
       columns={authorsColumns}
       title="Authors"
-      urlFilters={urlFilters}
+      searchParams={search}
       viewMode={viewMode}
       onViewModeChange={setViewMode}
     />

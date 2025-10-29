@@ -1,8 +1,9 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { useSearch } from "@tanstack/react-router";
+import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
 import { EntityList } from "@/components/EntityList";
 import type { ColumnConfig } from "@/components/types";
-import { createFilterBuilder } from "@academic-explorer/client";
+import type { OpenAlexSearchParams } from "@/lib/route-schemas";
+import { useState } from "react";
+import type { ViewMode } from "@/components/ViewModeToggle";
 
 const institutionsColumns: ColumnConfig[] = [
   { key: "display_name", header: "Name" },
@@ -13,18 +14,17 @@ const institutionsColumns: ColumnConfig[] = [
 ];
 
 function InstitutionsListRoute() {
-  const search = useSearch({ from: "/institutions/" }) as { filter?: string };
-  const filterBuilder = createFilterBuilder();
-  const urlFilters = search.filter
-    ? filterBuilder.parseFilterString(search.filter)
-    : undefined;
+  const search = useSearch({ from: "/institutions/" }) as OpenAlexSearchParams;
+  const [viewMode, setViewMode] = useState<ViewMode>("table");
 
   return (
     <EntityList
       entityType="institutions"
       columns={institutionsColumns}
       title="Institutions"
-      urlFilters={urlFilters}
+      searchParams={search}
+      viewMode={viewMode}
+      onViewModeChange={setViewMode}
     />
   );
 }
