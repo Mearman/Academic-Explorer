@@ -115,8 +115,12 @@ function OpenAlexUrlComponent() {
             { rorId: rorMatch[1] },
             "OpenAlexUrlComponent",
           );
-          const targetPath = buildPathWithSearch(`/institutions/ror/${rorMatch[1]}`, searchParams);
-          navigate({ to: targetPath, replace: true });
+          navigate({
+            to: "/institutions/ror/$ror",
+            params: { ror: rorMatch[1] },
+            search: parseSearchParams(searchParams),
+            replace: true
+          });
           return;
         }
 
@@ -128,8 +132,12 @@ function OpenAlexUrlComponent() {
             { issn: issnMatch[1] },
             "OpenAlexUrlComponent",
           );
-          const targetPath = buildPathWithSearch(`/sources/issn/${issnMatch[1]}`, searchParams);
-          navigate({ to: targetPath, replace: true });
+          navigate({
+            to: "/sources/issn/$issn",
+            params: { issn: issnMatch[1] },
+            search: parseSearchParams(searchParams),
+            replace: true
+          });
           return;
         }
 
@@ -141,8 +149,12 @@ function OpenAlexUrlComponent() {
             { orcid: orcidMatch[1] },
             "OpenAlexUrlComponent",
           );
-          const targetPath = buildPathWithSearch(`/authors/orcid/${orcidMatch[1]}`, searchParams);
-          navigate({ to: targetPath, replace: true });
+          navigate({
+            to: "/authors/orcid/$orcid",
+            params: { orcid: orcidMatch[1] },
+            search: parseSearchParams(searchParams),
+            replace: true
+          });
           return;
         }
 
