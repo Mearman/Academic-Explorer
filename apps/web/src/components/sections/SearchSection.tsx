@@ -8,6 +8,7 @@ import { Switch, Group, Text, Stack } from "@mantine/core";
 import { IconGraph, IconArchive } from "@tabler/icons-react";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { useRepositoryStore } from "@/stores/repository-store";
 import { logger } from "@academic-explorer/utils/logger";
 
@@ -16,6 +17,7 @@ export const SearchSection: React.FC = () => {
   const { loadEntity, loadEntityIntoRepository, isLoading } = useGraphData();
   const themeColors = useThemeColors();
   const { colors } = themeColors;
+  const prefersReducedMotion = useReducedMotion();
 
   // Repository store - use direct store methods
   const repositoryStore = useRepositoryStore();
@@ -151,7 +153,7 @@ export const SearchSection: React.FC = () => {
             borderRadius: "6px",
             fontSize: "14px",
             cursor: isLoading ? "not-allowed" : "pointer",
-            transition: "background-color 0.2s",
+            transition: prefersReducedMotion ? "none" : "background-color 0.2s",
           }}
         >
           {isLoading

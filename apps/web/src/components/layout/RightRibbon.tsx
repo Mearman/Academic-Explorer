@@ -5,6 +5,7 @@
 
 import { GroupRibbonButton } from "@/components/layout/GroupRibbonButton";
 import { useThemeColors } from "@/hooks/use-theme-colors";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { useGraphStore } from "@/stores/graph-store";
 import {
   createNewGroup,
@@ -52,6 +53,7 @@ export const RightRibbon: React.FC = () => {
   }, [nodesMap]);
   const themeColors = useThemeColors();
   const { colors } = themeColors;
+  const prefersReducedMotion = useReducedMotion();
 
   // Get tool groups for right sidebar
   const toolGroups = getToolGroupsForSidebar("right");
@@ -217,7 +219,7 @@ export const RightRibbon: React.FC = () => {
     height: shouldShow ? "40px" : "0px",
     width: shouldShow ? "40px" : "40px",
     backgroundColor: shouldShow ? colors.primary : "transparent",
-    transition: "all 0.2s ease",
+    transition: prefersReducedMotion ? "none" : "all 0.2s ease",
     borderRadius: "8px",
     margin: shouldShow ? "2px 0" : "0px",
     opacity: shouldShow ? 1 : 0,

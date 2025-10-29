@@ -6,6 +6,7 @@
 import React, { useMemo } from "react";
 import { useGraphStore } from "@/stores/graph-store";
 import { useThemeColors } from "@/hooks/use-theme-colors";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { logger } from "@academic-explorer/utils/logger";
 import type { EntityType } from "@academic-explorer/types";
 import type { GraphNode } from "@academic-explorer/graph";
@@ -42,6 +43,7 @@ const entityTypeOptions: Array<{
 export const EntityFiltersSection: React.FC = () => {
   const themeColors = useThemeColors();
   const { colors } = themeColors;
+  const prefersReducedMotion = useReducedMotion();
   const graphStore = useGraphStore();
   const { nodes, visibleEntityTypes, setEntityTypeVisibility } = graphStore;
 
@@ -153,7 +155,7 @@ export const EntityFiltersSection: React.FC = () => {
                   ? "transparent"
                   : colors.background.secondary,
                 opacity: isVisible ? 1 : 0.6,
-                transition: "all 0.2s ease",
+                transition: prefersReducedMotion ? "none" : "all 0.2s ease",
               }}
             >
               <Checkbox

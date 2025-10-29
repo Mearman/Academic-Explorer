@@ -7,6 +7,7 @@ import React, { useCallback, useMemo } from "react";
 import { Group, ActionIcon, Tooltip, Text, Alert } from "@mantine/core";
 import { IconX, IconAlertCircle } from "@tabler/icons-react";
 import { useThemeColors } from "@/hooks/use-theme-colors";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import type {
   FilterFieldProps,
   FilterCondition,
@@ -40,6 +41,7 @@ export function FilterField<T extends EntityFilters = EntityFilters>({
   error,
 }: FilterFieldWrapperProps<T>) {
   const { colors } = useThemeColors();
+  const prefersReducedMotion = useReducedMotion();
 
   // Generate unique ID for form elements
   const fieldId = useMemo(() => `filter-${condition.id}`, [condition.id]);
@@ -191,7 +193,7 @@ export function FilterField<T extends EntityFilters = EntityFilters>({
           ? colors.background.primary
           : colors.background.secondary,
         opacity: condition.enabled ? 1 : 0.7,
-        transition: "all 0.2s ease",
+        transition: prefersReducedMotion ? "none" : "all 0.2s ease",
       }}
     >
       {/* Field Label and Controls */}

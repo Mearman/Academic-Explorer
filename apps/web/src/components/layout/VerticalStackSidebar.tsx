@@ -11,6 +11,7 @@ import { getSectionById } from "@/stores/section-registry";
 import { getGroupDefinition } from "@/stores/group-registry";
 import { SectionContextMenu } from "@/components/layout/SectionContextMenu";
 import { useThemeColors } from "@/hooks/use-theme-colors";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { logger } from "@academic-explorer/utils/logger";
 
 // Constants
@@ -35,6 +36,7 @@ export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({
   const { setRightSidebarOpen } = layoutActions;
   const themeColors = useThemeColors();
   const { colors } = themeColors;
+  const prefersReducedMotion = useReducedMotion();
 
   const activeGroupId = getActiveGroup(side);
   const toolGroups = getToolGroupsForSidebar(side);
@@ -247,7 +249,7 @@ export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({
                   borderBottom: `1px solid ${colors.border.primary}`,
                   cursor: "grab",
                   userSelect: "none",
-                  transition: "background-color 0.2s ease",
+                  transition: prefersReducedMotion ? "none" : "background-color 0.2s ease",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor =
@@ -312,7 +314,7 @@ export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({
                   style={{
                     marginLeft: "4px",
                     transform: isCollapsed ? "rotate(-90deg)" : "rotate(0deg)",
-                    transition: "transform 0.2s ease",
+                    transition: prefersReducedMotion ? "none" : "transform 0.2s ease",
                   }}
                 >
                   <IconChevronDown size={14} />

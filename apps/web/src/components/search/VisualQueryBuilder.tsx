@@ -42,6 +42,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import React, { useCallback, useState } from "react";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 // Query builder types
 export interface QueryFilterChip {
@@ -227,6 +228,7 @@ const DropZone: React.FC<DropZoneProps> = ({
   description,
   isEmpty = false,
 }) => {
+  const prefersReducedMotion = useReducedMotion();
   return (
     <Paper
       withBorder
@@ -235,7 +237,7 @@ const DropZone: React.FC<DropZoneProps> = ({
         minHeight: isEmpty ? "80px" : "auto",
         border: "2px dashed #e5e7eb",
         backgroundColor: isEmpty ? "#f9fafb" : "white",
-        transition: "all 0.2s ease",
+        transition: prefersReducedMotion ? "none" : "all 0.2s ease",
       }}
       data-drop-zone={id}
     >

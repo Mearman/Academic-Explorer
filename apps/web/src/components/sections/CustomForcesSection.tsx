@@ -46,6 +46,7 @@ import {
   IconWaveSquare,
 } from "@tabler/icons-react";
 import React, { useCallback, useState } from "react";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 // Common constants and utilities
 const NUMBER_VALUE_FALLBACK = ({ value, fallback }): number =>
@@ -374,6 +375,7 @@ interface ForceItemProps {
 
 const ForceItem: React.FC<ForceItemProps> = ({ force, onUpdate, onRemove }) => {
   const [opened, { toggle }] = useDisclosure(false);
+  const prefersReducedMotion = useReducedMotion();
 
   const handleConfigChange = useCallback(
     (config: CustomForceConfig) => {
@@ -410,7 +412,7 @@ const ForceItem: React.FC<ForceItemProps> = ({ force, onUpdate, onRemove }) => {
                 size={14}
                 style={{
                   transform: opened ? "rotate(180deg)" : "rotate(0deg)",
-                  transition: "transform 0.2s ease",
+                  transition: prefersReducedMotion ? "none" : "transform 0.2s ease",
                 }}
               />
             </ActionIcon>

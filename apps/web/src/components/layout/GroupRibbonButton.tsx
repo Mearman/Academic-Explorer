@@ -6,6 +6,7 @@
 import React from "react";
 import { ActionIcon, Tooltip, Badge } from "@mantine/core";
 import { useThemeColors } from "@/hooks/use-theme-colors";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { logger } from "@academic-explorer/utils/logger";
 import type { ToolGroupDefinition } from "@/stores/group-registry";
 
@@ -52,6 +53,7 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
 }) => {
   const themeColors = useThemeColors();
   const { colors } = themeColors;
+  const prefersReducedMotion = useReducedMotion();
 
   const handleClick = () => {
     logger.debug("ui", `Group ribbon button clicked for ${group.id}`, {
@@ -263,7 +265,7 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
     borderWidth: "1px",
     borderStyle: "solid",
     borderColor: colors.border.primary,
-    transition: "all 0.2s ease",
+    transition: prefersReducedMotion ? "none" : "all 0.2s ease",
   };
 
   const ribbonButtonHoverStyle = {
