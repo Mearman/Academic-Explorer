@@ -45,7 +45,7 @@ function getEntityType(url: string): string | null {
 }
 
 test.describe('All OpenAlex URLs - Load Test', () => {
-  test.setTimeout(1800000); // 30 minutes for all URLs (276 URLs * ~6.5 seconds each)
+  test.setTimeout(3600000); // 60 minutes for all URLs (276 URLs + retries, ~6.5 seconds each)
 
   // Group URLs by type for better organization
   const urlsByType: Record<string, string[]> = {};
