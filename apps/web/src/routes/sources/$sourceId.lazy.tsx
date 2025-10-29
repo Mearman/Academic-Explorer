@@ -4,6 +4,7 @@ import { useState } from "react";
 import { SOURCE_FIELDS, cachedOpenAlex, type Source, type SourceField } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
+import { EntityDataDisplay } from "@/components/EntityDataDisplay";
 
 function SourceRoute() {
   const { sourceId: rawSourceId } = useParams({ strict: false });
@@ -72,33 +73,7 @@ function SourceRoute() {
             {JSON.stringify(source, null, 2)}
           </pre>
         ) : (
-          <div className="space-y-4">
-            {source?.display_name && (
-              <div>
-                <strong>Name:</strong> {source.display_name}
-              </div>
-            )}
-            {source?.works_count !== undefined && (
-              <div>
-                <strong>Works:</strong> {source.works_count}
-              </div>
-            )}
-            {source?.cited_by_count !== undefined && (
-              <div>
-                <strong>Citations:</strong> {source.cited_by_count}
-              </div>
-            )}
-            {source?.type && (
-              <div>
-                <strong>Type:</strong> {source.type}
-              </div>
-            )}
-            {source?.issn_l && (
-              <div>
-                <strong>ISSN-L:</strong> {source.issn_l}
-              </div>
-            )}
-          </div>
+          <EntityDataDisplay data={source as Record<string, unknown>} />
         )}
       </div>
     );

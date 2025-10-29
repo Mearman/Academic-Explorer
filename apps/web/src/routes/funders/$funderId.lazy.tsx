@@ -4,6 +4,7 @@ import { useState } from "react";
 import { FUNDER_FIELDS, cachedOpenAlex, type Funder, type FunderField } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
+import { EntityDataDisplay } from "@/components/EntityDataDisplay";
 
 function FunderRoute() {
   const { funderId: rawFunderId } = useParams({ strict: false });
@@ -72,38 +73,7 @@ function FunderRoute() {
             {JSON.stringify(funder, null, 2)}
           </pre>
         ) : (
-          <div className="space-y-4">
-            {funder?.display_name && (
-              <div>
-                <strong>Name:</strong> {funder.display_name}
-              </div>
-            )}
-            {funder?.grants_count !== undefined && (
-              <div>
-                <strong>Grants:</strong> {funder.grants_count}
-              </div>
-            )}
-            {funder?.works_count !== undefined && (
-              <div>
-                <strong>Works:</strong> {funder.works_count}
-              </div>
-            )}
-            {funder?.cited_by_count !== undefined && (
-              <div>
-                <strong>Citations:</strong> {funder.cited_by_count}
-              </div>
-            )}
-            {funder?.country_code && (
-              <div>
-                <strong>Country:</strong> {funder.country_code}
-              </div>
-            )}
-            {funder?.description && (
-              <div>
-                <strong>Description:</strong> {funder.description}
-              </div>
-            )}
-          </div>
+          <EntityDataDisplay data={funder as Record<string, unknown>} />
         )}
       </div>
     );

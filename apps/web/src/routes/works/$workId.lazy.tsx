@@ -5,6 +5,7 @@ import { useState } from "react";
 import { WORK_FIELDS, cachedOpenAlex, type Work, type WorkField } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
+import { EntityDataDisplay } from "@/components/EntityDataDisplay";
 
 function WorkRoute() {
   const { workId: rawWorkId } = useParams({ strict: false });
@@ -73,28 +74,7 @@ function WorkRoute() {
             {JSON.stringify(work, null, 2)}
           </pre>
         ) : (
-          <div className="space-y-4">
-            {work?.display_name && (
-              <div>
-                <strong>Title:</strong> {work.display_name}
-              </div>
-            )}
-            {work?.publication_year && (
-              <div>
-                <strong>Year:</strong> {work.publication_year}
-              </div>
-            )}
-            {work?.cited_by_count && (
-              <div>
-                <strong>Citations:</strong> {work.cited_by_count}
-              </div>
-            )}
-            {work?.type && (
-              <div>
-                <strong>Type:</strong> {work.type}
-              </div>
-            )}
-          </div>
+          <EntityDataDisplay data={work as Record<string, unknown>} />
         )}
       </div>
     );

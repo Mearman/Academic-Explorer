@@ -4,6 +4,7 @@ import { useState } from "react";
 import { PUBLISHER_FIELDS, cachedOpenAlex, type Publisher, type PublisherField } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
+import { EntityDataDisplay } from "@/components/EntityDataDisplay";
 
 function PublisherRoute() {
   const { publisherId: rawPublisherId } = useParams({ strict: false });
@@ -72,48 +73,7 @@ function PublisherRoute() {
             {JSON.stringify(publisher, null, 2)}
           </pre>
         ) : (
-          <div className="space-y-4">
-            {publisher?.display_name && (
-              <div>
-                <strong>Name:</strong> {publisher.display_name}
-              </div>
-            )}
-            {publisher?.works_count !== undefined && (
-              <div>
-                <strong>Works:</strong> {publisher.works_count}
-              </div>
-            )}
-            {publisher?.cited_by_count !== undefined && (
-              <div>
-                <strong>Citations:</strong> {publisher.cited_by_count}
-              </div>
-            )}
-            {publisher?.sources_count !== undefined && (
-              <div>
-                <strong>Sources:</strong> {publisher.sources_count}
-              </div>
-            )}
-            {publisher?.hierarchy_level !== undefined && (
-              <div>
-                <strong>Hierarchy Level:</strong> {publisher.hierarchy_level}
-              </div>
-            )}
-            {publisher?.country_codes && publisher.country_codes.length > 0 && (
-              <div>
-                <strong>Countries:</strong> {publisher.country_codes.join(", ")}
-              </div>
-            )}
-            {publisher?.alternate_titles && publisher.alternate_titles.length > 0 && (
-              <div>
-                <strong>Alternate Titles:</strong> {publisher.alternate_titles.join(", ")}
-              </div>
-            )}
-            {publisher?.parent_publisher && (
-              <div>
-                <strong>Parent Publisher:</strong> {publisher.parent_publisher}
-              </div>
-            )}
-          </div>
+          <EntityDataDisplay data={publisher as Record<string, unknown>} />
         )}
       </div>
     );

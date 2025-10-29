@@ -4,6 +4,7 @@ import { useState } from "react";
 import { INSTITUTION_FIELDS, cachedOpenAlex, type InstitutionEntity, type InstitutionField } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
+import { EntityDataDisplay } from "@/components/EntityDataDisplay";
 
 function InstitutionRoute() {
   const { institutionId: rawInstitutionId } = useParams({ strict: false });
@@ -72,38 +73,7 @@ function InstitutionRoute() {
             {JSON.stringify(institution, null, 2)}
           </pre>
         ) : (
-          <div className="space-y-4">
-            {institution?.display_name && (
-              <div>
-                <strong>Name:</strong> {institution.display_name}
-              </div>
-            )}
-            {institution?.works_count !== undefined && (
-              <div>
-                <strong>Works:</strong> {institution.works_count}
-              </div>
-            )}
-            {institution?.cited_by_count !== undefined && (
-              <div>
-                <strong>Citations:</strong> {institution.cited_by_count}
-              </div>
-            )}
-            {institution?.type && (
-              <div>
-                <strong>Type:</strong> {institution.type}
-              </div>
-            )}
-            {institution?.country_code && (
-              <div>
-                <strong>Country:</strong> {institution.country_code}
-              </div>
-            )}
-            {institution?.ror && (
-              <div>
-                <strong>ROR:</strong> {institution.ror}
-              </div>
-            )}
-          </div>
+          <EntityDataDisplay data={institution as Record<string, unknown>} />
         )}
       </div>
     );

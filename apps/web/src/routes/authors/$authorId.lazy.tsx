@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AUTHOR_FIELDS, cachedOpenAlex, type Author, type AuthorField } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
+import { EntityDataDisplay } from "@/components/EntityDataDisplay";
 
 const AUTHOR_ROUTE_PATH = "/authors/$authorId";
 
@@ -74,30 +75,7 @@ function AuthorRoute() {
             {JSON.stringify(author, null, 2)}
           </pre>
         ) : (
-          <div className="space-y-4">
-            {author?.display_name && (
-              <div>
-                <strong>Name:</strong> {author.display_name}
-              </div>
-            )}
-            {author?.works_count && (
-              <div>
-                <strong>Works:</strong> {author.works_count}
-              </div>
-            )}
-            {author?.cited_by_count && (
-              <div>
-                <strong>Citations:</strong> {author.cited_by_count}
-              </div>
-            )}
-            {author?.summary_stats && (
-              <div>
-                <strong>H-index:</strong> {author.summary_stats.h_index}
-                <br />
-                <strong>i10-index:</strong> {author.summary_stats.i10_index}
-              </div>
-            )}
-          </div>
+          <EntityDataDisplay data={author as Record<string, unknown>} />
         )}
       </div>
     );

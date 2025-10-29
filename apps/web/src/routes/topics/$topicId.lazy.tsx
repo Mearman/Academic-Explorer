@@ -4,6 +4,7 @@ import { useState } from "react";
 import { TOPIC_FIELDS, cachedOpenAlex, type Topic, type TopicField } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
+import { EntityDataDisplay } from "@/components/EntityDataDisplay";
 
 function TopicRoute() {
   const { topicId: rawTopicId } = useParams({ strict: false });
@@ -72,28 +73,7 @@ function TopicRoute() {
             {JSON.stringify(topic, null, 2)}
           </pre>
         ) : (
-          <div className="space-y-4">
-            {topic?.display_name && (
-              <div>
-                <strong>Name:</strong> {topic.display_name}
-              </div>
-            )}
-            {topic?.works_count !== undefined && (
-              <div>
-                <strong>Works:</strong> {topic.works_count}
-              </div>
-            )}
-            {topic?.cited_by_count !== undefined && (
-              <div>
-                <strong>Citations:</strong> {topic.cited_by_count}
-              </div>
-            )}
-            {topic?.description && (
-              <div>
-                <strong>Description:</strong> {topic.description}
-              </div>
-            )}
-          </div>
+          <EntityDataDisplay data={topic as Record<string, unknown>} />
         )}
       </div>
     );

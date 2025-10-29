@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
 import { Alert } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
+import { EntityDataDisplay } from "@/components/EntityDataDisplay";
 
 function ConceptRoute() {
   const { conceptId: rawConceptId } = useParams({ strict: false });
@@ -74,46 +75,7 @@ function ConceptRoute() {
             {JSON.stringify(concept, null, 2)}
           </pre>
         ) : (
-          <div className="space-y-4">
-            {concept?.display_name && (
-              <div>
-                <strong>Name:</strong> {concept.display_name}
-              </div>
-            )}
-            {concept?.description && (
-              <div>
-                <strong>Description:</strong> {concept.description}
-              </div>
-            )}
-            {concept?.level !== undefined && (
-              <div>
-                <strong>Level:</strong> {concept.level}
-              </div>
-            )}
-            {concept?.works_count !== undefined && (
-              <div>
-                <strong>Works:</strong> {concept.works_count.toLocaleString()}
-              </div>
-            )}
-            {concept?.cited_by_count !== undefined && (
-              <div>
-                <strong>Citations:</strong> {concept.cited_by_count.toLocaleString()}
-              </div>
-            )}
-            {concept?.wikidata && (
-              <div>
-                <strong>Wikidata:</strong>{" "}
-                <a
-                  href={concept.wikidata}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline"
-                >
-                  {concept.wikidata}
-                </a>
-              </div>
-            )}
-          </div>
+          <EntityDataDisplay data={concept as Record<string, unknown>} />
         )}
       </div>
     );
