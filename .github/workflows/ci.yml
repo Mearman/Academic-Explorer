@@ -385,6 +385,7 @@ jobs:
         run: pnpm nx build web --verbose
         env:
           GITHUB_PAGES: true
+          NX_SKIP_NX_CACHE: true
 
       - name: Upload build artifacts
         uses: actions/upload-pages-artifact@v3
