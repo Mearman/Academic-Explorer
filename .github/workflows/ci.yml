@@ -428,7 +428,7 @@ jobs:
       - name: Release
         run: |
           # Create a simple release without changelog generation
-          VERSION=$(npx nx show project web --json | jq -r '.metadata.js.packageVersion' || echo "0.0.1")
+          VERSION=$(jq -r '.version' apps/web/package.json || echo "0.0.1")
           echo "Creating release for version $VERSION"
 
           # Create GitHub release
