@@ -51,6 +51,7 @@ function SourceRoute() {
   return (
     <EntityDetailLayout
       config={config}
+      entityType="source"
       entityId={sourceId}
       displayName={source.display_name || "Source"}
       selectParam={selectParam as string}

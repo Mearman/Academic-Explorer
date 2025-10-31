@@ -53,6 +53,7 @@ function AuthorRoute() {
   return (
     <EntityDetailLayout
       config={config}
+      entityType="author"
       entityId={authorId}
       displayName={author.display_name || "Author"}
       selectParam={selectParam as string}

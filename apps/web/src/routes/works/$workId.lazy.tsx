@@ -52,6 +52,7 @@ function WorkRoute() {
   return (
     <EntityDetailLayout
       config={config}
+      entityType="work"
       entityId={workId}
       displayName={work.display_name || work.title || "Work"}
       selectParam={selectParam as string}

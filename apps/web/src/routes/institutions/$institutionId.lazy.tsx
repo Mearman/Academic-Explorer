@@ -51,6 +51,7 @@ function InstitutionRoute() {
   return (
     <EntityDetailLayout
       config={config}
+      entityType="institution"
       entityId={institutionId}
       displayName={institution.display_name || "Institution"}
       selectParam={selectParam as string}
