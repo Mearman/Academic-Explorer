@@ -21,17 +21,29 @@ function renderValue(value: unknown, depth: number = 0): React.ReactNode {
 
   // Handle null/undefined
   if (value === null || value === undefined) {
-    return <span className="text-gray-400 italic">null</span>;
+    return <span className="text-gray-400 italic text-sm">null</span>;
   }
 
   // Handle booleans
   if (typeof value === "boolean") {
-    return <span className={value ? "text-green-600" : "text-red-600"}>{String(value)}</span>;
+    return (
+      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+        value
+          ? "bg-green-100 text-green-800 border border-green-200"
+          : "bg-red-100 text-red-800 border border-red-200"
+      }`}>
+        {value ? "✓ true" : "✗ false"}
+      </span>
+    );
   }
 
   // Handle numbers
   if (typeof value === "number") {
-    return <span className="text-blue-600">{value.toLocaleString()}</span>;
+    return (
+      <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-sm font-mono font-medium bg-blue-50 text-blue-700 border border-blue-200">
+        {value.toLocaleString()}
+      </span>
+    );
   }
 
   // Handle strings
@@ -39,34 +51,50 @@ function renderValue(value: unknown, depth: number = 0): React.ReactNode {
     // Handle URLs
     if (value.startsWith("http://") || value.startsWith("https://")) {
       return (
-        <a href={value} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-          {value}
+        <a
+          href={value}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 hover:underline decoration-2 underline-offset-2 transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+          <span className="break-all">{value}</span>
         </a>
       );
     }
     // Handle DOIs
     if (value.startsWith("https://doi.org/")) {
       return (
-        <a href={value} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-          {value}
+        <a
+          href={value}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 hover:underline decoration-2 underline-offset-2 transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+          <span className="break-all">{value}</span>
         </a>
       );
     }
-    return <span className="text-gray-800">{value}</span>;
+    return <span className="text-gray-900">{value}</span>;
   }
 
   // Handle arrays
   if (Array.isArray(value)) {
     if (value.length === 0) {
-      return <span className="text-gray-400 italic">[]</span>;
+      return <span className="text-gray-400 italic text-sm">[ ]</span>;
     }
 
     // For primitive arrays, show inline
     if (value.every(item => typeof item !== "object" || item === null)) {
       return (
-        <div className="inline-flex flex-wrap gap-1">
+        <div className="inline-flex flex-wrap gap-2">
           {value.map((item, index) => (
-            <span key={index} className="bg-gray-100 px-2 py-0.5 rounded text-sm">
+            <span key={index} className="bg-gradient-to-br from-gray-50 to-gray-100 px-3 py-1 rounded-md text-sm border border-gray-200 shadow-sm">
               {renderValue(item, depth)}
             </span>
           ))}
@@ -76,11 +104,15 @@ function renderValue(value: unknown, depth: number = 0): React.ReactNode {
 
     // For object arrays, show each item
     return (
-      <div className="space-y-2 mt-1">
+      <div className="space-y-3 mt-2">
         {value.map((item, index) => (
-          <div key={index} className="border-l-2 border-gray-300 pl-3">
-            <div className="text-xs text-gray-500 mb-1">Item {index + 1}</div>
-            {renderValue(item, depth + 1)}
+          <div key={index} className="relative border-l-4 border-indigo-300 pl-4 py-2 bg-gradient-to-r from-indigo-50/50 to-transparent rounded-r">
+            <div className="absolute -left-[13px] top-2 w-6 h-6 bg-indigo-500 text-white rounded-full flex items-center justify-center text-xs font-bold shadow">
+              {index + 1}
+            </div>
+            <div className="mt-1">
+              {renderValue(item, depth + 1)}
+            </div>
           </div>
         ))}
       </div>
@@ -93,16 +125,16 @@ function renderValue(value: unknown, depth: number = 0): React.ReactNode {
     const entries = Object.entries(obj);
 
     if (entries.length === 0) {
-      return <span className="text-gray-400 italic">{"{}"}</span>;
+      return <span className="text-gray-400 italic text-sm">{ }</span>;
     }
 
     return (
-      <div className="space-y-1 mt-1" style={{ marginLeft: indent }}>
+      <div className="space-y-2 mt-2" style={{ marginLeft: indent }}>
         {entries.map(([key, val]) => (
-          <div key={key} className="border-l-2 border-gray-200 pl-3">
-            <div className="flex flex-col">
-              <span className="font-medium text-gray-700 text-sm">{key}:</span>
-              <div className="ml-2">{renderValue(val, depth + 1)}</div>
+          <div key={key} className="border-l-2 border-purple-300 pl-4 py-1 bg-gradient-to-r from-purple-50/40 to-transparent rounded-r hover:border-purple-400 transition-colors">
+            <div className="flex flex-col gap-1">
+              <span className="font-semibold text-purple-900 text-sm">{key}:</span>
+              <div className="ml-3">{renderValue(val, depth + 1)}</div>
             </div>
           </div>
         ))}
@@ -166,20 +198,49 @@ function groupFields(data: Record<string, unknown>): Record<string, Record<strin
 export function EntityDataDisplay({ data, title }: EntityDataDisplayProps) {
   const groups = groupFields(data);
 
+  // Define icons for each section
+  const sectionIcons: Record<string, string> = {
+    "Basic Information": "ℹ️",
+    "Identifiers": "🔑",
+    "Metrics": "📊",
+    "Relationships": "🔗",
+    "Dates": "📅",
+    "Locations & Geo": "🌍",
+    "Other": "📋",
+  };
+
   return (
     <div className="space-y-6">
-      {title && <h2 className="text-xl font-bold mb-4">{title}</h2>}
+      {title && (
+        <h2 className="text-3xl font-bold mb-6 text-gray-900 border-b-2 border-gray-200 pb-3">
+          {title}
+        </h2>
+      )}
 
       {Object.entries(groups).map(([groupName, groupData]) => (
-        <div key={groupName} className="bg-white rounded-lg border border-gray-200 p-4">
-          <h3 className="text-lg font-semibold mb-3 text-gray-800 border-b pb-2">
-            {groupName}
-          </h3>
-          <div className="space-y-3">
+        <div
+          key={groupName}
+          className="bg-gradient-to-br from-white to-gray-50 rounded-xl border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-200 overflow-hidden"
+        >
+          <div className="bg-gradient-to-r from-gray-50 to-white border-b border-gray-200 px-6 py-4">
+            <h3 className="text-xl font-bold text-gray-800 flex items-center gap-3">
+              <span className="text-2xl">{sectionIcons[groupName] || "📄"}</span>
+              <span>{groupName}</span>
+              <span className="ml-auto text-sm font-normal text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                {Object.keys(groupData).length} {Object.keys(groupData).length === 1 ? "field" : "fields"}
+              </span>
+            </h3>
+          </div>
+          <div className="p-6 space-y-4">
             {Object.entries(groupData).map(([key, value]) => (
-              <div key={key} className="flex flex-col">
-                <span className="font-medium text-gray-700 mb-1">{key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}:</span>
-                <div className="ml-4">
+              <div
+                key={key}
+                className="flex flex-col gap-2 p-4 rounded-lg bg-white border border-gray-100 hover:border-gray-300 hover:shadow-md transition-all duration-150"
+              >
+                <span className="font-bold text-gray-800 text-base tracking-wide">
+                  {key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
+                </span>
+                <div className="ml-2 mt-1">
                   {renderValue(value)}
                 </div>
               </div>
