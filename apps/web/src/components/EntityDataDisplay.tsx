@@ -8,7 +8,9 @@
 
 import React from "react";
 import { Anchor, Badge, Text } from "@mantine/core";
-import { IconExternalLink } from "@tabler/icons-react";
+import { IconExternalLink, IconLink } from "@tabler/icons-react";
+import { Link } from "@tanstack/react-router";
+import { convertOpenAlexToInternalLink, isOpenAlexId } from "@/utils/openalex-link-conversion";
 import * as styles from "./EntityDataDisplay.css";
 
 interface EntityDataDisplayProps {
@@ -45,7 +47,24 @@ function renderValue(value: unknown, depth: number = 0): React.ReactNode {
 
   // Handle strings
   if (typeof value === "string") {
-    // Handle URLs
+    // Check if it's an OpenAlex URL or ID
+    const converted = convertOpenAlexToInternalLink(value);
+
+    if (converted.isOpenAlexLink) {
+      // Internal OpenAlex link
+      return (
+        <Link
+          to={converted.internalPath}
+          className={styles.urlLink}
+          style={{ color: 'var(--mantine-color-blue-6)' }}
+        >
+          <IconLink size={16} />
+          <span>{value}</span>
+        </Link>
+      );
+    }
+
+    // Handle other URLs (external links)
     if (value.startsWith("http://") || value.startsWith("https://")) {
       return (
         <Anchor
@@ -59,6 +78,22 @@ function renderValue(value: unknown, depth: number = 0): React.ReactNode {
         </Anchor>
       );
     }
+
+    // Check if it's just an OpenAlex ID (without URL)
+    if (isOpenAlexId(value)) {
+      const idConverted = convertOpenAlexToInternalLink(value);
+      return (
+        <Link
+          to={idConverted.internalPath}
+          className={styles.urlLink}
+          style={{ color: 'var(--mantine-color-blue-6)' }}
+        >
+          <IconLink size={16} />
+          <span>{value}</span>
+        </Link>
+      );
+    }
+
     return <span className={styles.stringValue}>{value}</span>;
   }
 
