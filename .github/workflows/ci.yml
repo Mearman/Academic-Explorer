@@ -444,7 +444,7 @@ jobs:
           # - Create git tags
           # - Generate changelog
           # - Create GitHub releases
-          pnpm nx release --skip-publish --yes || echo "No changes to release"
+          pnpm nx release --skip-publish || echo "No changes to release"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
