@@ -614,7 +614,19 @@
   "release": {
     "projects": ["packages/*", "apps/*"],
     "version": {
-      "conventionalCommits": true
+      "conventionalCommits": true,
+      "git": {
+        "commit": true,
+        "commitMessage": "chore(release): publish {version}",
+        "tag": true,
+        "push": true
+      }
+    },
+    "changelog": {
+      "workspaceChangelog": {
+        "createRelease": "github",
+        "file": "CHANGELOG.md"
+      }
     },
     "conventionalCommits": {
       "types": {
