@@ -59,15 +59,19 @@ export default defineConfig({
   // Test timeout
   timeout: 90000,
 
-  // Global setup and teardown
-  globalSetup: undefined, // Vitest handles this
-  globalTeardown: undefined, // Vitest handles this
+  // Global setup and teardown for cache warming and cleanup
+  globalSetup: require.resolve("./playwright.global-setup.ts"),
+  globalTeardown: require.resolve("./playwright.global-teardown.ts"),
 
   // Configure projects for major browsers
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: {
+        ...devices["Desktop Chrome"],
+        // Reuse storage state for faster tests (cached cookies, localStorage, IndexedDB)
+        storageState: "./test-results/storage-state/state.json",
+      },
     },
 
     // Uncomment for cross-browser testing
