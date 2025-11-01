@@ -10,7 +10,7 @@ export const container = style({
 export const sectionCard = style({
   backgroundColor: vars.color.background.primary,
   borderRadius: vars.borderRadius.xl,
-  border: `${vars.borderWidth[1]} solid ${vars.color.gray[200]}`,
+  border: `${vars.borderWidth[1]} solid ${vars.color.border.primary}`,
   boxShadow: vars.shadow.lg,
   overflow: "hidden",
   transition: "box-shadow 0.2s ease",
@@ -20,8 +20,8 @@ export const sectionCard = style({
 });
 
 export const sectionHeader = style({
-  background: `linear-gradient(to right, ${vars.color.gray[50]}, ${vars.color.background.primary})`,
-  borderBottom: `${vars.borderWidth[1]} solid ${vars.color.gray[200]}`,
+  background: `linear-gradient(to right, ${vars.color.sectionHeaderGradientStart}, ${vars.color.sectionHeaderGradientEnd})`,
+  borderBottom: `${vars.borderWidth[1]} solid ${vars.color.border.primary}`,
   padding: `${vars.space[4]} ${vars.space[6]}`,
 });
 
@@ -43,7 +43,7 @@ export const fieldCount = style({
   fontSize: vars.fontSize.sm,
   fontWeight: vars.fontWeight.normal,
   color: vars.color.text.secondary,
-  backgroundColor: vars.color.gray[100],
+  backgroundColor: vars.color.badgeBg,
   padding: `${vars.space[1]} ${vars.space[3]}`,
   borderRadius: vars.borderRadius.full,
 });
@@ -62,10 +62,10 @@ export const fieldContainer = style({
   padding: vars.space[4],
   borderRadius: vars.borderRadius.lg,
   backgroundColor: vars.color.background.primary,
-  border: `${vars.borderWidth[1]} solid ${vars.color.gray[100]}`,
+  border: `${vars.borderWidth[1]} solid ${vars.color.border.secondary}`,
   transition: "all 0.15s ease",
   ":hover": {
-    borderColor: vars.color.gray[300],
+    borderColor: vars.color.border.primary,
     boxShadow: vars.shadow.md,
   },
 });
@@ -101,14 +101,14 @@ export const booleanBadgeBase = style({
 
 export const booleanBadge = styleVariants({
   true: [booleanBadgeBase, {
-    backgroundColor: "#d1fae5",
-    color: "#065f46",
-    borderColor: "#6ee7b7",
+    backgroundColor: vars.color.trueBadgeBg,
+    color: vars.color.trueBadgeText,
+    borderColor: vars.color.trueBadgeBorder,
   }],
   false: [booleanBadgeBase, {
-    backgroundColor: "#fee2e2",
-    color: "#991b1b",
-    borderColor: "#fca5a5",
+    backgroundColor: vars.color.falseBadgeBg,
+    color: vars.color.falseBadgeText,
+    borderColor: vars.color.falseBadgeBorder,
   }],
 });
 
@@ -120,9 +120,9 @@ export const numberBadge = style({
   fontSize: vars.fontSize.sm,
   fontFamily: "monospace",
   fontWeight: vars.fontWeight.medium,
-  backgroundColor: "#dbeafe",
-  color: "#1e40af",
-  border: `${vars.borderWidth[1]} solid #93c5fd`,
+  backgroundColor: vars.color.numberBadgeBg,
+  color: vars.color.numberBadgeText,
+  border: `${vars.borderWidth[1]} solid ${vars.color.numberBadgeBorder}`,
 });
 
 export const urlLink = style({
@@ -158,11 +158,11 @@ export const primitiveArray = style({
 });
 
 export const primitiveArrayItem = style({
-  background: `linear-gradient(to bottom right, ${vars.color.gray[50]}, ${vars.color.gray[100]})`,
+  background: `linear-gradient(to bottom right, ${vars.color.arrayItemGradientStart}, ${vars.color.arrayItemGradientEnd})`,
   padding: `${vars.space[1]} ${vars.space[3]}`,
   borderRadius: vars.borderRadius.md,
   fontSize: vars.fontSize.sm,
-  border: `${vars.borderWidth[1]} solid ${vars.color.gray[200]}`,
+  border: `${vars.borderWidth[1]} solid ${vars.color.arrayItemBorder}`,
   boxShadow: vars.shadow.sm,
 });
 
@@ -175,11 +175,11 @@ export const objectArray = style({
 
 export const objectArrayItem = style({
   position: "relative",
-  borderLeft: `${vars.borderWidth[4]} solid #a5b4fc`,
+  borderLeft: `${vars.borderWidth[4]} solid ${vars.color.objectArrayBorder}`,
   paddingLeft: vars.space[4],
   paddingTop: vars.space[2],
   paddingBottom: vars.space[2],
-  background: `linear-gradient(to right, #eef2ff80, transparent)`,
+  background: `linear-gradient(to right, ${vars.color.objectArrayBg}, transparent)`,
   borderRadius: `0 ${vars.borderRadius.md} ${vars.borderRadius.md} 0`,
 });
 
@@ -189,7 +189,7 @@ export const arrayItemNumber = style({
   top: vars.space[2],
   width: "1.5rem",
   height: "1.5rem",
-  backgroundColor: "#6366f1",
+  backgroundColor: vars.color.objectArrayNumberBg,
   color: vars.color.text.inverse,
   borderRadius: vars.borderRadius.full,
   display: "flex",
@@ -219,21 +219,21 @@ export const objectContainer = style({
 });
 
 export const objectField = style({
-  borderLeft: `${vars.borderWidth[2]} solid #d8b4fe`,
+  borderLeft: `${vars.borderWidth[2]} solid ${vars.color.objectFieldBorder}`,
   paddingLeft: vars.space[4],
   paddingTop: vars.space[1],
   paddingBottom: vars.space[1],
-  background: `linear-gradient(to right, #faf5ff66, transparent)`,
+  background: `linear-gradient(to right, ${vars.color.objectFieldBg}, transparent)`,
   borderRadius: `0 ${vars.borderRadius.md} ${vars.borderRadius.md} 0`,
   transition: "border-color 0.2s ease",
   ":hover": {
-    borderColor: "#c084fc",
+    borderColor: vars.color.objectFieldHoverBorder,
   },
 });
 
 export const objectFieldLabel = style({
   fontWeight: vars.fontWeight.semibold,
-  color: "#7c3aed",
+  color: vars.color.objectFieldLabel,
   fontSize: vars.fontSize.sm,
 });
 
