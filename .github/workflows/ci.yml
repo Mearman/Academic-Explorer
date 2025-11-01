@@ -436,15 +436,15 @@ jobs:
 
       - name: Release
         run: |
-          # Create a simple release without changelog generation
-          VERSION=$(jq -r '.version' apps/web/package.json || echo "0.0.1")
-          echo "Creating release for version $VERSION"
-
-          # Create GitHub release
-          gh release create "v$VERSION" \
-            --title "Release v$VERSION" \
-            --notes "Automated release from CI/CD pipeline" \
-            --target main || echo "Release already exists or failed"
+          # Use Nx release with conventional commits
+          # This will:
+          # - Analyze commits since last release
+          # - Determine version bump (major/minor/patch)
+          # - Update package.json versions
+          # - Create git tags
+          # - Generate changelog
+          # - Create GitHub releases
+          pnpm nx release --skip-publish --yes || echo "No changes to release"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
