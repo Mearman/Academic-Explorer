@@ -615,6 +615,76 @@
     "projects": ["packages/*", "apps/*"],
     "version": {
       "conventionalCommits": true
+    },
+    "conventionalCommits": {
+      "types": {
+        "feat": {
+          "semverBump": "minor",
+          "changelog": {
+            "title": "🚀 Features"
+          }
+        },
+        "fix": {
+          "semverBump": "patch",
+          "changelog": {
+            "title": "🐛 Bug Fixes"
+          }
+        },
+        "perf": {
+          "semverBump": "patch",
+          "changelog": {
+            "title": "⚡ Performance Improvements"
+          }
+        },
+        "refactor": {
+          "semverBump": "patch",
+          "changelog": {
+            "title": "♻️ Code Refactoring"
+          }
+        },
+        "docs": {
+          "semverBump": "patch",
+          "changelog": {
+            "title": "📝 Documentation"
+          }
+        },
+        "build": {
+          "semverBump": "patch",
+          "changelog": {
+            "title": "🏗️ Build System"
+          }
+        },
+        "test": {
+          "semverBump": "patch",
+          "changelog": {
+            "title": "✅ Tests"
+          }
+        },
+        "ci": {
+          "semverBump": "patch",
+          "changelog": {
+            "title": "👷 CI/CD"
+          }
+        },
+        "chore": {
+          "semverBump": "patch",
+          "changelog": {
+            "title": "🔧 Chores"
+          }
+        },
+        "style": {
+          "semverBump": "patch",
+          "changelog": {
+            "title": "💄 Styles"
+          }
+        },
+        "revert": {
+          "semverBump": "patch",
+          "changelog": {
+            "title": "⏪ Reverts"
+          }
+        }
+      }
     }
   },
   "cli": {
