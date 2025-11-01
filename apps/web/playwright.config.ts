@@ -60,8 +60,8 @@ export default defineConfig({
   timeout: 90000,
 
   // Global setup and teardown for cache warming and cleanup
-  globalSetup: require.resolve("./playwright.global-setup.ts"),
-  globalTeardown: require.resolve("./playwright.global-teardown.ts"),
+  globalSetup: "./playwright.global-setup.ts",
+  globalTeardown: "./playwright.global-teardown.ts",
 
   // Configure projects for major browsers
   projects: [
