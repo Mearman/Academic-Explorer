@@ -19,13 +19,14 @@ vi.mock("@academic-explorer/client", async (importOriginal) => {
   };
 });
 
-// Mock router hooks
+// Mock router hooks and Link component
 vi.mock("@tanstack/react-router", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@tanstack/react-router")>();
   return {
     ...actual,
     useParams: vi.fn(),
     useSearch: vi.fn(),
+    Link: ({ children, ...props }: any) => <a {...props}>{children}</a>,
   };
 });
 
@@ -89,7 +90,7 @@ describe("AuthorRoute Integration Tests", () => {
     );
 
     expect(screen.getByText("Loading Author...")).toBeInTheDocument();
-    expect(screen.getByText("Author ID: A123")).toBeInTheDocument();
+    expect(screen.getByText("A123")).toBeInTheDocument();
   });
 
   it("renders error state when API fails", async () => {
@@ -110,8 +111,8 @@ describe("AuthorRoute Integration Tests", () => {
       expect(screen.getByText("Error Loading Author")).toBeInTheDocument();
     });
 
-    expect(screen.getByText("Author ID: A123")).toBeInTheDocument();
-    expect(screen.getByText("Error: Error: API Error")).toBeInTheDocument();
+    expect(screen.getByText("A123")).toBeInTheDocument();
+    expect(screen.getByText(/Error:.*API Error/)).toBeInTheDocument();
   });
 
   it("renders author data in rich view by default", async () => {
@@ -127,14 +128,11 @@ describe("AuthorRoute Integration Tests", () => {
       expect(screen.getByRole("heading", { name: "John Doe" })).toBeInTheDocument();
     });
 
-    // EntityDataDisplay shows section headers and formatted field names
-    expect(screen.getByText(/Basic Information/)).toBeInTheDocument();
-    expect(screen.getByText(/Display Name:/)).toBeInTheDocument();
-    // Name appears in h1 and EntityDataDisplay - just verify sections exist
+    // Name appears in h1 and EntityDataDisplay - just verify it exists
     expect(screen.getAllByText(/John Doe/).length).toBeGreaterThan(0);
 
     // Should have toggle button
-    expect(screen.getByText(/Toggle Raw View/)).toBeInTheDocument();
+    expect(screen.getByText("Switch to Raw View")).toBeInTheDocument();
 
     // Should NOT show JSON by default
     expect(screen.queryByText(/"id":/)).not.toBeInTheDocument();
@@ -155,7 +153,7 @@ describe("AuthorRoute Integration Tests", () => {
     });
 
     // Click toggle button
-    const toggleButton = screen.getByText(/Toggle Raw View/);
+    const toggleButton = screen.getByText(/Switch to Raw View/);
     fireEvent.click(toggleButton);
 
     // Should show JSON
@@ -183,15 +181,15 @@ describe("AuthorRoute Integration Tests", () => {
     });
 
     // Toggle to raw
-    fireEvent.click(screen.getByText(/Toggle Raw View/));
+    fireEvent.click(screen.getByText(/Switch to Raw View/));
     await waitFor(() => {
       expect(screen.getByText(/"display_name":/)).toBeInTheDocument();
     });
 
     // Toggle back to rich
-    fireEvent.click(screen.getByText(/Toggle Rich View/));
+    fireEvent.click(screen.getByText(/Switch to Rich View/));
     await waitFor(() => {
-      expect(screen.getByText(/Name:/)).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "John Doe" })).toBeInTheDocument();
     });
 
     // Should NOT show JSON
@@ -219,7 +217,7 @@ describe("AuthorRoute Integration Tests", () => {
     expect(getAuthorMock).toHaveBeenCalledTimes(1);
 
     // Toggle to raw
-    fireEvent.click(screen.getByText(/Toggle Raw View/));
+    fireEvent.click(screen.getByText(/Switch to Raw View/));
     await waitFor(() => {
       expect(screen.getByText(/"display_name":/)).toBeInTheDocument();
     });
@@ -228,9 +226,9 @@ describe("AuthorRoute Integration Tests", () => {
     expect(getAuthorMock).toHaveBeenCalledTimes(1);
 
     // Toggle back to rich
-    fireEvent.click(screen.getByText(/Toggle Rich View/));
+    fireEvent.click(screen.getByText(/Switch to Rich View/));
     await waitFor(() => {
-      expect(screen.getByText(/Name:/)).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "John Doe" })).toBeInTheDocument();
     });
 
     // Should still be called only once

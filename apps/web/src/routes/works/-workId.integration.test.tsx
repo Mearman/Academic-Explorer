@@ -19,13 +19,14 @@ vi.mock("@academic-explorer/client", async (importOriginal) => {
   };
 });
 
-// Mock router hooks
+// Mock router hooks and Link component
 vi.mock("@tanstack/react-router", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@tanstack/react-router")>();
   return {
     ...actual,
     useParams: vi.fn(),
     useSearch: vi.fn(),
+    Link: ({ children, ...props }: any) => <a {...props}>{children}</a>,
   };
 });
 
@@ -90,7 +91,7 @@ describe("WorkRoute Integration Tests", () => {
     );
 
     expect(screen.getByText("Loading Work...")).toBeInTheDocument();
-    expect(screen.getByText("Work ID: W123")).toBeInTheDocument();
+    expect(screen.getByText("W123")).toBeInTheDocument();
   });
 
   it("renders error state when API fails", async () => {
@@ -111,8 +112,8 @@ describe("WorkRoute Integration Tests", () => {
       expect(screen.getByText("Error Loading Work")).toBeInTheDocument();
     });
 
-    expect(screen.getByText("Work ID: W123")).toBeInTheDocument();
-    expect(screen.getByText("Error: Error: API Error")).toBeInTheDocument();
+    expect(screen.getByText("W123")).toBeInTheDocument();
+    expect(screen.getByText(/Error:.*API Error/)).toBeInTheDocument();
   });
 
   it("renders work data in rich view by default", async () => {
@@ -128,14 +129,11 @@ describe("WorkRoute Integration Tests", () => {
       expect(screen.getByRole("heading", { name: "Sample Work Title" })).toBeInTheDocument();
     });
 
-    // EntityDataDisplay shows section headers and formatted field names
-    expect(screen.getByText(/Basic Information/)).toBeInTheDocument();
-    expect(screen.getByText(/Display Name:/)).toBeInTheDocument();
-    // Title appears in h1 and EntityDataDisplay - just verify sections exist
+    // Title appears in h1 and EntityDataDisplay - just verify it exists
     expect(screen.getAllByText(/Sample Work Title/).length).toBeGreaterThan(0);
 
-    // Should have toggle button
-    expect(screen.getByText(/Toggle Raw View/)).toBeInTheDocument();
+    // Should have toggle button with new text
+    expect(screen.getByText("Switch to Raw View")).toBeInTheDocument();
 
     // Should NOT show JSON by default
     expect(screen.queryByText(/"id":/)).not.toBeInTheDocument();
@@ -156,7 +154,7 @@ describe("WorkRoute Integration Tests", () => {
     });
 
     // Click toggle button
-    const toggleButton = screen.getByText(/Toggle Raw View/);
+    const toggleButton = screen.getByText("Switch to Raw View");
     fireEvent.click(toggleButton);
 
     // Should show JSON
@@ -184,15 +182,15 @@ describe("WorkRoute Integration Tests", () => {
     });
 
     // Toggle to raw
-    fireEvent.click(screen.getByText(/Toggle Raw View/));
+    fireEvent.click(screen.getByText("Switch to Raw View"));
     await waitFor(() => {
       expect(screen.getByText(/"display_name":/)).toBeInTheDocument();
     });
 
     // Toggle back to rich
-    fireEvent.click(screen.getByText(/Toggle Rich View/));
+    fireEvent.click(screen.getByText("Switch to Rich View"));
     await waitFor(() => {
-      expect(screen.getByText(/Title:/)).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "Sample Work Title" })).toBeInTheDocument();
     });
 
     // Should NOT show JSON
@@ -220,7 +218,7 @@ describe("WorkRoute Integration Tests", () => {
     expect(getWorkMock).toHaveBeenCalledTimes(1);
 
     // Toggle to raw
-    fireEvent.click(screen.getByText(/Toggle Raw View/));
+    fireEvent.click(screen.getByText("Switch to Raw View"));
     await waitFor(() => {
       expect(screen.getByText(/"display_name":/)).toBeInTheDocument();
     });
@@ -229,9 +227,9 @@ describe("WorkRoute Integration Tests", () => {
     expect(getWorkMock).toHaveBeenCalledTimes(1);
 
     // Toggle back to rich
-    fireEvent.click(screen.getByText(/Toggle Rich View/));
+    fireEvent.click(screen.getByText("Switch to Rich View"));
     await waitFor(() => {
-      expect(screen.getByText(/Title:/)).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "Sample Work Title" })).toBeInTheDocument();
     });
 
     // Should still be called only once

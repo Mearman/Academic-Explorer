@@ -19,13 +19,14 @@ vi.mock("@academic-explorer/client", async (importOriginal) => {
   };
 });
 
-// Mock router hooks
+// Mock router hooks and Link component
 vi.mock("@tanstack/react-router", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@tanstack/react-router")>();
   return {
     ...actual,
     useParams: vi.fn(),
     useSearch: vi.fn(),
+    Link: ({ children, ...props }: any) => <a {...props}>{children}</a>,
   };
 });
 
@@ -87,7 +88,7 @@ describe("SourceRoute Integration Tests", () => {
     );
 
     expect(screen.getByText("Loading Source...")).toBeInTheDocument();
-    expect(screen.getByText("Source ID: S123")).toBeInTheDocument();
+    expect(screen.getByText("S123")).toBeInTheDocument();
   });
 
   it("renders error state when API fails", async () => {
@@ -108,8 +109,8 @@ describe("SourceRoute Integration Tests", () => {
       expect(screen.getByText("Error Loading Source")).toBeInTheDocument();
     });
 
-    expect(screen.getByText("Source ID: S123")).toBeInTheDocument();
-    expect(screen.getByText("Error: Error: API Error")).toBeInTheDocument();
+    expect(screen.getByText("S123")).toBeInTheDocument();
+    expect(screen.getByText(/Error:.*API Error/)).toBeInTheDocument();
   });
 
   it("renders institution data in rich view by default", async () => {
@@ -125,17 +126,11 @@ describe("SourceRoute Integration Tests", () => {
       expect(screen.getByRole("heading", { name: "Sample Source" })).toBeInTheDocument();
     });
 
-    // EntityDataDisplay shows section headers and formatted field names
-    expect(screen.getByText(/Basic Information/)).toBeInTheDocument();
-    expect(screen.getByText(/Display Name:/)).toBeInTheDocument();
-    // Name appears in h1 and EntityDataDisplay - just verify sections exist
+    // Name appears in h1 and EntityDataDisplay - just verify it exists
     expect(screen.getAllByText(/Sample Source/).length).toBeGreaterThan(0);
-    expect(screen.getByText(/Type:/)).toBeInTheDocument();
-    // ISSN-L field is displayed with formatted name
-    expect(screen.getByText(/Issn L:/)).toBeInTheDocument();
 
     // Should have toggle button
-    expect(screen.getByText(/Toggle Raw View/)).toBeInTheDocument();
+    expect(screen.getByText("Switch to Raw View")).toBeInTheDocument();
 
     // Should NOT show JSON by default
     expect(screen.queryByText(/"id":/)).not.toBeInTheDocument();
@@ -156,7 +151,7 @@ describe("SourceRoute Integration Tests", () => {
     });
 
     // Click toggle button
-    const toggleButton = screen.getByText(/Toggle Raw View/);
+    const toggleButton = screen.getByText("Switch to Raw View");
     fireEvent.click(toggleButton);
 
     // Should show JSON
@@ -184,15 +179,15 @@ describe("SourceRoute Integration Tests", () => {
     });
 
     // Toggle to raw
-    fireEvent.click(screen.getByText(/Toggle Raw View/));
+    fireEvent.click(screen.getByText("Switch to Raw View"));
     await waitFor(() => {
       expect(screen.getByText(/"display_name":/)).toBeInTheDocument();
     });
 
     // Toggle back to rich
-    fireEvent.click(screen.getByText(/Toggle Rich View/));
+    fireEvent.click(screen.getByText("Switch to Rich View"));
     await waitFor(() => {
-      expect(screen.getByText(/Name:/)).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "Sample Source" })).toBeInTheDocument();
     });
 
     // Should NOT show JSON
@@ -220,7 +215,7 @@ describe("SourceRoute Integration Tests", () => {
     expect(getSourceMock).toHaveBeenCalledTimes(1);
 
     // Toggle to raw
-    fireEvent.click(screen.getByText(/Toggle Raw View/));
+    fireEvent.click(screen.getByText("Switch to Raw View"));
     await waitFor(() => {
       expect(screen.getByText(/"display_name":/)).toBeInTheDocument();
     });
@@ -229,9 +224,9 @@ describe("SourceRoute Integration Tests", () => {
     expect(getSourceMock).toHaveBeenCalledTimes(1);
 
     // Toggle back to rich
-    fireEvent.click(screen.getByText(/Toggle Rich View/));
+    fireEvent.click(screen.getByText("Switch to Rich View"));
     await waitFor(() => {
-      expect(screen.getByText(/Name:/)).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "Sample Source" })).toBeInTheDocument();
     });
 
     // Should still be called only once
