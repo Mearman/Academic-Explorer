@@ -391,7 +391,7 @@ jobs:
           NX_SKIP_NX_CACHE: true
 
       - name: Upload build artifacts
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: apps/web/dist
 
