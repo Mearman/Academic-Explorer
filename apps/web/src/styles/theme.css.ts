@@ -1,4 +1,4 @@
-import { createTheme } from "@vanilla-extract/css";
+import { createTheme, globalStyle } from "@vanilla-extract/css";
 
 // Academic Explorer Design Tokens
 export const [themeClass, vars] = createTheme({
@@ -48,20 +48,83 @@ export const [themeClass, vars] = createTheme({
     funder: "#06b6d4", // Cyan for funders
     keyword: "#6b7280", // Gray for keywords
 
-    // Background and surface colors
+    // Background and surface colors (light mode defaults)
     background: {
       primary: "#ffffff",
       secondary: "#f9fafb",
       tertiary: "#f3f4f6",
     },
 
-    // Text colors
+    // Text colors (light mode defaults)
     text: {
       primary: "#111827",
       secondary: "#4b5563",
       tertiary: "#6b7280",
       inverse: "#ffffff",
     },
+
+    // Border colors (light mode defaults)
+    border: {
+      primary: "#e5e7eb",
+      secondary: "#d1d5db",
+    },
+
+    // Code/Badge background colors
+    codeBg: "#f3f4f6",
+    codeText: "#111827",
+
+    // Error state colors
+    errorBg: {
+      light: "#fee2e2",
+      lighter: "#fef2f2",
+    },
+    errorBorder: "#fecaca",
+    errorText: "#b91c1c",
+    errorDetailsBg: "#f9fafb",
+
+    // Code viewer (dark theme for JSON/code display)
+    codeViewer: {
+      bg: "#111827",
+      headerBg: "#1f2937",
+      border: "#374151",
+      text: "#f3f4f6",
+    },
+
+    // Section styling
+    sectionHeaderGradientStart: "#f9fafb",
+    sectionHeaderGradientEnd: "#ffffff",
+
+    // Badge colors
+    badgeBg: "#f3f4f6",
+
+    // Boolean badge colors
+    trueBadgeBg: "#d1fae5",
+    trueBadgeText: "#065f46",
+    trueBadgeBorder: "#6ee7b7",
+    falseBadgeBg: "#fee2e2",
+    falseBadgeText: "#991b1b",
+    falseBadgeBorder: "#fca5a5",
+
+    // Number badge colors
+    numberBadgeBg: "#dbeafe",
+    numberBadgeText: "#1e40af",
+    numberBadgeBorder: "#93c5fd",
+
+    // Array item colors
+    arrayItemGradientStart: "#f9fafb",
+    arrayItemGradientEnd: "#f3f4f6",
+    arrayItemBorder: "#e5e7eb",
+
+    // Object array colors
+    objectArrayBorder: "#a5b4fc",
+    objectArrayBg: "#eef2ff80",
+    objectArrayNumberBg: "#6366f1",
+
+    // Object field colors
+    objectFieldBorder: "#d8b4fe",
+    objectFieldBg: "#faf5ff66",
+    objectFieldLabel: "#7c3aed",
+    objectFieldHoverBorder: "#c084fc",
   },
 
   space: {
@@ -124,6 +187,81 @@ export const [themeClass, vars] = createTheme({
     md: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
     lg: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
     xl: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+  },
+});
+
+// Dark mode theme overrides using Mantine's color scheme data attribute
+// Mantine applies [data-mantine-color-scheme] to the <html> element
+// themeClass is on a descendant <div>, so we use a descendant selector
+globalStyle(`[data-mantine-color-scheme="dark"] ${themeClass}`, {
+  vars: {
+    // Override background colors for dark mode
+    [vars.color.background.primary]: "#1a1b1e",
+    [vars.color.background.secondary]: "#25262b",
+    [vars.color.background.tertiary]: "#2c2e33",
+
+    // Override text colors for dark mode
+    [vars.color.text.primary]: "#c1c2c5",
+    [vars.color.text.secondary]: "#909296",
+    [vars.color.text.tertiary]: "#5c5f66",
+    [vars.color.text.inverse]: "#1a1b1e",
+
+    // Override border colors for dark mode
+    [vars.color.border.primary]: "#373a40",
+    [vars.color.border.secondary]: "#2c2e33",
+
+    // Override code/badge colors for dark mode
+    [vars.color.codeBg]: "#2c2e33",
+    [vars.color.codeText]: "#c1c2c5",
+
+    // Override error state colors for dark mode
+    [vars.color.errorBg.light]: "#42212180",
+    [vars.color.errorBg.lighter]: "#31151580",
+    [vars.color.errorBorder]: "#cc4c4c",
+    [vars.color.errorText]: "#ff6b6b",
+    [vars.color.errorDetailsBg]: "#25262b",
+
+    // Code viewer colors stay dark-themed in dark mode (minimal change)
+    [vars.color.codeViewer.bg]: "#0d1117",
+    [vars.color.codeViewer.headerBg]: "#161b22",
+    [vars.color.codeViewer.border]: "#30363d",
+    [vars.color.codeViewer.text]: "#f0f6fc",
+
+    // Section header gradient for dark mode (subtle)
+    [vars.color.sectionHeaderGradientStart]: "#25262b",
+    [vars.color.sectionHeaderGradientEnd]: "#1a1b1e",
+
+    // Badge colors for dark mode
+    [vars.color.badgeBg]: "#2c2e33",
+
+    // Boolean badges for dark mode
+    [vars.color.trueBadgeBg]: "#0a3d2c",
+    [vars.color.trueBadgeText]: "#6ee7b7",
+    [vars.color.trueBadgeBorder]: "#065f46",
+    [vars.color.falseBadgeBg]: "#3d0a0a",
+    [vars.color.falseBadgeText]: "#fca5a5",
+    [vars.color.falseBadgeBorder]: "#991b1b",
+
+    // Number badge for dark mode
+    [vars.color.numberBadgeBg]: "#1e3a5f",
+    [vars.color.numberBadgeText]: "#93c5fd",
+    [vars.color.numberBadgeBorder]: "#1e40af",
+
+    // Array item colors for dark mode
+    [vars.color.arrayItemGradientStart]: "#2c2e33",
+    [vars.color.arrayItemGradientEnd]: "#25262b",
+    [vars.color.arrayItemBorder]: "#373a40",
+
+    // Object array colors for dark mode
+    [vars.color.objectArrayBorder]: "#4c4f82",
+    [vars.color.objectArrayBg]: "#2c2e5580",
+    [vars.color.objectArrayNumberBg]: "#4c4f82",
+
+    // Object field colors for dark mode
+    [vars.color.objectFieldBorder]: "#6b4f9e",
+    [vars.color.objectFieldBg]: "#3a2d5066",
+    [vars.color.objectFieldLabel]: "#c084fc",
+    [vars.color.objectFieldHoverBorder]: "#a855f7",
   },
 });
 
