@@ -6,6 +6,11 @@
 import { chromium, FullConfig } from "@playwright/test";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const STORAGE_STATE_PATH = path.join(
   __dirname,
