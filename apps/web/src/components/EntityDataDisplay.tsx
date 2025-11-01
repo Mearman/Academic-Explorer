@@ -1,12 +1,17 @@
 /**
  * EntityDataDisplay Component
  *
- * Displays all entity data in a structured, readable format.
+ * Displays all entity data in a structured, readable format using Vanilla Extract and Mantine.
  * Handles nested objects, arrays, and various data types.
  * Renders ALL fields from the API response.
  */
 
 import React from "react";
+import { Anchor, Badge, Text } from "@mantine/core";
+import { IconExternalLink, IconLink } from "@tabler/icons-react";
+import { Link } from "@tanstack/react-router";
+import { convertOpenAlexToInternalLink, isOpenAlexId } from "@/utils/openalex-link-conversion";
+import * as styles from "./EntityDataDisplay.css";
 
 interface EntityDataDisplayProps {
   data: Record<string, unknown>;
@@ -17,56 +22,93 @@ interface EntityDataDisplayProps {
  * Recursively renders data in a structured format
  */
 function renderValue(value: unknown, depth: number = 0): React.ReactNode {
-  const indent = depth * 20;
-
   // Handle null/undefined
   if (value === null || value === undefined) {
-    return <span className="text-gray-400 italic">null</span>;
+    return <span className={styles.nullValue}>null</span>;
   }
 
   // Handle booleans
   if (typeof value === "boolean") {
-    return <span className={value ? "text-green-600" : "text-red-600"}>{String(value)}</span>;
+    return (
+      <span className={styles.booleanBadge[value ? "true" : "false"]}>
+        {value ? "✓ true" : "✗ false"}
+      </span>
+    );
   }
 
   // Handle numbers
   if (typeof value === "number") {
-    return <span className="text-blue-600">{value.toLocaleString()}</span>;
+    return (
+      <span className={styles.numberBadge}>
+        {value.toLocaleString()}
+      </span>
+    );
   }
 
   // Handle strings
   if (typeof value === "string") {
-    // Handle URLs
+    // Check if it's an OpenAlex URL or ID
+    const converted = convertOpenAlexToInternalLink(value);
+
+    if (converted.isOpenAlexLink) {
+      // Internal OpenAlex link
+      return (
+        <Link
+          to={converted.internalPath}
+          className={styles.urlLink}
+          style={{ color: 'var(--mantine-color-blue-6)' }}
+        >
+          <IconLink size={16} />
+          <span>{value}</span>
+        </Link>
+      );
+    }
+
+    // Handle other URLs (external links)
     if (value.startsWith("http://") || value.startsWith("https://")) {
       return (
-        <a href={value} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-          {value}
-        </a>
+        <Anchor
+          href={value}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.urlLink}
+        >
+          <IconExternalLink size={16} />
+          <span>{value}</span>
+        </Anchor>
       );
     }
-    // Handle DOIs
-    if (value.startsWith("https://doi.org/")) {
+
+    // Check if it's just an OpenAlex ID (without URL)
+    if (isOpenAlexId(value)) {
+      const idConverted = convertOpenAlexToInternalLink(value);
       return (
-        <a href={value} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-          {value}
-        </a>
+        <Link
+          to={idConverted.internalPath}
+          className={styles.urlLink}
+          style={{ color: 'var(--mantine-color-blue-6)' }}
+        >
+          <IconLink size={16} />
+          <span>{value}</span>
+        </Link>
       );
     }
-    return <span className="text-gray-800">{value}</span>;
+
+    return <span className={styles.stringValue}>{value}</span>;
   }
 
   // Handle arrays
   if (Array.isArray(value)) {
     if (value.length === 0) {
-      return <span className="text-gray-400 italic">[]</span>;
+      return <span className={styles.emptyArray}>[ ]</span>;
     }
 
     // For primitive arrays, show inline
     if (value.every(item => typeof item !== "object" || item === null)) {
       return (
-        <div className="inline-flex flex-wrap gap-1">
+        <div className={styles.primitiveArray}>
           {value.map((item, index) => (
-            <span key={index} className="bg-gray-100 px-2 py-0.5 rounded text-sm">
+            <span key={index} className={styles.primitiveArrayItem}>
               {renderValue(item, depth)}
             </span>
           ))}
@@ -76,11 +118,13 @@ function renderValue(value: unknown, depth: number = 0): React.ReactNode {
 
     // For object arrays, show each item
     return (
-      <div className="space-y-2 mt-1">
+      <div className={styles.objectArray}>
         {value.map((item, index) => (
-          <div key={index} className="border-l-2 border-gray-300 pl-3">
-            <div className="text-xs text-gray-500 mb-1">Item {index + 1}</div>
-            {renderValue(item, depth + 1)}
+          <div key={index} className={styles.objectArrayItem}>
+            <div className={styles.arrayItemNumber}>{index + 1}</div>
+            <div className={styles.arrayItemContent}>
+              {renderValue(item, depth + 1)}
+            </div>
           </div>
         ))}
       </div>
@@ -93,16 +137,16 @@ function renderValue(value: unknown, depth: number = 0): React.ReactNode {
     const entries = Object.entries(obj);
 
     if (entries.length === 0) {
-      return <span className="text-gray-400 italic">{"{}"}</span>;
+      return <span className={styles.emptyObject}>{"{ }"}</span>;
     }
 
     return (
-      <div className="space-y-1 mt-1" style={{ marginLeft: indent }}>
+      <div className={styles.objectContainer}>
         {entries.map(([key, val]) => (
-          <div key={key} className="border-l-2 border-gray-200 pl-3">
-            <div className="flex flex-col">
-              <span className="font-medium text-gray-700 text-sm">{key}:</span>
-              <div className="ml-2">{renderValue(val, depth + 1)}</div>
+          <div key={key} className={styles.objectField}>
+            <div>
+              <span className={styles.objectFieldLabel}>{key}:</span>
+              <div className={styles.objectFieldValue}>{renderValue(val, depth + 1)}</div>
             </div>
           </div>
         ))}
@@ -111,7 +155,7 @@ function renderValue(value: unknown, depth: number = 0): React.ReactNode {
   }
 
   // Fallback for unknown types
-  return <span className="text-gray-600">{String(value)}</span>;
+  return <span className={styles.fallbackValue}>{String(value)}</span>;
 }
 
 /**
@@ -163,23 +207,42 @@ function groupFields(data: Record<string, unknown>): Record<string, Record<strin
   return groups;
 }
 
+// Section icons mapping
+const sectionIcons: Record<string, string> = {
+  "Basic Information": "ℹ️",
+  "Identifiers": "🔑",
+  "Metrics": "📊",
+  "Relationships": "🔗",
+  "Dates": "📅",
+  "Locations & Geo": "🌍",
+  "Other": "📋",
+};
+
 export function EntityDataDisplay({ data, title }: EntityDataDisplayProps) {
   const groups = groupFields(data);
 
   return (
-    <div className="space-y-6">
-      {title && <h2 className="text-xl font-bold mb-4">{title}</h2>}
+    <div className={styles.container}>
+      {title && <h2 style={{ fontSize: "1.875rem", fontWeight: 700, marginBottom: "1.5rem" }}>{title}</h2>}
 
       {Object.entries(groups).map(([groupName, groupData]) => (
-        <div key={groupName} className="bg-white rounded-lg border border-gray-200 p-4">
-          <h3 className="text-lg font-semibold mb-3 text-gray-800 border-b pb-2">
-            {groupName}
-          </h3>
-          <div className="space-y-3">
+        <div key={groupName} className={styles.sectionCard}>
+          <div className={styles.sectionHeader}>
+            <h3 className={styles.sectionTitle}>
+              <span className={styles.sectionIcon}>{sectionIcons[groupName] || "📄"}</span>
+              <span>{groupName}</span>
+              <span className={styles.fieldCount}>
+                {Object.keys(groupData).length} {Object.keys(groupData).length === 1 ? "field" : "fields"}
+              </span>
+            </h3>
+          </div>
+          <div className={styles.sectionContent}>
             {Object.entries(groupData).map(([key, value]) => (
-              <div key={key} className="flex flex-col">
-                <span className="font-medium text-gray-700 mb-1">{key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}:</span>
-                <div className="ml-4">
+              <div key={key} className={styles.fieldContainer}>
+                <span className={styles.fieldLabel}>
+                  {key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
+                </span>
+                <div className={styles.fieldValue}>
                   {renderValue(value)}
                 </div>
               </div>
