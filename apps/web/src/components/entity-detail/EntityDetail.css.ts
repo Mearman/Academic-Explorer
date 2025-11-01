@@ -20,7 +20,7 @@ export const headerCard = style({
   boxShadow: vars.shadow.xl,
   padding: vars.space[8],
   marginBottom: vars.space[8],
-  border: `${vars.borderWidth[1]} solid ${vars.color.gray[200]}`,
+  border: `${vars.borderWidth[1]} solid ${vars.color.border.primary}`,
 });
 
 export const headerContent = style({
@@ -115,10 +115,10 @@ export const metadataLabel = style({
 });
 
 export const metadataValue = style({
-  color: vars.color.text.tertiary,
+  color: vars.color.codeText,
   fontSize: vars.fontSize.xs,
   fontFamily: "monospace",
-  backgroundColor: vars.color.gray[100],
+  backgroundColor: vars.color.codeBg,
   padding: `${vars.space[1]} ${vars.space[3]}`,
   borderRadius: vars.borderRadius.md,
   wordBreak: "break-all",
@@ -153,10 +153,10 @@ export const loadingTitle = style({
 });
 
 export const loadingId = style({
-  color: vars.color.text.tertiary,
+  color: vars.color.codeText,
   fontFamily: "monospace",
   fontSize: vars.fontSize.sm,
-  backgroundColor: vars.color.gray[100],
+  backgroundColor: vars.color.codeBg,
   padding: `${vars.space[2]} ${vars.space[4]}`,
   borderRadius: vars.borderRadius.lg,
   display: "inline-block",
@@ -180,7 +180,7 @@ export const errorIconWrapper = style({
   justifyContent: "center",
   width: "5rem",
   height: "5rem",
-  backgroundColor: "#fee2e2",
+  backgroundColor: vars.color.errorBg.light,
   borderRadius: vars.borderRadius.full,
   marginBottom: vars.space[4],
 });
@@ -193,7 +193,7 @@ export const errorTitle = style({
 });
 
 export const errorDetailsBox = style({
-  backgroundColor: vars.color.gray[50],
+  backgroundColor: vars.color.errorDetailsBg,
   padding: vars.space[4],
   borderRadius: vars.borderRadius.lg,
 });
@@ -212,10 +212,10 @@ export const errorDetailsText = style({
 });
 
 export const errorBox = style({
-  backgroundColor: "#fef2f2",
+  backgroundColor: vars.color.errorBg.lighter,
   padding: vars.space[4],
   borderRadius: vars.borderRadius.lg,
-  border: `${vars.borderWidth[1]} solid #fecaca`,
+  border: `${vars.borderWidth[1]} solid ${vars.color.errorBorder}`,
 });
 
 export const errorBoxTitle = style({
@@ -226,7 +226,7 @@ export const errorBoxTitle = style({
 });
 
 export const errorBoxText = style({
-  color: "#b91c1c",
+  color: vars.color.errorText,
   fontFamily: "monospace",
   fontSize: vars.fontSize.sm,
   wordBreak: "break-all",
@@ -234,23 +234,23 @@ export const errorBoxText = style({
 
 // Raw JSON view
 export const rawJsonContainer = style({
-  backgroundColor: vars.color.gray[900],
+  backgroundColor: vars.color.codeViewer.bg,
   borderRadius: vars.borderRadius.xl,
   boxShadow: vars.shadow.xl,
   overflow: "hidden",
-  border: `${vars.borderWidth[1]} solid ${vars.color.gray[700]}`,
+  border: `${vars.borderWidth[1]} solid ${vars.color.codeViewer.border}`,
 });
 
 export const rawJsonHeader = style({
-  background: `linear-gradient(to right, ${vars.color.gray[800]}, ${vars.color.gray[900]})`,
+  background: `linear-gradient(to right, ${vars.color.codeViewer.headerBg}, ${vars.color.codeViewer.bg})`,
   padding: `${vars.space[4]} ${vars.space[6]}`,
-  borderBottom: `${vars.borderWidth[1]} solid ${vars.color.gray[700]}`,
+  borderBottom: `${vars.borderWidth[1]} solid ${vars.color.codeViewer.border}`,
 });
 
 export const rawJsonTitle = style({
   fontSize: vars.fontSize.lg,
   fontWeight: vars.fontWeight.bold,
-  color: vars.color.gray[100],
+  color: vars.color.codeViewer.text,
   display: "flex",
   alignItems: "center",
   gap: vars.space[2],
@@ -259,7 +259,7 @@ export const rawJsonTitle = style({
 export const rawJsonContent = style({
   padding: vars.space[6],
   fontSize: vars.fontSize.sm,
-  color: vars.color.gray[100],
+  color: vars.color.codeViewer.text,
   overflowX: "auto",
   maxHeight: "800px",
   fontFamily: "monospace",
