@@ -54,9 +54,9 @@ export function EntityDetailLayout({
             <div className={styles.headerInfo}>
               <Badge
                 className={styles.entityBadge[entityType]}
-                size="lg"
+                size="xl"
                 leftSection={
-                  <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                  <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
                     {config.icon}
                   </svg>
                 }
@@ -73,7 +73,7 @@ export function EntityDetailLayout({
                 </div>
                 <div className={styles.metadataRow}>
                   <span className={styles.metadataLabel}>Select fields:</span>
-                  <Text size="xs" c="dimmed" style={{ flex: 1 }}>
+                  <Text size="sm" c="dimmed" fw={500} style={{ flex: 1 }}>
                     {selectParam && typeof selectParam === 'string'
                       ? selectParam
                       : `default (${selectFields.length} fields)`}
@@ -84,16 +84,22 @@ export function EntityDetailLayout({
 
             <div style={{ flexShrink: 0 }}>
               <Button
-                size="lg"
+                size="xl"
                 variant="gradient"
                 gradient={gradient}
-                leftSection={viewMode === "raw" ? <IconEye size={20} /> : <IconCode size={20} />}
+                leftSection={viewMode === "raw" ? <IconEye size={24} /> : <IconCode size={24} />}
                 onClick={onToggleView}
                 styles={{
                   root: {
-                    transition: "all 0.2s ease",
+                    padding: "16px 32px",
+                    fontSize: "1rem",
+                    fontWeight: 600,
+                    borderRadius: "12px",
+                    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                    transition: "all 0.3s ease",
                     ":hover": {
-                      transform: "scale(1.05)",
+                      transform: "translateY(-2px)",
+                      boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
                     },
                   },
                 }}
@@ -109,7 +115,7 @@ export function EntityDetailLayout({
           <div className={styles.rawJsonContainer}>
             <div className={styles.rawJsonHeader}>
               <h3 className={styles.rawJsonTitle}>
-                <IconCode size={20} />
+                <IconCode size={24} />
                 Raw JSON Data
               </h3>
             </div>
