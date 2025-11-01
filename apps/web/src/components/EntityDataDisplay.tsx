@@ -8,7 +8,20 @@
 
 import React from "react";
 import { Anchor, Badge, Text } from "@mantine/core";
-import { IconExternalLink, IconLink } from "@tabler/icons-react";
+import {
+  IconExternalLink,
+  IconLink,
+  IconCheck,
+  IconX,
+  IconInfoCircle,
+  IconKey,
+  IconChartBar,
+  IconNetwork,
+  IconCalendar,
+  IconWorld,
+  IconClipboard,
+  IconFile,
+} from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 import { convertOpenAlexToInternalLink, isOpenAlexId } from "@/utils/openalex-link-conversion";
 import * as styles from "./EntityDataDisplay.css";
@@ -31,7 +44,17 @@ function renderValue(value: unknown, depth: number = 0): React.ReactNode {
   if (typeof value === "boolean") {
     return (
       <span className={styles.booleanBadge[value ? "true" : "false"]}>
-        {value ? "✓ true" : "✗ false"}
+        {value ? (
+          <>
+            <IconCheck size={14} />
+            <span>true</span>
+          </>
+        ) : (
+          <>
+            <IconX size={14} />
+            <span>false</span>
+          </>
+        )}
       </span>
     );
   }
@@ -208,14 +231,14 @@ function groupFields(data: Record<string, unknown>): Record<string, Record<strin
 }
 
 // Section icons mapping
-const sectionIcons: Record<string, string> = {
-  "Basic Information": "ℹ️",
-  "Identifiers": "🔑",
-  "Metrics": "📊",
-  "Relationships": "🔗",
-  "Dates": "📅",
-  "Locations & Geo": "🌍",
-  "Other": "📋",
+const sectionIcons: Record<string, React.ReactNode> = {
+  "Basic Information": <IconInfoCircle size={20} />,
+  "Identifiers": <IconKey size={20} />,
+  "Metrics": <IconChartBar size={20} />,
+  "Relationships": <IconNetwork size={20} />,
+  "Dates": <IconCalendar size={20} />,
+  "Locations & Geo": <IconWorld size={20} />,
+  "Other": <IconClipboard size={20} />,
 };
 
 export function EntityDataDisplay({ data, title }: EntityDataDisplayProps) {
@@ -229,7 +252,7 @@ export function EntityDataDisplay({ data, title }: EntityDataDisplayProps) {
         <div key={groupName} className={styles.sectionCard}>
           <div className={styles.sectionHeader}>
             <h3 className={styles.sectionTitle}>
-              <span className={styles.sectionIcon}>{sectionIcons[groupName] || "📄"}</span>
+              <span className={styles.sectionIcon}>{sectionIcons[groupName] || <IconFile size={20} />}</span>
               <span>{groupName}</span>
               <span className={styles.fieldCount}>
                 {Object.keys(groupData).length} {Object.keys(groupData).length === 1 ? "field" : "fields"}
