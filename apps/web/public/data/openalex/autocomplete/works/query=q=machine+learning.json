@@ -45,6 +45,17 @@
       "filter_key": "id"
     },
     {
+      "id": "https://openalex.org/W4289745963",
+      "short_id": "works/W4289745963",
+      "display_name": "machine learning method for heart disease prediction using convolutional neural network",
+      "hint": "C. Rukumani Khandhan, P. Sowndharya, N. D. Visalini",
+      "cited_by_count": 0,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.53730/ijhs.v6ns8.9727",
+      "filter_key": "id"
+    },
+    {
       "id": "https://openalex.org/W3172350871",
       "short_id": "works/W3172350871",
       "display_name": "machine learning for modeling dynamic stochastic systems : application to adaptive control on deep-brain stimulation",
@@ -56,14 +67,14 @@
       "filter_key": "id"
     },
     {
-      "id": "https://openalex.org/W4289745963",
-      "short_id": "works/W4289745963",
-      "display_name": "machine learning method for heart disease prediction using convolutional neural network",
-      "hint": "C. Rukumani Khandhan, P. Sowndharya, N. D. Visalini",
+      "id": "https://openalex.org/W3210120249",
+      "short_id": "works/W3210120249",
+      "display_name": "machine learning trigger",
+      "hint": "Tao Zhang",
       "cited_by_count": 0,
       "works_count": null,
       "entity_type": "work",
-      "external_id": "https://doi.org/10.53730/ijhs.v6ns8.9727",
+      "external_id": "https://doi.org/10.5281/zenodo.4086008",
       "filter_key": "id"
     },
     {
@@ -78,9 +89,9 @@
       "filter_key": "id"
     },
     {
-      "id": "https://openalex.org/W3206140862",
-      "short_id": "works/W3206140862",
-      "display_name": "machine learning techniques. Computer Science Ontology (CSO)",
+      "id": "https://openalex.org/W3206633295",
+      "short_id": "works/W3206633295",
+      "display_name": "machine learning. Computer Science Ontology (CSO)",
       "hint": "Angelo A. Salatino, Enrico Motta",
       "cited_by_count": 0,
       "works_count": null,
@@ -97,17 +108,6 @@
       "works_count": null,
       "entity_type": "work",
       "external_id": "https://doi.org/10.4414/saez.2019.17656",
-      "filter_key": "id"
-    },
-    {
-      "id": "https://openalex.org/W4242809973",
-      "short_id": "works/W4242809973",
-      "display_name": "machine learning und humane Intelligenz",
-      "hint": "Yves Robert",
-      "cited_by_count": 0,
-      "works_count": null,
-      "entity_type": "work",
-      "external_id": "https://doi.org/10.4414/bms.2019.17656",
       "filter_key": "id"
     }
   ]

@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-11-04T20:18:01.087Z",
+  "lastUpdated": "2025-11-04T23:01:38.575Z",
   "directories": {
     "authors": {
       "$ref": "./authors",
@@ -7,7 +7,7 @@
     },
     "autocomplete": {
       "$ref": "./autocomplete",
-      "lastModified": "2025-10-11T16:04:08.047Z"
+      "lastModified": "2025-11-04T23:00:28.797Z"
     },
     "concepts": {
       "$ref": "./concepts",
@@ -42,9 +42,15 @@
       "contentHash": "3db646598be403a1"
     },
     "works": {
-      "url": "https://api.openalex.org/autocomplete?q=machine+learning",
+      "url": "https://api.openalex.org/works",
       "$ref": "./works.json",
-      "lastRetrieved": "2025-11-04T20:18:01.086Z",
+      "lastRetrieved": "2025-11-04T23:01:38.458Z",
+      "contentHash": "dd796f6d32a769cc"
+    },
+    "authors": {
+      "url": "https://api.openalex.org/authors",
+      "$ref": "./authors.json",
+      "lastRetrieved": "2025-11-04T23:01:36.584Z",
       "contentHash": "dd796f6d32a769cc"
     }
   }

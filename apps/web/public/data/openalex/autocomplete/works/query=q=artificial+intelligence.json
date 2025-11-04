@@ -89,17 +89,6 @@
       "filter_key": "id"
     },
     {
-      "id": "https://openalex.org/W4235817418",
-      "short_id": "works/W4235817418",
-      "display_name": "Artificial Intelligences",
-      "hint": "authors unknown",
-      "cited_by_count": 4,
-      "works_count": null,
-      "entity_type": "work",
-      "external_id": "https://doi.org/10.5040/9781474236829.ch-003",
-      "filter_key": "id"
-    },
-    {
       "id": "https://openalex.org/W3179661880",
       "short_id": "works/W3179661880",
       "display_name": "The Future of Artificial Intelligence: Toward Truly Intelligent Artificial Intelligences",
@@ -108,6 +97,17 @@
       "works_count": null,
       "entity_type": "work",
       "external_id": null,
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W4235817418",
+      "short_id": "works/W4235817418",
+      "display_name": "Artificial Intelligences",
+      "hint": "authors unknown",
+      "cited_by_count": 4,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.5040/9781474236829.ch-003",
       "filter_key": "id"
     }
   ]

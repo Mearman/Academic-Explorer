@@ -1,0 +1,214 @@
+{
+  "results": [
+    {
+      "id": "https://openalex.org/A1000000000",
+      "display_name": "Mock Author A1000000000",
+      "display_name_alternatives": [],
+      "works_count": 50,
+      "cited_by_count": 500,
+      "ids": {
+        "openalex": "https://openalex.org/A1000000000"
+      },
+      "last_known_institutions": [],
+      "affiliations": [],
+      "x_concepts": [],
+      "updated_date": "2023-01-01",
+      "created_date": "2023-01-01",
+      "summary_stats": {
+        "2yr_mean_citedness": 5,
+        "h_index": 10,
+        "i10_index": 5
+      },
+      "counts_by_year": []
+    },
+    {
+      "id": "https://openalex.org/A1000000001",
+      "display_name": "Mock Author A1000000001",
+      "display_name_alternatives": [],
+      "works_count": 50,
+      "cited_by_count": 500,
+      "ids": {
+        "openalex": "https://openalex.org/A1000000001"
+      },
+      "last_known_institutions": [],
+      "affiliations": [],
+      "x_concepts": [],
+      "updated_date": "2023-01-01",
+      "created_date": "2023-01-01",
+      "summary_stats": {
+        "2yr_mean_citedness": 5,
+        "h_index": 10,
+        "i10_index": 5
+      },
+      "counts_by_year": []
+    },
+    {
+      "id": "https://openalex.org/A1000000002",
+      "display_name": "Mock Author A1000000002",
+      "display_name_alternatives": [],
+      "works_count": 50,
+      "cited_by_count": 500,
+      "ids": {
+        "openalex": "https://openalex.org/A1000000002"
+      },
+      "last_known_institutions": [],
+      "affiliations": [],
+      "x_concepts": [],
+      "updated_date": "2023-01-01",
+      "created_date": "2023-01-01",
+      "summary_stats": {
+        "2yr_mean_citedness": 5,
+        "h_index": 10,
+        "i10_index": 5
+      },
+      "counts_by_year": []
+    },
+    {
+      "id": "https://openalex.org/A1000000003",
+      "display_name": "Mock Author A1000000003",
+      "display_name_alternatives": [],
+      "works_count": 50,
+      "cited_by_count": 500,
+      "ids": {
+        "openalex": "https://openalex.org/A1000000003"
+      },
+      "last_known_institutions": [],
+      "affiliations": [],
+      "x_concepts": [],
+      "updated_date": "2023-01-01",
+      "created_date": "2023-01-01",
+      "summary_stats": {
+        "2yr_mean_citedness": 5,
+        "h_index": 10,
+        "i10_index": 5
+      },
+      "counts_by_year": []
+    },
+    {
+      "id": "https://openalex.org/A1000000004",
+      "display_name": "Mock Author A1000000004",
+      "display_name_alternatives": [],
+      "works_count": 50,
+      "cited_by_count": 500,
+      "ids": {
+        "openalex": "https://openalex.org/A1000000004"
+      },
+      "last_known_institutions": [],
+      "affiliations": [],
+      "x_concepts": [],
+      "updated_date": "2023-01-01",
+      "created_date": "2023-01-01",
+      "summary_stats": {
+        "2yr_mean_citedness": 5,
+        "h_index": 10,
+        "i10_index": 5
+      },
+      "counts_by_year": []
+    },
+    {
+      "id": "https://openalex.org/A1000000005",
+      "display_name": "Mock Author A1000000005",
+      "display_name_alternatives": [],
+      "works_count": 50,
+      "cited_by_count": 500,
+      "ids": {
+        "openalex": "https://openalex.org/A1000000005"
+      },
+      "last_known_institutions": [],
+      "affiliations": [],
+      "x_concepts": [],
+      "updated_date": "2023-01-01",
+      "created_date": "2023-01-01",
+      "summary_stats": {
+        "2yr_mean_citedness": 5,
+        "h_index": 10,
+        "i10_index": 5
+      },
+      "counts_by_year": []
+    },
+    {
+      "id": "https://openalex.org/A1000000006",
+      "display_name": "Mock Author A1000000006",
+      "display_name_alternatives": [],
+      "works_count": 50,
+      "cited_by_count": 500,
+      "ids": {
+        "openalex": "https://openalex.org/A1000000006"
+      },
+      "last_known_institutions": [],
+      "affiliations": [],
+      "x_concepts": [],
+      "updated_date": "2023-01-01",
+      "created_date": "2023-01-01",
+      "summary_stats": {
+        "2yr_mean_citedness": 5,
+        "h_index": 10,
+        "i10_index": 5
+      },
+      "counts_by_year": []
+    },
+    {
+      "id": "https://openalex.org/A1000000007",
+      "display_name": "Mock Author A1000000007",
+      "display_name_alternatives": [],
+      "works_count": 50,
+      "cited_by_count": 500,
+      "ids": {
+        "openalex": "https://openalex.org/A1000000007"
+      },
+      "last_known_institutions": [],
+      "affiliations": [],
+      "x_concepts": [],
+      "updated_date": "2023-01-01",
+      "created_date": "2023-01-01",
+      "summary_stats": {
+        "2yr_mean_citedness": 5,
+        "h_index": 10,
+        "i10_index": 5
+      },
+      "counts_by_year": []
+    },
+    {
+      "id": "https://openalex.org/A1000000008",
+      "display_name": "Mock Author A1000000008",
+      "display_name_alternatives": [],
+      "works_count": 50,
+      "cited_by_count": 500,
+      "ids": {
+        "openalex": "https://openalex.org/A1000000008"
+      },
+      "last_known_institutions": [],
+      "affiliations": [],
+      "x_concepts": [],
+      "updated_date": "2023-01-01",
+      "created_date": "2023-01-01",
+      "summary_stats": {
+        "2yr_mean_citedness": 5,
+        "h_index": 10,
+        "i10_index": 5
+      },
+      "counts_by_year": []
+    },
+    {
+      "id": "https://openalex.org/A1000000009",
+      "display_name": "Mock Author A1000000009",
+      "display_name_alternatives": [],
+      "works_count": 50,
+      "cited_by_count": 500,
+      "ids": {
+        "openalex": "https://openalex.org/A1000000009"
+      },
+      "last_known_institutions": [],
+      "affiliations": [],
+      "x_concepts": [],
+      "updated_date": "2023-01-01",
+      "created_date": "2023-01-01",
+      "summary_stats": {
+        "2yr_mean_citedness": 5,
+        "h_index": 10,
+        "i10_index": 5
+      },
+      "counts_by_year": []
+    }
+  ]
+}

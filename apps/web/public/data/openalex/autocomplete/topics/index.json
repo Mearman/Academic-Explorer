@@ -1,16 +1,16 @@
 {
-  "lastUpdated": "2025-11-04T21:15:22.498Z",
+  "lastUpdated": "2025-11-04T23:01:52.914Z",
   "files": {
     "query=q=artificial+intelligence": {
       "url": "https://api.openalex.org/autocomplete/topics?q=artificial+intelligence",
       "$ref": "./query=q=artificial+intelligence.json",
-      "lastRetrieved": "2025-11-04T21:15:20.141Z",
+      "lastRetrieved": "2025-11-04T23:01:46.951Z",
       "contentHash": "dd796f6d32a769cc"
     },
     "query=q=Machine+Learning": {
       "url": "https://api.openalex.org/autocomplete/topics?q=Machine+Learning",
       "$ref": "./query=q=Machine+Learning.json",
-      "lastRetrieved": "2025-11-04T21:15:22.496Z",
+      "lastRetrieved": "2025-11-04T23:01:52.911Z",
       "contentHash": "dd796f6d32a769cc"
     }
   }

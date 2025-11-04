@@ -1,10 +1,13 @@
 {
-  "lastUpdated": "2025-10-11T15:48:32.863Z",
-  "files": {},
+  "lastUpdated": "2025-11-04T23:00:28.792Z",
   "directories": {
     "works": {
       "$ref": "./works",
       "lastModified": "2025-10-11T15:48:32.728Z"
+    },
+    "general": {
+      "$ref": "./general",
+      "lastModified": "2025-11-04T23:00:28.792Z"
     }
   }
 }
