@@ -25,6 +25,7 @@ import { LeftSidebarDynamic } from "./LeftSidebarDynamic";
 import { RightSidebarDynamic } from "./RightSidebarDynamic";
 import { LeftRibbon } from "./LeftRibbon";
 import { RightRibbon } from "./RightRibbon";
+import { HeaderSearchInput } from "./HeaderSearchInput";
 import { useLayoutStore, useLayoutActions } from "@/stores/layout-store";
 
 interface MainLayoutProps {
@@ -182,6 +183,10 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             <Text size="xl" fw={600} c="blue">
               Academic Explorer
             </Text>
+          </Group>
+
+          <Group gap="md">
+            <HeaderSearchInput />
           </Group>
 
           <Group gap="md">
