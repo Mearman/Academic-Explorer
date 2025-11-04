@@ -263,9 +263,10 @@ export class DiskCacheWriter {
       // Ensure directory structure exists
       await this.ensureDirectoryStructure(filePaths.directoryPath);
 
-      // Prepare content
-      const content = JSON.stringify(data.responseData, null, 2);
-      const newContentHash = await generateContentHash(data.responseData);
+      // Prepare content - exclude meta field from cached responses
+      const responseDataToCache = this.excludeMetaField(data.responseData);
+      const content = JSON.stringify(responseDataToCache, null, 2);
+      const newContentHash = await generateContentHash(responseDataToCache);
       const newLastRetrieved = new Date().toISOString();
 
       const baseName = pathModule.basename(filePaths.dataFile, ".json");
@@ -554,6 +555,22 @@ export class DiskCacheWriter {
 
     // Default fallback
     return "works";
+  }
+
+  /**
+   * Exclude meta field from response data before caching
+   * The meta field contains pagination and timing info that shouldn't be cached
+   */
+  private excludeMetaField(responseData: unknown): unknown {
+    if (
+      typeof responseData === "object" &&
+      responseData !== null &&
+      "meta" in responseData
+    ) {
+      const { meta: _meta, ...rest } = responseData as Record<string, unknown>;
+      return rest;
+    }
+    return responseData;
   }
 
   /**
@@ -996,11 +1013,12 @@ export class DiskCacheWriter {
       ) {
         const filename = path.basename(filePaths.dataFile, ".json");
         indexData.files ??= {};
+        const responseDataToCache = this.excludeMetaField(data.responseData);
         indexData.files[filename] = {
           url: data.url,
           $ref: `./${filename}.json`,
           lastRetrieved: new Date().toISOString(),
-          contentHash: await generateContentHash(data.responseData),
+          contentHash: await generateContentHash(responseDataToCache),
         };
         return;
       }
