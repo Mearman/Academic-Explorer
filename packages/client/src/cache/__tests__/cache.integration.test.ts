@@ -15,21 +15,12 @@ import { CacheTier } from "../../internal/static-data-provider";
 // Mock the static data provider
 vi.mock("../../internal/static-data-provider", () => ({
   staticDataProvider: {
-    getStaticData: vi.fn().mockResolvedValue(null),
-    hasStaticData: vi.fn().mockReturnValue(false),
-    getCacheStatistics: vi.fn().mockReturnValue({
-      totalSize: 0,
-      memorySize: 0,
-      diskSize: 0,
-      githubPagesSize: 0,
-      entries: [],
-    }),
-    clearCache: vi.fn().mockResolvedValue(undefined),
-    getEnvironmentInfo: vi.fn().mockReturnValue({
-      isDevelopment: false,
-      isProduction: true,
-      isTest: true,
-    }),
+    configure: vi.fn(),
+    getStaticData: vi.fn(),
+    hasStaticData: vi.fn(),
+    getCacheStatistics: vi.fn(),
+    clearCache: vi.fn(),
+    getEnvironmentInfo: vi.fn(),
   },
   CacheTier: {
     MEMORY: "memory",
@@ -171,6 +162,29 @@ describe("Cache Integration - CachedOpenAlexClient", () => {
   let cachedClient: CachedOpenAlexClient;
 
   beforeEach(() => {
+    // Reset all mocks before each test
+    vi.clearAllMocks();
+
+    // Reset static data provider mock to default behavior
+    mockedStaticDataProvider.getStaticData.mockResolvedValue({
+      found: false,
+      data: undefined,
+    });
+    mockedStaticDataProvider.hasStaticData.mockResolvedValue(false);
+    mockedStaticDataProvider.getCacheStatistics.mockResolvedValue({
+      totalSize: 0,
+      memorySize: 0,
+      diskSize: 0,
+      githubPagesSize: 0,
+      entries: [],
+    });
+    mockedStaticDataProvider.clearCache.mockResolvedValue(undefined);
+    mockedStaticDataProvider.getEnvironmentInfo.mockReturnValue({
+      isDevelopment: false,
+      isProduction: true,
+      isTest: true,
+    });
+
     const config: CachedClientConfig = {
       staticCacheEnabled: true,
       staticCacheGitHubPagesUrl: "https://example.github.io",
