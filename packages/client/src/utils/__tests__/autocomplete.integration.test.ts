@@ -4,21 +4,21 @@
  */
 
 import { describe, it, expect, beforeAll } from "vitest";
-import { OpenAlexClient } from "../../client";
+import { CachedOpenAlexClient } from "../../cached-client";
 import type { EntityType } from "../../types";
 
 describe("AutocompleteApi Integration Tests", () => {
-  let client: OpenAlexClient;
+  let client: CachedOpenAlexClient;
 
   beforeAll(() => {
-    client = new OpenAlexClient({
+    client = new CachedOpenAlexClient({
       userEmail: "test@academic-explorer.com",
     });
   });
 
   describe("General Autocomplete", () => {
     it("should fetch results across all entity types", async () => {
-      const results = await client.autocomplete.autocompleteGeneral(
+      const results = await client.client.autocomplete.autocompleteGeneral(
         "machine learning",
       );
 
@@ -33,14 +33,14 @@ describe("AutocompleteApi Integration Tests", () => {
 
     it("should handle queries with special characters", async () => {
       const results =
-        await client.autocomplete.autocompleteGeneral("C++ programming");
+        await client.client.autocomplete.autocompleteGeneral("C++ programming");
 
       expect(results).toBeDefined();
       expect(Array.isArray(results)).toBe(true);
     });
 
     it("should return empty array for nonsense query", async () => {
-      const results = await client.autocomplete.autocompleteGeneral(
+      const results = await client.client.autocomplete.autocompleteGeneral(
         "xyzqweasdzxc123456789",
       );
 
@@ -75,8 +75,8 @@ describe("AutocompleteApi Integration Tests", () => {
 
     testCases.forEach(({ entityType, query, expectedType }) => {
       it(`should fetch ${entityType} with autocomplete`, async () => {
-        const methodName = `autocomplete${entityType.charAt(0).toUpperCase() + entityType.slice(1)}` as keyof typeof client.autocomplete;
-        const method = client.autocomplete[methodName] as (
+        const methodName = `autocomplete${entityType.charAt(0).toUpperCase() + entityType.slice(1)}` as keyof typeof client.client.autocomplete;
+        const method = client.client.autocomplete[methodName] as (
           query: string,
         ) => Promise<unknown[]>;
 
@@ -101,7 +101,7 @@ describe("AutocompleteApi Integration Tests", () => {
 
   describe("Response Structure", () => {
     it("should return results with required fields", async () => {
-      const results = await client.autocomplete.autocompleteWorks(
+      const results = await client.client.autocomplete.autocompleteWorks(
         "machine learning",
       );
 
@@ -116,7 +116,7 @@ describe("AutocompleteApi Integration Tests", () => {
     });
 
     it("should include optional fields when available", async () => {
-      const results = await client.autocomplete.autocompleteWorks(
+      const results = await client.client.autocomplete.autocompleteWorks(
         "neural networks",
       );
 
@@ -135,7 +135,7 @@ describe("AutocompleteApi Integration Tests", () => {
 
   describe("Sorting and Ranking", () => {
     it("should return results sorted by relevance/citation count", async () => {
-      const results = await client.autocomplete.autocompleteWorks(
+      const results = await client.client.autocomplete.autocompleteWorks(
         "artificial intelligence",
       );
 
@@ -159,13 +159,13 @@ describe("AutocompleteApi Integration Tests", () => {
   describe("Error Handling", () => {
     it("should handle empty query gracefully", async () => {
       await expect(
-        client.autocomplete.autocompleteGeneral(""),
+        client.client.autocomplete.autocompleteGeneral(""),
       ).rejects.toThrow("Query string is required");
     });
 
     it("should handle whitespace-only query", async () => {
       await expect(
-        client.autocomplete.autocompleteGeneral("   "),
+        client.client.autocomplete.autocompleteGeneral("   "),
       ).rejects.toThrow("Query string is required");
     });
   });
@@ -173,7 +173,7 @@ describe("AutocompleteApi Integration Tests", () => {
   describe("Parameter Validation", () => {
     it("should not send format parameter", async () => {
       // This test verifies the fix - format parameter should never be sent
-      const results = await client.autocomplete.autocompleteGeneral("test");
+      const results = await client.client.autocomplete.autocompleteGeneral("test");
 
       // If we get results without 403 error, the parameter is not being sent
       expect(Array.isArray(results)).toBe(true);
@@ -181,7 +181,7 @@ describe("AutocompleteApi Integration Tests", () => {
 
     it("should not send per_page parameter by default", async () => {
       // Default behavior should not include per_page
-      const results = await client.autocomplete.autocompleteGeneral("test");
+      const results = await client.client.autocomplete.autocompleteGeneral("test");
 
       // If we get results without 403 error, the parameter is not being sent incorrectly
       expect(Array.isArray(results)).toBe(true);
@@ -190,7 +190,7 @@ describe("AutocompleteApi Integration Tests", () => {
 
   describe("Real-World Queries", () => {
     it("should find famous authors", async () => {
-      const results = await client.autocomplete.autocompleteAuthors("Marie Curie");
+      const results = await client.client.autocomplete.autocompleteAuthors("Marie Curie");
 
       expect(results.length).toBeGreaterThan(0);
       if (results.length > 0) {
@@ -199,7 +199,7 @@ describe("AutocompleteApi Integration Tests", () => {
     });
 
     it("should find well-known institutions", async () => {
-      const results = await client.autocomplete.autocompleteInstitutions(
+      const results = await client.client.autocomplete.autocompleteInstitutions(
         "Massachusetts Institute of Technology",
       );
 
@@ -215,7 +215,7 @@ describe("AutocompleteApi Integration Tests", () => {
     });
 
     it("should find major journals", async () => {
-      const results = await client.autocomplete.autocompleteSources("Nature");
+      const results = await client.client.autocomplete.autocompleteSources("Nature");
 
       expect(results.length).toBeGreaterThan(0);
       if (results.length > 0) {
@@ -224,7 +224,7 @@ describe("AutocompleteApi Integration Tests", () => {
     });
 
     it("should find popular topics", async () => {
-      const results = await client.autocomplete.autocompleteTopics(
+      const results = await client.client.autocomplete.autocompleteTopics(
         "Machine Learning",
       );
 
@@ -240,7 +240,7 @@ describe("AutocompleteApi Integration Tests", () => {
     it("should complete requests in reasonable time", async () => {
       const startTime = Date.now();
 
-      await client.autocomplete.autocompleteGeneral("test");
+      await client.client.autocomplete.autocompleteGeneral("test");
 
       const duration = Date.now() - startTime;
       // Should complete within 5 seconds
@@ -251,7 +251,7 @@ describe("AutocompleteApi Integration Tests", () => {
       const queries = ["test1", "test2", "test3"];
 
       const results = await Promise.all(
-        queries.map((q) => client.autocomplete.autocompleteGeneral(q)),
+        queries.map((q) => client.client.autocomplete.autocompleteGeneral(q)),
       );
 
       expect(results).toHaveLength(3);
@@ -263,7 +263,7 @@ describe("AutocompleteApi Integration Tests", () => {
 
   describe("Edge Cases", () => {
     it("should handle very short queries", async () => {
-      const results = await client.autocomplete.autocompleteGeneral("AI");
+      const results = await client.client.autocomplete.autocompleteGeneral("AI");
 
       expect(Array.isArray(results)).toBe(true);
     });
@@ -272,13 +272,13 @@ describe("AutocompleteApi Integration Tests", () => {
       const longQuery =
         "machine learning artificial intelligence deep learning neural networks";
 
-      const results = await client.autocomplete.autocompleteGeneral(longQuery);
+      const results = await client.client.autocomplete.autocompleteGeneral(longQuery);
 
       expect(Array.isArray(results)).toBe(true);
     });
 
     it("should handle queries with numbers", async () => {
-      const results = await client.autocomplete.autocompleteGeneral(
+      const results = await client.client.autocomplete.autocompleteGeneral(
         "COVID-19 pandemic 2020",
       );
 
@@ -286,7 +286,7 @@ describe("AutocompleteApi Integration Tests", () => {
     });
 
     it("should handle queries with punctuation", async () => {
-      const results = await client.autocomplete.autocompleteGeneral(
+      const results = await client.client.autocomplete.autocompleteGeneral(
         "machine-learning, AI & neural-networks",
       );
 
@@ -295,7 +295,7 @@ describe("AutocompleteApi Integration Tests", () => {
 
     it("should handle unicode characters", async () => {
       const results =
-        await client.autocomplete.autocompleteGeneral("日本の大学");
+        await client.client.autocomplete.autocompleteGeneral("日本の大学");
 
       expect(Array.isArray(results)).toBe(true);
     });

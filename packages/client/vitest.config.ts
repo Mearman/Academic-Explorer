@@ -27,14 +27,13 @@ export default defineConfig(
             environment: "node",
           },
         },
-        // Integration tests are disabled by default - run with: pnpm test --project=integration
-        // {
-        //   test: {
-        //     name: 'integration',
-        //     include: ['src/**/*.integration.test.ts'],
-        //     environment: 'node',
-        //   },
-        // },
+        {
+          test: {
+            name: "integration",
+            include: ["src/**/*.integration.test.ts"],
+            environment: "node",
+          },
+        },
       ],
     },
   }),
