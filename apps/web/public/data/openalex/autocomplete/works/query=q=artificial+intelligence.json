@@ -1,0 +1,114 @@
+{
+  "results": [
+    {
+      "id": "https://openalex.org/W4207012451",
+      "short_id": "works/W4207012451",
+      "display_name": "artificial intelligence",
+      "hint": "authors unknown",
+      "cited_by_count": 7,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.5040/9781501365287.101",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W4295333447",
+      "short_id": "works/W4295333447",
+      "display_name": "artificial intelligence",
+      "hint": "Martin H. Weik",
+      "cited_by_count": 19,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.1007/1-4020-0613-6_857",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W4299307858",
+      "short_id": "works/W4299307858",
+      "display_name": "artificial intelligence",
+      "hint": "authors unknown",
+      "cited_by_count": 32,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.1007/springerreference_8261",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W4385057300",
+      "short_id": "works/W4385057300",
+      "display_name": "artificial intelligence, n.",
+      "hint": "authors unknown",
+      "cited_by_count": 10,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.1093/oed/3194963277",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W2793101008",
+      "short_id": "works/W2793101008",
+      "display_name": "artificial intelligence based antivirus",
+      "hint": "M Sangeetha",
+      "cited_by_count": 0,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": null,
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W2884430232",
+      "short_id": "works/W2884430232",
+      "display_name": "artificial intelligence and basic income",
+      "hint": "Wonsup Jung",
+      "cited_by_count": 1,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.15750/chss.67.201802.006",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W3188299458",
+      "short_id": "works/W3188299458",
+      "display_name": "artificial intelligence and religion: between existing ai and grand narratives",
+      "hint": "Boris Rähme",
+      "cited_by_count": 48,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.1080/17432200.2021.1947030",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W4401881916",
+      "short_id": "works/W4401881916",
+      "display_name": "Influencer Marketing and Artificial IntelligenceInfluencer Marketing and Artificial Intelligence",
+      "hint": "Deniz Zeren, İsmail Erkan, Abdulaziz Elwalda, et al.",
+      "cited_by_count": 0,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.4018/979-8-3693-6145-0.ch009",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W4235817418",
+      "short_id": "works/W4235817418",
+      "display_name": "Artificial Intelligences",
+      "hint": "authors unknown",
+      "cited_by_count": 4,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.5040/9781474236829.ch-003",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W3179661880",
+      "short_id": "works/W3179661880",
+      "display_name": "The Future of Artificial Intelligence: Toward Truly Intelligent Artificial Intelligences",
+      "hint": "Ramón López de Mántaras",
+      "cited_by_count": 1,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": null,
+      "filter_key": "id"
+    }
+  ]
+}

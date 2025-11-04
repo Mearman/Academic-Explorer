@@ -1,0 +1,26 @@
+{
+  "results": [
+    {
+      "id": "https://openalex.org/A4296306023",
+      "short_id": "authors/A4296306023",
+      "display_name": "test2",
+      "hint": null,
+      "cited_by_count": 0,
+      "works_count": 8,
+      "entity_type": "author",
+      "external_id": null,
+      "filter_key": "authorships.author.id"
+    },
+    {
+      "id": "https://openalex.org/A5094307578",
+      "short_id": "authors/A5094307578",
+      "display_name": "test test.com",
+      "hint": null,
+      "cited_by_count": 0,
+      "works_count": 10,
+      "entity_type": "author",
+      "external_id": null,
+      "filter_key": "authorships.author.id"
+    }
+  ]
+}

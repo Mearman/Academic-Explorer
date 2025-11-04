@@ -1,0 +1,114 @@
+{
+  "results": [
+    {
+      "id": "https://openalex.org/S4404662976",
+      "short_id": "sources/S4404662976",
+      "display_name": "Nature's symphony",
+      "hint": "TSF Nexus",
+      "cited_by_count": 3,
+      "works_count": 25,
+      "entity_type": "source",
+      "external_id": "3007-2026",
+      "filter_key": "primary_location.source.id"
+    },
+    {
+      "id": "https://openalex.org/S4210237454",
+      "short_id": "sources/S4210237454",
+      "display_name": "Nature China",
+      "hint": "Springer Nature",
+      "cited_by_count": 24,
+      "works_count": 1363,
+      "entity_type": "source",
+      "external_id": "1751-5793",
+      "filter_key": "primary_location.source.id"
+    },
+    {
+      "id": "https://openalex.org/S81889800",
+      "short_id": "sources/S81889800",
+      "display_name": "Natureza & Conservação",
+      "hint": "Elsevier",
+      "cited_by_count": 8727,
+      "works_count": 293,
+      "entity_type": "source",
+      "external_id": "1679-0073",
+      "filter_key": "primary_location.source.id"
+    },
+    {
+      "id": "https://openalex.org/S137773608",
+      "short_id": "sources/S137773608",
+      "display_name": "Nature",
+      "hint": "Springer Nature",
+      "cited_by_count": 26225053,
+      "works_count": 446231,
+      "entity_type": "source",
+      "external_id": "0028-0836",
+      "filter_key": "primary_location.source.id"
+    },
+    {
+      "id": "https://openalex.org/S4404662016",
+      "short_id": "sources/S4404662016",
+      "display_name": "Nature Webcasts.",
+      "hint": "Nature Publishing Group UK",
+      "cited_by_count": 4,
+      "works_count": 5,
+      "entity_type": "source",
+      "external_id": "2731-6173",
+      "filter_key": "primary_location.source.id"
+    },
+    {
+      "id": "https://openalex.org/S124624646",
+      "short_id": "sources/S124624646",
+      "display_name": "Nature and Culture",
+      "hint": "Berghahn Books",
+      "cited_by_count": 4843,
+      "works_count": 364,
+      "entity_type": "source",
+      "external_id": "1558-5468",
+      "filter_key": "primary_location.source.id"
+    },
+    {
+      "id": "https://openalex.org/S4210225191",
+      "short_id": "sources/S4210225191",
+      "display_name": "Naturen",
+      "hint": "Scandinavian University Press / Universitetsforlaget AS",
+      "cited_by_count": 168,
+      "works_count": 1044,
+      "entity_type": "source",
+      "external_id": "0028-0887",
+      "filter_key": "primary_location.source.id"
+    },
+    {
+      "id": "https://openalex.org/S2764884935",
+      "short_id": "sources/S2764884935",
+      "display_name": "Nature Ecology & Evolution",
+      "hint": "Springer Nature",
+      "cited_by_count": 163755,
+      "works_count": 2876,
+      "entity_type": "source",
+      "external_id": "2397-334X",
+      "filter_key": "primary_location.source.id"
+    },
+    {
+      "id": "https://openalex.org/S4306520593",
+      "short_id": "sources/S4306520593",
+      "display_name": "Naturens Verden",
+      "hint": "host organization unknown",
+      "cited_by_count": 6,
+      "works_count": 61,
+      "entity_type": "source",
+      "external_id": null,
+      "filter_key": "primary_location.source.id"
+    },
+    {
+      "id": "https://openalex.org/S120397320",
+      "short_id": "sources/S120397320",
+      "display_name": "Nature Reviews Gastroenterology & Hepatology",
+      "hint": "Springer Nature",
+      "cited_by_count": 248575,
+      "works_count": 3269,
+      "entity_type": "source",
+      "external_id": "1759-5045",
+      "filter_key": "primary_location.source.id"
+    }
+  ]
+}

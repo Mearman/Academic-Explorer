@@ -1,0 +1,114 @@
+{
+  "results": [
+    {
+      "id": "https://openalex.org/T12535",
+      "short_id": "topics/T12535",
+      "display_name": "Machine Learning and Data Classification",
+      "hint": "This cluster of papers focuses on the challenges and techniques for learning with noisy labels in machine learning, including methods for hyperparameter optimization, instance selection, robust learning, and automated machine learning. It also explores the use of meta-learning and deep neural networks in handling noisy label problems, particularly in the context of classification tasks and learning from positive and unlabeled data.",
+      "cited_by_count": 661971,
+      "works_count": 36533,
+      "entity_type": "topic",
+      "external_id": "https://en.wikipedia.org/wiki/Learning_with_noisy_labels",
+      "filter_key": "topics.id"
+    },
+    {
+      "id": "https://openalex.org/T12254",
+      "short_id": "topics/T12254",
+      "display_name": "Machine Learning in Bioinformatics",
+      "hint": "This cluster of papers focuses on the prediction of protein subcellular localization using various computational methods such as amino acid composition, machine learning algorithms like support vector machines, and the analysis of signal peptides and transmembrane topology. The research aims to improve the accuracy and reliability of predicting the subcellular location of proteins, which has significant implications for understanding protein function and cellular processes.",
+      "cited_by_count": 687428,
+      "works_count": 274265,
+      "entity_type": "topic",
+      "external_id": "https://en.wikipedia.org/wiki/Subcellular_localization_prediction",
+      "filter_key": "topics.id"
+    },
+    {
+      "id": "https://openalex.org/T11948",
+      "short_id": "topics/T11948",
+      "display_name": "Machine Learning in Materials Science",
+      "hint": "This cluster of papers focuses on the application of materials informatics, machine learning, and high-throughput computational techniques to accelerate materials innovation. It encompasses topics such as property predictions, crystal structures, molecular dynamics, and data mining in the context of materials science and engineering.",
+      "cited_by_count": 886725,
+      "works_count": 122334,
+      "entity_type": "topic",
+      "external_id": "https://en.wikipedia.org/wiki/Materials_informatics",
+      "filter_key": "topics.id"
+    },
+    {
+      "id": "https://openalex.org/T12072",
+      "short_id": "topics/T12072",
+      "display_name": "Machine Learning and Algorithms",
+      "hint": "This cluster of papers revolves around the topic of active learning in machine learning research. It covers various aspects such as semi-supervised learning, deep learning, Gaussian processes, image classification, text categorization, batch mode active learning, statistical guarantees, and human-in-the-loop approaches.",
+      "cited_by_count": 654097,
+      "works_count": 33143,
+      "entity_type": "topic",
+      "external_id": "https://en.wikipedia.org/wiki/Active_learning_(machine_learning)",
+      "filter_key": "topics.id"
+    },
+    {
+      "id": "https://openalex.org/T12676",
+      "short_id": "topics/T12676",
+      "display_name": "Machine Learning and ELM",
+      "hint": "This cluster of papers focuses on the theory, applications, and advancements in Extreme Learning Machines (ELM), a machine learning framework based on feedforward neural networks with random hidden nodes. The papers cover topics such as incremental learning, classification, regression, ensemble methods, kernel-based models, and their applications in various domains.",
+      "cited_by_count": 252183,
+      "works_count": 16131,
+      "entity_type": "topic",
+      "external_id": "https://en.wikipedia.org/wiki/Extreme_learning_machine",
+      "filter_key": "topics.id"
+    },
+    {
+      "id": "https://openalex.org/T13702",
+      "short_id": "topics/T13702",
+      "display_name": "Machine Learning in Healthcare",
+      "hint": "This cluster of papers focuses on the application of deep learning techniques in healthcare, particularly in the analysis of electronic health records (EHR). The papers cover a wide range of topics including predictive modeling, patient similarity, disease risk prediction, medical concept embedding, and temporal data analysis. The goal is to leverage deep learning to improve healthcare decision-making and enable precision medicine.",
+      "cited_by_count": 289024,
+      "works_count": 34791,
+      "entity_type": "topic",
+      "external_id": "https://en.wikipedia.org/wiki/Deep_learning#Applications_in_healthcare",
+      "filter_key": "topics.id"
+    },
+    {
+      "id": "https://openalex.org/T12422",
+      "short_id": "topics/T12422",
+      "display_name": "Radiomics and Machine Learning in Medical Imaging",
+      "hint": "This cluster of papers focuses on the application of radiomics, a quantitative analysis of medical images, particularly in the context of cancer imaging and precision medicine. It explores the extraction of advanced features from medical images, the use of machine learning for predictive modeling, and the assessment of tumor heterogeneity through texture analysis.",
+      "cited_by_count": 883782,
+      "works_count": 130604,
+      "entity_type": "topic",
+      "external_id": "https://en.wikipedia.org/wiki/Radiomics",
+      "filter_key": "topics.id"
+    },
+    {
+      "id": "https://openalex.org/T13693",
+      "short_id": "topics/T13693",
+      "display_name": "Smart Systems and Machine Learning",
+      "hint": "This cluster of papers focuses on cognitive radio networks, machine learning, and smart technologies for applications such as spectrum handovers, smart farming, urban sustainability, IoT, and wireless sensor networks. It also addresses security techniques, energy efficiency, and social awareness in the context of cognitive radio networks.",
+      "cited_by_count": 14836,
+      "works_count": 4921,
+      "entity_type": "topic",
+      "external_id": "https://en.wikipedia.org/wiki/Cognitive_radio",
+      "filter_key": "topics.id"
+    },
+    {
+      "id": "https://openalex.org/T11689",
+      "short_id": "topics/T11689",
+      "display_name": "Adversarial Robustness in Machine Learning",
+      "hint": "This cluster of papers focuses on the robustness of deep learning models against adversarial attacks, exploring topics such as adversarial examples, security, uncertainty estimation, defenses, and verification. It delves into the challenges and potential solutions for ensuring the resilience of neural networks in the face of malicious inputs.",
+      "cited_by_count": 503844,
+      "works_count": 46193,
+      "entity_type": "topic",
+      "external_id": "https://en.wikipedia.org/wiki/Adversarial_machine_learning",
+      "filter_key": "topics.id"
+    },
+    {
+      "id": "https://openalex.org/T10764",
+      "short_id": "topics/T10764",
+      "display_name": "Privacy-Preserving Technologies in Data",
+      "hint": "This cluster of papers focuses on privacy-preserving techniques for data analysis and machine learning, including topics such as differential privacy, federated learning, k-anonymity, secure computation, and location privacy. The papers explore methods to protect sensitive information while performing data mining, machine learning, and statistical analysis.",
+      "cited_by_count": 924835,
+      "works_count": 72519,
+      "entity_type": "topic",
+      "external_id": "https://en.wikipedia.org/wiki/Differential_privacy",
+      "filter_key": "topics.id"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "lastUpdated": "2025-11-04T20:29:20.109Z",
+  "files": {
+    "query=q=Nature": {
+      "url": "https://api.openalex.org/autocomplete/sources?q=Nature",
+      "$ref": "./query=q=Nature.json",
+      "lastRetrieved": "2025-11-04T20:29:20.108Z",
+      "contentHash": "dd796f6d32a769cc"
+    }
+  }
+}

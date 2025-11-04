@@ -1,0 +1,114 @@
+{
+  "results": [
+    {
+      "id": "https://openalex.org/A5068773159",
+      "short_id": "authors/A5068773159",
+      "display_name": "Marie Curie",
+      "hint": null,
+      "cited_by_count": 0,
+      "works_count": 1,
+      "entity_type": "author",
+      "external_id": null,
+      "filter_key": "authorships.author.id"
+    },
+    {
+      "id": "https://openalex.org/A5094448657",
+      "short_id": "authors/A5094448657",
+      "display_name": "Marie Curie",
+      "hint": "Massachusetts Institute of Technology, USA",
+      "cited_by_count": 0,
+      "works_count": 5,
+      "entity_type": "author",
+      "external_id": null,
+      "filter_key": "authorships.author.id"
+    },
+    {
+      "id": "https://openalex.org/A5099454797",
+      "short_id": "authors/A5099454797",
+      "display_name": "Marie Curie",
+      "hint": "European Society for Therapeutic Radiology and Oncology, Belgium",
+      "cited_by_count": 0,
+      "works_count": 1,
+      "entity_type": "author",
+      "external_id": null,
+      "filter_key": "authorships.author.id"
+    },
+    {
+      "id": "https://openalex.org/A5094092233",
+      "short_id": "authors/A5094092233",
+      "display_name": "Marie Curie",
+      "hint": null,
+      "cited_by_count": 0,
+      "works_count": 1,
+      "entity_type": "author",
+      "external_id": null,
+      "filter_key": "authorships.author.id"
+    },
+    {
+      "id": "https://openalex.org/A2063766281",
+      "short_id": "authors/A2063766281",
+      "display_name": "Marie Curie",
+      "hint": null,
+      "cited_by_count": 7,
+      "works_count": 771,
+      "entity_type": "author",
+      "external_id": null,
+      "filter_key": "authorships.author.id"
+    },
+    {
+      "id": "https://openalex.org/A5095305276",
+      "short_id": "authors/A5095305276",
+      "display_name": "Marie Curie",
+      "hint": "Matrix Research (United States), USA",
+      "cited_by_count": 0,
+      "works_count": 1,
+      "entity_type": "author",
+      "external_id": null,
+      "filter_key": "authorships.author.id"
+    },
+    {
+      "id": "https://openalex.org/A5046933271",
+      "short_id": "authors/A5046933271",
+      "display_name": "Marie Curie",
+      "hint": null,
+      "cited_by_count": 0,
+      "works_count": 2,
+      "entity_type": "author",
+      "external_id": null,
+      "filter_key": "authorships.author.id"
+    },
+    {
+      "id": "https://openalex.org/A5038745913",
+      "short_id": "authors/A5038745913",
+      "display_name": "Marie Curie",
+      "hint": null,
+      "cited_by_count": 283,
+      "works_count": 85,
+      "entity_type": "author",
+      "external_id": null,
+      "filter_key": "authorships.author.id"
+    },
+    {
+      "id": "https://openalex.org/A2610295041",
+      "short_id": "authors/A2610295041",
+      "display_name": "Marie Curie",
+      "hint": null,
+      "cited_by_count": 0,
+      "works_count": 11,
+      "entity_type": "author",
+      "external_id": null,
+      "filter_key": "authorships.author.id"
+    },
+    {
+      "id": "https://openalex.org/A5024700653",
+      "short_id": "authors/A5024700653",
+      "display_name": "Marie Curie",
+      "hint": "Pioneer (Japan), Japan",
+      "cited_by_count": 0,
+      "works_count": 4,
+      "entity_type": "author",
+      "external_id": null,
+      "filter_key": "authorships.author.id"
+    }
+  ]
+}

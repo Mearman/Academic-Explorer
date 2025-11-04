@@ -1,0 +1,37 @@
+{
+  "results": [
+    {
+      "id": "https://openalex.org/A5035891467",
+      "short_id": "authors/A5035891467",
+      "display_name": "Test Test r",
+      "hint": null,
+      "cited_by_count": 0,
+      "works_count": 1,
+      "entity_type": "author",
+      "external_id": null,
+      "filter_key": "authorships.author.id"
+    },
+    {
+      "id": "https://openalex.org/A5117769069",
+      "short_id": "authors/A5117769069",
+      "display_name": "test",
+      "hint": null,
+      "cited_by_count": 0,
+      "works_count": 1,
+      "entity_type": "author",
+      "external_id": null,
+      "filter_key": "authorships.author.id"
+    },
+    {
+      "id": "https://openalex.org/A5094315720",
+      "short_id": "authors/A5094315720",
+      "display_name": "Test",
+      "hint": null,
+      "cited_by_count": 0,
+      "works_count": 2,
+      "entity_type": "author",
+      "external_id": null,
+      "filter_key": "authorships.author.id"
+    }
+  ]
+}

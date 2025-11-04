@@ -1,0 +1,114 @@
+{
+  "results": [
+    {
+      "id": "https://openalex.org/W2945822029",
+      "short_id": "works/W2945822029",
+      "display_name": "neural networks control of inverted double pendulum",
+      "hint": "David Ha",
+      "cited_by_count": 0,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": null,
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W4240385632",
+      "short_id": "works/W4240385632",
+      "display_name": "neural networks in the human brain under short-term olfactory deprivation",
+      "hint": "Сергій Тукаєв",
+      "cited_by_count": 0,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.26226/morressier.5b31ec5c2afeeb001345b1d6",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W573570576",
+      "short_id": "works/W573570576",
+      "display_name": "neural networks approach to predict sedimentation and climate changes in Arctic Sediment covering last 350 ka",
+      "hint": "M. Sirat, Ala Aldahan, Ulf Nordlund",
+      "cited_by_count": 0,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": null,
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W2382085139",
+      "short_id": "works/W2382085139",
+      "display_name": "ds Using Artificial ds Using Artificial ds Using Artificial Neural Networks in Sahiwal Cattle Neural Networks in Sahiwal Cattle Neural Networks in Sahiwal Cattle Neural Networks in Sahiwal Cattle Neural Networks in Sahiwal Cattle",
+      "hint": "R. S. Gandhi, D. Monalisa, V.B. Dongre, et al.",
+      "cited_by_count": 0,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": null,
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W2186751627",
+      "short_id": "works/W2186751627",
+      "display_name": "FUZZY NEURAL NETWORKS FUZZY NEURAL NETWORKS FUZZY NEURAL NETWORKS FUZZY NEURAL NETWORKS",
+      "hint": "V Suresh kumar, Shobha Nagar",
+      "cited_by_count": 0,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": null,
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W2188177794",
+      "short_id": "works/W2188177794",
+      "display_name": "Eyes Detection by Pulse Coupled Neural Networks Eyes Detection by Pulse Coupled Neural Networks Eyes Detection by Pulse Coupled Neural Networks Eyes Detection by Pulse Coupled Neural Networks",
+      "hint": "Maminiaina Alphonse Rafidison, Andry Auguste Randriamitantsoa, Paul Auguste Randriamitantsoa",
+      "cited_by_count": 0,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": null,
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W2187567013",
+      "short_id": "works/W2187567013",
+      "display_name": "Dynamic Response Of Rc Buildings By Using Artificial Neural Networks Dynamic Response Of Rc Buildings By Using Artificial Neural Networks Dynamic Response Of Rc Buildings By Using Artificial Neural Networks Dynamic Response Of Rc Buildings By Using Artificial Neural Networks",
+      "hint": "M R Anusha, S. B. Vanakudre, P. G. Scholar",
+      "cited_by_count": 0,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": null,
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W589001743",
+      "short_id": "works/W589001743",
+      "display_name": "Ninth Workshop on Virtual Intelligence/Dynamic Neural Networks : academic/industrial/NASA/defense technical interchange and tutorials : international conferences on virtual intelligence/dynamic neural networks--neural networks, fuzzy systems, evolutionary systems, and virtual reality/pulse coupled neural networks, 1998",
+      "hint": "Thomas Lindblad, Mary Lou Padgett, Jason M. Kinser",
+      "cited_by_count": 0,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": null,
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W4401836534",
+      "short_id": "works/W4401836534",
+      "display_name": "Understanding Vector-Valued Neural Networks and Their Relationship With Real and Hypercomplex-Valued Neural Networks: Incorporating intercorrelation between features into neural networks",
+      "hint": "Marcos Eduardo Valle",
+      "cited_by_count": 4,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.1109/msp.2024.3401621",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W2740739384",
+      "short_id": "works/W2740739384",
+      "display_name": "NEURAL NETWORKS USING CONVERGENCE OF DISCRETE-TIME NEURAL NETWORKS WITH DELAYS AND DYNAMIC RECURRENT NEURAL NETWORKS",
+      "hint": "R. Akila, S. Ramadevi",
+      "cited_by_count": 0,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": null,
+      "filter_key": "id"
+    }
+  ]
+}

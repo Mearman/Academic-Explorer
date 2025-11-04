@@ -1,0 +1,15 @@
+{
+  "results": [
+    {
+      "id": "https://openalex.org/C108583219",
+      "short_id": "concepts/C108583219",
+      "display_name": "Deep learning",
+      "hint": "branch of machine learning",
+      "cited_by_count": 10520512,
+      "works_count": 708578,
+      "entity_type": "concept",
+      "external_id": "https://www.wikidata.org/wiki/Q197536",
+      "filter_key": "concepts.id"
+    }
+  ]
+}

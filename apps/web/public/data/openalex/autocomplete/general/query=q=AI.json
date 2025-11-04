@@ -1,0 +1,114 @@
+{
+  "results": [
+    {
+      "id": "https://openalex.org/I24354313",
+      "short_id": "institutions/I24354313",
+      "display_name": "University of Buenos Aires",
+      "hint": "Buenos Aires, Argentina",
+      "cited_by_count": 5194286,
+      "works_count": 121221,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/0081fs513",
+      "filter_key": "authorships.institutions.lineage"
+    },
+    {
+      "id": "https://openalex.org/I63739035",
+      "short_id": "institutions/I63739035",
+      "display_name": "All India Institute of Medical Sciences",
+      "hint": "New Delhi, India",
+      "cited_by_count": 3465943,
+      "works_count": 76103,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/02dwcqs71",
+      "filter_key": "authorships.institutions.lineage"
+    },
+    {
+      "id": "https://openalex.org/I107720978",
+      "short_id": "institutions/I107720978",
+      "display_name": "Ain Shams University",
+      "hint": "Cairo, Egypt",
+      "cited_by_count": 1722047,
+      "works_count": 79486,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/00cb9w016",
+      "filter_key": "authorships.institutions.lineage"
+    },
+    {
+      "id": "https://openalex.org/I4210133851",
+      "short_id": "institutions/I4210133851",
+      "display_name": "Aichi Cancer Center",
+      "hint": "Nagoya, Japan",
+      "cited_by_count": 1402499,
+      "works_count": 12738,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/03kfmm080",
+      "filter_key": "authorships.institutions.lineage"
+    },
+    {
+      "id": "https://openalex.org/I1280414376",
+      "short_id": "institutions/I1280414376",
+      "display_name": "United States Air Force Research Laboratory",
+      "hint": "Wright-Patterson AFB, USA",
+      "cited_by_count": 1264924,
+      "works_count": 32845,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/02e2egq70",
+      "filter_key": "authorships.institutions.lineage"
+    },
+    {
+      "id": "https://openalex.org/I157122930",
+      "short_id": "institutions/I157122930",
+      "display_name": "Aaron Diamond AIDS Research Center",
+      "hint": "New York, USA",
+      "cited_by_count": 808506,
+      "works_count": 1462,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/04jdq2t93",
+      "filter_key": "authorships.institutions.lineage"
+    },
+    {
+      "id": "https://openalex.org/I4210114008",
+      "short_id": "institutions/I4210114008",
+      "display_name": "Laboratory for Atmospheric and Space Physics",
+      "hint": "Boulder, USA",
+      "cited_by_count": 800717,
+      "works_count": 9077,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/01fcjzv38",
+      "filter_key": "authorships.institutions.lineage"
+    },
+    {
+      "id": "https://openalex.org/I4210113904",
+      "short_id": "institutions/I4210113904",
+      "display_name": "National Center for HIV/AIDS Viral Hepatitis STD and TB Prevention",
+      "hint": "Atlanta, USA",
+      "cited_by_count": 703833,
+      "works_count": 3687,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/01wjn2x92",
+      "filter_key": "authorships.institutions.lineage"
+    },
+    {
+      "id": "https://openalex.org/I4210114103",
+      "short_id": "institutions/I4210114103",
+      "display_name": "FIRC Institute of Molecular Oncology",
+      "hint": "Milan, Italy",
+      "cited_by_count": 670656,
+      "works_count": 3158,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/02hcsa680",
+      "filter_key": "authorships.institutions.lineage"
+    },
+    {
+      "id": "https://openalex.org/I16528096",
+      "short_id": "institutions/I16528096",
+      "display_name": "Aichi Medical University",
+      "hint": "Nagakute, Japan",
+      "cited_by_count": 624002,
+      "works_count": 12220,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/02h6cs343",
+      "filter_key": "authorships.institutions.lineage"
+    }
+  ]
+}

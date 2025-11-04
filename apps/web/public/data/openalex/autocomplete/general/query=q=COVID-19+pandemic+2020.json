@@ -1,0 +1,114 @@
+{
+  "results": [
+    {
+      "id": "https://openalex.org/W3048135604",
+      "short_id": "works/W3048135604",
+      "display_name": "Travel risk perception and travel behaviour during the COVID-19 pandemic 2020: a case study of the DACH region",
+      "hint": "Larissa Neuburger, Roman Egger",
+      "cited_by_count": 634,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.1080/13683500.2020.1803807",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W3210339563",
+      "short_id": "works/W3210339563",
+      "display_name": "Prevalent, incident, and persistent insomnia in a population-based cohort tested before (2018) and during the first-wave of COVID-19 pandemic (2020)",
+      "hint": "Charles M. Morin, Lydi‐Anne Vézina‐Im, Hans Ivers, et al.",
+      "cited_by_count": 108,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.1093/sleep/zsab258",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W4293174788",
+      "short_id": "works/W4293174788",
+      "display_name": "Tuberculosis Situation in the Years of the COVID-19 Pandemic – 2020-2021",
+      "hint": "I. А. Vаsilyevа, Vadim Testov, С. А. Стерликов",
+      "cited_by_count": 75,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.21292/2075-1230-2022-100-3-6-12",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W4283392498",
+      "short_id": "works/W4283392498",
+      "display_name": "Leading causes of excess mortality in Mexico during the COVID-19 pandemic 2020–2021: A death certificates study in a middle-income country",
+      "hint": "Lina Sofia Palacio-Mejía, Juan Eugenio Hernández‐Ávila, Mauricio Hernández‐Ávila, et al.",
+      "cited_by_count": 71,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.1016/j.lana.2022.100303",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W4280521560",
+      "short_id": "works/W4280521560",
+      "display_name": "Collateral Impact of Public Health and Social Measures on Respiratory Virus Activity during the COVID-19 Pandemic 2020–2021",
+      "hint": "Chiara Achangwa, Huikyung Park, Sukhyun Ryu, et al.",
+      "cited_by_count": 67,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.3390/v14051071",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W4281709983",
+      "short_id": "works/W4281709983",
+      "display_name": "Emergency Department and Intensive Care Unit Overcrowding and Ventilator Shortages in US Hospitals During the COVID-19 Pandemic, 2020-2021",
+      "hint": "Paramjit Sandhu, Ami B. Shah, Farida Ahmad, et al.",
+      "cited_by_count": 49,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.1177/00333549221091781",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W4367595682",
+      "short_id": "works/W4367595682",
+      "display_name": "All-cause and pathogen-specific lower respiratory tract infection hospital admissions in children younger than 5 years during the COVID-19 pandemic (2020–22) compared with the pre-pandemic period (2015–19) in South Africa: an observational study",
+      "hint": "Alane Izu, Marta C. Nunes, Fatima Solomon, et al.",
+      "cited_by_count": 42,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.1016/s1473-3099(23)00200-1",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W4281930372",
+      "short_id": "works/W4281930372",
+      "display_name": "Experiences of personal protective equipment by Australian healthcare workers during the COVID-19 pandemic, 2020: A cross-sectional study",
+      "hint": "Darshini Ayton, Sze‐Ee Soh, Danielle Berkovic, et al.",
+      "cited_by_count": 39,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.1371/journal.pone.0269484",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W4308485652",
+      "short_id": "works/W4308485652",
+      "display_name": "Excess all-cause mortality in the USA and Europe during the COVID-19 pandemic, 2020 and 2021",
+      "hint": "Lauren M. Rossen, Sarah Kristine Nørgaard, Paul D Sutton, et al.",
+      "cited_by_count": 34,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.1038/s41598-022-21844-7",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W3155581755",
+      "short_id": "works/W3155581755",
+      "display_name": "Different Trends in Excess Mortality in a Central European Country Compared to Main European Regions in the Year of the COVID-19 Pandemic (2020): a Hungarian Analysis",
+      "hint": "Krisztina Bogos, Zoltán Kiss, Anna Kerpel Fronius, et al.",
+      "cited_by_count": 33,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.3389/pore.2021.1609774",
+      "filter_key": "id"
+    }
+  ]
+}

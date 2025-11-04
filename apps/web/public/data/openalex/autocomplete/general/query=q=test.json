@@ -1,0 +1,114 @@
+{
+  "results": [
+    {
+      "id": "https://openalex.org/I1330165540",
+      "short_id": "institutions/I1330165540",
+      "display_name": "Federal Institute For Materials Research and Testing",
+      "hint": "Berlin, Germany",
+      "cited_by_count": 744603,
+      "works_count": 14208,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/03x516a66",
+      "filter_key": "authorships.institutions.lineage"
+    },
+    {
+      "id": "https://openalex.org/I1341030882",
+      "short_id": "institutions/I1341030882",
+      "display_name": "Educational Testing Service",
+      "hint": "Princeton, USA",
+      "cited_by_count": 549119,
+      "works_count": 7228,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/03b5q4637",
+      "filter_key": "authorships.institutions.lineage"
+    },
+    {
+      "id": "https://openalex.org/I4210160718",
+      "short_id": "institutions/I4210160718",
+      "display_name": "Institute of Quality Standards and Testing Technology for Agro Products",
+      "hint": "Beijing, China",
+      "cited_by_count": 123904,
+      "works_count": 1725,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/05khqm878",
+      "filter_key": "authorships.institutions.lineage"
+    },
+    {
+      "id": "https://openalex.org/I4210109015",
+      "short_id": "institutions/I4210109015",
+      "display_name": "Analysis and Testing Centre",
+      "hint": "Haikou, China",
+      "cited_by_count": 75733,
+      "works_count": 2786,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/01m9scr97",
+      "filter_key": "authorships.institutions.lineage"
+    },
+    {
+      "id": "https://openalex.org/I4210107682",
+      "short_id": "institutions/I4210107682",
+      "display_name": "Laboratoire National de Métrologie et d'Essais",
+      "hint": "Paris, France",
+      "cited_by_count": 51590,
+      "works_count": 2022,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/01ph39d13",
+      "filter_key": "authorships.institutions.lineage"
+    },
+    {
+      "id": "https://openalex.org/A5016084363",
+      "short_id": "authors/A5016084363",
+      "display_name": "Mark Tester",
+      "hint": "King Abdullah University of Science and Technology, Saudi Arabia",
+      "cited_by_count": 48265,
+      "works_count": 352,
+      "entity_type": "author",
+      "external_id": "https://orcid.org/0000-0002-5085-8801",
+      "filter_key": "authorships.author.id"
+    },
+    {
+      "id": "https://openalex.org/A5015481457",
+      "short_id": "authors/A5015481457",
+      "display_name": "Tetsuya Taga",
+      "hint": "Tokyo Medical and Dental University, Japan",
+      "cited_by_count": 42993,
+      "works_count": 348,
+      "entity_type": "author",
+      "external_id": "https://orcid.org/0000-0002-1625-0122",
+      "filter_key": "authorships.author.id"
+    },
+    {
+      "id": "https://openalex.org/I4210134618",
+      "short_id": "institutions/I4210134618",
+      "display_name": "Fraunhofer Institute for Nondestructive Testing",
+      "hint": "Saarbrücken, Germany",
+      "cited_by_count": 40203,
+      "works_count": 1284,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/03wq67h32",
+      "filter_key": "authorships.institutions.lineage"
+    },
+    {
+      "id": "https://openalex.org/A5014868247",
+      "short_id": "authors/A5014868247",
+      "display_name": "Joseph R. Testa",
+      "hint": "Fox Chase Cancer Center, USA",
+      "cited_by_count": 40202,
+      "works_count": 773,
+      "entity_type": "author",
+      "external_id": "https://orcid.org/0000-0003-1301-5175",
+      "filter_key": "authorships.author.id"
+    },
+    {
+      "id": "https://openalex.org/I4210092257",
+      "short_id": "institutions/I4210092257",
+      "display_name": "China Guangzhou Analysis and Testing Center",
+      "hint": "Guangzhou, China",
+      "cited_by_count": 36182,
+      "works_count": 1384,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/00d6bjs95",
+      "filter_key": "authorships.institutions.lineage"
+    }
+  ]
+}
