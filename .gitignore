@@ -104,3 +104,6 @@ nx-local-cache.json
 *.backup
 **/*.backup
 apps/web/src/routeTree.gen.ts
+
+# Prevent incorrectly nested cache directories from workspace root detection bugs
+apps/web/apps/

@@ -1,16 +1,16 @@
 {
-  "lastUpdated": "2025-11-04T20:29:22.276Z",
+  "lastUpdated": "2025-11-04T21:15:21.868Z",
   "files": {
     "query=q=Einstein": {
       "url": "https://api.openalex.org/autocomplete/authors?q=Einstein",
       "$ref": "./query=q=Einstein.json",
-      "lastRetrieved": "2025-11-04T20:29:19.404Z",
+      "lastRetrieved": "2025-11-04T21:15:19.411Z",
       "contentHash": "dd796f6d32a769cc"
     },
     "query=q=Marie+Curie": {
       "url": "https://api.openalex.org/autocomplete/authors?q=Marie+Curie",
       "$ref": "./query=q=Marie+Curie.json",
-      "lastRetrieved": "2025-11-04T20:29:22.275Z",
+      "lastRetrieved": "2025-11-04T21:15:21.867Z",
       "contentHash": "dd796f6d32a769cc"
     }
   }

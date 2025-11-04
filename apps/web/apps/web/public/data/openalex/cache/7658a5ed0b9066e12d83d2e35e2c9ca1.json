@@ -1,9 +1,0 @@
-{
-  "data": {
-    "id": "https://openalex.org/W2138270253",
-    "display_name": "DNA sequencing with chain-terminating inhibitors"
-  },
-  "headers": {},
-  "timestamp": "2025-10-29T07:44:46.814Z",
-  "url": "https://api.openalex.org/works/W2138270253?select=id,display_name"
-}
