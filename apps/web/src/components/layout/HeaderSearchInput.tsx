@@ -9,9 +9,9 @@ export function HeaderSearchInput() {
   const location = useLocation();
   const searchParams = useSearch({ strict: false });
 
-  // Initialize from URL params if on search page
+  // Initialize from URL params if on autocomplete page
   const [query, setQuery] = useState(() => {
-    if (location.pathname === "/search" && searchParams.q) {
+    if (location.pathname === "/autocomplete" && searchParams.q) {
       return String(searchParams.q);
     }
     return "";
@@ -19,18 +19,18 @@ export function HeaderSearchInput() {
 
   // Update local state when URL changes
   useEffect(() => {
-    if (location.pathname === "/search" && searchParams.q) {
+    if (location.pathname === "/autocomplete" && searchParams.q) {
       setQuery(String(searchParams.q));
-    } else if (location.pathname !== "/search") {
+    } else if (location.pathname !== "/autocomplete") {
       setQuery("");
     }
   }, [location.pathname, searchParams.q]);
 
-  // Debounced navigation to search page
+  // Debounced navigation to autocomplete page
   const debouncedNavigate = useDebouncedCallback((searchQuery: string) => {
     if (searchQuery.trim()) {
       navigate({
-        to: "/search",
+        to: "/autocomplete",
         search: { q: searchQuery.trim(), filter: undefined, search: undefined },
       });
     }
@@ -50,7 +50,7 @@ export function HeaderSearchInput() {
         e.preventDefault();
         if (query.trim()) {
           navigate({
-            to: "/search",
+            to: "/autocomplete",
             search: { q: query.trim(), filter: undefined, search: undefined },
           });
         }
