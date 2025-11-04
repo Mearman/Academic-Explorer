@@ -16,8 +16,6 @@ export interface AutocompleteOptions {
   q: string;
   /** Number of results to return per page (max 200) */
   per_page?: number;
-  /** Response format (currently only 'json' supported) */
-  format?: "json";
 }
 
 /**
@@ -292,10 +290,6 @@ export class BaseAutocompleteApi {
       (options.per_page < 1 || options.per_page > 200)
     ) {
       throw new Error("per_page must be between 1 and 200");
-    }
-
-    if (options.format !== undefined && options.format !== "json") {
-      throw new Error("Only json format is currently supported");
     }
   }
 
