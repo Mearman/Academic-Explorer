@@ -519,6 +519,33 @@ export class CompleteAutocompleteApi extends BaseAutocompleteApi {
   }
 
   /**
+   * Publisher-specific autocomplete for academic publishers
+   * @param query - Search query string
+   * @returns Promise resolving to array of publisher autocomplete results
+   */
+  async autocompletePublishers(query: string): Promise<AutocompleteResult[]> {
+    return this.autocomplete(query, "publishers");
+  }
+
+  /**
+   * Funder-specific autocomplete for research funding organizations
+   * @param query - Search query string
+   * @returns Promise resolving to array of funder autocomplete results
+   */
+  async autocompleteFunders(query: string): Promise<AutocompleteResult[]> {
+    return this.autocomplete(query, "funders");
+  }
+
+  /**
+   * Concept-specific autocomplete for research concepts and topics
+   * @param query - Search query string
+   * @returns Promise resolving to array of concept autocomplete results
+   */
+  async autocompleteConcepts(query: string): Promise<AutocompleteResult[]> {
+    return this.autocomplete(query, "concepts");
+  }
+
+  /**
    * Cross-entity search across multiple entity types
    * @param query - Search query string
    * @param entityTypes - Optional array of entity types to search (defaults to all)
