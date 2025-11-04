@@ -82,11 +82,9 @@ export class BaseAutocompleteApi {
     options: AutocompleteOptions,
   ): Promise<AutocompleteResponse<T>> {
     // OpenAlex autocomplete endpoints do NOT accept per_page or format parameters
-    // Filter them out to avoid 403 errors
-    const { per_page, format, ...validOptions } = options;
-
+    // Only pass the options that were explicitly provided
     const params: QueryParams & AutocompleteOptions = {
-      ...validOptions,
+      ...options,
       q: options.q.trim(),
     };
 
