@@ -79,6 +79,45 @@ function getNodeModules(): {
 }
 
 /**
+ * Find the workspace root by looking for pnpm-workspace.yaml or package.json with workspaces
+ * Walks up the directory tree from the current working directory
+ */
+async function findWorkspaceRoot(): Promise<string> {
+  await initializeNodeModules();
+  const { fs: fsModule, path: pathModule } = getNodeModules();
+
+  let currentDir = process.cwd();
+  const root = pathModule.parse(currentDir).root;
+
+  while (currentDir !== root) {
+    try {
+      // Check for pnpm-workspace.yaml (pnpm monorepo)
+      const pnpmWorkspace = pathModule.join(currentDir, "pnpm-workspace.yaml");
+      await fsModule.access(pnpmWorkspace);
+      return currentDir;
+    } catch {
+      // Not found, try package.json with workspaces field
+      try {
+        const packageJson = pathModule.join(currentDir, "package.json");
+        const content = await fsModule.readFile(packageJson, "utf8");
+        const pkg = JSON.parse(content) as { workspaces?: unknown };
+        if (pkg.workspaces) {
+          return currentDir;
+        }
+      } catch {
+        // Continue searching
+      }
+    }
+
+    // Move up one directory
+    currentDir = pathModule.dirname(currentDir);
+  }
+
+  // Fallback to current working directory if no workspace root found
+  return process.cwd();
+}
+
+/**
  * Configuration for disk cache writer
  */
 export interface DiskWriterConfig {
@@ -173,6 +212,8 @@ export class DiskCacheWriter {
   private readonly config: Required<DiskWriterConfig>;
   private readonly activeLocks = new Map<string, FileLock>();
   private readonly writeQueue = new Set<Promise<void>>();
+  private workspaceRoot: string | null = null;
+  private workspaceRootPromise: Promise<string> | null = null;
 
   constructor(config: Partial<DiskWriterConfig> = {}) {
     this.config = {
@@ -186,6 +227,32 @@ export class DiskCacheWriter {
     logger.debug("cache", "DiskCacheWriter initialized", {
       config: this.config,
     });
+  }
+
+  /**
+   * Get the resolved base path (workspace root + relative path)
+   * Cached after first call
+   */
+  private async getResolvedBasePath(): Promise<string> {
+    if (this.workspaceRoot) {
+      await initializeNodeModules();
+      const { path: pathModule } = getNodeModules();
+      return pathModule.join(this.workspaceRoot, this.config.basePath);
+    }
+
+    // Check if basePath is already absolute
+    if (!this.workspaceRootPromise) {
+      this.workspaceRootPromise = findWorkspaceRoot().then((root) => {
+        this.workspaceRoot = root;
+        logger.debug("cache", "Workspace root found", { root });
+        return root;
+      });
+    }
+
+    const root = await this.workspaceRootPromise;
+    await initializeNodeModules();
+    const { path: pathModule } = getNodeModules();
+    return pathModule.join(root, this.config.basePath);
   }
 
   /**
@@ -240,16 +307,19 @@ export class DiskCacheWriter {
       // Validate input data
       this.validateInterceptedData(data);
 
+      // Get resolved base path (workspace root + relative path)
+      const resolvedBasePath = await this.getResolvedBasePath();
+
       // Check disk space if enabled
       if (this.config.checkDiskSpace) {
-        await this.ensureSufficientDiskSpace();
+        await this.ensureSufficientDiskSpace(resolvedBasePath);
       }
 
       // Extract entity information from URL or response
       const entityInfo = await this.extractEntityInfo(data);
 
       // Generate file paths
-      filePaths = this.generateFilePaths(entityInfo);
+      filePaths = this.generateFilePaths(entityInfo, resolvedBasePath);
 
       const indexPath = pathModule.join(
         filePaths.directoryPath,
@@ -601,12 +671,15 @@ export class DiskCacheWriter {
   /**
    * Generate file paths for data
    */
-  private generateFilePaths(entityInfo: {
-    entityType?: EntityType;
-    entityId?: string;
-    queryParams?: string;
-    isQueryResponse?: boolean;
-  }): {
+  private generateFilePaths(
+    entityInfo: {
+      entityType?: EntityType;
+      entityId?: string;
+      queryParams?: string;
+      isQueryResponse?: boolean;
+    },
+    basePath: string,
+  ): {
     dataFile: string;
     directoryPath: string;
   } {
@@ -624,25 +697,25 @@ export class DiskCacheWriter {
       const sanitizedQuery = this.sanitizeFilename(
         `filter=${entityInfo.queryParams}`,
       );
-      directoryPath = path.join(this.config.basePath, entityType, "queries");
+      directoryPath = path.join(basePath, entityType, "queries");
       filename = sanitizedQuery;
     } else if (entityInfo.entityId && !entityInfo.isQueryResponse) {
       // Single entity: works/W123456789.json
       const sanitizedId = this.sanitizeFilename(entityInfo.entityId);
-      directoryPath = path.join(this.config.basePath, entityType);
+      directoryPath = path.join(basePath, entityType);
       filename = sanitizedId;
     } else if (
       entityInfo.isQueryResponse &&
       entityInfo.entityId === entityType
     ) {
       // Collection response: works.json (not works/works.json)
-      directoryPath = this.config.basePath;
+      directoryPath = basePath;
       filename = entityType;
     } else {
       // Default fallback
       const entityId = entityInfo.entityId ?? "unknown";
       const sanitizedId = this.sanitizeFilename(entityId);
-      directoryPath = path.join(this.config.basePath, entityType);
+      directoryPath = path.join(basePath, entityType);
       filename = sanitizedId;
     }
 
@@ -821,12 +894,12 @@ export class DiskCacheWriter {
   /**
    * Check available disk space
    */
-  private async ensureSufficientDiskSpace(): Promise<void> {
+  private async ensureSufficientDiskSpace(basePath: string): Promise<void> {
     try {
       if (!fs) {
         throw new Error(ERROR_MESSAGE_FS_NOT_INITIALIZED);
       }
-      const stats = await fs.statfs(this.config.basePath);
+      const stats = await fs.statfs(basePath);
       const availableBytes = stats.bavail * stats.bsize;
 
       if (availableBytes < this.config.minDiskSpaceBytes) {
