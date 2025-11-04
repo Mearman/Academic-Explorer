@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-10-12T20:10:24.852Z",
+  "lastUpdated": "2025-11-04T20:29:17.779Z",
   "files": {
     "W123456789": {
       "url": "https://api.openalex.org/works/W123456789",
@@ -192,6 +192,12 @@
         "mergedCount": 0,
         "totalUrls": 1
       }
+    },
+    "W123%2Fspecial-chars": {
+      "url": "https://api.openalex.org/works/W123%2Fspecial-chars",
+      "$ref": "./W123%2Fspecial-chars.json",
+      "lastRetrieved": "2025-11-04T20:29:17.778Z",
+      "contentHash": "44136fa355b3678a"
     }
   },
   "directories": {
