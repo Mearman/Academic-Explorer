@@ -420,15 +420,20 @@ export class CompleteAutocompleteApi extends BaseAutocompleteApi {
     return this.executeWithDebounce(cacheKey, async () => {
       try {
         const endpoint = "autocomplete";
+        // Filter out per_page and format - the general autocomplete endpoint doesn't accept them
+        const { per_page, format, ...validOptions } = options;
         const requestOptions: AutocompleteOptions = {
           q: query.trim(),
-          ...options,
+          ...validOptions,
         };
 
-        const response = await this.makeAutocompleteRequest(
-          endpoint,
-          requestOptions,
-        );
+        // Make request without per_page and format defaults
+        const params: QueryParams & AutocompleteOptions = {
+          ...requestOptions,
+          q: requestOptions.q.trim(),
+        };
+
+        const response = await this.client.get<AutocompleteResponse>(endpoint, params);
         return this.sortAutocompleteResults(response.results);
       } catch (error: unknown) {
         const errorDetails = this.formatErrorForLogging(error);

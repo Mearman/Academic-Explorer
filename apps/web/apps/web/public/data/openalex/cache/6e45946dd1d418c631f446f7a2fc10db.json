@@ -529,6 +529,6 @@
     ]
   },
   "headers": {},
-  "timestamp": "2025-10-28T19:56:47.617Z",
+  "timestamp": "2025-11-01T11:13:43.263Z",
   "url": "https://api.openalex.org/authors/A5017898742?select=id,display_name,cited_by_count,counts_by_year,updated_date,created_date,works_count,works_api_url,orcid,display_name_alternatives,ids,last_known_institutions,affiliations,summary_stats,x_concepts,topics"
 }

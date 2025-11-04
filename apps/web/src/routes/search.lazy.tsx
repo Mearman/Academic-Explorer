@@ -49,9 +49,6 @@ const searchAllEntities = async (
     // Use the general autocomplete endpoint that searches across all entity types
     const results = await cachedOpenAlex.client.autocomplete.autocompleteGeneral(
       filters.query,
-      {
-        per_page: 50, // Get more results for better coverage
-      },
     );
 
     logger.debug("search", "Autocomplete search completed", {

@@ -92,7 +92,25 @@ export async function saveToCache(
  * Fetches data from the OpenAlex API
  */
 export async function fetchFromAPI(url: string): Promise<unknown> {
-  const response = await fetch(url);
+  // Get git email for polite pool access
+  let gitEmail = "";
+  try {
+    const { execSync } = require("child_process");
+    gitEmail = execSync("git config user.email", { encoding: "utf8" }).trim();
+  } catch {
+    // Ignore if git email not available
+  }
+
+  const headers: Record<string, string> = {
+    "User-Agent": "Academic-Explorer/1.0 (https://github.com/Mearman/Academic-Explorer)",
+  };
+
+  // Add email for polite pool if available
+  if (gitEmail) {
+    headers["User-Agent"] = `Academic-Explorer/1.0 (https://github.com/Mearman/Academic-Explorer; mailto:${gitEmail})`;
+  }
+
+  const response = await fetch(url, { headers });
 
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
