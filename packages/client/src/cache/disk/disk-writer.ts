@@ -265,6 +265,15 @@ export class DiskCacheWriter {
 
       // Prepare content - exclude meta field from cached responses
       const responseDataToCache = this.excludeMetaField(data.responseData);
+
+      // Skip caching if results are empty
+      if (this.hasEmptyResults(responseDataToCache)) {
+        logger.debug("cache", "Skipping cache write for empty results", {
+          url: data.url,
+        });
+        return;
+      }
+
       const content = JSON.stringify(responseDataToCache, null, 2);
       const newContentHash = await generateContentHash(responseDataToCache);
       const newLastRetrieved = new Date().toISOString();
@@ -571,6 +580,22 @@ export class DiskCacheWriter {
       return rest;
     }
     return responseData;
+  }
+
+  /**
+   * Check if response data has empty results
+   * Returns true if the response has a results array that is empty
+   */
+  private hasEmptyResults(responseData: unknown): boolean {
+    if (
+      typeof responseData === "object" &&
+      responseData !== null &&
+      "results" in responseData
+    ) {
+      const data = responseData as Record<string, unknown>;
+      return Array.isArray(data.results) && data.results.length === 0;
+    }
+    return false;
   }
 
   /**
