@@ -1,0 +1,125 @@
+{
+  "data": {
+    "meta": {
+      "count": 33192,
+      "db_response_time_ms": 42,
+      "page": 1,
+      "per_page": 10
+    },
+    "results": [
+      {
+        "id": "https://openalex.org/P4310319965",
+        "short_id": "publishers/P4310319965",
+        "display_name": "Springer Nature",
+        "hint": null,
+        "cited_by_count": 37599906,
+        "works_count": 2720054,
+        "entity_type": "publisher",
+        "external_id": "https://www.wikidata.org/entity/Q21096327",
+        "filter_key": "primary_location.source.host_organization_lineage"
+      },
+      {
+        "id": "https://openalex.org/S4210187552",
+        "short_id": "sources/S4210187552",
+        "display_name": "Springer series in statistics",
+        "hint": "host organization unknown",
+        "cited_by_count": 380433,
+        "works_count": 2921,
+        "entity_type": "source",
+        "external_id": "0172-7397",
+        "filter_key": "primary_location.source.id"
+      },
+      {
+        "id": "https://openalex.org/S30543418",
+        "short_id": "sources/S30543418",
+        "display_name": "Demography",
+        "hint": "Duke University Press",
+        "cited_by_count": 257382,
+        "works_count": 3887,
+        "entity_type": "source",
+        "external_id": "0070-3370",
+        "filter_key": "primary_location.source.id"
+      },
+      {
+        "id": "https://openalex.org/I1313014049",
+        "short_id": "institutions/I1313014049",
+        "display_name": "Springer Nature (Germany)",
+        "hint": "Berlin, Germany",
+        "cited_by_count": 194762,
+        "works_count": 10984,
+        "entity_type": "institution",
+        "external_id": "https://ror.org/0117jxy09",
+        "filter_key": "authorships.institutions.lineage"
+      },
+      {
+        "id": "https://openalex.org/S4363604060",
+        "short_id": "sources/S4363604060",
+        "display_name": "SpringerReference",
+        "hint": "host organization unknown",
+        "cited_by_count": 182874,
+        "works_count": 85771,
+        "entity_type": "source",
+        "external_id": null,
+        "filter_key": "primary_location.source.id"
+      },
+      {
+        "id": "https://openalex.org/S4306463937",
+        "short_id": "sources/S4306463937",
+        "display_name": "Springer eBooks",
+        "hint": "Springer Nature",
+        "cited_by_count": 175548,
+        "works_count": 13149,
+        "entity_type": "source",
+        "external_id": null,
+        "filter_key": "primary_location.source.id"
+      },
+      {
+        "id": "https://openalex.org/S2531072874",
+        "short_id": "sources/S2531072874",
+        "display_name": "SpringerPlus",
+        "hint": "Springer Nature",
+        "cited_by_count": 120001,
+        "works_count": 4720,
+        "entity_type": "source",
+        "external_id": "2193-1801",
+        "filter_key": "primary_location.source.id"
+      },
+      {
+        "id": "https://openalex.org/A5003615852",
+        "short_id": "authors/A5003615852",
+        "display_name": "Timothy A. Springer",
+        "hint": "Boston Children's Hospital, USA",
+        "cited_by_count": 110498,
+        "works_count": 742,
+        "entity_type": "author",
+        "external_id": "https://orcid.org/0000-0001-6627-2904",
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/S4210230340",
+        "short_id": "sources/S4210230340",
+        "display_name": "Lecture notes in statistics",
+        "hint": "host organization unknown",
+        "cited_by_count": 86996,
+        "works_count": 3047,
+        "entity_type": "source",
+        "external_id": "0930-0325",
+        "filter_key": "primary_location.source.id"
+      },
+      {
+        "id": "https://openalex.org/S4210187616",
+        "short_id": "sources/S4210187616",
+        "display_name": "Springer series in solid-state sciences",
+        "hint": "host organization unknown",
+        "cited_by_count": 85087,
+        "works_count": 4561,
+        "entity_type": "source",
+        "external_id": "0171-1873",
+        "filter_key": "primary_location.source.id"
+      }
+    ]
+  },
+  "headers": {},
+  "timestamp": "2025-11-04T18:40:33.451Z",
+  "url": "https://api.openalex.org/autocomplete?q=Springer"
+}

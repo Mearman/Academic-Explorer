@@ -1,0 +1,125 @@
+{
+  "data": {
+    "meta": {
+      "count": 196,
+      "db_response_time_ms": 16,
+      "page": 1,
+      "per_page": 10
+    },
+    "results": [
+      {
+        "id": "https://openalex.org/I107766831",
+        "short_id": "institutions/I107766831",
+        "display_name": "NSF National Center for Atmospheric Research",
+        "hint": "Boulder, USA",
+        "cited_by_count": 5009776,
+        "works_count": 35106,
+        "entity_type": "institution",
+        "external_id": "https://ror.org/05cvfcr44",
+        "filter_key": "authorships.institutions.lineage"
+      },
+      {
+        "id": "https://openalex.org/I1311060795",
+        "short_id": "institutions/I1311060795",
+        "display_name": "U.S. National Science Foundation",
+        "hint": "Alexandria, USA",
+        "cited_by_count": 1369066,
+        "works_count": 13684,
+        "entity_type": "institution",
+        "external_id": "https://ror.org/021nxhr62",
+        "filter_key": "authorships.institutions.lineage"
+      },
+      {
+        "id": "https://openalex.org/I4210133469",
+        "short_id": "institutions/I4210133469",
+        "display_name": "Climate and Global Dynamics Laboratory",
+        "hint": "Boulder, USA",
+        "cited_by_count": 463128,
+        "works_count": 2067,
+        "entity_type": "institution",
+        "external_id": "https://ror.org/03qrb1j36",
+        "filter_key": "authorships.institutions.lineage"
+      },
+      {
+        "id": "https://openalex.org/I4210110509",
+        "short_id": "institutions/I4210110509",
+        "display_name": "Division of Chemistry",
+        "hint": "Arlington, USA",
+        "cited_by_count": 303643,
+        "works_count": 3513,
+        "entity_type": "institution",
+        "external_id": "https://ror.org/01ar8dr59",
+        "filter_key": "authorships.institutions.lineage"
+      },
+      {
+        "id": "https://openalex.org/I102398690",
+        "short_id": "institutions/I102398690",
+        "display_name": "National Natural Science Foundation of China",
+        "hint": "Beijing, China",
+        "cited_by_count": 293820,
+        "works_count": 4134,
+        "entity_type": "institution",
+        "external_id": "https://ror.org/01h0zpd94",
+        "filter_key": "authorships.institutions.lineage"
+      },
+      {
+        "id": "https://openalex.org/I4210137449",
+        "short_id": "institutions/I4210137449",
+        "display_name": "Office of the Director",
+        "hint": "Arlington, USA",
+        "cited_by_count": 83003,
+        "works_count": 1266,
+        "entity_type": "institution",
+        "external_id": "https://ror.org/04nseet23",
+        "filter_key": "authorships.institutions.lineage"
+      },
+      {
+        "id": "https://openalex.org/I4210141577",
+        "short_id": "institutions/I4210141577",
+        "display_name": "NSF’s NOIRLab",
+        "hint": "Tucson, USA",
+        "cited_by_count": 80846,
+        "works_count": 1619,
+        "entity_type": "institution",
+        "external_id": "https://ror.org/03zmsge54",
+        "filter_key": "authorships.institutions.lineage"
+      },
+      {
+        "id": "https://openalex.org/I4210128160",
+        "short_id": "institutions/I4210128160",
+        "display_name": "Division of Undergraduate Education",
+        "hint": "Arlington, USA",
+        "cited_by_count": 79657,
+        "works_count": 2932,
+        "entity_type": "institution",
+        "external_id": "https://ror.org/02kd4km72",
+        "filter_key": "authorships.institutions.lineage"
+      },
+      {
+        "id": "https://openalex.org/I4210157326",
+        "short_id": "institutions/I4210157326",
+        "display_name": "Division of Ocean Sciences",
+        "hint": "Alexandria, USA",
+        "cited_by_count": 24444,
+        "works_count": 386,
+        "entity_type": "institution",
+        "external_id": "https://ror.org/05wqqhv83",
+        "filter_key": "authorships.institutions.lineage"
+      },
+      {
+        "id": "https://openalex.org/I215048945",
+        "short_id": "institutions/I215048945",
+        "display_name": "Norfolk and Suffolk NHS Foundation Trust",
+        "hint": "Norwich, UK",
+        "cited_by_count": 20426,
+        "works_count": 715,
+        "entity_type": "institution",
+        "external_id": "https://ror.org/03400ft78",
+        "filter_key": "authorships.institutions.lineage"
+      }
+    ]
+  },
+  "headers": {},
+  "timestamp": "2025-11-04T18:40:35.468Z",
+  "url": "https://api.openalex.org/autocomplete?q=NSF"
+}

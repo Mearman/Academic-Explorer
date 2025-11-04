@@ -1,0 +1,125 @@
+{
+  "data": {
+    "meta": {
+      "count": 13,
+      "db_response_time_ms": 14,
+      "page": 1,
+      "per_page": 10
+    },
+    "results": [
+      {
+        "id": "https://openalex.org/A5019952124",
+        "short_id": "authors/A5019952124",
+        "display_name": "Andrew Mearman",
+        "hint": "University of Leeds, UK",
+        "cited_by_count": 1058,
+        "works_count": 105,
+        "entity_type": "author",
+        "external_id": "https://orcid.org/0000-0003-0601-8060",
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5017898742",
+        "short_id": "authors/A5017898742",
+        "display_name": "Joseph Mearman",
+        "hint": "Bangor University, UK",
+        "cited_by_count": 45,
+        "works_count": 9,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5042124131",
+        "short_id": "authors/A5042124131",
+        "display_name": "David H. Mearman",
+        "hint": "Queen Elizabeth Hospital Birmingham, UK",
+        "cited_by_count": 28,
+        "works_count": 2,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5089224452",
+        "short_id": "authors/A5089224452",
+        "display_name": "ROBERT C. MEARMAN",
+        "hint": null,
+        "cited_by_count": 11,
+        "works_count": 1,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/W2009047091",
+        "short_id": "works/W2009047091",
+        "display_name": "Work, the Aims of Life and the Aims of Education: a Reply to Clarke and Mearman",
+        "hint": "Christopher Winch",
+        "cited_by_count": 2,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.1111/j.0309-8249.2004.00409.x",
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/A242265080",
+        "short_id": "authors/A242265080",
+        "display_name": "Andrew Mearman",
+        "hint": null,
+        "cited_by_count": 2,
+        "works_count": 8,
+        "entity_type": "author",
+        "external_id": "https://orcid.org/0000-0003-0601-8060",
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/A5071882449",
+        "short_id": "authors/A5071882449",
+        "display_name": "Kimberly A. Mearman",
+        "hint": null,
+        "cited_by_count": 1,
+        "works_count": 1,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/W2972595232",
+        "short_id": "works/W2972595232",
+        "display_name": "Triangulation and social research: Reply to Downward and Mearman",
+        "hint": "Downward and Mearman Tony Lawson",
+        "cited_by_count": 1,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.4324/9780203888773-11",
+        "filter_key": "id"
+      },
+      {
+        "id": "https://openalex.org/A5001208659",
+        "short_id": "authors/A5001208659",
+        "display_name": "Downward and Mearman Tony Lawson",
+        "hint": null,
+        "cited_by_count": 1,
+        "works_count": 1,
+        "entity_type": "author",
+        "external_id": null,
+        "filter_key": "authorships.author.id"
+      },
+      {
+        "id": "https://openalex.org/W3184032449",
+        "short_id": "works/W3184032449",
+        "display_name": "Andrew Mearman, Sebastian Berger and Danielle Guizzo, What is Heterodox Economics: Conversations with Leading Economists",
+        "hint": "James K. Galbraith",
+        "cited_by_count": 1,
+        "works_count": null,
+        "entity_type": "work",
+        "external_id": "https://doi.org/10.4000/oeconomia.11090",
+        "filter_key": "id"
+      }
+    ]
+  },
+  "headers": {},
+  "timestamp": "2025-11-04T18:40:07.753Z",
+  "url": "https://api.openalex.org/autocomplete?q=Mearman"
+}

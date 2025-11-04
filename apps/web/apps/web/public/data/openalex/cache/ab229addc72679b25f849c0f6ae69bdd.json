@@ -1,0 +1,125 @@
+{
+  "data": {
+    "meta": {
+      "count": 256827,
+      "db_response_time_ms": 63,
+      "page": 1,
+      "per_page": 10
+    },
+    "results": [
+      {
+        "id": "https://openalex.org/T10320",
+        "short_id": "topics/T10320",
+        "display_name": "Neural Networks and Applications",
+        "hint": "This cluster of papers covers a wide range of topics related to neural networks, including backpropagation learning, self-organizing maps, radial basis function networks, deep learning, and applications such as pattern classification and function approximation.",
+        "cited_by_count": 4280970,
+        "works_count": 245219,
+        "entity_type": "topic",
+        "external_id": "https://en.wikipedia.org/wiki/Artificial_neural_network",
+        "filter_key": "topics.id"
+      },
+      {
+        "id": "https://openalex.org/keywords/deep-learning",
+        "short_id": "keywords/deep-learning",
+        "display_name": "Deep learning",
+        "hint": null,
+        "cited_by_count": 3445050,
+        "works_count": 272986,
+        "entity_type": "keyword",
+        "external_id": null,
+        "filter_key": "keywords.id"
+      },
+      {
+        "id": "https://openalex.org/T10036",
+        "short_id": "topics/T10036",
+        "display_name": "Advanced Neural Network Applications",
+        "hint": "This cluster of papers focuses on the application of deep learning, particularly convolutional neural networks, in computer vision tasks such as image recognition, object detection, and semantic segmentation. It covers various neural network architectures, model compression techniques, and their applications in fields like autonomous driving.",
+        "cited_by_count": 2837368,
+        "works_count": 85843,
+        "entity_type": "topic",
+        "external_id": "https://en.wikipedia.org/wiki/Deep_learning",
+        "filter_key": "topics.id"
+      },
+      {
+        "id": "https://openalex.org/T10378",
+        "short_id": "topics/T10378",
+        "display_name": "Advanced MRI Techniques and Applications",
+        "hint": "This cluster of papers covers a wide range of applications and techniques related to magnetic resonance imaging (MRI) in the field of medicine. It includes topics such as perfusion imaging, spectroscopy, parallel imaging, susceptibility weighted imaging, deep learning applications, brain metabolites, functional MRI, quantitative susceptibility mapping, and cardiovascular MRI.",
+        "cited_by_count": 2353590,
+        "works_count": 143515,
+        "entity_type": "topic",
+        "external_id": "https://en.wikipedia.org/wiki/Magnetic_resonance_imaging",
+        "filter_key": "topics.id"
+      },
+      {
+        "id": "https://openalex.org/T10429",
+        "short_id": "topics/T10429",
+        "display_name": "EEG and Brain-Computer Interfaces",
+        "hint": "This cluster of papers focuses on the development and application of Brain-Computer Interfaces (BCIs) in neuroscience and medicine. It covers topics such as EEG analysis, neuroprosthetics, BCI technology, motor imagery, epilepsy detection, cortical control, neural ensemble physiology, BCI communication, and deep learning for EEG decoding.",
+        "cited_by_count": 2347263,
+        "works_count": 156355,
+        "entity_type": "topic",
+        "external_id": "https://en.wikipedia.org/wiki/Brain%E2%80%93computer_interface",
+        "filter_key": "topics.id"
+      },
+      {
+        "id": "https://openalex.org/T10531",
+        "short_id": "topics/T10531",
+        "display_name": "Advanced Vision and Imaging",
+        "hint": "This cluster of papers focuses on various aspects of stereo vision, depth estimation, optical flow, and scene reconstruction. It covers topics such as multi-view stereo, unsupervised learning for depth estimation, monocular depth estimation using deep learning, visual servoing, and the use of light field cameras for scene reconstruction.",
+        "cited_by_count": 1760163,
+        "works_count": 101536,
+        "entity_type": "topic",
+        "external_id": "https://en.wikipedia.org/wiki/Stereo_vision",
+        "filter_key": "topics.id"
+      },
+      {
+        "id": "https://openalex.org/T10627",
+        "short_id": "topics/T10627",
+        "display_name": "Advanced Image and Video Retrieval Techniques",
+        "hint": "This cluster of papers focuses on the development and evaluation of techniques for extracting, matching, and utilizing local image features for tasks such as object recognition, image retrieval, and scene classification. It covers a wide range of methods including local descriptors, deep learning approaches, binary codes, and cross-modal retrieval techniques.",
+        "cited_by_count": 1655258,
+        "works_count": 116003,
+        "entity_type": "topic",
+        "external_id": "https://en.wikipedia.org/wiki/Feature_extraction",
+        "filter_key": "topics.id"
+      },
+      {
+        "id": "https://openalex.org/T10688",
+        "short_id": "topics/T10688",
+        "display_name": "Image and Signal Denoising Methods",
+        "hint": "This cluster of papers encompasses a wide range of techniques and algorithms for image denoising, including sparse representations, wavelet transform, deep learning with convolutional neural networks, non-local means, and methods specific to handling different types of noise such as Gaussian, Poisson, and salt-and-pepper noise. The applications also extend to hyperspectral imaging and the use of anisotropic diffusion for speckle reduction.",
+        "cited_by_count": 1469600,
+        "works_count": 89172,
+        "entity_type": "topic",
+        "external_id": "https://en.wikipedia.org/wiki/Denoising",
+        "filter_key": "topics.id"
+      },
+      {
+        "id": "https://openalex.org/T10331",
+        "short_id": "topics/T10331",
+        "display_name": "Video Surveillance and Tracking Methods",
+        "hint": "This cluster of papers focuses on visual object tracking and person re-identification, covering topics such as background subtraction, convolutional neural networks, real-time tracking, deep learning, foreground segmentation, multiple object tracking, and motion detection.",
+        "cited_by_count": 1371981,
+        "works_count": 78502,
+        "entity_type": "topic",
+        "external_id": "https://en.wikipedia.org/wiki/Multiple_object_tracking",
+        "filter_key": "topics.id"
+      },
+      {
+        "id": "https://openalex.org/T10534",
+        "short_id": "topics/T10534",
+        "display_name": "Structural Health Monitoring Techniques",
+        "hint": "This cluster of papers covers advancements in structural health monitoring techniques, including vibration-based damage identification, wireless sensor networks, modal identification, structural damage detection, model updating, Bayesian system identification, deep learning applications, sensor networks, environmental effects, and nonlinear dynamics.",
+        "cited_by_count": 1337086,
+        "works_count": 122263,
+        "entity_type": "topic",
+        "external_id": "https://en.wikipedia.org/wiki/Structural_health_monitoring",
+        "filter_key": "topics.id"
+      }
+    ]
+  },
+  "headers": {},
+  "timestamp": "2025-11-04T18:40:37.549Z",
+  "url": "https://api.openalex.org/autocomplete?q=deep+learning"
+}

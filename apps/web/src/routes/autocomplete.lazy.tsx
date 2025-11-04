@@ -87,7 +87,7 @@ const searchAllEntities = async (
 const renderSearchHeader = () => (
   <div>
     <Title order={1} className={pageTitle}>
-      Universal Search
+      General Autocomplete
     </Title>
     <Text className={pageDescription}>
       Search across all OpenAlex entities - works, authors, sources,
