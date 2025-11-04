@@ -117,19 +117,17 @@ export function createCacheMiddleware(
         return next();
       }
 
+      // Check if cache exists and is valid
       const cachePath = getCachePath(fullUrl, context);
-      if (!cachePath) {
-        return next();
-      }
-
-      // Check cache first
-      const cached = await getCachedResponse(cachePath);
-      if (cached) {
-        logVerbose(`Cache hit for ${req.url}`);
-        res.setHeader("Content-Type", "application/json");
-        res.setHeader("Cache-Control", "public, max-age=3600");
-        res.end(JSON.stringify(cached));
-        return;
+      if (cachePath) {
+        const cached = await getCachedResponse(cachePath);
+        if (cached) {
+          logVerbose(`Cache hit for ${req.url}`);
+          res.setHeader("Content-Type", "application/json");
+          res.setHeader("Cache-Control", "public, max-age=3600");
+          res.end(JSON.stringify(cached.data));
+          return;
+        }
       }
 
       // Cache miss - fetch from API

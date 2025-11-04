@@ -132,10 +132,14 @@ export async function saveToCache(
     const writer = getDiskWriter(context);
 
     // Use DiskCacheWriter to save the response
-    // writeToCache expects InterceptedData format
+    // writeToCache expects InterceptedData format with all required fields
     await writer.writeToCache({
       url,
+      method: "GET",
+      requestHeaders: {},
       responseData: data,
+      statusCode: 200,
+      responseHeaders: headers,
       timestamp: new Date().toISOString(),
     });
 
