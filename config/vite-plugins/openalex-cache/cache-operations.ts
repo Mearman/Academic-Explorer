@@ -1,25 +1,32 @@
 import type { CacheContext, CachedResponse } from "./types";
 import { createLogVerbose } from "./utils";
-// Import from source file directly - Vite plugin runs in Node.js, not bundled
-import { DiskCacheWriter } from "../../../packages/client/src/cache/disk/disk-writer.js";
 import { readFileSync, existsSync, readdirSync } from "fs";
 import { join, dirname } from "path";
 import { createHash } from "crypto";
+
+// Dynamic import to avoid resolving @academic-explorer/utils during Vite config bundling
+type DiskCacheWriter = import("../../../packages/client/src/cache/disk/disk-writer.js").DiskCacheWriter;
 
 /**
  * DiskCacheWriter instance for the Vite plugin
  * This ensures cache files are written with the same structure as the client package
  */
 let diskWriter: DiskCacheWriter | null = null;
+let DiskCacheWriterClass: typeof import("../../../packages/client/src/cache/disk/disk-writer.js").DiskCacheWriter | null = null;
 
 /**
  * Initialize or get the DiskCacheWriter instance
  */
-function getDiskWriter(context: CacheContext): DiskCacheWriter {
+async function getDiskWriter(context: CacheContext): Promise<DiskCacheWriter> {
+  // Lazy load DiskCacheWriter to avoid import resolution during config bundling
+  if (!DiskCacheWriterClass) {
+    const module = await import("../../../packages/client/src/cache/disk/disk-writer.js");
+    DiskCacheWriterClass = module.DiskCacheWriter;
+  }
+
   if (!diskWriter) {
-    diskWriter = new DiskCacheWriter({
+    diskWriter = new DiskCacheWriterClass({
       basePath: context.staticDataDir,
-      enabled: true,
     });
   }
   return diskWriter;
@@ -129,7 +136,7 @@ export async function saveToCache(
       return;
     }
 
-    const writer = getDiskWriter(context);
+    const writer = await getDiskWriter(context);
 
     // Use DiskCacheWriter to save the response
     // writeToCache expects InterceptedData format with all required fields
