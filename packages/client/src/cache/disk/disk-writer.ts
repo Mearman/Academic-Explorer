@@ -497,19 +497,19 @@ export class DiskCacheWriter {
         if (pathParts.length === 1) {
           // General autocomplete: /autocomplete?q=query
           return {
-            entityType: "autocomplete" as EntityType,
+            // Don't set entityType for autocomplete - use undefined to mark as special case
             queryParams,
             isQueryResponse: true,
-            entityId: "general",
+            entityId: "autocomplete/general", // Special marker for autocomplete
           };
         } else if (pathParts.length === 2) {
           // Entity-specific autocomplete: /autocomplete/works?q=query
-          const entityType = pathParts[1];
+          const entitySubtype = pathParts[1];
           return {
-            entityType: "autocomplete" as EntityType,
+            // Don't set entityType for autocomplete - use undefined to mark as special case
             queryParams,
             isQueryResponse: true,
-            entityId: entityType, // Use entity type as subdirectory
+            entityId: `autocomplete/${entitySubtype}`, // Special marker for autocomplete with subtype
           };
         }
       }
@@ -716,10 +716,10 @@ export class DiskCacheWriter {
     let filename: string;
 
     // Handle autocomplete responses specially
-    if (entityType === "autocomplete" && entityInfo.queryParams) {
+    if (entityInfo.entityId?.startsWith("autocomplete/") && entityInfo.queryParams) {
       // Autocomplete: autocomplete/works/query.json or autocomplete/general/query.json
       const sanitizedQuery = this.sanitizeFilename(`query=${entityInfo.queryParams}`);
-      const subdirectory = entityInfo.entityId ?? "general";
+      const [, subdirectory] = entityInfo.entityId.split("/");
       directoryPath = path.join(basePath, "autocomplete", subdirectory);
       filename = sanitizedQuery;
     } else if (entityInfo.isQueryResponse && entityInfo.queryParams) {
