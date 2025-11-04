@@ -234,13 +234,23 @@ export class DiskCacheWriter {
    * Cached after first call
    */
   private async getResolvedBasePath(): Promise<string> {
+    // Check if basePath is already absolute FIRST
+    // This must be checked before using this.workspaceRoot to avoid double path joining
+    await initializeNodeModules();
+    const { path: pathModule } = getNodeModules();
+    if (pathModule.isAbsolute(this.config.basePath)) {
+      logger.debug("cache", "Using absolute basePath", {
+        basePath: this.config.basePath,
+      });
+      return this.config.basePath;
+    }
+
+    // If we have a cached workspace root, use it for relative paths
     if (this.workspaceRoot) {
-      await initializeNodeModules();
-      const { path: pathModule } = getNodeModules();
       return pathModule.join(this.workspaceRoot, this.config.basePath);
     }
 
-    // Check if basePath is already absolute
+    // Perform workspace root detection for relative paths
     if (!this.workspaceRootPromise) {
       this.workspaceRootPromise = findWorkspaceRoot().then((root) => {
         this.workspaceRoot = root;
@@ -250,8 +260,6 @@ export class DiskCacheWriter {
     }
 
     const root = await this.workspaceRootPromise;
-    await initializeNodeModules();
-    const { path: pathModule } = getNodeModules();
     return pathModule.join(root, this.config.basePath);
   }
 

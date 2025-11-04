@@ -38,7 +38,7 @@ export const createPlugins = () => [
   // Note: Using inline path constant to avoid importing from workspace packages
   // during Nx project graph generation (before dependencies are built)
   openalexCachePlugin({
-    staticDataPath: "apps/web/public/data/openalex",
+    staticDataPath: "public/data/openalex",
     verbose: true,
   }),
 
