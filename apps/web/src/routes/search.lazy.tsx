@@ -1,8 +1,8 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useSearch } from "@tanstack/react-router";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
-import { cachedOpenAlex, createWorksQuery } from "@academic-explorer/client";
-import type { Work, WorksFilters } from "@academic-explorer/types";
+import { cachedOpenAlex } from "@academic-explorer/client";
+import type { AutocompleteResult } from "@academic-explorer/client";
 import { convertToRelativeUrl } from "@academic-explorer/ui";
 import { formatLargeNumber, logger } from "@academic-explorer/utils";
 import {
@@ -35,58 +35,53 @@ interface SearchFilters {
   endDate: Date | null;
 }
 
-// Real OpenAlex API search function
-const searchWorks = async (filters: SearchFilters): Promise<Work[]> => {
+// Real OpenAlex API autocomplete function - searches across all entity types
+const searchAllEntities = async (
+  filters: SearchFilters,
+): Promise<AutocompleteResult[]> => {
   if (!filters.query.trim()) return [];
 
   try {
-    logger.debug("search", "Searching works with filters", { filters });
+    logger.debug("search", "Searching all entities with autocomplete", {
+      filters,
+    });
 
-    const queryBuilder = createWorksQuery();
-
-    // Add search query
-    queryBuilder.addSearch(
-      "display_name.search" as keyof WorksFilters,
-      filters.query,
-    );
-
-    // Add date filters if provided
-    if (filters.startDate) {
-      const startYear = filters.startDate.getFullYear();
-      queryBuilder.addFilter("publication_year", `>=${startYear}`);
-    }
-
-    if (filters.endDate) {
-      const endYear = filters.endDate.getFullYear();
-      queryBuilder.addFilter("publication_year", `<=${endYear}`);
-    }
-
-    const response = await cachedOpenAlex.client.works.searchWorks(
+    // Use the general autocomplete endpoint that searches across all entity types
+    const results = await cachedOpenAlex.client.autocomplete.autocompleteGeneral(
       filters.query,
       {
-        filters: queryBuilder.build(),
-        select: [
-          "id",
-          "display_name",
-          "authorships",
-          "publication_year",
-          "cited_by_count",
-          "primary_location",
-          "open_access",
-          "doi",
-        ],
-        per_page: 20,
+        per_page: 50, // Get more results for better coverage
       },
     );
 
-    logger.debug("search", "Search completed", {
-      resultsCount: response.results?.length ?? 0,
-      total: response.meta?.count ?? 0,
+    logger.debug("search", "Autocomplete search completed", {
+      resultsCount: results.length,
+      query: filters.query,
     });
 
-    return response.results ?? [];
+    // Filter by date if provided
+    if (filters.startDate || filters.endDate) {
+      return results.filter((result) => {
+        // Only works have publication_year, so filter those
+        if (result.entity_type !== "work") return true;
+
+        const year = (result as unknown as { publication_year?: number })
+          .publication_year;
+        if (!year) return true;
+
+        if (filters.startDate && year < filters.startDate.getFullYear()) {
+          return false;
+        }
+        if (filters.endDate && year > filters.endDate.getFullYear()) {
+          return false;
+        }
+        return true;
+      });
+    }
+
+    return results;
   } catch (error) {
-    logger.error("search", "Search failed", { error, filters });
+    logger.error("search", "Autocomplete search failed", { error, filters });
     throw error;
   }
 };
@@ -95,11 +90,12 @@ const searchWorks = async (filters: SearchFilters): Promise<Work[]> => {
 const renderSearchHeader = () => (
   <div>
     <Title order={1} className={pageTitle}>
-      Academic Search
+      Universal Search
     </Title>
     <Text className={pageDescription}>
-      Search the OpenAlex database of academic works with advanced filtering
-      capabilities. Results are cached for improved performance.
+      Search across all OpenAlex entities - works, authors, sources,
+      institutions, and topics. Results are sorted by relevance and cached for
+      improved performance.
     </Text>
   </div>
 );
@@ -108,11 +104,11 @@ const renderEmptyState = () => (
   <Card withBorder>
     <Stack align="center" py="xl">
       <Text size="lg" fw={500}>
-        Enter a search term to explore academic literature
+        Enter a search term to explore OpenAlex
       </Text>
       <Text size="sm" c="dimmed" ta="center">
-        Search millions of academic works from OpenAlex with real-time results,
-        date filtering, and advanced search capabilities.
+        Search across millions of works, authors, sources, institutions, and
+        topics with real-time results and intelligent ranking.
       </Text>
     </Stack>
   </Card>
@@ -145,169 +141,116 @@ const renderNoResultsState = (query: string) => (
     variant="light"
   >
     <Text size="sm">
-      No academic works found for &quot;{query}&quot;. Try different search
-      terms or adjust your filters.
+      No entities found for &quot;{query}&quot;. Try different search terms or
+      adjust your filters.
     </Text>
   </Alert>
 );
 
+// Get entity type color for badges
+const getEntityTypeColor = (entityType: AutocompleteResult["entity_type"]) => {
+  const colors: Record<AutocompleteResult["entity_type"], string> = {
+    work: "blue",
+    author: "green",
+    source: "orange",
+    institution: "purple",
+    topic: "red",
+    concept: "pink",
+    publisher: "grape",
+    funder: "teal",
+    keyword: "cyan",
+  };
+  return colors[entityType] || "gray";
+};
+
 // Extract column definitions to reduce complexity
-const createSearchColumns = (): ColumnDef<Work>[] => [
+const createSearchColumns = (): ColumnDef<AutocompleteResult>[] => [
   {
-    accessorKey: "display_name",
-    header: "Title",
+    accessorKey: "entity_type",
+    header: "Type",
+    size: 100,
     cell: ({ row }) => {
-      const work = row.original;
-      const authors =
-        work.authorships
-          ?.slice(0, 3)
-          .map((a) => a.author?.display_name)
-          .filter(Boolean) || [];
-      const moreAuthors = (work.authorships?.length || 0) > 3;
-
+      const result = row.original;
       return (
-        <div>
-          <Text fw={500} size="sm" lineClamp={2}>
-            {work.display_name}
-          </Text>
-          <Text size="xs" c="dimmed">
-            {authors.length > 0 ? (
-              <span>
-                {authors.join(", ")}
-                {moreAuthors && ` +${(work.authorships?.length || 0) - 3} more`}
-              </span>
-            ) : (
-              "No authors listed"
-            )}
-          </Text>
-          {work.doi && (
-            <Anchor
-              href={`https://doi.org/${work.doi}`}
-              target="_blank"
-              size="xs"
-              c="dimmed"
-            >
-              DOI: {work.doi}
-            </Anchor>
-          )}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "display_name",
-    header: "Title",
-    cell: ({ row }) => {
-      const work = row.original;
-      const authors =
-        work.authorships
-          ?.slice(0, 3)
-          .map((a) => a.author)
-          .filter(Boolean) || [];
-      const moreAuthors = (work.authorships?.length || 0) > 3;
-
-      return (
-        <div>
-          <Text fw={500} size="sm" lineClamp={2}>
-            {work.display_name}
-          </Text>
-          <Text size="xs" c="dimmed">
-            {authors.length > 0 ? (
-              <span>
-                {authors.slice(0, 3).map((author, index) => {
-                  const authorUrl = convertToRelativeUrl(
-                    `https://openalex.org/${author.id}`,
-                  );
-                  return (
-                    <span key={author.id}>
-                      {authorUrl ? (
-                        <Anchor
-                          href={authorUrl}
-                          size="xs"
-                          style={{ textDecoration: "none" }}
-                          aria-label={`View author ${author.display_name}`}
-                        >
-                          {author.display_name}
-                        </Anchor>
-                      ) : (
-                        <span>{author.display_name}</span>
-                      )}
-                      {index < Math.min(authors.length, 3) - 1 && ", "}
-                    </span>
-                  );
-                })}
-                {moreAuthors && ` +${(work.authorships?.length || 0) - 3} more`}
-              </span>
-            ) : (
-              "No authors listed"
-            )}
-          </Text>
-          {work.doi && (
-            <Anchor
-              href={`https://doi.org/${work.doi}`}
-              target="_blank"
-              size="xs"
-              c="dimmed"
-            >
-              DOI: {work.doi}
-            </Anchor>
-          )}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "primary_location",
-    header: "Source",
-    cell: ({ row }) => {
-      const location = row.original.primary_location;
-      const source = location?.source;
-
-      if (!source?.display_name) {
-        return <Text size="sm">Unknown</Text>;
-      }
-
-      const sourceUrl = convertToRelativeUrl(
-        `https://openalex.org/${source.id}`,
-      );
-
-      return sourceUrl ? (
-        <Anchor
-          href={sourceUrl}
+        <Badge
           size="sm"
-          style={{ textDecoration: "none" }}
-          aria-label={`View source ${source.display_name}`}
+          color={getEntityTypeColor(result.entity_type)}
+          variant="light"
         >
-          {source.display_name}
-        </Anchor>
-      ) : (
-        <Text size="sm">{source.display_name}</Text>
+          {result.entity_type}
+        </Badge>
+      );
+    },
+  },
+  {
+    accessorKey: "display_name",
+    header: "Name",
+    cell: ({ row }) => {
+      const result = row.original;
+      const entityUrl = convertToRelativeUrl(
+        `https://openalex.org/${result.id}`,
+      );
+
+      return (
+        <div>
+          {entityUrl ? (
+            <Anchor
+              href={entityUrl}
+              size="sm"
+              fw={500}
+              style={{ textDecoration: "none" }}
+              aria-label={`View ${result.entity_type} ${result.display_name}`}
+            >
+              {result.display_name}
+            </Anchor>
+          ) : (
+            <Text fw={500} size="sm">
+              {result.display_name}
+            </Text>
+          )}
+          {result.hint && (
+            <Text size="xs" c="dimmed" lineClamp={1}>
+              {result.hint}
+            </Text>
+          )}
+          {result.external_id && (
+            <Text size="xs" c="dimmed">
+              {result.external_id}
+            </Text>
+          )}
+        </div>
       );
     },
   },
   {
     accessorKey: "cited_by_count",
     header: "Citations",
-    cell: ({ row }) => (
-      <Text size="sm" fw={500}>
-        {formatLargeNumber(row.original.cited_by_count || 0)}
-      </Text>
-    ),
+    size: 120,
+    cell: ({ row }) => {
+      const count = row.original.cited_by_count;
+      return count ? (
+        <Text size="sm" fw={500}>
+          {formatLargeNumber(count)}
+        </Text>
+      ) : (
+        <Text size="sm" c="dimmed">
+          —
+        </Text>
+      );
+    },
   },
   {
-    accessorKey: "open_access",
-    header: "Access",
+    accessorKey: "works_count",
+    header: "Works",
+    size: 100,
     cell: ({ row }) => {
-      const isOpen = row.original.open_access?.is_oa || false;
-
-      return (
-        <Badge
-          size="sm"
-          color={isOpen ? "green" : "gray"}
-          variant={isOpen ? "light" : "outline"}
-        >
-          {isOpen ? "Open Access" : "Closed"}
-        </Badge>
+      const count = row.original.works_count;
+      return count ? (
+        <Text size="sm">{formatLargeNumber(count)}</Text>
+      ) : (
+        <Text size="sm" c="dimmed">
+          —
+        </Text>
       );
     },
   },
@@ -353,8 +296,8 @@ function SearchPage() {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["search", searchFilters],
-    queryFn: () => searchWorks(searchFilters),
+    queryKey: ["search-autocomplete", searchFilters],
+    queryFn: () => searchAllEntities(searchFilters),
     enabled: Boolean(searchFilters.query.trim()),
     retry: 1,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -431,14 +374,18 @@ function SearchPage() {
           data={searchResults}
           columns={columns}
           searchable={false} // Search is handled by the SearchInterface
-          onRowClick={(work) => {
+          onRowClick={(result) => {
             logger.debug(
               "ui",
-              "Work clicked in search results",
-              { workId: work.id, workTitle: work.display_name },
+              "Search result clicked",
+              {
+                id: result.id,
+                name: result.display_name,
+                type: result.entity_type,
+              },
               "SearchPage",
             );
-            // Navigate to work detail page if needed
+            // Navigation is handled by the entity links in the table
           }}
         />
       </Stack>
@@ -453,7 +400,7 @@ function SearchPage() {
         <SearchInterface
           onSearch={handleSearch}
           isLoading={isLoading}
-          placeholder="Try searching for 'machine learning', 'climate change', or 'artificial intelligence'"
+          placeholder="Search for works, authors, institutions, topics... e.g. 'machine learning', 'Marie Curie', 'MIT'"
           showDateFilter={true}
         />
 
