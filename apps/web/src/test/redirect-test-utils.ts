@@ -1,6 +1,7 @@
 import { extractOpenAlexPaths } from "../../../../scripts/extract-openalex-paths";
 import * as path from "path";
 import { fileURLToPath } from "url";
+import { readFileSync } from "fs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -15,13 +16,28 @@ export interface RedirectTestCase {
 
 /**
  * Generate all redirect test cases from documented URLs
+ * Prefers openalex-urls.json if available, otherwise falls back to docs
  */
 export async function generateRedirectTestCases(): Promise<RedirectTestCase[]> {
-  // Resolve the path to docs/openalex-docs relative to the project root
-  const docsPath = path.resolve(__dirname, "../../../../docs/openalex-docs");
-  const { urls } = await extractOpenAlexPaths({
-    searchDir: docsPath,
-  });
+  let urls: string[] = [];
+
+  // Try to load from openalex-urls.json first
+  try {
+    const urlsJsonPath = path.resolve(__dirname, "../../../../openalex-urls.json");
+    console.log(`Attempting to load URLs from: ${urlsJsonPath}`);
+    const urlsJson = readFileSync(urlsJsonPath, "utf-8");
+    urls = JSON.parse(urlsJson);
+    console.log(`✅ Successfully loaded ${urls.length} URLs from openalex-urls.json`);
+  } catch (error) {
+    // Fallback to extracting from docs
+    console.log(`⚠️  openalex-urls.json not found (${error instanceof Error ? error.message : error}), falling back to docs`);
+    const docsPath = path.resolve(__dirname, "../../../../docs/openalex-docs");
+    const result = await extractOpenAlexPaths({
+      searchDir: docsPath,
+    });
+    urls = result.urls;
+    console.log(`Loaded ${urls.length} URLs from docs`);
+  }
 
   const testCases: RedirectTestCase[] = [];
 
