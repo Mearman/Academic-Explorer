@@ -81,11 +81,13 @@ export class BaseAutocompleteApi {
     endpoint: string,
     options: AutocompleteOptions,
   ): Promise<AutocompleteResponse<T>> {
+    // OpenAlex autocomplete endpoints do NOT accept per_page or format parameters
+    // Filter them out to avoid 403 errors
+    const { per_page, format, ...validOptions } = options;
+
     const params: QueryParams & AutocompleteOptions = {
-      ...options,
+      ...validOptions,
       q: options.q.trim(),
-      per_page: options.per_page ?? 25,
-      format: options.format ?? "json",
     };
 
     try {
@@ -420,20 +422,15 @@ export class CompleteAutocompleteApi extends BaseAutocompleteApi {
     return this.executeWithDebounce(cacheKey, async () => {
       try {
         const endpoint = "autocomplete";
-        // Filter out per_page and format - the general autocomplete endpoint doesn't accept them
-        const { per_page, format, ...validOptions } = options;
         const requestOptions: AutocompleteOptions = {
           q: query.trim(),
-          ...validOptions,
+          ...options,
         };
 
-        // Make request without per_page and format defaults
-        const params: QueryParams & AutocompleteOptions = {
-          ...requestOptions,
-          q: requestOptions.q.trim(),
-        };
-
-        const response = await this.client.get<AutocompleteResponse>(endpoint, params);
+        const response = await this.makeAutocompleteRequest(
+          endpoint,
+          requestOptions,
+        );
         return this.sortAutocompleteResults(response.results);
       } catch (error: unknown) {
         const errorDetails = this.formatErrorForLogging(error);
