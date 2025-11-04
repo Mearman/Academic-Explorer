@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-10-19T19:01:42.212Z",
+  "lastUpdated": "2025-11-04T20:18:01.087Z",
   "directories": {
     "authors": {
       "$ref": "./authors",
@@ -40,6 +40,12 @@
       "$ref": "./sources.json",
       "lastRetrieved": "2025-10-06T14:10:20.319Z",
       "contentHash": "3db646598be403a1"
+    },
+    "works": {
+      "url": "https://api.openalex.org/autocomplete?q=machine+learning",
+      "$ref": "./works.json",
+      "lastRetrieved": "2025-11-04T20:18:01.086Z",
+      "contentHash": "dd796f6d32a769cc"
     }
   }
 }
