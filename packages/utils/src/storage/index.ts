@@ -7,11 +7,11 @@ export {
 	defaultStorageConfig,
 	type StorageConfig,
 	type StateStorage,
-} from "./indexeddb-storage"
+} from "./indexeddb-storage.js"
 
 export {
 	userInteractionsService,
 	type BookmarkRecord,
 	type PageVisitRecord,
 	type UserInteractionsService,
-} from "./user-interactions-db"
+} from "./user-interactions-db.js"

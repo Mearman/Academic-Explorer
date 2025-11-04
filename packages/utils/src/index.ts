@@ -1,11 +1,11 @@
 // State module re-export
-export * from "./state"
+export * from "./state/index.js"
 
 // Cache utilities
-export * from "./cache"
+export * from "./cache/index.js"
 
 // Cache browser utilities
-export { cacheBrowserService } from "./cache-browser"
+export { cacheBrowserService } from "./cache-browser/index.js"
 export type {
 	CachedEntityMetadata,
 	CacheBrowserStats,
@@ -13,18 +13,18 @@ export type {
 	CacheBrowserFilters,
 	CacheBrowserOptions,
 	CacheBrowserResult,
-} from "./cache-browser"
+} from "./cache-browser/index.js"
 
 // Static data utilities - only export what's needed to avoid conflicts
 export type {
 	EntityType as StaticEntityType,
 	DirectoryIndex,
 	FileEntry,
-} from "./static-data/cache-utilities"
+} from "./static-data/cache-utilities.js"
 
 // Logger
-export { logger, logError } from "./logger"
-export type { LogCategory } from "./logger"
+export { logger, logError } from "./logger.js"
+export type { LogCategory } from "./logger.js"
 
 // Utility functions
 export {
@@ -34,7 +34,7 @@ export {
 	safeParseExpansionTarget,
 	type RelationType,
 	type ExpansionTarget,
-} from "./validation"
+} from "./validation.js"
 
 // Data utilities
 export {
@@ -42,10 +42,10 @@ export {
 	isValidSearchQuery,
 	normalizeSearchQuery,
 	formatLargeNumber,
-} from "./data"
+} from "./data.js"
 
 // Worker message schemas and types
-export * from "./workers/messages"
+export * from "./workers/messages.js"
 
 // Build info utilities
 export {
@@ -55,7 +55,7 @@ export {
 	getReleaseUrl,
 	getRelativeBuildTime,
 	type BuildInfo,
-} from "./build-info"
+} from "./build-info.js"
 
 // Entity route hook
 export {
@@ -63,10 +63,10 @@ export {
 	type EntityRouteConfig,
 	type UseEntityRouteOptions,
 	type UseEntityRouteResult,
-} from "./hooks/use-entity-route"
+} from "./hooks/use-entity-route.js"
 
 // Navigation utilities
-export { NavigationHelper, type NavigationConfig } from "./navigation"
+export { NavigationHelper, type NavigationConfig } from "./navigation.js"
 
 // UI components and hooks moved to UI package
 // export {
@@ -76,11 +76,11 @@ export { NavigationHelper, type NavigationConfig } from "./navigation"
 // 	type LoadingStateProps,
 // 	type ErrorStateProps,
 // 	type EmptyStateProps,
-// } from "./ui/loading-states"
+// } from "./ui/loading-states.js"
 
 // UI components - base filters and form components
-export type { FilterOperator, FilterFieldConfig } from "./ui/filter-base"
-export { BaseFilter, createFilter, createEnumOptions, FILTER_WIDTHS } from "./ui/filter-base"
+export type { FilterOperator, FilterFieldConfig } from "./ui/filter-base.js"
+export { BaseFilter, createFilter, createEnumOptions, FILTER_WIDTHS } from "./ui/filter-base.js"
 
 // Async operation hook and Data state moved to UI package
 // These can be imported from @academic-explorer/ui
@@ -91,10 +91,10 @@ export { BaseFilter, createFilter, createEnumOptions, FILTER_WIDTHS } from "./ui
 // 	type UseSearchStateOptions,
 // 	type UseSearchStateResult,
 // 	type SearchFilters,
-// } from "./hooks/use-search-state"
+// } from "./hooks/use-search-state.js"
 
 // Base search component
-// export { BaseSearch, type BaseSearchProps } from "./ui/base-search"
+// export { BaseSearch, type BaseSearchProps } from "./ui/base-search.js"
 
 // Entity fetching hooks with Zod validation
 // Temporarily disabled due to circular dependency with client package
@@ -103,7 +103,7 @@ export { BaseFilter, createFilter, createEnumOptions, FILTER_WIDTHS } from "./ui
 //   useEntityList,
 //   type UseEntityFetchOptions,
 //   type UseEntityFetchResult,
-// } from "./hooks/use-entity-fetch";
+// } from "./hooks/use-entity-fetch.js";
 
 // Base section component
 // export {
@@ -113,7 +113,7 @@ export { BaseFilter, createFilter, createEnumOptions, FILTER_WIDTHS } from "./ui
 // 	type BaseSectionProps,
 // 	type SectionWithLoadingProps,
 // 	type SectionWithErrorProps,
-// } from "./ui/base-section"
+// } from "./ui/base-section.js"
 
 // Store utilities
 export {
@@ -121,7 +121,7 @@ export {
 	type BaseActivity,
 	type ProgressTracking,
 	type StatusTracking,
-} from "./stores/activity-tracking"
+} from "./stores/activity-tracking.js"
 
 // Network tracking store disabled (React-dependent, moved to UI package)
 // The network tracking functionality has been moved to the UI package since it relies on React Context
@@ -146,7 +146,7 @@ export {
 	type MissingPaperDetectionConfig,
 	type DetectionProgress,
 	type MissingPaperDetectionResults,
-} from "./data-evaluation"
+} from "./data-evaluation.js"
 
 // Entity type inference utilities
 export {
@@ -154,7 +154,7 @@ export {
 	inferEntityTypeFromOpenAlexId,
 	inferEntityTypeFromExternalId,
 	getEntityTypeFromEntity,
-} from "./entity-type-inference"
+} from "./entity-type-inference.js"
 
 // Storage utilities
 export {
@@ -166,4 +166,4 @@ export {
 	type BookmarkRecord,
 	type PageVisitRecord,
 	type UserInteractionsService,
-} from "./storage"
+} from "./storage/index.js"

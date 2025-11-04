@@ -1,4 +1,4 @@
-import { logger as _logger } from "../logger"
+import { logger as _logger } from "../logger.js"
 
 /**
  * Base activity tracking interface

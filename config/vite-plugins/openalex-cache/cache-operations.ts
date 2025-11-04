@@ -1,58 +1,120 @@
 import type { CacheContext, CachedResponse } from "./types";
 import { createLogVerbose } from "./utils";
-import { writeFileSync, readFileSync, existsSync, mkdirSync } from "fs";
+// Import from source file directly - Vite plugin runs in Node.js, not bundled
+import { DiskCacheWriter } from "../../../packages/client/src/cache/disk/disk-writer.js";
+import { readFileSync, existsSync, readdirSync } from "fs";
 import { join, dirname } from "path";
 import { createHash } from "crypto";
 
 /**
- * Creates a short hash from a URL for use as a filename
- * Uses SHA-256 hash truncated to 32 characters for reasonable uniqueness
+ * DiskCacheWriter instance for the Vite plugin
+ * This ensures cache files are written with the same structure as the client package
  */
-function createUrlHash(url: string): string {
-  const hash = createHash("sha256").update(url).digest("hex");
-  return hash.substring(0, 32); // 32 chars is enough for uniqueness
+let diskWriter: DiskCacheWriter | null = null;
+
+/**
+ * Initialize or get the DiskCacheWriter instance
+ */
+function getDiskWriter(context: CacheContext): DiskCacheWriter {
+  if (!diskWriter) {
+    diskWriter = new DiskCacheWriter({
+      basePath: context.staticDataDir,
+      enabled: true,
+    });
+  }
+  return diskWriter;
 }
 
 /**
- * Gets the cache path for a given URL
- * Uses a hash-based filename to avoid ENAMETOOLONG errors with long URLs
+ * Gets the cache path for a given URL by checking if it exists
+ * Returns null if not found
  */
-export function getCachePath(url: string, context: CacheContext): string {
-  const urlHash = createUrlHash(url);
-  return join(context.staticDataDir, "cache", `${urlHash}.json`);
-}
-
-/**
- * Retrieves a cached response if it exists and is not expired
- */
-export function getCachedResponse(cachePath: string): CachedResponse | null {
+export function getCachePath(url: string, context: CacheContext): string | null {
   try {
-    if (!existsSync(cachePath)) {
+    // Parse URL to determine entity type and path
+    const urlObj = new URL(url);
+    const pathParts = urlObj.pathname.split("/").filter(Boolean);
+    const queryParams = urlObj.searchParams.toString();
+
+    // Check for autocomplete endpoint
+    if (pathParts[0] === "autocomplete") {
+      const subtype = pathParts.length > 1 ? pathParts[1] : "general";
+      const autocompleteDir = join(context.staticDataDir, "autocomplete", subtype);
+
+      if (existsSync(autocompleteDir)) {
+        const files = readdirSync(autocompleteDir);
+        // Look for matching query file
+        const queryFile = files.find(f => f.includes(encodeURIComponent(urlObj.search)));
+        if (queryFile) {
+          return join(autocompleteDir, queryFile);
+        }
+      }
       return null;
     }
 
-    const cached = readFileSync(cachePath, "utf-8");
-    const parsed = JSON.parse(cached) as CachedResponse;
+    // Check for entity endpoints
+    const validEntityTypes = ["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords"];
 
-    // Check if cache is expired (24 hours)
-    const cacheAge = Date.now() - new Date(parsed.timestamp).getTime();
-    const maxAge = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+    if (pathParts.length >= 1 && validEntityTypes.includes(pathParts[0])) {
+      const entityType = pathParts[0];
+      const entityDir = join(context.staticDataDir, entityType);
 
-    if (cacheAge > maxAge) {
-      return null;
+      // Single entity: /entity_type/entity_id
+      if (pathParts.length >= 2 && !queryParams) {
+        const entityId = pathParts[1];
+        const entityFile = join(entityDir, `${entityId}.json`);
+        if (existsSync(entityFile)) {
+          return entityFile;
+        }
+      }
+
+      // Query response: /entity_type?params
+      if (queryParams && existsSync(entityDir)) {
+        const files = readdirSync(entityDir);
+        const queryFile = files.find(f => f.startsWith("query=") && f.includes(encodeURIComponent("?" + queryParams)));
+        if (queryFile) {
+          return join(entityDir, queryFile);
+        }
+      }
     }
 
-    return parsed;
-  } catch {
+    return null;
+  } catch (error) {
+    console.error(`[openalex-cache] Failed to get cache path: ${error}`);
     return null;
   }
 }
 
 /**
- * Saves response data to cache
+ * Retrieves a cached response if it exists
+ */
+export function getCachedResponse(cachePath: string | null): CachedResponse | null {
+  try {
+    if (!cachePath || !existsSync(cachePath)) {
+      return null;
+    }
+
+    const cached = readFileSync(cachePath, "utf-8");
+    const parsed = JSON.parse(cached);
+
+    // DiskCacheWriter stores raw responses, return as CachedResponse format
+    return {
+      data: parsed,
+      headers: {},
+      timestamp: new Date().toISOString(),
+      url: "",
+    };
+  } catch (error) {
+    console.error(`[openalex-cache] Failed to read cache: ${error}`);
+    return null;
+  }
+}
+
+/**
+ * Saves response data to cache using DiskCacheWriter
  */
 export async function saveToCache(
-  cachePath: string,
+  cachePath: string | null,
   data: unknown,
   headers: Record<string, string>,
   url: string,
@@ -61,30 +123,26 @@ export async function saveToCache(
   try {
     const logVerbose = createLogVerbose(context.verbose);
 
-    // Ensure cache directory exists
-    const cacheDir = dirname(cachePath);
-    if (!existsSync(cacheDir)) {
-      mkdirSync(cacheDir, { recursive: true });
-    }
-
-    const cachedResponse: CachedResponse = {
-      data,
-      headers,
-      timestamp: new Date().toISOString(),
-      url,
-    };
-
     if (context.dryRun) {
-      logVerbose(`[DRY RUN] Would save cache to: ${cachePath}`);
-      logVerbose(`[DRY RUN] Cache data: ${JSON.stringify(cachedResponse, null, 2)}`);
+      logVerbose(`[DRY RUN] Would save cache for URL: ${url}`);
+      logVerbose(`[DRY RUN] Cache data: ${JSON.stringify(data, null, 2)}`);
       return;
     }
 
-    writeFileSync(cachePath, JSON.stringify(cachedResponse, null, 2), "utf-8");
-    logVerbose(`Saved cache to: ${cachePath}`);
+    const writer = getDiskWriter(context);
+
+    // Use DiskCacheWriter to save the response
+    // writeToCache expects InterceptedData format
+    await writer.writeToCache({
+      url,
+      responseData: data,
+      timestamp: new Date().toISOString(),
+    });
+
+    logVerbose(`Saved cache for URL: ${url}`);
   } catch (error) {
     const logVerbose = createLogVerbose(context.verbose);
-    logVerbose(`Failed to save cache to ${cachePath}: ${error}`);
+    logVerbose(`Failed to save cache for ${url}: ${error}`);
   }
 }
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams, useSearch } from "@tanstack/react-router";
 import type { EntityType } from "@academic-explorer/types";
-import { logger } from "../logger";
+import { logger } from "../logger.js";
 
 export interface EntityRouteConfig {
 	entityType: string;

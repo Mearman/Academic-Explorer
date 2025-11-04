@@ -8,7 +8,7 @@ import {
 	type ParsedQuery,
 	type QueryTerm,
 	type FieldQuery,
-} from "./query-parser"
+} from "./query-parser.js"
 
 // Test constants for common patterns
 const UNQUOTED_TERM = { isWildcard: false, isQuoted: false }

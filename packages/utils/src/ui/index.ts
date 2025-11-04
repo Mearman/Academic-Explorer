@@ -1,7 +1,7 @@
 // Re-export all UI components and types
-export * from "./filter-base";
+export * from "./filter-base.js";
 export type {
   FilterOperator,
   FilterFieldConfig,
   FilterFieldOption,
-} from "./filter-base";
+} from "./filter-base.js";

@@ -1,4 +1,4 @@
-import { logger } from "../logger"
+import { logger } from "../logger.js"
 
 // Filter operator types - aligned with apps/web filter system
 export type FilterOperator =
