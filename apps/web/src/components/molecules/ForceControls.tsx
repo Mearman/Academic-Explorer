@@ -28,8 +28,7 @@ import {
   FORCE_PARAM_CONFIG,
 } from "@academic-explorer/graph";
 
-// Common style constants
-const DIMMED_ICON_STYLE = { color: "var(--mantine-color-dimmed)" };
+// No custom style constants needed - using Mantine props directly
 
 // Local type for component state (allows for number mutations)
 type ForceParameters = {
@@ -343,8 +342,9 @@ export const ForceControls: React.FC = () => {
     return (
       <Text
         size="sm"
-        c="dimmed"
-        style={{ fontStyle: "italic", textAlign: "center" }}
+        style={{ color: "var(--mantine-color-dimmed)" }}
+        fs="italic"
+        ta="center"
       >
         Force controls are only available when using D3 Force Layout
       </Text>
@@ -367,7 +367,7 @@ export const ForceControls: React.FC = () => {
       <Stack gap="lg">
         {/* Link Forces */}
         <Stack gap="xs">
-          <Text size="xs" fw={500} c="dimmed">
+          <Text size="xs" fw={500} style={{ color: "var(--mantine-color-dimmed)" }}>
             LINK FORCES
           </Text>
 
@@ -376,12 +376,12 @@ export const ForceControls: React.FC = () => {
             <Group gap="xs">
               <Text size="xs">{FORCE_PARAM_CONFIG.linkDistance.label}</Text>
               <Tooltip label={FORCE_PARAM_CONFIG.linkDistance.description}>
-                <IconInfoCircle size={12} style={DIMMED_ICON_STYLE} />
+                <IconInfoCircle size={12} style={{ color: "var(--mantine-color-dimmed)" }} />
               </Tooltip>
             </Group>
             <Group gap="md" align="center">
               <Slider
-                style={{ flex: 1 }}
+                flex={1}
                 min={FORCE_PARAM_CONFIG.linkDistance.min}
                 max={FORCE_PARAM_CONFIG.linkDistance.max}
                 step={FORCE_PARAM_CONFIG.linkDistance.step}
@@ -417,12 +417,12 @@ export const ForceControls: React.FC = () => {
             <Group gap="xs">
               <Text size="xs">{FORCE_PARAM_CONFIG.linkStrength.label}</Text>
               <Tooltip label={FORCE_PARAM_CONFIG.linkStrength.description}>
-                <IconInfoCircle size={12} style={DIMMED_ICON_STYLE} />
+                <IconInfoCircle size={12} style={{ color: "var(--mantine-color-dimmed)" }} />
               </Tooltip>
             </Group>
             <Group gap="md" align="center">
               <Slider
-                style={{ flex: 1 }}
+                flex={1}
                 min={FORCE_PARAM_CONFIG.linkStrength.min}
                 max={FORCE_PARAM_CONFIG.linkStrength.max}
                 step={FORCE_PARAM_CONFIG.linkStrength.step}
@@ -459,7 +459,7 @@ export const ForceControls: React.FC = () => {
 
         {/* Node Forces */}
         <Stack gap="xs">
-          <Text size="xs" fw={500} c="dimmed">
+          <Text size="xs" fw={500} style={{ color: "var(--mantine-color-dimmed)" }}>
             NODE FORCES
           </Text>
 
@@ -468,12 +468,12 @@ export const ForceControls: React.FC = () => {
             <Group gap="xs">
               <Text size="xs">{FORCE_PARAM_CONFIG.chargeStrength.label}</Text>
               <Tooltip label={FORCE_PARAM_CONFIG.chargeStrength.description}>
-                <IconInfoCircle size={12} style={DIMMED_ICON_STYLE} />
+                <IconInfoCircle size={12} style={{ color: "var(--mantine-color-dimmed)" }} />
               </Tooltip>
             </Group>
             <Group gap="md" align="center">
               <Slider
-                style={{ flex: 1 }}
+                flex={1}
                 min={FORCE_PARAM_CONFIG.chargeStrength.min}
                 max={FORCE_PARAM_CONFIG.chargeStrength.max}
                 step={FORCE_PARAM_CONFIG.chargeStrength.step}
@@ -509,12 +509,12 @@ export const ForceControls: React.FC = () => {
             <Group gap="xs">
               <Text size="xs">{FORCE_PARAM_CONFIG.centerStrength.label}</Text>
               <Tooltip label={FORCE_PARAM_CONFIG.centerStrength.description}>
-                <IconInfoCircle size={12} style={DIMMED_ICON_STYLE} />
+                <IconInfoCircle size={12} style={{ color: "var(--mantine-color-dimmed)" }} />
               </Tooltip>
             </Group>
             <Group gap="md" align="center">
               <Slider
-                style={{ flex: 1 }}
+                flex={1}
                 min={FORCE_PARAM_CONFIG.centerStrength.min}
                 max={FORCE_PARAM_CONFIG.centerStrength.max}
                 step={FORCE_PARAM_CONFIG.centerStrength.step}
@@ -551,7 +551,7 @@ export const ForceControls: React.FC = () => {
 
         {/* Collision Forces */}
         <Stack gap="xs">
-          <Text size="xs" fw={500} c="dimmed">
+          <Text size="xs" fw={500} style={{ color: "var(--mantine-color-dimmed)" }}>
             COLLISION
           </Text>
 
@@ -560,12 +560,12 @@ export const ForceControls: React.FC = () => {
             <Group gap="xs">
               <Text size="xs">{FORCE_PARAM_CONFIG.collisionRadius.label}</Text>
               <Tooltip label={FORCE_PARAM_CONFIG.collisionRadius.description}>
-                <IconInfoCircle size={12} style={DIMMED_ICON_STYLE} />
+                <IconInfoCircle size={12} style={{ color: "var(--mantine-color-dimmed)" }} />
               </Tooltip>
             </Group>
             <Group gap="md" align="center">
               <Slider
-                style={{ flex: 1 }}
+                flex={1}
                 min={FORCE_PARAM_CONFIG.collisionRadius.min}
                 max={FORCE_PARAM_CONFIG.collisionRadius.max}
                 step={FORCE_PARAM_CONFIG.collisionRadius.step}
@@ -603,12 +603,12 @@ export const ForceControls: React.FC = () => {
                 {FORCE_PARAM_CONFIG.collisionStrength.label}
               </Text>
               <Tooltip label={FORCE_PARAM_CONFIG.collisionStrength.description}>
-                <IconInfoCircle size={12} style={DIMMED_ICON_STYLE} />
+                <IconInfoCircle size={12} style={{ color: "var(--mantine-color-dimmed)" }} />
               </Tooltip>
             </Group>
             <Group gap="md" align="center">
               <Slider
-                style={{ flex: 1 }}
+                flex={1}
                 min={FORCE_PARAM_CONFIG.collisionStrength.min}
                 max={FORCE_PARAM_CONFIG.collisionStrength.max}
                 step={FORCE_PARAM_CONFIG.collisionStrength.step}
@@ -645,7 +645,7 @@ export const ForceControls: React.FC = () => {
 
         {/* Animation Controls */}
         <Stack gap="xs">
-          <Text size="xs" fw={500} c="dimmed">
+          <Text size="xs" fw={500} style={{ color: "var(--mantine-color-dimmed)" }}>
             ANIMATION
           </Text>
 
@@ -654,12 +654,12 @@ export const ForceControls: React.FC = () => {
             <Group gap="xs">
               <Text size="xs">{FORCE_PARAM_CONFIG.velocityDecay.label}</Text>
               <Tooltip label={FORCE_PARAM_CONFIG.velocityDecay.description}>
-                <IconInfoCircle size={12} style={DIMMED_ICON_STYLE} />
+                <IconInfoCircle size={12} style={{ color: "var(--mantine-color-dimmed)" }} />
               </Tooltip>
             </Group>
             <Group gap="md" align="center">
               <Slider
-                style={{ flex: 1 }}
+                flex={1}
                 min={FORCE_PARAM_CONFIG.velocityDecay.min}
                 max={FORCE_PARAM_CONFIG.velocityDecay.max}
                 step={FORCE_PARAM_CONFIG.velocityDecay.step}
@@ -696,12 +696,12 @@ export const ForceControls: React.FC = () => {
             <Group gap="xs">
               <Text size="xs">{FORCE_PARAM_CONFIG.alphaDecay.label}</Text>
               <Tooltip label={FORCE_PARAM_CONFIG.alphaDecay.description}>
-                <IconInfoCircle size={12} style={DIMMED_ICON_STYLE} />
+                <IconInfoCircle size={12} style={{ color: "var(--mantine-color-dimmed)" }} />
               </Tooltip>
             </Group>
             <Group gap="md" align="center">
               <Slider
-                style={{ flex: 1 }}
+                flex={1}
                 min={FORCE_PARAM_CONFIG.alphaDecay.min}
                 max={FORCE_PARAM_CONFIG.alphaDecay.max}
                 step={FORCE_PARAM_CONFIG.alphaDecay.step}

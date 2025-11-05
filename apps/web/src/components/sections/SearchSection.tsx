@@ -4,8 +4,8 @@
  */
 
 import React, { useState, useCallback } from "react";
-import { Switch, Group, Text, Stack } from "@mantine/core";
-import { IconGraph, IconArchive } from "@tabler/icons-react";
+import { Switch, Group, Text, Stack, TextInput, Button, Flex } from "@mantine/core";
+import { IconGraph, IconArchive, IconSearch } from "@tabler/icons-react";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
@@ -96,72 +96,45 @@ export const SearchSection: React.FC = () => {
           color="blue"
           thumbIcon={
             repositoryMode ? (
-              <IconArchive size={12} style={{ color: colors.text.inverse }} />
+              <IconArchive size={12} style={{ color: "white" }} />
             ) : (
-              <IconGraph size={12} style={{ color: colors.text.secondary }} />
+              <IconGraph size={12} style={{ color: "var(--mantine-color-dimmed)" }} />
             )
           }
         />
-        <div style={{ flex: 1 }}>
-          <Text
-            size="sm"
-            style={{ fontWeight: 500, color: colors.text.primary }}
-          >
+        <Flex flex={1} direction="column">
+          <Text size="sm" fw={500} c="var(--mantine-color-text)">
             {repositoryMode ? "Repository Mode" : "Live Mode"}
           </Text>
-          <Text size="xs" style={{ color: colors.text.secondary }}>
+          <Text size="xs" c="dimmed">
             {repositoryMode
               ? "Search adds to repository for manual drag-to-graph"
               : "Search immediately adds results to graph"}
           </Text>
-        </div>
+        </Flex>
       </Group>
 
       {/* Search form */}
-      <form
-        onSubmit={handleSearch}
-        style={{ display: "flex", flexDirection: "column", gap: "8px" }}
-      >
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-          }}
-          placeholder="Enter keywords, DOI, ORCID, etc..."
-          style={{
-            width: "100%",
-            padding: "8px 12px",
-            border: `1px solid ${colors.border.primary}`,
-            borderRadius: "6px",
-            fontSize: "14px",
-            outline: "none",
-            boxSizing: "border-box",
-            backgroundColor: colors.background.primary,
-            color: colors.text.primary,
-          }}
-          disabled={isLoading}
-        />
-        <button
-          type="submit"
-          disabled={!searchQuery.trim() || isLoading}
-          style={{
-            padding: "8px 16px",
-            backgroundColor: isLoading ? colors.text.tertiary : colors.primary,
-            color: colors.text.inverse,
-            border: "none",
-            borderRadius: "6px",
-            fontSize: "14px",
-            cursor: isLoading ? "not-allowed" : "pointer",
-            transition: prefersReducedMotion ? "none" : "background-color 0.2s",
-          }}
-        >
-          {isLoading
-            ? "Searching..."
-            : repositoryMode
-              ? "Search → Repository"
-              : "Search → Graph"}
-        </button>
+      <form onSubmit={handleSearch}>
+        <Stack gap="xs">
+          <TextInput
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+            }}
+            placeholder="Enter keywords, DOI, ORCID, etc..."
+            disabled={isLoading}
+            rightSection={<IconSearch size={16} />}
+          />
+          <Button
+            type="submit"
+            disabled={!searchQuery.trim() || isLoading}
+            loading={isLoading}
+            fullWidth
+          >
+            {repositoryMode ? "Search → Repository" : "Search → Graph"}
+          </Button>
+        </Stack>
       </form>
     </Stack>
   );

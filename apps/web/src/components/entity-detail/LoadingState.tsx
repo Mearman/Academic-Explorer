@@ -1,5 +1,5 @@
 import React from "react";
-import { Loader, Paper, Stack, Container, Title, Code } from "@mantine/core";
+import { Loader, Paper, Stack, Container, Title, Code, Flex } from "@mantine/core";
 import { EntityTypeConfig, EntityType } from "./EntityTypeConfig";
 
 interface LoadingStateProps {
@@ -27,18 +27,20 @@ export function LoadingState({ entityType, entityId, config }: LoadingStateProps
   const loaderColor = getMantineColor(config.colorKey as EntityType);
 
   return (
-    <Container size="sm" p="xl" style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <Paper p="xl" radius="xl" withBorder w="100%" maw="32rem">
-        <Stack align="center" gap="lg">
-          <Loader size="xl" color={loaderColor} />
-          <Title order={2} ta="center">
-            Loading {entityType}...
-          </Title>
-          <Code style={{ wordBreak: "break-all" }}>
-            {entityId}
-          </Code>
-        </Stack>
-      </Paper>
+    <Container size="sm" p="xl">
+      <Flex h="100vh" justify="center" align="center">
+        <Paper p="xl" radius="xl" withBorder w="100%" maw="32rem">
+          <Stack align="center" gap="lg">
+            <Loader size="xl" color={loaderColor} />
+            <Title order={2} ta="center">
+              Loading {entityType}...
+            </Title>
+            <Code style={{ wordBreak: "break-all" }}>
+              {entityId}
+            </Code>
+          </Stack>
+        </Paper>
+      </Flex>
     </Container>
   );
 }
