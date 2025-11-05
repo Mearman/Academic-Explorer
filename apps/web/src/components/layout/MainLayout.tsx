@@ -9,6 +9,7 @@ import {
   Group,
   Text,
   ActionIcon,
+  Button,
   useMantineColorScheme,
 } from "@mantine/core";
 import {
@@ -211,60 +212,44 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               <IconLayoutSidebarRight size={18} />
             </ActionIcon>
 
-            <nav style={{ display: "flex", gap: "1rem" }}>
-              <Link
+            <Group>
+              <Button
+                component={Link}
                 to="/"
-                style={{
-                  color: colors.text.primary,
-                  textDecoration: "none",
-                  padding: "0.5rem 0.75rem",
-                  borderRadius: "6px",
-                  fontSize: "14px",
-                  fontWeight: "500",
-                }}
+                variant="subtle"
+                size="sm"
+                c={colors.text.primary}
               >
                 Home
-              </Link>
-              <Link
+              </Button>
+              <Button
+                component={Link}
                 to="/about"
-                style={{
-                  color: colors.text.primary,
-                  textDecoration: "none",
-                  padding: "0.5rem 0.75rem",
-                  borderRadius: "6px",
-                  fontSize: "14px",
-                  fontWeight: "500",
-                }}
+                variant="subtle"
+                size="sm"
+                c={colors.text.primary}
               >
                 About
-              </Link>
-              <Link
+              </Button>
+              <Button
+                component={Link}
                 to="/history"
-                style={{
-                  color: colors.text.primary,
-                  textDecoration: "none",
-                  padding: "0.5rem 0.75rem",
-                  borderRadius: "6px",
-                  fontSize: "14px",
-                  fontWeight: "500",
-                }}
+                variant="subtle"
+                size="sm"
+                c={colors.text.primary}
               >
                 History
-              </Link>
-              <Link
+              </Button>
+              <Button
+                component={Link}
                 to="/bookmarks"
-                style={{
-                  color: colors.text.primary,
-                  textDecoration: "none",
-                  padding: "0.5rem 0.75rem",
-                  borderRadius: "6px",
-                  fontSize: "14px",
-                  fontWeight: "500",
-                }}
+                variant="subtle"
+                size="sm"
+                c={colors.text.primary}
               >
                 Bookmarks
-              </Link>
-            </nav>
+              </Button>
+            </Group>
 
             <ActionIcon
               onClick={cycleColorScheme}
