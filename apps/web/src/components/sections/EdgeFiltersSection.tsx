@@ -5,7 +5,7 @@
 
 import React from "react";
 import { IconLink, IconEye, IconEyeOff } from "@tabler/icons-react";
-import { Button, Checkbox, Badge, Group, Stack } from "@mantine/core";
+import { Button, Checkbox, Badge, Group, Stack, Paper, Text } from "@mantine/core";
 import { useGraphStore } from "@/stores/graph-store";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
@@ -98,64 +98,38 @@ export const EdgeFiltersSection: React.FC<EdgeFiltersSectionProps> = ({
   };
 
   return (
-    <div className={className} style={{ padding: "16px" }}>
-      <div
-        style={{
-          fontSize: "14px",
-          fontWeight: 600,
-          marginBottom: "12px",
-          color: colors.text.primary,
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-        }}
-      >
+    <Stack p="md" className={className}>
+      <Group gap="sm">
         <IconLink size={16} />
-        Edge Types & Visibility
-      </div>
+        <Text size="sm" fw={600} c="var(--mantine-color-text)">
+          Edge Types & Visibility
+        </Text>
+      </Group>
 
       {/* Summary Stats */}
-      <div
-        style={{
-          padding: "12px",
-          backgroundColor: colors.background.secondary,
-          borderRadius: "8px",
-          marginBottom: "16px",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: FLEX_JUSTIFY_SPACE_BETWEEN,
-            alignItems: "center",
-            marginBottom: "8px",
-          }}
-        >
-          <span style={{ fontSize: "12px", color: colors.text.secondary }}>
-            Visible Connections
-          </span>
-          <Badge size="sm" variant="light" color="blue">
-            {totalVisibleEdges.toLocaleString()} / {totalEdges.toLocaleString()}
-          </Badge>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: FLEX_JUSTIFY_SPACE_BETWEEN,
-            alignItems: "center",
-          }}
-        >
-          <span style={{ fontSize: "12px", color: colors.text.secondary }}>
-            Active Types
-          </span>
-          <Badge size="sm" variant="light" color="green">
-            {visibleTypesCount} / {totalTypesCount}
-          </Badge>
-        </div>
-      </div>
+      <Paper p="sm" radius="md" withBorder>
+        <Stack gap="xs">
+          <Group justify="space-between">
+            <Text size="xs" c="dimmed">
+              Visible Connections
+            </Text>
+            <Badge size="sm" variant="light" color="blue">
+              {totalVisibleEdges.toLocaleString()} / {totalEdges.toLocaleString()}
+            </Badge>
+          </Group>
+          <Group justify="space-between">
+            <Text size="xs" c="dimmed">
+              Active Types
+            </Text>
+            <Badge size="sm" variant="light" color="green">
+              {visibleTypesCount} / {totalTypesCount}
+            </Badge>
+          </Group>
+        </Stack>
+      </Paper>
 
       {/* Bulk Actions */}
-      <Group gap="xs" style={{ marginBottom: "16px" }}>
+      <Group gap="xs">
         <Button
           size="xs"
           variant="light"
@@ -194,87 +168,63 @@ export const EdgeFiltersSection: React.FC<EdgeFiltersSectionProps> = ({
             const isVisible = visibleEdgeTypes[edgeType] || false;
 
             return (
-              <div
+              <Paper
                 key={edgeType}
+                p="xs"
+                radius="md"
+                withBorder
+                bg={isVisible ? "var(--mantine-color-gray-0)" : "var(--mantine-color-gray-1)"}
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: FLEX_JUSTIFY_SPACE_BETWEEN,
-                  padding: "8px 12px",
-                  backgroundColor: isVisible
-                    ? colors.background.tertiary
-                    : colors.background.secondary,
-                  borderRadius: "6px",
-                  border: `1px solid ${isVisible ? colors.primary : colors.border.secondary}`,
+                  borderColor: isVisible ? "var(--mantine-color-blue-6)" : "var(--mantine-color-gray-3)",
                   transition: prefersReducedMotion ? "none" : "all 0.2s ease",
                 }}
               >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    flex: 1,
-                  }}
-                >
-                  <Checkbox
-                    checked={isVisible}
-                    onChange={() => {
-                      handleToggleEdgeType(edgeType);
-                    }}
-                    size="sm"
-                  />
-                  <div style={{ flex: 1 }}>
-                    <div
-                      style={{
-                        fontSize: "13px",
-                        fontWeight: 500,
-                        color: colors.text.primary,
-                        textTransform: "capitalize",
+                <Group justify="space-between" align="flex-start">
+                  <Group gap="sm" flex={1}>
+                    <Checkbox
+                      checked={isVisible}
+                      onChange={() => {
+                        handleToggleEdgeType(edgeType);
                       }}
-                    >
-                      {config.label || edgeType.replace("_", " ")}
-                    </div>
-                    {config.description && (
-                      <div
-                        style={{
-                          fontSize: "11px",
-                          color: colors.text.secondary,
-                          marginTop: "2px",
-                        }}
-                      >
-                        {config.description}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
-                >
-                  {totalCount > 0 && (
-                    <>
-                      <Badge
-                        size="xs"
-                        variant={isVisible ? "filled" : "light"}
-                        color={isVisible ? "blue" : "gray"}
-                      >
-                        {isVisible ? visibleCount.toLocaleString() : "Hidden"}
-                      </Badge>
-                      {visibleCount !== totalCount && (
-                        <Badge size="xs" variant="light" color="gray">
-                          {totalCount.toLocaleString()} total
-                        </Badge>
+                      size="sm"
+                    />
+                    <Stack gap={2} flex={1}>
+                      <Text size="sm" fw={500} tt="capitalize">
+                        {config.label || edgeType.replace("_", " ")}
+                      </Text>
+                      {config.description && (
+                        <Text size="xs" c="dimmed">
+                          {config.description}
+                        </Text>
                       )}
-                    </>
-                  )}
-                  {totalCount === 0 && (
-                    <Badge size="xs" variant="light" color="gray">
-                      None
-                    </Badge>
-                  )}
-                </div>
-              </div>
+                    </Stack>
+                  </Group>
+
+                  <Group gap="xs">
+                    {totalCount > 0 && (
+                      <>
+                        <Badge
+                          size="xs"
+                          variant={isVisible ? "filled" : "light"}
+                          color={isVisible ? "blue" : "gray"}
+                        >
+                          {isVisible ? visibleCount.toLocaleString() : "Hidden"}
+                        </Badge>
+                        {visibleCount !== totalCount && (
+                          <Badge size="xs" variant="light" color="gray">
+                            {totalCount.toLocaleString()} total
+                          </Badge>
+                        )}
+                      </>
+                    )}
+                    {totalCount === 0 && (
+                      <Badge size="xs" variant="light" color="gray">
+                        None
+                      </Badge>
+                    )}
+                  </Group>
+                </Group>
+              </Paper>
             );
           })}
         </Stack>
@@ -287,23 +237,16 @@ export const EdgeFiltersSection: React.FC<EdgeFiltersSectionProps> = ({
         defaultExpanded={false}
         storageKey="edge-filters-direction"
       >
-        <div
-          style={{
-            padding: "16px",
-            textAlign: "center",
-            color: colors.text.secondary,
-            fontSize: "12px",
-          }}
-        >
-          <div style={{ marginBottom: "8px" }}>
+        <Stack p="md" align="center">
+          <Text size="sm" c="dimmed" ta="center">
             Direction and weight filtering
-          </div>
-          <div style={{ fontSize: "11px", opacity: 0.7 }}>
+          </Text>
+          <Text size="xs" c="dimmed" opacity={0.7} ta="center">
             Coming soon: Filter by edge direction (incoming/outgoing) and
             connection strength
-          </div>
-        </div>
+          </Text>
+        </Stack>
       </CollapsibleSection>
-    </div>
+    </Stack>
   );
 };

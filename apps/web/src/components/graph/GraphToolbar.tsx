@@ -12,6 +12,7 @@ import {
   IconPinnedOff,
 } from "@tabler/icons-react";
 import { useReactFlow } from "@xyflow/react";
+import { Group, Button, Paper } from "@mantine/core";
 
 import { useGraphUtilities } from "@/hooks/use-graph-utilities";
 import { useGraphData } from "@/hooks/use-graph-data";
@@ -340,63 +341,83 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
   }, [pinnedNodesCount, pinnedNodeIds, clearAllPinnedNodes]);
 
   return (
-    <div
-      className={`flex gap-2 p-3 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg shadow-lg ${className}`}
+    <Paper
+      p="sm"
+      radius="md"
+      withBorder
+      shadow="md"
+      className={className}
+      style={{
+        backgroundColor: "rgba(255, 255, 255, 0.95)",
+        backdropFilter: "blur(4px)",
+      }}
     >
-      <button
-        onClick={handleTrimLeaves}
-        className="flex items-center gap-2 px-3 py-2 text-sm bg-red-50 hover:bg-red-100 text-red-700 rounded transition-colors"
-        title="Trim Leaf Nodes - Remove papers with no citations"
-      >
-        <IconScissors size={16} />
-        <span>Trim Leaves</span>
-      </button>
+      <Group gap="xs">
+        <Button
+          onClick={handleTrimLeaves}
+          variant="light"
+          color="red"
+          size="sm"
+          leftSection={<IconScissors size={16} />}
+          title="Trim Leaf Nodes - Remove papers with no citations"
+        >
+          Trim Leaves
+        </Button>
 
-      <button
-        onClick={handleSelect1Degree}
-        className="flex items-center gap-2 px-3 py-2 text-sm bg-blue-50 hover:bg-blue-100 text-blue-700 rounded transition-colors"
-        title="Select 1-Degree - Select all nodes directly connected to the selected node"
-      >
-        <IconTarget size={16} />
-        <span>Select 1-Degree</span>
-      </button>
+        <Button
+          onClick={handleSelect1Degree}
+          variant="light"
+          color="blue"
+          size="sm"
+          leftSection={<IconTarget size={16} />}
+          title="Select 1-Degree - Select all nodes directly connected to the selected node"
+        >
+          Select 1-Degree
+        </Button>
 
-      <button
-        onClick={() => {
-          handleExpandSelected().catch((error: unknown) => {
-            logger.error(
-              GRAPH_LOGGER_NAME,
-              "Unhandled error in expand selected",
-              {
-                error: error instanceof Error ? error.message : String(error),
-              },
-            );
-          });
-        }}
-        className="flex items-center gap-2 px-3 py-2 text-sm bg-green-50 hover:bg-green-100 text-green-700 rounded transition-colors"
-        title="Expand Selected - Load connections for all selected nodes"
-      >
-        <IconGitBranch size={16} />
-        <span>Expand Selected</span>
-      </button>
+        <Button
+          onClick={() => {
+            handleExpandSelected().catch((error: unknown) => {
+              logger.error(
+                GRAPH_LOGGER_NAME,
+                "Unhandled error in expand selected",
+                {
+                  error: error instanceof Error ? error.message : String(error),
+                },
+              );
+            });
+          }}
+          variant="light"
+          color="green"
+          size="sm"
+          leftSection={<IconGitBranch size={16} />}
+          title="Expand Selected - Load connections for all selected nodes"
+        >
+          Expand Selected
+        </Button>
 
-      <button
-        onClick={handlePinAll}
-        className="flex items-center gap-2 px-3 py-2 text-sm bg-purple-50 hover:bg-purple-100 text-purple-700 rounded transition-colors"
-        title="Pin All - Pin all nodes to prevent them from moving during layout"
-      >
-        <IconPin size={16} />
-        <span>Pin All</span>
-      </button>
+        <Button
+          onClick={handlePinAll}
+          variant="light"
+          color="purple"
+          size="sm"
+          leftSection={<IconPin size={16} />}
+          title="Pin All - Pin all nodes to prevent them from moving during layout"
+        >
+          Pin All
+        </Button>
 
-      <button
-        onClick={handleUnpinAll}
-        className="flex items-center gap-2 px-3 py-2 text-sm bg-orange-50 hover:bg-orange-100 text-orange-700 rounded transition-colors"
-        title="Unpin All - Unpin all nodes to allow them to move during layout"
-      >
-        <IconPinnedOff size={16} />
-        <span>Unpin All</span>
-      </button>
-    </div>
+        <Button
+          onClick={handleUnpinAll}
+          variant="light"
+          color="orange"
+          size="sm"
+          leftSection={<IconPinnedOff size={16} />}
+          title="Unpin All - Unpin all nodes to allow them to move during layout"
+        >
+          Unpin All
+        </Button>
+      </Group>
+    </Paper>
   );
 };
