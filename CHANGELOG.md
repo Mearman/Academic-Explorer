@@ -1,3 +1,10 @@
+# [10.2.0](https://github.com/Mearman/Academic-Explorer/compare/v10.1.0...v10.2.0) (2025-11-05)
+
+
+### Features
+
+* **web:** standardize topic page to use shared EntityDetailLayout ([ea66b31](https://github.com/Mearman/Academic-Explorer/commit/ea66b3144a5545e56bf59e8fe27649fae781c473))
+
 # [10.1.0](https://github.com/Mearman/Academic-Explorer/compare/v10.0.0...v10.1.0) (2025-11-05)
 
 
