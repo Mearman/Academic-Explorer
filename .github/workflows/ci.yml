@@ -103,7 +103,7 @@ jobs:
 
       - name: Test
         timeout-minutes: 15
-        run: npx nx test web --coverage --reporter=json --reporter=text --outputFile=coverage-report.json || true
+        run: npx nx test web --coverage || true
         continue-on-error: true
 
       - name: Upload coverage reports
