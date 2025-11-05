@@ -1,3 +1,10 @@
+# [10.1.0](https://github.com/Mearman/Academic-Explorer/compare/v10.0.0...v10.1.0) (2025-11-05)
+
+
+### Features
+
+* **release:** restore semantic-release for automated version management ([022f2a2](https://github.com/Mearman/Academic-Explorer/commit/022f2a2c42f46d5e75957757979fdd548fb36780))
+
 ## 8.43.4 (2025-09-30)
 
 ### 🩹 Fixes
