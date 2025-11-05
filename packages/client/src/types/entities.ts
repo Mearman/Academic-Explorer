@@ -235,6 +235,11 @@ export interface Author
   summary_stats: SummaryStats;
   x_concepts?: ConceptItem[];
   topics?: TopicItem[];
+  topic_share?: Array<{
+    id: OpenAlexId;
+    display_name: string;
+    value: number;
+  }>;
 }
 
 export type PartialAuthor = PartialExceptId<Author>;
@@ -257,6 +262,24 @@ export interface Source extends EntityWithWorks {
   x_concepts?: ConceptItem[];
   summary_stats: SummaryStats;
   topics?: TopicItem[];
+  topic_share?: Array<{
+    id: OpenAlexId;
+    display_name: string;
+    value: number;
+  }>;
+  first_publication_year?: number;
+  last_publication_year?: number;
+  oa_flip_year?: number;
+  oa_works_count?: number;
+  is_core?: boolean;
+  is_ojs?: boolean;
+  is_in_scielo?: boolean;
+  is_high_oa_rate?: boolean;
+  is_high_oa_rate_since_year?: number;
+  is_in_doaj_since_year?: number;
+  host_organization?: OpenAlexId;
+  host_organization_lineage?: OpenAlexId[];
+  host_organization_name?: string;
 }
 
 // Institution entity
@@ -292,7 +315,26 @@ export interface InstitutionEntity extends EntityWithWorks {
   }>;
   x_concepts?: ConceptItem[];
   topics?: TopicItem[];
+  topic_share?: Array<{
+    id: OpenAlexId;
+    display_name: string;
+    value: number;
+  }>;
   lineage?: OpenAlexId[];
+  repositories?: Array<{
+    id: OpenAlexId;
+    display_name: string;
+    host_organization?: OpenAlexId;
+    host_organization_name?: string;
+  }>;
+  roles?: Array<{
+    role: string;
+    id: OpenAlexId;
+    works_count: number;
+  }>;
+  summary_stats: SummaryStats;
+  type_id?: OpenAlexId;
+  is_super_system?: boolean;
 }
 
 // Concept entity (being phased out, replaced by Topics)
@@ -349,6 +391,10 @@ export interface Publisher extends EntityWithWorks {
   sources_count: number;
   ids: PublisherIds;
   sources_api_url: string;
+  homepage_url?: string;
+  image_url?: string;
+  image_thumbnail_url?: string;
+  summary_stats: SummaryStats;
 }
 
 // Funder entity
@@ -493,6 +539,7 @@ export const AUTHOR_FIELDS = keysOf<Author>()([
   "summary_stats",
   "x_concepts",
   "topics",
+  "topic_share",
 ]);
 
 export type AuthorField = (typeof AUTHOR_FIELDS)[number];
@@ -576,6 +623,20 @@ export const SOURCE_FIELDS = keysOf<Source>()([
   "x_concepts",
   "summary_stats",
   "topics",
+  "topic_share",
+  "first_publication_year",
+  "last_publication_year",
+  "oa_flip_year",
+  "oa_works_count",
+  "is_core",
+  "is_ojs",
+  "is_in_scielo",
+  "is_high_oa_rate",
+  "is_high_oa_rate_since_year",
+  "is_in_doaj_since_year",
+  "host_organization",
+  "host_organization_lineage",
+  "host_organization_name",
 ]);
 
 export type SourceField = (typeof SOURCE_FIELDS)[number];
@@ -584,15 +645,28 @@ export type SourceField = (typeof SOURCE_FIELDS)[number];
  * Fields that can be selected for Institution entities.
  */
 export const INSTITUTION_FIELDS = keysOf<InstitutionEntity>()([
-  "id",
-  "display_name",
-  "cited_by_count",
-  "updated_date",
-  "created_date",
-  "works_count",
+  ...ENTITY_WITH_WORKS_FIELDS,
   "ror",
   "country_code",
   "type",
+  "homepage_url",
+  "image_url",
+  "image_thumbnail_url",
+  "display_name_acronyms",
+  "display_name_alternatives",
+  "ids",
+  "geo",
+  "international",
+  "associated_institutions",
+  "x_concepts",
+  "topics",
+  "topic_share",
+  "lineage",
+  "repositories",
+  "roles",
+  "summary_stats",
+  "type_id",
+  "is_super_system",
 ]);
 
 export type InstitutionField = (typeof INSTITUTION_FIELDS)[number];
@@ -663,6 +737,10 @@ export const PUBLISHER_FIELDS = keysOf<Publisher>()([
   "sources_count",
   "ids",
   "sources_api_url",
+  "homepage_url",
+  "image_url",
+  "image_thumbnail_url",
+  "summary_stats",
 ]);
 
 export type PublisherField = (typeof PUBLISHER_FIELDS)[number];
