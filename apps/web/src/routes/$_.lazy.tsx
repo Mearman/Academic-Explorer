@@ -62,8 +62,12 @@ function ExternalIdRoute() {
                   .join("&")
               : "";
 
+          // Properly concatenate query parameters
+          const hasExistingParams = cleanPath.includes("?");
           const newUrl = queryParams
-            ? `/${cleanPath}?${queryParams}`
+            ? hasExistingParams
+              ? `/${cleanPath}&${queryParams}`
+              : `/${cleanPath}?${queryParams}`
             : `/${cleanPath}`;
           window.location.replace(`#${newUrl}`);
           return;
