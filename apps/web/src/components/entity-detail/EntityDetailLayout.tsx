@@ -1,9 +1,8 @@
 import React, { ReactNode } from "react";
-import { Button, Text, Code, Badge } from "@mantine/core";
+import { Button, Text, Code, Badge, Paper, Stack, Group, Container, Title } from "@mantine/core";
 import { IconEye, IconCode } from "@tabler/icons-react";
 import { EntityTypeConfig, EntityType } from "./EntityTypeConfig";
 import { EntityDataDisplay } from "../EntityDataDisplay";
-import * as styles from "./EntityDetail.css";
 
 interface EntityDetailLayoutProps {
   config: EntityTypeConfig;
@@ -16,6 +15,21 @@ interface EntityDetailLayoutProps {
   onToggleView: () => void;
   data: Record<string, unknown>;
   children?: ReactNode;
+}
+
+// Helper function to map entity types to Mantine colors
+function getMantineColor(entityType: EntityType): string {
+  const colorMap: Record<EntityType, string> = {
+    author: 'blue',
+    work: 'violet',
+    institution: 'orange',
+    source: 'teal',
+    concept: 'yellow',
+    topic: 'pink',
+    publisher: 'indigo',
+    funder: 'lime',
+  };
+  return colorMap[entityType] || 'blue';
 }
 
 export function EntityDetailLayout({
@@ -31,15 +45,16 @@ export function EntityDetailLayout({
   children,
 }: EntityDetailLayoutProps) {
   return (
-    <div className={styles.pageContainer}>
-      <div className={styles.contentContainer}>
+    <Container size="lg" p="xl" bg="var(--mantine-color-gray-0)" style={{ minHeight: "100vh" }}>
+      <Stack gap="xl">
         {/* Header Section */}
-        <div className={styles.headerCard}>
-          <div className={styles.headerContent}>
-            <div className={styles.headerInfo}>
+        <Paper p="xl" radius="xl" withBorder>
+          <Group align="flex-start" justify="space-between" gap="xl">
+            <Stack gap="lg" flex={1}>
               <Badge
-                className={styles.entityBadge[entityType]}
                 size="xl"
+                variant="light"
+                color={getMantineColor(entityType)}
                 leftSection={
                   <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
                     {config.icon}
@@ -49,57 +64,78 @@ export function EntityDetailLayout({
                 {config.name}
               </Badge>
 
-              <h1 className={styles.entityTitle}>{displayName}</h1>
+              <Title order={1} size="h1" c="var(--mantine-color-text)">
+                {displayName}
+              </Title>
 
-              <div className={styles.metadataGroup}>
-                <div className={styles.metadataRow}>
-                  <span className={styles.metadataLabel}>{config.name} ID:</span>
-                  <Code className={styles.metadataValue}>{entityId}</Code>
-                </div>
-                <div className={styles.metadataRow}>
-                  <span className={styles.metadataLabel}>Select fields:</span>
-                  <Text size="sm" c="dimmed" fw={500} style={{ flex: 1 }}>
-                    {selectParam && typeof selectParam === 'string'
-                      ? selectParam
-                      : `default (${selectFields.length} fields)`}
-                  </Text>
-                </div>
-              </div>
-            </div>
+              <Paper p="md" radius="lg" withBorder bg="var(--mantine-color-gray-0)">
+                <Stack gap="sm">
+                  <Group align="flex-start" gap="sm">
+                    <Text size="sm" fw={600} c="dimmed" miw="100px">
+                      {config.name} ID:
+                    </Text>
+                    <Code style={{ flex: 1, wordBreak: "break-all" }}>
+                      {entityId}
+                    </Code>
+                  </Group>
+                  <Group align="flex-start" gap="sm">
+                    <Text size="sm" fw={600} c="dimmed" miw="100px">
+                      Select fields:
+                    </Text>
+                    <Text size="sm" c="dimmed" style={{ flex: 1 }}>
+                      {selectParam && typeof selectParam === 'string'
+                        ? selectParam
+                        : `default (${selectFields.length} fields)`}
+                    </Text>
+                  </Group>
+                </Stack>
+              </Paper>
+            </Stack>
 
-            <div style={{ flexShrink: 0 }}>
-              <Button
-                size="xl"
-                variant="light"
-                leftSection={viewMode === "raw" ? <IconEye size={20} /> : <IconCode size={20} />}
-                onClick={onToggleView}
-              >
-                {viewMode === "raw" ? "Rich View" : "Raw View"}
-              </Button>
-            </div>
-          </div>
-        </div>
+            <Button
+              size="lg"
+              variant="light"
+              leftSection={viewMode === "raw" ? <IconEye size={20} /> : <IconCode size={20} />}
+              onClick={onToggleView}
+            >
+              {viewMode === "raw" ? "Rich View" : "Raw View"}
+            </Button>
+          </Group>
+        </Paper>
 
         {/* Content Section */}
         {viewMode === "raw" ? (
-          <div className={styles.rawJsonContainer}>
-            <div className={styles.rawJsonHeader}>
-              <h3 className={styles.rawJsonTitle}>
-                <IconCode size={20} />
-                Raw JSON Data
-              </h3>
-            </div>
-            <pre className={styles.rawJsonContent}>
-              {JSON.stringify(data, null, 2)}
-            </pre>
-          </div>
+          <Paper withBorder radius="xl" style={{ overflow: "hidden" }}>
+            <Paper p="md" bg="var(--mantine-color-dark-8)" style={{ borderBottom: "1px solid var(--mantine-color-dark-4)" }}>
+              <Group gap="sm">
+                <IconCode size={20} color="var(--mantine-color-dark-0)" />
+                <Text size="lg" fw={600} c="var(--mantine-color-dark-0)">
+                  Raw JSON Data
+                </Text>
+              </Group>
+            </Paper>
+            <Paper p="xl" bg="var(--mantine-color-dark-9)" style={{ overflowX: "auto", maxHeight: "1000px" }}>
+              <Text
+                component="pre"
+                size="sm"
+                c="var(--mantine-color-dark-0)"
+                style={{
+                  fontFamily: "'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace",
+                  whiteSpace: "pre",
+                  lineHeight: 1.6
+                }}
+              >
+                {JSON.stringify(data, null, 2)}
+              </Text>
+            </Paper>
+          </Paper>
         ) : (
           <>
             <EntityDataDisplay data={data} />
             {children}
           </>
         )}
-      </div>
-    </div>
+      </Stack>
+    </Container>
   );
 }
