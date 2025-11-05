@@ -10,7 +10,7 @@ import { join } from 'path';
 
 // Load all URLs from the JSON file
 const urlsPath = join(process.cwd(), '../../openalex-urls.json');
-let urls: Record<string, string> = {};
+let urls: string[] = [];
 
 beforeAll(() => {
   try {
@@ -49,13 +49,13 @@ describe('OpenAlex URL Routing - All 276 URLs', () => {
   };
 
   it('should have loaded 276 URLs from openalex-urls.json', () => {
-    const urlCount = Object.keys(urls).length;
+    const urlCount = urls.length;
     expect(urlCount).toBe(276);
   });
 
   // Group URLs by type for organized testing
   const urlsByType: Record<string, string[]> = {};
-  Object.values(urls).forEach((url) => {
+  urls.forEach((url) => {
     const { type } = parseUrl(url);
     if (!urlsByType[type]) {
       urlsByType[type] = [];
@@ -115,7 +115,7 @@ describe('OpenAlex URL Routing - All 276 URLs', () => {
 
   describe('URL format compatibility', () => {
     it('should handle both URL formats', () => {
-      const sampleUrls = Object.values(urls).slice(0, 10);
+      const sampleUrls = urls.slice(0, 10);
       expect(sampleUrls.length).toBeGreaterThan(0);
 
       sampleUrls.forEach((apiUrl) => {
@@ -140,7 +140,7 @@ describe('OpenAlex URL Routing - All 276 URLs', () => {
 
     expectedTypes.forEach((type) => {
       it(`should have URLs for entity type: ${type}`, () => {
-        const hasType = Object.values(urls).some((url) => url.includes(`/${type}`));
+        const hasType = urls.some((url) => url.includes(`/${type}`));
         expect(hasType).toBe(true);
       });
     });
@@ -148,7 +148,7 @@ describe('OpenAlex URL Routing - All 276 URLs', () => {
 
   describe('URL structure validation', () => {
     it('should have valid OpenAlex entity IDs', () => {
-      const entityUrls = Object.values(urls).filter((url) => {
+      const entityUrls = urls.filter((url) => {
         const { id } = parseUrl(url);
         return id !== undefined;
       });
@@ -163,7 +163,7 @@ describe('OpenAlex URL Routing - All 276 URLs', () => {
     });
 
     it('should have valid query parameters in search URLs', () => {
-      const searchUrls = Object.values(urls).filter((url) => url.includes('?'));
+      const searchUrls = urls.filter((url) => url.includes('?'));
 
       searchUrls.forEach((url) => {
         const urlObj = new URL(url);
