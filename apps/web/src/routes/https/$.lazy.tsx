@@ -4,13 +4,45 @@ import { IconSearch } from "@tabler/icons-react";
 import {
   useNavigate,
   useParams,
+  useSearch,
   createLazyFileRoute,
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 
+/**
+ * Parse query parameters from a URL string
+ * @param urlString Full URL string with potential query parameters
+ * @returns Object with path and search params
+ */
+function parseUrlPathAndSearch(urlString: string): {
+  path: string;
+  search: Record<string, string | number>;
+} {
+  try {
+    const url = new URL(urlString);
+    const search: Record<string, string | number> = {};
+    const numericKeys = new Set(["per_page", "page", "sample", "seed"]);
+
+    url.searchParams.forEach((value, key) => {
+      if (numericKeys.has(key)) {
+        const num = Number(value);
+        search[key] = isNaN(num) ? value : num;
+      } else {
+        search[key] = value;
+      }
+    });
+
+    return { path: url.pathname, search };
+  } catch (error) {
+    // If URL parsing fails, return empty
+    return { path: "", search: {} };
+  }
+}
+
 function HttpsRoute() {
   const { _splat: splat } = useParams({ from: "/https/$" });
   const externalId = splat || "";
+  const routeSearch = useSearch({ from: "/https/$" });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,6 +67,9 @@ function HttpsRoute() {
 
         // Check if this is a full URL that should be handled
         if (decodedId.match(/^https?:\/\//i)) {
+          // Parse the URL to extract query parameters
+          const { path: urlPath, search: urlSearch } = parseUrlPathAndSearch(decodedId);
+
           // Try to detect entity type and normalize ID
           const detection = EntityDetectionService.detectEntity(decodedId);
           if (detection?.entityType && detection?.normalizedId) {
@@ -44,13 +79,19 @@ function HttpsRoute() {
               {
                 externalId: decodedId,
                 entityType: detection.entityType,
-                normalizedId: detection.normalizedId
+                normalizedId: detection.normalizedId,
+                search: urlSearch
               },
               "HttpsRoute",
             );
-            // Navigate to the proper entity route with encoded ID
+
+            // Merge URL search params with route search params
+            const mergedSearch = { ...urlSearch, ...routeSearch };
+
+            // Navigate to the proper entity route with encoded ID and search params
             navigate({
               to: `/${detection.entityType}/${encodeURIComponent(detection.normalizedId)}`,
+              search: mergedSearch,
               replace: true,
             });
             return;
@@ -78,7 +119,7 @@ function HttpsRoute() {
     if (externalId) {
       resolveExternalId();
     }
-  }, [externalId, navigate]);
+  }, [externalId, navigate, routeSearch]);
 
   return (
     <div
