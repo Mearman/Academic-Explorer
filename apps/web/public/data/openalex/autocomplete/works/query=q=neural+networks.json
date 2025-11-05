@@ -45,10 +45,10 @@
       "filter_key": "id"
     },
     {
-      "id": "https://openalex.org/W2186751627",
-      "short_id": "works/W2186751627",
-      "display_name": "FUZZY NEURAL NETWORKS FUZZY NEURAL NETWORKS FUZZY NEURAL NETWORKS FUZZY NEURAL NETWORKS",
-      "hint": "V Suresh kumar, Shobha Nagar",
+      "id": "https://openalex.org/W2188177794",
+      "short_id": "works/W2188177794",
+      "display_name": "Eyes Detection by Pulse Coupled Neural Networks Eyes Detection by Pulse Coupled Neural Networks Eyes Detection by Pulse Coupled Neural Networks Eyes Detection by Pulse Coupled Neural Networks",
+      "hint": "Maminiaina Alphonse Rafidison, Andry Auguste Randriamitantsoa, Paul Auguste Randriamitantsoa",
       "cited_by_count": 0,
       "works_count": null,
       "entity_type": "work",
@@ -67,10 +67,10 @@
       "filter_key": "id"
     },
     {
-      "id": "https://openalex.org/W2188177794",
-      "short_id": "works/W2188177794",
-      "display_name": "Eyes Detection by Pulse Coupled Neural Networks Eyes Detection by Pulse Coupled Neural Networks Eyes Detection by Pulse Coupled Neural Networks Eyes Detection by Pulse Coupled Neural Networks",
-      "hint": "Maminiaina Alphonse Rafidison, Andry Auguste Randriamitantsoa, Paul Auguste Randriamitantsoa",
+      "id": "https://openalex.org/W2186751627",
+      "short_id": "works/W2186751627",
+      "display_name": "FUZZY NEURAL NETWORKS FUZZY NEURAL NETWORKS FUZZY NEURAL NETWORKS FUZZY NEURAL NETWORKS",
+      "hint": "V Suresh kumar, Shobha Nagar",
       "cited_by_count": 0,
       "works_count": null,
       "entity_type": "work",
@@ -100,14 +100,14 @@
       "filter_key": "id"
     },
     {
-      "id": "https://openalex.org/W2279175531",
-      "short_id": "works/W2279175531",
-      "display_name": "Connections between Neural Networks and Multivariate Statistical Methods: An Overview**An important recent development in the statistics community is to consider neural networks as a subdiscipline of multivariate statistics, instead of a branch in artificial intelligence, as emphasized in this text. To help our reader better understand the similarities and differences between neural networks and multivariate statistical methods, we have invited Professor Bakshi and Mr. Utojo to prepare this appendix. Because of our page limitation, the level of coverage in this appendix is more appropriate for those readers with some background in multivariate statistics.",
-      "hint": "Utomo Utojo, Bhavik R. Bakshi",
-      "cited_by_count": 14,
+      "id": "https://openalex.org/W2740739384",
+      "short_id": "works/W2740739384",
+      "display_name": "NEURAL NETWORKS USING CONVERGENCE OF DISCRETE-TIME NEURAL NETWORKS WITH DELAYS AND DYNAMIC RECURRENT NEURAL NETWORKS",
+      "hint": "R. Akila, S. Ramadevi",
+      "cited_by_count": 0,
       "works_count": null,
       "entity_type": "work",
-      "external_id": "https://doi.org/10.1016/b978-0-12-083030-5.50013-8",
+      "external_id": null,
       "filter_key": "id"
     }
   ]

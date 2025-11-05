@@ -1,10 +1,10 @@
 {
-  "lastUpdated": "2025-11-04T23:01:47.379Z",
+  "lastUpdated": "2025-11-05T01:29:16.464Z",
   "files": {
     "query=q=NSF": {
       "url": "https://api.openalex.org/autocomplete/funders?q=NSF",
       "$ref": "./query=q=NSF.json",
-      "lastRetrieved": "2025-11-04T23:01:47.374Z",
+      "lastRetrieved": "2025-11-05T01:29:16.462Z",
       "contentHash": "f92d31fff5868cbf"
     }
   }

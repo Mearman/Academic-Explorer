@@ -89,25 +89,25 @@
       "filter_key": "id"
     },
     {
-      "id": "https://openalex.org/W3179661880",
-      "short_id": "works/W3179661880",
-      "display_name": "The Future of Artificial Intelligence: Toward Truly Intelligent Artificial Intelligences",
-      "hint": "Ramón López de Mántaras",
-      "cited_by_count": 1,
+      "id": "https://openalex.org/W4248691610",
+      "short_id": "works/W4248691610",
+      "display_name": "Artificial Intelligences:",
+      "hint": "authors unknown",
+      "cited_by_count": 0,
       "works_count": null,
       "entity_type": "work",
-      "external_id": null,
+      "external_id": "https://doi.org/10.2307/j.ctv105bc2g.19",
       "filter_key": "id"
     },
     {
-      "id": "https://openalex.org/W4235817418",
-      "short_id": "works/W4235817418",
-      "display_name": "Artificial Intelligences",
-      "hint": "authors unknown",
-      "cited_by_count": 4,
+      "id": "https://openalex.org/W2348497019",
+      "short_id": "works/W2348497019",
+      "display_name": "Artificial Intelligence:Progress and Challenges",
+      "hint": "Yixin Zhong",
+      "cited_by_count": 0,
       "works_count": null,
       "entity_type": "work",
-      "external_id": "https://doi.org/10.5040/9781474236829.ch-003",
+      "external_id": null,
       "filter_key": "id"
     }
   ]
