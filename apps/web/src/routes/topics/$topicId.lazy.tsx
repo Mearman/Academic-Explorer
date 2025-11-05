@@ -4,7 +4,10 @@ import { useState } from "react";
 import { TOPIC_FIELDS, cachedOpenAlex, type Topic, type TopicField } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
-import { EntityDataDisplay } from "@/components/EntityDataDisplay";
+import { EntityDetailLayout } from "@/components/entity-detail/EntityDetailLayout";
+import { LoadingState } from "@/components/entity-detail/LoadingState";
+import { ErrorState } from "@/components/entity-detail/ErrorState";
+import { ENTITY_TYPE_CONFIGS } from "@/components/entity-detail/EntityTypeConfig";
 
 function TopicRoute() {
   const { topicId: rawTopicId } = useParams({ strict: false });
@@ -34,52 +37,35 @@ function TopicRoute() {
     enabled: !!topicId && topicId !== "random",
   });
 
-  // Render content based on state
-  let content;
+  // Handle loading state
   if (isLoading) {
-    content = (
-      <div className="p-4 text-center">
-        <h2>Loading Topic...</h2>
-        <p>Topic ID: {topicId}</p>
-      </div>
-    );
-  } else if (error) {
-    content = (
-      <div className="p-4 text-center text-red-500">
-        <h2>Error Loading Topic</h2>
-        <p>Topic ID: {topicId}</p>
-        <p>Error: {String(error)}</p>
-      </div>
-    );
-  } else {
-    content = (
-      <div className="p-4">
-        <div className="mb-4">
-          <h1 className="text-2xl font-bold mb-2">{topic?.display_name || "Topic"}</h1>
-          <div className="text-sm text-gray-600 mb-4">
-            <strong>Topic ID:</strong> {topicId}<br />
-            <strong>Select fields:</strong> {selectParam && typeof selectParam === 'string' ? selectParam : `default (${selectFields.join(", ")})`}
-          </div>
-          <button
-            onClick={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            {viewMode === "raw" ? "Switch to Rich View" : "Switch to Raw View"}
-          </button>
-        </div>
+    return <LoadingState entityType="topic" entityId={topicId || ''} config={ENTITY_TYPE_CONFIGS.topic} />;
+  }
 
-        {viewMode === "raw" ? (
-          <pre className="bg-gray-100 p-4 rounded overflow-auto max-h-[600px]">
-            {JSON.stringify(topic, null, 2)}
-          </pre>
-        ) : (
-          <EntityDataDisplay data={topic as Record<string, unknown>} />
-        )}
-      </div>
+  // Handle error state
+  if (error || !topic) {
+    return (
+      <ErrorState
+        error={error}
+        entityType="topic"
+        entityId={topicId || ''}
+      />
     );
   }
 
-  return content;
+  return (
+    <EntityDetailLayout
+      config={ENTITY_TYPE_CONFIGS.topic}
+      entityType="topic"
+      entityId={topicId || ''}
+      displayName={topic.display_name || "Topic"}
+      selectParam={typeof selectParam === 'string' ? selectParam : undefined}
+      selectFields={selectFields}
+      viewMode={viewMode}
+      onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
+      data={topic}
+    />
+  );
 }
 
 export const Route = createLazyFileRoute("/topics/$topicId")({
