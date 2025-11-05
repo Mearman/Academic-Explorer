@@ -1,7 +1,6 @@
 import React from "react";
-import { Box, Text, Code, Stack, Group, Alert } from "@mantine/core";
+import { Text, Code, Stack, Container, Paper, Title, Alert, Group } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
-import * as styles from "./EntityDetail.css";
 
 interface ErrorStateProps {
   entityType: string;
@@ -11,27 +10,39 @@ interface ErrorStateProps {
 
 export function ErrorState({ entityType, entityId, error }: ErrorStateProps) {
   return (
-    <div className={styles.errorContainer}>
-      <div className={styles.errorCard}>
-        <Box style={{ textAlign: "center" }} mb="md">
-          <div className={styles.errorIconWrapper}>
-            <IconAlertCircle size={40} color="#dc2626" />
-          </div>
-          <h2 className={styles.errorTitle}>Error Loading {entityType}</h2>
-        </Box>
+    <Container size="md" p="xl" style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <Paper p="xl" radius="xl" withBorder w="100%" maw="48rem">
+        <Stack gap="lg">
+          <Group justify="center" mb="md">
+            <Alert variant="light" color="red" radius="xl" p="lg" w="fit-content">
+              <IconAlertCircle size={40} />
+            </Alert>
+          </Group>
 
-        <Stack gap="md">
-          <div className={styles.errorDetailsBox}>
-            <p className={styles.errorDetailsTitle}>{entityType} ID:</p>
-            <Code block className={styles.errorDetailsText}>{entityId}</Code>
-          </div>
+          <Title order={2} ta="center" c="red">
+            Error Loading {entityType}
+          </Title>
 
-          <div className={styles.errorBox}>
-            <p className={styles.errorBoxTitle}>Error Details:</p>
-            <Code block className={styles.errorBoxText}>{String(error)}</Code>
-          </div>
+          <Stack gap="md">
+            <Paper p="md" radius="lg" withBorder bg="var(--mantine-color-red-light-0)">
+              <Stack gap="xs">
+                <Text size="sm" fw={600} c="dimmed" tt="uppercase" style={{ letterSpacing: "0.05em" }}>
+                  {entityType} ID:
+                </Text>
+                <Code block style={{ wordBreak: "break-all", fontFamily: "monospace" }}>
+                  {entityId}
+                </Code>
+              </Stack>
+            </Paper>
+
+            <Alert variant="light" color="red" title="Error Details">
+              <Code block style={{ wordBreak: "break-all", fontFamily: "monospace", color: "var(--mantine-color-red-8)" }}>
+                {String(error)}
+              </Code>
+            </Alert>
+          </Stack>
         </Stack>
-      </div>
-    </div>
+      </Paper>
+    </Container>
   );
 }
