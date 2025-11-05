@@ -1,12 +1,13 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
 import { EntityList } from "@/components/EntityList";
 import type { ColumnConfig } from "@/components/types";
 import type { Work } from "@academic-explorer/client";
 import { createFilterBuilder } from "@academic-explorer/client";
 import { convertToRelativeUrl } from "@academic-explorer/ui";
 import { Anchor } from "@mantine/core";
+import type { OpenAlexSearchParams } from "@/lib/route-schemas";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { ViewMode } from "@/components/ViewModeToggle";
 
 const worksColumns: ColumnConfig[] = [
@@ -105,67 +106,13 @@ const worksColumns: ColumnConfig[] = [
 ];
 
 function WorksListRoute() {
-  const [urlFilters, setUrlFilters] = useState<
-    Record<string, unknown> | undefined | null
-  >(null); // null = not yet parsed, undefined = no filters, object = parsed filters
+  const search = useSearch({ from: "/works/" }) as OpenAlexSearchParams;
   const [viewMode, setViewMode] = useState<ViewMode>("table");
 
-  const [searchParams, setSearchParams] = useState<{
-    filter?: string;
-    sort?: string;
-    per_page?: number;
-    page?: number;
-  } | null>(null);
-
-  useEffect(() => {
-    const parseHashParams = () => {
-      // Parse URL parameters manually since TanStack Router useSearch might not work with hash routing
-      const { hash } = window.location;
-      const queryIndex = hash.indexOf("?");
-      if (queryIndex !== -1) {
-        const queryString = hash.substring(queryIndex + 1);
-        const urlParams = new URLSearchParams(queryString);
-
-        // Parse all relevant parameters
-        const filterParam = urlParams.get("filter");
-        const sortParam = urlParams.get("sort");
-        const perPageParam = urlParams.get("per_page");
-        const pageParam = urlParams.get("page");
-
-        if (filterParam) {
-          const filterBuilder = createFilterBuilder();
-          const parsedFilters = filterBuilder.parseFilterString(filterParam);
-          setUrlFilters(parsedFilters);
-        } else {
-          setUrlFilters(undefined);
-        }
-
-        // Set search parameters including sort, per_page, page
-        setSearchParams({
-          filter: filterParam || undefined,
-          sort: sortParam || undefined,
-          per_page: perPageParam ? Number.parseInt(perPageParam, 10) : undefined,
-          page: pageParam ? Number.parseInt(pageParam, 10) : undefined,
-        });
-      } else {
-        setUrlFilters(undefined);
-        setSearchParams({});
-      }
-    };
-
-    // Parse parameters on mount and when hash changes
-    parseHashParams();
-    window.addEventListener("hashchange", parseHashParams);
-
-    return () => {
-      window.removeEventListener("hashchange", parseHashParams);
-    };
-  }, []);
-
-  // Wait for filters and search params to be parsed before rendering EntityList
-  if (urlFilters === null || searchParams === null) {
-    return null;
-  }
+  // Parse filter string into filter object if present
+  const urlFilters = search.filter
+    ? createFilterBuilder().parseFilterString(search.filter)
+    : undefined;
 
   return (
     <EntityList
@@ -173,7 +120,7 @@ function WorksListRoute() {
       columns={worksColumns}
       title="Works"
       urlFilters={urlFilters}
-      searchParams={searchParams}
+      searchParams={search}
       viewMode={viewMode}
       onViewModeChange={setViewMode}
     />
