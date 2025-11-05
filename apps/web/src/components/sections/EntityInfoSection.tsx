@@ -13,6 +13,7 @@ import { useLayoutState } from "@/stores/layout-store";
 import type { GraphNode } from "@academic-explorer/graph";
 import { logger } from "@academic-explorer/utils/logger";
 import { IconInfoCircle } from "@tabler/icons-react";
+import { Group, Stack } from "@mantine/core";
 import React from "react";
 
 interface ThemeColors {
@@ -324,22 +325,20 @@ export const EntityInfoSection: React.FC<EntityInfoSectionProps> = ({
   }
 
   return (
-    <div className={className} style={{ padding: "16px" }}>
-      <div
-        style={{
-          fontSize: "14px",
-          fontWeight: 600,
-          marginBottom: "12px",
-          color: colors.text.primary,
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-        }}
-      >
+    <Stack gap="md" p="md" className={className}>
+      <Group gap="xs">
         <IconInfoCircle size={16} />
-        Entity Information
-      </div>
+        <div
+          style={{
+            fontSize: "14px",
+            fontWeight: 600,
+            color: colors.text.primary,
+          }}
+        >
+          Entity Information
+        </div>
+      </Group>
       <RichEntityDisplay entity={entity} />
-    </div>
+    </Stack>
   );
 };
