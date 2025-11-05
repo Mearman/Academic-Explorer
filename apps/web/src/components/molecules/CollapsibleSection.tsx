@@ -1,13 +1,11 @@
 /**
  * Collapsible section component for sidebar organization
- * Provides expandable sections with icons and state persistence
+ * Provides expandable sections with icons and state persistence using Mantine Accordion
  */
 
 import React from "react";
-import { useThemeColors } from "@/hooks/use-theme-colors";
+import { Accordion } from "@mantine/core";
 import { useLayoutStore } from "@/stores/layout-store";
-import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 interface CollapsibleSectionProps {
   title: string;
@@ -24,95 +22,36 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
   defaultExpanded = true,
   storageKey,
 }) => {
-  const themeColors = useThemeColors();
-  const { colors } = themeColors;
   const layoutStore = useLayoutStore();
   const { collapsedSections } = layoutStore;
   const { setSectionCollapsed } = layoutStore;
-  const prefersReducedMotion = useReducedMotion();
 
   // Get current expanded state from store or default (inverted from collapsed)
   const isExpanded = storageKey
     ? !(collapsedSections[storageKey] ?? !defaultExpanded)
     : defaultExpanded;
 
-  const toggleExpanded = () => {
+  const handleChange = () => {
     if (storageKey) {
       setSectionCollapsed({ sectionKey: storageKey, collapsed: isExpanded });
     }
   };
 
   return (
-    <div style={{ width: "100%" }}>
-      {/* Section Header */}
-      <button
-        onClick={toggleExpanded}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          width: "100%",
-          padding: "8px 0",
-          backgroundColor: "transparent",
-          border: "none",
-          borderBottom: `1px solid ${colors.border.primary}`,
-          fontSize: "13px",
-          fontWeight: 600,
-          color: colors.text.primary,
-          cursor: "pointer",
-          transition: prefersReducedMotion ? "none" : "color 0.2s ease",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.color = colors.primary;
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.color = colors.text.primary;
-        }}
-      >
-        {/* Expand/collapse chevron */}
-        <span style={{ display: "flex", alignItems: "center" }}>
-          {isExpanded ? (
-            <IconChevronDown size={14} />
-          ) : (
-            <IconChevronRight size={14} />
-          )}
-        </span>
-
-        {/* Section icon */}
-        <span style={{ display: "flex", alignItems: "center" }}>{icon}</span>
-
-        {/* Section title */}
-        <span>{title}</span>
-      </button>
-
-      {/* Section Content */}
-      {isExpanded && (
-        <div
-          style={{
-            paddingTop: "12px",
-            paddingBottom: "20px",
-            animation: prefersReducedMotion ? "none" : "fadeIn 0.2s ease-in-out",
-          }}
-        >
+    <Accordion
+      chevronPosition="right"
+      variant="default"
+      value={isExpanded ? storageKey || "default" : null}
+      onChange={handleChange}
+    >
+      <Accordion.Item value={storageKey || "default"}>
+        <Accordion.Control icon={icon}>
+          {title}
+        </Accordion.Control>
+        <Accordion.Panel>
           {children}
-        </div>
-      )}
-
-      {/* CSS for fade-in animation - only applies when animations are not reduced */}
-      {!prefersReducedMotion && (
-        <style>{`
-				@keyframes fadeIn {
-					from {
-						opacity: 0;
-						transform: translateY(-8px);
-					}
-					to {
-						opacity: 1;
-						transform: translateY(0);
-					}
-				}
-			`}</style>
-      )}
-    </div>
+        </Accordion.Panel>
+      </Accordion.Item>
+    </Accordion>
   );
 };
