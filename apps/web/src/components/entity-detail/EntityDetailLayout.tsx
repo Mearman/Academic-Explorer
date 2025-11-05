@@ -1,9 +1,8 @@
 import React, { ReactNode } from "react";
-import { Button, Box, Text, Code, Group, Stack, Badge, MantineGradient } from "@mantine/core";
+import { Button, Text, Code, Badge } from "@mantine/core";
 import { IconEye, IconCode } from "@tabler/icons-react";
 import { EntityTypeConfig, EntityType } from "./EntityTypeConfig";
 import { EntityDataDisplay } from "../EntityDataDisplay";
-import { vars } from "@/styles/theme.css";
 import * as styles from "./EntityDetail.css";
 
 interface EntityDetailLayoutProps {
@@ -31,20 +30,6 @@ export function EntityDetailLayout({
   data,
   children,
 }: EntityDetailLayoutProps) {
-  // Map entity type to Mantine theme colors
-  const entityColorMap: Record<EntityType, MantineGradient> = {
-    author: { from: 'blue', to: 'cyan', deg: 45 },
-    work: { from: 'violet', to: 'grape', deg: 45 },
-    institution: { from: 'orange', to: 'red', deg: 45 },
-    source: { from: 'teal', to: 'green', deg: 45 },
-    concept: { from: 'yellow', to: 'orange', deg: 45 },
-    topic: { from: 'pink', to: 'red', deg: 45 },
-    publisher: { from: 'indigo', to: 'blue', deg: 45 },
-    funder: { from: 'lime', to: 'green', deg: 45 },
-  };
-
-  const gradient = entityColorMap[entityType];
-
   return (
     <div className={styles.pageContainer}>
       <div className={styles.contentContainer}>
@@ -85,26 +70,11 @@ export function EntityDetailLayout({
             <div style={{ flexShrink: 0 }}>
               <Button
                 size="xl"
-                variant="gradient"
-                gradient={gradient}
-                leftSection={viewMode === "raw" ? <IconEye size={24} /> : <IconCode size={24} />}
+                variant="light"
+                leftSection={viewMode === "raw" ? <IconEye size={20} /> : <IconCode size={20} />}
                 onClick={onToggleView}
-                styles={{
-                  root: {
-                    padding: "16px 32px",
-                    fontSize: "1rem",
-                    fontWeight: 600,
-                    borderRadius: "12px",
-                    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                    transition: "all 0.3s ease",
-                    ":hover": {
-                      transform: "translateY(-2px)",
-                      boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
-                    },
-                  },
-                }}
               >
-                {viewMode === "raw" ? "Switch to Rich View" : "Switch to Raw View"}
+                {viewMode === "raw" ? "Rich View" : "Raw View"}
               </Button>
             </div>
           </div>
@@ -115,7 +85,7 @@ export function EntityDetailLayout({
           <div className={styles.rawJsonContainer}>
             <div className={styles.rawJsonHeader}>
               <h3 className={styles.rawJsonTitle}>
-                <IconCode size={24} />
+                <IconCode size={20} />
                 Raw JSON Data
               </h3>
             </div>

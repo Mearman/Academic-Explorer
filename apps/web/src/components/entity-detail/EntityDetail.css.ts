@@ -25,7 +25,6 @@ export const contentContainer = style({
 export const headerCard = style({
   backgroundColor: vars.color.background.primary,
   borderRadius: vars.borderRadius.xl,
-  boxShadow: vars.shadow.sm,
   padding: vars.space[10],
   border: `${vars.borderWidth[1]} solid ${vars.color.border.primary}`,
   "@media": {
@@ -154,11 +153,6 @@ export const metadataValue = style({
   wordBreak: "break-all",
   flex: 1,
   border: `${vars.borderWidth[1]} solid ${vars.color.border.secondary}`,
-  transition: "all 0.2s ease",
-  ":hover": {
-    borderColor: vars.color.border.primary,
-    backgroundColor: vars.color.background.primary,
-  },
 });
 
 // Loading state
@@ -174,13 +168,11 @@ export const loadingContainer = style({
 export const loadingCard = style({
   backgroundColor: vars.color.background.primary,
   borderRadius: vars.borderRadius.xl,
-  boxShadow: vars.shadow.xl,
   padding: vars.space[12],
   maxWidth: "32rem",
   width: "100%",
   textAlign: "center",
   border: `${vars.borderWidth[1]} solid ${vars.color.border.primary}`,
-  animation: "fadeIn 0.3s ease",
   "@media": {
     "(max-width: 768px)": {
       padding: vars.space[8],
@@ -215,12 +207,10 @@ export const errorContainer = loadingContainer;
 export const errorCard = style({
   backgroundColor: vars.color.background.primary,
   borderRadius: vars.borderRadius.xl,
-  boxShadow: vars.shadow.xl,
   padding: vars.space[12],
   maxWidth: "48rem",
   width: "100%",
   border: `${vars.borderWidth[1]} solid ${vars.color.border.primary}`,
-  animation: "fadeIn 0.3s ease",
   "@media": {
     "(max-width: 768px)": {
       padding: vars.space[8],
@@ -239,7 +229,6 @@ export const errorIconWrapper = style({
   borderRadius: vars.borderRadius.full,
   marginBottom: vars.space[6],
   border: `${vars.borderWidth[2]} solid ${vars.color.errorBorder}`,
-  animation: "pulse 2s ease-in-out infinite",
 });
 
 export const errorTitle = style({
@@ -304,7 +293,6 @@ export const errorBoxText = style({
 export const rawJsonContainer = style({
   backgroundColor: vars.color.codeViewer.bg,
   borderRadius: vars.borderRadius.xl,
-  boxShadow: vars.shadow.md,
   overflow: "hidden",
   border: `${vars.borderWidth[1]} solid ${vars.color.codeViewer.border}`,
 });
