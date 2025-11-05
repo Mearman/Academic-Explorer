@@ -1,13 +1,32 @@
 /**
  * EntityDataDisplay Component
  *
- * Displays all entity data in a structured, readable format using Vanilla Extract and Mantine.
+ * Displays all entity data in a structured, readable format using native Mantine components.
  * Handles nested objects, arrays, and various data types.
  * Renders ALL fields from the API response.
  */
 
 import React from "react";
-import { Anchor, Badge, Text } from "@mantine/core";
+import {
+  Anchor,
+  Badge,
+  Code,
+  Text,
+  Card,
+  CardSection,
+  Stack,
+  Flex,
+  Group,
+  List,
+  Table,
+  TableTbody,
+  TableTr,
+  TableTd,
+  Container,
+  Title,
+  Divider,
+  Box
+} from "@mantine/core";
 import {
   IconExternalLink,
   IconLink,
@@ -24,7 +43,6 @@ import {
 } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 import { convertOpenAlexToInternalLink, isOpenAlexId } from "@/utils/openalex-link-conversion";
-import * as styles from "./EntityDataDisplay.css";
 
 interface EntityDataDisplayProps {
   data: Record<string, unknown>;
@@ -37,34 +55,34 @@ interface EntityDataDisplayProps {
 function renderValue(value: unknown, depth: number = 0): React.ReactNode {
   // Handle null/undefined
   if (value === null || value === undefined) {
-    return <span className={styles.nullValue}>null</span>;
+    return <Text c="dimmed" fs="italic" size="sm">null</Text>;
   }
 
   // Handle booleans
   if (typeof value === "boolean") {
     return (
-      <span className={styles.booleanBadge[value ? "true" : "false"]}>
-        {value ? (
-          <>
-            <IconCheck size={14} />
-            <span>true</span>
-          </>
-        ) : (
-          <>
-            <IconX size={14} />
-            <span>false</span>
-          </>
-        )}
-      </span>
+      <Badge
+        color={value ? "green" : "red"}
+        variant="light"
+        size="sm"
+        leftSection={value ? <IconCheck size={12} /> : <IconX size={12} />}
+      >
+        {value.toString()}
+      </Badge>
     );
   }
 
   // Handle numbers
   if (typeof value === "number") {
     return (
-      <span className={styles.numberBadge}>
+      <Code
+        variant="light"
+        color="blue"
+        ff="monospace"
+        fw={600}
+      >
         {value.toLocaleString()}
-      </span>
+      </Code>
     );
   }
 
@@ -76,29 +94,36 @@ function renderValue(value: unknown, depth: number = 0): React.ReactNode {
     if (converted.isOpenAlexLink) {
       // Internal OpenAlex link
       return (
-        <Link
+        <Group gap="xs">
+        <Anchor
+          component={Link}
           to={converted.internalPath}
-          className={styles.urlLink}
-          style={{ color: 'var(--mantine-color-blue-6)' }}
+          c="blue"
+          display="inline-flex"
+          style={{ wordBreak: "break-word" }}
         >
           <IconLink size={16} />
-          <span>{value}</span>
-        </Link>
+          {value}
+        </Anchor>
+      </Group>
       );
     }
 
     // Handle other URLs (external links)
     if (value.startsWith("http://") || value.startsWith("https://")) {
       return (
+        <Group gap="xs">
         <Anchor
           href={value}
           target="_blank"
           rel="noopener noreferrer"
-          className={styles.urlLink}
+          display="inline-flex"
+          style={{ wordBreak: "break-word" }}
         >
           <IconExternalLink size={16} />
-          <span>{value}</span>
+          {value}
         </Anchor>
+      </Group>
       );
     }
 
@@ -106,51 +131,68 @@ function renderValue(value: unknown, depth: number = 0): React.ReactNode {
     if (isOpenAlexId(value)) {
       const idConverted = convertOpenAlexToInternalLink(value);
       return (
-        <Link
+        <Group gap="xs">
+        <Anchor
+          component={Link}
           to={idConverted.internalPath}
-          className={styles.urlLink}
-          style={{ color: 'var(--mantine-color-blue-6)' }}
+          c="blue"
+          display="inline-flex"
+          style={{ wordBreak: "break-word" }}
         >
           <IconLink size={16} />
-          <span>{value}</span>
-        </Link>
+          {value}
+        </Anchor>
+      </Group>
       );
     }
 
-    return <span className={styles.stringValue}>{value}</span>;
+    return <Text>{value}</Text>;
   }
 
   // Handle arrays
   if (Array.isArray(value)) {
     if (value.length === 0) {
-      return <span className={styles.emptyArray}>[ ]</span>;
+      return <Text c="dimmed" fs="italic" size="sm">[ ]</Text>;
     }
 
     // For primitive arrays, show inline
     if (value.every(item => typeof item !== "object" || item === null)) {
       return (
-        <div className={styles.primitiveArray}>
+        <Flex wrap="wrap" gap="xs">
           {value.map((item, index) => (
-            <span key={index} className={styles.primitiveArrayItem}>
+            <Badge
+              key={index}
+              variant="light"
+              color="gray"
+              size="sm"
+            >
               {renderValue(item, depth)}
-            </span>
+            </Badge>
           ))}
-        </div>
+        </Flex>
       );
     }
 
     // For object arrays, show each item
     return (
-      <div className={styles.objectArray}>
+      <Stack gap="md" mt="xs">
         {value.map((item, index) => (
-          <div key={index} className={styles.objectArrayItem}>
-            <div className={styles.arrayItemNumber}>{index + 1}</div>
-            <div className={styles.arrayItemContent}>
-              {renderValue(item, depth + 1)}
-            </div>
-          </div>
+          <Card key={index} withBorder p="md" bg="gray.0">
+            <Group gap="sm">
+              <Badge
+                circle
+                size="lg"
+                color="blue"
+              >
+                {index + 1}
+              </Badge>
+              <Box miw={0} style={{ flex: 1 }}>
+                {renderValue(item, depth + 1)}
+              </Box>
+            </Group>
+          </Card>
         ))}
-      </div>
+      </Stack>
     );
   }
 
@@ -160,25 +202,31 @@ function renderValue(value: unknown, depth: number = 0): React.ReactNode {
     const entries = Object.entries(obj);
 
     if (entries.length === 0) {
-      return <span className={styles.emptyObject}>{"{ }"}</span>;
+      return <Text c="dimmed" fs="italic" size="sm">{"{ }"}</Text>;
     }
 
     return (
-      <div className={styles.objectContainer}>
-        {entries.map(([key, val]) => (
-          <div key={key} className={styles.objectField}>
-            <div>
-              <span className={styles.objectFieldLabel}>{key}:</span>
-              <div className={styles.objectFieldValue}>{renderValue(val, depth + 1)}</div>
-            </div>
-          </div>
-        ))}
-      </div>
+      <Table>
+        <TableTbody>
+          {entries.map(([key, val]) => (
+            <TableTr key={key}>
+              <TableTd w={150} ta="left" style={{ verticalAlign: "top" }}>
+                <Text size="sm" fw={600} c="blue.7">
+                  {key}
+                </Text>
+              </TableTd>
+              <TableTd>
+                {renderValue(val, depth + 1)}
+              </TableTd>
+            </TableTr>
+          ))}
+        </TableTbody>
+      </Table>
     );
   }
 
   // Fallback for unknown types
-  return <span className={styles.fallbackValue}>{String(value)}</span>;
+  return <Text c="dimmed" fs="italic">{String(value)}</Text>;
 }
 
 /**
@@ -245,34 +293,59 @@ export function EntityDataDisplay({ data, title }: EntityDataDisplayProps) {
   const groups = groupFields(data);
 
   return (
-    <div className={styles.container}>
-      {title && <h2 style={{ fontSize: "1.875rem", fontWeight: 700, marginBottom: "1.5rem" }}>{title}</h2>}
+    <Container size="100%" p={0}>
+      <Stack gap="xl">
+        {title && (
+          <Title order={1} size="h1" fw={700} mb="md">
+            {title}
+          </Title>
+        )}
 
-      {Object.entries(groups).map(([groupName, groupData]) => (
-        <div key={groupName} className={styles.sectionCard}>
-          <div className={styles.sectionHeader}>
-            <h3 className={styles.sectionTitle}>
-              <span className={styles.sectionIcon}>{sectionIcons[groupName] || <IconFile size={20} />}</span>
-              <span>{groupName}</span>
-              <span className={styles.fieldCount}>
-                {Object.keys(groupData).length} {Object.keys(groupData).length === 1 ? "field" : "fields"}
-              </span>
-            </h3>
-          </div>
-          <div className={styles.sectionContent}>
-            {Object.entries(groupData).map(([key, value]) => (
-              <div key={key} className={styles.fieldContainer}>
-                <span className={styles.fieldLabel}>
-                  {key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
-                </span>
-                <div className={styles.fieldValue}>
-                  {renderValue(value)}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
+        {Object.entries(groups).map(([groupName, groupData]) => (
+          <Card key={groupName} withBorder shadow="sm">
+            <CardSection
+              p="md"
+              bg="gray.0"
+              style={{ borderBottom: "1px solid var(--mantine-color-gray-3)" }}
+            >
+              <Group gap="sm" justify="space-between">
+                <Group gap="sm">
+                  <Box c="blue.6">
+                    {sectionIcons[groupName] || <IconFile size={20} />}
+                  </Box>
+                  <Text size="xl" fw={600}>
+                    {groupName}
+                  </Text>
+                </Group>
+                <Badge
+                  variant="light"
+                  color="gray"
+                  size="sm"
+                >
+                  {Object.keys(groupData).length} {Object.keys(groupData).length === 1 ? "field" : "fields"}
+                </Badge>
+              </Group>
+            </CardSection>
+
+            <CardSection p="lg">
+              <Stack gap="md">
+                {Object.entries(groupData).map(([key, value]) => (
+                  <Card key={key} withBorder p="md" bg="gray.0">
+                    <Stack gap="xs">
+                      <Text size="md" fw={600} c="blue.6">
+                        {key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
+                      </Text>
+                      <Box ml="xs" mt={2}>
+                        {renderValue(value)}
+                      </Box>
+                    </Stack>
+                  </Card>
+                ))}
+              </Stack>
+            </CardSection>
+          </Card>
+        ))}
+      </Stack>
+    </Container>
   );
 }
