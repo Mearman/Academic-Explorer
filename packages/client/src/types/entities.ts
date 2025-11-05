@@ -194,6 +194,17 @@ export interface Work extends BaseEntity {
     display_name: string;
     score: number;
   }>;
+  awards?: unknown[];
+  citation_normalized_percentile?: number | null;
+  funders?: unknown[];
+  has_content?: {
+    pdf: boolean;
+    grobid_xml: boolean;
+  };
+  institutions?: Institution[];
+  is_xpac?: boolean;
+  primary_topic?: TopicItem | null;
+  relevance_score?: number;
 }
 
 // Partial hydration types - only id is guaranteed, all other fields are optional
@@ -532,6 +543,14 @@ export const WORK_FIELDS = keysOf<Work>()([
   "language",
   "topics",
   "keywords",
+  "awards",
+  "citation_normalized_percentile",
+  "funders",
+  "has_content",
+  "institutions",
+  "is_xpac",
+  "primary_topic",
+  "relevance_score",
 ]);
 
 export type WorkField = (typeof WORK_FIELDS)[number];
