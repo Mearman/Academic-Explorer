@@ -389,6 +389,13 @@ export const FUNDER_FIELDS = funderSchema.keyof().options
 
 export type FunderField = (typeof FUNDER_FIELDS)[number]
 
+/**
+ * Fields that can be selected for Keyword entities.
+ */
+export const KEYWORD_FIELDS = keywordSchema.keyof().options
+
+export type KeywordField = (typeof KEYWORD_FIELDS)[number]
+
 // Re-export types from base.ts to make them available to other modules
 export type {
 	APCInfo,

@@ -27,6 +27,7 @@ import { Route as TextIndexRouteImport } from './routes/text/index'
 import { Route as SourcesIndexRouteImport } from './routes/sources/index'
 import { Route as PublishersIndexRouteImport } from './routes/publishers/index'
 import { Route as KeywordsIndexRouteImport } from './routes/keywords/index'
+import { Route as KeywordsKeywordIdRouteImport } from './routes/keywords/$keywordId'
 import { Route as InstitutionsIndexRouteImport } from './routes/institutions/index'
 import { Route as FundersIndexRouteImport } from './routes/funders/index'
 import { Route as ConceptsIndexRouteImport } from './routes/concepts/index'
@@ -155,6 +156,13 @@ const KeywordsIndexRoute = KeywordsIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/keywords/index.lazy').then((d) => d.Route),
+)
+const KeywordsKeywordIdRoute = KeywordsKeywordIdRouteImport.update({
+  id: '/keywords/$keywordId',
+  path: '/keywords/$keywordId',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/keywords/$keywordId.lazy').then((d) => d.Route),
 )
 const InstitutionsIndexRoute = InstitutionsIndexRouteImport.update({
   id: '/institutions/',
@@ -389,6 +397,7 @@ export interface FileRoutesByFullPath {
   '/explore/graph': typeof ExploreGraphRoute
   '/funders/$funderId': typeof FundersFunderIdRoute
   '/https/$': typeof HttpsSplatRoute
+  '/keywords/$keywordId': typeof KeywordsKeywordIdRoute
   '/institutions/$institutionId': typeof InstitutionsInstitutionIdRoute
   '/openalex-url/$': typeof OpenalexUrlSplatRoute
   '/publishers/$publisherId': typeof PublishersPublisherIdRoute
@@ -443,6 +452,7 @@ export interface FileRoutesByTo {
   '/explore/graph': typeof ExploreGraphRoute
   '/funders/$funderId': typeof FundersFunderIdRoute
   '/https/$': typeof HttpsSplatRoute
+  '/keywords/$keywordId': typeof KeywordsKeywordIdRoute
   '/institutions/$institutionId': typeof InstitutionsInstitutionIdRoute
   '/openalex-url/$': typeof OpenalexUrlSplatRoute
   '/publishers/$publisherId': typeof PublishersPublisherIdRoute
@@ -498,6 +508,7 @@ export interface FileRoutesById {
   '/explore/graph': typeof ExploreGraphRoute
   '/funders/$funderId': typeof FundersFunderIdRoute
   '/https/$': typeof HttpsSplatRoute
+  '/keywords/$keywordId': typeof KeywordsKeywordIdRoute
   '/institutions/$institutionId': typeof InstitutionsInstitutionIdRoute
   '/openalex-url/$': typeof OpenalexUrlSplatRoute
   '/publishers/$publisherId': typeof PublishersPublisherIdRoute
@@ -554,6 +565,7 @@ export interface FileRouteTypes {
     | '/explore/graph'
     | '/funders/$funderId'
     | '/https/$'
+    | '/keywords/$keywordId'
     | '/institutions/$institutionId'
     | '/openalex-url/$'
     | '/publishers/$publisherId'
@@ -608,6 +620,7 @@ export interface FileRouteTypes {
     | '/explore/graph'
     | '/funders/$funderId'
     | '/https/$'
+    | '/keywords/$keywordId'
     | '/institutions/$institutionId'
     | '/openalex-url/$'
     | '/publishers/$publisherId'
@@ -662,6 +675,7 @@ export interface FileRouteTypes {
     | '/explore/graph'
     | '/funders/$funderId'
     | '/https/$'
+    | '/keywords/$keywordId'
     | '/institutions/$institutionId'
     | '/openalex-url/$'
     | '/publishers/$publisherId'
@@ -951,6 +965,13 @@ declare module '@tanstack/react-router' {
       path: '/https/$'
       fullPath: '/https/$'
       preLoaderRoute: typeof HttpsSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/keywords/$keywordId': {
+      id: '/keywords/$keywordId'
+      path: '/keywords/$keywordId'
+      fullPath: '/keywords/$keywordId'
+      preLoaderRoute: typeof KeywordsKeywordIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/funders/$funderId': {

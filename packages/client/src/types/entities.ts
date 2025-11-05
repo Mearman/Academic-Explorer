@@ -647,3 +647,22 @@ export const PUBLISHER_FIELDS = keysOf<Publisher>()([
 ]);
 
 export type PublisherField = (typeof PUBLISHER_FIELDS)[number];
+
+/**
+ * Fields that can be selected for Keyword entities.
+ */
+export const KEYWORD_FIELDS = keysOf<Keyword>()([
+  "id",
+  "display_name",
+  "cited_by_count",
+  "counts_by_year",
+  "updated_date",
+  "created_date",
+  "works_count",
+  "works_api_url",
+  "description",
+  "keywords",
+  "ids",
+]);
+
+export type KeywordField = (typeof KEYWORD_FIELDS)[number];
