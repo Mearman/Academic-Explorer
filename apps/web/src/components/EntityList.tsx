@@ -5,6 +5,7 @@ import type {
   Funder,
   InstitutionEntity,
   InstitutionsFilters,
+  Keyword,
   OpenAlexResponse,
   Publisher,
   Source,
@@ -34,7 +35,8 @@ type Entity =
   | Author
   | InstitutionEntity
   | Topic
-  | Concept;
+  | Concept
+  | Keyword;
 
 export type ColumnConfig = {
   key: string;
@@ -189,6 +191,17 @@ export function EntityList({
         response = await openAlex.client.topics.getMultiple({
           per_page: perPage,
           page: currentPage,
+        });
+        break;
+      case "keywords":
+        response = await openAlex.client.keywords.getKeywords({
+          per_page: searchParams?.per_page ?? perPage,
+          page: searchParams?.page ?? currentPage,
+          filter: searchParams?.filter,
+          search: searchParams?.search,
+          sort: searchParams?.sort,
+          sample: searchParams?.sample,
+          group_by: searchParams?.group_by,
         });
         break;
       default:

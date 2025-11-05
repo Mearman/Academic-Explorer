@@ -241,6 +241,7 @@ function OpenAlexUrlComponent() {
         publishers: "publishers",
         funders: "funders",
         topics: "topics",
+        keywords: "keywords",
       };
 
       const entityType = entityMap[pathParts[0]];
