@@ -151,11 +151,12 @@ export function EntityList({
       case "works": {
         const worksFilter = urlFilters
           ? buildFilterString(urlFilters)
-          : undefined;
+          : searchParams?.filter;
         response = await openAlex.client.works.getWorks({
-          per_page: perPage,
-          page: currentPage,
+          per_page: searchParams?.per_page ?? perPage,
+          page: searchParams?.page ?? currentPage,
           filter: worksFilter,
+          sort: searchParams?.sort,
         });
         break;
       }

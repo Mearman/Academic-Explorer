@@ -110,15 +110,27 @@ function WorksListRoute() {
   >(null); // null = not yet parsed, undefined = no filters, object = parsed filters
   const [viewMode, setViewMode] = useState<ViewMode>("table");
 
+  const [searchParams, setSearchParams] = useState<{
+    filter?: string;
+    sort?: string;
+    per_page?: number;
+    page?: number;
+  } | null>(null);
+
   useEffect(() => {
-    const parseHashFilters = () => {
+    const parseHashParams = () => {
       // Parse URL parameters manually since TanStack Router useSearch might not work with hash routing
       const { hash } = window.location;
       const queryIndex = hash.indexOf("?");
       if (queryIndex !== -1) {
         const queryString = hash.substring(queryIndex + 1);
         const urlParams = new URLSearchParams(queryString);
+
+        // Parse all relevant parameters
         const filterParam = urlParams.get("filter");
+        const sortParam = urlParams.get("sort");
+        const perPageParam = urlParams.get("per_page");
+        const pageParam = urlParams.get("page");
 
         if (filterParam) {
           const filterBuilder = createFilterBuilder();
@@ -127,22 +139,31 @@ function WorksListRoute() {
         } else {
           setUrlFilters(undefined);
         }
+
+        // Set search parameters including sort, per_page, page
+        setSearchParams({
+          filter: filterParam || undefined,
+          sort: sortParam || undefined,
+          per_page: perPageParam ? Number.parseInt(perPageParam, 10) : undefined,
+          page: pageParam ? Number.parseInt(pageParam, 10) : undefined,
+        });
       } else {
         setUrlFilters(undefined);
+        setSearchParams({});
       }
     };
 
-    // Parse filters on mount and when hash changes
-    parseHashFilters();
-    window.addEventListener("hashchange", parseHashFilters);
+    // Parse parameters on mount and when hash changes
+    parseHashParams();
+    window.addEventListener("hashchange", parseHashParams);
 
     return () => {
-      window.removeEventListener("hashchange", parseHashFilters);
+      window.removeEventListener("hashchange", parseHashParams);
     };
   }, []);
 
-  // Wait for filters to be parsed before rendering EntityList
-  if (urlFilters === null) {
+  // Wait for filters and search params to be parsed before rendering EntityList
+  if (urlFilters === null || searchParams === null) {
     return null;
   }
 
@@ -152,6 +173,7 @@ function WorksListRoute() {
       columns={worksColumns}
       title="Works"
       urlFilters={urlFilters}
+      searchParams={searchParams}
       viewMode={viewMode}
       onViewModeChange={setViewMode}
     />
