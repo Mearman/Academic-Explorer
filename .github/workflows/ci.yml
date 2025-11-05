@@ -437,17 +437,31 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
 
-      - name: Release
+      - name: Check for version changes
+        id: check-version
         run: |
-          # Use Nx release with conventional commits
-          # This will:
-          # - Analyze commits since last release
-          # - Determine version bump (major/minor/patch)
-          # - Update package.json versions
-          # - Create git tags
-          # - Generate changelog
-          # - Create GitHub releases
-          pnpm nx release --skip-publish || echo "No changes to release"
+          # Try to determine if there are version changes needed
+          pnpm nx release version --dry-run --skip-publish > /tmp/release-dry-run.txt 2>&1 || true
+          if grep -q "New version" /tmp/release-dry-run.txt; then
+            echo "has-changes=true" >> "${GITHUB_OUTPUT}"
+            # Extract the new version
+            NEW_VERSION=$(grep -oP 'New version \K[\d.]+' /tmp/release-dry-run.txt | head -1)
+            echo "new-version=${NEW_VERSION}" >> "${GITHUB_OUTPUT}"
+          else
+            echo "has-changes=false" >> "${GITHUB_OUTPUT}"
+          fi
+
+      - name: Create release
+        if: steps.check-version.outputs.has-changes == 'true'
+        run: |
+          # Run Nx release version to bump versions and create tags
+          pnpm nx release version --skip-publish
+
+          # Create GitHub release
+          gh release create "v${{ steps.check-version.outputs.new-version }}" \
+            --title "Release v${{ steps.check-version.outputs.new-version }}" \
+            --notes "Automated release from CI" \
+            --latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
