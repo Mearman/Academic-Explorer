@@ -165,7 +165,9 @@ function ApiOpenAlexRoute() {
           pathWithQuery.startsWith("concepts") ||
           pathWithQuery.startsWith("funders") ||
           pathWithQuery.startsWith("publishers") ||
-          pathWithQuery.startsWith("sources")
+          pathWithQuery.startsWith("sources") ||
+          pathWithQuery.startsWith("topics") ||
+          pathWithQuery.startsWith("keywords")
         ) {
           // Preserve query parameters by using navigate with parsed search
           const targetPath = `/${pathWithQuery}`;
@@ -224,7 +226,7 @@ function ApiOpenAlexRoute() {
     if (externalId) {
       resolveExternalId();
     }
-  }, [externalId, navigate]);
+  }, [externalId, navigate, routeSearch]);
 
   return (
     <div
