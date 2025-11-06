@@ -1,3 +1,10 @@
+## [11.0.1](https://github.com/Mearman/Academic-Explorer/compare/v11.0.0...v11.0.1) (2025-11-06)
+
+
+### Bug Fixes
+
+* **release:** create tag on triggering commit before version bump ([62ec096](https://github.com/Mearman/Academic-Explorer/commit/62ec096d8aa50ada2925eb1c26066d97fdde5824))
+
 # [11.0.0](https://github.com/Mearman/Academic-Explorer/compare/v10.2.0...v11.0.0) (2025-11-06)
 
 
