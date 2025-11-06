@@ -160,7 +160,6 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                 size="xs"
                 fw={500}
                 c={getEntityColor("sources")}
-                style={{ cursor: "pointer" }}
                 onClick={() => {
                   if (work.primary_location?.source?.id) {
                     handleEntityClick({
@@ -252,7 +251,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                       <Anchor
                         size="xs"
                         c={getEntityColor("authors")}
-                        style={{ cursor: "pointer" }}
+                       
                         onClick={() => {
                           if (authorship.author.id) {
                             handleEntityClick({
@@ -313,7 +312,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                   size="sm"
                   variant="light"
                   color={getEntityColor("topics")}
-                  style={{ cursor: "pointer" }}
+                 
                   onClick={() => {
                     if (topic.id) {
                       handleEntityClick({
@@ -363,7 +362,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                   <Anchor
                     size="sm"
                     c={getEntityColor("institutions")}
-                    style={{ cursor: "pointer" }}
+                   
                     onClick={() => {
                       if (author.last_known_institutions?.[0]?.id) {
                         handleEntityClick({
@@ -458,7 +457,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                       <Anchor
                         size="sm"
                         c={getEntityColor("institutions")}
-                        style={{ cursor: "pointer" }}
+                       
                         onClick={() => {
                           if (affiliation.institution.id) {
                             handleEntityClick({
@@ -511,7 +510,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                   <Anchor
                     size="sm"
                     c={getEntityColor("topics")}
-                    style={{ cursor: "pointer" }}
+                   
                     onClick={() => {
                       if (topic.id) {
                         handleEntityClick({
@@ -645,7 +644,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                   <Anchor
                     size="sm"
                     c={getEntityColor("topics")}
-                    style={{ cursor: "pointer" }}
+                   
                     onClick={() => {
                       if (topic.id) {
                         handleEntityClick({
