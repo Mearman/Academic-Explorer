@@ -21,14 +21,10 @@ import {
   Stack,
   Button,
   ThemeIcon,
+  SimpleGrid,
+  Paper,
 } from "@mantine/core";
 
-// Style constants
-const BORDER_COLOR_GRAY = "#e5e7eb";
-const BORDER_STYLE = `1px solid ${BORDER_COLOR_GRAY}`;
-
-const BOX_SHADOW =
-  "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)";
 
 function EvaluationDashboard() {
   const navigate = useNavigate();
@@ -55,61 +51,31 @@ function EvaluationDashboard() {
       </Stack>
 
       {/* Dashboard Cards */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-        gap: "24px",
-        marginBottom: "32px",
-      }}>
+      <SimpleGrid
+        cols={{ base: 1, sm: 2, lg: 3 }}
+        spacing="lg"
+        mb="xl"
+      >
         {/* Datasets Card */}
-        <div
-          style={{
-            backgroundColor: "white",
-            borderRadius: "12px",
-            border: BORDER_STYLE,
-            padding: "24px",
-            boxShadow: BOX_SHADOW,
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginBottom: "16px",
-            }}
-          >
-            <div
-              style={{
-                backgroundColor: "#dbeafe",
-                borderRadius: "8px",
-                padding: "8px",
-                marginRight: "12px",
-              }}
-            >
+        <Card shadow="sm" padding="lg" radius="md" withBorder>
+          <Group justify="space-between" mb="md">
+            <ThemeIcon color="blue" size={40} radius="md">
               <IconChartBar size={20} />
-            </div>
-            <h3
-              style={{
-                fontSize: "18px",
-                fontWeight: "600",
-                color: "#1f2937",
-                margin: 0,
-              }}
-            >
-              STAR Datasets
-            </h3>
-          </div>
-          <p
-            style={{
-              color: "#6b7280",
-              marginBottom: "16px",
-              lineHeight: "1.5",
-            }}
-          >
+            </ThemeIcon>
+          </Group>
+
+          <Text fw={600} size="lg" c="gray.9" mb="xs">
+            STAR Datasets
+          </Text>
+
+          <Text size="sm" c="dimmed" mb="md" lineClamp={3}>
             Upload and manage systematic literature review datasets for ground
             truth comparison
-          </p>
-          <button
+          </Text>
+
+          <Button
+            variant="filled"
+            color="blue"
             onClick={() => {
               logger.debug(
                 "ui",
@@ -119,324 +85,154 @@ function EvaluationDashboard() {
               );
               void navigate({ to: "/evaluation/datasets" });
             }}
-            style={{
-              backgroundColor: "#3b82f6",
-              color: "white",
-              padding: "8px 16px",
-              borderRadius: "6px",
-              border: "none",
-              fontSize: "14px",
-              fontWeight: "500",
-              cursor: "pointer",
-              transition: "background-color 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#2563eb";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "#3b82f6";
-            }}
+            fullWidth
           >
             Manage Datasets
-          </button>
-        </div>
+          </Button>
+        </Card>
 
         {/* Comparison Card */}
-        <div
-          style={{
-            backgroundColor: "white",
-            borderRadius: "12px",
-            border: BORDER_STYLE,
-            padding: "24px",
-            boxShadow: BOX_SHADOW,
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginBottom: "16px",
-            }}
-          >
-            <div
-              style={{
-                backgroundColor: "#dcfce7",
-                borderRadius: "8px",
-                padding: "8px",
-                marginRight: "12px",
-              }}
-            >
+        <Card shadow="sm" padding="lg" radius="md" withBorder>
+          <Group justify="space-between" mb="md">
+            <ThemeIcon color="green" size={40} radius="md">
               <IconSearch size={20} />
-            </div>
-            <h3
-              style={{
-                fontSize: "18px",
-                fontWeight: "600",
-                color: "#1f2937",
-                margin: 0,
-              }}
-            >
-              Run Comparisons
-            </h3>
-          </div>
-          <p
-            style={{
-              color: "#6b7280",
-              marginBottom: "16px",
-              lineHeight: "1.5",
-            }}
-          >
+            </ThemeIcon>
+          </Group>
+
+          <Text fw={600} size="lg" c="gray.9" mb="xs">
+            Run Comparisons
+          </Text>
+
+          <Text size="sm" c="dimmed" mb="md" lineClamp={3}>
             Execute Academic Explorer searches against STAR datasets and
             calculate precision/recall metrics
-          </p>
-          <button
+          </Text>
+
+          <Button
+            variant="filled"
+            color="gray"
             disabled
-            style={{
-              backgroundColor: "#9ca3af",
-              color: "white",
-              padding: "8px 16px",
-              borderRadius: "6px",
-              border: "none",
-              fontSize: "14px",
-              fontWeight: "500",
-              cursor: "not-allowed",
-            }}
+            fullWidth
+            mb="xs"
           >
             Start Comparison
-          </button>
-          <p style={{ fontSize: "12px", color: "#9ca3af", marginTop: "8px" }}>
+          </Button>
+
+          <Text size="xs" c="gray.5" ta="center">
             Requires datasets to be uploaded first
-          </p>
-        </div>
+          </Text>
+        </Card>
 
         {/* Results Card */}
-        <div
-          style={{
-            backgroundColor: "white",
-            borderRadius: "12px",
-            border: BORDER_STYLE,
-            padding: "24px",
-            boxShadow: BOX_SHADOW,
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginBottom: "16px",
-            }}
-          >
-            <div
-              style={{
-                backgroundColor: "#fef3c7",
-                borderRadius: "8px",
-                padding: "8px",
-                marginRight: "12px",
-              }}
-            >
+        <Card shadow="sm" padding="lg" radius="md" withBorder>
+          <Group justify="space-between" mb="md">
+            <ThemeIcon color="yellow" size={40} radius="md">
               <IconTrendingUp size={20} />
-            </div>
-            <h3
-              style={{
-                fontSize: "18px",
-                fontWeight: "600",
-                color: "#1f2937",
-                margin: 0,
-              }}
-            >
-              Results & Analytics
-            </h3>
-          </div>
-          <p
-            style={{
-              color: "#6b7280",
-              marginBottom: "16px",
-              lineHeight: "1.5",
-            }}
-          >
+            </ThemeIcon>
+          </Group>
+
+          <Text fw={600} size="lg" c="gray.9" mb="xs">
+            Results & Analytics
+          </Text>
+
+          <Text size="sm" c="dimmed" mb="md" lineClamp={3}>
             View detailed comparison results, precision/recall charts, and
             thesis-ready statistics
-          </p>
-          <button
+          </Text>
+
+          <Button
+            variant="filled"
+            color="gray"
             disabled
-            style={{
-              backgroundColor: "#9ca3af",
-              color: "white",
-              padding: "8px 16px",
-              borderRadius: "6px",
-              border: "none",
-              fontSize: "14px",
-              fontWeight: "500",
-              cursor: "not-allowed",
-            }}
+            fullWidth
+            mb="xs"
           >
             View Results
-          </button>
-          <p style={{ fontSize: "12px", color: "#9ca3af", marginTop: "8px" }}>
+          </Button>
+
+          <Text size="xs" c="gray.5" ta="center">
             No comparison results available yet
-          </p>
-        </div>
-      </div>
+          </Text>
+        </Card>
+      </SimpleGrid>
 
       {/* Methodology Information */}
-      <div
-        style={{
-          backgroundColor: "#f9fafb",
-          borderRadius: "12px",
-          border: BORDER_STYLE,
-          padding: "24px",
-        }}
+      <Paper
+        bg="gray.0"
+        p="lg"
+        radius="md"
+        withBorder
       >
-        <h2
-          style={{
-            fontSize: "20px",
-            fontWeight: "600",
-            color: "#1f2937",
-            marginBottom: "16px",
-          }}
-        >
+        <Title order={2} fw={600} c="gray.9" mb="md">
           STAR Methodology Overview
-        </h2>
+        </Title>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-            gap: "20px",
-          }}
+        <SimpleGrid
+          cols={{ base: 1, sm: 2, lg: 4 }}
+          spacing="lg"
         >
-          <div>
-            <h4
-              style={{
-                fontSize: "14px",
-                fontWeight: "600",
-                color: "#374151",
-                marginBottom: "8px",
-              }}
-            >
+          <Stack gap="xs">
+            <Text size="sm" fw={600} c="gray.7">
               1. Dataset Upload
-            </h4>
-            <p
-              style={{
-                fontSize: "13px",
-                color: "#6b7280",
-                lineHeight: "1.4",
-                margin: 0,
-              }}
-            >
+            </Text>
+            <Text size="xs" c="dimmed" lineClamp={3}>
               Import existing systematic literature reviews as CSV/JSON with
               included/excluded papers
-            </p>
-          </div>
+            </Text>
+          </Stack>
 
-          <div>
-            <h4
-              style={{
-                fontSize: "14px",
-                fontWeight: "600",
-                color: "#374151",
-                marginBottom: "8px",
-              }}
-            >
+          <Stack gap="xs">
+            <Text size="sm" fw={600} c="gray.7">
               2. Search Replication
-            </h4>
-            <p
-              style={{
-                fontSize: "13px",
-                color: "#6b7280",
-                lineHeight: "1.4",
-                margin: 0,
-              }}
-            >
+            </Text>
+            <Text size="xs" c="dimmed" lineClamp={3}>
               Run Academic Explorer searches using original STAR search criteria
               and strategies
-            </p>
-          </div>
+            </Text>
+          </Stack>
 
-          <div>
-            <h4
-              style={{
-                fontSize: "14px",
-                fontWeight: "600",
-                color: "#374151",
-                marginBottom: "8px",
-              }}
-            >
+          <Stack gap="xs">
+            <Text size="sm" fw={600} c="gray.7">
               3. Paper Matching
-            </h4>
-            <p
-              style={{
-                fontSize: "13px",
-                color: "#6b7280",
-                lineHeight: "1.4",
-                margin: 0,
-              }}
-            >
+            </Text>
+            <Text size="xs" c="dimmed" lineClamp={3}>
               Match discovered papers to ground truth using DOI, title, and
               OpenAlex ID fuzzy matching
-            </p>
-          </div>
+            </Text>
+          </Stack>
 
-          <div>
-            <h4
-              style={{
-                fontSize: "14px",
-                fontWeight: "600",
-                color: "#374151",
-                marginBottom: "8px",
-              }}
-            >
+          <Stack gap="xs">
+            <Text size="sm" fw={600} c="gray.7">
               4. Metrics Calculation
-            </h4>
-            <p
-              style={{
-                fontSize: "13px",
-                color: "#6b7280",
-                lineHeight: "1.4",
-                margin: 0,
-              }}
-            >
+            </Text>
+            <Text size="xs" c="dimmed" lineClamp={3}>
               Calculate precision, recall, F1-score, and identify additional
               papers for innovation metrics
-            </p>
-          </div>
-        </div>
+            </Text>
+          </Stack>
+        </SimpleGrid>
 
-        <div
-          style={{
-            marginTop: "20px",
-            padding: "16px",
-            backgroundColor: "white",
-            borderRadius: "8px",
-            border: BORDER_STYLE,
-          }}
+        <Paper
+          mt="md"
+          p="md"
+          radius="sm"
+          withBorder
+          bg="white"
         >
-          <p
-            style={{
-              fontSize: "13px",
-              color: "#374151",
-              margin: 0,
-              fontStyle: "italic",
-            }}
-          >
-            <span
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "4px",
-              }}
-            >
+          <Text size="xs" c="gray.7" fs="italic">
+            <Group gap={4} mb="xs">
               <IconBulb size={14} />
-              <strong>PhD Evaluation Context:</strong>
-            </span>{" "}
+              <Text span fw={600}>PhD Evaluation Context:</Text>
+            </Group>
+            {" "}
             This evaluation demonstrates Academic Explorer&apos;s ability to
             improve upon existing systematic reviews by identifying previously
             missed papers and providing more efficient literature discovery
             pathways. Results provide quantitative evidence for thesis Chapter 6
             evaluation.
-          </p>
-        </div>
-      </div>
+          </Text>
+        </Paper>
+      </Paper>
     </Container>
   );
 }
