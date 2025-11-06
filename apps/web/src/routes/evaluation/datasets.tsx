@@ -7,6 +7,20 @@ import { createFileRoute } from "@tanstack/react-router";
 import React, { useState } from "react";
 import { IconUpload, IconChartBar } from "@tabler/icons-react";
 import {
+  Modal,
+  FileInput,
+  Button,
+  Progress,
+  Group,
+  Stack,
+  Text,
+  Title,
+  Paper,
+  Flex,
+  ActionIcon,
+  Tooltip,
+} from "@mantine/core";
+import {
   parseSTARFile,
   createSTARDatasetFromParseResult,
 } from "@academic-explorer/utils";
@@ -24,8 +38,7 @@ function DatasetsManagement() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const handleFileUpload = (file: File | null) => {
     if (file) {
       setUploadFile(file);
     }
@@ -371,233 +384,98 @@ function DatasetsManagement() {
       )}
 
       {/* Upload Modal */}
-      {showUploadModal && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1000,
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: "white",
-              borderRadius: "12px",
-              width: "500px",
-              maxWidth: "90vw",
-              maxHeight: "80vh",
-              overflow: "hidden",
-              boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            <div
-              style={{
-                padding: "24px 24px 16px",
-                borderBottom: "BORDER_DEFAULT",
-              }}
-            >
-              <h2
-                style={{
-                  fontSize: "20px",
-                  fontWeight: "600",
-                  color: "#1f2937",
-                  margin: 0,
-                }}
-              >
-                Upload STAR Dataset
-              </h2>
-            </div>
-
-            <div style={{ padding: "24px" }}>
-              {!uploadFile ? (
-                <div
-                  role="button"
-                  tabIndex={0}
-                  aria-label="Click to select a file or press Enter"
-                  style={{
-                    border: "2px dashed #d1d5db",
-                    borderRadius: "8px",
-                    padding: "48px 24px",
-                    textAlign: "center",
-                    cursor: "pointer",
-                    backgroundColor: "#f9fafb",
-                  }}
-                  onClick={() =>
-                    document.getElementById("file-upload")?.click()
-                  }
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      document.getElementById("file-upload")?.click();
-                    }
-                  }}
-                >
-                  <div style={{ marginBottom: "12px" }}>
-                    <IconUpload size={32} />
-                  </div>
-                  <p
-                    style={{
-                      fontSize: "16px",
-                      fontWeight: "500",
-                      color: "#374151",
-                      marginBottom: "8px",
-                    }}
-                  >
+      <Modal
+        opened={showUploadModal}
+        onClose={() => {
+          setShowUploadModal(false);
+          setUploadFile(null);
+          setUploadProgress(0);
+        }}
+        title="Upload STAR Dataset"
+        size="md"
+        radius="md"
+      >
+        <Stack>
+          {!uploadFile ? (
+            <FileInput
+              accept=".csv,.json,.xlsx,.xls"
+              onChange={(file) => handleFileUpload(file)}
+              placeholder={
+                <Stack align="center" gap="md" p="xl">
+                  <IconUpload size={32} style={{ color: "var(--mantine-color-blue-6)" }} />
+                  <Text size="lg" fw={500} ta="center">
                     Upload your dataset file
-                  </p>
-                  <p
-                    style={{
-                      fontSize: "14px",
-                      color: "#6b7280",
-                      marginBottom: "16px",
-                    }}
-                  >
+                  </Text>
+                  <Text size="sm" c="dimmed" ta="center">
                     Supported formats: CSV, JSON, Excel (.xlsx)
-                  </p>
-                  <input
-                    id="file-upload"
-                    type="file"
-                    accept=".csv,.json,.xlsx,.xls"
-                    onChange={(e) => {
-                      handleFileUpload(e);
-                    }}
-                    style={{ display: "none" }}
+                  </Text>
+                  <Text size="sm" c="blue" ta="center" td="underline">
+                    Click to select file
+                  </Text>
+                </Stack>
+              }
+              styles={{
+                input: {
+                  borderStyle: "dashed",
+                  backgroundColor: "var(--mantine-color-gray-0)",
+                  cursor: "pointer",
+                  textAlign: "center",
+                },
+              }}
+            />
+          ) : (
+            <Stack gap="md">
+              <Paper p="md" withBorder bg="var(--mantine-color-gray-0)">
+                <Stack gap="xs">
+                  <Text size="sm" fw={500}>
+                    Selected file: {uploadFile.name}
+                  </Text>
+                  <Text size="xs" c="dimmed">
+                    Size: {(uploadFile.size / 1024).toFixed(1)} KB
+                  </Text>
+                </Stack>
+              </Paper>
+
+              {isUploading && (
+                <Stack gap="xs">
+                  <Group justify="space-between">
+                    <Text size="sm">Uploading...</Text>
+                    <Text size="sm" c="dimmed">
+                      {uploadProgress}%
+                    </Text>
+                  </Group>
+                  <Progress
+                    value={uploadProgress}
+                    color="blue"
+                    size="sm"
                   />
-                  <button
-                    style={{
-                      backgroundColor: "#3b82f6",
-                      color: "white",
-                      padding: "8px 16px",
-                      borderRadius: "6px",
-                      border: "none",
-                      fontSize: "14px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Choose File
-                  </button>
-                </div>
-              ) : (
-                <div>
-                  <div
-                    style={{
-                      padding: "16px",
-                      backgroundColor: "#f3f4f6",
-                      borderRadius: "8px",
-                      marginBottom: "16px",
-                    }}
-                  >
-                    <p
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: "500",
-                        color: "#374151",
-                        marginBottom: "4px",
-                      }}
-                    >
-                      Selected file: {uploadFile.name}
-                    </p>
-                    <p style={{ fontSize: "12px", color: "#6b7280" }}>
-                      Size: {(uploadFile.size / 1024).toFixed(1)} KB
-                    </p>
-                  </div>
-
-                  {isUploading && (
-                    <div style={{ marginBottom: "16px" }}>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          marginBottom: "8px",
-                        }}
-                      >
-                        <span style={{ fontSize: "14px", color: "#374151" }}>
-                          Uploading...
-                        </span>
-                        <span style={{ fontSize: "14px", color: "#6b7280" }}>
-                          {uploadProgress}%
-                        </span>
-                      </div>
-                      <div
-                        style={{
-                          backgroundColor: "#e5e7eb",
-                          borderRadius: "4px",
-                          height: "8px",
-                          overflow: "hidden",
-                        }}
-                      >
-                        <div
-                          style={{
-                            backgroundColor: "#3b82f6",
-                            height: "100%",
-                            width: `${String(uploadProgress)}%`,
-                            transition: "width 0.3s ease",
-                          }}
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
+                </Stack>
               )}
+            </Stack>
+          )}
 
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  gap: "12px",
-                  marginTop: "24px",
-                }}
-              >
-                <button
-                  onClick={() => {
-                    setShowUploadModal(false);
-                    setUploadFile(null);
-                    setUploadProgress(0);
-                  }}
-                  disabled={isUploading}
-                  style={{
-                    padding: "8px 16px",
-                    backgroundColor: "#f3f4f6",
-                    color: "#374151",
-                    border: "none",
-                    borderRadius: "6px",
-                    fontSize: "14px",
-                    cursor: isUploading ? "not-allowed" : "pointer",
-                    opacity: isUploading ? 0.5 : 1,
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => void handleUpload()}
-                  disabled={!uploadFile || isUploading}
-                  style={{
-                    padding: "8px 16px",
-                    backgroundColor:
-                      uploadFile && !isUploading ? "#3b82f6" : "#9ca3af",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "6px",
-                    fontSize: "14px",
-                    cursor:
-                      uploadFile && !isUploading ? "pointer" : "not-allowed",
-                  }}
-                >
-                  {isUploading ? "Processing..." : "Upload Dataset"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+          <Group justify="flex-end" mt="lg">
+            <Button
+              variant="light"
+              onClick={() => {
+                setShowUploadModal(false);
+                setUploadFile(null);
+                setUploadProgress(0);
+              }}
+              disabled={isUploading}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => void handleUpload()}
+              disabled={!uploadFile || isUploading}
+              loading={isUploading}
+            >
+              Upload Dataset
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
     </div>
   );
 }
