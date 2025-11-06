@@ -1,6 +1,6 @@
 {
   "name": "@academic-explorer/ui",
-  "version": "8.2.1",
+  "version": "0.0.0",
   "type": "module",
   "description": "Reusable UI components for Academic Explorer built with Mantine and XYFlow",
   "keywords": [

@@ -1,6 +1,6 @@
 {
   "name": "@academic-explorer/utils",
-  "version": "9.0.0",
+  "version": "0.0.0",
   "type": "module",
   "description": "Shared utilities and helpers for Academic Explorer",
   "keywords": [
@@ -109,7 +109,7 @@
   "dependencies": {
     "@academic-explorer/types": "workspace:*",
     "dexie": "^4.2.1",
-        "zod": "^3.23.8"
+    "zod": "^3.23.8"
   },
   "peerDependencies": {
     "react": "^19.0.0",

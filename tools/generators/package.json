@@ -1,6 +1,6 @@
 {
   "name": "@academic-explorer/generators",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Custom Nx generators for Academic Explorer monorepo",
   "main": "./index.ts",
   "type": "module",
