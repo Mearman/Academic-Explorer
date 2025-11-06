@@ -5,7 +5,27 @@
 
 import React, { useState, useMemo } from "react";
 import { IconClipboard, IconAlertTriangle } from "@tabler/icons-react";
-import { Button, Group, Stack, Text, Paper } from "@mantine/core";
+import {
+  Button,
+  Group,
+  Stack,
+  Text,
+  Paper,
+  Card,
+  Title,
+  TextInput,
+  NumberInput,
+  Switch,
+  SimpleGrid,
+  Grid,
+  Progress,
+  Alert,
+  Tabs,
+  Badge,
+  Divider,
+  Box,
+  rem
+} from "@mantine/core";
 import type {
   MissingPaperDetectionResults,
   MissingPaperDetectionConfig,
@@ -13,42 +33,6 @@ import type {
 } from "@academic-explorer/utils";
 import type { STARDataset, WorkReference } from "@academic-explorer/utils";
 import { logger } from "@academic-explorer/utils/logger";
-import {
-  BORDER_DEFAULT,
-  FONT_SIZE_12,
-  FONT_SIZE_14,
-  FONT_SIZE_16,
-  FONT_SIZE_18,
-  FONT_SIZE_32,
-  FONT_WEIGHT_MEDIUM,
-  FONT_WEIGHT_SEMIBOLD,
-  FONT_WEIGHT_BOLD,
-  COLOR_TEXT_PRIMARY,
-  COLOR_TEXT_SECONDARY,
-  COLOR_GRAY_700,
-  COLOR_BLUE_500,
-  COLOR_GREEN_500,
-  COLOR_RED_500,
-  COLOR_YELLOW_500,
-  COLOR_AMBER_700,
-  COLOR_PURPLE_500,
-  BORDER_RADIUS_LG,
-  BORDER_RADIUS_MD,
-  BORDER_RADIUS_SM,
-  PADDING_16,
-  PADDING_20,
-  PADDING_24,
-  MARGIN_0,
-  MARGIN_BOTTOM_24,
-  BG_WHITE,
-  BG_GRAY_50,
-  BG_RED_50,
-  BG_YELLOW_50,
-  BORDER_ERROR,
-  BORDER_WARNING,
-  BORDER_INPUT,
-  FLEX_JUSTIFY_SPACE_BETWEEN,
-} from "@/constants/styles";
 
 interface MissingPaperDetectionProps {
   dataset: STARDataset;
@@ -149,224 +133,115 @@ export function MissingPaperDetection({
   };
 
   return (
-    <div
-      style={{
-        backgroundColor: BG_WHITE,
-        borderRadius: BORDER_RADIUS_LG,
-        border: BORDER_DEFAULT,
-        padding: PADDING_24,
-      }}
-    >
-      {/* Header */}
-      <div style={MARGIN_BOTTOM_24}>
-        <h3
-          style={{
-            fontSize: FONT_SIZE_18,
-            fontWeight: FONT_WEIGHT_SEMIBOLD,
-            color: COLOR_TEXT_PRIMARY,
-            marginBottom: "8px",
-          }}
-        >
+    <Paper p="lg" radius="lg" withBorder>
+      <Stack gap="lg" mb="lg">
+        <Title order={3} c="var(--mantine-color-text)">
           Missing Paper Detection
-        </h3>
-        <p
-          style={{
-            fontSize: FONT_SIZE_14,
-            color: COLOR_TEXT_SECONDARY,
-            ...MARGIN_0,
-          }}
-        >
+        </Title>
+        <Text c="dimmed" size="sm">
           Identify potentially relevant papers that may have been missed by the
           systematic review
-        </p>
-      </div>
+        </Text>
+      </Stack>
 
       {/* Configuration Panel */}
-      <div
-        style={{
-          backgroundColor: BG_GRAY_50,
-          borderRadius: BORDER_RADIUS_MD,
-          border: BORDER_DEFAULT,
-          padding: PADDING_20,
-          marginBottom: PADDING_24,
-        }}
-      >
-        <h4
-          style={{
-            fontSize: FONT_SIZE_16,
-            fontWeight: FONT_WEIGHT_MEDIUM,
-            color: COLOR_TEXT_PRIMARY,
-            marginBottom: PADDING_16,
-          }}
-        >
+      <Card p="md" radius="md" withBorder bg="var(--mantine-color-gray-0)" mb="lg">
+        <Title order={4} mb="md">
           Detection Configuration
-        </h4>
+        </Title>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: "16px",
-            marginBottom: "16px",
-          }}
-        >
-          <div>
-            <label
-              htmlFor="max-papers-input"
-              style={{
-                fontSize: FONT_SIZE_14,
-                fontWeight: FONT_WEIGHT_MEDIUM,
-                color: COLOR_GRAY_700,
-                display: "block",
-                marginBottom: "4px",
-              }}
-            >
-              Max Papers per Method
-            </label>
-            <input
-              id="max-papers-input"
-              type="number"
-              value={detectionConfig.maxPapersPerMethod}
-              onChange={(e) => {
-                setDetectionConfig((prev) => ({
-                  ...prev,
-                  maxPapersPerMethod: parseInt(e.target.value),
-                }));
-              }}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                borderRadius: BORDER_RADIUS_SM,
-                border: BORDER_INPUT,
-                fontSize: FONT_SIZE_14,
-              }}
-              min="10"
-              max="200"
-            />
-          </div>
+        <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md" mb="md">
+          <NumberInput
+            label="Max Papers per Method"
+            value={detectionConfig.maxPapersPerMethod}
+            onChange={(value) => {
+              setDetectionConfig((prev) => ({
+                ...prev,
+                maxPapersPerMethod: Number(value) || 50,
+              }));
+            }}
+            min={10}
+            max={200}
+          />
 
-          <div>
-            <label
-              htmlFor="min-citation-input"
-              style={{
-                fontSize: FONT_SIZE_14,
-                fontWeight: FONT_WEIGHT_MEDIUM,
-                color: COLOR_GRAY_700,
-                display: "block",
-                marginBottom: "4px",
-              }}
-            >
-              Min Citation Threshold
-            </label>
-            <input
-              id="min-citation-input"
-              type="number"
-              value={detectionConfig.minimumCitationThreshold}
-              onChange={(e) => {
-                setDetectionConfig((prev) => ({
-                  ...prev,
-                  minimumCitationThreshold: parseInt(e.target.value),
-                }));
-              }}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                borderRadius: BORDER_RADIUS_SM,
-                border: BORDER_INPUT,
-                fontSize: FONT_SIZE_14,
-              }}
-              min="0"
-              max="50"
-            />
-          </div>
+          <NumberInput
+            label="Min Citation Threshold"
+            value={detectionConfig.minimumCitationThreshold}
+            onChange={(value) => {
+              setDetectionConfig((prev) => ({
+                ...prev,
+                minimumCitationThreshold: Number(value) || 5,
+              }));
+            }}
+            min={0}
+            max={50}
+          />
 
-          <div>
-            <label
-              htmlFor="temporal-window-input"
-              style={{
-                fontSize: FONT_SIZE_14,
-                fontWeight: FONT_WEIGHT_MEDIUM,
-                color: COLOR_GRAY_700,
-                display: "block",
-                marginBottom: "4px",
-              }}
-            >
-              Temporal Window (Years)
-            </label>
-            <input
-              id="temporal-window-input"
-              type="number"
-              value={detectionConfig.temporalWindowYears}
-              onChange={(e) => {
-                setDetectionConfig((prev) => ({
-                  ...prev,
-                  temporalWindowYears: parseInt(e.target.value),
-                }));
-              }}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                borderRadius: BORDER_RADIUS_SM,
-                border: BORDER_INPUT,
-                fontSize: FONT_SIZE_14,
-              }}
-              min="0"
-              max="10"
-            />
-          </div>
-        </div>
+          <NumberInput
+            label="Temporal Window (Years)"
+            value={detectionConfig.temporalWindowYears}
+            onChange={(value) => {
+              setDetectionConfig((prev) => ({
+                ...prev,
+                temporalWindowYears: Number(value) || 2,
+              }));
+            }}
+            min={0}
+            max={10}
+          />
+        </SimpleGrid>
 
         {/* Detection Method Toggles */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
-          {[
-            { key: "enableTemporalAnalysis", label: "Temporal Gap Analysis" },
-            {
-              key: "enableCitationAnalysis",
-              label: "Citation Network Analysis",
-            },
-            { key: "enableAuthorAnalysis", label: "Author Network Analysis" },
-            {
-              key: "enableKeywordExpansion",
-              label: "Keyword Expansion (Experimental)",
-            },
-          ].map(({ key, label }) => (
-            <label
-              key={key}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                fontSize: FONT_SIZE_14,
-                color: COLOR_GRAY_700,
-              }}
-            >
-              <input
-                type="checkbox"
-                checked={(() => {
-                  // Type guard to check if key is a valid config property
-                  if (
-                    key === "enableTemporalAnalysis" ||
-                    key === "enableCitationAnalysis" ||
-                    key === "enableAuthorAnalysis" ||
-                    key === "enableKeywordExpansion"
-                  ) {
-                    const value = detectionConfig[key];
-                    return typeof value === "boolean" ? value : false;
-                  }
-                  return false;
-                })()}
-                onChange={(e) => {
-                  setDetectionConfig((prev) => ({
-                    ...prev,
-                    [key]: e.target.checked,
-                  }));
-                }}
-                style={{ marginRight: "8px" }}
-              />
-              {label}
-            </label>
-          ))}
-        </div>
-      </div>
+        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+          <Switch
+            label="Temporal Gap Analysis"
+            checked={detectionConfig.enableTemporalAnalysis}
+            onChange={(event) => {
+              setDetectionConfig((prev) => ({
+                ...prev,
+                enableTemporalAnalysis: event.currentTarget.checked,
+              }));
+            }}
+            size="sm"
+          />
+
+          <Switch
+            label="Citation Network Analysis"
+            checked={detectionConfig.enableCitationAnalysis}
+            onChange={(event) => {
+              setDetectionConfig((prev) => ({
+                ...prev,
+                enableCitationAnalysis: event.currentTarget.checked,
+              }));
+            }}
+            size="sm"
+          />
+
+          <Switch
+            label="Author Network Analysis"
+            checked={detectionConfig.enableAuthorAnalysis}
+            onChange={(event) => {
+              setDetectionConfig((prev) => ({
+                ...prev,
+                enableAuthorAnalysis: event.currentTarget.checked,
+              }));
+            }}
+            size="sm"
+          />
+
+          <Switch
+            label="Keyword Expansion (Experimental)"
+            checked={detectionConfig.enableKeywordExpansion}
+            onChange={(event) => {
+              setDetectionConfig((prev) => ({
+                ...prev,
+                enableKeywordExpansion: event.currentTarget.checked,
+              }));
+            }}
+            size="sm"
+          />
+        </SimpleGrid>
+      </Card>
 
       {/* Detection Control */}
       <div style={{ marginBottom: "24px" }}>
@@ -413,65 +288,26 @@ export function MissingPaperDetection({
 
       {/* Progress Display */}
       {currentJob?.progress && (
-        <div
-          style={{
-            backgroundColor: BG_YELLOW_50,
-            borderRadius: BORDER_RADIUS_MD,
-            border: BORDER_WARNING,
-            padding: PADDING_16,
-            marginBottom: PADDING_24,
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: FLEX_JUSTIFY_SPACE_BETWEEN,
-              alignItems: "center",
-              marginBottom: "8px",
-            }}
-          >
-            <span
-              style={{
-                fontSize: FONT_SIZE_14,
-                fontWeight: FONT_WEIGHT_MEDIUM,
-                color: COLOR_AMBER_700,
-              }}
-            >
+        <Alert color="yellow" mb="lg">
+          <Group justify="space-between" mb="xs">
+            <Text size="sm" fw={500} c="var(--mantine-color-yellow-6)">
               {currentJob.progress.currentMethod}
-            </span>
-            <span
-              style={{
-                fontSize: FONT_SIZE_14,
-                fontWeight: FONT_WEIGHT_MEDIUM,
-                color: COLOR_AMBER_700,
-              }}
-            >
+            </Text>
+            <Text size="sm" fw={500} c="var(--mantine-color-yellow-6)">
               {currentJob.progress.progress}%
-            </span>
-          </div>
-          <div
-            style={{
-              width: "100%",
-              backgroundColor: "#fde68a",
-              borderRadius: "4px",
-              height: "8px",
-              marginBottom: "8px",
-            }}
-          >
-            <div
-              style={{
-                width: `${String(currentJob.progress.progress)}%`,
-                backgroundColor: COLOR_YELLOW_500,
-                borderRadius: "4px",
-                height: "100%",
-              }}
-            />
-          </div>
-          <p style={{ fontSize: FONT_SIZE_12, color: "#78350f", ...MARGIN_0 }}>
+            </Text>
+          </Group>
+          <Progress
+            value={currentJob.progress.progress || 0}
+            color="yellow"
+            size="sm"
+            mb="xs"
+          />
+          <Text size="xs" c="var(--mantine-color-yellow-8)">
             {currentJob.progress.message} • {currentJob.progress.papersFound}{" "}
             papers found
-          </p>
-        </div>
+          </Text>
+        </Alert>
       )}
 
       {/* Results Display */}
@@ -484,30 +320,11 @@ export function MissingPaperDetection({
 
       {/* Error Display */}
       {currentJob?.status === "failed" && (
-        <div
-          style={{
-            backgroundColor: BG_RED_50,
-            borderRadius: BORDER_RADIUS_MD,
-            border: BORDER_ERROR,
-            padding: PADDING_16,
-          }}
-        >
-          <h4
-            style={{
-              fontSize: FONT_SIZE_16,
-              fontWeight: FONT_WEIGHT_MEDIUM,
-              color: COLOR_RED_500,
-              marginBottom: "8px",
-            }}
-          >
-            Detection Failed
-          </h4>
-          <p style={{ fontSize: FONT_SIZE_14, color: "#7f1d1d", ...MARGIN_0 }}>
-            {currentJob.error}
-          </p>
-        </div>
+        <Alert color="red" title="Detection Failed">
+          <Text size="sm">{currentJob.error}</Text>
+        </Alert>
       )}
-    </div>
+    </Paper>
   );
 }
 
@@ -527,207 +344,82 @@ function MissingPaperResults({
   const formatPercent = (value: number) => `${(value * 100).toFixed(1)}%`;
 
   return (
-    <div
-      style={{
-        border: BORDER_DEFAULT,
-        borderRadius: "8px",
-        overflow: "hidden",
-      }}
-    >
-      {/* Tabs */}
-      <div
-        style={{
-          display: "flex",
-          borderBottom: BORDER_DEFAULT,
-          backgroundColor: BG_GRAY_50,
-        }}
-      >
-        {[
-          { key: "summary", label: "Summary" },
-          {
-            key: "candidates",
-            label: `Candidates (${String(results.candidateMissingPapers.length)})`,
-          },
-          { key: "methods", label: "Methods" },
-          { key: "validation", label: "Validation" },
-        ].map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => {
-              const tabKey = tab.key;
-              if (
-                tabKey === "summary" ||
-                tabKey === "candidates" ||
-                tabKey === "methods" ||
-                tabKey === "validation"
-              ) {
-                setActiveTab(tabKey);
+    <Card withBorder p={0}>
+      <Tabs value={activeTab} onChange={(value) => {
+        if (value === "summary" || value === "candidates" || value === "methods" || value === "validation") {
+          setActiveTab(value);
+        }
+      }}>
+        <Tabs.List>
+          <Tabs.Tab value="summary">Summary</Tabs.Tab>
+          <Tabs.Tab value="candidates">
+            Candidates ({results.candidateMissingPapers.length})
+          </Tabs.Tab>
+          <Tabs.Tab value="methods">Methods</Tabs.Tab>
+          <Tabs.Tab value="validation">Validation</Tabs.Tab>
+        </Tabs.List>
+
+              <Tabs.Panel value="summary" p="lg">
+          <Title order={4} mb="md">
+            Detection Summary
+          </Title>
+
+          <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="lg" mb="xl">
+            <Stack gap="xs" align="center">
+              <Text size={rem(32)} fw="bold" c="blue">
+                {results.detectionStatistics.totalCandidates}
+              </Text>
+              <Text size="sm" c="dimmed">
+                Total Candidates
+              </Text>
+            </Stack>
+
+            <Stack gap="xs" align="center">
+              <Text size={rem(32)} fw="bold" c="green">
+                {results.detectionStatistics.highConfidenceCandidates}
+              </Text>
+              <Text size="sm" c="dimmed">
+                High Confidence
+              </Text>
+            </Stack>
+
+            <Stack gap="xs" align="center">
+              <Text size={rem(32)} fw="bold" c="purple">
+                {results.detectionStatistics.averageCitationCount.toFixed(1)}
+              </Text>
+              <Text size="sm" c="dimmed">
+                Avg Citations
+              </Text>
+            </Stack>
+
+            <Stack gap="xs" align="center">
+              <Text size={rem(32)} fw="bold" c="yellow">
+                {formatPercent(results.validationMetrics.confidenceScore)}
+              </Text>
+              <Text size="sm" c="dimmed">
+                Confidence
+              </Text>
+            </Stack>
+          </SimpleGrid>
+
+          <Card p="md" radius="md" bg="var(--mantine-color-gray-0)">
+            <Text size="sm" fw={600} c="var(--mantine-color-gray-7)" mb="xs">
+              Execution Details
+            </Text>
+            <Text size="xs" c="dimmed">
+              Dataset: {results.dataset.name} • Execution Time:{" "}
+              {executionTime} • Methods:{" "}
+              {
+                Object.values(
+                  results.detectionStatistics.methodContributions,
+                ).filter((count) => count > 0).length
               }
-            }}
-            style={{
-              padding: "12px 20px",
-              border: "none",
-              backgroundColor: activeTab === tab.key ? BG_WHITE : "transparent",
-              color:
-                activeTab === tab.key ? COLOR_BLUE_500 : COLOR_TEXT_SECONDARY,
-              fontWeight: activeTab === tab.key ? FONT_WEIGHT_SEMIBOLD : "400",
-              fontSize: FONT_SIZE_14,
-              cursor: "pointer",
-              borderBottom:
-                activeTab === tab.key ? `2px solid ${COLOR_BLUE_500}` : "none",
-            }}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+              /4
+            </Text>
+          </Card>
+        </Tabs.Panel>
 
-      {/* Tab Content */}
-      <div style={{ padding: "24px" }}>
-        {activeTab === "summary" && (
-          <div>
-            <h4
-              style={{
-                fontSize: FONT_SIZE_16,
-                fontWeight: FONT_WEIGHT_SEMIBOLD,
-                color: COLOR_TEXT_PRIMARY,
-                marginBottom: PADDING_16,
-              }}
-            >
-              Detection Summary
-            </h4>
-
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                gap: "16px",
-                marginBottom: "24px",
-              }}
-            >
-              <div style={{ textAlign: "center" }}>
-                <div
-                  style={{
-                    fontSize: FONT_SIZE_32,
-                    fontWeight: FONT_WEIGHT_BOLD,
-                    color: COLOR_BLUE_500,
-                    marginBottom: "8px",
-                  }}
-                >
-                  {results.detectionStatistics.totalCandidates}
-                </div>
-                <div
-                  style={{
-                    fontSize: FONT_SIZE_14,
-                    color: COLOR_TEXT_SECONDARY,
-                  }}
-                >
-                  Total Candidates
-                </div>
-              </div>
-
-              <div style={{ textAlign: "center" }}>
-                <div
-                  style={{
-                    fontSize: FONT_SIZE_32,
-                    fontWeight: FONT_WEIGHT_BOLD,
-                    color: COLOR_GREEN_500,
-                    marginBottom: "8px",
-                  }}
-                >
-                  {results.detectionStatistics.highConfidenceCandidates}
-                </div>
-                <div
-                  style={{
-                    fontSize: FONT_SIZE_14,
-                    color: COLOR_TEXT_SECONDARY,
-                  }}
-                >
-                  High Confidence
-                </div>
-              </div>
-
-              <div style={{ textAlign: "center" }}>
-                <div
-                  style={{
-                    fontSize: FONT_SIZE_32,
-                    fontWeight: FONT_WEIGHT_BOLD,
-                    color: COLOR_PURPLE_500,
-                    marginBottom: "8px",
-                  }}
-                >
-                  {results.detectionStatistics.averageCitationCount.toFixed(1)}
-                </div>
-                <div
-                  style={{
-                    fontSize: FONT_SIZE_14,
-                    color: COLOR_TEXT_SECONDARY,
-                  }}
-                >
-                  Avg Citations
-                </div>
-              </div>
-
-              <div style={{ textAlign: "center" }}>
-                <div
-                  style={{
-                    fontSize: FONT_SIZE_32,
-                    fontWeight: FONT_WEIGHT_BOLD,
-                    color: COLOR_YELLOW_500,
-                    marginBottom: "8px",
-                  }}
-                >
-                  {formatPercent(results.validationMetrics.confidenceScore)}
-                </div>
-                <div
-                  style={{
-                    fontSize: FONT_SIZE_14,
-                    color: COLOR_TEXT_SECONDARY,
-                  }}
-                >
-                  Confidence
-                </div>
-              </div>
-            </div>
-
-            <div
-              style={{
-                backgroundColor: "#f3f4f6",
-                borderRadius: BORDER_RADIUS_MD,
-                padding: PADDING_16,
-              }}
-            >
-              <h5
-                style={{
-                  fontSize: FONT_SIZE_14,
-                  fontWeight: FONT_WEIGHT_SEMIBOLD,
-                  color: COLOR_GRAY_700,
-                  marginBottom: "8px",
-                }}
-              >
-                Execution Details
-              </h5>
-              <p
-                style={{
-                  fontSize: FONT_SIZE_12,
-                  color: COLOR_TEXT_SECONDARY,
-                  ...MARGIN_0,
-                }}
-              >
-                Dataset: {results.dataset.name} • Execution Time:{" "}
-                {executionTime} • Methods:{" "}
-                {
-                  Object.values(
-                    results.detectionStatistics.methodContributions,
-                  ).filter((count) => count > 0).length
-                }
-                /4
-              </p>
-            </div>
-          </div>
-        )}
-
-        {activeTab === "candidates" && (
+        <Tabs.Panel value="candidates" p="lg">
           <Stack>
             <Group justify="space-between" align="center">
               <Text size="lg" fw={600} c="var(--mantine-color-text)">
@@ -796,178 +488,87 @@ function MissingPaperResults({
               </Stack>
             )}
           </Stack>
-        )}
+        </Tabs.Panel>
 
-        {activeTab === "methods" && (
-          <div>
-            <h4
-              style={{
-                fontSize: FONT_SIZE_16,
-                fontWeight: FONT_WEIGHT_SEMIBOLD,
-                color: COLOR_TEXT_PRIMARY,
-                marginBottom: PADDING_16,
-              }}
-            >
-              Detection Methods Breakdown
-            </h4>
+        <Tabs.Panel value="methods" p="lg">
+          <Title order={4} mb="md">
+            Detection Methods Breakdown
+          </Title>
 
-            <div style={{ display: "grid", gap: PADDING_16 }}>
-              {Object.entries(
-                results.detectionStatistics.methodContributions,
-              ).map(([method, count]) => (
-                <div
-                  key={method}
-                  style={{
-                    display: "flex",
-                    justifyContent: FLEX_JUSTIFY_SPACE_BETWEEN,
-                    alignItems: "center",
-                    padding: PADDING_16,
-                    backgroundColor: BG_GRAY_50,
-                    borderRadius: BORDER_RADIUS_MD,
-                  }}
-                >
-                  <div>
-                    <h5
-                      style={{
-                        fontSize: FONT_SIZE_14,
-                        fontWeight: FONT_WEIGHT_MEDIUM,
-                        color: COLOR_TEXT_PRIMARY,
-                        marginBottom: "4px",
-                      }}
-                    >
+          <Stack gap="md">
+            {Object.entries(
+              results.detectionStatistics.methodContributions,
+            ).map(([method, count]) => (
+              <Card key={method} p="md" radius="md" bg="var(--mantine-color-gray-0)">
+                <Group justify="space-between" align="flex-start">
+                  <Stack gap="xs" flex={1}>
+                    <Text size="sm" fw={600}>
                       {method
                         .replace(/([A-Z])/g, " $1")
                         .replace(/^./, (str) => str.toUpperCase())}
-                    </h5>
-                    <p
-                      style={{
-                        fontSize: FONT_SIZE_12,
-                        color: COLOR_TEXT_SECONDARY,
-                        ...MARGIN_0,
-                      }}
-                    >
+                    </Text>
+                    <Text size="xs" c="dimmed">
                       {getMethodDescription(method)}
-                    </p>
-                  </div>
-                  <div
-                    style={{
-                      padding: "8px 16px",
-                      backgroundColor: count > 0 ? COLOR_GREEN_500 : "#9ca3af",
-                      color: "white",
-                      borderRadius: "20px",
-                      fontSize: FONT_SIZE_14,
-                      fontWeight: FONT_WEIGHT_SEMIBOLD,
-                    }}
+                    </Text>
+                  </Stack>
+                  <Badge
+                    color={count > 0 ? "green" : "gray"}
+                    variant="filled"
+                    size="lg"
                   >
                     {count}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+                  </Badge>
+                </Group>
+              </Card>
+            ))}
+          </Stack>
+        </Tabs.Panel>
 
-        {activeTab === "validation" && (
-          <div>
-            <h4
-              style={{
-                fontSize: FONT_SIZE_16,
-                fontWeight: FONT_WEIGHT_SEMIBOLD,
-                color: COLOR_TEXT_PRIMARY,
-                marginBottom: PADDING_16,
-              }}
-            >
-              Validation Metrics
-            </h4>
+        <Tabs.Panel value="validation" p="lg">
+          <Title order={4} mb="md">
+            Validation Metrics
+          </Title>
 
-            <div style={MARGIN_BOTTOM_24}>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: FLEX_JUSTIFY_SPACE_BETWEEN,
-                  alignItems: "center",
-                  marginBottom: "8px",
-                }}
-              >
-                <span style={{ fontSize: FONT_SIZE_14, color: COLOR_GRAY_700 }}>
+          <Stack gap="lg">
+            <Box>
+              <Group justify="space-between" mb="xs">
+                <Text size="sm" c="var(--mantine-color-gray-6)">
                   Algorithm Confidence
-                </span>
-                <span
-                  style={{
-                    fontSize: FONT_SIZE_14,
-                    fontWeight: FONT_WEIGHT_SEMIBOLD,
-                    color: COLOR_TEXT_PRIMARY,
-                  }}
-                >
+                </Text>
+                <Text size="sm" fw={600}>
                   {formatPercent(results.validationMetrics.confidenceScore)}
-                </span>
-              </div>
-              <div
-                style={{
-                  width: "100%",
-                  backgroundColor: "#e5e7eb",
-                  borderRadius: "4px",
-                  height: "8px",
-                }}
-              >
-                <div
-                  style={{
-                    width: `${String(results.validationMetrics.confidenceScore * 100)}%`,
-                    backgroundColor: COLOR_BLUE_500,
-                    borderRadius: "4px",
-                    height: "100%",
-                  }}
-                />
-              </div>
-            </div>
+                </Text>
+              </Group>
+              <Progress
+                value={results.validationMetrics.confidenceScore * 100}
+                color="blue"
+                size="sm"
+              />
+            </Box>
 
             {results.validationMetrics.algorithmicBias.length > 0 && (
-              <div>
-                <h5
-                  style={{
-                    fontSize: FONT_SIZE_14,
-                    fontWeight: FONT_WEIGHT_SEMIBOLD,
-                    color: COLOR_RED_500,
-                    marginBottom: "12px",
-                  }}
-                >
+              <Stack gap="sm">
+                <Text size="sm" fw={600} c="red" mb="xs">
                   Potential Algorithmic Biases
-                </h5>
-                <div style={{ display: "grid", gap: "8px" }}>
-                  {results.validationMetrics.algorithmicBias.map(
-                    (bias, index) => (
-                      <div
-                        key={`bias-${String(index)}-${bias.substring(0, 10)}`}
-                        style={{
-                          padding: "12px",
-                          backgroundColor: BG_RED_50,
-                          border: BORDER_ERROR,
-                          borderRadius: BORDER_RADIUS_SM,
-                        }}
-                      >
-                        <div
-                          style={{
-                            fontSize: FONT_SIZE_12,
-                            color: "#7f1d1d",
-                            ...MARGIN_0,
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "4px",
-                          }}
-                        >
-                          <IconAlertTriangle size={12} />
-                          {bias}
-                        </div>
-                      </div>
-                    ),
-                  )}
-                </div>
-              </div>
+                </Text>
+                {results.validationMetrics.algorithmicBias.map(
+                  (bias, index) => (
+                    <Alert
+                      key={`bias-${String(index)}-${bias.substring(0, 10)}`}
+                      color="red"
+                      variant="light"
+                      icon={<IconAlertTriangle size={16} />}
+                    >
+                      <Text size="xs">{bias}</Text>
+                    </Alert>
+                  ),
+                )}
+              </Stack>
             )}
-          </div>
-        )}
-      </div>
-    </div>
+          </Stack>
+        </Tabs.Panel>
+      </Tabs>
+    </Card>
   );
 }
 
@@ -978,118 +579,66 @@ interface PaperCardProps {
 
 function PaperCard({ paper, rank }: PaperCardProps) {
   return (
-    <div
-      style={{
-        padding: PADDING_16,
-        border: BORDER_DEFAULT,
-        borderRadius: BORDER_RADIUS_MD,
-        backgroundColor: BG_WHITE,
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: FLEX_JUSTIFY_SPACE_BETWEEN,
-          alignItems: "flex-start",
-          marginBottom: "12px",
-        }}
-      >
-        <div style={{ flex: 1 }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginBottom: "8px",
-            }}
-          >
-            <span
-              style={{
-                backgroundColor: COLOR_BLUE_500,
-                color: "white",
-                padding: "4px 8px",
-                borderRadius: "12px",
-                fontSize: FONT_SIZE_12,
-                fontWeight: FONT_WEIGHT_SEMIBOLD,
-                marginRight: "12px",
-              }}
+    <Card p="md" withBorder>
+      <Group justify="space-between" align="flex-start" mb="sm">
+        <Box flex={1}>
+          <Group align="center" mb="xs">
+            <Badge
+              color="blue"
+              variant="filled"
+              size="sm"
+              radius="xl"
+              fw={600}
             >
               #{rank}
-            </span>
-            <h5
-              style={{
-                fontSize: FONT_SIZE_14,
-                fontWeight: FONT_WEIGHT_SEMIBOLD,
-                color: COLOR_TEXT_PRIMARY,
-                ...MARGIN_0,
-                lineHeight: "1.4",
-              }}
+            </Badge>
+            <Text
+              size="sm"
+              fw={600}
+              c="var(--mantine-color-text)"
+              lineClamp={2}
             >
               {paper.title}
-            </h5>
-          </div>
+            </Text>
+          </Group>
 
-          <p
-            style={{
-              fontSize: FONT_SIZE_12,
-              color: COLOR_TEXT_SECONDARY,
-              marginBottom: "8px",
-            }}
-          >
+          <Text size="xs" c="dimmed" mb="xs">
             {paper.authors.slice(0, 3).join(", ")}
             {paper.authors.length > 3
               ? ` et al. (${String(paper.authors.length)} authors)`
               : ""}
-          </p>
+          </Text>
 
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "8px",
-              alignItems: "center",
-            }}
-          >
-            <span
-              style={{ fontSize: FONT_SIZE_12, color: COLOR_TEXT_SECONDARY }}
-            >
+          <Group gap="xs" wrap="wrap">
+            <Text size="xs" c="dimmed">
               {paper.publicationYear} • {paper.source}
-            </span>
+            </Text>
             {paper.citedByCount !== undefined && (
-              <span
-                style={{
-                  backgroundColor: "#f3f4f6",
-                  color: COLOR_GRAY_700,
-                  padding: "2px 6px",
-                  borderRadius: "4px",
-                  fontSize: "11px",
-                  fontWeight: FONT_WEIGHT_MEDIUM,
-                }}
+              <Badge
+                variant="light"
+                color="gray"
+                size="xs"
               >
                 {paper.citedByCount} citations
-              </span>
+              </Badge>
             )}
             {paper.doi && (
-              <a
+              <Badge
+                component="a"
                 href={`https://doi.org/${paper.doi}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{
-                  backgroundColor: "#dbeafe",
-                  color: COLOR_BLUE_500,
-                  padding: "2px 6px",
-                  borderRadius: "4px",
-                  fontSize: "11px",
-                  fontWeight: FONT_WEIGHT_MEDIUM,
-                  textDecoration: "none",
-                }}
+                variant="light"
+                color="blue"
+                size="xs"
               >
                 DOI
-              </a>
+              </Badge>
             )}
-          </div>
-        </div>
-      </div>
-    </div>
+          </Group>
+        </Box>
+      </Group>
+    </Card>
   );
 }
 
