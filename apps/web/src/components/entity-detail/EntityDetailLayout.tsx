@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react";
-import { Button, Text, Code, Badge, Paper, Stack, Group, Container, Title } from "@mantine/core";
-import { IconEye, IconCode } from "@tabler/icons-react";
+import { Button, Text, Code, Badge, Paper, Stack, Group, Container, Title, Tooltip, ActionIcon } from "@mantine/core";
+import { IconEye, IconCode, IconBookmark, IconBookmarkOff } from "@tabler/icons-react";
+import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { EntityTypeConfig, EntityType } from "./EntityTypeConfig";
 import { EntityDataDisplay } from "../EntityDataDisplay";
 
@@ -44,6 +45,28 @@ export function EntityDetailLayout({
   data,
   children,
 }: EntityDetailLayoutProps) {
+  // Initialize user interactions hook for bookmark functionality
+  const userInteractions = useUserInteractions({
+    entityId,
+    entityType,
+    autoTrackVisits: true,
+  });
+
+  const handleBookmarkToggle = async () => {
+    try {
+      if (userInteractions.isBookmarked) {
+        await userInteractions.unbookmarkEntity();
+      } else {
+        await userInteractions.bookmarkEntity({
+          title: displayName,
+          notes: `${config.name} from OpenAlex`,
+          tags: [config.name.toLowerCase(), "openalex"],
+        });
+      }
+    } catch (error) {
+      console.error("Failed to toggle bookmark:", error);
+    }
+  };
   return (
     <Container size="lg" p="xl" bg="var(--mantine-color-gray-0)" style={{ minHeight: "100vh" }}>
       <Stack gap="xl">
@@ -92,14 +115,36 @@ export function EntityDetailLayout({
               </Paper>
             </Stack>
 
-            <Button
-              size="lg"
-              variant="light"
-              leftSection={viewMode === "raw" ? <IconEye size={20} /> : <IconCode size={20} />}
-              onClick={onToggleView}
-            >
-              {viewMode === "raw" ? "Rich View" : "Raw View"}
-            </Button>
+            <Group gap="sm">
+              {/* Bookmark Button */}
+              <Tooltip
+                label={userInteractions.isBookmarked ? "Remove bookmark" : "Bookmark this entity"}
+                position="bottom"
+              >
+                <ActionIcon
+                  size="lg"
+                  variant={userInteractions.isBookmarked ? "filled" : "light"}
+                  color={userInteractions.isBookmarked ? "yellow" : "gray"}
+                  onClick={handleBookmarkToggle}
+                  loading={userInteractions.isLoadingBookmarks}
+                >
+                  {userInteractions.isBookmarked ? (
+                    <IconBookmark size={20} fill="currentColor" />
+                  ) : (
+                    <IconBookmarkOff size={20} />
+                  )}
+                </ActionIcon>
+              </Tooltip>
+
+              <Button
+                size="lg"
+                variant="light"
+                leftSection={viewMode === "raw" ? <IconEye size={20} /> : <IconCode size={20} />}
+                onClick={onToggleView}
+              >
+                {viewMode === "raw" ? "Rich View" : "Raw View"}
+              </Button>
+            </Group>
           </Group>
         </Paper>
 
