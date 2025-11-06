@@ -87,7 +87,7 @@ describe("TopicRoute Integration Tests", () => {
     );
 
     expect(screen.getByText("Loading Topic...")).toBeInTheDocument();
-    expect(screen.getByText("Topic ID: T123")).toBeInTheDocument();
+    expect(screen.getByText("T123")).toBeInTheDocument();
   });
 
   it("renders error state when API fails", async () => {
@@ -108,8 +108,9 @@ describe("TopicRoute Integration Tests", () => {
       expect(screen.getByText("Error Loading Topic")).toBeInTheDocument();
     });
 
-    expect(screen.getByText("Topic ID: T123")).toBeInTheDocument();
-    expect(screen.getByText("Error: Error: API Error")).toBeInTheDocument();
+    expect(screen.getByText("Topic ID:")).toBeInTheDocument();
+    expect(screen.getByText("T123")).toBeInTheDocument();
+    expect(screen.getByText("Error: API Error")).toBeInTheDocument();
   });
 
   it("renders topic data in rich view by default", async () => {
