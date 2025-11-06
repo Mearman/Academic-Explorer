@@ -1,0 +1,114 @@
+{
+  "results": [
+    {
+      "id": "https://openalex.org/I73613424",
+      "short_id": "institutions/I73613424",
+      "display_name": "National Institute of Advanced Industrial Science and Technology",
+      "hint": "Tsukuba, Japan",
+      "cited_by_count": 6550785,
+      "works_count": 91236,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/01703db54",
+      "filter_key": "authorships.institutions.lineage"
+    },
+    {
+      "id": "https://openalex.org/I24354313",
+      "short_id": "institutions/I24354313",
+      "display_name": "University of Buenos Aires",
+      "hint": "Buenos Aires, Argentina",
+      "cited_by_count": 5184350,
+      "works_count": 121334,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/0081fs513",
+      "filter_key": "authorships.institutions.lineage"
+    },
+    {
+      "id": "https://openalex.org/I9916479",
+      "short_id": "institutions/I9916479",
+      "display_name": "Air Force Medical University",
+      "hint": "Xi'an, China",
+      "cited_by_count": 4245134,
+      "works_count": 51565,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/00ms48f15",
+      "filter_key": "authorships.institutions.lineage"
+    },
+    {
+      "id": "https://openalex.org/I63739035",
+      "short_id": "institutions/I63739035",
+      "display_name": "All India Institute of Medical Sciences",
+      "hint": "New Delhi, India",
+      "cited_by_count": 3460710,
+      "works_count": 76158,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/02dwcqs71",
+      "filter_key": "authorships.institutions.lineage"
+    },
+    {
+      "id": "https://openalex.org/I107720978",
+      "short_id": "institutions/I107720978",
+      "display_name": "Ain Shams University",
+      "hint": "Cairo, Egypt",
+      "cited_by_count": 1720647,
+      "works_count": 79568,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/00cb9w016",
+      "filter_key": "authorships.institutions.lineage"
+    },
+    {
+      "id": "https://openalex.org/I4210133851",
+      "short_id": "institutions/I4210133851",
+      "display_name": "Aichi Cancer Center",
+      "hint": "Nagoya, Japan",
+      "cited_by_count": 1396829,
+      "works_count": 12742,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/03kfmm080",
+      "filter_key": "authorships.institutions.lineage"
+    },
+    {
+      "id": "https://openalex.org/I4210086977",
+      "short_id": "institutions/I4210086977",
+      "display_name": "Astrophysique, Instrumentation et Modélisation",
+      "hint": "Gif-sur-Yvette, France",
+      "cited_by_count": 1386640,
+      "works_count": 6898,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/0015h8611",
+      "filter_key": "authorships.institutions.lineage"
+    },
+    {
+      "id": "https://openalex.org/I1280414376",
+      "short_id": "institutions/I1280414376",
+      "display_name": "United States Air Force Research Laboratory",
+      "hint": "Wright-Patterson AFB, USA",
+      "cited_by_count": 1266007,
+      "works_count": 32859,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/02e2egq70",
+      "filter_key": "authorships.institutions.lineage"
+    },
+    {
+      "id": "https://openalex.org/I2799950915",
+      "short_id": "institutions/I2799950915",
+      "display_name": "Wright-Patterson Air Force Base",
+      "hint": "Wright-Patterson AFB, USA",
+      "cited_by_count": 1186235,
+      "works_count": 18742,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/0097e1k27",
+      "filter_key": "authorships.institutions.lineage"
+    },
+    {
+      "id": "https://openalex.org/I2799713863",
+      "short_id": "institutions/I2799713863",
+      "display_name": "Leibniz Institute for Astrophysics Potsdam",
+      "hint": "Potsdam, Germany",
+      "cited_by_count": 934072,
+      "works_count": 20313,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/03mrbr458",
+      "filter_key": "authorships.institutions.lineage"
+    }
+  ]
+}
