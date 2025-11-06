@@ -1,10 +1,16 @@
 {
-  "lastUpdated": "2025-11-06T13:01:52.413Z",
+  "lastUpdated": "2025-11-06T14:42:26.217Z",
   "files": {
     "query=q=Springer": {
       "url": "https://api.openalex.org/autocomplete/publishers?q=Springer",
       "$ref": "./query=q=Springer.json",
       "lastRetrieved": "2025-11-06T13:01:52.412Z",
+      "contentHash": "dd796f6d32a769cc"
+    },
+    "q=q=Springer": {
+      "url": "https://api.openalex.org/autocomplete/publishers?q=Springer",
+      "$ref": "./q=q=Springer.json",
+      "lastRetrieved": "2025-11-06T14:42:26.216Z",
       "contentHash": "dd796f6d32a769cc"
     }
   }

@@ -1,10 +1,16 @@
 {
-  "lastUpdated": "2025-11-06T13:01:51.982Z",
+  "lastUpdated": "2025-11-06T14:42:25.689Z",
   "files": {
     "query=q=Nature": {
       "url": "https://api.openalex.org/autocomplete/sources?q=Nature",
       "$ref": "./query=q=Nature.json",
       "lastRetrieved": "2025-11-06T13:01:51.981Z",
+      "contentHash": "dd796f6d32a769cc"
+    },
+    "q=q=Nature": {
+      "url": "https://api.openalex.org/autocomplete/sources?q=Nature",
+      "$ref": "./q=q=Nature.json",
+      "lastRetrieved": "2025-11-06T14:42:25.688Z",
       "contentHash": "dd796f6d32a769cc"
     }
   }
