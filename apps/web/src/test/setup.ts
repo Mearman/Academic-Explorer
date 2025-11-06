@@ -7,6 +7,31 @@ import "fake-indexeddb/auto";
 import { Buffer } from "buffer";
 import { TextEncoder as NodeTextEncoder, TextDecoder as NodeTextDecoder } from "util";
 
+// Ensure AbortSignal/AbortController are properly available in test environment
+// This fixes issues with fetch() calls that use AbortSignal in Node.js test environments
+if (typeof globalThis.AbortController === "undefined") {
+  const { AbortController: NodeAbortController, AbortSignal: NodeAbortSignal } = require("abort-controller");
+  globalThis.AbortController = NodeAbortController;
+  globalThis.AbortSignal = NodeAbortSignal;
+}
+
+// Ensure AbortSignal and AbortController are available globally
+// This prevents issues with type checking in test environments
+if (typeof global.AbortController === "undefined") {
+  global.AbortController = globalThis.AbortController;
+}
+if (typeof global.AbortSignal === "undefined") {
+  global.AbortSignal = globalThis.AbortSignal;
+}
+if (typeof global.AbortSignal.timeout === "undefined") {
+  // Add timeout method if not available (Node.js < 20)
+  global.AbortSignal.timeout = (delay) => {
+    const controller = new global.AbortController();
+    setTimeout(() => controller.abort(), delay);
+    return controller.signal;
+  };
+}
+
 try {
   global.TextEncoder = NodeTextEncoder as typeof TextEncoder;
   global.TextDecoder = NodeTextDecoder as typeof TextDecoder;

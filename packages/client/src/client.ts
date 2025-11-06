@@ -474,8 +474,11 @@ export class OpenAlexBaseClient {
   }
 
   private buildRequestOptions(options: RequestInit): RequestInit {
+    // Filter out invalid signal to prevent test environment errors
+    const { signal, ...filteredOptions } = options;
+
     return {
-      ...options,
+      ...filteredOptions,
       headers: {
         Accept: "application/json",
         "User-Agent": "OpenAlex-TypeScript-Client/1.0",
@@ -659,6 +662,16 @@ export class OpenAlexBaseClient {
       const timeoutId = setTimeout(() => {
         controller.abort();
       }, this.config.timeout);
+
+      // Handle signal merging - if original request has a signal, abort both
+      if (options.signal) {
+        if (options.signal.aborted) {
+          throw new DOMException("The operation was aborted.", "AbortError");
+        }
+        options.signal.addEventListener("abort", () => {
+          controller.abort();
+        });
+      }
 
       const response = await fetch(url, {
         ...requestOptions,
