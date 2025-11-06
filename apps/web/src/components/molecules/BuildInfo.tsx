@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import { Text, Group, Tooltip } from "@mantine/core";
+import { Text, Group, Tooltip, Paper, Flex, Anchor } from "@mantine/core";
 import {
   getBuildInfo,
   formatBuildTimestamp,
@@ -26,30 +26,19 @@ export const BuildInfo: React.FC = () => {
   const buildInfo = getBuildInfo();
 
   return (
-    <div
-      style={{
-        marginTop: "auto",
-        padding: "12px",
-        backgroundColor: colors.background.secondary,
-        borderRadius: "6px",
-        fontSize: "11px",
-        color: colors.text.tertiary,
-        lineHeight: "1.3",
-        borderTop: `1px solid ${colors.border.primary}`,
-      }}
+    <Paper
+      mt="auto"
+      p="xs"
+      bg="var(--mantine-color-gray-0)"
+      radius="sm"
+      withBorder
+      style={{ borderTop: "1px solid var(--mantine-color-gray-3)" }}
     >
       {/* Version */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "6px",
-          marginBottom: "6px",
-        }}
-      >
+      <Group gap="xs" mb="xs">
         <IconTag size={12} />
-        <span style={{ color: colors.text.secondary }}>Version</span>
-        <a
+        <Text size="xs" c="dimmed">Version</Text>
+        <Anchor
           href={getReleaseUrl({
             repositoryUrl: buildInfo.repositoryUrl,
             version: buildInfo.version,
@@ -69,20 +58,13 @@ export const BuildInfo: React.FC = () => {
           }}
         >
           {buildInfo.version}
-        </a>
-      </div>
+              </Anchor>
+      </Group>
 
       {/* Commit Hash */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "6px",
-          marginBottom: "6px",
-        }}
-      >
+      <Group gap="xs" mb="xs">
         <IconGitCommit size={12} />
-        <a
+        <Anchor
           href={getCommitUrl({
             repositoryUrl: buildInfo.repositoryUrl,
             commitHash: buildInfo.commitHash,
@@ -92,7 +74,7 @@ export const BuildInfo: React.FC = () => {
           style={{
             fontFamily: "monospace",
             fontSize: "10px",
-            color: colors.primary,
+            color: "var(--mantine-color-blue-6)",
             textDecoration: "none",
           }}
           onMouseEnter={(e) => {
@@ -103,63 +85,35 @@ export const BuildInfo: React.FC = () => {
           }}
         >
           {buildInfo.shortCommitHash}
-        </a>
-        <span style={{ color: colors.text.tertiary }}>
+        </Anchor>
+        <Text size="xs" c="dimmed">
           ({buildInfo.branchName})
-        </span>
-      </div>
+        </Text>
+      </Group>
 
       {/* Build Time */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "6px",
-          marginBottom: "8px",
-        }}
-      >
+      <Group gap="xs" mb="sm">
         <IconClock size={12} />
         <Tooltip label={formatBuildTimestamp(buildInfo.buildTimestamp)}>
           <Text size="xs" c="dimmed" span>
             Built {getRelativeBuildTime(buildInfo.buildTimestamp)}
           </Text>
         </Tooltip>
-      </div>
+      </Group>
 
       {/* Repository Link */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          paddingTop: "6px",
-          borderTop: `1px solid ${colors.border.secondary}`,
-        }}
-      >
-        <a
+      <Group justify="center" gap="xs" pt="xs" style={{ borderTop: "1px solid var(--mantine-color-gray-2)" }}>
+        <Anchor
           href={buildInfo.repositoryUrl}
           target="_blank"
           rel="noopener noreferrer"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            color: colors.text.secondary,
-            textDecoration: "none",
-            fontSize: "11px",
-            fontWeight: 500,
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = colors.primary;
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = colors.text.secondary;
-          }}
+          size="xs"
+          fw={500}
         >
           <IconBrandGithub size={14} />
           Academic Explorer
-        </a>
-      </div>
-    </div>
+        </Anchor>
+      </Group>
+    </Paper>
   );
 };
