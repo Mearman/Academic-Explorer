@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-11-06T18:15:00.416Z",
+  "lastUpdated": "2025-11-06T23:10:18.561Z",
   "files": {
     "query=q=Einstein": {
       "url": "https://api.openalex.org/autocomplete/authors?q=Einstein",
@@ -28,13 +28,13 @@
     "q=Einstein": {
       "url": "https://api.openalex.org/autocomplete/authors?q=Einstein",
       "$ref": "./q=Einstein.json",
-      "lastRetrieved": "2025-11-06T18:14:58.249Z",
+      "lastRetrieved": "2025-11-06T23:10:16.232Z",
       "contentHash": "dd796f6d32a769cc"
     },
     "q=Marie+Curie": {
       "url": "https://api.openalex.org/autocomplete/authors?q=Marie+Curie",
       "$ref": "./q=Marie+Curie.json",
-      "lastRetrieved": "2025-11-06T18:15:00.416Z",
+      "lastRetrieved": "2025-11-06T23:10:18.559Z",
       "contentHash": "dd796f6d32a769cc"
     }
   }

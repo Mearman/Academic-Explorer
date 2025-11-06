@@ -97,7 +97,21 @@ export function useUserInteractions(
     autoTrackVisits = true,
     sessionId,
   } = options;
-  const location = useLocation();
+  // Safely get router location (may not be available in test environments)
+  const location = (() => {
+    try {
+      return useLocation();
+    } catch (error) {
+      // Return a fallback location object when router is not available
+      return {
+        pathname: '',
+        search: '',
+        hash: '',
+        state: null,
+        key: '',
+      };
+    }
+  })();
 
   // Helper to parse search params
   const getSearchParams = useCallback((): Record<string, string> => {
