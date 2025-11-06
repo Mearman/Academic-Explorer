@@ -1,3 +1,10 @@
+# [11.3.0](https://github.com/Mearman/Academic-Explorer/compare/v11.2.1...v11.3.0) (2025-11-06)
+
+
+### Features
+
+* **web:** Update OpenAlex cache with improved data indexing ([52f7e4d](https://github.com/Mearman/Academic-Explorer/commit/52f7e4d4e0bb3534464cf94a4debbf7355b548d4))
+
 ## [11.2.1](https://github.com/Mearman/Academic-Explorer/compare/v11.2.0...v11.2.1) (2025-11-06)
 
 
