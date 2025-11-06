@@ -105,21 +105,7 @@ export function BookmarkManager({ onNavigate }: BookmarkManagerProps) {
               <Group justify="space-between" mb="xs">
                 <Text
                   component="a"
-                  href={`#${bookmark.request.cacheKey.replace(
-                    /^\/(author|work|institution|source|funder|topic|concept)\//,
-                    (_match: string, type: string) => {
-                      const pluralMap: Record<string, string> = {
-                        author: "authors",
-                        work: "works",
-                        institution: "institutions",
-                        source: "sources",
-                        funder: "funders",
-                        topic: "topics",
-                        concept: "concepts",
-                      };
-                      return `/${pluralMap[type] || type}/`;
-                    },
-                  )}`}
+                  href={`#${bookmark.request.cacheKey}`}
                   onClick={(e) => {
                     e.preventDefault();
                     handleNavigate(bookmark.request.cacheKey);

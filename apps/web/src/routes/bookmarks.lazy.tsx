@@ -13,7 +13,8 @@ function BookmarksPage() {
           onNavigate={(url) => {
             // Handle navigation to bookmarked URLs
             if (url.startsWith("/")) {
-              void navigate({ to: url });
+              // Use hash-based navigation
+              window.location.hash = url;
             } else {
               window.location.href = url;
             }

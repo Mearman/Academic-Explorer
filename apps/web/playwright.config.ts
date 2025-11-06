@@ -4,6 +4,7 @@
  */
 
 import { defineConfig, devices } from "@playwright/test";
+import fs from "fs";
 
 export default defineConfig({
   // Test directory - using src for all tests
@@ -70,7 +71,7 @@ export default defineConfig({
       use: {
         ...devices["Desktop Chrome"],
         // Reuse storage state for faster tests (cached cookies, localStorage, IndexedDB)
-        storageState: "./test-results/storage-state/state.json",
+        storageState: fs.existsSync("./test-results/storage-state/state.json") ? "./test-results/storage-state/state.json" : undefined,
       },
     },
 
