@@ -1,3 +1,17 @@
+# [11.1.0](https://github.com/Mearman/Academic-Explorer/compare/v11.0.1...v11.1.0) (2025-11-06)
+
+
+### Bug Fixes
+
+* **release:** use exec plugin to commit version bumps after tag creation ([14b0286](https://github.com/Mearman/Academic-Explorer/commit/14b0286c34245e559587833dea121982bfa1cef4))
+* **web:** Fix router context issue in bookmark functionality ([6c95584](https://github.com/Mearman/Academic-Explorer/commit/6c955848449089d2a0a3bd34948f2dcfc74d1c16))
+* **web:** Resolve TypeScript errors in E2E bookmarking tests ([95986a2](https://github.com/Mearman/Academic-Explorer/commit/95986a29496f0ffe2d29f85441a682c734db1319))
+
+
+### Features
+
+* **web:** Add bookmark functionality to entity pages ([8dd9587](https://github.com/Mearman/Academic-Explorer/commit/8dd958787065ac809d4b12f00cd20537e1441248))
+
 ## [11.0.1](https://github.com/Mearman/Academic-Explorer/compare/v11.0.0...v11.0.1) (2025-11-06)
 
 
