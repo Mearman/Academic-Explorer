@@ -1,3 +1,37 @@
+# [11.0.0](https://github.com/Mearman/Academic-Explorer/compare/v10.2.0...v11.0.0) (2025-11-06)
+
+
+### Bug Fixes
+
+* **config:** upgrade Node.js version to 22 for semantic-release compatibility ([a3714f1](https://github.com/Mearman/Academic-Explorer/commit/a3714f17343965df0f204672e72e7645d8d3c194))
+* **openalex-client:** correct autocomplete cache file naming from q=q= to q= ([2543805](https://github.com/Mearman/Academic-Explorer/commit/2543805aa1fe1323f0ed49c43fd525221db04adb))
+* **openalex-client:** correct autocomplete cache file naming from query= to q= ([d937a0c](https://github.com/Mearman/Academic-Explorer/commit/d937a0c47365957347fe7b1f9393ea0301187e94))
+* **web:** add MantineProvider to GraphToolbar test wrapper ([ec25c4c](https://github.com/Mearman/Academic-Explorer/commit/ec25c4cb7ede2f7e913df82bfcac5a6b567a70a2))
+* **web:** correct button text assertions in integration tests ([a494dd6](https://github.com/Mearman/Academic-Explorer/commit/a494dd671473c82b8eca2545a5bbc18fffb501bc))
+* **web:** fix topic route entity type capitalization in loading/error states ([438daa4](https://github.com/Mearman/Academic-Explorer/commit/438daa4ff064878447c26a1c18fc881766836481))
+* **web:** improve test suite pass rate from 97.0% to 99.5% ([9bc2ca0](https://github.com/Mearman/Academic-Explorer/commit/9bc2ca07003dc70a2fa754c881345ce3b8936bf8))
+* **web:** rename authors autocomplete cache files to correct naming convention ([421121c](https://github.com/Mearman/Academic-Explorer/commit/421121c2aef00ce20b054c62264aa1b18a75c5fe))
+* **web:** rename concepts and funders autocomplete cache files ([967fc9b](https://github.com/Mearman/Academic-Explorer/commit/967fc9bad71749479d9c65bd8afef18958c1d2b9))
+* **web:** rename general autocomplete cache files to correct naming convention ([4ff161e](https://github.com/Mearman/Academic-Explorer/commit/4ff161ef49c9083146690a77558f0353103ee579))
+* **web:** rename institutions autocomplete cache files to correct naming ([16b5d38](https://github.com/Mearman/Academic-Explorer/commit/16b5d38b258c762415dfcba7c9d8f302fe9c197a))
+* **web:** rename remaining autocomplete cache files to correct naming ([5349e4f](https://github.com/Mearman/Academic-Explorer/commit/5349e4f0dc844f0cd77308634913db3ed64814b5))
+* **web:** resolve CI/CD pipeline timeout and release failures ([3ab18d7](https://github.com/Mearman/Academic-Explorer/commit/3ab18d7396ad695e3d87ce93c9f7ed5d49a4b2a3))
+
+
+### Code Refactoring
+
+* **web:** replace custom modal with Mantine Modal in datasets ([ba05bd9](https://github.com/Mearman/Academic-Explorer/commit/ba05bd9aa87d1a9d579fc375c75a60a11a186341))
+
+
+### Features
+
+* **graph:** add aria-label attributes to toolbar buttons ([6e2a78f](https://github.com/Mearman/Academic-Explorer/commit/6e2a78f2d46ad77a7511aa7903b20b9d1ca8de85))
+
+
+### BREAKING CHANGES
+
+* **web:** Modal now uses Mantine's design system instead of custom styling
+
 # [10.2.0](https://github.com/Mearman/Academic-Explorer/compare/v10.1.0...v10.2.0) (2025-11-05)
 
 
