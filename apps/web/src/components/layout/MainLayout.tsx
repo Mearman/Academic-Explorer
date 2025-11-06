@@ -11,6 +11,10 @@ import {
   ActionIcon,
   Button,
   useMantineColorScheme,
+  Stack,
+  Title,
+  Box,
+  rem,
 } from "@mantine/core";
 import {
   IconMoon,
@@ -75,14 +79,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const [isDragging, setIsDragging] = useState<"left" | "right" | null>(null);
   const dragStartRef = useRef<{ x: number; width: number } | null>(null);
 
-  // Static theme colors to avoid hook complexity
-  const colors = {
-    background: { primary: "#fff", secondary: "#f8f9fa", tertiary: "#e9ecef" },
-    text: { primary: "#000", secondary: "#666" },
-    border: { primary: "#dee2e6" },
-    primary: "#007bff",
-  };
-
+  
   // Theme toggle logic
   const cycleColorScheme = () => {
     if (colorScheme === "auto") {
@@ -218,7 +215,6 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 to="/"
                 variant="subtle"
                 size="sm"
-                c={colors.text.primary}
               >
                 Home
               </Button>
@@ -227,7 +223,6 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 to="/about"
                 variant="subtle"
                 size="sm"
-                c={colors.text.primary}
               >
                 About
               </Button>
@@ -236,7 +231,6 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 to="/history"
                 variant="subtle"
                 size="sm"
-                c={colors.text.primary}
               >
                 History
               </Button>
@@ -245,7 +239,6 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 to="/bookmarks"
                 variant="subtle"
                 size="sm"
-                c={colors.text.primary}
               >
                 Bookmarks
               </Button>
@@ -278,7 +271,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           {/* Expandable sidebar content */}
           {leftSidebarOpen && (
             <>
-              <div style={{ flex: 1, padding: "0.75rem", overflowY: "auto" }}>
+              <Box flex={1} p="sm" style={{ overflowY: "auto" }}>
                 {/* Pinning controls */}
                 <Group justify="space-between" mb="sm" px="xs">
                   <Text size="xs" c="dimmed">
@@ -322,9 +315,9 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   </Group>
                 </Group>
                 <LeftSidebarDynamic />
-              </div>
+              </Box>
               {/* Left drag handle */}
-              <div
+              <Box
                 role="slider"
                 aria-label="Resize left sidebar"
                 aria-orientation="vertical"
@@ -332,18 +325,11 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 aria-valuemin={200}
                 aria-valuemax={600}
                 tabIndex={0}
-                style={{
-                  width: "4px",
-                  height: "100%",
-                  background:
-                    isDragging === "left" ? colors.primary : "transparent",
-                  cursor: "ew-resize",
-                  position: "absolute",
-                  right: 0,
-                  top: 0,
-                  zIndex: 10,
-                  borderRight: `1px solid ${colors.border.primary}`,
-                }}
+                w={rem(4)}
+                h="100%"
+                bg={isDragging === "left" ? "blue" : "transparent"}
+                style={{ cursor: "ew-resize", position: "absolute", right: 0, top: 0, zIndex: 10 }}
+                bd={`1px solid var(--mantine-color-gray-3)`}
                 onMouseDown={(e) => {
                   handleDragStart({ side: "left", e });
                 }}
@@ -359,7 +345,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 }}
                 onMouseEnter={(e) => {
                   if (!isDragging) {
-                    e.currentTarget.style.background = colors.border.primary;
+                    e.currentTarget.style.background = "var(--mantine-color-gray-3)";
                   }
                 }}
                 onMouseLeave={(e) => {
@@ -386,7 +372,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           {rightSidebarOpen && (
             <>
               {/* Right drag handle */}
-              <div
+              <Box
                 role="slider"
                 aria-label="Resize right sidebar"
                 aria-orientation="vertical"
@@ -394,18 +380,11 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 aria-valuemin={200}
                 aria-valuemax={600}
                 tabIndex={0}
-                style={{
-                  width: "4px",
-                  height: "100%",
-                  background:
-                    isDragging === "right" ? colors.primary : "transparent",
-                  cursor: "ew-resize",
-                  position: "absolute",
-                  left: 0,
-                  top: 0,
-                  zIndex: 10,
-                  borderLeft: `1px solid ${colors.border.primary}`,
-                }}
+                w={rem(4)}
+                h="100%"
+                bg={isDragging === "right" ? "blue" : "transparent"}
+                style={{ cursor: "ew-resize", position: "absolute", left: 0, top: 0, zIndex: 10 }}
+                bd={`1px solid var(--mantine-color-gray-3)`}
                 onMouseDown={(e) => {
                   handleDragStart({ side: "right", e });
                 }}
@@ -421,7 +400,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 }}
                 onMouseEnter={(e) => {
                   if (!isDragging) {
-                    e.currentTarget.style.background = colors.border.primary;
+                    e.currentTarget.style.background = "var(--mantine-color-gray-3)";
                   }
                 }}
                 onMouseLeave={(e) => {
@@ -430,13 +409,10 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   }
                 }}
               />
-              <div
-                style={{
-                  flex: 1,
-                  padding: "0.75rem",
-                  overflowY: "auto",
-                  marginLeft: "4px",
-                }}
+              <Box
+                flex={1}
+                p="sm"
+                style={{ overflowY: "auto", marginLeft: rem(4) }}
               >
                 {/* Pinning controls */}
                 <Group justify="space-between" mb="sm" px="xs">
@@ -481,7 +457,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   </Group>
                 </Group>
                 <RightSidebarDynamic />
-              </div>
+              </Box>
             </>
           )}
 
@@ -492,30 +468,14 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
       {/* Main Content Area */}
       <AppShell.Main>
-        <div
-          style={{
-            height: "calc(100vh - 60px)",
-            padding: "1rem",
-            overflow: "auto",
-          }}
-        >
+        <Box h="calc(100vh - 60px)" p="md" style={{ overflow: "auto" }}>
           {children ?? (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                height: "100%",
-                flexDirection: "column",
-                gap: "1rem",
-                color: "var(--mantine-color-dimmed)",
-              }}
-            >
-              <h2>Academic Explorer</h2>
-              <p>Sidebars restored - Navigate to view content</p>
-            </div>
+            <Stack align="center" justify="center" h="100%" gap="md" c="dimmed">
+              <Title order={2}>Academic Explorer</Title>
+              <Text>Sidebars restored - Navigate to view content</Text>
+            </Stack>
           )}
-        </div>
+        </Box>
       </AppShell.Main>
     </AppShell>
   );
