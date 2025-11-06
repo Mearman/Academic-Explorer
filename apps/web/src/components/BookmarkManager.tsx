@@ -20,6 +20,7 @@ import {
   Badge,
   Loader,
   SimpleGrid,
+  Tooltip,
 } from "@mantine/core";
 
 interface BookmarkManagerProps {
@@ -169,15 +170,16 @@ export function BookmarkManager({ onNavigate }: BookmarkManagerProps) {
                 <Text size="xs" c="dimmed">
                   {new Date(bookmark.timestamp).toLocaleDateString()}
                 </Text>
-                <Button
-                  variant="subtle"
-                  size="xs"
-                  leftSection={<IconExternalLink size={14} />}
-                  onClick={() => handleNavigate(bookmark.request.cacheKey)}
-                  title="Open bookmark"
-                >
-                  Open
-                </Button>
+                <Tooltip label="Open bookmark">
+                  <Button
+                    variant="subtle"
+                    size="xs"
+                    leftSection={<IconExternalLink size={14} />}
+                    onClick={() => handleNavigate(bookmark.request.cacheKey)}
+                  >
+                    Open
+                  </Button>
+                </Tooltip>
               </Group>
             </Card>
           ))}

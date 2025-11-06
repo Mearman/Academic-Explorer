@@ -12,7 +12,7 @@ import {
   IconPinnedOff,
 } from "@tabler/icons-react";
 import { useReactFlow } from "@xyflow/react";
-import { Group, Button, Paper } from "@mantine/core";
+import { Group, Button, Paper, Tooltip } from "@mantine/core";
 
 import { useGraphUtilities } from "@/hooks/use-graph-utilities";
 import { useGraphData } from "@/hooks/use-graph-data";
@@ -353,70 +353,75 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
       }}
     >
       <Group gap="xs">
-        <Button
-          onClick={handleTrimLeaves}
-          variant="light"
-          color="red"
-          size="sm"
-          leftSection={<IconScissors size={16} />}
-          title="Trim Leaf Nodes - Remove papers with no citations"
-        >
-          Trim Leaves
-        </Button>
+        <Tooltip label="Trim Leaf Nodes - Remove papers with no citations">
+          <Button
+            onClick={handleTrimLeaves}
+            variant="light"
+            color="red"
+            size="sm"
+            leftSection={<IconScissors size={16} />}
+          >
+            Trim Leaves
+          </Button>
+        </Tooltip>
 
-        <Button
-          onClick={handleSelect1Degree}
-          variant="light"
-          color="blue"
-          size="sm"
-          leftSection={<IconTarget size={16} />}
-          title="Select 1-Degree - Select all nodes directly connected to the selected node"
-        >
-          Select 1-Degree
-        </Button>
+        <Tooltip label="Select 1-Degree - Select all nodes directly connected to the selected node">
+          <Button
+            onClick={handleSelect1Degree}
+            variant="light"
+            color="blue"
+            size="sm"
+            leftSection={<IconTarget size={16} />}
+          >
+            Select 1-Degree
+          </Button>
+        </Tooltip>
 
-        <Button
-          onClick={() => {
-            handleExpandSelected().catch((error: unknown) => {
-              logger.error(
-                GRAPH_LOGGER_NAME,
-                "Unhandled error in expand selected",
-                {
-                  error: error instanceof Error ? error.message : String(error),
-                },
-              );
-            });
-          }}
-          variant="light"
-          color="green"
-          size="sm"
-          leftSection={<IconGitBranch size={16} />}
-          title="Expand Selected - Load connections for all selected nodes"
-        >
-          Expand Selected
-        </Button>
+        <Tooltip label="Expand Selected - Load connections for all selected nodes">
+          <Button
+            onClick={() => {
+              handleExpandSelected().catch((error: unknown) => {
+                logger.error(
+                  GRAPH_LOGGER_NAME,
+                  "Unhandled error in expand selected",
+                  {
+                    error: error instanceof Error ? error.message : String(error),
+                  },
+                );
+              });
+            }}
+            variant="light"
+            color="green"
+            size="sm"
+            leftSection={<IconGitBranch size={16} />}
+          >
+            Expand Selected
+          </Button>
+        </Tooltip>
 
-        <Button
-          onClick={handlePinAll}
-          variant="light"
-          color="purple"
-          size="sm"
-          leftSection={<IconPin size={16} />}
-          title="Pin All - Pin all nodes to prevent them from moving during layout"
-        >
-          Pin All
-        </Button>
+        <Tooltip label="Pin All - Pin all nodes to prevent them from moving during layout">
+          <Button
+            onClick={handlePinAll}
+            variant="light"
+            color="purple"
+            size="sm"
+            leftSection={<IconPin size={16} />}
+          >
+            Pin All
+          </Button>
+        </Tooltip>
 
-        <Button
-          onClick={handleUnpinAll}
-          variant="light"
-          color="orange"
-          size="sm"
-          leftSection={<IconPinnedOff size={16} />}
-          title="Unpin All - Unpin all nodes to allow them to move during layout"
-        >
-          Unpin All
-        </Button>
+        <Tooltip label="Unpin All - Unpin all nodes to allow them to move during layout">
+          <Button
+            onClick={handleUnpinAll}
+            variant="light"
+            color="orange"
+            size="sm"
+            leftSection={<IconPinnedOff size={16} />}
+          >
+            Unpin All
+          </Button>
+        </Tooltip>
       </Group>
     </Paper>
   );
