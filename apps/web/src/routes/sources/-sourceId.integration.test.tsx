@@ -130,7 +130,7 @@ describe("SourceRoute Integration Tests", () => {
     expect(screen.getAllByText(/Sample Source/).length).toBeGreaterThan(0);
 
     // Should have toggle button
-    expect(screen.getByText("Switch to Raw View")).toBeInTheDocument();
+    expect(screen.getByText("Raw View")).toBeInTheDocument();
 
     // Should NOT show JSON by default
     expect(screen.queryByText(/"id":/)).not.toBeInTheDocument();
@@ -151,7 +151,7 @@ describe("SourceRoute Integration Tests", () => {
     });
 
     // Click toggle button
-    const toggleButton = screen.getByText("Switch to Raw View");
+    const toggleButton = screen.getByText("Raw View");
     fireEvent.click(toggleButton);
 
     // Should show JSON
@@ -179,13 +179,13 @@ describe("SourceRoute Integration Tests", () => {
     });
 
     // Toggle to raw
-    fireEvent.click(screen.getByText("Switch to Raw View"));
+    fireEvent.click(screen.getByText("Raw View"));
     await waitFor(() => {
       expect(screen.getByText(/"display_name":/)).toBeInTheDocument();
     });
 
     // Toggle back to rich
-    fireEvent.click(screen.getByText("Switch to Rich View"));
+    fireEvent.click(screen.getByText("Rich View"));
     await waitFor(() => {
       expect(screen.getByRole("heading", { name: "Sample Source" })).toBeInTheDocument();
     });
@@ -215,7 +215,7 @@ describe("SourceRoute Integration Tests", () => {
     expect(getSourceMock).toHaveBeenCalledTimes(1);
 
     // Toggle to raw
-    fireEvent.click(screen.getByText("Switch to Raw View"));
+    fireEvent.click(screen.getByText("Raw View"));
     await waitFor(() => {
       expect(screen.getByText(/"display_name":/)).toBeInTheDocument();
     });
@@ -224,7 +224,7 @@ describe("SourceRoute Integration Tests", () => {
     expect(getSourceMock).toHaveBeenCalledTimes(1);
 
     // Toggle back to rich
-    fireEvent.click(screen.getByText("Switch to Rich View"));
+    fireEvent.click(screen.getByText("Rich View"));
     await waitFor(() => {
       expect(screen.getByRole("heading", { name: "Sample Source" })).toBeInTheDocument();
     });

@@ -133,7 +133,7 @@ describe("WorkRoute Integration Tests", () => {
     expect(screen.getAllByText(/Sample Work Title/).length).toBeGreaterThan(0);
 
     // Should have toggle button with new text
-    expect(screen.getByText("Switch to Raw View")).toBeInTheDocument();
+    expect(screen.getByText("Raw View")).toBeInTheDocument();
 
     // Should NOT show JSON by default
     expect(screen.queryByText(/"id":/)).not.toBeInTheDocument();
@@ -154,7 +154,7 @@ describe("WorkRoute Integration Tests", () => {
     });
 
     // Click toggle button
-    const toggleButton = screen.getByText("Switch to Raw View");
+    const toggleButton = screen.getByText("Raw View");
     fireEvent.click(toggleButton);
 
     // Should show JSON
@@ -182,13 +182,13 @@ describe("WorkRoute Integration Tests", () => {
     });
 
     // Toggle to raw
-    fireEvent.click(screen.getByText("Switch to Raw View"));
+    fireEvent.click(screen.getByText("Raw View"));
     await waitFor(() => {
       expect(screen.getByText(/"display_name":/)).toBeInTheDocument();
     });
 
     // Toggle back to rich
-    fireEvent.click(screen.getByText("Switch to Rich View"));
+    fireEvent.click(screen.getByText("Rich View"));
     await waitFor(() => {
       expect(screen.getByRole("heading", { name: "Sample Work Title" })).toBeInTheDocument();
     });
@@ -218,7 +218,7 @@ describe("WorkRoute Integration Tests", () => {
     expect(getWorkMock).toHaveBeenCalledTimes(1);
 
     // Toggle to raw
-    fireEvent.click(screen.getByText("Switch to Raw View"));
+    fireEvent.click(screen.getByText("Raw View"));
     await waitFor(() => {
       expect(screen.getByText(/"display_name":/)).toBeInTheDocument();
     });
@@ -227,7 +227,7 @@ describe("WorkRoute Integration Tests", () => {
     expect(getWorkMock).toHaveBeenCalledTimes(1);
 
     // Toggle back to rich
-    fireEvent.click(screen.getByText("Switch to Rich View"));
+    fireEvent.click(screen.getByText("Rich View"));
     await waitFor(() => {
       expect(screen.getByRole("heading", { name: "Sample Work Title" })).toBeInTheDocument();
     });

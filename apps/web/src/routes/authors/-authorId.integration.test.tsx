@@ -132,7 +132,7 @@ describe("AuthorRoute Integration Tests", () => {
     expect(screen.getAllByText(/John Doe/).length).toBeGreaterThan(0);
 
     // Should have toggle button
-    expect(screen.getByText("Switch to Raw View")).toBeInTheDocument();
+    expect(screen.getByText("Raw View")).toBeInTheDocument();
 
     // Should NOT show JSON by default
     expect(screen.queryByText(/"id":/)).not.toBeInTheDocument();
@@ -153,7 +153,7 @@ describe("AuthorRoute Integration Tests", () => {
     });
 
     // Click toggle button
-    const toggleButton = screen.getByText(/Switch to Raw View/);
+    const toggleButton = screen.getByText(/Raw View/);
     fireEvent.click(toggleButton);
 
     // Should show JSON
@@ -181,13 +181,13 @@ describe("AuthorRoute Integration Tests", () => {
     });
 
     // Toggle to raw
-    fireEvent.click(screen.getByText(/Switch to Raw View/));
+    fireEvent.click(screen.getByText(/Raw View/));
     await waitFor(() => {
       expect(screen.getByText(/"display_name":/)).toBeInTheDocument();
     });
 
     // Toggle back to rich
-    fireEvent.click(screen.getByText(/Switch to Rich View/));
+    fireEvent.click(screen.getByText(/Rich View/));
     await waitFor(() => {
       expect(screen.getByRole("heading", { name: "John Doe" })).toBeInTheDocument();
     });
@@ -217,7 +217,7 @@ describe("AuthorRoute Integration Tests", () => {
     expect(getAuthorMock).toHaveBeenCalledTimes(1);
 
     // Toggle to raw
-    fireEvent.click(screen.getByText(/Switch to Raw View/));
+    fireEvent.click(screen.getByText(/Raw View/));
     await waitFor(() => {
       expect(screen.getByText(/"display_name":/)).toBeInTheDocument();
     });
@@ -226,7 +226,7 @@ describe("AuthorRoute Integration Tests", () => {
     expect(getAuthorMock).toHaveBeenCalledTimes(1);
 
     // Toggle back to rich
-    fireEvent.click(screen.getByText(/Switch to Rich View/));
+    fireEvent.click(screen.getByText(/Rich View/));
     await waitFor(() => {
       expect(screen.getByRole("heading", { name: "John Doe" })).toBeInTheDocument();
     });

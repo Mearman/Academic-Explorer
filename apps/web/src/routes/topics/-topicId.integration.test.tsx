@@ -129,7 +129,7 @@ describe("TopicRoute Integration Tests", () => {
     expect(screen.getAllByText(/Sample Topic/).length).toBeGreaterThan(0);
 
     // Should have toggle button
-    expect(screen.getByText("Switch to Raw View")).toBeInTheDocument();
+    expect(screen.getByText("Raw View")).toBeInTheDocument();
 
     // Should NOT show JSON by default
     expect(screen.queryByText(/"id":/)).not.toBeInTheDocument();
@@ -150,7 +150,7 @@ describe("TopicRoute Integration Tests", () => {
     });
 
     // Click toggle button
-    const toggleButton = screen.getByText("Switch to Raw View");
+    const toggleButton = screen.getByText("Raw View");
     fireEvent.click(toggleButton);
 
     // Should show JSON
@@ -178,13 +178,13 @@ describe("TopicRoute Integration Tests", () => {
     });
 
     // Toggle to raw
-    fireEvent.click(screen.getByText("Switch to Raw View"));
+    fireEvent.click(screen.getByText("Raw View"));
     await waitFor(() => {
       expect(screen.getByText(/"display_name":/)).toBeInTheDocument();
     });
 
     // Toggle back to rich
-    fireEvent.click(screen.getByText("Switch to Rich View"));
+    fireEvent.click(screen.getByText("Rich View"));
     await waitFor(() => {
       expect(screen.getByRole("heading", { name: "Sample Topic" })).toBeInTheDocument();
     });
@@ -214,7 +214,7 @@ describe("TopicRoute Integration Tests", () => {
     expect(getTopicMock).toHaveBeenCalledTimes(1);
 
     // Toggle to raw
-    fireEvent.click(screen.getByText("Switch to Raw View"));
+    fireEvent.click(screen.getByText("Raw View"));
     await waitFor(() => {
       expect(screen.getByText(/"display_name":/)).toBeInTheDocument();
     });
@@ -223,7 +223,7 @@ describe("TopicRoute Integration Tests", () => {
     expect(getTopicMock).toHaveBeenCalledTimes(1);
 
     // Toggle back to rich
-    fireEvent.click(screen.getByText("Switch to Rich View"));
+    fireEvent.click(screen.getByText("Rich View"));
     await waitFor(() => {
       expect(screen.getByRole("heading", { name: "Sample Topic" })).toBeInTheDocument();
     });
