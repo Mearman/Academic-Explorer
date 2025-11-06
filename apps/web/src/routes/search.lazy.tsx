@@ -9,6 +9,7 @@ import {
   Alert,
   Anchor,
   Badge,
+  Button,
   Card,
   Container,
   Group,
@@ -327,7 +328,10 @@ function SearchPage() {
           </Text>
 
           {hasQuery && (
-            <button
+            <Button
+              variant="light"
+              color={userInteractions.isBookmarked ? "yellow" : "gray"}
+              size="sm"
               onClick={async () => {
                 if (userInteractions.isBookmarked) {
                   await userInteractions.unbookmarkSearch();
@@ -346,24 +350,21 @@ function SearchPage() {
                   });
                 }
               }}
-              className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                userInteractions.isBookmarked
-                  ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
+              leftSection={
+                userInteractions.isBookmarked ? (
+                  <IconBookmark size={16} fill="currentColor" />
+                ) : (
+                  <IconBookmarkOff size={16} />
+                )
+              }
               title={
                 userInteractions.isBookmarked
                   ? "Remove search bookmark"
                   : "Bookmark this search"
               }
             >
-              {userInteractions.isBookmarked ? (
-                <IconBookmark size={16} fill="currentColor" />
-              ) : (
-                <IconBookmarkOff size={16} />
-              )}
               {userInteractions.isBookmarked ? "Bookmarked" : "Bookmark Search"}
-            </button>
+            </Button>
           )}
         </Group>
 
