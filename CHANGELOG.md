@@ -1,3 +1,10 @@
+## [11.2.1](https://github.com/Mearman/Academic-Explorer/compare/v11.2.0...v11.2.1) (2025-11-06)
+
+
+### Bug Fixes
+
+* **web:** Improve test environment AbortSignal compatibility ([834d261](https://github.com/Mearman/Academic-Explorer/commit/834d261ed62ac50afb81fc6d32f88c742d1e9290))
+
 # [11.2.0](https://github.com/Mearman/Academic-Explorer/compare/v11.1.0...v11.2.0) (2025-11-06)
 
 
