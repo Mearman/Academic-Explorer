@@ -1,3 +1,10 @@
+# [11.2.0](https://github.com/Mearman/Academic-Explorer/compare/v11.1.0...v11.2.0) (2025-11-06)
+
+
+### Features
+
+* **web:** Complete E2E test fixes and URL redirection verification ([46c1683](https://github.com/Mearman/Academic-Explorer/commit/46c16830c498dd5e72c801dd66078d05988378b4))
+
 # [11.1.0](https://github.com/Mearman/Academic-Explorer/compare/v11.0.1...v11.1.0) (2025-11-06)
 
 
