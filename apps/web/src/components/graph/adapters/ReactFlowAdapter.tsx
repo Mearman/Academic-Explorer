@@ -8,6 +8,7 @@ import {
   useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import { Button, Tooltip } from "@mantine/core";
 
 import type {
   GraphData,
@@ -145,25 +146,23 @@ function FitViewButton() {
   }, [fitView]);
 
   return (
-    <button
-      onClick={handleFitView}
-      style={{
-        position: "absolute",
-        top: "8px",
-        right: "8px",
-        zIndex: 1000,
-        background: "rgba(255, 255, 255, 0.9)",
-        border: "1px solid #ccc",
-        borderRadius: "4px",
-        padding: "4px 8px",
-        fontSize: "11px",
-        cursor: "pointer",
-        backdropFilter: "blur(4px)",
-      }}
-      title="Fit view to graph"
-    >
-      Fit
-    </button>
+    <Tooltip label="Fit view to graph">
+      <Button
+        onClick={handleFitView}
+        size="xs"
+        variant="white"
+        radius="xs"
+        style={{
+          position: "absolute",
+          top: 8,
+          right: 8,
+          zIndex: 1000,
+          backdropFilter: "blur(4px)",
+        }}
+      >
+        Fit
+      </Button>
+    </Tooltip>
   );
 }
 
