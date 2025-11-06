@@ -5,8 +5,8 @@
       "short_id": "institutions/I63966007",
       "display_name": "Massachusetts Institute of Technology",
       "hint": "Cambridge, USA",
-      "cited_by_count": 61622581,
-      "works_count": 328248,
+      "cited_by_count": 61474117,
+      "works_count": 328420,
       "entity_type": "institution",
       "external_id": "https://ror.org/042nb2s44",
       "filter_key": "authorships.institutions.lineage"
@@ -16,8 +16,8 @@
       "short_id": "institutions/I4390039253",
       "display_name": "Koch Institute for Integrative Cancer Research At MIT",
       "hint": null,
-      "cited_by_count": 243845,
-      "works_count": 780,
+      "cited_by_count": 240776,
+      "works_count": 785,
       "entity_type": "institution",
       "external_id": "https://ror.org/01xd6q208",
       "filter_key": "authorships.institutions.lineage"
