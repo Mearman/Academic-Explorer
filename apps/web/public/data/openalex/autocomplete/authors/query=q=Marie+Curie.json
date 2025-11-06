@@ -45,6 +45,17 @@
       "filter_key": "authorships.author.id"
     },
     {
+      "id": "https://openalex.org/A5046933271",
+      "short_id": "authors/A5046933271",
+      "display_name": "Marie Curie",
+      "hint": null,
+      "cited_by_count": 0,
+      "works_count": 2,
+      "entity_type": "author",
+      "external_id": null,
+      "filter_key": "authorships.author.id"
+    },
+    {
       "id": "https://openalex.org/A2063766281",
       "short_id": "authors/A2063766281",
       "display_name": "Marie Curie",
@@ -67,12 +78,12 @@
       "filter_key": "authorships.author.id"
     },
     {
-      "id": "https://openalex.org/A5046933271",
-      "short_id": "authors/A5046933271",
+      "id": "https://openalex.org/A5112581527",
+      "short_id": "authors/A5112581527",
       "display_name": "Marie Curie",
       "hint": null,
-      "cited_by_count": 0,
-      "works_count": 2,
+      "cited_by_count": 98,
+      "works_count": 6,
       "entity_type": "author",
       "external_id": null,
       "filter_key": "authorships.author.id"
@@ -95,17 +106,6 @@
       "hint": null,
       "cited_by_count": 0,
       "works_count": 11,
-      "entity_type": "author",
-      "external_id": null,
-      "filter_key": "authorships.author.id"
-    },
-    {
-      "id": "https://openalex.org/A5024700653",
-      "short_id": "authors/A5024700653",
-      "display_name": "Marie Curie",
-      "hint": "Pioneer (Japan), Japan",
-      "cited_by_count": 0,
-      "works_count": 4,
       "entity_type": "author",
       "external_id": null,
       "filter_key": "authorships.author.id"

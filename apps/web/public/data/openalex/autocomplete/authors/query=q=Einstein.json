@@ -34,17 +34,6 @@
       "filter_key": "authorships.author.id"
     },
     {
-      "id": "https://openalex.org/A5089638974",
-      "short_id": "authors/A5089638974",
-      "display_name": "Einstein",
-      "hint": null,
-      "cited_by_count": 0,
-      "works_count": 1,
-      "entity_type": "author",
-      "external_id": null,
-      "filter_key": "authorships.author.id"
-    },
-    {
       "id": "https://openalex.org/A5024598936",
       "short_id": "authors/A5024598936",
       "display_name": "Einstein",
@@ -56,10 +45,10 @@
       "filter_key": "authorships.author.id"
     },
     {
-      "id": "https://openalex.org/A5019358761",
-      "short_id": "authors/A5019358761",
+      "id": "https://openalex.org/A5089638974",
+      "short_id": "authors/A5089638974",
       "display_name": "Einstein",
-      "hint": "Helios Hospital Berlin-Buch, Germany",
+      "hint": null,
       "cited_by_count": 0,
       "works_count": 1,
       "entity_type": "author",
@@ -67,12 +56,12 @@
       "filter_key": "authorships.author.id"
     },
     {
-      "id": "https://openalex.org/A4261667763",
-      "short_id": "authors/A4261667763",
+      "id": "https://openalex.org/A5019358761",
+      "short_id": "authors/A5019358761",
       "display_name": "Einstein",
-      "hint": null,
+      "hint": "Helios Hospital Berlin-Buch, Germany",
       "cited_by_count": 0,
-      "works_count": 2,
+      "works_count": 1,
       "entity_type": "author",
       "external_id": null,
       "filter_key": "authorships.author.id"
@@ -102,6 +91,17 @@
     {
       "id": "https://openalex.org/A5050922103",
       "short_id": "authors/A5050922103",
+      "display_name": "Einstein",
+      "hint": null,
+      "cited_by_count": 0,
+      "works_count": 1,
+      "entity_type": "author",
+      "external_id": null,
+      "filter_key": "authorships.author.id"
+    },
+    {
+      "id": "https://openalex.org/A5096409901",
+      "short_id": "authors/A5096409901",
       "display_name": "Einstein",
       "hint": null,
       "cited_by_count": 0,

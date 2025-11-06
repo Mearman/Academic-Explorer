@@ -725,8 +725,8 @@ export class DiskCacheWriter {
 
     // Handle autocomplete responses specially
     if (entityInfo.entityId?.startsWith("autocomplete/") && entityInfo.queryParams) {
-      // Autocomplete: autocomplete/works/query.json or autocomplete/general/query.json
-      const sanitizedQuery = this.sanitizeFilename(`query=${entityInfo.queryParams}`);
+      // Autocomplete: autocomplete/works/q=query.json or autocomplete/general/q=query.json
+      const sanitizedQuery = this.sanitizeFilename(`q=${entityInfo.queryParams}`);
       const [, subdirectory] = entityInfo.entityId.split("/");
       directoryPath = path.join(basePath, "autocomplete", subdirectory);
       filename = sanitizedQuery;
