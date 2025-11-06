@@ -33,6 +33,7 @@ Object.defineProperty(window, "matchMedia", {
 
 import type { GraphEdge } from "@academic-explorer/graph";
 import { RelationType } from "@academic-explorer/graph";
+import { MantineProvider } from "@mantine/core";
 import { cleanup } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { GraphToolbar } from "./GraphToolbar";
@@ -69,7 +70,11 @@ vi.mock("@academic-explorer/utils/logger", () => ({
 
 // Test wrapper component
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return <div data-testid="@xyflow/react-provider">{children}</div>;
+  return (
+    <MantineProvider>
+      <div data-testid="@xyflow/react-provider">{children}</div>
+    </MantineProvider>
+  );
 };
 
 describe("GraphToolbar", () => {
