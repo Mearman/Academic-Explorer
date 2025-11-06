@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-11-06T23:40:06.025Z",
+  "lastUpdated": "2025-11-06T23:45:19.609Z",
   "files": {
     "query=q=MIT": {
       "url": "https://api.openalex.org/autocomplete/institutions?q=MIT",
@@ -28,13 +28,13 @@
     "q=MIT": {
       "url": "https://api.openalex.org/autocomplete/institutions?q=MIT",
       "$ref": "./q=MIT.json",
-      "lastRetrieved": "2025-11-06T23:40:04.032Z",
+      "lastRetrieved": "2025-11-06T23:45:18.173Z",
       "contentHash": "dd796f6d32a769cc"
     },
     "q=Massachusetts+Institute+of+Technology": {
       "url": "https://api.openalex.org/autocomplete/institutions?q=Massachusetts+Institute+of+Technology",
       "$ref": "./q=Massachusetts+Institute+of+Technology.json",
-      "lastRetrieved": "2025-11-06T23:40:06.024Z",
+      "lastRetrieved": "2025-11-06T23:45:19.608Z",
       "contentHash": "a695960dbd857a99"
     }
   }
