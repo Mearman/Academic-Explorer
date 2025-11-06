@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-11-06T14:42:26.357Z",
+  "lastUpdated": "2025-11-06T18:14:59.259Z",
   "files": {
     "query=q=NSF": {
       "url": "https://api.openalex.org/autocomplete/funders?q=NSF",
@@ -11,6 +11,12 @@
       "url": "https://api.openalex.org/autocomplete/funders?q=NSF",
       "$ref": "./q=q=NSF.json",
       "lastRetrieved": "2025-11-06T14:42:26.356Z",
+      "contentHash": "f92d31fff5868cbf"
+    },
+    "q=NSF": {
+      "url": "https://api.openalex.org/autocomplete/funders?q=NSF",
+      "$ref": "./q=NSF.json",
+      "lastRetrieved": "2025-11-06T18:14:59.258Z",
       "contentHash": "f92d31fff5868cbf"
     }
   }

@@ -360,6 +360,7 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
             color="red"
             size="sm"
             leftSection={<IconScissors size={16} />}
+            {...({ title: "Trim Leaf Nodes - Remove papers with no citations" } as any)}
           >
             Trim Leaves
           </Button>
@@ -372,6 +373,7 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
             color="blue"
             size="sm"
             leftSection={<IconTarget size={16} />}
+            {...({ title: "Select 1-Degree - Select all nodes directly connected to the selected node" } as any)}
           >
             Select 1-Degree
           </Button>
@@ -394,6 +396,7 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
             color="green"
             size="sm"
             leftSection={<IconGitBranch size={16} />}
+            {...({ title: "Expand Selected - Load connections for all selected nodes" } as any)}
           >
             Expand Selected
           </Button>
@@ -406,6 +409,7 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
             color="purple"
             size="sm"
             leftSection={<IconPin size={16} />}
+            {...({ title: "Pin All - Pin all nodes to prevent them from moving during layout" } as any)}
           >
             Pin All
           </Button>
@@ -418,6 +422,7 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
             color="orange"
             size="sm"
             leftSection={<IconPinnedOff size={16} />}
+            {...({ title: "Unpin All - Unpin all nodes to allow them to move during layout" } as any)}
           >
             Unpin All
           </Button>

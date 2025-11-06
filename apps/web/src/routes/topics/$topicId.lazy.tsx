@@ -39,7 +39,7 @@ function TopicRoute() {
 
   // Handle loading state
   if (isLoading) {
-    return <LoadingState entityType="topic" entityId={topicId || ''} config={ENTITY_TYPE_CONFIGS.topic} />;
+    return <LoadingState entityType="Topic" entityId={topicId || ''} config={ENTITY_TYPE_CONFIGS.topic} />;
   }
 
   // Handle error state
@@ -47,7 +47,7 @@ function TopicRoute() {
     return (
       <ErrorState
         error={error}
-        entityType="topic"
+        entityType="Topic"
         entityId={topicId || ''}
       />
     );
