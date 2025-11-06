@@ -1,17 +1,6 @@
 {
   "results": [
     {
-      "id": "https://openalex.org/W4207012451",
-      "short_id": "works/W4207012451",
-      "display_name": "artificial intelligence",
-      "hint": "authors unknown",
-      "cited_by_count": 7,
-      "works_count": null,
-      "entity_type": "work",
-      "external_id": "https://doi.org/10.5040/9781501365287.101",
-      "filter_key": "id"
-    },
-    {
       "id": "https://openalex.org/W4295333447",
       "short_id": "works/W4295333447",
       "display_name": "artificial intelligence",
@@ -31,6 +20,17 @@
       "works_count": null,
       "entity_type": "work",
       "external_id": "https://doi.org/10.1007/springerreference_8261",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W4207012451",
+      "short_id": "works/W4207012451",
+      "display_name": "artificial intelligence",
+      "hint": "authors unknown",
+      "cited_by_count": 7,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.5040/9781501365287.101",
       "filter_key": "id"
     },
     {
@@ -89,14 +89,14 @@
       "filter_key": "id"
     },
     {
-      "id": "https://openalex.org/W4235817418",
-      "short_id": "works/W4235817418",
-      "display_name": "Artificial Intelligences",
+      "id": "https://openalex.org/W4248691610",
+      "short_id": "works/W4248691610",
+      "display_name": "Artificial Intelligences:",
       "hint": "authors unknown",
-      "cited_by_count": 4,
+      "cited_by_count": 0,
       "works_count": null,
       "entity_type": "work",
-      "external_id": "https://doi.org/10.5040/9781474236829.ch-003",
+      "external_id": "https://doi.org/10.2307/j.ctv105bc2g.19",
       "filter_key": "id"
     },
     {
