@@ -377,7 +377,7 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
 
       - name: Install dependencies
         timeout-minutes: 5
