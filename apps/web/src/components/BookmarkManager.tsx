@@ -85,10 +85,9 @@ export function BookmarkManager({ onNavigate }: BookmarkManagerProps) {
       {filteredBookmarks.length === 0 ? (
         <Card withBorder p="xl">
           <Stack align="center" gap="md">
-            <IconBookmarkOff
-              size={48}
-              style={{ color: "var(--mantine-color-gray-4)" }}
-            />
+            <div style={{ color: "var(--mantine-color-gray-4)" }}>
+            <IconBookmarkOff size={48} />
+          </div>
             <Text size="lg" fw={500}>
               {searchQuery ? "No bookmarks found" : "No bookmarks yet"}
             </Text>
@@ -104,7 +103,8 @@ export function BookmarkManager({ onNavigate }: BookmarkManagerProps) {
           {filteredBookmarks.map((bookmark) => (
             <Card key={bookmark.id} withBorder padding="md">
               <Group justify="space-between" mb="xs">
-                <a
+                <Text
+                  component="a"
                   href={`#${bookmark.request.cacheKey.replace(
                     /^\/(author|work|institution|source|funder|topic|concept)\//,
                     (_match: string, type: string) => {
@@ -124,17 +124,14 @@ export function BookmarkManager({ onNavigate }: BookmarkManagerProps) {
                     e.preventDefault();
                     handleNavigate(bookmark.request.cacheKey);
                   }}
-                  style={{
-                    flex: 1,
-                    fontWeight: 500,
-                    textDecoration: "none",
-                    color: "inherit",
-                    cursor: "pointer",
-                  }}
+                  flex={1}
+                  fw={500}
+                  c="inherit"
+                  style={{ cursor: "pointer" }}
                   className="hover:text-blue-600 transition-colors"
                 >
                   {bookmark.title}
-                </a>
+                </Text>
                 {bookmark.request.params &&
                   JSON.parse(bookmark.request.params) &&
                   Object.keys(JSON.parse(bookmark.request.params)).length >
