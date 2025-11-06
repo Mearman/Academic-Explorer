@@ -1,10 +1,10 @@
 {
-  "lastUpdated": "2025-11-05T06:48:20.372Z",
+  "lastUpdated": "2025-11-06T13:01:52.691Z",
   "files": {
     "query=q=deep+learning": {
       "url": "https://api.openalex.org/autocomplete/concepts?q=deep+learning",
       "$ref": "./query=q=deep+learning.json",
-      "lastRetrieved": "2025-11-05T06:48:20.370Z",
+      "lastRetrieved": "2025-11-06T13:01:52.690Z",
       "contentHash": "a0460b2895f6918d"
     }
   }
