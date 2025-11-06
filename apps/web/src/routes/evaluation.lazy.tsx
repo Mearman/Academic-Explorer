@@ -12,6 +12,16 @@ import {
   IconTrendingUp,
 } from "@tabler/icons-react";
 import { useNavigate } from "@tanstack/react-router";
+import {
+  Container,
+  Title,
+  Text,
+  Card,
+  Group,
+  Stack,
+  Button,
+  ThemeIcon,
+} from "@mantine/core";
 
 // Style constants
 const BORDER_COLOR_GRAY = "#e5e7eb";
@@ -24,44 +34,33 @@ function EvaluationDashboard() {
   const navigate = useNavigate();
 
   return (
-    <div style={{ padding: "24px", maxWidth: "1200px", margin: "0 auto" }}>
+    <Container size="xl" p="xl" mx="auto">
       {/* Header */}
-      <div style={{ marginBottom: "32px" }}>
-        <h1
-          style={{
-            fontSize: "32px",
-            fontWeight: "bold",
-            color: "#1f2937",
-            marginBottom: "8px",
-          }}
-        >
+      <Stack mb="xl">
+        <Title order={1} fw={700} c="gray.9" mb="sm">
           STAR Methodology Evaluation
-        </h1>
-        <p
-          style={{
-            fontSize: "16px",
-            color: "#6b7280",
-            lineHeight: "1.6",
-            maxWidth: "800px",
-          }}
+        </Title>
+        <Text
+          size="md"
+          c="dimmed"
+          lineClamp={3}
+          maw={800}
         >
           Evaluate Academic Explorer&apos;s literature discovery capabilities
           against published systematic literature reviews using the STAR
           (Systematic Literature Review) methodology. This provides quantitative
           metrics for precision, recall, and F1-score analysis required for PhD
           thesis evaluation.
-        </p>
-      </div>
+        </Text>
+      </Stack>
 
       {/* Dashboard Cards */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-          gap: "24px",
-          marginBottom: "32px",
-        }}
-      >
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+        gap: "24px",
+        marginBottom: "32px",
+      }}>
         {/* Datasets Card */}
         <div
           style={{
@@ -438,7 +437,7 @@ function EvaluationDashboard() {
           </p>
         </div>
       </div>
-    </div>
+    </Container>
   );
 }
 
