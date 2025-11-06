@@ -5,6 +5,7 @@
 
 import React, { useState, useMemo } from "react";
 import { IconClipboard, IconAlertTriangle } from "@tabler/icons-react";
+import { Button, Group, Stack, Text, Paper } from "@mantine/core";
 import type {
   MissingPaperDetectionResults,
   MissingPaperDetectionConfig,
@@ -369,57 +370,45 @@ export function MissingPaperDetection({
 
       {/* Detection Control */}
       <div style={{ marginBottom: "24px" }}>
-        <button
-          onClick={() => {
-            void handleStartDetection();
-          }}
-          disabled={currentJob?.status === "running"}
-          style={{
-            padding: "12px 24px",
-            backgroundColor:
-              currentJob?.status === "running" ? "#9ca3af" : COLOR_BLUE_500,
-            color: "white",
-            border: "none",
-            borderRadius: BORDER_RADIUS_MD,
-            fontSize: FONT_SIZE_16,
-            fontWeight: FONT_WEIGHT_SEMIBOLD,
-            cursor:
-              currentJob?.status === "running" ? "not-allowed" : "pointer",
-            marginRight: "12px",
-          }}
-        >
-          {currentJob?.status === "running"
-            ? "Detecting..."
-            : "Start Detection"}
-        </button>
-
-        {currentJob?.results && (
-          <button
+        <Group>
+          <Button
             onClick={() => {
-              logger.debug(
-                "ui",
-                "Export detection results clicked",
-                {
-                  resultsCount:
-                    currentJob.results?.candidateMissingPapers.length,
-                },
-                "MissingPaperDetection",
-              );
+              void handleStartDetection();
             }}
-            style={{
-              padding: "12px 24px",
-              backgroundColor: COLOR_GREEN_500,
-              color: "white",
-              border: "none",
-              borderRadius: BORDER_RADIUS_MD,
-              fontSize: FONT_SIZE_16,
-              fontWeight: FONT_WEIGHT_SEMIBOLD,
-              cursor: "pointer",
-            }}
+            disabled={currentJob?.status === "running"}
+            loading={currentJob?.status === "running"}
+            variant="filled"
+            color="blue"
+            size="md"
+            fw={600}
           >
-            Export Results
-          </button>
-        )}
+            {currentJob?.status === "running"
+              ? "Detecting..."
+              : "Start Detection"}
+          </Button>
+
+          {currentJob?.results && (
+            <Button
+              onClick={() => {
+                logger.debug(
+                  "ui",
+                  "Export detection results clicked",
+                  {
+                    resultsCount:
+                      currentJob.results?.candidateMissingPapers.length,
+                  },
+                  "MissingPaperDetection",
+                );
+              }}
+              variant="filled"
+              color="green"
+              size="md"
+              fw={600}
+            >
+              Export Results
+            </Button>
+          )}
+        </Group>
       </div>
 
       {/* Progress Display */}
@@ -739,42 +728,48 @@ function MissingPaperResults({
         )}
 
         {activeTab === "candidates" && (
-          <div>
-            <h4
-              style={{
-                fontSize: FONT_SIZE_16,
-                fontWeight: FONT_WEIGHT_SEMIBOLD,
-                color: COLOR_TEXT_PRIMARY,
-                marginBottom: PADDING_16,
-              }}
-            >
-              Candidate Missing Papers
-            </h4>
+          <Stack>
+            <Group justify="space-between" align="center">
+              <Text size="lg" fw={600} c="var(--mantine-color-text)">
+                Candidate Missing Papers
+              </Text>
+              {results.candidateMissingPapers.length > 0 && (
+                <Button
+                  onClick={() => {
+                    logger.debug(
+                      "ui",
+                      "Create work from missing papers clicked",
+                      {
+                        count: results.candidateMissingPapers.length,
+                      },
+                      "MissingPaperDetection",
+                    );
+                  }}
+                  variant="outline"
+                  color="blue"
+                  size="sm"
+                >
+                  Create Work from Missing
+                </Button>
+              )}
+            </Group>
 
             {results.candidateMissingPapers.length === 0 ? (
-              <div
-                style={{
-                  textAlign: "center",
-                  padding: "48px 24px",
-                  backgroundColor: BG_GRAY_50,
-                  borderRadius: BORDER_RADIUS_MD,
-                }}
+              <Paper
+                p="xl"
+                radius="md"
+                bg="var(--mantine-color-gray-0)"
+                ta="center"
               >
-                <div style={{ marginBottom: PADDING_16, opacity: 0.3 }}>
-                  <IconClipboard size={48} />
-                </div>
-                <p
-                  style={{
-                    fontSize: FONT_SIZE_16,
-                    color: COLOR_TEXT_SECONDARY,
-                    ...MARGIN_0,
-                  }}
-                >
-                  No potential missing papers detected
-                </p>
-              </div>
+                <Stack gap="md" align="center">
+                  <IconClipboard size={48} style={{ opacity: 0.3 }} />
+                  <Text size="md" c="var(--mantine-color-dimmed)">
+                    No potential missing papers detected
+                  </Text>
+                </Stack>
+              </Paper>
             ) : (
-              <div style={{ display: "grid", gap: "16px" }}>
+              <Stack gap="md">
                 {results.candidateMissingPapers
                   .slice(0, 20)
                   .map((paper, index) => (
@@ -786,29 +781,21 @@ function MissingPaperResults({
                   ))}
 
                 {results.candidateMissingPapers.length > 20 && (
-                  <div
-                    style={{
-                      textAlign: "center",
-                      padding: PADDING_16,
-                      backgroundColor: BG_GRAY_50,
-                      borderRadius: BORDER_RADIUS_MD,
-                    }}
+                  <Paper
+                    p="md"
+                    radius="md"
+                    bg="var(--mantine-color-gray-0)"
+                    ta="center"
                   >
-                    <p
-                      style={{
-                        fontSize: FONT_SIZE_14,
-                        color: COLOR_TEXT_SECONDARY,
-                        ...MARGIN_0,
-                      }}
-                    >
+                    <Text size="sm" c="var(--mantine-color-dimmed)">
                       Showing top 20 of {results.candidateMissingPapers.length}{" "}
                       candidates
-                    </p>
-                  </div>
+                    </Text>
+                  </Paper>
                 )}
-              </div>
+              </Stack>
             )}
-          </div>
+          </Stack>
         )}
 
         {activeTab === "methods" && (
