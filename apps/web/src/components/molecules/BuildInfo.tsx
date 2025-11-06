@@ -4,6 +4,7 @@
  */
 
 import React from "react";
+import { Text, Group, Tooltip } from "@mantine/core";
 import {
   getBuildInfo,
   formatBuildTimestamp,
@@ -118,9 +119,11 @@ export const BuildInfo: React.FC = () => {
         }}
       >
         <IconClock size={12} />
-        <span title={formatBuildTimestamp(buildInfo.buildTimestamp)}>
-          Built {getRelativeBuildTime(buildInfo.buildTimestamp)}
-        </span>
+        <Tooltip label={formatBuildTimestamp(buildInfo.buildTimestamp)}>
+          <Text size="xs" c="dimmed" span>
+            Built {getRelativeBuildTime(buildInfo.buildTimestamp)}
+          </Text>
+        </Tooltip>
       </div>
 
       {/* Repository Link */}
