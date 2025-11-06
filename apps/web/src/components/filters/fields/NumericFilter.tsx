@@ -42,7 +42,7 @@ export function NumericFilter({
           placeholder={config.placeholder}
           disabled={disabled}
           size={compact ? "xs" : "sm"}
-          style={{ flex: 1 }}
+          flex={1}
         />
       )}
     </BaseFilter>

@@ -54,7 +54,7 @@ export function EntityFilter({
                 placeholder={config.placeholder || "Select entities"}
                 disabled={disabled}
                 size={compact ? "xs" : "sm"}
-                style={{ flex: 1 }}
+                flex={1}
                 searchable
               />
             ) : (
@@ -66,7 +66,7 @@ export function EntityFilter({
                 placeholder={config.placeholder || "Select entity"}
                 disabled={disabled}
                 size={compact ? "xs" : "sm"}
-                style={{ flex: 1 }}
+                flex={1}
                 searchable
               />
             )
@@ -78,7 +78,7 @@ export function EntityFilter({
               placeholder={config.placeholder || "Enter entity ID or name"}
               disabled={disabled}
               size={compact ? "xs" : "sm"}
-              style={{ flex: 1 }}
+              flex={1}
             />
           )}
         </>

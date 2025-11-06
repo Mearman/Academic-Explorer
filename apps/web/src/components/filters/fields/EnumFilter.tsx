@@ -58,7 +58,7 @@ export function EnumFilter({
               disabled={disabled}
               size={compact ? "xs" : "sm"}
               placeholder={config.placeholder}
-              style={{ flex: 1 }}
+              flex={1}
             />
           ) : (
             <Select
@@ -69,7 +69,7 @@ export function EnumFilter({
               disabled={disabled}
               size={compact ? "xs" : "sm"}
               placeholder={config.placeholder}
-              style={{ flex: 1 }}
+              flex={1}
               searchable
             />
           )}

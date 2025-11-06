@@ -75,7 +75,7 @@ export function DateFilter({
           placeholder={config.placeholder || (isRange ? "2023-01-01 to 2023-12-31" : "YYYY-MM-DD")}
           disabled={disabled}
           size={compact ? "xs" : "sm"}
-          style={{ flex: 1 }}
+          flex={1}
         />
       )}
     </BaseFilter>
