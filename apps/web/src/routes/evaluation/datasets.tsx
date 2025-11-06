@@ -16,9 +16,12 @@ import {
   Text,
   Title,
   Paper,
-  Flex,
   ActionIcon,
   Tooltip,
+  Container,
+  SimpleGrid,
+  Card,
+  Badge,
 } from "@mantine/core";
 import {
   parseSTARFile,
@@ -26,7 +29,6 @@ import {
 } from "@academic-explorer/utils";
 import type { STARDataset } from "@academic-explorer/utils";
 import { logError, logger } from "@academic-explorer/utils/logger";
-import { BORDER_DEFAULT } from "@/constants/styles";
 
 
 // Types are imported from @academic-explorer/utils
@@ -127,211 +129,106 @@ function DatasetsManagement() {
   };
 
   return (
-    <div style={{ padding: "24px", maxWidth: "1200px", margin: "0 auto" }}>
+    <Container size="xl" p="lg" maw={1200}>
       {/* Header */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: "32px",
-        }}
-      >
+      <Group justify="space-between" align="center" mb="xl">
         <div>
-          <h1
-            style={{
-              fontSize: "28px",
-              fontWeight: "bold",
-              color: "#1f2937",
-              marginBottom: "8px",
-            }}
-          >
+          <Title order={1} fw={700} c="gray.9" mb="xs">
             STAR Datasets
-          </h1>
-          <p style={{ fontSize: "16px", color: "#6b7280" }}>
+          </Title>
+          <Text size="lg" c="dimmed">
             Manage systematic literature review datasets for evaluation
             comparisons
-          </p>
+          </Text>
         </div>
 
-        <button
+        <Button
           onClick={() => {
             setShowUploadModal(true);
           }}
-          style={{
-            backgroundColor: "#3b82f6",
-            color: "white",
-            padding: "12px 20px",
-            borderRadius: "8px",
-            border: "none",
-            fontSize: "14px",
-            fontWeight: "500",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-          }}
+          leftSection={<IconUpload size={16} />}
+          size="md"
         >
-          <IconUpload size={16} />
           Upload Dataset
-        </button>
-      </div>
+        </Button>
+      </Group>
 
       {/* Datasets Grid */}
       {datasets.length === 0 ? (
-        <div
-          style={{
-            backgroundColor: "#f9fafb",
-            borderRadius: "12px",
-            border: BORDER_DEFAULT,
-            padding: "48px 24px",
-            textAlign: "center",
-          }}
-        >
-          <div style={{ marginBottom: "16px", opacity: 0.3 }}>
-            <IconChartBar size={48} />
-          </div>
-          <h3
-            style={{
-              fontSize: "18px",
-              fontWeight: "600",
-              color: "#374151",
-              marginBottom: "8px",
-            }}
-          >
-            No datasets uploaded yet
-          </h3>
-          <p
-            style={{
-              fontSize: "14px",
-              color: "#6b7280",
-              marginBottom: "24px",
-              maxWidth: "400px",
-              margin: "0 auto 24px",
-            }}
-          >
-            Upload your first STAR dataset to begin evaluation. Supported
-            formats: CSV, JSON, Excel.
-          </p>
-          <button
-            onClick={() => {
-              setShowUploadModal(true);
-            }}
-            style={{
-              backgroundColor: "#3b82f6",
-              color: "white",
-              padding: "10px 18px",
-              borderRadius: "6px",
-              border: "none",
-              fontSize: "14px",
-              fontWeight: "500",
-              cursor: "pointer",
-            }}
-          >
-            Upload Your First Dataset
-          </button>
-        </div>
+        <Card withBorder p="xl" bg="gray.0">
+          <Stack align="center" gap="md">
+            <div style={{ opacity: 0.3 }}>
+              <IconChartBar size={48} />
+            </div>
+            <Title order={3} fw={600} c="gray.7">
+              No datasets uploaded yet
+            </Title>
+            <Text size="sm" c="dimmed" ta="center" maw={400}>
+              Upload your first STAR dataset to begin evaluation. Supported
+              formats: CSV, JSON, Excel.
+            </Text>
+            <Button
+              onClick={() => {
+                setShowUploadModal(true);
+              }}
+              color="blue"
+            >
+              Upload Your First Dataset
+            </Button>
+          </Stack>
+        </Card>
       ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
-            gap: "24px",
-          }}
+        <SimpleGrid
+          cols={{ base: 1, md: 2 }}
+          spacing="lg"
         >
           {datasets.map((dataset) => (
-            <div
-              key={dataset.id}
-              style={{
-                backgroundColor: "white",
-                borderRadius: "12px",
-                border: BORDER_DEFAULT,
-                padding: "20px",
-                boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              <div style={{ marginBottom: "16px" }}>
-                <h3
-                  style={{
-                    fontSize: "16px",
-                    fontWeight: "600",
-                    color: "#1f2937",
-                    marginBottom: "4px",
-                  }}
-                >
+            <Card key={dataset.id} withBorder p="md" shadow="sm">
+              <Stack gap="md" mb="md">
+                <Title order={3} fw={600} c="gray.7" size="sm">
                   {dataset.name}
-                </h3>
-                <p
-                  style={{
-                    fontSize: "14px",
-                    color: "#6b7280",
-                    marginBottom: "8px",
-                  }}
-                >
+                </Title>
+                <Text size="sm" c="dimmed">
                   Topic: {dataset.reviewTopic}
-                </p>
-                <p style={{ fontSize: "12px", color: "#9ca3af" }}>
+                </Text>
+                <Text size="xs" c="gray.5">
                   Uploaded {formatDate(dataset.uploadDate)}
-                </p>
-              </div>
+                </Text>
+              </Stack>
 
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "12px",
-                  marginBottom: "16px",
-                  padding: "12px",
-                  backgroundColor: "#f9fafb",
-                  borderRadius: "6px",
-                }}
-              >
-                <div>
-                  <div
-                    style={{
-                      fontSize: "20px",
-                      fontWeight: "bold",
-                      color: "#1f2937",
-                    }}
-                  >
-                    {dataset.originalPaperCount}
-                  </div>
-                  <div style={{ fontSize: "12px", color: "#6b7280" }}>
-                    Total Papers
-                  </div>
-                </div>
-                <div>
-                  <div
-                    style={{
-                      fontSize: "20px",
-                      fontWeight: "bold",
-                      color: "#10b981",
-                    }}
-                  >
-                    {dataset.includedPapers.length}
-                  </div>
-                  <div style={{ fontSize: "12px", color: "#6b7280" }}>
-                    Included
-                  </div>
-                </div>
-              </div>
+              <Card p="sm" bg="gray.0" mb="md">
+                <Group grow>
+                  <Stack gap={0} align="center">
+                    <Text size="lg" fw="bold" c="gray.7">
+                      {dataset.originalPaperCount}
+                    </Text>
+                    <Text size="xs" c="dimmed">
+                      Total Papers
+                    </Text>
+                  </Stack>
+                  <Stack gap={0} align="center">
+                    <Text size="lg" fw="bold" c="green">
+                      {dataset.includedPapers.length}
+                    </Text>
+                    <Text size="xs" c="dimmed">
+                      Included
+                    </Text>
+                  </Stack>
+                </Group>
+              </Card>
 
               {"description" in dataset.metadata &&
                 typeof dataset.metadata.description === "string" && (
-                  <p
-                    style={{
-                      fontSize: "13px",
-                      color: "#6b7280",
-                      marginBottom: "16px",
-                      lineHeight: "1.4",
-                    }}
-                  >
+                  <Text size="xs" c="dimmed" mb="md" lineClamp={3}>
                     {dataset.metadata["description"]}
-                  </p>
+                  </Text>
                 )}
 
-              <div style={{ display: "flex", gap: "8px" }}>
-                <button
+              <Group gap="xs">
+                <Button
+                  variant="light"
+                  color="gray"
+                  size="sm"
                   onClick={() => {
                     logger.debug(
                       "ui",
@@ -340,21 +237,13 @@ function DatasetsManagement() {
                       "DatasetsManagement",
                     );
                   }}
-                  style={{
-                    flex: 1,
-                    backgroundColor: "#f3f4f6",
-                    color: "#374151",
-                    padding: "8px 12px",
-                    borderRadius: "6px",
-                    border: "none",
-                    fontSize: "13px",
-                    fontWeight: "500",
-                    cursor: "pointer",
-                  }}
+                  style={{ flex: 1 }}
                 >
                   View Details
-                </button>
-                <button
+                </Button>
+                <Button
+                  color="green"
+                  size="sm"
                   onClick={() => {
                     logger.debug(
                       "ui",
@@ -363,24 +252,14 @@ function DatasetsManagement() {
                       "DatasetsManagement",
                     );
                   }}
-                  style={{
-                    flex: 1,
-                    backgroundColor: "#10b981",
-                    color: "white",
-                    padding: "8px 12px",
-                    borderRadius: "6px",
-                    border: "none",
-                    fontSize: "13px",
-                    fontWeight: "500",
-                    cursor: "pointer",
-                  }}
+                  style={{ flex: 1 }}
                 >
                   Run Comparison
-                </button>
-              </div>
-            </div>
+                </Button>
+              </Group>
+            </Card>
           ))}
-        </div>
+        </SimpleGrid>
       )}
 
       {/* Upload Modal */}
@@ -476,7 +355,7 @@ function DatasetsManagement() {
           </Group>
         </Stack>
       </Modal>
-    </div>
+    </Container>
   );
 }
 
