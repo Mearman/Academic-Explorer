@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual URL Redirection Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .url-link {
+            display: block;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        .url-link:hover {
+            background: #0056b3;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        .warning { background: #fff3cd; color: #856404; }
+    </style>
+</head>
+<body>
+    <h1>🧪 OpenAlex URL Redirection Manual Test</h1>
+
+    <div class="test-section">
+        <h2>📋 Test Instructions</h2>
+        <p>1. Make sure the development server is running: <code>pnpm dev</code></p>
+        <p>2. Click on each test link below</p>
+        <p>3. Observe the URL redirection and page content</p>
+        <p>4. Check if bookmark functionality is available on the redirected pages</p>
+    </div>
+
+    <div class="test-section">
+        <h2>🔬 Test Case 1: Bioplastics URL (from requirements)</h2>
+        <div class="status info">
+            <strong>Expected:</strong> Should redirect from <code>/openalex-url/https://api.openalex.org/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc</code> to <code>/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc</code>
+        </div>
+        <a href="http://localhost:5173/#/https://api.openalex.org/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc" target="_blank" class="url-link">
+            🔗 Test Bioplastics URL
+        </a>
+    </div>
+
+    <div class="test-section">
+        <h2>🔬 Test Case 2: Entity URL</h2>
+        <div class="status info">
+            <strong>Expected:</strong> Should redirect from <code>/openalex-url/https://api.openalex.org/authors/A5017898742</code> to <code>/authors/A5017898742</code>
+        </div>
+        <a href="http://localhost:5173/#/https://api.openalex.org/authors/A5017898742" target="_blank" class="url-link">
+            🔗 Test Author Entity URL
+        </a>
+    </div>
+
+    <div class="test-section">
+        <h2>🔬 Test Case 3: Institution URL</h2>
+        <div class="status info">
+            <strong>Expected:</strong> Should redirect from <code>/openalex-url/https://api.openalex.org/institutions/I27837315</code> to <code>/institutions/I27837315</code>
+        </div>
+        <a href="http://localhost:5173/#/https://api.openalex.org/institutions/I27837315" target="_blank" class="url-link">
+            🔗 Test Institution Entity URL
+        </a>
+    </div>
+
+    <div class="test-section">
+        <h2>🔬 Test Case 4: Source URL</h2>
+        <div class="status info">
+            <strong>Expected:</strong> Should redirect from <code>/openalex-url/https://api.openalex.org/sources/S137773608</code> to <code>/sources/S137773608</code>
+        </div>
+        <a href="http://localhost:5173/#/https://api.openalex.org/sources/S137773608" target="_blank" class="url-link">
+            🔗 Test Source Entity URL
+        </a>
+    </div>
+
+    <div class="test-section">
+        <h2>🔬 Test Case 5: Complex Query Parameters</h2>
+        <div class="status info">
+            <strong>Expected:</strong> Should redirect and preserve all query parameters
+        </div>
+        <a href="http://localhost:5173/#/https://api.openalex.org/works?filter=publication_year:2023,is_oa:true&sort=cited_by_count:desc&per-page=50" target="_blank" class="url-link">
+            🔗 Test Complex Query Parameters
+        </a>
+    </div>
+
+    <div class="test-section">
+        <h2>🔬 Test Case 6: Autocomplete URL</h2>
+        <div class="status info">
+            <strong>Expected:</strong> Should redirect to autocomplete route
+        </div>
+        <a href="http://localhost:5173/#/https://api.openalex.org/autocomplete/authors?q=einst" target="_blank" class="url-link">
+            🔗 Test Autocomplete URL
+        </a>
+    </div>
+
+    <div class="test-section">
+        <h2>✅ Verification Checklist</h2>
+        <div id="checklist">
+            <label><input type="checkbox"> URL redirects correctly</label><br>
+            <label><input type="checkbox"> Query parameters are preserved</label><br>
+            <label><input type="checkbox"> Page content loads successfully</label><br>
+            <label><input type="checkbox"> Bookmark button is visible</label><br>
+            <label><input type="checkbox"> Bookmark functionality works</label><br>
+            <label><input type="checkbox"> Final URL format is correct</label>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>📝 Notes</h2>
+        <ul>
+            <li>The redirection logic is in <code>apps/web/src/routes/openalex-url/$.lazy.tsx</code></li>
+            <li>Look for bookmark buttons in entity detail layouts</li>
+            <li>Check browser developer tools network tab for redirection flow</li>
+            <li>Test with both development and production URL formats</li>
+        </ul>
+    </div>
+
+    <script>
+        // Add current timestamp for reference
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+    </script>
+</body>
+</html>
