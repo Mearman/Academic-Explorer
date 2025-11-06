@@ -4,7 +4,6 @@
  */
 
 import { expect, test } from "@playwright/test";
-import openalexUrls from "../../../../openalex-urls.json";
 
 test.describe("OpenAlex URL Redirection and Bookmarking", () => {
   const BASE_URL = "http://localhost:5173";
@@ -268,7 +267,7 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
       // Should handle gracefully - either show error or redirect to search
       const currentUrl = page.url();
       // Should not crash and should still be on our app
-      expect(currentUrl).toContain(BASE_URL.split("//")[1]) || expect(currentUrl).toContain("localhost");
+      expect(currentUrl).toMatch(/localhost|mearman\.github\.io/);
     });
 
     test("should handle malformed URLs", async ({ page }) => {

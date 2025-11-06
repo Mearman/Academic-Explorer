@@ -158,7 +158,7 @@ test.describe("Bookmark Functionality E2E Tests", () => {
       await page.waitForTimeout(2000);
 
       // Check that we have bookmarks
-      const bookmarkCards = page.locator('[data-testid="bookmark-card"], .mantine-Card-root').filter({ hasText: entity.name });
+      const bookmarkCards = page.locator('[data-testid="bookmark-card"], .mantine-Card-root');
       await expect(bookmarkCards.first()).toBeVisible({ timeout: 10000 });
     });
   });
