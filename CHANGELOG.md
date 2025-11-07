@@ -1,3 +1,10 @@
+## [12.0.12](https://github.com/Mearman/Academic-Explorer/compare/v12.0.11...v12.0.12) (2025-11-07)
+
+
+### Bug Fixes
+
+* **web:** use TanStack Router redirect() instead of window.location.replace() ([0c05622](https://github.com/Mearman/Academic-Explorer/commit/0c05622cbb1d9b635bf9d6a417cd0fd5cd71005a))
+
 ## [12.0.11](https://github.com/Mearman/Academic-Explorer/compare/v12.0.10...v12.0.11) (2025-11-07)
 
 
