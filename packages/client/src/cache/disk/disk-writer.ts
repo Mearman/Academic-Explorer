@@ -79,6 +79,75 @@ function getNodeModules(): {
 }
 
 /**
+ * Compare two DirectoryIndex objects to determine if content has changed
+ * Excludes the lastUpdated field from comparison
+ * @param oldIndex - Previous index state
+ * @param newIndex - New index state
+ * @returns true if content is identical (excluding lastUpdated), false otherwise
+ */
+function indexContentEquals(oldIndex: DirectoryIndex, newIndex: DirectoryIndex): boolean {
+  // Compare files
+  const oldFiles = oldIndex.files ?? {};
+  const newFiles = newIndex.files ?? {};
+
+  const oldFileKeys = Object.keys(oldFiles).sort();
+  const newFileKeys = Object.keys(newFiles).sort();
+
+  if (oldFileKeys.length !== newFileKeys.length) {
+    return false;
+  }
+
+  for (let i = 0; i < oldFileKeys.length; i++) {
+    if (oldFileKeys[i] !== newFileKeys[i]) {
+      return false;
+    }
+
+    const oldFile = oldFiles[oldFileKeys[i]] as FileEntry;
+    const newFile = newFiles[newFileKeys[i]] as FileEntry;
+
+    // Compare all FileEntry fields
+    if (
+      oldFile.url !== newFile.url ||
+      oldFile.$ref !== newFile.$ref ||
+      oldFile.lastRetrieved !== newFile.lastRetrieved ||
+      oldFile.contentHash !== newFile.contentHash
+    ) {
+      return false;
+    }
+  }
+
+  // Compare directories
+  const oldDirs = oldIndex.directories ?? {};
+  const newDirs = newIndex.directories ?? {};
+
+  const oldDirKeys = Object.keys(oldDirs).sort();
+  const newDirKeys = Object.keys(newDirs).sort();
+
+  if (oldDirKeys.length !== newDirKeys.length) {
+    return false;
+  }
+
+  for (let i = 0; i < oldDirKeys.length; i++) {
+    if (oldDirKeys[i] !== newDirKeys[i]) {
+      return false;
+    }
+
+    const oldDir = oldDirs[oldDirKeys[i]];
+    const newDir = newDirs[newDirKeys[i]];
+
+    // Compare directory entry fields
+    if (
+      oldDir?.$ref !== newDir?.$ref ||
+      oldDir?.lastModified !== newDir?.lastModified
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
  * Find the workspace root by looking for pnpm-workspace.yaml or package.json with workspaces
  * Walks up the directory tree from the current working directory
  */
@@ -359,6 +428,7 @@ export class DiskCacheWriter {
       const baseName = pathModule.basename(filePaths.dataFile, ".json");
 
       // Read or create directory index
+      let oldIndexData: DirectoryIndex | null = null;
       let indexData: DirectoryIndex = {
         lastUpdated: new Date().toISOString(),
       };
@@ -370,9 +440,11 @@ export class DiskCacheWriter {
           throw new Error(`Invalid directory index format in ${indexPath}`);
         }
         // parsedData is validated as DirectoryIndex by isDirectoryIndex
+        oldIndexData = parsedData;
         indexData = {
           ...parsedData,
-          lastUpdated: new Date().toISOString(),
+          // Preserve existing lastUpdated initially, we'll update it below if content changes
+          lastUpdated: parsedData.lastUpdated,
         };
       } catch {
         // Index doesn't exist, use default
@@ -393,7 +465,16 @@ export class DiskCacheWriter {
       // Update the containing directory index
       indexData.files ??= {};
       indexData.files[baseName] = fileEntry;
-      indexData.lastUpdated = new Date().toISOString();
+
+      // Only update lastUpdated if content has actually changed
+      if (oldIndexData && indexContentEquals(oldIndexData, indexData)) {
+        // Content is identical, preserve old lastUpdated timestamp
+        indexData.lastUpdated = oldIndexData.lastUpdated;
+      } else {
+        // Content has changed or this is a new index, update timestamp
+        indexData.lastUpdated = new Date().toISOString();
+      }
+
       await this.writeFileAtomic({
         filePath: indexPath,
         content: JSON.stringify(indexData, null, 2),
@@ -1111,6 +1192,7 @@ export class DiskCacheWriter {
 
     try {
       // Read existing index or create new one
+      let oldIndexData: DirectoryIndex | null = null;
       let indexData: DirectoryIndex = {
         lastUpdated: new Date().toISOString(),
       };
@@ -1122,8 +1204,10 @@ export class DiskCacheWriter {
           throw new Error(`Invalid directory index format in ${indexPath}`);
         }
         // parsedData is validated as DirectoryIndex by isDirectoryIndex
+        oldIndexData = parsedData;
         indexData = {
-          lastUpdated: new Date().toISOString(),
+          // Preserve existing lastUpdated initially
+          lastUpdated: parsedData.lastUpdated,
           ...(parsedData.directories &&
             Object.keys(parsedData.directories).length > 0 && {
               directories: parsedData.directories,
@@ -1136,9 +1220,6 @@ export class DiskCacheWriter {
       } catch {
         // File doesn't exist, use default structure
       }
-
-      // Update timestamp
-      indexData.lastUpdated = new Date().toISOString();
 
       const isContainingDirectory = directoryPath === filePaths.directoryPath;
 
@@ -1157,6 +1238,18 @@ export class DiskCacheWriter {
           lastRetrieved: new Date().toISOString(),
           contentHash: await generateContentHash(responseDataToCache),
         };
+
+        // Only update lastUpdated if content has actually changed
+        if (oldIndexData && indexContentEquals(oldIndexData, indexData)) {
+          indexData.lastUpdated = oldIndexData.lastUpdated;
+        } else {
+          indexData.lastUpdated = new Date().toISOString();
+        }
+
+        await this.writeFileAtomic({
+          filePath: indexPath,
+          content: JSON.stringify(indexData, null, 2),
+        });
         return;
       }
 
@@ -1174,6 +1267,15 @@ export class DiskCacheWriter {
             lastModified: new Date().toISOString(),
           };
         }
+      }
+
+      // Only update lastUpdated if content has actually changed
+      if (oldIndexData && indexContentEquals(oldIndexData, indexData)) {
+        // Content is identical, preserve old lastUpdated timestamp
+        indexData.lastUpdated = oldIndexData.lastUpdated;
+      } else {
+        // Content has changed or this is a new index, update timestamp
+        indexData.lastUpdated = new Date().toISOString();
       }
 
       // Write updated index
