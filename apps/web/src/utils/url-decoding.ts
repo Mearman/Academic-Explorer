@@ -36,8 +36,8 @@ export function decodeEntityId(encodedId: string | undefined): string | undefine
   let decodedId = decodeURIComponent(processedId);
 
   // Fix collapsed protocol slashes (https:/ -> https://)
-  // This happens when URLs are used as route parameters and the router
-  // normalizes consecutive slashes during routing (fallback for legacy URLs)
+  // This happens when TanStack Router processes splat routes with forward slashes
+  // and normalizes consecutive slashes during parsing
   if (decodedId.match(/^https?:\//i) && !decodedId.match(/^https?:\/\//i)) {
     decodedId = decodedId.replace(/^(https?:\/?)/, "$1/");
   }
