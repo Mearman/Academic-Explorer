@@ -1,3 +1,10 @@
+## [11.5.8](https://github.com/Mearman/Academic-Explorer/compare/v11.5.7...v11.5.8) (2025-11-07)
+
+
+### Bug Fixes
+
+* **web:** resolve quality gate failures and optimize test infrastructure ([e4b2348](https://github.com/Mearman/Academic-Explorer/commit/e4b234884a5e33ded54e3ea736088c957181dabb))
+
 ## [11.5.7](https://github.com/Mearman/Academic-Explorer/compare/v11.5.6...v11.5.7) (2025-11-07)
 
 
