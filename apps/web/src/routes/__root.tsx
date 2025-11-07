@@ -114,10 +114,9 @@ export const Route = createRootRoute({
                 ? "?" + currentHash.split("?").slice(1).join("?")
                 : "";
 
-              const prettyHash = `#/${entityType}/${decodedId}${hashQueryParams}`;
-              const prettyUrl = window.location.pathname + window.location.search + prettyHash;
+              const prettyHash = `${entityType}/${decodedId}${hashQueryParams}`;
 
-              logger.debug("routing", "Converting encoded URL to pretty URL", {
+              logger.debug("routing", "Detected encoded external canonical ID, redirecting", {
                 originalHash: currentHash,
                 prettyHash,
                 encodedId,
@@ -125,9 +124,10 @@ export const Route = createRootRoute({
                 hashQueryParams
               });
 
-              // Use replaceState to update URL without triggering router re-processing
-              window.history.replaceState(window.history.state, "", prettyUrl);
-              logger.debug("routing", "URL conversion completed", { finalUrl: window.location.href });
+              // Use window.location to force proper navigation and route re-processing
+              window.location.replace(`#${prettyHash}`);
+              // Throw to stop route processing
+              throw new Error("Redirecting");
             } else {
               logger.debug("routing", "Skipping URL conversion - conditions not met", {
                 decodedId,
