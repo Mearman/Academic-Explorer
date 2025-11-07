@@ -9,6 +9,7 @@ import { TextEncoder as NodeTextEncoder, TextDecoder as NodeTextDecoder } from "
 
 // Ensure AbortSignal/AbortController are properly available in test environment
 // This fixes issues with fetch() calls that use AbortSignal in Node.js test environments
+// Note: We prefer native implementations when available to avoid compatibility issues
 if (typeof globalThis.AbortController === "undefined") {
   const { AbortController: NodeAbortController, AbortSignal: NodeAbortSignal } = require("abort-controller");
   globalThis.AbortController = NodeAbortController;
@@ -23,7 +24,10 @@ if (typeof global.AbortController === "undefined") {
 if (typeof global.AbortSignal === "undefined") {
   global.AbortSignal = globalThis.AbortSignal;
 }
-if (typeof global.AbortSignal.timeout === "undefined") {
+
+// Only add timeout method if not available and if we have a valid AbortSignal
+// This prevents conflicts with native AbortSignal implementations
+if (typeof global.AbortSignal !== "undefined" && typeof global.AbortSignal.timeout === "undefined") {
   // Add timeout method if not available (Node.js < 20)
   global.AbortSignal.timeout = (delay) => {
     const controller = new global.AbortController();

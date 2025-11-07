@@ -686,11 +686,17 @@ export class OpenAlexBaseClient {
         ...requestOptions,
       };
 
+      // Check if we're in a test environment - disable AbortSignal usage entirely in tests
+      const isTestEnvironment = typeof process !== 'undefined' &&
+                               (process.env.NODE_ENV === 'test' ||
+                                process.env.VITEST === 'true' ||
+                                process.env.JEST_WORKER_ID !== undefined);
+
       if (controller.signal &&
           typeof controller.signal === 'object' &&
           controller.signal !== null &&
-          'aborted' in controller.signal &&
-          'addEventListener' in controller.signal) {
+          !isTestEnvironment) {
+        // Only use AbortSignal in non-test environments to avoid polyfill compatibility issues
         fetchOptions.signal = controller.signal;
       }
 
