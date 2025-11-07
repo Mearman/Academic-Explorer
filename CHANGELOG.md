@@ -1,3 +1,10 @@
+## [11.5.12](https://github.com/Mearman/Academic-Explorer/compare/v11.5.11...v11.5.12) (2025-11-07)
+
+
+### Bug Fixes
+
+* **web:** resolve ROR URL parameter handling bug ([c0268a2](https://github.com/Mearman/Academic-Explorer/commit/c0268a2c5592215977b3088e2214beafdd031b80))
+
 ## [11.5.11](https://github.com/Mearman/Academic-Explorer/compare/v11.5.10...v11.5.11) (2025-11-07)
 
 
