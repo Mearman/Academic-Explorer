@@ -1,3 +1,10 @@
+## [12.0.11](https://github.com/Mearman/Academic-Explorer/compare/v12.0.10...v12.0.11) (2025-11-07)
+
+
+### Bug Fixes
+
+* **web:** add missing leading slash in external canonical ID redirect URL ([103efa0](https://github.com/Mearman/Academic-Explorer/commit/103efa04deaab4f09707f549f5521194c1830f83))
+
 ## [12.0.10](https://github.com/Mearman/Academic-Explorer/compare/v12.0.9...v12.0.10) (2025-11-07)
 
 
