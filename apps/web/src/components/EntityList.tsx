@@ -144,12 +144,20 @@ export function EntityList({
           group_by: searchParams?.group_by,
         });
         break;
-      case "sources":
+      case "sources": {
+        const sourcesFilter = urlFilters
+          ? buildFilterString(urlFilters)
+          : searchParams?.filter;
+        // Type assertion needed: URL filter strings are valid but don't match strict SourcesFilters type
         response = await openAlex.client.sources.getSources({
-          per_page: perPage,
-          page: currentPage,
+          per_page: searchParams?.per_page ?? perPage,
+          page: searchParams?.page ?? currentPage,
+          sort: searchParams?.sort,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          ...(sourcesFilter && { filters: sourcesFilter as any }),
         });
         break;
+      }
       case "works": {
         const worksFilter = urlFilters
           ? buildFilterString(urlFilters)
@@ -162,20 +170,32 @@ export function EntityList({
         });
         break;
       }
-      case "authors":
+      case "authors": {
+        const authorsFilter = urlFilters
+          ? buildFilterString(urlFilters)
+          : searchParams?.filter;
         response = await openAlex.client.authors.getAuthors({
-          per_page: perPage,
-          page: currentPage,
-          filter: urlFilters ? buildFilterString(urlFilters) : undefined,
+          per_page: searchParams?.per_page ?? perPage,
+          page: searchParams?.page ?? currentPage,
+          filter: authorsFilter,
+          sort: searchParams?.sort,
         });
         break;
-      case "institutions":
+      }
+      case "institutions": {
+        const institutionsFilter = urlFilters
+          ? buildFilterString(urlFilters)
+          : searchParams?.filter;
+        // Type assertion needed: URL params are valid but don't match strict InstitutionSearchOptions types
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         response = await openAlex.client.institutions.getInstitutions({
-          per_page: perPage,
-          page: currentPage,
-          filters: urlFilters as InstitutionsFilters | undefined,
-        });
+          per_page: searchParams?.per_page ?? perPage,
+          page: searchParams?.page ?? currentPage,
+          filter: institutionsFilter,
+          sort: searchParams?.sort,
+        } as any);
         break;
+      }
       case "concepts":
         response = await openAlex.client.concepts.getConcepts({
           per_page: searchParams?.per_page ?? perPage,
@@ -187,12 +207,18 @@ export function EntityList({
           group_by: searchParams?.group_by,
         });
         break;
-      case "topics":
+      case "topics": {
+        const topicsFilter = urlFilters
+          ? buildFilterString(urlFilters)
+          : searchParams?.filter;
         response = await openAlex.client.topics.getMultiple({
-          per_page: perPage,
-          page: currentPage,
+          per_page: searchParams?.per_page ?? perPage,
+          page: searchParams?.page ?? currentPage,
+          filter: topicsFilter,
+          sort: searchParams?.sort,
         });
         break;
+      }
       case "keywords":
         response = await openAlex.client.keywords.getKeywords({
           per_page: searchParams?.per_page ?? perPage,
