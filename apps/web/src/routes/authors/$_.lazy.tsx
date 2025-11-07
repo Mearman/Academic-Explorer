@@ -18,9 +18,18 @@ function AuthorRoute() {
   // Fix browser address bar display issues with collapsed protocol slashes
   useUrlNormalization();
 
-  // Decode the author ID and fix any collapsed protocol slashes
-  const authorId = decodeEntityId(rawAuthorId);
-  usePrettyUrl("authors", rawAuthorId, authorId);
+  // Extract author ID from URL hash as fallback since splat parameter isn't working
+  const getAuthorIdFromHash = () => {
+    if (typeof window !== 'undefined') {
+      const hashParts = window.location.hash.split('/');
+      return hashParts.length >= 3 ? hashParts[2] : '';
+    }
+    return '';
+  };
+
+  const authorId = rawAuthorId || getAuthorIdFromHash();
+  const decodedAuthorId = decodeEntityId(authorId);
+  usePrettyUrl("authors", rawAuthorId, decodedAuthorId);
 
   // Parse select parameter - if not provided, use all AUTHOR_FIELDS (default behavior)
   const selectFields = selectParam && typeof selectParam === 'string'
@@ -29,30 +38,30 @@ function AuthorRoute() {
 
   // Fetch author data
   const { data: author, isLoading, error } = useQuery({
-    queryKey: ["author", authorId, selectParam],
+    queryKey: ["author", decodedAuthorId, selectParam],
     queryFn: async () => {
-      if (!authorId) {
+      if (!decodedAuthorId) {
         throw new Error("Author ID is required");
       }
-      const response = await cachedOpenAlex.client.authors.getAuthor(authorId, {
+      const response = await cachedOpenAlex.client.authors.getAuthor(decodedAuthorId, {
         select: selectFields,
       });
       return response as Author;
     },
-    enabled: !!authorId && authorId !== "random",
+    enabled: !!decodedAuthorId && decodedAuthorId !== "random",
   });
 
   const config = ENTITY_TYPE_CONFIGS.author;
 
   if (isLoading) {
-    return <LoadingState entityType="Author" entityId={authorId || ''} config={config} />;
+    return <LoadingState entityType="Author" entityId={decodedAuthorId || ''} config={config} />;
   }
 
   if (error) {
-    return <ErrorState entityType="Author" entityId={authorId || ''} error={error} />;
+    return <ErrorState entityType="Author" entityId={decodedAuthorId || ''} error={error} />;
   }
 
-  if (!author || !authorId) {
+  if (!author || !decodedAuthorId) {
     return null;
   }
 
@@ -60,7 +69,7 @@ function AuthorRoute() {
     <EntityDetailLayout
       config={config}
       entityType="author"
-      entityId={authorId}
+      entityId={decodedAuthorId}
       displayName={author.display_name || "Author"}
       selectParam={(selectParam as string) || ''}
       selectFields={selectFields}

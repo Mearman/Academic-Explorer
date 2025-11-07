@@ -16,11 +16,20 @@ function InstitutionRoute() {
   // Fix browser address bar display issues with collapsed protocol slashes
   useUrlNormalization();
 
-  // Decode the institution ID and fix any collapsed protocol slashes
-  const institutionId = decodeEntityId(rawInstitutionId);
+  // Extract institution ID from URL hash as fallback since splat parameter isn't working
+  const getInstitutionIdFromHash = () => {
+    if (typeof window !== 'undefined') {
+      const hashParts = window.location.hash.split('/');
+      return hashParts.length >= 3 ? hashParts[2] : '';
+    }
+    return '';
+  };
+
+  const institutionId = rawInstitutionId || getInstitutionIdFromHash();
+  const decodedInstitutionId = decodeEntityId(institutionId);
 
   // Update URL with pretty display name if needed
-  usePrettyUrl("institutions", rawInstitutionId, institutionId);
+  usePrettyUrl("institutions", rawInstitutionId, decodedInstitutionId);
 
   // Parse select parameter - if not provided, use all INSTITUTION_FIELDS (default behavior)
   const selectFields = selectParam && typeof selectParam === 'string'
@@ -29,30 +38,30 @@ function InstitutionRoute() {
 
   // Fetch institution data
   const { data: institution, isLoading, error } = useQuery({
-    queryKey: ["institution", institutionId, selectParam],
+    queryKey: ["institution", decodedInstitutionId, selectParam],
     queryFn: async () => {
-      if (!institutionId) {
+      if (!decodedInstitutionId) {
         throw new Error("Institution ID is required");
       }
-      const response = await cachedOpenAlex.client.institutions.getInstitution(institutionId, {
+      const response = await cachedOpenAlex.client.institutions.getInstitution(decodedInstitutionId, {
         select: selectFields,
       });
       return response as InstitutionEntity;
     },
-    enabled: !!institutionId && institutionId !== "random",
+    enabled: !!decodedInstitutionId && decodedInstitutionId !== "random",
   });
 
   const config = ENTITY_TYPE_CONFIGS.institution;
 
   if (isLoading) {
-    return <LoadingState entityType="Institution" entityId={institutionId || ''} config={config} />;
+    return <LoadingState entityType="Institution" entityId={decodedInstitutionId || ''} config={config} />;
   }
 
   if (error) {
-    return <ErrorState entityType="Institution" entityId={institutionId || ''} error={error} />;
+    return <ErrorState entityType="Institution" entityId={decodedInstitutionId || ''} error={error} />;
   }
 
-  if (!institution || !institutionId) {
+  if (!institution || !decodedInstitutionId) {
     return null;
   }
 
@@ -60,7 +69,7 @@ function InstitutionRoute() {
     <EntityDetailLayout
       config={config}
       entityType="institution"
-      entityId={institutionId}
+      entityId={decodedInstitutionId}
       displayName={institution.display_name || "Institution"}
       selectParam={(selectParam as string) || ''}
       selectFields={selectFields}
