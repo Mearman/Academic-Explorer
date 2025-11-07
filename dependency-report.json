@@ -1,0 +1,139 @@
+{
+  "timestamp": "2025-11-07T12:20:20.750Z",
+  "workspace": {
+    "name": "academic-explorer",
+    "version": "11.6.0",
+    "totalPackages": 11
+  },
+  "projects": [
+    {
+      "name": "0",
+      "type": "library",
+      "dependencies": {
+        "production": 0,
+        "development": 0,
+        "peer": 0
+      },
+      "implicitDependencies": [],
+      "circularDependencies": []
+    },
+    {
+      "name": "1",
+      "type": "library",
+      "dependencies": {
+        "production": 0,
+        "development": 0,
+        "peer": 0
+      },
+      "implicitDependencies": [],
+      "circularDependencies": []
+    },
+    {
+      "name": "2",
+      "type": "library",
+      "dependencies": {
+        "production": 0,
+        "development": 0,
+        "peer": 0
+      },
+      "implicitDependencies": [],
+      "circularDependencies": []
+    },
+    {
+      "name": "3",
+      "type": "library",
+      "dependencies": {
+        "production": 0,
+        "development": 0,
+        "peer": 0
+      },
+      "implicitDependencies": [],
+      "circularDependencies": []
+    },
+    {
+      "name": "4",
+      "type": "library",
+      "dependencies": {
+        "production": 0,
+        "development": 0,
+        "peer": 0
+      },
+      "implicitDependencies": [],
+      "circularDependencies": []
+    },
+    {
+      "name": "5",
+      "type": "library",
+      "dependencies": {
+        "production": 0,
+        "development": 0,
+        "peer": 0
+      },
+      "implicitDependencies": [],
+      "circularDependencies": []
+    },
+    {
+      "name": "6",
+      "type": "library",
+      "dependencies": {
+        "production": 0,
+        "development": 0,
+        "peer": 0
+      },
+      "implicitDependencies": [],
+      "circularDependencies": []
+    },
+    {
+      "name": "7",
+      "type": "library",
+      "dependencies": {
+        "production": 0,
+        "development": 0,
+        "peer": 0
+      },
+      "implicitDependencies": [],
+      "circularDependencies": []
+    },
+    {
+      "name": "8",
+      "type": "library",
+      "dependencies": {
+        "production": 0,
+        "development": 0,
+        "peer": 0
+      },
+      "implicitDependencies": [],
+      "circularDependencies": []
+    },
+    {
+      "name": "9",
+      "type": "library",
+      "dependencies": {
+        "production": 0,
+        "development": 0,
+        "peer": 0
+      },
+      "implicitDependencies": [],
+      "circularDependencies": []
+    },
+    {
+      "name": "10",
+      "type": "library",
+      "dependencies": {
+        "production": 0,
+        "development": 0,
+        "peer": 0
+      },
+      "implicitDependencies": [],
+      "circularDependencies": []
+    }
+  ],
+  "issues": [],
+  "recommendations": [
+    "Run `pnpm audit` regularly to check for security vulnerabilities",
+    "Use `pnpm outdated` to identify packages that need updates",
+    "Consider using `pnpm update --interactive --latest` for safe updates",
+    "Review implicit dependencies in project.json files",
+    "Set up automated dependency updates in CI/CD"
+  ]
+}

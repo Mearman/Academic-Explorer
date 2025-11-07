@@ -32,7 +32,10 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
 
 // Import after mocks
 import { useParams, useSearch } from "@tanstack/react-router";
-import SourceRoute from "./$sourceId.lazy";
+import { Route as SourceRouteExport } from "./$sourceId.lazy";
+
+// Extract the component from the lazy route
+const SourceRoute = SourceRouteExport.options.component!;
 
 // Synthetic mock data for source
 const mockSourceData = {

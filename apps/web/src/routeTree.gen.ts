@@ -115,7 +115,7 @@ const ExternalIdRoute = ExternalIdRouteImport.update({
 } as any).lazy(() => import('./routes/$externalId.lazy').then((d) => d.Route))
 const SplatRoute = SplatRouteImport.update({
   id: '/$_',
-  path: '/$',
+  path: '/$_',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/$_.lazy').then((d) => d.Route))
 const IndexRoute = IndexRouteImport.update({
@@ -204,7 +204,7 @@ const AuthorsIndexRoute = AuthorsIndexRouteImport.update({
 } as any).lazy(() => import('./routes/authors/index.lazy').then((d) => d.Route))
 const WorksWorkIdRoute = WorksWorkIdRouteImport.update({
   id: '/works/$_',
-  path: '/works/$',
+  path: '/works/$_',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/works/$_.lazy').then((d) => d.Route))
 const TopicsTopicIdRoute = TopicsTopicIdRouteImport.update({
@@ -231,7 +231,7 @@ const OpenalexUrlSplatRoute = OpenalexUrlSplatRouteImport.update({
 const InstitutionsInstitutionIdRoute =
   InstitutionsInstitutionIdRouteImport.update({
     id: '/institutions/$_',
-    path: '/institutions/$',
+    path: '/institutions/$_',
     getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
     import('./routes/institutions/$_.lazy').then((d) => d.Route),
@@ -272,7 +272,7 @@ const EvaluationDatasetsRoute = EvaluationDatasetsRouteImport.update({
 } as any)
 const AuthorsAuthorIdRoute = AuthorsAuthorIdRouteImport.update({
   id: '/authors/$_',
-  path: '/authors/$',
+  path: '/authors/$_',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/authors/$_.lazy').then((d) => d.Route),

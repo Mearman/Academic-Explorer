@@ -32,7 +32,7 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
 
 // Import after mocks
 import { useParams, useSearch } from "@tanstack/react-router";
-import { Route as WorkRouteExport } from "./$workId.lazy";
+import { Route as WorkRouteExport } from "./$_.lazy";
 
 // Extract the component from the lazy route
 const WorkRoute = WorkRouteExport.options.component!;
@@ -59,7 +59,7 @@ describe("WorkRoute Integration Tests", () => {
     });
 
     // Mock useParams
-    vi.mocked(useParams).mockReturnValue({ workId: "W123" });
+    vi.mocked(useParams).mockReturnValue({ _splat: "W123" });
 
     // Mock useSearch
     vi.mocked(useSearch).mockReturnValue({});

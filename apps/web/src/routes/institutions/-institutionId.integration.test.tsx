@@ -32,7 +32,7 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
 
 // Import after mocks
 import { useParams, useSearch } from "@tanstack/react-router";
-import InstitutionRoute from "./$institutionId.lazy";
+import InstitutionRoute from "./$_.lazy";
 
 // Synthetic mock data for institution
 const mockInstitutionData = {
@@ -57,7 +57,7 @@ describe("InstitutionRoute Integration Tests", () => {
     });
 
     // Mock useParams
-    vi.mocked(useParams).mockReturnValue({ institutionId: "I123" });
+    vi.mocked(useParams).mockReturnValue({ _splat: "I123" });
 
     // Mock useSearch
     vi.mocked(useSearch).mockReturnValue({});
