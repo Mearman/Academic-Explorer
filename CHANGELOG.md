@@ -1,3 +1,13 @@
+## [11.5.7](https://github.com/Mearman/Academic-Explorer/compare/v11.5.6...v11.5.7) (2025-11-07)
+
+
+### Bug Fixes
+
+* **web:** add placeholder components for removed CacheBrowser and EntityBrowser ([f7cbbe6](https://github.com/Mearman/Academic-Explorer/commit/f7cbbe6e115a8817d3ca5f740c3d6e22bc2f2c94))
+* **web:** add placeholder components for removed layout components ([ad120e5](https://github.com/Mearman/Academic-Explorer/commit/ad120e54729b872231c1bd4e9a1288dd6b6f6cb4))
+* **web:** add placeholder components for removed section components ([9c35f72](https://github.com/Mearman/Academic-Explorer/commit/9c35f72d646b93f35bba3d666ff7d7e226c906c3))
+* **web:** remove DateRangeFilter dependencies from SearchInterface and search page ([0293378](https://github.com/Mearman/Academic-Explorer/commit/029337897a0b889e7d4b70e8fdde4055dcfd8c95))
+
 ## [11.5.6](https://github.com/Mearman/Academic-Explorer/compare/v11.5.5...v11.5.6) (2025-11-07)
 
 
