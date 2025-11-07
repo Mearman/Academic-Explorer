@@ -1,5 +1,5 @@
 import { MultiSelect, Select, TextInput } from "@mantine/core";
-import { BaseFilter } from "@academic-explorer/utils/ui/filter-base";
+import { BaseFilter, type BaseFilterRenderProps } from "@academic-explorer/utils/ui/filter-base";
 import type { FilterFieldConfig, FilterOperator } from "../types/filter-ui";
 
 interface EntityFilterProps {
@@ -42,42 +42,42 @@ export function EntityFilter({
       compact={compact}
       fieldId={fieldId}
     >
-      {({ value, onChange, disabled, compact, fieldId }) => (
+      {(props: BaseFilterRenderProps<string | string[]>) => (
         <>
           {hasOptions ? (
             isMulti ? (
               <MultiSelect
-                id={fieldId}
+                id={props.fieldId}
                 data={selectOptions}
-                value={Array.isArray(value) ? value : []}
-                onChange={onChange}
+                value={Array.isArray(props.value) ? props.value : []}
+                onChange={(val) => props.onChange(val)}
                 placeholder={config.placeholder || "Select entities"}
-                disabled={disabled}
-                size={compact ? "xs" : "sm"}
+                disabled={props.disabled}
+                size={props.compact ? "xs" : "sm"}
                 flex={1}
                 searchable
               />
             ) : (
               <Select
-                id={fieldId}
+                id={props.fieldId}
                 data={selectOptions}
-                value={typeof value === "string" ? value : ""}
-                onChange={(val) => onChange(val || "")}
+                value={typeof props.value === "string" ? props.value : ""}
+                onChange={(val) => props.onChange(val || "")}
                 placeholder={config.placeholder || "Select entity"}
-                disabled={disabled}
-                size={compact ? "xs" : "sm"}
+                disabled={props.disabled}
+                size={props.compact ? "xs" : "sm"}
                 flex={1}
                 searchable
               />
             )
           ) : (
             <TextInput
-              id={fieldId}
-              value={typeof value === "string" ? value : ""}
-              onChange={(event) => onChange(event.currentTarget.value)}
+              id={props.fieldId}
+              value={typeof props.value === "string" ? props.value : ""}
+              onChange={(event) => props.onChange(event.currentTarget.value)}
               placeholder={config.placeholder || "Enter entity ID or name"}
-              disabled={disabled}
-              size={compact ? "xs" : "sm"}
+              disabled={props.disabled}
+              size={props.compact ? "xs" : "sm"}
               flex={1}
             />
           )}

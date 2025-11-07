@@ -242,12 +242,12 @@ test.describe("OpenAlex URL Redirection and Bookmarking", () => {
 
       await page.waitForTimeout(2000);
 
-      // Check that parameters are preserved in the redirected URL
+      // Check that parameters are preserved in the redirected URL (URL-encoded format)
       const currentUrl = page.url();
       expect(currentUrl).toContain("works");
-      expect(currentUrl).toContain("publication_year:2023");
-      expect(currentUrl).toContain("is_oa:true");
-      expect(currentUrl).toContain("cited_by_count:desc");
+      expect(currentUrl).toContain("publication_year%3A2023");
+      expect(currentUrl).toContain("is_oa%3Atrue");
+      expect(currentUrl).toContain("cited_by_count%3Adesc");
     });
   });
 

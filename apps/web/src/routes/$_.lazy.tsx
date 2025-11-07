@@ -136,6 +136,46 @@ function ExternalIdRoute() {
           });
         }
 
+        // Basic validation: reject obviously invalid IDs early
+        if (!idForDetection || idForDetection.trim().length === 0) {
+          logger.warn(
+            "routing",
+            "Empty or invalid ID provided, redirecting to search",
+            { decodedId },
+            "ExternalIdRoute",
+          );
+
+          void navigate({
+            to: "/search",
+            search: { q: "", filter: undefined, search: undefined },
+            replace: true,
+          });
+          return;
+        }
+
+        // Reject obviously invalid patterns
+        const invalidPatterns = [
+          /^[^a-zA-Z0-9\-._~:/?#[\]@!$&'()*+,;=%]+$/, // Contains invalid URL characters
+          /^\s+$/, // Only whitespace
+          /^(data:|javascript:|vbscript:)/i, // Dangerous protocols
+        ];
+
+        if (invalidPatterns.some(pattern => pattern.test(idForDetection))) {
+          logger.warn(
+            "routing",
+            "Invalid ID pattern detected, redirecting to search",
+            { idForDetection },
+            "ExternalIdRoute",
+          );
+
+          void navigate({
+            to: "/search",
+            search: { q: idForDetection, filter: undefined, search: undefined },
+            replace: true,
+          });
+          return;
+        }
+
         // Clean up OpenAlex API URLs to match detection patterns
         // Convert: https://api.openalex.org/authors/A5023888391 -> https://api.openalex.org/A5023888391
         // The API uses REST-style paths but the entity detection expects the ID directly after openalex.org
@@ -220,7 +260,21 @@ function ExternalIdRoute() {
             }
           });
         } else {
-          throw new Error(`Unable to detect entity type for: ${decodedId}`);
+          // Instead of throwing, immediately redirect to search
+          logger.warn(
+            "routing",
+            "Unable to detect entity type, redirecting to search",
+            { decodedId, idForDetection, detection },
+            "ExternalIdRoute",
+          );
+
+          // Immediate fallback to search without throwing
+          void navigate({
+            to: "/search",
+            search: { q: decodedId, filter: undefined, search: undefined },
+            replace: true,
+          });
+          return;
         }
       } catch (error) {
         logError(

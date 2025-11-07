@@ -86,11 +86,8 @@ const precacheManifest = self.__WB_MANIFEST;
 
 const sw = self;
 
-// Log precache manifest for debugging
-console.log(
-  "[OpenAlex SW] Precache manifest entries:",
-  precacheManifest.length,
-);
+// Service worker initialized with precache manifest
+// Note: precacheManifest contains the list of files to cache
 
 // Service worker event types
 interface ExtendableEvent extends Event {
@@ -104,13 +101,13 @@ interface FetchEvent extends ExtendableEvent {
 
 // Install event - set up the service worker
 sw.addEventListener("install", (_event) => {
-  console.log("[OpenAlex SW] Installing service worker");
+  // Service worker installation starting - activating immediately
   sw.skipWaiting(); // Activate immediately
 });
 
 // Activate event - clean up old caches
 sw.addEventListener("activate", (event) => {
-  console.log("[OpenAlex SW] Activating service worker");
+  // Service worker activation starting - claiming all clients
   (event as ExtendableEvent).waitUntil(sw.clients.claim()); // Take control immediately
 });
 
@@ -148,7 +145,7 @@ async function handleDevelopmentRequest({
   url: URL;
 }): Promise<Response> {
   const proxyUrl = `/api/openalex${url.pathname}${url.search}`;
-  console.log("[OpenAlex SW] Proxying to:", proxyUrl);
+  // In development, proxy OpenAlex API requests to local development server
 
   const proxyRequest = new Request(proxyUrl, {
     method: request.method,
@@ -165,14 +162,14 @@ async function handleDevelopmentRequest({
 async function tryStaticFile(url: URL): Promise<Response | null> {
   const staticPath = `/data/openalex${url.pathname}.json`;
   try {
-    console.log("[OpenAlex SW] Trying static file:", staticPath);
+    // Attempt to fetch pre-generated static JSON file for this OpenAlex endpoint
     const staticResponse = await fetch(staticPath);
     if (staticResponse.ok) {
-      console.log("[OpenAlex SW] Static file hit:", staticPath);
+      // Static file found and served successfully
       return staticResponse;
     }
   } catch (error) {
-    console.log("[OpenAlex SW] Static file miss:", staticPath, error);
+    // Static file not available or failed to load
   }
   return null;
 }
@@ -190,7 +187,7 @@ async function tryCache({
   const cache = await caches.open(CACHE_NAME);
   const cachedResponse = await cache.match(request);
   if (cachedResponse) {
-    console.log("[OpenAlex SW] Cache hit for:", url.pathname);
+    // Found cached response for this OpenAlex API request
     return cachedResponse;
   }
   return null;
@@ -227,7 +224,7 @@ async function validateAndCacheResponse({
     // Cache valid response
     const cache = await caches.open(CACHE_NAME);
     await cache.put(request, response.clone());
-    console.log("[OpenAlex SW] Cached validated response for:", url.pathname);
+    // Successfully cached validated OpenAlex response
   } catch (error) {
     console.warn(
       "[OpenAlex SW] Failed to validate response, not caching:",
@@ -260,10 +257,7 @@ function isValidOpenAlexResponse({
 async function handleOpenAlexRequest(request: Request): Promise<Response> {
   try {
     const url = new URL(request.url);
-    console.log(
-      "[OpenAlex SW] Intercepting request:",
-      url.pathname + url.search,
-    );
+    // Intercepting OpenAlex API request for caching and optimization
 
     if (isDevelopmentEnvironment()) {
       return handleDevelopmentRequest({ request, url });
@@ -278,12 +272,12 @@ async function handleOpenAlexRequest(request: Request): Promise<Response> {
     if (cachedResponse) return cachedResponse;
 
     // Fetch from API
-    console.log("[OpenAlex SW] Cache miss, fetching from API:", url.pathname);
+    // No cached response available, fetching from live OpenAlex API
     const response = await fetch(request);
 
     return validateAndCacheResponse({ request, response, url });
   } catch (error) {
-    console.error("[OpenAlex SW] Error handling request:", error);
+    // Error in service worker, falling back to direct network request
     // Fallback to normal fetch
     return fetch(request);
   }

@@ -1,5 +1,5 @@
 import { TextInput } from "@mantine/core";
-import { BaseFilter } from "@academic-explorer/utils/ui/filter-base";
+import { BaseFilter, type BaseFilterRenderProps } from "@academic-explorer/utils/ui/filter-base";
 import type { FilterFieldConfig, FilterOperator } from "../types/filter-ui";
 
 interface TextFilterProps {
@@ -34,14 +34,14 @@ export function TextFilter({
       compact={compact}
       fieldId={fieldId}
     >
-      {({ value, onChange, disabled, compact, fieldId }) => (
+      {(props: BaseFilterRenderProps<string>) => (
         <TextInput
-          id={fieldId}
-          value={value || ""}
-          onChange={(event) => onChange(event.currentTarget.value)}
+          id={props.fieldId}
+          value={props.value || ""}
+          onChange={(event) => props.onChange(event.currentTarget.value)}
           placeholder={config.placeholder}
-          disabled={disabled}
-          size={compact ? "xs" : "sm"}
+          disabled={props.disabled}
+          size={props.compact ? "xs" : "sm"}
           flex={1}
         />
       )}

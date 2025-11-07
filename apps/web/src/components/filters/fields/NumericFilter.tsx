@@ -1,5 +1,5 @@
 import { NumberInput } from "@mantine/core";
-import { BaseFilter } from "@academic-explorer/utils/ui/filter-base";
+import { BaseFilter, type BaseFilterRenderProps } from "@academic-explorer/utils/ui/filter-base";
 import type { FilterFieldConfig, FilterOperator } from "../types/filter-ui";
 
 interface NumericFilterProps {
@@ -34,14 +34,14 @@ export function NumericFilter({
       compact={compact}
       fieldId={fieldId}
     >
-      {({ value, onChange, disabled, compact, fieldId }) => (
+      {(props: BaseFilterRenderProps<number>) => (
         <NumberInput
-          id={fieldId}
-          value={value || 0}
-          onChange={(val) => onChange(typeof val === "number" ? val : 0)}
+          id={props.fieldId}
+          value={props.value || 0}
+          onChange={(val) => props.onChange(typeof val === "number" ? val : 0)}
           placeholder={config.placeholder}
-          disabled={disabled}
-          size={compact ? "xs" : "sm"}
+          disabled={props.disabled}
+          size={props.compact ? "xs" : "sm"}
           flex={1}
         />
       )}

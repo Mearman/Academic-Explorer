@@ -1,6 +1,6 @@
 import React from "react";
 import { TextInput } from "@mantine/core";
-import { BaseFilter } from "@academic-explorer/utils/ui/filter-base";
+import { BaseFilter, type BaseFilterRenderProps } from "@academic-explorer/utils/ui/filter-base";
 import type { FilterFieldConfig, FilterOperator } from "../types/filter-ui";
 
 interface DateFilterProps {
@@ -67,14 +67,14 @@ export function DateFilter({
       compact={compact}
       fieldId={fieldId}
     >
-      {({ disabled, compact, fieldId }) => (
+      {(props: BaseFilterRenderProps<string | [string, string] | null>) => (
         <TextInput
-          id={fieldId}
+          id={props.fieldId}
           value={displayValue}
           onChange={(event) => handleValueChange(event.currentTarget.value)}
           placeholder={config.placeholder || (isRange ? "2023-01-01 to 2023-12-31" : "YYYY-MM-DD")}
-          disabled={disabled}
-          size={compact ? "xs" : "sm"}
+          disabled={props.disabled}
+          size={props.compact ? "xs" : "sm"}
           flex={1}
         />
       )}

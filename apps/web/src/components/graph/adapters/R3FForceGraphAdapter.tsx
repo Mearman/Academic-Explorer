@@ -207,12 +207,9 @@ function R3FForceGraphScene({
   // Callback to update node positions for labels (no-op for now)
   const nodePositionUpdate = useCallback(
     (
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      nodeObject: unknown,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      coords: { x: number; y: number; z: number },
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      node: { id?: string | number | undefined },
+      _nodeObject: unknown,
+      _coords: { x: number; y: number; z: number },
+      _node: { id?: string | number | undefined },
     ) => {
       // No-op - node position tracking disabled for now
     },

@@ -2,6 +2,7 @@ import { MultiSelect, Select } from "@mantine/core";
 import {
   BaseFilter,
   createEnumOptions,
+  type BaseFilterRenderProps,
 } from "@academic-explorer/utils/ui/filter-base";
 import type { FilterFieldConfig, FilterOperator } from "../types/filter-ui";
 import type { FilterFieldOption as UtilsFilterFieldOption } from "@academic-explorer/utils/ui";
@@ -47,27 +48,27 @@ export function EnumFilter({
       compact={compact}
       fieldId={fieldId}
     >
-      {({ value, onChange, disabled, compact, fieldId }) => (
+      {(props: BaseFilterRenderProps<string | string[]>) => (
         <>
           {isMulti ? (
             <MultiSelect
-              id={fieldId}
+              id={props.fieldId}
               data={selectOptions}
-              value={Array.isArray(value) ? value : []}
-              onChange={(val) => onChange(val)}
-              disabled={disabled}
-              size={compact ? "xs" : "sm"}
+              value={Array.isArray(props.value) ? props.value : []}
+              onChange={(val) => props.onChange(val)}
+              disabled={props.disabled}
+              size={props.compact ? "xs" : "sm"}
               placeholder={config.placeholder}
               flex={1}
             />
           ) : (
             <Select
-              id={fieldId}
+              id={props.fieldId}
               data={selectOptions}
-              value={Array.isArray(value) ? value[0] : value || ""}
-              onChange={(val) => onChange(val as string)}
-              disabled={disabled}
-              size={compact ? "xs" : "sm"}
+              value={Array.isArray(props.value) ? props.value[0] : props.value || ""}
+              onChange={(val) => props.onChange(val as string)}
+              disabled={props.disabled}
+              size={props.compact ? "xs" : "sm"}
               placeholder={config.placeholder}
               flex={1}
               searchable

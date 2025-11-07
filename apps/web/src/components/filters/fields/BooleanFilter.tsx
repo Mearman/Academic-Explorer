@@ -1,5 +1,5 @@
 import { Switch } from "@mantine/core";
-import { BaseFilter } from "@academic-explorer/utils/ui/filter-base";
+import { BaseFilter, type BaseFilterRenderProps } from "@academic-explorer/utils/ui/filter-base";
 import type { FilterFieldConfig, FilterOperator } from "../types/filter-ui";
 
 interface BooleanFilterProps {
@@ -34,13 +34,13 @@ export function BooleanFilter({
       compact={compact}
       fieldId={fieldId}
     >
-      {({ value, onChange, disabled, compact, fieldId }) => (
+      {(props: BaseFilterRenderProps<boolean>) => (
         <Switch
-          id={fieldId}
-          checked={value}
-          onChange={(event) => onChange(event.currentTarget.checked)}
-          disabled={disabled}
-          size={compact ? "xs" : "sm"}
+          id={props.fieldId}
+          checked={props.value}
+          onChange={(event) => props.onChange(event.currentTarget.checked)}
+          disabled={props.disabled}
+          size={props.compact ? "xs" : "sm"}
           style={{ marginTop: "4px" }}
         />
       )}

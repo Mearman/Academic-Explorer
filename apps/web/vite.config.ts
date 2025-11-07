@@ -47,24 +47,123 @@ function createWebConfig(): UserConfig {
         // For web app, we don't want external dependencies
         // Don't spread base.build.rollupOptions since it has external deps for library builds
         onwarn: base.build?.rollupOptions?.onwarn,
-        // Enable manual chunking to improve bundle size
+        // Enhanced manual chunking with better optimization
         output: {
-          manualChunks: {
-            vendor: ['react', 'react-dom'],
-            router: ['@tanstack/react-router'],
-            ui: ['@mantine/core', '@mantine/hooks', '@mantine/dates', '@mantine/notifications', '@tabler/icons-react'],
-            table: ['@tanstack/react-table', '@tanstack/react-virtual'],
-            query: ['@tanstack/react-query'],
-            graph: ['@academic-explorer/simulation', '@react-three/fiber', '@react-three/drei', 'react-force-graph-2d', 'react-force-graph-3d', 'r3f-forcegraph', 'three', 'three-spritetext'],
-            xyflow: ['@xyflow/react', '@dnd-kit/core', '@dnd-kit/sortable', '@dnd-kit/utilities'],
-            client: ['@academic-explorer/client'],
-            utils: ['@academic-explorer/utils'],
-            graphlib: ['@academic-explorer/graph'],
-            uiPackage: ['@academic-explorer/ui'],
-            dexie: ['dexie'],
+          manualChunks: (id) => {
+            // Core React ecosystem
+            if (id.includes('react') || id.includes('react-dom')) {
+              return 'vendor-react';
+            }
+
+            // TanStack ecosystem
+            if (id.includes('@tanstack/react-router')) {
+              return 'vendor-router';
+            }
+            if (id.includes('@tanstack/react-query')) {
+              return 'vendor-query';
+            }
+            if (id.includes('@tanstack/react-table') || id.includes('@tanstack/react-virtual')) {
+              return 'vendor-table';
+            }
+
+            // Mantine UI (split for better caching)
+            if (id.includes('@mantine/core') || id.includes('@mantine/hooks')) {
+              return 'vendor-ui-core';
+            }
+            if (id.includes('@mantine/dates') || id.includes('@mantine/notifications')) {
+              return 'vendor-ui-extra';
+            }
+            if (id.includes('@tabler/icons-react')) {
+              return 'vendor-icons';
+            }
+
+            // Graph visualization (split by library for better loading)
+            if (id.includes('@xyflow/react') || id.includes('@dnd-kit')) {
+              return 'vendor-xyflow';
+            }
+            if (id.includes('@react-three') || id.includes('three') || id.includes('react-force-graph') || id.includes('r3f-forcegraph')) {
+              return 'vendor-three';
+            }
+
+            // Database and storage
+            if (id.includes('dexie')) {
+              return 'vendor-storage';
+            }
+
+            // Workspace packages
+            if (id.includes('@academic-explorer/client')) {
+              return 'workspace-client';
+            }
+            if (id.includes('@academic-explorer/graph')) {
+              return 'workspace-graph';
+            }
+            if (id.includes('@academic-explorer/utils')) {
+              return 'workspace-utils';
+            }
+            if (id.includes('@academic-explorer/ui')) {
+              return 'workspace-ui';
+            }
+            if (id.includes('@academic-explorer/simulation')) {
+              return 'workspace-simulation';
+            }
+
+            // Node modules fallback
+            if (id.includes('node_modules')) {
+              return 'vendor-libs';
+            }
+
+            // Default chunk
+            return 'chunk';
+          },
+          // Optimize chunk naming for better caching
+          chunkFileNames: (chunkInfo) => {
+            const facadeModuleId = chunkInfo.facadeModuleId ? chunkInfo.facadeModuleId.split('/').pop() : 'chunk';
+            return `assets/[name]-[hash].js`;
+          },
+          assetFileNames: (assetInfo) => {
+            if (!assetInfo.name) {
+              return `assets/[name]-[hash][extname]`;
+            }
+            const info = assetInfo.name.split('.');
+            const extType = info[info.length - 1];
+            if (/\.(css)$/.test(assetInfo.name)) {
+              return `assets/css/[name]-[hash][extname]`;
+            }
+            if (/\.(png|jpe?g|gif|svg|webp|avif)$/.test(assetInfo.name)) {
+              return `assets/images/[name]-[hash][extname]`;
+            }
+            if (/\.(woff2?|eot|ttf|otf)$/.test(assetInfo.name)) {
+              return `assets/fonts/[name]-[hash][extname]`;
+            }
+            return `assets/[name]-[hash][extname]`;
           },
         },
+        // Enable additional optimizations
+        treeshake: {
+          moduleSideEffects: false,
+          propertyReadSideEffects: false,
+          tryCatchDeoptimization: false,
+        },
       },
+      // Optimize build targets and compression
+      target: 'esnext',
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true,
+          pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn'],
+        },
+        mangle: {
+          safari10: true,
+        },
+      },
+      // Enable CSS code splitting
+      cssCodeSplit: true,
+      // Generate source maps for production debugging
+      sourcemap: true,
+      // Optimize chunk size warnings
+      chunkSizeWarningLimit: 1000,
     },
 
     // Development server configuration for the web app

@@ -1,5 +1,6 @@
 import React from "react";
 import { Loader, Paper, Stack, Container, Title, Code, Flex, Text } from "@mantine/core";
+import { logger } from "@/lib/logger";
 import { EntityTypeConfig, EntityType } from "./EntityTypeConfig";
 
 interface LoadingStateProps {
@@ -27,8 +28,7 @@ export function LoadingState({ entityType, entityId, config }: LoadingStateProps
   const loaderColor = getMantineColor(config.colorKey as EntityType);
 
   // Debug logging
-  console.log('LoadingState entityType:', entityType);
-  console.log('LoadingState config.colorKey:', config.colorKey);
+  logger.debug("ui", "LoadingState rendering", { entityType, colorKey: config.colorKey });
 
   return (
     <Container size="sm" p="xl">
