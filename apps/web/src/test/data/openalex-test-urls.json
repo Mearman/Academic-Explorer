@@ -1,13 +1,4 @@
 {
-  "extractedAt": "2025-10-11T14:29:01.702Z",
-  "cleanedAt": "2025-10-29T09:15:00.000Z",
-  "totalUrls": 230,
-  "removedUrls": 4,
-  "removedReasons": {
-    "invalidAuthor": "A2798520857 returns 404 from OpenAlex API",
-    "orcidHttpsFormat": "2 URLs using https://orcid.org format (router limitation, use orcid: prefix instead)",
-    "rorHttpsFormat": "2 URLs using https://ror.org format (1 removed, 1 fixed to use ror: prefix)"
-  },
   "urls": [
     "https://api.openalex.org/W2741809807",
     "https://api.openalex.org/authors",
