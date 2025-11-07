@@ -47,30 +47,45 @@ function ExternalIdRoute() {
         const apiMatch = decodedId.match(openAlexApiPattern);
         if (apiMatch) {
           const cleanPath = apiMatch[1];
-          logger.debug(
-            "routing",
-            "Detected OpenAlex API URL in catch-all, redirecting",
-            { original: decodedId, cleanPath },
-            "ExternalIdRoute",
-          );
 
-          // Preserve query params from routeSearch
-          const queryParams =
-            routeSearch && typeof routeSearch === "object"
-              ? Object.entries(routeSearch)
-                  .map(([key, value]) => `${key}=${value}`)
-                  .join("&")
-              : "";
+          // Check if this path contains external IDs (like ror:, orcid:, etc.)
+          // If so, let it fall through to entity detection logic instead of doing simple redirect
+          const hasExternalId = /:/.test(cleanPath);
 
-          // Properly concatenate query parameters
-          const hasExistingParams = cleanPath.includes("?");
-          const newUrl = queryParams
-            ? hasExistingParams
-              ? `/${cleanPath}&${queryParams}`
-              : `/${cleanPath}?${queryParams}`
-            : `/${cleanPath}`;
-          window.location.replace(`#${newUrl}`);
-          return;
+          if (!hasExternalId) {
+            logger.debug(
+              "routing",
+              "Detected OpenAlex API URL in catch-all, redirecting",
+              { original: decodedId, cleanPath },
+              "ExternalIdRoute",
+            );
+
+            // Preserve query params from routeSearch
+            const queryParams =
+              routeSearch && typeof routeSearch === "object"
+                ? Object.entries(routeSearch)
+                    .map(([key, value]) => `${key}=${value}`)
+                    .join("&")
+                : "";
+
+            // Properly concatenate query parameters
+            const hasExistingParams = cleanPath.includes("?");
+            const newUrl = queryParams
+              ? hasExistingParams
+                ? `/${cleanPath}&${queryParams}`
+                : `/${cleanPath}?${queryParams}`
+              : `/${cleanPath}`;
+            window.location.replace(`#${newUrl}`);
+            return;
+          } else {
+            // This URL contains external IDs (like ror:), let it fall through to entity detection
+            logger.debug(
+              "routing",
+              "OpenAlex API URL contains external IDs, falling through to entity detection",
+              { original: decodedId, cleanPath },
+              "ExternalIdRoute",
+            );
+          }
         }
 
         // Skip known route prefixes that should be handled by other routes
@@ -192,6 +207,21 @@ function ExternalIdRoute() {
           );
         }
 
+        // Clean up OpenAlex API URLs with external IDs (ROR, ORCID, etc.)
+        // Convert: https://api.openalex.org/institutions/ror:02y3ad647 -> ror:02y3ad647
+        const externalIdApiPathMatch = idForDetection.match(
+          /^https?:\/\/(?:api\.)?openalex\.org\/(?:authors|works|institutions|sources|funders|publishers|topics|concepts)\/(.+)$/i,
+        );
+        if (externalIdApiPathMatch) {
+          idForDetection = externalIdApiPathMatch[1];
+          logger.debug(
+            "routing",
+            "Cleaned OpenAlex API URL with external ID",
+            { original: decodedId, cleaned: idForDetection },
+            "ExternalIdRoute",
+          );
+        }
+
         // Detect entity type and ID type
         const detection = EntityDetectionService.detectEntity(idForDetection);
 
@@ -211,7 +241,11 @@ function ExternalIdRoute() {
               specificRoute = `/authors/orcid/${detection.normalizedId}`;
               break;
             case "ROR":
-              specificRoute = `/institutions/ror/${detection.normalizedId}`;
+              // Extract raw ROR ID from normalized URL for the route
+              // normalizedId is like "https://ror.org/02y3ad647" but route expects "02y3ad647"
+              const rorIdMatch = detection.normalizedId.match(/ror\.org\/([a-z0-9]{9})$/i);
+              const rorIdForRoute = rorIdMatch ? rorIdMatch[1] : detection.normalizedId;
+              specificRoute = `/institutions/ror/${rorIdForRoute}`;
               break;
             case "ISSN":
               specificRoute = `/sources/issn/${detection.normalizedId}`;

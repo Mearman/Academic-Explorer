@@ -25,12 +25,15 @@ function RORInstitutionRoute() {
         // Decode the ROR parameter
         const decodedROR = decodeURIComponent(ror);
 
+        // Add ror: prefix if not present for EntityDetectionService
+        const rorWithPrefix = decodedROR.startsWith('ror:') ? decodedROR : `ror:${decodedROR}`;
+
         // Detect and normalize the ROR ID
-        const detection = EntityDetectionService.detectEntity(decodedROR);
+        const detection = EntityDetectionService.detectEntity(rorWithPrefix);
 
         if (
           detection?.entityType === "institutions" &&
-          detection.detectionMethod.includes("ror")
+          detection.detectionMethod.toLowerCase().includes("ror")
         ) {
           // If graph already has nodes, use incremental loading to preserve existing entities
           if (nodeCount > 0) {

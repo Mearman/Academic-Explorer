@@ -99,7 +99,11 @@ function ExternalIdRoute() {
               specificRoute = `/authors/orcid/${detection.normalizedId}`;
               break;
             case "ROR":
-              specificRoute = `/institutions/ror/${detection.normalizedId}`;
+              // Extract raw ROR ID from normalized URL for the route
+              // normalizedId is like "https://ror.org/02y3ad647" but route expects "02y3ad647"
+              const rorIdMatch = detection.normalizedId.match(/ror\.org\/([a-z0-9]{9})$/i);
+              const rorIdForRoute = rorIdMatch ? rorIdMatch[1] : detection.normalizedId;
+              specificRoute = `/institutions/ror/${rorIdForRoute}`;
               break;
             case "ISSN":
               specificRoute = `/sources/issn/${detection.normalizedId}`;
