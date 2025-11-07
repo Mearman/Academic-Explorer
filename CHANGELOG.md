@@ -1,3 +1,10 @@
+## [11.5.3](https://github.com/Mearman/Academic-Explorer/compare/v11.5.2...v11.5.3) (2025-11-07)
+
+
+### Bug Fixes
+
+* **web:** resolve TypeScript errors in NavigationTracker component ([1209ad8](https://github.com/Mearman/Academic-Explorer/commit/1209ad8d938ee39cf07828803b152f2aaab5e3a0))
+
 ## [11.5.2](https://github.com/Mearman/Academic-Explorer/compare/v11.5.1...v11.5.2) (2025-11-07)
 
 ## [11.5.1](https://github.com/Mearman/Academic-Explorer/compare/v11.5.0...v11.5.1) (2025-11-07)
