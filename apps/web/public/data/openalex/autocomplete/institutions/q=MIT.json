@@ -5,8 +5,8 @@
       "short_id": "institutions/I4210088227",
       "display_name": "MIT World Peace University",
       "hint": "Pune, India",
-      "cited_by_count": 37581,
-      "works_count": 3984,
+      "cited_by_count": 37623,
+      "works_count": 3988,
       "entity_type": "institution",
       "external_id": "https://ror.org/004ymxd45",
       "filter_key": "authorships.institutions.lineage"
@@ -16,8 +16,8 @@
       "short_id": "institutions/I4210162439",
       "display_name": "MIT Art, Design and Technology University",
       "hint": "Pune, India",
-      "cited_by_count": 23478,
-      "works_count": 2386,
+      "cited_by_count": 23510,
+      "works_count": 2388,
       "entity_type": "institution",
       "external_id": "https://ror.org/05b69xa56",
       "filter_key": "authorships.institutions.lineage"
@@ -27,7 +27,7 @@
       "short_id": "institutions/I4387152970",
       "display_name": "MIT Academy of Engineering",
       "hint": null,
-      "cited_by_count": 8128,
+      "cited_by_count": 8135,
       "works_count": 856,
       "entity_type": "institution",
       "external_id": "https://ror.org/05sjf8653",
@@ -38,8 +38,8 @@
       "short_id": "institutions/I4210095297",
       "display_name": "MIT University",
       "hint": "Skopje, North Macedonia",
-      "cited_by_count": 156227,
-      "works_count": 20071,
+      "cited_by_count": 156274,
+      "works_count": 20076,
       "entity_type": "institution",
       "external_id": "https://ror.org/00v140q16",
       "filter_key": "authorships.institutions.lineage"
@@ -49,8 +49,8 @@
       "short_id": "institutions/I4210122954",
       "display_name": "MIT Lincoln Laboratory",
       "hint": "Lexington, USA",
-      "cited_by_count": 1004349,
-      "works_count": 13338,
+      "cited_by_count": 1004493,
+      "works_count": 13339,
       "entity_type": "institution",
       "external_id": "https://ror.org/022z6jk58",
       "filter_key": "authorships.institutions.lineage"
@@ -71,8 +71,8 @@
       "short_id": "institutions/I4210159271",
       "display_name": "MIT-Harvard Center for Ultracold Atoms",
       "hint": "Cambridge, USA",
-      "cited_by_count": 239534,
-      "works_count": 905,
+      "cited_by_count": 239574,
+      "works_count": 906,
       "entity_type": "institution",
       "external_id": "https://ror.org/053tmcn30",
       "filter_key": "authorships.institutions.lineage"
@@ -82,7 +82,7 @@
       "short_id": "institutions/I4387155524",
       "display_name": "Mitochondrial and Cardiovascular Physiopathology",
       "hint": null,
-      "cited_by_count": 1513,
+      "cited_by_count": 1520,
       "works_count": 66,
       "entity_type": "institution",
       "external_id": "https://ror.org/03hqv2x85",
@@ -100,14 +100,14 @@
       "filter_key": "authorships.institutions.lineage"
     },
     {
-      "id": "https://openalex.org/I4400600946",
-      "short_id": "institutions/I4400600946",
-      "display_name": "Mitford Hospital, Dhaka",
+      "id": "https://openalex.org/I4402554153",
+      "short_id": "institutions/I4402554153",
+      "display_name": "Universitas Mitra Indonesia",
       "hint": null,
-      "cited_by_count": 3104,
-      "works_count": 661,
+      "cited_by_count": 2869,
+      "works_count": 817,
       "entity_type": "institution",
-      "external_id": "https://ror.org/03s61s823",
+      "external_id": "https://ror.org/02a1v0072",
       "filter_key": "authorships.institutions.lineage"
     }
   ]

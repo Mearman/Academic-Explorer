@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-11-07T05:44:20.134Z",
+  "lastUpdated": "2025-11-07T06:11:37.449Z",
   "files": {
     "query=q=neural+networks": {
       "url": "https://api.openalex.org/autocomplete/works?q=neural+networks",
@@ -40,19 +40,19 @@
     "q=neural+networks": {
       "url": "https://api.openalex.org/autocomplete/works?q=neural+networks",
       "$ref": "./q=neural+networks.json",
-      "lastRetrieved": "2025-11-07T05:44:18.414Z",
+      "lastRetrieved": "2025-11-07T06:11:35.119Z",
       "contentHash": "dd796f6d32a769cc"
     },
     "q=machine+learning": {
       "url": "https://api.openalex.org/autocomplete/works?q=machine+learning",
       "$ref": "./q=machine+learning.json",
-      "lastRetrieved": "2025-11-07T05:44:19.725Z",
+      "lastRetrieved": "2025-11-07T06:11:36.734Z",
       "contentHash": "dd796f6d32a769cc"
     },
     "q=artificial+intelligence": {
       "url": "https://api.openalex.org/autocomplete/works?q=artificial+intelligence",
       "$ref": "./q=artificial+intelligence.json",
-      "lastRetrieved": "2025-11-07T05:44:20.133Z",
+      "lastRetrieved": "2025-11-07T06:11:37.445Z",
       "contentHash": "dd796f6d32a769cc"
     }
   },

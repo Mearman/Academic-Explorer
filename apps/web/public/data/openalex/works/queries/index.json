@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-11-07T05:44:16.599Z",
+  "lastUpdated": "2025-11-07T06:11:32.845Z",
   "files": {
     "filter__3D__author.id__3A__A5017898742__26__page__3D__1__26__per_page__3D__50": {
       "url": "https://api.openalex.org/works?filter=author.id:A5017898742&page=1&per_page=50",
@@ -52,19 +52,19 @@
     "filter=select=id,display_name": {
       "url": "https://api.openalex.org/works/W123?select=id,display_name",
       "$ref": "./filter=select=id,display_name.json",
-      "lastRetrieved": "2025-11-07T05:44:16.584Z",
+      "lastRetrieved": "2025-11-07T06:11:32.827Z",
       "contentHash": "fb6d08e8002b7d8e"
     },
     "filter=per_page=2": {
       "url": "https://api.openalex.org/works?per_page=2",
       "$ref": "./filter=per_page=2.json",
-      "lastRetrieved": "2025-11-07T05:44:16.594Z",
+      "lastRetrieved": "2025-11-07T06:11:32.838Z",
       "contentHash": "a695960dbd857a99"
     },
     "filter=per_page=200": {
       "url": "https://api.openalex.org/works?per_page=200",
       "$ref": "./filter=per_page=200.json",
-      "lastRetrieved": "2025-11-07T05:44:16.598Z",
+      "lastRetrieved": "2025-11-07T06:11:32.844Z",
       "contentHash": "a695960dbd857a99"
     }
   },

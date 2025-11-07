@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-11-07T05:44:16.591Z",
+  "lastUpdated": "2025-11-07T06:11:32.835Z",
   "directories": {
     "queries": {
       "$ref": "./queries",
@@ -202,7 +202,7 @@
     "W123%2Fspecial-chars": {
       "url": "https://api.openalex.org/works/W123%2Fspecial-chars",
       "$ref": "./W123%2Fspecial-chars.json",
-      "lastRetrieved": "2025-11-07T05:44:16.589Z",
+      "lastRetrieved": "2025-11-07T06:11:32.834Z",
       "contentHash": "44136fa355b3678a"
     }
   }
