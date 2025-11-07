@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-11-07T04:32:09.693Z",
+  "lastUpdated": "2025-11-07T05:10:31.006Z",
   "files": {
     "query=q=Springer": {
       "url": "https://api.openalex.org/autocomplete/publishers?q=Springer",
@@ -16,7 +16,7 @@
     "q=Springer": {
       "url": "https://api.openalex.org/autocomplete/publishers?q=Springer",
       "$ref": "./q=Springer.json",
-      "lastRetrieved": "2025-11-07T04:32:09.692Z",
+      "lastRetrieved": "2025-11-07T05:10:31.004Z",
       "contentHash": "dd796f6d32a769cc"
     }
   }

@@ -106,6 +106,7 @@ function OpenAlexUrlComponent() {
         const rorPattern = /^ror:([a-z0-9]{9})$/i;
         const issnPattern = /^issn:([0-9]{4}-[0-9]{3}[0-9X])$/i;
         const orcidPattern = /^orcid:([0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[0-9X])$/i;
+        const doiPattern = /^https:\/?\/?doi\.org\/(.+)$/i;
 
         const rorMatch = id.match(rorPattern);
         if (rorMatch && entityType === "institutions") {
@@ -163,6 +164,29 @@ function OpenAlexUrlComponent() {
           const targetPath = Object.keys(searchObj).length > 0
             ? buildPathWithSearch(orcidPath, searchParams)
             : orcidPath;
+          navigate({
+            to: targetPath,
+            replace: true
+          });
+          return;
+        }
+
+        const doiMatch = id.match(doiPattern);
+        if (doiMatch && entityType === "works") {
+          logger.debug(
+            "routing",
+            "Detected DOI URL in works path, redirecting to DOI route",
+            { doi: doiMatch[1] },
+            "OpenAlexUrlComponent",
+          );
+          // Reconstruct the proper DOI URL from the match
+          const doiUrl = `https://doi.org/${doiMatch[1]}`;
+          // Build the path manually to avoid TanStack Router param expansion issues
+          const doiPath = `/works/doi/${encodeURIComponent(doiUrl)}`;
+          const searchObj = parseSearchParams(searchParams);
+          const targetPath = Object.keys(searchObj).length > 0
+            ? buildPathWithSearch(doiPath, searchParams)
+            : doiPath;
           navigate({
             to: targetPath,
             replace: true

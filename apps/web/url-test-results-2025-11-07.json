@@ -1,0 +1,1931 @@
+{
+  "total": 230,
+  "tested": 230,
+  "passed": 224,
+  "failed": 6,
+  "errors": [
+    {
+      "url": "https://api.openalex.org/concepts/random",
+      "category": "SPECIAL_CASES",
+      "error": "No matching pattern found for: /concepts/random"
+    },
+    {
+      "url": "https://api.openalex.org/institutions/random",
+      "category": "SPECIAL_CASES",
+      "error": "No matching pattern found for: /institutions/random"
+    },
+    {
+      "url": "https://api.openalex.org/text/concepts?title=type%201%20diabetes%20research%20for%20children",
+      "category": "SPECIAL_CASES",
+      "error": "Text endpoint not supported in current routing: /text/concepts"
+    },
+    {
+      "url": "https://api.openalex.org/text/keywords?title=type%201%20diabetes%20research%20for%20children",
+      "category": "SPECIAL_CASES",
+      "error": "Text endpoint not supported in current routing: /text/keywords"
+    },
+    {
+      "url": "https://api.openalex.org/text/topics?title=type%201%20diabetes%20research%20for%20children",
+      "category": "SPECIAL_CASES",
+      "error": "Text endpoint not supported in current routing: /text/topics"
+    },
+    {
+      "url": "https://api.openalex.org/works/https://doi.org/10.7717/peerj.4375",
+      "category": "EXTERNAL_IDS",
+      "error": "No matching pattern found for: /works/https://doi.org/10.7717/peerj.4375"
+    }
+  ],
+  "categoryResults": {
+    "BASIC_ENTITY": {
+      "name": "Basic Entity URLs",
+      "total": 12,
+      "passed": 12,
+      "failed": 0,
+      "urls": []
+    },
+    "ENTITY_LISTS": {
+      "name": "Entity List URLs",
+      "total": 179,
+      "passed": 179,
+      "failed": 0,
+      "urls": []
+    },
+    "UNCATEGORIZED": {
+      "name": "UNCATEGORIZED",
+      "total": 12,
+      "passed": 12,
+      "failed": 0,
+      "urls": []
+    },
+    "EXTERNAL_IDS": {
+      "name": "External ID URLs",
+      "total": 10,
+      "passed": 9,
+      "failed": 1,
+      "urls": []
+    },
+    "AUTOCOMPLETE": {
+      "name": "Autocomplete URLs",
+      "total": 10,
+      "passed": 10,
+      "failed": 0,
+      "urls": []
+    },
+    "SEARCH_FILTERS": {
+      "name": "Search and Filter URLs",
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "urls": []
+    },
+    "SPECIAL_CASES": {
+      "name": "Special Case URLs",
+      "total": 6,
+      "passed": 1,
+      "failed": 5,
+      "urls": []
+    }
+  },
+  "detailedResults": [
+    {
+      "url": "https://api.openalex.org/W2741809807",
+      "category": "BASIC_ENTITY",
+      "success": true,
+      "message": "Single entity ID detected: works/W2741809807",
+      "expectedRoute": "/works/W2741809807",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/authors",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: authors",
+      "expectedRoute": "/authors",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/authors/A5006060960",
+      "category": "BASIC_ENTITY",
+      "success": true,
+      "message": "Entity type + ID detected: authors/A5006060960",
+      "expectedRoute": "/authors/A5006060960",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/authors/A5023888391",
+      "category": "BASIC_ENTITY",
+      "success": true,
+      "message": "Entity type + ID detected: authors/A5023888391",
+      "expectedRoute": "/authors/A5023888391",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/authors/A5023888391?select=id,display_name,orcid",
+      "category": "UNCATEGORIZED",
+      "success": true,
+      "message": "Entity type + ID detected: authors/A5023888391",
+      "expectedRoute": "/authors/A5023888391?select=id%2Cdisplay_name%2Corcid",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/authors/A5092938886",
+      "category": "BASIC_ENTITY",
+      "success": true,
+      "message": "Entity type + ID detected: authors/A5092938886",
+      "expectedRoute": "/authors/A5092938886",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/authors/orcid:0000-0002-1298-3089",
+      "category": "EXTERNAL_IDS",
+      "success": true,
+      "message": "External ID detected: orcid=0000-0002-1298-3089",
+      "expectedRoute": "/authors/orcid/0000-0002-1298-3089",
+      "externalIdType": "orcid"
+    },
+    {
+      "url": "https://api.openalex.org/authors/orcid:0000-0003-1613-5981",
+      "category": "EXTERNAL_IDS",
+      "success": true,
+      "message": "External ID detected: orcid=0000-0003-1613-5981",
+      "expectedRoute": "/authors/orcid/0000-0003-1613-5981",
+      "externalIdType": "orcid"
+    },
+    {
+      "url": "https://api.openalex.org/authors?filter=display_name.search:einstein",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: authors",
+      "expectedRoute": "/authors?filter=display_name.search%3Aeinstein",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/authors?filter=display_name.search:john%20smith",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: authors",
+      "expectedRoute": "/authors?filter=display_name.search%3Ajohn+smith",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/authors?filter=display_name.search:tupolev",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: authors",
+      "expectedRoute": "/authors?filter=display_name.search%3Atupolev",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/authors?filter=has_orcid:true",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: authors",
+      "expectedRoute": "/authors?filter=has_orcid%3Atrue",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/authors?filter=last_known_institutions.continent:africa",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: authors",
+      "expectedRoute": "/authors?filter=last_known_institutions.continent%3Aafrica",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/authors?filter=last_known_institutions.is_global_south:true",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: authors",
+      "expectedRoute": "/authors?filter=last_known_institutions.is_global_south%3Atrue",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/authors?filter=last_known_institutions.is_global_south:true&group_by=last_known_institutions.country_code",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: authors",
+      "expectedRoute": "/authors?filter=last_known_institutions.is_global_south%3Atrue&group_by=last_known_institutions.country_code",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/authors?group_by=last_known_institutions.continent",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: authors",
+      "expectedRoute": "/authors?group_by=last_known_institutions.continent",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/authors?group_by=last_known_institutions.continent&filter=cited_by_count:>100",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: authors",
+      "expectedRoute": "/authors?group_by=last_known_institutions.continent&filter=cited_by_count%3A%3E100",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/authors?per_page=50&page=2",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: authors",
+      "expectedRoute": "/authors?per_page=50&page=2",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/authors?sample=25",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: authors",
+      "expectedRoute": "/authors?sample=25",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/authors?search=carl%20sagan",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: authors",
+      "expectedRoute": "/authors?search=carl+sagan",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/authors?select=id,display_name,orcid",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: authors",
+      "expectedRoute": "/authors?select=id%2Cdisplay_name%2Corcid",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/authors?sort=cited_by_count:desc",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: authors",
+      "expectedRoute": "/authors?sort=cited_by_count%3Adesc",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/autocomplete/authors?q=ronald%20sw",
+      "category": "AUTOCOMPLETE",
+      "success": true,
+      "message": "Autocomplete detected: authors",
+      "expectedRoute": "/autocomplete/authors?q=ronald+sw",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/autocomplete/concepts?q=comp",
+      "category": "AUTOCOMPLETE",
+      "success": true,
+      "message": "Autocomplete detected: concepts",
+      "expectedRoute": "/autocomplete/concepts?q=comp",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/autocomplete/funders?q=national+sci",
+      "category": "AUTOCOMPLETE",
+      "success": true,
+      "message": "Autocomplete detected: funders",
+      "expectedRoute": "/autocomplete/funders?q=national+sci",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/autocomplete/institutions?q=Florida",
+      "category": "AUTOCOMPLETE",
+      "success": true,
+      "message": "Autocomplete detected: institutions",
+      "expectedRoute": "/autocomplete/institutions?q=Florida",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/autocomplete/institutions?q=flori",
+      "category": "AUTOCOMPLETE",
+      "success": true,
+      "message": "Autocomplete detected: institutions",
+      "expectedRoute": "/autocomplete/institutions?q=flori",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/autocomplete/institutions?q=harv",
+      "category": "AUTOCOMPLETE",
+      "success": true,
+      "message": "Autocomplete detected: institutions",
+      "expectedRoute": "/autocomplete/institutions?q=harv",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/autocomplete/publishers?q=els",
+      "category": "AUTOCOMPLETE",
+      "success": true,
+      "message": "Autocomplete detected: publishers",
+      "expectedRoute": "/autocomplete/publishers?q=els",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/autocomplete/sources?q=S49861241",
+      "category": "AUTOCOMPLETE",
+      "success": true,
+      "message": "Autocomplete detected: sources",
+      "expectedRoute": "/autocomplete/sources?q=S49861241",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/autocomplete/sources?q=neuro",
+      "category": "AUTOCOMPLETE",
+      "success": true,
+      "message": "Autocomplete detected: sources",
+      "expectedRoute": "/autocomplete/sources?q=neuro",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/autocomplete/works?filter=publication_year:2010&search=frogs&q=greenhou",
+      "category": "SEARCH_FILTERS",
+      "success": true,
+      "message": "Autocomplete detected: works",
+      "expectedRoute": "/autocomplete/works?filter=publication_year%3A2010&search=frogs&q=greenhou",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/autocomplete/works?q=tigers",
+      "category": "AUTOCOMPLETE",
+      "success": true,
+      "message": "Autocomplete detected: works",
+      "expectedRoute": "/autocomplete/works?q=tigers",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/autocomplete?q=https://orcid.org/0000-0002-7436-3176",
+      "category": "UNCATEGORIZED",
+      "success": true,
+      "message": "Single entity ID detected: keywords/autocomplete",
+      "expectedRoute": "/keywords/autocomplete?q=https%3A%2F%2Forcid.org%2F0000-0002-7436-3176",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/concepts",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: concepts",
+      "expectedRoute": "/concepts",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/concepts/C71924100",
+      "category": "BASIC_ENTITY",
+      "success": true,
+      "message": "Entity type + ID detected: concepts/C71924100",
+      "expectedRoute": "/concepts/C71924100",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/concepts/C71924100?select=id,display_name",
+      "category": "UNCATEGORIZED",
+      "success": true,
+      "message": "Entity type + ID detected: concepts/C71924100",
+      "expectedRoute": "/concepts/C71924100?select=id%2Cdisplay_name",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/concepts/random",
+      "category": "SPECIAL_CASES",
+      "success": false,
+      "message": "No matching pattern found for: /concepts/random",
+      "expectedRoute": null,
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/concepts/wikidata:Q11190",
+      "category": "EXTERNAL_IDS",
+      "success": true,
+      "message": "External ID detected: wikidata=Q11190 for concepts",
+      "expectedRoute": "/concepts/wikidata/Q11190",
+      "externalIdType": "wikidata"
+    },
+    {
+      "url": "https://api.openalex.org/concepts?filter=display_name.search:electrodynamics",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: concepts",
+      "expectedRoute": "/concepts?filter=display_name.search%3Aelectrodynamics",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/concepts?filter=display_name.search:medical",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: concepts",
+      "expectedRoute": "/concepts?filter=display_name.search%3Amedical",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/concepts?filter=has_wikidata:false",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: concepts",
+      "expectedRoute": "/concepts?filter=has_wikidata%3Afalse",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/concepts?filter=level:0",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: concepts",
+      "expectedRoute": "/concepts?filter=level%3A0",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/concepts?group_by=level",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: concepts",
+      "expectedRoute": "/concepts?group_by=level",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/concepts?per_page=50&page=2",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: concepts",
+      "expectedRoute": "/concepts?per_page=50&page=2",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/concepts?sample=10",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: concepts",
+      "expectedRoute": "/concepts?sample=10",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/concepts?search=artificial%20intelligence",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: concepts",
+      "expectedRoute": "/concepts?search=artificial+intelligence",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/concepts?select=id,display_name,description",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: concepts",
+      "expectedRoute": "/concepts?select=id%2Cdisplay_name%2Cdescription",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/concepts?sort=cited_by_count:desc",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: concepts",
+      "expectedRoute": "/concepts?sort=cited_by_count%3Adesc",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/funders",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: funders",
+      "expectedRoute": "/funders",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/funders/F4320332161",
+      "category": "BASIC_ENTITY",
+      "success": true,
+      "message": "Entity type + ID detected: funders/F4320332161",
+      "expectedRoute": "/funders/F4320332161",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/funders/F4320332161?select=id,display_name",
+      "category": "UNCATEGORIZED",
+      "success": true,
+      "message": "Entity type + ID detected: funders/F4320332161",
+      "expectedRoute": "/funders/F4320332161?select=id%2Cdisplay_name",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/funders/wikidata:Q390551",
+      "category": "EXTERNAL_IDS",
+      "success": true,
+      "message": "External ID detected: wikidata=Q390551 for funders",
+      "expectedRoute": "/funders/wikidata/Q390551",
+      "externalIdType": "wikidata"
+    },
+    {
+      "url": "https://api.openalex.org/funders?filter=continent:south_america",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: funders",
+      "expectedRoute": "/funders?filter=continent%3Asouth_america",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/funders?filter=country_code:ca",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: funders",
+      "expectedRoute": "/funders?filter=country_code%3Aca",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/funders?filter=description.search:health",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: funders",
+      "expectedRoute": "/funders?filter=description.search%3Ahealth",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/funders?filter=display_name.search:florida",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: funders",
+      "expectedRoute": "/funders?filter=display_name.search%3Aflorida",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/funders?filter=display_name.search:health",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: funders",
+      "expectedRoute": "/funders?filter=display_name.search%3Ahealth",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/funders?filter=is_global_south:true",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: funders",
+      "expectedRoute": "/funders?filter=is_global_south%3Atrue",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/funders?group_by=country_code",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: funders",
+      "expectedRoute": "/funders?group_by=country_code",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/funders?per_page=50&page=2",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: funders",
+      "expectedRoute": "/funders?per_page=50&page=2",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/funders?sample=10",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: funders",
+      "expectedRoute": "/funders?sample=10",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/funders?search=health",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: funders",
+      "expectedRoute": "/funders?search=health",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/funders?select=id,display_name,alternate_titles",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: funders",
+      "expectedRoute": "/funders?select=id%2Cdisplay_name%2Calternate_titles",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/funders?sort=display_name:desc",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: funders",
+      "expectedRoute": "/funders?sort=display_name%3Adesc",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/institutions",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: institutions",
+      "expectedRoute": "/institutions",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/institutions/I27837315",
+      "category": "BASIC_ENTITY",
+      "success": true,
+      "message": "Entity type + ID detected: institutions/I27837315",
+      "expectedRoute": "/institutions/I27837315",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/institutions/I27837315?select=id,display_name",
+      "category": "UNCATEGORIZED",
+      "success": true,
+      "message": "Entity type + ID detected: institutions/I27837315",
+      "expectedRoute": "/institutions/I27837315?select=id%2Cdisplay_name",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/institutions/random",
+      "category": "SPECIAL_CASES",
+      "success": false,
+      "message": "No matching pattern found for: /institutions/random",
+      "expectedRoute": null,
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/institutions/ror:02y3ad647",
+      "category": "EXTERNAL_IDS",
+      "success": true,
+      "message": "External ID detected: ror=02y3ad647",
+      "expectedRoute": "/institutions/ror/02y3ad647",
+      "externalIdType": "ror"
+    },
+    {
+      "url": "https://api.openalex.org/institutions/ror:00cvxb145",
+      "category": "EXTERNAL_IDS",
+      "success": true,
+      "message": "External ID detected: ror=00cvxb145",
+      "expectedRoute": "/institutions/ror/00cvxb145",
+      "externalIdType": "ror"
+    },
+    {
+      "url": "https://api.openalex.org/institutions?filter=continent:south_america",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: institutions",
+      "expectedRoute": "/institutions?filter=continent%3Asouth_america",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/institutions?filter=country_code:!us",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: institutions",
+      "expectedRoute": "/institutions?filter=country_code%3A%21us",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/institutions?filter=country_code:ca",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: institutions",
+      "expectedRoute": "/institutions?filter=country_code%3Aca",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/institutions?filter=display_name.search:florida",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: institutions",
+      "expectedRoute": "/institutions?filter=display_name.search%3Aflorida",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/institutions?filter=display_name.search:technology",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: institutions",
+      "expectedRoute": "/institutions?filter=display_name.search%3Atechnology",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/institutions?filter=has_ror:false",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: institutions",
+      "expectedRoute": "/institutions?filter=has_ror%3Afalse",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/institutions?filter=is_global_south:true",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: institutions",
+      "expectedRoute": "/institutions?filter=is_global_south%3Atrue",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/institutions?group_by=continent",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: institutions",
+      "expectedRoute": "/institutions?group_by=continent",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/institutions?group_by=country_code",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: institutions",
+      "expectedRoute": "/institutions?group_by=country_code",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/institutions?per_page=50&page=2",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: institutions",
+      "expectedRoute": "/institutions?per_page=50&page=2",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/institutions?sample=50&per_page=50",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: institutions",
+      "expectedRoute": "/institutions?sample=50&per_page=50",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/institutions?search=nyu",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: institutions",
+      "expectedRoute": "/institutions?search=nyu",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/institutions?search=san%20diego%20state%20university",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: institutions",
+      "expectedRoute": "/institutions?search=san+diego+state+university",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/institutions?search=stanford",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: institutions",
+      "expectedRoute": "/institutions?search=stanford",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/institutions?select=id,display_name,ror",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: institutions",
+      "expectedRoute": "/institutions?select=id%2Cdisplay_name%2Cror",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/institutions?sort=cited_by_count:desc",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: institutions",
+      "expectedRoute": "/institutions?sort=cited_by_count%3Adesc",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/keywords",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: keywords",
+      "expectedRoute": "/keywords",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/keywords/cardiac-imaging",
+      "category": "UNCATEGORIZED",
+      "success": true,
+      "message": "Entity type + ID detected: keywords/cardiac-imaging",
+      "expectedRoute": "/keywords/cardiac-imaging",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/keywords/cardiac-imaging?select=id,display_name",
+      "category": "UNCATEGORIZED",
+      "success": true,
+      "message": "Entity type + ID detected: keywords/cardiac-imaging",
+      "expectedRoute": "/keywords/cardiac-imaging?select=id%2Cdisplay_name",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/keywords?filter=display_name.search:artificial+intelligence",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: keywords",
+      "expectedRoute": "/keywords?filter=display_name.search%3Aartificial+intelligence",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/keywords?filter=subfield.id:2713",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: keywords",
+      "expectedRoute": "/keywords?filter=subfield.id%3A2713",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/keywords?group_by=cited_by_count",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: keywords",
+      "expectedRoute": "/keywords?group_by=cited_by_count",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/keywords?search=artificial%20intelligence",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: keywords",
+      "expectedRoute": "/keywords?search=artificial+intelligence",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/publishers",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: publishers",
+      "expectedRoute": "/publishers",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/publishers/P4310319965",
+      "category": "BASIC_ENTITY",
+      "success": true,
+      "message": "Entity type + ID detected: publishers/P4310319965",
+      "expectedRoute": "/publishers/P4310319965",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/publishers/P4310319965?select=id,display_name",
+      "category": "UNCATEGORIZED",
+      "success": true,
+      "message": "Entity type + ID detected: publishers/P4310319965",
+      "expectedRoute": "/publishers/P4310319965?select=id%2Cdisplay_name",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/publishers/wikidata:Q1479654",
+      "category": "EXTERNAL_IDS",
+      "success": true,
+      "message": "External ID detected: wikidata=Q1479654 for publishers",
+      "expectedRoute": "/publishers/wikidata/Q1479654",
+      "externalIdType": "wikidata"
+    },
+    {
+      "url": "https://api.openalex.org/publishers?filter=continent:south_america",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: publishers",
+      "expectedRoute": "/publishers?filter=continent%3Asouth_america",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/publishers?filter=display_name.search:elsevier",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: publishers",
+      "expectedRoute": "/publishers?filter=display_name.search%3Aelsevier",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/publishers?filter=hierarchy_level:0",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: publishers",
+      "expectedRoute": "/publishers?filter=hierarchy_level%3A0",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/publishers?group_by=country_codes",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: publishers",
+      "expectedRoute": "/publishers?group_by=country_codes",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/publishers?per_page=50&page=2",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: publishers",
+      "expectedRoute": "/publishers?per_page=50&page=2",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/publishers?sample=10",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: publishers",
+      "expectedRoute": "/publishers?sample=10",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/publishers?search=springer",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: publishers",
+      "expectedRoute": "/publishers?search=springer",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/publishers?select=id,display_name,alternate_titles",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: publishers",
+      "expectedRoute": "/publishers?select=id%2Cdisplay_name%2Calternate_titles",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/publishers?sort=display_name:desc",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: publishers",
+      "expectedRoute": "/publishers?sort=display_name%3Adesc",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/sources",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: sources",
+      "expectedRoute": "/sources",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/sources/S137773608",
+      "category": "BASIC_ENTITY",
+      "success": true,
+      "message": "Entity type + ID detected: sources/S137773608",
+      "expectedRoute": "/sources/S137773608",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/sources/S137773608?select=id,display_name",
+      "category": "UNCATEGORIZED",
+      "success": true,
+      "message": "Entity type + ID detected: sources/S137773608",
+      "expectedRoute": "/sources/S137773608?select=id%2Cdisplay_name",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/sources/issn:2041-1723",
+      "category": "EXTERNAL_IDS",
+      "success": true,
+      "message": "External ID detected: issn=2041-1723",
+      "expectedRoute": "/sources/issn/2041-1723",
+      "externalIdType": "issn"
+    },
+    {
+      "url": "https://api.openalex.org/sources?filter=continent:asia",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: sources",
+      "expectedRoute": "/sources?filter=continent%3Aasia",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/sources?filter=display_name.search:Neurology",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: sources",
+      "expectedRoute": "/sources?filter=display_name.search%3ANeurology",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/sources?filter=display_name.search:nature",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: sources",
+      "expectedRoute": "/sources?filter=display_name.search%3Anature",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/sources?filter=has_issn:false",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: sources",
+      "expectedRoute": "/sources?filter=has_issn%3Afalse",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/sources?filter=has_issn:true",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: sources",
+      "expectedRoute": "/sources?filter=has_issn%3Atrue",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/sources?filter=host_organization.id:P4310319965",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: sources",
+      "expectedRoute": "/sources?filter=host_organization.id%3AP4310319965",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/sources?filter=is_global_south:true",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: sources",
+      "expectedRoute": "/sources?filter=is_global_south%3Atrue",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/sources?filter=works_count:>1000",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: sources",
+      "expectedRoute": "/sources?filter=works_count%3A%3E1000",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/sources?group_by=host_organization",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: sources",
+      "expectedRoute": "/sources?group_by=host_organization",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/sources?per_page=50&page=2",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: sources",
+      "expectedRoute": "/sources?per_page=50&page=2",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/sources?sample=10",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: sources",
+      "expectedRoute": "/sources?sample=10",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/sources?sample=20&seed=123",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: sources",
+      "expectedRoute": "/sources?sample=20&seed=123",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/sources?search=jacs",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: sources",
+      "expectedRoute": "/sources?search=jacs",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/sources?select=id,display_name,issn",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: sources",
+      "expectedRoute": "/sources?select=id%2Cdisplay_name%2Cissn",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/sources?sort=cited_by_count:desc",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: sources",
+      "expectedRoute": "/sources?sort=cited_by_count%3Adesc",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/sources?sort=display_name",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: sources",
+      "expectedRoute": "/sources?sort=display_name",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/text/concepts?title=type%201%20diabetes%20research%20for%20children",
+      "category": "SPECIAL_CASES",
+      "success": false,
+      "message": "Text endpoint not supported in current routing: /text/concepts",
+      "expectedRoute": null,
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/text/keywords?title=type%201%20diabetes%20research%20for%20children",
+      "category": "SPECIAL_CASES",
+      "success": false,
+      "message": "Text endpoint not supported in current routing: /text/keywords",
+      "expectedRoute": null,
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/text/topics?title=type%201%20diabetes%20research%20for%20children",
+      "category": "SPECIAL_CASES",
+      "success": false,
+      "message": "Text endpoint not supported in current routing: /text/topics",
+      "expectedRoute": null,
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/text?title=type%201%20diabetes%20research%20for%20children",
+      "category": "SPECIAL_CASES",
+      "success": true,
+      "message": "Single entity ID detected: keywords/text",
+      "expectedRoute": "/keywords/text?title=type+1+diabetes+research+for+children",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/topics",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: topics",
+      "expectedRoute": "/topics",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/topics/T11636",
+      "category": "BASIC_ENTITY",
+      "success": true,
+      "message": "Entity type + ID detected: topics/T11636",
+      "expectedRoute": "/topics/T11636",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/topics/T11636?select=id,display_name",
+      "category": "UNCATEGORIZED",
+      "success": true,
+      "message": "Entity type + ID detected: topics/T11636",
+      "expectedRoute": "/topics/T11636?select=id%2Cdisplay_name",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/topics?filter=display_name.search:artificial+intelligence",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: topics",
+      "expectedRoute": "/topics?filter=display_name.search%3Aartificial+intelligence",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/topics?filter=display_name.search:medical",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: topics",
+      "expectedRoute": "/topics?filter=display_name.search%3Amedical",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/topics?filter=subfield.id:2713",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: topics",
+      "expectedRoute": "/topics?filter=subfield.id%3A2713",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/topics?group_by=domain.id",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: topics",
+      "expectedRoute": "/topics?group_by=domain.id",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/topics?per_page=50&page=2",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: topics",
+      "expectedRoute": "/topics?per_page=50&page=2",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/topics?sample=10",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: topics",
+      "expectedRoute": "/topics?sample=10",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/topics?search=artificial%20intelligence",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: topics",
+      "expectedRoute": "/topics?search=artificial+intelligence",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/topics?select=id,display_name,description",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: topics",
+      "expectedRoute": "/topics?select=id%2Cdisplay_name%2Cdescription",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/topics?sort=cited_by_count:desc",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: topics",
+      "expectedRoute": "/topics?sort=cited_by_count%3Adesc",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works/W2138270253?select=id,display_name",
+      "category": "UNCATEGORIZED",
+      "success": true,
+      "message": "Entity type + ID detected: works/W2138270253",
+      "expectedRoute": "/works/W2138270253?select=id%2Cdisplay_name",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works/W2168909179",
+      "category": "BASIC_ENTITY",
+      "success": true,
+      "message": "Entity type + ID detected: works/W2168909179",
+      "expectedRoute": "/works/W2168909179",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works/W2741809807",
+      "category": "BASIC_ENTITY",
+      "success": true,
+      "message": "Entity type + ID detected: works/W2741809807",
+      "expectedRoute": "/works/W2741809807",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works/W2741809807?select=id,display_name",
+      "category": "UNCATEGORIZED",
+      "success": true,
+      "message": "Entity type + ID detected: works/W2741809807",
+      "expectedRoute": "/works/W2741809807?select=id%2Cdisplay_name",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works/https://doi.org/10.7717/peerj.4375",
+      "category": "EXTERNAL_IDS",
+      "success": false,
+      "message": "No matching pattern found for: /works/https://doi.org/10.7717/peerj.4375",
+      "expectedRoute": null,
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works/pmid:14907713",
+      "category": "EXTERNAL_IDS",
+      "success": true,
+      "message": "External ID detected: pmid=14907713",
+      "expectedRoute": "/works/pmid/14907713",
+      "externalIdType": "pmid"
+    },
+    {
+      "url": "https://api.openalex.org/works?api_key=424242",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?api_key=424242",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=abstract.search.no_stem:surgery",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=abstract.search.no_stem%3Asurgery",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=abstract.search:artificial%20intelligence",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=abstract.search%3Aartificial+intelligence",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=author.id:A5023888391",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=author.id%3AA5023888391",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=authors_count:1",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=authors_count%3A1",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=authors_count:>100",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=authors_count%3A%3E100",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=authorships.institutions.continent:europe",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=authorships.institutions.continent%3Aeurope",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=authorships.institutions.is_global_south:true",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=authorships.institutions.is_global_south%3Atrue",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=best_open_version:any",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=best_open_version%3Aany",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=cited_by:W2766808518",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=cited_by%3AW2766808518",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=cited_by_count:>1,is_oa:true",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=cited_by_count%3A%3E1%2Cis_oa%3Atrue",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=cites:W2741809807",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=cites%3AW2741809807",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=concept.id:C2778407487",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=concept.id%3AC2778407487",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=concepts_count:>2",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=concepts_count%3A%3E2",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=display_name.search.no_stem:surgery",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=display_name.search.no_stem%3Asurgery",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=display_name.search%3Abioplastics&sort=publication_year%3Adesc%2Crelevance_score%3Adesc",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=doi:https://doi.org/10.1371/journal.pone.0266781|https://doi.org/10.1371/journal.pone.0267149",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=doi%3Ahttps%3A%2F%2Fdoi.org%2F10.1371%2Fjournal.pone.0266781%7Chttps%3A%2F%2Fdoi.org%2F10.1371%2Fjournal.pone.0267149",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=from_publication_date:2001-03-14",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=from_publication_date%3A2001-03-14",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=from_publication_date:2022-01-01,to_publication_date:2022-01-26",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=from_publication_date%3A2022-01-01%2Cto_publication_date%3A2022-01-26",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=fulltext.search:climate%20change",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=fulltext.search%3Aclimate+change",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=has_abstract:true",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=has_abstract%3Atrue",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=has_doi:false",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=has_doi%3Afalse",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=has_oa_accepted_or_published_version:true",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=has_oa_accepted_or_published_version%3Atrue",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=has_oa_submitted_version:true",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=has_oa_submitted_version%3Atrue",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=has_orcid:true",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=has_orcid%3Atrue",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=has_pmcid:true",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=has_pmcid%3Atrue",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=has_pmid:true",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=has_pmid%3Atrue",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=has_references:true",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=has_references%3Atrue",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=institutions.country_code:fr+gb",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=institutions.country_code%3Afr+gb",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=institutions.country_code:fr,institutions.country_code:gb",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=institutions.country_code%3Afr%2Cinstitutions.country_code%3Agb",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=institutions.country_code:fr|gb",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=institutions.country_code%3Afr%7Cgb",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=institutions.country_code:fr|primary_location.source.issn:0957-1558",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=institutions.country_code%3Afr%7Cprimary_location.source.issn%3A0957-1558",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=institutions.id:I114027177",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=institutions.id%3AI114027177",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=institutions.id:I27837315,repository:!S4306400393",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=institutions.id%3AI27837315%2Crepository%3A%21S4306400393",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=institutions.id:I57206974",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=institutions.id%3AI57206974",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=institutions.id:https://openalex.org/I97018004",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=institutions.id%3Ahttps%3A%2F%2Fopenalex.org%2FI97018004",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=institutions.id:https://openalex.org/I97018004,publication_year:2010-2020&group_by=publication_year",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=institutions.id%3Ahttps%3A%2F%2Fopenalex.org%2FI97018004%2Cpublication_year%3A2010-2020&group_by=publication_year",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=institutions.id:https://openalex.org/I97018004,publication_year:2010-2020&sort=publication_date:desc",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=institutions.id%3Ahttps%3A%2F%2Fopenalex.org%2FI97018004%2Cpublication_year%3A2010-2020&sort=publication_date%3Adesc",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=institutions.is_global_south:true",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=institutions.is_global_south%3Atrue",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=is_oa:true&group_by=repository",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=is_oa%3Atrue&group_by=repository",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=locations.source.host_institution_lineage:https://openalex.org/I205783295",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=locations.source.host_institution_lineage%3Ahttps%3A%2F%2Fopenalex.org%2FI205783295",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=locations.source.publisher_lineage:https://openalex.org/P4310320547",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=locations.source.publisher_lineage%3Ahttps%3A%2F%2Fopenalex.org%2FP4310320547",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=mag_only:true",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=mag_only%3Atrue",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=open_access.is_oa:true,publication_year:2021&sample=50&per_page=50",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=open_access.is_oa%3Atrue%2Cpublication_year%3A2021&sample=50&per_page=50",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=primary_location.source.has_issn:true",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=primary_location.source.has_issn%3Atrue",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=primary_location.source.id:S1983995261",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=primary_location.source.id%3AS1983995261",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=primary_location.source.publisher_lineage:https://openalex.org/P4310320547",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=primary_location.source.publisher_lineage%3Ahttps%3A%2F%2Fopenalex.org%2FP4310320547",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=publication_year:2020",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=publication_year%3A2020",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=publication_year:2020&per_page=100&cursor=*",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=publication_year%3A2020&per_page=100&cursor=*",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=publication_year:2020&per_page=100&cursor=IlsxNjA5MzcyODAwMDAwLCAnaHR0cHM6Ly9vcGVuYWxleC5vcmcvVzI0ODg0OTk3NjQnXSI=",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=publication_year%3A2020&per_page=100&cursor=IlsxNjA5MzcyODAwMDAwLCAnaHR0cHM6Ly9vcGVuYWxleC5vcmcvVzI0ODg0OTk3NjQnXSI%3D",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=raw_affiliation_strings.search:department%20of%20political%20science%20university%20of%20amsterdam",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=raw_affiliation_strings.search%3Adepartment+of+political+science+university+of+amsterdam",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=related_to:W2486144666",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=related_to%3AW2486144666",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=repository:S4306400393",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=repository%3AS4306400393",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=title.search.no_stem:surgery",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=title.search.no_stem%3Asurgery",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=title.search:cubist",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=title.search%3Acubist",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=title.search:wombat",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=title.search%3Awombat",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=title_and_abstract.search.no_stem:surgery",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=title_and_abstract.search.no_stem%3Asurgery",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=title_and_abstract.search:gum%20disease",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=title_and_abstract.search%3Agum+disease",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=to_publication_date:2001-03-14",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=to_publication_date%3A2001-03-14",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=type:book",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=type%3Abook",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?filter=version:publishedVersion",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?filter=version%3ApublishedVersion",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?group_by=authorships.countries",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?group_by=authorships.countries",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?group_by=authorships.countries:include_unknown",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?group_by=authorships.countries%3Ainclude_unknown",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?group_by=authorships.institutions.id",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?group_by=authorships.institutions.id",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?group_by=oa_status",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?group_by=oa_status",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?group_by=type",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?group_by=type",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?mailto=you@example.com",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?mailto=you%40example.com",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?page=2",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?page=2",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?page=2&per_page=200",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?page=2&per_page=200",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?per_page=50&page=2",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?per_page=50&page=2",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?sample=100&per_page=100",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?sample=100&per_page=100",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?sample=20",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?sample=20",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?search=%22fierce%20creatures%22",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?search=%22fierce+creatures%22",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?search=%28elmo%20AND%20%22sesame%20street%22%29%20NOT%20%28cookie%20OR%20monster%29",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?search=%28elmo+AND+%22sesame+street%22%29+NOT+%28cookie+OR+monster%29",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?search=dna",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?search=dna",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?search=fierce%20creatures",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?search=fierce+creatures",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?select=id,display_name",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?select=id%2Cdisplay_name",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?select=id,doi,display_name",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?select=id%2Cdoi%2Cdisplay_name",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?sort=cited_by_count:desc",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?sort=cited_by_count%3Adesc",
+      "externalIdType": null
+    },
+    {
+      "url": "https://api.openalex.org/works?sort=publication_year",
+      "category": "ENTITY_LISTS",
+      "success": true,
+      "message": "Entity list detected: works",
+      "expectedRoute": "/works?sort=publication_year",
+      "externalIdType": null
+    }
+  ]
+}
