@@ -1,3 +1,20 @@
+# [11.6.0](https://github.com/Mearman/Academic-Explorer/compare/v11.5.12...v11.6.0) (2025-11-07)
+
+
+### Bug Fixes
+
+* **openalex-client:** prevent unnecessary lastUpdated timestamp updates in cache index files ([038d58f](https://github.com/Mearman/Academic-Explorer/commit/038d58f8fe617ac9d16f1b8a5346d4f55cc3a512))
+* **web:** handle unencoded external ID URLs with collapsed slashes ([7111c41](https://github.com/Mearman/Academic-Explorer/commit/7111c41a954e861b06ffc0206ed6d0be779999c7))
+* **web:** improve pretty URL reliability with timing and query param fixes ([8243790](https://github.com/Mearman/Academic-Explorer/commit/8243790d03f1fe3918af00f66915537c68817eba))
+* **web:** prevent URL flickering by tracking update state ([94f040c](https://github.com/Mearman/Academic-Explorer/commit/94f040c0ba883cbccc5fe42d837135351b80136c))
+* **web:** prevent URL flickering in pretty URL hook ([c856541](https://github.com/Mearman/Academic-Explorer/commit/c8565413f0fdc38e00205e2d5fdf712350177b09))
+
+
+### Features
+
+* **web:** display pretty (decoded) URLs in browser address bar ([80895de](https://github.com/Mearman/Academic-Explorer/commit/80895de59b1c81bf6a62f5760cb014eee9160311))
+* **web:** implement pretty URL display for entity pages ([b6f9309](https://github.com/Mearman/Academic-Explorer/commit/b6f930910b43f809d21daafa12e3512f4196484e))
+
 ## [11.5.12](https://github.com/Mearman/Academic-Explorer/compare/v11.5.11...v11.5.12) (2025-11-07)
 
 
