@@ -1,3 +1,15 @@
+# [11.4.0](https://github.com/Mearman/Academic-Explorer/compare/v11.3.0...v11.4.0) (2025-11-07)
+
+
+### Bug Fixes
+
+* **web:** Improve bookmark navigation with TanStack Router ([7063c5b](https://github.com/Mearman/Academic-Explorer/commit/7063c5bd5305775525abec08b9d5f0497397c5ce))
+
+
+### Features
+
+* **web:** Fix E2E test infrastructure and bookmark navigation ([f1090e0](https://github.com/Mearman/Academic-Explorer/commit/f1090e0aae2d664e67b26943c946a88c40d23d4b))
+
 # [11.3.0](https://github.com/Mearman/Academic-Explorer/compare/v11.2.1...v11.3.0) (2025-11-06)
 
 
