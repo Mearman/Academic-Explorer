@@ -3,7 +3,7 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { NavigationTracker } from "@/components/NavigationTracker";
 import { UrlFixer } from "@/components/UrlFixer";
 import { logger } from "@academic-explorer/utils/logger";
-import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { createRootRoute, Outlet, redirect } from "@tanstack/react-router";
 import { themeClass } from "../styles/theme.css";
 
 function RootLayout() {
@@ -124,10 +124,8 @@ export const Route = createRootRoute({
                 hashQueryParams
               });
 
-              // Use window.location to force proper navigation and route re-processing
-              window.location.replace(`#${prettyHash}`);
-              // Throw to stop route processing
-              throw new Error("Redirecting");
+              // Use TanStack Router's redirect for proper navigation
+              throw redirect({ to: prettyHash });
             } else {
               logger.debug("routing", "Skipping URL conversion - conditions not met", {
                 decodedId,
