@@ -1,3 +1,10 @@
+## [11.5.9](https://github.com/Mearman/Academic-Explorer/compare/v11.5.8...v11.5.9) (2025-11-07)
+
+
+### Bug Fixes
+
+* **web:** enhance OpenAlex URL handler with DOI support and comprehensive testing ([075e587](https://github.com/Mearman/Academic-Explorer/commit/075e5874f6d42de8eff7bfff1700b9f27fbae34b))
+
 ## [11.5.8](https://github.com/Mearman/Academic-Explorer/compare/v11.5.7...v11.5.8) (2025-11-07)
 
 
