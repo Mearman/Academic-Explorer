@@ -1,4 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
+
+// Module-level set to track which entity URLs have been updated
+// This persists across component remounts to prevent flickering
+const updatedEntities = new Set<string>();
 
 /**
  * Hook to update the browser URL to show a "pretty" (decoded) version
@@ -17,8 +21,6 @@ export function usePrettyUrl(
   rawId: string | undefined,
   decodedId: string | undefined,
 ): void {
-  // Track if we've already updated the URL for this entity to prevent flickering
-  const hasUpdatedRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!rawId || !decodedId) return;
@@ -26,13 +28,13 @@ export function usePrettyUrl(
     // Create a unique key for this entity
     const entityKey = `${entityType}:${decodedId}`;
 
-    // If we've already updated this entity's URL, don't do it again
-    if (hasUpdatedRef.current === entityKey) {
-      return;
-    }
-
     // Small delay to ensure router has finished processing
     const timeoutId = setTimeout(() => {
+      // If we've already processed this entity, never update again (prevents flickering loop)
+      if (updatedEntities.has(entityKey)) {
+        return;
+      }
+
       // Get the actual current hash from the browser URL
       const currentHash = window.location.hash;
 
@@ -44,6 +46,7 @@ export function usePrettyUrl(
       const hasEncodedChars = hashPath.includes("%");
       const needsUpdate = hasEncodedChars && !hashPath.includes(decodedId);
 
+      // If URL needs updating, decode it
       if (needsUpdate) {
         // Extract query parameters from the hash (after the ?)
         const hashQueryParams = currentHash.includes("?")
@@ -66,9 +69,9 @@ export function usePrettyUrl(
         );
 
         // Mark that we've updated this entity's URL
-        hasUpdatedRef.current = entityKey;
+        updatedEntities.add(entityKey);
       }
-    }, 100); // Small delay to let router finish
+    }, 150); // Slightly longer delay to ensure router stability
 
     return () => clearTimeout(timeoutId);
   }, [entityType, rawId, decodedId]);
