@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 /**
  * Hook to update the browser URL to show a "pretty" (decoded) version
@@ -17,8 +17,19 @@ export function usePrettyUrl(
   rawId: string | undefined,
   decodedId: string | undefined,
 ): void {
+  // Track if we've already updated the URL for this entity to prevent flickering
+  const hasUpdatedRef = useRef<string | null>(null);
+
   useEffect(() => {
     if (!rawId || !decodedId) return;
+
+    // Create a unique key for this entity
+    const entityKey = `${entityType}:${decodedId}`;
+
+    // If we've already updated this entity's URL, don't do it again
+    if (hasUpdatedRef.current === entityKey) {
+      return;
+    }
 
     // Small delay to ensure router has finished processing
     const timeoutId = setTimeout(() => {
@@ -53,6 +64,9 @@ export function usePrettyUrl(
           "",
           relativeUrl,
         );
+
+        // Mark that we've updated this entity's URL
+        hasUpdatedRef.current = entityKey;
       }
     }, 100); // Small delay to let router finish
 
