@@ -668,13 +668,17 @@ export class OpenAlexBaseClient {
       }, this.config.timeout);
 
       // Handle signal merging - if original request has a signal, abort both
-      if (options.signal) {
-        if (options.signal.aborted) {
-          throw new DOMException("The operation was aborted.", "AbortError");
+      if (options.signal && typeof options.signal === 'object' && options.signal !== null) {
+        try {
+          if (options.signal.aborted) {
+            throw new DOMException("The operation was aborted.", "AbortError");
+          }
+          options.signal.addEventListener("abort", () => {
+            controller.abort();
+          });
+        } catch (e) {
+          // Signal is not a valid AbortSignal (e.g., polyfill issues), continue without signal merging
         }
-        options.signal.addEventListener("abort", () => {
-          controller.abort();
-        });
       }
 
       // Only add signal if it's a valid AbortSignal (fixes test environment issues)
@@ -682,7 +686,11 @@ export class OpenAlexBaseClient {
         ...requestOptions,
       };
 
-      if (controller.signal && typeof controller.signal === 'object') {
+      if (controller.signal &&
+          typeof controller.signal === 'object' &&
+          controller.signal !== null &&
+          'aborted' in controller.signal &&
+          'addEventListener' in controller.signal) {
         fetchOptions.signal = controller.signal;
       }
 
