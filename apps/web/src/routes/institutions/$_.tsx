@@ -4,10 +4,10 @@ import { LazyRoute } from "@/components/routing/LazyRoute";
 import { z } from "zod";
 
 const InstitutionRoute = lazy(() =>
-  import("./$institutionId.lazy").then((m) => ({ default: m.default })),
+  import("./$_.lazy").then((m) => ({ default: m.default })),
 );
 
-export const Route = createFileRoute("/institutions/$institutionId")({
+export const Route = createFileRoute("/institutions/$_")({
   component: () => (
     <LazyRoute>
       <InstitutionRoute />

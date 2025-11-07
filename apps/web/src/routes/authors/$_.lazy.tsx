@@ -7,10 +7,10 @@ import { decodeEntityId } from "@/utils/url-decoding";
 import { usePrettyUrl } from "@/hooks/use-pretty-url";
 import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS } from "@/components/entity-detail";
 
-const AUTHOR_ROUTE_PATH = "/authors/$authorId";
+const AUTHOR_ROUTE_PATH = "/authors/$_";
 
 function AuthorRoute() {
-  const { authorId: rawAuthorId } = useParams({ strict: false });
+  const { _splat: rawAuthorId } = useParams({ from: "/authors/$_" });
   const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
 

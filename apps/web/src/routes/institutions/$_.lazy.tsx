@@ -8,7 +8,7 @@ import { usePrettyUrl } from "@/hooks/use-pretty-url";
 import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS } from "@/components/entity-detail";
 
 function InstitutionRoute() {
-  const { institutionId: rawInstitutionId } = useParams({ strict: false });
+  const { _splat: rawInstitutionId } = useParams({ from: "/institutions/$_" });
   const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
 
@@ -67,7 +67,7 @@ function InstitutionRoute() {
   );
 }
 
-export const Route = createLazyFileRoute("/institutions/$institutionId")({
+export const Route = createLazyFileRoute("/institutions/$_")({
   component: InstitutionRoute,
 });
 

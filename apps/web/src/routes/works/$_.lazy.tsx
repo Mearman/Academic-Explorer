@@ -9,7 +9,7 @@ import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS } fro
 import { usePrettyUrl } from "@/hooks/use-pretty-url";
 
 function WorkRoute() {
-  const { workId: rawWorkId } = useParams({ strict: false });
+  const { _splat: rawWorkId } = useParams({ from: "/works/$_" });
   const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
 
@@ -68,6 +68,6 @@ function WorkRoute() {
   );
 }
 
-export const Route = createLazyFileRoute("/works/$workId")({
+export const Route = createLazyFileRoute("/works/$_")({
   component: WorkRoute,
 });
