@@ -47,7 +47,12 @@ export function BookmarkManager({ onNavigate }: BookmarkManagerProps) {
     if (onNavigate) {
       onNavigate(url);
     } else {
-      window.location.href = url;
+      // Fallback if no onNavigate prop provided
+      if (url.startsWith("/")) {
+        window.location.hash = url;
+      } else {
+        window.location.href = url;
+      }
     }
   };
 
@@ -101,11 +106,11 @@ export function BookmarkManager({ onNavigate }: BookmarkManagerProps) {
       ) : (
         <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="md">
           {filteredBookmarks.map((bookmark) => (
-            <Card key={bookmark.id} withBorder padding="md">
+            <Card key={bookmark.id} withBorder padding="md" data-testid="bookmark-card">
               <Group justify="space-between" mb="xs">
                 <Text
                   component="a"
-                  href={`#${bookmark.request.cacheKey}`}
+                  href="#"
                   onClick={(e) => {
                     e.preventDefault();
                     handleNavigate(bookmark.request.cacheKey);
@@ -115,6 +120,7 @@ export function BookmarkManager({ onNavigate }: BookmarkManagerProps) {
                   c="inherit"
                   style={{ cursor: "pointer" }}
                   className="hover:text-blue-600 transition-colors"
+                  data-testid="bookmark-title-link"
                 >
                   {bookmark.title}
                 </Text>
@@ -158,7 +164,10 @@ export function BookmarkManager({ onNavigate }: BookmarkManagerProps) {
                     variant="subtle"
                     size="xs"
                     leftSection={<IconExternalLink size={14} />}
-                    onClick={() => handleNavigate(bookmark.request.cacheKey)}
+                    onClick={() => {
+                      handleNavigate(bookmark.request.cacheKey);
+                    }}
+                    data-testid="bookmark-open-button"
                   >
                     Open
                   </Button>

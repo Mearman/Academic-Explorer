@@ -13,9 +13,11 @@ function BookmarksPage() {
           onNavigate={(url) => {
             // Handle navigation to bookmarked URLs
             if (url.startsWith("/")) {
-              // Use TanStack Router navigation
-              void navigate({ to: url });
+              // For hash-based routing, directly update the hash
+              // This is more reliable than using TanStack Router's navigate in this context
+              window.location.hash = url;
             } else {
+              // Use window.location for external URLs
               window.location.href = url;
             }
           }}
