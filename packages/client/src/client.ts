@@ -474,7 +474,7 @@ export class OpenAlexBaseClient {
   }
 
   private buildRequestOptions(options: RequestInit): RequestInit {
-    // Filter out invalid signal to prevent test environment errors
+    // Filter out signal entirely - we'll handle it separately to prevent test environment errors
     const { signal, ...filteredOptions } = options;
 
     return {
@@ -512,9 +512,11 @@ export class OpenAlexBaseClient {
         retryAfterMs,
       );
       await this.sleep(waitTime);
+      // Create clean options without signal for retry to prevent AbortSignal issues
+      const { signal, ...cleanOptions } = options;
       return await this.makeRequest({
         url,
-        options,
+        options: cleanOptions,
         retryCount: retryCount + 1,
       });
     }
@@ -550,9 +552,11 @@ export class OpenAlexBaseClient {
           ? this.config.retryDelay * Math.pow(2, retryCount)
           : calculateRetryDelay(retryCount, RETRY_CONFIG.server);
       await this.sleep(waitTime);
+      // Create clean options without signal for retry to prevent AbortSignal issues
+      const { signal, ...cleanOptions } = options;
       return await this.makeRequest({
         url,
-        options,
+        options: cleanOptions,
         retryCount: retryCount + 1,
       });
     }
@@ -673,10 +677,16 @@ export class OpenAlexBaseClient {
         });
       }
 
-      const response = await fetch(url, {
+      // Only add signal if it's a valid AbortSignal (fixes test environment issues)
+      const fetchOptions: RequestInit = {
         ...requestOptions,
-        signal: controller.signal,
-      });
+      };
+
+      if (controller.signal && typeof controller.signal === 'object') {
+        fetchOptions.signal = controller.signal;
+      }
+
+      const response = await fetch(url, fetchOptions);
 
       clearTimeout(timeoutId);
       const responseTime = Date.now() - requestStartTime;
@@ -723,7 +733,9 @@ export class OpenAlexBaseClient {
             ? this.config.retryDelay * Math.pow(2, retryCount)
             : calculateRetryDelay(retryCount, RETRY_CONFIG.network);
         await this.sleep(waitTime);
-        return this.makeRequest({ url, options, retryCount: retryCount + 1 });
+        // Create clean options without signal for retry to prevent AbortSignal issues
+        const { signal, ...cleanOptions } = options;
+        return this.makeRequest({ url, options: cleanOptions, retryCount: retryCount + 1 });
       }
 
       throw new OpenAlexApiError({
