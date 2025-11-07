@@ -1,3 +1,25 @@
+# [12.0.0](https://github.com/Mearman/Academic-Explorer/compare/v11.6.0...v12.0.0) (2025-11-07)
+
+
+### Bug Fixes
+
+* **router:** improve decodeEntityId to handle TanStack Router slash normalization ([1c5f30e](https://github.com/Mearman/Academic-Explorer/commit/1c5f30e66589de24c238910a530486d588fa402f))
+* **router:** update route tree with correct splat path patterns ([4e1a52b](https://github.com/Mearman/Academic-Explorer/commit/4e1a52b70a67b71658dfb3b866f00858f6c4cc7b))
+* **web:** resolve URL flickering in pretty URL feature ([f40feaa](https://github.com/Mearman/Academic-Explorer/commit/f40feaabcfdfc3d622b43cce3c354e64365706e6))
+
+
+### Features
+
+* **router:** add URL normalization to fix browser address bar display ([e31988b](https://github.com/Mearman/Academic-Explorer/commit/e31988bf6d4c0d7427f357da60c5f947f96fb4ea))
+* **router:** convert entity routes to splat routes for forward slash support ([c76202a](https://github.com/Mearman/Academic-Explorer/commit/c76202ab08e438fbcfcce6950540528b68f846b3))
+* **web:** implement comprehensive URL display fixes for protocol slashes ([71b1ef1](https://github.com/Mearman/Academic-Explorer/commit/71b1ef14443a84c2efddbdba26607ae0bcb57299))
+
+
+### BREAKING CHANGES
+
+* **router:** Entity routes now use splat parameter ($_splat)
+instead of typed parameters ($workId, $authorId, $institutionId).
+
 # [11.6.0](https://github.com/Mearman/Academic-Explorer/compare/v11.5.12...v11.6.0) (2025-11-07)
 
 
