@@ -26,12 +26,8 @@ test.describe('Pretty URL Display', () => {
     await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
     await page.waitForSelector('main', { timeout: 40000 });
 
-    // Wait for URL to update to decoded version
-    await page.waitForFunction(
-      (expectedId) => window.location.hash.includes(expectedId),
-      decodedDoi,
-      { timeout: 30000 }
-    );
+    // Wait for URL to update (2s timeout + buffer)
+    await page.waitForTimeout(3000);
 
     // Get the current URL
     const currentUrl = page.url();
@@ -59,12 +55,8 @@ test.describe('Pretty URL Display', () => {
     await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
     await page.waitForSelector('main', { timeout: 40000 });
 
-    // Wait for URL to update to decoded version
-    await page.waitForFunction(
-      (expectedId) => window.location.hash.includes(expectedId),
-      decodedOrcid,
-      { timeout: 30000 }
-    );
+    // Wait for URL to update (2s timeout + buffer)
+    await page.waitForTimeout(3000);
 
     const currentUrl = page.url();
     const currentHash = currentUrl.split('#')[1] || '';
@@ -88,12 +80,8 @@ test.describe('Pretty URL Display', () => {
     await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
     await page.waitForSelector('main', { timeout: 40000 });
 
-    // Wait for URL to update to decoded version
-    await page.waitForFunction(
-      (expectedId) => window.location.hash.includes(expectedId),
-      decodedRor,
-      { timeout: 30000 }
-    );
+    // Wait for URL to update (2s timeout + buffer)
+    await page.waitForTimeout(3000);
 
     const currentUrl = page.url();
     const currentHash = currentUrl.split('#')[1] || '';
@@ -117,12 +105,8 @@ test.describe('Pretty URL Display', () => {
     await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
     await page.waitForSelector('main', { timeout: 40000 });
 
-    // Wait for URL to update to decoded version
-    await page.waitForFunction(
-      (expectedId) => window.location.hash.includes(expectedId),
-      decodedDoi,
-      { timeout: 30000 }
-    );
+    // Wait for URL to update (2s timeout + buffer)
+    await page.waitForTimeout(3000);
 
     const currentUrl = page.url();
     const currentHash = currentUrl.split('#')[1] || '';
@@ -147,9 +131,8 @@ test.describe('Pretty URL Display', () => {
     await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
     await page.waitForSelector('main', { timeout: 40000 });
 
-    // Give time for any URL processing to complete
-    // Browser might encode the URL first, then our hook will decode it back
-    await page.waitForTimeout(2000);
+    // Wait for URL processing to complete (may be encoded then decoded by hook)
+    await page.waitForTimeout(3000);
 
     const currentUrl = page.url();
     const currentHash = currentUrl.split('#')[1] || '';

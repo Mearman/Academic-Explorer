@@ -20,6 +20,18 @@ function ExternalIdRoute() {
   useEffect(() => {
     const resolveExternalId = async () => {
       try {
+        // Check if this is a pretty URL update from usePrettyUrl hook
+        // If so, skip processing as the URL is already correctly routed
+        if (window.history.state?.__prettyUrlUpdate) {
+          logger.debug(
+            "routing",
+            "Skipping external ID resolution - this is a display-only pretty URL update",
+            { externalId },
+            "ExternalIdRoute",
+          );
+          return;
+        }
+
         // Handle double-encoded slashes first (%252F -> %2F)
         const processedId = externalId.replace(/%252F/gi, '%2F');
         // Decode the parameter

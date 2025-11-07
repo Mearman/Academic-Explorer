@@ -1,8 +1,7 @@
 import { useEffect } from "react";
 
-// Module-level set to track which entity URLs have been updated
-// This persists across component remounts to prevent flickering
-const updatedEntities = new Set<string>();
+// Track which entities we've attempted to decode to prevent retries
+const attemptedDecodes = new Set<string>();
 
 /**
  * Hook to update the browser URL to show a "pretty" (decoded) version
@@ -25,53 +24,49 @@ export function usePrettyUrl(
   useEffect(() => {
     if (!rawId || !decodedId) return;
 
-    // Create a unique key for this entity
+    const currentHash = window.location.hash;
+    const hashPath = currentHash.split("?")[0];
+
+    // Check if URL is currently encoded
+    const isCurrentlyEncoded = hashPath.includes("%");
+
     const entityKey = `${entityType}:${decodedId}`;
 
-    // Small delay to ensure router has finished processing
+    // Only skip if we've already attempted AND the URL is not currently encoded
+    if (attemptedDecodes.has(entityKey) && !isCurrentlyEncoded) {
+      return;
+    }
+
+    // Mark that we're attempting this decode
+    attemptedDecodes.add(entityKey);
+
+    // Wait for page to fully load and router to settle
     const timeoutId = setTimeout(() => {
-      // If we've already processed this entity, never update again (prevents flickering loop)
-      if (updatedEntities.has(entityKey)) {
-        return;
-      }
-
-      // Get the actual current hash from the browser URL
       const currentHash = window.location.hash;
-
-      // Extract just the path part (before any query params)
       const hashPath = currentHash.split("?")[0];
 
-      // Check if the current URL needs updating by comparing with decoded version
-      // We check both for encoded characters and if the hash doesn't contain the decoded ID
-      const hasEncodedChars = hashPath.includes("%");
-      const needsUpdate = hasEncodedChars && !hashPath.includes(decodedId);
-
-      // If URL needs updating, decode it
-      if (needsUpdate) {
-        // Extract query parameters from the hash (after the ?)
+      // Only decode if currently encoded
+      if (hashPath.includes("%") && !hashPath.includes(decodedId)) {
         const hashQueryParams = currentHash.includes("?")
-          ? "?" + currentHash.split("?").slice(1).join("?") // Handle multiple ? in URL
+          ? "?" + currentHash.split("?").slice(1).join("?")
           : "";
 
-        // Build the pretty (decoded) URL
-        const prettyHash = `#/${entityType}/${decodedId}${hashQueryParams}`;
+        const decodedHash = `#/${entityType}/${decodedId}${hashQueryParams}`;
+        const newUrl = window.location.pathname + window.location.search + decodedHash;
 
-        // Preserve any search params that might be separate from hash
-        // (TanStack Router might use either location.search or hash params)
-        const searchString = window.location.search || "";
-        const relativeUrl = `${window.location.pathname}${searchString}${prettyHash}`;
+        // Store original state to preserve router state
+        const originalState = window.history.state;
 
-        // Replace the current URL with the pretty version without triggering navigation
-        window.history.replaceState(
-          null,
-          "",
-          relativeUrl,
-        );
+        // Update URL without triggering router re-processing
+        // We use a custom property to mark this as a "display-only" update
+        const newState = {
+          ...originalState,
+          __prettyUrlUpdate: true,
+        };
 
-        // Mark that we've updated this entity's URL
-        updatedEntities.add(entityKey);
+        window.history.replaceState(newState, "", newUrl);
       }
-    }, 150); // Slightly longer delay to ensure router stability
+    }, 2000); // Wait 2 full seconds for everything to settle
 
     return () => clearTimeout(timeoutId);
   }, [entityType, rawId, decodedId]);
