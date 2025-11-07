@@ -1,0 +1,54 @@
+{
+  "totalUrls": 276,
+  "testCases": 62,
+  "categories": [
+    "single-entity",
+    "external-id",
+    "entity-list-simple",
+    "entity-list-simple-filters",
+    "entity-list-complex-filters",
+    "autocomplete",
+    "text-endpoint",
+    "problematic-urls",
+    "special-cases"
+  ],
+  "coverageByCategory": {
+    "single-entity": {
+      "count": 8,
+      "expectedSupport": "full"
+    },
+    "external-id": {
+      "count": 10,
+      "expectedSupport": "full"
+    },
+    "entity-list-simple": {
+      "count": 8,
+      "expectedSupport": "full"
+    },
+    "entity-list-simple-filters": {
+      "count": 8,
+      "expectedSupport": "full"
+    },
+    "entity-list-complex-filters": {
+      "count": 6,
+      "expectedSupport": "partial"
+    },
+    "autocomplete": {
+      "count": 7,
+      "expectedSupport": "full"
+    },
+    "text-endpoint": {
+      "count": 3,
+      "expectedSupport": "none"
+    },
+    "problematic-urls": {
+      "count": 8,
+      "expectedSupport": "partial"
+    },
+    "special-cases": {
+      "count": 4,
+      "expectedSupport": "mixed"
+    }
+  },
+  "generatedAt": "2025-11-07T03:17:22.184Z"
+}

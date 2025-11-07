@@ -173,6 +173,32 @@ function createWebConfig(): UserConfig {
       open: true,
     },
 
+    // Improve HMR and resolve issues
+    optimizeDeps: {
+      ...base.optimizeDeps,
+      include: [
+        'react',
+        'react-dom',
+        '@tanstack/react-router',
+        '@tanstack/react-query',
+        '@mantine/core',
+        '@mantine/hooks',
+      ],
+      exclude: [
+        '@academic-explorer/client',
+        '@academic-explorer/utils',
+        '@academic-explorer/graph',
+        '@academic-explorer/simulation',
+      ],
+      force: true,
+    },
+
+    // Define global replacements for browser compatibility
+    define: {
+      ...base.define,
+      global: 'globalThis',
+    },
+
     // Preview server configuration
     preview: {
       ...base.preview,

@@ -13,11 +13,7 @@ export default defineConfig({
   // Nx TypeScript paths plugin for proper module resolution
   plugins: [nxViteTsPaths()],
 
-  // Global environment variables
-  define: {
-    __DEV__: JSON.stringify(process.env.NODE_ENV !== "production"),
-  },
-
+  
   // Path aliases for absolute imports
   // Note: This is resolved dynamically relative to this config file
   resolve: {
@@ -94,5 +90,14 @@ export default defineConfig({
   // Optimized dependencies handling for monorepo
   optimizeDeps: {
     include: [],
+    // Handle Node.js externalization properly
+    exclude: ['@academic-explorer/client', '@academic-explorer/utils'],
+  },
+
+  // Define global replacements for browser compatibility
+  define: {
+    __DEV__: JSON.stringify(process.env.NODE_ENV !== "production"),
+    global: 'globalThis',
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
   },
 });

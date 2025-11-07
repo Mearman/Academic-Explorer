@@ -1,0 +1,1439 @@
+{
+  "totalUrls": 276,
+  "categories": {
+    "single-entity": [
+      {
+        "url": "https://api.openalex.org/authors/A2798520857",
+        "entityType": "authors"
+      },
+      {
+        "url": "https://api.openalex.org/authors/A5006060960",
+        "entityType": "authors"
+      },
+      {
+        "url": "https://api.openalex.org/authors/A5023888391",
+        "entityType": "authors"
+      },
+      {
+        "url": "https://api.openalex.org/authors/A5092938886",
+        "entityType": "authors"
+      },
+      {
+        "url": "https://api.openalex.org/concepts/C71924100",
+        "entityType": "concepts"
+      },
+      {
+        "url": "https://api.openalex.org/funders/F4320332161",
+        "entityType": "funders"
+      },
+      {
+        "url": "https://api.openalex.org/institutions/I27837315",
+        "entityType": "institutions"
+      },
+      {
+        "url": "https://api.openalex.org/publishers/P4310319965",
+        "entityType": "publishers"
+      },
+      {
+        "url": "https://api.openalex.org/sources/S137773608",
+        "entityType": "sources"
+      },
+      {
+        "url": "https://api.openalex.org/topics/T11636",
+        "entityType": "topics"
+      },
+      {
+        "url": "https://api.openalex.org/works/W2168909179",
+        "entityType": "works"
+      },
+      {
+        "url": "https://api.openalex.org/works/W2741809807",
+        "entityType": "works"
+      }
+    ],
+    "external-id": [
+      {
+        "url": "https://api.openalex.org/authors/https://orcid.org/0000-0002-1298-3089",
+        "entityType": "authors"
+      },
+      {
+        "url": "https://api.openalex.org/authors/https://orcid.org/0000-0003-1613-5981",
+        "entityType": "authors"
+      },
+      {
+        "url": "https://api.openalex.org/authors/orcid:0000-0002-1298-3089",
+        "entityType": "authors"
+      },
+      {
+        "url": "https://api.openalex.org/authors/orcid:0000-0003-1613-5981",
+        "entityType": "authors"
+      },
+      {
+        "url": "https://api.openalex.org/concepts/wikidata:Q11190",
+        "entityType": "concepts"
+      },
+      {
+        "url": "https://api.openalex.org/funders/wikidata:Q390551",
+        "entityType": "funders"
+      },
+      {
+        "url": "https://api.openalex.org/institutions/https://ror.org/02y3ad647",
+        "entityType": "institutions"
+      },
+      {
+        "url": "https://api.openalex.org/institutions/ror:02y3ad647",
+        "entityType": "institutions"
+      },
+      {
+        "url": "https://api.openalex.org/institutions/ror:https://ror.org/00cvxb145",
+        "entityType": "institutions"
+      },
+      {
+        "url": "https://api.openalex.org/publishers/wikidata:Q1479654",
+        "entityType": "publishers"
+      },
+      {
+        "url": "https://api.openalex.org/sources/issn:2041-1723",
+        "entityType": "sources"
+      },
+      {
+        "url": "https://api.openalex.org/works/https://doi.org/10.7717/peerj.4375",
+        "entityType": "works"
+      },
+      {
+        "url": "https://api.openalex.org/works/pmid:14907713",
+        "entityType": "works"
+      }
+    ],
+    "entity-list": [
+      {
+        "url": "https://api.openalex.org/authors",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/authors?filter=display_name.search:einstein",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/authors?filter=display_name.search:john%20smith",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/authors?filter=display_name.search:tupolev",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/authors?filter=has_orcid:true",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/authors?filter=last_known_institution.continent:africa",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/authors?filter=last_known_institution.is_global_south:true",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/authors?filter=last_known_institution.is_global_south:true&group-by=last_known_institution.country_code",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/authors?group-by=last_known_institution.continent&filter=cited_by_count:%3E100",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/authors?group_by=last_known_institution.continent",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/authors?per-page=50&page=2",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/authors?sample=25",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/authors?search=Heather+Piwowar",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/authors?search=carl%20sagan",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/authors?select=id,display_name,orcid",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/authors?sort=cited_by_count:desc",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/concepts",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/concepts?filter=display_name.search:electrodynamics",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/concepts?filter=display_name.search:medical",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/concepts?filter=has_wikidata:false",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/concepts?filter=level:0",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/concepts?group_by=level",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/concepts?per-page=50&page=2",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/concepts?sample=10",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/concepts?search=artificial%20intelligence",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/concepts?select=id,display_name,description",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/concepts?sort=cited_by_count:desc",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/funders",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/funders?filter=continent:south_america",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/funders?filter=country_code:ca",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/funders?filter=description.search:health",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/funders?filter=display_name.search:florida",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/funders?filter=display_name.search:health",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/funders?filter=is_global_south:true",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/funders?group_by=country_code",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/funders?per-page=50&page=2",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/funders?sample=10",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/funders?search=health",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/funders?select=id,display_name,alternate_titles",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/funders?sort=display_name:desc",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/institutions",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/institutions?filter=continent:south_america",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/institutions?filter=country_code:!us",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/institutions?filter=country_code:ca",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/institutions?filter=display_name.search:florida",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/institutions?filter=display_name.search:technology",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/institutions?filter=has_ror:false",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/institutions?filter=is_global_south:true",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/institutions?group-by=continent",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/institutions?group_by=country_code",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/institutions?per-page=50&page=2",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/institutions?sample=50&per-page=50",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/institutions?search=MIT",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/institutions?search=nyu",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/institutions?search=san%20diego%20state%20university",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/institutions?search=stanford",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/institutions?select=id,display_name,ror",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/institutions?sort=cited_by_count:desc",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/keywords",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/keywords?filter=display_name.search:artificial+intelligence",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/keywords?filter=subfield.id:2713",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/keywords?group_by=cited_by_count",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/keywords?search=artificial%20intelligence",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/publishers",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/publishers?filter=continent:south_america",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/publishers?filter=display_name.search:elsevier",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/publishers?filter=hierarchy_level:0",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/publishers?group_by=country_codes",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/publishers?per-page=50&page=2",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/publishers?sample=10",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/publishers?search=springer",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/publishers?select=id,display_name,alternate_titles",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/publishers?sort=display_name:desc",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/sources",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/sources?filter=continent:asia",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/sources?filter=display_name.search:Neurology",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/sources?filter=display_name.search:nature",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/sources?filter=has_issn:false",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/sources?filter=has_issn:true",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/sources?filter=host_organization.id:P4310319965",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/sources?filter=is_global_south:true",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/sources?filter=works_count:%3E1000",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/sources?group_by=publisher",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/sources?per-page=50&page=2",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/sources?sample=10",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/sources?sample=20&seed=123",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/sources?search=Nature",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/sources?search=jacs",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/sources?select=id,display_name,issn",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/sources?sort=cited_by_count:desc",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/sources?sort=display_name",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/topics",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/topics?filter=display_name.search:artificial+intelligence",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/topics?filter=display_name.search:medical",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/topics?filter=subfield.id:2713",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/topics?group_by=domain.id",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/topics?per-page=50&page=2",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/topics?sample=10",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/topics?search=artificial%20intelligence",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/topics?select=id,display_name,description",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/topics?sort=cited_by_count:desc",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?api_key=424242",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=abstract.search.no_stem:surgery",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=abstract.search:artificial%20intelligence",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=author.id:A5023888391",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=authors_count:%3E100",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=authors_count:1",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=authorships.author.id:A5023888391",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=authorships.author.id:https://orcid.org/0000-0003-1613-5981",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=authorships.institutions.continent:europe",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=authorships.institutions.id:I136199984",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=authorships.institutions.id:https://ror.org/042nb2s44",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=authorships.institutions.is_global_south:true",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=best_open_version:any",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=cited_by:W2766808518",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=cited_by_count:%3E1,is_oa:true",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=cites:W2741809807",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=concept.id:C2778407487",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=concepts_count:%3E2",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=display_name.search.no_stem:surgery",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=doi:https://doi.org/10.1371/journal.pone.0266781|https://doi.org/10.1371/journal.pone.0267149",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=doi:https://doi.org/10.1371/journal.pone.0266781|https://doi.org/10.1371/journal.pone.0267149|https://doi.org/10.1371/journal.pone.0267890&per-page=50",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=from_created_date:2023-01-12&api_key=myapikey",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=from_publication_date:2001-03-14",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=from_publication_date:2022-01-01,to_publication_date:2022-01-26",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=from_updated_date:2023-01-12&api_key=myapikey",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=fulltext.search:climate%20change",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=has_abstract:true",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=has_doi:false",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=has_ngrams:true",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=has_oa_accepted_or_published_version:true",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=has_oa_submitted_version:true",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=has_orcid:true",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=has_pmcid:true",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=has_pmid:true",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=has_references:true",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=has_oa_published_version:true",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=institutions.country_code:fr+gb",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=institutions.country_code:fr,institutions.country_code:gb",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=institutions.country_code:fr|gb",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=institutions.country_code:fr|primary_location.source.issn:0957-1558",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=institutions.id:I114027177",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=institutions.id:I27837315,repository:!S4306400393",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=institutions.id:I57206974",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=institutions.id:https://openalex.org/I97018004",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=institutions.id:https://openalex.org/I97018004,publication_year:2010-2020&group-by=publication_year",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=institutions.id:https://openalex.org/I97018004,publication_year:2010-2020&sort=publication_date:desc",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=institutions.is_global_south:true",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=is_oa:true&group_by=repository",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=is_oa:true",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=locations.source.host_institution_lineage:https://openalex.org/I205783295",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=locations.source.publisher_lineage:https://openalex.org/P4310320547",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=mag_only:true",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=open_access.is_oa:true,publication_year:2021&sample=50&per-page=50",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=open_access.oa_status:gold",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=primary_location.source.has_issn:true",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=primary_location.source.publisher_lineage:https://openalex.org/P4310320547",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=primary_location.source.id:S137773608",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=primary_location.source.id:S1983995261",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=publication_year:2020",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=publication_year:2020&per-page=100&cursor=IlsxNjA5MzcyODAwMDAwLCAnaHR0cHM6Ly9vcGVuYWxleC5vcmcvVzI0ODg0OTk3NjQnXSI=",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=publication_year:2020&per-page=100&cursor=*",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=publication_year:2022,is_oa:true,title.search:covid,authorships.institutions.id:I136199984|I27837315",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=publication_year:2023&per-page=200",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=publication_year:2023&per-page=200&page=2",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=publication_year:2023&per-page=200&page=3",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=publication_year:>2020&group_by=topics.id",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=publication_year:>2020&sort=cited_by_count:desc&per-page=200",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=raw_affiliation_strings.search:department%20of%20political%20science%20university%20of%20amsterdam",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=related_to:W2486144666",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=repository:S4306400393",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=title.search.no_stem:surgery",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=title.search:CRISPR",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=title.search:cubist",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=title.search:wombat",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=title_and_abstract.search:gum%20disease",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=title_and_abstract.search.no_stem:surgery",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=to_publication_date:2001-03-14",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=to_updated_date:2023-01-12&api_key=myapikey",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=to_created_date:2024-01-12&api_key=myapikey",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=type:book",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?filter=version:publishedVersion",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?group_by=authorships.countries",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?group_by=authorships.countries:include_unknown",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?group_by=authorships.institutions.id",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?group_by=oa_status",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?group_by=type",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?group_by=authorships.institutions.id",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?group_by=publication_year",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?group_by=topics.id",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?group_by=type",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?mailto=you@example.com",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?mailto=yourname@example.edu",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?page=2",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?page=2&per-page=200",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?per-page=50&page=2",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?sample=100&seed=42",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?sample=1000&seed=1",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?sample=1000&seed=2",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?sample=1000&seed=3",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?sample=100&per-page=100",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?sample=20",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?sample=20&seed=42",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?search=%22fierce%20creatures%22",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?search=%28elmo%20AND%20%22sesame%20street%22%29%20NOT%20%28cookie%20OR%20monster%29",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?search=climate&filter=publication_year:2023",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?search=dna",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?search=fierce%20creatures",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?search=machine+learning",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?select=id,display_name",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?select=id,doi,display_name",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?select=id,title&per-page=200",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?select=id,title,publication_year,cited_by_count",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?sort=cited_by_count:desc",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/works?sort=publication_year",
+        "entityType": "unknown"
+      }
+    ],
+    "autocomplete": [
+      {
+        "url": "https://api.openalex.org/autocomplete/authors?q=einst",
+        "entityType": "autocomplete"
+      },
+      {
+        "url": "https://api.openalex.org/autocomplete/authors?q=ronald%20sw",
+        "entityType": "autocomplete"
+      },
+      {
+        "url": "https://api.openalex.org/autocomplete/concepts?q=comp",
+        "entityType": "autocomplete"
+      },
+      {
+        "url": "https://api.openalex.org/autocomplete/funders?q=national+sci",
+        "entityType": "autocomplete"
+      },
+      {
+        "url": "https://api.openalex.org/autocomplete/institutions?q=Florida",
+        "entityType": "autocomplete"
+      },
+      {
+        "url": "https://api.openalex.org/autocomplete/institutions?q=flori",
+        "entityType": "autocomplete"
+      },
+      {
+        "url": "https://api.openalex.org/autocomplete/institutions?q=harv",
+        "entityType": "autocomplete"
+      },
+      {
+        "url": "https://api.openalex.org/autocomplete/institutions?q=stanford",
+        "entityType": "autocomplete"
+      },
+      {
+        "url": "https://api.openalex.org/autocomplete/publishers?q=els",
+        "entityType": "autocomplete"
+      },
+      {
+        "url": "https://api.openalex.org/autocomplete/sources?q=S49861241",
+        "entityType": "autocomplete"
+      },
+      {
+        "url": "https://api.openalex.org/autocomplete/sources?q=neuro",
+        "entityType": "autocomplete"
+      },
+      {
+        "url": "https://api.openalex.org/autocomplete/works?filter=publication_year:2010&search=frogs&q=greenhou",
+        "entityType": "autocomplete"
+      },
+      {
+        "url": "https://api.openalex.org/autocomplete/works?q=neural+networks",
+        "entityType": "autocomplete"
+      },
+      {
+        "url": "https://api.openalex.org/autocomplete/works?q=tigers",
+        "entityType": "autocomplete"
+      }
+    ],
+    "text-endpoint": [
+      {
+        "url": "https://api.openalex.org/text/concepts?title=type%201%20diabetes%20research%20for%20children",
+        "entityType": "text"
+      },
+      {
+        "url": "https://api.openalex.org/text/keywords?title=type%201%20diabetes%20research%20for%20children",
+        "entityType": "text"
+      },
+      {
+        "url": "https://api.openalex.org/text/topics?title=type%201%20diabetes%20research%20for%20children",
+        "entityType": "text"
+      }
+    ],
+    "unknown": [
+      {
+        "url": "https://api.openalex.org/W2741809807",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/authors/A5023888391?select=id,display_name,orcid",
+        "entityType": "authors"
+      },
+      {
+        "url": "https://api.openalex.org/autocomplete?q=https://orcid.org/0000-0002-7436-3176",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/concepts/C71924100?select=id,display_name",
+        "entityType": "concepts"
+      },
+      {
+        "url": "https://api.openalex.org/concepts/random",
+        "entityType": "concepts"
+      },
+      {
+        "url": "https://api.openalex.org/funders/F4320332161?select=id,display_name",
+        "entityType": "funders"
+      },
+      {
+        "url": "https://api.openalex.org/institutions/I27837315?select=id,display_name",
+        "entityType": "institutions"
+      },
+      {
+        "url": "https://api.openalex.org/institutions/random",
+        "entityType": "institutions"
+      },
+      {
+        "url": "https://api.openalex.org/keywords/cardiac-imaging",
+        "entityType": "keywords"
+      },
+      {
+        "url": "https://api.openalex.org/keywords/cardiac-imaging?select=id,display_name",
+        "entityType": "keywords"
+      },
+      {
+        "url": "https://api.openalex.org/publishers/P4310319965?select=id,display_name",
+        "entityType": "publishers"
+      },
+      {
+        "url": "https://api.openalex.org/sources/S137773608?select=id,display_name",
+        "entityType": "sources"
+      },
+      {
+        "url": "https://api.openalex.org/text?title=Machine+learning+for+drug+discovery",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/text?title=type%201%20diabetes%20research%20for%20children",
+        "entityType": "unknown"
+      },
+      {
+        "url": "https://api.openalex.org/topics/T11636?select=id,display_name",
+        "entityType": "topics"
+      },
+      {
+        "url": "https://api.openalex.org/works/W2138270253?select=id,display_name",
+        "entityType": "works"
+      },
+      {
+        "url": "https://api.openalex.org/works/W2741809807?select=id,display_name",
+        "entityType": "works"
+      }
+    ]
+  },
+  "entityTypes": {
+    "unknown": [
+      "https://api.openalex.org/W2741809807",
+      "https://api.openalex.org/authors",
+      "https://api.openalex.org/authors?filter=display_name.search:einstein",
+      "https://api.openalex.org/authors?filter=display_name.search:john%20smith",
+      "https://api.openalex.org/authors?filter=display_name.search:tupolev",
+      "https://api.openalex.org/authors?filter=has_orcid:true",
+      "https://api.openalex.org/authors?filter=last_known_institution.continent:africa",
+      "https://api.openalex.org/authors?filter=last_known_institution.is_global_south:true",
+      "https://api.openalex.org/authors?filter=last_known_institution.is_global_south:true&group-by=last_known_institution.country_code",
+      "https://api.openalex.org/authors?group-by=last_known_institution.continent&filter=cited_by_count:%3E100",
+      "https://api.openalex.org/authors?group_by=last_known_institution.continent",
+      "https://api.openalex.org/authors?per-page=50&page=2",
+      "https://api.openalex.org/authors?sample=25",
+      "https://api.openalex.org/authors?search=Heather+Piwowar",
+      "https://api.openalex.org/authors?search=carl%20sagan",
+      "https://api.openalex.org/authors?select=id,display_name,orcid",
+      "https://api.openalex.org/authors?sort=cited_by_count:desc",
+      "https://api.openalex.org/autocomplete?q=https://orcid.org/0000-0002-7436-3176",
+      "https://api.openalex.org/concepts",
+      "https://api.openalex.org/concepts?filter=display_name.search:electrodynamics",
+      "https://api.openalex.org/concepts?filter=display_name.search:medical",
+      "https://api.openalex.org/concepts?filter=has_wikidata:false",
+      "https://api.openalex.org/concepts?filter=level:0",
+      "https://api.openalex.org/concepts?group_by=level",
+      "https://api.openalex.org/concepts?per-page=50&page=2",
+      "https://api.openalex.org/concepts?sample=10",
+      "https://api.openalex.org/concepts?search=artificial%20intelligence",
+      "https://api.openalex.org/concepts?select=id,display_name,description",
+      "https://api.openalex.org/concepts?sort=cited_by_count:desc",
+      "https://api.openalex.org/funders",
+      "https://api.openalex.org/funders?filter=continent:south_america",
+      "https://api.openalex.org/funders?filter=country_code:ca",
+      "https://api.openalex.org/funders?filter=description.search:health",
+      "https://api.openalex.org/funders?filter=display_name.search:florida",
+      "https://api.openalex.org/funders?filter=display_name.search:health",
+      "https://api.openalex.org/funders?filter=is_global_south:true",
+      "https://api.openalex.org/funders?group_by=country_code",
+      "https://api.openalex.org/funders?per-page=50&page=2",
+      "https://api.openalex.org/funders?sample=10",
+      "https://api.openalex.org/funders?search=health",
+      "https://api.openalex.org/funders?select=id,display_name,alternate_titles",
+      "https://api.openalex.org/funders?sort=display_name:desc",
+      "https://api.openalex.org/institutions",
+      "https://api.openalex.org/institutions?filter=continent:south_america",
+      "https://api.openalex.org/institutions?filter=country_code:!us",
+      "https://api.openalex.org/institutions?filter=country_code:ca",
+      "https://api.openalex.org/institutions?filter=display_name.search:florida",
+      "https://api.openalex.org/institutions?filter=display_name.search:technology",
+      "https://api.openalex.org/institutions?filter=has_ror:false",
+      "https://api.openalex.org/institutions?filter=is_global_south:true",
+      "https://api.openalex.org/institutions?group-by=continent",
+      "https://api.openalex.org/institutions?group_by=country_code",
+      "https://api.openalex.org/institutions?per-page=50&page=2",
+      "https://api.openalex.org/institutions?sample=50&per-page=50",
+      "https://api.openalex.org/institutions?search=MIT",
+      "https://api.openalex.org/institutions?search=nyu",
+      "https://api.openalex.org/institutions?search=san%20diego%20state%20university",
+      "https://api.openalex.org/institutions?search=stanford",
+      "https://api.openalex.org/institutions?select=id,display_name,ror",
+      "https://api.openalex.org/institutions?sort=cited_by_count:desc",
+      "https://api.openalex.org/keywords",
+      "https://api.openalex.org/keywords?filter=display_name.search:artificial+intelligence",
+      "https://api.openalex.org/keywords?filter=subfield.id:2713",
+      "https://api.openalex.org/keywords?group_by=cited_by_count",
+      "https://api.openalex.org/keywords?search=artificial%20intelligence",
+      "https://api.openalex.org/publishers",
+      "https://api.openalex.org/publishers?filter=continent:south_america",
+      "https://api.openalex.org/publishers?filter=display_name.search:elsevier",
+      "https://api.openalex.org/publishers?filter=hierarchy_level:0",
+      "https://api.openalex.org/publishers?group_by=country_codes",
+      "https://api.openalex.org/publishers?per-page=50&page=2",
+      "https://api.openalex.org/publishers?sample=10",
+      "https://api.openalex.org/publishers?search=springer",
+      "https://api.openalex.org/publishers?select=id,display_name,alternate_titles",
+      "https://api.openalex.org/publishers?sort=display_name:desc",
+      "https://api.openalex.org/sources",
+      "https://api.openalex.org/sources?filter=continent:asia",
+      "https://api.openalex.org/sources?filter=display_name.search:Neurology",
+      "https://api.openalex.org/sources?filter=display_name.search:nature",
+      "https://api.openalex.org/sources?filter=has_issn:false",
+      "https://api.openalex.org/sources?filter=has_issn:true",
+      "https://api.openalex.org/sources?filter=host_organization.id:P4310319965",
+      "https://api.openalex.org/sources?filter=is_global_south:true",
+      "https://api.openalex.org/sources?filter=works_count:%3E1000",
+      "https://api.openalex.org/sources?group_by=publisher",
+      "https://api.openalex.org/sources?per-page=50&page=2",
+      "https://api.openalex.org/sources?sample=10",
+      "https://api.openalex.org/sources?sample=20&seed=123",
+      "https://api.openalex.org/sources?search=Nature",
+      "https://api.openalex.org/sources?search=jacs",
+      "https://api.openalex.org/sources?select=id,display_name,issn",
+      "https://api.openalex.org/sources?sort=cited_by_count:desc",
+      "https://api.openalex.org/sources?sort=display_name",
+      "https://api.openalex.org/text?title=Machine+learning+for+drug+discovery",
+      "https://api.openalex.org/text?title=type%201%20diabetes%20research%20for%20children",
+      "https://api.openalex.org/topics",
+      "https://api.openalex.org/topics?filter=display_name.search:artificial+intelligence",
+      "https://api.openalex.org/topics?filter=display_name.search:medical",
+      "https://api.openalex.org/topics?filter=subfield.id:2713",
+      "https://api.openalex.org/topics?group_by=domain.id",
+      "https://api.openalex.org/topics?per-page=50&page=2",
+      "https://api.openalex.org/topics?sample=10",
+      "https://api.openalex.org/topics?search=artificial%20intelligence",
+      "https://api.openalex.org/topics?select=id,display_name,description",
+      "https://api.openalex.org/topics?sort=cited_by_count:desc",
+      "https://api.openalex.org/works",
+      "https://api.openalex.org/works?api_key=424242",
+      "https://api.openalex.org/works?filter=abstract.search.no_stem:surgery",
+      "https://api.openalex.org/works?filter=abstract.search:artificial%20intelligence",
+      "https://api.openalex.org/works?filter=author.id:A5023888391",
+      "https://api.openalex.org/works?filter=authors_count:%3E100",
+      "https://api.openalex.org/works?filter=authors_count:1",
+      "https://api.openalex.org/works?filter=authorships.author.id:A5023888391",
+      "https://api.openalex.org/works?filter=authorships.author.id:https://orcid.org/0000-0003-1613-5981",
+      "https://api.openalex.org/works?filter=authorships.institutions.continent:europe",
+      "https://api.openalex.org/works?filter=authorships.institutions.id:I136199984",
+      "https://api.openalex.org/works?filter=authorships.institutions.id:https://ror.org/042nb2s44",
+      "https://api.openalex.org/works?filter=authorships.institutions.is_global_south:true",
+      "https://api.openalex.org/works?filter=best_open_version:any",
+      "https://api.openalex.org/works?filter=cited_by:W2766808518",
+      "https://api.openalex.org/works?filter=cited_by_count:%3E1,is_oa:true",
+      "https://api.openalex.org/works?filter=cites:W2741809807",
+      "https://api.openalex.org/works?filter=concept.id:C2778407487",
+      "https://api.openalex.org/works?filter=concepts_count:%3E2",
+      "https://api.openalex.org/works?filter=display_name.search:bioplastics&sort=publication_year:desc,relevance_score:desc",
+      "https://api.openalex.org/works?filter=display_name.search.no_stem:surgery",
+      "https://api.openalex.org/works?filter=doi:https://doi.org/10.1371/journal.pone.0266781|https://doi.org/10.1371/journal.pone.0267149",
+      "https://api.openalex.org/works?filter=doi:https://doi.org/10.1371/journal.pone.0266781|https://doi.org/10.1371/journal.pone.0267149|https://doi.org/10.1371/journal.pone.0267890&per-page=50",
+      "https://api.openalex.org/works?filter=from_created_date:2023-01-12&api_key=myapikey",
+      "https://api.openalex.org/works?filter=from_publication_date:2001-03-14",
+      "https://api.openalex.org/works?filter=from_publication_date:2022-01-01,to_publication_date:2022-01-26",
+      "https://api.openalex.org/works?filter=from_updated_date:2023-01-12&api_key=myapikey",
+      "https://api.openalex.org/works?filter=fulltext.search:climate%20change",
+      "https://api.openalex.org/works?filter=has_abstract:true",
+      "https://api.openalex.org/works?filter=has_doi:false",
+      "https://api.openalex.org/works?filter=has_ngrams:true",
+      "https://api.openalex.org/works?filter=has_oa_accepted_or_published_version:true",
+      "https://api.openalex.org/works?filter=has_oa_submitted_version:true",
+      "https://api.openalex.org/works?filter=has_orcid:true",
+      "https://api.openalex.org/works?filter=has_pmcid:true",
+      "https://api.openalex.org/works?filter=has_pmid:true",
+      "https://api.openalex.org/works?filter=has_references:true",
+      "https://api.openalex.org/works?filter=has_oa_published_version:true",
+      "https://api.openalex.org/works?filter=institutions.country_code:fr+gb",
+      "https://api.openalex.org/works?filter=institutions.country_code:fr,institutions.country_code:gb",
+      "https://api.openalex.org/works?filter=institutions.country_code:fr|gb",
+      "https://api.openalex.org/works?filter=institutions.country_code:fr|primary_location.source.issn:0957-1558",
+      "https://api.openalex.org/works?filter=institutions.id:I114027177",
+      "https://api.openalex.org/works?filter=institutions.id:I27837315,repository:!S4306400393",
+      "https://api.openalex.org/works?filter=institutions.id:I57206974",
+      "https://api.openalex.org/works?filter=institutions.id:https://openalex.org/I97018004",
+      "https://api.openalex.org/works?filter=institutions.id:https://openalex.org/I97018004,publication_year:2010-2020&group-by=publication_year",
+      "https://api.openalex.org/works?filter=institutions.id:https://openalex.org/I97018004,publication_year:2010-2020&sort=publication_date:desc",
+      "https://api.openalex.org/works?filter=institutions.is_global_south:true",
+      "https://api.openalex.org/works?filter=is_oa:true&group_by=repository",
+      "https://api.openalex.org/works?filter=is_oa:true",
+      "https://api.openalex.org/works?filter=locations.source.host_institution_lineage:https://openalex.org/I205783295",
+      "https://api.openalex.org/works?filter=locations.source.publisher_lineage:https://openalex.org/P4310320547",
+      "https://api.openalex.org/works?filter=mag_only:true",
+      "https://api.openalex.org/works?filter=open_access.is_oa:true,publication_year:2021&sample=50&per-page=50",
+      "https://api.openalex.org/works?filter=open_access.oa_status:gold",
+      "https://api.openalex.org/works?filter=primary_location.source.has_issn:true",
+      "https://api.openalex.org/works?filter=primary_location.source.publisher_lineage:https://openalex.org/P4310320547",
+      "https://api.openalex.org/works?filter=primary_location.source.id:S137773608",
+      "https://api.openalex.org/works?filter=primary_location.source.id:S1983995261",
+      "https://api.openalex.org/works?filter=publication_year:2020",
+      "https://api.openalex.org/works?filter=publication_year:2020&per-page=100&cursor=IlsxNjA5MzcyODAwMDAwLCAnaHR0cHM6Ly9vcGVuYWxleC5vcmcvVzI0ODg0OTk3NjQnXSI=",
+      "https://api.openalex.org/works?filter=publication_year:2020&per-page=100&cursor=*",
+      "https://api.openalex.org/works?filter=publication_year:2022,is_oa:true,title.search:covid,authorships.institutions.id:I136199984|I27837315",
+      "https://api.openalex.org/works?filter=publication_year:2023&per-page=200",
+      "https://api.openalex.org/works?filter=publication_year:2023&per-page=200&page=2",
+      "https://api.openalex.org/works?filter=publication_year:2023&per-page=200&page=3",
+      "https://api.openalex.org/works?filter=publication_year:>2020&group_by=topics.id",
+      "https://api.openalex.org/works?filter=publication_year:>2020&sort=cited_by_count:desc&per-page=200",
+      "https://api.openalex.org/works?filter=raw_affiliation_strings.search:department%20of%20political%20science%20university%20of%20amsterdam",
+      "https://api.openalex.org/works?filter=related_to:W2486144666",
+      "https://api.openalex.org/works?filter=repository:S4306400393",
+      "https://api.openalex.org/works?filter=title.search.no_stem:surgery",
+      "https://api.openalex.org/works?filter=title.search:CRISPR",
+      "https://api.openalex.org/works?filter=title.search:cubist",
+      "https://api.openalex.org/works?filter=title.search:wombat",
+      "https://api.openalex.org/works?filter=title_and_abstract.search:gum%20disease",
+      "https://api.openalex.org/works?filter=title_and_abstract.search.no_stem:surgery",
+      "https://api.openalex.org/works?filter=to_publication_date:2001-03-14",
+      "https://api.openalex.org/works?filter=to_updated_date:2023-01-12&api_key=myapikey",
+      "https://api.openalex.org/works?filter=to_created_date:2024-01-12&api_key=myapikey",
+      "https://api.openalex.org/works?filter=type:book",
+      "https://api.openalex.org/works?filter=version:publishedVersion",
+      "https://api.openalex.org/works?group_by=authorships.countries",
+      "https://api.openalex.org/works?group_by=authorships.countries:include_unknown",
+      "https://api.openalex.org/works?group_by=authorships.institutions.id",
+      "https://api.openalex.org/works?group_by=oa_status",
+      "https://api.openalex.org/works?group_by=type",
+      "https://api.openalex.org/works?group_by=authorships.institutions.id",
+      "https://api.openalex.org/works?group_by=publication_year",
+      "https://api.openalex.org/works?group_by=topics.id",
+      "https://api.openalex.org/works?group_by=type",
+      "https://api.openalex.org/works?mailto=you@example.com",
+      "https://api.openalex.org/works?mailto=yourname@example.edu",
+      "https://api.openalex.org/works?page=2",
+      "https://api.openalex.org/works?page=2&per-page=200",
+      "https://api.openalex.org/works?per-page=50&page=2",
+      "https://api.openalex.org/works?sample=100&seed=42",
+      "https://api.openalex.org/works?sample=1000&seed=1",
+      "https://api.openalex.org/works?sample=1000&seed=2",
+      "https://api.openalex.org/works?sample=1000&seed=3",
+      "https://api.openalex.org/works?sample=100&per-page=100",
+      "https://api.openalex.org/works?sample=20",
+      "https://api.openalex.org/works?sample=20&seed=42",
+      "https://api.openalex.org/works?search=%22fierce%20creatures%22",
+      "https://api.openalex.org/works?search=%28elmo%20AND%20%22sesame%20street%22%29%20NOT%20%28cookie%20OR%20monster%29",
+      "https://api.openalex.org/works?search=climate&filter=publication_year:2023",
+      "https://api.openalex.org/works?search=dna",
+      "https://api.openalex.org/works?search=fierce%20creatures",
+      "https://api.openalex.org/works?search=machine+learning",
+      "https://api.openalex.org/works?select=id,display_name",
+      "https://api.openalex.org/works?select=id,doi,display_name",
+      "https://api.openalex.org/works?select=id,title&per-page=200",
+      "https://api.openalex.org/works?select=id,title,publication_year,cited_by_count",
+      "https://api.openalex.org/works?sort=cited_by_count:desc",
+      "https://api.openalex.org/works?sort=publication_year"
+    ],
+    "authors": [
+      "https://api.openalex.org/authors/A2798520857",
+      "https://api.openalex.org/authors/A5006060960",
+      "https://api.openalex.org/authors/A5023888391",
+      "https://api.openalex.org/authors/A5023888391?select=id,display_name,orcid",
+      "https://api.openalex.org/authors/A5092938886",
+      "https://api.openalex.org/authors/https://orcid.org/0000-0002-1298-3089",
+      "https://api.openalex.org/authors/https://orcid.org/0000-0003-1613-5981",
+      "https://api.openalex.org/authors/orcid:0000-0002-1298-3089",
+      "https://api.openalex.org/authors/orcid:0000-0003-1613-5981"
+    ],
+    "autocomplete": [
+      "https://api.openalex.org/autocomplete/authors?q=einst",
+      "https://api.openalex.org/autocomplete/authors?q=ronald%20sw",
+      "https://api.openalex.org/autocomplete/concepts?q=comp",
+      "https://api.openalex.org/autocomplete/funders?q=national+sci",
+      "https://api.openalex.org/autocomplete/institutions?q=Florida",
+      "https://api.openalex.org/autocomplete/institutions?q=flori",
+      "https://api.openalex.org/autocomplete/institutions?q=harv",
+      "https://api.openalex.org/autocomplete/institutions?q=stanford",
+      "https://api.openalex.org/autocomplete/publishers?q=els",
+      "https://api.openalex.org/autocomplete/sources?q=S49861241",
+      "https://api.openalex.org/autocomplete/sources?q=neuro",
+      "https://api.openalex.org/autocomplete/works?filter=publication_year:2010&search=frogs&q=greenhou",
+      "https://api.openalex.org/autocomplete/works?q=neural+networks",
+      "https://api.openalex.org/autocomplete/works?q=tigers"
+    ],
+    "concepts": [
+      "https://api.openalex.org/concepts/C71924100",
+      "https://api.openalex.org/concepts/C71924100?select=id,display_name",
+      "https://api.openalex.org/concepts/random",
+      "https://api.openalex.org/concepts/wikidata:Q11190"
+    ],
+    "funders": [
+      "https://api.openalex.org/funders/F4320332161",
+      "https://api.openalex.org/funders/F4320332161?select=id,display_name",
+      "https://api.openalex.org/funders/wikidata:Q390551"
+    ],
+    "institutions": [
+      "https://api.openalex.org/institutions/I27837315",
+      "https://api.openalex.org/institutions/I27837315?select=id,display_name",
+      "https://api.openalex.org/institutions/https://ror.org/02y3ad647",
+      "https://api.openalex.org/institutions/random",
+      "https://api.openalex.org/institutions/ror:02y3ad647",
+      "https://api.openalex.org/institutions/ror:https://ror.org/00cvxb145"
+    ],
+    "keywords": [
+      "https://api.openalex.org/keywords/cardiac-imaging",
+      "https://api.openalex.org/keywords/cardiac-imaging?select=id,display_name"
+    ],
+    "publishers": [
+      "https://api.openalex.org/publishers/P4310319965",
+      "https://api.openalex.org/publishers/P4310319965?select=id,display_name",
+      "https://api.openalex.org/publishers/wikidata:Q1479654"
+    ],
+    "sources": [
+      "https://api.openalex.org/sources/S137773608",
+      "https://api.openalex.org/sources/S137773608?select=id,display_name",
+      "https://api.openalex.org/sources/issn:2041-1723"
+    ],
+    "text": [
+      "https://api.openalex.org/text/concepts?title=type%201%20diabetes%20research%20for%20children",
+      "https://api.openalex.org/text/keywords?title=type%201%20diabetes%20research%20for%20children",
+      "https://api.openalex.org/text/topics?title=type%201%20diabetes%20research%20for%20children"
+    ],
+    "topics": [
+      "https://api.openalex.org/topics/T11636",
+      "https://api.openalex.org/topics/T11636?select=id,display_name"
+    ],
+    "works": [
+      "https://api.openalex.org/works/W2138270253?select=id,display_name",
+      "https://api.openalex.org/works/W2168909179",
+      "https://api.openalex.org/works/W2741809807",
+      "https://api.openalex.org/works/W2741809807?select=id,display_name",
+      "https://api.openalex.org/works/https://doi.org/10.7717/peerj.4375",
+      "https://api.openalex.org/works/pmid:14907713"
+    ]
+  },
+  "potentialIssues": [
+    "Special characters in filters may need encoding",
+    "Text endpoints may not have UI equivalents",
+    "API key parameter may need sanitization",
+    "Cursor pagination may not be bookmarkable"
+  ],
+  "recommendedTests": [
+    "https://api.openalex.org/authors/A2798520857",
+    "https://api.openalex.org/authors/https://orcid.org/0000-0002-1298-3089",
+    "https://api.openalex.org/authors",
+    "https://api.openalex.org/autocomplete/authors?q=einst",
+    "https://api.openalex.org/text/concepts?title=type%201%20diabetes%20research%20for%20children",
+    "https://api.openalex.org/W2741809807"
+  ],
+  "coveragePercentage": 88,
+  "generatedAt": "2025-11-07T03:15:44.369Z"
+}

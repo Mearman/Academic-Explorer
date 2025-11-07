@@ -1,0 +1,862 @@
+{
+  "config": {
+    "rootDir": "/Users/joe/Documents/Research/PhD/Academic Explorer",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {},
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/joe/Documents/Research/PhD/Academic Explorer/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "",
+        "name": "",
+        "testDir": "/Users/joe/Documents/Research/PhD/Academic Explorer",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 6,
+    "webServer": null
+  },
+  "suites": [],
+  "errors": [
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/openalex-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/openalex-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/openalex-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/openalex-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/base-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/base-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/openalex-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/openalex-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/openalex-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/openalex-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/openalex-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/openalex-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/base-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/base-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/base-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/base-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/base-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/base-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/utils/event-emitter.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/utils/event-emitter.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/base-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/base-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/openalex-provider.unit.test.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/openalex-provider.unit.test.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/base-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/base-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/base-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/base-provider.js"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/services/entity-detection-service.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/services/entity-detection-service.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/base-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/providers/base-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/services/smart-entity-cache.unit.test.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/536373846510404227/packages/graph/dist/services/smart-entity-cache.unit.test.js"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/5893273961427177872/apps/cli/dist/src/openalex-cli-class.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/5893273961427177872/apps/cli/dist/src/openalex-cli-class.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/5893273961427177872/apps/cli/dist/src/openalex-cli.unit.test.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/5893273961427177872/apps/cli/dist/src/openalex-cli.unit.test.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/8218735969173999351/apps/cli/dist/src/openalex-cli-class.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/8218735969173999351/apps/cli/dist/src/openalex-cli-class.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/8218735969173999351/apps/cli/dist/src/openalex-cli.unit.test.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/8218735969173999351/apps/cli/dist/src/openalex-cli.unit.test.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9068459139021375213/apps/cli/dist/src/openalex-cli-class.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9068459139021375213/apps/cli/dist/src/openalex-cli-class.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9068459139021375213/apps/cli/dist/src/openalex-cli.unit.test.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9068459139021375213/apps/cli/dist/src/openalex-cli.unit.test.js"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/openalex-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/openalex-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/openalex-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/openalex-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/base-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/base-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/openalex-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/openalex-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/openalex-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/openalex-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/openalex-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/openalex-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/base-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/base-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/base-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/base-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/base-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/base-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/utils/event-emitter.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/utils/event-emitter.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/base-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/base-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/openalex-provider.unit.test.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/openalex-provider.unit.test.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/base-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/base-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/base-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/base-provider.js"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/services/entity-detection-service.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/services/entity-detection-service.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/base-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/providers/base-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/services/smart-entity-cache.unit.test.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9896470257308290694/packages/graph/dist/services/smart-entity-cache.unit.test.js"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/openalex-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/openalex-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/openalex-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/openalex-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/base-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/base-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/openalex-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/openalex-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/openalex-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/openalex-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/openalex-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/openalex-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/base-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/base-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/base-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/base-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/base-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/base-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/utils/event-emitter.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/utils/event-emitter.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/base-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/base-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/openalex-provider.unit.test.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/openalex-provider.unit.test.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/base-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/base-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/base-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/base-provider.js"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/services/entity-detection-service.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/services/entity-detection-service.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/base-provider.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/providers/base-provider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/services/smart-entity-cache.unit.test.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.nx/cache/9898474288618914887/packages/graph/dist/services/smart-entity-cache.unit.test.js"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.rollup.cache/Users/joe/Documents/Research/PhD/Academic Explorer/packages/client/dist/src/cached-client.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.rollup.cache/Users/joe/Documents/Research/PhD/Academic Explorer/packages/client/dist/src/cached-client.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.rollup.cache/Users/joe/Documents/Research/PhD/Academic Explorer/packages/client/dist/src/client.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.rollup.cache/Users/joe/Documents/Research/PhD/Academic Explorer/packages/client/dist/src/client.js"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.rollup.cache/Users/joe/Documents/Research/PhD/Academic Explorer/packages/client/dist/src/cached-client.js",
+      "stack": "Error: Cannot find package '@academic-explorer/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.rollup.cache/Users/joe/Documents/Research/PhD/Academic Explorer/packages/client/dist/src/cached-client.js"
+    },
+    {
+      "message": "Error: Cannot find package '@academic-explorer/types' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.rollup.cache/Users/joe/Documents/Research/PhD/Academic Explorer/packages/client/dist/src/utils/autocomplete.js",
+      "stack": "Error: Cannot find package '@academic-explorer/types' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/.rollup.cache/Users/joe/Documents/Research/PhD/Academic Explorer/packages/client/dist/src/utils/autocomplete.js"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "Error: Cannot find package '@/components' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/components/cache/CacheBrowser.js",
+      "stack": "Error: Cannot find package '@/components' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/components/cache/CacheBrowser.js"
+    },
+    {
+      "message": "Error: Cannot find package '@/constants' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/components/tables/BaseTable.js",
+      "stack": "Error: Cannot find package '@/constants' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/components/tables/BaseTable.js"
+    },
+    {
+      "message": "Error: Cannot find package '@/stores' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/components/graph/AnimatedLayoutProvider.js",
+      "stack": "Error: Cannot find package '@/stores' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/components/graph/AnimatedLayoutProvider.js"
+    },
+    {
+      "message": "Error: Cannot find package '@/hooks' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/components/graph/EntityMiniGraph.js",
+      "stack": "Error: Cannot find package '@/hooks' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/components/graph/EntityMiniGraph.js"
+    },
+    {
+      "message": "Error: Cannot find package '@/hooks' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/components/graph/GraphToolbar.js",
+      "stack": "Error: Cannot find package '@/hooks' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/components/graph/GraphToolbar.js"
+    },
+    {
+      "message": "Error: Cannot find package '@/stores' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/components/molecules/LayoutControls.js",
+      "stack": "Error: Cannot find package '@/stores' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/components/molecules/LayoutControls.js"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "Error: Cannot find package '@/hooks' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/components/search/VisualQueryBuilder.js",
+      "stack": "Error: Cannot find package '@/hooks' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/components/search/VisualQueryBuilder.js"
+    },
+    {
+      "message": "Error: Cannot find package '@/constants' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/components/tables/BaseTable.js",
+      "stack": "Error: Cannot find package '@/constants' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/components/tables/BaseTable.js"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "Error: Cannot find package '@/stores' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/hooks/use-entity-interaction.js",
+      "stack": "Error: Cannot find package '@/stores' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/hooks/use-entity-interaction.js"
+    },
+    {
+      "message": "Error: Cannot find package '@/stores' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/hooks/use-graph-data.js",
+      "stack": "Error: Cannot find package '@/stores' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/hooks/use-graph-data.js"
+    },
+    {
+      "message": "Error: Cannot find package '@/stores' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/hooks/use-graph-persistence.js",
+      "stack": "Error: Cannot find package '@/stores' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/hooks/use-graph-persistence.js"
+    },
+    {
+      "message": "Error: Cannot find package '@/stores' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/hooks/use-graph-utilities.js",
+      "stack": "Error: Cannot find package '@/stores' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/hooks/use-graph-utilities.js"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "Error: Cannot find package '@/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/routes/authors/$authorId.lazy.js",
+      "stack": "Error: Cannot find package '@/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/routes/authors/$authorId.lazy.js"
+    },
+    {
+      "message": "Error: Cannot find package '@/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/routes/institutions/$institutionId.lazy.js",
+      "stack": "Error: Cannot find package '@/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/routes/institutions/$institutionId.lazy.js"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "Error: Cannot find package '@/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/routes/sources/$sourceId.lazy.js",
+      "stack": "Error: Cannot find package '@/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/routes/sources/$sourceId.lazy.js"
+    },
+    {
+      "message": "Error: Cannot find package '@/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/routes/topics/$topicId.lazy.js",
+      "stack": "Error: Cannot find package '@/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/routes/topics/$topicId.lazy.js"
+    },
+    {
+      "message": "Error: Cannot find package '@/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/routes/works/$workId.lazy.js",
+      "stack": "Error: Cannot find package '@/utils' imported from /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/routes/works/$workId.lazy.js"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "Error: ENOENT: no such file or directory, open '/Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/test/e2e/data/openalex-test-urls.json'",
+      "stack": "Error: ENOENT: no such file or directory, open '/Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/test/e2e/data/openalex-test-urls.json'\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/test/e2e/manual/all-urls-load-full.e2e.test.ts:23:68",
+      "location": {
+        "file": "/Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/test/e2e/manual/all-urls-load-full.e2e.test.ts",
+        "column": 68,
+        "line": 23
+      },
+      "snippet": "\u001b[90m   at \u001b[39mapps/web/src/test/e2e/manual/all-urls-load-full.e2e.test.ts:23\n\n  21 | // Load all URLs from the JSON file\n  22 | const urlsPath = join(__dirname, '../data/openalex-test-urls.json');\n> 23 | const urlsData: { urls: string[]; totalUrls: number } = JSON.parse(readFileSync(urlsPath, 'utf-8'));\n     |                                                                    ^\n  24 | const urls: string[] = urlsData.urls;\n  25 |\n  26 | const BASE_URL = process.env.BASE_URL || 'http://localhost:5173';"
+    },
+    {
+      "message": "Error: ENOENT: no such file or directory, open '/Users/joe/Documents/Research/openalex-urls.json'",
+      "stack": "Error: ENOENT: no such file or directory, open '/Users/joe/Documents/Research/openalex-urls.json'\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/test/e2e/manual/data-consistency-full.e2e.test.ts:19:35",
+      "location": {
+        "file": "/Users/joe/Documents/Research/PhD/Academic Explorer/apps/web/src/test/e2e/manual/data-consistency-full.e2e.test.ts",
+        "column": 35,
+        "line": 19
+      },
+      "snippet": "\u001b[90m   at \u001b[39mapps/web/src/test/e2e/manual/data-consistency-full.e2e.test.ts:19\n\n  17 | // Load all URLs from the JSON file\n  18 | const urlsPath = join(process.cwd(), '../../openalex-urls.json');\n> 19 | const urls: string[] = JSON.parse(readFileSync(urlsPath, 'utf-8'));\n     |                                   ^\n  20 |\n  21 | const BASE_URL = process.env.BASE_URL || 'http://localhost:5173';\n  22 | const API_BASE = 'https://api.openalex.org';"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Module \"file:///Users/joe/Documents/Research/PhD/Academic%20Explorer/apps/web/src/test/data/openalex-test-urls.json\" needs an import attribute of \"type: json\"",
+      "stack": "TypeError: Module \"file:///Users/joe/Documents/Research/PhD/Academic%20Explorer/apps/web/src/test/data/openalex-test-urls.json\" needs an import attribute of \"type: json\""
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    },
+    {
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/joe/Documents/Research/PhD/Academic Explorer/node_modules/.pnpm/@vitest+expect@3.2.4/node_modules/@vitest/expect/dist/index.js:667:9"
+    }
+  ],
+  "stats": {
+    "startTime": "2025-11-07T03:06:08.997Z",
+    "duration": 4774.1140000000005,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

@@ -39,7 +39,7 @@ export const createPlugins = () => [
   // during Nx project graph generation (before dependencies are built)
   openalexCachePlugin({
     staticDataPath: "public/data/openalex",
-    verbose: true,
+    verbose: false, // Reduced verbosity to prevent console spam
   }),
 
   // TanStack Router Plugin with correct routes directory (absolute path for Nx compatibility)
@@ -70,6 +70,22 @@ export const serverConfig = () => ({
   port: 5173,
   strictPort: true,
   hmr: {
-    overlay: false,
+    overlay: true,
+    port: 5174,
+  },
+  fs: {
+    strict: true,
+  },
+  watch: {
+    usePolling: false,
+    interval: 300, // Increased to reduce CPU usage
+    ignored: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/.git/**',
+      '**/public/data/**', // Ignore static data changes
+      '**/*.log',
+      '**/.nx/**',
+    ],
   },
 });

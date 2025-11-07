@@ -17,6 +17,7 @@
         "generateExportsField": false,
         "project": "packages/client/package.json",
         "declaration": true,
+        "sourcemap": "inline",
         "additionalEntryPoints": [
           "packages/client/src/client.ts",
           "packages/client/src/types.ts"
@@ -36,6 +37,7 @@
         "project": "packages/client/package.json",
         "watch": true,
         "skipTypeCheck": true,
+        "sourcemap": "inline",
         "additionalEntryPoints": [
           "packages/client/src/client.ts",
           "packages/client/src/types.ts"
