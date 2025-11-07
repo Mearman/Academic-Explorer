@@ -1,3 +1,10 @@
+## [11.5.4](https://github.com/Mearman/Academic-Explorer/compare/v11.5.3...v11.5.4) (2025-11-07)
+
+
+### Bug Fixes
+
+* **web:** resolve strict mode violation in bookmarks page test ([e2f3e1f](https://github.com/Mearman/Academic-Explorer/commit/e2f3e1f97fd691e0c53ce4117b638af3f8220632))
+
 ## [11.5.3](https://github.com/Mearman/Academic-Explorer/compare/v11.5.2...v11.5.3) (2025-11-07)
 
 
