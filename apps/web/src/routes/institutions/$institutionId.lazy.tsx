@@ -4,6 +4,7 @@ import { useState } from "react";
 import { INSTITUTION_FIELDS, cachedOpenAlex, type InstitutionEntity, type InstitutionField } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
+import { usePrettyUrl } from "@/hooks/use-pretty-url";
 import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS } from "@/components/entity-detail";
 
 function InstitutionRoute() {
@@ -13,6 +14,9 @@ function InstitutionRoute() {
 
   // Decode the institution ID and fix any collapsed protocol slashes
   const institutionId = decodeEntityId(rawInstitutionId);
+
+  // Update URL with pretty display name if needed
+  usePrettyUrl("institutions", rawInstitutionId, institutionId);
 
   // Parse select parameter - if not provided, use all INSTITUTION_FIELDS (default behavior)
   const selectFields = selectParam && typeof selectParam === 'string'

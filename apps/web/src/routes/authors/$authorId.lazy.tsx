@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AUTHOR_FIELDS, cachedOpenAlex, type Author, type AuthorField } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
+import { usePrettyUrl } from "@/hooks/use-pretty-url";
 import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS } from "@/components/entity-detail";
 
 const AUTHOR_ROUTE_PATH = "/authors/$authorId";
@@ -15,6 +16,7 @@ function AuthorRoute() {
 
   // Decode the author ID and fix any collapsed protocol slashes
   const authorId = decodeEntityId(rawAuthorId);
+  usePrettyUrl("authors", rawAuthorId, authorId);
 
   // Parse select parameter - if not provided, use all AUTHOR_FIELDS (default behavior)
   const selectFields = selectParam && typeof selectParam === 'string'

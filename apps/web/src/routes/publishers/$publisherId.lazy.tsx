@@ -4,6 +4,7 @@ import { useState } from "react";
 import { PUBLISHER_FIELDS, cachedOpenAlex, type Publisher, type PublisherField } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
+import { usePrettyUrl } from "@/hooks/use-pretty-url";
 import { EntityDataDisplay } from "@/components/EntityDataDisplay";
 
 function PublisherRoute() {
@@ -13,6 +14,7 @@ function PublisherRoute() {
 
   // Decode the publisher ID in case it's URL-encoded (for external IDs with special characters)
   const publisherId = decodeEntityId(rawPublisherId);
+  usePrettyUrl("publishers", rawPublisherId, publisherId);
 
   // Parse select parameter - if not provided, use all PUBLISHER_FIELDS (default behavior)
   const selectFields = selectParam && typeof selectParam === 'string'

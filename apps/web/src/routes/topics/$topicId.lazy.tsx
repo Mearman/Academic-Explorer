@@ -4,6 +4,7 @@ import { useState } from "react";
 import { TOPIC_FIELDS, cachedOpenAlex, type Topic, type TopicField } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
+import { usePrettyUrl } from "@/hooks/use-pretty-url";
 import { EntityDetailLayout } from "@/components/entity-detail/EntityDetailLayout";
 import { LoadingState } from "@/components/entity-detail/LoadingState";
 import { ErrorState } from "@/components/entity-detail/ErrorState";
@@ -16,6 +17,9 @@ function TopicRoute() {
 
   // Decode the topic ID in case it's URL-encoded (for external IDs with special characters)
   const topicId = decodeEntityId(rawTopicId);
+
+  // Use pretty URL hook to replace encoded IDs with decoded versions in the URL
+  usePrettyUrl("topics", rawTopicId, topicId);
 
   // Parse select parameter - if not provided, use all TOPIC_FIELDS (default behavior)
   const selectFields = selectParam && typeof selectParam === 'string'

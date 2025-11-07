@@ -4,6 +4,7 @@ import { useState } from "react";
 import { SOURCE_FIELDS, cachedOpenAlex, type Source, type SourceField } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
+import { usePrettyUrl } from "@/hooks/use-pretty-url";
 import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS } from "@/components/entity-detail";
 
 function SourceRoute() {
@@ -13,6 +14,7 @@ function SourceRoute() {
 
   // Decode the source ID in case it's URL-encoded (for external IDs with special characters)
   const sourceId = decodeEntityId(rawSourceId);
+  usePrettyUrl("sources", rawSourceId, sourceId);
 
   // Parse select parameter - if not provided, use all SOURCE_FIELDS (default behavior)
   const selectFields = selectParam && typeof selectParam === 'string'

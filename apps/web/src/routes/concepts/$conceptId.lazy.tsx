@@ -4,6 +4,7 @@ import { useState } from "react";
 import { cachedOpenAlex, type Concept } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
+import { usePrettyUrl } from "@/hooks/use-pretty-url";
 import { Alert } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { EntityDataDisplay } from "@/components/EntityDataDisplay";
@@ -15,6 +16,7 @@ function ConceptRoute() {
 
   // Decode the concept ID in case it's URL-encoded (for external IDs with special characters)
   const conceptId = decodeEntityId(rawConceptId);
+  usePrettyUrl("concepts", rawConceptId, conceptId);
 
   // Parse select parameter if provided
   const selectFields = selectParam && typeof selectParam === 'string'
