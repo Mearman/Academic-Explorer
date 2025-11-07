@@ -114,7 +114,7 @@ export const Route = createRootRoute({
                 ? "?" + currentHash.split("?").slice(1).join("?")
                 : "";
 
-              const prettyHash = `${entityType}/${decodedId}${hashQueryParams}`;
+              const prettyHash = `/${entityType}/${decodedId}${hashQueryParams}`;
 
               logger.debug("routing", "Detected encoded external canonical ID, redirecting", {
                 originalHash: currentHash,
