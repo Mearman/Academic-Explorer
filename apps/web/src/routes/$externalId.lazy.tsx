@@ -69,6 +69,29 @@ function ExternalIdRoute() {
             // Extract the ID part after the entity type prefix
             let extractedId = decodedId.substring(entityType.length + 1);
 
+            // Check if this is a properly formatted external canonical ID
+            // If so, let the detection logic handle it instead of doing a simple redirect
+            if (
+              (extractedId.startsWith("https://doi.org/") ||
+               extractedId.startsWith("http://doi.org/") ||
+               extractedId.startsWith("https://orcid.org/") ||
+               extractedId.startsWith("http://orcid.org/") ||
+               extractedId.startsWith("https://ror.org/") ||
+               extractedId.startsWith("http://ror.org/") ||
+               extractedId.startsWith("issn:")) &&
+              extractedId.match(/^https?:\/\//i) // Properly formatted with double slashes
+            ) {
+              // This is a properly formatted external canonical ID
+              // Let the detection logic below handle it
+              logger.debug(
+                "routing",
+                `ExternalIdRoute: Detected properly formatted external canonical ID, letting detection logic handle it`,
+                { decodedId, entityType, extractedId },
+                "ExternalIdRoute",
+              );
+              break; // Exit the for loop and let detection logic handle it
+            }
+
             // Fix collapsed protocol slashes (https:/ -> https://)
             if (extractedId.match(/^https?:\//i) && !extractedId.match(/^https?:\/\//i)) {
               extractedId = extractedId.replace(/^(https?:\/?)/, "$1/");
