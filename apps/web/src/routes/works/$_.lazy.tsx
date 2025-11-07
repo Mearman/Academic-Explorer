@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
 import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS } from "@/components/entity-detail";
 import { useUrlNormalization } from "@/hooks/use-url-normalization";
+import { usePrettyUrl } from "@/hooks/use-pretty-url";
 
 function WorkRoute() {
   const { _splat: rawWorkId } = useParams({ from: "/works/$_" });
@@ -28,7 +29,8 @@ function WorkRoute() {
   const workId = rawWorkId || getWorkIdFromHash();
   const decodedWorkId = decodeEntityId(workId);
 
-  // Pretty URL decoding is now handled in main.tsx for immediate processing
+  // Update URL with pretty display version if needed
+  usePrettyUrl("works", rawWorkId, decodedWorkId);
 
   // Parse select parameter - if not provided, use all WORK_FIELDS (default behavior)
   const selectFields = selectParam && typeof selectParam === 'string'
