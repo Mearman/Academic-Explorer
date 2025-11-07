@@ -1,3 +1,10 @@
+## [12.0.9](https://github.com/Mearman/Academic-Explorer/compare/v12.0.8...v12.0.9) (2025-11-07)
+
+
+### Bug Fixes
+
+* **web:** restore URL decoding in beforeLoad with corrected query param extraction ([42650fa](https://github.com/Mearman/Academic-Explorer/commit/42650fae08be2828087342326130f56636b37480))
+
 ## [12.0.8](https://github.com/Mearman/Academic-Explorer/compare/v12.0.7...v12.0.8) (2025-11-07)
 
 
