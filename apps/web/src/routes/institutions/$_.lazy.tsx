@@ -6,11 +6,15 @@ import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
 import { usePrettyUrl } from "@/hooks/use-pretty-url";
 import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS } from "@/components/entity-detail";
+import { useUrlNormalization } from "@/hooks/use-url-normalization";
 
 function InstitutionRoute() {
   const { _splat: rawInstitutionId } = useParams({ from: "/institutions/$_" });
   const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+
+  // Fix browser address bar display issues with collapsed protocol slashes
+  useUrlNormalization();
 
   // Decode the institution ID and fix any collapsed protocol slashes
   const institutionId = decodeEntityId(rawInstitutionId);

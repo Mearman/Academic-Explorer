@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
 import { usePrettyUrl } from "@/hooks/use-pretty-url";
 import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS } from "@/components/entity-detail";
+import { useUrlNormalization } from "@/hooks/use-url-normalization";
 
 const AUTHOR_ROUTE_PATH = "/authors/$_";
 
@@ -13,6 +14,9 @@ function AuthorRoute() {
   const { _splat: rawAuthorId } = useParams({ from: "/authors/$_" });
   const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+
+  // Fix browser address bar display issues with collapsed protocol slashes
+  useUrlNormalization();
 
   // Decode the author ID and fix any collapsed protocol slashes
   const authorId = decodeEntityId(rawAuthorId);

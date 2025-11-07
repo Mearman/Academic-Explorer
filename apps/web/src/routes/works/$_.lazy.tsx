@@ -7,11 +7,15 @@ import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
 import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS } from "@/components/entity-detail";
 import { usePrettyUrl } from "@/hooks/use-pretty-url";
+import { useUrlNormalization } from "@/hooks/use-url-normalization";
 
 function WorkRoute() {
   const { _splat: rawWorkId } = useParams({ from: "/works/$_" });
   const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+
+  // Fix browser address bar display issues with collapsed protocol slashes
+  useUrlNormalization();
 
   // Decode the work ID and fix any collapsed protocol slashes
   const workId = decodeEntityId(rawWorkId);

@@ -68,5 +68,69 @@ export const Route = createRootRoute({
         throw new Error("Redirecting");
       }
     }
+
+    // Fix browser address bar display issues with collapsed protocol slashes
+    // This handles cases where https://doi.org/... displays as https:/doi.org/...
+    if (typeof window !== "undefined") {
+      logger.debug("routing", "Starting URL normalization check", {
+        pathname,
+        href,
+        hasHash: !!window.location.hash,
+        hash: window.location.hash,
+      });
+
+      // Check both hash (for #/works/...) and pathname (when TanStack Router processes hash routes)
+      const currentHash = window.location.hash || "";
+      const hashPath = currentHash.split("?")[0];
+
+      // For hash routes, TanStack Router puts the hash content in the pathname
+      // We need to check both sources for collapsed protocol patterns
+      let sourceToFix = "";
+      let urlPrefix = "";
+
+      if (currentHash && currentHash !== "#") {
+        // Direct hash navigation - use the hash
+        sourceToFix = hashPath;
+        urlPrefix = "#";
+        logger.debug("routing", "Using hash as source for URL normalization", { hashPath });
+      } else if (pathname.includes("https:/") || pathname.includes("http:/") || pathname.includes("ror:/")) {
+        // Hash route processed by TanStack Router - use pathname
+        sourceToFix = pathname;
+        urlPrefix = "#";
+        logger.debug("routing", "Using pathname as source for URL normalization", { pathname });
+      }
+
+      if (sourceToFix) {
+        // Look for collapsed protocol patterns
+        const collapsedHttpsPattern = /(^|\/)(https?:\/)([^\/])/;
+        const collapsedRorPattern = /(^|\/)(ror:\/)([^\/])/;
+
+        let fixedSource = sourceToFix;
+
+        // Fix collapsed https:// or http:// patterns
+        fixedSource = fixedSource.replace(collapsedHttpsPattern, '$1$2/$3');
+
+        // Fix collapsed ror:// patterns
+        fixedSource = fixedSource.replace(collapsedRorPattern, '$1$2/$3');
+
+        // If we made corrections, update the URL immediately without page reload
+        if (fixedSource !== sourceToFix) {
+          const queryIndex = href.indexOf("?");
+          const queryParams = queryIndex !== -1 ? href.substring(queryIndex) : "";
+
+          const fixedUrl = window.location.pathname + window.location.search + urlPrefix + fixedSource + queryParams;
+
+          logger.debug("routing", "Fixing collapsed protocol slashes", {
+            source: currentHash ? "hash" : "pathname",
+            originalSource: sourceToFix,
+            fixedSource,
+            fixedUrl,
+          });
+
+          // Use replaceState to update URL without adding to history or triggering reload
+          window.history.replaceState(window.history.state, "", fixedUrl);
+        }
+      }
+    }
   },
 });
