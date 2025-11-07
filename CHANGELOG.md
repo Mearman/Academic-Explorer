@@ -1,3 +1,10 @@
+# [11.5.0](https://github.com/Mearman/Academic-Explorer/compare/v11.4.0...v11.5.0) (2025-11-07)
+
+
+### Features
+
+* **web:** Fix bookmark navigation and test infrastructure ([6cd574d](https://github.com/Mearman/Academic-Explorer/commit/6cd574dfda59fd5d562a96fa9d4705aec6498403))
+
 # [11.4.0](https://github.com/Mearman/Academic-Explorer/compare/v11.3.0...v11.4.0) (2025-11-07)
 
 
