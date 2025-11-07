@@ -109,13 +109,41 @@ function ExternalIdRoute() {
           "explore",
           "search",
         ];
-        // Also check if the decodedId starts with any of these prefixes followed by a slash
-        const isKnownRoute =
-          knownRoutePrefixes.includes(decodedId) ||
-          knownRoutePrefixes.some((prefix) =>
-            decodedId.startsWith(`${prefix}/`),
-          );
-        if (isKnownRoute) {
+        // Handle case where decodedId contains path separators due to unencoded URLs
+        // e.g., "works/https:/doi.org/..." should be treated as works route with ID "https://doi.org/..."
+        const entityTypePrefixes = ["authors", "works", "institutions", "sources", "funders", "publishers", "topics", "concepts"];
+        for (const entityType of entityTypePrefixes) {
+          if (decodedId.startsWith(`${entityType}/`)) {
+            // Extract the ID part after the entity type prefix
+            let extractedId = decodedId.substring(entityType.length + 1);
+
+            // Fix collapsed protocol slashes (https:/ -> https://)
+            if (extractedId.match(/^https?:\//i) && !extractedId.match(/^https?:\/\//i)) {
+              extractedId = extractedId.replace(/^(https?:\/?)/, "$1/");
+            }
+            if (extractedId.match(/^ror:\//i) && !extractedId.match(/^ror:\/\//i)) {
+              extractedId = extractedId.replace(/^(ror:\/?)/, "$1/");
+            }
+
+            logger.debug(
+              "routing",
+              `Splat route: Detected unencoded URL with entity type prefix. Redirecting to ${entityType} route`,
+              { decodedId, entityType, extractedId },
+              "ExternalIdRoute",
+            );
+
+            // Navigate to the correct entity route with properly encoded ID
+            // This prevents TanStack Router from treating slashes in the ID as path separators
+            void navigate({
+              to: `/${entityType}/${encodeURIComponent(extractedId)}`,
+              replace: true,
+            });
+            return;
+          }
+        }
+
+        // Also check if the decodedId exactly matches a known route prefix (without trailing path)
+        if (knownRoutePrefixes.includes(decodedId)) {
           // This is a known route prefix, let other routes handle it
           return;
         }
