@@ -1651,7 +1651,9 @@ export class OpenAlexCLI {
 		void _entityType // Acknowledge unused parameters
 		void _limit
 		try {
-			// TODO: Re-enable when synthetic cache is available
+			// TODO: Re-enable when synthetic cache analysis is available
+			// This requires implementing synthetic cache population for analysis queries
+			// Current implementation provides placeholder behavior until cache analytics are ready
 			logger.warn(LOG_CONTEXT_GENERAL, WELL_POPULATED_ENTITIES_ANALYSIS_NOT_AVAILABLE_MESSAGE)
 			return Promise.resolve([])
 		} catch (error) {
@@ -1672,7 +1674,9 @@ export class OpenAlexCLI {
 	> {
 		void _limit // Acknowledge unused parameter
 		try {
-			// TODO: Re-enable when synthetic cache is available
+			// TODO: Re-enable when synthetic cache analysis is available
+			// This requires implementing synthetic cache population for analysis queries
+			// Current implementation provides placeholder behavior until cache analytics are ready
 			logger.warn(LOG_CONTEXT_GENERAL, POPULAR_COLLECTIONS_ANALYSIS_NOT_AVAILABLE_MESSAGE)
 			return Promise.resolve([])
 		} catch (error) {

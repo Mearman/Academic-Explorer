@@ -1,5 +1,11 @@
 {
-  "lastUpdated": "2025-11-07T05:10:28.059Z",
+  "lastUpdated": "2025-11-07T05:32:19.437Z",
+  "directories": {
+    "queries": {
+      "$ref": "./queries",
+      "lastModified": "2025-11-07T05:30:03.084Z"
+    }
+  },
   "files": {
     "W123456789": {
       "url": "https://api.openalex.org/works/W123456789",
@@ -196,14 +202,8 @@
     "W123%2Fspecial-chars": {
       "url": "https://api.openalex.org/works/W123%2Fspecial-chars",
       "$ref": "./W123%2Fspecial-chars.json",
-      "lastRetrieved": "2025-11-07T05:10:28.058Z",
+      "lastRetrieved": "2025-11-07T05:32:19.436Z",
       "contentHash": "44136fa355b3678a"
-    }
-  },
-  "directories": {
-    "queries": {
-      "$ref": "./queries",
-      "lastModified": "2025-10-12T20:04:33.603Z"
     }
   }
 }

@@ -3,8 +3,8 @@
  */
 
 import { MantineProvider } from "@mantine/core";
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { render, screen, cleanup } from "@testing-library/react";
+import { describe, expect, it, vi, afterEach } from "vitest";
 import { CacheBrowser } from "./CacheBrowser";
 
 // Mock the cache browser service
@@ -57,6 +57,9 @@ const TestWrapper = ({ children }: { children: React.ReactNode }) => (
 );
 
 describe("CacheBrowser", () => {
+  afterEach(() => {
+    cleanup();
+  });
   it("renders without crashing", () => {
     render(
       <TestWrapper>
@@ -71,27 +74,25 @@ describe("CacheBrowser", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders filter controls", () => {
+  it("renders CLI tools suggestion", () => {
     render(
       <TestWrapper>
         <CacheBrowser />
       </TestWrapper>,
     );
 
-    // Since this is now a placeholder component, filter controls are not present
-    // This test should be adapted or skipped for the placeholder implementation
+    // Check for CLI tools suggestion
     expect(screen.getByText(/For cache management, please use the CLI tools/)).toBeInTheDocument();
   });
 
-  it("renders statistics section", () => {
+  it("renders future version message", () => {
     render(
       <TestWrapper>
         <CacheBrowser />
       </TestWrapper>,
     );
 
-    // Since this is now a placeholder component, statistics are not present
-    // This test should be adapted or skipped for the placeholder implementation
+    // Check for future version message
     expect(screen.getByText(/This functionality may be restored in a future version/)).toBeInTheDocument();
   });
 });

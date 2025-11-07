@@ -355,11 +355,12 @@ export function staticDataIndexPlugin(
         try {
           console.log("🔍 Performing final static data validation...");
 
-          // TODO: Add build-time validation logic here
-          // This could include:
-          // - Checking for broken references
-          // - Validating data consistency
-          // - Ensuring all required entities are present
+          // TODO: Implement build-time validation logic for static data integrity
+          // Future enhancements could include:
+          // - Cross-referencing entity IDs for broken references
+          // - Validating data consistency across entity types
+          // - Ensuring all required entities are present for proper functionality
+          // - Checking for duplicate IDs or malformed data structures
 
           console.log("✅ Static data validation completed");
         } catch (error) {

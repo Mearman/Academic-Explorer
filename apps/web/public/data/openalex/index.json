@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-11-04T23:01:38.575Z",
+  "lastUpdated": "2025-11-07T05:30:03.087Z",
   "directories": {
     "authors": {
       "$ref": "./authors",
@@ -7,7 +7,7 @@
     },
     "autocomplete": {
       "$ref": "./autocomplete",
-      "lastModified": "2025-11-04T23:00:28.797Z"
+      "lastModified": "2025-11-07T05:29:59.879Z"
     },
     "concepts": {
       "$ref": "./concepts",
@@ -31,7 +31,7 @@
     },
     "works": {
       "$ref": "./works",
-      "lastModified": "2025-10-19T18:40:40.585Z"
+      "lastModified": "2025-11-07T05:30:03.087Z"
     }
   },
   "files": {

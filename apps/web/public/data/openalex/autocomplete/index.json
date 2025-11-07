@@ -1,13 +1,41 @@
 {
-  "lastUpdated": "2025-11-04T23:00:28.792Z",
+  "lastUpdated": "2025-11-07T05:29:59.877Z",
   "directories": {
     "works": {
       "$ref": "./works",
-      "lastModified": "2025-10-11T15:48:32.728Z"
+      "lastModified": "2025-11-07T05:29:57.618Z"
     },
     "general": {
       "$ref": "./general",
-      "lastModified": "2025-11-04T23:00:28.792Z"
+      "lastModified": "2025-11-07T05:29:59.878Z"
+    },
+    "authors": {
+      "$ref": "./authors",
+      "lastModified": "2025-11-07T05:29:58.035Z"
+    },
+    "sources": {
+      "$ref": "./sources",
+      "lastModified": "2025-11-07T05:29:55.782Z"
+    },
+    "institutions": {
+      "$ref": "./institutions",
+      "lastModified": "2025-11-07T05:29:58.234Z"
+    },
+    "topics": {
+      "$ref": "./topics",
+      "lastModified": "2025-11-07T05:29:58.637Z"
+    },
+    "publishers": {
+      "$ref": "./publishers",
+      "lastModified": "2025-11-07T05:29:56.401Z"
+    },
+    "funders": {
+      "$ref": "./funders",
+      "lastModified": "2025-11-07T05:29:56.614Z"
+    },
+    "concepts": {
+      "$ref": "./concepts",
+      "lastModified": "2025-11-07T05:29:56.828Z"
     }
   }
 }
