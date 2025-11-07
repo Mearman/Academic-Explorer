@@ -1,3 +1,10 @@
+## [12.0.2](https://github.com/Mearman/Academic-Explorer/compare/v12.0.1...v12.0.2) (2025-11-07)
+
+
+### Bug Fixes
+
+* **openalex-client:** resolve AbortSignal compatibility issues ([6091276](https://github.com/Mearman/Academic-Explorer/commit/6091276b2e4455bc87ca6073aa0f072b1834b3a6))
+
 ## [12.0.1](https://github.com/Mearman/Academic-Explorer/compare/v12.0.0...v12.0.1) (2025-11-07)
 
 
