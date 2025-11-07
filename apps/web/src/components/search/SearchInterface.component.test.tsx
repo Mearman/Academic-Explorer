@@ -84,9 +84,9 @@ describe("SearchInterface", () => {
     ).toBeTruthy();
   });
 
-  it("should hide date filter when showDateFilter is false", () => {
+  it("should not show filter toggle button", () => {
     renderWithMantine(
-      <SearchInterface onSearch={mockOnSearch} showDateFilter={false} />,
+      <SearchInterface onSearch={mockOnSearch} />,
     );
 
     expect(screen.queryByRole("button", { name: /show filters/i })).toBeNull();
@@ -116,8 +116,6 @@ describe("SearchInterface", () => {
 
     expect(mockOnSearch).toHaveBeenCalledWith({
       query: "test query",
-      startDate: null,
-      endDate: null,
     });
   });
 
@@ -135,15 +133,7 @@ describe("SearchInterface", () => {
     expect(searchButton.getAttribute("data-loading")).toBe("true");
   });
 
-  it("should toggle advanced filters", () => {
-    renderWithMantine(<SearchInterface onSearch={mockOnSearch} />);
-
-    const filterButton = screen.getByRole("button", { name: /show filters/i });
-    fireEvent.click(filterButton);
-
-    expect(screen.getByRole("button", { name: /hide filters/i })).toBeTruthy();
-  });
-
+  
   it("should show clear button when there is content", () => {
     renderWithMantine(<SearchInterface onSearch={mockOnSearch} />);
 
@@ -169,8 +159,6 @@ describe("SearchInterface", () => {
     expect((searchInput as HTMLInputElement).value).toBe("");
     expect(mockOnSearch).toHaveBeenCalledWith({
       query: "",
-      startDate: null,
-      endDate: null,
     });
   });
 
@@ -254,8 +242,6 @@ describe("SearchInterface", () => {
 
     expect(mockOnSearch).toHaveBeenCalledWith({
       query: "",
-      startDate: null,
-      endDate: null,
     });
   });
 });

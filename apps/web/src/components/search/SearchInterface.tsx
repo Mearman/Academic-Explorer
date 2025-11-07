@@ -1,7 +1,6 @@
 import { useState, useCallback } from "react";
 import { Group, TextInput, Button, Stack, Paper, Title } from "@mantine/core";
-import { IconSearch, IconFilter } from "@tabler/icons-react";
-import { DateRangeFilter } from "./DateRangeFilter";
+import { IconSearch } from "@tabler/icons-react";
 import {
   debouncedSearch,
   normalizeSearchQuery,
@@ -10,37 +9,28 @@ import {
 
 interface SearchFilters {
   query: string;
-  startDate: Date | null;
-  endDate: Date | null;
 }
 
 interface SearchInterfaceProps {
   onSearch: (filters: SearchFilters) => void;
   isLoading?: boolean;
   placeholder?: string;
-  showDateFilter?: boolean;
 }
 
 export function SearchInterface({
   onSearch,
   isLoading = false,
   placeholder = "Search academic works, authors, institutions...",
-  showDateFilter = true,
 }: SearchInterfaceProps) {
   const [query, setQuery] = useState("");
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
-  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
 
   const handleSearch = useCallback(() => {
     const filters: SearchFilters = {
       query: isValidSearchQuery(query) ? normalizeSearchQuery(query) : "",
-      startDate,
-      endDate,
     };
 
     onSearch(filters);
-  }, [query, startDate, endDate, onSearch]);
+  }, [query, onSearch]);
 
   const handleQueryChange = useCallback(
     (value: string) => {
@@ -51,24 +41,18 @@ export function SearchInterface({
         debouncedSearch(() => {
           const filters: SearchFilters = {
             query: normalizeSearchQuery(value),
-            startDate,
-            endDate,
           };
           onSearch(filters);
         }, value);
       }
     },
-    [startDate, endDate, onSearch],
+    [onSearch],
   );
 
   const handleClearFilters = () => {
     setQuery("");
-    setStartDate(null);
-    setEndDate(null);
     onSearch({
       query: "",
-      startDate: null,
-      endDate: null,
     });
   };
 
@@ -77,19 +61,6 @@ export function SearchInterface({
       <Stack gap="md">
         <Group>
           <Title order={3}>Search Academic Literature</Title>
-
-          {showDateFilter && (
-            <Button
-              variant="subtle"
-              leftSection={<IconFilter size={16} />}
-              onClick={() => {
-                setIsAdvancedOpen(!isAdvancedOpen);
-              }}
-              size="sm"
-            >
-              {isAdvancedOpen ? "Hide" : "Show"} Filters
-            </Button>
-          )}
         </Group>
 
         <Group align="flex-end">
@@ -114,7 +85,7 @@ export function SearchInterface({
             Search
           </Button>
 
-          {(Boolean(query) || startDate !== null || endDate !== null) && (
+          {Boolean(query) && (
             <Button
               variant="subtle"
               onClick={handleClearFilters}
@@ -124,18 +95,6 @@ export function SearchInterface({
             </Button>
           )}
         </Group>
-
-        {showDateFilter && isAdvancedOpen && (
-          <Group>
-            <DateRangeFilter
-              startDate={startDate}
-              endDate={endDate}
-              onStartDateChange={setStartDate}
-              onEndDateChange={setEndDate}
-              disabled={isLoading}
-            />
-          </Group>
-        )}
       </Stack>
     </Paper>
   );

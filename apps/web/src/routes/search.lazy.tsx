@@ -32,8 +32,6 @@ import { pageDescription, pageTitle } from "../styles/layout.css";
 
 interface SearchFilters {
   query: string;
-  startDate: Date | null;
-  endDate: Date | null;
 }
 
 // Real OpenAlex API autocomplete function - searches across all entity types
@@ -56,26 +54,6 @@ const searchAllEntities = async (
       resultsCount: results.length,
       query: filters.query,
     });
-
-    // Filter by date if provided
-    if (filters.startDate || filters.endDate) {
-      return results.filter((result) => {
-        // Only works have publication_year, so filter those
-        if (result.entity_type !== "work") return true;
-
-        const year = (result as unknown as { publication_year?: number })
-          .publication_year;
-        if (!year) return true;
-
-        if (filters.startDate && year < filters.startDate.getFullYear()) {
-          return false;
-        }
-        if (filters.endDate && year > filters.endDate.getFullYear()) {
-          return false;
-        }
-        return true;
-      });
-    }
 
     return results;
   } catch (error) {
@@ -259,8 +237,6 @@ function SearchPage() {
 
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
     query: "",
-    startDate: null,
-    endDate: null,
   });
 
   // Handle URL parameters on mount
@@ -275,12 +251,9 @@ function SearchPage() {
   // Memoize filters to prevent unnecessary re-renders
   const memoizedFilters = useMemo(() => {
     return searchFilters.query
-      ? {
-          startDate: searchFilters.startDate?.toISOString(),
-          endDate: searchFilters.endDate?.toISOString(),
-        }
+      ? {}
       : undefined;
-  }, [searchFilters.query, searchFilters.startDate, searchFilters.endDate]);
+  }, [searchFilters.query]);
 
   // Track page visits and bookmarks - only when we have a query to avoid re-render loops
   const userInteractions = useUserInteractions({
@@ -322,9 +295,6 @@ function SearchPage() {
           <Text size="sm" c="dimmed">
             Found {searchResults.length} results for &quot;
             {searchFilters.query}&quot;
-            {searchFilters.startDate || searchFilters.endDate ? (
-              <span> with date filters applied</span>
-            ) : null}
           </Text>
 
           {hasQuery && (
@@ -336,17 +306,10 @@ function SearchPage() {
                 if (userInteractions.isBookmarked) {
                   await userInteractions.unbookmarkSearch();
                 } else {
-                  const title =
-                    searchFilters.startDate || searchFilters.endDate
-                      ? `${searchFilters.query} (${searchFilters.startDate?.getFullYear() || ""}-${searchFilters.endDate?.getFullYear() || ""})`
-                      : searchFilters.query;
+                  const title = searchFilters.query;
                   await userInteractions.bookmarkSearch({
                     title,
                     searchQuery: searchFilters.query,
-                    filters: {
-                      startDate: searchFilters.startDate?.toISOString(),
-                      endDate: searchFilters.endDate?.toISOString(),
-                    },
                   });
                 }
               }}
@@ -399,7 +362,6 @@ function SearchPage() {
           onSearch={handleSearch}
           isLoading={isLoading}
           placeholder="Search for works, authors, institutions, topics... e.g. 'machine learning', 'Marie Curie', 'MIT'"
-          showDateFilter={true}
         />
 
         {hasQuery && <Card withBorder>{renderSearchResults()}</Card>}
