@@ -6,8 +6,9 @@ import { historyDB } from "@/lib/history-db";
 import { useAppActivityStore } from "@/stores/app-activity-store";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { useLocation } from "@tanstack/react-router";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import { decodeEntityId } from "@/utils/url-decoding";
+import { logger } from "@/lib/logger";
 
 export function NavigationTracker() {
   const location = useLocation();
@@ -25,68 +26,86 @@ export function NavigationTracker() {
     });
   }, [addEvent]);
 
+  // Memoize pageInfo extraction to prevent excessive re-computation
+  const extractPageInfoMemoized = useMemo(() => {
+    const cache = new Map<string, ReturnType<typeof extractPageInfo>>();
+
+    return (pathname: string, search: Record<string, unknown>) => {
+      const key = `${pathname}|${JSON.stringify(search)}`;
+      if (cache.has(key)) {
+        return cache.get(key)!;
+      }
+
+      const result = extractPageInfo(pathname, search);
+      cache.set(key, result);
+
+      // Limit cache size
+      if (cache.size > 100) {
+        const firstKey = cache.keys().next().value;
+        if (firstKey !== undefined) {
+          cache.delete(firstKey);
+        }
+      }
+
+      return result;
+    };
+  }, []);
+
   useEffect(() => {
-    const currentLocation =
-      location.pathname +
-      (Object.keys(location.search).length > 0
-        ? "?" +
-          new URLSearchParams(
-            location.search as Record<string, string>,
-          ).toString()
-        : "");
+    const currentLocation = location.pathname + location.search + location.hash;
 
-    // Add visit to history database (normalized routes)
-    const searchString =
-      Object.keys(location.search).length > 0
-        ? "?" +
-          new URLSearchParams(
-            location.search as Record<string, string>,
-          ).toString()
-        : "";
-    historyDB.addVisit({
-      path: location.pathname,
-      search: searchString,
-      hash: location.hash,
-    });
-
-    // Always log page visits with detailed metadata
-    const pageInfo = extractPageInfo(
-      location.pathname,
-      location.search as Record<string, unknown>,
-    );
-
-    if (pageInfo) {
-      // Log the page visit
-      addEvent({
-        type: "navigation",
-        category: "ui",
-        event: pageInfo.isEntityPage
-          ? "entity_page_visit"
-          : "search_page_visit",
-        description: pageInfo.description,
-        severity: "info",
-        metadata: {
-          ...pageInfo.metadata,
-          route: currentLocation,
-        },
+    // Debounce heavy operations to prevent excessive calls
+    const timeoutId = setTimeout(() => {
+      // Add visit to history database (normalized routes)
+      historyDB.addVisit({
+        path: location.pathname,
+        search: location.search.toString(),
+        hash: location.hash,
+      }).catch((error) => {
+        // Silently handle database errors to prevent crashes
+        logger.warn("storage", "Failed to add visit to history", { error });
       });
-    }
 
-    // Log navigation if there's a previous location
-    if (
-      previousLocationRef.current &&
-      previousLocationRef.current !== currentLocation
-    ) {
-      logNavigation(previousLocationRef.current, currentLocation, {
-        searchParams:
-          Object.keys(location.search).length > 0 ? location.search : undefined,
-        ...(pageInfo?.metadata || {}),
-      });
-    }
+      // Extract page information with memoization
+      const pageInfo = extractPageInfoMemoized(
+        location.pathname,
+        location.search as Record<string, unknown>,
+      );
 
-    // Update previous location
+      if (pageInfo) {
+        // Log the page visit
+        addEvent({
+          type: "navigation",
+          category: "ui",
+          event: pageInfo.isEntityPage
+            ? "entity_page_visit"
+            : "search_page_visit",
+          description: pageInfo.description,
+          severity: "info",
+          metadata: {
+            ...pageInfo.metadata,
+            route: currentLocation,
+          },
+        });
+      }
+
+      // Log navigation if there's a previous location
+      if (
+        previousLocationRef.current &&
+        previousLocationRef.current !== currentLocation
+      ) {
+        logNavigation(previousLocationRef.current, currentLocation, {
+          searchParams: location.search || undefined,
+          ...(pageInfo?.metadata || {}),
+        });
+      }
+    }, 100); // 100ms debounce
+
+    // Update previous location immediately
     previousLocationRef.current = currentLocation;
-  }, [location.pathname, location.search, addEvent, logNavigation]);
+
+    return () => clearTimeout(timeoutId);
+  }, [location.pathname, location.search, location.hash, addEvent, logNavigation, extractPageInfoMemoized]);
 
   // Helper function to extract page information from pathname and search
   const extractPageInfo = (
