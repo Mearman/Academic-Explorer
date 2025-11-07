@@ -12,6 +12,149 @@ import { initializeNetworkMonitoring } from "./services/network-interceptor";
 import { initWebVitals } from "@/utils/web-vitals";
 import { cachedOpenAlex } from "@academic-explorer/client";
 
+// Fix URL display issues immediately when page loads
+// This runs before React mounts to fix browser address bar display
+if (typeof window !== "undefined") {
+  const currentHash = window.location.hash;
+
+  console.log("main.tsx URL processing started:", {
+    currentHash,
+    href: window.location.href
+  });
+
+  if (currentHash && currentHash !== "#") {
+    let fixedHash = currentHash;
+    let needsUpdate = false;
+
+    // First, fix double hash issue (##/... should become #/...)
+    if (currentHash.startsWith("##")) {
+      fixedHash = "#" + currentHash.substring(2);
+      needsUpdate = true;
+      console.log("Fixed double hash:", { original: currentHash, clean: fixedHash });
+    }
+
+    // Check if we need to decode encoded URLs to pretty URLs
+    if (!needsUpdate && currentHash.includes("%")) {
+      // Extract entity type and encoded ID from hash
+      const hashParts = fixedHash.split("/");
+      const entityType = hashParts[1]; // works, authors, institutions, etc.
+      const encodedId = hashParts.slice(2).join("/"); // Join the rest with slashes
+
+      if (entityType && encodedId) {
+        try {
+          const decodedId = decodeURIComponent(encodedId);
+
+          // Only update if the decoded version is different and contains protocols
+          if (decodedId !== encodedId && (decodedId.includes("://") || decodedId.includes(":/"))) {
+            const hashQueryParams = currentHash.includes("?")
+              ? "?" + currentHash.split("?").slice(1).join("?")
+              : "";
+
+            fixedHash = `#/${entityType}/${decodedId}${hashQueryParams}`;
+            needsUpdate = true;
+
+            console.log("Converting encoded URL to pretty URL:", {
+              original: currentHash,
+              fixed: fixedHash,
+              encodedId,
+              decodedId
+            });
+          }
+        } catch (error) {
+          // If decoding fails, continue with normal processing
+          console.log("Failed to decode URL:", { error, encodedId });
+        }
+      }
+    }
+
+    // Check for collapsed protocol slashes in the (potentially updated) hash
+    if (!needsUpdate) {
+      const collapsedPattern = /(https?:\/)([^\/])/;
+      if (collapsedPattern.test(fixedHash)) {
+        // Fix collapsed patterns in the hash portion only
+        fixedHash = fixedHash
+          .replace(/https?:\/(?!\/)/g, 'https://')
+          .replace(/http?:\/(?!\/)/g, 'http://')
+          .replace(/ror:\/(?!\/)/g, 'ror://');
+
+        needsUpdate = true;
+
+        console.log("Fixing collapsed URL display in hash:", {
+          original: currentHash,
+          fixed: fixedHash
+        });
+      }
+    }
+
+    // Apply the update if needed
+    if (needsUpdate && fixedHash !== currentHash) {
+      // Ensure we have a single hash, not double hash
+      const cleanHash = fixedHash.startsWith("#") ? fixedHash : "#" + fixedHash;
+      const newUrl = window.location.pathname + window.location.search + cleanHash;
+
+      console.log("Applying URL fix:", {
+        original: currentHash,
+        fixed: fixedHash,
+        clean: cleanHash,
+        final: newUrl
+      });
+
+      // Use history.replaceState to update URL without page reload
+      window.history.replaceState(window.history.state, "", newUrl);
+
+      console.log("URL fix applied, new location:", {
+        href: window.location.href,
+        hash: window.location.hash
+      });
+    } else {
+      console.log("No URL fix needed:", {
+        currentHash,
+        needsUpdate
+      });
+    }
+  } else {
+    console.log("No hash to process");
+  }
+}
+
+// Add a persistent URL fixer that runs after page load
+// This catches any URL issues that weren't handled by the initial fix
+if (typeof window !== "undefined") {
+  const fixUrlDisplay = () => {
+    const currentHash = window.location.hash;
+    if (!currentHash || currentHash === "#") return;
+
+    let needsUpdate = false;
+    let fixedHash = currentHash;
+
+    // Fix double hash
+    if (currentHash.startsWith("##")) {
+      fixedHash = "#" + currentHash.substring(2);
+      needsUpdate = true;
+    }
+
+    // Fix collapsed protocol slashes
+    const collapsedPattern = /(^|\/)(https?:\/)([^\/])/;
+    if (collapsedPattern.test(fixedHash)) {
+      fixedHash = fixedHash.replace(collapsedPattern, '$1$2/$3');
+      needsUpdate = true;
+    }
+
+    // Apply fix if needed
+    if (needsUpdate && fixedHash !== currentHash) {
+      const newUrl = window.location.pathname + window.location.search + fixedHash;
+      window.history.replaceState(window.history.state, "", newUrl);
+      console.log("URL fix applied:", { original: currentHash, fixed: fixedHash });
+    }
+  };
+
+  // Run immediately and then periodically for the first few seconds
+  setTimeout(fixUrlDisplay, 100);
+  setTimeout(fixUrlDisplay, 500);
+  setTimeout(fixUrlDisplay, 1000);
+  setTimeout(fixUrlDisplay, 2000);
+}
+
 // Import Mantine core styles
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";

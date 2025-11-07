@@ -1,6 +1,7 @@
 import { RouterErrorComponent } from "@/components/error/RouterErrorComponent";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { NavigationTracker } from "@/components/NavigationTracker";
+import { UrlFixer } from "@/components/UrlFixer";
 import { logger } from "@academic-explorer/utils/logger";
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { themeClass } from "../styles/theme.css";
@@ -12,6 +13,7 @@ function RootLayout() {
   // The layout-store was refactored to ensure stable method references
   return (
     <div className={themeClass}>
+      <UrlFixer />
       <NavigationTracker />
       <MainLayout>
         <Outlet />
@@ -83,16 +85,80 @@ export const Route = createRootRoute({
       const currentHash = window.location.hash || "";
       const hashPath = currentHash.split("?")[0];
 
+      // First, check if we need to decode encoded URLs to pretty URLs
+      if (currentHash.includes("%")) {
+        logger.debug("routing", "Found encoded URL, attempting decode", { currentHash });
+
+        // Extract entity type and encoded ID from hash
+        const hashParts = hashPath.split("/");
+        const entityType = hashParts[1]; // works, authors, institutions, etc.
+        const encodedId = hashParts.slice(2).join("/"); // Join the rest with slashes
+
+        logger.debug("routing", "Parsed hash components", { hashParts, entityType, encodedId });
+
+        if (entityType && encodedId) {
+          try {
+            const decodedId = decodeURIComponent(encodedId);
+
+            logger.debug("routing", "URL decode attempt", {
+              encodedId,
+              decodedId,
+              areDifferent: decodedId !== encodedId,
+              includesProtocol: decodedId.includes("://") || decodedId.includes(":/")
+            });
+
+            // Only update if the decoded version is different (contains unencoded characters)
+            if (decodedId !== encodedId && (decodedId.includes("://") || decodedId.includes(":/"))) {
+              const hashQueryParams = currentHash.includes("?")
+                ? "?" + currentHash.split("?").slice(1).join("?")
+                : "";
+
+              const prettyHash = `#/${entityType}/${decodedId}${hashQueryParams}`;
+              const prettyUrl = window.location.pathname + window.location.search + prettyHash;
+
+              logger.debug("routing", "Converting encoded URL to pretty URL", {
+                originalHash: currentHash,
+                prettyHash,
+                encodedId,
+                decodedId
+              });
+
+              // Use replaceState to update URL without triggering router re-processing
+              window.history.replaceState(window.history.state, "", prettyUrl);
+              logger.debug("routing", "URL conversion completed", { finalUrl: window.location.href });
+            } else {
+              logger.debug("routing", "Skipping URL conversion - conditions not met", {
+                decodedId,
+                encodedId,
+                areDifferent: decodedId !== encodedId,
+                includesProtocol: decodedId.includes("://") || decodedId.includes(":/")
+              });
+            }
+          } catch (error) {
+            // If decoding fails, continue with normal collapsed protocol fixing
+            logger.debug("routing", "Failed to decode URL", { error, encodedId });
+          }
+        } else {
+          logger.debug("routing", "Missing entity type or encoded ID", { entityType, encodedId });
+        }
+      } else {
+        logger.debug("routing", "No encoded URL found, skipping decode", { currentHash });
+      }
+
+      // Then fix any remaining collapsed protocol patterns
+      const updatedHash = window.location.hash; // Use updated hash after potential decoding
+      const updatedHashPath = updatedHash.split("?")[0];
+
       // For hash routes, TanStack Router puts the hash content in the pathname
       // We need to check both sources for collapsed protocol patterns
       let sourceToFix = "";
       let urlPrefix = "";
 
-      if (currentHash && currentHash !== "#") {
+      if (updatedHash && updatedHash !== "#") {
         // Direct hash navigation - use the hash
-        sourceToFix = hashPath;
+        sourceToFix = updatedHashPath;
         urlPrefix = "#";
-        logger.debug("routing", "Using hash as source for URL normalization", { hashPath });
+        logger.debug("routing", "Using hash as source for URL normalization", { hashPath: updatedHashPath });
       } else if (pathname.includes("https:/") || pathname.includes("http:/") || pathname.includes("ror:/")) {
         // Hash route processed by TanStack Router - use pathname
         sourceToFix = pathname;
@@ -107,11 +173,23 @@ export const Route = createRootRoute({
 
         let fixedSource = sourceToFix;
 
+        logger.debug("routing", "Checking for collapsed patterns", {
+          sourceToFix,
+          hasCollapsedHttps: collapsedHttpsPattern.test(sourceToFix),
+          hasCollapsedRor: collapsedRorPattern.test(sourceToFix)
+        });
+
         // Fix collapsed https:// or http:// patterns
         fixedSource = fixedSource.replace(collapsedHttpsPattern, '$1$2/$3');
 
         // Fix collapsed ror:// patterns
         fixedSource = fixedSource.replace(collapsedRorPattern, '$1$2/$3');
+
+        logger.debug("routing", "URL fix attempt", {
+          originalSource: sourceToFix,
+          fixedSource,
+          wouldChange: fixedSource !== sourceToFix
+        });
 
         // If we made corrections, update the URL immediately without page reload
         if (fixedSource !== sourceToFix) {
@@ -121,7 +199,7 @@ export const Route = createRootRoute({
           const fixedUrl = window.location.pathname + window.location.search + urlPrefix + fixedSource + queryParams;
 
           logger.debug("routing", "Fixing collapsed protocol slashes", {
-            source: currentHash ? "hash" : "pathname",
+            source: updatedHash ? "hash" : "pathname",
             originalSource: sourceToFix,
             fixedSource,
             fixedUrl,
@@ -129,6 +207,11 @@ export const Route = createRootRoute({
 
           // Use replaceState to update URL without adding to history or triggering reload
           window.history.replaceState(window.history.state, "", fixedUrl);
+        } else {
+          logger.debug("routing", "No changes needed - URL already correct", {
+            sourceToFix,
+            fixedSource
+          });
         }
       }
     }

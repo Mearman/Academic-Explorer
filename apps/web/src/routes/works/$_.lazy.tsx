@@ -1,12 +1,11 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { useParams, useSearch } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { WORK_FIELDS, cachedOpenAlex, type Work, type WorkField } from "@academic-explorer/client";
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
 import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS } from "@/components/entity-detail";
-import { usePrettyUrl } from "@/hooks/use-pretty-url";
 import { useUrlNormalization } from "@/hooks/use-url-normalization";
 
 function WorkRoute() {
@@ -20,8 +19,7 @@ function WorkRoute() {
   // Decode the work ID and fix any collapsed protocol slashes
   const workId = decodeEntityId(rawWorkId);
 
-  // Update URL to show pretty (decoded) version in address bar
-  usePrettyUrl("works", rawWorkId, workId);
+  // Pretty URL decoding is now handled in main.tsx for immediate processing
 
   // Parse select parameter - if not provided, use all WORK_FIELDS (default behavior)
   const selectFields = selectParam && typeof selectParam === 'string'

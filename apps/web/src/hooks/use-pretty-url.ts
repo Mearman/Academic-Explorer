@@ -1,8 +1,5 @@
 import { useEffect } from "react";
 
-// Track which entities we've attempted to decode to prevent retries
-const attemptedDecodes = new Set<string>();
-
 /**
  * Hook to update the browser URL to show a "pretty" (decoded) version
  * of entity IDs while maintaining functional routing with encoded IDs.
@@ -24,50 +21,34 @@ export function usePrettyUrl(
   useEffect(() => {
     if (!rawId || !decodedId) return;
 
+    // Immediate check for encoded URL in hash
     const currentHash = window.location.hash;
     const hashPath = currentHash.split("?")[0];
 
-    // Check if URL is currently encoded
-    const isCurrentlyEncoded = hashPath.includes("%");
+    // Only decode if currently encoded and the decoded version is different
+    if (hashPath.includes("%") && !hashPath.includes(decodedId)) {
+      // Use a very short timeout to ensure the component has fully mounted
+      const timeoutId = setTimeout(() => {
+        const currentHash = window.location.hash;
+        const hashPath = currentHash.split("?")[0];
 
-    const entityKey = `${entityType}:${decodedId}`;
+        // Double-check conditions after timeout
+        if (hashPath.includes("%") && !hashPath.includes(decodedId)) {
+          const hashQueryParams = currentHash.includes("?")
+            ? "?" + currentHash.split("?").slice(1).join("?")
+            : "";
 
-    // Only skip if we've already attempted AND the URL is not currently encoded
-    if (attemptedDecodes.has(entityKey) && !isCurrentlyEncoded) {
-      return;
+          const decodedHash = `#/${entityType}/${decodedId}${hashQueryParams}`;
+          const newUrl = window.location.pathname + window.location.search + decodedHash;
+
+          // Only update if the URL would actually change
+          if (newUrl !== window.location.href) {
+            window.history.replaceState(window.history.state, "", newUrl);
+          }
+        }
+      }, 100); // Very short timeout for better UX
+
+      return () => clearTimeout(timeoutId);
     }
-
-    // Mark that we're attempting this decode
-    attemptedDecodes.add(entityKey);
-
-    // Wait for page to fully load and router to settle
-    const timeoutId = setTimeout(() => {
-      const currentHash = window.location.hash;
-      const hashPath = currentHash.split("?")[0];
-
-      // Only decode if currently encoded
-      if (hashPath.includes("%") && !hashPath.includes(decodedId)) {
-        const hashQueryParams = currentHash.includes("?")
-          ? "?" + currentHash.split("?").slice(1).join("?")
-          : "";
-
-        const decodedHash = `#/${entityType}/${decodedId}${hashQueryParams}`;
-        const newUrl = window.location.pathname + window.location.search + decodedHash;
-
-        // Store original state to preserve router state
-        const originalState = window.history.state;
-
-        // Update URL without triggering router re-processing
-        // We use a custom property to mark this as a "display-only" update
-        const newState = {
-          ...originalState,
-          __prettyUrlUpdate: true,
-        };
-
-        window.history.replaceState(newState, "", newUrl);
-      }
-    }, 2000); // Wait 2 full seconds for everything to settle
-
-    return () => clearTimeout(timeoutId);
   }, [entityType, rawId, decodedId]);
 }
