@@ -1,3 +1,10 @@
+## [12.0.1](https://github.com/Mearman/Academic-Explorer/compare/v12.0.0...v12.0.1) (2025-11-07)
+
+
+### Bug Fixes
+
+* **client:** correct interceptor import path ([b809884](https://github.com/Mearman/Academic-Explorer/commit/b809884726f97a01ced1fe6246aff6df28798d7b))
+
 # [12.0.0](https://github.com/Mearman/Academic-Explorer/compare/v11.6.0...v12.0.0) (2025-11-07)
 
 
