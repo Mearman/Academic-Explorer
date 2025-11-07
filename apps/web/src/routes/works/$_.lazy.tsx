@@ -16,8 +16,17 @@ function WorkRoute() {
   // Fix browser address bar display issues with collapsed protocol slashes
   useUrlNormalization();
 
-  // Decode the work ID and fix any collapsed protocol slashes
-  const workId = decodeEntityId(rawWorkId);
+  // Extract work ID from URL hash as fallback since splat parameter isn't working
+  const getWorkIdFromHash = () => {
+    if (typeof window !== 'undefined') {
+      const hashParts = window.location.hash.split('/');
+      return hashParts.length >= 3 ? hashParts[2] : '';
+    }
+    return '';
+  };
+
+  const workId = rawWorkId || getWorkIdFromHash();
+  const decodedWorkId = decodeEntityId(workId);
 
   // Pretty URL decoding is now handled in main.tsx for immediate processing
 
@@ -28,30 +37,30 @@ function WorkRoute() {
 
   // Fetch work data
   const { data: work, isLoading, error } = useQuery({
-    queryKey: ["work", workId, selectParam],
+    queryKey: ["work", decodedWorkId, selectParam],
     queryFn: async () => {
-      if (!workId) {
+      if (!decodedWorkId) {
         throw new Error("Work ID is required");
       }
-      const response = await cachedOpenAlex.client.works.getWork(workId, {
+      const response = await cachedOpenAlex.client.works.getWork(decodedWorkId, {
         select: selectFields,
       });
       return response as Work;
     },
-    enabled: !!workId && workId !== "random",
+    enabled: !!decodedWorkId && decodedWorkId !== "random",
   });
 
   const config = ENTITY_TYPE_CONFIGS.work;
 
   if (isLoading) {
-    return <LoadingState entityType="Work" entityId={workId || ''} config={config} />;
+    return <LoadingState entityType="Work" entityId={decodedWorkId || ''} config={config} />;
   }
 
   if (error) {
-    return <ErrorState entityType="Work" entityId={workId || ''} error={error} />;
+    return <ErrorState entityType="Work" entityId={decodedWorkId || ''} error={error} />;
   }
 
-  if (!work || !workId) {
+  if (!work || !decodedWorkId) {
     return null;
   }
 
@@ -59,7 +68,7 @@ function WorkRoute() {
     <EntityDetailLayout
       config={config}
       entityType="work"
-      entityId={workId}
+      entityId={decodedWorkId}
       displayName={work.display_name || work.title || "Work"}
       selectParam={(selectParam as string) || ''}
       selectFields={selectFields}
