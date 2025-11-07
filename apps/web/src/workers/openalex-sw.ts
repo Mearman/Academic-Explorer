@@ -213,11 +213,8 @@ async function validateAndCacheResponse({
 
     const parsedUrl = parseOpenAlexUrl(request.url);
     if (parsedUrl && !isValidOpenAlexResponse({ data, parsedUrl })) {
-      console.warn("[OpenAlex SW] Invalid response structure, not caching:", {
-        url: request.url,
-        expectedFormat: parsedUrl.entityId ? "entity" : "query result",
-        isEntity: !!parsedUrl.entityId,
-      });
+      // Invalid response structure detected, not caching this response
+      // Reason: Invalid response format for the request
       return response;
     }
 
@@ -226,10 +223,8 @@ async function validateAndCacheResponse({
     await cache.put(request, response.clone());
     // Successfully cached validated OpenAlex response
   } catch (error) {
-    console.warn(
-      "[OpenAlex SW] Failed to validate response, not caching:",
-      error,
-    );
+    // Response validation failed, not caching this response
+    // Error details captured in service worker debugging
   }
 
   return response;

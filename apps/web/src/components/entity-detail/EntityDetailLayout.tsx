@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react";
 import { Button, Text, Code, Badge, Paper, Stack, Group, Container, Title, Tooltip, ActionIcon } from "@mantine/core";
 import { IconEye, IconCode, IconBookmark, IconBookmarkOff } from "@tabler/icons-react";
+import { logger } from "@/lib/logger";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { EntityTypeConfig, EntityType } from "./EntityTypeConfig";
 import { EntityDataDisplay } from "../EntityDataDisplay";
@@ -64,7 +65,7 @@ export function EntityDetailLayout({
         });
       }
     } catch (error) {
-      console.error("Failed to toggle bookmark:", error);
+      logger.error("ui", "Failed to toggle bookmark", { error, entityType, entityId });
     }
   };
   return (
