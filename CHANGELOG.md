@@ -1,3 +1,10 @@
+## [12.0.5](https://github.com/Mearman/Academic-Explorer/compare/v12.0.4...v12.0.5) (2025-11-07)
+
+
+### Bug Fixes
+
+* **web:** resolve duplicate coverage flag in CI tests ([c2456f3](https://github.com/Mearman/Academic-Explorer/commit/c2456f30e63d2d635b5151c60e5c7c1a6a2af3d4))
+
 ## [12.0.4](https://github.com/Mearman/Academic-Explorer/compare/v12.0.3...v12.0.4) (2025-11-07)
 
 
