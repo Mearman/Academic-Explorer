@@ -1,3 +1,10 @@
+## [12.0.8](https://github.com/Mearman/Academic-Explorer/compare/v12.0.7...v12.0.8) (2025-11-07)
+
+
+### Bug Fixes
+
+* **web:** resolve E2E URL routing and query parameter issues ([30fbef9](https://github.com/Mearman/Academic-Explorer/commit/30fbef942222da343d237c721f166ab6e287cb90))
+
 ## [12.0.7](https://github.com/Mearman/Academic-Explorer/compare/v12.0.6...v12.0.7) (2025-11-07)
 
 ## [12.0.6](https://github.com/Mearman/Academic-Explorer/compare/v12.0.5...v12.0.6) (2025-11-07)
