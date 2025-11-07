@@ -1,3 +1,10 @@
+## [12.0.10](https://github.com/Mearman/Academic-Explorer/compare/v12.0.9...v12.0.10) (2025-11-07)
+
+
+### Bug Fixes
+
+* **web:** use window.location.replace for external canonical ID redirects ([308d915](https://github.com/Mearman/Academic-Explorer/commit/308d915d966cb212af16fca9342d5523fc262e20))
+
 ## [12.0.9](https://github.com/Mearman/Academic-Explorer/compare/v12.0.8...v12.0.9) (2025-11-07)
 
 
