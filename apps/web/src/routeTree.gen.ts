@@ -34,18 +34,18 @@ import { Route as ConceptsIndexRouteImport } from './routes/concepts/index'
 import { Route as ConceptsConceptIdRouteImport } from './routes/concepts/$conceptId'
 import { Route as AutocompleteIndexRouteImport } from './routes/autocomplete/index'
 import { Route as AuthorsIndexRouteImport } from './routes/authors/index'
-import { Route as WorksWorkIdRouteImport } from './routes/works/$workId'
+import { Route as WorksWorkIdRouteImport } from './routes/works/$_'
 import { Route as TopicsTopicIdRouteImport } from './routes/topics/$topicId'
 import { Route as SourcesSourceIdRouteImport } from './routes/sources/$sourceId'
 import { Route as OpenalexUrlSplatRouteImport } from './routes/openalex-url/$'
-import { Route as InstitutionsInstitutionIdRouteImport } from './routes/institutions/$institutionId'
+import { Route as InstitutionsInstitutionIdRouteImport } from './routes/institutions/$_'
 import { Route as HttpsSplatRouteImport } from './routes/https/$'
 import { Route as FundersFunderIdRouteImport } from './routes/funders/$funderId'
 import { Route as PublishersPublisherIdRouteImport } from './routes/publishers/$publisherId'
 import { Route as ExploreGraphRouteImport } from './routes/explore/graph'
 import { Route as EvaluationResultsRouteImport } from './routes/evaluation/results'
 import { Route as EvaluationDatasetsRouteImport } from './routes/evaluation/datasets'
-import { Route as AuthorsAuthorIdRouteImport } from './routes/authors/$authorId'
+import { Route as AuthorsAuthorIdRouteImport } from './routes/authors/$_'
 import { Route as ApiOpenalexOrgSplatRouteImport } from './routes/api-openalex-org/$'
 import { Route as TextTopicsIndexRouteImport } from './routes/text/topics/index'
 import { Route as TextKeywordsIndexRouteImport } from './routes/text/keywords/index'
@@ -203,10 +203,10 @@ const AuthorsIndexRoute = AuthorsIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/authors/index.lazy').then((d) => d.Route))
 const WorksWorkIdRoute = WorksWorkIdRouteImport.update({
-  id: '/works/$workId',
-  path: '/works/$workId',
+  id: '/works/$_',
+  path: '/works/$',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/works/$workId.lazy').then((d) => d.Route))
+} as any).lazy(() => import('./routes/works/$_.lazy').then((d) => d.Route))
 const TopicsTopicIdRoute = TopicsTopicIdRouteImport.update({
   id: '/topics/$topicId',
   path: '/topics/$topicId',
@@ -230,11 +230,11 @@ const OpenalexUrlSplatRoute = OpenalexUrlSplatRouteImport.update({
 )
 const InstitutionsInstitutionIdRoute =
   InstitutionsInstitutionIdRouteImport.update({
-    id: '/institutions/$institutionId',
-    path: '/institutions/$institutionId',
+    id: '/institutions/$_',
+    path: '/institutions/$',
     getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
-    import('./routes/institutions/$institutionId.lazy').then((d) => d.Route),
+    import('./routes/institutions/$_.lazy').then((d) => d.Route),
   )
 const HttpsSplatRoute = HttpsSplatRouteImport.update({
   id: '/https/$',
@@ -271,11 +271,11 @@ const EvaluationDatasetsRoute = EvaluationDatasetsRouteImport.update({
   getParentRoute: () => EvaluationRoute,
 } as any)
 const AuthorsAuthorIdRoute = AuthorsAuthorIdRouteImport.update({
-  id: '/authors/$authorId',
-  path: '/authors/$authorId',
+  id: '/authors/$_',
+  path: '/authors/$',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
-  import('./routes/authors/$authorId.lazy').then((d) => d.Route),
+  import('./routes/authors/$_.lazy').then((d) => d.Route),
 )
 const ApiOpenalexOrgSplatRoute = ApiOpenalexOrgSplatRouteImport.update({
   id: '/api-openalex-org/$',
@@ -390,7 +390,7 @@ export interface FileRoutesByFullPath {
   '/history': typeof HistoryRoute
   '/search': typeof SearchRoute
   '/api-openalex-org/$': typeof ApiOpenalexOrgSplatRoute
-  '/authors/$authorId': typeof AuthorsAuthorIdRoute
+  '/authors/$_': typeof AuthorsAuthorIdRoute
   '/concepts/$conceptId': typeof ConceptsConceptIdRoute
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
   '/evaluation/results': typeof EvaluationResultsRoute
@@ -398,12 +398,12 @@ export interface FileRoutesByFullPath {
   '/funders/$funderId': typeof FundersFunderIdRoute
   '/https/$': typeof HttpsSplatRoute
   '/keywords/$keywordId': typeof KeywordsKeywordIdRoute
-  '/institutions/$institutionId': typeof InstitutionsInstitutionIdRoute
+  '/institutions/$_': typeof InstitutionsInstitutionIdRoute
   '/openalex-url/$': typeof OpenalexUrlSplatRoute
   '/publishers/$publisherId': typeof PublishersPublisherIdRoute
   '/sources/$sourceId': typeof SourcesSourceIdRoute
   '/topics/$topicId': typeof TopicsTopicIdRoute
-  '/works/$workId': typeof WorksWorkIdRoute
+  '/works/$_': typeof WorksWorkIdRoute
   '/authors': typeof AuthorsIndexRoute
   '/autocomplete': typeof AutocompleteIndexRoute
   '/concepts': typeof ConceptsIndexRoute
@@ -445,7 +445,7 @@ export interface FileRoutesByTo {
   '/history': typeof HistoryRoute
   '/search': typeof SearchRoute
   '/api-openalex-org/$': typeof ApiOpenalexOrgSplatRoute
-  '/authors/$authorId': typeof AuthorsAuthorIdRoute
+  '/authors/$_': typeof AuthorsAuthorIdRoute
   '/concepts/$conceptId': typeof ConceptsConceptIdRoute
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
   '/evaluation/results': typeof EvaluationResultsRoute
@@ -453,12 +453,12 @@ export interface FileRoutesByTo {
   '/funders/$funderId': typeof FundersFunderIdRoute
   '/https/$': typeof HttpsSplatRoute
   '/keywords/$keywordId': typeof KeywordsKeywordIdRoute
-  '/institutions/$institutionId': typeof InstitutionsInstitutionIdRoute
+  '/institutions/$_': typeof InstitutionsInstitutionIdRoute
   '/openalex-url/$': typeof OpenalexUrlSplatRoute
   '/publishers/$publisherId': typeof PublishersPublisherIdRoute
   '/sources/$sourceId': typeof SourcesSourceIdRoute
   '/topics/$topicId': typeof TopicsTopicIdRoute
-  '/works/$workId': typeof WorksWorkIdRoute
+  '/works/$_': typeof WorksWorkIdRoute
   '/authors': typeof AuthorsIndexRoute
   '/autocomplete': typeof AutocompleteIndexRoute
   '/concepts': typeof ConceptsIndexRoute
@@ -501,7 +501,7 @@ export interface FileRoutesById {
   '/history': typeof HistoryRoute
   '/search': typeof SearchRoute
   '/api-openalex-org/$': typeof ApiOpenalexOrgSplatRoute
-  '/authors/$authorId': typeof AuthorsAuthorIdRoute
+  '/authors/$_': typeof AuthorsAuthorIdRoute
   '/concepts/$conceptId': typeof ConceptsConceptIdRoute
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
   '/evaluation/results': typeof EvaluationResultsRoute
@@ -509,12 +509,12 @@ export interface FileRoutesById {
   '/funders/$funderId': typeof FundersFunderIdRoute
   '/https/$': typeof HttpsSplatRoute
   '/keywords/$keywordId': typeof KeywordsKeywordIdRoute
-  '/institutions/$institutionId': typeof InstitutionsInstitutionIdRoute
+  '/institutions/$_': typeof InstitutionsInstitutionIdRoute
   '/openalex-url/$': typeof OpenalexUrlSplatRoute
   '/publishers/$publisherId': typeof PublishersPublisherIdRoute
   '/sources/$sourceId': typeof SourcesSourceIdRoute
   '/topics/$topicId': typeof TopicsTopicIdRoute
-  '/works/$workId': typeof WorksWorkIdRoute
+  '/works/$_': typeof WorksWorkIdRoute
   '/authors/': typeof AuthorsIndexRoute
   '/autocomplete/': typeof AutocompleteIndexRoute
   '/concepts/': typeof ConceptsIndexRoute
@@ -558,7 +558,7 @@ export interface FileRouteTypes {
     | '/history'
     | '/search'
     | '/api-openalex-org/$'
-    | '/authors/$authorId'
+    | '/authors/$_'
     | '/concepts/$conceptId'
     | '/evaluation/datasets'
     | '/evaluation/results'
@@ -566,12 +566,12 @@ export interface FileRouteTypes {
     | '/funders/$funderId'
     | '/https/$'
     | '/keywords/$keywordId'
-    | '/institutions/$institutionId'
+    | '/institutions/$_'
     | '/openalex-url/$'
     | '/publishers/$publisherId'
     | '/sources/$sourceId'
     | '/topics/$topicId'
-    | '/works/$workId'
+    | '/works/$_'
     | '/authors'
     | '/autocomplete'
     | '/concepts'
@@ -613,7 +613,7 @@ export interface FileRouteTypes {
     | '/history'
     | '/search'
     | '/api-openalex-org/$'
-    | '/authors/$authorId'
+    | '/authors/$_'
     | '/concepts/$conceptId'
     | '/evaluation/datasets'
     | '/evaluation/results'
@@ -621,12 +621,12 @@ export interface FileRouteTypes {
     | '/funders/$funderId'
     | '/https/$'
     | '/keywords/$keywordId'
-    | '/institutions/$institutionId'
+    | '/institutions/$_'
     | '/openalex-url/$'
     | '/publishers/$publisherId'
     | '/sources/$sourceId'
     | '/topics/$topicId'
-    | '/works/$workId'
+    | '/works/$_'
     | '/authors'
     | '/autocomplete'
     | '/concepts'
@@ -668,7 +668,7 @@ export interface FileRouteTypes {
     | '/history'
     | '/search'
     | '/api-openalex-org/$'
-    | '/authors/$authorId'
+    | '/authors/$_'
     | '/concepts/$conceptId'
     | '/evaluation/datasets'
     | '/evaluation/results'
@@ -676,12 +676,12 @@ export interface FileRouteTypes {
     | '/funders/$funderId'
     | '/https/$'
     | '/keywords/$keywordId'
-    | '/institutions/$institutionId'
+    | '/institutions/$_'
     | '/openalex-url/$'
     | '/publishers/$publisherId'
     | '/sources/$sourceId'
     | '/topics/$topicId'
-    | '/works/$workId'
+    | '/works/$_'
     | '/authors/'
     | '/autocomplete/'
     | '/concepts/'
@@ -925,10 +925,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthorsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/works/$workId': {
-      id: '/works/$workId'
-      path: '/works/$workId'
-      fullPath: '/works/$workId'
+    '/works/$_': {
+      id: '/works/$_'
+      path: '/works/$'
+      fullPath: '/works/$_'
       preLoaderRoute: typeof WorksWorkIdRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -953,10 +953,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OpenalexUrlSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/institutions/$institutionId': {
-      id: '/institutions/$institutionId'
-      path: '/institutions/$institutionId'
-      fullPath: '/institutions/$institutionId'
+    '/institutions/$_': {
+      id: '/institutions/$_'
+      path: '/institutions/$'
+      fullPath: '/institutions/$_'
       preLoaderRoute: typeof InstitutionsInstitutionIdRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -1009,10 +1009,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EvaluationDatasetsRouteImport
       parentRoute: typeof EvaluationRoute
     }
-    '/authors/$authorId': {
-      id: '/authors/$authorId'
-      path: '/authors/$authorId'
-      fullPath: '/authors/$authorId'
+    '/authors/$_': {
+      id: '/authors/$_'
+      path: '/authors/$'
+      fullPath: '/authors/$_'
       preLoaderRoute: typeof AuthorsAuthorIdRouteImport
       parentRoute: typeof rootRouteImport
     }
