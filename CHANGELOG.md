@@ -1,3 +1,10 @@
+## [11.5.11](https://github.com/Mearman/Academic-Explorer/compare/v11.5.10...v11.5.11) (2025-11-07)
+
+
+### Bug Fixes
+
+* **web:** resolve all test failures and improve application stability ([b3e5cb8](https://github.com/Mearman/Academic-Explorer/commit/b3e5cb8b66e08ae61d0bfaf3d4b4710b065d295c))
+
 ## [11.5.10](https://github.com/Mearman/Academic-Explorer/compare/v11.5.9...v11.5.10) (2025-11-07)
 
 ## [11.5.9](https://github.com/Mearman/Academic-Explorer/compare/v11.5.8...v11.5.9) (2025-11-07)
