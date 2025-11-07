@@ -1,3 +1,12 @@
+## [12.0.6](https://github.com/Mearman/Academic-Explorer/compare/v12.0.5...v12.0.6) (2025-11-07)
+
+
+### Bug Fixes
+
+* **web:** properly pass query parameters to OpenAlex API ([a362037](https://github.com/Mearman/Academic-Explorer/commit/a362037ad02ad34548a54df2cb6686e4587baf64))
+* **web:** resolve author and institution route parameter extraction ([aa13210](https://github.com/Mearman/Academic-Explorer/commit/aa132105ca9a783f3a175c822ff7deab97792756))
+* **web:** resolve work route parameter extraction with hash-based fallback ([c3ade0d](https://github.com/Mearman/Academic-Explorer/commit/c3ade0d3833e2569ac3bdd5106f459ea974049b8))
+
 ## [12.0.5](https://github.com/Mearman/Academic-Explorer/compare/v12.0.4...v12.0.5) (2025-11-07)
 
 
