@@ -147,22 +147,19 @@ test.describe('Pretty URL Display', () => {
     await page.goto(testUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
     await page.waitForSelector('main', { timeout: 40000 });
 
-    // Wait for URL to settle (browser might encode it first, then our hook decodes it back)
-    await page.waitForFunction(
-      (expectedId) => window.location.hash.includes(expectedId),
-      decodedDoi,
-      { timeout: 30000 }
-    );
+    // Give time for any URL processing to complete
+    // Browser might encode the URL first, then our hook will decode it back
+    await page.waitForTimeout(2000);
 
     const currentUrl = page.url();
     const currentHash = currentUrl.split('#')[1] || '';
 
     console.log(`Current hash: ${currentHash}`);
 
-    // URL should remain the same (decoded)
+    // URL should be in decoded form (either stayed decoded or was encoded then decoded by hook)
     expect(currentHash).toContain(decodedDoi);
 
-    console.log('✓ Already-decoded URL remains unchanged');
+    console.log('✓ Already-decoded URL is in pretty (decoded) form');
   });
 
   test('should handle OpenAlex IDs without modification', async ({ page }) => {
