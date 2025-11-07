@@ -88,12 +88,12 @@ test.describe("Bioplastics URL Pattern and Bookmarking E2E Test", () => {
 
       await page.waitForTimeout(3000);
 
-      // Verify all parameters are preserved
+      // Verify all parameters are preserved (URL encoded)
       const currentUrl = page.url();
       expect(currentUrl).toContain("works");
-      expect(currentUrl).toContain("display_name.search:bioplastics");
-      expect(currentUrl).toContain("publication_year:desc");
-      expect(currentUrl).toContain("relevance_score:desc");
+      expect(currentUrl).toContain("display_name.search%3Abioplastics");
+      expect(currentUrl).toContain("publication_year%3Adesc");
+      expect(currentUrl).toContain("relevance_score%3Adesc");
       expect(currentUrl).toContain("per-page=25");
     });
   });
