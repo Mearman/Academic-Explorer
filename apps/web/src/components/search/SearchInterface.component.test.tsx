@@ -67,7 +67,7 @@ describe("SearchInterface", () => {
     expect(screen.getByText(/Search Academic Literature/i)).toBeTruthy();
     expect(screen.getByPlaceholderText(/Search academic works/i)).toBeTruthy();
     expect(screen.getByRole("button", { name: /search/i })).toBeTruthy();
-    expect(screen.getByRole("button", { name: /show filters/i })).toBeTruthy();
+    // Filter toggle button has been removed from component
   });
 
   it("should render with custom placeholder", () => {
@@ -89,6 +89,7 @@ describe("SearchInterface", () => {
       <SearchInterface onSearch={mockOnSearch} />,
     );
 
+    // Filter toggle button has been removed from component
     expect(screen.queryByRole("button", { name: /show filters/i })).toBeNull();
   });
 
@@ -138,7 +139,7 @@ describe("SearchInterface", () => {
     renderWithMantine(<SearchInterface onSearch={mockOnSearch} />);
 
     const searchInput = screen.getByPlaceholderText(
-      /Search academic works, authors, institutions/i,
+      /Search academic works/i,
     );
     fireEvent.change(searchInput, { target: { value: "test query" } });
 
@@ -149,7 +150,7 @@ describe("SearchInterface", () => {
     renderWithMantine(<SearchInterface onSearch={mockOnSearch} />);
 
     const searchInput = screen.getByPlaceholderText(
-      /Search academic works, authors, institutions/i,
+      /Search academic works/i,
     );
     fireEvent.change(searchInput, { target: { value: "test query" } });
 
@@ -171,7 +172,7 @@ describe("SearchInterface", () => {
     renderWithMantine(<SearchInterface onSearch={mockOnSearch} />);
 
     const searchInput = screen.getByPlaceholderText(
-      /Search academic works, authors, institutions/i,
+      /Search academic works/i,
     );
     fireEvent.change(searchInput, { target: { value: "valid query" } });
 
@@ -194,7 +195,7 @@ describe("SearchInterface", () => {
     renderWithMantine(<SearchInterface onSearch={mockOnSearch} />);
 
     const searchInput = screen.getByPlaceholderText(
-      /Search academic works, authors, institutions/i,
+      /Search academic works/i,
     );
     fireEvent.change(searchInput, { target: { value: "a" } });
 
@@ -214,7 +215,7 @@ describe("SearchInterface", () => {
     renderWithMantine(<SearchInterface onSearch={mockOnSearch} />);
 
     const searchInput = screen.getByPlaceholderText(
-      /Search academic works, authors, institutions/i,
+      /Search academic works/i,
     );
     const searchButton = screen.getByRole("button", { name: /search/i });
 
@@ -224,8 +225,6 @@ describe("SearchInterface", () => {
     expect(normalizeSearchQuery).toHaveBeenCalledWith("  Test Query  ");
     expect(mockOnSearch).toHaveBeenCalledWith({
       query: "normalized query",
-      startDate: null,
-      endDate: null,
     });
   });
 

@@ -67,7 +67,7 @@ describe("CacheBrowser", () => {
     // Component should render immediately since useEffect is mocked
     expect(screen.getByText("Cache Browser")).toBeInTheDocument();
     expect(
-      screen.getByText("Browse and manage cached OpenAlex entities"),
+      screen.getByText(/The Cache Browser component has been temporarily removed/),
     ).toBeInTheDocument();
   });
 
@@ -78,20 +78,9 @@ describe("CacheBrowser", () => {
       </TestWrapper>,
     );
 
-    // Check for filter elements - component should render synchronously since useEffect is mocked
-    const searchInputs = screen.getAllByPlaceholderText("Search entities...");
-    expect(searchInputs.length).toBeGreaterThan(0);
-
-    const entityTypeInputs = screen.getAllByPlaceholderText("Entity types");
-    expect(entityTypeInputs.length).toBeGreaterThan(0);
-
-    const storageLocationInputs =
-      screen.getAllByPlaceholderText("Storage locations");
-    expect(storageLocationInputs.length).toBeGreaterThan(0);
-
-    // Check for filter section heading
-    const filterElements = screen.getAllByText("Filters");
-    expect(filterElements.length).toBeGreaterThan(0);
+    // Since this is now a placeholder component, filter controls are not present
+    // This test should be adapted or skipped for the placeholder implementation
+    expect(screen.getByText(/For cache management, please use the CLI tools/)).toBeInTheDocument();
   });
 
   it("renders statistics section", () => {
@@ -101,11 +90,8 @@ describe("CacheBrowser", () => {
       </TestWrapper>,
     );
 
-    // Statistics should render synchronously since useEffect is mocked
-    const totalEntitiesElements = screen.getAllByText("Total Entities");
-    expect(totalEntitiesElements.length).toBeGreaterThan(0);
-
-    const totalSizeElements = screen.getAllByText("Total Size");
-    expect(totalSizeElements.length).toBeGreaterThan(0);
+    // Since this is now a placeholder component, statistics are not present
+    // This test should be adapted or skipped for the placeholder implementation
+    expect(screen.getByText(/This functionality may be restored in a future version/)).toBeInTheDocument();
   });
 });
