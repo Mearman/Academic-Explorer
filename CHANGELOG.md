@@ -1,3 +1,10 @@
+## [12.0.13](https://github.com/Mearman/Academic-Explorer/compare/v12.0.12...v12.0.13) (2025-11-07)
+
+
+### Bug Fixes
+
+* **web:** prevent infinite loop in external canonical ID routing ([68bcd92](https://github.com/Mearman/Academic-Explorer/commit/68bcd92eac2f5de48778c5e84bebaff0d65306e0))
+
 ## [12.0.12](https://github.com/Mearman/Academic-Explorer/compare/v12.0.11...v12.0.12) (2025-11-07)
 
 
