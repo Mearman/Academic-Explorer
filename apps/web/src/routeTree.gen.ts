@@ -18,6 +18,7 @@ import { Route as CacheRouteImport } from './routes/cache'
 import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as BookmarksRouteImport } from './routes/bookmarks'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as CatalogueRouteImport } from './routes/catalogue'
 import { Route as ExternalIdRouteImport } from './routes/$externalId'
 import { Route as SplatRouteImport } from './routes/$_'
 import { Route as IndexRouteImport } from './routes/index'
@@ -108,6 +109,11 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
+const CatalogueRoute = CatalogueRouteImport.update({
+  id: '/catalogue',
+  path: '/catalogue',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() => import('./routes/catalogue.lazy').then((d) => d.Route))
 const ExternalIdRoute = ExternalIdRouteImport.update({
   id: '/$externalId',
   path: '/$externalId',
@@ -384,6 +390,7 @@ export interface FileRoutesByFullPath {
   '/bookmarks': typeof BookmarksRoute
   '/browse': typeof BrowseRoute
   '/cache': typeof CacheRoute
+  '/catalogue': typeof CatalogueRoute
   '/error-test': typeof ErrorTestRoute
   '/evaluation': typeof EvaluationRouteWithChildren
   '/explore': typeof ExploreRouteWithChildren
@@ -439,6 +446,7 @@ export interface FileRoutesByTo {
   '/bookmarks': typeof BookmarksRoute
   '/browse': typeof BrowseRoute
   '/cache': typeof CacheRoute
+  '/catalogue': typeof CatalogueRoute
   '/error-test': typeof ErrorTestRoute
   '/evaluation': typeof EvaluationRouteWithChildren
   '/explore': typeof ExploreRouteWithChildren
@@ -495,6 +503,7 @@ export interface FileRoutesById {
   '/bookmarks': typeof BookmarksRoute
   '/browse': typeof BrowseRoute
   '/cache': typeof CacheRoute
+  '/catalogue': typeof CatalogueRoute
   '/error-test': typeof ErrorTestRoute
   '/evaluation': typeof EvaluationRouteWithChildren
   '/explore': typeof ExploreRouteWithChildren
@@ -552,6 +561,7 @@ export interface FileRouteTypes {
     | '/bookmarks'
     | '/browse'
     | '/cache'
+    | '/catalogue'
     | '/error-test'
     | '/evaluation'
     | '/explore'
@@ -607,6 +617,7 @@ export interface FileRouteTypes {
     | '/bookmarks'
     | '/browse'
     | '/cache'
+    | '/catalogue'
     | '/error-test'
     | '/evaluation'
     | '/explore'
@@ -662,6 +673,7 @@ export interface FileRouteTypes {
     | '/bookmarks'
     | '/browse'
     | '/cache'
+    | '/catalogue'
     | '/error-test'
     | '/evaluation'
     | '/explore'
@@ -718,6 +730,7 @@ export interface RootRouteChildren {
   BookmarksRoute: typeof BookmarksRoute
   BrowseRoute: typeof BrowseRoute
   CacheRoute: typeof CacheRoute
+  CatalogueRoute: typeof CatalogueRoute
   ErrorTestRoute: typeof ErrorTestRoute
   EvaluationRoute: typeof EvaluationRouteWithChildren
   ExploreRoute: typeof ExploreRouteWithChildren
@@ -825,6 +838,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/catalogue': {
+      id: '/catalogue'
+      path: '/catalogue'
+      fullPath: '/catalogue'
+      preLoaderRoute: typeof CatalogueRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$externalId': {
@@ -1171,6 +1191,7 @@ const rootRouteChildren: RootRouteChildren = {
   BookmarksRoute: BookmarksRoute,
   BrowseRoute: BrowseRoute,
   CacheRoute: CacheRoute,
+  CatalogueRoute: CatalogueRoute,
   ErrorTestRoute: ErrorTestRoute,
   EvaluationRoute: EvaluationRouteWithChildren,
   ExploreRoute: ExploreRouteWithChildren,
