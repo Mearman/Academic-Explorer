@@ -1,3 +1,10 @@
+# [12.1.0](https://github.com/Mearman/Academic-Explorer/compare/v12.0.13...v12.1.0) (2025-11-08)
+
+
+### Features
+
+* **web:** implement functional sidebars with bookmarks and history management ([35dc68f](https://github.com/Mearman/Academic-Explorer/commit/35dc68f184888696bb091a8c1f44a9f66356f257))
+
 ## [12.0.13](https://github.com/Mearman/Academic-Explorer/compare/v12.0.12...v12.0.13) (2025-11-07)
 
 
