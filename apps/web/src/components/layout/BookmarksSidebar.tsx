@@ -4,7 +4,7 @@
 
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { userInteractionsService } from "@academic-explorer/utils/storage/user-interactions-db";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, Link } from "@tanstack/react-router";
 import {
   IconBookmark,
   IconBookmarkOff,
@@ -12,6 +12,7 @@ import {
   IconExternalLink,
   IconX,
   IconTrash,
+  IconSettings,
 } from "@tabler/icons-react";
 import { useState } from "react";
 import {
@@ -91,6 +92,7 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
     }
   };
 
+  
   const handleDeleteBookmark = (bookmarkId: number, bookmarkTitle: string) => {
     modals.openConfirmModal({
       title: "Delete Bookmark",
@@ -121,11 +123,24 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
             <IconBookmark size={18} />
             <Title order={6}>Bookmarks</Title>
           </div>
-          {onClose && (
-            <ActionIcon size="sm" variant="subtle" onClick={onClose}>
-              <IconX size={14} />
-            </ActionIcon>
-          )}
+          <Group gap="xs">
+            <Tooltip label="Manage all bookmarks">
+              <ActionIcon
+                size="sm"
+                variant="subtle"
+                component={Link}
+                to="/bookmarks"
+                aria-label="Go to bookmarks management page"
+              >
+                <IconSettings size={14} />
+              </ActionIcon>
+            </Tooltip>
+            {onClose && (
+              <ActionIcon size="sm" variant="subtle" onClick={onClose}>
+                <IconX size={14} />
+              </ActionIcon>
+            )}
+          </Group>
         </div>
         <div className={styles.emptyState}>
           <Loader size="sm" />
@@ -145,11 +160,24 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
           <IconBookmark size={18} />
           <Title order={6}>Bookmarks</Title>
         </div>
-        {onClose && (
-          <ActionIcon size="sm" variant="subtle" onClick={onClose}>
-            <IconX size={14} />
-          </ActionIcon>
-        )}
+        <Group gap="xs">
+          <Tooltip label="Manage all bookmarks">
+            <ActionIcon
+              size="sm"
+              variant="subtle"
+              component={Link}
+              to="/bookmarks"
+              aria-label="Go to bookmarks management page"
+            >
+              <IconSettings size={14} />
+            </ActionIcon>
+          </Tooltip>
+          {onClose && (
+            <ActionIcon size="sm" variant="subtle" onClick={onClose}>
+              <IconX size={14} />
+            </ActionIcon>
+          )}
+        </Group>
       </div>
 
       {/* Search */}
