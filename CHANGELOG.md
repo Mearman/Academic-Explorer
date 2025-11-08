@@ -1,3 +1,10 @@
+## [12.2.2](https://github.com/Mearman/Academic-Explorer/compare/v12.2.1...v12.2.2) (2025-11-08)
+
+
+### Bug Fixes
+
+* **web:** improve pretty URL handling and query parameter preservation ([61edc19](https://github.com/Mearman/Academic-Explorer/commit/61edc19ebe4c3b5b81b042d1ded87a260dfbae90))
+
 ## [12.2.1](https://github.com/Mearman/Academic-Explorer/compare/v12.2.0...v12.2.1) (2025-11-08)
 
 
