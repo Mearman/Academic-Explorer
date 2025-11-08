@@ -7,6 +7,7 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MantineProvider, createTheme } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
+import { ModalsProvider } from "@mantine/modals";
 import { setupGlobalErrorHandling, logger } from "@academic-explorer/utils/logger";
 import { initializeNetworkMonitoring } from "./services/network-interceptor";
 import { initWebVitals } from "@/utils/web-vitals";
@@ -257,14 +258,16 @@ if (!rootElement) {
 createRoot(rootElement).render(
   <QueryClientProvider client={queryClient}>
     <MantineProvider theme={theme} defaultColorScheme="auto">
-      <Notifications />
-      <GraphProvider>
-        <LayoutProvider>
-          <AppActivityProvider>
-            <RouterProvider router={router} />
-          </AppActivityProvider>
-        </LayoutProvider>
-      </GraphProvider>
+      <ModalsProvider>
+        <Notifications />
+        <GraphProvider>
+          <LayoutProvider>
+            <AppActivityProvider>
+              <RouterProvider router={router} />
+            </AppActivityProvider>
+          </LayoutProvider>
+        </GraphProvider>
+      </ModalsProvider>
     </MantineProvider>
   </QueryClientProvider>,
 );
