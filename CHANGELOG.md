@@ -1,3 +1,11 @@
+## [12.2.3](https://github.com/Mearman/Academic-Explorer/compare/v12.2.2...v12.2.3) (2025-11-08)
+
+
+### Bug Fixes
+
+* **web:** add timeout mechanism to useUserInteractions hook ([06d80d3](https://github.com/Mearman/Academic-Explorer/commit/06d80d3d0f410bf5b29dae3826555060c7138cc3))
+* **web:** resolve sidebar rendering and external canonical ID routing issues ([7aa5f61](https://github.com/Mearman/Academic-Explorer/commit/7aa5f6197ef5a11162b0bfd72f6fe106443eaf62))
+
 ## [12.2.2](https://github.com/Mearman/Academic-Explorer/compare/v12.2.1...v12.2.2) (2025-11-08)
 
 
