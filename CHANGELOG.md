@@ -1,3 +1,10 @@
+## [12.2.1](https://github.com/Mearman/Academic-Explorer/compare/v12.2.0...v12.2.1) (2025-11-08)
+
+
+### Bug Fixes
+
+* **web:** sidebar integration and pretty URL improvements ([5ce8f3f](https://github.com/Mearman/Academic-Explorer/commit/5ce8f3f00165d9ee3816882396050030d5012d40))
+
 # [12.2.0](https://github.com/Mearman/Academic-Explorer/compare/v12.1.2...v12.2.0) (2025-11-08)
 
 
