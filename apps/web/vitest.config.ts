@@ -18,6 +18,21 @@ export default defineConfig(
 			},
 		},
 
+		// Fix for lru-cache ES module compatibility issue
+		define: {
+			// Ensure global exports are available for ES modules
+			global: 'globalThis',
+		},
+
+		optimizeDeps: {
+			include: [
+				// Pre-bundle lru-cache to avoid ES module issues
+				'lru-cache',
+			],
+			// Force optimization even for dependencies
+			force: true,
+		},
+
 		test: {
 			// Override for React/DOM environment
 			environment: "jsdom",
