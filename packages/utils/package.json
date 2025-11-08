@@ -108,15 +108,19 @@
   },
   "dependencies": {
     "@academic-explorer/types": "workspace:*",
+    "@types/pako": "^2.0.4",
+    "@types/qrcode": "^1.5.6",
     "dexie": "^4.2.1",
+    "pako": "^2.1.0",
+    "qrcode": "^1.5.4",
     "zod": "^3.23.8"
   },
   "peerDependencies": {
-    "react": "^19.0.0",
     "@mantine/core": "^7.0.0",
     "@tabler/icons-react": "^3.0.0",
     "@tanstack/react-query": "^5.0.0",
-    "@tanstack/react-router": "^1.0.0"
+    "@tanstack/react-router": "^1.0.0",
+    "react": "^19.0.0"
   },
   "peerDependenciesMeta": {
     "@mantine/core": {

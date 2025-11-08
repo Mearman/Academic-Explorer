@@ -9,7 +9,7 @@ export { cacheBrowserService } from "./cache-browser/index.js"
 export type {
 	CachedEntityMetadata,
 	CacheBrowserStats,
-	EntityType,
+	EntityType as CacheBrowserEntityType,
 	CacheBrowserFilters,
 	CacheBrowserOptions,
 	CacheBrowserResult,
@@ -167,3 +167,29 @@ export {
 	type PageVisitRecord,
 	type UserInteractionsService,
 } from "./storage/index.js"
+
+// Catalogue database utilities
+export {
+	catalogueService,
+	catalogueEventEmitter,
+	type CatalogueList,
+	type CatalogueEntity,
+	type EntityType,
+	type ListType,
+	type CatalogueService,
+} from "./storage/catalogue-db.js"
+
+// URL compression utilities
+export {
+	compressListData,
+	decompressListData,
+	createShareUrl,
+	extractListDataFromUrl,
+	validateListData,
+	optimizeListData,
+	estimateCompressedSize,
+	canShareViaUrl,
+	splitListForSharing,
+	type CompressedListData,
+	type ShareUrlData,
+} from "./url-compression.js"
