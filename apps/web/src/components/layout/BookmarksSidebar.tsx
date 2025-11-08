@@ -5,6 +5,7 @@
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { catalogueService } from "@academic-explorer/utils/storage/catalogue-db";
 import { useNavigate, Link } from "@tanstack/react-router";
+import { CatalogueSidebarLink } from "@/components/catalogue";
 import {
   IconBookmark,
   IconBookmarkOff,
@@ -13,6 +14,7 @@ import {
   IconX,
   IconTrash,
   IconSettings,
+  IconList,
 } from "@tabler/icons-react";
 import { useState } from "react";
 import {
@@ -196,6 +198,27 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
             </ActionIcon>
           )}
         </Group>
+      </div>
+
+      {/* Catalogue Navigation */}
+      <div className={styles.searchInput}>
+        <Group justify="space-between" align="center">
+          <Text size="sm" fw={500}>Collections</Text>
+          <CatalogueSidebarLink onClose={onClose} />
+        </Group>
+        <Button
+          variant="subtle"
+          size="sm"
+          leftSection={<IconList size={14} />}
+          onClick={() => {
+            window.location.hash = "/catalogue";
+            if (onClose) onClose();
+          }}
+          title="Catalogue"
+          fullWidth
+        >
+          Catalogue
+        </Button>
       </div>
 
       {/* Search */}

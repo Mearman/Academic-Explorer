@@ -174,7 +174,7 @@ export function CatalogueManager({ onNavigate, sharedToken }: CatalogueManagerPr
               leftSection={<IconPlus size={16} />}
               onClick={() => setShowCreateModal(true)}
             >
-              Create List
+              Create New List
             </Button>
           </Group>
         </Group>
