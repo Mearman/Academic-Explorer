@@ -1,3 +1,10 @@
+## [12.1.2](https://github.com/Mearman/Academic-Explorer/compare/v12.1.1...v12.1.2) (2025-11-08)
+
+
+### Bug Fixes
+
+* **web:** resolve history database schema error in E2E tests ([c815707](https://github.com/Mearman/Academic-Explorer/commit/c8157078cd33c0c5296ae81bb748329b3fedb52e))
+
 ## [12.1.1](https://github.com/Mearman/Academic-Explorer/compare/v12.1.0...v12.1.1) (2025-11-08)
 
 
