@@ -247,6 +247,14 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               >
                 Bookmarks
               </Button>
+              <Button
+                component={Link}
+                to="/catalogue"
+                variant="subtle"
+                size="sm"
+              >
+                Catalogue
+              </Button>
             </Group>
 
             <ActionIcon
