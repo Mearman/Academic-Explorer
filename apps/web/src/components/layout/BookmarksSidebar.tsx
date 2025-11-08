@@ -3,6 +3,7 @@
  */
 
 import { useUserInteractions } from "@/hooks/use-user-interactions";
+import { userInteractionsService } from "@academic-explorer/utils/storage/user-interactions-db";
 import { useNavigate } from "@tanstack/react-router";
 import {
   IconBookmark,
@@ -10,6 +11,7 @@ import {
   IconSearch,
   IconExternalLink,
   IconX,
+  IconTrash,
 } from "@tabler/icons-react";
 import { useState } from "react";
 import {
@@ -26,6 +28,7 @@ import {
   ScrollArea,
   Title,
 } from "@mantine/core";
+import { modals } from "@mantine/modals";
 import * as styles from "./sidebar.css";
 
 interface BookmarksSidebarProps {
@@ -33,7 +36,7 @@ interface BookmarksSidebarProps {
 }
 
 export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
-  const { bookmarks, isLoadingBookmarks } = useUserInteractions();
+  const { bookmarks, isLoadingBookmarks, refreshData } = useUserInteractions();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -58,6 +61,28 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
     if (onClose) {
       onClose();
     }
+  };
+
+  const handleDeleteBookmark = (bookmarkId: string, bookmarkTitle: string) => {
+    modals.openConfirmModal({
+      title: "Delete Bookmark",
+      centered: true,
+      children: (
+        <Text size="sm">
+          Are you sure you want to delete "{bookmarkTitle}"? This action cannot be undone.
+        </Text>
+      ),
+      labels: { confirm: "Delete", cancel: "Cancel" },
+      confirmProps: { color: "red" },
+      onConfirm: async () => {
+        try {
+          await userInteractionsService.removeBookmark(bookmarkId);
+          await refreshData();
+        } catch (error) {
+          console.error("Failed to delete bookmark:", error);
+        }
+      },
+    });
   };
 
   if (isLoadingBookmarks) {
@@ -170,19 +195,35 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
                       {new Date(bookmark.timestamp).toLocaleDateString()}
                     </Text>
                   </Stack>
-                  <Tooltip label="Open bookmark">
-                    <ActionIcon
-                      size="sm"
-                      variant="subtle"
-                      className={styles.actionButton}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleNavigate(bookmark.request.cacheKey);
-                      }}
-                    >
-                      <IconExternalLink size={12} />
-                    </ActionIcon>
-                  </Tooltip>
+                  <Group gap="xs">
+                    <Tooltip label="Open bookmark">
+                      <ActionIcon
+                        size="sm"
+                        variant="subtle"
+                        className={styles.actionButton}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleNavigate(bookmark.request.cacheKey);
+                        }}
+                      >
+                        <IconExternalLink size={12} />
+                      </ActionIcon>
+                    </Tooltip>
+                    <Tooltip label="Delete bookmark">
+                      <ActionIcon
+                        size="sm"
+                        variant="subtle"
+                        color="red"
+                        className={styles.actionButton}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteBookmark(bookmark.id, bookmark.title);
+                        }}
+                      >
+                        <IconTrash size={12} />
+                      </ActionIcon>
+                    </Tooltip>
+                  </Group>
                 </Group>
               </Card>
             ))}

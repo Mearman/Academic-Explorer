@@ -65,6 +65,19 @@ export class HistoryDatabase extends Dexie {
     });
   }
 
+  async deleteVisit(routeId: string, visitedAt: number) {
+    // Delete the specific visit entry
+    await this.visits.where("[routeId+visitedAt]").equals([routeId, visitedAt]).delete();
+
+    // Check if there are any remaining visits for this route
+    const remainingVisits = await this.visits.where("routeId").equals(routeId).count();
+
+    // If no more visits for this route, clean up the route entry
+    if (remainingVisits === 0) {
+      await this.routes.where("normalizedRoute").equals(routeId).delete();
+    }
+  }
+
   async clear() {
     await this.visits.clear();
     await this.routes.clear();

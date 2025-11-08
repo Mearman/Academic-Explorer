@@ -44,6 +44,7 @@
     "@mantine/core": "^8.3.2",
     "@mantine/dates": "^8.3.2",
     "@mantine/hooks": "^8.3.2",
+    "@mantine/modals": "^8.3.6",
     "@mantine/notifications": "^8.3.2",
     "@react-three/drei": "^10.7.6",
     "@react-three/fiber": "^9.4.0",

@@ -26,6 +26,8 @@ import {
   Divider,
   Tooltip,
 } from "@mantine/core";
+import { modals } from "@mantine/modals";
+import * as styles from "./sidebar.css";
 
 interface HistorySidebarProps {
   onClose?: () => void;
@@ -79,6 +81,30 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
     if (onClose) {
       onClose();
     }
+  };
+
+  const handleDeleteHistoryEntry = (route: string, visitedAt: number) => {
+    modals.openConfirmModal({
+      title: "Delete History Entry",
+      centered: true,
+      children: (
+        <Text size="sm">
+          Are you sure you want to delete this history entry? This action cannot be undone.
+        </Text>
+      ),
+      labels: { confirm: "Delete", cancel: "Cancel" },
+      confirmProps: { color: "red" },
+      onConfirm: async () => {
+        try {
+          await historyDB.deleteVisit(route, visitedAt);
+          // Reload history entries
+          const entries = await historyDB.getAll();
+          setHistoryEntries(entries.sort((a, b) => b.visitedAt - a.visitedAt));
+        } catch (error) {
+          logError(logger, "Failed to delete history entry", error, "HistorySidebar");
+        }
+      },
+    });
   };
 
   const formatDate = (timestamp: number) => {
@@ -136,22 +162,22 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
   const groupedEntries = groupEntriesByDate(filteredEntries);
 
   return (
-    <Stack h="100%" p="md">
+    <div className={styles.sidebarContainer}>
       {/* Header */}
-      <Group justify="space-between">
-        <Group>
+      <div className={styles.sidebarHeader}>
+        <div className={styles.sidebarTitle}>
           <IconHistory size={18} />
           <Title order={6}>History</Title>
-        </Group>
+        </div>
         {onClose && (
           <ActionIcon size="sm" variant="subtle" onClick={onClose}>
             <IconX size={14} />
           </ActionIcon>
         )}
-      </Group>
+      </div>
 
       {/* Search */}
-      <Group gap="xs">
+      <Group gap="xs" className={styles.searchInput}>
         <TextInput
           placeholder="Search history..."
           value={searchQuery}
@@ -167,6 +193,7 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
               color="red"
               size="sm"
               onClick={handleClearHistory}
+              className={styles.actionButton}
             >
               <IconTrash size={14} />
             </ActionIcon>
@@ -175,10 +202,10 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
       </Group>
 
       {/* History List */}
-      <ScrollArea flex={1}>
+      <div className={styles.scrollableContent}>
         {filteredEntries.length === 0 ? (
           <Card withBorder p="md">
-            <Stack align="center" gap="md">
+            <Stack align="center" gap="md" className={styles.emptyState}>
               <IconHistory
                 size={32}
                 style={{ color: "var(--mantine-color-gray-4)" }}
@@ -197,21 +224,21 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
           <Stack gap="xs">
             {Object.entries(groupedEntries).map(([groupKey, entries]) => (
               <Stack key={groupKey} gap="xs">
-                <Group justify="space-between">
-                  <Text size="xs" fw={600} c="dimmed">
+                <div className={styles.groupHeader}>
+                  <Text className={styles.groupTitle}>
                     {groupKey}
                   </Text>
                   <Text size="xs" c="dimmed">
                     {entries.length} {entries.length === 1 ? 'item' : 'items'}
                   </Text>
-                </Group>
+                </div>
                 {entries.map((entry, index) => (
                   <Card
                     key={`${entry.route}-${entry.visitedAt}`}
                     withBorder
                     padding="xs"
                     shadow="none"
-                    style={{ cursor: "pointer" }}
+                    className={styles.historyCard}
                     onClick={() => handleNavigate(entry.route)}
                   >
                     <Group justify="space-between" align="flex-start" gap="xs">
@@ -220,7 +247,7 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
                           size="xs"
                           fw={500}
                           lineClamp={1}
-                          className="hover:text-blue-600 transition-colors"
+                          className={styles.historyEntry}
                         >
                           {entry.route}
                         </Text>
@@ -228,36 +255,53 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
                           {formatDate(entry.visitedAt)}
                         </Text>
                       </Stack>
-                      <Tooltip label="Navigate to this route">
-                        <ActionIcon
-                          size="sm"
-                          variant="subtle"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleNavigate(entry.route);
-                          }}
-                        >
-                          <IconExternalLink size={12} />
-                        </ActionIcon>
-                      </Tooltip>
+                      <Group gap="xs">
+                        <Tooltip label="Navigate to this route">
+                          <ActionIcon
+                            size="sm"
+                            variant="subtle"
+                            className={styles.navigationButton}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleNavigate(entry.route);
+                            }}
+                          >
+                            <IconExternalLink size={12} />
+                          </ActionIcon>
+                        </Tooltip>
+                        <Tooltip label="Delete history entry">
+                          <ActionIcon
+                            size="sm"
+                            variant="subtle"
+                            color="red"
+                            className={styles.actionButton}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteHistoryEntry(entry.route, entry.visitedAt);
+                            }}
+                          >
+                            <IconTrash size={12} />
+                          </ActionIcon>
+                        </Tooltip>
+                      </Group>
                     </Group>
                   </Card>
                 ))}
                 {groupKey !== Object.keys(groupedEntries)[Object.keys(groupedEntries).length - 1] && (
-                  <Divider size="xs" />
+                  <Divider size="xs" className={styles.groupDivider} />
                 )}
               </Stack>
             ))}
           </Stack>
         )}
-      </ScrollArea>
+      </div>
 
       {/* Footer */}
       {filteredEntries.length > 0 && (
-        <Text size="xs" c="dimmed" ta="center">
+        <Text className={styles.footerText}>
           {filteredEntries.length} history {filteredEntries.length === 1 ? 'entry' : 'entries'}
         </Text>
       )}
-    </Stack>
+    </div>
   );
 }
