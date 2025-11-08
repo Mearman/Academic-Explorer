@@ -2,10 +2,11 @@
  * React hook for user interactions (visits and bookmarks)
  */
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { useLocation } from "@tanstack/react-router";
 import {
   userInteractionsService,
+  bookmarkEventEmitter,
   type BookmarkRecord,
   type PageVisitRecord,
 } from "@academic-explorer/utils/storage/user-interactions-db";
@@ -283,6 +284,17 @@ export function useUserInteractions(
   useEffect(() => {
     void refreshData();
   }, [entityId, entityType, searchQuery, url]); // Don't include filters or refreshData to prevent loops
+
+  // Listen for bookmark change events to keep all instances in sync
+  useEffect(() => {
+    const unsubscribe = bookmarkEventEmitter.subscribe((event) => {
+      // When bookmarks change, refresh data to keep UI in sync
+      logger.debug(USER_INTERACTIONS_LOGGER_CONTEXT, "Bookmark change detected, refreshing data", { event });
+      void refreshData();
+    });
+
+    return unsubscribe;
+  }, [refreshData]);
 
   const recordPageVisit = useCallback(
     async ({
