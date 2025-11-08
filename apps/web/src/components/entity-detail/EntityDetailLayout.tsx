@@ -3,6 +3,7 @@ import { Button, Text, Code, Badge, Paper, Stack, Group, Container, Title, Toolt
 import { IconEye, IconCode, IconBookmark, IconBookmarkOff } from "@tabler/icons-react";
 import { logger } from "@/lib/logger";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 import { EntityTypeConfig, EntityType } from "./EntityTypeConfig";
 import { EntityDataDisplay } from "../EntityDataDisplay";
 
@@ -46,6 +47,9 @@ export function EntityDetailLayout({
   data,
   children,
 }: EntityDetailLayoutProps) {
+  // Initialize theme colors hook
+  const { colors } = useThemeColors();
+
   // Initialize user interactions hook for bookmark functionality
   const userInteractions = useUserInteractions({
     entityId,
@@ -69,7 +73,7 @@ export function EntityDetailLayout({
     }
   };
   return (
-    <Container size="lg" p="xl" bg="var(--mantine-color-gray-0)" style={{ minHeight: "100vh" }}>
+    <Container size="lg" p="xl" bg="var(--mantine-color-body)" style={{ minHeight: "100vh" }}>
       <Stack gap="xl">
         {/* Header Section */}
         <Paper p="xl" radius="xl" withBorder>
@@ -92,7 +96,7 @@ export function EntityDetailLayout({
                 {displayName}
               </Title>
 
-              <Paper p="md" radius="lg" withBorder bg="var(--mantine-color-gray-0)">
+              <Paper p="md" radius="lg" withBorder bg="var(--mantine-color-body)">
                 <Stack gap="sm">
                   <Group align="flex-start" gap="sm">
                     <Text size="sm" fw={600} c="dimmed" miw="100px">
@@ -152,19 +156,19 @@ export function EntityDetailLayout({
         {/* Content Section */}
         {viewMode === "raw" ? (
           <Paper withBorder radius="xl" style={{ overflow: "hidden" }}>
-            <Paper p="md" bg="var(--mantine-color-dark-8)" style={{ borderBottom: "1px solid var(--mantine-color-dark-4)" }}>
+            <Paper p="md" bg={colors.background.tertiary} style={{ borderBottom: `1px solid ${colors.border.secondary}` }}>
               <Group gap="sm">
-                <IconCode size={20} color="var(--mantine-color-dark-0)" />
-                <Text size="lg" fw={600} c="var(--mantine-color-dark-0)">
+                <IconCode size={20} color={colors.text.primary} />
+                <Text size="lg" fw={600} c={colors.text.primary}>
                   Raw JSON Data
                 </Text>
               </Group>
             </Paper>
-            <Paper p="xl" bg="var(--mantine-color-dark-9)" style={{ overflowX: "auto", maxHeight: "1000px" }}>
+            <Paper p="xl" bg={colors.background.secondary} style={{ overflowX: "auto", maxHeight: "1000px" }}>
               <Text
                 component="pre"
                 size="sm"
-                c="var(--mantine-color-dark-0)"
+                c={colors.text.primary}
                 style={{
                   fontFamily: "'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace",
                   whiteSpace: "pre",
