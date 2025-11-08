@@ -4,12 +4,24 @@
 
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 import {
+  BookmarkSelectionProvider,
+  useBookmarkSelection,
+  useBookmarkSelectionActions,
+  useSelectionCount,
+  useSelectedBookmarks,
+} from "@/contexts/bookmark-selection-context";
+import {
   IconBookmark,
   IconBookmarkOff,
   IconSearch,
   IconExternalLink,
+  IconCheckbox,
+  IconSquare,
+  IconTrash,
+  IconTag,
+  IconNotes,
 } from "@tabler/icons-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   TextInput,
   Button,
@@ -21,16 +33,152 @@ import {
   Loader,
   SimpleGrid,
   Tooltip,
+  Checkbox,
+  Modal,
+  ActionIcon,
+  Divider,
+  TagsInput,
+  Textarea,
 } from "@mantine/core";
+import { modals } from "@mantine/modals";
 
 interface BookmarkManagerProps {
   onNavigate?: (url: string) => void;
 }
 
-export function BookmarkManager({ onNavigate }: BookmarkManagerProps) {
-  const { bookmarks, isLoadingBookmarks } =
-    useUserInteractions();
+// Bookmark card component with selection
+function BookmarkCard({
+  bookmark,
+  isSelected,
+  onToggleSelection,
+  onNavigate
+}: {
+  bookmark: any;
+  isSelected: boolean;
+  onToggleSelection: () => void;
+  onNavigate: (url: string) => void;
+}) {
+  return (
+    <Card
+      withBorder
+      padding="md"
+      data-testid="bookmark-card"
+      className={isSelected ? "border-blue-500 bg-blue-50 dark:bg-blue-950" : ""}
+    >
+      <Group justify="space-between" mb="xs">
+        <Group>
+          <Checkbox
+            checked={isSelected}
+            onChange={onToggleSelection}
+            aria-label={`Select bookmark: ${bookmark.title}`}
+            size="sm"
+          />
+          <Text
+            component="a"
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              onNavigate(bookmark.request.cacheKey);
+            }}
+            flex={1}
+            fw={500}
+            c="inherit"
+            style={{ cursor: "pointer" }}
+            className="hover:text-blue-600 transition-colors"
+            data-testid="bookmark-title-link"
+          >
+            {bookmark.title}
+          </Text>
+        </Group>
+        {bookmark.request.params &&
+          JSON.parse(bookmark.request.params) &&
+          Object.keys(JSON.parse(bookmark.request.params)).length > 0 && (
+          <Badge size="xs" variant="light">
+            {Object.keys(JSON.parse(bookmark.request.params)).length}{" "}
+            param
+            {Object.keys(JSON.parse(bookmark.request.params))
+              .length !== 1
+              ? "s"
+              : ""}
+          </Badge>
+        )}
+      </Group>
+
+      {bookmark.notes && (
+        <Text size="sm" c="dimmed" mb="xs" lineClamp={2}>
+          {bookmark.notes}
+        </Text>
+      )}
+
+      {bookmark.tags && bookmark.tags.length > 0 && (
+        <Group gap="xs" mb="xs">
+          {bookmark.tags.map((tag: string, index: number) => (
+            <Badge key={index} size="xs" variant="light">
+              {tag}
+            </Badge>
+          ))}
+        </Group>
+      )}
+
+      <Group justify="space-between" mt="xs">
+        <Text size="xs" c="dimmed">
+          {new Date(bookmark.timestamp).toLocaleDateString()}
+        </Text>
+        <Tooltip label="Open bookmark">
+          <Button
+            variant="subtle"
+            size="xs"
+            leftSection={<IconExternalLink size={14} />}
+            onClick={() => {
+              onNavigate(bookmark.request.cacheKey);
+            }}
+            data-testid="bookmark-open-button"
+          >
+            Open
+          </Button>
+        </Tooltip>
+      </Group>
+    </Card>
+  );
+}
+
+// Inner component that uses selection context
+function BookmarkManagerInner({ onNavigate }: BookmarkManagerProps) {
+  const {
+    bookmarks,
+    isLoadingBookmarks,
+    bulkRemoveBookmarks,
+    bulkUpdateBookmarkTags,
+    bulkUpdateBookmarkNotes
+  } = useUserInteractions();
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Selection state and actions
+  const { state: selectionState } = useBookmarkSelection();
+  const selectionCount = useSelectionCount();
+  const selectedBookmarks = useSelectedBookmarks();
+  const {
+    toggleSelection,
+    selectAll,
+    deselectAll,
+    setTotalCount
+  } = useBookmarkSelectionActions();
+
+  // Update total count when bookmarks change
+  useEffect(() => {
+    console.log("Updating total count to:", bookmarks.length);
+    setTotalCount(bookmarks.length);
+  }, [bookmarks.length]);
+
+  // Debug selection state
+  useEffect(() => {
+    console.log("Selection state updated:", {
+      selectionCount,
+      selectedBookmarks: Array.from(selectedBookmarks),
+      isAllSelected: selectionState.isAllSelected,
+      totalCount: selectionState.totalCount
+    });
+  }, [selectionCount, selectedBookmarks, selectionState.isAllSelected, selectionState.totalCount]);
 
   const filteredBookmarks = searchQuery
     ? bookmarks.filter(
@@ -42,6 +190,57 @@ export function BookmarkManager({ onNavigate }: BookmarkManagerProps) {
           ),
       )
     : bookmarks;
+
+  // Bulk operation handlers
+  const handleBulkDelete = () => {
+    const selectedIds = Array.from(selectedBookmarks);
+
+    if (selectedIds.length === 0) {
+      return;
+    }
+
+    modals.openConfirmModal({
+      title: "Delete Selected Bookmarks",
+      centered: true,
+      children: (
+        <Text size="sm">
+          Are you sure you want to delete {selectedIds.length} selected bookmark{selectedIds.length !== 1 ? "s" : ""}? This action cannot be undone.
+        </Text>
+      ),
+      labels: { confirm: "Delete", cancel: "Cancel" },
+      confirmProps: { color: "red" },
+      onConfirm: async () => {
+        try {
+          const result = await bulkRemoveBookmarks(selectedIds);
+
+          // Always show result to user
+          modals.open({
+            title: result.failed > 0 ? "Partial Success" : "Success",
+            children: (
+              <Text size="sm">
+                {result.failed > 0
+                  ? `Successfully deleted ${result.success} bookmark${result.success !== 1 ? "s" : ""}, but ${result.failed} failed.`
+                  : `Successfully deleted ${result.success} bookmark${result.success !== 1 ? "s" : ""}.`
+                }
+              </Text>
+            ),
+          });
+
+          deselectAll();
+        } catch (error) {
+          // Show error modal
+          modals.open({
+            title: "Error",
+            children: (
+              <Text size="sm">
+                Failed to delete bookmarks. Please try again.
+              </Text>
+            ),
+          });
+        }
+      },
+    });
+  };
 
   const handleNavigate = (url: string) => {
     if (onNavigate) {
@@ -69,23 +268,59 @@ export function BookmarkManager({ onNavigate }: BookmarkManagerProps) {
 
   return (
     <Stack maw={1000} mx="auto" p="md">
-      <Group justify="space-between" mb="md">
-        <Group>
-          <IconBookmark size={24} />
-          <Text size="xl" fw={700}>
-            Bookmarks
-          </Text>
+        <Group justify="space-between" mb="md">
+          <Group>
+            <IconBookmark size={24} />
+            <Text size="xl" fw={700}>
+              Bookmarks
+            </Text>
+            {selectionCount > 0 && (
+              <Badge size="lg" color="blue">
+                {selectionCount} selected
+              </Badge>
+            )}
+          </Group>
+          {filteredBookmarks.length > 0 && (
+            <Group gap="xs">
+              <Button
+                variant="subtle"
+                size="sm"
+                onClick={() => selectAll(filteredBookmarks.map(b => b.id!).filter(Boolean))}
+              >
+                Select All ({filteredBookmarks.length})
+              </Button>
+              {selectionCount > 0 && (
+                <>
+                  <Button
+                    variant="subtle"
+                    size="sm"
+                    onClick={deselectAll}
+                  >
+                    Deselect All
+                  </Button>
+                  <Divider orientation="vertical" />
+                  <ActionIcon
+                    variant="subtle"
+                    color="red"
+                    onClick={handleBulkDelete}
+                    title="Delete selected bookmarks"
+                  >
+                    <IconTrash size={16} />
+                  </ActionIcon>
+                </>
+              )}
+            </Group>
+          )}
         </Group>
-      </Group>
 
-      {/* Search */}
-      <TextInput
-        placeholder="Search bookmarks..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        leftSection={<IconSearch size={16} />}
-        mb="md"
-      />
+        {/* Search */}
+        <TextInput
+          placeholder="Search bookmarks..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          leftSection={<IconSearch size={16} />}
+          mb="md"
+        />
 
       {filteredBookmarks.length === 0 ? (
         <Card withBorder p="xl">
@@ -106,74 +341,13 @@ export function BookmarkManager({ onNavigate }: BookmarkManagerProps) {
       ) : (
         <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="md">
           {filteredBookmarks.map((bookmark) => (
-            <Card key={bookmark.id} withBorder padding="md" data-testid="bookmark-card">
-              <Group justify="space-between" mb="xs">
-                <Text
-                  component="a"
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNavigate(bookmark.request.cacheKey);
-                  }}
-                  flex={1}
-                  fw={500}
-                  c="inherit"
-                  style={{ cursor: "pointer" }}
-                  className="hover:text-blue-600 transition-colors"
-                  data-testid="bookmark-title-link"
-                >
-                  {bookmark.title}
-                </Text>
-                {bookmark.request.params &&
-                  JSON.parse(bookmark.request.params) &&
-                  Object.keys(JSON.parse(bookmark.request.params)).length >
-                    0 && (
-                    <Badge size="xs" variant="light">
-                      {Object.keys(JSON.parse(bookmark.request.params)).length}{" "}
-                      param
-                      {Object.keys(JSON.parse(bookmark.request.params))
-                        .length !== 1
-                        ? "s"
-                        : ""}
-                    </Badge>
-                  )}
-              </Group>
-
-              {bookmark.notes && (
-                <Text size="sm" c="dimmed" mb="xs" lineClamp={2}>
-                  {bookmark.notes}
-                </Text>
-              )}
-
-              {bookmark.tags && bookmark.tags.length > 0 && (
-                <Group gap="xs" mb="xs">
-                  {bookmark.tags.map((tag: string, index: number) => (
-                    <Badge key={index} size="xs" variant="light">
-                      {tag}
-                    </Badge>
-                  ))}
-                </Group>
-              )}
-
-              <Group justify="space-between" mt="xs">
-                <Text size="xs" c="dimmed">
-                  {new Date(bookmark.timestamp).toLocaleDateString()}
-                </Text>
-                <Tooltip label="Open bookmark">
-                  <Button
-                    variant="subtle"
-                    size="xs"
-                    leftSection={<IconExternalLink size={14} />}
-                    onClick={() => {
-                      handleNavigate(bookmark.request.cacheKey);
-                    }}
-                    data-testid="bookmark-open-button"
-                  >
-                    Open
-                  </Button>
-                </Tooltip>
-              </Group>
-            </Card>
+            <BookmarkCard
+              key={bookmark.id}
+              bookmark={bookmark}
+              isSelected={selectedBookmarks.has(bookmark.id!)}
+              onToggleSelection={() => toggleSelection(bookmark.id!)}
+              onNavigate={handleNavigate}
+            />
           ))}
         </SimpleGrid>
       )}
@@ -184,5 +358,14 @@ export function BookmarkManager({ onNavigate }: BookmarkManagerProps) {
         </Text>
       )}
     </Stack>
+  );
+}
+
+// Main component that provides the selection context
+export function BookmarkManager({ onNavigate }: BookmarkManagerProps) {
+  return (
+    <BookmarkSelectionProvider>
+      <BookmarkManagerInner onNavigate={onNavigate} />
+    </BookmarkSelectionProvider>
   );
 }
