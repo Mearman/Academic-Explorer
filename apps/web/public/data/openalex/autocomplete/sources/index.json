@@ -16,7 +16,7 @@
     "q=Nature": {
       "url": "https://api.openalex.org/autocomplete/sources?q=Nature",
       "$ref": "./q=Nature.json",
-      "lastRetrieved": "2025-11-08T13:24:45.935Z",
+      "lastRetrieved": "2025-11-08T15:11:41.640Z",
       "contentHash": "dd796f6d32a769cc"
     }
   }
