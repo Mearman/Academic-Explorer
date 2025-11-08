@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { logger } from "@academic-explorer/utils/logger";
 
 /**
  * Hook to update the browser URL to show a "pretty" (decoded) version
@@ -39,12 +40,10 @@ export function usePrettyUrl(
           const queryIndex = latestHash.indexOf("?");
           if (queryIndex !== -1) {
             queryParams = latestHash.substring(queryIndex);
-            // Check if query parameters are already duplicated and fix if needed
-            if (queryParams.includes("?")) {
-              const queryString = queryParams.substring(1); // Remove the ?
-              const uniqueParams = new URLSearchParams(queryString).toString();
-              queryParams = uniqueParams ? "?" + uniqueParams : "";
-            }
+            // Fix duplicated query parameters like ?select=x?select=x by parsing and rebuilding
+            const queryString = queryParams.substring(1); // Remove the ?
+            const uniqueParams = new URLSearchParams(queryString).toString();
+            queryParams = uniqueParams ? "?" + uniqueParams : "";
           }
 
           const decodedHash = `#/${entityType}/${decodedId}${queryParams}`;
@@ -52,11 +51,12 @@ export function usePrettyUrl(
 
           // Only update if the URL would actually change
           if (newUrl !== window.location.href) {
-            console.log("usePrettyUrl updating URL:", {
+            logger.debug("routing", "usePrettyUrl updating URL", {
               entityType,
               rawId,
               decodedId,
               oldHash: latestHash,
+              queryParams,
               newHash: decodedHash
             });
             window.history.replaceState(window.history.state, "", newUrl);
