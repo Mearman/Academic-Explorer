@@ -13,7 +13,7 @@ import {
   IconX,
   IconTrash,
 } from "@tabler/icons-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   TextInput,
   Button,
@@ -30,15 +30,78 @@ import {
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import * as styles from "./sidebar.css";
+import { SidebarFallback } from "./SidebarFallback";
 
 interface BookmarksSidebarProps {
   onClose?: () => void;
 }
 
 export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
-  const { bookmarks, isLoadingBookmarks, refreshData } = useUserInteractions();
+  const [hasError, setHasError] = useState(false);
+  const errorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Wrap data loading in error boundary with timeout
+  const safeUseUserInteractions = () => {
+    try {
+      const result = useUserInteractions();
+
+      // Set a timeout to detect if data loading is taking too long
+      errorTimeoutRef.current = setTimeout(() => {
+        if (result.isLoadingBookmarks) {
+          console.warn('BookmarksSidebar: Data loading taking too long, using fallback');
+          setHasError(true);
+        }
+      }, 8000); // 8 second timeout for fallback
+
+      return result;
+    } catch (error) {
+      console.error('BookmarksSidebar: Error in useUserInteractions', error);
+      setHasError(true);
+      // Return fallback values
+      return {
+        bookmarks: [],
+        isLoadingBookmarks: false,
+        refreshData: async () => {},
+        isBookmarked: false,
+        recordPageVisit: async () => {},
+        bookmarkEntity: async () => {},
+        bookmarkSearch: async () => {},
+        bookmarkList: async () => {},
+        unbookmarkEntity: async () => {},
+        unbookmarkSearch: async () => {},
+        unbookmarkList: async () => {},
+        updateBookmark: async () => {},
+        searchBookmarks: async () => [],
+        isLoadingPageVisits: false,
+        isLoadingStats: false,
+      };
+    }
+  };
+
+  const { bookmarks, isLoadingBookmarks, refreshData } = safeUseUserInteractions();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Clear timeout when component unmounts or loading completes
+  useEffect(() => {
+    return () => {
+      if (errorTimeoutRef.current) {
+        clearTimeout(errorTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Clear timeout when loading completes
+  useEffect(() => {
+    if (!isLoadingBookmarks && errorTimeoutRef.current) {
+      clearTimeout(errorTimeoutRef.current);
+    }
+  }, [isLoadingBookmarks]);
+
+  // Use fallback component if there's an error
+  if (hasError) {
+    return <SidebarFallback title="Bookmarks" type="bookmarks" onClose={onClose} />;
+  }
 
   const filteredBookmarks = searchQuery
     ? bookmarks.filter(

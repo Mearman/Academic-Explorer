@@ -17,10 +17,11 @@ function InstitutionRoute() {
   useUrlNormalization();
 
   // Extract institution ID from URL hash as fallback since splat parameter isn't working
+  // For hash routing with URLs containing slashes (like ROR, ORCID), we need to reconstruct the full ID
   const getInstitutionIdFromHash = () => {
     if (typeof window !== 'undefined') {
       const hashParts = window.location.hash.split('/');
-      return hashParts.length >= 3 ? hashParts[2] : '';
+      return hashParts.length >= 3 ? hashParts.slice(2).join('/') : '';
     }
     return '';
   };

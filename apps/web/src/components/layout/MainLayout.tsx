@@ -15,6 +15,8 @@ import {
   Title,
   Box,
   rem,
+  TextInput,
+  Card,
 } from "@mantine/core";
 import {
   IconMoon,
@@ -30,6 +32,7 @@ import { LeftSidebarDynamic } from "./LeftSidebarDynamic";
 import { RightSidebarDynamic } from "./RightSidebarDynamic";
 import { BookmarksSidebar } from "./BookmarksSidebar";
 import { HistorySidebar } from "./HistorySidebar";
+import { SidebarFallback } from "./SidebarFallback";
 import { LeftRibbon } from "./LeftRibbon";
 import { RightRibbon } from "./RightRibbon";
 import { HeaderSearchInput } from "./HeaderSearchInput";
@@ -316,6 +319,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     </ActionIcon>
                   </Group>
                 </Group>
+                {/* Bookmarks sidebar component */}
                 <BookmarksSidebar />
               </Box>
               {/* Left drag handle */}

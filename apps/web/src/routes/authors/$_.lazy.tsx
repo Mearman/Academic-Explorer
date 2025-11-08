@@ -19,10 +19,11 @@ function AuthorRoute() {
   useUrlNormalization();
 
   // Extract author ID from URL hash as fallback since splat parameter isn't working
+  // For hash routing with URLs containing slashes (like ORCID, ROR), we need to reconstruct the full ID
   const getAuthorIdFromHash = () => {
     if (typeof window !== 'undefined') {
       const hashParts = window.location.hash.split('/');
-      return hashParts.length >= 3 ? hashParts[2] : '';
+      return hashParts.length >= 3 ? hashParts.slice(2).join('/') : '';
     }
     return '';
   };
