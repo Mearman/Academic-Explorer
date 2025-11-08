@@ -86,6 +86,10 @@
       "import": "./dist/storage/user-interactions-db.js",
       "types": "./dist/storage/user-interactions-db.d.ts"
     },
+    "./storage/catalogue-db": {
+      "import": "./dist/storage/catalogue-db.js",
+      "types": "./dist/storage/catalogue-db.d.ts"
+    },
     "./ui/filter-base": {
       "import": "./dist/ui/filter-base.js",
       "types": "./dist/ui/filter-base.d.ts"
