@@ -172,6 +172,8 @@ export {
 export {
 	catalogueService,
 	catalogueEventEmitter,
+	SPECIAL_LIST_IDS,
+	SPECIAL_LIST_TYPES,
 	type CatalogueList,
 	type CatalogueEntity,
 	type EntityType,

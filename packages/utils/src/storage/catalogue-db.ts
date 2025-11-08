@@ -47,6 +47,17 @@ const LOG_CATEGORY = "catalogue";
 const DB_NAME = "academic-explorer-catalogue";
 const DB_VERSION = 1;
 
+// Special list identifiers
+export const SPECIAL_LIST_IDS = {
+  BOOKMARKS: "bookmarks-list",
+  HISTORY: "history-list",
+} as const;
+
+export const SPECIAL_LIST_TYPES = {
+  BOOKMARKS: "bookmarks" as const,
+  HISTORY: "history" as const,
+} as const;
+
 // Entity types that can be added to lists
 export type EntityType =
   | "works"
@@ -247,35 +258,7 @@ export class CatalogueService {
     }
   }
 
-  /**
-   * Delete a catalogue list and all its entities
-   */
-  async deleteList(listId: string): Promise<void> {
-    try {
-      await this.db.transaction("rw", this.db.catalogueLists, this.db.catalogueEntities, async () => {
-        // Delete the list
-        await this.db.catalogueLists.delete(listId);
-
-        // Delete all entities in the list
-        await this.db.catalogueEntities.where("listId").equals(listId).delete();
-
-        // Delete any share records
-        await this.db.catalogueShares.where("listId").equals(listId).delete();
-      });
-
-      // Emit event for list deletion
-      catalogueEventEmitter.emit({
-        type: 'list-removed',
-        listId,
-      });
-
-      this.logger?.debug(LOG_CATEGORY, "Catalogue list deleted", { listId });
-    } catch (error) {
-      this.logger?.error(LOG_CATEGORY, "Failed to delete catalogue list", { listId, error });
-      throw error;
-    }
-  }
-
+  
   /**
    * Add an entity to a catalogue list
    */
@@ -626,6 +609,226 @@ export class CatalogueService {
           funders: 0,
         },
       };
+    }
+  }
+
+  /**
+   * Initialize special system lists if they don't exist
+   */
+  async initializeSpecialLists(): Promise<void> {
+    try {
+      const bookmarksList = await this.getList(SPECIAL_LIST_IDS.BOOKMARKS);
+      const historyList = await this.getList(SPECIAL_LIST_IDS.HISTORY);
+
+      if (!bookmarksList) {
+        await this.db.catalogueLists.add({
+          id: SPECIAL_LIST_IDS.BOOKMARKS,
+          title: "Bookmarks",
+          description: "System-managed bookmarks list",
+          type: "list",
+          tags: ["system"],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          isPublic: false,
+        });
+        this.logger?.debug(LOG_CATEGORY, "Bookmarks list initialized");
+      }
+
+      if (!historyList) {
+        await this.db.catalogueLists.add({
+          id: SPECIAL_LIST_IDS.HISTORY,
+          title: "History",
+          description: "System-managed browsing history",
+          type: "list",
+          tags: ["system"],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          isPublic: false,
+        });
+        this.logger?.debug(LOG_CATEGORY, "History list initialized");
+      }
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to initialize special lists", { error });
+      throw error;
+    }
+  }
+
+  /**
+   * Check if a list is a special system list
+   */
+  isSpecialList(listId: string): boolean {
+    return Object.values(SPECIAL_LIST_IDS).includes(listId as any);
+  }
+
+  /**
+   * Prevent deletion of special lists
+   */
+  async deleteList(listId: string): Promise<void> {
+    if (this.isSpecialList(listId)) {
+      throw new Error(`Cannot delete special system list: ${listId}`);
+    }
+
+    try {
+      await this.db.transaction("rw", this.db.catalogueLists, this.db.catalogueEntities, async () => {
+        // Delete the list
+        await this.db.catalogueLists.delete(listId);
+
+        // Delete all entities in the list
+        await this.db.catalogueEntities.where("listId").equals(listId).delete();
+
+        // Delete any share records
+        await this.db.catalogueShares.where("listId").equals(listId).delete();
+      });
+
+      // Emit event for list deletion
+      catalogueEventEmitter.emit({
+        type: 'list-removed',
+        listId,
+      });
+
+      this.logger?.debug(LOG_CATEGORY, "Catalogue list deleted", { listId });
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to delete catalogue list", { listId, error });
+      throw error;
+    }
+  }
+
+  /**
+   * Add a bookmark to the special bookmarks list
+   */
+  async addBookmark(params: {
+    entityType: EntityType;
+    entityId: string;
+    url: string;
+    title?: string;
+    notes?: string;
+  }): Promise<string> {
+    await this.initializeSpecialLists();
+
+    // Add to bookmarks list with URL as notes
+    const notesWithUrl = params.notes
+      ? `${params.notes}\n\nURL: ${params.url}`
+      : `URL: ${params.url}`;
+
+    return await this.addEntityToList({
+      listId: SPECIAL_LIST_IDS.BOOKMARKS,
+      entityType: params.entityType,
+      entityId: params.entityId,
+      notes: notesWithUrl,
+    });
+  }
+
+  /**
+   * Remove a bookmark from the special bookmarks list
+   */
+  async removeBookmark(entityRecordId: string): Promise<void> {
+    await this.removeEntityFromList(SPECIAL_LIST_IDS.BOOKMARKS, entityRecordId);
+  }
+
+  /**
+   * Get all bookmarks
+   */
+  async getBookmarks(): Promise<CatalogueEntity[]> {
+    await this.initializeSpecialLists();
+    return await this.getListEntities(SPECIAL_LIST_IDS.BOOKMARKS);
+  }
+
+  /**
+   * Check if an entity is bookmarked
+   */
+  async isBookmarked(entityType: EntityType, entityId: string): Promise<boolean> {
+    try {
+      const existing = await this.db.catalogueEntities
+        .where(["listId", "entityType", "entityId"])
+        .equals([SPECIAL_LIST_IDS.BOOKMARKS, entityType, entityId])
+        .first();
+      return !!existing;
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to check bookmark status", { entityType, entityId, error });
+      return false;
+    }
+  }
+
+  /**
+   * Add a page to the special history list
+   */
+  async addToHistory(params: {
+    entityType: EntityType;
+    entityId: string;
+    url: string;
+    title?: string;
+    timestamp?: Date;
+  }): Promise<string> {
+    await this.initializeSpecialLists();
+
+    // Check if this entity/page already exists in history
+    const existing = await this.db.catalogueEntities
+      .where(["listId", "entityType", "entityId"])
+      .equals([SPECIAL_LIST_IDS.HISTORY, params.entityType, params.entityId])
+      .first();
+
+    if (existing) {
+      // Update existing record with new timestamp
+      await this.db.catalogueEntities.update(existing.id!, {
+        addedAt: params.timestamp || new Date(),
+        notes: `URL: ${params.url}${params.title ? `\nTitle: ${params.title}` : ''}`,
+      });
+
+      // Update list's updated timestamp
+      await this.updateList(SPECIAL_LIST_IDS.HISTORY, {});
+
+      return existing.id!;
+    }
+
+    // Add new history entry
+    const notes = `URL: ${params.url}${params.title ? `\nTitle: ${params.title}` : ''}`;
+
+    return await this.addEntityToList({
+      listId: SPECIAL_LIST_IDS.HISTORY,
+      entityType: params.entityType,
+      entityId: params.entityId,
+      notes,
+    });
+  }
+
+  /**
+   * Get all history entries
+   */
+  async getHistory(): Promise<CatalogueEntity[]> {
+    await this.initializeSpecialLists();
+    return await this.getListEntities(SPECIAL_LIST_IDS.HISTORY);
+  }
+
+  /**
+   * Clear history (remove all entries from history list)
+   */
+  async clearHistory(): Promise<void> {
+    try {
+      await this.db.catalogueEntities.where("listId").equals(SPECIAL_LIST_IDS.HISTORY).delete();
+
+      // Update list's updated timestamp
+      await this.updateList(SPECIAL_LIST_IDS.HISTORY, {});
+
+      this.logger?.debug(LOG_CATEGORY, "History cleared");
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to clear history", { error });
+      throw error;
+    }
+  }
+
+  /**
+   * Get special lists without the system tag
+   */
+  async getNonSystemLists(): Promise<CatalogueList[]> {
+    try {
+      const allLists = await this.getAllLists();
+      return allLists.filter(list =>
+        !this.isSpecialList(list.id!) &&
+        !list.tags?.includes("system")
+      );
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to get non-system lists", { error });
+      return [];
     }
   }
 }
