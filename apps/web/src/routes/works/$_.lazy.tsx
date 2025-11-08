@@ -17,7 +17,8 @@ function WorkRoute() {
   // Fix browser address bar display issues with collapsed protocol slashes
   useUrlNormalization();
 
-  // Extract work ID from URL hash as fallback since splat parameter isn't working
+  // Extract work ID from URL hash - TanStack Router splat parameter doesn't work with
+  // hash routing for URL-encoded external IDs, so we extract directly from hash
   const getWorkIdFromHash = () => {
     if (typeof window !== 'undefined') {
       const hashParts = window.location.hash.split('/');

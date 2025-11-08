@@ -33,14 +33,15 @@ if (typeof window !== "undefined") {
       console.log("Fixed double hash:", { original: currentHash, clean: fixedHash });
     }
 
-    // Check if we need to decode encoded URLs to pretty URLs
+    // Skip URL decoding for external canonical IDs - let TanStack Router handle encoded URLs
+    // This prevents routing interference with encoded external IDs like DOIs, ORCIDs, etc.
     if (!needsUpdate && currentHash.includes("%")) {
-      // Extract entity type and encoded ID from hash
       const hashParts = fixedHash.split("/");
       const entityType = hashParts[1]; // works, authors, institutions, etc.
       const encodedId = hashParts.slice(2).join("/"); // Join the rest with slashes
 
-      if (entityType && encodedId) {
+      // Only decode if this is NOT an external canonical ID URL pattern
+      if (entityType && encodedId && !encodedId.match(/^(https?%3A%2F%2F|orcid%3A|ror%3A|doi%3A)/i)) {
         try {
           const decodedId = decodeURIComponent(encodedId);
 
@@ -64,6 +65,12 @@ if (typeof window !== "undefined") {
           // If decoding fails, continue with normal processing
           console.log("Failed to decode URL:", { error, encodedId });
         }
+      } else if (entityType && encodedId) {
+        console.log("Skipping URL decoding for external canonical ID:", {
+          entityType,
+          encodedId,
+          reason: "External canonical ID - let TanStack Router handle"
+        });
       }
     }
 
