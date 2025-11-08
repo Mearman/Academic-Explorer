@@ -76,6 +76,20 @@ export interface UseUserInteractionsReturn {
   ) => Promise<void>;
   searchBookmarks: (query: string) => Promise<BookmarkRecord[]>;
 
+  // Bulk operations
+  bulkRemoveBookmarks: (bookmarkIds: number[]) => Promise<{ success: number; failed: number }>;
+  bulkUpdateBookmarkTags: (params: {
+    bookmarkIds: number[];
+    addTags?: string[];
+    removeTags?: string[];
+    replaceTags?: string[];
+  }) => Promise<{ success: number; failed: number }>;
+  bulkUpdateBookmarkNotes: (params: {
+    bookmarkIds: number[];
+    notes?: string;
+    action?: "replace" | "append" | "prepend";
+  }) => Promise<{ success: number; failed: number }>;
+
   // Loading states
   isLoadingPageVisits: boolean;
   isLoadingBookmarks: boolean;
@@ -598,6 +612,78 @@ export function useUserInteractions(
     [],
   );
 
+  const bulkRemoveBookmarks = useCallback(
+    async (bookmarkIds: number[]): Promise<{ success: number; failed: number }> => {
+      try {
+        const result = await userInteractionsService.removeBookmarks(bookmarkIds);
+        await refreshData(); // Refresh data after bulk operation
+        return result;
+      } catch (error) {
+        logger.error(
+          USER_INTERACTIONS_LOGGER_CONTEXT,
+          "Failed to bulk remove bookmarks",
+          {
+            bookmarkIds,
+            error,
+          },
+        );
+        throw error;
+      }
+    },
+    [refreshData],
+  );
+
+  const bulkUpdateBookmarkTags = useCallback(
+    async (params: {
+      bookmarkIds: number[];
+      addTags?: string[];
+      removeTags?: string[];
+      replaceTags?: string[];
+    }): Promise<{ success: number; failed: number }> => {
+      try {
+        const result = await userInteractionsService.updateBookmarkTags(params);
+        await refreshData(); // Refresh data after bulk operation
+        return result;
+      } catch (error) {
+        logger.error(
+          USER_INTERACTIONS_LOGGER_CONTEXT,
+          "Failed to bulk update bookmark tags",
+          {
+            params,
+            error,
+          },
+        );
+        throw error;
+      }
+    },
+    [refreshData],
+  );
+
+  const bulkUpdateBookmarkNotes = useCallback(
+    async (params: {
+      bookmarkIds: number[];
+      notes?: string;
+      action?: "replace" | "append" | "prepend";
+    }): Promise<{ success: number; failed: number }> => {
+      try {
+        const result = await userInteractionsService.updateBookmarkNotes(params);
+        await refreshData(); // Refresh data after bulk operation
+        return result;
+      } catch (error) {
+        logger.error(
+          USER_INTERACTIONS_LOGGER_CONTEXT,
+          "Failed to bulk update bookmark notes",
+          {
+            params,
+            error,
+          },
+        );
+        throw error;
+      }
+    },
+    [refreshData],
+  );
+
   return {
     // Page visit tracking
     recordPageVisit,
@@ -616,6 +702,11 @@ export function useUserInteractions(
     unbookmarkList,
     updateBookmark,
     searchBookmarks,
+
+    // Bulk operations
+    bulkRemoveBookmarks,
+    bulkUpdateBookmarkTags,
+    bulkUpdateBookmarkNotes,
 
     // Loading states
     isLoadingPageVisits,
