@@ -1,3 +1,16 @@
+# [12.2.0](https://github.com/Mearman/Academic-Explorer/compare/v12.1.2...v12.2.0) (2025-11-08)
+
+
+### Bug Fixes
+
+* **web:** improve external canonical ID routing detection ([be058b3](https://github.com/Mearman/Academic-Explorer/commit/be058b3b2897aecf99fad44f45a085e793c516e2))
+* **web:** resolve external canonical ID routing failures ([ce4e2c6](https://github.com/Mearman/Academic-Explorer/commit/ce4e2c6d6e7b1c44d836afced589e3a24fe4ed14))
+
+
+### Features
+
+* **web:** enhance sidebar functionality with delete operations and styling improvements ([9fe66b4](https://github.com/Mearman/Academic-Explorer/commit/9fe66b4fd8d3417e10be04303b6577998275ba2c))
+
 ## [12.1.2](https://github.com/Mearman/Academic-Explorer/compare/v12.1.1...v12.1.2) (2025-11-08)
 
 
