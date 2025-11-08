@@ -191,6 +191,8 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
       <div className={styles.searchInput}>
         <TextInput
           placeholder="Search bookmarks..."
+          aria-label="Search bookmarks"
+          label="Search bookmarks"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           leftSection={<IconSearch size={14} />}

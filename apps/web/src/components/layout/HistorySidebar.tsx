@@ -180,6 +180,8 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
       <Group gap="xs" className={styles.searchInput}>
         <TextInput
           placeholder="Search history..."
+          aria-label="Search navigation history"
+          label="Search history"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           leftSection={<IconSearch size={14} />}
@@ -194,6 +196,7 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
               size="sm"
               onClick={handleClearHistory}
               className={styles.actionButton}
+              aria-label="Clear all navigation history"
             >
               <IconTrash size={14} />
             </ActionIcon>
@@ -261,6 +264,7 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
                             size="sm"
                             variant="subtle"
                             className={styles.navigationButton}
+                            aria-label={`Navigate to ${entry.route}`}
                             onClick={(e) => {
                               e.stopPropagation();
                               handleNavigate(entry.route);
@@ -275,6 +279,7 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
                             variant="subtle"
                             color="red"
                             className={styles.actionButton}
+                            aria-label={`Delete ${entry.route} from history`}
                             onClick={(e) => {
                               e.stopPropagation();
                               handleDeleteHistoryEntry(entry.route, entry.visitedAt);
