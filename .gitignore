@@ -51,8 +51,16 @@ packages/*/coverage
 # Package build artifacts
 *.tgz
 **/dist/
-**/lib/
 **/build/
+# Ignore lib directories in node_modules or package root, but allow src/lib
+node_modules/**/lib/
+/lib/
+# Allow source lib directories
+!src/lib/
+!apps/*/src/lib/
+!packages/*/src/lib/
+# But ignore compiled lib in tools
+tools/dist/**/lib/
 
 # TypeScript compiled outputs (anywhere in project)
 **/*.js
