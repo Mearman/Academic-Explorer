@@ -63,7 +63,7 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
     }
   };
 
-  const handleDeleteBookmark = (bookmarkId: string, bookmarkTitle: string) => {
+  const handleDeleteBookmark = (bookmarkId: number, bookmarkTitle: string) => {
     modals.openConfirmModal({
       title: "Delete Bookmark",
       centered: true,
@@ -155,7 +155,7 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
           <Stack gap="xs">
             {filteredBookmarks.map((bookmark) => (
               <Card
-                key={bookmark.id}
+                key={bookmark.id || bookmark.request.cacheKey}
                 withBorder
                 padding="xs"
                 shadow="none"
@@ -209,20 +209,24 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
                         <IconExternalLink size={12} />
                       </ActionIcon>
                     </Tooltip>
-                    <Tooltip label="Delete bookmark">
-                      <ActionIcon
-                        size="sm"
-                        variant="subtle"
-                        color="red"
-                        className={styles.actionButton}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteBookmark(bookmark.id, bookmark.title);
-                        }}
-                      >
-                        <IconTrash size={12} />
-                      </ActionIcon>
-                    </Tooltip>
+                    {bookmark.id && (
+                      <Tooltip label="Delete bookmark">
+                        <ActionIcon
+                          size="sm"
+                          variant="subtle"
+                          color="red"
+                          className={styles.actionButton}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (bookmark.id !== undefined) {
+                              handleDeleteBookmark(bookmark.id, bookmark.title);
+                            }
+                          }}
+                        >
+                          <IconTrash size={12} />
+                        </ActionIcon>
+                      </Tooltip>
+                    )}
                   </Group>
                 </Group>
               </Card>

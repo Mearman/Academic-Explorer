@@ -85,6 +85,15 @@ export const Route = createRootRoute({
       const currentHash = window.location.hash || "";
       const hashPath = currentHash.split("?")[0];
 
+      logger.debug("routing", "URL normalization check - starting", {
+        pathname,
+        href,
+        currentHash,
+        hashPath,
+        hasEncodedChars: currentHash.includes("%"),
+        location: window.location
+      });
+
       // First, check if we need to decode encoded URLs to pretty URLs
       if (currentHash.includes("%")) {
         logger.debug("routing", "Found encoded URL, attempting decode", { currentHash });
@@ -94,7 +103,14 @@ export const Route = createRootRoute({
         const entityType = hashParts[1]; // works, authors, institutions, etc.
         const encodedId = hashParts.slice(2).join("/"); // Join the rest with slashes
 
-        logger.debug("routing", "Parsed hash components", { hashParts, entityType, encodedId });
+        logger.debug("routing", "Parsed hash components", {
+          currentHash,
+          hashPath,
+          hashParts,
+          entityType,
+          encodedId,
+          hashPartsLength: hashParts.length
+        });
 
         if (entityType && encodedId) {
           try {
@@ -108,7 +124,13 @@ export const Route = createRootRoute({
             });
 
             // Only update if the decoded version is different (contains unencoded characters)
-            if (decodedId !== encodedId && (decodedId.includes("://") || decodedId.includes(":/"))) {
+            if (decodedId !== encodedId && (decodedId.includes("://") || decodedId.includes(":/") || decodedId.includes("doi.org/") || decodedId.includes("orcid.org/") || decodedId.includes("ror.org/"))) {
+              // Log the redirect for debugging
+              logger.debug("routing", "Executing external canonical ID redirect", {
+                currentHash,
+                encodedId,
+                decodedId,
+              });
               // Extract query params from CURRENT hash, not from old href
               const hashQueryParams = currentHash.includes("?")
                 ? "?" + currentHash.split("?").slice(1).join("?")
@@ -124,8 +146,10 @@ export const Route = createRootRoute({
                 hashQueryParams
               });
 
-              // Use TanStack Router's redirect for proper navigation
-              throw redirect({ to: prettyHash });
+              // Use window.location.replace for hash-based routing
+              window.location.replace(`#${prettyHash}`);
+              // Throw to stop route processing
+              throw new Error("Redirecting to decoded URL");
             } else {
               logger.debug("routing", "Skipping URL conversion - conditions not met", {
                 decodedId,
