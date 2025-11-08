@@ -13,7 +13,7 @@ import {
   IconX,
   IconTrash,
 } from "@tabler/icons-react";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import {
   TextInput,
   Button,
@@ -37,26 +37,12 @@ interface BookmarksSidebarProps {
 }
 
 export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
-  const [hasError, setHasError] = useState(false);
-  const errorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Wrap data loading in error boundary with timeout
+  // Simplified data loading without timeout fallback
   const safeUseUserInteractions = () => {
     try {
-      const result = useUserInteractions();
-
-      // Set a timeout to detect if data loading is taking too long
-      errorTimeoutRef.current = setTimeout(() => {
-        if (result.isLoadingBookmarks) {
-          console.warn('BookmarksSidebar: Data loading taking too long, using fallback');
-          setHasError(true);
-        }
-      }, 8000); // 8 second timeout for fallback
-
-      return result;
+      return useUserInteractions();
     } catch (error) {
       console.error('BookmarksSidebar: Error in useUserInteractions', error);
-      setHasError(true);
       // Return fallback values
       return {
         bookmarks: [],
@@ -81,27 +67,6 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
   const { bookmarks, isLoadingBookmarks, refreshData } = safeUseUserInteractions();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-
-  // Clear timeout when component unmounts or loading completes
-  useEffect(() => {
-    return () => {
-      if (errorTimeoutRef.current) {
-        clearTimeout(errorTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  // Clear timeout when loading completes
-  useEffect(() => {
-    if (!isLoadingBookmarks && errorTimeoutRef.current) {
-      clearTimeout(errorTimeoutRef.current);
-    }
-  }, [isLoadingBookmarks]);
-
-  // Use fallback component if there's an error
-  if (hasError) {
-    return <SidebarFallback title="Bookmarks" type="bookmarks" onClose={onClose} />;
-  }
 
   const filteredBookmarks = searchQuery
     ? bookmarks.filter(
