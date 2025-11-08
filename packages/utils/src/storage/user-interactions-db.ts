@@ -48,6 +48,7 @@ const _SEARCH_ENDPOINT = "/search"
 
 // Database schema version constants
 const DB_VERSION_UNIFIED_REQUEST_SCHEMA = 3
+const DB_VERSION_API_URL_SCHEMA = 4
 
 // Database schema interfaces
 
@@ -70,14 +71,20 @@ export interface BookmarkRecord {
  * This matches the structure from @academic-explorer/client
  */
 export interface StoredNormalizedRequest {
-	/** Cache key for lookups */
+	/** Cache key for lookups - now stores full API URL */
 	cacheKey: string
 	/** Request hash for deduplication */
 	hash: string
-	/** Original endpoint */
+	/** Original endpoint - kept for backward compatibility */
 	endpoint: string
+	/** Internal endpoint for app navigation */
+	internalEndpoint: string
 	/** Normalized params as JSON string (for storage) */
 	params: string
+	/** Full API URL for external references */
+	apiUrl?: string
+	/** Internal navigation path */
+	internalPath?: string
 }
 
 export interface PageVisitRecord {
@@ -117,6 +124,38 @@ class UserInteractionsDB extends Dexie {
 			bookmarks: "++id, request.cacheKey, request.hash, request.endpoint, timestamp, *tags",
 			pageVisits: "++id, request.cacheKey, request.hash, request.endpoint, timestamp, cached",
 		})
+
+		// V4: API URL-based schema
+		this.version(DB_VERSION_API_URL_SCHEMA).stores({
+			bookmarks: "++id, request.cacheKey, request.hash, request.internalEndpoint, request.apiUrl, timestamp, *tags",
+			pageVisits: "++id, request.cacheKey, request.hash, request.internalEndpoint, timestamp, cached",
+		}).upgrade(tx => {
+			// Migration from V3 to V4: Convert internal paths to API URLs
+			return tx.table("bookmarks").toCollection().modify(bookmark => {
+				const { cacheKey, endpoint } = bookmark.request;
+
+				// Convert internal cacheKey to API URL
+				let apiUrl = cacheKey;
+				if (cacheKey.startsWith('/')) {
+					// Convert internal path to API URL
+					if (cacheKey.includes('?')) {
+						const [path, query] = cacheKey.split('?');
+						apiUrl = `https://api.openalex.org${path}?${query}`;
+					} else {
+						apiUrl = `https://api.openalex.org${cacheKey}`;
+					}
+				}
+
+				// Update bookmark with new structure
+				bookmark.request = {
+					...bookmark.request,
+					cacheKey: apiUrl, // Now stores API URL
+					internalEndpoint: endpoint, // Use old endpoint as internal endpoint
+					apiUrl, // Full API URL
+					internalPath: cacheKey, // Preserve original internal path
+				};
+			});
+		})
 	}
 }
 
@@ -126,6 +165,80 @@ let dbInstance: UserInteractionsDB | null = null
 const getDB = (): UserInteractionsDB => {
 	dbInstance ??= new UserInteractionsDB()
 	return dbInstance
+}
+
+/**
+ * Convert internal path to API URL
+ * @param internalPath - Internal application path (e.g., "/authors/A5017898742")
+ * @returns Full API URL (e.g., "https://api.openalex.org/authors/A5017898742")
+ */
+export function internalPathToApiUrl(internalPath: string): string {
+	if (internalPath.startsWith('https://api.openalex.org')) {
+		return internalPath // Already an API URL
+	}
+
+	if (internalPath.startsWith('/')) {
+		return `https://api.openalex.org${internalPath}`
+	}
+
+	return `https://api.openalex.org/${internalPath}`
+}
+
+/**
+ * Convert API URL to internal path
+ * @param apiUrl - Full API URL (e.g., "https://api.openalex.org/authors/A5017898742")
+ * @returns Internal application path (e.g., "/authors/A5017898742")
+ */
+export function apiUrlToInternalPath(apiUrl: string): string {
+	if (apiUrl.startsWith('https://api.openalex.org')) {
+		return apiUrl.replace('https://api.openalex.org', '')
+	}
+
+	return apiUrl
+}
+
+/**
+ * Create a StoredNormalizedRequest with API URL support
+ * @param internalPath - Internal application path
+ * @param params - Request parameters
+ * @param hash - Request hash for deduplication
+ * @returns StoredNormalizedRequest with API URL fields populated
+ */
+export function createApiUrlRequest(
+	internalPath: string,
+	params: Record<string, any>,
+	hash: string
+): StoredNormalizedRequest {
+	const apiUrl = internalPathToApiUrl(internalPath)
+
+	// Add query parameters to API URL if present
+	let fullApiUrl = apiUrl
+	if (Object.keys(params).length > 0) {
+		const searchParams = new URLSearchParams()
+		Object.entries(params).forEach(([key, value]) => {
+			if (value !== undefined && value !== null) {
+				searchParams.append(key, String(value))
+			}
+		})
+		const queryString = searchParams.toString()
+		if (queryString && !apiUrl.includes('?')) {
+			fullApiUrl += `?${queryString}`
+		} else if (queryString) {
+			fullApiUrl += `&${queryString}`
+		}
+	}
+
+	const endpoint = internalPath.split('/')[1] || ''
+
+	return {
+		cacheKey: fullApiUrl, // Store API URL as primary key
+		hash,
+		endpoint, // Include endpoint for backward compatibility
+		internalEndpoint: internalPath,
+		params: JSON.stringify(params),
+		apiUrl: fullApiUrl,
+		internalPath,
+	}
 }
 
 /**
@@ -148,12 +261,7 @@ export class UserInteractionsService {
 		request,
 		metadata,
 	}: {
-		request: {
-			cacheKey: string
-			hash: string
-			endpoint: string
-			params: Record<string, unknown>
-		}
+		request: StoredNormalizedRequest
 		metadata?: {
 			sessionId?: string
 			referrer?: string
@@ -165,10 +273,8 @@ export class UserInteractionsService {
 		try {
 			const pageVisit: PageVisitRecord = {
 				request: {
-					cacheKey: request.cacheKey,
-					hash: request.hash,
-					endpoint: request.endpoint,
-					params: JSON.stringify(request.params),
+					...request,
+					params: typeof request.params === 'string' ? request.params : JSON.stringify(request.params),
 				},
 				timestamp: new Date(),
 				sessionId: metadata?.sessionId,
@@ -286,12 +392,7 @@ export class UserInteractionsService {
 		notes,
 		tags,
 	}: {
-		request: {
-			cacheKey: string
-			hash: string
-			endpoint: string
-			params: Record<string, unknown>
-		}
+		request: StoredNormalizedRequest
 		title: string
 		notes?: string
 		tags?: string[]
@@ -299,10 +400,8 @@ export class UserInteractionsService {
 		try {
 			const bookmark: BookmarkRecord = {
 				request: {
-					cacheKey: request.cacheKey,
-					hash: request.hash,
-					endpoint: request.endpoint,
-					params: JSON.stringify(request.params),
+					...request,
+					params: typeof request.params === 'string' ? request.params : JSON.stringify(request.params),
 				},
 				title,
 				notes,
@@ -510,12 +609,11 @@ export class UserInteractionsService {
 		notes?: string,
 		tags?: string[]
 	): Promise<number> {
-		const request = {
-			cacheKey: url,
-			hash: url.slice(0, 16),
-			endpoint: url,
-			params: {},
-		}
+		const request = createApiUrlRequest(
+			url,
+			{},
+			url.slice(0, 16)
+		)
 
 		return this.addBookmark({
 			request,
@@ -557,12 +655,11 @@ export class UserInteractionsService {
 			bytesSaved?: number
 		}
 	}): Promise<void> {
-		const request = {
+		const request = createApiUrlRequest(
 			cacheKey,
-			hash: cacheKey.slice(0, 16),
-			endpoint: cacheKey,
-			params: {},
-		}
+			{},
+			cacheKey.slice(0, 16)
+		)
 
 		return this.recordPageVisit({ request, metadata })
 	}

@@ -84,6 +84,10 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
     // Handle hash-based navigation for internal routes
     if (url.startsWith("/")) {
       navigate({ to: url });
+    } else if (url.startsWith("https://api.openalex.org")) {
+      // Convert API URL to internal path for navigation
+      const internalPath = url.replace("https://api.openalex.org", "");
+      navigate({ to: internalPath });
     } else {
       window.location.href = url;
     }

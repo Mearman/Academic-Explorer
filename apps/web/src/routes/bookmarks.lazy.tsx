@@ -16,6 +16,10 @@ function BookmarksPage() {
               // For hash-based routing, directly update the hash
               // This is more reliable than using TanStack Router's navigate in this context
               window.location.hash = url;
+            } else if (url.startsWith("https://api.openalex.org")) {
+              // Convert API URL to internal path for navigation
+              const internalPath = url.replace("https://api.openalex.org", "");
+              window.location.hash = internalPath;
             } else {
               // Use window.location for external URLs
               window.location.href = url;

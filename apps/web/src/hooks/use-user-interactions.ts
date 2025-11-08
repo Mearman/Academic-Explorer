@@ -7,8 +7,10 @@ import { useLocation } from "@tanstack/react-router";
 import {
   userInteractionsService,
   bookmarkEventEmitter,
+  createApiUrlRequest,
   type BookmarkRecord,
   type PageVisitRecord,
+  type StoredNormalizedRequest,
 } from "@academic-explorer/utils/storage/user-interactions-db";
 import { logger } from "@academic-explorer/utils/logger";
 
@@ -362,12 +364,12 @@ export function useUserInteractions(
       }
 
       try {
-        const request = {
-          cacheKey: `/${entityType}/${entityId}`,
-          hash: `entity-${entityType}-${entityId}`.slice(0, 16),
-          endpoint: `/${entityType}`,
-          params: { id: entityId },
-        };
+        const internalPath = `/${entityType}/${entityId}`
+        const request = createApiUrlRequest(
+          internalPath,
+          { id: entityId },
+          `entity-${entityType}-${entityId}`.slice(0, 16)
+        );
 
         await userInteractionsService.addBookmark({
           request,
@@ -450,12 +452,17 @@ export function useUserInteractions(
           Object.assign(params, filters);
         }
 
-        const request = {
-          cacheKey: `/search?q=${searchQuery}`,
-          hash: `search-${searchQuery}`.slice(0, 16),
-          endpoint: "/search",
+        // Convert search to API URL format
+        let internalPath = "/search"
+        if (searchQuery) {
+          internalPath += `?search=${encodeURIComponent(searchQuery)}`
+        }
+
+        const request = createApiUrlRequest(
+          internalPath,
           params,
-        };
+          `search-${searchQuery}`.slice(0, 16)
+        );
 
         await userInteractionsService.addBookmark({
           request,

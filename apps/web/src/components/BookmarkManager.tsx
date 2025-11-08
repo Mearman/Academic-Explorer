@@ -249,6 +249,10 @@ function BookmarkManagerInner({ onNavigate }: BookmarkManagerProps) {
       // Fallback if no onNavigate prop provided
       if (url.startsWith("/")) {
         window.location.hash = url;
+      } else if (url.startsWith("https://api.openalex.org")) {
+        // Convert API URL to internal path for navigation
+        const internalPath = url.replace("https://api.openalex.org", "");
+        window.location.hash = internalPath;
       } else {
         window.location.href = url;
       }
