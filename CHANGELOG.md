@@ -1,3 +1,10 @@
+## [12.1.1](https://github.com/Mearman/Academic-Explorer/compare/v12.1.0...v12.1.1) (2025-11-08)
+
+
+### Bug Fixes
+
+* **web:** optimize sidebar E2E tests to prevent CI timeouts ([78ca725](https://github.com/Mearman/Academic-Explorer/commit/78ca7254a7845671e741ab9b818c4999beaff058))
+
 # [12.1.0](https://github.com/Mearman/Academic-Explorer/compare/v12.0.13...v12.1.0) (2025-11-08)
 
 
