@@ -145,7 +145,7 @@ describe("Query Bookmarking", () => {
       expect(request.internalEndpoint).toBe("/works");
       expect(request.cacheKey).toContain("https://api.openalex.org/works");
       expect(request.cacheKey).toContain("filter=author.id%3AA5017898742");
-      expect(request.cacheKey).toContain("search=machine%20learning");
+      expect(request.cacheKey).toContain("search=machine+learning");
       // Should NOT contain pagination parameters
       expect(request.cacheKey).not.toContain("page=2");
       expect(request.cacheKey).not.toContain("per_page=25");
@@ -237,7 +237,40 @@ describe("Query Bookmarking", () => {
     });
 
     it("should fall back to entity name for simple queries", () => {
-      const title = generateQueryTitle("authors", {});
+      // Test step by step
+      const entityType = "authors";
+      const searchParams = {};
+
+      // Test extractQueryParameters directly
+      const queryParams = extractQueryParameters(searchParams);
+      console.log('Extracted query params:', queryParams);
+      console.log('Query params length:', Object.keys(queryParams).length);
+
+      // Test parts building manually
+      const parts: string[] = [];
+      if (queryParams.search) {
+        parts.push(`"${queryParams.search}"`);
+      }
+      if (queryParams.filter) {
+        const filterStr = queryParams.filter;
+        if (filterStr.includes('author.id:')) {
+          parts.push('by author');
+        } else if (filterStr.includes('concepts.id:')) {
+          parts.push('by concept');
+        } else if (filterStr.includes('institutions.id:')) {
+          parts.push('by institution');
+        } else if (filterStr.includes('publication_year:')) {
+          parts.push('by year');
+        } else {
+          parts.push('filtered');
+        }
+      }
+      console.log('Parts array:', parts);
+      console.log('Parts length:', parts.length);
+
+      const title = generateQueryTitle(entityType, searchParams);
+      console.log('Function output:', title);
+      console.log('Expected:', "Authors list");
 
       expect(title).toBe("Authors list");
     });

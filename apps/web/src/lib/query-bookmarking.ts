@@ -214,14 +214,20 @@ export function generateQueryTitle(
     parts.push(`grouped by ${queryParams.group_by}`);
   }
 
-  
   // If there are no characteristics, return entity type + "list"
   if (parts.length === 0) {
     return `${entityTypeName} list`;
   }
 
   // Otherwise, prepend entity type and join
-  return [entityTypeName, ...parts].join(' ');
+  const result = [entityTypeName, ...parts].join(' ');
+
+  // Fallback: if result somehow ends up as just the entity name, add " list"
+  if (result === entityTypeName) {
+    return `${entityTypeName} list`;
+  }
+
+  return result;
 }
 
 /**
