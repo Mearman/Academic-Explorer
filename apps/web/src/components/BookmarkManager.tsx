@@ -147,9 +147,7 @@ function BookmarkManagerInner({ onNavigate }: BookmarkManagerProps) {
   const {
     bookmarks,
     isLoadingBookmarks,
-    bulkRemoveBookmarks,
-    bulkUpdateBookmarkTags,
-    bulkUpdateBookmarkNotes
+    bulkRemoveBookmarks
   } = useUserInteractions();
   const [searchQuery, setSearchQuery] = useState("");
 
