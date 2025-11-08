@@ -43,6 +43,7 @@ import {
 } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 import { convertOpenAlexToInternalLink, isOpenAlexId } from "@/utils/openalex-link-conversion";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 interface EntityDataDisplayProps {
   data: Record<string, unknown>;
@@ -52,7 +53,7 @@ interface EntityDataDisplayProps {
 /**
  * Recursively renders data in a structured format
  */
-function renderValue(value: unknown, depth: number = 0): React.ReactNode {
+function renderValue(value: unknown, depth: number = 0, colors?: any): React.ReactNode {
   // Handle null/undefined
   if (value === null || value === undefined) {
     return <Text c="dimmed" fs="italic" size="sm">null</Text>;
@@ -166,7 +167,7 @@ function renderValue(value: unknown, depth: number = 0): React.ReactNode {
               color="gray"
               size="sm"
             >
-              {renderValue(item, depth)}
+              {renderValue(item, depth, colors)}
             </Badge>
           ))}
         </Flex>
@@ -177,7 +178,7 @@ function renderValue(value: unknown, depth: number = 0): React.ReactNode {
     return (
       <Stack gap="md" mt="xs">
         {value.map((item, index) => (
-          <Card key={index} withBorder p="md" bg="gray.0">
+          <Card key={index} withBorder p="md" bg={colors.background.primary}>
             <Group gap="sm">
               <Badge
                 circle
@@ -187,7 +188,7 @@ function renderValue(value: unknown, depth: number = 0): React.ReactNode {
                 {index + 1}
               </Badge>
               <Box miw={0} style={{ flex: 1 }}>
-                {renderValue(item, depth + 1)}
+                {renderValue(item, depth + 1, colors)}
               </Box>
             </Group>
           </Card>
@@ -216,7 +217,7 @@ function renderValue(value: unknown, depth: number = 0): React.ReactNode {
                 </Text>
               </TableTd>
               <TableTd>
-                {renderValue(val, depth + 1)}
+                {renderValue(val, depth + 1, colors)}
               </TableTd>
             </TableTr>
           ))}
@@ -290,6 +291,7 @@ const sectionIcons: Record<string, React.ReactNode> = {
 };
 
 export function EntityDataDisplay({ data, title }: EntityDataDisplayProps) {
+  const { colors } = useThemeColors();
   const groups = groupFields(data);
 
   return (
@@ -305,8 +307,8 @@ export function EntityDataDisplay({ data, title }: EntityDataDisplayProps) {
           <Card key={groupName} withBorder shadow="sm">
             <CardSection
               p="md"
-              bg="gray.0"
-              style={{ borderBottom: "1px solid var(--mantine-color-gray-3)" }}
+              bg={colors.background.primary}
+              style={{ borderBottom: `1px solid ${colors.border.secondary}` }}
             >
               <Group gap="sm" justify="space-between">
                 <Group gap="sm">
@@ -330,13 +332,13 @@ export function EntityDataDisplay({ data, title }: EntityDataDisplayProps) {
             <CardSection p="lg">
               <Stack gap="md">
                 {Object.entries(groupData).map(([key, value]) => (
-                  <Card key={key} withBorder p="md" bg="gray.0">
+                  <Card key={key} withBorder p="md" bg={colors.background.primary}>
                     <Stack gap="xs">
                       <Text size="md" fw={600} c="blue.6">
                         {key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
                       </Text>
                       <Box ml="xs" mt={2}>
-                        {renderValue(value)}
+                        {renderValue(value, 0, colors)}
                       </Box>
                     </Stack>
                   </Card>
