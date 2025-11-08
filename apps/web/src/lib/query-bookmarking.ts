@@ -182,8 +182,8 @@ export function generateQueryTitle(
   const queryParams = extractQueryParameters(searchParams);
   const parts: string[] = [];
 
-  // Entity type
-  parts.push(entityType.charAt(0).toUpperCase() + entityType.slice(1));
+  // Entity type (capitalized)
+  const entityTypeName = entityType.charAt(0).toUpperCase() + entityType.slice(1);
 
   // Add key query characteristics
   if (queryParams.search) {
@@ -214,7 +214,14 @@ export function generateQueryTitle(
     parts.push(`grouped by ${queryParams.group_by}`);
   }
 
-  return parts.join(' ') || `${entityType} list`;
+  
+  // If there are no characteristics, return entity type + "list"
+  if (parts.length === 0) {
+    return `${entityTypeName} list`;
+  }
+
+  // Otherwise, prepend entity type and join
+  return [entityTypeName, ...parts].join(' ');
 }
 
 /**

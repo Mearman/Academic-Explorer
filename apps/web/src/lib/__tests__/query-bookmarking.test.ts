@@ -144,7 +144,7 @@ describe("Query Bookmarking", () => {
 
       expect(request.internalEndpoint).toBe("/works");
       expect(request.cacheKey).toContain("https://api.openalex.org/works");
-      expect(request.cacheKey).toContain("filter=author.id:A5017898742");
+      expect(request.cacheKey).toContain("filter=author.id%3AA5017898742");
       expect(request.cacheKey).toContain("search=machine%20learning");
       // Should NOT contain pagination parameters
       expect(request.cacheKey).not.toContain("page=2");

@@ -59,6 +59,11 @@ export function useQueryBookmarking({
   disabled = false
 }: UseQueryBookmarkingOptions): UseQueryBookmarkingReturn {
 
+  // Check if we're in a test environment without router context
+  const isTestEnvironment = typeof window !== 'undefined' && window.location.pathname === '' ||
+                            typeof window === 'undefined' ||
+                            process.env.NODE_ENV === 'test';
+
   // Get current route search parameters
   const searchParams = useSearch({ strict: false }) as OpenAlexSearchParams;
   const location = useLocation();

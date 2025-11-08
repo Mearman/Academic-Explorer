@@ -26,6 +26,7 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
     ...actual,
     useParams: vi.fn(),
     useSearch: vi.fn(),
+    useLocation: vi.fn().mockReturnValue({ pathname: '/entities/W123', search: '' }),
     Link: ({ children, ...props }: any) => <a {...props}>{children}</a>,
   };
 });
