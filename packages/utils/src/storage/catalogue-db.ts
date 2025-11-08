@@ -1,0 +1,634 @@
+/**
+ * Catalogue database for lists and bibliographies
+ * Extends user interactions with specialized list management
+ */
+
+import Dexie from "dexie";
+import { logger } from "../logger.js";
+import type { GenericLogger } from "../logger.js";
+
+// Event system for catalogue changes
+type CatalogueEventListener = (event: {
+  type: 'list-added' | 'list-removed' | 'list-updated' | 'entity-added' | 'entity-removed';
+  listId?: string;
+  entityIds?: string[];
+  list?: CatalogueList;
+}) => void;
+
+class CatalogueEventEmitter {
+  private listeners: CatalogueEventListener[] = [];
+
+  subscribe(listener: CatalogueEventListener) {
+    this.listeners.push(listener);
+    return () => {
+      const index = this.listeners.indexOf(listener);
+      if (index > -1) {
+        this.listeners.splice(index, 1);
+      }
+    };
+  }
+
+  emit(event: Parameters<CatalogueEventListener>[0]) {
+    this.listeners.forEach(listener => {
+      try {
+        listener(event);
+      } catch (error) {
+        console.error('Error in catalogue event listener:', error);
+      }
+    });
+  }
+}
+
+// Global event emitter for catalogue changes
+export const catalogueEventEmitter = new CatalogueEventEmitter();
+
+// Constants
+const LOG_CATEGORY = "catalogue";
+const DB_NAME = "academic-explorer-catalogue";
+const DB_VERSION = 1;
+
+// Entity types that can be added to lists
+export type EntityType =
+  | "works"
+  | "authors"
+  | "sources"
+  | "institutions"
+  | "topics"
+  | "publishers"
+  | "funders";
+
+// List types
+export type ListType = "list" | "bibliography";
+
+// Database interfaces
+export interface CatalogueList {
+  id?: string;
+  /** List title */
+  title: string;
+  /** Optional description */
+  description?: string;
+  /** List type: general list or works-only bibliography */
+  type: ListType;
+  /** User-defined tags for organization */
+  tags?: string[];
+  /** When the list was created */
+  createdAt: Date;
+  /** When the list was last modified */
+  updatedAt: Date;
+  /** Whether this list is publicly shareable */
+  isPublic: boolean;
+  /** Optional share token for public access */
+  shareToken?: string;
+}
+
+export interface CatalogueEntity {
+  id?: string;
+  /** List this entity belongs to */
+  listId: string;
+  /** Entity type (works, authors, etc.) */
+  entityType: EntityType;
+  /** OpenAlex entity ID */
+  entityId: string;
+  /** When entity was added to list */
+  addedAt: Date;
+  /** Optional notes for this specific entity in the list */
+  notes?: string;
+  /** Order position within the list */
+  position: number;
+}
+
+export interface CatalogueShareRecord {
+  id?: string;
+  /** List ID this share belongs to */
+  listId: string;
+  /** Unique share token */
+  shareToken: string;
+  /** When share was created */
+  createdAt: Date;
+  /** When share expires (optional) */
+  expiresAt?: Date;
+  /** How many times this share was accessed */
+  accessCount: number;
+  /** Last access timestamp */
+  lastAccessedAt?: Date;
+}
+
+// Dexie database class
+class CatalogueDB extends Dexie {
+  catalogueLists!: Dexie.Table<CatalogueList, string>;
+  catalogueEntities!: Dexie.Table<CatalogueEntity, string>;
+  catalogueShares!: Dexie.Table<CatalogueShareRecord, string>;
+
+  constructor() {
+    super(DB_NAME);
+
+    this.version(DB_VERSION).stores({
+      catalogueLists: "id, title, type, createdAt, updatedAt, isPublic, shareToken, *tags",
+      catalogueEntities: "id, listId, entityType, entityId, addedAt, position",
+      catalogueShares: "id, listId, shareToken, createdAt, expiresAt",
+    });
+  }
+}
+
+// Singleton instance
+let dbInstance: CatalogueDB | null = null;
+
+const getDB = (): CatalogueDB => {
+  dbInstance ??= new CatalogueDB();
+  return dbInstance;
+};
+
+/**
+ * Service for managing catalogue lists and entities
+ */
+export class CatalogueService {
+  private db: CatalogueDB;
+  private logger?: GenericLogger;
+
+  constructor(logger?: GenericLogger) {
+    this.db = getDB();
+    this.logger = logger;
+  }
+
+  /**
+   * Create a new catalogue list
+   */
+  async createList(params: {
+    title: string;
+    description?: string;
+    type: ListType;
+    tags?: string[];
+    isPublic?: boolean;
+  }): Promise<string> {
+    try {
+      const id = crypto.randomUUID();
+      const list: CatalogueList = {
+        id,
+        title: params.title,
+        description: params.description,
+        type: params.type,
+        tags: params.tags,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        isPublic: params.isPublic ?? false,
+      };
+
+      await this.db.catalogueLists.add(list);
+
+      // Emit event for list creation
+      catalogueEventEmitter.emit({
+        type: 'list-added',
+        listId: id,
+        list,
+      });
+
+      this.logger?.debug(LOG_CATEGORY, "Catalogue list created", { id, title: params.title, type: params.type });
+
+      return id;
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to create catalogue list", {
+        title: params.title,
+        type: params.type,
+        error,
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Get all catalogue lists
+   */
+  async getAllLists(): Promise<CatalogueList[]> {
+    try {
+      return await this.db.catalogueLists.orderBy("updatedAt").reverse().toArray();
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to get all catalogue lists", { error });
+      return [];
+    }
+  }
+
+  /**
+   * Get a specific catalogue list by ID
+   */
+  async getList(listId: string): Promise<CatalogueList | null> {
+    try {
+      const result = await this.db.catalogueLists.get(listId);
+      return result ?? null;
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to get catalogue list", { listId, error });
+      return null;
+    }
+  }
+
+  /**
+   * Update a catalogue list
+   */
+  async updateList(listId: string, updates: Partial<Pick<CatalogueList,
+    "title" | "description" | "tags" | "isPublic"
+  >>): Promise<void> {
+    try {
+      const updateData = {
+        ...updates,
+        updatedAt: new Date(),
+      };
+
+      await this.db.catalogueLists.update(listId, updateData);
+
+      // Emit event for list update
+      catalogueEventEmitter.emit({
+        type: 'list-updated',
+        listId,
+      });
+
+      this.logger?.debug(LOG_CATEGORY, "Catalogue list updated", { listId, updates });
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to update catalogue list", { listId, updates, error });
+      throw error;
+    }
+  }
+
+  /**
+   * Delete a catalogue list and all its entities
+   */
+  async deleteList(listId: string): Promise<void> {
+    try {
+      await this.db.transaction("rw", this.db.catalogueLists, this.db.catalogueEntities, async () => {
+        // Delete the list
+        await this.db.catalogueLists.delete(listId);
+
+        // Delete all entities in the list
+        await this.db.catalogueEntities.where("listId").equals(listId).delete();
+
+        // Delete any share records
+        await this.db.catalogueShares.where("listId").equals(listId).delete();
+      });
+
+      // Emit event for list deletion
+      catalogueEventEmitter.emit({
+        type: 'list-removed',
+        listId,
+      });
+
+      this.logger?.debug(LOG_CATEGORY, "Catalogue list deleted", { listId });
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to delete catalogue list", { listId, error });
+      throw error;
+    }
+  }
+
+  /**
+   * Add an entity to a catalogue list
+   */
+  async addEntityToList(params: {
+    listId: string;
+    entityType: EntityType;
+    entityId: string;
+    notes?: string;
+    position?: number;
+  }): Promise<string> {
+    try {
+      // Validate that the entity type matches the list type
+      const list = await this.getList(params.listId);
+      if (!list) {
+        throw new Error("List not found");
+      }
+
+      if (list.type === "bibliography" && params.entityType !== "works") {
+        throw new Error("Bibliographies can only contain works");
+      }
+
+      // Check if entity already exists in list
+      const existing = await this.db.catalogueEntities
+        .where(["listId", "entityType", "entityId"])
+        .equals([params.listId, params.entityType, params.entityId])
+        .first();
+
+      if (existing) {
+        throw new Error("Entity already exists in list");
+      }
+
+      // Get next position if not specified
+      let position = params.position;
+      if (position === undefined) {
+        const entities = await this.db.catalogueEntities
+          .where("listId")
+          .equals(params.listId)
+          .toArray();
+        const maxPosition = entities.reduce((max, entity) => Math.max(max, entity.position), 0);
+        position = maxPosition + 1;
+      }
+
+      const id = crypto.randomUUID();
+      const entity: CatalogueEntity = {
+        id,
+        listId: params.listId,
+        entityType: params.entityType,
+        entityId: params.entityId,
+        addedAt: new Date(),
+        notes: params.notes,
+        position: position ?? 0,
+      };
+
+      await this.db.catalogueEntities.add(entity);
+
+      // Update list's updated timestamp
+      await this.updateList(params.listId, {});
+
+      // Emit event for entity addition
+      catalogueEventEmitter.emit({
+        type: 'entity-added',
+        listId: params.listId,
+        entityIds: [params.entityId],
+      });
+
+      this.logger?.debug(LOG_CATEGORY, "Entity added to catalogue list", {
+        listId: params.listId,
+        entityType: params.entityType,
+        entityId: params.entityId,
+      });
+
+      return id;
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to add entity to catalogue list", {
+        params,
+        error,
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Remove an entity from a catalogue list
+   */
+  async removeEntityFromList(listId: string, entityRecordId: string): Promise<void> {
+    try {
+      await this.db.catalogueEntities.delete(entityRecordId);
+
+      // Update list's updated timestamp
+      await this.updateList(listId, {});
+
+      // Emit event for entity removal
+      catalogueEventEmitter.emit({
+        type: 'entity-removed',
+        listId,
+      });
+
+      this.logger?.debug(LOG_CATEGORY, "Entity removed from catalogue list", {
+        listId,
+        entityRecordId,
+      });
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to remove entity from catalogue list", {
+        listId,
+        entityRecordId,
+        error,
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Get all entities in a catalogue list
+   */
+  async getListEntities(listId: string): Promise<CatalogueEntity[]> {
+    try {
+      return await this.db.catalogueEntities
+        .where("listId")
+        .equals(listId)
+        .sortBy("position");
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to get catalogue list entities", { listId, error });
+      return [];
+    }
+  }
+
+  /**
+   * Add multiple entities to a catalogue list
+   */
+  async addEntitiesToList(listId: string, entities: Array<{
+    entityType: EntityType;
+    entityId: string;
+    notes?: string;
+  }>): Promise<{ success: number; failed: number }> {
+    let success = 0;
+    let failed = 0;
+
+    try {
+      // Validate list type
+      const list = await this.getList(listId);
+      if (!list) {
+        throw new Error("List not found");
+      }
+
+      // Get next position
+      const entities = await this.db.catalogueEntities
+        .where("listId")
+        .equals(listId)
+        .toArray();
+      const maxPosition = entities.reduce((max, entity) => Math.max(max, entity.position), 0);
+      let nextPosition = maxPosition + 1;
+
+      await this.db.transaction("rw", this.db.catalogueEntities, async () => {
+        for (const entity of entities) {
+          try {
+            // Validate entity type for bibliographies
+            if (list.type === "bibliography" && entity.entityType !== "works") {
+              throw new Error("Bibliographies can only contain works");
+            }
+
+            // Check for duplicates
+            const existing = await this.db.catalogueEntities
+              .where(["listId", "entityType", "entityId"])
+              .equals([listId, entity.entityType, entity.entityId])
+              .first();
+
+            if (existing) {
+              failed++;
+              continue;
+            }
+
+            const id = crypto.randomUUID();
+            const entityRecord: CatalogueEntity = {
+              id,
+              listId,
+              entityType: entity.entityType,
+              entityId: entity.entityId,
+              addedAt: new Date(),
+              notes: entity.notes,
+              position: nextPosition++,
+            };
+
+            await this.db.catalogueEntities.add(entityRecord);
+            success++;
+          } catch (error) {
+            this.logger?.warn(LOG_CATEGORY, "Failed to add entity in bulk operation", {
+              listId,
+              entityType: entity.entityType,
+              entityId: entity.entityId,
+              error,
+            });
+            failed++;
+          }
+        }
+      });
+
+      // Update list's updated timestamp
+      await this.updateList(listId, {});
+
+      // Emit event for bulk entity addition
+      if (success > 0) {
+        catalogueEventEmitter.emit({
+          type: 'entity-added',
+          listId,
+          entityIds: entities.map(e => e.entityId),
+        });
+      }
+
+      this.logger?.debug(LOG_CATEGORY, "Bulk entity addition completed", {
+        listId,
+        totalRequested: entities.length,
+        success,
+        failed,
+      });
+
+      return { success, failed };
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to perform bulk entity addition", {
+        listId,
+        entitiesCount: entities.length,
+        error,
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Search catalogue lists by title, description, or tags
+   */
+  async searchLists(query: string): Promise<CatalogueList[]> {
+    try {
+      const lists = await this.db.catalogueLists.toArray();
+      const lowercaseQuery = query.toLowerCase();
+
+      return lists.filter(
+        (list) =>
+          list.title.toLowerCase().includes(lowercaseQuery) ||
+          Boolean(list.description?.toLowerCase().includes(lowercaseQuery)) ||
+          list.tags?.some((tag) => tag.toLowerCase().includes(lowercaseQuery))
+      );
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to search catalogue lists", { query, error });
+      return [];
+    }
+  }
+
+  /**
+   * Generate a share token for a list
+   */
+  async generateShareToken(listId: string): Promise<string> {
+    try {
+      const shareToken = crypto.randomUUID();
+      const expiresAt = new Date();
+      expiresAt.setFullYear(expiresAt.getFullYear() + 1); // Expires in 1 year
+
+      const shareRecord: CatalogueShareRecord = {
+        id: crypto.randomUUID(),
+        listId,
+        shareToken,
+        createdAt: new Date(),
+        expiresAt,
+        accessCount: 0,
+      };
+
+      await this.db.catalogueShares.add(shareRecord);
+
+      // Update list with share token
+      await this.db.catalogueLists.update(listId, { shareToken, isPublic: true });
+
+      this.logger?.debug(LOG_CATEGORY, "Share token generated", { listId, shareToken });
+
+      return shareToken;
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to generate share token", { listId, error });
+      throw error;
+    }
+  }
+
+  /**
+   * Get list by share token
+   */
+  async getListByShareToken(shareToken: string): Promise<{ list: CatalogueList | null; valid: boolean }> {
+    try {
+      const shareRecord = await this.db.catalogueShares.where("shareToken").equals(shareToken).first();
+
+      if (!shareRecord) {
+        return { list: null, valid: false };
+      }
+
+      // Check if share has expired
+      if (shareRecord.expiresAt && shareRecord.expiresAt < new Date()) {
+        return { list: null, valid: false };
+      }
+
+      // Update access count
+      await this.db.catalogueShares.update(shareRecord.id!, {
+        accessCount: shareRecord.accessCount + 1,
+        lastAccessedAt: new Date(),
+      });
+
+      const list = await this.getList(shareRecord.listId);
+      return { list, valid: true };
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to get list by share token", { shareToken, error });
+      return { list: null, valid: false };
+    }
+  }
+
+  /**
+   * Get list statistics
+   */
+  async getListStats(listId: string): Promise<{
+    totalEntities: number;
+    entityCounts: Record<EntityType, number>;
+  }> {
+    try {
+      const entities = await this.getListEntities(listId);
+
+      const entityCounts: Record<EntityType, number> = {
+        works: 0,
+        authors: 0,
+        sources: 0,
+        institutions: 0,
+        topics: 0,
+        publishers: 0,
+        funders: 0,
+      };
+
+      entities.forEach(entity => {
+        entityCounts[entity.entityType]++;
+      });
+
+      return {
+        totalEntities: entities.length,
+        entityCounts,
+      };
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to get list stats", { listId, error });
+      return {
+        totalEntities: 0,
+        entityCounts: {
+          works: 0,
+          authors: 0,
+          sources: 0,
+          institutions: 0,
+          topics: 0,
+          publishers: 0,
+          funders: 0,
+        },
+      };
+    }
+  }
+}
+
+// Export singleton instance
+export const catalogueService: CatalogueService = new CatalogueService();
