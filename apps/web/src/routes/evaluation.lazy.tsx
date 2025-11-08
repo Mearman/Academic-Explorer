@@ -11,7 +11,7 @@ import {
   IconSearch,
   IconTrendingUp,
 } from "@tabler/icons-react";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, Link } from "@tanstack/react-router";
 import {
   Container,
   Title,
@@ -76,6 +76,8 @@ function EvaluationDashboard() {
           <Button
             variant="filled"
             color="blue"
+            component={Link}
+            to="/evaluation/datasets"
             onClick={() => {
               logger.debug(
                 "ui",
@@ -83,7 +85,6 @@ function EvaluationDashboard() {
                 {},
                 "EvaluationDashboard",
               );
-              void navigate({ to: "/evaluation/datasets" });
             }}
             fullWidth
           >

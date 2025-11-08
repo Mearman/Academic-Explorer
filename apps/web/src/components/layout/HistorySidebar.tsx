@@ -4,13 +4,14 @@
 
 import { historyDB } from "@/lib/history-db";
 import { logError, logger } from "@academic-explorer/utils/logger";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, Link } from "@tanstack/react-router";
 import {
   IconHistory,
   IconSearch,
   IconExternalLink,
   IconTrash,
   IconX,
+  IconSettings,
 } from "@tabler/icons-react";
 import { useState, useEffect } from "react";
 import {
@@ -169,11 +170,24 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
           <IconHistory size={18} />
           <Title order={6}>History</Title>
         </div>
-        {onClose && (
-          <ActionIcon size="sm" variant="subtle" onClick={onClose}>
-            <IconX size={14} />
-          </ActionIcon>
-        )}
+        <Group gap="xs">
+          <Tooltip label="Manage all history">
+            <ActionIcon
+              size="sm"
+              variant="subtle"
+              component={Link}
+              to="/history"
+              aria-label="Go to history management page"
+            >
+              <IconSettings size={14} />
+            </ActionIcon>
+          </Tooltip>
+          {onClose && (
+            <ActionIcon size="sm" variant="subtle" onClick={onClose}>
+              <IconX size={14} />
+            </ActionIcon>
+          )}
+        </Group>
       </div>
 
       {/* Search */}
