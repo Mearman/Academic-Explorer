@@ -29,7 +29,8 @@ function InstitutionRoute() {
   const decodedInstitutionId = decodeEntityId(institutionId);
 
   // Update URL with pretty display name if needed
-  usePrettyUrl("institutions", rawInstitutionId, decodedInstitutionId);
+  // Use the extracted institutionId since rawInstitutionId from TanStack Router doesn't work with hash routing
+  usePrettyUrl("institutions", institutionId, decodedInstitutionId);
 
   // Parse select parameter - if not provided, use all INSTITUTION_FIELDS (default behavior)
   const selectFields = selectParam && typeof selectParam === 'string'

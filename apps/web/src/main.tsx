@@ -33,14 +33,15 @@ if (typeof window !== "undefined") {
       console.log("Fixed double hash:", { original: currentHash, clean: fixedHash });
     }
 
-    // Skip URL decoding for external canonical IDs - let TanStack Router handle encoded URLs
-    // This prevents routing interference with encoded external IDs like DOIs, ORCIDs, etc.
+    // Only decode regular URLs, not external canonical IDs - let usePrettyUrl hook handle those
+    // This prevents routing interference while still allowing pretty URL display via React hooks
     if (!needsUpdate && currentHash.includes("%")) {
       const hashParts = fixedHash.split("/");
       const entityType = hashParts[1]; // works, authors, institutions, etc.
       const encodedId = hashParts.slice(2).join("/"); // Join the rest with slashes
 
       // Only decode if this is NOT an external canonical ID URL pattern
+      // External canonical IDs will be handled by the usePrettyUrl hook in React components
       if (entityType && encodedId && !encodedId.match(/^(https?%3A%2F%2F|orcid%3A|ror%3A|doi%3A)/i)) {
         try {
           const decodedId = decodeURIComponent(encodedId);
@@ -65,13 +66,8 @@ if (typeof window !== "undefined") {
           // If decoding fails, continue with normal processing
           console.log("Failed to decode URL:", { error, encodedId });
         }
-      } else if (entityType && encodedId) {
-        console.log("Skipping URL decoding for external canonical ID:", {
-          entityType,
-          encodedId,
-          reason: "External canonical ID - let TanStack Router handle"
-        });
       }
+      // Skip processing external canonical IDs here - let React hooks handle pretty URL display
     }
 
     // Check for collapsed protocol slashes in the (potentially updated) hash

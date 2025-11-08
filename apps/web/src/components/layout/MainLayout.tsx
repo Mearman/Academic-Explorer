@@ -28,6 +28,8 @@ import {
 import { Link } from "@tanstack/react-router";
 import { LeftSidebarDynamic } from "./LeftSidebarDynamic";
 import { RightSidebarDynamic } from "./RightSidebarDynamic";
+import { BookmarksSidebar } from "./BookmarksSidebar";
+import { HistorySidebar } from "./HistorySidebar";
 import { LeftRibbon } from "./LeftRibbon";
 import { RightRibbon } from "./RightRibbon";
 import { HeaderSearchInput } from "./HeaderSearchInput";
@@ -314,7 +316,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     </ActionIcon>
                   </Group>
                 </Group>
-                <LeftSidebarDynamic />
+                <BookmarksSidebar />
               </Box>
               {/* Left drag handle */}
               <Box
@@ -456,7 +458,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     </ActionIcon>
                   </Group>
                 </Group>
-                <RightSidebarDynamic />
+                <HistorySidebar />
               </Box>
             </>
           )}

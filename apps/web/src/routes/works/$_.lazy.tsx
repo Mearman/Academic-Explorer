@@ -31,7 +31,8 @@ function WorkRoute() {
   const decodedWorkId = decodeEntityId(workId);
 
   // Update URL with pretty display version if needed
-  usePrettyUrl("works", rawWorkId, decodedWorkId);
+  // Use the extracted workId since rawWorkId from TanStack Router doesn't work with hash routing
+  usePrettyUrl("works", workId, decodedWorkId);
 
   // Parse select parameter - if not provided, use all WORK_FIELDS (default behavior)
   const selectFields = selectParam && typeof selectParam === 'string'

@@ -21,7 +21,7 @@ export function usePrettyUrl(
   useEffect(() => {
     if (!rawId || !decodedId) return;
 
-    // Immediate check for encoded URL in hash
+    // Prevent duplicate processing
     const currentHash = window.location.hash;
     const hashPath = currentHash.split("?")[0];
 
@@ -29,20 +29,36 @@ export function usePrettyUrl(
     if (hashPath.includes("%") && !hashPath.includes(decodedId)) {
       // Use a very short timeout to ensure the component has fully mounted
       const timeoutId = setTimeout(() => {
-        const currentHash = window.location.hash;
-        const hashPath = currentHash.split("?")[0];
+        const latestHash = window.location.hash;
+        const latestHashPath = latestHash.split("?")[0];
 
-        // Double-check conditions after timeout
-        if (hashPath.includes("%") && !hashPath.includes(decodedId)) {
-          const hashQueryParams = currentHash.includes("?")
-            ? "?" + currentHash.split("?").slice(1).join("?")
-            : "";
+        // Double-check conditions after timeout and ensure we're not duplicating
+        if (latestHashPath.includes("%") && !latestHashPath.includes(decodedId)) {
+          // Extract query parameters carefully to avoid duplication
+          let queryParams = "";
+          const queryIndex = latestHash.indexOf("?");
+          if (queryIndex !== -1) {
+            queryParams = latestHash.substring(queryIndex);
+            // Check if query parameters are already duplicated and fix if needed
+            if (queryParams.includes("?")) {
+              const queryString = queryParams.substring(1); // Remove the ?
+              const uniqueParams = new URLSearchParams(queryString).toString();
+              queryParams = uniqueParams ? "?" + uniqueParams : "";
+            }
+          }
 
-          const decodedHash = `#/${entityType}/${decodedId}${hashQueryParams}`;
+          const decodedHash = `#/${entityType}/${decodedId}${queryParams}`;
           const newUrl = window.location.pathname + window.location.search + decodedHash;
 
           // Only update if the URL would actually change
           if (newUrl !== window.location.href) {
+            console.log("usePrettyUrl updating URL:", {
+              entityType,
+              rawId,
+              decodedId,
+              oldHash: latestHash,
+              newHash: decodedHash
+            });
             window.history.replaceState(window.history.state, "", newUrl);
           }
         }

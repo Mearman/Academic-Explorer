@@ -29,7 +29,8 @@ function AuthorRoute() {
 
   const authorId = rawAuthorId || getAuthorIdFromHash();
   const decodedAuthorId = decodeEntityId(authorId);
-  usePrettyUrl("authors", rawAuthorId, decodedAuthorId);
+  // Use the extracted authorId since rawAuthorId from TanStack Router doesn't work with hash routing
+  usePrettyUrl("authors", authorId, decodedAuthorId);
 
   // Parse select parameter - if not provided, use all AUTHOR_FIELDS (default behavior)
   const selectFields = selectParam && typeof selectParam === 'string'
