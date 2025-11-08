@@ -1,5 +1,5 @@
 import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
-import { EntityList } from "@/components/EntityList";
+import { EntityListWithQueryBookmarking } from "@/components/EntityListWithQueryBookmarking";
 import type { ColumnConfig } from "@/components/types";
 import type { Work } from "@academic-explorer/client";
 import { createFilterBuilder } from "@academic-explorer/client";
@@ -115,7 +115,7 @@ function WorksListRoute() {
     : undefined;
 
   return (
-    <EntityList
+    <EntityListWithQueryBookmarking
       entityType="works"
       columns={worksColumns}
       title="Works"
@@ -123,6 +123,8 @@ function WorksListRoute() {
       searchParams={search}
       viewMode={viewMode}
       onViewModeChange={setViewMode}
+      showBookmarkButton={true}
+      bookmarkButtonPosition="header"
     />
   );
 }

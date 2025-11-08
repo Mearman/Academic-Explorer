@@ -1,8 +1,9 @@
 import React, { ReactNode } from "react";
 import { Button, Text, Code, Badge, Paper, Stack, Group, Container, Title, Tooltip, ActionIcon } from "@mantine/core";
-import { IconEye, IconCode, IconBookmark, IconBookmarkOff } from "@tabler/icons-react";
+import { IconEye, IconCode, IconBookmark, IconBookmarkOff, IconBookmarkFilled } from "@tabler/icons-react";
 import { logger } from "@/lib/logger";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
+import { useQueryBookmarking } from "@/hooks/use-query-bookmarking";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { EntityTypeConfig, EntityType } from "./EntityTypeConfig";
 import { EntityDataDisplay } from "../EntityDataDisplay";
@@ -50,11 +51,17 @@ export function EntityDetailLayout({
   // Initialize theme colors hook
   const { colors } = useThemeColors();
 
-  // Initialize user interactions hook for bookmark functionality
+  // Initialize user interactions hook for entity bookmark functionality
   const userInteractions = useUserInteractions({
     entityId,
     entityType,
     autoTrackVisits: true,
+  });
+
+  // Initialize query bookmarking hook for query-specific bookmarking
+  const queryBookmarking = useQueryBookmarking({
+    entityType,
+    entityId,
   });
 
   const handleBookmarkToggle = async () => {
@@ -70,6 +77,22 @@ export function EntityDetailLayout({
       }
     } catch (error) {
       logger.error("ui", "Failed to toggle bookmark", { error, entityType, entityId });
+    }
+  };
+
+  const handleQueryBookmarkToggle = async () => {
+    try {
+      if (queryBookmarking.isQueryBookmarked) {
+        await queryBookmarking.unbookmarkCurrentQuery();
+      } else {
+        await queryBookmarking.bookmarkCurrentQuery({
+          title: `${displayName} (Query)`,
+          notes: `Query bookmark for ${config.name} with specific parameters`,
+          tags: [config.name.toLowerCase(), "query", "entity-query"]
+        });
+      }
+    } catch (error) {
+      logger.error("ui", "Failed to toggle query bookmark", { error, entityType, entityId });
     }
   };
   return (
@@ -121,9 +144,9 @@ export function EntityDetailLayout({
             </Stack>
 
             <Group gap="sm">
-              {/* Bookmark Button */}
+              {/* Entity Bookmark Button */}
               <Tooltip
-                label={userInteractions.isBookmarked ? "Remove bookmark" : "Bookmark this entity"}
+                label={userInteractions.isBookmarked ? "Remove entity bookmark" : "Bookmark this entity"}
                 position="bottom"
               >
                 <ActionIcon
@@ -140,6 +163,31 @@ export function EntityDetailLayout({
                   )}
                 </ActionIcon>
               </Tooltip>
+
+              {/* Query Bookmark Button - only show if there are query parameters */}
+              {(selectParam || Object.keys(queryBookmarking.currentQueryParams).length > 0) && (
+                <Tooltip
+                  label={
+                    queryBookmarking.isQueryBookmarked
+                      ? "Remove query bookmark"
+                      : "Bookmark this query (ignores pagination)"
+                  }
+                  position="bottom"
+                >
+                  <ActionIcon
+                    size="lg"
+                    variant={queryBookmarking.isQueryBookmarked ? "filled" : "light"}
+                    color={queryBookmarking.isQueryBookmarked ? "blue" : "gray"}
+                    onClick={handleQueryBookmarkToggle}
+                  >
+                    {queryBookmarking.isQueryBookmarked ? (
+                      <IconBookmarkFilled size={20} />
+                    ) : (
+                      <IconBookmark size={20} />
+                    )}
+                  </ActionIcon>
+                </Tooltip>
+              )}
 
               <Button
                 size="lg"

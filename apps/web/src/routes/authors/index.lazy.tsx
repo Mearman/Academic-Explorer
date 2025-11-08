@@ -1,5 +1,5 @@
 import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
-import { EntityList } from "@/components/EntityList";
+import { EntityListWithQueryBookmarking } from "@/components/EntityListWithQueryBookmarking";
 import type { ColumnConfig } from "@/components/types";
 import type { Author } from "@academic-explorer/client";
 import type { ViewMode } from "@/components/ViewModeToggle";
@@ -26,13 +26,15 @@ function AuthorsListRoute() {
   const [viewMode, setViewMode] = useState<ViewMode>("table");
 
   return (
-    <EntityList
+    <EntityListWithQueryBookmarking
       entityType="authors"
       columns={authorsColumns}
       title="Authors"
       searchParams={search}
       viewMode={viewMode}
       onViewModeChange={setViewMode}
+      showBookmarkButton={true}
+      bookmarkButtonPosition="header"
     />
   );
 }
