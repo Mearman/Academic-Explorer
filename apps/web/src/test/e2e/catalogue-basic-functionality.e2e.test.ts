@@ -65,8 +65,8 @@ test.describe("Catalogue Basic Functionality", () => {
     // Check for empty state message with more flexible matching
     // Look for either the exact phrase or similar empty state indicators
     await expect(page.locator('text="No lists yet"')).toBeVisible({ timeout: 10000 });
-    // Also check for the "Create your first list" message separately
-    await expect(page.locator('text="Create your first list to start organizing your research"')).toBeVisible({ timeout: 5000 });
+    // Also check for the "Create your first list" message separately - use the specific Lists tab
+    await expect(page.locator('[id*="panel-lists"]:has-text("Create your first list to start organizing your research")')).toBeVisible({ timeout: 5000 });
   });
 
   test("should create a new list successfully", async ({ page }) => {
@@ -113,23 +113,24 @@ test.describe("Catalogue Basic Functionality", () => {
     // Select bibliography type
     await page.click('input[value="bibliography"], label:has-text("Bibliography")');
 
-    // Create the bibliography
-    await page.click('button:has-text("Create List")');
+    // Create the bibliography - button text changes based on type
+    await page.click('button:has-text("Create Bibliography")');
 
     // Wait for modal to close and bibliography to appear
     await expect(page.locator('[role="dialog"]')).not.toBeVisible();
-    await expect(page.locator('text="Test Bibliography for E2E"')).toBeVisible({ timeout: 10000 });
-
-    // Verify it shows as bibliography type
-    await expect(page.locator('text="Bibliography"')).toBeVisible();
+    // Switch to Bibliographies tab to verify
+    await page.click('button:has-text("Bibliographies")');
+    await expect(page.locator('[id*="panel-bibliographies"]:has-text("Test Bibliography for E2E")')).toBeVisible({ timeout: 10000 });
   });
 
   test("should edit list details", async ({ page }) => {
     // First create a list
     await createTestList(page, "Editable Test List");
 
-    // Find edit button and click it
-    await page.click('[aria-label*="edit"], button:has-text("Edit")');
+    // Find edit button and click it - first select the list card, then click edit
+    await page.click('[id*="panel-lists"] .mantine-Card:has-text("Editable Test List")');
+    // Now click the edit button in the selected list details area
+    await page.click('[data-testid="catalogue-manager"] button:has-text("Edit")');
 
     // Wait for edit modal
     await expect(page.locator('[role="dialog"]')).toBeVisible();
@@ -143,15 +144,16 @@ test.describe("Catalogue Basic Functionality", () => {
 
     // Verify changes are saved
     await expect(page.locator('[role="dialog"]')).not.toBeVisible();
-    await expect(page.locator('text="Updated Test List"')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('[id*="panel-lists"]:has-text("Updated Test List")')).toBeVisible({ timeout: 10000 });
   });
 
   test("should delete a list", async ({ page }) => {
     // First create a list
     await createTestList(page, "Deletable Test List");
 
-    // Find delete button and click it
-    await page.click('[aria-label*="delete"], button:has-text("Delete")');
+    // Find delete button and click it - hover over the list card first to reveal actions
+    await page.hover('[id*="panel-lists"] .mantine-Card:has-text("Deletable Test List")');
+    await page.click('[id*="panel-lists"] .mantine-Card:has-text("Deletable Test List") button:last-child'); // Delete button is last action icon
 
     // Wait for confirmation dialog
     await expect(page.locator('[role="dialog"]')).toBeVisible();
@@ -162,7 +164,7 @@ test.describe("Catalogue Basic Functionality", () => {
 
     // Verify list is deleted
     await expect(page.locator('[role="dialog"]')).not.toBeVisible();
-    await expect(page.locator('text="Deletable Test List"')).not.toBeVisible({ timeout: 10000 });
+    await expect(page.locator('[id*="panel-lists"]:has-text("Deletable Test List")')).not.toBeVisible({ timeout: 10000 });
   });
 
   test("should search and filter lists", async ({ page }) => {
@@ -231,5 +233,6 @@ async function createTestList(page: Page, listName: string): Promise<void> {
 
   await page.click('button:has-text("Create List")');
   await expect(page.locator('[role="dialog"]')).not.toBeVisible();
-  await expect(page.locator(`text="${listName}"`)).toBeVisible({ timeout: 10000 });
+  // Use more specific selector to avoid strict mode violations - look for the list in the Lists tab
+  await expect(page.locator('[id*="panel-lists"]:has-text("' + listName + '")')).toBeVisible({ timeout: 10000 });
 }
