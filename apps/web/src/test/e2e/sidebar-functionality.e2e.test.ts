@@ -15,20 +15,57 @@ test.describe("Sidebar Functionality E2E Tests", () => {
   });
 
   test("should display bookmarks sidebar with basic functionality", async ({ page }) => {
-    // Open left sidebar
-    await page.click('[aria-label="Toggle left sidebar"]');
+    // Wait for page to fully load
+    await page.waitForLoadState('networkidle');
+
+    // Listen for console errors
+    page.on('console', msg => {
+      if (msg.type() === 'error') {
+        console.log('Console error:', msg.text());
+      }
+    });
+
+    // Check if left sidebar toggle button exists and is visible
+    const leftSidebarToggle = page.locator('[aria-label="Toggle left sidebar"]');
+    await expect(leftSidebarToggle).toBeVisible({ timeout: 5000 });
+
+    // Check if sidebar is already open by looking for the bookmarks content directly
+    let bookmarksSidebar = page.locator('text=Bookmarks');
+    const isBookmarksVisible = await bookmarksSidebar.isVisible().catch(() => false);
+
+    console.log(`Bookmarks sidebar initially visible: ${isBookmarksVisible}`);
+
+    if (!isBookmarksVisible) {
+      // Open left sidebar if it's not already open
+      console.log('Opening left sidebar...');
+      await leftSidebarToggle.click();
+
+      // Wait a bit for the sidebar to open
+      await page.waitForTimeout(1000);
+    }
 
     // Check if bookmarks sidebar is displayed
-    const bookmarksSidebar = page.locator('text=Bookmarks');
     await expect(bookmarksSidebar).toBeVisible({ timeout: 5000 });
+    console.log('Bookmarks sidebar is visible');
 
     // Check for search functionality
     const searchInput = page.locator('input[placeholder="Search bookmarks..."]');
     await expect(searchInput).toBeVisible();
+    console.log('Search input is visible');
+
+    // Check if it's stuck in loading state
+    const loadingText = page.locator('text="Loading bookmarks..."');
+    const isLoading = await loadingText.isVisible().catch(() => false);
+
+    if (isLoading) {
+      console.log('ERROR: Bookmarks sidebar is stuck in loading state');
+      throw new Error('Bookmarks sidebar is stuck in loading state - useUserInteractions hook issue');
+    }
 
     // Check for empty state message
     const emptyState = page.locator('text="No bookmarks yet"');
     await expect(emptyState).toBeVisible();
+    console.log('Empty state message is visible');
   });
 
   test("should display history sidebar with basic functionality", async ({ page }) => {
