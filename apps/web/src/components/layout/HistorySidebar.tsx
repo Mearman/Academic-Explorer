@@ -2,7 +2,8 @@
  * History sidebar component for managing navigation history in the right sidebar
  */
 
-import { historyDB } from "@/lib/history-db";
+import { useUserInteractions } from "@/hooks/use-user-interactions";
+import { catalogueService, type CatalogueEntity } from "@academic-explorer/utils/storage/catalogue-db";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { useNavigate, Link } from "@tanstack/react-router";
 import {
@@ -36,55 +37,58 @@ interface HistorySidebarProps {
 
 export function HistorySidebar({ onClose }: HistorySidebarProps) {
   const navigate = useNavigate();
-  const [historyEntries, setHistoryEntries] = useState<
-    Array<{ route: string; visitedAt: number }>
-  >([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Load history from Dexie on mount
-  useEffect(() => {
-    const loadHistory = async () => {
-      try {
-        const entries = await historyDB.getAll();
-        // Sort by most recent first
-        setHistoryEntries(entries.sort((a, b) => b.visitedAt - a.visitedAt));
-      } catch (error) {
-        logError(logger, "Failed to load history", error, "HistorySidebar");
-      }
-    };
-    loadHistory();
-  }, []);
+  // Use the refactored user interactions hook for history
+  const { recentHistory, clearHistory, isLoadingHistory } = useUserInteractions();
 
   // Filter history entries based on search query
-  const filteredEntries = historyEntries.filter(
+  const filteredEntries = recentHistory.filter(
     (entry) =>
       searchQuery === "" ||
-      entry.route.toLowerCase().includes(searchQuery.toLowerCase()),
+      entry.entityId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (entry.notes && entry.notes.toLowerCase().includes(searchQuery.toLowerCase())),
   );
 
   const handleClearHistory = async () => {
     try {
-      await historyDB.clear();
-      setHistoryEntries([]);
+      await clearHistory();
       setSearchQuery("");
     } catch (error) {
       logError(logger, "Failed to clear history", error, "HistorySidebar");
     }
   };
 
-  const handleNavigate = (url: string) => {
-    // Handle hash-based navigation for internal routes
+  const handleNavigate = (entry: any) => {
+    // Extract URL from entry notes or construct from entity
+    let url = "";
+
+    // Try to extract URL from notes
+    const urlMatch = entry.notes?.match(/URL: ([^\n]+)/);
+    if (urlMatch) {
+      url = urlMatch[1];
+    } else if (entry.entityId.startsWith("search-") || entry.entityId.startsWith("list-")) {
+      // For search and list entries, use the URL from notes
+      const urlFromNotes = entry.notes?.match(/URL: ([^\n]+)/);
+      url = urlFromNotes?.[1] || "";
+    } else {
+      // For entity entries, construct the internal path
+      url = `/${entry.entityType}/${entry.entityId}`;
+    }
+
+    // Handle navigation
     if (url.startsWith("/")) {
       navigate({ to: url });
-    } else {
+    } else if (url) {
       window.location.href = url;
     }
+
     if (onClose) {
       onClose();
     }
   };
 
-  const handleDeleteHistoryEntry = (route: string, visitedAt: number) => {
+  const handleDeleteHistoryEntry = (entityRecordId: string, entityTitle: string) => {
     modals.openConfirmModal({
       title: "Delete History Entry",
       centered: true,
@@ -97,10 +101,7 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
       confirmProps: { color: "red" },
       onConfirm: async () => {
         try {
-          await historyDB.deleteVisit(route, visitedAt);
-          // Reload history entries
-          const entries = await historyDB.getAll();
-          setHistoryEntries(entries.sort((a, b) => b.visitedAt - a.visitedAt));
+          await catalogueService.removeEntityFromList("history-list", entityRecordId);
         } catch (error) {
           logError(logger, "Failed to delete history entry", error, "HistorySidebar");
         }
@@ -108,8 +109,7 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
     });
   };
 
-  const formatDate = (timestamp: number) => {
-    const date = new Date(timestamp);
+  const formatDate = (date: Date) => {
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
@@ -131,11 +131,11 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
     return Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
   };
 
-  const groupEntriesByDate = (entries: Array<{ route: string; visitedAt: number }>) => {
-    const groups: { [key: string]: Array<{ route: string; visitedAt: number }> } = {};
+  const groupEntriesByDate = (entries: Array<CatalogueEntity>) => {
+    const groups: { [key: string]: Array<CatalogueEntity> } = {};
 
     entries.forEach(entry => {
-      const date = new Date(entry.visitedAt);
+      const date = new Date(entry.addedAt);
       const today = new Date();
       const yesterday = new Date(today);
       yesterday.setDate(yesterday.getDate() - 1);
@@ -202,7 +202,7 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
           size="sm"
           style={{ flex: 1 }}
         />
-        {historyEntries.length > 0 && (
+        {recentHistory.length > 0 && (
           <Tooltip label="Clear all history">
             <ActionIcon
               variant="light"
@@ -249,63 +249,85 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
                     {entries.length} {entries.length === 1 ? 'item' : 'items'}
                   </Text>
                 </div>
-                {entries.map((entry, index) => (
-                  <Card
-                    key={`${entry.route}-${entry.visitedAt}`}
-                    withBorder
-                    padding="xs"
-                    shadow="none"
-                    className={styles.historyCard}
-                    onClick={() => handleNavigate(entry.route)}
-                  >
-                    <Group justify="space-between" align="flex-start" gap="xs">
-                      <Stack gap="xs" style={{ flex: 1 }}>
-                        <Text
-                          size="xs"
-                          fw={500}
-                          lineClamp={1}
-                          className={styles.historyEntry}
-                        >
-                          {entry.route}
-                        </Text>
-                        <Text size="xs" c="dimmed">
-                          {formatDate(entry.visitedAt)}
-                        </Text>
-                      </Stack>
-                      <Group gap="xs">
-                        <Tooltip label="Navigate to this route">
-                          <ActionIcon
-                            size="sm"
-                            variant="subtle"
-                            className={styles.navigationButton}
-                            aria-label={`Navigate to ${entry.route}`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleNavigate(entry.route);
-                            }}
+                {entries.map((entry, index) => {
+                  // Extract title from entry notes or use entity ID
+                  let title = entry.entityId;
+                  const titleMatch = entry.notes?.match(/Title: ([^\n]+)/);
+                  if (titleMatch) {
+                    title = titleMatch[1];
+                  } else if (entry.entityId.startsWith("search-")) {
+                    title = `Search: ${entry.entityId.replace("search-", "").split("-")[0]}`;
+                  } else if (entry.entityId.startsWith("list-")) {
+                    title = `List: ${entry.entityId.replace("list-", "")}`;
+                  } else {
+                    title = `${entry.entityType}: ${entry.entityId}`;
+                  }
+
+                  return (
+                    <Card
+                      key={`${entry.entityId}-${entry.addedAt}`}
+                      withBorder
+                      padding="xs"
+                      shadow="none"
+                      className={styles.historyCard}
+                      onClick={() => handleNavigate(entry)}
+                    >
+                      <Group justify="space-between" align="flex-start" gap="xs">
+                        <Stack gap="xs" style={{ flex: 1 }}>
+                          <Text
+                            size="xs"
+                            fw={500}
+                            lineClamp={1}
+                            className={styles.historyEntry}
                           >
-                            <IconExternalLink size={12} />
-                          </ActionIcon>
-                        </Tooltip>
-                        <Tooltip label="Delete history entry">
-                          <ActionIcon
-                            size="sm"
-                            variant="subtle"
-                            color="red"
-                            className={styles.actionButton}
-                            aria-label={`Delete ${entry.route} from history`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteHistoryEntry(entry.route, entry.visitedAt);
-                            }}
-                          >
-                            <IconTrash size={12} />
-                          </ActionIcon>
-                        </Tooltip>
+                            {title}
+                          </Text>
+                          {entry.notes && (
+                            <Text size="xs" c="dimmed" lineClamp={1}>
+                              {entry.notes.split('\n').filter(line => !line.startsWith('URL:') && !line.startsWith('Title:')).join('\n')}
+                            </Text>
+                          )}
+                          <Text size="xs" c="dimmed">
+                            {formatDate(new Date(entry.addedAt))}
+                          </Text>
+                        </Stack>
+                        <Group gap="xs">
+                          <Tooltip label="Navigate to this entry">
+                            <ActionIcon
+                              size="sm"
+                              variant="subtle"
+                              className={styles.navigationButton}
+                              aria-label={`Navigate to ${title}`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleNavigate(entry);
+                              }}
+                            >
+                              <IconExternalLink size={12} />
+                            </ActionIcon>
+                          </Tooltip>
+                          {entry.id && (
+                            <Tooltip label="Delete history entry">
+                              <ActionIcon
+                                size="sm"
+                                variant="subtle"
+                                color="red"
+                                className={styles.actionButton}
+                                aria-label={`Delete ${title} from history`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteHistoryEntry(entry.id, title);
+                                }}
+                              >
+                                <IconTrash size={12} />
+                              </ActionIcon>
+                            </Tooltip>
+                          )}
+                        </Group>
                       </Group>
-                    </Group>
-                  </Card>
-                ))}
+                    </Card>
+                  );
+                })}
                 {groupKey !== Object.keys(groupedEntries)[Object.keys(groupedEntries).length - 1] && (
                   <Divider size="xs" className={styles.groupDivider} />
                 )}
