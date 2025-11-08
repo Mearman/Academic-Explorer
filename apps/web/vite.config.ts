@@ -1,21 +1,38 @@
 import { defineConfig, type UserConfig } from 'vite';
-import baseConfig from '../../vite.config.base';
-import { createPlugins, serverConfig, previewConfig } from './config/plugins';
+import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
+import react from '@vitejs/plugin-react';
+import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
+import { openalexCachePlugin } from '../../config/vite-plugins/openalex-cache';
+import { fileURLToPath } from 'node:url';
+import { dirname, resolve } from 'node:path';
+import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import type { Plugin } from 'vite';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const appRoot = resolve(__dirname, "..");
+
+/**
+ * GitHub Pages plugin - creates .nojekyll file for proper asset serving
+ */
+function githubPagesPlugin(): Plugin {
+  return {
+    name: "github-pages",
+    apply: "build",
+    closeBundle() {
+      const outputDir = resolve(appRoot, "dist");
+      // Ensure output directory exists
+      if (!existsSync(outputDir)) {
+        mkdirSync(outputDir, { recursive: true });
+      }
+      const nojekyllPath = resolve(outputDir, ".nojekyll");
+      writeFileSync(nojekyllPath, "");
+    },
+  };
+}
 
 // Type-safe configuration creation
 function createWebConfig(): UserConfig {
-  // Type guard for base configuration
-  function isValidUserConfig(config: unknown): config is UserConfig {
-    return config !== null && typeof config === 'object';
-  }
-
-  // Validate base configuration type
-  if (!isValidUserConfig(baseConfig)) {
-    throw new Error('Base configuration is not a valid UserConfig');
-  }
-
-  const base = baseConfig;
-
   const isGitHubPages = process.env.GITHUB_PAGES === 'true';
 
   return {
@@ -23,38 +40,43 @@ function createWebConfig(): UserConfig {
     base: isGitHubPages ? '/Academic-Explorer/' : '/',
 
     // Pass GITHUB_PAGES to client code via import.meta.env
-    // Use envPrefix to expose GITHUB_PAGES as import.meta.env.GITHUB_PAGES
     envPrefix: ['VITE_', 'GITHUB_PAGES'],
 
-    // Inherit base configuration properties safely
-    ...base,
-
-    // Use configured plugins from config/plugins.ts
+    // Plugins configuration
     plugins: [
-      ...(base.plugins || []),
-      ...createPlugins(),
+      nxViteTsPaths(),
+      // OpenAlex Cache Plugin
+      openalexCachePlugin({
+        staticDataPath: "public/data/openalex",
+        verbose: false,
+      }),
+      // Vanilla Extract Plugin
+      vanillaExtractPlugin(),
+      // React Plugin
+      react(),
+      // GitHub Pages Plugin
+      githubPagesPlugin(),
     ],
 
-    // Ensure resolve configuration is properly inherited
-    resolve: {
-      ...(base.resolve || {}),
-    },
-
+    // Build configuration
     build: {
-      ...base.build,
       outDir: 'dist',
+      target: 'esnext',
+      minify: 'esbuild',
+      sourcemap: true,
       rollupOptions: {
-        // For web app, we don't want external dependencies
-        // Don't spread base.build.rollupOptions since it has external deps for library builds
-        onwarn: base.build?.rollupOptions?.onwarn,
-        // Enhanced manual chunking with better optimization
+        onwarn(warning, warn) {
+          // Suppress certain warnings that are common in monorepos
+          if (warning.code === "MODULE_LEVEL_DIRECTIVE") return;
+          if (warning.code === "THIS_IS_UNDEFINED") return;
+          warn(warning);
+        },
         output: {
           manualChunks: (id) => {
             // Core React ecosystem
             if (id.includes('react') || id.includes('react-dom')) {
               return 'vendor-react';
             }
-
             // TanStack ecosystem
             if (id.includes('@tanstack/react-router')) {
               return 'vendor-router';
@@ -62,11 +84,7 @@ function createWebConfig(): UserConfig {
             if (id.includes('@tanstack/react-query')) {
               return 'vendor-query';
             }
-            if (id.includes('@tanstack/react-table') || id.includes('@tanstack/react-virtual')) {
-              return 'vendor-table';
-            }
-
-            // Mantine UI (split for better caching)
+            // Mantine UI
             if (id.includes('@mantine/core') || id.includes('@mantine/hooks')) {
               return 'vendor-ui-core';
             }
@@ -76,20 +94,17 @@ function createWebConfig(): UserConfig {
             if (id.includes('@tabler/icons-react')) {
               return 'vendor-icons';
             }
-
-            // Graph visualization (split by library for better loading)
+            // Graph visualization
             if (id.includes('@xyflow/react') || id.includes('@dnd-kit')) {
               return 'vendor-xyflow';
             }
             if (id.includes('@react-three') || id.includes('three') || id.includes('react-force-graph') || id.includes('r3f-forcegraph')) {
               return 'vendor-three';
             }
-
             // Database and storage
             if (id.includes('dexie')) {
               return 'vendor-storage';
             }
-
             // Workspace packages
             if (id.includes('@academic-explorer/client')) {
               return 'workspace-client';
@@ -106,16 +121,9 @@ function createWebConfig(): UserConfig {
             if (id.includes('@academic-explorer/simulation')) {
               return 'workspace-simulation';
             }
-
-            // Node modules fallback
-            if (id.includes('node_modules')) {
-              return 'vendor-libs';
-            }
-
             // Default chunk
             return 'chunk';
           },
-          // Optimize chunk naming for better caching
           chunkFileNames: (chunkInfo) => {
             const facadeModuleId = chunkInfo.facadeModuleId ? chunkInfo.facadeModuleId.split('/').pop() : 'chunk';
             return `assets/[name]-[hash].js`;
@@ -138,44 +146,50 @@ function createWebConfig(): UserConfig {
             return `assets/[name]-[hash][extname]`;
           },
         },
-        // Enable additional optimizations
         treeshake: {
           moduleSideEffects: false,
           propertyReadSideEffects: false,
           tryCatchDeoptimization: false,
         },
       },
-      // Optimize build targets and compression
-      target: 'esnext',
-      minify: 'terser',
-      terserOptions: {
-        compress: {
-          drop_console: true,
-          drop_debugger: true,
-          pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn'],
-        },
-        mangle: {
-          safari10: true,
-        },
-      },
-      // Enable CSS code splitting
-      cssCodeSplit: true,
-      // Generate source maps for production debugging
-      sourcemap: true,
-      // Optimize chunk size warnings
       chunkSizeWarningLimit: 1000,
     },
 
-    // Development server configuration for the web app
-    server: {
-      ...base.server,
-      ...serverConfig(),
-      open: true,
+    // Resolve configuration
+    resolve: {
+      alias: {
+        '@': resolve(__dirname, 'src'),
+      },
     },
 
-    // Improve HMR and resolve issues
+    // Development server configuration
+    server: {
+      host: true,
+      port: 5173,
+      strictPort: true,
+      hmr: {
+        overlay: true,
+        port: 5174,
+      },
+      fs: {
+        strict: true,
+      },
+      watch: {
+        usePolling: false,
+        interval: 300,
+        ignored: [
+          '**/node_modules/**',
+          '**/dist/**',
+          '**/.git/**',
+          '**/public/data/**',
+          '**/*.log',
+          '**/.nx/**',
+        ],
+      },
+    },
+
+    // Optimize dependencies
     optimizeDeps: {
-      ...base.optimizeDeps,
       include: [
         'react',
         'react-dom',
@@ -193,17 +207,15 @@ function createWebConfig(): UserConfig {
       force: true,
     },
 
-    // Define global replacements for browser compatibility
+    // Define global replacements
     define: {
-      ...base.define,
       global: 'globalThis',
     },
 
     // Preview server configuration
     preview: {
-      ...base.preview,
-      ...previewConfig,
-      open: true,
+      port: 4173,
+      strictPort: true,
     },
   };
 }
