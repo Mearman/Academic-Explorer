@@ -153,47 +153,71 @@ export function useUserInteractions(
     setIsLoadingBookmarks(true);
     setIsLoadingStats(true);
 
+    // Add timeout to prevent infinite loading in test environments
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => {
+        reject(new Error('User interactions data loading timed out after 10 seconds'));
+      }, 10000); // 10 second timeout
+    });
+
     try {
-      // Load recent page visits
-      const pageVisits = await userInteractionsService.getRecentPageVisits(20);
-      setRecentPageVisits(pageVisits);
+      // Wrap all database operations in a race against timeout
+      const dataLoadPromise = (async () => {
+        // Load recent page visits
+        const pageVisits = await userInteractionsService.getRecentPageVisits(20);
+        setRecentPageVisits(pageVisits);
 
-      // Check bookmark status based on content type
-      if (entityId && entityType) {
-        const bookmarked = await userInteractionsService.isEntityBookmarked({
-          entityId,
-          entityType,
+        // Check bookmark status based on content type
+        if (entityId && entityType) {
+          const bookmarked = await userInteractionsService.isEntityBookmarked({
+            entityId,
+            entityType,
+          });
+          setIsBookmarked(bookmarked);
+        } else if (searchQuery) {
+          const bookmarked = await userInteractionsService.isSearchBookmarked({
+            searchQuery,
+            filters,
+          });
+          setIsBookmarked(bookmarked);
+        } else if (url) {
+          const bookmarked = await userInteractionsService.isListBookmarked(url);
+          setIsBookmarked(bookmarked);
+        }
+
+        // Load all bookmarks
+        const allBookmarks = await userInteractionsService.getAllBookmarks();
+        setBookmarks(allBookmarks);
+
+        // Load page visit stats (using legacy format for compatibility)
+        const pageStats = await userInteractionsService.getPageVisitStatsLegacy();
+        setPageVisitStats({
+          totalVisits: pageStats.totalVisits,
+          uniqueUrls: pageStats.uniqueRequests,
+          byType: pageStats.byEndpoint,
+          mostVisitedUrl: null,
         });
-        setIsBookmarked(bookmarked);
-      } else if (searchQuery) {
-        const bookmarked = await userInteractionsService.isSearchBookmarked({
-          searchQuery,
-          filters,
-        });
-        setIsBookmarked(bookmarked);
-      } else if (url) {
-        const bookmarked = await userInteractionsService.isListBookmarked(url);
-        setIsBookmarked(bookmarked);
-      }
+      })();
 
-      // Load all bookmarks
-      const allBookmarks = await userInteractionsService.getAllBookmarks();
-      setBookmarks(allBookmarks);
-
-      // Load page visit stats (using legacy format for compatibility)
-      const pageStats = await userInteractionsService.getPageVisitStatsLegacy();
-      setPageVisitStats({
-        totalVisits: pageStats.totalVisits,
-        uniqueUrls: pageStats.uniqueRequests,
-        byType: pageStats.byEndpoint,
-        mostVisitedUrl: null,
-      });
+      // Race between data loading and timeout
+      await Promise.race([dataLoadPromise, timeoutPromise]);
     } catch (error) {
       logger.error(
         USER_INTERACTIONS_LOGGER_CONTEXT,
         "Failed to refresh user interaction data",
         { error },
       );
+
+      // Set default values when loading fails
+      setRecentPageVisits([]);
+      setBookmarks([]);
+      setPageVisitStats({
+        totalVisits: 0,
+        uniqueUrls: 0,
+        byType: {},
+        mostVisitedUrl: null,
+      });
+      setIsBookmarked(false);
     } finally {
       setIsLoadingPageVisits(false);
       setIsLoadingBookmarks(false);
