@@ -187,7 +187,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
           </Group>
 
           <Group grow>
-            <Paper p="xs" bg="gray.0" radius="sm">
+            <Paper p="xs" bg={colors.background.primary} radius="sm">
               <Group justify="center" gap="xs">
                 <IconQuote size={16} color={colors.text.secondary} />
                 <Stack gap={0} align="center">
@@ -203,7 +203,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
               </Group>
             </Paper>
 
-            <Paper p="xs" bg="gray.0" radius="sm">
+            <Paper p="xs" bg={colors.background.primary} radius="sm">
               <Group justify="center" gap="xs">
                 <IconEye size={16} color={colors.text.secondary} />
                 <Stack gap={0} align="center">
@@ -401,7 +401,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
           </Group>
 
           <Group grow>
-            <Paper p="xs" bg="gray.0" radius="sm">
+            <Paper p="xs" bg={colors.background.primary} radius="sm">
               <Group justify="center" gap="xs">
                 <IconStar size={16} color={colors.text.secondary} />
                 <Stack gap={0} align="center">
@@ -415,7 +415,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
               </Group>
             </Paper>
 
-            <Paper p="xs" bg="gray.0" radius="sm">
+            <Paper p="xs" bg={colors.background.primary} radius="sm">
               <Group justify="center" gap="xs">
                 <IconBolt size={16} color={colors.text.secondary} />
                 <Stack gap={0} align="center">
@@ -589,7 +589,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
           </Group>
 
           <Group grow>
-            <Paper p="xs" bg="gray.0" radius="sm">
+            <Paper p="xs" bg={colors.background.primary} radius="sm">
               <Group justify="center" gap="xs">
                 <IconFile size={16} color={colors.text.secondary} />
                 <Stack gap={0} align="center">
@@ -605,7 +605,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
               </Group>
             </Paper>
 
-            <Paper p="xs" bg="gray.0" radius="sm">
+            <Paper p="xs" bg={colors.background.primary} radius="sm">
               <Group justify="center" gap="xs">
                 <IconQuote size={16} color={colors.text.secondary} />
                 <Stack gap={0} align="center">
@@ -731,7 +731,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
         c="dimmed"
         ff="monospace"
         p="xs"
-        bg="gray.0"
+        bg={colors.background.primary}
         style={{ borderRadius: 4, wordBreak: "break-all", marginTop: 8 }}
       >
         {entity.entityId}
