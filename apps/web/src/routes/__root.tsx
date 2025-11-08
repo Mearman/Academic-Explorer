@@ -94,80 +94,8 @@ export const Route = createRootRoute({
         location: window.location
       });
 
-      // First, check if we need to decode encoded URLs to pretty URLs
-      if (currentHash.includes("%")) {
-        logger.debug("routing", "Found encoded URL, attempting decode", { currentHash });
-
-        // Extract entity type and encoded ID from hash
-        const hashParts = hashPath.split("/");
-        const entityType = hashParts[1]; // works, authors, institutions, etc.
-        const encodedId = hashParts.slice(2).join("/"); // Join the rest with slashes
-
-        logger.debug("routing", "Parsed hash components", {
-          currentHash,
-          hashPath,
-          hashParts,
-          entityType,
-          encodedId,
-          hashPartsLength: hashParts.length
-        });
-
-        if (entityType && encodedId) {
-          try {
-            const decodedId = decodeURIComponent(encodedId);
-
-            logger.debug("routing", "URL decode attempt", {
-              encodedId,
-              decodedId,
-              areDifferent: decodedId !== encodedId,
-              includesProtocol: decodedId.includes("://") || decodedId.includes(":/")
-            });
-
-            // Only update if the decoded version is different (contains unencoded characters)
-            if (decodedId !== encodedId && (decodedId.includes("://") || decodedId.includes(":/") || decodedId.includes("doi.org/") || decodedId.includes("orcid.org/") || decodedId.includes("ror.org/"))) {
-              // Log the redirect for debugging
-              logger.debug("routing", "Executing external canonical ID redirect", {
-                currentHash,
-                encodedId,
-                decodedId,
-              });
-              // Extract query params from CURRENT hash, not from old href
-              const hashQueryParams = currentHash.includes("?")
-                ? "?" + currentHash.split("?").slice(1).join("?")
-                : "";
-
-              const prettyHash = `/${entityType}/${decodedId}${hashQueryParams}`;
-
-              logger.debug("routing", "Detected encoded external canonical ID, redirecting", {
-                originalHash: currentHash,
-                prettyHash,
-                encodedId,
-                decodedId,
-                hashQueryParams
-              });
-
-              // Use window.location.replace for hash-based routing
-              window.location.replace(`#${prettyHash}`);
-              // Throw to stop route processing
-              throw new Error("Redirecting to decoded URL");
-            } else {
-              logger.debug("routing", "Skipping URL conversion - conditions not met", {
-                decodedId,
-                encodedId,
-                areDifferent: decodedId !== encodedId,
-                includesProtocol: decodedId.includes("://") || decodedId.includes(":/")
-              });
-            }
-          } catch (error) {
-            // If decoding fails, continue with normal collapsed protocol fixing
-            logger.debug("routing", "Failed to decode URL", { error, encodedId });
-          }
-        } else {
-          logger.debug("routing", "Missing entity type or encoded ID", { entityType, encodedId });
-        }
-      } else {
-        logger.debug("routing", "No encoded URL found, skipping decode", { currentHash });
-      }
+      // Skip automatic URL decoding in __root.tsx - let route handlers deal with encoded URLs directly
+      logger.debug("routing", "Skipping automatic URL decoding, letting route handlers process encoded URLs", { currentHash });
 
       // Then fix any remaining collapsed protocol patterns
       const updatedHash = window.location.hash; // Use updated hash after potential decoding
