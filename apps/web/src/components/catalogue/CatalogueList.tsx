@@ -443,7 +443,7 @@ export function CatalogueListComponent({
             No {listType === "bibliography" ? "bibliographies" : "lists"} yet
           </Text>
           <Text size="sm" c="dimmed">
-            Create your first {listType} to start organizing your research
+            Create your first list to start organizing your research
           </Text>
         </Stack>
       </Card>

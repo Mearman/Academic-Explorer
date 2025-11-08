@@ -76,8 +76,9 @@ export function CreateListModal({ onClose, onSubmit }: CreateListModalProps) {
     <Box component="form" onSubmit={handleSubmit}>
       <Stack gap="md">
         <TextInput
+          id="list-title"
           label="Title"
-          placeholder="Enter list title"
+          placeholder="Enter list name"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
@@ -85,6 +86,7 @@ export function CreateListModal({ onClose, onSubmit }: CreateListModalProps) {
         />
 
         <Textarea
+          id="list-description"
           label="Description"
           placeholder="Optional description of your list"
           value={description}
@@ -119,6 +121,7 @@ export function CreateListModal({ onClose, onSubmit }: CreateListModalProps) {
         </Radio.Group>
 
         <TagsInput
+          id="list-tags"
           label="Tags"
           placeholder="Add tags to organize your lists..."
           data={[]}
