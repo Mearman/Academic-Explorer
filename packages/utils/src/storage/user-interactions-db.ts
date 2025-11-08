@@ -6,6 +6,40 @@
 import Dexie from "dexie"
 import { GenericLogger } from "../logger.js"
 
+// Event system for notifying components of data changes
+type BookmarkEventListener = (event: {
+  type: 'added' | 'removed' | 'updated';
+  bookmarkIds?: number[];
+  bookmark?: BookmarkRecord;
+}) => void;
+
+class BookmarkEventEmitter {
+  private listeners: BookmarkEventListener[] = [];
+
+  subscribe(listener: BookmarkEventListener) {
+    this.listeners.push(listener);
+    return () => {
+      const index = this.listeners.indexOf(listener);
+      if (index > -1) {
+        this.listeners.splice(index, 1);
+      }
+    };
+  }
+
+  emit(event: Parameters<BookmarkEventListener>[0]) {
+    this.listeners.forEach(listener => {
+      try {
+        listener(event);
+      } catch (error) {
+        console.error('Error in bookmark event listener:', error);
+      }
+    });
+  }
+}
+
+// Global event emitter for bookmark changes
+export const bookmarkEventEmitter = new BookmarkEventEmitter();
+
 // Constants for logging and database operations
 const _EXAMPLE_URL_PREFIX = "https://api.openalex.org"
 const LOG_CATEGORY = "user-interactions"
@@ -278,6 +312,12 @@ export class UserInteractionsService {
 
 			const id: number = await this.db.bookmarks.add(bookmark)
 
+			// Emit event for bookmark addition
+			bookmarkEventEmitter.emit({
+				type: 'added',
+				bookmark: { ...bookmark, id }
+			});
+
 			this.logger?.debug(LOG_CATEGORY, "Bookmark added", {
 				id,
 				cacheKey: request.cacheKey,
@@ -315,6 +355,12 @@ export class UserInteractionsService {
 	async removeBookmark(bookmarkId: number): Promise<void> {
 		try {
 			await this.db.bookmarks.delete(bookmarkId)
+
+			// Emit event for bookmark removal
+			bookmarkEventEmitter.emit({
+				type: 'removed',
+				bookmarkIds: [bookmarkId]
+			});
 
 			this.logger?.debug(LOG_CATEGORY, "Bookmark removed", {
 				bookmarkId,
@@ -673,14 +719,46 @@ export class UserInteractionsService {
 				}
 			})
 
-			this.logger?.debug(LOG_CATEGORY, "Bulk bookmark removal completed", {
-				totalRequested: bookmarkIds.length,
-				success,
-				failed,
-			})
+				// Collect successfully deleted bookmark IDs for event emission
+		const successfullyDeletedIds: number[] = [];
+		const allDeletedIds: number[] = [];
 
-			console.log("Bulk removal completed with result:", { success, failed });
-			return { success, failed }
+		// Use a transaction for bulk deletion
+		await this.db.transaction("rw", this.db.bookmarks, async () => {
+			for (const bookmarkId of bookmarkIds) {
+				try {
+					console.log("Deleting bookmark ID:", bookmarkId);
+					await this.db.bookmarks.delete(bookmarkId)
+					console.log("Successfully deleted bookmark ID:", bookmarkId);
+					successfullyDeletedIds.push(bookmarkId);
+					allDeletedIds.push(bookmarkId);
+				} catch (error) {
+					console.error("Failed to delete bookmark ID:", bookmarkId, error);
+					failed++
+					this.logger?.warn(LOG_CATEGORY, "Failed to delete bookmark in bulk operation", {
+						bookmarkId,
+						error,
+					})
+				}
+			}
+		})
+
+		// Emit event for bulk bookmark removal if any were deleted
+		if (successfullyDeletedIds.length > 0) {
+			bookmarkEventEmitter.emit({
+				type: 'removed',
+				bookmarkIds: successfullyDeletedIds
+			});
+		}
+
+		this.logger?.debug(LOG_CATEGORY, "Bulk bookmark removal completed", {
+			totalRequested: bookmarkIds.length,
+			success,
+			failed,
+		})
+
+		console.log("Bulk removal completed with result:", { success, failed });
+		return { success, failed }
 		} catch (error) {
 			console.error("Bulk removal transaction failed:", error);
 			this.logger?.error(LOG_CATEGORY, "Failed to perform bulk bookmark removal", {
