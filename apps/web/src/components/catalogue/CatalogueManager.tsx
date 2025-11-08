@@ -37,6 +37,7 @@ import { CreateListModal } from "@/components/catalogue/CreateListModal";
 import { ShareModal } from "@/components/catalogue/ShareModal";
 import { ImportModal } from "@/components/catalogue/ImportModal";
 import { logger } from "@/lib/logger";
+import { SPECIAL_LIST_IDS } from "@academic-explorer/utils/storage/catalogue-db";
 
 interface CatalogueManagerProps {
   onNavigate?: (url: string) => void;
@@ -77,14 +78,16 @@ export function CatalogueManager({ onNavigate, sharedToken }: CatalogueManagerPr
     ["mod+Shift+I", () => setShowImportModal(true)],
   ]);
 
-  // Filter lists based on search
+  // Filter lists based on search (exclude special system lists)
   const filteredLists = searchQuery
     ? lists.filter(list =>
-        list.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        list.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        list.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+        list.id && !Object.values(SPECIAL_LIST_IDS).includes(list.id as any) && (
+          list.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          list.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          list.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+        )
       )
-    : lists;
+    : lists.filter(list => list.id && !Object.values(SPECIAL_LIST_IDS).includes(list.id as any));
 
   // Handle sharing
   const handleShare = async () => {
