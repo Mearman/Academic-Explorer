@@ -5,17 +5,17 @@
 import React, { createContext, useContext, useReducer, useCallback, type ReactNode } from "react";
 
 export type BookmarkSelectionState = {
-  selectedIds: Set<number>;
+  selectedIds: Set<string>;
   isAllSelected: boolean;
   totalCount: number;
 };
 
 export type BookmarkSelectionAction =
-  | { type: "SELECT_BOOKMARK"; payload: number }
-  | { type: "DESELECT_BOOKMARK"; payload: number }
-  | { type: "SELECT_ALL"; payload: number[] }
+  | { type: "SELECT_BOOKMARK"; payload: string }
+  | { type: "DESELECT_BOOKMARK"; payload: string }
+  | { type: "SELECT_ALL"; payload: string[] }
   | { type: "DESELECT_ALL" }
-  | { type: "TOGGLE_SELECTION"; payload: number }
+  | { type: "TOGGLE_SELECTION"; payload: string }
   | { type: "SET_TOTAL_COUNT"; payload: number };
 
 const initialState: BookmarkSelectionState = {
@@ -181,10 +181,10 @@ export const useBookmarkSelectionActions = () => {
   const { dispatch } = useBookmarkSelection();
 
   return {
-    selectBookmark: useCallback((id: number) => dispatch({ type: "SELECT_BOOKMARK", payload: id }), [dispatch]),
-    deselectBookmark: useCallback((id: number) => dispatch({ type: "DESELECT_BOOKMARK", payload: id }), [dispatch]),
-    toggleSelection: useCallback((id: number) => dispatch({ type: "TOGGLE_SELECTION", payload: id }), [dispatch]),
-    selectAll: useCallback((ids: number[]) => dispatch({ type: "SELECT_ALL", payload: ids }), [dispatch]),
+    selectBookmark: useCallback((id: string) => dispatch({ type: "SELECT_BOOKMARK", payload: id }), [dispatch]),
+    deselectBookmark: useCallback((id: string) => dispatch({ type: "DESELECT_BOOKMARK", payload: id }), [dispatch]),
+    toggleSelection: useCallback((id: string) => dispatch({ type: "TOGGLE_SELECTION", payload: id }), [dispatch]),
+    selectAll: useCallback((ids: string[]) => dispatch({ type: "SELECT_ALL", payload: ids }), [dispatch]),
     deselectAll: useCallback(() => dispatch({ type: "DESELECT_ALL" }), [dispatch]),
     setTotalCount: useCallback((count: number) => dispatch({ type: "SET_TOTAL_COUNT", payload: count }), [dispatch]),
   };

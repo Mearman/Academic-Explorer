@@ -316,7 +316,9 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
                                 aria-label={`Delete ${title} from history`}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleDeleteHistoryEntry(entry.id, title);
+                                  if (entry.id) {
+                                    handleDeleteHistoryEntry(entry.id, title);
+                                  }
                                 }}
                               >
                                 <IconTrash size={12} />

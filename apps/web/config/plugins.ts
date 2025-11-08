@@ -43,7 +43,8 @@ export const createPlugins = () => [
   }),
 
   // TanStack Router Plugin with correct routes directory (absolute path for Nx compatibility)
-  // TEMPORARILY DISABLED: Using static routeTree.gen.ts until generator is fixed
+  // TEMPORARILY DISABLED: Route generator has parsing issues with some route files
+  // Using static routeTree.gen.ts until generator is fixed
   // tanstackRouter({
   //   routesDirectory: resolve(appRoot, "src/routes"),
   //   generatedRouteTree: resolve(appRoot, "src/routeTree.gen.ts"),

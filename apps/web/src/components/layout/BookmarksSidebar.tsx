@@ -297,7 +297,9 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
                             className={styles.actionButton}
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleDeleteBookmark(bookmark.id, title);
+                              if (bookmark.id) {
+                                handleDeleteBookmark(bookmark.id, title);
+                              }
                             }}
                           >
                             <IconTrash size={12} />

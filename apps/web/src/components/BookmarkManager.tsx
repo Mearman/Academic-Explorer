@@ -58,6 +58,25 @@ function BookmarkCard({
   onToggleSelection: () => void;
   onNavigate: (url: string) => void;
 }) {
+  // Helper functions to extract data from CatalogueEntity
+  const extractTitle = (bookmark: any): string => {
+    const titleMatch = bookmark.notes?.match(/Title: ([^\n]+)/);
+    return titleMatch?.[1] || bookmark.entityId;
+  };
+
+  const extractUrl = (bookmark: any): string => {
+    const urlMatch = bookmark.notes?.match(/URL: ([^\n]+)/);
+    return urlMatch?.[1] || "";
+  };
+
+  const extractNotes = (bookmark: any): string => {
+    return bookmark.notes?.split('\n').filter(line => !line.startsWith('URL:') && !line.startsWith('Title:')).join('\n') || '';
+  };
+
+  const title = extractTitle(bookmark);
+  const url = extractUrl(bookmark);
+  const notes = extractNotes(bookmark);
+
   return (
     <Card
       withBorder
@@ -70,7 +89,7 @@ function BookmarkCard({
           <Checkbox
             checked={isSelected}
             onChange={onToggleSelection}
-            aria-label={`Select bookmark: ${bookmark.title}`}
+            aria-label={`Select bookmark: ${title}`}
             size="sm"
           />
           <Text
@@ -78,7 +97,7 @@ function BookmarkCard({
             href="#"
             onClick={(e) => {
               e.preventDefault();
-              onNavigate(bookmark.request.cacheKey);
+              onNavigate(url);
             }}
             flex={1}
             fw={500}
@@ -87,42 +106,20 @@ function BookmarkCard({
             className="hover:text-blue-600 transition-colors"
             data-testid="bookmark-title-link"
           >
-            {bookmark.title}
+            {title}
           </Text>
         </Group>
-        {bookmark.request.params &&
-          JSON.parse(bookmark.request.params) &&
-          Object.keys(JSON.parse(bookmark.request.params)).length > 0 && (
-          <Badge size="xs" variant="light">
-            {Object.keys(JSON.parse(bookmark.request.params)).length}{" "}
-            param
-            {Object.keys(JSON.parse(bookmark.request.params))
-              .length !== 1
-              ? "s"
-              : ""}
-          </Badge>
-        )}
       </Group>
 
-      {bookmark.notes && (
+      {notes && (
         <Text size="sm" c="dimmed" mb="xs" lineClamp={2}>
-          {bookmark.notes}
+          {notes}
         </Text>
-      )}
-
-      {bookmark.tags && bookmark.tags.length > 0 && (
-        <Group gap="xs" mb="xs">
-          {bookmark.tags.map((tag: string, index: number) => (
-            <Badge key={index} size="xs" variant="light">
-              {tag}
-            </Badge>
-          ))}
-        </Group>
       )}
 
       <Group justify="space-between" mt="xs">
         <Text size="xs" c="dimmed">
-          {new Date(bookmark.timestamp).toLocaleDateString()}
+          {new Date(bookmark.addedAt).toLocaleDateString()}
         </Text>
         <Tooltip label="Open bookmark">
           <Button
@@ -130,7 +127,7 @@ function BookmarkCard({
             size="xs"
             leftSection={<IconExternalLink size={14} />}
             onClick={() => {
-              onNavigate(bookmark.request.cacheKey);
+              onNavigate(url);
             }}
             data-testid="bookmark-open-button"
           >
@@ -166,7 +163,7 @@ function BookmarkManagerInner({ onNavigate }: BookmarkManagerProps) {
   useEffect(() => {
     console.log("Updating total count to:", bookmarks.length);
     setTotalCount(bookmarks.length);
-  }, [bookmarks.length]);
+  }, [bookmarks.length, setTotalCount]);
 
   // Debug selection state
   useEffect(() => {
@@ -178,14 +175,28 @@ function BookmarkManagerInner({ onNavigate }: BookmarkManagerProps) {
     });
   }, [selectionCount, selectedBookmarks, selectionState.isAllSelected, selectionState.totalCount]);
 
+  // Helper functions to extract data from CatalogueEntity
+  const extractTitle = (bookmark: any): string => {
+    const titleMatch = bookmark.notes?.match(/Title: ([^\n]+)/);
+    return titleMatch?.[1] || bookmark.entityId;
+  };
+
+  const extractTags = (bookmark: any): string[] => {
+    // For bookmarks, tags might be stored in a special format in notes
+    // This is a placeholder - tags may need to be stored differently
+    return [];
+  };
+
   const filteredBookmarks = searchQuery
     ? bookmarks.filter(
-        (bookmark) =>
-          bookmark.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          bookmark.notes?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          bookmark.tags?.some((tag: string) =>
-            tag.toLowerCase().includes(searchQuery.toLowerCase()),
-          ),
+        (bookmark) => {
+          const title = extractTitle(bookmark);
+          const notes = bookmark.notes?.split('\n').filter(line => !line.startsWith('URL:') && !line.startsWith('Title:')).join('\n') || '';
+          return (
+            title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            notes.toLowerCase().includes(searchQuery.toLowerCase())
+          );
+        },
       )
     : bookmarks;
 
@@ -287,7 +298,7 @@ function BookmarkManagerInner({ onNavigate }: BookmarkManagerProps) {
               <Button
                 variant="subtle"
                 size="sm"
-                onClick={() => selectAll(filteredBookmarks.map(b => b.id!).filter(Boolean))}
+                onClick={() => selectAll(filteredBookmarks.map(b => b.id || b.entityId))}
               >
                 Select All ({filteredBookmarks.length})
               </Button>
@@ -344,10 +355,10 @@ function BookmarkManagerInner({ onNavigate }: BookmarkManagerProps) {
         <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="md">
           {filteredBookmarks.map((bookmark) => (
             <BookmarkCard
-              key={bookmark.id}
+              key={bookmark.id || bookmark.entityId}
               bookmark={bookmark}
-              isSelected={selectedBookmarks.has(bookmark.id!)}
-              onToggleSelection={() => toggleSelection(bookmark.id!)}
+              isSelected={selectedBookmarks.has(bookmark.id || bookmark.entityId)}
+              onToggleSelection={() => toggleSelection(bookmark.id || bookmark.entityId)}
               onNavigate={handleNavigate}
             />
           ))}

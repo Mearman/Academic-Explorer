@@ -95,8 +95,14 @@ export function useQueryBookmarking({
     // Look for existing bookmarks with equivalent query parameters
     return userInteractions.bookmarks.some(bookmark => {
       try {
-        const bookmarkParams = JSON.parse(bookmark.request.params);
-        return areQueriesEquivalent(searchParams, bookmarkParams as OpenAlexSearchParams);
+        // For CatalogueEntity, check if the notes contain the URL we're looking for
+        const urlMatch = bookmark.notes?.match(/URL: ([^\n]+)/);
+        if (urlMatch) {
+          const bookmarkUrl = urlMatch[1];
+          // Simple check - this will need to be improved for proper query parameter matching
+          return bookmarkUrl.includes(searchParams.toString());
+        }
+        return false;
       } catch (error) {
         logger.warn(
           QUERY_BOOKMARKING_LOGGER_CONTEXT,
@@ -176,8 +182,13 @@ export function useQueryBookmarking({
       // Find the bookmark that matches our query
       const matchingBookmark = userInteractions.bookmarks.find(bookmark => {
         try {
-          const bookmarkParams = JSON.parse(bookmark.request.params);
-          return areQueriesEquivalent(searchParams, bookmarkParams as OpenAlexSearchParams);
+          // For CatalogueEntity, check if the notes contain the URL we're looking for
+          const urlMatch = bookmark.notes?.match(/URL: ([^\n]+)/);
+          if (urlMatch) {
+            const bookmarkUrl = urlMatch[1];
+            return bookmarkUrl.includes(searchParams.toString());
+          }
+          return false;
         } catch (error) {
           return false;
         }
