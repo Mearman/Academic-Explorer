@@ -1,3 +1,10 @@
+## [12.2.6](https://github.com/Mearman/Academic-Explorer/compare/v12.2.5...v12.2.6) (2025-11-08)
+
+
+### Bug Fixes
+
+* **web:** enhance accessibility with proper labels and ARIA attributes ([89ff950](https://github.com/Mearman/Academic-Explorer/commit/89ff950d8b226c12a0fe8a078629a53eb875ffab))
+
 ## [12.2.5](https://github.com/Mearman/Academic-Explorer/compare/v12.2.4...v12.2.5) (2025-11-08)
 
 ## [12.2.4](https://github.com/Mearman/Academic-Explorer/compare/v12.2.3...v12.2.4) (2025-11-08)
