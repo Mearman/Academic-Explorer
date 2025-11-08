@@ -42,9 +42,11 @@ export class HistoryDatabase extends Dexie {
   }
 
   async getAll() {
-    // Join routes and visits, ordered by visitedAt desc
-    const visits = await this.visits.orderBy("visitedAt").reverse().toArray();
-    const routeIds = [...new Set(visits.map((v) => v.routeId))];
+    // Get all visits and sort them manually since visitedAt is part of compound key
+    const visits = await this.visits.toArray();
+    const sortedVisits = visits.sort((a, b) => b.visitedAt - a.visitedAt);
+
+    const routeIds = [...new Set(sortedVisits.map((v) => v.routeId))];
     const routes = await this.routes
       .where("normalizedRoute")
       .anyOf(routeIds)
@@ -53,7 +55,7 @@ export class HistoryDatabase extends Dexie {
       routes.map((r) => [r.normalizedRoute, r.normalizedRoute]),
     );
 
-    return visits.map((visit) => {
+    return sortedVisits.map((visit) => {
       const route = routeMap.get(visit.routeId);
       if (!route) throw new Error(`Route not found for ${visit.routeId}`);
       return {
