@@ -6,13 +6,13 @@ import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { catalogueService, type CatalogueEntity } from "@academic-explorer/utils/storage/catalogue-db";
 import { logger } from "@academic-explorer/utils/logger";
 import { useNavigate, Link } from "@tanstack/react-router";
-import { CatalogueSidebarLink } from "@/components/catalogue";
 import {
   IconBookmark,
   IconBookmarkOff,
   IconSearch,
   IconExternalLink,
   IconX,
+  IconBook,
   IconTrash,
   IconSettings,
   IconList,
@@ -205,7 +205,7 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
       <div className={styles.searchInput}>
         <Group justify="space-between" align="center">
           <Text size="sm" fw={500}>Collections</Text>
-          <CatalogueSidebarLink onClose={onClose} />
+          <IconBook size={14} />
         </Group>
         <Button
           variant="subtle"
