@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { logger } from "@academic-explorer/utils/logger";
 
 /**
  * Component that fixes URL display issues immediately when mounted.
@@ -30,7 +31,7 @@ export function UrlFixer() {
       if (needsUpdate && fixedHash !== currentHash) {
         const newUrl = window.location.pathname + window.location.search + fixedHash;
         window.history.replaceState(window.history.state, '', newUrl);
-        console.log('URL fix applied:', { original: currentHash, fixed: fixedHash });
+        logger.debug('routing', 'URL fix applied:', { original: currentHash, fixed: fixedHash });
       }
     };
 

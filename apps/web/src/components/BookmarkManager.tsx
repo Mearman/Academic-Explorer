@@ -3,6 +3,7 @@
  */
 
 import { useUserInteractions } from "@/hooks/use-user-interactions";
+import { logger } from "@academic-explorer/utils/logger";
 import {
   BookmarkSelectionProvider,
   useBookmarkSelection,
@@ -161,13 +162,13 @@ function BookmarkManagerInner({ onNavigate }: BookmarkManagerProps) {
 
   // Update total count when bookmarks change
   useEffect(() => {
-    console.log("Updating total count to:", bookmarks.length);
+    logger.debug("bookmarks", "Updating total count to:", bookmarks.length);
     setTotalCount(bookmarks.length);
   }, [bookmarks.length, setTotalCount]);
 
   // Debug selection state
   useEffect(() => {
-    console.log("Selection state updated:", {
+    logger.debug("bookmarks", "Selection state updated:", {
       selectionCount,
       selectedBookmarks: Array.from(selectedBookmarks),
       isAllSelected: selectionState.isAllSelected,

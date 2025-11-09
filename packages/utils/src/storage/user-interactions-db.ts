@@ -792,7 +792,7 @@ export class UserInteractionsService {
 	 * Remove multiple bookmarks in bulk
 	 */
 	async removeBookmarks(bookmarkIds: number[]): Promise<{ success: number; failed: number }> {
-		console.log("removeBookmarks service called with:", bookmarkIds);
+		this.logger?.debug(LOG_CATEGORY, "removeBookmarks service called with:", bookmarkIds);
 		let success = 0
 		let failed = 0
 
@@ -801,12 +801,12 @@ export class UserInteractionsService {
 			await this.db.transaction("rw", this.db.bookmarks, async () => {
 				for (const bookmarkId of bookmarkIds) {
 					try {
-						console.log("Deleting bookmark ID:", bookmarkId);
+						this.logger?.debug(LOG_CATEGORY, "Deleting bookmark ID:", bookmarkId);
 						await this.db.bookmarks.delete(bookmarkId)
-						console.log("Successfully deleted bookmark ID:", bookmarkId);
+						this.logger?.debug(LOG_CATEGORY, "Successfully deleted bookmark ID:", bookmarkId);
 						success++
 					} catch (error) {
-						console.error("Failed to delete bookmark ID:", bookmarkId, error);
+						this.logger?.error(LOG_CATEGORY, "Failed to delete bookmark ID:", { bookmarkId, error });
 						failed++
 						this.logger?.warn(LOG_CATEGORY, "Failed to delete bookmark in bulk operation", {
 							bookmarkId,
@@ -824,13 +824,13 @@ export class UserInteractionsService {
 		await this.db.transaction("rw", this.db.bookmarks, async () => {
 			for (const bookmarkId of bookmarkIds) {
 				try {
-					console.log("Deleting bookmark ID:", bookmarkId);
+					this.logger?.debug(LOG_CATEGORY, "Deleting bookmark ID:", bookmarkId);
 					await this.db.bookmarks.delete(bookmarkId)
-					console.log("Successfully deleted bookmark ID:", bookmarkId);
+					this.logger?.debug(LOG_CATEGORY, "Successfully deleted bookmark ID:", bookmarkId);
 					successfullyDeletedIds.push(bookmarkId);
 					allDeletedIds.push(bookmarkId);
 				} catch (error) {
-					console.error("Failed to delete bookmark ID:", bookmarkId, error);
+					this.logger?.error(LOG_CATEGORY, "Failed to delete bookmark ID:", { bookmarkId, error });
 					failed++
 					this.logger?.warn(LOG_CATEGORY, "Failed to delete bookmark in bulk operation", {
 						bookmarkId,
@@ -854,10 +854,10 @@ export class UserInteractionsService {
 			failed,
 		})
 
-		console.log("Bulk removal completed with result:", { success, failed });
+		this.logger?.debug(LOG_CATEGORY, "Bulk removal completed with result:", { success, failed });
 		return { success, failed }
 		} catch (error) {
-			console.error("Bulk removal transaction failed:", error);
+			this.logger?.error(LOG_CATEGORY, "Bulk removal transaction failed:", error);
 			this.logger?.error(LOG_CATEGORY, "Failed to perform bulk bookmark removal", {
 				bookmarkIds,
 				error,

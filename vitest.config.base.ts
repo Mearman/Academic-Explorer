@@ -10,6 +10,9 @@ export const baseVitestConfig = defineConfig({
     environment: "node",
     watch: false,
 
+    // Global setup file to handle lru-cache ES module compatibility
+    setupFiles: ['./vitest.setup.ts'],
+
     // Performance and timeout configuration
     testTimeout: 10000,
     hookTimeout: 10000,

@@ -18,7 +18,7 @@ import { cachedOpenAlex } from "@academic-explorer/client";
 if (typeof window !== "undefined") {
   const currentHash = window.location.hash;
 
-  console.log("main.tsx URL processing started:", {
+  logger.debug("routing", "main.tsx URL processing started", {
     currentHash,
     href: window.location.href
   });
@@ -31,7 +31,7 @@ if (typeof window !== "undefined") {
     if (currentHash.startsWith("##")) {
       fixedHash = "#" + currentHash.substring(2);
       needsUpdate = true;
-      console.log("Fixed double hash:", { original: currentHash, clean: fixedHash });
+      logger.debug("routing", "Fixed double hash:", { original: currentHash, clean: fixedHash });
     }
 
     // Only decode regular URLs, not external canonical IDs - let usePrettyUrl hook handle those
@@ -56,7 +56,7 @@ if (typeof window !== "undefined") {
             fixedHash = `#/${entityType}/${decodedId}${hashQueryParams}`;
             needsUpdate = true;
 
-            console.log("Converting encoded URL to pretty URL:", {
+            logger.debug("routing", "Converting encoded URL to pretty URL:", {
               original: currentHash,
               fixed: fixedHash,
               encodedId,
@@ -65,7 +65,7 @@ if (typeof window !== "undefined") {
           }
         } catch (error) {
           // If decoding fails, continue with normal processing
-          console.log("Failed to decode URL:", { error, encodedId });
+          logger.debug("routing", "Failed to decode URL:", { error, encodedId });
         }
       }
       // Skip processing external canonical IDs here - let React hooks handle pretty URL display
@@ -83,7 +83,7 @@ if (typeof window !== "undefined") {
 
         needsUpdate = true;
 
-        console.log("Fixing collapsed URL display in hash:", {
+        logger.debug("routing", "Fixing collapsed URL display in hash:", {
           original: currentHash,
           fixed: fixedHash
         });
@@ -96,7 +96,7 @@ if (typeof window !== "undefined") {
       const cleanHash = fixedHash.startsWith("#") ? fixedHash : "#" + fixedHash;
       const newUrl = window.location.pathname + window.location.search + cleanHash;
 
-      console.log("Applying URL fix:", {
+      logger.debug("routing", "Applying URL fix:", {
         original: currentHash,
         fixed: fixedHash,
         clean: cleanHash,
@@ -106,18 +106,18 @@ if (typeof window !== "undefined") {
       // Use history.replaceState to update URL without page reload
       window.history.replaceState(window.history.state, "", newUrl);
 
-      console.log("URL fix applied, new location:", {
+      logger.debug("routing", "URL fix applied, new location:", {
         href: window.location.href,
         hash: window.location.hash
       });
     } else {
-      console.log("No URL fix needed:", {
+      logger.debug("routing", "No URL fix needed:", {
         currentHash,
         needsUpdate
       });
     }
   } else {
-    console.log("No hash to process");
+    logger.debug("routing", "No hash to process");
   }
 }
 
@@ -148,7 +148,7 @@ if (typeof window !== "undefined") {
     if (needsUpdate && fixedHash !== currentHash) {
       const newUrl = window.location.pathname + window.location.search + fixedHash;
       window.history.replaceState(window.history.state, "", newUrl);
-      console.log("URL fix applied:", { original: currentHash, fixed: fixedHash });
+      logger.debug("routing", "URL fix applied:", { original: currentHash, fixed: fixedHash });
     }
   };
 

@@ -1,11 +1,20 @@
 import { vi } from "vitest"
 
-// Fix lru-cache ES module compatibility issue
+// Global Vitest setup for the Academic Explorer monorepo
+// This handles common testing issues across all packages
+
+// Fix lru-cache ES module compatibility issue system-wide
+// Multiple packages in the dependency tree try to import LRUCache from lru-cache
+// but face ES module compatibility issues in the Node.js test environment
+
+// Store original module if it exists
 let originalLruCache: any = null
 
 try {
+  // Try to require the original lru-cache module
   originalLruCache = require('lru-cache')
 } catch (error) {
+  // lru-cache might not be available or have issues
   console.warn('lru-cache module not available during setup:', error)
 }
 
@@ -24,6 +33,7 @@ class CompatibleLRUCache {
 
   set(key: any, value: any) {
     if (this.cache.size >= this.maxSize) {
+      // Simple LRU eviction: delete the first item
       const firstKey = this.cache.keys().next().value
       if (firstKey !== undefined) {
         this.cache.delete(firstKey)
@@ -52,13 +62,17 @@ class CompatibleLRUCache {
 
 // Patch the lru-cache module globally before any tests run
 if (originalLruCache) {
+  // If LRUCache constructor is missing (ES module issue), patch it
   if (!originalLruCache.LRUCache && originalLruCache.default) {
     originalLruCache.LRUCache = originalLruCache.default
   }
+
+  // If still no LRUCache, provide our compatible implementation
   if (!originalLruCache.LRUCache) {
     originalLruCache.LRUCache = CompatibleLRUCache
   }
 } else {
+  // If no original module, provide a complete mock
   vi.mock('lru-cache', () => ({
     LRUCache: CompatibleLRUCache,
     default: CompatibleLRUCache
@@ -78,6 +92,7 @@ vi.mock('@asamuzakjp/css-color', () => ({
   },
 }))
 
+// Mock DOM selector to prevent lru-cache issues
 vi.mock('@asamuzakjp/dom-selector', () => ({
   DOMSelector: class MockDOMSelector {
     constructor() {}
@@ -86,50 +101,10 @@ vi.mock('@asamuzakjp/dom-selector', () => ({
   },
 }))
 
+// Mock cssstyle to prevent lru-cache issues
 vi.mock('cssstyle', () => ({
   parse: () => ({}),
   stringify: () => '',
 }))
 
-// Mock IntersectionObserver for tests
-global.IntersectionObserver = class IntersectionObserver {
-	root = null
-	rootMargin = ""
-	thresholds = []
-	observe() {}
-	disconnect() {}
-	unobserve() {}
-	takeRecords() {
-		return []
-	}
-} as unknown as typeof IntersectionObserver
-
-// Mock ResizeObserver for tests
-global.ResizeObserver = class ResizeObserver {
-	observe() {}
-	unobserve() {}
-	disconnect() {}
-}
-
-// Mock window.matchMedia for Mantine components
-Object.defineProperty(window, "matchMedia", {
-	writable: true,
-	value: vi.fn().mockImplementation((query) => ({
-		matches: false,
-		media: query,
-		onchange: null,
-		addListener: vi.fn(), // deprecated
-		removeListener: vi.fn(), // deprecated
-		addEventListener: vi.fn(),
-		removeEventListener: vi.fn(),
-		dispatchEvent: vi.fn(),
-	})),
-})
-
-// Mock clipboard API
-Object.defineProperty(navigator, "clipboard", {
-	value: {
-		writeText: vi.fn().mockResolvedValue(undefined),
-		readText: vi.fn().mockResolvedValue(""),
-	},
-})
+console.log('✅ Vitest global setup completed - lru-cache compatibility patched')

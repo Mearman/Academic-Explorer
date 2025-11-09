@@ -3,6 +3,7 @@
  * Provides bookmarking functionality for complex queries with pagination awareness
  */
 
+import { logger } from "@academic-explorer/utils/logger";
 import {
   IconBookmark,
   IconBookmarkOff,
@@ -71,7 +72,7 @@ export function QueryBookmarkButton({
         onBookmark?.();
       }
     } catch (error) {
-      console.error("Failed to toggle query bookmark:", error);
+      logger.error("bookmarks", "Failed to toggle query bookmark:", error);
       // You could add error notification here
     } finally {
       setIsLoading(false);

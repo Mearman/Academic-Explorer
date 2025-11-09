@@ -4,6 +4,7 @@
 
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { catalogueService } from "@academic-explorer/utils/storage/catalogue-db";
+import { logger } from "@academic-explorer/utils/logger";
 import { useNavigate, Link } from "@tanstack/react-router";
 import { CatalogueSidebarLink } from "@/components/catalogue";
 import {
@@ -45,7 +46,7 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
     try {
       return useUserInteractions();
     } catch (error) {
-      console.error('BookmarksSidebar: Error in useUserInteractions', error);
+      logger.error('bookmarks', 'BookmarksSidebar: Error in useUserInteractions', error);
       // Return fallback values
       return {
         bookmarks: [],
@@ -129,7 +130,7 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
           await catalogueService.removeBookmark(bookmarkRecordId);
           await refreshData();
         } catch (error) {
-          console.error("Failed to delete bookmark:", error);
+          logger.error("bookmarks", "Failed to delete bookmark:", error);
         }
       },
     });

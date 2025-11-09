@@ -9,26 +9,34 @@ export default defineConfig(
 		cacheDir: "../../node_modules/.vite/packages/ui",
 		plugins: [nxViteTsPaths()],
 
-		// Fix for lru-cache ES module compatibility issue
+	// Configure Node.js module resolution to handle ES module issues
 		define: {
 			// Ensure global exports are available for ES modules
 			global: 'globalThis',
 		},
 
+		// Externalize problematic packages to avoid bundling issues
+		ssr: {
+			noExternal: ['lru-cache', '@asamuzakjp/css-color', '@asamuzakjp/dom-selector'],
+		},
+
 		optimizeDeps: {
 			include: [
-				// Pre-bundle lru-cache to avoid ES module issues
+				// Pre-bundle these problematic packages
 				'lru-cache',
+				'@asamuzakjp/css-color',
+				'@asamuzakjp/dom-selector',
+				'cssstyle',
 			],
 			// Force optimization even for dependencies
 			force: true,
-		},
+			},
 
 		test: {
 			environment: "jsdom",
 			setupFiles: ["./src/test/setup.ts"],
 			coverage: {
-				reportsDirectory: "../../coverage/packages/ui",
+			 reportsDirectory: "../../coverage/packages/ui",
 			},
 		},
 	})
