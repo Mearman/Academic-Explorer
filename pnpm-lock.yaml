@@ -10,7 +10,7 @@ overrides:
   got@<11.8.5: '>=11.8.5'
   koa@>=3.0.1 <3.0.3: '>=3.0.3'
   minimatch: 8.0.4
-  lru-cache: 10.4.3
+  lru-cache: 7.18.3
   '@babel/helper-compilation-targets': 7.27.2
   '@babel/core': 7.28.5
   '@vanilla-extract/css': 1.14.1
@@ -6529,8 +6529,9 @@ packages:
   lower-case@2.0.2:
     resolution: {integrity: sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==}
 
-  lru-cache@10.4.3:
-    resolution: {integrity: sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==}
+  lru-cache@7.18.3:
+    resolution: {integrity: sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==}
+    engines: {node: '>=12'}
 
   luxon@3.7.2:
     resolution: {integrity: sha512-vtEhXh/gNjI9Yg1u4jX/0YVPMvxzHuGgCm6tC5kZyb08yjGWGnqAjGJvcXbqQR2P3MyMEFnRbpcdFS6PBcLqew==}
@@ -9503,7 +9504,7 @@ snapshots:
       '@csstools/css-color-parser': 3.1.0(@csstools/css-parser-algorithms@3.0.5(@csstools/css-tokenizer@3.0.4))(@csstools/css-tokenizer@3.0.4)
       '@csstools/css-parser-algorithms': 3.0.5(@csstools/css-tokenizer@3.0.4)
       '@csstools/css-tokenizer': 3.0.4
-      lru-cache: 10.4.3
+      lru-cache: 7.18.3
 
   '@asamuzakjp/dom-selector@6.7.2':
     dependencies:
@@ -9511,7 +9512,7 @@ snapshots:
       bidi-js: 1.0.3
       css-tree: 3.1.0
       is-potential-custom-element-name: 1.0.1
-      lru-cache: 10.4.3
+      lru-cache: 7.18.3
 
   '@asamuzakjp/dom-selector@6.7.4':
     dependencies:
@@ -9519,7 +9520,7 @@ snapshots:
       bidi-js: 1.0.3
       css-tree: 3.1.0
       is-potential-custom-element-name: 1.0.1
-      lru-cache: 10.4.3
+      lru-cache: 7.18.3
 
   '@asamuzakjp/nwsapi@2.3.9': {}
 
@@ -9573,7 +9574,7 @@ snapshots:
       '@babel/compat-data': 7.28.5
       '@babel/helper-validator-option': 7.27.1
       browserslist: 4.27.0
-      lru-cache: 10.4.3
+      lru-cache: 7.18.3
       semver: 6.3.1
 
   '@babel/helper-create-class-features-plugin@7.28.5(@babel/core@7.28.5)':
@@ -15780,11 +15781,11 @@ snapshots:
 
   hosted-git-info@7.0.2:
     dependencies:
-      lru-cache: 10.4.3
+      lru-cache: 7.18.3
 
   hosted-git-info@9.0.2:
     dependencies:
-      lru-cache: 10.4.3
+      lru-cache: 7.18.3
 
   html-encoding-sniffer@3.0.0:
     dependencies:
@@ -16577,7 +16578,7 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  lru-cache@10.4.3: {}
+  lru-cache@7.18.3: {}
 
   luxon@3.7.2: {}
 
@@ -17555,7 +17556,7 @@ snapshots:
 
   path-scurry@1.11.1:
     dependencies:
-      lru-cache: 10.4.3
+      lru-cache: 7.18.3
       minipass: 7.1.2
 
   path-to-regexp@0.1.12: {}
