@@ -153,12 +153,7 @@
       "minimatch": "8.0.4",
       "lru-cache": "10.4.3",
       "@babel/helper-compilation-targets": "7.27.2",
-      "@babel/helper-compilation-targets@7.27.2": {
-        "lru-cache": "10.4.3"
-      },
-      "@babel/core@7.28.5": {
-        "lru-cache": "10.4.3"
-      },
+      "@babel/core": "7.28.5",
       "@vanilla-extract/css": "1.14.1",
       "@asamuzakjp/css-color": "4.0.5"
     }
