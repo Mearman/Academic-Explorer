@@ -60,8 +60,8 @@ describe("Cache Population Integration Tests", () => {
         openalexCachePlugin({
           staticDataPath: "public/data/openalex",
           verbose: true,
-        }) as PluginOption,
-      ] as PluginOption[],
+        }),
+      ],
       server: {
         port: DEV_SERVER_PORT,
         host: "127.0.0.1",

@@ -4,7 +4,7 @@
  */
 
 // Import from new modular structure
-import type { Plugin } from "vite";
+import type { PluginOption } from "vite";
 import type { OpenAlexCachePluginOptions } from "./types";
 import { createLogVerbose, shouldEnablePlugin } from "./utils";
 import { PluginState } from "./state";
@@ -16,7 +16,7 @@ import { createRedirectMiddleware, createCacheMiddleware } from "./middleware";
  */
 export function openalexCachePlugin(
   options: OpenAlexCachePluginOptions = {},
-): Plugin {
+): PluginOption {
   const pluginState = new PluginState();
 
   const opts = {

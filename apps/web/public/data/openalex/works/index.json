@@ -202,7 +202,7 @@
     "W123%2Fspecial-chars": {
       "url": "https://api.openalex.org/works/W123%2Fspecial-chars",
       "$ref": "./W123%2Fspecial-chars.json",
-      "lastRetrieved": "2025-11-09T04:45:42.576Z",
+      "lastRetrieved": "2025-11-09T09:39:48.974Z",
       "contentHash": "44136fa355b3678a"
     }
   }
