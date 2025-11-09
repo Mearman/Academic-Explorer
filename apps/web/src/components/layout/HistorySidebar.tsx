@@ -59,7 +59,7 @@ export function HistorySidebar({ onClose }: HistorySidebarProps) {
     }
   };
 
-  const handleNavigate = (entry: any) => {
+  const handleNavigate = (entry: CatalogueEntity) => {
     // Extract URL from entry notes or construct from entity
     let url = "";
 

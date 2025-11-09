@@ -3,7 +3,7 @@
  */
 
 import { useUserInteractions } from "@/hooks/use-user-interactions";
-import { catalogueService } from "@academic-explorer/utils/storage/catalogue-db";
+import { catalogueService, type CatalogueEntity } from "@academic-explorer/utils/storage/catalogue-db";
 import { logger } from "@academic-explorer/utils/logger";
 import { useNavigate, Link } from "@tanstack/react-router";
 import { CatalogueSidebarLink } from "@/components/catalogue";
@@ -81,7 +81,7 @@ export function BookmarksSidebar({ onClose }: BookmarksSidebarProps) {
       )
     : bookmarks;
 
-  const handleNavigate = (bookmark: any) => {
+  const handleNavigate = (bookmark: CatalogueEntity) => {
     // Extract URL from bookmark notes or construct from entity
     let url = "";
 

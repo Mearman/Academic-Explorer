@@ -45,6 +45,15 @@ import { Link } from "@tanstack/react-router";
 import { convertOpenAlexToInternalLink, isOpenAlexId } from "@/utils/openalex-link-conversion";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 
+interface ThemeColors {
+  background: {
+    primary: string;
+  };
+  border: {
+    secondary: string;
+  };
+}
+
 interface EntityDataDisplayProps {
   data: Record<string, unknown>;
   title?: string;
@@ -53,7 +62,7 @@ interface EntityDataDisplayProps {
 /**
  * Recursively renders data in a structured format
  */
-function renderValue(value: unknown, depth: number = 0, colors?: any): React.ReactNode {
+function renderValue(value: unknown, depth: number = 0, colors?: ThemeColors): React.ReactNode {
   // Handle null/undefined
   if (value === null || value === undefined) {
     return <Text c="dimmed" fs="italic" size="sm">null</Text>;
@@ -178,7 +187,7 @@ function renderValue(value: unknown, depth: number = 0, colors?: any): React.Rea
     return (
       <Stack gap="md" mt="xs">
         {value.map((item, index) => (
-          <Card key={index} withBorder p="md" bg={colors.background.primary}>
+          <Card key={index} withBorder p="md" bg={colors?.background.primary}>
             <Group gap="sm">
               <Badge
                 circle
@@ -307,8 +316,8 @@ export function EntityDataDisplay({ data, title }: EntityDataDisplayProps) {
           <Card key={groupName} withBorder shadow="sm">
             <CardSection
               p="md"
-              bg={colors.background.primary}
-              style={{ borderBottom: `1px solid ${colors.border.secondary}` }}
+              bg={colors?.background.primary}
+              style={{ borderBottom: `1px solid ${colors?.border.secondary}` }}
             >
               <Group gap="sm" justify="space-between">
                 <Group gap="sm">
@@ -332,7 +341,7 @@ export function EntityDataDisplay({ data, title }: EntityDataDisplayProps) {
             <CardSection p="lg">
               <Stack gap="md">
                 {Object.entries(groupData).map(([key, value]) => (
-                  <Card key={key} withBorder p="md" bg={colors.background.primary}>
+                  <Card key={key} withBorder p="md" bg={colors?.background.primary}>
                     <Stack gap="xs">
                       <Text size="md" fw={600} c="blue.6">
                         {key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}

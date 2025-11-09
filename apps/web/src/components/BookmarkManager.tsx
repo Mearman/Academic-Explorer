@@ -4,6 +4,7 @@
 
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { logger } from "@academic-explorer/utils/logger";
+import { type CatalogueEntity } from "@academic-explorer/utils/storage/catalogue-db";
 import {
   BookmarkSelectionProvider,
   useBookmarkSelection,
@@ -54,23 +55,23 @@ function BookmarkCard({
   onToggleSelection,
   onNavigate
 }: {
-  bookmark: any;
+  bookmark: CatalogueEntity;
   isSelected: boolean;
   onToggleSelection: () => void;
   onNavigate: (url: string) => void;
 }) {
   // Helper functions to extract data from CatalogueEntity
-  const extractTitle = (bookmark: any): string => {
+  const extractTitle = (bookmark: CatalogueEntity): string => {
     const titleMatch = bookmark.notes?.match(/Title: ([^\n]+)/);
     return titleMatch?.[1] || bookmark.entityId;
   };
 
-  const extractUrl = (bookmark: any): string => {
+  const extractUrl = (bookmark: CatalogueEntity): string => {
     const urlMatch = bookmark.notes?.match(/URL: ([^\n]+)/);
     return urlMatch?.[1] || "";
   };
 
-  const extractNotes = (bookmark: any): string => {
+  const extractNotes = (bookmark: CatalogueEntity): string => {
     return bookmark.notes?.split('\n').filter(line => !line.startsWith('URL:') && !line.startsWith('Title:')).join('\n') || '';
   };
 
@@ -177,12 +178,12 @@ function BookmarkManagerInner({ onNavigate }: BookmarkManagerProps) {
   }, [selectionCount, selectedBookmarks, selectionState.isAllSelected, selectionState.totalCount]);
 
   // Helper functions to extract data from CatalogueEntity
-  const extractTitle = (bookmark: any): string => {
+  const extractTitle = (bookmark: CatalogueEntity): string => {
     const titleMatch = bookmark.notes?.match(/Title: ([^\n]+)/);
     return titleMatch?.[1] || bookmark.entityId;
   };
 
-  const extractTags = (bookmark: any): string[] => {
+  const extractTags = (bookmark: CatalogueEntity): string[] => {
     // For bookmarks, tags might be stored in a special format in notes
     // This is a placeholder - tags may need to be stored differently
     return [];
