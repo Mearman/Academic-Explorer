@@ -12,12 +12,6 @@
   },
   "include": [
     "src",
-    "*.config.ts",
-    "vite.config*.ts",
-    "vitest.config.ts",
-    "eslint.config.ts",
-    "knip.ts",
-    "playwright.config.ts",
     "config/**/*",
     "../../config/**/*",
     "../../vite.config.base.ts",
