@@ -28,13 +28,13 @@
     "q=MIT": {
       "url": "https://api.openalex.org/autocomplete/institutions?q=MIT",
       "$ref": "./q=MIT.json",
-      "lastRetrieved": "2025-11-09T09:39:51.916Z",
+      "lastRetrieved": "2025-11-09T20:15:36.859Z",
       "contentHash": "dd796f6d32a769cc"
     },
     "q=Massachusetts+Institute+of+Technology": {
       "url": "https://api.openalex.org/autocomplete/institutions?q=Massachusetts+Institute+of+Technology",
       "$ref": "./q=Massachusetts+Institute+of+Technology.json",
-      "lastRetrieved": "2025-11-09T09:39:55.299Z",
+      "lastRetrieved": "2025-11-09T20:15:38.576Z",
       "contentHash": "a695960dbd857a99"
     }
   }

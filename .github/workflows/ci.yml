@@ -198,7 +198,7 @@ jobs:
 
       - name: Run all tests with coverage
         timeout-minutes: 25
-        run: pnpm test
+        run: pnpm test:quality-gates
 
       - name: Generate workspace coverage report
         run: pnpm coverage:report

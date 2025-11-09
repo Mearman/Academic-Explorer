@@ -135,6 +135,17 @@ async function globalSetup(config: FullConfig) {
         });
       });
 
+      // Additional cleanup: Clear localStorage and sessionStorage
+      await page.evaluate(() => {
+        try {
+          localStorage.clear();
+          sessionStorage.clear();
+          console.log("✅ Cleared localStorage and sessionStorage");
+        } catch (error) {
+          console.log("⚠️ Failed to clear storage:", error);
+        }
+      });
+
       console.log("🧹 IndexedDB databases cleared for fresh E2E test state");
 
       // Log cache statistics if available (with timeout protection)
