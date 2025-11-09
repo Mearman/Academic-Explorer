@@ -82,6 +82,61 @@ async function globalSetup(config: FullConfig) {
       ]);
       console.log(`✅ Storage state saved to: ${STORAGE_STATE_PATH}`);
 
+      // Clear IndexedDB databases to prevent DexieError2 conflicts in E2E tests
+      await page.evaluate(() => {
+        return new Promise((resolve) => {
+          if (!("indexedDB" in window)) {
+            resolve({ error: "IndexedDB not available" });
+            return;
+          }
+
+          const databasesToDelete = [
+            "user-interactions",
+            "catalogue-db",
+            "openalex-cache"
+          ];
+
+          let deletedCount = 0;
+          const totalCount = databasesToDelete.length;
+
+          const checkComplete = () => {
+            if (deletedCount === totalCount) {
+              resolve({ deletedDatabases: databasesToDelete.length });
+            }
+          };
+
+          databasesToDelete.forEach(dbName => {
+            try {
+              const deleteRequest = indexedDB.deleteDatabase(dbName);
+
+              deleteRequest.onsuccess = () => {
+                console.log(`✅ Deleted IndexedDB: ${dbName}`);
+                deletedCount++;
+                checkComplete();
+              };
+
+              deleteRequest.onerror = () => {
+                console.log(`❌ Failed to delete IndexedDB: ${dbName}`);
+                deletedCount++; // Still count as complete to avoid hanging
+                checkComplete();
+              };
+
+              deleteRequest.onblocked = () => {
+                console.log(`⚠️ Blocked deleting IndexedDB: ${dbName}`);
+                deletedCount++; // Still count as complete to avoid hanging
+                checkComplete();
+              };
+            } catch (error) {
+              console.log(`❌ Exception deleting IndexedDB ${dbName}:`, error);
+              deletedCount++; // Still count as complete to avoid hanging
+              checkComplete();
+            }
+          });
+        });
+      });
+
+      console.log("🧹 IndexedDB databases cleared for fresh E2E test state");
+
       // Log cache statistics if available (with timeout protection)
       const cacheStats = await page.evaluate(() => {
         return new Promise((resolve) => {
@@ -91,7 +146,7 @@ async function globalSetup(config: FullConfig) {
               error: "IndexedDB access timeout",
               localStorageKeys: Object.keys(localStorage)
             });
-          }, 5000); // 5 second timeout
+          }, 3000); // Reduced timeout since we just cleared databases
 
           // Check IndexedDB cache size
           if ("indexedDB" in window) {
@@ -150,7 +205,7 @@ async function globalSetup(config: FullConfig) {
         });
       });
 
-      console.log("📊 Cache statistics:", cacheStats);
+      console.log("📊 Cache statistics after cleanup:", cacheStats);
     } catch (error) {
       console.error("❌ Cache warmup failed:", error);
       // Don't fail the entire setup if warmup fails
