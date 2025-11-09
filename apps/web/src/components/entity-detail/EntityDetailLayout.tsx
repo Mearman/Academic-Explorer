@@ -7,6 +7,7 @@ import { useQueryBookmarking } from "@/hooks/use-query-bookmarking";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { EntityTypeConfig, EntityType } from "./EntityTypeConfig";
 import { EntityDataDisplay } from "../EntityDataDisplay";
+import { EntityRelationships } from "./EntityRelationships";
 
 interface EntityDetailLayoutProps {
   config: EntityTypeConfig;
@@ -230,6 +231,7 @@ export function EntityDetailLayout({
         ) : (
           <>
             <EntityDataDisplay data={data} />
+            <EntityRelationships data={data} entityType={entityType} entityId={entityId} />
             {children}
           </>
         )}
