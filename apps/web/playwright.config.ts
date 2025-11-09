@@ -4,7 +4,7 @@
  */
 
 import { defineConfig, devices } from "@playwright/test";
-import fs from "fs";
+import * as fs from "fs";
 
 export default defineConfig({
   // Test directory - using src for all tests
