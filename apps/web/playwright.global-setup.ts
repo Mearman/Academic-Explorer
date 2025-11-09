@@ -4,19 +4,18 @@
  */
 
 import { chromium, FullConfig } from "@playwright/test";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
+import * as fs from "fs";
+import * as path from "path";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
+// Use relative paths to avoid import.meta issues
 const STORAGE_STATE_PATH = path.join(
-  __dirname,
-  "test-results/storage-state/state.json"
+  process.cwd(),
+  "apps/web/test-results/storage-state/state.json"
 );
-const HAR_CACHE_DIR = path.join(__dirname, "test-results/har-cache");
+const HAR_CACHE_DIR = path.join(
+  process.cwd(),
+  "apps/web/test-results/har-cache"
+);
 
 async function globalSetup(config: FullConfig) {
   console.log("🚀 Starting Playwright global setup...");
@@ -34,8 +33,10 @@ async function globalSetup(config: FullConfig) {
   }
 
   // Check if we should warm up the cache
+  // Skip cache warmup in CI environments to prevent hanging
   const shouldWarmCache =
-    process.env.E2E_WARM_CACHE === "true" || !fs.existsSync(STORAGE_STATE_PATH);
+    !process.env.CI &&
+    (process.env.E2E_WARM_CACHE === "true" || !fs.existsSync(STORAGE_STATE_PATH));
 
   if (shouldWarmCache) {
     console.log("🔥 Warming cache with initial application load...");
@@ -56,34 +57,97 @@ async function globalSetup(config: FullConfig) {
       const baseURL = config.projects[0]?.use?.baseURL ?? "http://localhost:5173";
       console.log(`📡 Loading ${baseURL} to warm cache...`);
 
-      await page.goto(baseURL, { waitUntil: "networkidle", timeout: 60000 });
+      // Add timeout protection for the entire page load process
+      await Promise.race([
+        page.goto(baseURL, { waitUntil: "networkidle", timeout: 30000 }),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Page load timeout")), 30000)
+        )
+      ]);
 
-      // Wait for the application to initialize and cache to populate
-      await page.waitForTimeout(5000);
+      // Wait for the application to initialize and cache to populate (with shorter timeout)
+      await Promise.race([
+        page.waitForTimeout(3000),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Application initialization timeout")), 3000)
+        )
+      ]);
 
-      // Save storage state for reuse in tests
-      await context.storageState({ path: STORAGE_STATE_PATH });
+      // Save storage state for reuse in tests (with timeout protection)
+      await Promise.race([
+        context.storageState({ path: STORAGE_STATE_PATH }),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Storage state save timeout")), 10000)
+        )
+      ]);
       console.log(`✅ Storage state saved to: ${STORAGE_STATE_PATH}`);
 
-      // Log cache statistics if available
+      // Log cache statistics if available (with timeout protection)
       const cacheStats = await page.evaluate(() => {
-        // Check IndexedDB cache size
-        if ("indexedDB" in window) {
-          return new Promise((resolve) => {
-            const request = indexedDB.open("openalex-cache");
-            request.onsuccess = () => {
-              const db = request.result;
-              const objectStoreNames = Array.from(db.objectStoreNames);
-              db.close();
+        return new Promise((resolve) => {
+          // Set a timeout for IndexedDB operations
+          const timeout = setTimeout(() => {
+            resolve({
+              error: "IndexedDB access timeout",
+              localStorageKeys: Object.keys(localStorage)
+            });
+          }, 5000); // 5 second timeout
+
+          // Check IndexedDB cache size
+          if ("indexedDB" in window) {
+            try {
+              const request = indexedDB.open("openalex-cache");
+
+              request.onsuccess = () => {
+                clearTimeout(timeout);
+                const db = request.result;
+                const objectStoreNames = Array.from(db.objectStoreNames);
+                db.close();
+                resolve({
+                  indexedDBStores: objectStoreNames,
+                  localStorageKeys: Object.keys(localStorage),
+                });
+              };
+
+              request.onerror = () => {
+                clearTimeout(timeout);
+                resolve({
+                  error: "Could not access IndexedDB",
+                  localStorageKeys: Object.keys(localStorage)
+                });
+              };
+
+              request.onblocked = () => {
+                clearTimeout(timeout);
+                resolve({
+                  error: "IndexedDB access blocked",
+                  localStorageKeys: Object.keys(localStorage)
+                });
+              };
+
+              request.onupgradeneeded = () => {
+                clearTimeout(timeout);
+                resolve({
+                  error: "IndexedDB needs upgrade",
+                  localStorageKeys: Object.keys(localStorage)
+                });
+              };
+
+            } catch (error) {
+              clearTimeout(timeout);
               resolve({
-                indexedDBStores: objectStoreNames,
-                localStorageKeys: Object.keys(localStorage),
+                error: `IndexedDB exception: ${error}`,
+                localStorageKeys: Object.keys(localStorage)
               });
-            };
-            request.onerror = () => resolve({ error: "Could not access IndexedDB" });
-          });
-        }
-        return { localStorageKeys: Object.keys(localStorage) };
+            }
+          } else {
+            clearTimeout(timeout);
+            resolve({
+              error: "IndexedDB not available",
+              localStorageKeys: Object.keys(localStorage)
+            });
+          }
+        });
       });
 
       console.log("📊 Cache statistics:", cacheStats);
