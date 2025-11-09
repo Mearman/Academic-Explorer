@@ -1,0 +1,5853 @@
+import type { EntityType } from "@academic-explorer/types";
+import { EntityCard } from "@academic-explorer/ui";
+import { SimpleGrid, Stack, Text } from "@mantine/core";
+
+export interface EntityGridItem {
+  id: string;
+  displayName: string;
+  entityType: EntityType;
+  worksCount?: number;
+  citedByCount?: number;
+  description?: string;
+  tags?: Array<{ label: string; color?: string }>;
+}
+
+interface EntityGridProps {
+  items: EntityGridItem[];
+  onNavigate?: (path: string) => void;
+  cols?: number;
+  spacing?: "xs" | "sm" | "md" | "lg" | "xl";
+  emptyMessage?: string;
+}
+
+export function EntityGrid({
+  items,
+  onNavigate,
+  cols = 3,
+  spacing = "md",
+  emptyMessage = "No items to display",
+}: EntityGridProps) {
+  if (items.length === 0) {
+    return (
+      <Stack align="center" gap="md" p="xl">
+        <Text size="lg" c="dimmed">
+          {emptyMessage}
+        </Text>
+      </Stack>
+    );
+  }
+
+  return (
+    <SimpleGrid cols={cols} spacing={spacing}>
+      {items.map((item) => (
+        <EntityCard
+          key={item.id}
+          id={item.id}
+          displayName={item.displayName}
+          entityType={item.entityType}
+          worksCount={item.worksCount}
+          citedByCount={item.citedByCount}
+          description={item.description}
+          tags={item.tags}
+          onNavigate={onNavigate}
+        />
+      ))}
+    </SimpleGrid>
+  );
+}
+import type { EntityType } from "@academic-explorer/types";
+import { EntityCard } from "@academic-explorer/ui";
+import { Stack, Text } from "@mantine/core";
+
+export interface EntityListItem {
+  id: string;
+  displayName: string;
+  entityType: EntityType;
+  worksCount?: number;
+  citedByCount?: number;
+  description?: string;
+  tags?: Array<{ label: string; color?: string }>;
+}
+
+interface EntityListViewProps {
+  items: EntityListItem[];
+  onNavigate?: (path: string) => void;
+  spacing?: "xs" | "sm" | "md" | "lg" | "xl";
+  emptyMessage?: string;
+}
+
+export function EntityListView({
+  items,
+  onNavigate,
+  spacing = "sm",
+  emptyMessage = "No items to display",
+}: EntityListViewProps) {
+  if (items.length === 0) {
+    return (
+      <Stack align="center" gap="md" p="xl">
+        <Text size="lg" c="dimmed">
+          {emptyMessage}
+        </Text>
+      </Stack>
+    );
+  }
+
+  return (
+    <Stack gap={spacing}>
+      {items.map((item) => (
+        <EntityCard
+          key={item.id}
+          id={item.id}
+          displayName={item.displayName}
+          entityType={item.entityType}
+          worksCount={item.worksCount}
+          citedByCount={item.citedByCount}
+          description={item.description}
+          tags={item.tags}
+          onNavigate={onNavigate}
+        />
+      ))}
+    </Stack>
+  );
+}
+import {
+  Badge,
+  Button,
+  Card,
+  Combobox,
+  Group,
+  Pill,
+  PillsInput,
+  Stack,
+  Text,
+  useCombobox,
+} from "@mantine/core";
+import { IconX } from "@tabler/icons-react";
+import { useState } from "react";
+
+export interface FieldSelectorProps<
+  T extends readonly string[] = readonly string[],
+> {
+  availableFields: T;
+  selectedFields: readonly string[];
+  onFieldsChange: (fields: readonly string[]) => void;
+  title?: string;
+  description?: string;
+}
+
+export function FieldSelector<T extends readonly string[] = readonly string[]>({
+  availableFields,
+  selectedFields,
+  onFieldsChange,
+  title = "Select Fields",
+  description = "Choose which fields to include in the response",
+}: FieldSelectorProps<T>) {
+  const combobox = useCombobox({
+    onDropdownClose: () => combobox.resetSelectedOption(),
+    onDropdownOpen: () => combobox.updateSelectedOptionIndex("active"),
+  });
+
+  const [search, setSearch] = useState("");
+
+  const handleValueSelect = (val: string) => {
+    if (!selectedFields.includes(val)) {
+      onFieldsChange([...selectedFields, val]);
+    }
+    setSearch("");
+  };
+
+  const handleValueRemove = (val: string) => {
+    onFieldsChange(selectedFields.filter((v) => v !== val));
+  };
+
+  const handleClear = () => {
+    onFieldsChange([]);
+  };
+
+  // Filter available fields based on search and exclude already selected
+  const filteredOptions = availableFields
+    .filter(
+      (field) =>
+        field.toLowerCase().includes(search.toLowerCase().trim()) &&
+        !selectedFields.includes(field),
+    )
+    .sort();
+
+  const values = selectedFields.map((field) => (
+    <Pill
+      key={field}
+      withRemoveButton
+      onRemove={() => handleValueRemove(field)}
+      styles={{
+        root: {
+          fontFamily: "monospace",
+          fontSize: "0.875rem",
+        },
+      }}
+    >
+      {field}
+    </Pill>
+  ));
+
+  const options = filteredOptions.map((field) => (
+    <Combobox.Option value={field} key={field}>
+      <Text size="sm" style={{ fontFamily: "monospace" }}>
+        {field}
+      </Text>
+    </Combobox.Option>
+  ));
+
+  return (
+    <Card withBorder padding="md">
+      <Stack gap="sm">
+        <Group justify="space-between" wrap="nowrap">
+          <div>
+            <Text size="sm" fw={500}>
+              {title}
+            </Text>
+            {description && (
+              <Text size="xs" c="dimmed">
+                {description}
+              </Text>
+            )}
+          </div>
+          {selectedFields.length > 0 && (
+            <Button
+              size="xs"
+              variant="subtle"
+              color="red"
+              leftSection={<IconX size={14} />}
+              onClick={handleClear}
+            >
+              Clear All
+            </Button>
+          )}
+        </Group>
+
+        <Combobox
+          store={combobox}
+          onOptionSubmit={handleValueSelect}
+          withinPortal={true}
+        >
+          <Combobox.DropdownTarget>
+            <PillsInput
+              onClick={() => combobox.openDropdown()}
+              rightSection={<Combobox.Chevron />}
+            >
+              <Pill.Group>
+                {values}
+                <Combobox.EventsTarget>
+                  <PillsInput.Field
+                    onFocus={() => combobox.openDropdown()}
+                    onBlur={() => combobox.closeDropdown()}
+                    value={search}
+                    placeholder={
+                      selectedFields.length === 0 ? "Select fields..." : ""
+                    }
+                    onChange={(event) => {
+                      combobox.updateSelectedOptionIndex();
+                      setSearch(event.currentTarget.value);
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === "Backspace" && search.length === 0) {
+                        event.preventDefault();
+                        if (selectedFields.length > 0) {
+                          handleValueRemove(
+                            selectedFields[selectedFields.length - 1],
+                          );
+                        }
+                      }
+                    }}
+                  />
+                </Combobox.EventsTarget>
+              </Pill.Group>
+            </PillsInput>
+          </Combobox.DropdownTarget>
+
+          <Combobox.Dropdown>
+            <Combobox.Options>
+              {options.length > 0 ? (
+                options
+              ) : (
+                <Combobox.Empty>
+                  {search.trim() ? "No fields found" : "All fields selected"}
+                </Combobox.Empty>
+              )}
+            </Combobox.Options>
+          </Combobox.Dropdown>
+        </Combobox>
+
+        {selectedFields.length > 0 && (
+          <Group gap="xs">
+            <Badge size="sm" variant="light">
+              {selectedFields.length} field
+              {selectedFields.length !== 1 ? "s" : ""} selected
+            </Badge>
+          </Group>
+        )}
+      </Stack>
+    </Card>
+  );
+}
+/**
+ * Query bookmark button component for Academic Explorer
+ * Provides bookmarking functionality for complex queries with pagination awareness
+ */
+
+import { logger } from "@academic-explorer/utils/logger";
+import {
+  IconBookmark,
+  IconBookmarkOff,
+  IconBookmarkFilled,
+  IconLoader
+} from "@tabler/icons-react";
+import { ActionIcon, Tooltip, Text } from "@mantine/core";
+import { useQueryBookmarking } from "@/hooks/use-query-bookmarking";
+import { useState } from "react";
+
+interface QueryBookmarkButtonProps {
+  entityType: string;
+  entityId?: string;
+  size?: "xs" | "sm" | "md" | "lg";
+  variant?: "subtle" | "light" | "filled" | "outline" | "default" | "transparent";
+  showLabel?: boolean;
+  disabled?: boolean;
+  onBookmark?: () => void;
+  onUnbookmark?: () => void;
+}
+
+export function QueryBookmarkButton({
+  entityType,
+  entityId,
+  size = "sm",
+  variant = "subtle",
+  showLabel = false,
+  disabled = false,
+  onBookmark,
+  onUnbookmark
+}: QueryBookmarkButtonProps) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const {
+    isQueryBookmarked,
+    bookmarkCurrentQuery,
+    unbookmarkCurrentQuery,
+    generateDefaultTitle,
+    currentQueryParams
+  } = useQueryBookmarking({
+    entityType,
+    entityId,
+    disabled
+  });
+
+  // Don't show bookmark button if there are no semantic query parameters
+  // and no specific entity ID (i.e., just a plain list page)
+  const hasSemanticQuery = Object.keys(currentQueryParams).length > 0 || !!entityId;
+  if (!hasSemanticQuery) {
+    return null;
+  }
+
+  const handleClick = async () => {
+    if (isLoading || disabled) return;
+
+    setIsLoading(true);
+
+    try {
+      if (isQueryBookmarked) {
+        await unbookmarkCurrentQuery();
+        onUnbookmark?.();
+      } else {
+        await bookmarkCurrentQuery({
+          title: generateDefaultTitle()
+        });
+        onBookmark?.();
+      }
+    } catch (error) {
+      logger.error("bookmarks", "Failed to toggle query bookmark:", error);
+      // You could add error notification here
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getTooltipLabel = () => {
+    if (disabled) return "Query bookmarking disabled";
+    if (isLoading) return isQueryBookmarked ? "Removing bookmark..." : "Adding bookmark...";
+    return isQueryBookmarked ? "Remove query bookmark" : "Bookmark this query";
+  };
+
+  return (
+    <Tooltip label={getTooltipLabel()} position="top">
+      <div style={{ display: "flex", alignItems: "center", gap: showLabel ? "8px" : "0" }}>
+        <ActionIcon
+          onClick={handleClick}
+          disabled={disabled || isLoading}
+          variant={variant}
+          size={size}
+          color={isQueryBookmarked ? "blue" : "gray"}
+          aria-label={getTooltipLabel()}
+          data-testid="query-bookmark-button"
+        >
+          {isLoading ? (
+            <IconLoader size={16} />
+          ) : isQueryBookmarked ? (
+            <IconBookmarkFilled size={16} />
+          ) : (
+            <IconBookmark size={16} />
+          )}
+        </ActionIcon>
+
+        {showLabel && (
+          <Text size="sm" c={isQueryBookmarked ? "blue" : "gray"}>
+            {isQueryBookmarked ? "Bookmarked" : "Bookmark"}
+          </Text>
+        )}
+      </div>
+    </Tooltip>
+  );
+}import { SegmentedControl, Group, Text } from "@mantine/core";
+import { IconTable, IconList, IconGridDots } from "@tabler/icons-react";
+import React from "react";
+
+export type ViewMode = "table" | "list" | "grid";
+
+interface ViewModeToggleProps {
+  value: ViewMode;
+  onChange: (value: ViewMode) => void;
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
+}
+
+const VIEW_MODE_DATA = [
+  {
+    value: "table" as const,
+    label: (
+      <Group gap="xs" wrap="nowrap">
+        <IconTable size={16} />
+        <Text size="sm">Table</Text>
+      </Group>
+    ),
+  },
+  {
+    value: "list" as const,
+    label: (
+      <Group gap="xs" wrap="nowrap">
+        <IconList size={16} />
+        <Text size="sm">List</Text>
+      </Group>
+    ),
+  },
+  {
+    value: "grid" as const,
+    label: (
+      <Group gap="xs" wrap="nowrap">
+        <IconGridDots size={16} />
+        <Text size="sm">Grid</Text>
+      </Group>
+    ),
+  },
+];
+
+export function ViewModeToggle({
+  value,
+  onChange,
+  size = "sm",
+}: ViewModeToggleProps) {
+  return (
+    <SegmentedControl
+      value={value}
+      onChange={(val) => onChange(val as ViewMode)}
+      data={VIEW_MODE_DATA}
+      size={size}
+      fullWidth={false}
+    />
+  );
+}
+/**
+ * Button component for adding entities to catalogue lists
+ * Integrates with existing bookmark system and entity detail components
+ */
+
+import React, { useState } from "react";
+import {
+  ActionIcon,
+  Menu,
+  Button,
+  Modal,
+  Stack,
+  Text,
+  Group,
+  Badge,
+  Divider,
+  TextInput,
+  Textarea,
+  Checkbox,
+} from "@mantine/core";
+import {
+  IconPlus,
+  IconBookmark,
+  IconList,
+  IconBook,
+} from "@tabler/icons-react";
+import { useCatalogue } from "@/hooks/useCatalogue";
+import { type EntityType } from "@academic-explorer/utils";
+import { notifications } from "@mantine/notifications";
+import { logger } from "@/lib/logger";
+
+interface AddToCatalogueButtonProps {
+  /** Entity type (works, authors, etc.) */
+  entityType: EntityType;
+  /** OpenAlex entity ID */
+  entityId: string;
+  /** Entity title for display */
+  entityTitle: string;
+  /** Optional custom styling */
+  size?: "xs" | "sm" | "md" | "lg";
+  /** Show as button instead of icon */
+  variant?: "icon" | "button";
+  /** Custom class name */
+  className?: string;
+}
+
+interface CreateAndAddModalProps {
+  opened: boolean;
+  onClose: () => void;
+  entityType: EntityType;
+  entityId: string;
+  entityTitle: string;
+  onSuccess: () => void;
+}
+
+function CreateAndAddModal({
+  opened,
+  onClose,
+  entityType,
+  entityId,
+  entityTitle,
+  onSuccess,
+}: CreateAndAddModalProps) {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
+  const [isPublic, setIsPublic] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { createList, addEntityToList } = useCatalogue();
+
+  const handleSubmit = async () => {
+    if (!title.trim()) return;
+
+    setIsSubmitting(true);
+    try {
+      // Determine list type based on entity type
+      const listType = entityType === "works" ? "bibliography" : "list";
+
+      // Create new list
+      const listId = await createList({
+        title: title.trim(),
+        description: description.trim() || undefined,
+        type: listType,
+        tags: tags.filter(tag => tag.trim().length > 0),
+        isPublic,
+      });
+
+      // Add entity to the new list
+      await addEntityToList({
+        listId,
+        entityType,
+        entityId,
+        notes: `Added from: ${entityTitle}`,
+      });
+
+      logger.debug("catalogue-ui", "Created list and added entity successfully", {
+        listId,
+        listTitle: title.trim(),
+        entityType,
+        entityId,
+        entityTitle
+      });
+
+      notifications.show({
+        title: "Success",
+        message: `Created "${title}" and added ${entityType === "works" ? "work" : entityType}`,
+        color: "green",
+      });
+
+      onSuccess();
+      onClose();
+    } catch (error) {
+      logger.error("catalogue-ui", "Failed to create list and add entity", {
+        entityType,
+        entityId,
+        entityTitle,
+        listTitle: title.trim(),
+        error
+      });
+      notifications.show({
+        title: "Error",
+        message: "Failed to create list and add entity",
+        color: "red",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Modal opened={opened} onClose={onClose} title="Create New List" size="md">
+      <Stack gap="md">
+        <div>
+          <Text size="sm" c="dimmed">Adding:</Text>
+          <Text fw={500}>{entityTitle}</Text>
+          <Badge size="xs" variant="light" mt="xs">
+            {entityType}
+          </Badge>
+        </div>
+
+        <Divider />
+
+        <TextInput
+          label="List Title"
+          placeholder="Enter list title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+          autoFocus
+        />
+
+        <Textarea
+          label="Description"
+          placeholder="Optional description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          minRows={3}
+        />
+
+        <Group>
+          <Checkbox
+            id="is-public-modal"
+            checked={isPublic}
+            onChange={(e) => setIsPublic(e.target.checked)}
+            label="Make this list publicly shareable"
+            size="sm"
+          />
+        </Group>
+
+        <Group justify="flex-end" gap="xs">
+          <Button variant="subtle" onClick={onClose} disabled={isSubmitting}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            loading={isSubmitting}
+            disabled={!title.trim()}
+          >
+            Create & Add
+          </Button>
+        </Group>
+      </Stack>
+    </Modal>
+  );
+}
+
+export function AddToCatalogueButton({
+  entityType,
+  entityId,
+  entityTitle,
+  size = "sm",
+  variant = "icon",
+  className,
+}: AddToCatalogueButtonProps) {
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const { lists, addEntityToList } = useCatalogue();
+
+  // Filter lists that can accept this entity type
+  const compatibleLists = lists.filter(list => {
+    if (list.type === "bibliography") {
+      return entityType === "works";
+    }
+    return true; // Regular lists can accept any entity type
+  });
+
+  const handleAddToList = async (listId: string, listTitle: string) => {
+    try {
+      await addEntityToList({
+        listId,
+        entityType,
+        entityId,
+        notes: `Added from: ${entityTitle}`,
+      });
+
+      logger.debug("catalogue-ui", "Entity added to existing list", {
+        listId,
+        listTitle,
+        entityType,
+        entityId,
+        entityTitle
+      });
+
+      notifications.show({
+        title: "Added to List",
+        message: `Added to "${listTitle}"`,
+        color: "green",
+      });
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("already exists")) {
+        logger.debug("catalogue-ui", "Entity already exists in list", {
+          listId,
+          listTitle,
+          entityType,
+          entityId,
+          entityTitle
+        });
+        notifications.show({
+          title: "Already in List",
+          message: `"${entityTitle}" is already in "${listTitle}"`,
+          color: "yellow",
+        });
+      } else {
+        logger.error("catalogue-ui", "Failed to add entity to list", {
+          listId,
+          listTitle,
+          entityType,
+          entityId,
+          entityTitle,
+          error
+        });
+        notifications.show({
+          title: "Error",
+          message: "Failed to add to list",
+          color: "red",
+        });
+      }
+    }
+  };
+
+  const handleCreateAndAdd = () => {
+    setShowCreateModal(true);
+  };
+
+  if (variant === "button") {
+    return (
+      <>
+        <Menu shadow="md" width={200}>
+          <Menu.Target>
+            <Button
+              size={size}
+              leftSection={<IconBookmark size={16} />}
+              variant="light"
+              className={className}
+            >
+              Add to List
+            </Button>
+          </Menu.Target>
+
+          <Menu.Dropdown>
+            {compatibleLists.length > 0 ? (
+              <>
+                {compatibleLists.slice(0, 5).map((list) => (
+                  <Menu.Item
+                    key={list.id}
+                    leftSection={
+                      list.type === "bibliography" ? (
+                        <IconBook size={14} />
+                      ) : (
+                        <IconList size={14} />
+                      )
+                    }
+                    onClick={() => handleAddToList(list.id!, list.title)}
+                  >
+                    {list.title}
+                  </Menu.Item>
+                ))}
+                {compatibleLists.length > 5 && (
+                  <Menu.Item disabled>
+                    ... and {compatibleLists.length - 5} more
+                  </Menu.Item>
+                )}
+                <Menu.Divider />
+              </>
+            ) : (
+              <Menu.Item disabled>
+                No compatible lists found
+              </Menu.Item>
+            )}
+            <Menu.Item
+              leftSection={<IconPlus size={14} />}
+              onClick={handleCreateAndAdd}
+            >
+              Create New List
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
+
+        <CreateAndAddModal
+          opened={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          entityType={entityType}
+          entityId={entityId}
+          entityTitle={entityTitle}
+          onSuccess={() => {}}
+        />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Menu shadow="md" width={200}>
+        <Menu.Target>
+          <ActionIcon
+            size={size}
+            variant="light"
+            className={className}
+            title="Add to catalogue list"
+          >
+            <IconBookmark size={16} />
+          </ActionIcon>
+        </Menu.Target>
+
+        <Menu.Dropdown>
+          {compatibleLists.length > 0 ? (
+            <>
+              {compatibleLists.slice(0, 5).map((list) => (
+                <Menu.Item
+                  key={list.id}
+                  leftSection={
+                    list.type === "bibliography" ? (
+                      <IconBook size={14} />
+                    ) : (
+                      <IconList size={14} />
+                    )
+                  }
+                  onClick={() => handleAddToList(list.id!, list.title)}
+                >
+                  {list.title}
+                </Menu.Item>
+              ))}
+              {compatibleLists.length > 5 && (
+                <Menu.Item disabled>
+                  ... and {compatibleLists.length - 5} more
+                </Menu.Item>
+              )}
+              <Menu.Divider />
+            </>
+          ) : (
+            <Menu.Item disabled>
+              No compatible lists found
+            </Menu.Item>
+          )}
+          <Menu.Item
+            leftSection={<IconPlus size={14} />}
+            onClick={handleCreateAndAdd}
+          >
+            Create New List
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
+
+      <CreateAndAddModal
+        opened={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        entityType={entityType}
+        entityId={entityId}
+        entityTitle={entityTitle}
+        onSuccess={() => {}}
+      />
+    </>
+  );
+}/**
+ * Main catalogue manager component
+ * Handles lists, bibliographies, and entity management
+ */
+
+import React, { useState } from "react";
+import {
+  Container,
+  Group,
+  Title,
+  Tabs,
+  Button,
+  Modal,
+  Stack,
+  Text,
+  Badge,
+  ActionIcon,
+  Tooltip,
+  rem,
+  TextInput,
+  Card,
+} from "@mantine/core";
+import {
+  IconPlus,
+  IconShare,
+  IconDownload,
+  IconUpload,
+  IconList,
+  IconBook,
+  IconSearch,
+} from "@tabler/icons-react";
+import { useHotkeys } from "@mantine/hooks";
+import { useCatalogue } from "@/hooks/useCatalogue";
+import { CatalogueListComponent } from "@/components/catalogue/CatalogueList";
+import { CatalogueEntities } from "@/components/catalogue/CatalogueEntities";
+import { CreateListModal } from "@/components/catalogue/CreateListModal";
+import { ShareModal } from "@/components/catalogue/ShareModal";
+import { ImportModal } from "@/components/catalogue/ImportModal";
+import { logger } from "@/lib/logger";
+import { SPECIAL_LIST_IDS } from "@academic-explorer/utils/storage/catalogue-db";
+
+interface CatalogueManagerProps {
+  onNavigate?: (url: string) => void;
+  sharedToken?: string;
+}
+
+export function CatalogueManager({ onNavigate, sharedToken }: CatalogueManagerProps) {
+  const {
+    lists,
+    selectedList,
+    entities,
+    isLoadingLists,
+    isLoadingEntities,
+    createList,
+    deleteList,
+    selectList,
+    generateShareUrl,
+    importFromShareUrl,
+    getListStats,
+    searchLists,
+  } = useCatalogue();
+
+  const [activeTab, setActiveTab] = useState<string | null>("lists");
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [shareUrl, setShareUrl] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Keyboard shortcuts
+  useHotkeys([
+    ["mod+N", () => setShowCreateModal(true)],
+    ["mod+K", () => {
+      const searchInput = document.querySelector('input[placeholder*="Search lists"]') as HTMLInputElement;
+      searchInput?.focus();
+    }],
+    ["mod+Shift+S", () => selectedList && handleShare()],
+    ["mod+Shift+I", () => setShowImportModal(true)],
+  ]);
+
+  // Filter lists based on search (exclude special system lists)
+  const filteredLists = searchQuery
+    ? lists.filter(list =>
+        list.id && !Object.values(SPECIAL_LIST_IDS).includes(list.id as any) && (
+          list.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          list.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          list.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+        )
+      )
+    : lists.filter(list => list.id && !Object.values(SPECIAL_LIST_IDS).includes(list.id as any));
+
+  // Handle sharing
+  const handleShare = async () => {
+    if (!selectedList) return;
+
+    try {
+      const url = await generateShareUrl(selectedList.id!);
+      setShareUrl(url);
+      setShowShareModal(true);
+      logger.debug("catalogue-ui", "Share URL generated successfully", {
+        listId: selectedList.id,
+        listTitle: selectedList.title
+      });
+    } catch (error) {
+      logger.error("catalogue-ui", "Failed to generate share URL", {
+        listId: selectedList.id,
+        error
+      });
+    }
+  };
+
+  // Handle import
+  const handleImport = async (url: string) => {
+    try {
+      const listId = await importFromShareUrl(url);
+      if (listId) {
+        selectList(listId);
+        setShowImportModal(false);
+        logger.info("catalogue-ui", "List imported successfully", {
+          importedUrl: url,
+          newListId: listId
+        });
+      } else {
+        logger.warn("catalogue-ui", "Import returned null - likely invalid data", {
+          url
+        });
+      }
+    } catch (error) {
+      logger.error("catalogue-ui", "Failed to import list", {
+        url,
+        error
+      });
+    }
+  };
+
+  return (
+    <Container size="xl" py="md">
+      <Stack gap="lg">
+        {/* Header */}
+        <Group justify="space-between">
+          <Group>
+            <IconList size={32} />
+            <Title order={1}>Catalogue</Title>
+            {selectedList && (
+              <Badge size="lg" color="blue">
+                {selectedList.type === "bibliography" ? "Bibliography" : "List"}
+              </Badge>
+            )}
+          </Group>
+
+          <Group gap="xs">
+            <Tooltip label="Import from URL">
+              <ActionIcon
+                variant="light"
+                size="lg"
+                onClick={() => setShowImportModal(true)}
+              >
+                <IconUpload size={rem(18)} />
+              </ActionIcon>
+            </Tooltip>
+
+            <Tooltip label="Share current list">
+              <ActionIcon
+                variant="light"
+                size="lg"
+                onClick={handleShare}
+                disabled={!selectedList}
+              >
+                <IconShare size={rem(18)} />
+              </ActionIcon>
+            </Tooltip>
+
+            <Button
+              leftSection={<IconPlus size={16} />}
+              onClick={() => setShowCreateModal(true)}
+            >
+              Create New List
+            </Button>
+          </Group>
+        </Group>
+
+        {/* Search */}
+        <Group>
+          <IconSearch size={16} />
+          <Text fw={500}>Search:</Text>
+          <TextInput
+            placeholder="Search lists by title, description, or tags..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            aria-label="Search catalogue lists"
+            aria-describedby="search-help"
+            flex={1}
+          />
+          <Text id="search-help" size="xs" c="dimmed" component="span">
+            Press Ctrl+K to focus
+          </Text>
+        </Group>
+
+        {/* Main Content */}
+        <Tabs value={activeTab} onChange={setActiveTab}>
+          <Tabs.List>
+            <Tabs.Tab value="lists" leftSection={<IconList size={16} />}>
+              Lists ({filteredLists.length})
+            </Tabs.Tab>
+            <Tabs.Tab value="bibliographies" leftSection={<IconBook size={16} />}>
+              Bibliographies ({filteredLists.filter(l => l.type === "bibliography").length})
+            </Tabs.Tab>
+          </Tabs.List>
+
+          <Tabs.Panel value="lists" pt="md">
+            <CatalogueListComponent
+              lists={filteredLists.filter(l => l.type === "list")}
+              selectedListId={selectedList?.id || null}
+              onSelectList={selectList}
+              onDeleteList={deleteList}
+              onNavigate={onNavigate}
+              isLoading={isLoadingLists}
+              listType="list"
+            />
+          </Tabs.Panel>
+
+          <Tabs.Panel value="bibliographies" pt="md">
+            <CatalogueListComponent
+              lists={filteredLists.filter(l => l.type === "bibliography")}
+              selectedListId={selectedList?.id || null}
+              onSelectList={selectList}
+              onDeleteList={deleteList}
+              onNavigate={onNavigate}
+              isLoading={isLoadingLists}
+              listType="bibliography"
+            />
+          </Tabs.Panel>
+        </Tabs>
+
+        {/* Selected List Details */}
+        {selectedList && (
+          <Card withBorder p="md" bg="gray.0">
+            <Group justify="space-between" mb="md">
+              <div>
+                <Title order={3}>{selectedList.title}</Title>
+                {selectedList.description && (
+                  <Text c="dimmed" size="sm" mt="xs">
+                    {selectedList.description}
+                  </Text>
+                )}
+              </div>
+
+              <Group gap="xs">
+                {selectedList.tags?.map((tag, index) => (
+                  <Badge key={index} size="sm" variant="light">
+                    {tag}
+                  </Badge>
+                ))}
+              </Group>
+            </Group>
+
+            <Text size="xs" c="dimmed">
+              Created: {selectedList.createdAt.toLocaleDateString()} •
+              Modified: {selectedList.updatedAt.toLocaleDateString()} •
+              {selectedList.isPublic ? " • Public" : " • Private"}
+            </Text>
+          </Card>
+        )}
+
+        {/* Selected List Entities */}
+        {selectedList && (
+          <CatalogueEntities
+            selectedList={selectedList}
+            onNavigate={(entityType, entityId) => {
+              const url = `/#/${entityType}/${entityId}`;
+              if (onNavigate) {
+                onNavigate(url);
+              } else {
+                window.location.hash = `/${entityType}/${entityId}`;
+              }
+            }}
+          />
+        )}
+
+        {/* Modals */}
+        <Modal
+          opened={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          title="Create New List"
+          size="md"
+        >
+          <CreateListModal
+            onClose={() => setShowCreateModal(false)}
+            onSubmit={async (params) => {
+              const listId = await createList(params);
+              selectList(listId);
+              setShowCreateModal(false);
+            }}
+          />
+        </Modal>
+
+        <Modal
+          opened={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          title="Share List"
+          size="lg"
+        >
+          <ShareModal
+            shareUrl={shareUrl}
+            listTitle={selectedList?.title || ""}
+            onClose={() => setShowShareModal(false)}
+          />
+        </Modal>
+
+        <Modal
+          opened={showImportModal}
+          onClose={() => setShowImportModal(false)}
+          title="Import List"
+          size="lg"
+        >
+          <ImportModal
+            onClose={() => setShowImportModal(false)}
+            onImport={handleImport}
+          />
+        </Modal>
+      </Stack>
+    </Container>
+  );
+}/**
+ * Sidebar link component for catalogue navigation
+ */
+
+import React from "react";
+import { ActionIcon, Tooltip } from "@mantine/core";
+import { IconList } from "@tabler/icons-react";
+import { useNavigate } from "@tanstack/react-router";
+
+interface CatalogueSidebarLinkProps {
+  onClose?: () => void;
+}
+
+export function CatalogueSidebarLink({ onClose }: CatalogueSidebarLinkProps) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    // Navigate to catalogue page
+    window.location.hash = "/catalogue";
+
+    // Close sidebar if provided
+    if (onClose) {
+      onClose();
+    }
+  };
+
+  return (
+    <Tooltip label="Catalogue" position="right">
+      <ActionIcon
+        variant="subtle"
+        size="lg"
+        onClick={handleClick}
+        title="Catalogue"
+      >
+        <IconList size={18} />
+      </ActionIcon>
+    </Tooltip>
+  );
+}/**
+ * Group ribbon button component for VSCode-style tool groups
+ * Represents a category/group of tools that can be activated
+ */
+
+import React from "react";
+import { ActionIcon, Tooltip, Badge } from "@mantine/core";
+import { useThemeColors } from "@/hooks/use-theme-colors";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { logger } from "@academic-explorer/utils/logger";
+import type { ToolGroupDefinition } from "@/stores/group-registry";
+
+// Constants
+const GROUP_REORDER_DATA_TYPE = "application/group-reorder";
+
+interface GroupRibbonButtonProps {
+  group: ToolGroupDefinition;
+  isActive?: boolean;
+  badge?: {
+    show: boolean;
+    count?: number;
+    color?: string;
+  };
+  onActivate: (groupId: string) => void;
+  onDrop?: (params: {
+    draggedSectionId: string;
+    targetGroupId: string;
+    event: React.DragEvent;
+  }) => void;
+  onDragOver?: (event: React.DragEvent) => void;
+  onGroupReorder?: (params: {
+    sourceGroupId: string;
+    targetGroupId: string;
+    insertBefore: boolean;
+    _event: React.DragEvent;
+  }) => void;
+  onDragStart?: (groupId: string) => void;
+  onDragEnd?: () => void;
+  side: "left" | "right";
+}
+
+export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
+  group,
+  isActive = false,
+  badge,
+  onActivate,
+  onDrop,
+  onDragOver,
+  onGroupReorder,
+  onDragStart,
+  onDragEnd,
+  side,
+}) => {
+  const themeColors = useThemeColors();
+  const { colors } = themeColors;
+  const prefersReducedMotion = useReducedMotion();
+
+  const handleClick = () => {
+    logger.debug("ui", `Group ribbon button clicked for ${group.id}`, {
+      groupId: group.id,
+      side,
+    });
+    onActivate(group.id);
+  };
+
+  const handleDragStart = (event: React.DragEvent) => {
+    // Ribbon buttons are always for group reordering
+    if (onGroupReorder) {
+      logger.debug("ui", `Starting group reorder drag for group ${group.id}`, {
+        groupId: group.id,
+        side,
+      });
+      // Set data for group reordering
+      event.dataTransfer.setData(GROUP_REORDER_DATA_TYPE, group.id);
+      event.dataTransfer.setData("text/plain", `group:${group.id}`);
+      event.dataTransfer.effectAllowed = "move";
+
+      // Add visual feedback for reordering
+      if (event.currentTarget instanceof HTMLElement) {
+        const target = event.currentTarget;
+        target.style.opacity = "0.7";
+        target.style.border = "2px dashed " + colors.primary;
+      }
+
+      // Notify parent component about drag start
+      onDragStart?.(group.id);
+    }
+  };
+
+  const handleDragEnd = (event: React.DragEvent) => {
+    // Reset visual feedback
+    if (event.currentTarget instanceof HTMLElement) {
+      const target = event.currentTarget;
+      target.style.opacity = "1";
+      target.style.border = `1px solid ${colors.border.primary}`;
+    }
+
+    // Notify parent component about drag end
+    onDragEnd?.();
+  };
+
+  const handleDrop = (event: React.DragEvent) => {
+    logger.debug("ui", `GroupRibbonButton ${group.id} drop event`, {
+      groupId: group.id,
+      side,
+      types: Array.from(event.dataTransfer.types),
+      hasOnDrop: Boolean(onDrop),
+    });
+
+    if (onDrop) {
+      event.preventDefault();
+      const draggedSectionId = event.dataTransfer.getData("text/plain");
+
+      logger.debug("ui", `Got dragged section ID: ${draggedSectionId}`);
+
+      // Reject group-to-group drops - these should only happen via drop zones
+      if (draggedSectionId.startsWith("group:")) {
+        logger.debug("ui", `Rejecting group drop onto ribbon button`, {
+          draggedSectionId,
+          targetGroupId: group.id,
+          side,
+        });
+        return;
+      }
+
+      // Validate that we have a valid section ID and target group
+      if (!draggedSectionId || !group.id) {
+        logger.warn("ui", `Invalid drop data`, {
+          draggedSectionId,
+          targetGroupId: group.id,
+          side,
+        });
+        return;
+      }
+
+      logger.debug(
+        "ui",
+        `Dropping section ${draggedSectionId} onto existing group ${group.id}`,
+        {
+          draggedSectionId,
+          targetGroupId: group.id,
+          side,
+          groupExists: true, // This is an existing group from the ribbon
+        },
+      );
+
+      onDrop({ draggedSectionId, targetGroupId: group.id, event });
+    } else {
+      logger.warn("ui", `No onDrop handler for ribbon button ${group.id}`);
+    }
+  };
+
+  const handleDragOver = (event: React.DragEvent) => {
+    // Reject group reorder drags on ribbon buttons - they should only use drop zones
+    const groupReorderData = event.dataTransfer.types.includes(
+      GROUP_REORDER_DATA_TYPE,
+    );
+
+    logger.debug("ui", `GroupRibbonButton ${group.id} dragover`, {
+      groupId: group.id,
+      side,
+      types: Array.from(event.dataTransfer.types),
+      isGroupReorder: groupReorderData,
+      hasOnDragOver: Boolean(onDragOver),
+    });
+
+    if (groupReorderData) {
+      // Don't prevent default - reject the drop
+      logger.debug(
+        "ui",
+        `Rejecting group reorder drag on ribbon button ${group.id}`,
+      );
+      return;
+    }
+
+    // Allow tool/section drags onto ribbon buttons
+    if (onDragOver) {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "move";
+      logger.debug("ui", `Allowing tool drag over ribbon button ${group.id}`);
+      onDragOver(event);
+    } else {
+      logger.warn("ui", `No onDragOver handler for ribbon button ${group.id}`);
+    }
+  };
+
+  const handleDragEnter = (event: React.DragEvent) => {
+    event.preventDefault();
+
+    // Don't highlight for group reorder drags - they should only use drop zones
+    const groupReorderData = event.dataTransfer.types.includes(
+      GROUP_REORDER_DATA_TYPE,
+    );
+
+    logger.debug("ui", `GroupRibbonButton ${group.id} dragenter`, {
+      groupId: group.id,
+      side,
+      types: Array.from(event.dataTransfer.types),
+      isGroupReorder: groupReorderData,
+    });
+
+    if (groupReorderData) {
+      logger.debug(
+        "ui",
+        `Ignoring dragenter for group reorder on ribbon button ${group.id}`,
+      );
+      return;
+    }
+
+    // Add visual feedback for valid drop zone (tools only)
+    if (event.currentTarget instanceof HTMLElement) {
+      const target = event.currentTarget;
+      target.style.backgroundColor = colors.primary;
+      target.style.borderColor = colors.primary;
+      target.style.transform = "scale(1.05)";
+    }
+
+    logger.debug(
+      "ui",
+      `Applied highlight to ribbon button ${group.id} for tool drag`,
+    );
+  };
+
+  const handleDragLeave = (event: React.DragEvent) => {
+    // Don't process drag leave for group reorder drags - they don't get highlighted anyway
+    const groupReorderData = event.dataTransfer.types.includes(
+      GROUP_REORDER_DATA_TYPE,
+    );
+
+    logger.debug("ui", `GroupRibbonButton ${group.id} dragleave`, {
+      groupId: group.id,
+      side,
+      types: Array.from(event.dataTransfer.types),
+      isGroupReorder: groupReorderData,
+    });
+
+    if (groupReorderData) {
+      return;
+    }
+
+    // Only remove highlight if leaving the element entirely
+    if (event.currentTarget instanceof HTMLElement) {
+      const target = event.currentTarget;
+      const rect = target.getBoundingClientRect();
+      const x = event.clientX;
+      const y = event.clientY;
+
+      if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
+        target.style.backgroundColor = isActive
+          ? colors.primary
+          : "transparent";
+        target.style.borderColor = colors.border.primary;
+        target.style.transform = "scale(1)";
+
+        logger.debug("ui", `Removed highlight from ribbon button ${group.id}`);
+      }
+    }
+  };
+
+  const ribbonButtonStyle = {
+    width: "40px",
+    height: "40px",
+    borderRadius: "8px",
+    backgroundColor: "transparent",
+    borderWidth: "1px",
+    borderStyle: "solid",
+    borderColor: colors.border.primary,
+    transition: prefersReducedMotion ? "none" : "all 0.2s ease",
+  };
+
+  const ribbonButtonHoverStyle = {
+    backgroundColor: colors.background.tertiary,
+    borderColor: colors.primary,
+  };
+
+  const activeButtonStyle = {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+    color: colors.text.inverse,
+  };
+
+  const Icon = group.icon;
+
+  return (
+    <div style={{ position: "relative" }}>
+      <Tooltip
+        label={group.description}
+        position={side === "left" ? "right" : "left"}
+        withArrow
+      >
+        <ActionIcon
+          variant="subtle"
+          size="lg"
+          style={
+            isActive
+              ? { ...ribbonButtonStyle, ...activeButtonStyle }
+              : ribbonButtonStyle
+          }
+          onClick={handleClick}
+          aria-label={group.description}
+          draggable={true}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragEnter={handleDragEnter}
+          onDragLeave={handleDragLeave}
+          onMouseEnter={(e) => {
+            if (!isActive) {
+              Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!isActive) {
+              Object.assign(e.currentTarget.style, ribbonButtonStyle);
+            }
+          }}
+        >
+          <Icon size={20} />
+        </ActionIcon>
+      </Tooltip>
+
+      {badge?.show && (
+        <Badge
+          size="xs"
+          variant="filled"
+          color={badge.color ?? "blue"}
+          style={{
+            position: "absolute",
+            top: badge.count ? "-8px" : "-4px",
+            right: badge.count ? "-8px" : "-4px",
+            minWidth: badge.count ? "16px" : "8px",
+            height: badge.count ? "16px" : "8px",
+            padding: badge.count ? undefined : 0,
+            borderRadius: badge.count ? undefined : "50%",
+            fontSize: badge.count ? "9px" : undefined,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {badge.count && (badge.count > 99 ? "99+" : badge.count)}
+        </Badge>
+      )}
+    </div>
+  );
+};
+import { useState, useCallback, useEffect } from "react";
+import { TextInput } from "@mantine/core";
+import { IconSearch } from "@tabler/icons-react";
+import { useNavigate, useSearch, useLocation } from "@tanstack/react-router";
+import { useDebouncedCallback } from "@mantine/hooks";
+
+export function HeaderSearchInput() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const searchParams = useSearch({ strict: false });
+
+  // Initialize from URL params if on autocomplete page
+  const [query, setQuery] = useState(() => {
+    if (location.pathname === "/autocomplete" && searchParams.q) {
+      return String(searchParams.q);
+    }
+    return "";
+  });
+
+  // Update local state when URL changes
+  useEffect(() => {
+    if (location.pathname === "/autocomplete" && searchParams.q) {
+      setQuery(String(searchParams.q));
+    } else if (location.pathname !== "/autocomplete") {
+      setQuery("");
+    }
+  }, [location.pathname, searchParams.q]);
+
+  // Debounced navigation to autocomplete page
+  const debouncedNavigate = useDebouncedCallback((searchQuery: string) => {
+    if (searchQuery.trim()) {
+      navigate({
+        to: "/autocomplete",
+        search: { q: searchQuery.trim(), filter: undefined, search: undefined },
+      });
+    }
+  }, 500);
+
+  const handleChange = useCallback(
+    (value: string) => {
+      setQuery(value);
+      debouncedNavigate(value);
+    },
+    [debouncedNavigate],
+  );
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        if (query.trim()) {
+          navigate({
+            to: "/autocomplete",
+            search: { q: query.trim(), filter: undefined, search: undefined },
+          });
+        }
+      }
+    },
+    [query, navigate],
+  );
+
+  return (
+    <TextInput
+      placeholder="Search works, authors, institutions..."
+      leftSection={<IconSearch size={16} />}
+      value={query}
+      onChange={(e) => handleChange(e.target.value)}
+      onKeyDown={handleKeyDown}
+      size="sm"
+      styles={{
+        root: {
+          width: "350px",
+        },
+        input: {
+          borderRadius: "8px",
+        },
+      }}
+      aria-label="Global search input"
+    />
+  );
+}
+import { ActionIcon, Tooltip } from "@mantine/core";
+import { IconLayoutSidebar } from "@tabler/icons-react";
+
+/**
+ * Placeholder component for the removed LeftRibbon functionality
+ */
+export function LeftRibbon() {
+  return (
+    <Tooltip label="Left Ribbon (temporarily disabled)">
+      <ActionIcon
+        variant="subtle"
+        size="lg"
+        c="dimmed"
+        disabled
+      >
+        <IconLayoutSidebar size={18} />
+      </ActionIcon>
+    </Tooltip>
+  );
+}import { ActionIcon, Tooltip } from "@mantine/core";
+import { IconLayoutSidebarRight } from "@tabler/icons-react";
+
+/**
+ * Placeholder component for the removed RightRibbon functionality
+ */
+export function RightRibbon() {
+  return (
+    <Tooltip label="Right Ribbon (temporarily disabled)">
+      <ActionIcon
+        variant="subtle"
+        size="lg"
+        c="dimmed"
+        disabled
+      >
+        <IconLayoutSidebarRight size={18} />
+      </ActionIcon>
+    </Tooltip>
+  );
+}/**
+ * Vertical stack sidebar component for VSCode-style tool groups
+ * Shows all tools within the active group in a vertical stack
+ */
+
+import React, { Suspense } from "react";
+import { Stack, Divider, Text, Collapse, ActionIcon } from "@mantine/core";
+import { IconChevronDown, IconGripVertical } from "@tabler/icons-react";
+import { useLayoutState, useLayoutActions } from "@/stores/layout-store";
+import { getSectionById } from "@/stores/section-registry";
+import { getGroupDefinition } from "@/stores/group-registry";
+import { SectionContextMenu } from "@/components/layout/SectionContextMenu";
+import { useThemeColors } from "@/hooks/use-theme-colors";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { logger } from "@academic-explorer/utils/logger";
+
+// Constants
+const TEXT_PLAIN_DATA_TYPE = "text/plain";
+
+interface VerticalStackSidebarProps {
+  side: "left" | "right";
+}
+
+export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({
+  side,
+}) => {
+  const layoutState = useLayoutState();
+  const layoutActions = useLayoutActions();
+  const { getActiveGroup } = layoutActions;
+  const { getToolGroupsForSidebar } = layoutActions;
+  const { addSectionToGroup } = layoutActions;
+  const { removeSectionFromGroup } = layoutActions;
+  const { setSectionCollapsed } = layoutActions;
+  const { collapsedSections } = layoutState;
+  const { setLeftSidebarOpen } = layoutActions;
+  const { setRightSidebarOpen } = layoutActions;
+  const themeColors = useThemeColors();
+  const { colors } = themeColors;
+  const prefersReducedMotion = useReducedMotion();
+
+  const activeGroupId = getActiveGroup(side);
+  const toolGroups = getToolGroupsForSidebar(side);
+  const activeGroup = activeGroupId ? toolGroups.find(group => group.id === activeGroupId) : null;
+
+  const groupDefinition = activeGroupId
+    ? getGroupDefinition(activeGroupId)
+    : null;
+
+  const handleDrop = (event: React.DragEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const draggedSectionId = event.dataTransfer.getData(TEXT_PLAIN_DATA_TYPE);
+    if (!draggedSectionId || !activeGroupId) return;
+
+    logger.debug(
+      "ui",
+      `Moving section ${draggedSectionId} to active group ${activeGroupId} for ${side} sidebar`,
+      {
+        draggedSectionId,
+        activeGroupId,
+        side,
+      },
+    );
+
+    // First, remove the section from all existing groups on both sides
+    const leftGroups = getToolGroupsForSidebar("left");
+    const rightGroups = getToolGroupsForSidebar("right");
+
+    // Remove from left sidebar groups
+    leftGroups.forEach((group) => {
+      if (group.sections.includes(draggedSectionId)) {
+        removeSectionFromGroup({
+          sidebar: "left",
+          groupId: group.id,
+          sectionKey: draggedSectionId,
+        });
+      }
+    });
+
+    // Remove from right sidebar groups
+    rightGroups.forEach((group) => {
+      if (group.sections.includes(draggedSectionId)) {
+        removeSectionFromGroup({
+          sidebar: "right",
+          groupId: group.id,
+          sectionKey: draggedSectionId,
+        });
+      }
+    });
+
+    // Then add to the target group
+    if (activeGroupId) {
+      addSectionToGroup({
+        sidebar: side,
+        groupId: activeGroupId,
+        sectionKey: draggedSectionId,
+      });
+    }
+  };
+
+  const handleDragOver = (event: React.DragEvent) => {
+    event.preventDefault();
+  };
+
+  const handleToolDragStart = ({ sectionId, event }) => {
+    logger.debug("ui", `Starting drag for tool ${sectionId}`, {
+      sectionId,
+      side,
+    });
+    event.dataTransfer.setData(TEXT_PLAIN_DATA_TYPE, sectionId);
+    event.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleToolDrop = ({ targetSectionId, event }) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const draggedSectionId = event.dataTransfer.getData(TEXT_PLAIN_DATA_TYPE);
+    if (
+      !draggedSectionId ||
+      !activeGroupId ||
+      draggedSectionId === targetSectionId
+    )
+      return;
+
+    logger.debug(
+      "ui",
+      `Moving tool ${draggedSectionId} to group ${activeGroupId}`,
+      {
+        draggedSectionId,
+        targetGroupId: activeGroupId,
+        side,
+      },
+    );
+
+    // First, remove the section from all existing groups on both sides
+    const leftGroups = getToolGroupsForSidebar("left");
+    const rightGroups = getToolGroupsForSidebar("right");
+
+    // Remove from left sidebar groups
+    leftGroups.forEach((group) => {
+      if (group.sections.includes(draggedSectionId)) {
+        removeSectionFromGroup({
+          sidebar: "left",
+          groupId: group.id,
+          sectionKey: draggedSectionId,
+        });
+      }
+    });
+
+    // Remove from right sidebar groups
+    rightGroups.forEach((group) => {
+      if (group.sections.includes(draggedSectionId)) {
+        removeSectionFromGroup({
+          sidebar: "right",
+          groupId: group.id,
+          sectionKey: draggedSectionId,
+        });
+      }
+    });
+
+    // Then add to the target group
+    if (activeGroupId) {
+      addSectionToGroup({
+        sidebar: side,
+        groupId: activeGroupId,
+        sectionKey: draggedSectionId,
+      });
+    }
+  };
+
+  const handleToggleCollapse = (sectionId: string) => {
+    const isCollapsed = collapsedSections[sectionId] || false;
+    setSectionCollapsed({ sectionKey: sectionId, collapsed: !isCollapsed });
+  };
+
+  // Use useEffect to handle sidebar collapse when no active group
+  React.useEffect(() => {
+    if (!activeGroup || !groupDefinition) {
+      // Collapse only the specific sidebar that has no active group
+      if (side === "left") {
+        setLeftSidebarOpen(false);
+      } else {
+        setRightSidebarOpen(false);
+      }
+    }
+  }, [
+    activeGroup,
+    groupDefinition,
+    side,
+    setLeftSidebarOpen,
+    setRightSidebarOpen,
+  ]);
+
+  if (!activeGroup || !groupDefinition) {
+    return null;
+  }
+
+  return (
+    <div
+      role="region"
+      aria-label={`${side} sidebar content - Drop tools here to add to group`}
+      style={{
+        height: "100%",
+        overflow: "auto",
+      }}
+      onDrop={handleDrop}
+      onDragOver={handleDragOver}
+    >
+      {/* Vertical stack of all tools in the group */}
+      <Stack gap={0}>
+        {activeGroup.sections.map((sectionId, index) => {
+          const section = getSectionById(sectionId);
+          if (!section) return null;
+
+          const SectionComponent = section.component;
+          const isLast = index === activeGroup.sections.length - 1;
+          const isCollapsed = collapsedSections[sectionId] || false;
+          const SectionIcon = section.icon;
+
+          return (
+            <div key={sectionId}>
+              {/* Collapsible tool header */}
+              <div
+                role="button"
+                tabIndex={0}
+                aria-label={`${section.title} - Drag to reorder or press Enter to toggle collapse`}
+                aria-expanded={!isCollapsed}
+                draggable
+                onDragStart={(e) => {
+                  handleToolDragStart({ sectionId, event: e });
+                }}
+                onDrop={(e) => {
+                  handleToolDrop({ targetSectionId: sectionId, event: e });
+                }}
+                onDragOver={handleDragOver}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    handleToggleCollapse(sectionId);
+                  }
+                }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "8px 12px",
+                  backgroundColor: colors.background.tertiary,
+                  borderBottom: `1px solid ${colors.border.primary}`,
+                  cursor: "grab",
+                  userSelect: "none",
+                  transition: prefersReducedMotion ? "none" : "background-color 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor =
+                    colors.background.secondary;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor =
+                    colors.background.tertiary;
+                }}
+              >
+                {/* Drag handle */}
+                <IconGripVertical
+                  size={14}
+                  style={{
+                    color: colors.text.secondary,
+                    marginRight: "6px",
+                    cursor: "grab",
+                  }}
+                />
+
+                {/* Tool icon */}
+                <div
+                  style={{
+                    color: colors.text.primary,
+                    marginRight: "8px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <SectionIcon size={16} />
+                </div>
+
+                {/* Tool title - clickable for collapse */}
+                <Text
+                  size="sm"
+                  fw={500}
+                  style={{
+                    color: colors.text.primary,
+                    flex: 1,
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    handleToggleCollapse(sectionId);
+                  }}
+                >
+                  {section.title}
+                </Text>
+
+                {/* Context menu */}
+                <SectionContextMenu
+                  sectionId={sectionId}
+                  currentSidebar={side}
+                />
+
+                {/* Collapse toggle */}
+                <ActionIcon
+                  variant="subtle"
+                  size="sm"
+                  onClick={() => {
+                    handleToggleCollapse(sectionId);
+                  }}
+                  style={{
+                    marginLeft: "4px",
+                    transform: isCollapsed ? "rotate(-90deg)" : "rotate(0deg)",
+                    transition: prefersReducedMotion ? "none" : "transform 0.2s ease",
+                  }}
+                >
+                  <IconChevronDown size={14} />
+                </ActionIcon>
+              </div>
+
+              {/* Collapsible section content - CRITICAL: Always render to maintain hook consistency */}
+              <div style={{ display: isCollapsed ? "none" : "block" }}>
+                <div
+                  style={{
+                    padding: "16px",
+                    minHeight: "200px",
+                  }}
+                >
+                  <Suspense
+                    fallback={
+                      <div
+                        style={{
+                          padding: "16px",
+                          textAlign: "center",
+                          color: colors.text.secondary,
+                        }}
+                      >
+                        Loading {section.title}...
+                      </div>
+                    }
+                  >
+                    <SectionComponent />
+                  </Suspense>
+                </div>
+              </div>
+
+              {/* Divider between tools (except for last one) */}
+              {!isLast && (
+                <Divider
+                  style={{
+                    borderColor: colors.border.secondary,
+                  }}
+                />
+              )}
+            </div>
+          );
+        })}
+      </Stack>
+    </div>
+  );
+};
+/**
+ * Build information footer component
+ * Displays application version, commit hash, build timestamp, and release links
+ */
+
+import React from "react";
+import { Text, Group, Tooltip, Paper, Flex, Anchor } from "@mantine/core";
+import {
+  getBuildInfo,
+  formatBuildTimestamp,
+  getCommitUrl,
+  getReleaseUrl,
+  getRelativeBuildTime,
+} from "@academic-explorer/utils";
+import { useThemeColors } from "@/hooks/use-theme-colors";
+import {
+  IconBrandGithub,
+  IconTag,
+  IconGitCommit,
+  IconClock,
+} from "@tabler/icons-react";
+
+export const BuildInfo: React.FC = () => {
+  const themeColors = useThemeColors();
+  const { colors } = themeColors;
+  const buildInfo = getBuildInfo();
+
+  return (
+    <Paper
+      mt="auto"
+      p="xs"
+      bg="var(--mantine-color-gray-0)"
+      radius="sm"
+      withBorder
+      style={{ borderTop: "1px solid var(--mantine-color-gray-3)" }}
+    >
+      {/* Version */}
+      <Group gap="xs" mb="xs">
+        <IconTag size={12} />
+        <Text size="xs" c="dimmed">Version</Text>
+        <Anchor
+          href={getReleaseUrl({
+            repositoryUrl: buildInfo.repositoryUrl,
+            version: buildInfo.version,
+          })}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            color: colors.primary,
+            textDecoration: "none",
+            fontWeight: 500,
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.textDecoration = "underline";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.textDecoration = "none";
+          }}
+        >
+          {buildInfo.version}
+              </Anchor>
+      </Group>
+
+      {/* Commit Hash */}
+      <Group gap="xs" mb="xs">
+        <IconGitCommit size={12} />
+        <Anchor
+          href={getCommitUrl({
+            repositoryUrl: buildInfo.repositoryUrl,
+            commitHash: buildInfo.commitHash,
+          })}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            fontFamily: "monospace",
+            fontSize: "10px",
+            color: "var(--mantine-color-blue-6)",
+            textDecoration: "none",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.textDecoration = "underline";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.textDecoration = "none";
+          }}
+        >
+          {buildInfo.shortCommitHash}
+        </Anchor>
+        <Text size="xs" c="dimmed">
+          ({buildInfo.branchName})
+        </Text>
+      </Group>
+
+      {/* Build Time */}
+      <Group gap="xs" mb="sm">
+        <IconClock size={12} />
+        <Tooltip label={formatBuildTimestamp(buildInfo.buildTimestamp)}>
+          <Text size="xs" c="dimmed" span>
+            Built {getRelativeBuildTime(buildInfo.buildTimestamp)}
+          </Text>
+        </Tooltip>
+      </Group>
+
+      {/* Repository Link */}
+      <Group justify="center" gap="xs" pt="xs" style={{ borderTop: "1px solid var(--mantine-color-gray-2)" }}>
+        <Anchor
+          href={buildInfo.repositoryUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          size="xs"
+          fw={500}
+        >
+          <IconBrandGithub size={14} />
+          Academic Explorer
+        </Anchor>
+      </Group>
+    </Paper>
+  );
+};
+import { useState, useCallback } from "react";
+import { Group, TextInput, Button, Stack, Paper, Title } from "@mantine/core";
+import { IconSearch } from "@tabler/icons-react";
+import {
+  debouncedSearch,
+  normalizeSearchQuery,
+  isValidSearchQuery,
+} from "@academic-explorer/utils";
+
+interface SearchFilters {
+  query: string;
+}
+
+interface SearchInterfaceProps {
+  onSearch: (filters: SearchFilters) => void;
+  isLoading?: boolean;
+  placeholder?: string;
+}
+
+export function SearchInterface({
+  onSearch,
+  isLoading = false,
+  placeholder = "Search academic works, authors, institutions...",
+}: SearchInterfaceProps) {
+  const [query, setQuery] = useState("");
+
+  const handleSearch = useCallback(() => {
+    const filters: SearchFilters = {
+      query: isValidSearchQuery(query) ? normalizeSearchQuery(query) : "",
+    };
+
+    onSearch(filters);
+  }, [query, onSearch]);
+
+  const handleQueryChange = useCallback(
+    (value: string) => {
+      setQuery(value);
+
+      // Only trigger debounced search if we have a valid query
+      if (isValidSearchQuery(value)) {
+        debouncedSearch(() => {
+          const filters: SearchFilters = {
+            query: normalizeSearchQuery(value),
+          };
+          onSearch(filters);
+        }, value);
+      }
+    },
+    [onSearch],
+  );
+
+  const handleClearFilters = () => {
+    setQuery("");
+    onSearch({
+      query: "",
+    });
+  };
+
+  return (
+    <Paper p="md" withBorder>
+      <Stack gap="md">
+        <Group>
+          <Title order={3}>Search Academic Literature</Title>
+        </Group>
+
+        <Group align="flex-end">
+          <TextInput
+            placeholder={placeholder}
+            leftSection={<IconSearch size={16} />}
+            value={query}
+            onChange={(e) => {
+              handleQueryChange(e.target.value);
+            }}
+            disabled={isLoading}
+            flex={1}
+            size="md"
+            aria-label="Search query input"
+          />
+
+          <Button
+            onClick={handleSearch}
+            loading={isLoading}
+            leftSection={<IconSearch size={16} />}
+          >
+            Search
+          </Button>
+
+          {Boolean(query) && (
+            <Button
+              variant="subtle"
+              onClick={handleClearFilters}
+              disabled={isLoading}
+            >
+              Clear
+            </Button>
+          )}
+        </Group>
+      </Stack>
+    </Paper>
+  );
+}
+import { Title, Text, Paper } from "@mantine/core";
+
+/**
+ * Placeholder component for the removed AllEdgesSection functionality
+ */
+export function AllEdgesSection() {
+  return (
+    <Paper p="md" withBorder>
+      <Title order={4}>All Edges</Title>
+      <Text size="sm" c="dimmed" mt="sm">
+        The All Edges section has been temporarily removed during application cleanup.
+        This functionality may be restored in a future version.
+      </Text>
+    </Paper>
+  );
+}import { Title, Text, Paper } from "@mantine/core";
+
+/**
+ * Placeholder component for the removed AllNodesSection functionality
+ */
+export function AllNodesSection() {
+  return (
+    <Paper p="md" withBorder>
+      <Title order={4}>All Nodes</Title>
+      <Text size="sm" c="dimmed" mt="sm">
+        The All Nodes section has been temporarily removed during application cleanup.
+        This functionality may be restored in a future version.
+      </Text>
+    </Paper>
+  );
+}import { Title, Text, Paper } from "@mantine/core";
+
+/**
+ * Placeholder component for the removed CustomForcesSection functionality
+ */
+export function CustomForcesSection() {
+  return (
+    <Paper p="md" withBorder>
+      <Title order={4}>Custom Forces</Title>
+      <Text size="sm" c="dimmed" mt="sm">
+        The Custom Forces section has been temporarily removed during application cleanup.
+        This functionality may be restored in a future version.
+      </Text>
+    </Paper>
+  );
+}/**
+ * Edge Filters Section
+ * Controls edge type visibility and filtering in the graph
+ */
+
+import React from "react";
+import { IconLink, IconEye, IconEyeOff } from "@tabler/icons-react";
+import { Button, Checkbox, Badge, Group, Stack, Paper, Text } from "@mantine/core";
+import { useGraphStore } from "@/stores/graph-store";
+import { useThemeColors } from "@/hooks/use-theme-colors";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { CollapsibleSection } from "@/components/molecules/CollapsibleSection";
+import { logger } from "@academic-explorer/utils/logger";
+import { RelationType } from "@academic-explorer/graph";
+import { safeParseRelationType } from "@academic-explorer/utils";
+
+// Constants
+const FLEX_JUSTIFY_SPACE_BETWEEN = "space-between";
+
+interface EdgeFiltersSectionProps {
+  className?: string;
+}
+
+// Configuration for relation types with labels and descriptions
+const RELATION_TYPE_CONFIG = {
+  [RelationType.AUTHORED]: {
+    label: "Authored",
+    description: "Author wrote this work",
+  },
+  [RelationType.AFFILIATED]: {
+    label: "Affiliated",
+    description: "Author is affiliated with institution",
+  },
+  [RelationType.PUBLISHED_IN]: {
+    label: "Published In",
+    description: "Work was published in this source",
+  },
+  [RelationType.FUNDED_BY]: {
+    label: "Funded By",
+    description: "Work was funded by this organization",
+  },
+  [RelationType.REFERENCES]: {
+    label: "References",
+    description: "Work cites another work",
+  },
+  [RelationType.SOURCE_PUBLISHED_BY]: {
+    label: "Source Published By",
+    description: "Source is published by this publisher",
+  },
+};
+
+export const EdgeFiltersSection: React.FC<EdgeFiltersSectionProps> = ({
+  className = "",
+}) => {
+  const themeColors = useThemeColors();
+  const { colors } = themeColors;
+  const prefersReducedMotion = useReducedMotion();
+
+  // Get edge state from store
+  const graphStore = useGraphStore();
+  const { visibleEdgeTypes, edgeTypeStats, toggleEdgeTypeVisibility } = graphStore;
+
+  // Calculate visibility stats with proper types
+  const totalVisibleEdges = edgeTypeStats.visible || 0;
+  const totalEdges = edgeTypeStats.total || 0;
+  const visibleTypesCount =
+    Object.values(visibleEdgeTypes).filter(Boolean).length;
+  const totalTypesCount = Object.keys(RELATION_TYPE_CONFIG).length;
+
+  const handleShowAll = () => {
+    logger.debug("ui", "Showing all edge types");
+    Object.keys(RELATION_TYPE_CONFIG).forEach((edgeTypeKey) => {
+      const parsedType = safeParseRelationType(edgeTypeKey);
+      const edgeType = edgeTypeKey as RelationType;
+      if (parsedType && !visibleEdgeTypes[edgeType]) {
+        toggleEdgeTypeVisibility(edgeType);
+      }
+    });
+  };
+
+  const handleHideAll = () => {
+    logger.debug("ui", "Hiding all edge types");
+    Object.keys(RELATION_TYPE_CONFIG).forEach((edgeTypeKey) => {
+      const parsedType = safeParseRelationType(edgeTypeKey);
+      const edgeType = edgeTypeKey as RelationType;
+      if (parsedType && visibleEdgeTypes[edgeType]) {
+        toggleEdgeTypeVisibility(edgeType);
+      }
+    });
+  };
+
+  const handleToggleEdgeType = (edgeType: RelationType) => {
+    logger.debug("ui", `Toggling edge type ${edgeType}`, {
+      edgeType,
+      currentlyVisible: visibleEdgeTypes[edgeType],
+    });
+    toggleEdgeTypeVisibility(edgeType);
+  };
+
+  return (
+    <Stack p="md" className={className}>
+      <Group gap="sm">
+        <IconLink size={16} />
+        <Text size="sm" fw={600} c="var(--mantine-color-text)">
+          Edge Types & Visibility
+        </Text>
+      </Group>
+
+      {/* Summary Stats */}
+      <Paper p="sm" radius="md" withBorder>
+        <Stack gap="xs">
+          <Group justify="space-between">
+            <Text size="xs" c="dimmed">
+              Visible Connections
+            </Text>
+            <Badge size="sm" variant="light" color="blue">
+              {totalVisibleEdges.toLocaleString()} / {totalEdges.toLocaleString()}
+            </Badge>
+          </Group>
+          <Group justify="space-between">
+            <Text size="xs" c="dimmed">
+              Active Types
+            </Text>
+            <Badge size="sm" variant="light" color="green">
+              {visibleTypesCount} / {totalTypesCount}
+            </Badge>
+          </Group>
+        </Stack>
+      </Paper>
+
+      {/* Bulk Actions */}
+      <Group gap="xs">
+        <Button
+          size="xs"
+          variant="light"
+          leftSection={<IconEye size={12} />}
+          onClick={handleShowAll}
+          disabled={visibleTypesCount === totalTypesCount}
+        >
+          Show All
+        </Button>
+        <Button
+          size="xs"
+          variant="light"
+          leftSection={<IconEyeOff size={12} />}
+          onClick={handleHideAll}
+          disabled={visibleTypesCount === 0}
+        >
+          Hide All
+        </Button>
+      </Group>
+
+      {/* Edge Type Filters */}
+      <CollapsibleSection
+        title="Connection Types"
+        icon={<IconLink size={14} />}
+        defaultExpanded={true}
+        storageKey="edge-filters-types"
+      >
+        <Stack gap="xs" style={{ marginTop: "8px" }}>
+          {Object.entries(RELATION_TYPE_CONFIG).map(([edgeTypeKey, config]) => {
+            const parsedType = safeParseRelationType(edgeTypeKey);
+            if (!parsedType) return null;
+            const edgeType = edgeTypeKey as RelationType;
+            const typeStats = edgeTypeStats[edgeType];
+            const visibleCount = typeof typeStats === "object" ? typeStats.visible : 0;
+            const totalCount = typeof typeStats === "object" ? typeStats.total : 0;
+            const isVisible = visibleEdgeTypes[edgeType] || false;
+
+            return (
+              <Paper
+                key={edgeType}
+                p="xs"
+                radius="md"
+                withBorder
+                bg={isVisible ? "var(--mantine-color-gray-0)" : "var(--mantine-color-gray-1)"}
+                style={{
+                  borderColor: isVisible ? "var(--mantine-color-blue-6)" : "var(--mantine-color-gray-3)",
+                  transition: prefersReducedMotion ? "none" : "all 0.2s ease",
+                }}
+              >
+                <Group justify="space-between" align="flex-start">
+                  <Group gap="sm" flex={1}>
+                    <Checkbox
+                      checked={isVisible}
+                      onChange={() => {
+                        handleToggleEdgeType(edgeType);
+                      }}
+                      size="sm"
+                    />
+                    <Stack gap={2} flex={1}>
+                      <Text size="sm" fw={500} tt="capitalize">
+                        {config.label || edgeType.replace("_", " ")}
+                      </Text>
+                      {config.description && (
+                        <Text size="xs" c="dimmed">
+                          {config.description}
+                        </Text>
+                      )}
+                    </Stack>
+                  </Group>
+
+                  <Group gap="xs">
+                    {totalCount > 0 && (
+                      <>
+                        <Badge
+                          size="xs"
+                          variant={isVisible ? "filled" : "light"}
+                          color={isVisible ? "blue" : "gray"}
+                        >
+                          {isVisible ? visibleCount.toLocaleString() : "Hidden"}
+                        </Badge>
+                        {visibleCount !== totalCount && (
+                          <Badge size="xs" variant="light" color="gray">
+                            {totalCount.toLocaleString()} total
+                          </Badge>
+                        )}
+                      </>
+                    )}
+                    {totalCount === 0 && (
+                      <Badge size="xs" variant="light" color="gray">
+                        None
+                      </Badge>
+                    )}
+                  </Group>
+                </Group>
+              </Paper>
+            );
+          })}
+        </Stack>
+      </CollapsibleSection>
+
+      {/* Edge Direction Filters - Future Enhancement */}
+      <CollapsibleSection
+        title="Direction & Weight"
+        icon={<IconLink size={14} />}
+        defaultExpanded={false}
+        storageKey="edge-filters-direction"
+      >
+        <Stack p="md" align="center">
+          <Text size="sm" c="dimmed" ta="center">
+            Direction and weight filtering
+          </Text>
+          <Text size="xs" c="dimmed" opacity={0.7} ta="center">
+            Coming soon: Filter by edge direction (incoming/outgoing) and
+            connection strength
+          </Text>
+        </Stack>
+      </CollapsibleSection>
+    </Stack>
+  );
+};
+/**
+ * Graph actions section component
+ * Extracted from LeftSidebar for dynamic section system
+ */
+
+import React from "react";
+import { LayoutControls } from "@/components/molecules/LayoutControls";
+import { ForceControls } from "@/components/molecules/ForceControls";
+
+export const GraphActionsSection: React.FC = () => {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+      <LayoutControls />
+      <ForceControls />
+    </div>
+  );
+};
+/**
+ * Graph Statistics Section
+ * Displays comprehensive graph statistics and metrics
+ */
+
+import React, { useMemo } from "react";
+import {
+  IconChartBar,
+  IconCircle,
+  IconLink,
+  IconTrendingUp,
+  IconDownload,
+} from "@tabler/icons-react";
+import { Button, Badge, Progress, Divider } from "@mantine/core";
+import { useGraphStore } from "@/stores/graph-store";
+import { useThemeColors } from "@/hooks/use-theme-colors";
+import { CollapsibleSection } from "@/components/molecules/CollapsibleSection";
+import { logger } from "@academic-explorer/utils/logger";
+// Types imported but used indirectly through store types
+
+// Constants
+const FLEX_JUSTIFY_SPACE_BETWEEN = "space-between";
+
+interface GraphStatsSectionProps {
+  className?: string;
+}
+
+export const GraphStatsSection: React.FC<GraphStatsSectionProps> = ({
+  className = "",
+}) => {
+  const themeColors = useThemeColors();
+  const { colors } = themeColors;
+
+  // Get stats from graph store using proper React Context pattern
+  const graphStore = useGraphStore();
+  const {
+    totalNodeCount,
+    totalEdgeCount,
+    entityTypeStats,
+    edgeTypeStats,
+    lastSearchStats,
+  } = graphStore;
+
+  // Calculate derived metrics
+  const networkMetrics = useMemo(() => {
+    const density =
+      totalNodeCount > 1
+        ? (2 * totalEdgeCount) / (totalNodeCount * (totalNodeCount - 1))
+        : 0;
+
+    const avgDegree =
+      totalNodeCount > 0 ? (2 * totalEdgeCount) / totalNodeCount : 0;
+
+    return {
+      density: Math.round(density * 10000) / 100, // As percentage with 2 decimal places
+      avgDegree: Math.round(avgDegree * 100) / 100,
+    };
+  }, [totalNodeCount, totalEdgeCount]);
+
+  // Top entity types by count
+  const topEntityTypes = useMemo(() => {
+    return Object.entries(entityTypeStats.visible || {})
+      .filter(([, count]) => (count as number) > 0)
+      .sort(([, a], [, b]) => (b as number) - (a as number))
+      .slice(0, 5);
+  }, [entityTypeStats.visible]);
+
+  // Top edge types by count
+  const topEdgeTypes = useMemo(() => {
+    return Object.entries(edgeTypeStats.visible || {})
+      .filter(([, count]) => (count as number) > 0)
+      .sort(([, a], [, b]) => (b as number) - (a as number))
+      .slice(0, 5);
+  }, [edgeTypeStats.visible]);
+
+  const handleExportStats = () => {
+    const stats = {
+      timestamp: new Date().toISOString(),
+      network: {
+        nodes: totalNodeCount,
+        edges: totalEdgeCount,
+        density: networkMetrics.density,
+        averageDegree: networkMetrics.avgDegree,
+      },
+      entityTypes: entityTypeStats,
+      edgeTypes: edgeTypeStats,
+      lastSearch: lastSearchStats,
+    };
+
+    const blob = new Blob([JSON.stringify(stats, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `graph-stats-${new Date().toISOString().split("T")[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    logger.debug("ui", "Graph statistics exported", {
+      nodeCount: totalNodeCount,
+      edgeCount: totalEdgeCount,
+    });
+  };
+
+  const StatItem: React.FC<{
+    label: string;
+    value: string | number;
+    icon?: React.ReactNode;
+  }> = ({ label, value, icon }) => (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: FLEX_JUSTIFY_SPACE_BETWEEN,
+        alignItems: "center",
+        padding: "8px 0",
+        borderBottom: `1px solid ${colors.border.secondary}`,
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          fontSize: "13px",
+          color: colors.text.secondary,
+        }}
+      >
+        {icon}
+        {label}
+      </div>
+      <div
+        style={{
+          fontSize: "14px",
+          fontWeight: 600,
+          color: colors.text.primary,
+        }}
+      >
+        {typeof value === "number" && value > 999
+          ? value.toLocaleString()
+          : value}
+      </div>
+    </div>
+  );
+
+  const EntityTypeBar: React.FC<{
+    entityType: string;
+    count: number;
+    total: number;
+  }> = ({ entityType, count, total }) => {
+    const percentage = total > 0 ? (count / total) * 100 : 0;
+    return (
+      <div style={{ marginBottom: "8px" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: FLEX_JUSTIFY_SPACE_BETWEEN,
+            alignItems: "center",
+            marginBottom: "4px",
+          }}
+        >
+          <span style={{ fontSize: "12px", textTransform: "capitalize" }}>
+            {entityType.replace("_", " ")}
+          </span>
+          <Badge size="xs" variant="light">
+            {count}
+          </Badge>
+        </div>
+        <Progress
+          value={percentage}
+          size="sm"
+          color="blue"
+          style={{ opacity: 0.8 }}
+        />
+      </div>
+    );
+  };
+
+  if (totalNodeCount === 0) {
+    return (
+      <div
+        className={className}
+        style={{
+          padding: "24px",
+          textAlign: "center",
+          color: colors.text.secondary,
+        }}
+      >
+        <IconChartBar
+          size={48}
+          style={{
+            opacity: 0.3,
+            marginBottom: "12px",
+          }}
+        />
+        <div
+          style={{
+            fontSize: "14px",
+            fontWeight: 500,
+            marginBottom: "8px",
+          }}
+        >
+          No Graph Data
+        </div>
+        <div
+          style={{
+            fontSize: "12px",
+            opacity: 0.7,
+          }}
+        >
+          Search for entities to see graph statistics
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={className} style={{ padding: "16px" }}>
+      <div
+        style={{
+          fontSize: "14px",
+          fontWeight: 600,
+          marginBottom: "16px",
+          color: colors.text.primary,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: FLEX_JUSTIFY_SPACE_BETWEEN,
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <IconChartBar size={16} />
+          Graph Statistics
+        </div>
+        <Button
+          size="xs"
+          variant="subtle"
+          leftSection={<IconDownload size={12} />}
+          onClick={handleExportStats}
+        >
+          Export
+        </Button>
+      </div>
+
+      {/* Basic Statistics */}
+      <CollapsibleSection
+        title="Network Overview"
+        icon={<IconTrendingUp size={14} />}
+        defaultExpanded={true}
+        storageKey="graph-stats-network-overview"
+      >
+        <div style={{ marginTop: "8px" }}>
+          <StatItem
+            label="Total Nodes"
+            value={totalNodeCount}
+            icon={<IconCircle size={14} />}
+          />
+          <StatItem
+            label="Total Edges"
+            value={totalEdgeCount}
+            icon={<IconLink size={14} />}
+          />
+          <StatItem
+            label="Network Density"
+            value={`${networkMetrics.density.toString()}%`}
+            icon={<IconTrendingUp size={14} />}
+          />
+          <StatItem
+            label="Avg. Connections"
+            value={networkMetrics.avgDegree}
+            icon={<IconTrendingUp size={14} />}
+          />
+        </div>
+      </CollapsibleSection>
+
+      <Divider style={{ margin: "16px 0" }} />
+
+      {/* Entity Types Distribution */}
+      <CollapsibleSection
+        title={`Entity Types (${topEntityTypes.length.toString()})`}
+        icon={<IconCircle size={14} />}
+        defaultExpanded={false}
+        storageKey="graph-stats-entity-types"
+      >
+        <div style={{ marginTop: "12px" }}>
+          {topEntityTypes.map(([type, count]) => (
+            <EntityTypeBar
+              key={type}
+              entityType={type}
+              count={count as number}
+              total={totalNodeCount}
+            />
+          ))}
+        </div>
+      </CollapsibleSection>
+
+      <Divider style={{ margin: "16px 0" }} />
+
+      {/* Edge Types Distribution */}
+      <CollapsibleSection
+        title={`Connection Types (${topEdgeTypes.length.toString()})`}
+        icon={<IconLink size={14} />}
+        defaultExpanded={false}
+        storageKey="graph-stats-edge-types"
+      >
+        <div style={{ marginTop: "12px" }}>
+          {topEdgeTypes.map(([type, count]) => (
+            <EntityTypeBar
+              key={type}
+              entityType={type}
+              count={count as number}
+              total={totalEdgeCount}
+            />
+          ))}
+        </div>
+      </CollapsibleSection>
+
+      {/* Search Results Summary */}
+      {Object.values(lastSearchStats).some(
+        (v) => typeof v === "number" && v > 0,
+      ) && (
+        <>
+          <Divider style={{ margin: "16px 0" }} />
+          <CollapsibleSection
+            title="Last Search Results"
+            icon={<IconChartBar size={14} />}
+            defaultExpanded={false}
+            storageKey="graph-stats-search-results"
+          >
+            <div style={{ marginTop: "8px" }}>
+              {Object.entries(lastSearchStats)
+                .filter(([, count]) => typeof count === "number" && count > 0)
+                .map(([type, count]) => (
+                  <StatItem
+                    key={type}
+                    label={type.replace("_", " ")}
+                    value={count as number}
+                  />
+                ))}
+            </div>
+          </CollapsibleSection>
+        </>
+      )}
+    </div>
+  );
+};
+/**
+ * Node Repository Section component
+ * Displays repository nodes that can be dragged into the graph
+ */
+
+import React, { useCallback, useMemo } from "react";
+import {
+  Stack,
+  Text,
+  TextInput,
+  Checkbox,
+  Group,
+  Button,
+  Card,
+  Badge,
+  ActionIcon,
+  Tooltip,
+} from "@mantine/core";
+import { IconSearch, IconTrash, IconDragDrop } from "@tabler/icons-react";
+import { useRepositoryStore, createInitialNodeTypeFilter } from "@/stores/repository-store";
+import { useThemeColors } from "@/hooks/use-theme-colors";
+import { logger } from "@academic-explorer/utils/logger";
+import type { GraphNode, EntityType } from "@academic-explorer/graph";
+import { RelationType } from "@academic-explorer/graph";
+import type { RepositoryState } from "@/stores/repository-store";
+import {
+  SectionFrame,
+  BulkActionToolbar,
+  EntityCollectionList,
+} from "@academic-explorer/ui";
+import {
+  IconFile,
+  IconUser,
+  IconBook,
+  IconBuilding,
+  IconTag,
+  IconBuildingStore,
+  IconCoin,
+  IconBulb,
+} from "@tabler/icons-react";
+
+// Properly typed entity options without type assertions
+const entityTypeOptions: Array<{
+  type: EntityType;
+  label: string;
+  icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }>;
+}> = [
+  { type: "works", label: "Works", icon: IconFile },
+  { type: "authors", label: "Authors", icon: IconUser },
+  { type: "sources", label: "Sources", icon: IconBook },
+  { type: "institutions", label: "Institutions", icon: IconBuilding },
+  { type: "topics", label: "Topics", icon: IconTag },
+  { type: "publishers", label: "Publishers", icon: IconBuildingStore },
+  { type: "funders", label: "Funders", icon: IconCoin },
+  { type: "concepts", label: "Concepts", icon: IconBulb },
+];
+
+interface NodeRepositoryItemProps {
+  node: GraphNode;
+  isSelected: boolean;
+  onSelect: (nodeId: string, selected: boolean) => void;
+  onRemove: (nodeId: string) => void;
+}
+
+const NodeRepositoryItem: React.FC<NodeRepositoryItemProps> = ({
+  node,
+  isSelected,
+  onSelect,
+  onRemove,
+}) => {
+  const themeColors = useThemeColors();
+  const { colors } = themeColors;
+
+  // Get icon for entity type
+  const entityOption = entityTypeOptions.find(
+    (option) => option.type === node.entityType,
+  );
+  const Icon = entityOption?.icon ?? IconFile;
+
+  const handleDragStart = useCallback(
+    (event: React.DragEvent) => {
+      // Store node data for drop handler
+      event.dataTransfer.setData(
+        "application/json",
+        JSON.stringify({
+          entityType: "repository-node",
+          node,
+        }),
+      );
+      event.dataTransfer.effectAllowed = "copy";
+
+      logger.debug("repository", "Started dragging repository node", {
+        nodeId: node.id,
+        nodeType: node.entityType,
+        nodeLabel: node.label,
+      });
+    },
+    [node],
+  );
+
+  const handleCheckboxChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      onSelect(node.id, event.currentTarget.checked);
+    },
+    [node.id, onSelect],
+  );
+
+  const handleRemove = useCallback(() => {
+    onRemove(node.id);
+  }, [node.id, onRemove]);
+
+  return (
+    <Card
+      padding="xs"
+      withBorder
+      style={{
+        cursor: "grab",
+        backgroundColor: isSelected
+          ? colors.primary + "20"
+          : colors.background.primary,
+        borderColor: isSelected ? colors.primary : colors.border.primary,
+        marginBottom: "4px",
+      }}
+      draggable="true"
+      onDragStart={handleDragStart}
+    >
+      <Group gap="xs" wrap="nowrap">
+        <Checkbox
+          checked={isSelected}
+          onChange={handleCheckboxChange}
+          size="sm"
+        />
+
+        <Icon
+          size={16}
+          style={{ color: colors.text.secondary, flexShrink: 0 }}
+        />
+
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <Text
+            size="sm"
+            style={{ fontWeight: 500, color: colors.text.primary }}
+            truncate
+          >
+            {node.label}
+          </Text>
+          <Text size="xs" style={{ color: colors.text.secondary }}>
+            {entityOption?.label ?? node.entityType}
+          </Text>
+        </div>
+
+        <Group gap="xs">
+          <Tooltip label="Drag to graph">
+            <div style={{ color: colors.text.tertiary }}>
+              <IconDragDrop size={14} />
+            </div>
+          </Tooltip>
+
+          <Tooltip label="Remove from repository">
+            <ActionIcon
+              size="sm"
+              variant="subtle"
+              color="red"
+              onClick={handleRemove}
+            >
+              <IconTrash size={12} />
+            </ActionIcon>
+          </Tooltip>
+        </Group>
+      </Group>
+    </Card>
+  );
+};
+
+export const NodeRepositorySection: React.FC = () => {
+  const themeColors = useThemeColors();
+  const { colors } = themeColors;
+
+  // Repository store - use direct store instance
+  const repositoryStore = useRepositoryStore();
+
+  // State management for component
+  const [searchQuery, setSearchQueryState] = React.useState("");
+  const [nodeTypeFilter, setNodeTypeFilterState] = React.useState(createInitialNodeTypeFilter());
+  const [selectedRepositoryNodes, setSelectedRepositoryNodes] = React.useState<Record<string, boolean>>({});
+
+  // Initialize state from store
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const state = await repositoryStore.getRepositoryState();
+        setSearchQueryState(state.searchQuery);
+        setNodeTypeFilterState(state.nodeTypeFilter);
+        setSelectedRepositoryNodes(state.selectedRepositoryNodes);
+      } catch (error) {
+        logger?.error("ui", "Failed to load repository state", { error });
+      }
+    })();
+  }, [repositoryStore]);
+
+  // Get filtered nodes using repository store methods
+  const filteredNodes = useMemo(() => {
+    // Create a complete mock state object for the compute method
+    const mockState: RepositoryState = {
+      repositoryMode: false,
+      repositoryNodes: {}, // Empty for now
+      repositoryEdges: {},
+      searchQuery,
+      nodeTypeFilter,
+      edgeTypeFilter: {
+        [RelationType.AUTHORED]: true,
+        [RelationType.AFFILIATED]: true,
+        [RelationType.PUBLISHED_IN]: true,
+        [RelationType.FUNDED_BY]: true,
+        [RelationType.REFERENCES]: true,
+        [RelationType.RELATED_TO]: true,
+        [RelationType.SOURCE_PUBLISHED_BY]: true,
+        [RelationType.INSTITUTION_CHILD_OF]: true,
+        [RelationType.PUBLISHER_CHILD_OF]: true,
+        [RelationType.WORK_HAS_TOPIC]: true,
+        [RelationType.WORK_HAS_KEYWORD]: true,
+        [RelationType.AUTHOR_RESEARCHES]: true,
+        [RelationType.INSTITUTION_LOCATED_IN]: true,
+        [RelationType.FUNDER_LOCATED_IN]: true,
+        [RelationType.TOPIC_PART_OF_FIELD]: true,
+      },
+      selectedRepositoryNodes,
+      selectedRepositoryEdges: {},
+      filteredNodes: [],
+      filteredEdges: [],
+      totalNodeCount: 0,
+      totalEdgeCount: 0,
+      selectedNodeCount: 0,
+      selectedEdgeCount: 0,
+    };
+    return repositoryStore.computeFilteredNodes(mockState);
+  }, [searchQuery, nodeTypeFilter, selectedRepositoryNodes, repositoryStore]);
+
+  const selectedNodes = useMemo(() => {
+    return Object.keys(selectedRepositoryNodes).filter(nodeId =>
+      selectedRepositoryNodes[nodeId]
+    );
+  }, [selectedRepositoryNodes]);
+
+  const handleSearchChange = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      try {
+        const newQuery = event.currentTarget.value;
+        setSearchQueryState(newQuery);
+        await repositoryStore.setSearchQuery(newQuery);
+      } catch (error) {
+        logger?.error("ui", "Failed to set search query", { error });
+      }
+    },
+    [repositoryStore],
+  );
+
+  const handleTypeFilterChange = useCallback(
+    async (entityType: EntityType, checked: boolean) => {
+      try {
+        await repositoryStore.setNodeTypeFilter(entityType, checked);
+        setNodeTypeFilterState(prev => ({ ...prev, [entityType]: checked }));
+      } catch (error) {
+        logger?.error("ui", "Failed to set node type filter", { error });
+      }
+    },
+    [repositoryStore],
+  );
+
+  const handleSelectAll = useCallback(async () => {
+    try {
+      await repositoryStore.selectAllNodes();
+      // Refresh selected nodes
+      const state = await repositoryStore.getRepositoryState();
+      setSelectedRepositoryNodes(state.selectedRepositoryNodes);
+    } catch (error) {
+      logger?.error("ui", "Failed to select all nodes", { error });
+    }
+  }, [repositoryStore]);
+
+  const handleClearSelection = useCallback(async () => {
+    try {
+      await repositoryStore.clearAllSelections();
+      setSelectedRepositoryNodes({});
+    } catch (error) {
+      logger?.error("ui", "Failed to clear selections", { error });
+    }
+  }, [repositoryStore]);
+
+  const handleRemoveSelected = useCallback(async () => {
+    try {
+      const selectedNodeIds = Object.keys(selectedRepositoryNodes);
+      if (selectedNodeIds.length > 0) {
+        await repositoryStore.removeFromRepository(selectedNodeIds);
+        setSelectedRepositoryNodes({});
+        logger.debug("repository", "Removed selected nodes from repository", {
+          removedCount: selectedNodeIds.length,
+        });
+      }
+    } catch (error) {
+      logger?.error("ui", "Failed to remove selected nodes", { error });
+    }
+  }, [selectedRepositoryNodes, repositoryStore]);
+
+  const handleRemoveNode = useCallback(
+    async (nodeId: string) => {
+      try {
+        await repositoryStore.removeFromRepository([nodeId]);
+        setSelectedRepositoryNodes(prev => {
+          const newState = { ...prev };
+          delete newState[nodeId];
+          return newState;
+        });
+        logger.debug("repository", "Removed single node from repository", {
+          nodeId,
+        });
+      } catch (error) {
+        logger?.error("ui", "Failed to remove node", { error });
+      }
+    },
+    [repositoryStore],
+  );
+
+  return (
+    <SectionFrame title="Node Repository" icon={<IconFile size={16} />}>
+      <BulkActionToolbar
+        totalItems={filteredNodes.length}
+        selectedItems={Object.keys(selectedRepositoryNodes)}
+        onSelectAll={handleSelectAll}
+        onClearSelection={handleClearSelection}
+        additionalActions={
+          selectedNodes.length > 0 ? (
+            <Button
+              size="xs"
+              variant="light"
+              color="red"
+              leftSection={<IconTrash size={14} />}
+              onClick={handleRemoveSelected}
+            >
+              Remove Selected
+            </Button>
+          ) : undefined
+        }
+      />
+
+      <Stack gap="sm" p="md" style={{ height: "100%", overflow: "hidden" }}>
+        {/* Search */}
+        <TextInput
+          placeholder="Search repository nodes..."
+          leftSection={<IconSearch size={16} />}
+          value={searchQuery}
+          onChange={handleSearchChange}
+          size="sm"
+        />
+
+        {/* Type filters */}
+        <Stack gap="xs">
+          <Text
+            size="sm"
+            style={{ fontWeight: 500, color: colors.text.primary }}
+          >
+            Filter by entityType:
+          </Text>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "4px",
+            }}
+          >
+            {entityTypeOptions.map((option) => {
+              const Icon = option.icon;
+              const isChecked = nodeTypeFilter[option.type];
+
+              return (
+                <Checkbox
+                  key={option.type}
+                  checked={isChecked}
+                  onChange={(event) => {
+                    handleTypeFilterChange(
+                      option.type,
+                      event.currentTarget.checked,
+                    );
+                  }}
+                  label={
+                    <Group gap="xs">
+                      <Icon size={14} />
+                      <Text size="xs">{option.label}</Text>
+                    </Group>
+                  }
+                  size="xs"
+                />
+              );
+            })}
+          </div>
+        </Stack>
+
+        {/* Results summary */}
+        <Group gap="xs" justify="space-between">
+          <Text size="xs" style={{ color: colors.text.secondary }}>
+            {filteredNodes.length} node{filteredNodes.length !== 1 ? "s" : ""}
+          </Text>
+          {selectedNodes.length > 0 && (
+            <Badge size="xs" color="blue">
+              {selectedNodes.length} selected
+            </Badge>
+          )}
+        </Group>
+
+        {/* Node list */}
+        <EntityCollectionList
+          items={filteredNodes}
+          renderItem={(node) => (
+            <NodeRepositoryItem
+              key={node.id}
+              node={node}
+              isSelected={selectedRepositoryNodes[node.id] ?? false}
+              onSelect={async (nodeId: string, selected: boolean) => {
+                try {
+                  await repositoryStore.selectRepositoryNode(nodeId, selected);
+                  setSelectedRepositoryNodes(prev => ({
+                    ...prev,
+                    [nodeId]: selected
+                  }));
+                } catch (error) {
+                  logger?.error("ui", "Failed to select node", { error });
+                }
+              }}
+              onRemove={handleRemoveNode}
+            />
+          )}
+          height="100%"
+          emptyState={{
+            title: "No nodes in repository",
+            description: "Search for entities to add them here",
+          }}
+        />
+
+        {/* Drag instructions */}
+        {filteredNodes.length > 0 && (
+          <Group justify="center" gap="xs" style={{ padding: "8px" }}>
+            <IconBulb size={12} style={{ color: colors.text.tertiary }} />
+            <Text size="xs" style={{ color: colors.text.tertiary }}>
+              Drag nodes to the graph to add them
+            </Text>
+          </Group>
+        )}
+      </Stack>
+    </SectionFrame>
+  );
+};
+/**
+ * View Options Section
+ * Configure graph visualization options and display settings
+ */
+
+import React from "react";
+import {
+  IconEye,
+  IconPalette,
+  IconSettings,
+  IconCamera,
+  IconAdjustments,
+} from "@tabler/icons-react";
+import {
+  Button,
+  Select,
+  Switch,
+  Slider,
+  Group,
+  Text,
+  Divider,
+} from "@mantine/core";
+import { useThemeColors } from "@/hooks/use-theme-colors";
+import { CollapsibleSection } from "@/components/molecules/CollapsibleSection";
+import { logger } from "@academic-explorer/utils/logger";
+
+interface ViewOptionsSectionProps {
+  className?: string;
+}
+
+export const ViewOptionsSection: React.FC<ViewOptionsSectionProps> = ({
+  className = "",
+}) => {
+  const themeColors = useThemeColors();
+  const { colors } = themeColors;
+
+  // Mock view settings - in a real implementation, these would come from a view settings store
+  const [nodeSizing, setNodeSizing] = React.useState("uniform");
+  const [nodeColorScheme, setNodeColorScheme] = React.useState("entity-type");
+  const [edgeStyle, setEdgeStyle] = React.useState("straight");
+  const [showLabels, setShowLabels] = React.useState(true);
+  const [showNodeBorders, setShowNodeBorders] = React.useState(true);
+  const [labelSize, setLabelSize] = React.useState(12);
+  const [nodeSize, setNodeSize] = React.useState(20);
+  const [edgeWidth, setEdgeWidth] = React.useState(2);
+
+  const handleNodeSizingChange = (value: string | null) => {
+    if (value) {
+      setNodeSizing(value);
+      logger.debug("ui", `Changed node sizing to ${value}`);
+    }
+  };
+
+  const handleColorSchemeChange = (value: string | null) => {
+    if (value) {
+      setNodeColorScheme(value);
+      logger.debug("ui", `Changed color scheme to ${value}`);
+    }
+  };
+
+  const handleEdgeStyleChange = (value: string | null) => {
+    if (value) {
+      setEdgeStyle(value);
+      logger.debug("ui", `Changed edge style to ${value}`);
+    }
+  };
+
+  const handleToggleLabels = () => {
+    const newValue = !showLabels;
+    setShowLabels(newValue);
+    logger.debug("ui", `Toggled labels to ${newValue ? "visible" : "hidden"}`);
+  };
+
+  const handleToggleNodeBorders = () => {
+    const newValue = !showNodeBorders;
+    setShowNodeBorders(newValue);
+    logger.debug(
+      "ui",
+      `Toggled node borders to ${newValue ? "visible" : "hidden"}`,
+    );
+  };
+
+  const handleResetView = () => {
+    // Mock reset functionality
+    logger.debug("ui", "Resetting view to defaults");
+    // In a real implementation, this would reset zoom/pan
+  };
+
+  const handleExportImage = () => {
+    // Mock export functionality
+    logger.debug("ui", "Exporting graph image");
+    // In a real implementation, this would capture the graph as an image
+  };
+
+  const handleFitToView = () => {
+    // Mock fit to view functionality
+    logger.debug("ui", "Fitting graph to view");
+    // In a real implementation, this would call ReactFlow's fitView
+  };
+
+  return (
+    <div className={className} style={{ padding: "16px" }}>
+      <div
+        style={{
+          fontSize: "14px",
+          fontWeight: 600,
+          marginBottom: "12px",
+          color: colors.text.primary,
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+        }}
+      >
+        <IconEye size={16} />
+        View Options
+      </div>
+
+      {/* Node Appearance */}
+      <CollapsibleSection
+        title="Node Appearance"
+        icon={<IconAdjustments size={14} />}
+        defaultExpanded={true}
+        storageKey="view-options-nodes"
+      >
+        <div style={{ marginTop: "12px" }}>
+          <div style={{ marginBottom: "16px" }}>
+            <Text size="sm" fw={500} style={{ marginBottom: "8px" }}>
+              Node Sizing
+            </Text>
+            <Select
+              value={nodeSizing}
+              onChange={handleNodeSizingChange}
+              data={[
+                { value: "uniform", label: "Uniform Size" },
+                { value: "citations", label: "By Citation Count" },
+                { value: "year", label: "By Publication Year" },
+                { value: "connections", label: "By Connection Count" },
+              ]}
+              size="sm"
+            />
+          </div>
+
+          <div style={{ marginBottom: "16px" }}>
+            <Text size="sm" fw={500} style={{ marginBottom: "8px" }}>
+              Color Scheme
+            </Text>
+            <Select
+              value={nodeColorScheme}
+              onChange={handleColorSchemeChange}
+              data={[
+                { value: "entity-type", label: "By Entity Type" },
+                { value: "year", label: "By Publication Year" },
+                { value: "citations", label: "By Citation Count" },
+                { value: "journal", label: "By Journal/Source" },
+                { value: "monochrome", label: "Monochrome" },
+              ]}
+              size="sm"
+            />
+          </div>
+
+          <div style={{ marginBottom: "16px" }}>
+            <Text size="sm" fw={500} style={{ marginBottom: "8px" }}>
+              Node Size: {nodeSize}px
+            </Text>
+            <Slider
+              value={nodeSize}
+              onChange={setNodeSize}
+              min={10}
+              max={50}
+              step={2}
+              size="sm"
+              color="blue"
+            />
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "8px",
+            }}
+          >
+            <div>
+              <Text size="sm" fw={500}>
+                Show Node Borders
+              </Text>
+              <Text size="xs" c="dimmed">
+                Display borders around nodes
+              </Text>
+            </div>
+            <Switch
+              checked={showNodeBorders}
+              onChange={handleToggleNodeBorders}
+              size="sm"
+            />
+          </div>
+        </div>
+      </CollapsibleSection>
+
+      <Divider style={{ margin: "16px 0" }} />
+
+      {/* Edge Appearance */}
+      <CollapsibleSection
+        title="Edge Appearance"
+        icon={<IconSettings size={14} />}
+        defaultExpanded={false}
+        storageKey="view-options-edges"
+      >
+        <div style={{ marginTop: "12px" }}>
+          <div style={{ marginBottom: "16px" }}>
+            <Text size="sm" fw={500} style={{ marginBottom: "8px" }}>
+              Edge Style
+            </Text>
+            <Select
+              value={edgeStyle}
+              onChange={handleEdgeStyleChange}
+              data={[
+                { value: "straight", label: "Straight Lines" },
+                { value: "curved", label: "Curved Lines" },
+                { value: "step", label: "Step Lines" },
+                { value: "smooth-step", label: "Smooth Step" },
+              ]}
+              size="sm"
+            />
+          </div>
+
+          <div style={{ marginBottom: "16px" }}>
+            <Text size="sm" fw={500} style={{ marginBottom: "8px" }}>
+              Edge Width: {edgeWidth}px
+            </Text>
+            <Slider
+              value={edgeWidth}
+              onChange={setEdgeWidth}
+              min={1}
+              max={8}
+              step={0.5}
+              size="sm"
+              color="blue"
+            />
+          </div>
+        </div>
+      </CollapsibleSection>
+
+      <Divider style={{ margin: "16px 0" }} />
+
+      {/* Labels & Text */}
+      <CollapsibleSection
+        title="Labels & Text"
+        icon={<IconPalette size={14} />}
+        defaultExpanded={false}
+        storageKey="view-options-labels"
+      >
+        <div style={{ marginTop: "12px" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "16px",
+            }}
+          >
+            <div>
+              <Text size="sm" fw={500}>
+                Show Labels
+              </Text>
+              <Text size="xs" c="dimmed">
+                Display node labels
+              </Text>
+            </div>
+            <Switch
+              checked={showLabels}
+              onChange={handleToggleLabels}
+              size="sm"
+            />
+          </div>
+
+          {showLabels && (
+            <div>
+              <Text size="sm" fw={500} style={{ marginBottom: "8px" }}>
+                Label Size: {labelSize}px
+              </Text>
+              <Slider
+                value={labelSize}
+                onChange={setLabelSize}
+                min={8}
+                max={20}
+                step={1}
+                size="sm"
+                color="blue"
+              />
+            </div>
+          )}
+        </div>
+      </CollapsibleSection>
+
+      <Divider style={{ margin: "16px 0" }} />
+
+      {/* View Controls */}
+      <CollapsibleSection
+        title="View Controls"
+        icon={<IconCamera size={14} />}
+        defaultExpanded={false}
+        storageKey="view-options-controls"
+      >
+        <div style={{ marginTop: "12px" }}>
+          <Group gap="xs">
+            <Button
+              size="xs"
+              variant="light"
+              onClick={handleFitToView}
+              color="blue"
+            >
+              Fit to View
+            </Button>
+            <Button
+              size="xs"
+              variant="light"
+              onClick={handleResetView}
+              color="orange"
+            >
+              Reset Zoom
+            </Button>
+          </Group>
+
+          <Divider style={{ margin: "12px 0" }} />
+
+          <div>
+            <Text size="sm" fw={500} style={{ marginBottom: "8px" }}>
+              Export Options
+            </Text>
+            <Group gap="xs">
+              <Button
+                size="xs"
+                variant="light"
+                leftSection={<IconCamera size={12} />}
+                onClick={handleExportImage}
+                color="green"
+              >
+                Export PNG
+              </Button>
+              <Button
+                size="xs"
+                variant="light"
+                onClick={handleExportImage}
+                color="green"
+              >
+                Export SVG
+              </Button>
+            </Group>
+          </div>
+
+          <div
+            style={{
+              marginTop: "16px",
+              padding: "12px",
+              backgroundColor: colors.background.secondary,
+              borderRadius: "6px",
+            }}
+          >
+            <Text size="xs" c="dimmed" style={{ marginBottom: "8px" }}>
+              Performance Tips
+            </Text>
+            <Text size="xs" c="dimmed">
+              • Disable labels for large graphs (&gt;500 nodes) • Use straight
+              edges for better performance • Smaller node sizes improve
+              rendering speed
+            </Text>
+          </div>
+        </div>
+      </CollapsibleSection>
+    </div>
+  );
+};
+import { useState, useRef, useEffect } from "react";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  flexRender,
+  type SortingState,
+  type ColumnFiltersState,
+  type ColumnDef,
+} from "@tanstack/react-table";
+import { useVirtualizer, type VirtualItem } from "@tanstack/react-virtual";
+import {
+  Table,
+  Pagination,
+  Group,
+  TextInput,
+  Select,
+  Text,
+  Box,
+  ScrollArea,
+} from "@mantine/core";
+import {
+  IconSearch,
+  IconSortAscending,
+  IconSortDescending,
+} from "@tabler/icons-react";
+import { logger } from "@academic-explorer/utils";
+import { BORDER_GRAY_LIGHT } from "@/constants/styles";
+import { TableSkeleton } from "@/components/molecules/TableSkeleton";
+
+interface BaseTableProps<T> {
+  data: T[];
+  columns: ColumnDef<T>[];
+  isLoading?: boolean;
+  pageSize?: number;
+  searchable?: boolean;
+  searchPlaceholder?: string;
+  onRowClick?: (row: T) => void;
+  // Virtualization options
+  enableVirtualization?: boolean;
+  estimateSize?: number;
+  maxHeight?: number;
+}
+
+export function BaseTable<T>({
+  data,
+  columns,
+  isLoading = false,
+  pageSize = 10,
+  searchable = true,
+  searchPlaceholder = "Search...",
+  onRowClick,
+  enableVirtualization = false,
+  estimateSize = 50,
+  maxHeight = 600,
+}: BaseTableProps<T>) {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize,
+  });
+
+  // Virtualization setup
+  const parentRef = useRef<HTMLDivElement>(null);
+  const shouldVirtualize = enableVirtualization && data.length > 100;
+
+  // Use virtualization when enabled and dataset is large
+  const effectivePageSize = shouldVirtualize ? data.length : pageSize;
+
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: shouldVirtualize
+      ? undefined
+      : getPaginationRowModel(),
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    onGlobalFilterChange: setGlobalFilter,
+    onPaginationChange: setPagination,
+    state: {
+      sorting,
+      columnFilters,
+      globalFilter,
+      pagination: {
+        ...pagination,
+        pageSize: effectivePageSize,
+      },
+    },
+    enableSorting: true,
+    enableColumnFilters: true,
+    enableGlobalFilter: searchable,
+  });
+
+  // Get rows for virtualization
+  const { rows } = table.getRowModel();
+
+  // Setup virtualizer
+  const rowVirtualizer = useVirtualizer({
+    count: rows.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => estimateSize,
+    overscan: 10,
+    enabled: shouldVirtualize,
+  });
+
+  // Log performance metrics
+  useEffect(() => {
+    if (shouldVirtualize) {
+      const virtualItems = rowVirtualizer.getVirtualItems();
+      logger.debug("table-virtualization", "Virtualized table active", {
+        totalRows: rows.length,
+        visibleRange: virtualItems.length,
+        estimateSize,
+        maxHeight,
+      });
+    }
+  }, [shouldVirtualize, rows.length, estimateSize, maxHeight, rowVirtualizer]);
+
+  const handleRowClick = (row: T) => {
+    if (onRowClick) {
+      onRowClick(row);
+    }
+  };
+
+  // Helper function to render search controls
+  const renderSearchControls = () => {
+    if (!searchable) return null;
+
+    return (
+      <Group mb="md" justify="space-between">
+        <TextInput
+          placeholder={searchPlaceholder}
+          leftSection={<IconSearch size={16} />}
+          value={globalFilter}
+          onChange={(e) => setGlobalFilter(e.target.value)}
+          style={{ minWidth: 300 }}
+        />
+
+        <Group>
+          <Select
+            label="Page size"
+            value={pagination.pageSize.toString()}
+            onChange={(value) => {
+              const newSize = Number(value) || 10;
+              setPagination((prev) => ({
+                ...prev,
+                pageSize: newSize,
+                pageIndex: 0,
+              }));
+            }}
+            data={[
+              { value: "10", label: "10" },
+              { value: "25", label: "25" },
+              { value: "50", label: "50" },
+              { value: "100", label: "100" },
+            ]}
+            w={100}
+          />
+        </Group>
+      </Group>
+    );
+  };
+
+  // Helper function to render table header
+  const renderTableHeader = () => (
+    <Table.Thead>
+      {table.getHeaderGroups().map((headerGroup) => (
+        <Table.Tr key={headerGroup.id}>
+          {headerGroup.headers.map((header) => (
+            <Table.Th
+              key={header.id}
+              style={{
+                cursor: header.column.getCanSort() ? "pointer" : "default",
+                userSelect: "none",
+              }}
+              onClick={header.column.getToggleSortingHandler()}
+            >
+              <Group gap="xs" justify="space-between">
+                <Text fw={600}>
+                  {flexRender(
+                    header.column.columnDef.header,
+                    header.getContext(),
+                  )}
+                </Text>
+                {header.column.getIsSorted() &&
+                  (header.column.getIsSorted() === "asc" ? (
+                    <IconSortAscending size={14} />
+                  ) : (
+                    <IconSortDescending size={14} />
+                  ))}
+              </Group>
+            </Table.Th>
+          ))}
+        </Table.Tr>
+      ))}
+    </Table.Thead>
+  );
+
+  // Helper function to render loading state
+  const renderLoadingState = (colSpan: number) => (
+    <TableSkeleton columnCount={colSpan} rowCount={5} />
+  );
+
+  // Helper function to render empty state
+  const renderEmptyState = (colSpan: number) => (
+    <Table.Tr>
+      <Table.Td
+        colSpan={colSpan}
+        style={{ textAlign: "center", padding: "2rem" }}
+      >
+        <Text c="dimmed">No data available</Text>
+      </Table.Td>
+    </Table.Tr>
+  );
+
+  // Helper function to get virtual row style
+  const getVirtualRowStyle = (
+    virtualRow: VirtualItem,
+    hasOnRowClick: boolean,
+  ) => ({
+    position: "absolute" as const,
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: `${virtualRow.size}px`,
+    transform: `translateY(${virtualRow.start}px)`,
+    borderBottom: BORDER_GRAY_LIGHT,
+    backgroundColor:
+      virtualRow.index % 2 === 0
+        ? "var(--mantine-color-gray-0)"
+        : "transparent",
+    display: "flex",
+    alignItems: "center",
+    padding: "8px 12px",
+    ...(hasOnRowClick ? { cursor: "pointer" } : {}),
+  });
+
+  // Helper function to get cell style
+  const getCellStyle = (cellIndex: number, totalCells: number) => ({
+    flex: cellIndex === 1 ? "1" : "0 0 auto",
+    padding: "0 8px",
+    borderRight: cellIndex < totalCells - 1 ? BORDER_GRAY_LIGHT : "none",
+    minWidth: getMinWidthForCell(cellIndex),
+  });
+
+  // Helper function to get minimum width for cell
+  const getMinWidthForCell = (cellIndex: number): string => {
+    switch (cellIndex) {
+      case 0:
+        return "80px";
+      case 2:
+        return "120px";
+      case 3:
+        return "100px";
+      case 4:
+        return "120px";
+      default:
+        return "auto";
+    }
+  };
+
+  // Helper function to render virtual row
+  const renderVirtualRow = (virtualRow: VirtualItem) => {
+    const row = rows[virtualRow.index];
+    const hasOnRowClick = !!onRowClick;
+
+    // Use descriptive aria-label for row selection
+    const ariaLabel = hasOnRowClick ? "Select this table row" : undefined;
+
+    return (
+      <button
+        key={row.id}
+        type="button"
+        aria-label={ariaLabel}
+        style={{
+          ...getVirtualRowStyle(virtualRow, hasOnRowClick),
+          border: "none",
+          background: "none",
+          padding: 0,
+          textAlign: "left",
+          width: "100%",
+          font: "inherit",
+          color: "inherit",
+        }}
+        onClick={hasOnRowClick ? () => handleRowClick(row.original) : undefined}
+        onKeyDown={hasOnRowClick ? handleRowKeyDown(row.original) : undefined}
+        onKeyUp={hasOnRowClick ? handleRowKeyUp : undefined}
+        disabled={!hasOnRowClick}
+      >
+        {row.getVisibleCells().map((cell, cellIndex) => (
+          <div
+            key={cell.id}
+            style={getCellStyle(cellIndex, row.getVisibleCells().length)}
+          >
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </div>
+        ))}
+      </button>
+    );
+  };
+
+  // Helper functions for row event handlers
+  const handleRowKeyDown = (rowData: T) => (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handleRowClick(rowData);
+    }
+  };
+
+  const handleRowKeyUp = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === "Escape") {
+      e.currentTarget.blur();
+    }
+  };
+
+  // Helper function to render virtualized table
+  const renderVirtualizedTable = () => (
+    <div>
+      <Table withTableBorder withColumnBorders>
+        {renderTableHeader()}
+      </Table>
+
+      <ScrollArea
+        ref={parentRef}
+        style={{
+          height: `${maxHeight}px`,
+          overflow: "auto",
+          border: BORDER_GRAY_LIGHT,
+          borderTop: "none",
+        }}
+      >
+        {isLoading ? (
+          <Table withTableBorder>
+            <Table.Tbody>
+              <TableSkeleton columnCount={columns.length} rowCount={10} />
+            </Table.Tbody>
+          </Table>
+        ) : rows.length === 0 ? (
+          <div style={{ padding: "2rem", textAlign: "center" }}>
+            <Text c="dimmed">No data available</Text>
+          </div>
+        ) : (
+          <div
+            style={{
+              height: `${rowVirtualizer.getTotalSize()}px`,
+              width: "100%",
+              position: "relative",
+            }}
+          >
+            {rowVirtualizer.getVirtualItems().map(renderVirtualRow)}
+          </div>
+        )}
+      </ScrollArea>
+    </div>
+  );
+
+  // Helper function to render regular table
+  const renderRegularTable = () => (
+    <Table
+      striped
+      highlightOnHover
+      withTableBorder
+      withColumnBorders
+      stickyHeader
+      style={{ minHeight: isLoading ? 400 : "auto" }}
+    >
+      {renderTableHeader()}
+
+      <Table.Tbody>
+        {isLoading
+          ? renderLoadingState(columns.length)
+          : table.getRowModel().rows.length === 0
+            ? renderEmptyState(columns.length)
+            : table.getRowModel().rows.map((row) => {
+                // Use descriptive aria-label for row selection
+                const ariaLabel = onRowClick
+                  ? "Select this table row"
+                  : undefined;
+
+                return (
+                  <Table.Tr
+                    key={row.id}
+                    role={onRowClick ? "button" : undefined}
+                    aria-label={ariaLabel}
+                    tabIndex={onRowClick ? 0 : undefined}
+                    style={{ cursor: onRowClick ? "pointer" : "default" }}
+                    onClick={
+                      onRowClick
+                        ? () => handleRowClick(row.original)
+                        : undefined
+                    }
+                    onKeyDown={
+                      onRowClick
+                        ? (e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              handleRowClick(row.original);
+                            }
+                          }
+                        : undefined
+                    }
+                    onKeyUp={
+                      onRowClick
+                        ? (e) => {
+                            if (e.key === "Escape") {
+                              (e.target as HTMLElement).blur();
+                            }
+                          }
+                        : undefined
+                    }
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <Table.Td key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </Table.Td>
+                    ))}
+                  </Table.Tr>
+                );
+              })}
+      </Table.Tbody>
+    </Table>
+  );
+
+  // Helper function to render pagination info
+  const renderPaginationInfo = () => {
+    if (isLoading || rows.length === 0) return null;
+
+    return (
+      <Group justify="space-between" mt="md">
+        <Text size="sm" c="dimmed">
+          {shouldVirtualize ? (
+            <>
+              Showing {rowVirtualizer.getVirtualItems().length} of {rows.length}{" "}
+              entries (virtualized)
+            </>
+          ) : (
+            <>
+              Showing{" "}
+              {table.getState().pagination.pageIndex *
+                table.getState().pagination.pageSize +
+                1}{" "}
+              to{" "}
+              {Math.min(
+                (table.getState().pagination.pageIndex + 1) *
+                  table.getState().pagination.pageSize,
+                table.getFilteredRowModel().rows.length,
+              )}{" "}
+              of {table.getFilteredRowModel().rows.length} entries
+            </>
+          )}
+        </Text>
+
+        {!shouldVirtualize && (
+          <Pagination
+            value={table.getState().pagination.pageIndex + 1}
+            onChange={(page) => table.setPageIndex(page - 1)}
+            total={table.getPageCount()}
+            size="sm"
+            withEdges
+          />
+        )}
+      </Group>
+    );
+  };
+
+  return (
+    <Box data-testid="table">
+      {renderSearchControls()}
+      {shouldVirtualize ? renderVirtualizedTable() : renderRegularTable()}
+      {renderPaginationInfo()}
+    </Box>
+  );
+}
+export type ColumnConfig = {
+  key: string;
+  header: string;
+  render?: (value: unknown, row: unknown) => React.ReactNode;
+};
+/**
+ * Real implementation of useEntityRoute hook for entity route pages
+ * This replaces the stub in @academic-explorer/utils with actual data fetching
+ */
+
+import { useState, useCallback } from "react";
+import { useParams, useSearch } from "@tanstack/react-router";
+import type { EntityRouteConfig, UseEntityRouteOptions, UseEntityRouteResult } from "@academic-explorer/utils";
+import { useRawEntityData } from "./use-raw-entity-data";
+import { useGraphData } from "./use-graph-data";
+import { useUserInteractions } from "./use-user-interactions";
+
+export function useEntityRoute<T = unknown>(
+  config: EntityRouteConfig,
+  options: UseEntityRouteOptions = {}
+): UseEntityRouteResult<T> {
+  const params = useParams({ strict: false }) as Record<string, string>;
+  const search = useSearch({ strict: false }) as Record<string, unknown>;
+  const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
+  const [isLoadingRandom, setIsLoadingRandom] = useState(false);
+
+  // Extract entity ID from params using the config's paramKey
+  const rawId = params[config.paramKey] || "";
+  // Safely clean the entity ID - handle undefined/null cases
+  const cleanEntityId = rawId ? rawId.replace(/^https?:\/\/(?:.*?)openalex\.org\//, "") : "";
+
+  // Fetch raw entity data using the real hook
+  const rawEntityData = useRawEntityData({
+    options: {
+      entityId: cleanEntityId,
+      enabled: !!cleanEntityId && !options.skipRandomEntity,
+      queryParams: search as Record<string, string>,
+    },
+  });
+
+  // Get graph data hooks
+  const { loadEntity, loadEntityIntoGraph } = useGraphData();
+
+  // Get user interactions
+  const userInteractions = useUserInteractions();
+
+  // Graph data - stub for now, will be implemented when needed
+  const graphData = {
+    data: null,
+    isLoading: false,
+    error: null,
+  };
+
+  // Mini graph data - stub for now, will be implemented when needed
+  const miniGraphData = {
+    data: rawEntityData.data,
+    isLoading: rawEntityData.isLoading,
+    error: rawEntityData.error,
+  };
+
+  // Wrap loadEntity to handle string parameter
+  const wrappedLoadEntity = useCallback(
+    (entity: unknown) => {
+      if (typeof entity === "string") {
+        loadEntity(entity);
+      } else if (entity && typeof entity === "object" && "id" in entity) {
+        loadEntity((entity as { id: string }).id);
+      }
+    },
+    [loadEntity]
+  );
+
+  // Wrap loadEntityIntoGraph to handle string parameter
+  const wrappedLoadEntityIntoGraph = useCallback(
+    (entity: unknown) => {
+      if (typeof entity === "string") {
+        loadEntityIntoGraph(entity);
+      } else if (entity && typeof entity === "object" && "id" in entity) {
+        loadEntityIntoGraph((entity as { id: string }).id);
+      }
+    },
+    [loadEntityIntoGraph]
+  );
+
+  return {
+    cleanEntityId,
+    entityType: config.entityType,
+    viewMode,
+    setViewMode,
+    isLoadingRandom,
+    graphData,
+    miniGraphData,
+    rawEntityData: {
+      data: rawEntityData.data as T | undefined,
+      isLoading: rawEntityData.isLoading,
+      error: rawEntityData.error,
+    },
+    userInteractions,
+    nodeCount: 0,
+    loadEntity: wrappedLoadEntity,
+    loadEntityIntoGraph: wrappedLoadEntityIntoGraph,
+    routeSearch: search,
+  };
+}
+/**
+ * Unified Event System Hooks
+ * React hooks for integrating with the unified EventBus, TaskQueue, and QueuedResourceCoordinator
+ * Based on the ChatGPT document specification for React integration
+ *
+ * Note: Some exports are intentionally unused and kept for future implementation
+ */
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import { logger } from "@academic-explorer/utils/logger";
+import {
+  EventBus,
+  EventHandler,
+  createLocalEventBus,
+  createCrossTabEventBus,
+} from "@academic-explorer/graph";
+import {
+  TaskQueue,
+  TaskDescriptor,
+  TaskResult,
+  TaskStatus,
+  createTaskQueue,
+} from "@academic-explorer/graph";
+import {
+  WorkerPool,
+  WorkerPoolOptions,
+  createWorkerPool,
+} from "@academic-explorer/graph";
+import {
+  QueuedResourceCoordinator,
+  QueueCoordinatorOptions,
+  createQueuedResourceCoordinator,
+} from "@academic-explorer/graph";
+
+// Type guard for TaskResult
+function isTaskResult(value: unknown): value is TaskResult {
+  return (
+    value !== null &&
+    typeof value === "object" &&
+    "id" in value &&
+    typeof value.id === "string" &&
+    "duration" in value &&
+    typeof value.duration === "number" &&
+    "executedBy" in value &&
+    (value.executedBy === "main" || value.executedBy === "worker")
+  );
+}
+
+/**
+ * Hook for managing EventBus instances
+ */
+export function useEventBus(channelName?: string): EventBus {
+  const busRef = useRef<EventBus | null>(null);
+
+  busRef.current ??= channelName
+    ? createCrossTabEventBus(channelName)
+    : createLocalEventBus();
+
+  useEffect(() => {
+    return () => {
+      if (busRef.current) {
+        busRef.current.close();
+        busRef.current = null;
+      }
+    };
+  }, []);
+
+  return busRef.current;
+}
+
+/**
+ * Hook for listening to specific event types
+ */
+export function useEventListener({
+  bus,
+  eventType,
+  handler,
+  deps = [],
+}: {
+  bus: EventBus;
+  eventType: string;
+  handler: (payload?: unknown) => void;
+  deps?: React.DependencyList;
+}): void {
+  const handlerRef = useRef(handler);
+  handlerRef.current = handler;
+
+  useEffect(() => {
+    const wrappedHandler: EventHandler = (event) => {
+      handlerRef.current(event.payload);
+    };
+
+    const listenerId = bus.on(eventType, wrappedHandler);
+
+    logger.debug("hooks", "Event listener registered", {
+      eventType,
+      listenerId,
+      isBroadcasting: bus.isBroadcasting(),
+    });
+
+    return () => {
+      bus.off(eventType, wrappedHandler);
+      logger.debug("hooks", "Event listener removed", {
+        eventType,
+        listenerId,
+      });
+    };
+    // Disable exhaustive-deps warning for spread element - this is intentional API design
+  }, [bus, eventType, ...deps]);
+}
+
+/**
+ * Hook for managing TaskQueue
+ * @internal - Intentionally unused, available for future implementation
+ */
+export function useTaskQueue(
+  bus: EventBus,
+  options: { maxConcurrency?: number } = {},
+): {
+  taskQueue: TaskQueue;
+  submitTask: (task: TaskDescriptor) => Promise<string>;
+  cancelTask: (taskId: string) => boolean;
+  getTaskStatus: (taskId: string) => TaskStatus | null;
+  clearQueue: () => void;
+  stats: ReturnType<TaskQueue["getStats"]>;
+} {
+  const taskQueueRef = useRef<TaskQueue | null>(null);
+  const [stats, setStats] = useState({
+    queueLength: 0,
+    activeTasks: 0,
+    processing: false,
+    maxConcurrency: 1,
+  });
+
+  taskQueueRef.current ??= createTaskQueue(bus, options);
+
+  const taskQueue = taskQueueRef.current;
+
+  // Update stats when tasks change
+  useEventListener({
+    bus,
+    eventType: "TASK_ENQUEUED",
+    handler: () => {
+      setStats(taskQueue.getStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "TASK_STARTED",
+    handler: () => {
+      setStats(taskQueue.getStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "TASK_COMPLETED",
+    handler: () => {
+      setStats(taskQueue.getStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "TASK_FAILED",
+    handler: () => {
+      setStats(taskQueue.getStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "QUEUE_CLEARED",
+    handler: () => {
+      setStats(taskQueue.getStats());
+    },
+  });
+
+  const submitTask = useCallback(
+    (task: TaskDescriptor) => {
+      return Promise.resolve(taskQueue.enqueue(task));
+    },
+    [taskQueue],
+  );
+
+  const cancelTask = useCallback(
+    (taskId: string) => {
+      return taskQueue.cancel(taskId);
+    },
+    [taskQueue],
+  );
+
+  const getTaskStatus = useCallback(
+    (taskId: string) => {
+      return taskQueue.getTaskStatus(taskId);
+    },
+    [taskQueue],
+  );
+
+  const clearQueue = useCallback(() => {
+    taskQueue.clear();
+  }, [taskQueue]);
+
+  useEffect(() => {
+    setStats(taskQueue.getStats());
+  }, [taskQueue]);
+
+  return {
+    taskQueue,
+    submitTask,
+    cancelTask,
+    getTaskStatus,
+    clearQueue,
+    stats,
+  };
+}
+
+/**
+ * Hook for managing WorkerPool
+ * @internal - Intentionally unused, available for future implementation
+ */
+export function useWorkerPool({
+  bus,
+  options,
+}: {
+  bus: EventBus;
+  options: WorkerPoolOptions;
+}): {
+  workerPool: WorkerPool;
+  submitTask: (
+    taskId: string,
+    payload: unknown,
+    timeout?: number,
+  ) => Promise<unknown>;
+  stats: ReturnType<WorkerPool["getStats"]>;
+  shutdown: () => Promise<void>;
+} {
+  const workerPoolRef = useRef<WorkerPool | null>(null);
+  const [stats, setStats] = useState({
+    totalWorkers: 0,
+    idleWorkers: 0,
+    busyWorkers: 0,
+    errorWorkers: 0,
+    queuedTasks: 0,
+    totalTasksCompleted: 0,
+    totalErrors: 0,
+  });
+
+  workerPoolRef.current ??= createWorkerPool(bus, options);
+
+  const workerPool = workerPoolRef.current;
+
+  // Update stats when pool state changes
+  useEventListener({
+    bus,
+    eventType: "POOL_WORKER_CREATED",
+    handler: () => {
+      setStats(workerPool.getStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "POOL_WORKER_TERMINATED",
+    handler: () => {
+      setStats(workerPool.getStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "POOL_TASK_QUEUED",
+    handler: () => {
+      setStats(workerPool.getStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "POOL_TASK_ASSIGNED",
+    handler: () => {
+      setStats(workerPool.getStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "POOL_WORKER_ERROR",
+    handler: () => {
+      setStats(workerPool.getStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "POOL_WORKER_TERMINATED",
+    handler: () => {
+      setStats(workerPool.getStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "POOL_TASK_QUEUED",
+    handler: () => {
+      setStats(workerPool.getStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "POOL_TASK_ASSIGNED",
+    handler: () => {
+      setStats(workerPool.getStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "POOL_WORKER_ERROR",
+    handler: () => {
+      setStats(workerPool.getStats());
+    },
+  });
+
+  const submitTask = useCallback(
+    (taskId: string, payload: unknown, timeout?: number) => {
+      return workerPool.submitTask(taskId, payload, timeout);
+    },
+    [workerPool],
+  );
+
+  const shutdown = useCallback((): Promise<void> => {
+    workerPool.shutdown();
+    return Promise.resolve();
+  }, [workerPool]);
+
+  useEffect(() => {
+    setStats(workerPool.getStats());
+
+    return () => {
+      workerPool.shutdown();
+    };
+  }, [workerPool]);
+
+  return {
+    workerPool,
+    submitTask,
+    stats,
+    shutdown,
+  };
+}
+
+/**
+ * Hook for managing QueuedResourceCoordinator
+ * @internal - Intentionally unused, available for future implementation
+ */
+export function useQueuedResourceCoordinator({
+  bus,
+  options,
+}: {
+  bus: EventBus;
+  options: QueueCoordinatorOptions;
+}): {
+  coordinator: QueuedResourceCoordinator;
+  submitTask: (task: TaskDescriptor) => Promise<string>;
+  cancelTask: (taskId: string) => boolean;
+  getTaskStatus: (taskId: string) => TaskStatus | null;
+  clearQueue: () => void;
+  leaderStatus: ReturnType<QueuedResourceCoordinator["getStatus"]>;
+  queueStats: ReturnType<QueuedResourceCoordinator["getQueueStats"]>;
+  release: () => Promise<void>;
+} {
+  const coordinatorRef = useRef<QueuedResourceCoordinator | null>(null);
+  const [leaderStatus, setLeaderStatus] = useState<
+    ReturnType<QueuedResourceCoordinator["getStatus"]>
+  >({
+    isLeader: false,
+    followers: [],
+  });
+  const [queueStats, setQueueStats] = useState({
+    pendingTasks: 0,
+    activeTasks: 0,
+    completedTasks: 0,
+    totalTasks: 0,
+    isLeader: false,
+    queueCapacity: 0,
+  });
+
+  coordinatorRef.current ??= createQueuedResourceCoordinator(bus, options);
+
+  const coordinator = coordinatorRef.current;
+
+  // Track leadership changes
+  useEffect(() => {
+    const unsubscribe = coordinator.onLeadershipChange((status) => {
+      setLeaderStatus(status);
+      setQueueStats(coordinator.getQueueStats());
+    });
+
+    setLeaderStatus(coordinator.getStatus());
+    setQueueStats(coordinator.getQueueStats());
+
+    return unsubscribe;
+  }, [coordinator]);
+
+  // Update queue stats when tasks change
+  useEventListener({
+    bus,
+    eventType: "QUEUE_TASK_SUBMITTED",
+    handler: () => {
+      setQueueStats(coordinator.getQueueStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "QUEUE_TASK_ASSIGNED",
+    handler: () => {
+      setQueueStats(coordinator.getQueueStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "QUEUE_TASK_COMPLETED",
+    handler: () => {
+      setQueueStats(coordinator.getQueueStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "QUEUE_TASK_FAILED",
+    handler: () => {
+      setQueueStats(coordinator.getQueueStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "QUEUE_TASK_CANCELLED",
+    handler: () => {
+      setQueueStats(coordinator.getQueueStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "QUEUE_CLEARED",
+    handler: () => {
+      setQueueStats(coordinator.getQueueStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "QUEUE_TASK_ASSIGNED",
+    handler: () => {
+      setQueueStats(coordinator.getQueueStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "QUEUE_TASK_COMPLETED",
+    handler: () => {
+      setQueueStats(coordinator.getQueueStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "QUEUE_TASK_FAILED",
+    handler: () => {
+      setQueueStats(coordinator.getQueueStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "QUEUE_TASK_CANCELLED",
+    handler: () => {
+      setQueueStats(coordinator.getQueueStats());
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "QUEUE_CLEARED",
+    handler: () => {
+      setQueueStats(coordinator.getQueueStats());
+    },
+  });
+
+  const submitTask = useCallback(
+    (task: TaskDescriptor) => {
+      return Promise.resolve(coordinator.submitTask(task));
+    },
+    [coordinator],
+  );
+
+  const cancelTask = useCallback(
+    (taskId: string) => {
+      return coordinator.cancelTask(taskId);
+    },
+    [coordinator],
+  );
+
+  const getTaskStatus = useCallback(
+    (taskId: string) => {
+      return coordinator.getTaskStatus(taskId);
+    },
+    [coordinator],
+  );
+
+  const clearQueue = useCallback(() => {
+    coordinator.clearQueue();
+  }, [coordinator]);
+
+  const release = useCallback((): Promise<void> => {
+    coordinator.release();
+    return Promise.resolve();
+  }, [coordinator]);
+
+  useEffect(() => {
+    return () => {
+      coordinator.release();
+    };
+  }, [coordinator]);
+
+  return {
+    coordinator,
+    submitTask,
+    cancelTask,
+    getTaskStatus,
+    clearQueue,
+    leaderStatus,
+    queueStats,
+    release,
+  };
+}
+
+/**
+ * Hook for task progress tracking
+ * @internal - Intentionally unused, available for future implementation
+ */
+export function useTaskProgress({
+  bus,
+  taskId,
+}: {
+  bus: EventBus;
+  taskId: string;
+}): {
+  status: TaskStatus | null;
+  progress: number;
+  message?: string;
+  result?: TaskResult;
+  error?: Error;
+} {
+  const [state, setState] = useState<{
+    status: TaskStatus | null;
+    progress: number;
+    message?: string;
+    result?: TaskResult;
+    error?: Error;
+  }>({
+    status: null,
+    progress: 0,
+  });
+
+  useEventListener({
+    bus,
+    eventType: "TASK_PROGRESS",
+    handler: (payload?: unknown) => {
+      if (
+        payload &&
+        typeof payload === "object" &&
+        "id" in payload &&
+        typeof payload.id === "string" &&
+        payload.id === taskId &&
+        "progress" in payload &&
+        typeof payload.progress === "number"
+      ) {
+        // Safe to access properties since we validated above
+        const message =
+          "message" in payload && typeof payload.message === "string"
+            ? payload.message
+            : undefined;
+        setState((prev) => {
+          if ("progress" in payload && typeof payload.progress === "number") {
+            const update: Partial<typeof prev> = {
+              progress: payload.progress,
+            };
+            if (message !== undefined) {
+              update.message = message;
+            }
+            return {
+              ...prev,
+              ...update,
+            };
+          }
+          return prev;
+        });
+      }
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "TASK_STARTED",
+    handler: (payload?: unknown) => {
+      if (
+        payload &&
+        typeof payload === "object" &&
+        "id" in payload &&
+        typeof payload.id === "string" &&
+        payload.id === taskId
+      ) {
+        setState((prev) => ({
+          ...prev,
+          status: TaskStatus.RUNNING,
+          progress: 0,
+        }));
+      }
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "TASK_COMPLETED",
+    handler: (payload?: unknown) => {
+      if (
+        payload &&
+        typeof payload === "object" &&
+        "id" in payload &&
+        typeof payload.id === "string" &&
+        payload.id === taskId &&
+        isTaskResult(payload)
+      ) {
+        setState((prev) => ({
+          ...prev,
+          status: TaskStatus.COMPLETED,
+          progress: 100,
+          result: payload,
+        }));
+      }
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "TASK_FAILED",
+    handler: (payload?: unknown) => {
+      if (
+        payload &&
+        typeof payload === "object" &&
+        "id" in payload &&
+        typeof payload.id === "string" &&
+        payload.id === taskId &&
+        isTaskResult(payload)
+      ) {
+        setState((prev) => ({
+          ...prev,
+          status: TaskStatus.FAILED,
+          error: new Error(payload.error ?? "Task failed"),
+        }));
+      }
+    },
+  });
+
+  useEventListener({
+    bus,
+    eventType: "TASK_CANCELLED",
+    handler: (payload?: unknown) => {
+      if (
+        payload &&
+        typeof payload === "object" &&
+        "id" in payload &&
+        typeof payload.id === "string" &&
+        payload.id === taskId
+      ) {
+        setState((prev) => ({
+          ...prev,
+          status: TaskStatus.CANCELLED,
+          error: new Error("Task cancelled"),
+        }));
+      }
+    },
+  });
+
+  return state;
+}
+
+/**
+ * Hook for cross-tab event broadcasting
+ * @internal - Intentionally unused, available for future implementation
+ */
+export function useCrossTabEvent({
+  channelName,
+  eventType,
+  handler,
+  deps = [],
+}: {
+  channelName: string;
+  eventType: string;
+  handler: (payload?: unknown) => void;
+  deps?: React.DependencyList;
+}): {
+  broadcast: (payload?: unknown) => void;
+  isConnected: boolean;
+} {
+  const bus = useEventBus(channelName);
+  const [isConnected, setIsConnected] = useState(bus.isBroadcasting());
+
+  useEventListener({ bus, eventType, handler, deps });
+
+  const broadcast = useCallback(
+    (payload?: unknown) => {
+      bus.emit({ type: eventType, payload });
+    },
+    [bus, eventType],
+  );
+
+  useEffect(() => {
+    setIsConnected(bus.isBroadcasting());
+  }, [bus]);
+
+  return {
+    broadcast,
+    isConnected,
+  };
+}
+
+/**
+ * Hook for managing multiple event subscriptions
+ * @internal - Intentionally unused, available for future implementation
+ */
+export function useEventSubscriptions({
+  bus,
+  subscriptions,
+}: {
+  bus: EventBus;
+  subscriptions: Array<{
+    eventType: string;
+    handler: EventHandler;
+  }>;
+}): void {
+  useEffect(() => {
+    const unsubscribers: Array<() => void> = [];
+
+    for (const { eventType, handler } of subscriptions) {
+      const listenerId = bus.on(eventType, handler);
+      unsubscribers.push(() => {
+        bus.off(eventType, handler);
+      });
+
+      logger.debug("hooks", "Event subscription registered", {
+        eventType,
+        listenerId,
+      });
+    }
+
+    return () => {
+      for (const unsubscribe of unsubscribers) {
+        unsubscribe();
+      }
+    };
+  }, [bus, subscriptions]);
+}
+/**
+ * Service Worker Registration for OpenAlex API Interception
+ */
+
+import { logger } from "@academic-explorer/utils";
+
+let swRegistration: ServiceWorkerRegistration | null = null;
+
+/**
+ * Register the OpenAlex service worker
+ */
+export async function registerOpenAlexServiceWorker(): Promise<boolean> {
+  // Only register in browser environment
+  if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
+    logger.debug("sw", "Service Worker not supported in this environment");
+    return false;
+  }
+
+  try {
+    // Check if we're in development mode
+    const isDevelopment =
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1" ||
+      window.location.port === "5173";
+
+    // Only register in development for now (where we have the Vite middleware)
+    if (!isDevelopment) {
+      logger.debug("sw", "Service Worker registration skipped in production");
+      return false;
+    }
+
+    logger.debug("sw", "Registering OpenAlex Service Worker");
+
+    // Register the service worker
+    // In development, vite-plugin-pwa serves the service worker at a different path
+    const serviceWorkerPath = isDevelopment
+      ? "/dev-sw.js?dev-sw"
+      : "/openalex-sw.js";
+    swRegistration = await navigator.serviceWorker.register(serviceWorkerPath, {
+      scope: "/",
+    });
+
+    logger.debug("sw", "Service Worker registered successfully", {
+      scope: swRegistration.scope,
+      state: swRegistration.active?.state,
+    });
+
+    // Listen for updates
+    swRegistration.addEventListener("updatefound", () => {
+      logger.debug("sw", "Service Worker update found");
+      const newWorker = swRegistration?.installing;
+
+      if (newWorker) {
+        newWorker.addEventListener("statechange", () => {
+          if (
+            newWorker.state === "installed" &&
+            navigator.serviceWorker.controller
+          ) {
+            logger.debug("sw", "New Service Worker available");
+            // Could notify user of update here
+          }
+        });
+      }
+    });
+
+    // Handle controller change (new service worker activated)
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      logger.debug("sw", "Service Worker controller changed - reloading page");
+      window.location.reload();
+    });
+
+    return true;
+  } catch (error) {
+    logger.error("sw", "Failed to register Service Worker", { error });
+    return false;
+  }
+}
+
+/**
+ * Unregister the OpenAlex service worker
+ */
+export async function unregisterOpenAlexServiceWorker(): Promise<boolean> {
+  if (!swRegistration) {
+    return true;
+  }
+
+  try {
+    const unregistered = await swRegistration.unregister();
+    logger.debug("sw", "Service Worker unregistered", {
+      success: unregistered,
+    });
+    swRegistration = null;
+    return unregistered;
+  } catch (error) {
+    logger.error("sw", "Failed to unregister Service Worker", { error });
+    return false;
+  }
+}
+
+/**
+ * Get service worker registration status
+ */
+export function getServiceWorkerStatus(): {
+  supported: boolean;
+  registered: boolean;
+  active: boolean;
+  scope?: string;
+} {
+  if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
+    return {
+      active: false,
+      registered: false,
+      supported: false,
+    };
+  }
+
+  return {
+    active: !!swRegistration?.active,
+    registered: !!swRegistration,
+    scope: swRegistration?.scope,
+    supported: true,
+  };
+}
+/**
+ * Static data index generator for OpenAlex entities
+ * Generates index.json files for cached entity directories to enable efficient data discovery
+ */
+
+import {
+  generateContentHash,
+  isValidOpenAlexEntity,
+  type DirectoryEntry,
+  type DirectoryIndex,
+  type EntityType,
+  type FileEntry,
+} from "@academic-explorer/utils/static-data/cache-utilities";
+
+// Dynamic imports for Node.js modules to avoid browser bundling issues
+let fs: typeof import("node:fs/promises");
+let path: typeof import("node:path");
+
+/**
+ * Initialize Node.js modules (required before using any file operations)
+ */
+async function initializeNodeModules(): Promise<void> {
+  if (!fs || !path) {
+    const [fsModule, pathModule] = await Promise.all([
+      import("node:fs/promises"),
+      import("node:path"),
+    ]);
+    fs = fsModule;
+    path = pathModule;
+  }
+}
+
+/**
+ * Check if file exists (using dynamic import)
+ */
+async function fileExists(filePath: string): Promise<boolean> {
+  try {
+    const { existsSync } = await import("node:fs");
+    return existsSync(filePath);
+  } catch {
+    return false;
+  }
+}
+
+export interface IndexGenerationOptions {
+  autoDownload?: boolean;
+  force?: boolean;
+  validate?: boolean;
+}
+
+const VALID_ENTITY_TYPES: EntityType[] = [
+  "works",
+  "authors",
+  "sources",
+  "institutions",
+  "topics",
+  "publishers",
+  "funders",
+  "concepts",
+];
+
+const INDEX_FILENAME = "index.json";
+
+/**
+ * Generate index for all entity types in the static data directory
+ */
+export async function generateAllIndexes(
+  staticDataDir: string,
+  options: IndexGenerationOptions = {},
+): Promise<void> {
+  await initializeNodeModules();
+  try {
+    console.log(`Generating indexes for all entity types in ${staticDataDir}`);
+
+    // Ensure static data directory exists
+    await ensureDirectoryExists(staticDataDir);
+
+    // Find all entity type directories
+    const entries = await fs.readdir(staticDataDir, { withFileTypes: true });
+    const entityDirs = entries
+      .filter(
+        (entry) =>
+          entry.isDirectory() &&
+          VALID_ENTITY_TYPES.includes(entry.name as EntityType),
+      )
+      .map((entry) => entry.name as EntityType);
+
+    if (entityDirs.length === 0) {
+      console.log(
+        "No entity directories found - directories will be created when data is cached",
+      );
+      return;
+    }
+
+    // Generate indexes for each entity type
+    const results = await Promise.allSettled(
+      entityDirs.map(async (entityType) => {
+        const entityDir = path.join(staticDataDir, entityType);
+        console.log(`Processing ${entityType} directory...`);
+
+        await (options.autoDownload
+          ? generateIndexWithAutoDownload({
+              entityDir,
+              entityType,
+              staticDataDir,
+            })
+          : generateIndexForEntityType(entityDir, entityType));
+      }),
+    );
+
+    // Report results
+    const successful = results.filter((r) => r.status === "fulfilled").length;
+    const failed = results.filter((r) => r.status === "rejected").length;
+
+    if (failed > 0) {
+      console.warn(
+        `Warning: Generated ${successful} indexes, ${failed} failed`,
+      );
+      results.forEach((result, index) => {
+        if (result.status === "rejected") {
+          console.error(
+            `Failed to generate index for ${entityDirs[index]}:`,
+            result.reason,
+          );
+        }
+      });
+    } else {
+      console.log(`Successfully generated ${successful} entity indexes`);
+    }
+  } catch (error) {
+    console.error("Failed to generate static data indexes:", error);
+    throw error;
+  }
+}
+
+/**
+ * Generate index for a specific entity type with auto-download support
+ */
+export async function generateIndexWithAutoDownload({
+  entityDir,
+  entityType,
+  staticDataDir,
+}: {
+  entityDir: string;
+  entityType: EntityType;
+  staticDataDir: string;
+}): Promise<void> {
+  await initializeNodeModules();
+  try {
+    console.log(`Auto-download enabled for ${entityType}`);
+
+    // First generate index for existing files
+    await generateIndexForEntityType(entityDir, entityType);
+
+    // TODO: Implement auto-download logic here
+    // This would integrate with the OpenAlex client to download missing popular entities
+    console.log(`Auto-download for ${entityType} not yet implemented`);
+  } catch (error) {
+    console.error(
+      `Failed to generate index with auto-download for ${entityType}:`,
+      error,
+    );
+    throw error;
+  }
+}
+
+/**
+ * Generate index for a specific entity type directory
+ */
+export async function generateIndexForEntityType(
+  entityDir: string,
+  entityType: EntityType,
+  recursive = true,
+): Promise<void> {
+  await initializeNodeModules();
+  try {
+    console.log(`Generating index for ${entityType}...`);
+
+    // Ensure directory exists
+    await ensureDirectoryExists(entityDir);
+
+    // Read all JSON files in the directory (direct entities)
+    const dirContents = await fs.readdir(entityDir);
+    const jsonFiles = dirContents.filter(
+      (file) =>
+        path.extname(file) === ".json" &&
+        path.basename(file, ".json") !== "index", // Don't include the index file itself
+    );
+
+    console.log(
+      `Found ${jsonFiles.length} JSON files in ${entityType} directory`,
+    );
+
+    if (jsonFiles.length === 0) {
+      console.log(
+        `No data files found for ${entityType}, creating empty index`,
+      );
+    }
+
+    // Process each file to extract metadata
+    const files = await processJsonFiles({ entityDir, jsonFiles, entityType });
+
+    // Process subdirectories if recursive
+    let directories: Record<string, DirectoryEntry> = {};
+    let maxLastUpdated = new Date().toISOString();
+
+    if (recursive) {
+      const { directories: subDirs, maxLastUpdated: subMaxUpdated } =
+        await processSubdirectories({ entityDir, entityType, recursive });
+      directories = subDirs;
+      maxLastUpdated = subMaxUpdated;
+    }
+
+    const overallLastUpdated =
+      maxLastUpdated > new Date().toISOString()
+        ? maxLastUpdated
+        : new Date().toISOString();
+
+    // Read existing index to check if content has changed
+    const indexPath = path.join(entityDir, INDEX_FILENAME);
+    let existingIndex: DirectoryIndex | null = null;
+
+    try {
+      if (await fileExists(indexPath)) {
+        const existingContent = await fs.readFile(indexPath, "utf-8");
+        existingIndex = JSON.parse(existingContent);
+      }
+    } catch (error) {
+      console.warn(`⚠️  Failed to read existing index: ${error}`);
+    }
+
+    // Check if content has actually changed (excluding lastUpdated field)
+    const contentChanged = hasIndexContentChanged({
+      existingIndex,
+      files,
+      directories,
+    });
+
+    // Create index with conditional lastUpdated
+    const index: DirectoryIndex = {
+      lastUpdated: contentChanged
+        ? overallLastUpdated
+        : existingIndex?.lastUpdated || overallLastUpdated,
+      ...(Object.keys(files).length > 0 && { files }),
+      ...(Object.keys(directories).length > 0 && { directories }),
+    };
+
+    // Only write if content has changed
+    if (contentChanged) {
+      await fs.writeFile(indexPath, JSON.stringify(index, null, 2), "utf-8");
+      console.log(
+        `Updated index for ${entityType}: ${Object.keys(files).length} files, ${Object.keys(directories).length} directories (content changed)`,
+      );
+    } else {
+      console.log(
+        `Index for ${entityType} unchanged: ${Object.keys(files).length} files, ${Object.keys(directories).length} directories (skipped write)`,
+      );
+    }
+  } catch (error) {
+    console.error(`Failed to generate index for ${entityType}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Validate static data index and entities recursively
+ */
+export async function validateStaticDataIndex(
+  entityDir: string,
+): Promise<boolean> {
+  try {
+    const indexPath = path.join(entityDir, INDEX_FILENAME);
+
+    if (!(await fileExists(indexPath))) {
+      console.warn(`Warning: No index found at ${indexPath}`);
+      return false;
+    }
+
+    const indexContent = await fs.readFile(indexPath, "utf-8");
+    const index: DirectoryIndex = JSON.parse(indexContent);
+
+    // Validate index structure
+    if (!index.lastUpdated) {
+      console.error(`Invalid index structure in ${indexPath}`);
+      return false;
+    }
+
+    // Check if all referenced files exist
+    const missingFiles = await validateIndexFiles({ index, entityDir });
+    if (missingFiles > 0) {
+      console.warn(`Warning: Index references ${missingFiles} missing files`);
+      return false;
+    }
+
+    // Recursively validate directories if present
+    const subdirIssues = await validateIndexDirectories({ index, entityDir });
+    if (subdirIssues > 0) {
+      console.warn(
+        `Warning: ${subdirIssues} subdirectory validation issues found`,
+      );
+      return false;
+    }
+
+    const fileCount = index.files ? Object.keys(index.files).length : 0;
+    const dirCount = index.directories
+      ? Object.keys(index.directories).length
+      : 0;
+    console.log(
+      `Index validation passed: ${fileCount} files, ${dirCount} directories`,
+    );
+    return true;
+  } catch (error) {
+    console.error("Failed to validate index:", error);
+    return false;
+  }
+}
+
+/**
+ * Get static data index for an entity type
+ */
+export async function getStaticDataIndex(
+  entityDir: string,
+): Promise<DirectoryIndex | null> {
+  try {
+    const indexPath = path.join(entityDir, INDEX_FILENAME);
+
+    if (!(await fileExists(indexPath))) {
+      return null;
+    }
+
+    const indexContent = await fs.readFile(indexPath, "utf-8");
+    return JSON.parse(indexContent);
+  } catch (error) {
+    console.error("Failed to read static data index:", error);
+    return null;
+  }
+}
+
+/**
+ * Ensure directory exists, create if it doesn't
+ */
+async function ensureDirectoryExists(dirPath: string): Promise<void> {
+  try {
+    if (!(await fileExists(dirPath))) {
+      await fs.mkdir(dirPath, { recursive: true });
+      console.log(`Created directory: ${dirPath}`);
+    }
+  } catch (error) {
+    console.error(`Failed to create directory ${dirPath}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Process JSON files in a directory and extract metadata
+ */
+async function processJsonFiles({
+  entityDir,
+  jsonFiles,
+  entityType,
+}: {
+  entityDir: string;
+  jsonFiles: string[];
+  entityType: EntityType;
+}): Promise<Record<string, FileEntry>> {
+  const files: Record<string, FileEntry> = {};
+
+  for (const fileName of jsonFiles) {
+    const filePath = path.join(entityDir, fileName);
+    const fileStats = await fs.stat(filePath);
+    const entityId = path.basename(fileName, ".json");
+
+    try {
+      const content = await fs.readFile(filePath, "utf-8");
+      const data = JSON.parse(content);
+
+      // Basic validation - ensure it looks like an OpenAlex entity
+      if (!isValidOpenAlexEntity(data)) {
+        console.warn(
+          `⚠️  File ${fileName} doesn't appear to be a valid OpenAlex entity`,
+        );
+      }
+
+      // Create FileEntry with reconstructed URL
+      const reconstructedUrl = `https://api.openalex.org/${entityType}/${entityId}`;
+
+      files[entityId] = {
+        $ref: `./${fileName}`,
+        contentHash: await generateContentHash(data),
+        lastRetrieved: fileStats.mtime.toISOString(),
+        url: reconstructedUrl,
+      };
+    } catch (error) {
+      console.warn(`⚠️  Failed to validate file ${fileName}:`, error);
+      // Skip invalid files rather than adding them
+    }
+  }
+
+  return files;
+}
+
+/**
+ * Process subdirectories and generate their indexes
+ */
+async function processSubdirectories({
+  entityDir,
+  entityType,
+  recursive,
+}: {
+  entityDir: string;
+  entityType: EntityType;
+  recursive: boolean;
+}): Promise<{
+  directories: Record<string, DirectoryEntry>;
+  maxLastUpdated: string;
+}> {
+  const directories: Record<string, DirectoryEntry> = {};
+  let maxLastUpdated = new Date().toISOString();
+
+  try {
+    // Get subdirectories (non-hidden directories)
+    const entries = await fs.readdir(entityDir, { withFileTypes: true });
+    const subdirs = entries
+      .filter(
+        (entry) =>
+          entry.isDirectory() &&
+          !entry.name.startsWith(".") &&
+          entry.name !== "queries",
+      )
+      .map((entry) => entry.name)
+      .sort(); // Sort for consistent order
+
+    console.log(`Found ${subdirs.length} subdirectories in ${entityType}`);
+
+    for (const subdir of subdirs) {
+      const subPath = path.join(entityDir, subdir);
+      try {
+        // Recursively generate index for subdirectory (same entityType)
+        await generateIndexForEntityType(subPath, entityType);
+
+        // Read sub-index
+        const subIndexPath = path.join(subPath, INDEX_FILENAME);
+        if (await fileExists(subIndexPath)) {
+          const subContent = await fs.readFile(subIndexPath, "utf-8");
+          const subIndex: DirectoryIndex = JSON.parse(subContent);
+
+          // Track the maximum lastUpdated timestamp
+          if (subIndex.lastUpdated > maxLastUpdated) {
+            maxLastUpdated = subIndex.lastUpdated;
+          }
+
+          // Build directory entry
+          directories[subdir] = {
+            $ref: `./${subdir}`,
+            lastModified: subIndex.lastUpdated,
+          };
+        } else {
+          console.warn(`⚠️  No index found for subdirectory: ${subPath}`);
+        }
+      } catch (subError) {
+        console.warn(`⚠️  Failed to process subdirectory ${subdir}:`, subError);
+        // Continue with other subdirs
+      }
+    }
+  } catch (aggError) {
+    console.warn("⚠️  Failed to aggregate subdirectories:", aggError);
+  }
+
+  return { directories, maxLastUpdated };
+}
+
+/**
+ * Check if index content has changed
+ */
+function hasIndexContentChanged({
+  existingIndex,
+  files,
+  directories,
+}: {
+  existingIndex: DirectoryIndex | null;
+  files: Record<string, FileEntry>;
+  directories: Record<string, DirectoryEntry>;
+}): boolean {
+  if (!existingIndex) {
+    return true;
+  }
+
+  const filesChanged =
+    JSON.stringify(existingIndex.files || {}) !== JSON.stringify(files);
+  const dirsChanged =
+    JSON.stringify(existingIndex.directories || {}) !==
+    JSON.stringify(directories);
+
+  return filesChanged || dirsChanged;
+}
+
+/**
+ * Validate that all files referenced in the index exist
+ */
+async function validateIndexFiles({
+  index,
+  entityDir,
+}: {
+  index: DirectoryIndex;
+  entityDir: string;
+}): Promise<number> {
+  let missingFiles = 0;
+
+  if (index.files) {
+    for (const [_key, fileEntry] of Object.entries(index.files)) {
+      const fileName = (fileEntry as FileEntry).$ref.replace("./", "");
+      const filePath = path.join(entityDir, fileName);
+      if (!(await fileExists(filePath))) {
+        console.warn(`⚠️  Referenced file not found: ${fileName}`);
+        missingFiles++;
+      }
+    }
+  }
+
+  return missingFiles;
+}
+
+/**
+ * Validate a single subdirectory and its index
+ */
+async function validateSubdirectory({
+  subdirName,
+  subdirMeta,
+  entityDir,
+}: {
+  subdirName: string;
+  subdirMeta: DirectoryEntry;
+  entityDir: string;
+}): Promise<boolean> {
+  const subPath = path.join(entityDir, subdirName);
+  const subIndexPath = path.join(subPath, INDEX_FILENAME);
+
+  // Check if sub-index exists
+  if (!(await fileExists(subIndexPath))) {
+    console.warn(`Warning: Subdirectory index not found: ${subIndexPath}`);
+    return false;
+  }
+
+  // Read and validate sub-index
+  try {
+    const subContent = await fs.readFile(subIndexPath, "utf-8");
+    const subIndex: DirectoryIndex = JSON.parse(subContent);
+
+    // Check metadata consistency
+    if (subIndex.lastUpdated !== subdirMeta.lastModified) {
+      console.warn(
+        `Warning: Last updated mismatch in ${subdirName}: index=${subIndex.lastUpdated}, metadata=${subdirMeta.lastModified}`,
+      );
+      return false;
+    }
+
+    // Recursively validate sub-index
+    return await validateStaticDataIndex(subPath);
+  } catch (subError) {
+    console.warn(
+      `Warning: Failed to validate subdirectory ${subdirName}:`,
+      subError,
+    );
+    return false;
+  }
+}
+
+/**
+ * Validate all subdirectories in the index
+ */
+async function validateIndexDirectories({
+  index,
+  entityDir,
+}: {
+  index: DirectoryIndex;
+  entityDir: string;
+}): Promise<number> {
+  let subdirIssues = 0;
+
+  if (index.directories) {
+    for (const [subdirName, subdirMeta] of Object.entries(index.directories)) {
+      const isValid = await validateSubdirectory({
+        subdirName,
+        subdirMeta,
+        entityDir,
+      });
+      if (!isValid) {
+        subdirIssues++;
+      }
+    }
+  }
+
+  return subdirIssues;
+}
+
+/**
+ * Get entity type from directory path
+ */
+export function getEntityTypeFromPath(dirPath: string): EntityType | null {
+  // Use simple string operations to avoid sync Node.js imports
+  const dirName =
+    dirPath.split("/").pop() || dirPath.split("\\").pop() || dirPath;
+  return VALID_ENTITY_TYPES.includes(dirName as EntityType)
+    ? (dirName as EntityType)
+    : null;
+}
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { CatalogueManager } from "@/components/catalogue";
+
+function CataloguePage() {
+  return <CatalogueManager />;
+}
+
+export const Route = createLazyFileRoute("/catalogue")({
+  component: CataloguePage,
+});
+
+export default CataloguePage;
