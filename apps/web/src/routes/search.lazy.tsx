@@ -27,7 +27,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 
 import { useEffect, useMemo, useState } from "react";
 import { SearchInterface } from "../components/search/SearchInterface";
-import { BaseTable } from "../components/tables/BaseTable.js";
+import { BaseTable } from "../components/tables/BaseTable";
 import { pageDescription, pageTitle } from "../styles/layout.css";
 
 interface SearchFilters {
