@@ -4,7 +4,7 @@
 
 import { readFileSync } from "fs";
 import { join } from "path";
-import { createServer, defineConfig } from "vite";
+import { createServer, defineConfig, type PluginOption } from "vite";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { openalexCachePlugin } from "../../../../../config/vite-plugins/openalex-cache";
 import testUrls from "../data/openalex-test-urls.json";
@@ -60,8 +60,8 @@ describe("Cache Population Integration Tests", () => {
         openalexCachePlugin({
           staticDataPath: "public/data/openalex",
           verbose: true,
-        }),
-      ],
+        }) as PluginOption,
+      ] as PluginOption[],
       server: {
         port: DEV_SERVER_PORT,
         host: "127.0.0.1",
