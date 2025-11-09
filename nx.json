@@ -386,46 +386,7 @@
         "{workspaceRoot}/coverage"
       ]
     },
-    "knip": {
-      "cache": true,
-      "inputs": [
-        "source",
-        "configs",
-        "^production",
-        "{workspaceRoot}/knip.ts",
-        "{workspaceRoot}/tsconfig*.json",
-        "{workspaceRoot}/package.json"
-      ],
-      "outputs": []
-    },
-    "knip:nx": {
-      "cache": true,
-      "inputs": [
-        "source",
-        "configs",
-        "^production",
-        "{workspaceRoot}/knip.ts",
-        "{workspaceRoot}/tsconfig*.json",
-        "{workspaceRoot}/package.json",
-        "{workspaceRoot}/tools/scripts/knip-nx.ts"
-      ],
-      "outputs": []
-    },
-    "knip:fix": {
-      "cache": false,
-      "inputs": [
-        "source",
-        "configs",
-        "^production",
-        "{workspaceRoot}/knip.ts",
-        "{workspaceRoot}/tsconfig*.json",
-        "{workspaceRoot}/package.json"
-      ],
-      "outputs": [
-        "{projectRoot}/**/*.{js,jsx,ts,tsx}"
-      ]
-    },
-    "a11y:test": {
+        "a11y:test": {
       "cache": false,
       "dependsOn": [
         "build"
