@@ -77,7 +77,6 @@ export default tseslint.config([
                     "eslint.config.base.ts",
                     "eslint.config.react.ts",
                     "eslint.config.ts",
-                    "knip.ts",
                     // Root configuration files
                     ".commitlintrc.ts",
                     "commitlintrc.ts",

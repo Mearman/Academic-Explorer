@@ -49,8 +49,6 @@ documentation/
 coverage-reports/
 .lighthouseci/
 pa11y-results.json
-knip-report.json
-knip-summary.md
 
 # License files
 LICENSE*
