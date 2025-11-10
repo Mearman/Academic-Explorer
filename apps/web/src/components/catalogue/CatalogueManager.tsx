@@ -374,6 +374,8 @@ export function CatalogueManager({ onNavigate, sharedToken }: CatalogueManagerPr
             onClose={() => setShowCreateModal(false)}
             onSubmit={async (params) => {
               const listId = await createList(params);
+              // Switch to the appropriate tab based on list type
+              setActiveTab(params.type === "bibliography" ? "bibliographies" : "lists");
               selectList(listId);
               setShowCreateModal(false);
             }}
