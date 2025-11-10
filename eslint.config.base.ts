@@ -122,6 +122,24 @@ export default tseslint.config([
             ],
             "@typescript-eslint/no-explicit-any": "warn",
             "@typescript-eslint/no-non-null-assertion": "error",
+            "no-restricted-imports": [
+                "error",
+                {
+                    "patterns": [
+                        {
+                            "group": ["@academic-explorer/client/types", "@academic-explorer/client/types/*"],
+                            "message": "Import types directly from '@academic-explorer/types/entities' instead. The client package re-exports are for backward compatibility only."
+                        }
+                    ]
+                }
+            ],
+        },
+    },
+    // Disable no-restricted-imports for client package (it re-exports types for backward compatibility)
+    {
+        files: ["packages/client/**/*.{ts,tsx}"],
+        rules: {
+            "no-restricted-imports": "off",
         },
     },
     // Configuration for test files
