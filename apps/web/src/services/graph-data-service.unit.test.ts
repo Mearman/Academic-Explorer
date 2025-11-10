@@ -14,7 +14,7 @@ import type {
   Author,
   OpenAlexEntity,
   Authorship,
-} from "@academic-explorer/client";
+} from "@academic-explorer/types";
 
 // Mock client
 vi.mock("@academic-explorer/client", () => ({

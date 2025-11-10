@@ -8,7 +8,7 @@ import type {
   OpenAlexResponse,
   Publisher,
   Source,
-} from "@academic-explorer/client";
+} from "@academic-explorer/types";
 import { cachedOpenAlex } from "@academic-explorer/client";
 import { MantineProvider } from "@mantine/core";
 import { act, render, screen, waitFor, within } from "@testing-library/react";
