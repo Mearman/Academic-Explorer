@@ -11,7 +11,7 @@ import type {
   Work,
   Author,
   AutocompleteResult,
-} from "../types";
+} from "@academic-explorer/types";
 import { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";
 import { AutocompleteOptions } from "../utils/autocomplete";

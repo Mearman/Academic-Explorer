@@ -17,7 +17,7 @@ import type {
   TopicsFilters,
   PublishersFilters,
   FundersFilters,
-} from "../types";
+} from "@academic-explorer/types";
 
 /**
  * Sort options for different entity types

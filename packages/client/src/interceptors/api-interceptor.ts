@@ -4,7 +4,7 @@
  */
 
 import { logger } from "../internal/logger";
-import type { EntityType, QueryParams } from "../types";
+import type { EntityType, QueryParams } from "@academic-explorer/types";
 
 /**
  * Represents an intercepted OpenAlex API request

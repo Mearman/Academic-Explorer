@@ -8,7 +8,7 @@
  * @see https://docs.openalex.org/how-to-use-the-api/get-lists-of-entities/filter-entity-lists
  */
 
-import type { EntityFilters } from "../types";
+import type { EntityFilters } from "@academic-explorer/types";
 
 /**
  * Filter value types supported by OpenAlex API

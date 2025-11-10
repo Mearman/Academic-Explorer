@@ -3,7 +3,7 @@
  * Provides comprehensive methods for analyzing text content using OpenAlex's aboutness assignments
  */
 
-import type { OpenAlexId, QueryParams } from "../types";
+import type { OpenAlexId, QueryParams } from "@academic-explorer/types";
 import type { OpenAlexBaseClient } from "../client";
 
 /**

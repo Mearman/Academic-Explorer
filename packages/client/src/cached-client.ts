@@ -5,7 +5,7 @@
 import { logger } from "@academic-explorer/utils";
 import { validateStaticData } from "./internal/type-helpers";
 import { OpenAlexBaseClient, type OpenAlexClientConfig } from "./client";
-import type { QueryParams } from "./types";
+import type { QueryParams } from "@academic-explorer/types";
 import { z } from "zod";
 import { AuthorsApi } from "./entities/authors";
 import { ConceptsApi } from "./entities/concepts";
@@ -26,7 +26,7 @@ import {
   cleanOpenAlexId,
   toStaticEntityType,
 } from "./internal/static-data-utils";
-import type { OpenAlexEntity } from "./types";
+import type { OpenAlexEntity } from "@academic-explorer/types";
 import { isOpenAlexEntity } from "@academic-explorer/types/entities";
 import { AutocompleteApi } from "./utils/autocomplete";
 

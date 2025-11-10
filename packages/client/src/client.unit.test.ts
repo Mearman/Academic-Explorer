@@ -20,7 +20,7 @@ import {
   OpenAlexApiError,
   type OpenAlexClientConfig,
 } from "./client";
-import type { OpenAlexResponse } from "./types";
+import type { OpenAlexResponse } from "@academic-explorer/types";
 
 describe("OpenAlexBaseClient", () => {
   let client: OpenAlexBaseClient;

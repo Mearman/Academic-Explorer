@@ -4,7 +4,7 @@
  */
 
 import { OpenAlexBaseClient } from "../client";
-import type { EntityType } from "../types";
+import type { EntityType } from "@academic-explorer/types";
 import { logger } from "../internal/logger";
 
 /**

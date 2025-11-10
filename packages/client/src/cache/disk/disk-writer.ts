@@ -14,7 +14,7 @@ import {
   sanitizeUrlForCaching,
   STATIC_DATA_CACHE_PATH,
 } from "@academic-explorer/utils/static-data/cache-utilities";
-import type { EntityType, OpenAlexEntity, OpenAlexResponse } from "../../types";
+import type { EntityType, OpenAlexEntity, OpenAlexResponse } from "@academic-explorer/types";
 
 // Dynamic imports for Node.js modules to avoid browser bundling issues
 let fs: any;

@@ -13,7 +13,7 @@ import type {
   OpenAlexResponse,
   QueryParams,
   Work,
-} from "../types";
+} from "@academic-explorer/types";
 import { buildFilterString } from "../utils/query-builder";
 
 /**

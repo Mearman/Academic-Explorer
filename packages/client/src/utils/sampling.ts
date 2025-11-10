@@ -10,7 +10,7 @@ import type {
   QueryParams,
   SampleParams,
   OpenAlexResponse,
-} from "../types";
+} from "@academic-explorer/types";
 import { logger, logError } from "../internal/logger";
 
 /**

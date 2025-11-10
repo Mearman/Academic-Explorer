@@ -76,7 +76,7 @@ import type {
   OpenAlexResponse,
   Work,
   AutocompleteResult,
-} from "../types";
+} from "@academic-explorer/types";
 import { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";
 import { logger } from "../internal/logger";

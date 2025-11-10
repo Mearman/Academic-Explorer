@@ -13,7 +13,7 @@ import type {
   KeywordsFilters,
   OpenAlexResponse,
   QueryParams,
-} from "../types";
+} from "@academic-explorer/types";
 import { buildFilterString } from "../utils/query-builder";
 // Replace lodash-es with native JavaScript
 function isString(value: unknown): value is string {

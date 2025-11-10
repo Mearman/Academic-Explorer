@@ -3,7 +3,7 @@
  * Provides text analysis functionality using the /text endpoint for "aboutness" detection
  */
 
-import type { TextAnalysis } from "../types";
+import type { TextAnalysis } from "@academic-explorer/types";
 import { OpenAlexBaseClient } from "../client";
 import { logger } from "../internal/logger";
 

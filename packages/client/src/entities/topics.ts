@@ -11,7 +11,7 @@ import type {
   OpenAlexResponse,
   QueryParams,
   AutocompleteResult,
-} from "../types";
+} from "@academic-explorer/types";
 import { OpenAlexBaseClient } from "../client";
 import { isValidWikidata, normalizeExternalId } from "../utils/id-resolver";
 import { buildFilterString } from "../utils/query-builder";

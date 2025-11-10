@@ -4,7 +4,7 @@
  */
 
 import { OpenAlexBaseClient } from "../client";
-import type { EntityType, QueryParams, GroupParams } from "../types";
+import type { EntityType, QueryParams, GroupParams } from "@academic-explorer/types";
 import { logger } from "../internal/logger";
 import { extractPropertyValue } from "@academic-explorer/types/entities";
 

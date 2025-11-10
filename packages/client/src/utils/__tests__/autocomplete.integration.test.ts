@@ -5,7 +5,7 @@
 
 import { describe, it, expect, beforeAll } from "vitest";
 import { CachedOpenAlexClient } from "../../cached-client";
-import type { EntityType } from "../../types";
+import type { EntityType } from "@academic-explorer/types";
 
 describe("AutocompleteApi Integration Tests", () => {
   let client: CachedOpenAlexClient;

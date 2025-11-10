@@ -30,7 +30,7 @@ import type {
   Source,
   Topic,
   Work,
-} from "./types";
+} from "@academic-explorer/types";
 
 // Shared client instance for helper functions
 let _sharedClient: OpenAlexBaseClient | null = null;

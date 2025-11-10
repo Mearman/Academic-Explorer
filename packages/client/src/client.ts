@@ -12,7 +12,7 @@ import {
 } from "./internal/type-helpers";
 import { validateWithSchema } from "@academic-explorer/types/entities";
 import { z } from "zod";
-import type { OpenAlexError, OpenAlexResponse, QueryParams } from "./types";
+import type { OpenAlexError, OpenAlexResponse, QueryParams } from "@academic-explorer/types";
 
 export interface OpenAlexClientConfig {
   baseUrl?: string;

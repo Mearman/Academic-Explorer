@@ -5,7 +5,7 @@
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { CompleteAutocompleteApi } from "../autocomplete";
-import type { AutocompleteResult, EntityType } from "../../types";
+import type { AutocompleteResult, EntityType } from "@academic-explorer/types";
 import type { OpenAlexBaseClient } from "../../client";
 
 // Mock client
