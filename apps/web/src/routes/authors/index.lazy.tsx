@@ -1,7 +1,7 @@
 import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
 import { EntityListWithQueryBookmarking } from "@/components/EntityListWithQueryBookmarking";
 import type { ColumnConfig } from "@/components/types";
-import type { Author } from "@academic-explorer/client";
+import type { Author } from "@academic-explorer/types/entities";
 import type { ViewMode } from "@/components/ViewModeToggle";
 import type { OpenAlexSearchParams } from "@/lib/route-schemas";
 import { useState } from "react";

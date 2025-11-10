@@ -2,7 +2,7 @@ import { createLazyFileRoute } from "@tanstack/react-router";
 import { useSearch } from "@tanstack/react-router";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { cachedOpenAlex } from "@academic-explorer/client";
-import type { AutocompleteResult } from "@academic-explorer/client";
+import type { AutocompleteResult } from "@academic-explorer/types/entities";
 import { convertToRelativeUrl } from "@academic-explorer/ui";
 import { formatLargeNumber, logger } from "@academic-explorer/utils";
 import {
