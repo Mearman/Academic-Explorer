@@ -33,5 +33,10 @@
   "exclude": [
     "node_modules",
     "generators/**/*.ts"
+  ],
+  "references": [
+    {
+      "path": "../apps/web"
+    }
   ]
 }

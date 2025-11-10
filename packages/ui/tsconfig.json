@@ -26,9 +26,8 @@
   },
   "include": ["src/**/*"],
   "references": [
-    { "path": "../types" },
-    { "path": "../utils" },
-    { "path": "../client" },
-    { "path": "../graph" }
+    {
+      "path": "../types"
+    }
   ]
 }
