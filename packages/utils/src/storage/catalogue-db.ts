@@ -371,6 +371,32 @@ export class CatalogueService {
   }
 
   /**
+   * Update entity notes
+   */
+  async updateEntityNotes(entityRecordId: string, notes: string): Promise<void> {
+    try {
+      await this.db.catalogueEntities.update(entityRecordId, { notes });
+
+      // Get the entity to find its listId for updating the list timestamp
+      const entity = await this.db.catalogueEntities.get(entityRecordId);
+      if (entity) {
+        await this.updateList(entity.listId, {});
+      }
+
+      this.logger?.debug(LOG_CATEGORY, "Entity notes updated", {
+        entityRecordId,
+        notesLength: notes.length,
+      });
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to update entity notes", {
+        entityRecordId,
+        error,
+      });
+      throw error;
+    }
+  }
+
+  /**
    * Get all entities in a catalogue list
    */
   async getListEntities(listId: string): Promise<CatalogueEntity[]> {
