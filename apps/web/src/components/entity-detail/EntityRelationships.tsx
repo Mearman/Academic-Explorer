@@ -68,6 +68,19 @@ interface RelationshipGroup {
   apiUrl?: string;
 }
 
+// Helper to safely access nested properties on unknown objects
+function getProp(obj: unknown, prop: string): unknown {
+  if (obj !== null && typeof obj === "object" && prop in obj) {
+    return (obj as Record<string, unknown>)[prop];
+  }
+  return undefined;
+}
+
+function hasProps(obj: unknown, props: string[]): boolean {
+  if (obj === null || typeof obj !== "object") return false;
+  return props.every(prop => prop in obj);
+}
+
 /**
  * Extract outbound relationships from entity data
  */
@@ -83,7 +96,7 @@ function extractOutboundRelationships(
       // Authors
       if (data.authorships && Array.isArray(data.authorships)) {
         const authors = data.authorships
-          .map((authorship: any) => ({
+          .map((authorship) => ({
             id: authorship.author?.id || "",
             displayName: authorship.author?.display_name || "Unknown Author",
             type: "author",
@@ -106,16 +119,19 @@ function extractOutboundRelationships(
       }
 
       // Published in (Source)
-      const source = (data.primary_location as any)?.source;
-      if (source?.id && source?.display_name) {
+      const primaryLocation = data.primary_location;
+      const source = getProp(primaryLocation, "source");
+      const sourceId = getProp(source, "id");
+      const sourceDisplayName = getProp(source, "display_name");
+      if (typeof sourceId === "string" && typeof sourceDisplayName === "string") {
         groups.push({
           label: "Published In",
           direction: "outbound",
           icon: <IconBookmark size={20} />,
           relationships: [
             {
-              id: source.id,
-              displayName: source.display_name,
+              id: sourceId,
+              displayName: sourceDisplayName,
               type: "source",
             },
           ],
@@ -161,7 +177,7 @@ function extractOutboundRelationships(
       // Funders
       if (data.grants && Array.isArray(data.grants)) {
         const funders = data.grants
-          .map((grant: any) => ({
+          .map((grant) => ({
             id: grant.funder || "",
             displayName: grant.funder_display_name || "Unknown Funder",
             type: "funder",
@@ -185,7 +201,7 @@ function extractOutboundRelationships(
       if (data.topics && Array.isArray(data.topics)) {
         const topics = data.topics
           .slice(0, 10)
-          .map((topic: any) => ({
+          .map((topic) => ({
             id: topic.id || "",
             displayName: topic.display_name || "Unknown Topic",
             type: "topic",
@@ -207,10 +223,10 @@ function extractOutboundRelationships(
       }
 
       // Keywords
-      if (data.keywords && Array.isArray(data.keywords)) {
-        const keywords = (data.keywords as string[]).slice(0, 20).map((keyword, index) => ({
+      if (Array.isArray(data.keywords)) {
+        const keywords = data.keywords.slice(0, 20).map((keyword, index) => ({
           id: `keyword-${index}`,
-          displayName: keyword,
+          displayName: String(keyword),
           type: "keyword",
         }));
 
@@ -220,7 +236,7 @@ function extractOutboundRelationships(
             direction: "outbound",
             icon: <IconTag size={20} />,
             relationships: keywords,
-            description: (data.keywords as string[]).length > 20 ? `${(data.keywords as string[]).length} keywords (showing first 20)` : undefined,
+            description: data.keywords.length > 20 ? `${data.keywords.length} keywords (showing first 20)` : undefined,
           });
         }
       }
@@ -230,7 +246,7 @@ function extractOutboundRelationships(
       // Institutions (last known)
       if (data.last_known_institutions && Array.isArray(data.last_known_institutions)) {
         const institutions = data.last_known_institutions
-          .map((inst: any) => ({
+          .map((inst) => ({
             id: inst.id || "",
             displayName: inst.display_name || "Unknown Institution",
             type: "institution",
@@ -254,7 +270,7 @@ function extractOutboundRelationships(
       // Affiliations
       if (data.affiliations && Array.isArray(data.affiliations)) {
         const affiliations = data.affiliations
-          .map((aff: any) => ({
+          .map((aff) => ({
             id: aff.institution?.id || "",
             displayName: aff.institution?.display_name || "Unknown Institution",
             type: "institution",
@@ -279,7 +295,7 @@ function extractOutboundRelationships(
       if (data.topics && Array.isArray(data.topics)) {
         const topics = data.topics
           .slice(0, 10)
-          .map((topic: any) => ({
+          .map((topic) => ({
             id: topic.id || "",
             displayName: topic.display_name || "Unknown Topic",
             type: "topic",
@@ -305,7 +321,7 @@ function extractOutboundRelationships(
       // Associated institutions
       if (data.associated_institutions && Array.isArray(data.associated_institutions)) {
         const associated = data.associated_institutions
-          .map((inst: any) => ({
+          .map((inst) => ({
             id: inst.id || "",
             displayName: inst.display_name || "Unknown Institution",
             type: "institution",
@@ -351,7 +367,7 @@ function extractOutboundRelationships(
       if (data.topics && Array.isArray(data.topics)) {
         const topics = data.topics
           .slice(0, 10)
-          .map((topic: any) => ({
+          .map((topic) => ({
             id: topic.id || "",
             displayName: topic.display_name || "Unknown Topic",
             type: "topic",
@@ -394,7 +410,7 @@ function extractOutboundRelationships(
       if (data.topics && Array.isArray(data.topics)) {
         const topics = data.topics
           .slice(0, 10)
-          .map((topic: any) => ({
+          .map((topic) => ({
             id: topic.id || "",
             displayName: topic.display_name || "Unknown Topic",
             type: "topic",
@@ -434,12 +450,12 @@ function extractOutboundRelationships(
       }
 
       // Lineage
-      if (data.lineage && Array.isArray(data.lineage)) {
-        const parents = (data.lineage as string[])
+      if (Array.isArray(data.lineage)) {
+        const parents = data.lineage
           .filter((id) => id !== data.id) // Exclude self
           .map((id) => ({
-            id,
-            displayName: id.split("/").pop() || id,
+            id: String(id),
+            displayName: String(id).split("/").pop() || String(id),
             type: "publisher",
           }));
 
@@ -456,15 +472,18 @@ function extractOutboundRelationships(
 
     case "topic":
       // Subfield
-      if ((data.subfield as any)?.id && (data.subfield as any)?.display_name) {
+      const subfield = data.subfield;
+      const subfieldId = getProp(subfield, "id");
+      const subfieldName = getProp(subfield, "display_name");
+      if (typeof subfieldId === "string" && typeof subfieldName === "string") {
         groups.push({
           label: "Subfield",
           direction: "outbound",
           icon: <IconBulb size={20} />,
           relationships: [
             {
-              id: (data.subfield as any).id,
-              displayName: (data.subfield as any).display_name,
+              id: subfieldId,
+              displayName: subfieldName,
               type: "topic",
             },
           ],
@@ -472,15 +491,18 @@ function extractOutboundRelationships(
       }
 
       // Field
-      if ((data.field as any)?.id && (data.field as any)?.display_name) {
+      const field = data.field;
+      const fieldId = getProp(field, "id");
+      const fieldName = getProp(field, "display_name");
+      if (typeof fieldId === "string" && typeof fieldName === "string") {
         groups.push({
           label: "Field",
           direction: "outbound",
           icon: <IconBulb size={20} />,
           relationships: [
             {
-              id: (data.field as any).id,
-              displayName: (data.field as any).display_name,
+              id: fieldId,
+              displayName: fieldName,
               type: "topic",
             },
           ],
@@ -488,15 +510,18 @@ function extractOutboundRelationships(
       }
 
       // Domain
-      if ((data.domain as any)?.id && (data.domain as any)?.display_name) {
+      const domain = data.domain;
+      const domainId = getProp(domain, "id");
+      const domainName = getProp(domain, "display_name");
+      if (typeof domainId === "string" && typeof domainName === "string") {
         groups.push({
           label: "Domain",
           direction: "outbound",
           icon: <IconBulb size={20} />,
           relationships: [
             {
-              id: (data.domain as any).id,
-              displayName: (data.domain as any).display_name,
+              id: domainId,
+              displayName: domainName,
               type: "topic",
             },
           ],
@@ -506,7 +531,7 @@ function extractOutboundRelationships(
       // Siblings
       if (data.siblings && Array.isArray(data.siblings)) {
         const siblings = data.siblings
-          .map((sibling: any) => ({
+          .map((sibling) => ({
             id: sibling.id || "",
             displayName: sibling.display_name || "Unknown Topic",
             type: "topic",
@@ -528,7 +553,7 @@ function extractOutboundRelationships(
       // Ancestors
       if (data.ancestors && Array.isArray(data.ancestors)) {
         const ancestors = data.ancestors
-          .map((ancestor: any) => ({
+          .map((ancestor) => ({
             id: ancestor.id || "",
             displayName: ancestor.display_name || "Unknown Concept",
             type: "concept",
@@ -552,7 +577,7 @@ function extractOutboundRelationships(
       if (data.related_concepts && Array.isArray(data.related_concepts)) {
         const related = data.related_concepts
           .slice(0, 10)
-          .map((concept: any) => ({
+          .map((concept) => ({
             id: concept.id || "",
             displayName: concept.display_name || "Unknown Concept",
             type: "concept",
@@ -580,7 +605,7 @@ function extractOutboundRelationships(
       if (data.topics && Array.isArray(data.topics)) {
         const topics = data.topics
           .slice(0, 10)
-          .map((topic: any) => ({
+          .map((topic) => ({
             id: topic.id || "",
             displayName: topic.display_name || "Unknown Topic",
             type: "topic",
@@ -617,7 +642,7 @@ function extractInboundRelationships(
 
   // Works relationship (most entities can have works)
   if (data.works_api_url && typeof data.works_api_url === "string") {
-    const worksCount = data.works_count as number | undefined;
+    const worksCount = typeof data.works_count === "number" ? data.works_count : undefined;
     groups.push({
       label: "Works",
       direction: "inbound",
@@ -630,7 +655,7 @@ function extractInboundRelationships(
 
   // Cited by (for works)
   if (entityType === "work" && data.cited_by_api_url && typeof data.cited_by_api_url === "string") {
-    const citedByCount = data.cited_by_count as number | undefined;
+    const citedByCount = typeof data.cited_by_count === "number" ? data.cited_by_count : undefined;
     groups.push({
       label: "Cited By",
       direction: "inbound",
@@ -643,7 +668,7 @@ function extractInboundRelationships(
 
   // Sources (for publishers)
   if (entityType === "publisher" && data.sources_api_url && typeof data.sources_api_url === "string") {
-    const sourcesCount = data.sources_count as number | undefined;
+    const sourcesCount = typeof data.sources_count === "number" ? data.sources_count : undefined;
     groups.push({
       label: "Sources",
       direction: "inbound",
