@@ -284,7 +284,11 @@ async function addEntityToCatalogue(page: Page, entityId: string, entityType: st
   await expect(addToCatalogueButton).toBeVisible({ timeout: 10000 });
   await addToCatalogueButton.click();
 
-  // Wait for modal to appear
+  // Wait for menu dropdown to appear and click "Create New List"
+  await expect(page.locator('[role="menu"]')).toBeVisible({ timeout: 5000 });
+  await page.locator('[role="menuitem"]:has-text("Create New List")').click();
+
+  // NOW the modal appears
   await expect(page.locator('[role="dialog"]')).toBeVisible({ timeout: 5000 });
 
   // Select the first available list
