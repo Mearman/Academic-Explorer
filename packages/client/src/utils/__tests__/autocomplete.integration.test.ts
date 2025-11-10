@@ -1,13 +1,18 @@
 /**
  * Integration tests for AutocompleteApi
  * Tests actual API calls to OpenAlex autocomplete endpoints
+ *
+ * These tests make real API calls and are skipped by default.
+ * Set RUN_INTEGRATION_TESTS=true to enable them.
  */
 
 import { describe, it, expect, beforeAll } from "vitest";
 import { CachedOpenAlexClient } from "../../cached-client";
 import type { EntityType } from "../../types";
 
-describe("AutocompleteApi Integration Tests", () => {
+const shouldRunIntegrationTests = process.env.RUN_INTEGRATION_TESTS === "true";
+
+describe.skipIf(!shouldRunIntegrationTests)("AutocompleteApi Integration Tests", () => {
   let client: CachedOpenAlexClient;
 
   beforeAll(() => {
