@@ -376,11 +376,62 @@ export const INSTITUTION_FIELDS = keysOf<InstitutionEntity>()([
 export type InstitutionField = (typeof INSTITUTION_FIELDS)[number]
 
 /**
+ * Fields that can be selected for Concept entities.
+ * Note: Concepts are being phased out in favor of Topics.
+ */
+export const CONCEPT_FIELDS = keysOf<Concept>()([
+	"id",
+	"display_name",
+	"cited_by_count",
+	"counts_by_year",
+	"updated_date",
+	"created_date",
+	"works_count",
+	"works_api_url",
+	"wikidata",
+	"level",
+	"description",
+	"ids",
+	"image_url",
+	"image_thumbnail_url",
+	"international",
+	"ancestors",
+	"related_concepts",
+	"summary_stats",
+])
+
+export type ConceptField = (typeof CONCEPT_FIELDS)[number]
+
+/**
  * Fields that can be selected for Topic entities.
  */
 export const TOPIC_FIELDS = topicSchema.keyof().options
 
 export type TopicField = (typeof TOPIC_FIELDS)[number]
+
+/**
+ * Fields that can be selected for Publisher entities.
+ */
+export const PUBLISHER_FIELDS = keysOf<Publisher>()([
+	"id",
+	"display_name",
+	"cited_by_count",
+	"counts_by_year",
+	"updated_date",
+	"created_date",
+	"works_count",
+	"works_api_url",
+	"alternate_titles",
+	"country_codes",
+	"hierarchy_level",
+	"parent_publisher",
+	"lineage",
+	"sources_count",
+	"ids",
+	"sources_api_url",
+])
+
+export type PublisherField = (typeof PUBLISHER_FIELDS)[number]
 
 /**
  * Fields that can be selected for Funder entities.

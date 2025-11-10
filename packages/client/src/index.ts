@@ -168,6 +168,7 @@ export type {
 export {
   AUTHOR_FIELDS,
   BASE_ENTITY_FIELDS,
+  CONCEPT_FIELDS,
   ENTITY_WITH_WORKS_FIELDS,
   FUNDER_FIELDS,
   INSTITUTION_FIELDS,
@@ -180,6 +181,7 @@ export {
 export type {
   AuthorField,
   BaseEntityField,
+  ConceptField,
   EntityWithWorksField,
   FunderField,
   InstitutionField,
