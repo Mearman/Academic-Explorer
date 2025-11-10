@@ -1,12 +1,13 @@
-import React, { ReactNode } from "react";
-import { Button, Text, Code, Badge, Paper, Stack, Group, Container, Title, Tooltip, ActionIcon } from "@mantine/core";
-import { IconEye, IconCode, IconBookmark, IconBookmarkOff, IconBookmarkFilled } from "@tabler/icons-react";
+import React, { ReactNode, useState } from "react";
+import { Button, Text, Code, Badge, Paper, Stack, Group, Container, Title, Tooltip, ActionIcon, Modal } from "@mantine/core";
+import { IconEye, IconCode, IconBookmark, IconBookmarkOff, IconBookmarkFilled, IconPlaylistAdd } from "@tabler/icons-react";
 import { logger } from "@/lib/logger";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { useQueryBookmarking } from "@/hooks/use-query-bookmarking";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { EntityTypeConfig, EntityType } from "./EntityTypeConfig";
 import { EntityDataDisplay } from "../EntityDataDisplay";
+import { AddToListModal } from "../catalogue/AddToListModal";
 
 interface EntityDetailLayoutProps {
   config: EntityTypeConfig;
@@ -63,6 +64,9 @@ export function EntityDetailLayout({
     entityType,
     entityId,
   });
+
+  // Modal state for adding to catalogue
+  const [showAddToListModal, setShowAddToListModal] = useState(false);
 
   const handleBookmarkToggle = async () => {
     try {
@@ -144,6 +148,19 @@ export function EntityDetailLayout({
             </Stack>
 
             <Group gap="sm">
+              {/* Add to Catalogue Button */}
+              <Tooltip label="Add to catalogue list" position="bottom">
+                <ActionIcon
+                  size="lg"
+                  variant="light"
+                  color="green"
+                  onClick={() => setShowAddToListModal(true)}
+                  data-testid="add-to-catalogue-button"
+                >
+                  <IconPlaylistAdd size={20} />
+                </ActionIcon>
+              </Tooltip>
+
               {/* Entity Bookmark Button */}
               <Tooltip
                 label={userInteractions.isBookmarked ? "Remove entity bookmark" : "Bookmark this entity"}
@@ -234,6 +251,21 @@ export function EntityDetailLayout({
           </>
         )}
       </Stack>
+
+      {/* Add to List Modal */}
+      <Modal
+        opened={showAddToListModal}
+        onClose={() => setShowAddToListModal(false)}
+        title="Add to Catalogue"
+        size="md"
+      >
+        <AddToListModal
+          entityType={entityType}
+          entityId={entityId}
+          entityDisplayName={displayName}
+          onClose={() => setShowAddToListModal(false)}
+        />
+      </Modal>
     </Container>
   );
 }
