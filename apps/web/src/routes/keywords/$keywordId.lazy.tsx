@@ -1,6 +1,7 @@
 import { createLazyFileRoute, useParams, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
-import { KEYWORD_FIELDS, cachedOpenAlex, type Keyword, type KeywordField } from "@academic-explorer/client";
+import { cachedOpenAlex } from "@academic-explorer/client";
+import { KEYWORD_FIELDS, type Keyword, type KeywordField } from "@academic-explorer/types/entities";
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
 import { EntityDataDisplay } from "@/components/EntityDataDisplay";

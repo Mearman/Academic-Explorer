@@ -1,8 +1,8 @@
 import { createLazyFileRoute, useSearch } from "@tanstack/react-router";
 import { EntityListWithQueryBookmarking } from "@/components/EntityListWithQueryBookmarking";
 import type { ColumnConfig } from "@/components/types";
-import type { Work } from "@academic-explorer/client";
 import { createFilterBuilder } from "@academic-explorer/client";
+import type { Work } from "@academic-explorer/types/entities";
 import { convertToRelativeUrl } from "@academic-explorer/ui";
 import { Anchor } from "@mantine/core";
 import type { OpenAlexSearchParams } from "@/lib/route-schemas";

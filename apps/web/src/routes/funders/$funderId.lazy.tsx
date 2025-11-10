@@ -1,7 +1,8 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useParams, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
-import { FUNDER_FIELDS, cachedOpenAlex, type Funder, type FunderField } from "@academic-explorer/client";
+import { cachedOpenAlex } from "@academic-explorer/client";
+import { FUNDER_FIELDS, type Funder, type FunderField } from "@academic-explorer/types/entities";
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
 import { usePrettyUrl } from "@/hooks/use-pretty-url";
