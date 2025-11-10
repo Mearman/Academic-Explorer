@@ -10,7 +10,6 @@
   "exclude": ["tools/generators/**/*"],
   "references": [
     { "path": "./apps/cli" },
-    { "path": "./apps/web" },
     { "path": "./packages/client" },
     { "path": "./packages/graph" },
     { "path": "./packages/simulation" },
