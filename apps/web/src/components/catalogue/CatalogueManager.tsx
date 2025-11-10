@@ -36,6 +36,7 @@ import { CatalogueEntities } from "@/components/catalogue/CatalogueEntities";
 import { CreateListModal } from "@/components/catalogue/CreateListModal";
 import { ShareModal } from "@/components/catalogue/ShareModal";
 import { ImportModal } from "@/components/catalogue/ImportModal";
+import { ExportModal } from "@/components/catalogue/ExportModal";
 import { logger } from "@/lib/logger";
 import { SPECIAL_LIST_IDS } from "@academic-explorer/utils/storage/catalogue-db";
 
@@ -64,6 +65,7 @@ export function CatalogueManager({ onNavigate, sharedToken }: CatalogueManagerPr
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
   const [shareUrl, setShareUrl] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -254,6 +256,15 @@ export function CatalogueManager({ onNavigate, sharedToken }: CatalogueManagerPr
                 <Button
                   variant="light"
                   size="sm"
+                  onClick={() => setShowExportModal(true)}
+                  leftSection={<IconDownload size={16} />}
+                  data-testid="export-list-button"
+                >
+                  Export
+                </Button>
+                <Button
+                  variant="light"
+                  size="sm"
                   onClick={handleShare}
                   leftSection={<IconShare size={16} />}
                   data-testid="share-list-button"
@@ -326,6 +337,21 @@ export function CatalogueManager({ onNavigate, sharedToken }: CatalogueManagerPr
             onClose={() => setShowImportModal(false)}
             onImport={handleImport}
           />
+        </Modal>
+
+        <Modal
+          opened={showExportModal}
+          onClose={() => setShowExportModal(false)}
+          title="Export List"
+          size="lg"
+        >
+          {selectedList && (
+            <ExportModal
+              listId={selectedList.id!}
+              listTitle={selectedList.title}
+              onClose={() => setShowExportModal(false)}
+            />
+          )}
         </Modal>
       </Stack>
     </Container>
