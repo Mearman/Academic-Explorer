@@ -3,7 +3,7 @@
   "directories": {
     "queries": {
       "$ref": "./queries",
-      "lastModified": "2025-11-07T05:30:03.084Z"
+      "lastModified": "2025-11-10T06:30:59.692Z"
     }
   },
   "files": {
@@ -202,7 +202,7 @@
     "W123%2Fspecial-chars": {
       "url": "https://api.openalex.org/works/W123%2Fspecial-chars",
       "$ref": "./W123%2Fspecial-chars.json",
-      "lastRetrieved": "2025-11-09T20:15:34.345Z",
+      "lastRetrieved": "2025-11-10T06:49:15.221Z",
       "contentHash": "44136fa355b3678a"
     }
   }

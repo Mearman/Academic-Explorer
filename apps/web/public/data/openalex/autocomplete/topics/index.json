@@ -28,13 +28,13 @@
     "q=artificial+intelligence": {
       "url": "https://api.openalex.org/autocomplete/topics?q=artificial+intelligence",
       "$ref": "./q=artificial+intelligence.json",
-      "lastRetrieved": "2025-11-10T05:49:21.457Z",
+      "lastRetrieved": "2025-11-10T06:49:17.879Z",
       "contentHash": "dd796f6d32a769cc"
     },
     "q=Machine+Learning": {
       "url": "https://api.openalex.org/autocomplete/topics?q=Machine+Learning",
       "$ref": "./q=Machine+Learning.json",
-      "lastRetrieved": "2025-11-09T20:15:38.867Z",
+      "lastRetrieved": "2025-11-10T06:49:19.637Z",
       "contentHash": "dd796f6d32a769cc"
     }
   }

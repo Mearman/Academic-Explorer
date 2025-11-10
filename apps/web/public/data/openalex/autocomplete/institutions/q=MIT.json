@@ -5,8 +5,8 @@
       "short_id": "institutions/I4210088227",
       "display_name": "MIT World Peace University",
       "hint": "Pune, India",
-      "cited_by_count": 37686,
-      "works_count": 3992,
+      "cited_by_count": 37696,
+      "works_count": 3993,
       "entity_type": "institution",
       "external_id": "https://ror.org/004ymxd45",
       "filter_key": "authorships.institutions.lineage"
@@ -16,7 +16,7 @@
       "short_id": "institutions/I4210162439",
       "display_name": "MIT Art, Design and Technology University",
       "hint": "Pune, India",
-      "cited_by_count": 23555,
+      "cited_by_count": 23559,
       "works_count": 2395,
       "entity_type": "institution",
       "external_id": "https://ror.org/05b69xa56",
@@ -38,7 +38,7 @@
       "short_id": "institutions/I4210095297",
       "display_name": "MIT University",
       "hint": "Skopje, North Macedonia",
-      "cited_by_count": 156399,
+      "cited_by_count": 156412,
       "works_count": 20110,
       "entity_type": "institution",
       "external_id": "https://ror.org/00v140q16",
@@ -49,7 +49,7 @@
       "short_id": "institutions/I4210122954",
       "display_name": "MIT Lincoln Laboratory",
       "hint": "Lexington, USA",
-      "cited_by_count": 1004741,
+      "cited_by_count": 1004783,
       "works_count": 13340,
       "entity_type": "institution",
       "external_id": "https://ror.org/022z6jk58",
@@ -71,7 +71,7 @@
       "short_id": "institutions/I4210159271",
       "display_name": "MIT-Harvard Center for Ultracold Atoms",
       "hint": "Cambridge, USA",
-      "cited_by_count": 239659,
+      "cited_by_count": 239692,
       "works_count": 906,
       "entity_type": "institution",
       "external_id": "https://ror.org/053tmcn30",
@@ -89,17 +89,6 @@
       "filter_key": "authorships.institutions.lineage"
     },
     {
-      "id": "https://openalex.org/I4210102838",
-      "short_id": "institutions/I4210102838",
-      "display_name": "MItoCanada",
-      "hint": "Oakville, Canada",
-      "cited_by_count": 10,
-      "works_count": 1,
-      "entity_type": "institution",
-      "external_id": "https://ror.org/01aw03h30",
-      "filter_key": "authorships.institutions.lineage"
-    },
-    {
       "id": "https://openalex.org/I4400600946",
       "short_id": "institutions/I4400600946",
       "display_name": "Mitford Hospital, Dhaka",
@@ -108,6 +97,17 @@
       "works_count": 661,
       "entity_type": "institution",
       "external_id": "https://ror.org/03s61s823",
+      "filter_key": "authorships.institutions.lineage"
+    },
+    {
+      "id": "https://openalex.org/I116397343",
+      "short_id": "institutions/I116397343",
+      "display_name": "Hochschule Mittweida",
+      "hint": "Mittweida, Germany",
+      "cited_by_count": 26027,
+      "works_count": 2060,
+      "entity_type": "institution",
+      "external_id": "https://ror.org/024ga3r86",
       "filter_key": "authorships.institutions.lineage"
     }
   ]
