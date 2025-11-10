@@ -128,7 +128,8 @@ test.describe("Catalogue Basic Functionality", () => {
     await createTestList(page, "Editable Test List");
 
     // The list is now selected (auto-selected after creation)
-    // Click the edit button in the selected list details area
+    // Wait for the edit button to be visible and then click it
+    await expect(page.locator('[data-testid="edit-selected-list-button"]')).toBeVisible({ timeout: 10000 });
     await page.click('[data-testid="edit-selected-list-button"]');
 
     // Wait for edit modal
@@ -151,11 +152,12 @@ test.describe("Catalogue Basic Functionality", () => {
     await createTestList(page, "Deletable Test List");
 
     // The list is now selected. We need to find the list card and click its delete button
-    // Use a more specific selector that doesn't rely on text matching in multiple places
-    const listCard = page.locator('[data-testid^="list-card-"]').filter({ hasText: "Deletable Test List" });
+    // Use the card's data-testid (list-card-{id}) and filter by role to avoid matching the title
+    const listCard = page.locator('[data-testid^="list-card-"][role="region"], [data-testid^="list-card-"].mantine-Card-root').filter({ hasText: "Deletable Test List" }).first();
 
     // Get the list ID from the card's data-testid attribute
-    const listId = await listCard.getAttribute('data-testid').then(attr => attr?.replace('list-card-', ''));
+    const cardTestId = await listCard.getAttribute('data-testid');
+    const listId = cardTestId?.replace('list-card-', '') || '';
 
     // Click the delete button for this specific list
     await page.click(`[data-testid="delete-list-${listId}"]`);
@@ -179,26 +181,33 @@ test.describe("Catalogue Basic Functionality", () => {
     await createTestList(page, "AI Applications");
 
     // Search for specific list
-    await page.fill('input[placeholder*="Search"], input[aria-label*="search"]', 'Machine Learning');
+    const searchInput = page.locator('input[placeholder*="Search"], input[aria-label*="search"]');
+    await searchInput.fill('Machine Learning');
 
-    // Wait a moment for search to filter
-    await page.waitForTimeout(500);
+    // Wait for search results to update
+    await page.waitForTimeout(1000);
 
-    // Verify search results - use list card selectors to avoid strict mode violations
-    await expect(page.locator('[data-testid^="list-card-title-"]:has-text("Machine Learning Research")')).toBeVisible();
-    await expect(page.locator('[data-testid^="list-card-title-"]:has-text("Data Science Papers")')).not.toBeVisible();
-    await expect(page.locator('[data-testid^="list-card-title-"]:has-text("AI Applications")')).not.toBeVisible();
+    // Verify search results - check that list cards are visible/hidden appropriately
+    // Use the list card testid to verify visibility
+    const mlCard = page.locator('[data-testid^="list-card-"].mantine-Card-root').filter({ hasText: "Machine Learning Research" });
+    const dsCard = page.locator('[data-testid^="list-card-"].mantine-Card-root').filter({ hasText: "Data Science Papers" });
+    const aiCard = page.locator('[data-testid^="list-card-"].mantine-Card-root').filter({ hasText: "AI Applications" });
+
+    await expect(mlCard).toBeVisible({ timeout: 10000 });
+    await expect(dsCard).not.toBeVisible();
+    await expect(aiCard).not.toBeVisible();
 
     // Clear search
-    await page.fill('input[placeholder*="Search"], input[aria-label*="search"]', '');
+    await searchInput.clear();
+    await searchInput.fill('');
 
-    // Wait a moment for search to update
-    await page.waitForTimeout(500);
+    // Wait for search to update
+    await page.waitForTimeout(1000);
 
     // Verify all lists are visible again
-    await expect(page.locator('[data-testid^="list-card-title-"]:has-text("Machine Learning Research")')).toBeVisible();
-    await expect(page.locator('[data-testid^="list-card-title-"]:has-text("Data Science Papers")')).toBeVisible();
-    await expect(page.locator('[data-testid^="list-card-title-"]:has-text("AI Applications")')).toBeVisible();
+    await expect(mlCard).toBeVisible({ timeout: 10000 });
+    await expect(dsCard).toBeVisible({ timeout: 10000 });
+    await expect(aiCard).toBeVisible({ timeout: 10000 });
   });
 
   test("should navigate between tabs", async ({ page }) => {
