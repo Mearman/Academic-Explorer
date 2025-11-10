@@ -28,7 +28,7 @@
     "q=artificial+intelligence": {
       "url": "https://api.openalex.org/autocomplete/topics?q=artificial+intelligence",
       "$ref": "./q=artificial+intelligence.json",
-      "lastRetrieved": "2025-11-09T20:15:37.018Z",
+      "lastRetrieved": "2025-11-10T05:49:21.457Z",
       "contentHash": "dd796f6d32a769cc"
     },
     "q=Machine+Learning": {

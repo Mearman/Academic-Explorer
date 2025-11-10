@@ -4,24 +4,6 @@
     "noEmit": true
   },
   "files": [],
-  "include": [
-    "eslint-rules/**/*",
-    "vitest.config.base.ts",
-    "vite.config.base.ts",
-    "scripts/**/*",
-    "tools/**/*",
-    ".commitlintrc.ts",
-    "workspace-coverage.config.ts",
-    "eslint.config.base.ts",
-    "apps/cli/*.config.ts",
-    "apps/web/*.config.ts",
-    "apps/web/vite.config*.ts",
-    "packages/client/*.config.ts",
-    "packages/graph/*.config.ts",
-    "packages/simulation/*.config.ts",
-    "packages/ui/*.config.ts",
-    "packages/utils/*.config.ts"
-  ],
   "exclude": ["tools/generators/**/*"],
   "references": [
     { "path": "./apps/cli" },
