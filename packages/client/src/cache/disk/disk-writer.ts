@@ -551,6 +551,12 @@ export class DiskCacheWriter {
         data.responseData,
       );
       if (responseInfo.entityType) {
+        // Check if the original URL contains an external canonical ID
+        const externalIdInfo = this.extractExternalCanonicalIdFromUrl(data.url);
+        if (externalIdInfo) {
+          // Use the external ID for caching instead of the OpenAlex ID
+          return { ...externalIdInfo, ...responseInfo };
+        }
         return { ...responseInfo, ...urlInfo };
       }
 
@@ -856,6 +862,69 @@ export class DiskCacheWriter {
     const dataFile = path.join(directoryPath, `${filename}.json`);
 
     return { dataFile, directoryPath };
+  }
+
+  /**
+   * Extract external canonical ID from URL for proper caching
+   */
+  private extractExternalCanonicalIdFromUrl(url: string): {
+    entityType?: EntityType;
+    entityId?: string;
+  } | null {
+    try {
+      const urlObj = new URL(url);
+      const pathParts = urlObj.pathname.split("/").filter(Boolean);
+
+      // Check if this is a works route with an external canonical ID
+      if (pathParts.length >= 2 && pathParts[0] === "works") {
+        const potentialId = decodeURIComponent(pathParts[1]);
+
+        // Check if this looks like an external canonical ID
+        if (this.isExternalCanonicalId(potentialId)) {
+          // Determine entity type from the external ID
+          let entityType: EntityType = "works"; // default
+
+          if (potentialId.includes("orcid.org/") || potentialId.match(/^(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/i)) {
+            entityType = "authors";
+          } else if (potentialId.includes("ror.org/") || potentialId.match(/^[a-z0-9]{9}$/i)) {
+            entityType = "institutions";
+          } else if (potentialId.includes("doi.org/") || potentialId.match(/^10\.\d+\/[^\s]+$/)) {
+            entityType = "works";
+          }
+
+          return {
+            entityType,
+            entityId: potentialId,
+          };
+        }
+      }
+
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Check if a string looks like an external canonical ID
+   */
+  private isExternalCanonicalId(id: string): boolean {
+    // DOI patterns
+    if (id.includes("doi.org/") || id.match(/^10\.\d+\/[^\s]+$/)) {
+      return true;
+    }
+
+    // ORCID patterns
+    if (id.includes("orcid.org/") || id.match(/^(\d{4}-\d{4}-\d{4}-\d{3}[0-9X])$/i)) {
+      return true;
+    }
+
+    // ROR patterns
+    if (id.includes("ror.org/") || id.match(/^[a-z0-9]{9}$/i)) {
+      return true;
+    }
+
+    return false;
   }
 
   /**

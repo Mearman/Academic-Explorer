@@ -155,7 +155,7 @@ function ExternalIdRoute() {
 
           switch (detection.detectionMethod) {
             case "DOI":
-              specificRoute = `/works/doi/${encodeURIComponent(detection.normalizedId)}`;
+              specificRoute = `/works/${encodeURIComponent(detection.normalizedId)}`;
               break;
             case "ORCID":
               specificRoute = `/authors/orcid/${detection.normalizedId}`;

@@ -75,13 +75,21 @@ export class EntityDetectionService {
 				/^https?:\/\/dx\.doi\.org\/(10\.\d+\/[^\s]+)$/i,
 			],
 			normalize: (match: string): string | null => {
-				// Extract DOI part from various formats
+				// Return DOI in URL format for OpenAlex client compatibility
+				// The OpenAlex client can resolve DOI URLs directly
 				let doi = match
 
+				// If it's already a DOI URL, use it as-is
+				if (doi.startsWith("https://doi.org/") || doi.startsWith("http://doi.org/")) {
+					return doi
+				}
+
+				// Extract DOI part from various formats
 				if (doi.toLowerCase().startsWith("doi:")) {
 					doi = doi.substring(4)
 				}
 
+				// Remove any dx.doi.org prefix
 				const urlMatch = doi.match(/https?:\/\/(?:dx\.)?doi\.org\/(.+)$/i)
 				if (urlMatch) {
 					doi = urlMatch[1]
@@ -89,7 +97,8 @@ export class EntityDetectionService {
 
 				// Validate DOI format
 				if (/^10\.\d+\/[^\s]+$/.test(doi)) {
-					return doi
+					// Return DOI in URL format for OpenAlex client
+					return `https://doi.org/${doi}`
 				}
 
 				return null
