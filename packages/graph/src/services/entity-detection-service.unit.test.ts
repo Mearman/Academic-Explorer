@@ -20,24 +20,24 @@ describe('EntityDetectionService', () => {
     describe('Valid DOI formats', () => {
       const validDois = [
         // Basic DOI format
-        { input: '10.1038/nature12373', expected: 'works', normalized: '10.1038/nature12373' },
-        { input: '10.1000/182', expected: 'works', normalized: '10.1000/182' },
-        { input: '10.1234/example.doi.2023.001', expected: 'works', normalized: '10.1234/example.doi.2023.001' },
+        { input: '10.1038/nature12373', expected: 'works', normalized: 'https://doi.org/10.1038/nature12373' },
+        { input: '10.1000/182', expected: 'works', normalized: 'https://doi.org/10.1000/182' },
+        { input: '10.1234/example.doi.2023.001', expected: 'works', normalized: 'https://doi.org/10.1234/example.doi.2023.001' },
 
         // DOI with prefix
-        { input: 'doi:10.1038/nature12373', expected: 'works', normalized: '10.1038/nature12373' },
-        { input: 'DOI:10.1234/test', expected: 'works', normalized: '10.1234/test' },
+        { input: 'doi:10.1038/nature12373', expected: 'works', normalized: 'https://doi.org/10.1038/nature12373' },
+        { input: 'DOI:10.1234/test', expected: 'works', normalized: 'https://doi.org/10.1234/test' },
 
         // DOI URLs
-        { input: 'https://doi.org/10.1038/nature12373', expected: 'works', normalized: '10.1038/nature12373' },
-        { input: 'http://doi.org/10.1234/test', expected: 'works', normalized: '10.1234/test' },
-        { input: 'https://dx.doi.org/10.1038/nature12373', expected: 'works', normalized: '10.1038/nature12373' },
-        { input: 'http://dx.doi.org/10.1234/test', expected: 'works', normalized: '10.1234/test' },
+        { input: 'https://doi.org/10.1038/nature12373', expected: 'works', normalized: 'https://doi.org/10.1038/nature12373' },
+        { input: 'http://doi.org/10.1234/test', expected: 'works', normalized: 'https://doi.org/10.1234/test' },
+        { input: 'https://dx.doi.org/10.1038/nature12373', expected: 'works', normalized: 'https://doi.org/10.1038/nature12373' },
+        { input: 'http://dx.doi.org/10.1234/test', expected: 'works', normalized: 'https://doi.org/10.1234/test' },
 
         // Complex DOI suffixes
-        { input: '10.1093/bioinformatics/btz123.456', expected: 'works', normalized: '10.1093/bioinformatics/btz123.456' },
-        { input: '10.1371/journal.pone.0123456', expected: 'works', normalized: '10.1371/journal.pone.0123456' },
-        { input: '10.1016/j.cell.2023.01.001', expected: 'works', normalized: '10.1016/j.cell.2023.01.001' },
+        { input: '10.1093/bioinformatics/btz123.456', expected: 'works', normalized: 'https://doi.org/10.1093/bioinformatics/btz123.456' },
+        { input: '10.1371/journal.pone.0123456', expected: 'works', normalized: 'https://doi.org/10.1371/journal.pone.0123456' },
+        { input: '10.1016/j.cell.2023.01.001', expected: 'works', normalized: 'https://doi.org/10.1016/j.cell.2023.01.001' },
       ];
 
       validDois.forEach(({ input, expected, normalized }) => {
@@ -504,7 +504,7 @@ describe('EntityDetectionService', () => {
 
     it('should handle whitespace in inputs', () => {
       const testCases = [
-        { input: '  10.1038/nature12373  ', expected: '10.1038/nature12373' },
+        { input: '  10.1038/nature12373  ', expected: 'https://doi.org/10.1038/nature12373' },
         { input: '\t0000-0002-1825-0097\n', expected: 'https://orcid.org/0000-0002-1825-0097' },
         { input: ' W2741809807 ', expected: 'W2741809807' },
       ];
@@ -563,7 +563,7 @@ describe('EntityDetectionService', () => {
           input: '10.1038/nature12373',
           expected: {
             entityType: 'works' as EntityType,
-            normalizedId: '10.1038/nature12373',
+            normalizedId: 'https://doi.org/10.1038/nature12373',
             originalInput: '10.1038/nature12373',
             detectionMethod: 'DOI',
           },

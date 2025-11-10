@@ -79,9 +79,10 @@ export class EntityDetectionService {
 				// The OpenAlex client can resolve DOI URLs directly
 				let doi = match
 
-				// If it's already a DOI URL, use it as-is
+				// If it's already a DOI URL, ensure it uses HTTPS
 				if (doi.startsWith("https://doi.org/") || doi.startsWith("http://doi.org/")) {
-					return doi
+					// Convert HTTP to HTTPS for consistency
+					return doi.replace(/^http:/, "https:")
 				}
 
 				// Extract DOI part from various formats
