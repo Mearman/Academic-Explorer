@@ -62,6 +62,7 @@ export interface UseCatalogueReturn {
   }>) => Promise<{ success: number; failed: number }>;
   removeEntityFromList: (listId: string, entityRecordId: string) => Promise<void>;
   reorderEntities: (listId: string, entityIds: string[]) => Promise<void>;
+  updateEntityNotes: (entityRecordId: string, notes: string) => Promise<void>;
 
   // Search
   searchLists: (query: string) => Promise<CatalogueList[]>;
@@ -280,6 +281,24 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
     }
   }, [refreshEntities]);
 
+  // Update entity notes
+  const updateEntityNotes = useCallback(async (entityRecordId: string, notes: string): Promise<void> => {
+    try {
+      await catalogueService.updateEntityNotes(entityRecordId, notes);
+      // Refresh entities to show updated notes
+      if (selectedList) {
+        await refreshEntities(selectedList.id!);
+      }
+    } catch (error) {
+      logger.error(CATALOGUE_LOGGER_CONTEXT, "Failed to update entity notes", {
+        entityRecordId,
+        notesLength: notes.length,
+        error
+      });
+      throw error;
+    }
+  }, [selectedList, refreshEntities]);
+
   // Search lists
   const searchLists = useCallback(async (query: string): Promise<CatalogueList[]> => {
     try {
@@ -463,6 +482,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
     addEntitiesToList,
     removeEntityFromList,
     reorderEntities,
+    updateEntityNotes,
 
     // Search
     searchLists,
