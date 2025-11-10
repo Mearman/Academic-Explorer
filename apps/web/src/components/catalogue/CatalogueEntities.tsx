@@ -204,7 +204,7 @@ export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitie
     return null;
   }
 
-  const { entities, isLoadingEntities, removeEntityFromList, reorderEntities } = useCatalogue();
+  const { entities, isLoadingEntities, removeEntityFromList, reorderEntities, updateEntityNotes } = useCatalogue();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("position");
@@ -302,12 +302,28 @@ export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitie
   };
 
   const handleEditNotes = async (entityRecordId: string, notes: string) => {
-    // This would need to be implemented in the hook/service
-    // For now, we'll just log it
-    logger.debug("catalogue-ui", "Entity notes updated", {
-      entityRecordId,
-      notesLength: notes.length
-    });
+    try {
+      await updateEntityNotes(entityRecordId, notes);
+      logger.debug("catalogue-ui", "Entity notes updated", {
+        entityRecordId,
+        notesLength: notes.length
+      });
+      notifications.show({
+        title: "Success",
+        message: "Notes updated successfully",
+        color: "green",
+      });
+    } catch (error) {
+      logger.error("catalogue-ui", "Failed to update entity notes", {
+        entityRecordId,
+        error
+      });
+      notifications.show({
+        title: "Error",
+        message: "Failed to update notes",
+        color: "red",
+      });
+    }
   };
 
   // Get unique entity types for filter dropdown
