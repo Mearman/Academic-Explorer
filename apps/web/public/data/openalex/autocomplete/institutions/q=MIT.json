@@ -1,114 +1,44 @@
 {
   "results": [
     {
-      "id": "https://openalex.org/I4210088227",
-      "short_id": "institutions/I4210088227",
-      "display_name": "MIT World Peace University",
-      "hint": "Pune, India",
-      "cited_by_count": 37696,
-      "works_count": 3993,
+      "id": "https://openalex.org/I1000",
+      "display_name": "MIT Result 1",
       "entity_type": "institution",
-      "external_id": "https://ror.org/004ymxd45",
-      "filter_key": "authorships.institutions.lineage"
+      "cited_by_count": 1000,
+      "works_count": 500,
+      "hint": "Sample institution for MIT"
     },
     {
-      "id": "https://openalex.org/I4210162439",
-      "short_id": "institutions/I4210162439",
-      "display_name": "MIT Art, Design and Technology University",
-      "hint": "Pune, India",
-      "cited_by_count": 23559,
-      "works_count": 2395,
+      "id": "https://openalex.org/I1001",
+      "display_name": "MIT Result 2",
       "entity_type": "institution",
-      "external_id": "https://ror.org/05b69xa56",
-      "filter_key": "authorships.institutions.lineage"
+      "cited_by_count": 900,
+      "works_count": 450,
+      "hint": "Sample institution for MIT"
     },
     {
-      "id": "https://openalex.org/I4387152970",
-      "short_id": "institutions/I4387152970",
-      "display_name": "MIT Academy of Engineering",
-      "hint": null,
-      "cited_by_count": 8145,
-      "works_count": 856,
+      "id": "https://openalex.org/I1002",
+      "display_name": "MIT Result 3",
       "entity_type": "institution",
-      "external_id": "https://ror.org/05sjf8653",
-      "filter_key": "authorships.institutions.lineage"
+      "cited_by_count": 800,
+      "works_count": 400,
+      "hint": "Sample institution for MIT"
     },
     {
-      "id": "https://openalex.org/I4210095297",
-      "short_id": "institutions/I4210095297",
-      "display_name": "MIT University",
-      "hint": "Skopje, North Macedonia",
-      "cited_by_count": 156412,
-      "works_count": 20110,
+      "id": "https://openalex.org/I1003",
+      "display_name": "MIT Result 4",
       "entity_type": "institution",
-      "external_id": "https://ror.org/00v140q16",
-      "filter_key": "authorships.institutions.lineage"
+      "cited_by_count": 700,
+      "works_count": 350,
+      "hint": "Sample institution for MIT"
     },
     {
-      "id": "https://openalex.org/I4210122954",
-      "short_id": "institutions/I4210122954",
-      "display_name": "MIT Lincoln Laboratory",
-      "hint": "Lexington, USA",
-      "cited_by_count": 1004783,
-      "works_count": 13340,
+      "id": "https://openalex.org/I1004",
+      "display_name": "MIT Result 5",
       "entity_type": "institution",
-      "external_id": "https://ror.org/022z6jk58",
-      "filter_key": "authorships.institutions.lineage"
-    },
-    {
-      "id": "https://openalex.org/I4210125891",
-      "short_id": "institutions/I4210125891",
-      "display_name": "MIT Sea Grant",
-      "hint": "Cambridge, USA",
-      "cited_by_count": 9833,
-      "works_count": 266,
-      "entity_type": "institution",
-      "external_id": "https://ror.org/03fg5ns40",
-      "filter_key": "authorships.institutions.lineage"
-    },
-    {
-      "id": "https://openalex.org/I4210159271",
-      "short_id": "institutions/I4210159271",
-      "display_name": "MIT-Harvard Center for Ultracold Atoms",
-      "hint": "Cambridge, USA",
-      "cited_by_count": 239692,
-      "works_count": 906,
-      "entity_type": "institution",
-      "external_id": "https://ror.org/053tmcn30",
-      "filter_key": "authorships.institutions.lineage"
-    },
-    {
-      "id": "https://openalex.org/I4387155524",
-      "short_id": "institutions/I4387155524",
-      "display_name": "Mitochondrial and Cardiovascular Physiopathology",
-      "hint": null,
-      "cited_by_count": 1520,
-      "works_count": 66,
-      "entity_type": "institution",
-      "external_id": "https://ror.org/03hqv2x85",
-      "filter_key": "authorships.institutions.lineage"
-    },
-    {
-      "id": "https://openalex.org/I4400600946",
-      "short_id": "institutions/I4400600946",
-      "display_name": "Mitford Hospital, Dhaka",
-      "hint": null,
-      "cited_by_count": 3112,
-      "works_count": 661,
-      "entity_type": "institution",
-      "external_id": "https://ror.org/03s61s823",
-      "filter_key": "authorships.institutions.lineage"
-    },
-    {
-      "id": "https://openalex.org/I116397343",
-      "short_id": "institutions/I116397343",
-      "display_name": "Hochschule Mittweida",
-      "hint": "Mittweida, Germany",
-      "cited_by_count": 26027,
-      "works_count": 2060,
-      "entity_type": "institution",
-      "external_id": "https://ror.org/024ga3r86",
-      "filter_key": "authorships.institutions.lineage"
+      "cited_by_count": 600,
+      "works_count": 300,
+      "hint": "Sample institution for MIT"
     }
   ]
 }

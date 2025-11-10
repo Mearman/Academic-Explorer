@@ -1,114 +1,44 @@
 {
   "results": [
     {
-      "id": "https://openalex.org/W4256121639",
-      "short_id": "works/W4256121639",
-      "display_name": "machine learning",
-      "hint": "Martin H. Weik",
-      "cited_by_count": 0,
-      "works_count": null,
+      "id": "https://openalex.org/W1000",
+      "display_name": "machine learning Result 1",
       "entity_type": "work",
-      "external_id": "https://doi.org/10.1007/1-4020-0613-6_10816",
-      "filter_key": "id"
+      "cited_by_count": 1000,
+      "works_count": 500,
+      "hint": "Sample work for machine learning"
     },
     {
-      "id": "https://openalex.org/W4233093176",
-      "short_id": "works/W4233093176",
-      "display_name": "machine learning",
-      "hint": "authors unknown",
-      "cited_by_count": 0,
-      "works_count": null,
+      "id": "https://openalex.org/W1001",
+      "display_name": "machine learning Result 2",
       "entity_type": "work",
-      "external_id": "https://doi.org/10.1007/springerreference_18220",
-      "filter_key": "id"
+      "cited_by_count": 900,
+      "works_count": 450,
+      "hint": "Sample work for machine learning"
     },
     {
-      "id": "https://openalex.org/W4207040467",
-      "short_id": "works/W4207040467",
-      "display_name": "machine learning",
-      "hint": "authors unknown",
-      "cited_by_count": 0,
-      "works_count": null,
+      "id": "https://openalex.org/W1002",
+      "display_name": "machine learning Result 3",
       "entity_type": "work",
-      "external_id": "https://doi.org/10.5040/9781501365287.1643",
-      "filter_key": "id"
+      "cited_by_count": 800,
+      "works_count": 400,
+      "hint": "Sample work for machine learning"
     },
     {
-      "id": "https://openalex.org/W4404178158",
-      "short_id": "works/W4404178158",
-      "display_name": "machine learning",
-      "hint": "authors unknown",
-      "cited_by_count": 0,
-      "works_count": null,
+      "id": "https://openalex.org/W1003",
+      "display_name": "machine learning Result 4",
       "entity_type": "work",
-      "external_id": "https://doi.org/10.1351/goldbook.11470",
-      "filter_key": "id"
+      "cited_by_count": 700,
+      "works_count": 350,
+      "hint": "Sample work for machine learning"
     },
     {
-      "id": "https://openalex.org/W4285607859",
-      "short_id": "works/W4285607859",
-      "display_name": "machine learning model to predict cyber attack",
-      "hint": "S. Madhavi, D. Divyadharshini, Sai Divya",
-      "cited_by_count": 1,
-      "works_count": null,
+      "id": "https://openalex.org/W1004",
+      "display_name": "machine learning Result 5",
       "entity_type": "work",
-      "external_id": "https://doi.org/10.53730/ijhs.v6ns6.9745",
-      "filter_key": "id"
-    },
-    {
-      "id": "https://openalex.org/W3189792243",
-      "short_id": "works/W3189792243",
-      "display_name": "machine learning for religious communities' detection on social networks",
-      "hint": "youmna dou, khaoula adaika",
-      "cited_by_count": 0,
-      "works_count": null,
-      "entity_type": "work",
-      "external_id": null,
-      "filter_key": "id"
-    },
-    {
-      "id": "https://openalex.org/W3206633295",
-      "short_id": "works/W3206633295",
-      "display_name": "machine learning. Computer Science Ontology (CSO)",
-      "hint": "Angelo A. Salatino, Enrico Motta",
-      "cited_by_count": 0,
-      "works_count": null,
-      "entity_type": "work",
-      "external_id": null,
-      "filter_key": "id"
-    },
-    {
-      "id": "https://openalex.org/W3206140862",
-      "short_id": "works/W3206140862",
-      "display_name": "machine learning techniques. Computer Science Ontology (CSO)",
-      "hint": "Angelo A. Salatino, Enrico Motta",
-      "cited_by_count": 0,
-      "works_count": null,
-      "entity_type": "work",
-      "external_id": null,
-      "filter_key": "id"
-    },
-    {
-      "id": "https://openalex.org/W4242809973",
-      "short_id": "works/W4242809973",
-      "display_name": "machine learning und humane Intelligenz",
-      "hint": "Yves Robert",
-      "cited_by_count": 0,
-      "works_count": null,
-      "entity_type": "work",
-      "external_id": "https://doi.org/10.4414/bms.2019.17656",
-      "filter_key": "id"
-    },
-    {
-      "id": "https://openalex.org/W2936701619",
-      "short_id": "works/W2936701619",
-      "display_name": "machine learning und humane Intelligenz",
-      "hint": "Yves Robert",
-      "cited_by_count": 0,
-      "works_count": null,
-      "entity_type": "work",
-      "external_id": "https://doi.org/10.4414/saez.2019.17656",
-      "filter_key": "id"
+      "cited_by_count": 600,
+      "works_count": 300,
+      "hint": "Sample work for machine learning"
     }
   ]
 }

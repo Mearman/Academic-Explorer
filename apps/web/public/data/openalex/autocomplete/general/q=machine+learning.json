@@ -1,114 +1,44 @@
 {
   "results": [
     {
-      "id": "https://openalex.org/keywords/machine-learning",
-      "short_id": "keywords/machine-learning",
-      "display_name": "Machine learning",
-      "hint": null,
-      "cited_by_count": 6852373,
-      "works_count": 707332,
-      "entity_type": "keyword",
-      "external_id": null,
-      "filter_key": "keywords.id"
+      "id": "https://openalex.org/W1000",
+      "display_name": "machine learning Result 1",
+      "entity_type": "work",
+      "cited_by_count": 1000,
+      "works_count": 500,
+      "hint": "Sample work for machine learning"
     },
     {
-      "id": "https://openalex.org/T10211",
-      "short_id": "topics/T10211",
-      "display_name": "Computational Drug Discovery Methods",
-      "hint": "This cluster of papers focuses on computational methods, virtual screening, and molecular docking techniques used in drug discovery. It covers topics such as drug target identification, pharmacokinetics, chemical properties, machine learning applications, polypharmacology, and network pharmacology.",
-      "cited_by_count": 2963550,
-      "works_count": 165403,
-      "entity_type": "topic",
-      "external_id": "https://en.wikipedia.org/wiki/Computer-aided_drug_design",
-      "filter_key": "topics.id"
+      "id": "https://openalex.org/W1001",
+      "display_name": "machine learning Result 2",
+      "entity_type": "work",
+      "cited_by_count": 900,
+      "works_count": 450,
+      "hint": "Sample work for machine learning"
     },
     {
-      "id": "https://openalex.org/T10111",
-      "short_id": "topics/T10111",
-      "display_name": "Remote Sensing in Agriculture",
-      "hint": "This cluster of papers focuses on the use of remote sensing technology, particularly MODIS and Landsat data, for monitoring vegetation dynamics, phenology, and biomass estimation in response to global change and climate variability. The papers also explore the application of machine learning techniques for land cover classification and the assessment of ecological responses to environmental change.",
-      "cited_by_count": 1853534,
-      "works_count": 120381,
-      "entity_type": "topic",
-      "external_id": "https://en.wikipedia.org/wiki/Remote_sensing",
-      "filter_key": "topics.id"
+      "id": "https://openalex.org/W1002",
+      "display_name": "machine learning Result 3",
+      "entity_type": "work",
+      "cited_by_count": 800,
+      "works_count": 400,
+      "hint": "Sample work for machine learning"
     },
     {
-      "id": "https://openalex.org/T10885",
-      "short_id": "topics/T10885",
-      "display_name": "Gene expression and cancer classification",
-      "hint": "This cluster of papers focuses on the analysis of microarray data and gene expression profiling, covering topics such as normalization, differential expression, feature selection, machine learning applications, clustering methods, quality control, and bioinformatics tools. The papers discuss various techniques and methods for processing and interpreting gene expression data obtained from microarray experiments.",
-      "cited_by_count": 1716784,
-      "works_count": 383965,
-      "entity_type": "topic",
-      "external_id": "https://en.wikipedia.org/wiki/Microarray_analysis",
-      "filter_key": "topics.id"
+      "id": "https://openalex.org/W1003",
+      "display_name": "machine learning Result 4",
+      "entity_type": "work",
+      "cited_by_count": 700,
+      "works_count": 350,
+      "hint": "Sample work for machine learning"
     },
     {
-      "id": "https://openalex.org/T12157",
-      "short_id": "topics/T12157",
-      "display_name": "Geochemistry and Geologic Mapping",
-      "hint": "This cluster of papers focuses on the application of machine learning, remote sensing, and compositional data analysis techniques for mineral prospectivity mapping. It explores the use of advanced technologies such as ASTER and hyperspectral imaging to identify geological features, geochemical anomalies, and hydrothermal alterations associated with mineralization. The cluster also delves into the challenges and opportunities in using support vector machines, fractal modeling, and statistical analysis for predicting undiscovered mineral deposits.",
-      "cited_by_count": 1633866,
-      "works_count": 3972258,
-      "entity_type": "topic",
-      "external_id": "https://en.wikipedia.org/wiki/Mineral_prospecting",
-      "filter_key": "topics.id"
-    },
-    {
-      "id": "https://openalex.org/T10538",
-      "short_id": "topics/T10538",
-      "display_name": "Data Mining Algorithms and Applications",
-      "hint": "This cluster of papers covers a wide range of topics in data mining, including frequent pattern mining, association rule mining, sequential pattern mining, machine learning, decision trees, interestingness measures, high utility itemsets, temporal data mining, and knowledge discovery.",
-      "cited_by_count": 1559614,
-      "works_count": 80672,
-      "entity_type": "topic",
-      "external_id": "https://en.wikipedia.org/wiki/Data_mining",
-      "filter_key": "topics.id"
-    },
-    {
-      "id": "https://openalex.org/T10260",
-      "short_id": "topics/T10260",
-      "display_name": "Software Engineering Research",
-      "hint": "This cluster of papers focuses on empirical studies in software engineering, covering topics such as refactoring, code clone detection, software defect prediction, requirements traceability, static code attributes, machine learning, software maintenance, source code analysis, bug localization, and API usage patterns.",
-      "cited_by_count": 1481387,
-      "works_count": 98107,
-      "entity_type": "topic",
-      "external_id": "https://en.wikipedia.org/wiki/Software_engineering",
-      "filter_key": "topics.id"
-    },
-    {
-      "id": "https://openalex.org/T10876",
-      "short_id": "topics/T10876",
-      "display_name": "Fault Detection and Control Systems",
-      "hint": "This cluster of papers focuses on the application of various data-driven and statistical techniques for process fault detection and diagnosis in industrial settings. It covers topics such as process monitoring, fault isolation, soft sensors, model-based diagnosis, and the use of machine learning in analyzing and improving industrial processes.",
-      "cited_by_count": 1473351,
-      "works_count": 141078,
-      "entity_type": "topic",
-      "external_id": "https://en.wikipedia.org/wiki/Fault_detection_and_isolation",
-      "filter_key": "topics.id"
-    },
-    {
-      "id": "https://openalex.org/T10057",
-      "short_id": "topics/T10057",
-      "display_name": "Face and Expression Recognition",
-      "hint": "This cluster of papers focuses on the application of various machine learning and dimensionality reduction techniques to the field of face recognition. It covers topics such as feature selection, support vector machines, ensemble methods, local binary patterns, non-negative matrix factorization, spectral clustering, Laplacian eigenmaps, and sparse representation in the context of face recognition.",
-      "cited_by_count": 1422187,
-      "works_count": 71818,
-      "entity_type": "topic",
-      "external_id": "https://en.wikipedia.org/wiki/Face_recognition",
-      "filter_key": "topics.id"
-    },
-    {
-      "id": "https://openalex.org/T10400",
-      "short_id": "topics/T10400",
-      "display_name": "Network Security and Intrusion Detection",
-      "hint": "This cluster of papers focuses on the development and application of techniques, models, and systems for network intrusion detection and defense mechanisms. It covers topics such as machine learning, DDoS attacks, anomaly detection, IoT security, and data mining in the context of cybersecurity. The papers explore various approaches to identifying and mitigating security threats in network environments.",
-      "cited_by_count": 1269962,
-      "works_count": 131618,
-      "entity_type": "topic",
-      "external_id": "https://en.wikipedia.org/wiki/Intrusion_detection_system",
-      "filter_key": "topics.id"
+      "id": "https://openalex.org/W1004",
+      "display_name": "machine learning Result 5",
+      "entity_type": "work",
+      "cited_by_count": 600,
+      "works_count": 300,
+      "hint": "Sample work for machine learning"
     }
   ]
 }

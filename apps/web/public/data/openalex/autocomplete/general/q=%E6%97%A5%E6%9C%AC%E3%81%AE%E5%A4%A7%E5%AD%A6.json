@@ -2,43 +2,43 @@
   "results": [
     {
       "id": "https://openalex.org/W1000",
-      "display_name": "AI Result 1",
+      "display_name": "日本の大学 Result 1",
       "entity_type": "work",
       "cited_by_count": 1000,
       "works_count": 500,
-      "hint": "Sample work for AI"
+      "hint": "Sample work for 日本の大学"
     },
     {
       "id": "https://openalex.org/W1001",
-      "display_name": "AI Result 2",
+      "display_name": "日本の大学 Result 2",
       "entity_type": "work",
       "cited_by_count": 900,
       "works_count": 450,
-      "hint": "Sample work for AI"
+      "hint": "Sample work for 日本の大学"
     },
     {
       "id": "https://openalex.org/W1002",
-      "display_name": "AI Result 3",
+      "display_name": "日本の大学 Result 3",
       "entity_type": "work",
       "cited_by_count": 800,
       "works_count": 400,
-      "hint": "Sample work for AI"
+      "hint": "Sample work for 日本の大学"
     },
     {
       "id": "https://openalex.org/W1003",
-      "display_name": "AI Result 4",
+      "display_name": "日本の大学 Result 4",
       "entity_type": "work",
       "cited_by_count": 700,
       "works_count": 350,
-      "hint": "Sample work for AI"
+      "hint": "Sample work for 日本の大学"
     },
     {
       "id": "https://openalex.org/W1004",
-      "display_name": "AI Result 5",
+      "display_name": "日本の大学 Result 5",
       "entity_type": "work",
       "cited_by_count": 600,
       "works_count": 300,
-      "hint": "Sample work for AI"
+      "hint": "Sample work for 日本の大学"
     }
   ]
 }

@@ -1,0 +1,44 @@
+{
+  "results": [
+    {
+      "id": "https://openalex.org/W1000",
+      "display_name": "machine learning artificial intelligence deep learning neural networks Result 1",
+      "entity_type": "work",
+      "cited_by_count": 1000,
+      "works_count": 500,
+      "hint": "Sample work for machine learning artificial intelligence deep learning neural networks"
+    },
+    {
+      "id": "https://openalex.org/W1001",
+      "display_name": "machine learning artificial intelligence deep learning neural networks Result 2",
+      "entity_type": "work",
+      "cited_by_count": 900,
+      "works_count": 450,
+      "hint": "Sample work for machine learning artificial intelligence deep learning neural networks"
+    },
+    {
+      "id": "https://openalex.org/W1002",
+      "display_name": "machine learning artificial intelligence deep learning neural networks Result 3",
+      "entity_type": "work",
+      "cited_by_count": 800,
+      "works_count": 400,
+      "hint": "Sample work for machine learning artificial intelligence deep learning neural networks"
+    },
+    {
+      "id": "https://openalex.org/W1003",
+      "display_name": "machine learning artificial intelligence deep learning neural networks Result 4",
+      "entity_type": "work",
+      "cited_by_count": 700,
+      "works_count": 350,
+      "hint": "Sample work for machine learning artificial intelligence deep learning neural networks"
+    },
+    {
+      "id": "https://openalex.org/W1004",
+      "display_name": "machine learning artificial intelligence deep learning neural networks Result 5",
+      "entity_type": "work",
+      "cited_by_count": 600,
+      "works_count": 300,
+      "hint": "Sample work for machine learning artificial intelligence deep learning neural networks"
+    }
+  ]
+}

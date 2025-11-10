@@ -1,26 +1,44 @@
 {
   "results": [
     {
-      "id": "https://openalex.org/I63966007",
-      "short_id": "institutions/I63966007",
-      "display_name": "Massachusetts Institute of Technology",
-      "hint": "Cambridge, USA",
-      "cited_by_count": 61506646,
-      "works_count": 328596,
+      "id": "https://openalex.org/I1000",
+      "display_name": "Massachusetts Institute of Technology Result 1",
       "entity_type": "institution",
-      "external_id": "https://ror.org/042nb2s44",
-      "filter_key": "authorships.institutions.lineage"
+      "cited_by_count": 1000,
+      "works_count": 500,
+      "hint": "Sample institution for Massachusetts Institute of Technology"
     },
     {
-      "id": "https://openalex.org/I4390039253",
-      "short_id": "institutions/I4390039253",
-      "display_name": "Koch Institute for Integrative Cancer Research At MIT",
-      "hint": null,
-      "cited_by_count": 240941,
-      "works_count": 785,
+      "id": "https://openalex.org/I1001",
+      "display_name": "Massachusetts Institute of Technology Result 2",
       "entity_type": "institution",
-      "external_id": "https://ror.org/01xd6q208",
-      "filter_key": "authorships.institutions.lineage"
+      "cited_by_count": 900,
+      "works_count": 450,
+      "hint": "Sample institution for Massachusetts Institute of Technology"
+    },
+    {
+      "id": "https://openalex.org/I1002",
+      "display_name": "Massachusetts Institute of Technology Result 3",
+      "entity_type": "institution",
+      "cited_by_count": 800,
+      "works_count": 400,
+      "hint": "Sample institution for Massachusetts Institute of Technology"
+    },
+    {
+      "id": "https://openalex.org/I1003",
+      "display_name": "Massachusetts Institute of Technology Result 4",
+      "entity_type": "institution",
+      "cited_by_count": 700,
+      "works_count": 350,
+      "hint": "Sample institution for Massachusetts Institute of Technology"
+    },
+    {
+      "id": "https://openalex.org/I1004",
+      "display_name": "Massachusetts Institute of Technology Result 5",
+      "entity_type": "institution",
+      "cited_by_count": 600,
+      "works_count": 300,
+      "hint": "Sample institution for Massachusetts Institute of Technology"
     }
   ]
 }

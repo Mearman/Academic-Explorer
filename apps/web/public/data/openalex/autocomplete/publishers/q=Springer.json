@@ -1,107 +1,44 @@
 {
   "results": [
     {
-      "id": "https://openalex.org/P4310319103",
-      "short_id": "publishers/P4310319103",
-      "display_name": "SpringerOpen",
-      "hint": null,
-      "works_count": null,
+      "id": "https://openalex.org/P1000",
+      "display_name": "Springer Result 1",
       "entity_type": "publisher",
-      "external_id": "https://www.wikidata.org/entity/Q73358518",
-      "filter_key": "primary_location.source.host_organization_lineage"
+      "cited_by_count": 1000,
+      "works_count": 500,
+      "hint": "Sample publisher for Springer"
     },
     {
-      "id": "https://openalex.org/P4310319507",
-      "short_id": "publishers/P4310319507",
-      "display_name": "SpringerOpen",
-      "hint": null,
-      "works_count": null,
+      "id": "https://openalex.org/P1001",
+      "display_name": "Springer Result 2",
       "entity_type": "publisher",
-      "external_id": "https://www.wikidata.org/entity/Q73358518",
-      "filter_key": "primary_location.source.host_organization_lineage"
+      "cited_by_count": 900,
+      "works_count": 450,
+      "hint": "Sample publisher for Springer"
     },
     {
-      "id": "https://openalex.org/P4310319965",
-      "short_id": "publishers/P4310319965",
-      "display_name": "Springer Nature",
-      "hint": null,
-      "cited_by_count": 37519968,
-      "works_count": 2721545,
+      "id": "https://openalex.org/P1002",
+      "display_name": "Springer Result 3",
       "entity_type": "publisher",
-      "external_id": "https://www.wikidata.org/entity/Q21096327",
-      "filter_key": "primary_location.source.host_organization_lineage"
+      "cited_by_count": 800,
+      "works_count": 400,
+      "hint": "Sample publisher for Springer"
     },
     {
-      "id": "https://openalex.org/P4404664013",
-      "short_id": "publishers/P4404664013",
-      "display_name": "Springer, Singapore",
-      "hint": null,
-      "cited_by_count": 745,
-      "works_count": 1041,
+      "id": "https://openalex.org/P1003",
+      "display_name": "Springer Result 4",
       "entity_type": "publisher",
-      "external_id": "https://www.wikidata.org/entity/Q42783774",
-      "filter_key": "primary_location.source.host_organization_lineage"
+      "cited_by_count": 700,
+      "works_count": 350,
+      "hint": "Sample publisher for Springer"
     },
     {
-      "id": "https://openalex.org/P4310314015",
-      "short_id": "publishers/P4310314015",
-      "display_name": "Springer Fachmedien",
-      "hint": null,
-      "works_count": null,
+      "id": "https://openalex.org/P1004",
+      "display_name": "Springer Result 5",
       "entity_type": "publisher",
-      "external_id": "https://www.wikidata.org/entity/Q2313929",
-      "filter_key": "primary_location.source.host_organization_lineage"
-    },
-    {
-      "id": "https://openalex.org/P4310320499",
-      "short_id": "publishers/P4310320499",
-      "display_name": "Springer Publishing",
-      "hint": null,
-      "works_count": null,
-      "entity_type": "publisher",
-      "external_id": "https://www.wikidata.org/entity/Q7580872",
-      "filter_key": "primary_location.source.host_organization_lineage"
-    },
-    {
-      "id": "https://openalex.org/P4404662779",
-      "short_id": "publishers/P4404662779",
-      "display_name": "Springer Vieweg Verlag",
-      "hint": null,
-      "cited_by_count": 0,
-      "works_count": 22,
-      "entity_type": "publisher",
-      "external_id": "https://www.wikidata.org/entity/Q1677665",
-      "filter_key": "primary_location.source.host_organization_lineage"
-    },
-    {
-      "id": "https://openalex.org/P4327983460",
-      "short_id": "publishers/P4327983460",
-      "display_name": "Springer-Verlag London",
-      "hint": null,
-      "works_count": null,
-      "entity_type": "publisher",
-      "external_id": null,
-      "filter_key": "primary_location.source.host_organization_lineage"
-    },
-    {
-      "id": "https://openalex.org/P4310320682",
-      "short_id": "publishers/P4310320682",
-      "display_name": "Springer New York",
-      "hint": null,
-      "works_count": null,
-      "entity_type": "publisher",
-      "external_id": "https://www.wikidata.org/entity/Q21694652",
-      "filter_key": "primary_location.source.host_organization_lineage"
-    },
-    {
-      "id": "https://openalex.org/P4310319873",
-      "short_id": "publishers/P4310319873",
-      "display_name": "Axel Springer SE",
-      "hint": null,
-      "works_count": null,
-      "entity_type": "publisher",
-      "external_id": "https://www.wikidata.org/entity/Q163560",
-      "filter_key": "primary_location.source.host_organization_lineage"
+      "cited_by_count": 600,
+      "works_count": 300,
+      "hint": "Sample publisher for Springer"
     }
   ]
 }

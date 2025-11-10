@@ -24,7 +24,7 @@ This directory contains automatically generated comprehensive tests for all Open
 pnpm test generated-tests/all-routes.unit.test.ts
 
 # Run integration tests (requires internet and rate limiting)
-RUN_INTEGRATION_TESTS=true OPENALEX_EMAIL=your@email.com pnpm test generated-tests/all-routes.integration.test.ts
+OPENALEX_EMAIL=your@email.com pnpm test generated-tests/all-routes.integration.test.ts
 
 # Run all generated tests
 pnpm test generated-tests/

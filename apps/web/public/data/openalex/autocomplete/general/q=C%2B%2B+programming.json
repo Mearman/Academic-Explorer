@@ -1,114 +1,44 @@
 {
   "results": [
     {
-      "id": "https://openalex.org/W2987803397",
-      "short_id": "works/W2987803397",
-      "display_name": "The C++ programming language",
-      "hint": "Bjarne Stroustrup",
-      "cited_by_count": 3844,
-      "works_count": null,
+      "id": "https://openalex.org/W1000",
+      "display_name": "C++ programming Result 1",
       "entity_type": "work",
-      "external_id": null,
-      "filter_key": "id"
+      "cited_by_count": 1000,
+      "works_count": 500,
+      "hint": "Sample work for C++ programming"
     },
     {
-      "id": "https://openalex.org/W2611598995",
-      "short_id": "works/W2611598995",
-      "display_name": "The C programming language",
-      "hint": "Brian W. Kernighan, Dennis M. Ritchie",
-      "cited_by_count": 1766,
-      "works_count": null,
+      "id": "https://openalex.org/W1001",
+      "display_name": "C++ programming Result 2",
       "entity_type": "work",
-      "external_id": null,
-      "filter_key": "id"
+      "cited_by_count": 900,
+      "works_count": 450,
+      "hint": "Sample work for C++ programming"
     },
     {
-      "id": "https://openalex.org/keywords/c-programming-language",
-      "short_id": "keywords/c-programming-language",
-      "display_name": "C programming language",
-      "hint": null,
-      "cited_by_count": 1571,
-      "works_count": 377,
-      "entity_type": "keyword",
-      "external_id": null,
-      "filter_key": "keywords.id"
+      "id": "https://openalex.org/W1002",
+      "display_name": "C++ programming Result 3",
+      "entity_type": "work",
+      "cited_by_count": 800,
+      "works_count": 400,
+      "hint": "Sample work for C++ programming"
     },
     {
-      "id": "https://openalex.org/W4235077482",
-      "short_id": "works/W4235077482",
-      "display_name": "The C programming language",
-      "hint": "authors unknown",
-      "cited_by_count": 1158,
-      "works_count": null,
+      "id": "https://openalex.org/W1003",
+      "display_name": "C++ programming Result 4",
       "entity_type": "work",
-      "external_id": "https://doi.org/10.1016/0096-0551(79)90021-3",
-      "filter_key": "id"
+      "cited_by_count": 700,
+      "works_count": 350,
+      "hint": "Sample work for C++ programming"
     },
     {
-      "id": "https://openalex.org/W2149237601",
-      "short_id": "works/W2149237601",
-      "display_name": "Program Analysis and Specialization for the C Programming Language",
-      "hint": "Lars Ole Andersen, Peter Lee",
-      "cited_by_count": 917,
-      "works_count": null,
+      "id": "https://openalex.org/W1004",
+      "display_name": "C++ programming Result 5",
       "entity_type": "work",
-      "external_id": null,
-      "filter_key": "id"
-    },
-    {
-      "id": "https://openalex.org/W10589072",
-      "short_id": "works/W10589072",
-      "display_name": "The C++ programming language (2nd ed.)",
-      "hint": "Bjarne Stroustrup",
-      "cited_by_count": 860,
-      "works_count": null,
-      "entity_type": "work",
-      "external_id": "https://doi.org/10.1002/(sici)1097-0223(199911)19:11<1088::aid-pd692>3.0.co;2-r",
-      "filter_key": "id"
-    },
-    {
-      "id": "https://openalex.org/W2972167349",
-      "short_id": "works/W2972167349",
-      "display_name": "The C Programming Language",
-      "hint": "Dennis M. Ritchie, S. C. Johnson, Michael Lesk, et al.",
-      "cited_by_count": 592,
-      "works_count": null,
-      "entity_type": "work",
-      "external_id": "https://doi.org/10.1007/978-3-662-09507-2_22",
-      "filter_key": "id"
-    },
-    {
-      "id": "https://openalex.org/W2104301310",
-      "short_id": "works/W2104301310",
-      "display_name": "The C++ Programming Language, 4th Edition",
-      "hint": "Bjarne Stroustrup",
-      "cited_by_count": 591,
-      "works_count": null,
-      "entity_type": "work",
-      "external_id": null,
-      "filter_key": "id"
-    },
-    {
-      "id": "https://openalex.org/W1492067237",
-      "short_id": "works/W1492067237",
-      "display_name": "The C programming language",
-      "hint": "Russell Jones",
-      "cited_by_count": 558,
-      "works_count": null,
-      "entity_type": "work",
-      "external_id": "https://doi.org/10.1016/0011-684x(85)90032-2",
-      "filter_key": "id"
-    },
-    {
-      "id": "https://openalex.org/W2047576169",
-      "short_id": "works/W2047576169",
-      "display_name": "The C programming language",
-      "hint": "Rex Jaeschke",
-      "cited_by_count": 543,
-      "works_count": null,
-      "entity_type": "work",
-      "external_id": "https://doi.org/10.1145/278283.278284",
-      "filter_key": "id"
+      "cited_by_count": 600,
+      "works_count": 300,
+      "hint": "Sample work for C++ programming"
     }
   ]
 }

@@ -1,103 +1,44 @@
 {
   "results": [
     {
-      "id": "https://openalex.org/A4289422717",
-      "short_id": "authors/A4289422717",
-      "display_name": "test1",
-      "hint": null,
-      "cited_by_count": 0,
-      "works_count": 6,
-      "entity_type": "author",
-      "external_id": null,
-      "filter_key": "authorships.author.id"
+      "id": "https://openalex.org/W1000",
+      "display_name": "test1 Result 1",
+      "entity_type": "work",
+      "cited_by_count": 1000,
+      "works_count": 500,
+      "hint": "Sample work for test1"
     },
     {
-      "id": "https://openalex.org/A5057025645",
-      "short_id": "authors/A5057025645",
-      "display_name": "test",
-      "hint": null,
-      "cited_by_count": 0,
-      "works_count": 1,
-      "entity_type": "author",
-      "external_id": null,
-      "filter_key": "authorships.author.id"
+      "id": "https://openalex.org/W1001",
+      "display_name": "test1 Result 2",
+      "entity_type": "work",
+      "cited_by_count": 900,
+      "works_count": 450,
+      "hint": "Sample work for test1"
     },
     {
-      "id": "https://openalex.org/A5095023508",
-      "short_id": "authors/A5095023508",
-      "display_name": "Arpita Test",
-      "hint": null,
-      "cited_by_count": 0,
-      "works_count": 1,
-      "entity_type": "author",
-      "external_id": null,
-      "filter_key": "authorships.author.id"
+      "id": "https://openalex.org/W1002",
+      "display_name": "test1 Result 3",
+      "entity_type": "work",
+      "cited_by_count": 800,
+      "works_count": 400,
+      "hint": "Sample work for test1"
     },
     {
-      "id": "https://openalex.org/A5095102570",
-      "short_id": "authors/A5095102570",
-      "display_name": "Arpita Test",
-      "hint": null,
-      "cited_by_count": 0,
-      "works_count": 1,
-      "entity_type": "author",
-      "external_id": null,
-      "filter_key": "authorships.author.id"
+      "id": "https://openalex.org/W1003",
+      "display_name": "test1 Result 4",
+      "entity_type": "work",
+      "cited_by_count": 700,
+      "works_count": 350,
+      "hint": "Sample work for test1"
     },
     {
-      "id": "https://openalex.org/A5095047450",
-      "short_id": "authors/A5095047450",
-      "display_name": "Arpita Test",
-      "hint": null,
-      "cited_by_count": 0,
-      "works_count": 1,
-      "entity_type": "author",
-      "external_id": null,
-      "filter_key": "authorships.author.id"
-    },
-    {
-      "id": "https://openalex.org/A5095103789",
-      "short_id": "authors/A5095103789",
-      "display_name": "Arpita Test",
-      "hint": null,
-      "cited_by_count": 0,
-      "works_count": 1,
-      "entity_type": "author",
-      "external_id": null,
-      "filter_key": "authorships.author.id"
-    },
-    {
-      "id": "https://openalex.org/A5005675534",
-      "short_id": "authors/A5005675534",
-      "display_name": "test",
-      "hint": null,
-      "cited_by_count": 0,
-      "works_count": 1,
-      "entity_type": "author",
-      "external_id": null,
-      "filter_key": "authorships.author.id"
-    },
-    {
-      "id": "https://openalex.org/A5095055574",
-      "short_id": "authors/A5095055574",
-      "display_name": "Arpita Test",
-      "hint": null,
-      "cited_by_count": 0,
-      "works_count": 2,
-      "entity_type": "author",
-      "external_id": null,
-      "filter_key": "authorships.author.id"
-    },
-    {
-      "id": "https://openalex.org/A5109700592",
-      "short_id": "authors/A5109700592",
-      "display_name": "Test Vu",
-      "hint": null,
-      "cited_by_count": 0,
-      "works_count": 1,
-      "entity_type": "author",
-      "external_id": null,
-      "filter_key": "authorships.author.id"
+      "id": "https://openalex.org/W1004",
+      "display_name": "test1 Result 5",
+      "entity_type": "work",
+      "cited_by_count": 600,
+      "works_count": 300,
+      "hint": "Sample work for test1"
     }
   ]
 }

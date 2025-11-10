@@ -1,37 +1,44 @@
 {
   "results": [
     {
-      "id": "https://openalex.org/F4320315764",
-      "short_id": "funders/F4320315764",
-      "display_name": "Kansas NSF EPSCoR",
-      "hint": null,
-      "cited_by_count": 0,
-      "works_count": 208,
+      "id": "https://openalex.org/F1000",
+      "display_name": "NSF Result 1",
       "entity_type": "funder",
-      "external_id": null,
-      "filter_key": "grants.funder"
+      "cited_by_count": 1000,
+      "works_count": 500,
+      "hint": "Sample funder for NSF"
     },
     {
-      "id": "https://openalex.org/F4320316523",
-      "short_id": "funders/F4320316523",
-      "display_name": "Arkansas NSF EPSCoR",
-      "hint": null,
-      "cited_by_count": 0,
-      "works_count": 26,
+      "id": "https://openalex.org/F1001",
+      "display_name": "NSF Result 2",
       "entity_type": "funder",
-      "external_id": null,
-      "filter_key": "grants.funder"
+      "cited_by_count": 900,
+      "works_count": 450,
+      "hint": "Sample funder for NSF"
     },
     {
-      "id": "https://openalex.org/F4320334091",
-      "short_id": "funders/F4320334091",
-      "display_name": "Key Program of NSFC-Tongyong Union Foundation",
-      "hint": null,
-      "cited_by_count": 0,
-      "works_count": 144,
+      "id": "https://openalex.org/F1002",
+      "display_name": "NSF Result 3",
       "entity_type": "funder",
-      "external_id": null,
-      "filter_key": "grants.funder"
+      "cited_by_count": 800,
+      "works_count": 400,
+      "hint": "Sample funder for NSF"
+    },
+    {
+      "id": "https://openalex.org/F1003",
+      "display_name": "NSF Result 4",
+      "entity_type": "funder",
+      "cited_by_count": 700,
+      "works_count": 350,
+      "hint": "Sample funder for NSF"
+    },
+    {
+      "id": "https://openalex.org/F1004",
+      "display_name": "NSF Result 5",
+      "entity_type": "funder",
+      "cited_by_count": 600,
+      "works_count": 300,
+      "hint": "Sample funder for NSF"
     }
   ]
 }

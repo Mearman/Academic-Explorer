@@ -1,26 +1,44 @@
 {
   "results": [
     {
-      "id": "https://openalex.org/A4296306023",
-      "short_id": "authors/A4296306023",
-      "display_name": "test2",
-      "hint": null,
-      "cited_by_count": 0,
-      "works_count": 8,
-      "entity_type": "author",
-      "external_id": null,
-      "filter_key": "authorships.author.id"
+      "id": "https://openalex.org/W1000",
+      "display_name": "test2 Result 1",
+      "entity_type": "work",
+      "cited_by_count": 1000,
+      "works_count": 500,
+      "hint": "Sample work for test2"
     },
     {
-      "id": "https://openalex.org/A5094307578",
-      "short_id": "authors/A5094307578",
-      "display_name": "test test.com",
-      "hint": null,
-      "cited_by_count": 0,
-      "works_count": 10,
-      "entity_type": "author",
-      "external_id": null,
-      "filter_key": "authorships.author.id"
+      "id": "https://openalex.org/W1001",
+      "display_name": "test2 Result 2",
+      "entity_type": "work",
+      "cited_by_count": 900,
+      "works_count": 450,
+      "hint": "Sample work for test2"
+    },
+    {
+      "id": "https://openalex.org/W1002",
+      "display_name": "test2 Result 3",
+      "entity_type": "work",
+      "cited_by_count": 800,
+      "works_count": 400,
+      "hint": "Sample work for test2"
+    },
+    {
+      "id": "https://openalex.org/W1003",
+      "display_name": "test2 Result 4",
+      "entity_type": "work",
+      "cited_by_count": 700,
+      "works_count": 350,
+      "hint": "Sample work for test2"
+    },
+    {
+      "id": "https://openalex.org/W1004",
+      "display_name": "test2 Result 5",
+      "entity_type": "work",
+      "cited_by_count": 600,
+      "works_count": 300,
+      "hint": "Sample work for test2"
     }
   ]
 }
