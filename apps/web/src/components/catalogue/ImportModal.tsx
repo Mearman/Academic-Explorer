@@ -2,7 +2,7 @@
  * Modal component for importing catalogue lists from URLs
  */
 
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
   TextInput,
   Button,
@@ -35,7 +35,6 @@ export function ImportModal({ onClose, onImport }: ImportModalProps) {
   const [isImporting, setIsImporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLButtonElement>(null);
 
   const handleImport = async () => {
     if (!url.trim()) return;
@@ -164,7 +163,6 @@ export function ImportModal({ onClose, onImport }: ImportModalProps) {
         <Stack gap="xs">
           <Text size="sm" fw={500}>Upload from File</Text>
           <FileButton
-            ref={fileInputRef}
             onChange={handleFileUpload}
             accept=".txt,.json"
           >
