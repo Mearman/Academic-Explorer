@@ -396,7 +396,7 @@ export class DiskCacheWriter {
       const entityInfo = await this.extractEntityInfo(data);
 
       // Generate file paths
-      filePaths = this.generateFilePaths(entityInfo, resolvedBasePath);
+      filePaths = await this.generateFilePaths(entityInfo, resolvedBasePath);
 
       const indexPath = pathModule.join(
         filePaths.directoryPath,
@@ -536,6 +536,12 @@ export class DiskCacheWriter {
     try {
       // Try to extract from URL first
       const urlInfo = this.extractEntityInfoFromUrl(data.url);
+
+      // Check if this is an autocomplete response (special case)
+      if (urlInfo.entityId?.startsWith("autocomplete/")) {
+        return urlInfo;
+      }
+
       if (urlInfo.entityType) {
         return urlInfo;
       }
@@ -783,7 +789,7 @@ export class DiskCacheWriter {
   /**
    * Generate file paths for data
    */
-  private generateFilePaths(
+  private async generateFilePaths(
     entityInfo: {
       entityType?: EntityType;
       entityId?: string;
@@ -791,10 +797,10 @@ export class DiskCacheWriter {
       isQueryResponse?: boolean;
     },
     basePath: string,
-  ): {
+  ): Promise<{
     dataFile: string;
     directoryPath: string;
-  } {
+  }> {
     const entityType = entityInfo.entityType ?? "unknown";
 
     if (!path) {
@@ -805,13 +811,21 @@ export class DiskCacheWriter {
     let filename: string;
 
     // Handle autocomplete responses specially
-    if (entityInfo.entityId?.startsWith("autocomplete/") && entityInfo.queryParams) {
-      // Autocomplete: autocomplete/works/q=query.json or autocomplete/general/q=query.json
-      // queryParams already contains the serialized query string (e.g., "q=neural+networks")
-      const sanitizedQuery = this.sanitizeFilename(entityInfo.queryParams);
-      const [, subdirectory] = entityInfo.entityId.split("/");
-      directoryPath = path.join(basePath, "autocomplete", subdirectory);
-      filename = sanitizedQuery;
+    if (entityInfo.entityId?.startsWith("autocomplete/")) {
+      if (entityInfo.queryParams) {
+        // Autocomplete: autocomplete/works/q=query.json or autocomplete/general/q=query.json
+        // queryParams already contains the serialized query string (e.g., "q=neural+networks")
+        const sanitizedQuery = this.sanitizeFilename(entityInfo.queryParams);
+        const [, subdirectory] = entityInfo.entityId.split("/");
+        directoryPath = path.join(basePath, "autocomplete", subdirectory);
+        filename = sanitizedQuery;
+      } else {
+        // Autocomplete without query params - use hash as filename
+        const urlHash = await generateContentHash(entityInfo.entityId);
+        const [, subdirectory] = entityInfo.entityId.split("/");
+        directoryPath = path.join(basePath, "autocomplete", subdirectory);
+        filename = urlHash.substring(0, 8);
+      }
     } else if (entityInfo.isQueryResponse && entityInfo.queryParams) {
       // Query/filter response: works/queries/filter=author.id:A123&select=display_name.json
       const sanitizedQuery = this.sanitizeFilename(
