@@ -128,16 +128,20 @@ test.describe("Catalogue Basic Functionality", () => {
     await createTestList(page, "Editable Test List");
 
     // The list is now selected (auto-selected after creation)
+    // Wait for the selected list details section to appear
+    await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10000 });
+
     // Wait for the edit button to be visible and then click it
-    await expect(page.locator('[data-testid="edit-selected-list-button"]')).toBeVisible({ timeout: 10000 });
-    await page.click('[data-testid="edit-selected-list-button"]');
+    const editButton = page.locator('[data-testid="edit-selected-list-button"]');
+    await expect(editButton).toBeVisible({ timeout: 10000 });
+    await editButton.click();
 
     // Wait for edit modal
     await expect(page.locator('[role="dialog"]')).toBeVisible();
     await expect(page.locator('h2:has-text("Edit List")')).toBeVisible();
 
-    // Update title
-    await page.fill('input[placeholder*="list name"], input[aria-label*="title"], #list-title', 'Updated Test List');
+    // Update title - use the edit form's input field
+    await page.locator('#list-title').fill('Updated Test List');
 
     // Save changes
     await page.click('button:has-text("Save Changes")');
@@ -151,26 +155,37 @@ test.describe("Catalogue Basic Functionality", () => {
     // First create a list
     await createTestList(page, "Deletable Test List");
 
+    // Wait for the selected list details to be visible
+    await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10000 });
+
     // The list is now selected. We need to find the list card and click its delete button
-    // Use the card's data-testid (list-card-{id}) and filter by role to avoid matching the title
-    const listCard = page.locator('[data-testid^="list-card-"][role="region"], [data-testid^="list-card-"].mantine-Card-root').filter({ hasText: "Deletable Test List" }).first();
+    // Use a more robust selector - find the card with the specific title
+    const listCards = page.locator('.mantine-Card-root[data-testid^="list-card-"]');
+    const deleteableCard = listCards.filter({ hasText: "Deletable Test List" }).first();
+
+    // Wait for the card to be visible
+    await expect(deleteableCard).toBeVisible({ timeout: 10000 });
 
     // Get the list ID from the card's data-testid attribute
-    const cardTestId = await listCard.getAttribute('data-testid');
+    const cardTestId = await deleteableCard.getAttribute('data-testid');
     const listId = cardTestId?.replace('list-card-', '') || '';
 
     // Click the delete button for this specific list
-    await page.click(`[data-testid="delete-list-${listId}"]`);
+    const deleteButton = page.locator(`[data-testid="delete-list-${listId}"]`);
+    await expect(deleteButton).toBeVisible({ timeout: 10000 });
+    await deleteButton.click();
 
-    // Wait for confirmation dialog
-    await expect(page.locator('[role="dialog"]')).toBeVisible();
-    await expect(page.locator('text="Are you sure"')).toBeVisible();
+    // Wait for confirmation dialog (Mantine Modal)
+    await expect(page.locator('[role="dialog"]')).toBeVisible({ timeout: 10000 });
 
-    // Confirm deletion
-    await page.click('button:has-text("Delete"), button:has-text("Confirm")');
+    // Look for the confirmation message - it should contain "Are you sure"
+    await expect(page.locator('[role="dialog"]:has-text("Are you sure")')).toBeVisible({ timeout: 10000 });
+
+    // Confirm deletion - look for the delete button in the modal
+    await page.locator('[role="dialog"] button:has-text("Delete")').click();
 
     // Verify list is deleted - the selected list details should disappear
-    await expect(page.locator('[role="dialog"]')).not.toBeVisible();
+    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 10000 });
     await expect(page.locator('[data-testid="selected-list-title"]:has-text("Deletable Test List")')).not.toBeVisible({ timeout: 10000 });
   });
 
@@ -180,8 +195,8 @@ test.describe("Catalogue Basic Functionality", () => {
     await createTestList(page, "Data Science Papers");
     await createTestList(page, "AI Applications");
 
-    // Search for specific list
-    const searchInput = page.locator('input[placeholder*="Search"], input[aria-label*="search"]');
+    // Search for specific list - use the catalogue-specific search input
+    const searchInput = page.locator('input[aria-label="Search catalogue lists"]');
     await searchInput.fill('Machine Learning');
 
     // Wait for search results to update
@@ -189,9 +204,9 @@ test.describe("Catalogue Basic Functionality", () => {
 
     // Verify search results - check that list cards are visible/hidden appropriately
     // Use the list card testid to verify visibility
-    const mlCard = page.locator('[data-testid^="list-card-"].mantine-Card-root').filter({ hasText: "Machine Learning Research" });
-    const dsCard = page.locator('[data-testid^="list-card-"].mantine-Card-root').filter({ hasText: "Data Science Papers" });
-    const aiCard = page.locator('[data-testid^="list-card-"].mantine-Card-root').filter({ hasText: "AI Applications" });
+    const mlCard = page.locator('.mantine-Card-root[data-testid^="list-card-"]').filter({ hasText: "Machine Learning Research" }).first();
+    const dsCard = page.locator('.mantine-Card-root[data-testid^="list-card-"]').filter({ hasText: "Data Science Papers" }).first();
+    const aiCard = page.locator('.mantine-Card-root[data-testid^="list-card-"]').filter({ hasText: "AI Applications" }).first();
 
     await expect(mlCard).toBeVisible({ timeout: 10000 });
     await expect(dsCard).not.toBeVisible();
