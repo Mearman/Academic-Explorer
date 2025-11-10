@@ -10,6 +10,7 @@ import type { ZodType } from "zod";
 
 import type {
   AutocompleteResult,
+  BaseAutocompleteOptions,
   Concept,
   ConceptsFilters,
   OpenAlexResponse,
@@ -17,9 +18,8 @@ import type {
   ConceptsQueryParams,
   ConceptSortOption,
   ConceptSelectField,
-  SearchConceptsOptions,
-  AutocompleteOptions,
-} from "../types";
+  ConceptSearchOptions,
+} from "@academic-explorer/types";
 import { AutocompleteApi } from "../utils/autocomplete";
 import { isValidWikidata, normalizeExternalId } from "../utils/id-resolver";
 import { buildFilterString } from "../utils/query-builder";
@@ -71,7 +71,7 @@ export class ConceptsApi {
    */
   async autocomplete(
     query: string,
-    options: AutocompleteOptions = {},
+    options: BaseAutocompleteOptions = {},
   ): Promise<AutocompleteResult[]> {
     if (!query || typeof query !== "string") {
       throw new Error(
@@ -251,21 +251,15 @@ export class ConceptsApi {
    */
   async searchConcepts(
     query: string,
-    options: SearchConceptsOptions = {},
+    options: ConceptSearchOptions = {},
   ): Promise<OpenAlexResponse<Concept>> {
     if (!query || typeof query !== "string" || query.trim().length === 0) {
       throw new Error("Search query must be a non-empty string");
     }
 
-    function hasValidProperties<T extends Record<string, unknown>>(
-      obj: unknown,
-      keys: (keyof T)[]
-    ): obj is T {
-      return typeof obj === "object" && obj !== null && keys.every(key => key in obj);
-    }
-
-    if (!hasValidProperties(options, ["filters", "sort", "page", "per_page", "select"])) {
-      throw new Error("Invalid options structure");
+    // Validate options object has expected structure for ConceptSearchOptions
+    if (typeof options !== "object" || options === null) {
+      throw new Error("Options must be an object");
     }
 
     const {

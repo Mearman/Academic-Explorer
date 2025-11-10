@@ -1,113 +1,20 @@
 /**
- * Re-export all OpenAlex API TypeScript types from shared utils package
+ * Client-specific types only
+ * All entity types should be imported directly from @academic-explorer/types where needed
  */
 
-// Re-export all types from entities
+// Core client types
 export type {
   OpenAlexId,
-  DOI,
-  ORCID,
-  RORId,
-  ISSNId,
-  WikidataId,
-  DateString,
-  NumericFilter,
-  BaseIds,
-  WorkIds,
-  AuthorIds,
-  SourceIds,
-  InstitutionIds,
-  ConceptIds,
-  TopicIds,
-  PublisherIds,
-  FunderIds,
-  KeywordIds,
-  ConceptItem,
-  TopicItem,
-  SummaryStats,
-  APCInfo,
-  APCPrice,
-  PartialExceptId,
-  BaseEntity,
-  EntityWithWorks,
-  CountsByYear,
-  Location,
-  Institution,
-  Authorship,
-  Work,
-  PartialWork,
-  Author,
-  PartialAuthor,
-  Source,
-  InstitutionEntity,
-  Concept,
-  Topic,
-  Publisher,
-  Funder,
-  Keyword,
-  KeywordCountsByYear,
-  PartialSource,
-  PartialInstitution,
-  OpenAlexEntity,
-  OpenAlexEntityType as EntityType,
-  EntityTypeMap,
-  BaseEntityFilters,
-  BaseEntityWithTopicsFilters,
-  WorksFilters,
-  AuthorsFilters,
-  SourcesFilters,
-  InstitutionsFilters,
-  TopicsFilters,
-  ConceptsFilters,
-  PublishersFilters,
-  FundersFilters,
-  KeywordsFilters,
-  EntityFilters,
+  OpenAlexError,
   OpenAlexResponse,
   OpenAlexQueryParams as QueryParams,
-  StatsParams,
-  SampleParams,
-  GroupParams,
   AutocompleteResult,
-  NGram,
-  OpenAlexError,
-  TextAnalysis,
 } from "@academic-explorer/types/entities";
 
-// Re-export concept-specific types from entities
-export type {
-  ConceptSortOption,
-  ConceptSelectField,
-  ConceptsQueryParams,
-} from "@academic-explorer/types/entities";
+// Client-specific types
+export interface AutocompleteOptions {
+  limit?: number;
+}
 
-// Client-specific type aliases
-export type { ConceptSearchOptions as SearchConceptsOptions } from "@academic-explorer/types/entities";
-export type { BaseAutocompleteOptions as AutocompleteOptions } from "@academic-explorer/types/entities";
-
-// Re-export schemas and type guards
-export {
-  openAlexIdSchema,
-  dateStringSchema,
-  countsByYearSchema,
-  metaSchema,
-  groupBySchema,
-  baseEntitySchema,
-  workSchema,
-  authorSchema,
-  institutionSchema,
-  openAlexResponseSchema,
-  apiResponseSchema,
-  workResponseSchema,
-  authorResponseSchema,
-  institutionResponseSchema,
-} from "@academic-explorer/types/entities";
-
-export {
-  isRecord,
-  trustObjectShape,
-  extractPropertyValue,
-  isOpenAlexId,
-  isValidDateString,
-  isValidWikidataId,
-} from "@academic-explorer/types/entities";
+export type { OpenAlexClientConfig } from "../client";
