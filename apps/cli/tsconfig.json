@@ -17,7 +17,9 @@
     "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "assumeChangesOnlyAffectDirectDependencies": true,
     "composite": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "outDir": "./dist",
+    "rootDir": "./src"
   },
   "include": [
     "src/**/*"
