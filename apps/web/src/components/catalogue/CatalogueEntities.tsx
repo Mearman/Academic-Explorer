@@ -21,6 +21,7 @@ import {
   Tooltip,
   Loader,
   Alert,
+  Checkbox,
 } from "@mantine/core";
 import {
   IconExternalLink,
@@ -66,6 +67,8 @@ interface SortableEntityRowProps {
   onNavigate?: (entityType: EntityType, entityId: string) => void;
   onRemove: (entityId: string) => void;
   onEditNotes: (entityId: string, notes: string) => void;
+  isSelected: boolean;
+  onToggleSelect: (entityId: string) => void;
 }
 
 function SortableEntityRow({
@@ -74,6 +77,8 @@ function SortableEntityRow({
   onNavigate,
   onRemove,
   onEditNotes,
+  isSelected,
+  onToggleSelect,
 }: SortableEntityRowProps) {
   const {
     attributes,
@@ -101,6 +106,13 @@ function SortableEntityRow({
   return (
     <div ref={setNodeRef} style={style} {...attributes}>
       <Table.Tr>
+        <Table.Td w={40}>
+          <Checkbox
+            checked={isSelected}
+            onChange={() => onToggleSelect(entity.id!)}
+            aria-label={`Select ${entity.entityId}`}
+          />
+        </Table.Td>
         <Table.Td w={40}>
           <div {...listeners} style={{ cursor: "grab" }}>
             <IconGripVertical size={16} color="var(--mantine-color-gray-4)" />
@@ -208,6 +220,8 @@ export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitie
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("position");
+  const [selectedEntities, setSelectedEntities] = useState<Set<string>>(new Set());
+  const [showBulkConfirm, setShowBulkConfirm] = useState(false);
 
   // Filter entities based on search and type
   const filteredEntities = entities.filter((entity) => {
@@ -326,6 +340,59 @@ export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitie
     }
   };
 
+  // Bulk operations handlers
+  const handleSelectAll = () => {
+    if (selectedEntities.size === sortedEntities.length) {
+      setSelectedEntities(new Set());
+    } else {
+      setSelectedEntities(new Set(sortedEntities.map(e => e.id!)));
+    }
+  };
+
+  const handleToggleEntity = (entityId: string) => {
+    const newSelection = new Set(selectedEntities);
+    if (newSelection.has(entityId)) {
+      newSelection.delete(entityId);
+    } else {
+      newSelection.add(entityId);
+    }
+    setSelectedEntities(newSelection);
+  };
+
+  const handleBulkRemove = async () => {
+    if (!selectedList || selectedEntities.size === 0) return;
+
+    try {
+      for (const entityId of selectedEntities) {
+        await removeEntityFromList(selectedList.id!, entityId);
+      }
+
+      logger.debug("catalogue-ui", "Bulk remove completed", {
+        listId: selectedList.id!,
+        removedCount: selectedEntities.size
+      });
+
+      notifications.show({
+        title: "Removed",
+        message: `${selectedEntities.size} entities removed from list`,
+        color: "green",
+      });
+
+      setSelectedEntities(new Set());
+      setShowBulkConfirm(false);
+    } catch (error) {
+      logger.error("catalogue-ui", "Failed to bulk remove entities", {
+        listId: selectedList.id!,
+        error
+      });
+      notifications.show({
+        title: "Error",
+        message: "Failed to remove entities",
+        color: "red",
+      });
+    }
+  };
+
   // Get unique entity types for filter dropdown
   const entityTypes = Array.from(new Set(entities.map((e) => e.entityType)));
 
@@ -415,12 +482,45 @@ export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitie
           />
         </Group>
 
+        {/* Bulk Actions */}
+        {selectedEntities.size > 0 && (
+          <Group gap="md" p="sm" style={{ background: "var(--mantine-color-blue-0)", borderRadius: "8px" }}>
+            <Text size="sm" fw={500}>
+              {selectedEntities.size} {selectedEntities.size === 1 ? "entity" : "entities"} selected
+            </Text>
+            <Button
+              size="xs"
+              variant="light"
+              color="red"
+              onClick={() => setShowBulkConfirm(true)}
+              data-testid="bulk-remove-button"
+            >
+              Remove Selected
+            </Button>
+            <Button
+              size="xs"
+              variant="subtle"
+              onClick={() => setSelectedEntities(new Set())}
+            >
+              Clear Selection
+            </Button>
+          </Group>
+        )}
+
         {/* Entities Table */}
         <Card withBorder padding={0}>
           <Table.ScrollContainer minWidth={500}>
             <Table striped highlightOnHover>
               <Table.Thead>
                 <Table.Tr>
+                  <Table.Th w={40}>
+                    <Checkbox
+                      checked={selectedEntities.size === sortedEntities.length && sortedEntities.length > 0}
+                      indeterminate={selectedEntities.size > 0 && selectedEntities.size < sortedEntities.length}
+                      onChange={handleSelectAll}
+                      aria-label="Select all entities"
+                    />
+                  </Table.Th>
                   <Table.Th w={40}></Table.Th>
                   <Table.Th>Entity</Table.Th>
                   <Table.Th>Notes</Table.Th>
@@ -446,6 +546,8 @@ export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitie
                         onNavigate={onNavigate}
                         onRemove={handleRemoveEntity}
                         onEditNotes={handleEditNotes}
+                        isSelected={selectedEntities.has(entity.id!)}
+                        onToggleSelect={handleToggleEntity}
                       />
                     ))}
                   </SortableContext>
@@ -465,6 +567,29 @@ export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitie
           Drag entities to reorder them • Click on entity ID to view details
         </Text>
       </Stack>
+
+      {/* Bulk Delete Confirmation Modal */}
+      <Modal
+        opened={showBulkConfirm}
+        onClose={() => setShowBulkConfirm(false)}
+        title="Confirm Bulk Removal"
+        centered
+      >
+        <Stack gap="md">
+          <Text>
+            Are you sure you want to remove {selectedEntities.size} {selectedEntities.size === 1 ? "entity" : "entities"} from this list?
+            This action cannot be undone.
+          </Text>
+          <Group justify="flex-end" gap="xs">
+            <Button variant="subtle" onClick={() => setShowBulkConfirm(false)}>
+              Cancel
+            </Button>
+            <Button color="red" onClick={handleBulkRemove}>
+              Remove
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
     </Card>
   );
 }
