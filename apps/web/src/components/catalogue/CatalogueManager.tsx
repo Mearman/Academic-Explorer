@@ -28,6 +28,7 @@ import {
   IconList,
   IconBook,
   IconSearch,
+  IconEdit,
 } from "@tabler/icons-react";
 import { useHotkeys } from "@mantine/hooks";
 import { useCatalogue } from "@/hooks/useCatalogue";
@@ -253,6 +254,22 @@ export function CatalogueManager({ onNavigate, sharedToken }: CatalogueManagerPr
                     {tag}
                   </Badge>
                 ))}
+                <Button
+                  variant="light"
+                  size="sm"
+                  onClick={() => {
+                    const card = lists.find(l => l.id === selectedList.id);
+                    if (card) {
+                      // Trigger edit via the list component
+                      const editButton = document.querySelector(`[data-testid="edit-list-${selectedList.id}"]`) as HTMLElement;
+                      editButton?.click();
+                    }
+                  }}
+                  leftSection={<IconEdit size={16} />}
+                  data-testid="edit-selected-list-button"
+                >
+                  Edit
+                </Button>
                 <Button
                   variant="light"
                   size="sm"
