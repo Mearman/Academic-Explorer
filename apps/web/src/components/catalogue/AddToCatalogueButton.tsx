@@ -268,6 +268,7 @@ export function AddToCatalogueButton({
         <Menu shadow="md" width={200}>
           <Menu.Target>
             <Button
+              data-testid="add-to-catalogue-button"
               size={size}
               leftSection={<IconBookmark size={16} />}
               variant="light"
@@ -333,6 +334,7 @@ export function AddToCatalogueButton({
       <Menu shadow="md" width={200}>
         <Menu.Target>
           <ActionIcon
+            data-testid="add-to-catalogue-button"
             size={size}
             variant="light"
             className={className}
