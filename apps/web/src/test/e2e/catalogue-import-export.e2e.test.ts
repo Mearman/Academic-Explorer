@@ -20,7 +20,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
     await createListWithMultipleEntities(page, "Export Test List");
 
     // Select the list
-    await page.click('text="Export Test List"');
+    await page.click('[data-testid="selected-list-title"]:has-text("Export Test List")');
 
     // Look for export functionality
     const exportButton = page.locator('button:has-text("Export"), [aria-label*="export"]');
@@ -47,7 +47,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
     await createListWithMultipleEntities(page, "Multi-format Export Test");
 
     // Select the list
-    await page.click('text="Multi-format Export Test"');
+    await page.click('[data-testid="selected-list-title"]:has-text("Multi-format Export Test")');
 
     // Look for export functionality
     const exportButton = page.locator('button:has-text("Export"), [aria-label*="export"]');
@@ -358,12 +358,12 @@ async function createTestList(page: Page, listName: string): Promise<void> {
   await page.click('button:has-text("Create New List")');
   await expect(page.locator('[role="dialog"]')).toBeVisible();
 
-  await page.fill('input[placeholder*="list name"], input[aria-label*="title"], #list-title', listName);
-  await page.fill('textarea[placeholder*="description"], #list-description', `Test description for ${listName}`);
+  await page.fill('input:below(:text("Title"))', listName);
+  await page.fill('textarea:below(:text("Description"))', `Test description for ${listName}`);
 
   await page.click('button:has-text("Create List")');
   await expect(page.locator('[role="dialog"]')).not.toBeVisible();
-  await expect(page.locator(`text="${listName}"`)).toBeVisible({ timeout: 10000 });
+  await expect(page.locator('[data-testid="selected-list-title"]:has-text("' + listName + '")')).toBeVisible({ timeout: 10000 });
 }
 
 async function createListWithMultipleEntities(page: Page, listName: string): Promise<void> {
@@ -380,11 +380,11 @@ async function createListWithMultipleEntities(page: Page, listName: string): Pro
     await page.goto(`http://localhost:5173/#/${entity.type}/${entity.id}`);
     await page.waitForLoadState("networkidle");
 
-    const addToCatalogueButton = page.locator('button:has-text("Add to Catalogue"), [aria-label*="catalogue"]');
+    const addToCatalogueButton = page.locator('[data-testid="add-to-catalogue-button"]');
     if (await addToCatalogueButton.isVisible()) {
       await addToCatalogueButton.click();
-      await page.click(`text="${listName}"`);
-      await page.click('button:has-text("Add to List")');
+      await page.click('[role="dialog"] [role="radio"]');
+      await page.click('[role="dialog"] button:has-text("Add")');
       await page.waitForTimeout(1000);
     }
   }
@@ -398,7 +398,7 @@ async function exportAndGetCompressedData(page: Page): Promise<string> {
   await page.goto("http://localhost:5173/#/catalogue");
   await page.waitForLoadState("networkidle");
 
-  await page.click('text="Export Test List"');
+  await page.click('[data-testid="selected-list-title"]:has-text("Export Test List")');
 
   const exportButton = page.locator('button:has-text("Export"), [aria-label*="export"]');
   if (await exportButton.isVisible()) {

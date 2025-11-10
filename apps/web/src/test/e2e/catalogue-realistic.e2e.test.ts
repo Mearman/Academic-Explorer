@@ -34,7 +34,7 @@ test.describe("Catalogue Realistic Functionality Tests", () => {
     } else {
       // If no direct navigation button, let's check if catalogue functionality is embedded
       // Check for create list functionality that we know works
-      const createButton = page.locator('button:has-text("Create New List"), button:has-text("Create"), [aria-label*="create"]');
+      const createButton = page.locator('button:has-text("Create New List"), button:has-text("Create"), [data-testid="catalogue-create-button"]');
 
       // The test passes if either catalogue navigation exists OR create functionality is accessible
       expect(await createButton.first().isVisible() || await catalogueButton.first().isVisible()).toBeTruthy();
@@ -156,7 +156,7 @@ test.describe("Catalogue Realistic Functionality Tests", () => {
 
   test("should verify catalogue integration completeness", async ({ page }) => {
     // Navigate to home page
-    await page.goto("http://http://localhost:5173/#/");
+    await page.goto("http://localhost:5173/#/");
     await page.waitForLoadState("networkidle");
 
     // Check overall catalogue feature integration
@@ -190,3 +190,23 @@ test.describe("Catalogue Realistic Functionality Tests", () => {
     // But the infrastructure should be in place
   });
 });
+
+// Helper function to create a test list following the same pattern as basic-functionality tests
+async function createTestList(page: Page, listName: string): Promise<void> {
+  await page.click('button:has-text("Create New List")');
+  await expect(page.locator('[role="dialog"]')).toBeVisible();
+
+  await page.fill('input:below(:text("Title"))', listName);
+  await page.fill('textarea:below(:text("Description"))', `Test description for ${listName}`);
+
+  await page.click('button:has-text("Create List")');
+  await expect(page.locator('[role="dialog"]')).not.toBeVisible();
+
+  // Wait for the list to appear in the selected list details section
+  await expect(page.locator('[data-testid="selected-list-title"]:has-text("' + listName + '")')).toBeVisible({ timeout: 10000 });
+}
+
+// Helper function to find the add to catalogue button
+function getAddToCatalogueButton(page: Page): any {
+  return page.locator('[data-testid="add-to-catalogue-button"]');
+}
