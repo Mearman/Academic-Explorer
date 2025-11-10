@@ -122,13 +122,29 @@ export default tseslint.config([
             ],
             "@typescript-eslint/no-explicit-any": "warn",
             "@typescript-eslint/no-non-null-assertion": "error",
+            // Prevent importing types from client package - use @academic-explorer/types/entities instead
             "no-restricted-imports": [
                 "error",
                 {
-                    "patterns": [
+                    "paths": [
                         {
-                            "group": ["@academic-explorer/client/types", "@academic-explorer/client/types/*"],
-                            "message": "Import types directly from '@academic-explorer/types/entities' instead. The client package re-exports are for backward compatibility only."
+                            "name": "@academic-explorer/client",
+                            "importNames": [
+                                // Entity types - import from @academic-explorer/types/entities
+                                "Work", "PartialWork",
+                                "Author", "PartialAuthor",
+                                "Source", "PartialSource",
+                                "InstitutionEntity", "PartialInstitution",
+                                "Topic", "Concept", "Publisher", "Funder", "Keyword",
+                                // Field constants - import from @academic-explorer/types/entities
+                                "WORK_FIELDS", "AUTHOR_FIELDS", "SOURCE_FIELDS",
+                                "INSTITUTION_FIELDS", "TOPIC_FIELDS", "CONCEPT_FIELDS",
+                                "PUBLISHER_FIELDS", "FUNDER_FIELDS", "KEYWORD_FIELDS",
+                                // Base types - import from @academic-explorer/types/entities
+                                "OpenAlexId", "DOI", "ORCID", "RORId",
+                                "AutocompleteResult",
+                            ],
+                            "message": "Import entity types from '@academic-explorer/types/entities' instead. The client package should only be used for API client functionality (cachedOpenAlex, createFilterBuilder, etc)."
                         }
                     ]
                 }
