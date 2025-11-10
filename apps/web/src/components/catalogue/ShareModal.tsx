@@ -63,34 +63,39 @@ export function ShareModal({ shareUrl, listTitle, onClose }: ShareModalProps) {
   };
 
   return (
-    <Modal opened={true} onClose={onClose} title="Share List" size="lg">
+    <>
       <Stack gap="md">
         <Text size="sm" c="dimmed">
-          Share "{listTitle}" with others by sending them this link:
+          Share this list with others by sending them this link:
         </Text>
 
-        <Group gap="xs">
-          <TextInput
-            value={shareUrl}
-            readOnly
-            flex={1}
-            size="sm"
-          />
-          <CopyButton value={shareUrl}>
-            {({ copied, copy }) => (
-              <Tooltip label={copied ? "Copied!" : "Copy link"}>
-                <ActionIcon color={copied ? "teal" : "gray"} onClick={copy}>
-                  {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
-                </ActionIcon>
-              </Tooltip>
-            )}
-          </CopyButton>
-          <Tooltip label="Open link">
-            <ActionIcon onClick={handleOpenLink}>
-              <IconExternalLink size={16} />
-            </ActionIcon>
-          </Tooltip>
-        </Group>
+        <Stack gap="xs">
+          <Text size="sm" fw={500}>Share URL</Text>
+          <Group gap="xs">
+            <TextInput
+              value={shareUrl}
+              readOnly
+              flex={1}
+              size="sm"
+              data-testid="share-url-input"
+            />
+            <CopyButton value={shareUrl}>
+              {({ copied, copy }) => (
+                <Tooltip label={copied ? "Copied!" : "Copy"}>
+                  <Button
+                    size="sm"
+                    variant="light"
+                    onClick={copy}
+                    leftSection={copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
+                    data-testid="copy-share-url-button"
+                  >
+                    {copied ? "Copied!" : "Copy"}
+                  </Button>
+                </Tooltip>
+              )}
+            </CopyButton>
+          </Group>
+        </Stack>
 
         <Group>
           <Button
@@ -98,19 +103,35 @@ export function ShareModal({ shareUrl, listTitle, onClose }: ShareModalProps) {
             leftSection={<IconQrcode size={16} />}
             onClick={() => setShowQR(!showQR)}
             size="sm"
+            data-testid="toggle-qr-code-button"
           >
             {showQR ? "Hide" : "Show"} QR Code
           </Button>
+          <Tooltip label="Open link in new tab">
+            <ActionIcon
+              onClick={handleOpenLink}
+              size="lg"
+              variant="light"
+              data-testid="open-share-link-button"
+            >
+              <IconExternalLink size={16} />
+            </ActionIcon>
+          </Tooltip>
         </Group>
 
         {showQR && qrCodeUrl && (
-          <Group justify="center" p="md">
+          <Stack align="center" gap="xs">
+            <Text size="sm" fw={500}>QR Code</Text>
             <img
               src={qrCodeUrl}
-              alt="QR Code"
+              alt="QR Code for sharing"
               style={{ width: 200, height: 200 }}
+              data-testid="share-qr-code"
             />
-          </Group>
+            <Text size="xs" c="dimmed">
+              Scan with a mobile device to view this list
+            </Text>
+          </Stack>
         )}
 
         <Text size="xs" c="dimmed" ta="center">
@@ -123,6 +144,6 @@ export function ShareModal({ shareUrl, listTitle, onClose }: ShareModalProps) {
           </Button>
         </Group>
       </Stack>
-    </Modal>
+    </>
   );
 }

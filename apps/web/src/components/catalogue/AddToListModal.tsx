@@ -159,6 +159,7 @@ export function AddToListModal({
           data={availableLists.map(list => ({
             value: list.id!,
             label: `${list.title} (${list.type})`,
+            "data-testid": `catalogue-list-${list.id}`,
           }))}
           required
           searchable

@@ -3,7 +3,7 @@
  * Handles lists, bibliographies, and entity management
  */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Group,
@@ -19,6 +19,8 @@ import {
   rem,
   TextInput,
   Card,
+  SimpleGrid,
+  Paper,
 } from "@mantine/core";
 import {
   IconPlus,
@@ -69,6 +71,26 @@ export function CatalogueManager({ onNavigate, sharedToken }: CatalogueManagerPr
   const [showExportModal, setShowExportModal] = useState(false);
   const [shareUrl, setShareUrl] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [listStats, setListStats] = useState<{
+    totalEntities: number;
+    entityCounts: Record<string, number>;
+  } | null>(null);
+
+  // Load stats when selected list changes
+  useEffect(() => {
+    if (selectedList?.id) {
+      getListStats(selectedList.id)
+        .then(setListStats)
+        .catch((error) => {
+          logger.error("catalogue-ui", "Failed to load list stats", {
+            listId: selectedList.id,
+            error
+          });
+        });
+    } else {
+      setListStats(null);
+    }
+  }, [selectedList?.id, getListStats]);
 
   // Keyboard shortcuts
   useHotkeys([
@@ -291,11 +313,38 @@ export function CatalogueManager({ onNavigate, sharedToken }: CatalogueManagerPr
               </Group>
             </Group>
 
-            <Text size="xs" c="dimmed">
-              Created: {selectedList.createdAt.toLocaleDateString()} •
-              Modified: {selectedList.updatedAt.toLocaleDateString()} •
-              {selectedList.isPublic ? " • Public" : " • Private"}
-            </Text>
+            <Group justify="space-between" mt="md">
+              <Text size="xs" c="dimmed">
+                Created: {selectedList.createdAt.toLocaleDateString()} •
+                Modified: {selectedList.updatedAt.toLocaleDateString()}
+                {selectedList.isPublic ? " • Public" : " • Private"}
+              </Text>
+            </Group>
+
+            {/* Entity Statistics */}
+            {listStats && listStats.totalEntities > 0 && (
+              <SimpleGrid cols={{ base: 2, sm: 3, md: 4 }} spacing="xs" mt="md">
+                <Paper withBorder p="xs" radius="sm">
+                  <Text size="xs" c="dimmed" fw={500}>Total</Text>
+                  <Text size="lg" fw={700} data-testid="stat-total">
+                    {listStats.totalEntities}
+                  </Text>
+                </Paper>
+
+                {Object.entries(listStats.entityCounts)
+                  .filter(([_, count]) => count > 0)
+                  .map(([entityType, count]) => (
+                    <Paper key={entityType} withBorder p="xs" radius="sm">
+                      <Text size="xs" c="dimmed" fw={500} tt="capitalize">
+                        {entityType}
+                      </Text>
+                      <Text size="lg" fw={700} data-testid={`stat-${entityType}`}>
+                        {count}
+                      </Text>
+                    </Paper>
+                  ))}
+              </SimpleGrid>
+            )}
           </Card>
         )}
 

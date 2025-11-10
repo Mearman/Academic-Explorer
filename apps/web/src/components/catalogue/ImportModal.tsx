@@ -2,7 +2,7 @@
  * Modal component for importing catalogue lists from URLs
  */
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   TextInput,
   Button,
@@ -13,11 +13,15 @@ import {
   Modal,
   Divider,
   Badge,
+  FileButton,
+  Paper,
 } from "@mantine/core";
 import {
   IconAlertTriangle,
   IconDownload,
   IconLink,
+  IconUpload,
+  IconFile,
 } from "@tabler/icons-react";
 import { logger } from "@/lib/logger";
 
@@ -30,6 +34,8 @@ export function ImportModal({ onClose, onImport }: ImportModalProps) {
   const [url, setUrl] = useState("");
   const [isImporting, setIsImporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLButtonElement>(null);
 
   const handleImport = async () => {
     if (!url.trim()) return;
@@ -54,6 +60,55 @@ export function ImportModal({ onClose, onImport }: ImportModalProps) {
       });
     } finally {
       setIsImporting(false);
+    }
+  };
+
+  const handleFileUpload = async (file: File | null) => {
+    if (!file) return;
+
+    setSelectedFile(file);
+    setIsImporting(true);
+    setError(null);
+
+    try {
+      const text = await file.text();
+
+      // Validate the file content
+      if (!text || text.trim().length === 0) {
+        throw new Error("File is empty");
+      }
+
+      // Try to parse as JSON to validate structure
+      try {
+        JSON.parse(text);
+      } catch {
+        // If not JSON, assume it's compressed data
+        logger.debug("catalogue-ui", "File content is not JSON, treating as compressed data");
+      }
+
+      // Set the URL with the file content
+      setUrl(text.trim());
+
+      logger.info("catalogue-ui", "File uploaded successfully", {
+        fileName: file.name,
+        fileSize: file.size,
+        contentLength: text.length
+      });
+
+      // Auto-import the file content
+      await onImport(text.trim());
+      onClose();
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to read file";
+      setError(errorMessage);
+      logger.error("catalogue-ui", "Failed to upload file", {
+        fileName: file.name,
+        fileSize: file.size,
+        error
+      });
+    } finally {
+      setIsImporting(false);
+      setSelectedFile(null);
     }
   };
 
@@ -101,7 +156,50 @@ export function ImportModal({ onClose, onImport }: ImportModalProps) {
               Paste
             </Button>
           }
+          data-testid="import-url-input"
         />
+
+        <Divider label="OR" labelPosition="center" />
+
+        <Stack gap="xs">
+          <Text size="sm" fw={500}>Upload from File</Text>
+          <FileButton
+            ref={fileInputRef}
+            onChange={handleFileUpload}
+            accept=".txt,.json"
+          >
+            {(props) => (
+              <Paper
+                withBorder
+                p="md"
+                style={{
+                  cursor: "pointer",
+                  borderStyle: "dashed",
+                  borderWidth: 2,
+                  transition: "all 0.2s",
+                }}
+                {...props}
+                data-testid="file-upload-area"
+              >
+                <Stack align="center" gap="xs">
+                  <IconUpload size={32} color="var(--mantine-color-blue-6)" />
+                  <Text size="sm" fw={500}>
+                    Click to upload file
+                  </Text>
+                  <Text size="xs" c="dimmed">
+                    Supports .txt and .json files
+                  </Text>
+                  {selectedFile && (
+                    <Group gap="xs">
+                      <IconFile size={16} />
+                      <Text size="sm">{selectedFile.name}</Text>
+                    </Group>
+                  )}
+                </Stack>
+              </Paper>
+            )}
+          </FileButton>
+        </Stack>
 
         {error && (
           <Alert
