@@ -1,19 +1,33 @@
 /**
  * Integration tests for AutocompleteApi
- * Tests actual API calls to OpenAlex autocomplete endpoints
+ * Tests autocomplete API integration with mocked responses
  */
 
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
+import { setupServer } from "msw/node";
 import { CachedOpenAlexClient } from "../../cached-client";
 import type { EntityType } from "@academic-explorer/types";
+import { autocompleteHandlers } from "./autocomplete-handlers";
+
+// Setup MSW server with autocomplete handlers
+const server = setupServer(...autocompleteHandlers);
 
 describe("AutocompleteApi Integration Tests", () => {
   let client: CachedOpenAlexClient;
 
   beforeAll(() => {
+    server.listen({ onUnhandledRequest: "warn" });
     client = new CachedOpenAlexClient({
       userEmail: "test@academic-explorer.com",
     });
+  });
+
+  afterEach(() => {
+    server.resetHandlers();
+  });
+
+  afterAll(() => {
+    server.close();
   });
 
   describe("General Autocomplete", () => {
