@@ -1,24 +1,33 @@
 /**
  * Integration tests for AutocompleteApi
- * Tests actual API calls to OpenAlex autocomplete endpoints
- *
- * These tests make real API calls and are skipped by default.
- * Set RUN_INTEGRATION_TESTS=true to enable them.
+ * Tests autocomplete API integration with mocked responses
  */
 
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
+import { setupServer } from "msw/node";
 import { CachedOpenAlexClient } from "../../cached-client";
 import type { EntityType } from "../../types";
+import { autocompleteHandlers } from "./autocomplete-handlers";
 
-const shouldRunIntegrationTests = process.env.RUN_INTEGRATION_TESTS === "true";
+// Setup MSW server with autocomplete handlers
+const server = setupServer(...autocompleteHandlers);
 
-describe.skipIf(!shouldRunIntegrationTests)("AutocompleteApi Integration Tests", () => {
+describe("AutocompleteApi Integration Tests", () => {
   let client: CachedOpenAlexClient;
 
   beforeAll(() => {
+    server.listen({ onUnhandledRequest: "warn" });
     client = new CachedOpenAlexClient({
       userEmail: "test@academic-explorer.com",
     });
+  });
+
+  afterEach(() => {
+    server.resetHandlers();
+  });
+
+  afterAll(() => {
+    server.close();
   });
 
   describe("General Autocomplete", () => {
