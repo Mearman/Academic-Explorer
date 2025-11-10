@@ -134,7 +134,7 @@ export function CatalogueManager({ onNavigate, sharedToken }: CatalogueManagerPr
   };
 
   return (
-    <Container size="xl" py="md">
+    <Container size="xl" py="md" data-testid="catalogue-manager">
       <Stack gap="lg">
         {/* Header */}
         <Group justify="space-between">
@@ -234,10 +234,10 @@ export function CatalogueManager({ onNavigate, sharedToken }: CatalogueManagerPr
 
         {/* Selected List Details */}
         {selectedList && (
-          <Card withBorder p="md" bg="gray.0">
+          <Card withBorder p="md" bg="gray.0" data-testid="selected-list-details">
             <Group justify="space-between" mb="md">
               <div>
-                <Title order={3}>{selectedList.title}</Title>
+                <Title order={3} data-testid="selected-list-title">{selectedList.title}</Title>
                 {selectedList.description && (
                   <Text c="dimmed" size="sm" mt="xs">
                     {selectedList.description}
@@ -251,6 +251,15 @@ export function CatalogueManager({ onNavigate, sharedToken }: CatalogueManagerPr
                     {tag}
                   </Badge>
                 ))}
+                <Button
+                  variant="light"
+                  size="sm"
+                  onClick={handleShare}
+                  leftSection={<IconShare size={16} />}
+                  data-testid="share-list-button"
+                >
+                  Share
+                </Button>
               </Group>
             </Group>
 

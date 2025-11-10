@@ -111,6 +111,7 @@ function ListCard({ list, isSelected, onSelect, onEdit, onDelete, onShare, onNav
       className={isSelected ? "border-blue-500 bg-blue-50 dark:bg-blue-950" : ""}
       style={{ cursor: "pointer" }}
       onClick={onSelect}
+      data-testid={`list-card-${list.id}`}
     >
       <Group justify="space-between" mb="xs">
         <Group>
@@ -119,7 +120,7 @@ function ListCard({ list, isSelected, onSelect, onEdit, onDelete, onShare, onNav
           ) : (
             <IconList size={20} color="var(--mantine-color-green-6)" />
           )}
-          <Text fw={500} size="lg" flex={1}>
+          <Text fw={500} size="lg" flex={1} data-testid={`list-card-title-${list.id}`}>
             {list.title}
           </Text>
         </Group>
@@ -165,6 +166,7 @@ function ListCard({ list, isSelected, onSelect, onEdit, onDelete, onShare, onNav
                 e.stopPropagation();
                 onEdit();
               }}
+              data-testid={`edit-list-${list.id}`}
             >
               <IconEdit size={14} />
             </ActionIcon>
@@ -179,6 +181,7 @@ function ListCard({ list, isSelected, onSelect, onEdit, onDelete, onShare, onNav
                 e.stopPropagation();
                 onDelete();
               }}
+              data-testid={`delete-list-${list.id}`}
             >
               <IconTrash size={14} />
             </ActionIcon>
@@ -291,11 +294,13 @@ function EditListModal({
     <Modal opened={opened} onClose={onClose} title="Edit List" size="md">
       <Stack gap="md">
         <TextInput
+          id="list-title"
           label="Title"
           placeholder="List title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
+          data-testid="edit-list-title"
         />
 
         <Textarea
