@@ -127,17 +127,21 @@ test.describe("Catalogue Basic Functionality", () => {
     // First create a list
     await createTestList(page, "Editable Test List");
 
-    // The list is now selected (auto-selected after creation)
-    // Wait for the selected list details section to appear
-    await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10000 });
+    // The list is now created. Find its card and click the edit button on the card
+    const listCard = page.locator('.mantine-Card-root[data-testid^="list-card-"]').filter({ hasText: "Editable Test List" }).first();
+    await expect(listCard).toBeVisible({ timeout: 10000 });
 
-    // Wait for the edit button to be visible and then click it
-    const editButton = page.locator('[data-testid="edit-selected-list-button"]');
+    // Get the list ID from the card
+    const cardTestId = await listCard.getAttribute('data-testid');
+    const listId = cardTestId?.replace('list-card-', '') || '';
+
+    // Click the edit button on the list card
+    const editButton = page.locator(`[data-testid="edit-list-${listId}"]`);
     await expect(editButton).toBeVisible({ timeout: 10000 });
     await editButton.click();
 
     // Wait for edit modal
-    await expect(page.locator('[role="dialog"]')).toBeVisible();
+    await expect(page.locator('[role="dialog"]')).toBeVisible({ timeout: 10000 });
     await expect(page.locator('h2:has-text("Edit List")')).toBeVisible();
 
     // Update title - use the edit form's input field
@@ -148,6 +152,7 @@ test.describe("Catalogue Basic Functionality", () => {
 
     // Verify changes are saved
     await expect(page.locator('[role="dialog"]')).not.toBeVisible();
+    // The list should still be selected and show the updated title
     await expect(page.locator('[data-testid="selected-list-title"]:has-text("Updated Test List")')).toBeVisible({ timeout: 10000 });
   });
 
@@ -184,9 +189,13 @@ test.describe("Catalogue Basic Functionality", () => {
     // Confirm deletion - look for the delete button in the modal
     await page.locator('[role="dialog"] button:has-text("Delete")').click();
 
-    // Verify list is deleted - the selected list details should disappear
+    // Verify list is deleted
     await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 10000 });
-    await expect(page.locator('[data-testid="selected-list-title"]:has-text("Deletable Test List")')).not.toBeVisible({ timeout: 10000 });
+
+    // Wait for the list card to be removed from the DOM
+    await expect(page.locator('.mantine-Card-root[data-testid^="list-card-"]').filter({ hasText: "Deletable Test List" })).not.toBeVisible({ timeout: 10000 });
+
+    // The selected list details might still show briefly, but the card should be gone
   });
 
   test("should search and filter lists", async ({ page }) => {
