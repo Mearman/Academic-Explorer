@@ -174,26 +174,22 @@ export function CatalogueManager({ onNavigate, sharedToken }: CatalogueManagerPr
           </Group>
 
           <Group gap="xs">
-            <Tooltip label="Import from URL">
-              <ActionIcon
-                variant="light"
-                size="lg"
-                onClick={() => setShowImportModal(true)}
-              >
-                <IconUpload size={rem(18)} />
-              </ActionIcon>
-            </Tooltip>
+            <Button
+              variant="light"
+              leftSection={<IconUpload size={16} />}
+              onClick={() => setShowImportModal(true)}
+            >
+              Import
+            </Button>
 
-            <Tooltip label="Share current list">
-              <ActionIcon
-                variant="light"
-                size="lg"
-                onClick={handleShare}
-                disabled={!selectedList}
-              >
-                <IconShare size={rem(18)} />
-              </ActionIcon>
-            </Tooltip>
+            <Button
+              variant="light"
+              leftSection={<IconShare size={16} />}
+              onClick={handleShare}
+              disabled={!selectedList}
+            >
+              Share
+            </Button>
 
             <Button
               leftSection={<IconPlus size={16} />}
