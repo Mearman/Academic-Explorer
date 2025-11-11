@@ -81,8 +81,9 @@ tools/dist/**/lib/
 .temp/
 .tmp/
 
-# Claude development notes and plans
-.claude/
+# Claude development notes and plans (but allow Spec Kit commands)
+.claude/*
+!.claude/commands/
 
 # Vitest temporary compiled config files
 **/*.timestamp-*.mjs
