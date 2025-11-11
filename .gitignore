@@ -116,3 +116,15 @@ apps/web/src/routeTree.gen.ts
 
 # Prevent incorrectly nested cache directories from workspace root detection bugs
 apps/web/apps/
+
+# TypeScript in-place compilation artifacts (PROBLEM - should never exist)
+# These files should only exist in dist/, never in src/
+apps/web/src/**/*.js
+apps/web/src/**/*.js.map
+apps/web/src/**/*.d.ts
+apps/web/src/**/*.d.ts.map
+
+# Exception: Allow legitimate .js files
+!apps/web/src/**/*.test.js
+!apps/web/src/**/*.config.js
+!apps/web/src/build-plugins/**/*.js
