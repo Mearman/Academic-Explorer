@@ -124,10 +124,8 @@ apps/web/src/**/*.js.map
 apps/web/src/**/*.d.ts
 apps/web/src/**/*.d.ts.map
 
-# Exception: Allow legitimate .js files
-!apps/web/src/**/*.test.js
-!apps/web/src/**/*.config.js
-!apps/web/src/build-plugins/**/*.js
+# No exceptions - ALL .js files in src/ are compilation artifacts
+# If a .ts/.tsx source exists, the .js should NEVER be committed
 
 # Root-level TypeScript compilation artifacts (PROBLEM - should never exist)
 # Config files should remain as .ts and be processed by tsx/vite
