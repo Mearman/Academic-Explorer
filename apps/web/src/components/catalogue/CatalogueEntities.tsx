@@ -457,7 +457,7 @@ export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitie
             No entities yet
           </Text>
           <Text size="sm" c="dimmed">
-            Add entities to "{selectedList.title}" to get started
+            Add entities to get started
           </Text>
         </Stack>
       </Card>
