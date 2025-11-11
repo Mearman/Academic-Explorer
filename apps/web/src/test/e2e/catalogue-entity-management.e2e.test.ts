@@ -33,9 +33,11 @@ test.describe("Catalogue Entity Management", () => {
     // Should open catalogue selection modal
     await expect(page.locator('[role="dialog"]')).toBeVisible();
 
-    // Select the first list using the Select dropdown (Entity Test List should be there)
+    // Select the list using the Select dropdown
     await page.locator('[data-testid="add-to-list-select"]').click();
-    await page.locator('[role="option"]').first().click();
+
+    // Wait for options to appear and select "Entity Test List"
+    await page.locator('[role="option"]:has-text("Entity Test List")').click();
 
     // Add to list
     await page.locator('[data-testid="add-to-list-submit"]').click();
