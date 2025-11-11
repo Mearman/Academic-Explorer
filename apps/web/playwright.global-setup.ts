@@ -74,79 +74,87 @@ async function globalSetup(config: FullConfig) {
       ]);
 
       // Save storage state for reuse in tests (with timeout protection)
+      // Include IndexedDB to support catalogue operations (Playwright 1.51+)
       await Promise.race([
-        context.storageState({ path: STORAGE_STATE_PATH }),
+        context.storageState({
+          path: STORAGE_STATE_PATH,
+          indexedDB: true // Enable IndexedDB state persistence
+        }),
         new Promise((_, reject) =>
           setTimeout(() => reject(new Error("Storage state save timeout")), 10000)
         )
       ]);
-      console.log(`✅ Storage state saved to: ${STORAGE_STATE_PATH}`);
+      console.log(`✅ Storage state saved with IndexedDB support: ${STORAGE_STATE_PATH}`);
 
-      // Clear IndexedDB databases to prevent DexieError2 conflicts in E2E tests
-      await page.evaluate(() => {
-        return new Promise((resolve) => {
-          if (!("indexedDB" in window)) {
-            resolve({ error: "IndexedDB not available" });
-            return;
-          }
+      // NOTE: IndexedDB databases are now preserved via storageState({ indexedDB: true })
+      // Previous approach of deleting databases was causing test failures
+      // The saved storage state will be reused across test runs for performance
 
-          const databasesToDelete = [
-            "user-interactions",
-            "catalogue-db",
-            "openalex-cache"
-          ];
+      // Commented out: IndexedDB deletion code that was causing catalogue tests to fail
+      // await page.evaluate(() => {
+      //   return new Promise((resolve) => {
+      //     if (!("indexedDB" in window)) {
+      //       resolve({ error: "IndexedDB not available" });
+      //       return;
+      //     }
+      //
+      //     const databasesToDelete = [
+      //       "user-interactions",
+      //       "catalogue-db",
+      //       "openalex-cache"
+      //     ];
+      //
+      //     let deletedCount = 0;
+      //     const totalCount = databasesToDelete.length;
+      //
+      //     const checkComplete = () => {
+      //       if (deletedCount === totalCount) {
+      //         resolve({ deletedDatabases: databasesToDelete.length });
+      //       }
+      //     };
+      //
+      //     databasesToDelete.forEach(dbName => {
+      //       try {
+      //         const deleteRequest = indexedDB.deleteDatabase(dbName);
+      //
+      //         deleteRequest.onsuccess = () => {
+      //           console.log(`✅ Deleted IndexedDB: ${dbName}`);
+      //           deletedCount++;
+      //           checkComplete();
+      //         };
+      //
+      //         deleteRequest.onerror = () => {
+      //           console.log(`❌ Failed to delete IndexedDB: ${dbName}`);
+      //           deletedCount++; // Still count as complete to avoid hanging
+      //           checkComplete();
+      //         };
+      //
+      //         deleteRequest.onblocked = () => {
+      //           console.log(`⚠️ Blocked deleting IndexedDB: ${dbName}`);
+      //           deletedCount++; // Still count as complete to avoid hanging
+      //           checkComplete();
+      //         };
+      //       } catch (error) {
+      //         console.log(`❌ Exception deleting IndexedDB ${dbName}:`, error);
+      //         deletedCount++; // Still count as complete to avoid hanging
+      //         checkComplete();
+      //       }
+      //     });
+      //   });
+      // });
 
-          let deletedCount = 0;
-          const totalCount = databasesToDelete.length;
+      // Commented out: localStorage/sessionStorage clearing (now preserved in storage state)
+      // await page.evaluate(() => {
+      //   try {
+      //     localStorage.clear();
+      //     sessionStorage.clear();
+      //     console.log("✅ Cleared localStorage and sessionStorage");
+      //   } catch (error) {
+      //     console.log("⚠️ Failed to clear storage:", error);
+      //   }
+      // });
 
-          const checkComplete = () => {
-            if (deletedCount === totalCount) {
-              resolve({ deletedDatabases: databasesToDelete.length });
-            }
-          };
-
-          databasesToDelete.forEach(dbName => {
-            try {
-              const deleteRequest = indexedDB.deleteDatabase(dbName);
-
-              deleteRequest.onsuccess = () => {
-                console.log(`✅ Deleted IndexedDB: ${dbName}`);
-                deletedCount++;
-                checkComplete();
-              };
-
-              deleteRequest.onerror = () => {
-                console.log(`❌ Failed to delete IndexedDB: ${dbName}`);
-                deletedCount++; // Still count as complete to avoid hanging
-                checkComplete();
-              };
-
-              deleteRequest.onblocked = () => {
-                console.log(`⚠️ Blocked deleting IndexedDB: ${dbName}`);
-                deletedCount++; // Still count as complete to avoid hanging
-                checkComplete();
-              };
-            } catch (error) {
-              console.log(`❌ Exception deleting IndexedDB ${dbName}:`, error);
-              deletedCount++; // Still count as complete to avoid hanging
-              checkComplete();
-            }
-          });
-        });
-      });
-
-      // Additional cleanup: Clear localStorage and sessionStorage
-      await page.evaluate(() => {
-        try {
-          localStorage.clear();
-          sessionStorage.clear();
-          console.log("✅ Cleared localStorage and sessionStorage");
-        } catch (error) {
-          console.log("⚠️ Failed to clear storage:", error);
-        }
-      });
-
-      console.log("🧹 IndexedDB databases cleared for fresh E2E test state");
+      console.log("🧹 IndexedDB databases preserved for E2E test state");
 
       // Log cache statistics if available (with timeout protection)
       const cacheStats = await page.evaluate(() => {
