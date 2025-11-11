@@ -46,9 +46,10 @@ import { SPECIAL_LIST_IDS } from "@academic-explorer/utils/storage/catalogue-db"
 interface CatalogueManagerProps {
   onNavigate?: (url: string) => void;
   sharedToken?: string;
+  shareData?: string; // T064: Compressed share data from URL parameter
 }
 
-export function CatalogueManager({ onNavigate, sharedToken }: CatalogueManagerProps) {
+export function CatalogueManager({ onNavigate, sharedToken, shareData }: CatalogueManagerProps) {
   const {
     lists,
     selectedList,
@@ -75,6 +76,16 @@ export function CatalogueManager({ onNavigate, sharedToken }: CatalogueManagerPr
     totalEntities: number;
     entityCounts: Record<string, number>;
   } | null>(null);
+
+  // T064: Auto-open import modal when share data is present in URL
+  useEffect(() => {
+    if (shareData) {
+      logger.debug("catalogue-ui", "Share data detected in URL, opening import modal", {
+        dataLength: shareData.length
+      });
+      setShowImportModal(true);
+    }
+  }, [shareData]);
 
   // Load stats when selected list changes
   useEffect(() => {
@@ -400,6 +411,7 @@ export function CatalogueManager({ onNavigate, sharedToken }: CatalogueManagerPr
           <ImportModal
             onClose={() => setShowImportModal(false)}
             onImport={handleImport}
+            initialShareData={shareData}
           />
         </Modal>
 
