@@ -28,9 +28,9 @@ This is a pnpm monorepo project:
 
 **Purpose**: Project initialization and basic structure for storage abstraction
 
-- [ ] T001 Create directory structure for storage providers in packages/utils/src/storage/
-- [ ] T002 [P] Create directory structure for tests in packages/utils/tests/unit/ and packages/utils/tests/integration/
-- [ ] T003 [P] Create directory structure for React context in apps/web/src/contexts/
+- [X] T001 Create directory structure for storage providers in packages/utils/src/storage/
+- [X] T002 [P] Create directory structure for tests in packages/utils/tests/unit/ and packages/utils/tests/integration/
+- [X] T003 [P] Create directory structure for React context in apps/web/src/contexts/
 
 ---
 
@@ -40,10 +40,10 @@ This is a pnpm monorepo project:
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 Define CatalogueStorageProvider interface in packages/utils/src/storage/catalogue-storage-provider.ts (25+ operations from contracts/storage-provider.ts)
-- [ ] T005 [P] Define parameter types (CreateListParams, AddEntityParams, etc.) in packages/utils/src/storage/catalogue-storage-provider.ts
-- [ ] T006 [P] Define result types (ListStats, BatchAddResult, ShareAccessResult) in packages/utils/src/storage/catalogue-storage-provider.ts
-- [ ] T007 [P] Export storage provider types from packages/utils/src/storage/index.ts
+- [X] T004 Define CatalogueStorageProvider interface in packages/utils/src/storage/catalogue-storage-provider.ts (25+ operations from contracts/storage-provider.ts)
+- [X] T005 [P] Define parameter types (CreateListParams, AddEntityParams, etc.) in packages/utils/src/storage/catalogue-storage-provider.ts
+- [X] T006 [P] Define result types (ListStats, BatchAddResult, ShareAccessResult) in packages/utils/src/storage/catalogue-storage-provider.ts
+- [X] T007 [P] Export storage provider types from packages/utils/src/storage/index.ts
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -59,20 +59,20 @@ This is a pnpm monorepo project:
 
 ### Implementation for User Story 2
 
-- [ ] T008 [P] [US2] Implement DexieStorageProvider class in packages/utils/src/storage/dexie-storage-provider.ts (wraps CatalogueService)
-- [ ] T009 [P] [US2] Implement all list operations (createList, getList, getAllLists, updateList, deleteList) by delegating to CatalogueService
-- [ ] T010 [P] [US2] Implement all entity operations (addEntityToList, getListEntities, removeEntityFromList, updateEntityNotes, addEntitiesToList) by delegating to CatalogueService
-- [ ] T011 [P] [US2] Implement search and stats operations (searchLists, getListStats) by delegating to CatalogueService
-- [ ] T012 [P] [US2] Implement sharing operations (generateShareToken, getListByShareToken) by delegating to CatalogueService
-- [ ] T013 [P] [US2] Implement special lists operations (initializeSpecialLists, isSpecialList, addBookmark, removeBookmark, getBookmarks, isBookmarked, addToHistory, getHistory, clearHistory, getNonSystemLists) by delegating to CatalogueService
-- [ ] T014 [US2] Export DexieStorageProvider from packages/utils/src/storage/index.ts
-- [ ] T015 [US2] Create React StorageProviderContext in apps/web/src/contexts/storage-provider-context.tsx
-- [ ] T016 [US2] Implement StorageProviderWrapper component in apps/web/src/contexts/storage-provider-context.tsx
-- [ ] T017 [US2] Implement useStorageProvider hook with error checking in apps/web/src/contexts/storage-provider-context.tsx
-- [ ] T018 [US2] Update apps/web/src/main.tsx to create DexieStorageProvider and wrap app with StorageProviderWrapper
-- [ ] T019 [US2] Update apps/web/src/main.tsx to call initializeSpecialLists() on startup
-- [ ] T020 [US2] Update apps/web/src/hooks/useCatalogue.ts to use useStorageProvider() instead of direct catalogueService import
-- [ ] T021 [US2] Update all storage operations in useCatalogue.ts to use injected provider (refreshLists, createList, updateList, deleteList, addEntity, etc.)
+- [X] T008 [P] [US2] Implement DexieStorageProvider class in packages/utils/src/storage/dexie-storage-provider.ts (wraps CatalogueService)
+- [X] T009 [P] [US2] Implement all list operations (createList, getList, getAllLists, updateList, deleteList) by delegating to CatalogueService
+- [X] T010 [P] [US2] Implement all entity operations (addEntityToList, getListEntities, removeEntityFromList, updateEntityNotes, addEntitiesToList) by delegating to CatalogueService
+- [X] T011 [P] [US2] Implement search and stats operations (searchLists, getListStats) by delegating to CatalogueService
+- [X] T012 [P] [US2] Implement sharing operations (generateShareToken, getListByShareToken) by delegating to CatalogueService
+- [X] T013 [P] [US2] Implement special lists operations (initializeSpecialLists, isSpecialList, addBookmark, removeBookmark, getBookmarks, isBookmarked, addToHistory, getHistory, clearHistory, getNonSystemLists) by delegating to CatalogueService
+- [X] T014 [US2] Export DexieStorageProvider from packages/utils/src/storage/index.ts
+- [X] T015 [US2] Create React StorageProviderContext in apps/web/src/contexts/storage-provider-context.tsx
+- [X] T016 [US2] Implement StorageProviderWrapper component in apps/web/src/contexts/storage-provider-context.tsx
+- [X] T017 [US2] Implement useStorageProvider hook with error checking in apps/web/src/contexts/storage-provider-context.tsx
+- [X] T018 [US2] Update apps/web/src/main.tsx to create DexieStorageProvider and wrap app with StorageProviderWrapper
+- [X] T019 [US2] Update apps/web/src/main.tsx to call initializeSpecialLists() on startup
+- [X] T020 [US2] Update apps/web/src/hooks/useCatalogue.ts to use useStorageProvider() instead of direct catalogueService import
+- [X] T021 [US2] Update all storage operations in useCatalogue.ts to use injected provider (refreshLists, createList, updateList, deleteList, addEntity, etc.)
 
 ### Tests for User Story 2
 
@@ -97,18 +97,18 @@ This is a pnpm monorepo project:
 
 ### Implementation for User Story 1
 
-- [ ] T026 [P] [US1] Implement InMemoryStorageProvider class in packages/utils/src/storage/in-memory-storage-provider.ts
-- [ ] T027 [P] [US1] Implement storage using JavaScript Maps (lists: Map, entities: Map, shares: Map) in InMemoryStorageProvider
-- [ ] T028 [P] [US1] Implement all list operations (createList, getList, getAllLists, updateList, deleteList) using Map operations
-- [ ] T029 [P] [US1] Implement all entity operations (addEntityToList, getListEntities, removeEntityFromList, updateEntityNotes, addEntitiesToList) using Map operations
-- [ ] T030 [P] [US1] Implement search and stats operations (searchLists, getListStats) using in-memory filtering
-- [ ] T031 [P] [US1] Implement sharing operations (generateShareToken, getListByShareToken) using Map storage
-- [ ] T032 [P] [US1] Implement special lists operations (initializeSpecialLists, isSpecialList, bookmarks, history) using special list IDs
-- [ ] T033 [P] [US1] Implement clear() method for test isolation in InMemoryStorageProvider
-- [ ] T034 [US1] Export InMemoryStorageProvider from packages/utils/src/storage/index.ts
-- [ ] T035 [US1] Remove manual IndexedDB initialization code from apps/web/src/test/e2e/catalogue-entity-management.e2e.test.ts (lines 17-66)
-- [ ] T036 [US1] Update apps/web/playwright.global-setup.ts to keep IndexedDB persistence enabled (storageState with indexedDB: true)
-- [ ] T037 [US1] Remove commented-out IndexedDB deletion code from apps/web/playwright.global-setup.ts (lines 89-153)
+- [X] T026 [P] [US1] Implement InMemoryStorageProvider class in packages/utils/src/storage/in-memory-storage-provider.ts
+- [X] T027 [P] [US1] Implement storage using JavaScript Maps (lists: Map, entities: Map, shares: Map) in InMemoryStorageProvider
+- [X] T028 [P] [US1] Implement all list operations (createList, getList, getAllLists, updateList, deleteList) using Map operations
+- [X] T029 [P] [US1] Implement all entity operations (addEntityToList, getListEntities, removeEntityFromList, updateEntityNotes, addEntitiesToList) using Map operations
+- [X] T030 [P] [US1] Implement search and stats operations (searchLists, getListStats) using in-memory filtering
+- [X] T031 [P] [US1] Implement sharing operations (generateShareToken, getListByShareToken) using Map storage
+- [X] T032 [P] [US1] Implement special lists operations (initializeSpecialLists, isSpecialList, bookmarks, history) using special list IDs
+- [X] T033 [P] [US1] Implement clear() method for test isolation in InMemoryStorageProvider
+- [X] T034 [US1] Export InMemoryStorageProvider from packages/utils/src/storage/index.ts
+- [X] T035 [US1] Remove manual IndexedDB initialization code from apps/web/src/test/e2e/catalogue-entity-management.e2e.test.ts (lines 17-66)
+- [X] T036 [US1] Update apps/web/playwright.global-setup.ts to keep IndexedDB persistence enabled (storageState with indexedDB: true)
+- [X] T037 [US1] Remove commented-out IndexedDB deletion code from apps/web/playwright.global-setup.ts (lines 89-153)
 
 ### Tests for User Story 1
 

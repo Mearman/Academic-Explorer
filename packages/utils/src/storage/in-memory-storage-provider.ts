@@ -1,0 +1,540 @@
+/**
+ * In-memory storage provider implementation for testing
+ * Uses JavaScript Maps for fast, isolated test execution
+ */
+
+import type {
+	CatalogueStorageProvider,
+	CreateListParams,
+	AddEntityParams,
+	AddToHistoryParams,
+	AddBookmarkParams,
+	ListStats,
+	BatchAddResult,
+	ShareAccessResult,
+} from './catalogue-storage-provider.js';
+import type { CatalogueList, CatalogueEntity, CatalogueShareRecord, EntityType } from './catalogue-db.js';
+import { SPECIAL_LIST_IDS } from './catalogue-db.js';
+
+/**
+ * In-memory storage provider for E2E and unit testing
+ * Provides fast, isolated storage without IndexedDB overhead
+ */
+export class InMemoryStorageProvider implements CatalogueStorageProvider {
+	private lists: Map<string, CatalogueList>;
+	private entities: Map<string, CatalogueEntity>;
+	private shares: Map<string, CatalogueShareRecord>;
+
+	constructor() {
+		this.lists = new Map();
+		this.entities = new Map();
+		this.shares = new Map();
+	}
+
+	/**
+	 * Clear all storage for test isolation
+	 * Call this in afterEach() to ensure clean state between tests
+	 */
+	clear(): void {
+		this.lists.clear();
+		this.entities.clear();
+		this.shares.clear();
+	}
+
+	// ========== List Operations ==========
+
+	async createList(params: CreateListParams): Promise<string> {
+		const id = crypto.randomUUID();
+		const list: CatalogueList = {
+			id,
+			title: params.title,
+			description: params.description,
+			type: params.type,
+			tags: params.tags,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			isPublic: params.isPublic ?? false,
+		};
+
+		this.lists.set(id, list);
+		return id;
+	}
+
+	async getList(listId: string): Promise<CatalogueList | null> {
+		return this.lists.get(listId) ?? null;
+	}
+
+	async getAllLists(): Promise<CatalogueList[]> {
+		const allLists = Array.from(this.lists.values());
+		// Sort by updatedAt descending (most recent first)
+		return allLists.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+	}
+
+	async updateList(
+		listId: string,
+		updates: Partial<Pick<CatalogueList, 'title' | 'description' | 'tags' | 'isPublic'>>
+	): Promise<void> {
+		const list = this.lists.get(listId);
+		if (!list) {
+			throw new Error('List not found');
+		}
+
+		const updatedList: CatalogueList = {
+			...list,
+			...updates,
+			updatedAt: new Date(),
+		};
+
+		this.lists.set(listId, updatedList);
+	}
+
+	async deleteList(listId: string): Promise<void> {
+		if (this.isSpecialList(listId)) {
+			throw new Error(`Cannot delete special system list: ${listId}`);
+		}
+
+		if (!this.lists.has(listId)) {
+			throw new Error('List not found');
+		}
+
+		// Delete list
+		this.lists.delete(listId);
+
+		// Delete all entities in the list
+		for (const [entityId, entity] of this.entities.entries()) {
+			if (entity.listId === listId) {
+				this.entities.delete(entityId);
+			}
+		}
+
+		// Delete all share records for the list
+		for (const [shareId, share] of this.shares.entries()) {
+			if (share.listId === listId) {
+				this.shares.delete(shareId);
+			}
+		}
+	}
+
+	// ========== Entity Operations ==========
+
+	async addEntityToList(params: AddEntityParams): Promise<string> {
+		// Validate that the entity type matches the list type
+		const list = await this.getList(params.listId);
+		if (!list) {
+			throw new Error('List not found');
+		}
+
+		if (list.type === 'bibliography' && params.entityType !== 'works') {
+			throw new Error('Bibliographies can only contain works');
+		}
+
+		// Check if entity already exists in list
+		for (const entity of this.entities.values()) {
+			if (
+				entity.listId === params.listId &&
+				entity.entityType === params.entityType &&
+				entity.entityId === params.entityId
+			) {
+				throw new Error('Entity already exists in list');
+			}
+		}
+
+		// Get next position
+		let maxPosition = 0;
+		for (const entity of this.entities.values()) {
+			if (entity.listId === params.listId) {
+				maxPosition = Math.max(maxPosition, entity.position);
+			}
+		}
+		const position = params.position ?? maxPosition + 1;
+
+		const id = crypto.randomUUID();
+		const entity: CatalogueEntity = {
+			id,
+			listId: params.listId,
+			entityType: params.entityType,
+			entityId: params.entityId,
+			addedAt: new Date(),
+			notes: params.notes,
+			position,
+		};
+
+		this.entities.set(id, entity);
+
+		// Update list's updated timestamp
+		await this.updateList(params.listId, {});
+
+		return id;
+	}
+
+	async getListEntities(listId: string): Promise<CatalogueEntity[]> {
+		const listEntities: CatalogueEntity[] = [];
+		for (const entity of this.entities.values()) {
+			if (entity.listId === listId) {
+				listEntities.push(entity);
+			}
+		}
+		// Sort by position
+		return listEntities.sort((a, b) => a.position - b.position);
+	}
+
+	async removeEntityFromList(listId: string, entityRecordId: string): Promise<void> {
+		const entity = this.entities.get(entityRecordId);
+		if (!entity) {
+			throw new Error('Entity not found');
+		}
+
+		this.entities.delete(entityRecordId);
+
+		// Update list's updated timestamp
+		await this.updateList(listId, {});
+	}
+
+	async updateEntityNotes(entityRecordId: string, notes: string): Promise<void> {
+		const entity = this.entities.get(entityRecordId);
+		if (!entity) {
+			throw new Error('Entity not found');
+		}
+
+		const updatedEntity: CatalogueEntity = {
+			...entity,
+			notes,
+		};
+
+		this.entities.set(entityRecordId, updatedEntity);
+
+		// Update list's updated timestamp
+		await this.updateList(entity.listId, {});
+	}
+
+	async addEntitiesToList(
+		listId: string,
+		entities: Array<{
+			entityType: EntityType;
+			entityId: string;
+			notes?: string;
+		}>
+	): Promise<BatchAddResult> {
+		let success = 0;
+		let failed = 0;
+
+		// Validate list type
+		const list = await this.getList(listId);
+		if (!list) {
+			throw new Error('List not found');
+		}
+
+		// Get next position
+		let maxPosition = 0;
+		for (const entity of this.entities.values()) {
+			if (entity.listId === listId) {
+				maxPosition = Math.max(maxPosition, entity.position);
+			}
+		}
+		let nextPosition = maxPosition + 1;
+
+		for (const entityData of entities) {
+			try {
+				// Validate entity type for bibliographies
+				if (list.type === 'bibliography' && entityData.entityType !== 'works') {
+					failed++;
+					continue;
+				}
+
+				// Check for duplicates
+				let exists = false;
+				for (const existingEntity of this.entities.values()) {
+					if (
+						existingEntity.listId === listId &&
+						existingEntity.entityType === entityData.entityType &&
+						existingEntity.entityId === entityData.entityId
+					) {
+						exists = true;
+						break;
+					}
+				}
+
+				if (exists) {
+					failed++;
+					continue;
+				}
+
+				const id = crypto.randomUUID();
+				const entity: CatalogueEntity = {
+					id,
+					listId,
+					entityType: entityData.entityType,
+					entityId: entityData.entityId,
+					addedAt: new Date(),
+					notes: entityData.notes,
+					position: nextPosition++,
+				};
+
+				this.entities.set(id, entity);
+				success++;
+			} catch (error) {
+				failed++;
+			}
+		}
+
+		// Update list's updated timestamp
+		await this.updateList(listId, {});
+
+		return { success, failed };
+	}
+
+	// ========== Search & Stats ==========
+
+	async searchLists(query: string): Promise<CatalogueList[]> {
+		const lowercaseQuery = query.toLowerCase();
+		const results: CatalogueList[] = [];
+
+		for (const list of this.lists.values()) {
+			if (
+				list.title.toLowerCase().includes(lowercaseQuery) ||
+				(list.description && list.description.toLowerCase().includes(lowercaseQuery)) ||
+				(list.tags && list.tags.some((tag) => tag.toLowerCase().includes(lowercaseQuery)))
+			) {
+				results.push(list);
+			}
+		}
+
+		return results;
+	}
+
+	async getListStats(listId: string): Promise<ListStats> {
+		const entities = await this.getListEntities(listId);
+
+		const entityCounts: Record<EntityType, number> = {
+			works: 0,
+			authors: 0,
+			sources: 0,
+			institutions: 0,
+			topics: 0,
+			publishers: 0,
+			funders: 0,
+		};
+
+		for (const entity of entities) {
+			entityCounts[entity.entityType]++;
+		}
+
+		return {
+			totalEntities: entities.length,
+			entityCounts,
+		};
+	}
+
+	// ========== Sharing ==========
+
+	async generateShareToken(listId: string): Promise<string> {
+		const list = this.lists.get(listId);
+		if (!list) {
+			throw new Error('List not found');
+		}
+
+		const shareToken = crypto.randomUUID();
+		const expiresAt = new Date();
+		expiresAt.setFullYear(expiresAt.getFullYear() + 1); // Expires in 1 year
+
+		const shareRecord: CatalogueShareRecord = {
+			id: crypto.randomUUID(),
+			listId,
+			shareToken,
+			createdAt: new Date(),
+			expiresAt,
+			accessCount: 0,
+		};
+
+		this.shares.set(shareRecord.id!, shareRecord);
+
+		// Update list with share token
+		const updatedList: CatalogueList = {
+			...list,
+			shareToken,
+			isPublic: true,
+		};
+		this.lists.set(listId, updatedList);
+
+		return shareToken;
+	}
+
+	async getListByShareToken(shareToken: string): Promise<ShareAccessResult> {
+		// Find share record
+		let shareRecord: CatalogueShareRecord | null = null;
+		for (const share of this.shares.values()) {
+			if (share.shareToken === shareToken) {
+				shareRecord = share;
+				break;
+			}
+		}
+
+		if (!shareRecord) {
+			return { list: null, valid: false };
+		}
+
+		// Check if share has expired
+		if (shareRecord.expiresAt && shareRecord.expiresAt < new Date()) {
+			return { list: null, valid: false };
+		}
+
+		// Update access count
+		const updatedShareRecord: CatalogueShareRecord = {
+			...shareRecord,
+			accessCount: shareRecord.accessCount + 1,
+			lastAccessedAt: new Date(),
+		};
+		this.shares.set(shareRecord.id!, updatedShareRecord);
+
+		const list = await this.getList(shareRecord.listId);
+		return { list, valid: true };
+	}
+
+	// ========== Special Lists (Bookmarks & History) ==========
+
+	async initializeSpecialLists(): Promise<void> {
+		const bookmarksList = await this.getList(SPECIAL_LIST_IDS.BOOKMARKS);
+		const historyList = await this.getList(SPECIAL_LIST_IDS.HISTORY);
+
+		if (!bookmarksList) {
+			const list: CatalogueList = {
+				id: SPECIAL_LIST_IDS.BOOKMARKS,
+				title: 'Bookmarks',
+				description: 'System-managed bookmarks list',
+				type: 'list',
+				tags: ['system'],
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				isPublic: false,
+			};
+			this.lists.set(SPECIAL_LIST_IDS.BOOKMARKS, list);
+		}
+
+		if (!historyList) {
+			const list: CatalogueList = {
+				id: SPECIAL_LIST_IDS.HISTORY,
+				title: 'History',
+				description: 'System-managed browsing history',
+				type: 'list',
+				tags: ['system'],
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				isPublic: false,
+			};
+			this.lists.set(SPECIAL_LIST_IDS.HISTORY, list);
+		}
+	}
+
+	isSpecialList(listId: string): boolean {
+		return Object.values(SPECIAL_LIST_IDS).includes(listId as any);
+	}
+
+	async addBookmark(params: AddBookmarkParams): Promise<string> {
+		await this.initializeSpecialLists();
+
+		// Add to bookmarks list with URL as notes
+		const notesWithUrl = params.notes
+			? `${params.notes}\n\nURL: ${params.url}`
+			: `URL: ${params.url}`;
+
+		return await this.addEntityToList({
+			listId: SPECIAL_LIST_IDS.BOOKMARKS,
+			entityType: params.entityType,
+			entityId: params.entityId,
+			notes: notesWithUrl,
+		});
+	}
+
+	async removeBookmark(entityRecordId: string): Promise<void> {
+		await this.removeEntityFromList(SPECIAL_LIST_IDS.BOOKMARKS, entityRecordId);
+	}
+
+	async getBookmarks(): Promise<CatalogueEntity[]> {
+		await this.initializeSpecialLists();
+		return await this.getListEntities(SPECIAL_LIST_IDS.BOOKMARKS);
+	}
+
+	async isBookmarked(entityType: EntityType, entityId: string): Promise<boolean> {
+		for (const entity of this.entities.values()) {
+			if (
+				entity.listId === SPECIAL_LIST_IDS.BOOKMARKS &&
+				entity.entityType === entityType &&
+				entity.entityId === entityId
+			) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	async addToHistory(params: AddToHistoryParams): Promise<string> {
+		await this.initializeSpecialLists();
+
+		// Check if this entity/page already exists in history
+		let existingEntity: CatalogueEntity | null = null;
+		for (const entity of this.entities.values()) {
+			if (
+				entity.listId === SPECIAL_LIST_IDS.HISTORY &&
+				entity.entityType === params.entityType &&
+				entity.entityId === params.entityId
+			) {
+				existingEntity = entity;
+				break;
+			}
+		}
+
+		if (existingEntity) {
+			// Update existing record with new timestamp
+			const updatedEntity: CatalogueEntity = {
+				...existingEntity,
+				addedAt: params.timestamp || new Date(),
+				notes: `URL: ${params.url}${params.title ? `\nTitle: ${params.title}` : ''}`,
+			};
+			this.entities.set(existingEntity.id!, updatedEntity);
+
+			// Update list's updated timestamp
+			await this.updateList(SPECIAL_LIST_IDS.HISTORY, {});
+
+			return existingEntity.id!;
+		}
+
+		// Add new history entry
+		const notes = `URL: ${params.url}${params.title ? `\nTitle: ${params.title}` : ''}`;
+
+		return await this.addEntityToList({
+			listId: SPECIAL_LIST_IDS.HISTORY,
+			entityType: params.entityType,
+			entityId: params.entityId,
+			notes,
+		});
+	}
+
+	async getHistory(): Promise<CatalogueEntity[]> {
+		await this.initializeSpecialLists();
+		return await this.getListEntities(SPECIAL_LIST_IDS.HISTORY);
+	}
+
+	async clearHistory(): Promise<void> {
+		// Delete all entities in history list
+		const entitiesToDelete: string[] = [];
+		for (const [entityId, entity] of this.entities.entries()) {
+			if (entity.listId === SPECIAL_LIST_IDS.HISTORY) {
+				entitiesToDelete.push(entityId);
+			}
+		}
+
+		for (const entityId of entitiesToDelete) {
+			this.entities.delete(entityId);
+		}
+
+		// Update list's updated timestamp
+		await this.updateList(SPECIAL_LIST_IDS.HISTORY, {});
+	}
+
+	async getNonSystemLists(): Promise<CatalogueList[]> {
+		const allLists = await this.getAllLists();
+		return allLists.filter(
+			(list) => !this.isSpecialList(list.id!) && !list.tags?.includes('system')
+		);
+	}
+}

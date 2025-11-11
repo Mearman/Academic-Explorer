@@ -162,6 +162,7 @@ export {
 	defaultStorageConfig,
 	userInteractionsService,
 	DexieStorageProvider,
+	InMemoryStorageProvider,
 	catalogueEventEmitter,
 	SPECIAL_LIST_IDS,
 	type StorageConfig,

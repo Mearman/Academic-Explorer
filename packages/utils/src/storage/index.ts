@@ -42,4 +42,4 @@ export { SPECIAL_LIST_IDS, catalogueEventEmitter } from './catalogue-db.js';
 
 // Storage Provider Implementations
 export { DexieStorageProvider } from './dexie-storage-provider.js';
-// export { InMemoryStorageProvider } from './in-memory-storage-provider.js';
+export { InMemoryStorageProvider } from './in-memory-storage-provider.js';
