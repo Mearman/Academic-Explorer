@@ -171,3 +171,47 @@ Continue parallel execution for remaining phases:
 Phase 2 (Foundational) is complete and provides all necessary types for the feature. The UI components and hooks exist but are blocked by missing storage provider implementation. **Fixing the storage provider is the critical path** to unblocking all 27 failing tests.
 
 Once storage provider is fixed, remaining work is primarily UI enhancements (drag-drop, search, import/export, sharing) which can be implemented incrementally.
+
+---
+
+## Phase 2 Cleanup - Dead Code Removal
+
+### Duplicate Database Schema File Removed
+
+**Date**: 2025-11-11
+
+**File Removed**: `apps/web/src/lib/db/catalogue-db.ts`
+
+**Reason**: Phase 2 implementation created a duplicate database schema file that was never imported or used anywhere in the codebase.
+
+**Why Safe to Remove**:
+- Codebase search confirmed zero imports of `lib/db/catalogue-db`
+- All actual database code uses `@academic-explorer/utils/storage/catalogue-db` (the primary database location)
+- The removed file was a simplified Dexie schema stub that duplicated the more complete implementation in the utils package
+- Build verification: TypeScript compilation and Vite build both pass after removal
+
+**Actual Database Location**: `/packages/utils/src/storage/catalogue-db.ts`
+- This is the production database with full CatalogueService implementation
+- Features: list management, entity operations, sharing, bookmarks, history, bulk operations
+- Used by: HistorySidebar, BookmarksSidebar, CatalogueManager, BookmarkManager, use-user-interactions
+
+**What the Duplicate Contained**:
+- Simple Dexie database class with only catalogueLists and catalogueEntities tables
+- Lacked event system, service layer, sharing features, and comprehensive operations
+- Would have created maintenance burden if kept (risk of drift between duplicates)
+
+**Verification**:
+```bash
+# Confirmed zero imports
+grep -r "lib/db/catalogue-db" apps/web/src/
+# Result: No imports found
+
+# Build verification
+npm run build  # ✓ Passed (dist built in 5.59s)
+```
+
+**Impact**:
+- Eliminated dead code duplication
+- Reduced codebase complexity
+- Ensured single source of truth for catalogue database
+- No functional changes to application behavior
