@@ -113,3 +113,16 @@
 - **SC-002**: [Measurable metric, e.g., "System handles 1000 concurrent users without degradation"]
 - **SC-003**: [User satisfaction metric, e.g., "90% of users successfully complete primary task on first attempt"]
 - **SC-004**: [Business metric, e.g., "Reduce support tickets related to [X] by 50%"]
+
+## Constitution Alignment *(recommended)*
+
+<!--
+  Verify this feature spec aligns with Academic Explorer Constitution principles.
+  See `.specify/memory/constitution.md` for full details.
+-->
+
+- **Type Safety**: Feature avoids `any` types; uses `unknown` with type guards where needed
+- **Test-First**: User stories include testable acceptance scenarios; implementation will follow Red-Green-Refactor
+- **Monorepo Architecture**: Feature fits within existing apps/ or packages/ structure (specify which)
+- **Storage Abstraction**: If feature involves persistence, uses storage provider interface (no direct Dexie/IndexedDB)
+- **Performance & Memory**: Success criteria include performance metrics; memory constraints considered

@@ -156,6 +156,12 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] TXXX [P] Additional unit tests (if requested) in tests/unit/
 - [ ] TXXX Security hardening
 - [ ] TXXX Run quickstart.md validation
+- [ ] TXXX Constitution compliance verification:
+  - [ ] No `any` types in implementation (Type Safety)
+  - [ ] All tests written before implementation (Test-First)
+  - [ ] Proper Nx workspace structure used (Monorepo Architecture)
+  - [ ] Storage operations use provider interface (Storage Abstraction)
+  - [ ] Performance requirements met; memory constraints respected (Performance & Memory)
 
 ---
 

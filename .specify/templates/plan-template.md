@@ -31,7 +31,19 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
+
+1. **Type Safety**: No `any` types planned; use `unknown` with type guards
+2. **Test-First Development**: Tests written and failing before implementation begins
+3. **Monorepo Architecture**: Changes use proper Nx workspace structure (apps/ or packages/)
+4. **Storage Abstraction**: Any storage operations use provider interface (no direct Dexie/IndexedDB coupling)
+5. **Performance & Memory**: Tests run serially; memory constraints considered; Web Workers for heavy computation
+
+**Complexity Justification Required?** Document in Complexity Tracking section if this feature:
+- Adds new packages/apps beyond existing structure
+- Introduces new storage provider implementations
+- Requires new worker threads
+- Violates YAGNI or adds architectural complexity
 
 ## Project Structure
 

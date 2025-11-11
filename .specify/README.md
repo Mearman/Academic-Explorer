@@ -87,10 +87,10 @@ After setup, the following slash commands are available in Claude Code:
 
 The project constitution is located at `.specify/memory/constitution.md` and defines:
 
-- **Core Principles**: TypeScript-first, monorepo architecture, TDD, deterministic behavior
-- **Development Standards**: Code quality, testing requirements, OpenAlex integration
-- **Quality Pipeline**: Type checking, testing, linting, building
-- **CI/CD Requirements**: GitHub Actions, deployment, rollback procedures
+- **Core Principles**: Type Safety (no `any`), Test-First Development, Monorepo Architecture, Storage Abstraction, Performance & Memory
+- **Development Workflow**: Fail-fast test execution, quality pipeline (typecheck/test/build/lint), Nx-managed dependencies
+- **Quality Gates**: Constitution compliance, complexity justification, test coverage requirements
+- **Governance**: Amendment process, versioning, compliance verification
 
 ## Workflow Example
 
