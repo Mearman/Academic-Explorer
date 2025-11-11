@@ -83,6 +83,10 @@ export class DexieStorageProvider implements CatalogueStorageProvider {
 		};
 	}
 
+	async reorderEntities(listId: string, orderedEntityIds: string[]): Promise<void> {
+		return await this.catalogueService.reorderEntities(listId, orderedEntityIds);
+	}
+
 	// ========== Search & Stats ==========
 
 	async searchLists(query: string): Promise<CatalogueList[]> {

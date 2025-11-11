@@ -337,6 +337,27 @@ export interface CatalogueStorageProvider {
     }>
   ): Promise<BatchAddResult>;
 
+  /**
+   * Reorder entities in a list by updating their positions
+   *
+   * Takes an ordered array of entity record IDs and updates their positions
+   * to match the array order. This operation is atomic.
+   *
+   * @param listId - ID of the list containing the entities
+   * @param orderedEntityIds - Array of entity record IDs in the desired order
+   * @returns Promise resolving when reorder completes
+   * @throws {Error} If list not found, entity IDs invalid, or reorder fails
+   *
+   * @example
+   * ```typescript
+   * // Move entity at index 2 to index 0
+   * const entities = await provider.getListEntities("a1b2c3d4-...");
+   * const reordered = [entities[2].id!, entities[0].id!, entities[1].id!, ...entities.slice(3).map(e => e.id!)];
+   * await provider.reorderEntities("a1b2c3d4-...", reordered);
+   * ```
+   */
+  reorderEntities(listId: string, orderedEntityIds: string[]): Promise<void>;
+
   // ========================================
   // Search & Statistics Operations
   // ========================================

@@ -9,7 +9,7 @@ import type { GenericLogger } from "../logger.js";
 
 // Event system for catalogue changes
 type CatalogueEventListener = (event: {
-  type: 'list-added' | 'list-removed' | 'list-updated' | 'entity-added' | 'entity-removed';
+  type: 'list-added' | 'list-removed' | 'list-updated' | 'entity-added' | 'entity-removed' | 'entity-reordered';
   listId?: string;
   entityIds?: string[];
   list?: CatalogueList;
@@ -506,6 +506,60 @@ export class CatalogueService {
         listId,
         entitiesCount: entities.length,
         error,
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Reorder entities in a list by updating their positions
+   */
+  async reorderEntities(listId: string, orderedEntityIds: string[]): Promise<void> {
+    try {
+      // Validate that the list exists
+      const list = await this.getList(listId);
+      if (!list) {
+        throw new Error("List not found");
+      }
+
+      // Get all entities for the list to validate IDs
+      const listEntities = await this.getListEntities(listId);
+      const entityIdSet = new Set(listEntities.map(e => e.id));
+
+      // Validate that all provided IDs exist in the list
+      for (const entityId of orderedEntityIds) {
+        if (!entityIdSet.has(entityId)) {
+          throw new Error(`Entity ${entityId} not found in list ${listId}`);
+        }
+      }
+
+      // Update positions atomically within a transaction
+      await this.db.transaction("rw", this.db.catalogueEntities, async () => {
+        for (let i = 0; i < orderedEntityIds.length; i++) {
+          await this.db.catalogueEntities.update(orderedEntityIds[i], {
+            position: i + 1
+          });
+        }
+      });
+
+      // Update list's updated timestamp
+      await this.updateList(listId, {});
+
+      // Emit event for entity reorder
+      catalogueEventEmitter.emit({
+        type: 'entity-reordered',
+        listId,
+      });
+
+      this.logger?.debug(LOG_CATEGORY, "Entities reordered successfully", {
+        listId,
+        entityCount: orderedEntityIds.length
+      });
+    } catch (error) {
+      this.logger?.error(LOG_CATEGORY, "Failed to reorder entities", {
+        listId,
+        entityCount: orderedEntityIds.length,
+        error
       });
       throw error;
     }

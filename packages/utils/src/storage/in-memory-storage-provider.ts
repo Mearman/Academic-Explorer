@@ -207,6 +207,39 @@ export class InMemoryStorageProvider implements CatalogueStorageProvider {
 		await this.updateList(entity.listId, {});
 	}
 
+	async reorderEntities(listId: string, orderedEntityIds: string[]): Promise<void> {
+		// Validate that the list exists
+		const list = await this.getList(listId);
+		if (!list) {
+			throw new Error('List not found');
+		}
+
+		// Get all entities for the list to validate IDs
+		const listEntities = await this.getListEntities(listId);
+		const entityIdSet = new Set(listEntities.map(e => e.id));
+
+		// Validate that all provided IDs exist in the list
+		for (const entityId of orderedEntityIds) {
+			if (!entityIdSet.has(entityId)) {
+				throw new Error(`Entity ${entityId} not found in list ${listId}`);
+			}
+		}
+
+		// Update positions
+		for (let i = 0; i < orderedEntityIds.length; i++) {
+			const entity = this.entities.get(orderedEntityIds[i]);
+			if (entity) {
+				this.entities.set(orderedEntityIds[i], {
+					...entity,
+					position: i + 1
+				});
+			}
+		}
+
+		// Update list's updated timestamp
+		await this.updateList(listId, {});
+	}
+
 	async addEntitiesToList(
 		listId: string,
 		entities: Array<{
