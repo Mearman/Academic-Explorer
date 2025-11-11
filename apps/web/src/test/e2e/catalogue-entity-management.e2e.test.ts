@@ -33,12 +33,12 @@ test.describe("Catalogue Entity Management", () => {
     // Should open catalogue selection modal
     await expect(page.locator('[role="dialog"]')).toBeVisible();
 
-    // Select the first list (Entity Test List should be there)
-    const firstList = page.locator('[role="dialog"] [role="radio"]').first();
-    await firstList.click();
+    // Select the first list using the Select dropdown (Entity Test List should be there)
+    await page.locator('[data-testid="add-to-list-select"]').click();
+    await page.locator('[role="option"]').first().click();
 
     // Add to list
-    await page.locator('[role="dialog"] button:has-text("Add")').click();
+    await page.locator('[data-testid="add-to-list-submit"]').click();
 
     // Wait for modal to close
     await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 5000 });
@@ -284,19 +284,15 @@ async function addEntityToCatalogue(page: Page, entityId: string, entityType: st
   await expect(addToCatalogueButton).toBeVisible({ timeout: 10000 });
   await addToCatalogueButton.click();
 
-  // Wait for menu dropdown to appear and click "Create New List"
-  await expect(page.locator('[role="menu"]')).toBeVisible({ timeout: 5000 });
-  await page.locator('[role="menuitem"]:has-text("Create New List")').click();
-
-  // NOW the modal appears
+  // Modal opens directly with AddToListModal
   await expect(page.locator('[role="dialog"]')).toBeVisible({ timeout: 5000 });
 
-  // Select the first available list
-  const firstList = page.locator('[role="dialog"] [role="radio"]').first();
-  await firstList.click();
+  // Select the first available list using the Select dropdown
+  await page.locator('[data-testid="add-to-list-select"]').click();
+  await page.locator('[role="option"]').first().click();
 
   // Click Add to List button
-  await page.locator('[role="dialog"] button:has-text("Add")').click();
+  await page.locator('[data-testid="add-to-list-submit"]').click();
 
   // Wait for modal to close
   await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 5000 });

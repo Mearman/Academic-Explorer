@@ -384,15 +384,15 @@ async function createListWithMultipleEntities(page: Page, listName: string): Pro
     if (await addToCatalogueButton.isVisible()) {
       await addToCatalogueButton.click();
 
-      // Wait for menu dropdown to appear and click "Create New List"
-      await expect(page.locator('[role="menu"]')).toBeVisible({ timeout: 5000 });
-      await page.locator('[role="menuitem"]:has-text("Create New List")').click();
-
-      // NOW the modal appears
+      // Modal opens directly with AddToListModal
       await expect(page.locator('[role="dialog"]')).toBeVisible({ timeout: 5000 });
 
-      await page.click('[role="dialog"] [role="radio"]');
-      await page.click('[role="dialog"] button:has-text("Add")');
+      // Select the first list using the Select dropdown
+      await page.locator('[data-testid="add-to-list-select"]').click();
+      await page.locator('[role="option"]').first().click();
+
+      // Click Add to List button
+      await page.locator('[data-testid="add-to-list-submit"]').click();
       await page.waitForTimeout(1000);
     }
   }

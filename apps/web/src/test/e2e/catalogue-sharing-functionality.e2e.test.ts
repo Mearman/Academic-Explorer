@@ -227,16 +227,15 @@ async function createTestListWithEntities(page: Page, listName: string): Promise
   if (await addToCatalogueButton.isVisible()) {
     await addToCatalogueButton.click();
 
-    // Wait for menu dropdown to appear and click "Create New List"
-    await expect(page.locator('[role="menu"]')).toBeVisible({ timeout: 5000 });
-    await page.locator('[role="menuitem"]:has-text("Create New List")').click();
-
-    // NOW the modal appears
+    // Modal opens directly with AddToListModal
     await expect(page.locator('[role="dialog"]')).toBeVisible({ timeout: 5000 });
 
-    // Select the list we created - use modal list selection
-    await page.click('[role="dialog"] [role="radio"]:has-text("' + listName + '")');
-    await page.click('button:has-text("Add to List")');
+    // Select the list we created using the Select dropdown
+    await page.locator('[data-testid="add-to-list-select"]').click();
+    await page.locator(`[role="option"]:has-text("${listName}")`).click();
+
+    // Click Add to List button
+    await page.locator('[data-testid="add-to-list-submit"]').click();
   }
 
   // Return to catalogue
