@@ -91,38 +91,38 @@ Each phase delivers independently testable value and can be deployed separately.
 
 ### 3.2 Entity Type Display and Metadata
 
-- [ ] T020 [P] [US1] Implement entity type badge rendering with correct colors in CatalogueEntities (apps/web/src/components/catalogue/CatalogueEntities.tsx) - Use ENTITY_TYPE_COLORS
-- [ ] T021 [P] [US1] Implement entity metadata display (citations, dates, etc.) in CatalogueEntities (apps/web/src/components/catalogue/CatalogueEntities.tsx) - Use type guards for metadata
+- [X] T020 [P] [US1] Implement entity type badge rendering with correct colors in CatalogueEntities (apps/web/src/components/catalogue/CatalogueEntities.tsx) - Use ENTITY_TYPE_COLORS
+- [X] T021 [P] [US1] Implement entity metadata display (citations, dates, etc.) in CatalogueEntities (apps/web/src/components/catalogue/CatalogueEntities.tsx) - Use type guards for metadata
 
 ### 3.3 Search and Filter
 
-- [ ] T022 [P] [US1] Implement searchEntities method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Filter by displayName and notes
-- [ ] T023 [P] [US1] Implement filterByType method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Filter by entity types
-- [ ] T024 [US1] Add search input to CatalogueList component (apps/web/src/components/catalogue/CatalogueList.tsx) - Search UI
+- [X] T022 [P] [US1] Implement searchEntities method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Filter by entityId and notes
+- [X] T023 [P] [US1] Implement filterByType method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Filter by entity types
+- [X] T024 [US1] Add search input to CatalogueList component (apps/web/src/components/catalogue/CatalogueList.tsx) - Search UI (Already implemented in CatalogueEntities.tsx)
 
 ### 3.4 Empty State
 
-- [ ] T025 [P] [US1] Add empty state rendering to CatalogueList (apps/web/src/components/catalogue/CatalogueList.tsx) - Show message when no entities
+- [X] T025 [P] [US1] Add empty state rendering to CatalogueList (apps/web/src/components/catalogue/CatalogueList.tsx) - Show message when no entities (Already implemented in CatalogueList.tsx lines 436-456 and CatalogueEntities.tsx lines 565-579)
 
 ### 3.5 Drag-and-Drop Reordering
 
-- [ ] T026 [US1] Install @dnd-kit dependencies (if not present) - `pnpm add @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities`
-- [ ] T027 [P] [US1] Implement reorderEntity method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Atomic position updates
-- [ ] T028 [US1] Integrate DndContext in CatalogueEntities component (apps/web/src/components/catalogue/CatalogueEntities.tsx) - Setup drag-and-drop context
-- [ ] T029 [US1] Make entity items sortable with useSortable hook (apps/web/src/components/catalogue/CatalogueEntities.tsx) - Individual sortable items
-- [ ] T030 [US1] Add keyboard navigation support for reordering (apps/web/src/components/catalogue/CatalogueEntities.tsx) - Accessibility
+- [X] T026 [US1] Install @dnd-kit dependencies (if not present) - `pnpm add @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities`
+- [X] T027 [P] [US1] Implement reorderEntity method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Atomic position updates
+- [X] T028 [US1] Integrate DndContext in CatalogueEntities component (apps/web/src/components/catalogue/CatalogueEntities.tsx) - Setup drag-and-drop context
+- [X] T029 [US1] Make entity items sortable with useSortable hook (apps/web/src/components/catalogue/CatalogueEntities.tsx) - Individual sortable items
+- [X] T030 [US1] Add keyboard navigation support for reordering (apps/web/src/components/catalogue/CatalogueEntities.tsx) - Accessibility
 
 ### 3.6 Entity Notes
 
-- [ ] T031 [P] [US1] Implement updateEntityNote method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Update note field
-- [ ] T032 [US1] Add note editing UI to entity items in CatalogueEntities (apps/web/src/components/catalogue/CatalogueEntities.tsx) - Inline note editor
+- [X] T031 [P] [US1] Implement updateEntityNote method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Update note field
+- [X] T032 [US1] Add note editing UI to entity items in CatalogueEntities (apps/web/src/components/catalogue/CatalogueEntities.tsx) - Inline note editor
 
 ### 3.7 Bulk Operations
 
-- [ ] T033 [P] [US1] Implement bulkRemoveEntities method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Transaction-based bulk delete
-- [ ] T034 [P] [US1] Implement bulkMoveEntities method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Move entities between lists
-- [ ] T035 [US1] Add multi-select UI to CatalogueEntities (apps/web/src/components/catalogue/CatalogueEntities.tsx) - Checkbox selection
-- [ ] T036 [US1] Add bulk action buttons (delete, move) to CatalogueList (apps/web/src/components/catalogue/CatalogueList.tsx) - Bulk operation UI
+- [X] T033 [P] [US1] Implement bulkRemoveEntities method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Transaction-based bulk delete
+- [X] T034 [P] [US1] Implement bulkMoveEntities method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Move entities between lists
+- [X] T035 [US1] Add multi-select UI to CatalogueEntities (apps/web/src/components/catalogue/CatalogueEntities.tsx) - Checkbox selection
+- [X] T036 [US1] Add bulk action buttons (delete, move) to CatalogueList (apps/web/src/components/catalogue/CatalogueEntities.tsx) - Bulk operation UI
 
 **Phase Validation**: Run `pnpm test:e2e catalogue-entity-management.e2e.test.ts` → 9/9 tests pass
 
@@ -140,29 +140,29 @@ Each phase delivers independently testable value and can be deployed separately.
 
 ### 4.1 Export Functionality
 
-- [ ] T037 [US2] Install pako compression library (if not present) - `pnpm add pako` and `pnpm add -D @types/pako`
-- [ ] T038 [P] [US2] Implement exportList method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Convert list to ExportFormat
-- [ ] T039 [P] [US2] Implement exportListCompressed method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Compress with pako + Base64URL encoding
-- [ ] T040 [P] [US2] Implement exportListAsFile method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Trigger file download
-- [ ] T041 [US2] Implement ExportModal component UI (apps/web/src/components/catalogue/ExportModal.tsx) - Format selection and export buttons
+- [X] T037 [US2] Install pako compression library (if not present) - Already present in packages/utils/package.json
+- [X] T038 [P] [US2] Implement exportList method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Convert list to ExportFormat
+- [X] T039 [P] [US2] Implement exportListCompressed method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Compress with pako + Base64URL encoding
+- [X] T040 [P] [US2] Implement exportListAsFile method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Trigger file download
+- [X] T041 [US2] Implement ExportModal component UI (apps/web/src/components/catalogue/ExportModal.tsx) - Format selection and export buttons
 
 ### 4.2 Import Functionality
 
-- [ ] T042 [P] [US2] Implement importList method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Import from ExportFormat
-- [ ] T043 [P] [US2] Implement importListCompressed method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Decompress and import
-- [ ] T044 [P] [US2] Implement importListFromFile method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Handle file upload
-- [ ] T045 [US2] Implement ImportModal component UI (apps/web/src/components/catalogue/ImportModal.tsx) - File upload and URL input
+- [X] T042 [P] [US2] Implement importList method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Import from ExportFormat
+- [X] T043 [P] [US2] Implement importListCompressed method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Decompress and import
+- [X] T044 [P] [US2] Implement importListFromFile method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Handle file upload
+- [X] T045 [US2] Implement ImportModal component UI (apps/web/src/components/catalogue/ImportModal.tsx) - File upload and URL input
 
 ### 4.3 Validation and Preview
 
-- [ ] T046 [P] [US2] Implement validateImportData method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Schema validation with errors
-- [ ] T047 [P] [US2] Implement previewImport method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Preview metadata and duplicates
-- [ ] T048 [US2] Add import preview UI to ImportModal (apps/web/src/components/catalogue/ImportModal.tsx) - Show preview before confirming
+- [X] T046 [P] [US2] Implement validateImportData method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Schema validation with errors
+- [X] T047 [P] [US2] Implement previewImport method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Preview metadata and duplicates
+- [X] T048 [US2] Add import preview UI to ImportModal (apps/web/src/components/catalogue/ImportModal.tsx) - Show preview before confirming
 
 ### 4.4 Error Handling
 
-- [ ] T049 [P] [US2] Add error handling for malformed import data in importListCompressed (apps/web/src/hooks/useCatalogue.ts) - Try/catch with clear messages
-- [ ] T050 [US2] Add error display in ImportModal (apps/web/src/components/catalogue/ImportModal.tsx) - Show validation errors to user
+- [X] T049 [P] [US2] Add error handling for malformed import data in importListCompressed (apps/web/src/hooks/useCatalogue.ts) - Try/catch with clear messages
+- [X] T050 [US2] Add error display in ImportModal (apps/web/src/components/catalogue/ImportModal.tsx) - Show validation errors to user
 
 ### 4.5 Large Dataset Support
 
@@ -185,36 +185,36 @@ Each phase delivers independently testable value and can be deployed separately.
 
 ### 5.1 Share URL Generation
 
-- [ ] T053 [US3] Install qrcode library (if not present) - `pnpm add qrcode` and `pnpm add -D @types/qrcode`
-- [ ] T054 [P] [US3] Implement generateShareURL method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Create share token, export, compress, encode
-- [ ] T055 [P] [US3] Implement share token generation logic in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - UUID generation and storage
-- [ ] T056 [P] [US3] Mark list as public when shared in generateShareURL (apps/web/src/hooks/useCatalogue.ts) - Update isPublic field
-- [ ] T057 [US3] Implement ShareModal component UI (apps/web/src/components/catalogue/ShareModal.tsx) - Share URL display
+- [X] T053 [US3] Install qrcode library (if not present) - `pnpm add qrcode` and `pnpm add -D @types/qrcode` - ✅ Already installed (qrcode ^1.5.4, @types/qrcode ^1.5.6)
+- [X] T054 [P] [US3] Implement generateShareURL method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Create share token, export, compress, encode - ✅ Already implemented (lines 421-455)
+- [X] T055 [P] [US3] Implement share token generation logic in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - UUID generation and storage - ✅ Already exists in storage provider (catalogue-db.ts lines 591-618)
+- [X] T056 [P] [US3] Mark list as public when shared in generateShareURL (apps/web/src/hooks/useCatalogue.ts) - Update isPublic field - ✅ Automatic in storage provider (line 609)
+- [X] T057 [US3] Implement ShareModal component UI (apps/web/src/components/catalogue/ShareModal.tsx) - Share URL display - ✅ Already fully implemented
 
 ### 5.2 QR Code Generation
 
-- [ ] T058 [P] [US3] Implement generateQRCode method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Use qrcode library
-- [ ] T059 [US3] Add QR code display to ShareModal (apps/web/src/components/catalogue/ShareModal.tsx) - Show QR code image
+- [X] T058 [P] [US3] Implement generateQRCode method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Use qrcode library - ✅ Implemented (lines 504-526)
+- [X] T059 [US3] Add QR code display to ShareModal (apps/web/src/components/catalogue/ShareModal.tsx) - Show QR code image - ✅ Already implemented (lines 122-135)
 
 ### 5.3 Clipboard Integration
 
-- [ ] T060 [P] [US3] Implement copyToClipboard method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Use Clipboard API
-- [ ] T061 [US3] Add copy button to ShareModal (apps/web/src/components/catalogue/ShareModal.tsx) - Mantine CopyButton component
+- [X] T060 [P] [US3] Implement copyToClipboard method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Use Clipboard API - ✅ Implemented with fallback (lines 528-565)
+- [X] T061 [US3] Add copy button to ShareModal (apps/web/src/components/catalogue/ShareModal.tsx) - Mantine CopyButton component - ✅ Already implemented (lines 82-96)
 
 ### 5.4 Import from Share URL
 
-- [ ] T062 [P] [US3] Implement importFromShareURL method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Parse URL, extract data, import
-- [ ] T063 [US3] Add share URL input to ImportModal (apps/web/src/components/catalogue/ImportModal.tsx) - URL paste field
-- [ ] T064 [US3] Implement URL query parameter detection in catalogue route (apps/web/src/routes/catalogue.tsx) - Auto-import from ?data= parameter
+- [X] T062 [P] [US3] Implement importFromShareURL method in useCatalogue hook (apps/web/src/hooks/useCatalogue.ts) - Parse URL, extract data, import
+- [X] T063 [US3] Add share URL input to ImportModal (apps/web/src/components/catalogue/ImportModal.tsx) - URL paste field
+- [X] T064 [US3] Implement URL query parameter detection in catalogue route (apps/web/src/routes/catalogue.tsx) - Auto-import from ?data= parameter
 
 ### 5.5 URL Validation
 
-- [ ] T065 [P] [US3] Add URL validation in importFromShareURL (apps/web/src/hooks/useCatalogue.ts) - Check format and decompress safely
-- [ ] T066 [US3] Add error handling for invalid URLs in ImportModal (apps/web/src/components/catalogue/ImportModal.tsx) - Display clear error messages
+- [X] T065 [P] [US3] Add URL validation in importFromShareURL (apps/web/src/hooks/useCatalogue.ts) - Check format and decompress safely
+- [X] T066 [US3] Add error handling for invalid URLs in ImportModal (apps/web/src/components/catalogue/ImportModal.tsx) - Display clear error messages
 
 ### 5.6 Bibliography Support
 
-- [ ] T067 [P] [US3] Ensure sharing works for bibliography lists (isBibliography flag) in generateShareURL (apps/web/src/hooks/useCatalogue.ts) - Include flag in export
+- [X] T067 [P] [US3] Ensure sharing works for bibliography lists (isBibliography flag) in generateShareURL (apps/web/src/hooks/useCatalogue.ts) - Include flag in export
 
 **Phase Validation**: Run `pnpm test:e2e catalogue-sharing-functionality.e2e.test.ts` → 9/9 tests pass
 
