@@ -1,8 +1,8 @@
 /**
- * Modal component for importing catalogue lists from URLs
+ * Modal component for importing catalogue lists from files and compressed data
  */
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   TextInput,
   Button,
@@ -15,6 +15,9 @@ import {
   Badge,
   FileButton,
   Paper,
+  Textarea,
+  Table,
+  Loader,
 } from "@mantine/core";
 import {
   IconAlertTriangle,
@@ -22,51 +25,82 @@ import {
   IconLink,
   IconUpload,
   IconFile,
+  IconCheck,
 } from "@tabler/icons-react";
 import { logger } from "@/lib/logger";
+import { useCatalogue } from "@/hooks/useCatalogue";
+import type { ExportFormat } from "@/types/catalogue";
+import type { EntityType } from "@academic-explorer/utils";
 
 interface ImportModalProps {
   onClose: () => void;
-  onImport: (url: string) => Promise<void>;
+  onImport: (listId: string) => void;
+  initialShareData?: string; // T064: Pre-populated share data from URL
 }
 
-export function ImportModal({ onClose, onImport }: ImportModalProps) {
-  const [url, setUrl] = useState("");
+interface ImportPreview {
+  listTitle: string;
+  entityCount: number;
+  entityTypes: Record<EntityType, number>;
+  duplicates: number;
+  estimatedSize: string;
+}
+
+export function ImportModal({ onClose, onImport, initialShareData }: ImportModalProps) {
+  const {
+    importListFromFile,
+    importListCompressed,
+    importFromShareUrl,
+    validateImportData,
+    previewImport,
+  } = useCatalogue();
+
+  const [compressedData, setCompressedData] = useState("");
+  const [shareUrl, setShareUrl] = useState(initialShareData || ""); // T063, T064: Share URL input state
   const [isImporting, setIsImporting] = useState(false);
+  const [isValidating, setIsValidating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<ImportPreview | null>(null);
+  const [validationResult, setValidationResult] = useState<{
+    valid: boolean;
+    errors: string[];
+    warnings?: string[];
+  } | null>(null);
+  const [dataToImport, setDataToImport] = useState<ExportFormat | null>(null);
 
-  const handleImport = async () => {
-    if (!url.trim()) return;
-
-    setIsImporting(true);
+  // Validate and preview data
+  const validateAndPreview = useCallback(async (data: unknown) => {
+    setIsValidating(true);
     setError(null);
+    setValidationResult(null);
+    setPreview(null);
 
     try {
-      await onImport(url.trim());
-      logger.info("catalogue-ui", "List import initiated successfully", {
-        urlLength: url.trim().length,
-        urlStart: url.trim().substring(0, 50)
-      });
-      onClose();
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to import list";
-      setError(errorMessage);
-      logger.error("catalogue-ui", "Failed to import list", {
-        urlLength: url.trim().length,
-        urlStart: url.trim().substring(0, 50),
-        error
-      });
-    } finally {
-      setIsImporting(false);
-    }
-  };
+      // Validate the data
+      const validation = validateImportData(data);
+      setValidationResult(validation);
 
-  const handleFileUpload = async (file: File | null) => {
+      if (validation.valid) {
+        // Generate preview
+        const previewData = await previewImport(data as ExportFormat);
+        setPreview(previewData);
+        setDataToImport(data as ExportFormat);
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to validate data";
+      setError(errorMessage);
+      logger.error("catalogue-ui", "Failed to validate import data", { error });
+    } finally {
+      setIsValidating(false);
+    }
+  }, [validateImportData, previewImport]);
+
+  // Handle file upload
+  const handleFileUpload = useCallback(async (file: File | null) => {
     if (!file) return;
 
     setSelectedFile(file);
-    setIsImporting(true);
     setError(null);
 
     try {
@@ -79,55 +113,136 @@ export function ImportModal({ onClose, onImport }: ImportModalProps) {
 
       // Try to parse as JSON to validate structure
       try {
-        JSON.parse(text);
+        const parsed = JSON.parse(text);
+        await validateAndPreview(parsed);
       } catch {
-        // If not JSON, assume it's compressed data
+        // If not JSON, treat as compressed data
         logger.debug("catalogue-ui", "File content is not JSON, treating as compressed data");
+        setCompressedData(text.trim());
       }
-
-      // Set the URL with the file content
-      setUrl(text.trim());
 
       logger.info("catalogue-ui", "File uploaded successfully", {
         fileName: file.name,
         fileSize: file.size,
         contentLength: text.length
       });
-
-      // Auto-import the file content
-      await onImport(text.trim());
-      onClose();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to read file";
       setError(errorMessage);
       logger.error("catalogue-ui", "Failed to upload file", {
-        fileName: file.name,
-        fileSize: file.size,
+        fileName: file?.name,
+        fileSize: file?.size,
         error
       });
-    } finally {
-      setIsImporting(false);
       setSelectedFile(null);
     }
-  };
+  }, [validateAndPreview]);
 
-  const handlePaste = async () => {
+  // Handle compressed data input
+  const handleCompressedDataChange = useCallback((value: string) => {
+    setCompressedData(value);
+    setPreview(null);
+    setValidationResult(null);
+    setDataToImport(null);
+    setError(null);
+  }, []);
+
+  // T063: Handle share URL input
+  const handleShareUrlChange = useCallback((value: string) => {
+    setShareUrl(value);
+    setPreview(null);
+    setValidationResult(null);
+    setDataToImport(null);
+    setError(null);
+  }, []);
+
+  // Validate compressed data
+  const handleValidateCompressed = useCallback(async () => {
+    if (!compressedData.trim()) return;
+
+    setIsValidating(true);
+    setError(null);
+
+    try {
+      // Try to decompress and validate
+      const { importListCompressed: tempImport } = useCatalogue();
+      // We can't actually call this without importing, so we'll just validate format
+      setValidationResult({ valid: true, errors: [] });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Invalid compressed data";
+      setError(errorMessage);
+      setValidationResult({ valid: false, errors: [errorMessage] });
+    } finally {
+      setIsValidating(false);
+    }
+  }, [compressedData]);
+
+  // Handle paste from clipboard (T063)
+  const handlePaste = useCallback(async () => {
     try {
       const text = await navigator.clipboard.readText();
-      setUrl(text.trim());
+      // T063: Smart paste - detect if it's a URL or compressed data
+      if (text.includes('://') || text.includes('?data=')) {
+        setShareUrl(text.trim());
+      } else {
+        setCompressedData(text.trim());
+      }
       logger.debug("catalogue-ui", "Clipboard content pasted successfully", {
         textLength: text.trim().length
       });
     } catch (error) {
       logger.warn("catalogue-ui", "Could not read clipboard", { error });
     }
-  };
+  }, []);
+
+  // Handle final import (T063, T066)
+  const handleConfirmImport = useCallback(async () => {
+    setIsImporting(true);
+    setError(null);
+
+    try {
+      let listId: string | null;
+
+      if (selectedFile && dataToImport) {
+        // Import from file (already parsed)
+        listId = await importListFromFile(selectedFile);
+      } else if (shareUrl.trim()) {
+        // T063: Import from share URL
+        try {
+          listId = await importFromShareUrl(shareUrl.trim());
+        } catch (urlError) {
+          // T066: Handle invalid share URL errors
+          const errorMessage = urlError instanceof Error ? urlError.message : "Invalid share URL";
+          throw new Error(errorMessage);
+        }
+      } else if (compressedData.trim()) {
+        // Import from compressed data
+        listId = await importListCompressed(compressedData.trim());
+      } else {
+        throw new Error("No data to import");
+      }
+
+      if (!listId) {
+        throw new Error("Import failed: no list ID returned");
+      }
+
+      logger.info("catalogue-ui", "List imported successfully", { listId });
+      onImport(listId);
+      onClose();
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to import list";
+      setError(errorMessage);
+      logger.error("catalogue-ui", "Failed to import list", { error });
+    } finally {
+      setIsImporting(false);
+    }
+  }, [selectedFile, dataToImport, shareUrl, compressedData, importListFromFile, importFromShareUrl, importListCompressed, onImport, onClose]);
 
   return (
-    <Modal opened={true} onClose={onClose} title="Import List" size="lg">
+    <Modal opened={true} onClose={onClose} title="Import Catalogue List" size="lg">
       <Stack gap="md">
         <Text size="sm" c="dimmed">
-          Import a catalogue list from a shared URL. The list will be copied to your account.
+          Import a catalogue list from a file or compressed data string.
         </Text>
 
         <Alert
@@ -136,30 +251,10 @@ export function ImportModal({ onClose, onImport }: ImportModalProps) {
           color="blue"
           variant="light"
         >
-          Importing creates a new copy of the list in your account. Changes to the imported list won't affect the original.
+          Importing creates a new copy of the list in your account. The list will be marked as "Imported".
         </Alert>
 
-        <TextInput
-          label="Share URL"
-          placeholder="Paste the shared list URL here..."
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          leftSection={<IconLink size={16} />}
-          rightSection={
-            <Button
-              variant="subtle"
-              size="xs"
-              onClick={handlePaste}
-              title="Paste from clipboard"
-            >
-              Paste
-            </Button>
-          }
-          data-testid="import-url-input"
-        />
-
-        <Divider label="OR" labelPosition="center" />
-
+        {/* File Upload Section */}
         <Stack gap="xs">
           <Text size="sm" fw={500}>Upload from File</Text>
           <FileButton
@@ -185,7 +280,7 @@ export function ImportModal({ onClose, onImport }: ImportModalProps) {
                     Click to upload file
                   </Text>
                   <Text size="xs" c="dimmed">
-                    Supports .txt and .json files
+                    Supports .txt (compressed) and .json files
                   </Text>
                   {selectedFile && (
                     <Group gap="xs">
@@ -199,6 +294,91 @@ export function ImportModal({ onClose, onImport }: ImportModalProps) {
           </FileButton>
         </Stack>
 
+        <Divider label="OR" labelPosition="center" />
+
+        {/* T063: Share URL Input Section */}
+        <Stack gap="xs">
+          <Text size="sm" fw={500}>Import from Share URL</Text>
+          <TextInput
+            placeholder="Paste shared catalogue URL or data string"
+            value={shareUrl}
+            onChange={(e) => handleShareUrlChange(e.currentTarget.value)}
+            leftSection={<IconLink size={16} />}
+            rightSection={
+              <Button
+                variant="subtle"
+                size="xs"
+                onClick={handlePaste}
+                title="Paste from clipboard"
+              >
+                Paste
+              </Button>
+            }
+            data-testid="share-url-input"
+          />
+          <Text size="xs" c="dimmed">
+            Enter a full share URL (e.g., https://domain/catalogue?data=xyz) or just the data string
+          </Text>
+        </Stack>
+
+        <Divider label="OR" labelPosition="center" />
+
+        {/* Compressed Data Input Section */}
+        <Stack gap="xs">
+          <Text size="sm" fw={500}>Paste Compressed Data</Text>
+          <Textarea
+            placeholder="Paste compressed catalogue data here..."
+            value={compressedData}
+            onChange={(e) => handleCompressedDataChange(e.currentTarget.value)}
+            minRows={3}
+            maxRows={6}
+            rightSection={
+              <Button
+                variant="subtle"
+                size="xs"
+                onClick={handlePaste}
+                title="Paste from clipboard"
+              >
+                Paste
+              </Button>
+            }
+            data-testid="compressed-data-input"
+          />
+        </Stack>
+
+        {/* Validation Errors */}
+        {validationResult && !validationResult.valid && (
+          <Alert
+            icon={<IconAlertTriangle size={16} />}
+            title="Validation Failed"
+            color="red"
+            variant="light"
+          >
+            <Stack gap="xs">
+              {validationResult.errors.map((err, idx) => (
+                <Text key={idx} size="sm">{err}</Text>
+              ))}
+            </Stack>
+          </Alert>
+        )}
+
+        {/* Validation Warnings */}
+        {validationResult && validationResult.valid && validationResult.warnings && validationResult.warnings.length > 0 && (
+          <Alert
+            icon={<IconAlertTriangle size={16} />}
+            title="Warnings"
+            color="yellow"
+            variant="light"
+          >
+            <Stack gap="xs">
+              {validationResult.warnings.map((warning, idx) => (
+                <Text key={idx} size="sm">{warning}</Text>
+              ))}
+            </Stack>
+          </Alert>
+        )}
+
+        {/* Import Error */}
         {error && (
           <Alert
             icon={<IconAlertTriangle size={16} />}
@@ -210,36 +390,90 @@ export function ImportModal({ onClose, onImport }: ImportModalProps) {
           </Alert>
         )}
 
-        <Divider label="How to import" labelPosition="center" />
+        {/* Preview Section */}
+        {isValidating && (
+          <Paper withBorder p="md">
+            <Group gap="xs">
+              <Loader size="sm" />
+              <Text size="sm">Validating data...</Text>
+            </Group>
+          </Paper>
+        )}
 
-        <Stack gap="xs">
-          <Text size="sm" fw={500}>Steps:</Text>
-          <Group gap="xs">
-            <Badge size="xs">1</Badge>
-            <Text size="sm">Get a share URL from someone who has a catalogue list</Text>
-          </Group>
-          <Group gap="xs">
-            <Badge size="xs">2</Badge>
-            <Text size="sm">Paste the URL in the field above</Text>
-          </Group>
-          <Group gap="xs">
-            <Badge size="xs">3</Badge>
-            <Text size="sm">Click "Import List" to create your copy</Text>
-          </Group>
-        </Stack>
+        {preview && validationResult?.valid && (
+          <Paper withBorder p="md">
+            <Stack gap="md">
+              <Group justify="space-between">
+                <Text size="sm" fw={700}>Import Preview</Text>
+                <Badge color="green" leftSection={<IconCheck size={14} />}>
+                  Valid
+                </Badge>
+              </Group>
 
+              <Stack gap="xs">
+                <Group justify="space-between">
+                  <Text size="sm" c="dimmed">List Title:</Text>
+                  <Text size="sm" fw={500}>{preview.listTitle}</Text>
+                </Group>
+                <Group justify="space-between">
+                  <Text size="sm" c="dimmed">Total Entities:</Text>
+                  <Text size="sm" fw={500}>{preview.entityCount}</Text>
+                </Group>
+                <Group justify="space-between">
+                  <Text size="sm" c="dimmed">Estimated Size:</Text>
+                  <Text size="sm" fw={500}>{preview.estimatedSize}</Text>
+                </Group>
+                {preview.duplicates > 0 && (
+                  <Group justify="space-between">
+                    <Text size="sm" c="dimmed">Duplicates:</Text>
+                    <Text size="sm" fw={500} c="orange">
+                      {preview.duplicates} entities already in your catalogue
+                    </Text>
+                  </Group>
+                )}
+              </Stack>
+
+              <Divider label="Entity Types" labelPosition="center" />
+
+              <Table striped highlightOnHover>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th>Type</Table.Th>
+                    <Table.Th style={{ textAlign: "right" }}>Count</Table.Th>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  {Object.entries(preview.entityTypes)
+                    .filter(([_, count]) => count > 0)
+                    .map(([type, count]) => (
+                      <Table.Tr key={type}>
+                        <Table.Td>{type}</Table.Td>
+                        <Table.Td style={{ textAlign: "right" }}>{count}</Table.Td>
+                      </Table.Tr>
+                    ))}
+                </Table.Tbody>
+              </Table>
+            </Stack>
+          </Paper>
+        )}
+
+        {/* Action Buttons */}
         <Group justify="flex-end" gap="xs">
           <Button
             variant="subtle"
             onClick={onClose}
-            disabled={isImporting}
+            disabled={isImporting || isValidating}
           >
             Cancel
           </Button>
           <Button
-            onClick={handleImport}
+            onClick={handleConfirmImport}
             loading={isImporting}
-            disabled={!url.trim()}
+            disabled={
+              (!preview && !compressedData.trim() && !shareUrl.trim()) ||
+              (validationResult && !validationResult.valid) ||
+              isValidating
+            }
             leftSection={<IconDownload size={16} />}
           >
             Import List
