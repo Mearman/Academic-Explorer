@@ -27,9 +27,11 @@ This is an Nx monorepo with the following structure:
 
 **Purpose**: Verify current state and prepare for configuration changes
 
-- [ ] T001 Verify current problem state by checking for in-place .js artifacts in apps/web/src/ using `find apps/web/src -name "*.js" -o -name "*.d.ts" | head -10`
-- [ ] T002 Check git status for untracked compiled artifacts using `git status --porcelain | grep "??" | grep "src/" | head -10`
-- [ ] T003 Verify apps/web/tsconfig.json has noEmit setting by running `jq '.compilerOptions.noEmit' apps/web/tsconfig.json`
+- [x] T001 Verify current problem state by checking for in-place .js artifacts in apps/web/src/ using `find apps/web/src -name "*.js" -o -name "*.d.ts" | head -10`
+- [x] T002 Check git status for untracked compiled artifacts using `git status --porcelain | grep "??" | grep "src/" | head -10`
+- [x] T003 Verify apps/web/tsconfig.json has noEmit setting by running `jq '.compilerOptions.noEmit' apps/web/tsconfig.json`
+- [x] T003a Verify root-level in-place compilation artifacts exist using `ls -la *.js *.d.ts 2>/dev/null | grep -E "(vite|vitest)\.config\.base"`
+- [x] T003b Check tsconfig.base.json for missing noEmit setting using `jq '.compilerOptions.noEmit' tsconfig.base.json`
 
 ---
 
@@ -39,10 +41,12 @@ This is an Nx monorepo with the following structure:
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 Backup .gitignore file using `cp .gitignore .gitignore.backup`
-- [ ] T005 Add TypeScript in-place compilation artifact patterns to .gitignore (apps/web/src/**/*.js, apps/web/src/**/*.js.map, apps/web/src/**/*.d.ts, apps/web/src/**/*.d.ts.map with exceptions for *.test.js and *.config.js)
-- [ ] T006 Verify .gitignore patterns work correctly using `git check-ignore apps/web/src/components/Button.js` and `git check-ignore apps/web/src/components/Button.test.js`
-- [ ] T007 Commit .gitignore changes with message "chore(config): ignore TypeScript in-place compilation artifacts"
+- [x] T004 Backup .gitignore file using `cp .gitignore .gitignore.backup`
+- [x] T005 Add TypeScript in-place compilation artifact patterns to .gitignore (apps/web/src/**/*.js, apps/web/src/**/*.js.map, apps/web/src/**/*.d.ts, apps/web/src/**/*.d.ts.map with exceptions for *.test.js and *.config.js)
+- [ ] T005a Add root-level TypeScript compilation artifact patterns to .gitignore (vite.config.base.js, vitest.config.base.js, vite.config.base.d.ts, vitest.config.base.d.ts)
+- [x] T006 Verify .gitignore patterns work correctly using `git check-ignore apps/web/src/components/Button.js` and `git check-ignore apps/web/src/components/Button.test.js`
+- [ ] T006a Verify root-level .gitignore patterns work using `git check-ignore vite.config.base.js` and `git check-ignore .lintstagedrc.js`
+- [x] T007 Commit .gitignore changes with message "chore(config): ignore TypeScript in-place compilation artifacts"
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -56,16 +60,21 @@ This is an Nx monorepo with the following structure:
 
 ### Implementation for User Story 1
 
-- [ ] T008 [US1] Create apps/web/tsconfig.build.json by copying apps/web/tsconfig.json using `cp apps/web/tsconfig.json apps/web/tsconfig.build.json`
-- [ ] T009 [US1] Update apps/web/tsconfig.build.json to add build-specific compiler options: noEmit: false, composite: true, declaration: true, declarationMap: true, outDir: "./dist", rootDir: "./src", sourceMap: true, incremental: true, tsBuildInfoFile: "./dist/.tsbuildinfo"
-- [ ] T010 [US1] Update apps/web/tsconfig.build.json to exclude test files: add exclude array with "src/**/*.test.ts", "src/**/*.test.tsx", "src/**/*.spec.ts", "src/**/*.spec.tsx", "src/test/**/*"
-- [ ] T011 [US1] Verify apps/web/tsconfig.json has noEmit: true in compilerOptions (ensure dev config prevents emission)
-- [ ] T012 [US1] Update apps/web/package.json build script from "vite build" to "tsc -p tsconfig.build.json && vite build"
-- [ ] T013 [US1] Verify typecheck script in apps/web/package.json uses "tsc --noEmit" (should already be correct)
-- [ ] T014 [US1] Preview files to be cleaned using `git clean -fdxn apps/web/src/ | grep -E "\.(js|d\.ts|js\.map)"`
-- [ ] T015 [US1] Clean existing in-place artifacts from apps/web/src/ using `git clean -fdX apps/web/src/`
-- [ ] T016 [US1] Verify no .js files remain in src/ using `find apps/web/src -name "*.js" | wc -l` (expect 0)
-- [ ] T017 [US1] Commit configuration changes with message "fix(config): separate TypeScript dev and build configurations" including detailed commit body from quickstart.md
+- [x] T008 [US1] Create apps/web/tsconfig.build.json by copying apps/web/tsconfig.json using `cp apps/web/tsconfig.json apps/web/tsconfig.build.json`
+- [x] T009 [US1] Update apps/web/tsconfig.build.json to add build-specific compiler options: noEmit: false, composite: true, declaration: true, declarationMap: true, outDir: "./dist", rootDir: "./src", sourceMap: true, incremental: true, tsBuildInfoFile: "./dist/.tsbuildinfo"
+- [x] T010 [US1] Update apps/web/tsconfig.build.json to exclude test files: add exclude array with "src/**/*.test.ts", "src/**/*.test.tsx", "src/**/*.spec.ts", "src/**/*.spec.tsx", "src/test/**/*"
+- [x] T011 [US1] Verify apps/web/tsconfig.json has noEmit: true in compilerOptions (ensure dev config prevents emission)
+- [ ] T011a [US1] Add noEmit: true to tsconfig.base.json compilerOptions to prevent root-level config file compilation
+- [ ] T011b [US1] Add noEmit: true to tsconfig.app.json compilerOptions to prevent root-level config file compilation
+- [x] T012 [US1] Update apps/web/package.json build script from "vite build" to "tsc -p tsconfig.build.json && vite build"
+- [x] T013 [US1] Verify typecheck script in apps/web/package.json uses "tsc --noEmit" (should already be correct)
+- [x] T014 [US1] Preview files to be cleaned using `git clean -fdxn apps/web/src/ | grep -E "\.(js|d\.ts|js\.map)"`
+- [x] T015 [US1] Clean existing in-place artifacts from apps/web/src/ using `git clean -fdX apps/web/src/`
+- [ ] T015a [US1] Clean root-level in-place artifacts using `rm -f vite.config.base.js vite.config.base.d.ts vitest.config.base.js vitest.config.base.d.ts`
+- [x] T016 [US1] Verify no .js files remain in src/ using `find apps/web/src -name "*.js" | wc -l` (expect 0)
+- [ ] T016a [US1] Verify no root-level config .js files remain using `ls vite.config.base.js vitest.config.base.js 2>&1 | grep "No such file"`
+- [x] T017 [US1] Commit configuration changes with message "fix(config): separate TypeScript dev and build configurations" including detailed commit body from quickstart.md
+- [ ] T017a [US1] Commit updated spec with clarified scope using message "docs(spec): clarify scope to include root-level in-place compilation fix"
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - Vite serves fresh code, E2E tests see latest changes
 

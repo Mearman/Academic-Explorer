@@ -66,16 +66,19 @@ A developer navigates the codebase and sees only TypeScript source files in src/
 
 ### Functional Requirements
 
-- **FR-001**: TypeScript compilation MUST NOT emit .js, .js.map, or .d.ts files into src/ directories where .ts/.tsx source files exist
-- **FR-002**: Vite dev server MUST serve compiled code from memory or node_modules/.vite/ cache, never from in-place .js files in src/
+- **FR-001**: TypeScript compilation MUST NOT emit .js, .js.map, or .d.ts files into src/ directories where .ts/.tsx source files exist **OR** into the repository root where .ts config files exist
+- **FR-001a**: Root-level TypeScript files (vite.config.base.ts, vitest.config.base.ts, etc.) MUST NOT generate .js/.d.ts siblings in the root directory
+- **FR-001b**: App/package-level TypeScript files in src/ MUST NOT generate .js/.d.ts siblings in src/ directories
+- **FR-002**: Vite dev server MUST serve compiled code from memory or node_modules/.vite/ cache, never from in-place .js files in src/ or root
 - **FR-003**: Project build command MUST succeed for all packages without TypeScript emit-related errors
 - **FR-004**: TypeScript project references MUST continue to work correctly for cross-package type checking
 - **FR-005**: Playwright E2E tests MUST execute against the latest compiled version of source code after any changes
 - **FR-006**: Vite dev server restart MUST clear any cached compilation artifacts and rebuild from current source
 - **FR-007**: Build system MUST generate required declaration files (.d.ts) for packages that are referenced by other packages
 - **FR-008**: Development workflow MUST support incremental compilation for fast rebuild times
-- **FR-009**: Git status MUST NOT show untracked compiled artifacts (.js, .d.ts files) in src/ directories after build/typecheck
-- **FR-010**: Configuration files (tsconfig.*.json, vite.config.ts) MUST be consistent across packages to prevent conflicting compilation behavior
+- **FR-009**: Git status MUST NOT show untracked compiled artifacts (.js, .d.ts files) in src/ directories **or root directory** after build/typecheck
+- **FR-010**: Configuration files (tsconfig.*.json, vite.config.ts) MUST be consistent across **all levels** (root, apps/, packages/) to prevent conflicting compilation behavior
+- **FR-011**: Root-level tsconfig files (tsconfig.base.json, tsconfig.app.json) MUST use noEmit: true to prevent config file compilation unless explicitly building for distribution
 
 ### Key Entities
 
@@ -92,8 +95,8 @@ A developer navigates the codebase and sees only TypeScript source files in src/
 - **SC-002**: 100% of Playwright E2E tests that previously failed due to stale code now pass when code changes are made
 - **SC-003**: Production build command (`pnpm build`) completes successfully with 0 TypeScript emit errors across all packages
 - **SC-004**: Developer can make a visible UI change, run tests, and see the change reflected in test execution within 5 seconds of test start
-- **SC-005**: File system search for `.js` files in `src/**/*.js` (excluding node_modules) returns 0 results after build/typecheck
-- **SC-006**: Git status shows 0 untracked compiled artifacts in src/ directories after full build
+- **SC-005**: File system search for `.js` files in `src/**/*.js` **and root `*.js`** (excluding node_modules, .lintstagedrc.js, and other legitimate config files) returns 0 compilation artifacts after build/typecheck
+- **SC-006**: Git status shows 0 untracked compiled artifacts in **both** src/ directories **and** root directory after full build
 - **SC-007**: Vite dev server cold start time remains under 2 seconds (compilation configuration doesn't slow down startup)
 
 ## Constitution Alignment *(recommended)*
@@ -108,9 +111,12 @@ A developer navigates the codebase and sees only TypeScript source files in src/
 
 ### In Scope
 
-- Modify tsconfig.*.json files to prevent in-place compilation while maintaining project references
+- Modify tsconfig.*.json files **at all levels** (root, apps/, packages/) to prevent in-place compilation while maintaining project references
+- **Root-level configuration files**: Fix tsconfig.base.json to prevent vite.config.base.ts, vitest.config.base.ts from compiling in-place
+- **App-level source files**: Fix apps/web/tsconfig.json to prevent src/**/*.ts files from compiling in-place
 - Update vite.config.ts if needed to ensure correct build output locations
-- Clear existing stale compiled artifacts from src/ directories
+- Clear existing stale compiled artifacts from **both** root directory and src/ directories
+- Update .gitignore patterns to cover **both** root-level and src-level in-place artifacts
 - Verify Vite dev server cache invalidation works correctly
 - Document correct compilation configuration for future package additions
 
@@ -126,9 +132,11 @@ A developer navigates the codebase and sees only TypeScript source files in src/
 
 - The existing Vite + TypeScript + Nx monorepo architecture will be maintained
 - Project references are necessary for cross-package type checking and should be preserved
-- The issue is caused by tsconfig emit settings, not Vite configuration (based on previous investigation showing noEmit flag fixes the symptom but breaks project references)
+- The issue affects **two levels**: (1) root-level config files (vite.config.base.ts → vite.config.base.js) and (2) app src/ files, both caused by missing noEmit/outDir settings
+- Root-level tsconfig files (tsconfig.base.json, tsconfig.app.json) should use noEmit: true since they are never built for distribution - they only provide shared compiler options
 - Vite dev server is the correct tool for E2E test execution (not switching to production builds for testing)
-- The tools package legitimately needs declaration files from apps/web for its build process
+- The tools package legitimately needs declaration files from apps/web for its build process, but only in dist/, never in src/
+- Legitimate .js config files (.lintstagedrc.js, jest.config.js, etc.) should remain unaffected - they are intentionally JavaScript
 
 ## Dependencies *(recommended)*
 
@@ -165,4 +173,10 @@ A developer navigates the codebase and sees only TypeScript source files in src/
 
 ## Open Questions *(optional)*
 
-None - the issue has been thoroughly diagnosed and the solution path is clear (tsconfig emit configuration needs adjustment to work with both Vite and project references).
+**RESOLVED - 2025-11-11**: Initial implementation only addressed apps/web/src/ in-place compilation. User observation identified that root-level TypeScript files (vite.config.base.ts, vitest.config.base.ts) are also being compiled in-place due to tsconfig.base.json having `composite: true` without `noEmit` or `outDir`.
+
+**Clarification**: The scope must expand to fix **both**:
+1. Root-level tsconfig files (tsconfig.base.json, tsconfig.app.json) → add noEmit: true
+2. App/package-level source directories (already addressed via tsconfig.build.json pattern)
+
+The root-level configs are never built for distribution - they only provide shared compiler options to extending configs. Therefore noEmit: true is the correct setting.
