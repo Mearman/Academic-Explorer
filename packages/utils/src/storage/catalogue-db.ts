@@ -133,9 +133,12 @@ class CatalogueDB extends Dexie {
   constructor() {
     super(DB_NAME);
 
+    // T076: Optimized indexes for common query patterns
     this.version(DB_VERSION).stores({
       catalogueLists: "id, title, type, createdAt, updatedAt, isPublic, shareToken, *tags",
-      catalogueEntities: "id, listId, entityType, entityId, addedAt, position",
+      // Added compound index [listId+position] for efficient reordering and sorted entity retrieval
+      // Added compound index [listId+entityType+entityId] for duplicate detection
+      catalogueEntities: "id, listId, entityType, entityId, addedAt, position, [listId+position], [listId+entityType+entityId]",
       catalogueShares: "id, listId, shareToken, createdAt, expiresAt",
     });
   }

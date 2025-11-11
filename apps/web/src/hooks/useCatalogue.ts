@@ -20,6 +20,55 @@ import QRCode from "qrcode";
 
 const CATALOGUE_LOGGER_CONTEXT = "catalogue-hook";
 
+// T079: User-friendly error message mapping
+function getUserFriendlyErrorMessage(error: unknown): string {
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  const lowerMessage = errorMessage.toLowerCase();
+
+  // Storage quota exceeded
+  if (lowerMessage.includes("quota") || lowerMessage.includes("storage") || lowerMessage.includes("full")) {
+    return "Storage quota exceeded. Please free up space by deleting unused lists or clearing browser data.";
+  }
+
+  // Network errors
+  if (lowerMessage.includes("network") || lowerMessage.includes("fetch") || lowerMessage.includes("connection")) {
+    return "Network error occurred. Please check your internet connection and try again.";
+  }
+
+  // Not found errors
+  if (lowerMessage.includes("not found") || lowerMessage.includes("does not exist")) {
+    return "The requested item could not be found. It may have been deleted.";
+  }
+
+  // Validation errors
+  if (lowerMessage.includes("invalid") || lowerMessage.includes("validation") || lowerMessage.includes("format")) {
+    return "Invalid data format. Please check your input and try again.";
+  }
+
+  // Permission errors
+  if (lowerMessage.includes("permission") || lowerMessage.includes("denied") || lowerMessage.includes("unauthorized")) {
+    return "Permission denied. You don't have access to perform this action.";
+  }
+
+  // Database errors
+  if (lowerMessage.includes("database") || lowerMessage.includes("indexeddb") || lowerMessage.includes("dexie")) {
+    return "Database error occurred. Try refreshing the page or clearing your browser cache.";
+  }
+
+  // Duplicate errors
+  if (lowerMessage.includes("duplicate") || lowerMessage.includes("already exists")) {
+    return "This item already exists in the list.";
+  }
+
+  // Timeout errors
+  if (lowerMessage.includes("timeout") || lowerMessage.includes("timed out")) {
+    return "Operation timed out. Please try again.";
+  }
+
+  // Default fallback
+  return `An error occurred: ${errorMessage}`;
+}
+
 export interface UseCatalogueOptions {
   /** Auto-refresh on list changes */
   autoRefresh?: boolean;
@@ -208,9 +257,10 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
       return listId;
     } catch (error) {
       logger.error(CATALOGUE_LOGGER_CONTEXT, "Failed to create catalogue list", { params, error });
-      throw error;
+      // T079: Throw user-friendly error message
+      throw new Error(getUserFriendlyErrorMessage(error));
     }
-  }, []);
+  }, [storage]);
 
   // Update list
   const updateList = useCallback(async (
@@ -221,9 +271,10 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
       await storage.updateList(listId, updates);
     } catch (error) {
       logger.error(CATALOGUE_LOGGER_CONTEXT, "Failed to update catalogue list", { listId, updates, error });
-      throw error;
+      // T079: Throw user-friendly error message
+      throw new Error(getUserFriendlyErrorMessage(error));
     }
-  }, []);
+  }, [storage]);
 
   // Delete list
   const deleteList = useCallback(async (listId: string): Promise<void> => {
@@ -236,9 +287,10 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
       }
     } catch (error) {
       logger.error(CATALOGUE_LOGGER_CONTEXT, "Failed to delete catalogue list", { listId, error });
-      throw error;
+      // T079: Throw user-friendly error message
+      throw new Error(getUserFriendlyErrorMessage(error));
     }
-  }, [selectedListId]);
+  }, [selectedListId, storage]);
 
   // Select list
   const selectList = useCallback((listId: string | null) => {
@@ -256,9 +308,10 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
       return await storage.addEntityToList(params);
     } catch (error) {
       logger.error(CATALOGUE_LOGGER_CONTEXT, "Failed to add entity to catalogue list", { params, error });
-      throw error;
+      // T079: Throw user-friendly error message
+      throw new Error(getUserFriendlyErrorMessage(error));
     }
-  }, []);
+  }, [storage]);
 
   // Add multiple entities to list
   const addEntitiesToList = useCallback(async (
@@ -531,8 +584,8 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
       return listId;
     } catch (error) {
       logger.error(CATALOGUE_LOGGER_CONTEXT, "Failed to import from share URL", { url, error });
-      // Re-throw to allow UI to handle error properly
-      throw error;
+      // T079: Re-throw with user-friendly message
+      throw new Error(getUserFriendlyErrorMessage(error));
     }
   }, [storage]);
 
