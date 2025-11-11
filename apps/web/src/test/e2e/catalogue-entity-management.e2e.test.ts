@@ -40,8 +40,11 @@ test.describe("Catalogue Entity Management", () => {
     // Add to list
     await page.locator('[data-testid="add-to-list-submit"]').click();
 
+    // Wait for success notification to appear
+    await expect(page.locator('text="Added to List"')).toBeVisible({ timeout: 20000 });
+
     // Wait for modal to close
-    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 5000 });
+    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 3000 });
 
     // Return to catalogue and verify entity was added
     await page.goto("http://localhost:5173/#/catalogue");
