@@ -13,6 +13,57 @@ test.describe("Catalogue Entity Management", () => {
       page.waitForSelector('[data-testid="catalogue-manager"], .mantine-Tabs-panel', { timeout: 10000 }),
       page.waitForSelector('text="Catalogue"', { timeout: 10000 })
     ]);
+
+    // Force IndexedDB database initialization (workaround for Playwright context)
+    // This ensures Dexie's onupgradeneeded fires and object stores are created
+    await page.evaluate(async () => {
+      const DB_NAME = "catalogue-db";
+      const DB_VERSION = 1;
+
+      return new Promise((resolve, reject) => {
+        const openRequest = indexedDB.open(DB_NAME, DB_VERSION);
+
+        openRequest.onupgradeneeded = (event: any) => {
+          const db = event.target.result;
+
+          // Create object stores matching catalogue-db.ts schema with Dexie indices
+          if (!db.objectStoreNames.contains("catalogueLists")) {
+            const listsStore = db.createObjectStore("catalogueLists", { keyPath: "id" });
+            listsStore.createIndex("title", "title", { unique: false });
+            listsStore.createIndex("type", "type", { unique: false });
+            listsStore.createIndex("createdAt", "createdAt", { unique: false });
+            listsStore.createIndex("updatedAt", "updatedAt", { unique: false });
+            listsStore.createIndex("isPublic", "isPublic", { unique: false });
+            listsStore.createIndex("shareToken", "shareToken", { unique: false });
+            listsStore.createIndex("tags", "tags", { unique: false, multiEntry: true });
+          }
+          if (!db.objectStoreNames.contains("catalogueEntities")) {
+            const entitiesStore = db.createObjectStore("catalogueEntities", { keyPath: "id" });
+            entitiesStore.createIndex("listId", "listId", { unique: false });
+            entitiesStore.createIndex("entityType", "entityType", { unique: false });
+            entitiesStore.createIndex("entityId", "entityId", { unique: false });
+            entitiesStore.createIndex("addedAt", "addedAt", { unique: false });
+            entitiesStore.createIndex("position", "position", { unique: false });
+          }
+          if (!db.objectStoreNames.contains("catalogueShares")) {
+            const sharesStore = db.createObjectStore("catalogueShares", { keyPath: "id" });
+            sharesStore.createIndex("listId", "listId", { unique: false });
+            sharesStore.createIndex("shareToken", "shareToken", { unique: false });
+            sharesStore.createIndex("createdAt", "createdAt", { unique: false });
+            sharesStore.createIndex("expiresAt", "expiresAt", { unique: false });
+          }
+        };
+
+        openRequest.onsuccess = () => {
+          openRequest.result.close();
+          resolve(true);
+        };
+
+        openRequest.onerror = () => {
+          reject(openRequest.error);
+        };
+      });
+    });
   });
 
   test("should add entities to catalogue from entity pages", async ({ page }) => {
