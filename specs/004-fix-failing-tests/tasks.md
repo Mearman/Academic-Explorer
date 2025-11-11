@@ -57,13 +57,13 @@ Each phase delivers independently testable value and can be deployed separately.
 
 **Tasks**:
 
-- [ ] T006 [P] Create core type definitions (EntityType, CatalogueList, CatalogueEntity) in apps/web/src/types/catalogue.ts based on specs/004-fix-failing-tests/contracts/types.ts
-- [ ] T007 [P] Create EntityMetadata discriminated union types (8 entity types) in apps/web/src/types/catalogue.ts
-- [ ] T008 [P] Create ExportFormat interface for import/export in apps/web/src/types/catalogue.ts
-- [ ] T009 [P] Implement type guard functions (isWorkMetadata, isAuthorMetadata, etc.) in apps/web/src/utils/catalogue-guards.ts
-- [ ] T010 [P] Implement validateExportFormat function with asserts in apps/web/src/utils/catalogue-validation.ts
-- [ ] T011 [P] Create entity type constants (ENTITY_TYPE_LABELS, ENTITY_TYPE_COLORS) in apps/web/src/constants/catalogue.ts
-- [ ] T012 Initialize Dexie database schema for CatalogueDatabase in apps/web/src/lib/db/catalogue-db.ts
+- [X] T006 [P] Create core type definitions (EntityType, CatalogueList, CatalogueEntity) in apps/web/src/types/catalogue.ts based on specs/004-fix-failing-tests/contracts/types.ts
+- [X] T007 [P] Create EntityMetadata discriminated union types (8 entity types) in apps/web/src/types/catalogue.ts
+- [X] T008 [P] Create ExportFormat interface for import/export in apps/web/src/types/catalogue.ts
+- [X] T009 [P] Implement type guard functions (isWorkMetadata, isAuthorMetadata, etc.) in apps/web/src/utils/catalogue-guards.ts
+- [X] T010 [P] Implement validateExportFormat function with asserts in apps/web/src/utils/catalogue-validation.ts
+- [X] T011 [P] Create entity type constants (ENTITY_TYPE_LABELS, ENTITY_TYPE_COLORS) in apps/web/src/constants/catalogue.ts
+- [X] T012 Initialize Dexie database schema for CatalogueDatabase in apps/web/src/lib/db/catalogue-db.ts
 
 **Validation**: TypeScript compilation succeeds, shared types available for all components
 
