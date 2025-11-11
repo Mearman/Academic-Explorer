@@ -6,6 +6,7 @@
 import { chromium, FullConfig } from "@playwright/test";
 import * as fs from "fs";
 import * as path from "path";
+import { startMSWServer } from "./test/setup/msw-setup";
 
 // Use relative paths to avoid import.meta issues
 const STORAGE_STATE_PATH = path.join(
@@ -18,6 +19,9 @@ const HAR_CACHE_DIR = path.join(
 );
 
 async function globalSetup(config: FullConfig) {
+  // START MSW SERVER FIRST - must intercept requests before any browser contexts created
+  startMSWServer();
+
   console.log("🚀 Starting Playwright global setup...");
 
   // Ensure directories exist

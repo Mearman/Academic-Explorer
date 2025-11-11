@@ -8,6 +8,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import { stopMSWServer } from "./test/setup/msw-setup";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -38,6 +39,9 @@ async function globalTeardown(config: FullConfig) {
       }
     }
   }
+
+  // STOP MSW SERVER LAST - cleanup after all tests complete
+  stopMSWServer();
 
   console.log("✨ Global teardown complete!");
 }
