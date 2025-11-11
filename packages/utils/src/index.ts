@@ -161,23 +161,34 @@ export {
 	createIndexedDBStorage,
 	defaultStorageConfig,
 	userInteractionsService,
+	DexieStorageProvider,
+	catalogueEventEmitter,
+	SPECIAL_LIST_IDS,
 	type StorageConfig,
 	type StateStorage,
 	type BookmarkRecord,
 	type PageVisitRecord,
 	type UserInteractionsService,
-} from "./storage/index.js"
-
-// Catalogue database utilities
-export {
-	catalogueService,
-	catalogueEventEmitter,
-	SPECIAL_LIST_IDS,
-	SPECIAL_LIST_TYPES,
+	type CatalogueStorageProvider,
+	type CreateListParams,
+	type AddEntityParams,
+	type AddToHistoryParams,
+	type AddBookmarkParams,
+	type ListStats,
+	type BatchAddResult,
+	type ShareAccessResult,
+	type StorageProviderFactory,
 	type CatalogueList,
 	type CatalogueEntity,
+	type CatalogueShareRecord,
 	type EntityType,
 	type ListType,
+} from "./storage/index.js"
+
+// Catalogue database utilities (legacy direct export - prefer using storage provider)
+export {
+	catalogueService,
+	SPECIAL_LIST_TYPES,
 	type CatalogueService,
 } from "./storage/catalogue-db.js"
 
