@@ -55,6 +55,21 @@ export default defineConfig({
     // Timeout settings
     actionTimeout: 10000,
     navigationTimeout: 30000,
+
+    // Browser launch options for IndexedDB support
+    launchOptions: {
+      args: [
+        '--disable-features=IsolateOrigins,site-per-process',
+        '--disable-site-isolation-trials',
+        '--enable-features=SharedArrayBuffer',
+      ],
+    },
+
+    // Grant permissions for storage APIs
+    permissions: ['storage-access'],
+
+    // Enable service workers and storage partitioning bypass
+    serviceWorkers: 'allow',
   },
 
   // Test timeout
