@@ -144,9 +144,9 @@ This is a pnpm monorepo project:
 
 ### Implementation for User Story 3
 
-- [ ] T053 [P] [US3] Create test utility helper in packages/utils/tests/setup.ts for creating InMemoryStorageProvider instances
+- [X] T053 [P] [US3] Create test utility helper in packages/utils/tests/setup.ts for creating InMemoryStorageProvider instances
 - [ ] T054 [P] [US3] Add example unit test in packages/utils/tests/unit/catalogue-operations.test.ts demonstrating fast, isolated testing pattern
-- [ ] T055 [P] [US3] Document test patterns in specs/001-storage-abstraction/quickstart.md with beforeEach/afterEach examples
+- [X] T055 [P] [US3] Document test patterns in specs/001-storage-abstraction/quickstart.md with beforeEach/afterEach examples
 - [ ] T056 [US3] Update apps/web/src/test/setup.ts to export createTestStorageProvider utility
 - [ ] T057 [US3] Create example component test in apps/web/src/components/catalogue/__tests__/CatalogueManager.test.tsx using StorageProviderWrapper
 - [ ] T058 [US3] Document React component testing pattern in quickstart.md
