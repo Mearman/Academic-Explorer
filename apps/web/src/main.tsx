@@ -9,6 +9,8 @@ import { MantineProvider, createTheme } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { ModalsProvider } from "@mantine/modals";
 import { setupGlobalErrorHandling, logger } from "@academic-explorer/utils/logger";
+import { DexieStorageProvider } from "@academic-explorer/utils";
+import { StorageProviderWrapper } from "@/contexts/storage-provider-context";
 import { initializeNetworkMonitoring } from "./services/network-interceptor";
 import { initWebVitals } from "@/utils/web-vitals";
 import { cachedOpenAlex } from "@academic-explorer/client";
@@ -250,6 +252,14 @@ declare module "@tanstack/react-router" {
 //   void error; // Suppress unused variable warning
 // });
 
+// Create and initialize storage provider
+const storageProvider = new DexieStorageProvider(logger);
+
+// Initialize special system lists (Bookmarks, History) before app starts
+storageProvider.initializeSpecialLists().catch((error) => {
+  logger.error("main", "Failed to initialize special lists", { error });
+});
+
 const rootElement = document.getElementById("root");
 if (!rootElement) {
   throw new Error("Root element not found");
@@ -260,13 +270,15 @@ createRoot(rootElement).render(
     <MantineProvider theme={theme} defaultColorScheme="auto">
       <ModalsProvider>
         <Notifications />
-        <GraphProvider>
-          <LayoutProvider>
-            <AppActivityProvider>
-              <RouterProvider router={router} />
-            </AppActivityProvider>
-          </LayoutProvider>
-        </GraphProvider>
+        <StorageProviderWrapper provider={storageProvider}>
+          <GraphProvider>
+            <LayoutProvider>
+              <AppActivityProvider>
+                <RouterProvider router={router} />
+              </AppActivityProvider>
+            </LayoutProvider>
+          </GraphProvider>
+        </StorageProviderWrapper>
       </ModalsProvider>
     </MantineProvider>
   </QueryClientProvider>,
