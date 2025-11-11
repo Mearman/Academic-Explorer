@@ -16,6 +16,7 @@
     "assumeChangesOnlyAffectDirectDependencies": true,
     "composite": true,
     "declaration": true,
+    "noEmit": true,
     "allowJs": false,
     "strict": true,
     "strictNullChecks": true,

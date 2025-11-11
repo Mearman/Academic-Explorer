@@ -128,3 +128,10 @@ apps/web/src/**/*.d.ts.map
 !apps/web/src/**/*.test.js
 !apps/web/src/**/*.config.js
 !apps/web/src/build-plugins/**/*.js
+
+# Root-level TypeScript compilation artifacts (PROBLEM - should never exist)
+# Config files should remain as .ts and be processed by tsx/vite
+vite.config.base.js
+vite.config.base.d.ts
+vitest.config.base.js
+vitest.config.base.d.ts

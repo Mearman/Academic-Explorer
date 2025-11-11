@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
+    "noEmit": true,
     "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "target": "ES2022",
     "useDefineForClassFields": true,
