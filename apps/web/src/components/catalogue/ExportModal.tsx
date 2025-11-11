@@ -26,64 +26,18 @@ interface ExportModalProps {
 }
 
 export function ExportModal({ listId, listTitle, onClose }: ExportModalProps) {
-  const { exportListAsCompressedData } = useCatalogue();
-  const [selectedFormat, setSelectedFormat] = useState<ExportFormat>("compressed");
+  const { exportListAsFile } = useCatalogue();
+  const [selectedFormat, setSelectedFormat] = useState<ExportFormat>("json");
   const [isExporting, setIsExporting] = useState(false);
-  const [exportedData, setExportedData] = useState<string | null>(null);
+  const [exportSuccess, setExportSuccess] = useState(false);
 
   const handleExport = async () => {
     setIsExporting(true);
+    setExportSuccess(false);
     try {
-      let data: string | null = null;
-
-      switch (selectedFormat) {
-        case "compressed":
-          data = await exportListAsCompressedData(listId);
-          break;
-        case "json":
-          // TODO: Implement JSON export
-          notifications.show({
-            title: "Not Implemented",
-            message: "JSON export is not yet implemented",
-            color: "yellow",
-          });
-          setIsExporting(false);
-          return;
-        case "csv":
-          // TODO: Implement CSV export
-          notifications.show({
-            title: "Not Implemented",
-            message: "CSV export is not yet implemented",
-            color: "yellow",
-          });
-          setIsExporting(false);
-          return;
-        case "bibtex":
-          // TODO: Implement BibTeX export
-          notifications.show({
-            title: "Not Implemented",
-            message: "BibTeX export is not yet implemented",
-            color: "yellow",
-          });
-          setIsExporting(false);
-          return;
-        default:
-          throw new Error(`Unknown export format: ${selectedFormat}`);
-      }
-
-      if (data) {
-        setExportedData(data);
-
-        // Download the file
-        const blob = new Blob([data], { type: "text/plain" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `${listTitle.replace(/[^a-z0-9]/gi, "_").toLowerCase()}_${selectedFormat}.txt`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+      // Call the appropriate export method based on format
+      if (selectedFormat === "json" || selectedFormat === "compressed") {
+        await exportListAsFile(listId, selectedFormat);
 
         logger.debug("catalogue-ui", "List exported successfully", {
           listId,
@@ -91,14 +45,21 @@ export function ExportModal({ listId, listTitle, onClose }: ExportModalProps) {
           format: selectedFormat,
         });
 
+        setExportSuccess(true);
+
         notifications.show({
           title: "Export Successful",
-          message: `List exported as ${selectedFormat} format`,
+          message: `List exported as ${selectedFormat.toUpperCase()} format`,
           color: "green",
           icon: <IconCheck size={16} />,
         });
       } else {
-        throw new Error("Export returned no data");
+        // CSV and BibTeX not yet implemented
+        notifications.show({
+          title: "Not Implemented",
+          message: `${selectedFormat.toUpperCase()} export is not yet implemented`,
+          color: "yellow",
+        });
       }
     } catch (error) {
       logger.error("catalogue-ui", "Failed to export list", {
@@ -109,7 +70,7 @@ export function ExportModal({ listId, listTitle, onClose }: ExportModalProps) {
 
       notifications.show({
         title: "Export Failed",
-        message: "Failed to export list",
+        message: "Failed to export list. Please try again.",
         color: "red",
       });
     } finally {
@@ -117,26 +78,6 @@ export function ExportModal({ listId, listTitle, onClose }: ExportModalProps) {
     }
   };
 
-  const handleCopyToClipboard = async () => {
-    if (!exportedData) return;
-
-    try {
-      await navigator.clipboard.writeText(exportedData);
-      notifications.show({
-        title: "Copied",
-        message: "Export data copied to clipboard",
-        color: "green",
-        icon: <IconCheck size={16} />,
-      });
-    } catch (error) {
-      logger.error("catalogue-ui", "Failed to copy export data to clipboard", { error });
-      notifications.show({
-        title: "Copy Failed",
-        message: "Failed to copy to clipboard",
-        color: "red",
-      });
-    }
-  };
 
   return (
     <Stack gap="md">
@@ -152,15 +93,14 @@ export function ExportModal({ listId, listTitle, onClose }: ExportModalProps) {
       >
         <Stack gap="xs" mt="xs">
           <Radio
-            value="compressed"
-            label="Compressed Data"
-            description="Compact format for sharing via URL or storing"
-          />
-          <Radio
             value="json"
             label="JSON"
-            description="Standard JSON format for data interchange"
-            disabled
+            description="Standard JSON format with full metadata"
+          />
+          <Radio
+            value="compressed"
+            label="Compressed Data"
+            description="Compact format for sharing via URL"
           />
           <Radio
             value="csv"
@@ -177,51 +117,37 @@ export function ExportModal({ listId, listTitle, onClose }: ExportModalProps) {
         </Stack>
       </Radio.Group>
 
-      {exportedData && (
+      {exportSuccess && (
         <Alert color="green" icon={<IconCheck size={16} />}>
           <Stack gap="xs">
             <Text size="sm" fw={500}>
               Export Successful!
             </Text>
             <Text size="xs" c="dimmed">
-              Data has been downloaded. You can also copy it to clipboard:
+              Your catalogue list has been downloaded as a {selectedFormat.toUpperCase()} file.
             </Text>
-            <Group>
-              <Button
-                size="xs"
-                variant="light"
-                onClick={handleCopyToClipboard}
-              >
-                Copy to Clipboard
-              </Button>
-            </Group>
-            {selectedFormat === "compressed" && exportedData.length > 100 && (
-              <Code block style={{ maxHeight: "150px", overflow: "auto" }}>
-                {exportedData.substring(0, 100)}...
-              </Code>
-            )}
           </Stack>
         </Alert>
       )}
 
-      {selectedFormat !== "compressed" && (
+      {(selectedFormat === "csv" || selectedFormat === "bibtex") && (
         <Alert icon={<IconAlertCircle size={16} />} color="yellow">
-          This export format is not yet implemented. Please use Compressed Data format.
+          This export format is not yet implemented. Please use JSON or Compressed Data format.
         </Alert>
       )}
 
       <Group justify="flex-end" gap="xs">
         <Button variant="subtle" onClick={onClose} disabled={isExporting}>
-          Close
+          {exportSuccess ? "Done" : "Cancel"}
         </Button>
         <Button
           onClick={handleExport}
           loading={isExporting}
-          disabled={selectedFormat !== "compressed"}
+          disabled={selectedFormat === "csv" || selectedFormat === "bibtex"}
           leftSection={<IconDownload size={16} />}
           data-testid="export-list-button"
         >
-          {exportedData ? "Export Again" : "Export"}
+          {exportSuccess ? "Export Again" : "Export"}
         </Button>
       </Group>
     </Stack>
