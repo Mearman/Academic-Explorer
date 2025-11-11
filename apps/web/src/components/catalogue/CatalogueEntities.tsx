@@ -453,11 +453,12 @@ export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitie
     return (
       <Card withBorder p="xl">
         <Stack align="center" gap="md">
-          <Text size="lg" fw={500}>
+          <Text size="lg" fw={500} ta="center">
             No entities yet
-          </Text>
-          <Text size="sm" c="dimmed">
-            Add entities to get started
+            <br />
+            <Text component="span" size="sm" c="dimmed">
+              Add entities to get started
+            </Text>
           </Text>
         </Stack>
       </Card>

@@ -90,14 +90,18 @@ export function AddToListModal({
         hasNotes: !!notes.trim()
       });
 
-      notifications.show({
-        title: "Added to List",
-        message: `${entityDisplayName || entityId} added to "${selectedList?.title}"`,
-        color: "green",
-        icon: <IconCheck size={16} />,
-      });
-
+      // Close modal immediately - notification will persist
       onClose();
+
+      // Show notification after modal starts closing
+      setTimeout(() => {
+        notifications.show({
+          title: "Added to List",
+          message: `${entityDisplayName || entityId} added to "${selectedList?.title}"`,
+          color: "green",
+          icon: <IconCheck size={16} />,
+        });
+      }, 50);
     } catch (error) {
       logger.error("catalogue-ui", "Failed to add entity to list from modal", {
         listId: selectedListId,
