@@ -230,16 +230,16 @@ Each phase delivers independently testable value and can be deployed separately.
 
 ### 6.1 Accessibility Audit
 
-- [ ] T068 [P] [US4] Audit all catalogue modals for ARIA attributes (apps/web/src/components/catalogue/) - Check Modal components
-- [ ] T069 [P] [US4] Audit all catalogue forms for proper labels (apps/web/src/components/catalogue/) - Check TextInput, Textarea
-- [ ] T070 [P] [US4] Audit all catalogue buttons for accessible labels (apps/web/src/components/catalogue/) - Check Button, ActionIcon
-- [ ] T071 [P] [US4] Audit catalogue tables for proper structure (apps/web/src/components/catalogue/CatalogueEntities.tsx) - Check Table, th, td
+- [x] T068 [P] [US4] Audit all catalogue modals for ARIA attributes (apps/web/src/components/catalogue/) - Check Modal components
+- [x] T069 [P] [US4] Audit all catalogue forms for proper labels (apps/web/src/components/catalogue/) - Check TextInput, Textarea
+- [x] T070 [P] [US4] Audit all catalogue buttons for accessible labels (apps/web/src/components/catalogue/) - Check Button, ActionIcon
+- [x] T071 [P] [US4] Audit catalogue tables for proper structure (apps/web/src/components/catalogue/CatalogueEntities.tsx) - Check Table, th, td
 
 ### 6.2 Accessibility Fixes
 
-- [ ] T072 [US4] Add missing ARIA labels to catalogue components (apps/web/src/components/catalogue/) - Fix any gaps found in audit
-- [ ] T073 [US4] Ensure focus management in modals (apps/web/src/components/catalogue/) - Mantine handles this, verify it works
-- [ ] T074 [US4] Add keyboard navigation hints (apps/web/src/components/catalogue/) - aria-describedby for complex interactions
+- [x] T072 [US4] Add missing ARIA labels to catalogue components (apps/web/src/components/catalogue/) - Fix any gaps found in audit
+- [x] T073 [US4] Ensure focus management in modals (apps/web/src/components/catalogue/) - Mantine handles this, verify it works
+- [x] T074 [US4] Add keyboard navigation hints (apps/web/src/components/catalogue/) - aria-describedby for complex interactions
 
 **Phase Validation**: Run test 87 → Pass
 
@@ -249,19 +249,19 @@ Each phase delivers independently testable value and can be deployed separately.
 
 ### 7.1 Performance Optimization
 
-- [ ] T075 [P] Add virtual scrolling for large entity lists (>100 entities) using @tanstack/react-virtual in CatalogueEntities (apps/web/src/components/catalogue/CatalogueEntities.tsx)
-- [ ] T076 [P] Optimize Dexie queries with proper indexing (apps/web/src/lib/db/catalogue-db.ts) - Verify compound indexes work
-- [ ] T077 [P] Add loading states to all async operations in catalogue components (apps/web/src/components/catalogue/)
+- [x] T075 [P] Add virtual scrolling for large entity lists (>100 entities) using @tanstack/react-virtual in CatalogueEntities (apps/web/src/components/catalogue/CatalogueEntities.tsx)
+- [x] T076 [P] Optimize Dexie queries with proper indexing (packages/utils/src/storage/catalogue-db.ts) - Verify compound indexes work
+- [x] T077 [P] Add loading states to all async operations in catalogue components (apps/web/src/components/catalogue/)
 
 ### 7.2 Error Handling
 
-- [ ] T078 [P] Implement error boundaries for catalogue components (apps/web/src/components/catalogue/CatalogueErrorBoundary.tsx) - Catch rendering errors
-- [ ] T079 [P] Add user-friendly error messages for storage failures (apps/web/src/hooks/useCatalogue.ts) - Improve error feedback
+- [x] T078 [P] Implement error boundaries for catalogue components (apps/web/src/components/catalogue/CatalogueErrorBoundary.tsx) - Catch rendering errors
+- [x] T079 [P] Add user-friendly error messages for storage failures (apps/web/src/hooks/useCatalogue.ts) - Improve error feedback
 
 ### 7.3 Final Validation
 
 - [ ] T080 Run full E2E test suite (`pnpm test:e2e`) → 232/232 tests passing
-- [ ] T081 Run TypeScript compilation (`pnpm typecheck`) → No errors
+- [x] T081 Run TypeScript compilation (`pnpm typecheck`) → No errors
 - [ ] T082 Run full validation pipeline (`pnpm verify`) → All checks pass
 - [ ] T083 Manual testing of catalogue feature end-to-end - Add, reorder, export, import, share
 - [ ] T084 Performance testing with 100+ entity list - Verify no UI freezing
