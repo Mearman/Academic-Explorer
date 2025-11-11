@@ -1,6 +1,6 @@
 import React, { ReactNode, useState } from "react";
 import { Button, Text, Code, Badge, Paper, Stack, Group, Container, Title, Tooltip, ActionIcon, Modal } from "@mantine/core";
-import { IconEye, IconCode, IconBookmark, IconBookmarkOff, IconBookmarkFilled, IconPlaylistAdd } from "@tabler/icons-react";
+import { IconEye, IconCode, IconBookmark, IconBookmarkOff, IconBookmarkFilled, IconListCheck } from "@tabler/icons-react";
 import { logger } from "@/lib/logger";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { useQueryBookmarking } from "@/hooks/use-query-bookmarking";
@@ -157,7 +157,7 @@ export function EntityDetailLayout({
                   onClick={() => setShowAddToListModal(true)}
                   data-testid="add-to-catalogue-button"
                 >
-                  <IconPlaylistAdd size={20} />
+                  <IconListCheck size={20} />
                 </ActionIcon>
               </Tooltip>
 
