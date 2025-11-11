@@ -5,7 +5,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import {
-  catalogueService,
   catalogueEventEmitter,
   type CatalogueList,
   type CatalogueEntity,
@@ -14,6 +13,7 @@ import {
 } from "@academic-explorer/utils";
 import { compressListData, createShareUrl, extractListDataFromUrl, validateListData, type CompressedListData, decompressListData } from "@academic-explorer/utils";
 import { logger } from "@academic-explorer/utils/logger";
+import { useStorageProvider } from "@/contexts/storage-provider-context";
 
 const CATALOGUE_LOGGER_CONTEXT = "catalogue-hook";
 
@@ -87,6 +87,9 @@ export interface UseCatalogueReturn {
 export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueReturn {
   const { autoRefresh = true, listId: focusedListId } = options;
 
+  // Get storage provider from context
+  const storage = useStorageProvider();
+
   // State
   const [lists, setLists] = useState<CatalogueList[]>([]);
   const [selectedListId, setSelectedListId] = useState<string | null>(focusedListId || null);
@@ -101,14 +104,14 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
   const refreshLists = useCallback(async () => {
     setIsLoadingLists(true);
     try {
-      const allLists = await catalogueService.getAllLists();
+      const allLists = await storage.getAllLists();
       setLists(allLists);
     } catch (error) {
       logger.error(CATALOGUE_LOGGER_CONTEXT, "Failed to refresh catalogue lists", { error });
     } finally {
       setIsLoadingLists(false);
     }
-  }, []);
+  }, [storage]);
 
   // Refresh entities for a specific list
   const refreshEntities = useCallback(async (listId: string) => {
@@ -116,7 +119,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
 
     setIsLoadingEntities(true);
     try {
-      const listEntities = await catalogueService.getListEntities(listId);
+      const listEntities = await storage.getListEntities(listId);
       setEntities(listEntities);
     } catch (error) {
       logger.error(CATALOGUE_LOGGER_CONTEXT, "Failed to refresh list entities", { listId, error });
@@ -124,7 +127,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
     } finally {
       setIsLoadingEntities(false);
     }
-  }, []);
+  }, [storage]);
 
   // Load data on mount
   useEffect(() => {
@@ -170,7 +173,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
     isPublic?: boolean;
   }): Promise<string> => {
     try {
-      const listId = await catalogueService.createList(params);
+      const listId = await storage.createList(params);
 
       // Auto-select the new list
       setSelectedListId(listId);
@@ -188,7 +191,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
     updates: Partial<Pick<CatalogueList, "title" | "description" | "tags" | "isPublic">>
   ): Promise<void> => {
     try {
-      await catalogueService.updateList(listId, updates);
+      await storage.updateList(listId, updates);
     } catch (error) {
       logger.error(CATALOGUE_LOGGER_CONTEXT, "Failed to update catalogue list", { listId, updates, error });
       throw error;
@@ -198,7 +201,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
   // Delete list
   const deleteList = useCallback(async (listId: string): Promise<void> => {
     try {
-      await catalogueService.deleteList(listId);
+      await storage.deleteList(listId);
 
       // Clear selection if deleted list was selected
       if (selectedListId === listId) {
@@ -223,7 +226,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
     notes?: string;
   }): Promise<string> => {
     try {
-      return await catalogueService.addEntityToList(params);
+      return await storage.addEntityToList(params);
     } catch (error) {
       logger.error(CATALOGUE_LOGGER_CONTEXT, "Failed to add entity to catalogue list", { params, error });
       throw error;
@@ -240,7 +243,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
     }>
   ): Promise<{ success: number; failed: number }> => {
     try {
-      return await catalogueService.addEntitiesToList(listId, entities);
+      return await storage.addEntitiesToList(listId, entities);
     } catch (error) {
       logger.error(CATALOGUE_LOGGER_CONTEXT, "Failed to add multiple entities to catalogue list", {
         listId,
@@ -254,7 +257,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
   // Remove entity from list
   const removeEntityFromList = useCallback(async (listId: string, entityRecordId: string): Promise<void> => {
     try {
-      await catalogueService.removeEntityFromList(listId, entityRecordId);
+      await storage.removeEntityFromList(listId, entityRecordId);
     } catch (error) {
       logger.error(CATALOGUE_LOGGER_CONTEXT, "Failed to remove entity from catalogue list", {
         listId,
@@ -284,7 +287,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
   // Update entity notes
   const updateEntityNotes = useCallback(async (entityRecordId: string, notes: string): Promise<void> => {
     try {
-      await catalogueService.updateEntityNotes(entityRecordId, notes);
+      await storage.updateEntityNotes(entityRecordId, notes);
       // Refresh entities to show updated notes
       if (selectedList) {
         await refreshEntities(selectedList.id!);
@@ -302,7 +305,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
   // Search lists
   const searchLists = useCallback(async (query: string): Promise<CatalogueList[]> => {
     try {
-      return await catalogueService.searchLists(query);
+      return await storage.searchLists(query);
     } catch (error) {
       logger.error(CATALOGUE_LOGGER_CONTEXT, "Failed to search catalogue lists", { query, error });
       return [];
@@ -312,12 +315,12 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
   // Generate share URL
   const generateShareUrl = useCallback(async (listId: string): Promise<string> => {
     try {
-      const list = await catalogueService.getList(listId);
+      const list = await storage.getList(listId);
       if (!list) {
         throw new Error("List not found");
       }
 
-      const listEntities = await catalogueService.getListEntities(listId);
+      const listEntities = await storage.getListEntities(listId);
 
       // Convert to compressed data format
       const listData: CompressedListData = {
@@ -335,7 +338,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
       };
 
       // Generate share token
-      const shareToken = await catalogueService.generateShareToken(listId);
+      const shareToken = await storage.generateShareToken(listId);
 
       // Create share URL with compressed data
       const baseUrl = `${window.location.origin}${window.location.pathname}#/catalogue/shared/${shareToken}`;
@@ -356,7 +359,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
       }
 
       // Create new list from shared data
-      const listId = await catalogueService.createList({
+      const listId = await storage.createList({
         title: `${listData.list.title} (Imported)`,
         description: listData.list.description ? `${listData.list.description} (Imported from shared list)` : "Imported from shared list",
         type: listData.list.type,
@@ -366,7 +369,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
 
       // Add entities to the new list
       if (listData.entities.length > 0) {
-        await catalogueService.addEntitiesToList(listId, listData.entities);
+        await storage.addEntitiesToList(listId, listData.entities);
       }
 
       return listId;
@@ -382,7 +385,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
     entityCounts: Record<EntityType, number>;
   }> => {
     try {
-      return await catalogueService.getListStats(listId);
+      return await storage.getListStats(listId);
     } catch (error) {
       logger.error(CATALOGUE_LOGGER_CONTEXT, "Failed to get list stats", { listId, error });
       return {
@@ -403,12 +406,12 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
   // Export list as compressed data
   const exportListAsCompressedData = useCallback(async (listId: string): Promise<string | null> => {
     try {
-      const list = await catalogueService.getList(listId);
+      const list = await storage.getList(listId);
       if (!list) {
         throw new Error("List not found");
       }
 
-      const listEntities = await catalogueService.getListEntities(listId);
+      const listEntities = await storage.getListEntities(listId);
 
       const listData: CompressedListData = {
         list: {
@@ -441,7 +444,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
       }
 
       // Create new list from compressed data
-      const listId = await catalogueService.createList({
+      const listId = await storage.createList({
         title: `${listData.list.title} (Imported)`,
         description: listData.list.description ? `${listData.list.description} (Imported)` : "Imported from compressed data",
         type: listData.list.type,
@@ -451,7 +454,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
 
       // Add entities to the new list
       if (listData.entities.length > 0) {
-        await catalogueService.addEntitiesToList(listId, listData.entities);
+        await storage.addEntitiesToList(listId, listData.entities);
       }
 
       return listId;
