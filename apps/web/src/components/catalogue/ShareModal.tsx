@@ -13,6 +13,8 @@ import {
   ActionIcon,
   Tooltip,
   Modal,
+  Loader,
+  Box,
 } from "@mantine/core";
 import {
   IconCopy,
@@ -32,9 +34,11 @@ interface ShareModalProps {
 export function ShareModal({ shareUrl, listTitle, onClose }: ShareModalProps) {
   const [showQR, setShowQR] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
+  const [isGeneratingQR, setIsGeneratingQR] = useState(false); // T077: Loading state for QR generation
 
   useEffect(() => {
     if (showQR && shareUrl) {
+      setIsGeneratingQR(true); // T077: Set loading state
       QRCode.toDataURL(shareUrl, {
         width: 200,
         margin: 1,
@@ -54,6 +58,9 @@ export function ShareModal({ shareUrl, listTitle, onClose }: ShareModalProps) {
             urlLength: shareUrl.length,
             error
           });
+        })
+        .finally(() => {
+          setIsGeneratingQR(false); // T077: Clear loading state
         });
     }
   }, [showQR, shareUrl]);
@@ -70,13 +77,15 @@ export function ShareModal({ shareUrl, listTitle, onClose }: ShareModalProps) {
         </Text>
 
         <Stack gap="xs">
-          <Text size="sm" fw={500}>Share URL</Text>
+          <Text size="sm" fw={500} component="label" htmlFor="share-url-field">Share URL</Text>
           <Group gap="xs">
             <TextInput
+              id="share-url-field"
               value={shareUrl}
               readOnly
               flex={1}
               size="sm"
+              aria-label="Share URL for this catalogue list"
               data-testid="share-url-input"
             />
             <CopyButton value={shareUrl}>
@@ -87,6 +96,7 @@ export function ShareModal({ shareUrl, listTitle, onClose }: ShareModalProps) {
                     variant="light"
                     onClick={copy}
                     leftSection={copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
+                    aria-label={copied ? "URL copied to clipboard" : "Copy share URL to clipboard"}
                     data-testid="copy-share-url-button"
                   >
                     {copied ? "Copied!" : "Copy"}
@@ -103,6 +113,8 @@ export function ShareModal({ shareUrl, listTitle, onClose }: ShareModalProps) {
             leftSection={<IconQrcode size={16} />}
             onClick={() => setShowQR(!showQR)}
             size="sm"
+            aria-expanded={showQR}
+            aria-controls="qr-code-section"
             data-testid="toggle-qr-code-button"
           >
             {showQR ? "Hide" : "Show"} QR Code
@@ -112,6 +124,7 @@ export function ShareModal({ shareUrl, listTitle, onClose }: ShareModalProps) {
               onClick={handleOpenLink}
               size="lg"
               variant="light"
+              aria-label="Open share link in new tab"
               data-testid="open-share-link-button"
             >
               <IconExternalLink size={16} />
@@ -119,12 +132,19 @@ export function ShareModal({ shareUrl, listTitle, onClose }: ShareModalProps) {
           </Tooltip>
         </Group>
 
-        {showQR && qrCodeUrl && (
-          <Stack align="center" gap="xs">
+        {/* T077: Show loading spinner while generating QR code */}
+        {showQR && isGeneratingQR && (
+          <Box style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
+            <Loader size="md" />
+          </Box>
+        )}
+
+        {showQR && !isGeneratingQR && qrCodeUrl && (
+          <Stack align="center" gap="xs" id="qr-code-section">
             <Text size="sm" fw={500}>QR Code</Text>
             <img
               src={qrCodeUrl}
-              alt="QR Code for sharing"
+              alt={`QR Code containing share URL for ${listTitle}`}
               style={{ width: 200, height: 200 }}
               data-testid="share-qr-code"
             />

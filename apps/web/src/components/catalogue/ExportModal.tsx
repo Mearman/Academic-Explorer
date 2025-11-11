@@ -80,7 +80,7 @@ export function ExportModal({ listId, listTitle, onClose }: ExportModalProps) {
 
 
   return (
-    <Stack gap="md">
+    <Stack gap="md" aria-busy={isExporting}>
       <Text size="sm" c="dimmed">
         Export "{listTitle}" to share or backup your catalogue list
       </Text>
@@ -90,35 +90,40 @@ export function ExportModal({ listId, listTitle, onClose }: ExportModalProps) {
         onChange={(value) => setSelectedFormat(value as ExportFormat)}
         label="Select Export Format"
         required
+        aria-required="true"
       >
         <Stack gap="xs" mt="xs">
           <Radio
             value="json"
             label="JSON"
             description="Standard JSON format with full metadata"
+            aria-describedby="json-description"
           />
           <Radio
             value="compressed"
             label="Compressed Data"
             description="Compact format for sharing via URL"
+            aria-describedby="compressed-description"
           />
           <Radio
             value="csv"
             label="CSV"
             description="Spreadsheet-compatible format"
             disabled
+            aria-describedby="csv-description"
           />
           <Radio
             value="bibtex"
             label="BibTeX"
             description="Bibliography format (works only)"
             disabled
+            aria-describedby="bibtex-description"
           />
         </Stack>
       </Radio.Group>
 
       {exportSuccess && (
-        <Alert color="green" icon={<IconCheck size={16} />}>
+        <Alert color="green" icon={<IconCheck size={16} />} role="status" aria-live="polite">
           <Stack gap="xs">
             <Text size="sm" fw={500}>
               Export Successful!

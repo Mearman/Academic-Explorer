@@ -189,6 +189,7 @@ export function CatalogueManager({ onNavigate, sharedToken, shareData }: Catalog
               variant="light"
               leftSection={<IconUpload size={16} />}
               onClick={() => setShowImportModal(true)}
+              aria-label="Open import modal to import a catalogue list"
             >
               Import
             </Button>
@@ -198,6 +199,7 @@ export function CatalogueManager({ onNavigate, sharedToken, shareData }: Catalog
               leftSection={<IconShare size={16} />}
               onClick={handleShare}
               disabled={!selectedList}
+              aria-label={selectedList ? "Open share modal to share this list" : "Select a list to enable sharing"}
             >
               Share
             </Button>
@@ -205,6 +207,7 @@ export function CatalogueManager({ onNavigate, sharedToken, shareData }: Catalog
             <Button
               leftSection={<IconPlus size={16} />}
               onClick={() => setShowCreateModal(true)}
+              aria-label="Open modal to create a new catalogue list"
             >
               Create New List
             </Button>
@@ -296,6 +299,7 @@ export function CatalogueManager({ onNavigate, sharedToken, shareData }: Catalog
                   }}
                   leftSection={<IconEdit size={16} />}
                   data-testid="edit-selected-list-button"
+                  aria-label="Edit list details"
                 >
                   Edit
                 </Button>
@@ -305,6 +309,7 @@ export function CatalogueManager({ onNavigate, sharedToken, shareData }: Catalog
                   onClick={() => setShowExportModal(true)}
                   leftSection={<IconDownload size={16} />}
                   data-testid="export-list-button"
+                  aria-label="Export this list to a file"
                 >
                   Export
                 </Button>
@@ -314,6 +319,7 @@ export function CatalogueManager({ onNavigate, sharedToken, shareData }: Catalog
                   onClick={handleShare}
                   leftSection={<IconShare size={16} />}
                   data-testid="share-list-button"
+                  aria-label="Share this list with others"
                 >
                   Share
                 </Button>
@@ -376,6 +382,8 @@ export function CatalogueManager({ onNavigate, sharedToken, shareData }: Catalog
           onClose={() => setShowCreateModal(false)}
           title="Create New List"
           size="md"
+          trapFocus
+          returnFocus
         >
           <CreateListModal
             onClose={() => setShowCreateModal(false)}
@@ -394,6 +402,8 @@ export function CatalogueManager({ onNavigate, sharedToken, shareData }: Catalog
           onClose={() => setShowShareModal(false)}
           title="Share List"
           size="lg"
+          trapFocus
+          returnFocus
         >
           <ShareModal
             shareUrl={shareUrl}
@@ -407,6 +417,8 @@ export function CatalogueManager({ onNavigate, sharedToken, shareData }: Catalog
           onClose={() => setShowImportModal(false)}
           title="Import List"
           size="lg"
+          trapFocus
+          returnFocus
         >
           <ImportModal
             onClose={() => setShowImportModal(false)}
@@ -420,6 +432,8 @@ export function CatalogueManager({ onNavigate, sharedToken, shareData }: Catalog
           onClose={() => setShowExportModal(false)}
           title="Export List"
           size="lg"
+          trapFocus
+          returnFocus
         >
           {selectedList && (
             <ExportModal

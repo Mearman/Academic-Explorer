@@ -3,7 +3,7 @@
  * Supports sorting, filtering, and entity operations
  */
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Card,
   Group,
@@ -22,6 +22,7 @@ import {
   Loader,
   Alert,
   Checkbox,
+  Box,
 } from "@mantine/core";
 import {
   IconExternalLink,
@@ -51,6 +52,7 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { useCatalogue } from "@/hooks/useCatalogue";
 import { type CatalogueEntity, type EntityType, type CatalogueList } from "@academic-explorer/utils";
 import { notifications } from "@mantine/notifications";
@@ -76,7 +78,6 @@ interface CatalogueEntitiesProps {
 
 interface SortableEntityRowProps {
   entity: CatalogueEntity;
-  index: number;
   onNavigate?: (entityType: EntityType, entityId: string) => void;
   onRemove: (entityId: string) => void;
   onEditNotes: (entityId: string, notes: string) => void;
@@ -91,6 +92,7 @@ interface SortableEntityRowProps {
  */
 function formatEntityMetadata(entity: CatalogueEntity): string {
   // Type guard: Check if entity has metadata property (enriched entity)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const enrichedEntity = entity as CatalogueEntity & { metadata?: any };
 
   if (!enrichedEntity.metadata) {
@@ -193,7 +195,6 @@ function formatEntityMetadata(entity: CatalogueEntity): string {
 
 function SortableEntityRow({
   entity,
-  index,
   onNavigate,
   onRemove,
   onEditNotes,
@@ -271,6 +272,7 @@ function SortableEntityRow({
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Add notes..."
                 flex={1}
+                aria-label="Edit notes for this entity"
               />
               <Button size="xs" onClick={handleSaveNotes}>
                 Save
@@ -370,11 +372,7 @@ function SortableEntityRow({
 }
 
 export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitiesProps) {
-  // Guard clause - if no selected list or no ID, don't render
-  if (!selectedList?.id) {
-    return null;
-  }
-
+  // T081: Hooks must be called unconditionally, so move them before guard clause
   const {
     entities,
     isLoadingEntities,
@@ -392,6 +390,15 @@ export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitie
   const [showBulkConfirm, setShowBulkConfirm] = useState(false);
   const [showBulkMoveModal, setShowBulkMoveModal] = useState(false);
   const [targetListId, setTargetListId] = useState<string | null>(null);
+
+  // T075: Virtual scrolling ref for large lists
+  const parentRef = useRef<HTMLDivElement>(null);
+  const VIRTUALIZATION_THRESHOLD = 100;
+
+  // Guard clause - if no selected list or no ID, don't render
+  if (!selectedList?.id) {
+    return null;
+  }
 
   // Filter entities based on search and type
   const filteredEntities = entities.filter((entity) => {
@@ -420,6 +427,16 @@ export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitie
     }
   });
 
+  // T075: Setup virtualizer for large lists (>100 entities)
+  const useVirtualization = sortedEntities.length > VIRTUALIZATION_THRESHOLD;
+  const rowVirtualizer = useVirtualizer({
+    count: sortedEntities.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 80, // Estimated row height in pixels
+    enabled: useVirtualization,
+    overscan: 10, // Render 10 items above and below viewport for smooth scrolling
+  });
+
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
 
@@ -443,6 +460,14 @@ export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitie
       logger.debug("catalogue-ui", "Entities reordered successfully", {
         listId: selectedList.id!,
         entityCount: reorderedIds.length
+      });
+
+      // Announce reorder to screen readers
+      notifications.show({
+        title: "Reordered",
+        message: `Entity moved from position ${oldIndex + 1} to position ${newIndex + 1}`,
+        color: "blue",
+        autoClose: 2000,
       });
     } catch (error) {
       logger.error("catalogue-ui", "Failed to reorder entities", {
@@ -661,6 +686,7 @@ export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitie
             onChange={(e) => setSearchQuery(e.target.value)}
             leftSection={<IconSearch size={16} />}
             flex={1}
+            aria-label="Search entities by ID or notes"
           />
 
           <Select
@@ -671,6 +697,7 @@ export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitie
               ...entityTypes.map((type) => ({ value: type, label: type })),
             ]}
             w={120}
+            aria-label="Filter entities by type"
           />
 
           <Select
@@ -683,6 +710,7 @@ export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitie
               { value: "addedAt", label: "Date Added" },
             ]}
             w={120}
+            aria-label="Sort entities by"
           />
         </Group>
 
@@ -721,59 +749,97 @@ export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitie
           </Group>
         )}
 
-        {/* Entities Table */}
+        {/* Entities Table - T075: With virtual scrolling for large lists */}
         <Card withBorder padding={0}>
-          <Table.ScrollContainer minWidth={500}>
-            <Table striped highlightOnHover>
-              <Table.Thead>
-                <Table.Tr>
-                  <Table.Th w={40}>
-                    <Checkbox
-                      checked={selectedEntities.size === sortedEntities.length && sortedEntities.length > 0}
-                      indeterminate={selectedEntities.size > 0 && selectedEntities.size < sortedEntities.length}
-                      onChange={handleSelectAll}
-                      aria-label="Select all entities"
-                    />
-                  </Table.Th>
-                  <Table.Th w={40}></Table.Th>
-                  <Table.Th>Entity</Table.Th>
-                  <Table.Th>Notes</Table.Th>
-                  <Table.Th w={100}>Added</Table.Th>
-                  <Table.Th w={100}>Actions</Table.Th>
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>
-                <DndContext
-                  sensors={useSensors(
-                    useSensor(PointerSensor),
-                    useSensor(KeyboardSensor, {
-                      coordinateGetter: sortableKeyboardCoordinates,
-                    })
-                  )}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleDragEnd}
-                >
-                  <SortableContext
-                    items={sortedEntities.map(entity => entity.id!)}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    {sortedEntities.map((entity) => (
-                      <SortableEntityRow
-                        key={entity.id}
-                        entity={entity}
-                        index={sortedEntities.indexOf(entity)}
-                        onNavigate={onNavigate}
-                        onRemove={handleRemoveEntity}
-                        onEditNotes={handleEditNotes}
-                        isSelected={selectedEntities.has(entity.id!)}
-                        onToggleSelect={handleToggleEntity}
+          <Box
+            ref={parentRef}
+            style={{
+              height: useVirtualization ? '600px' : 'auto',
+              overflow: useVirtualization ? 'auto' : 'visible',
+            }}
+          >
+            <Table.ScrollContainer minWidth={500}>
+              <Table striped highlightOnHover>
+                <Table.Thead style={{ position: useVirtualization ? 'sticky' : 'static', top: 0, zIndex: 1, background: 'white' }}>
+                  <Table.Tr>
+                    <Table.Th w={40}>
+                      <Checkbox
+                        checked={selectedEntities.size === sortedEntities.length && sortedEntities.length > 0}
+                        indeterminate={selectedEntities.size > 0 && selectedEntities.size < sortedEntities.length}
+                        onChange={handleSelectAll}
+                        aria-label="Select all entities"
                       />
-                    ))}
-                  </SortableContext>
-                </DndContext>
-              </Table.Tbody>
-            </Table>
-          </Table.ScrollContainer>
+                    </Table.Th>
+                    <Table.Th w={40}></Table.Th>
+                    <Table.Th>Entity</Table.Th>
+                    <Table.Th>Notes</Table.Th>
+                    <Table.Th w={100}>Added</Table.Th>
+                    <Table.Th w={100}>Actions</Table.Th>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  <DndContext
+                    sensors={useSensors(
+                      useSensor(PointerSensor),
+                      useSensor(KeyboardSensor, {
+                        coordinateGetter: sortableKeyboardCoordinates,
+                      })
+                    )}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext
+                      items={sortedEntities.map(entity => entity.id!)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      {useVirtualization ? (
+                        // Virtualized rendering for large lists
+                        <Box style={{ height: `${rowVirtualizer.getTotalSize()}px`, position: 'relative' }}>
+                          {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                            const entity = sortedEntities[virtualRow.index];
+                            return (
+                              <Box
+                                key={entity.id}
+                                style={{
+                                  position: 'absolute',
+                                  top: 0,
+                                  left: 0,
+                                  width: '100%',
+                                  transform: `translateY(${virtualRow.start}px)`,
+                                }}
+                              >
+                                <SortableEntityRow
+                                  entity={entity}
+                                  onNavigate={onNavigate}
+                                  onRemove={handleRemoveEntity}
+                                  onEditNotes={handleEditNotes}
+                                  isSelected={selectedEntities.has(entity.id ?? "")}
+                                  onToggleSelect={handleToggleEntity}
+                                />
+                              </Box>
+                            );
+                          })}
+                        </Box>
+                      ) : (
+                        // Standard rendering for small lists
+                        sortedEntities.map((entity) => (
+                          <SortableEntityRow
+                            key={entity.id}
+                            entity={entity}
+                            onNavigate={onNavigate}
+                            onRemove={handleRemoveEntity}
+                            onEditNotes={handleEditNotes}
+                            isSelected={selectedEntities.has(entity.id ?? "")}
+                            onToggleSelect={handleToggleEntity}
+                          />
+                        ))
+                      )}
+                    </SortableContext>
+                  </DndContext>
+                </Table.Tbody>
+              </Table>
+            </Table.ScrollContainer>
+          </Box>
         </Card>
 
         {filteredEntities.length === 0 && entities.length > 0 && (

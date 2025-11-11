@@ -239,7 +239,7 @@ export function ImportModal({ onClose, onImport, initialShareData }: ImportModal
   }, [selectedFile, dataToImport, shareUrl, compressedData, importListFromFile, importFromShareUrl, importListCompressed, onImport, onClose]);
 
   return (
-    <Modal opened={true} onClose={onClose} title="Import Catalogue List" size="lg">
+    <Modal opened={true} onClose={onClose} title="Import Catalogue List" size="lg" trapFocus returnFocus>
       <Stack gap="md">
         <Text size="sm" c="dimmed">
           Import a catalogue list from a file or compressed data string.
@@ -256,7 +256,7 @@ export function ImportModal({ onClose, onImport, initialShareData }: ImportModal
 
         {/* File Upload Section */}
         <Stack gap="xs">
-          <Text size="sm" fw={500}>Upload from File</Text>
+          <Text size="sm" fw={500} id="file-upload-label">Upload from File</Text>
           <FileButton
             onChange={handleFileUpload}
             accept=".txt,.json"
@@ -272,6 +272,9 @@ export function ImportModal({ onClose, onImport, initialShareData }: ImportModal
                   transition: "all 0.2s",
                 }}
                 {...props}
+                role="button"
+                aria-labelledby="file-upload-label"
+                aria-describedby="file-upload-description"
                 data-testid="file-upload-area"
               >
                 <Stack align="center" gap="xs">
@@ -279,7 +282,7 @@ export function ImportModal({ onClose, onImport, initialShareData }: ImportModal
                   <Text size="sm" fw={500}>
                     Click to upload file
                   </Text>
-                  <Text size="xs" c="dimmed">
+                  <Text size="xs" c="dimmed" id="file-upload-description">
                     Supports .txt (compressed) and .json files
                   </Text>
                   {selectedFile && (
@@ -298,7 +301,7 @@ export function ImportModal({ onClose, onImport, initialShareData }: ImportModal
 
         {/* T063: Share URL Input Section */}
         <Stack gap="xs">
-          <Text size="sm" fw={500}>Import from Share URL</Text>
+          <Text size="sm" fw={500} id="share-url-label">Import from Share URL</Text>
           <TextInput
             placeholder="Paste shared catalogue URL or data string"
             value={shareUrl}
@@ -309,14 +312,16 @@ export function ImportModal({ onClose, onImport, initialShareData }: ImportModal
                 variant="subtle"
                 size="xs"
                 onClick={handlePaste}
-                title="Paste from clipboard"
+                aria-label="Paste from clipboard"
               >
                 Paste
               </Button>
             }
+            aria-labelledby="share-url-label"
+            aria-describedby="share-url-help"
             data-testid="share-url-input"
           />
-          <Text size="xs" c="dimmed">
+          <Text size="xs" c="dimmed" id="share-url-help">
             Enter a full share URL (e.g., https://domain/catalogue?data=xyz) or just the data string
           </Text>
         </Stack>
@@ -325,8 +330,11 @@ export function ImportModal({ onClose, onImport, initialShareData }: ImportModal
 
         {/* Compressed Data Input Section */}
         <Stack gap="xs">
-          <Text size="sm" fw={500}>Paste Compressed Data</Text>
+          <Text size="sm" fw={500} component="label" htmlFor="compressed-data-textarea">
+            Paste Compressed Data
+          </Text>
           <Textarea
+            id="compressed-data-textarea"
             placeholder="Paste compressed catalogue data here..."
             value={compressedData}
             onChange={(e) => handleCompressedDataChange(e.currentTarget.value)}
@@ -337,7 +345,7 @@ export function ImportModal({ onClose, onImport, initialShareData }: ImportModal
                 variant="subtle"
                 size="xs"
                 onClick={handlePaste}
-                title="Paste from clipboard"
+                aria-label="Paste from clipboard"
               >
                 Paste
               </Button>
@@ -385,6 +393,7 @@ export function ImportModal({ onClose, onImport, initialShareData }: ImportModal
             title="Import Failed"
             color="red"
             variant="light"
+            role="alert"
           >
             {error}
           </Alert>
@@ -395,7 +404,7 @@ export function ImportModal({ onClose, onImport, initialShareData }: ImportModal
           <Paper withBorder p="md">
             <Group gap="xs">
               <Loader size="sm" />
-              <Text size="sm">Validating data...</Text>
+              <Text size="sm" role="status" aria-live="polite">Validating data...</Text>
             </Group>
           </Paper>
         )}
@@ -475,6 +484,7 @@ export function ImportModal({ onClose, onImport, initialShareData }: ImportModal
               isValidating
             }
             leftSection={<IconDownload size={16} />}
+            aria-busy={isImporting}
           >
             Import List
           </Button>

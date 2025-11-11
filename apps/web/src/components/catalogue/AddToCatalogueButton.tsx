@@ -142,15 +142,18 @@ function CreateAndAddModal({
         <Divider />
 
         <TextInput
+          id="list-title-input"
           label="List Title"
           placeholder="Enter list title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
+          aria-required="true"
           autoFocus
         />
 
         <Textarea
+          id="list-description-input"
           label="Description"
           placeholder="Optional description"
           value={description}
@@ -160,7 +163,7 @@ function CreateAndAddModal({
 
         <Group>
           <Checkbox
-            id="is-public-modal"
+            id="is-public-checkbox"
             checked={isPublic}
             onChange={(e) => setIsPublic(e.target.checked)}
             label="Make this list publicly shareable"
@@ -338,7 +341,7 @@ export function AddToCatalogueButton({
             size={size}
             variant="light"
             className={className}
-            title="Add to catalogue list"
+            aria-label="Add to catalogue list"
           >
             <IconBookmark size={16} />
           </ActionIcon>

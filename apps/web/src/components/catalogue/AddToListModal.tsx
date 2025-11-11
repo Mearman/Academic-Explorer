@@ -122,7 +122,7 @@ export function AddToListModal({
     return (
       <Stack align="center" py="xl">
         <Loader size="lg" />
-        <Text size="sm" c="dimmed">
+        <Text size="sm" c="dimmed" role="status" aria-live="polite">
           Loading lists...
         </Text>
       </Stack>
@@ -163,6 +163,7 @@ export function AddToListModal({
             label: `${list.title} (${list.type})`,
           }))}
           required
+          aria-required="true"
           searchable
           data-testid="add-to-list-select"
         />
