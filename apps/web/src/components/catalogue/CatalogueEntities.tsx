@@ -39,11 +39,13 @@ import {
   useSensor,
   useSensors,
   PointerSensor,
+  KeyboardSensor,
 } from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
   verticalListSortingStrategy,
+  sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
 import {
   useSortable,
@@ -53,6 +55,17 @@ import { useCatalogue } from "@/hooks/useCatalogue";
 import { type CatalogueEntity, type EntityType, type CatalogueList } from "@academic-explorer/utils";
 import { notifications } from "@mantine/notifications";
 import { logger } from "@/lib/logger";
+import { ENTITY_TYPE_COLORS, ENTITY_TYPE_LABELS } from "@/constants/catalogue";
+import {
+  isWorkMetadata,
+  isAuthorMetadata,
+  isInstitutionMetadata,
+  isSourceMetadata,
+  isTopicMetadata,
+  isFunderMetadata,
+  isPublisherMetadata,
+  isConceptMetadata,
+} from "@/utils/catalogue-guards";
 
 interface CatalogueEntitiesProps {
   /** Currently selected list */
@@ -69,6 +82,113 @@ interface SortableEntityRowProps {
   onEditNotes: (entityId: string, notes: string) => void;
   isSelected: boolean;
   onToggleSelect: (entityId: string) => void;
+}
+
+/**
+ * Formats entity metadata for display based on entity type
+ * Note: Metadata is only available when entities are enriched with OpenAlex data.
+ * For base CatalogueEntity objects from storage, this will show entity ID.
+ */
+function formatEntityMetadata(entity: CatalogueEntity): string {
+  // Type guard: Check if entity has metadata property (enriched entity)
+  const enrichedEntity = entity as CatalogueEntity & { metadata?: any };
+
+  if (!enrichedEntity.metadata) {
+    // Fallback for non-enriched entities - show entity type info
+    return `Entity: ${entity.entityId}`;
+  }
+
+  const { metadata } = enrichedEntity;
+
+  if (isWorkMetadata(metadata)) {
+    const parts: string[] = [];
+    if (metadata.citedByCount !== undefined) {
+      parts.push(`${metadata.citedByCount} citations`);
+    }
+    if (metadata.publicationYear) {
+      parts.push(`${metadata.publicationYear}`);
+    }
+    return parts.join(' • ') || 'No citation data';
+  }
+
+  if (isAuthorMetadata(metadata)) {
+    const parts: string[] = [];
+    if (metadata.worksCount !== undefined) {
+      parts.push(`${metadata.worksCount} works`);
+    }
+    if (metadata.hIndex !== undefined) {
+      parts.push(`h-index: ${metadata.hIndex}`);
+    }
+    return parts.join(' • ') || 'No works data';
+  }
+
+  if (isInstitutionMetadata(metadata)) {
+    const parts: string[] = [];
+    if (metadata.worksCount !== undefined) {
+      parts.push(`${metadata.worksCount} works`);
+    }
+    if (metadata.countryCode) {
+      parts.push(metadata.countryCode);
+    }
+    return parts.join(' • ') || 'No works data';
+  }
+
+  if (isSourceMetadata(metadata)) {
+    const parts: string[] = [];
+    if (metadata.worksCount !== undefined) {
+      parts.push(`${metadata.worksCount} works`);
+    }
+    if (metadata.issn && metadata.issn.length > 0) {
+      parts.push(`ISSN: ${metadata.issn[0]}`);
+    }
+    return parts.join(' • ') || 'No works data';
+  }
+
+  if (isTopicMetadata(metadata)) {
+    const parts: string[] = [];
+    if (metadata.worksCount !== undefined) {
+      parts.push(`${metadata.worksCount} works`);
+    }
+    if (metadata.citedByCount !== undefined) {
+      parts.push(`${metadata.citedByCount} citations`);
+    }
+    return parts.join(' • ') || 'No data';
+  }
+
+  if (isFunderMetadata(metadata)) {
+    const parts: string[] = [];
+    if (metadata.worksCount !== undefined) {
+      parts.push(`${metadata.worksCount} works`);
+    }
+    if (metadata.citedByCount !== undefined) {
+      parts.push(`${metadata.citedByCount} citations`);
+    }
+    return parts.join(' • ') || 'No data';
+  }
+
+  if (isPublisherMetadata(metadata)) {
+    const parts: string[] = [];
+    if (metadata.worksCount !== undefined) {
+      parts.push(`${metadata.worksCount} works`);
+    }
+    if (metadata.citedByCount !== undefined) {
+      parts.push(`${metadata.citedByCount} citations`);
+    }
+    return parts.join(' • ') || 'No data';
+  }
+
+  if (isConceptMetadata(metadata)) {
+    const parts: string[] = [];
+    if (metadata.worksCount !== undefined) {
+      parts.push(`${metadata.worksCount} works`);
+    }
+    if (metadata.citedByCount !== undefined) {
+      parts.push(`${metadata.citedByCount} citations`);
+    }
+    return parts.join(' • ') || 'No data';
+  }
+
+  return 'No metadata';
 }
 
 function SortableEntityRow({
@@ -115,19 +235,30 @@ function SortableEntityRow({
           />
         </Table.Td>
         <Table.Td w={40}>
-          <div {...listeners} style={{ cursor: "grab" }}>
+          <div
+            {...listeners}
+            style={{ cursor: "grab" }}
+            aria-label={`Drag to reorder ${entity.entityId}`}
+            role="button"
+            tabIndex={0}
+          >
             <IconGripVertical size={16} color="var(--mantine-color-gray-4)" />
           </div>
         </Table.Td>
         <Table.Td>
-          <Group gap="sm">
-            <Badge size="sm" variant="light" color="blue">
-              {entity.entityType}
-            </Badge>
-            <Text size="sm" fw={500}>
-              {entity.entityId}
+          <Stack gap="xs">
+            <Group gap="sm">
+              <Badge size="sm" variant="light" color={ENTITY_TYPE_COLORS[entity.entityType]}>
+                {ENTITY_TYPE_LABELS[entity.entityType]}
+              </Badge>
+              <Text size="sm" fw={500}>
+                {entity.entityId}
+              </Text>
+            </Group>
+            <Text size="xs" c="dimmed">
+              {formatEntityMetadata(entity)}
             </Text>
-          </Group>
+          </Stack>
         </Table.Td>
         <Table.Td>
           {editingNotes ? (
@@ -244,12 +375,23 @@ export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitie
     return null;
   }
 
-  const { entities, isLoadingEntities, removeEntityFromList, reorderEntities, updateEntityNotes } = useCatalogue();
+  const {
+    entities,
+    isLoadingEntities,
+    removeEntityFromList,
+    reorderEntities,
+    updateEntityNotes,
+    bulkRemoveEntities,
+    bulkMoveEntities,
+    lists,
+  } = useCatalogue();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("position");
   const [selectedEntities, setSelectedEntities] = useState<Set<string>>(new Set());
   const [showBulkConfirm, setShowBulkConfirm] = useState(false);
+  const [showBulkMoveModal, setShowBulkMoveModal] = useState(false);
+  const [targetListId, setTargetListId] = useState<string | null>(null);
 
   // Filter entities based on search and type
   const filteredEntities = entities.filter((entity) => {
@@ -391,9 +533,7 @@ export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitie
     if (!selectedList || selectedEntities.size === 0) return;
 
     try {
-      for (const entityId of selectedEntities) {
-        await removeEntityFromList(selectedList.id!, entityId);
-      }
+      await bulkRemoveEntities(selectedList.id!, Array.from(selectedEntities));
 
       logger.debug("catalogue-ui", "Bulk remove completed", {
         listId: selectedList.id!,
@@ -416,6 +556,41 @@ export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitie
       notifications.show({
         title: "Error",
         message: "Failed to remove entities",
+        color: "red",
+      });
+    }
+  };
+
+  const handleBulkMove = async () => {
+    if (!selectedList || !targetListId || selectedEntities.size === 0) return;
+
+    try {
+      await bulkMoveEntities(selectedList.id!, targetListId, Array.from(selectedEntities));
+
+      logger.debug("catalogue-ui", "Bulk move completed", {
+        sourceListId: selectedList.id!,
+        targetListId,
+        movedCount: selectedEntities.size
+      });
+
+      notifications.show({
+        title: "Moved",
+        message: `${selectedEntities.size} entities moved to target list`,
+        color: "green",
+      });
+
+      setSelectedEntities(new Set());
+      setShowBulkMoveModal(false);
+      setTargetListId(null);
+    } catch (error) {
+      logger.error("catalogue-ui", "Failed to bulk move entities", {
+        sourceListId: selectedList.id!,
+        targetListId,
+        error
+      });
+      notifications.show({
+        title: "Error",
+        message: error instanceof Error ? error.message : "Failed to move entities",
         color: "red",
       });
     }
@@ -520,6 +695,16 @@ export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitie
             <Button
               size="xs"
               variant="light"
+              color="blue"
+              onClick={() => setShowBulkMoveModal(true)}
+              disabled={lists.length <= 1}
+              data-testid="bulk-move-button"
+            >
+              Move to...
+            </Button>
+            <Button
+              size="xs"
+              variant="light"
               color="red"
               onClick={() => setShowBulkConfirm(true)}
               data-testid="bulk-remove-button"
@@ -559,7 +744,12 @@ export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitie
               </Table.Thead>
               <Table.Tbody>
                 <DndContext
-                  sensors={useSensors(useSensor(PointerSensor))}
+                  sensors={useSensors(
+                    useSensor(PointerSensor),
+                    useSensor(KeyboardSensor, {
+                      coordinateGetter: sortableKeyboardCoordinates,
+                    })
+                  )}
                   collisionDetection={closestCenter}
                   onDragEnd={handleDragEnd}
                 >
@@ -615,6 +805,55 @@ export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitie
             </Button>
             <Button color="red" onClick={handleBulkRemove}>
               Remove
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
+
+      {/* Bulk Move Modal */}
+      <Modal
+        opened={showBulkMoveModal}
+        onClose={() => {
+          setShowBulkMoveModal(false);
+          setTargetListId(null);
+        }}
+        title="Move Entities to List"
+        centered
+      >
+        <Stack gap="md">
+          <Text size="sm">
+            Select a list to move {selectedEntities.size} {selectedEntities.size === 1 ? "entity" : "entities"} to:
+          </Text>
+          <Select
+            label="Target List"
+            placeholder="Select a list..."
+            value={targetListId}
+            onChange={(value) => setTargetListId(value)}
+            data={lists
+              .filter((list) => list.id !== selectedList?.id)
+              .map((list) => ({
+                value: list.id!,
+                label: list.title,
+              }))}
+            searchable
+            required
+          />
+          <Group justify="flex-end" gap="xs">
+            <Button
+              variant="subtle"
+              onClick={() => {
+                setShowBulkMoveModal(false);
+                setTargetListId(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              color="blue"
+              onClick={handleBulkMove}
+              disabled={!targetListId}
+            >
+              Move
             </Button>
           </Group>
         </Stack>
