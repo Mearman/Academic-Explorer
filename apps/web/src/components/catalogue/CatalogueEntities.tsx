@@ -97,6 +97,7 @@ function SortableEntityRow({
 
   const [editingNotes, setEditingNotes] = useState(false);
   const [notes, setNotes] = useState(entity.notes || "");
+  const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
 
   const handleSaveNotes = () => {
     onEditNotes(entity.id!, notes);
@@ -104,7 +105,7 @@ function SortableEntityRow({
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes}>
+    <div ref={setNodeRef} style={style} {...attributes} data-testid="entity-item" className="entity-card">
       <Table.Tr>
         <Table.Td w={40}>
           <Checkbox
@@ -157,6 +158,7 @@ function SortableEntityRow({
                 variant="subtle"
                 onClick={() => setEditingNotes(true)}
                 title="Edit notes"
+                aria-label="Edit notes"
               >
                 <IconEdit size={14} />
               </ActionIcon>
@@ -197,7 +199,8 @@ function SortableEntityRow({
                 <Menu.Item
                   leftSection={<IconTrash size={14} />}
                   color="red"
-                  onClick={() => onRemove(entity.id!)}
+                  onClick={() => setShowRemoveConfirm(true)}
+                  aria-label="Remove entity"
                 >
                   Remove
                 </Menu.Item>
@@ -206,6 +209,31 @@ function SortableEntityRow({
           </Group>
         </Table.Td>
       </Table.Tr>
+
+      {/* Remove Confirmation Modal */}
+      <Modal
+        opened={showRemoveConfirm}
+        onClose={() => setShowRemoveConfirm(false)}
+        title="Confirm Removal"
+        centered
+      >
+        <Stack gap="md">
+          <Text>
+            Are you sure you want to remove this entity from the list? This action cannot be undone.
+          </Text>
+          <Group justify="flex-end" gap="xs">
+            <Button variant="subtle" onClick={() => setShowRemoveConfirm(false)}>
+              Cancel
+            </Button>
+            <Button color="red" onClick={() => {
+              onRemove(entity.id!);
+              setShowRemoveConfirm(false);
+            }}>
+              Remove
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
     </div>
   );
 }
