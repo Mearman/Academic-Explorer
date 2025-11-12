@@ -162,6 +162,7 @@ Examples of foundational tasks (adjust based on your project):
   - [ ] Proper Nx workspace structure used (Monorepo Architecture)
   - [ ] Storage operations use provider interface (Storage Abstraction)
   - [ ] Performance requirements met; memory constraints respected (Performance & Memory)
+  - [ ] Atomic conventional commits created after each task (Atomic Conventional Commits)
 
 ---
 

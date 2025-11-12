@@ -1,21 +1,19 @@
 <!--
 Sync Impact Report:
-Version: 0.0.0 → 1.0.0 (initial constitution)
-Modified Principles: N/A (initial version)
+Version: 1.0.0 → 1.1.0 (new principle added)
+Modified Principles: None (existing principles unchanged)
 Added Sections:
-  - I. Type Safety
-  - II. Test-First Development
-  - III. Monorepo Architecture
-  - IV. Storage Abstraction
-  - V. Performance & Memory
-  - Development Workflow
-  - Quality Gates
-Removed Sections: N/A
+  - VI. Atomic Conventional Commits (new principle)
+  - Updated Development Workflow to reference commit discipline
+Removed Sections: None
 Templates Requiring Updates:
-  - ✅ .specify/templates/plan-template.md (Constitution Check section aligns)
-  - ✅ .specify/templates/spec-template.md (Requirements align with principles)
-  - ✅ .specify/templates/tasks-template.md (Task categorization reflects principles)
-Follow-up TODOs: None
+  - ✅ .specify/templates/plan-template.md (Constitution Check section already flexible for new principles)
+  - ✅ .specify/templates/spec-template.md (Constitution Alignment section already flexible)
+  - ✅ .specify/templates/tasks-template.md (Phase N includes constitution verification checklist)
+  - ⚠ Task execution workflows should enforce commits between tasks
+Follow-up TODOs:
+  - Agents/workflows should check for uncommitted changes before moving to next task
+  - CI/CD pipeline could enforce conventional commit format via commitlint (optional)
 -->
 
 # Academic Explorer Constitution
@@ -102,6 +100,32 @@ automated testing. OOM failures during test runs waste hours of research time. A
 users need responsive graph interactions even with large citation networks. Deterministic
 layouts ensure figures in papers can be regenerated consistently.
 
+### VI. Atomic Conventional Commits (NON-NEGOTIABLE)
+
+**ALWAYS create incremental atomic conventional commits from uncommitted changes before
+moving onto the next task**. Each commit MUST represent a single, complete unit of work
+that can be understood in isolation. Commit messages MUST follow the Conventional Commits
+specification.
+
+Commit requirements:
+- Format: `<type>(<scope>): <description>` (e.g., `feat(msw): add logging for request lifecycle`)
+- Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `perf`, `ci`, `build`, `revert`
+- Each commit MUST pass all quality gates (typecheck, test, build, lint)
+- Commits MUST be made after completing each atomic task, not batched at the end
+- Work-in-progress commits are allowed with `WIP:` prefix during development, but MUST be squashed before PR
+- NEVER move to a new task with uncommitted changes from the previous task
+
+**Rationale**: The PhD research workflow involves iterative experimentation where the ability
+to bisect, revert, and understand historical changes is critical. Atomic commits enable:
+1. **Bisect debugging** - Quickly identify which specific change introduced a regression
+2. **Selective reversion** - Roll back problematic changes without losing other work
+3. **Code review clarity** - Reviewers can understand changes incrementally
+4. **Research reproducibility** - Each experiment milestone is clearly documented
+5. **CI/CD efficiency** - Failed commits can be identified and fixed in isolation
+
+Conventional commit format provides automated changelog generation and semantic versioning,
+essential for maintaining the monorepo's multiple packages with independent version numbers.
+
 ## Development Workflow
 
 **Fail-fast test execution order**: TypeScript validation → Unit tests → Component tests
@@ -120,11 +144,17 @@ upstream projects have type errors.
 **No DRY violations**: Create abstractions over duplication. If the same logic appears in
 two places, extract it to `packages/utils` or create a shared package.
 
+**Commit discipline**: After completing each atomic task:
+1. Verify all quality gates pass for the changes
+2. Stage only the files related to the completed task
+3. Create a conventional commit with clear type and scope
+4. Push commits regularly to avoid losing work
+
 ## Quality Gates
 
-**Constitution compliance**: Every PR MUST verify alignment with all five core principles.
+**Constitution compliance**: Every PR MUST verify alignment with all six core principles.
 Feature specs MUST document how they respect type safety, test-first development, monorepo
-architecture, storage abstraction, and performance constraints.
+architecture, storage abstraction, performance constraints, and atomic commit discipline.
 
 **Complexity justification**: Any feature that adds architectural complexity (new package,
 new storage provider, new worker) MUST document why a simpler alternative is insufficient.
@@ -138,6 +168,12 @@ to shared package APIs require documentation of migration path and approval from
 - All new storage operations MUST have E2E tests with in-memory provider
 - All new components MUST have component tests
 - All new graph features MUST have deterministic layout tests
+
+**Commit quality gates**:
+- All commits MUST follow Conventional Commits format
+- Each commit MUST represent a single logical change
+- Commit messages MUST clearly describe the "why" not just the "what"
+- All commits MUST pass quality pipeline before pushing to shared branches
 
 ## Governance
 
@@ -154,4 +190,4 @@ For runtime development guidance specific to Academic Explorer workflows, see `C
 in the project root. That file provides operational instructions (commands, architecture
 patterns, research context) while this constitution defines non-negotiable principles.
 
-**Version**: 1.0.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-11
+**Version**: 1.1.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-12
