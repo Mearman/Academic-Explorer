@@ -1,13 +1,16 @@
 {
   "metadata": {
     "generated": "2025-11-12",
-    "totalNames": 109,
+    "totalNames": 119,
     "totalDomainsChecked": 218,
     "fullyAvailable": 5,
-    "partiallyAvailable": 21,
-    "allTaken": 83,
+    "partiallyAvailable": 26,
+    "allTaken": 88,
     "verificationType": "DNS lookups + Namecheap registrar verification",
-    "extensionsChecked": [".com", ".io"]
+    "extensionsChecked": [
+      ".com",
+      ".io"
+    ]
   },
   "names": [
     {
@@ -186,7 +189,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["scholium.ai (AI research assistant)"],
+      "conflicts": [
+        "scholium.ai (AI research assistant)"
+      ],
       "recommendation": "none",
       "notes": "Conflict with existing product, only one extension available"
     },
@@ -226,7 +231,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Very common term, multiple products"],
+      "conflicts": [
+        "Very common term, multiple products"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken, very common term"
     },
@@ -246,7 +253,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Widely used in various contexts"],
+      "conflicts": [
+        "Widely used in various contexts"
+      ],
       "recommendation": "low",
       "notes": "Only one extension available, very common"
     },
@@ -286,7 +295,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Common term, likely trademark conflicts"],
+      "conflicts": [
+        "Common term, likely trademark conflicts"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken"
     },
@@ -306,7 +317,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Very generic term, many conflicts"],
+      "conflicts": [
+        "Very generic term, many conflicts"
+      ],
       "recommendation": "none",
       "notes": "Only one extension available, very generic"
     },
@@ -366,7 +379,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Multiple existing products with this name"],
+      "conflicts": [
+        "Multiple existing products with this name"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken, multiple conflicts"
     },
@@ -446,7 +461,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Elsevier Scopus database - major conflict"],
+      "conflicts": [
+        "Elsevier Scopus database - major conflict"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken, Elsevier has Scopus database"
     },
@@ -466,7 +483,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Common in tech/math contexts"],
+      "conflicts": [
+        "Common in tech/math contexts"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken, common term"
     },
@@ -486,7 +505,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["axion.com is AI quality platform"],
+      "conflicts": [
+        "axion.com is AI quality platform"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken, conflict with AI platform"
     },
@@ -526,7 +547,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["scholix.org exists (scholarly link exchange)"],
+      "conflicts": [
+        "scholix.org exists (scholarly link exchange)"
+      ],
       "recommendation": "none",
       "notes": "Partial availability, conflict with scholix.org"
     },
@@ -566,7 +589,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["graphon.com exists (remote desktop software)"],
+      "conflicts": [
+        "graphon.com exists (remote desktop software)"
+      ],
       "recommendation": "none",
       "notes": "Partial availability, conflict with remote desktop software"
     },
@@ -631,7 +656,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Very common word, many conflicts"],
+      "conflicts": [
+        "Very common word, many conflicts"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken, extremely common"
     },
@@ -651,7 +678,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Common term, many products"],
+      "conflicts": [
+        "Common term, many products"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken"
     },
@@ -671,7 +700,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Generic term"],
+      "conflicts": [
+        "Generic term"
+      ],
       "recommendation": "low",
       "notes": "Partial availability, generic term"
     },
@@ -691,7 +722,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Very common in tech (Node.js, etc.)"],
+      "conflicts": [
+        "Very common in tech (Node.js, etc.)"
+      ],
       "recommendation": "none",
       "notes": "Partial availability, extremely common in tech"
     },
@@ -711,7 +744,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Extremely common word, countless conflicts"],
+      "conflicts": [
+        "Extremely common word, countless conflicts"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken, extremely common"
     },
@@ -1051,7 +1086,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Common Greek letter"],
+      "conflicts": [
+        "Common Greek letter"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken"
     },
@@ -1151,7 +1188,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Very common term, countless products"],
+      "conflicts": [
+        "Very common term, countless products"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken, extremely common"
     },
@@ -1171,7 +1210,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Common term"],
+      "conflicts": [
+        "Common term"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken"
     },
@@ -1211,7 +1252,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Used in physics"],
+      "conflicts": [
+        "Used in physics"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken"
     },
@@ -1231,7 +1274,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Common Greek letter, many conflicts"],
+      "conflicts": [
+        "Common Greek letter, many conflicts"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken"
     },
@@ -1251,7 +1296,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Extremely common, many conflicts (Delta Airlines, etc.)"],
+      "conflicts": [
+        "Extremely common, many conflicts (Delta Airlines, etc.)"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken, extremely common"
     },
@@ -1291,7 +1338,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Similar to 'metrics'"],
+      "conflicts": [
+        "Similar to 'metrics'"
+      ],
       "recommendation": "low",
       "notes": "Only one extension available"
     },
@@ -1311,7 +1360,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Common word"],
+      "conflicts": [
+        "Common word"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken"
     },
@@ -1331,7 +1382,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Harvard connection"],
+      "conflicts": [
+        "Harvard connection"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken, Harvard motto"
     },
@@ -1471,7 +1524,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Common mineral"],
+      "conflicts": [
+        "Common mineral"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken"
     },
@@ -1551,7 +1606,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Common name"],
+      "conflicts": [
+        "Common name"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken"
     },
@@ -1571,7 +1628,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Alternative spelling of 'ether'"],
+      "conflicts": [
+        "Alternative spelling of 'ether'"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken"
     },
@@ -1611,7 +1670,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Common word"],
+      "conflicts": [
+        "Common word"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken"
     },
@@ -1631,7 +1692,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Common name"],
+      "conflicts": [
+        "Common name"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken"
     },
@@ -1671,7 +1734,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Common geometric term"],
+      "conflicts": [
+        "Common geometric term"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken"
     },
@@ -1691,7 +1756,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Common term"],
+      "conflicts": [
+        "Common term"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken"
     },
@@ -1771,7 +1838,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Musical instrument, astronomy"],
+      "conflicts": [
+        "Musical instrument, astronomy"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken"
     },
@@ -1891,7 +1960,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Common tech term"],
+      "conflicts": [
+        "Common tech term"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken, common in tech"
     },
@@ -2131,7 +2202,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Common word"],
+      "conflicts": [
+        "Common word"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken, common word"
     },
@@ -2151,7 +2224,9 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Very common word"],
+      "conflicts": [
+        "Very common word"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken, very common"
     },
@@ -2171,15 +2246,265 @@
         "verified": true
       },
       "pricing": null,
-      "conflicts": ["Very common (maps, companies, etc.)"],
+      "conflicts": [
+        "Very common (maps, companies, etc.)"
+      ],
       "recommendation": "none",
       "notes": "Both extensions taken, extremely common"
+    },
+    {
+      "name": "Scholarium",
+      "type": "invented",
+      "category": "New Non-Compound Concepts",
+      "origin": "Scholar + Latin suffix",
+      "pronunciation": "sko-LAIR-ee-um",
+      "meaning": "Scholarly repository or hall of learning",
+      "vibe": "Professional, archival, modern-classical",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": false,
+        "io": true,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "research-needed",
+      "notes": "Fresh coinage emphasizing curated scholarship"
+    },
+    {
+      "name": "Mentoria",
+      "type": "invented",
+      "category": "New Non-Compound Concepts",
+      "origin": "Mentor + ia suffix",
+      "pronunciation": "men-TOR-ee-uh",
+      "meaning": "Guided scholarly mentorship",
+      "vibe": "Supportive, aspirational, human-centric",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "research-needed",
+      "notes": "Suggests a coaching layer around research discovery"
+    },
+    {
+      "name": "Archivum",
+      "type": "invented",
+      "category": "New Non-Compound Concepts",
+      "origin": "Latin for archive",
+      "pronunciation": "ar-KY-vum",
+      "meaning": "Curated archive of knowledge",
+      "vibe": "Trusted, archival, precise",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "research-needed",
+      "notes": "Signals preservation and structured access"
+    },
+    {
+      "name": "Lucerna",
+      "type": "invented",
+      "category": "New Non-Compound Concepts",
+      "origin": "Latin for lantern",
+      "pronunciation": "loo-SAIR-nah",
+      "meaning": "Light that illuminates research pathways",
+      "vibe": "Illuminating, poetic, confident",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "research-needed",
+      "notes": "Metaphor for shedding light on academic work"
+    },
+    {
+      "name": "Protasis",
+      "type": "lexical",
+      "category": "New Non-Compound Concepts",
+      "origin": "Rhetorical term for proposition",
+      "pronunciation": "PRO-tuh-sis",
+      "meaning": "Opening clause or proposition in rhetoric",
+      "vibe": "Analytical, precise, scholarly",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": false,
+        "io": true,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "research-needed",
+      "notes": "Connects to structured argumentation"
+    },
+    {
+      "name": "Synkrisis",
+      "type": "lexical",
+      "category": "New Non-Compound Concepts",
+      "origin": "Ancient rhetorical comparison",
+      "pronunciation": "sin-KREE-sis",
+      "meaning": "Comparative analysis of ideas",
+      "vibe": "Comparative, analytical, distinctive",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": false,
+        "io": true,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "research-needed",
+      "notes": "Highlights side-by-side scholarly evaluation"
+    },
+    {
+      "name": "Vectura",
+      "type": "invented",
+      "category": "New Non-Compound Concepts",
+      "origin": "Vector-inspired coinage",
+      "pronunciation": "vek-TOOR-uh",
+      "meaning": "Movement and direction through knowledge graphs",
+      "vibe": "Dynamic, technical, forward-moving",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "research-needed",
+      "notes": "Suggests graph traversal and momentum"
+    },
+    {
+      "name": "Auraton",
+      "type": "invented",
+      "category": "New Non-Compound Concepts",
+      "origin": "Aura + ton blending",
+      "pronunciation": "OR-uh-ton",
+      "meaning": "Golden aura of insights",
+      "vibe": "Premium, luminous, memorable",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": false,
+        "io": true,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "research-needed",
+      "notes": "Single-word brandable coinage"
+    },
+    {
+      "name": "Cognitia",
+      "type": "invented",
+      "category": "New Non-Compound Concepts",
+      "origin": "Cognition-derived coinage",
+      "pronunciation": "kog-NISH-uh",
+      "meaning": "Domain of cognition and understanding",
+      "vibe": "Modern SaaS, intelligent, crisp",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "research-needed",
+      "notes": "Feels like an established knowledge platform"
+    },
+    {
+      "name": "Erudion",
+      "type": "invented",
+      "category": "New Non-Compound Concepts",
+      "origin": "Streamlined erudition",
+      "pronunciation": "air-ROO-dee-on",
+      "meaning": "State of deep scholarly learning",
+      "vibe": "Cultivated, confident, tech-savvy",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": false,
+        "io": true,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "research-needed",
+      "notes": "Distinctive twist on erudition"
+    },
+    {
+      "name": "Mentis",
+      "type": "lexical",
+      "category": "New Non-Compound Concepts",
+      "origin": "Latin for mind",
+      "pronunciation": "MEN-tis",
+      "meaning": "Mind, intellect",
+      "vibe": "Concise, intellectual, timeless",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "research-needed",
+      "notes": "Short memorable option with classical roots"
+    },
+    {
+      "name": "Luminor",
+      "type": "invented",
+      "category": "New Non-Compound Concepts",
+      "origin": "Lumina + or suffix",
+      "pronunciation": "LOO-min-or",
+      "meaning": "Bringer of light or clarity",
+      "vibe": "Clear, confident, premium",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "research-needed",
+      "notes": "Communicates illumination of complex research"
     }
   ],
   "recommendations": {
-    "highest": ["ScholarWeave"],
-    "high": ["CitationMesh"],
-    "medium": ["Graphademia", "ResearchLattice", "Bibliom"],
+    "highest": [
+      "ScholarWeave"
+    ],
+    "high": [
+      "CitationMesh"
+    ],
+    "medium": [
+      "Graphademia",
+      "ResearchLattice",
+      "Bibliom"
+    ],
     "avoid": [
       "All names with 'all-taken' status",
       "Names with major conflicts (Scopus, Node, Logos, Delta, Atlas, etc.)",

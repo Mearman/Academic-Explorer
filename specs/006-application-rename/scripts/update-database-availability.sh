@@ -1,0 +1,167 @@
+#!/usr/bin/env bash
+# Consolidated Domain Availability Checker and Database Updater
+# Checks unverified names in all-names-database.json and updates with availability results
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SPEC_DIR="$(dirname "$SCRIPT_DIR")"
+DB_FILE="$SPEC_DIR/all-names-database.json"
+TEMP_FILE="$SPEC_DIR/.all-names-database.json.tmp"
+
+# Check if database exists
+if [ ! -f "$DB_FILE" ]; then
+    echo "Error: Database file not found at $DB_FILE"
+    exit 1
+fi
+
+# Check if jq is available
+if ! command -v jq &>/dev/null; then
+    echo "Error: jq is required but not installed."
+    echo "Install with: brew install jq"
+    exit 1
+fi
+
+echo "=========================================="
+echo "Domain Availability Database Updater"
+echo "=========================================="
+echo ""
+
+# Extract unverified names from JSON
+echo "Reading database and finding unverified names..."
+unverified_names=$(jq -r '.names[] | select(.availability.verified == false) | .name' "$DB_FILE")
+
+if [ -z "$unverified_names" ]; then
+    echo "No unverified names found in database."
+    echo "All names have been verified!"
+    exit 0
+fi
+
+# Count unverified names
+unverified_count=$(echo "$unverified_names" | wc -l | tr -d ' ')
+echo "Found $unverified_count unverified names"
+echo ""
+
+# Arrays to track results
+declare -a fully_available=()
+declare -a partially_available=()
+declare -a all_taken=()
+
+# Check each unverified name
+total_checked=0
+for name in $unverified_names; do
+    name_lower=$(echo "$name" | tr '[:upper:]' '[:lower:]')
+
+    # Check .com and .io
+    com_available=false
+    io_available=false
+
+    if ! host "${name_lower}.com" &>/dev/null; then
+        com_available=true
+    fi
+
+    if ! host "${name_lower}.io" &>/dev/null; then
+        io_available=true
+    fi
+
+    # Determine status
+    if [ "$com_available" = true ] && [ "$io_available" = true ]; then
+        status="fully-available"
+        fully_available+=("$name")
+        echo "✓ $name - FULLY AVAILABLE (.com and .io)"
+    elif [ "$com_available" = true ] || [ "$io_available" = true ]; then
+        status="partial"
+        partially_available+=("$name")
+        available_count=0
+        [ "$com_available" = true ] && available_count=$((available_count + 1))
+        [ "$io_available" = true ] && available_count=$((available_count + 1))
+        echo "~ $name - PARTIAL ($available_count/2 available)"
+    else
+        status="all-taken"
+        all_taken+=("$name")
+        echo "✗ $name - ALL TAKEN"
+    fi
+
+    # Update JSON database using jq
+    jq --arg name "$name" \
+       --arg status "$status" \
+       --argjson com "$com_available" \
+       --argjson io "$io_available" \
+       '(.names[] | select(.name == $name) | .availability) |= {
+          status: $status,
+          com: $com,
+          io: $io,
+          verified: true
+        }' "$DB_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$DB_FILE"
+
+    total_checked=$((total_checked + 1))
+done
+
+echo ""
+echo "=========================================="
+echo "UPDATE SUMMARY"
+echo "=========================================="
+echo ""
+echo "Total names checked: $total_checked"
+echo "Fully available (.com + .io): ${#fully_available[@]}"
+echo "Partially available: ${#partially_available[@]}"
+echo "All taken: ${#all_taken[@]}"
+echo ""
+
+if [ ${#fully_available[@]} -gt 0 ]; then
+    echo "✓ Fully Available Names:"
+    for name in "${fully_available[@]}"; do
+        echo "  - $name"
+    done
+    echo ""
+fi
+
+if [ ${#partially_available[@]} -gt 0 ]; then
+    echo "~ Partially Available Names:"
+    for name in "${partially_available[@]}"; do
+        echo "  - $name"
+    done
+    echo ""
+fi
+
+# Update metadata in JSON
+total_names=$(jq '.names | length' "$DB_FILE")
+verified_count=$(jq '[.names[] | select(.availability.verified == true)] | length' "$DB_FILE")
+fully_available_count=$(jq '[.names[] | select(.availability.status == "fully-available")] | length' "$DB_FILE")
+partial_count=$(jq '[.names[] | select(.availability.status == "partial")] | length' "$DB_FILE")
+taken_count=$(jq '[.names[] | select(.availability.status == "all-taken")] | length' "$DB_FILE")
+
+jq --argjson total "$total_names" \
+   --argjson verified "$verified_count" \
+   --argjson available "$fully_available_count" \
+   --argjson partial "$partial_count" \
+   --argjson taken "$taken_count" \
+   '.metadata.totalNames = $total |
+    .metadata.fullyAvailable = $available |
+    .metadata.partiallyAvailable = $partial |
+    .metadata.allTaken = $taken' \
+   "$DB_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$DB_FILE"
+
+echo "=========================================="
+echo "DATABASE UPDATED"
+echo "=========================================="
+echo ""
+echo "Updated: $DB_FILE"
+echo ""
+echo "Current database statistics:"
+echo "  Total names: $total_names"
+echo "  Verified: $verified_count"
+echo "  Fully available: $fully_available_count"
+echo "  Partially available: $partial_count"
+echo "  All taken: $taken_count"
+echo "  Unverified: $((total_names - verified_count))"
+echo ""
+
+if [ $((total_names - verified_count)) -eq 0 ]; then
+    echo "✓ All names in database have been verified!"
+else
+    echo "⚠ $(( total_names - verified_count )) names still need verification"
+    echo "Run this script again to verify remaining names."
+fi
+
+echo ""
