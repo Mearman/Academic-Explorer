@@ -1,11 +1,18 @@
 {
+  "config": {
+    "tlds": [
+      "com",
+      "io"
+    ],
+    "description": "Top-level domains to check for availability. Modify this list to check additional TLDs."
+  },
   "metadata": {
     "generated": "2025-11-12",
-    "totalNames": 119,
-    "totalDomainsChecked": 218,
-    "fullyAvailable": 5,
-    "partiallyAvailable": 26,
-    "allTaken": 88,
+    "totalNames": 129,
+    "totalDomainsChecked": 238,
+    "fullyAvailable": 6,
+    "partiallyAvailable": 30,
+    "allTaken": 93,
     "verificationType": "DNS lookups + Namecheap registrar verification",
     "extensionsChecked": [
       ".com",
@@ -2491,6 +2498,206 @@
       "conflicts": [],
       "recommendation": "research-needed",
       "notes": "Communicates illumination of complex research"
+    },
+    {
+      "name": "Lexora",
+      "type": "invented",
+      "category": "New Non-Compound Concepts",
+      "origin": "Lexical root + ora suffix",
+      "pronunciation": "lek-SOR-uh",
+      "meaning": "Domain of curated language and knowledge",
+      "vibe": "Sleek, contemporary, linguistic",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "verified": true,
+        "com": false,
+        "io": false
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "research-needed",
+      "notes": "Conveys refined lexical tooling"
+    },
+    {
+      "name": "Notilium",
+      "type": "invented",
+      "category": "New Non-Compound Concepts",
+      "origin": "Note + metallic suffix",
+      "pronunciation": "no-TIL-ee-um",
+      "meaning": "Durable vault of research notes",
+      "vibe": "Solid, reliable, archival",
+      "researchScore": null,
+      "availability": {
+        "status": "fully-available",
+        "verified": true,
+        "com": true,
+        "io": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "research-needed",
+      "notes": "Feels like a fortified knowledge repository"
+    },
+    {
+      "name": "Praxison",
+      "type": "invented",
+      "category": "New Non-Compound Concepts",
+      "origin": "Praxis-inspired coinage",
+      "pronunciation": "PRAK-sih-son",
+      "meaning": "Applied scholarly practice",
+      "vibe": "Purposeful, action-oriented, modern",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "verified": true,
+        "com": false,
+        "io": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "research-needed",
+      "notes": "Highlights research-to-practice workflows"
+    },
+    {
+      "name": "Querium",
+      "type": "invented",
+      "category": "New Non-Compound Concepts",
+      "origin": "Query + ium suffix",
+      "pronunciation": "KWEER-ee-um",
+      "meaning": "Realm of scholarly inquiry",
+      "vibe": "Inquisitive, structured, tech-forward",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "verified": true,
+        "com": false,
+        "io": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "research-needed",
+      "notes": "Signals advanced research search"
+    },
+    {
+      "name": "Analytica",
+      "type": "lexical",
+      "category": "New Non-Compound Concepts",
+      "origin": "Derived from analytics",
+      "pronunciation": "an-uh-LIT-ih-kuh",
+      "meaning": "Analytical insight domain",
+      "vibe": "Data-centric, clear, credible",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "verified": true,
+        "com": false,
+        "io": false
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "research-needed",
+      "notes": "Immediate association with insight tooling"
+    },
+    {
+      "name": "Evidion",
+      "type": "invented",
+      "category": "New Non-Compound Concepts",
+      "origin": "Evidence-inspired coinage",
+      "pronunciation": "eh-VIH-dee-on",
+      "meaning": "Space for verifiable findings",
+      "vibe": "Rigorous, trustworthy, concise",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "verified": true,
+        "com": false,
+        "io": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "research-needed",
+      "notes": "Anchors brand in evidence-based outputs"
+    },
+    {
+      "name": "Ratiom",
+      "type": "invented",
+      "category": "New Non-Compound Concepts",
+      "origin": "Ratio + om ending",
+      "pronunciation": "RAY-shee-om",
+      "meaning": "Reasoned measure of knowledge",
+      "vibe": "Mathematical, cerebral, minimalist",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "verified": true,
+        "com": false,
+        "io": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "research-needed",
+      "notes": "Appeals to quantitative research audiences"
+    },
+    {
+      "name": "Studium",
+      "type": "lexical",
+      "category": "New Non-Compound Concepts",
+      "origin": "Latin for study",
+      "pronunciation": "STOO-dee-um",
+      "meaning": "Focused pursuit of knowledge",
+      "vibe": "Classical, trustworthy, academic",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "verified": true,
+        "com": false,
+        "io": false
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "research-needed",
+      "notes": "Balances heritage with modern SaaS energy"
+    },
+    {
+      "name": "Academis",
+      "type": "invented",
+      "category": "New Non-Compound Concepts",
+      "origin": "Streamlined academic",
+      "pronunciation": "ak-uh-DEE-miss",
+      "meaning": "Integrated academic platform",
+      "vibe": "Comprehensive, platform-like, professional",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "verified": true,
+        "com": false,
+        "io": false
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "research-needed",
+      "notes": "Feels like a suite of scholarly tools"
+    },
+    {
+      "name": "Intellex",
+      "type": "invented",
+      "category": "New Non-Compound Concepts",
+      "origin": "Intellect + flex",
+      "pronunciation": "IN-tuh-leks",
+      "meaning": "Flexible intelligence workspace",
+      "vibe": "Tech-forward, crisp, confident",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "verified": true,
+        "com": false,
+        "io": false
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "research-needed",
+      "notes": "Modern tone suited for a SaaS knowledge hub"
     }
   ],
   "recommendations": {

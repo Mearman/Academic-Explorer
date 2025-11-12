@@ -27,8 +27,20 @@ echo "Domain Availability Database Updater"
 echo "=========================================="
 echo ""
 
+# Read TLDs from config
+echo "Reading configuration..."
+tlds_json=$(jq -r '.config.tlds[]' "$DB_FILE")
+tlds=()
+while IFS= read -r tld; do
+    tlds+=("$tld")
+done <<< "$tlds_json"
+
+tld_count=${#tlds[@]}
+echo "TLDs to check: ${tlds[*]} ($tld_count extensions)"
+echo ""
+
 # Extract unverified names from JSON
-echo "Reading database and finding unverified names..."
+echo "Finding unverified names..."
 unverified_names=$(jq -r '.names[] | select(.availability.verified == false) | .name' "$DB_FILE")
 
 if [ -z "$unverified_names" ]; then
@@ -52,49 +64,50 @@ total_checked=0
 for name in $unverified_names; do
     name_lower=$(echo "$name" | tr '[:upper:]' '[:lower:]')
 
-    # Check .com and .io
-    com_available=false
-    io_available=false
+    # Check all configured TLDs
+    declare -A tld_availability
+    available_count=0
 
-    if ! host "${name_lower}.com" &>/dev/null; then
-        com_available=true
-    fi
-
-    if ! host "${name_lower}.io" &>/dev/null; then
-        io_available=true
-    fi
+    for tld in "${tlds[@]}"; do
+        if ! host "${name_lower}.${tld}" &>/dev/null; then
+            tld_availability[$tld]=true
+            available_count=$((available_count + 1))
+        else
+            tld_availability[$tld]=false
+        fi
+    done
 
     # Determine status
-    if [ "$com_available" = true ] && [ "$io_available" = true ]; then
+    if [ $available_count -eq ${#tlds[@]} ]; then
         status="fully-available"
         fully_available+=("$name")
-        echo "✓ $name - FULLY AVAILABLE (.com and .io)"
-    elif [ "$com_available" = true ] || [ "$io_available" = true ]; then
+        echo "✓ $name - FULLY AVAILABLE (${tlds[*]})"
+    elif [ $available_count -gt 0 ]; then
         status="partial"
         partially_available+=("$name")
-        available_count=0
-        [ "$com_available" = true ] && available_count=$((available_count + 1))
-        [ "$io_available" = true ] && available_count=$((available_count + 1))
-        echo "~ $name - PARTIAL ($available_count/2 available)"
+        echo "~ $name - PARTIAL ($available_count/${#tlds[@]} available)"
     else
         status="all-taken"
         all_taken+=("$name")
         echo "✗ $name - ALL TAKEN"
     fi
 
+    # Build jq update command dynamically based on configured TLDs
+    jq_update='(.names[] | select(.name == $name) | .availability) |= {status: $status, verified: true'
+    jq_args=(--arg name "$name" --arg status "$status")
+
+    for tld in "${tlds[@]}"; do
+        jq_update+=", ${tld}: \$${tld}"
+        jq_args+=(--argjson "$tld" "${tld_availability[$tld]}")
+    done
+
+    jq_update+='}'
+
     # Update JSON database using jq
-    jq --arg name "$name" \
-       --arg status "$status" \
-       --argjson com "$com_available" \
-       --argjson io "$io_available" \
-       '(.names[] | select(.name == $name) | .availability) |= {
-          status: $status,
-          com: $com,
-          io: $io,
-          verified: true
-        }' "$DB_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$DB_FILE"
+    jq "${jq_args[@]}" "$jq_update" "$DB_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$DB_FILE"
 
     total_checked=$((total_checked + 1))
+    unset tld_availability
 done
 
 echo ""
