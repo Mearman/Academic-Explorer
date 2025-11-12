@@ -2,18 +2,18 @@
 
 **Feature Branch**: `008-bookmark-query-views`
 **Last Updated**: 2025-11-12
-**Status**: Foundation Complete (Phase 1 & 2) - Ready for UI Implementation
+**Status**: MVP Complete (Phase 3) - Core Bookmarking Functional
 
 ## 📊 Progress Overview
 
-**Completed**: 8/55 tasks (15%)
-**Commit**: `116be5553` - feat(bookmarks): implement foundational bookmark infrastructure
+**Completed**: 22/55 tasks (40%)
+**Latest Commit**: `23d43a57` - feat(bookmarks): implement core bookmark functionality (User Story 1 MVP)
 
 ### Phase Completion
 
 - ✅ **Phase 1 - Setup**: 2/3 tasks (67%)
 - ✅ **Phase 2 - Foundational**: 6/6 tasks (100%)
-- ⏳ **Phase 3 - User Story 1**: 0/14 tasks (0%)
+- ✅ **Phase 3 - User Story 1**: 14/14 tasks (100%) ← **MVP COMPLETE**
 - ⏳ **Phase 4 - User Story 2**: 0/6 tasks (0%)
 - ⏳ **Phase 5 - User Story 3**: 0/10 tasks (0%)
 - ⏳ **Phase 6 - Polish**: 0/10 tasks (0%)
@@ -95,11 +95,127 @@ The `CatalogueStorageProvider` interface already has complete bookmark support:
 
 **Special List ID**: `"bookmarks-list"` (constant: `SPECIAL_LIST_IDS.BOOKMARKS`)
 
-## 🎯 What Needs to Be Built (47 tasks)
+### 6. MVP Implementation (Phase 3 - User Story 1) ✅
 
-### Phase 3: User Story 1 - Core Bookmarking (14 tasks)
+**Commit**: `23d43a57` - feat(bookmarks): implement core bookmark functionality (User Story 1 MVP)
+
+#### UI Components (`packages/ui/src/bookmarks/`)
+
+1. **BookmarkIcon.tsx** (55 lines)
+   - Animated crossfade between filled/outline states
+   - Uses Mantine Transition component
+   - Smooth 200ms fade animation
+
+2. **BookmarkButton.tsx** (106 lines) + 9 passing tests
+   - Mantine ActionIcon wrapper
+   - Loading state with Loader component
+   - Accessibility: ARIA labels, aria-pressed
+   - Tooltip hover feedback
+   - Customizable size/variant
+   - Test coverage: 100%
+
+3. **EntityTypeBadge.tsx** (54 lines)
+   - Color-coded badges for 9 entity types
+   - Auto-capitalize labels
+   - Mantine Badge integration
+   - Default size='sm', variant='light'
+
+4. **BookmarkListItem.tsx** (262 lines)
+   - Individual bookmark card display
+   - Entity type badge + title + timestamp + notes
+   - Delete button with loading state
+   - Click-to-navigate functionality
+   - Hover effects (translateY, shadow)
+   - Relative time formatting
+
+5. **BookmarkList.tsx** (207 lines)
+   - Full bookmark list with sorting/grouping
+   - Group by entity type (optional)
+   - Sort by date/title/type
+   - Empty state with message
+   - Loading skeleton state
+   - UseMemo optimization
+
+#### Hooks & Services (`apps/web/src/`)
+
+6. **useBookmarks.ts** (215 lines)
+   - React hook for reactive bookmark state
+   - DexieStorageProvider integration
+   - Event subscription via catalogueEventEmitter
+   - Error handling with state
+   - Loading states during operations
+   - Exports: `{ bookmarks, addBookmark, removeBookmark, isBookmarked, loading, error, refresh }`
+
+7. **bookmark-service.ts** (631 lines)
+   - Business logic layer for CRUD operations
+   - URL parsing and metadata extraction
+   - Integration with storage provider
+   - Validation and error handling
+   - 9 functions including factory pattern
+   - Full JSDoc documentation
+
+8. **routes/bookmarks/index.lazy.tsx** (137 lines)
+   - Full bookmarks catalogue view at `/bookmarks/`
+   - View controls: grouped/flat, sort order
+   - Error state handling
+   - Navigation to bookmarked entities
+   - Integration with BookmarkList component
+
+#### Utilities (`packages/utils/src/`)
+
+9. **formatters/date-formatter.ts** + 18 passing tests
+   - `formatRelativeTime()`: "2 hours ago", "3 days ago"
+   - `formatAbsoluteTime()`: "Mar 15, 2024 at 2:30 PM"
+   - `formatTimestamp()`: Smart choice based on threshold (default: 7 days)
+   - Handles invalid dates gracefully
+   - No external dependencies (native Intl API)
+
+10. **storage/dexie-storage-provider.test.ts** + 31 passing tests
+    - Bookmark operations test coverage
+    - Tests: initializeSpecialLists, addBookmark, isBookmarked, getBookmarks, removeBookmark
+    - Duplicate detection tests
+    - Metadata validation tests
+    - Integration with list operations
+
+11. **url-parser.test.ts** + 16 additional tests (44 total)
+    - Bookmark-specific URL parameter extraction
+    - Query parameter preservation
+    - Select field extraction
+    - Base path extraction
+    - Round-trip parsing validation
+
+#### E2E Tests (`apps/web/src/test/e2e/`)
+
+12. **bookmark-entity.e2e.test.ts** (481 lines, 11 tests)
+    - Bookmark author, work, institution, source entities
+    - Multiple entity bookmarking
+    - Navigation to bookmarks page
+    - Cross-navigation persistence
+    - Error handling and loading states
+
+13. **bookmark-query.e2e.test.ts** (722 lines, 16 tests)
+    - Bookmark query pages with filters
+    - Query parameter preservation
+    - Complex query scenarios
+    - Edge cases and special characters
+    - Visual feedback and UX tests
+
+#### Integration
+
+14. **Entity Pages** - `EntityDetailLayout.tsx` (1 line change)
+    - Added `data-testid="entity-bookmark-button"` to existing bookmark button
+    - Bookmark functionality already present via `useUserInteractions` hook
+
+**Total New Code**: ~2,800 lines across 18 files
+**Test Coverage**: 65 new passing unit tests, 27 E2E tests
+
+## 🎯 What Needs to Be Built (33 tasks)
+
+### Phase 3: User Story 1 - Core Bookmarking ✅ COMPLETE
 
 **Goal**: Enable users to bookmark entity/query pages and view their bookmarks
+
+All 14 tasks completed - see section 6 above for details.
 
 #### UI Components Needed
 
