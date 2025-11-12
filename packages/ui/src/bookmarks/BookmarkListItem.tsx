@@ -1,9 +1,10 @@
 import type { Bookmark, EntityType } from "@academic-explorer/types";
-import { ActionIcon, Badge, Card, Group, Stack, Text, Tooltip } from "@mantine/core";
-import { IconTrash } from "@tabler/icons-react";
+import { ActionIcon, Badge, Card, Group, Stack, Text, Tooltip, Button } from "@mantine/core";
+import { IconTrash, IconEdit, IconCheck, IconX } from "@tabler/icons-react";
 import { useState } from "react";
 import { FieldSelectionPreview } from "./FieldSelectionPreview";
 import { TagList } from "./TagBadge";
+import { TagInput } from "./TagInput";
 
 /**
  * Props for the BookmarkListItem component
@@ -25,6 +26,13 @@ export interface BookmarkListItemProps {
 	 * @param url - URL to navigate to
 	 */
 	onNavigate: (url: string) => void;
+
+	/**
+	 * Callback fired when bookmark tags are updated
+	 * @param bookmarkId - ID of the bookmark to update
+	 * @param tags - New tags array
+	 */
+	onUpdateTags?: (bookmarkId: string, tags: string[]) => void | Promise<void>;
 
 	/**
 	 * Optional test ID for E2E testing
@@ -154,9 +162,12 @@ export function BookmarkListItem({
 	bookmark,
 	onDelete,
 	onNavigate,
+	onUpdateTags,
 	...restProps
 }: BookmarkListItemProps) {
 	const [isDeleting, setIsDeleting] = useState(false);
+	const [isEditingTags, setIsEditingTags] = useState(false);
+	const [editedTags, setEditedTags] = useState<string[]>(bookmark.metadata.tags || []);
 
 	// Handle card click (navigate to bookmark)
 	const handleCardClick = () => {
@@ -177,6 +188,33 @@ export function BookmarkListItem({
 		} finally {
 			setIsDeleting(false);
 		}
+	};
+
+	// Handle edit tags button click
+	const handleEditTagsClick = (event: React.MouseEvent) => {
+		event.stopPropagation();
+		setIsEditingTags(true);
+		setEditedTags(bookmark.metadata.tags || []);
+	};
+
+	// Handle save tags
+	const handleSaveTags = async (event: React.MouseEvent) => {
+		event.stopPropagation();
+		if (onUpdateTags && bookmark.id) {
+			try {
+				await onUpdateTags(bookmark.id, editedTags);
+				setIsEditingTags(false);
+			} catch (err) {
+				// Keep editing mode open on error
+			}
+		}
+	};
+
+	// Handle cancel tag editing
+	const handleCancelTagEdit = (event: React.MouseEvent) => {
+		event.stopPropagation();
+		setIsEditingTags(false);
+		setEditedTags(bookmark.metadata.tags || []);
 	};
 
 	// Format timestamp
@@ -252,16 +290,57 @@ export function BookmarkListItem({
 					</Text>
 				)}
 
-		{/* Tags (if available) */}
-		{bookmark.metadata.tags && bookmark.metadata.tags.length > 0 && (
-			<TagList
-				tags={bookmark.metadata.tags}
-				size="xs"
-				variant="light"
-				maxVisible={5}
-				data-testid="bookmark-tags"
-			/>
-		)}
+				{/* Tags Section */}
+				{isEditingTags ? (
+					<Stack gap="xs" onClick={(e) => e.stopPropagation()}>
+						<TagInput
+							value={editedTags}
+							onChange={setEditedTags}
+							placeholder="Add tags..."
+							data-testid="bookmark-tag-input"
+						/>
+						<Group gap="xs">
+							<Button size="xs" variant="filled" leftSection={<IconCheck size={14} />} onClick={handleSaveTags}>
+								Save
+							</Button>
+							<Button
+								size="xs"
+								variant="subtle"
+								color="gray"
+								leftSection={<IconX size={14} />}
+								onClick={handleCancelTagEdit}
+							>
+								Cancel
+							</Button>
+						</Group>
+					</Stack>
+				) : (
+					<Group gap="xs" wrap="wrap">
+						{bookmark.metadata.tags && bookmark.metadata.tags.length > 0 && (
+							<TagList
+								tags={bookmark.metadata.tags}
+								size="xs"
+								variant="light"
+								maxVisible={5}
+								data-testid="bookmark-tags"
+							/>
+						)}
+						{onUpdateTags && (
+							<Tooltip label="Edit tags">
+								<ActionIcon
+									size="xs"
+									variant="subtle"
+									color="gray"
+									onClick={handleEditTagsClick}
+									aria-label="Edit tags"
+									data-testid="edit-tags-button"
+								>
+									<IconEdit size={12} />
+								</ActionIcon>
+							</Tooltip>
+						)}
+					</Group>
+				)}
 
 
 				{/* Footer: Timestamp and field selection preview */}
