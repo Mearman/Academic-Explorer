@@ -9,19 +9,19 @@
 
 ### User Story 1 - E2E Tests Run Reliably Without External API Dependencies (Priority: P1)
 
-A developer runs the E2E test suite (`pnpm test:e2e`) and all 232 tests pass consistently, without failures caused by external API unavailability, rate limiting, or HTTP 403 errors. The tests execute against mocked OpenAlex API responses, ensuring deterministic behavior and fast execution.
+A developer runs the E2E test suite (`pnpm test:e2e`) and all 225 tests pass consistently, without failures caused by external API unavailability, rate limiting, or HTTP 403 errors. The tests execute against mocked OpenAlex API responses, ensuring deterministic behavior and fast execution.
 
 **Why this priority**: This is the critical MVP - without reliable test execution, the CI/CD pipeline is broken and developers cannot confidently deploy changes. Currently 27 tests fail due to OpenAlex API returning HTTP 403 errors, blocking development workflow.
 
 **Independent Test**: Run `pnpm test:e2e` and verify:
 1. Zero HTTP 403 errors in test output
-2. All 232 tests pass
-3. Tests complete in under 5 minutes
+2. All 225 tests pass
+3. Tests complete in under 15 minutes (serial execution per constitution)
 4. No real API calls to api.openalex.org
 
 **Acceptance Scenarios**:
 
-1. **Given** the test suite is configured with MSW, **When** a developer runs `pnpm test:e2e`, **Then** all 232 E2E tests pass without external API calls
+1. **Given** the test suite is configured with MSW, **When** a developer runs `pnpm test:e2e`, **Then** all 225 E2E tests pass without external API calls
 2. **Given** MSW is initialized, **When** a test requests an OpenAlex entity (work/author/institution), **Then** MSW returns a fixture response instantly
 3. **Given** the OpenAlex API is down or rate-limiting, **When** tests run, **Then** all tests still pass using mocked responses
 4. **Given** a test requests an entity with ID W123, **When** MSW intercepts the request, **Then** it returns the fixture for W123 or a 404 if fixture doesn't exist
@@ -92,7 +92,7 @@ A developer new to the project can understand the MSW setup by reading documenta
 - **FR-006**: System MUST load fixtures dynamically based on entity ID in request URL
 - **FR-007**: System MUST return HTTP 404 for entity IDs that have no corresponding fixture
 - **FR-008**: System MUST validate fixture JSON on load and report clear errors for malformed files
-- **FR-009**: System MUST update failing tests to use fixture IDs instead of real OpenAlex IDs
+- **FR-009**: System MUST use mock factories that accept any OpenAlex ID without requiring test modifications (programmatic generation approach per research.md Decision 6)
 - **FR-010**: System MUST maintain test isolation - fixtures should not leak state between tests
 - **FR-011**: System MUST document MSW setup, architecture, and fixture management in README files
 - **FR-012**: System MUST provide troubleshooting guide for common MSW issues (requests not mocked, wrong fixtures, initialization failures)
@@ -111,10 +111,10 @@ A developer new to the project can understand the MSW setup by reading documenta
 
 ### Measurable Outcomes
 
-- **SC-001**: 232 out of 232 E2E tests pass (100% pass rate, up from current 205/232 = 88.4%)
+- **SC-001**: 225 out of 225 E2E tests pass (100% pass rate, up from current 197/225 = 87.6%)
 - **SC-002**: Zero HTTP 403 errors appear in test output logs
 - **SC-003**: Zero real HTTP requests to api.openalex.org during test execution (verified via network logs)
-- **SC-004**: Test suite completes in under 5 minutes (no significant slowdown from MSW overhead)
+- **SC-004**: Test suite completes in under 15 minutes (serial execution per constitution; baseline 13.7m observed)
 - **SC-005**: MSW adds less than 100ms overhead per test on average (MSW response time vs real API)
 - **SC-006**: 100% of mocked requests return a response (no "Request not mocked" warnings)
 - **SC-007**: Tests pass consistently across different environments (local, CI/CD, offline)
@@ -154,7 +154,7 @@ A developer new to the project can understand the MSW setup by reading documenta
 ### Internal Dependencies
 
 - **Playwright**: Already installed, provides E2E test framework and global setup hooks
-- **Existing test suite**: 232 E2E tests in `apps/web/test/e2e/` need fixture IDs updated
+- **Existing test suite**: 225 E2E tests in `apps/web/test/e2e/` (no test modifications required per research.md Decision 6)
 - **OpenAlex API knowledge**: Understanding of entity response structure to create realistic fixtures
 - **Catalogue feature**: Tests validate catalogue entity management, import/export, and sharing features (implemented in feature 004)
 
