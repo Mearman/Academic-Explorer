@@ -511,3 +511,303 @@ describe("bookmark-specific URL parameter extraction", () => {
 		expect(reparsed.queryParams.per_page).toBe(parsed.queryParams.per_page)
 	})
 })
+
+describe("custom field view preservation (User Story 2 - T026)", () => {
+	it("should preserve minimal custom field selection", () => {
+		const originalUrl = "/authors/A2208157607?select=id,display_name"
+		const parsed = parseURL(originalUrl)
+
+		expect(parsed.selectFields).toEqual(["id", "display_name"])
+		expect(parsed.queryParams.select).toBe("id,display_name")
+
+		const reconstructed = reconstructURL(
+			parsed.basePath,
+			parsed.queryParams,
+			parsed.selectFields
+		)
+
+		// Verify the reconstructed URL preserves the minimal field selection
+		expect(reconstructed).toContain("select=id,display_name")
+		expect(reconstructed).not.toContain("%2C")
+	})
+
+	it("should preserve extended custom field selection", () => {
+		const originalUrl =
+			"/authors/A2208157607?select=id,display_name,works_count,cited_by_count,h_index"
+		const parsed = parseURL(originalUrl)
+
+		expect(parsed.selectFields).toEqual([
+			"id",
+			"display_name",
+			"works_count",
+			"cited_by_count",
+			"h_index",
+		])
+
+		const reconstructed = reconstructURL(
+			parsed.basePath,
+			parsed.queryParams,
+			parsed.selectFields
+		)
+
+		const reparsed = parseURL(reconstructed)
+		expect(reparsed.selectFields).toEqual(parsed.selectFields)
+	})
+
+	it("should differentiate between same entity with different field selections", () => {
+		const minimalUrl = "/authors/A2208157607?select=id,display_name"
+		const extendedUrl =
+			"/authors/A2208157607?select=id,display_name,works_count,cited_by_count,h_index"
+
+		const parsedMinimal = parseURL(minimalUrl)
+		const parsedExtended = parseURL(extendedUrl)
+
+		// Same entity but different field selections
+		expect(parsedMinimal.entityType).toBe(parsedExtended.entityType)
+		expect(parsedMinimal.entityId).toBe(parsedExtended.entityId)
+		expect(parsedMinimal.selectFields).not.toEqual(parsedExtended.selectFields)
+
+		// Verify field counts differ
+		expect(parsedMinimal.selectFields.length).toBe(2)
+		expect(parsedExtended.selectFields.length).toBe(5)
+	})
+
+	it("should handle select parameter with nested object fields", () => {
+		const originalUrl = "/authors/A2208157607?select=id,display_name,counts_by_year,x_concepts"
+		const parsed = parseURL(originalUrl)
+
+		expect(parsed.selectFields).toEqual([
+			"id",
+			"display_name",
+			"counts_by_year",
+			"x_concepts",
+		])
+
+		const reconstructed = reconstructURL(
+			parsed.basePath,
+			parsed.queryParams,
+			parsed.selectFields
+		)
+
+		const reparsed = parseURL(reconstructed)
+		expect(reparsed.selectFields).toEqual(parsed.selectFields)
+	})
+
+	it("should preserve select parameter when other query params are present", () => {
+		const originalUrl =
+			"/works?select=id,title,publication_year&filter=is_oa:true&sort=cited_by_count:desc"
+		const parsed = parseURL(originalUrl)
+
+		expect(parsed.selectFields).toEqual(["id", "title", "publication_year"])
+		expect(parsed.queryParams.filter).toBe("is_oa:true")
+		expect(parsed.queryParams.sort).toBe("cited_by_count:desc")
+
+		const reconstructed = reconstructURL(
+			parsed.basePath,
+			parsed.queryParams,
+			parsed.selectFields
+		)
+
+		const reparsed = parseURL(reconstructed)
+		expect(reparsed.selectFields).toEqual(parsed.selectFields)
+		expect(reparsed.queryParams.filter).toBe(parsed.queryParams.filter)
+		expect(reparsed.queryParams.sort).toBe(parsed.queryParams.sort)
+	})
+
+	it("should handle select parameter across bookmark delete/recreate cycle", () => {
+		const originalUrl = "/authors/A2208157607?select=id,display_name,works_count"
+		const parsed = parseURL(originalUrl)
+
+		// Simulate bookmark creation
+		const bookmarkData = {
+			basePath: parsed.basePath,
+			queryParams: parsed.queryParams,
+			selectFields: parsed.selectFields,
+		}
+
+		// Simulate bookmark deletion (data persists)
+		// Simulate bookmark recreation with same URL
+		const reconstructed = reconstructURL(
+			bookmarkData.basePath,
+			bookmarkData.queryParams,
+			bookmarkData.selectFields
+		)
+
+		const reparsed = parseURL(reconstructed)
+		expect(reparsed.selectFields).toEqual(parsed.selectFields)
+		expect(reparsed.queryParams.select).toBe(parsed.queryParams.select)
+	})
+
+	it("should preserve select parameter field order", () => {
+		const originalUrl = "/authors/A2208157607?select=works_count,cited_by_count,id,display_name"
+		const parsed = parseURL(originalUrl)
+
+		// Order should be preserved
+		expect(parsed.selectFields).toEqual([
+			"works_count",
+			"cited_by_count",
+			"id",
+			"display_name",
+		])
+
+		const reconstructed = reconstructURL(
+			parsed.basePath,
+			parsed.queryParams,
+			parsed.selectFields
+		)
+
+		// Verify order is preserved in reconstruction
+		expect(reconstructed).toContain("select=works_count,cited_by_count,id,display_name")
+	})
+
+	it("should handle entity URL with select parameter and no other query params", () => {
+		const originalUrl = "/works/W2741809807?select=id,title,publication_year,type"
+		const parsed = parseURL(originalUrl)
+
+		expect(parsed.basePath).toBe("/works/W2741809807")
+		expect(parsed.entityType).toBe("works")
+		expect(parsed.entityId).toBe("W2741809807")
+		expect(parsed.selectFields).toEqual(["id", "title", "publication_year", "type"])
+		expect(Object.keys(parsed.queryParams)).toEqual(["select"])
+
+		const reconstructed = reconstructURL(
+			parsed.basePath,
+			parsed.queryParams,
+			parsed.selectFields
+		)
+
+		expect(reconstructed).toBe("/works/W2741809807?select=id,title,publication_year,type")
+	})
+
+	it("should handle select parameter with underscored field names", () => {
+		const originalUrl =
+			"/authors/A2208157607?select=id,display_name,works_count,cited_by_count,summary_stats"
+		const parsed = parseURL(originalUrl)
+
+		expect(parsed.selectFields).toContain("works_count")
+		expect(parsed.selectFields).toContain("cited_by_count")
+		expect(parsed.selectFields).toContain("summary_stats")
+
+		const reconstructed = reconstructURL(
+			parsed.basePath,
+			parsed.queryParams,
+			parsed.selectFields
+		)
+
+		// Underscores should NOT be encoded in select parameter
+		expect(reconstructed).toContain("works_count")
+		expect(reconstructed).toContain("cited_by_count")
+		expect(reconstructed).not.toContain("works%5Fcount")
+	})
+
+	it("should preserve select parameter with very long field list", () => {
+		const fields = [
+			"id",
+			"display_name",
+			"works_count",
+			"cited_by_count",
+			"h_index",
+			"i10_index",
+			"orcid",
+			"works_api_url",
+			"updated_date",
+			"created_date",
+			"counts_by_year",
+			"x_concepts",
+			"last_known_institution",
+			"last_known_institutions",
+			"affiliations",
+		]
+		const selectParam = fields.join(",")
+		const originalUrl = `/authors/A2208157607?select=${selectParam}`
+
+		const parsed = parseURL(originalUrl)
+
+		expect(parsed.selectFields).toEqual(fields)
+		expect(parsed.selectFields.length).toBe(15)
+
+		const reconstructed = reconstructURL(
+			parsed.basePath,
+			parsed.queryParams,
+			parsed.selectFields
+		)
+
+		const reparsed = parseURL(reconstructed)
+		expect(reparsed.selectFields).toEqual(fields)
+	})
+
+	it("should handle select parameter restoration with pagination params", () => {
+		const originalUrl = "/works?select=id,title&page=2&per_page=50"
+		const parsed = parseURL(originalUrl)
+
+		// When restoring bookmark, pagination params should be preserved
+		expect(parsed.selectFields).toEqual(["id", "title"])
+		expect(parsed.queryParams.page).toBe("2")
+		expect(parsed.queryParams.per_page).toBe("50")
+
+		const reconstructed = reconstructURL(
+			parsed.basePath,
+			parsed.queryParams,
+			parsed.selectFields
+		)
+
+		const reparsed = parseURL(reconstructed)
+		expect(reparsed.selectFields).toEqual(parsed.selectFields)
+		expect(reparsed.queryParams.page).toBe(parsed.queryParams.page)
+		expect(reparsed.queryParams.per_page).toBe(parsed.queryParams.per_page)
+	})
+
+	it("should handle bookmarking same entity with default vs custom fields", () => {
+		const defaultUrl = "/authors/A2208157607" // No select parameter
+		const customUrl = "/authors/A2208157607?select=id,display_name"
+
+		const parsedDefault = parseURL(defaultUrl)
+		const parsedCustom = parseURL(customUrl)
+
+		// Default should have no select fields
+		expect(parsedDefault.selectFields).toEqual([])
+		expect(parsedDefault.queryParams.select).toBeUndefined()
+
+		// Custom should have select fields
+		expect(parsedCustom.selectFields).toEqual(["id", "display_name"])
+		expect(parsedCustom.queryParams.select).toBe("id,display_name")
+
+		// Reconstruct both
+		const reconstructedDefault = reconstructURL(
+			parsedDefault.basePath,
+			parsedDefault.queryParams,
+			parsedDefault.selectFields
+		)
+		const reconstructedCustom = reconstructURL(
+			parsedCustom.basePath,
+			parsedCustom.queryParams,
+			parsedCustom.selectFields
+		)
+
+		// Default should not have select parameter
+		expect(reconstructedDefault).toBe("/authors/A2208157607")
+		expect(reconstructedDefault).not.toContain("select=")
+
+		// Custom should have select parameter
+		expect(reconstructedCustom).toContain("select=id,display_name")
+	})
+
+	it("should handle select parameter with complex nested field paths", () => {
+		const originalUrl =
+			"/institutions/I33213144?select=id,display_name,geo.country_code,geo.region,associated_institutions"
+		const parsed = parseURL(originalUrl)
+
+		expect(parsed.selectFields).toContain("geo.country_code")
+		expect(parsed.selectFields).toContain("geo.region")
+
+		const reconstructed = reconstructURL(
+			parsed.basePath,
+			parsed.queryParams,
+			parsed.selectFields
+		)
+
+		// Dots in field names should NOT be encoded in select parameter
+		expect(reconstructed).toContain("geo.country_code")
+		expect(reconstructed).not.toContain("geo%2Ecountry_code")
+	})
+})

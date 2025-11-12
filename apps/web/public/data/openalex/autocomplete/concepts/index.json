@@ -16,7 +16,7 @@
     "q=deep+learning": {
       "url": "https://api.openalex.org/autocomplete/concepts?q=deep+learning",
       "$ref": "./q=deep+learning.json",
-      "lastRetrieved": "2025-11-10T13:41:54.952Z",
+      "lastRetrieved": "2025-11-12T22:11:38.216Z",
       "contentHash": "75f196f26b823bd3"
     }
   }

@@ -2,6 +2,7 @@ import type { Bookmark, EntityType } from "@academic-explorer/types";
 import { ActionIcon, Badge, Card, Group, Stack, Text, Tooltip } from "@mantine/core";
 import { IconTrash } from "@tabler/icons-react";
 import { useState } from "react";
+import { FieldSelectionPreview } from "./FieldSelectionPreview";
 
 /**
  * Props for the BookmarkListItem component
@@ -250,11 +251,20 @@ export function BookmarkListItem({
 					</Text>
 				)}
 
-				{/* Footer: Timestamp */}
-				<Group gap="xs" mt="xs">
+				{/* Footer: Timestamp and field selection preview */}
+				<Group gap="xs" mt="xs" justify="space-between" wrap="wrap">
 					<Text size="xs" c="dimmed">
 						{timestampText}
 					</Text>
+
+					{/* Field selection preview - only show if custom fields are selected */}
+					{bookmark.metadata.selectFields && bookmark.metadata.selectFields.length > 0 && (
+						<FieldSelectionPreview
+							selectFields={bookmark.metadata.selectFields}
+							variant="badge"
+							size="xs"
+						/>
+					)}
 				</Group>
 			</Stack>
 		</Card>

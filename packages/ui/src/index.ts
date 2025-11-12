@@ -55,6 +55,11 @@ export { BookmarkIcon, type BookmarkIconProps } from "./bookmarks/BookmarkIcon"
 export { BookmarkList, type BookmarkListProps } from "./bookmarks/BookmarkList"
 export { BookmarkListItem, type BookmarkListItemProps } from "./bookmarks/BookmarkListItem"
 export { EntityTypeBadge, type EntityTypeBadgeProps } from "./bookmarks/EntityTypeBadge"
+export {
+	FieldSelectionPreview,
+	CompactFieldBadge,
+	type FieldSelectionPreviewProps,
+} from "./bookmarks/FieldSelectionPreview"
 
 // Hooks
 export {

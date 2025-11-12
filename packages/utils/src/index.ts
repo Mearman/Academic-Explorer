@@ -230,3 +230,16 @@ export {
 	reconstructURL,
 	type ParsedURL,
 } from "./url-parser.js"
+
+// Field summary utilities
+export {
+	generateFieldSummary,
+	generateDetailedFieldSummary,
+	generateCompactFieldSummary,
+	generateFieldListPreview,
+	categorizeFields,
+	generateSmartFieldSummary,
+	compareFieldSelections,
+	areFieldSelectionsEquivalent,
+	validateFieldNames,
+} from "./field-summary.js"
