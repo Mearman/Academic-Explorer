@@ -319,3 +319,107 @@ export interface CollisionForce extends ForceConfig {
    */
   iterations?: number;
 }
+
+/**
+ * Circular environmental force configuration.
+ *
+ * Applies rotational/vortex force around a center point affecting all nodes uniformly.
+ * Creates orbital or spiral layout patterns.
+ * Complexity: O(n).
+ *
+ * @remarks
+ * Formula: F_tangential = k * perpendicular(position - center) / distance
+ * - k: strength (positive = clockwise rotation, negative = counter-clockwise)
+ * - perpendicular vector: (-dy, dx) for clockwise rotation
+ * - distance: distance from node to center point
+ *
+ * @example
+ * ```typescript
+ * const circular: CircularForce = {
+ *   strength: 0.1,
+ *   enabled: true,
+ *   centerX: 400,
+ *   centerY: 300,
+ *   radius: 200
+ * };
+ * ```
+ */
+export interface CircularForce extends ForceConfig {
+  /**
+   * X-coordinate of rotation center point.
+   *
+   * @remarks
+   * Typically set to viewport center (width / 2).
+   *
+   * @default 0
+   */
+  centerX?: number;
+
+  /**
+   * Y-coordinate of rotation center point.
+   *
+   * @remarks
+   * Typically set to viewport center (height / 2).
+   *
+   * @default 0
+   */
+  centerY?: number;
+
+  /**
+   * Radius of influence zone.
+   *
+   * @remarks
+   * Nodes beyond this radius experience reduced or zero rotational force.
+   * Set to Infinity for unlimited influence.
+   *
+   * @default Infinity
+   */
+  radius?: number;
+}
+
+/**
+ * Linear environmental force configuration.
+ *
+ * Applies uniform directional force to all nodes (gravity-like effect).
+ * Creates directional flow or bias in the layout.
+ * Complexity: O(n).
+ *
+ * @remarks
+ * Formula: F = k * direction
+ * - k: strength (magnitude of force)
+ * - direction: unit vector (dx, dy) defining force direction
+ *
+ * @example
+ * ```typescript
+ * // Downward gravity effect
+ * const gravity: LinearForce = {
+ *   strength: 0.1,
+ *   enabled: true,
+ *   directionX: 0,
+ *   directionY: 1
+ * };
+ * ```
+ */
+export interface LinearForce extends ForceConfig {
+  /**
+   * X-component of force direction vector.
+   *
+   * @remarks
+   * Combined with directionY to form direction vector.
+   * Will be normalized to unit vector internally.
+   *
+   * @default 0
+   */
+  directionX?: number;
+
+  /**
+   * Y-component of force direction vector.
+   *
+   * @remarks
+   * Combined with directionX to form direction vector.
+   * Will be normalized to unit vector internally.
+   *
+   * @default 1 (downward by default)
+   */
+  directionY?: number;
+}

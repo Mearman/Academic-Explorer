@@ -186,7 +186,7 @@ graph.addEdge({
   type: 'membership',
   source: 'alice',
   target: 'js-meetup',
-  directed: true, // Person ’ Group
+  directed: true, // Person ï¿½ Group
   data: {
     role: 'admin',
     joinDate: '2023-01-01'
@@ -431,6 +431,77 @@ simulation.addForce(createPopularityForce(-50));
 
 ---
 
+## Environmental Forces Example
+
+Environmental forces affect all nodes uniformly, creating global layout patterns.
+
+### Circular Force (Vortex Effect)
+
+Creates rotational movement around a center point:
+
+```typescript
+import { createCircularForce } from '@academic-explorer/graph-renderer';
+
+// Create clockwise rotation around canvas center
+const vortexForce = createCircularForce({
+  strength: 0.15,           // Positive = clockwise, negative = counter-clockwise
+  enabled: true,
+  centerX: 400,             // Canvas center X
+  centerY: 300,             // Canvas center Y
+  radius: 300               // Influence radius (nodes beyond this distance unaffected)
+});
+
+simulation.addForce(vortexForce);
+
+// Result: Nodes spiral around center in orbital patterns
+```
+
+### Linear Force (Gravity Effect)
+
+Creates uniform directional force on all nodes:
+
+```typescript
+import { createLinearForce } from '@academic-explorer/graph-renderer';
+
+// Downward gravity effect
+const gravityForce = createLinearForce({
+  strength: 0.1,            // Force magnitude
+  enabled: true,
+  directionX: 0,            // No horizontal component
+  directionY: 1             // Downward direction (normalized internally)
+});
+
+simulation.addForce(gravityForce);
+
+// Example: Horizontal wind from left
+const windForce = createLinearForce({
+  strength: 0.05,
+  enabled: true,
+  directionX: 1,            // Rightward
+  directionY: 0             // No vertical component
+});
+
+simulation.addForce(windForce);
+
+// Result: Nodes drift downward and to the right
+```
+
+### Combining Environmental Forces
+
+Environmental forces compose additively with other forces:
+
+```typescript
+// Setup: Repulsion + Centering + Circular + Linear
+simulation.addForce(createRepulsionForce({ strength: -30 }));
+simulation.addForce(createCenteringForce({ strength: 0.05, x: 400, y: 300 }));
+simulation.addForce(createCircularForce({ strength: 0.1, centerX: 400, centerY: 300 }));
+simulation.addForce(createLinearForce({ strength: 0.02, directionX: 0, directionY: 1 }));
+
+// Result: Nodes repel each other while spiraling around center with gentle downward drift
+```
+
+---
+
 ## Hidden Edge Influence Example
 
 Sometimes you want edge relationships to influence layout without cluttering the visualization. For example, common friends between people:
@@ -543,7 +614,7 @@ for (const node of graph.nodes.values()) {
   node.y = rng.range(-100, 100);
 }
 
-// Same seed ’ identical layout every time
+// Same seed ï¿½ identical layout every time
 ```
 
 ---

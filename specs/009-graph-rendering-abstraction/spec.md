@@ -55,19 +55,21 @@ A developer wants to apply force-directed layout physics to position nodes witho
 
 ---
 
-### User Story 4 - Apply Node-Based Forces (Priority: P2)
+### User Story 4 - Apply Node-Based and Environmental Forces (Priority: P2)
 
-A developer wants to apply custom forces directly to individual nodes or groups of nodes based on node properties. For example, nodes with higher importance (e.g., citation count) should exert stronger repulsion or have larger influence zones.
+A developer wants to apply custom forces directly to individual nodes or groups of nodes based on node properties. For example, nodes with higher importance (e.g., citation count) should exert stronger repulsion or have larger influence zones. Additionally, developers should be able to apply environmental forces that affect all nodes uniformly, such as circular forces (rotational/vortex effects around a center point) or linear forces (directional gravity-like effects).
 
-**Why this priority**: Enables semantic layout where graph structure reflects node importance or other domain properties. Common requirement for analytical visualizations.
+**Why this priority**: Enables semantic layout where graph structure reflects node importance or other domain properties. Environmental forces add global constraints that can create interesting layout patterns (e.g., orbital arrangements, directional flow). Common requirement for analytical visualizations.
 
-**Independent Test**: Can be tested by assigning different force values to nodes and verifying their positions reflect those forces (e.g., high-force nodes have more space around them).
+**Independent Test**: Can be tested by assigning different force values to nodes and verifying their positions reflect those forces (e.g., high-force nodes have more space around them). Environmental forces can be tested by applying circular or linear forces and verifying all nodes respond appropriately.
 
 **Acceptance Scenarios**:
 
 1. **Given** nodes with varying force values, **When** simulation runs, **Then** nodes with higher forces repel more strongly than nodes with lower forces
 2. **Given** a node property (e.g., weight, importance), **When** simulation is configured to use this property, **Then** node positions reflect the property values
 3. **Given** force values change dynamically, **When** simulation updates, **Then** node positions adapt to new force configuration
+4. **Given** a circular environmental force, **When** simulation runs, **Then** nodes experience rotational forces around a center point
+5. **Given** a linear environmental force, **When** simulation runs, **Then** all nodes experience uniform directional force (like gravity)
 
 ---
 
@@ -129,6 +131,7 @@ A developer wants node properties (e.g., citation count) to influence layout for
 - **FR-008**: System MUST emit position update events from simulation that any renderer can consume
 - **FR-009**: System MUST support pausing, resuming, and resetting simulation state
 - **FR-010**: System MUST allow custom force functions to be applied to individual nodes based on node properties
+- **FR-010a**: System MUST support environmental forces that apply uniformly to all nodes (circular and linear forces)
 - **FR-011**: System MUST allow custom force functions to be applied to edges based on edge properties
 - **FR-012**: System MUST support force calculations that consider edge data even when edges are not visually rendered
 - **FR-013**: System MUST provide default force implementations for common cases (repulsion, attraction, centering)

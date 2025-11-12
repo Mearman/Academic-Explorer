@@ -33,10 +33,10 @@ Represents a graph vertex with position, velocity, and custom metadata.
 - **Target Node**: Referenced by 0+ edges as target
 
 **State Transitions**:
-1. **Created** í Initialized with id, type, position (x, y)
-2. **Simulating** í Velocity (vx, vy) updated by forces; position updated by integrator
-3. **Fixed** í Position locked, velocity zeroed, forces ignored
-4. **Removed** í Deleted from graph; orphan edges become invalid
+1. **Created** ÔøΩ Initialized with id, type, position (x, y)
+2. **Simulating** ÔøΩ Velocity (vx, vy) updated by forces; position updated by integrator
+3. **Fixed** ÔøΩ Position locked, velocity zeroed, forces ignored
+4. **Removed** ÔøΩ Deleted from graph; orphan edges become invalid
 
 **Validation Rules**:
 ```typescript
@@ -84,11 +84,11 @@ Represents a connection between two nodes with directionality and custom metadat
 - **Target Node**: References one node (must exist in graph)
 
 **State Transitions**:
-1. **Created** í Initialized with id, type, source, target node references
-2. **Active** í Participates in force calculations and rendering
-3. **Hidden** í Participates in forces but excluded from rendering
-4. **Orphaned** í Source or target node removed; edge becomes invalid
-5. **Removed** í Deleted from graph
+1. **Created** ÔøΩ Initialized with id, type, source, target node references
+2. **Active** ÔøΩ Participates in force calculations and rendering
+3. **Hidden** ÔøΩ Participates in forces but excluded from rendering
+4. **Orphaned** ÔøΩ Source or target node removed; edge becomes invalid
+5. **Removed** ÔøΩ Deleted from graph
 
 **Validation Rules** (FR-016):
 ```typescript
@@ -124,8 +124,8 @@ Container for nodes and edges with CRUD operations and validation.
 **Fields**:
 | Field | Type | Required | Description | Validation |
 |-------|------|----------|-------------|------------|
-| `nodes` | `Map<string, TNode>` | Yes | Node storage (id í node) | Unique IDs |
-| `edges` | `Map<string, TEdge>` | Yes | Edge storage (id í edge) | Unique IDs; valid references |
+| `nodes` | `Map<string, TNode>` | Yes | Node storage (id ÔøΩ node) | Unique IDs |
+| `edges` | `Map<string, TEdge>` | Yes | Edge storage (id ÔøΩ edge) | Unique IDs; valid references |
 
 **Operations**:
 ```typescript
@@ -223,13 +223,13 @@ type ForceFunction<TNode extends Node, TEdge extends Edge> = (
 **Standard Forces**:
 1. **Repulsion (Many-Body)**:
    - Type: Node-node interaction
-   - Formula: `F = k * (qÅ * qÇ) / r≤` (Coulomb-like)
+   - Formula: `F = k * (qÔøΩ * qÔøΩ) / rÔøΩ` (Coulomb-like)
    - Use Case: Prevent node overlap
    - Strength: Negative for repulsion (e.g., -30)
 
 2. **Attraction (Link/Spring)**:
    - Type: Edge-based interaction
-   - Formula: `F = k * (d - dÄ)` (Hooke's law)
+   - Formula: `F = k * (d - dÔøΩ)` (Hooke's law)
    - Use Case: Pull connected nodes together
    - Strength: Positive (e.g., 0.1)
 
@@ -244,6 +244,20 @@ type ForceFunction<TNode extends Node, TEdge extends Edge> = (
    - Formula: `F = radius collision detection`
    - Use Case: Hard node separation
    - Strength: 1.0 (binary constraint)
+
+5. **Circular (Environmental)**:
+   - Type: Environmental force (affects all nodes uniformly)
+   - Formula: `F_tangential = k * (position - center).perpendicular() / distance`
+   - Use Case: Create rotational/vortex layout patterns around center point
+   - Strength: Configurable (e.g., 0.1 for gentle rotation, -0.1 for counter-rotation)
+   - Parameters: centerX, centerY, radius (influence zone), strength
+
+6. **Linear (Environmental)**:
+   - Type: Environmental force (affects all nodes uniformly)
+   - Formula: `F = k * direction` where direction is a unit vector
+   - Use Case: Create directional flow or gravity-like effects
+   - Strength: Configurable (e.g., 0.05 for gentle pull, 0.2 for strong gravity)
+   - Parameters: direction (x, y as vector), strength
 
 **Custom Force Example** (Node-Based):
 ```typescript
@@ -288,9 +302,9 @@ Physics engine that applies forces and updates node positions over time.
 ```
        start()
 stopped         > running
-   ë                 
+   ÔøΩ                 
     stop()     pause() 
-                    ì
+                    ÔøΩ
                 paused
            resume()
 ```
@@ -343,7 +357,7 @@ Interface for pluggable visualization implementations (Canvas, SVG, WebGL, etc.)
 | Field | Type | Description |
 |-------|------|-------------|
 | `element` | `HTMLElement` | Container or canvas element |
-| `visualConfig` | `VisualConfigMap<TNode, TEdge>` | Type í visual property mapping |
+| `visualConfig` | `VisualConfigMap<TNode, TEdge>` | Type ÔøΩ visual property mapping |
 
 **Methods**:
 ```typescript
@@ -379,8 +393,8 @@ interface EdgeVisualConfig {
 }
 
 interface VisualConfigMap<TNode extends Node, TEdge extends Edge> {
-  node: Record<string, NodeVisualConfig>; // node.type í config
-  edge: Record<string, EdgeVisualConfig>; // edge.type í config
+  node: Record<string, NodeVisualConfig>; // node.type ÔøΩ config
+  edge: Record<string, EdgeVisualConfig>; // edge.type ÔøΩ config
 }
 ```
 
