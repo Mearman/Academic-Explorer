@@ -26,11 +26,11 @@ test.describe("Sidebar Functionality E2E Tests", () => {
     });
 
     // Check if left sidebar toggle button exists and is visible
-    const leftSidebarToggle = page.locator('button[aria-label="Toggle left sidebar"]');
+    const leftSidebarToggle = page.getByRole('button', { name: /toggle left sidebar/i });
     await expect(leftSidebarToggle).toBeVisible({ timeout: 5000 });
 
     // Check if sidebar is already open by looking for the bookmarks content directly
-    let bookmarksSidebar = page.locator('text=Bookmarks');
+    let bookmarksSidebar = page.getByRole('heading', { name: /bookmarks/i });
     const isBookmarksVisible = await bookmarksSidebar.isVisible().catch(() => false);
 
     console.log(`Bookmarks sidebar initially visible: ${isBookmarksVisible}`);
@@ -52,7 +52,7 @@ test.describe("Sidebar Functionality E2E Tests", () => {
     await page.waitForTimeout(5000);
 
     // Check if it's stuck in loading state first
-    const loadingText = page.locator('text="Loading bookmarks..."');
+    const loadingText = page.getByText('Loading bookmarks...');
     const isLoading = await loadingText.isVisible().catch(() => false);
 
     if (isLoading) {
@@ -61,18 +61,18 @@ test.describe("Sidebar Functionality E2E Tests", () => {
     }
 
     // Check for empty state message (should be visible if no bookmarks)
-    const emptyState = page.locator('text="No bookmarks yet"');
+    const emptyState = page.getByText('No bookmarks yet');
     const emptyStateVisible = await emptyState.isVisible().catch(() => false);
     console.log(`Empty state visible: ${emptyStateVisible}`);
 
     // Check for search functionality - look for any search input (global or sidebar) since both indicate sidebar is open
     // We'll accept any search input since the sidebar being open is what matters
-    const anySearchInput = page.locator('input[placeholder*="Search"]');
+    const anySearchInput = page.getByPlaceholder(/search/i).first();
     const searchInputVisible = await anySearchInput.isVisible().catch(() => false);
     console.log(`Search input visible: ${searchInputVisible}`);
 
     // Check for bookmarks panel text
-    const panelText = page.locator('text="Bookmarks"');
+    const panelText = page.getByRole('heading', { name: /bookmarks/i });
     const panelTextVisible = await panelText.isVisible().catch(() => false);
     console.log(`Panel text visible: ${panelTextVisible}`);
 
@@ -89,17 +89,17 @@ test.describe("Sidebar Functionality E2E Tests", () => {
 
   test("should display history sidebar with basic functionality", async ({ page }) => {
     // Open right sidebar
-    await page.click('button[aria-label="Toggle right sidebar"]');
+    await page.getByRole('button', { name: /toggle right sidebar/i }).click();
 
     // Wait for sidebar to open
     await page.waitForTimeout(2000);
 
     // Check if history sidebar is displayed
-    const historySidebar = page.locator('text=History');
+    const historySidebar = page.getByRole('heading', { name: /history/i });
     await expect(historySidebar).toBeVisible({ timeout: 5000 });
 
     // Check for search functionality - history sidebar may have different content
-    const searchInput = page.locator('input[placeholder="Search history..."]');
+    const searchInput = page.getByPlaceholder(/search history/i);
     const searchInputVisible = await searchInput.isVisible().catch(() => false);
 
     // If search input isn't visible, check if history sidebar is at least open
@@ -109,11 +109,11 @@ test.describe("Sidebar Functionality E2E Tests", () => {
     }
 
     // History sidebar should be open even if search input isn't immediately visible
-    const historySidebarVisible = await page.locator('text=History').isVisible();
+    const historySidebarVisible = await page.getByRole('heading', { name: /history/i }).isVisible();
     console.log(`History sidebar visible: ${historySidebarVisible}, Search input visible: ${searchInputVisible}`);
 
     // Either search input or history sidebar should be visible
-    await expect(searchInput.or(page.locator('text=History'))).toBeVisible();
+    await expect(searchInput.or(page.getByRole('heading', { name: /history/i }))).toBeVisible();
 
     // History sidebar is visible and functional (confirmed by console log)
     // The History component is working correctly with 539 entries as confirmed by QA investigation
@@ -129,27 +129,27 @@ test.describe("Sidebar Functionality E2E Tests", () => {
     await page.waitForTimeout(2000);
 
     // Open right sidebar and check if history is tracked
-    await page.click('button[aria-label="Toggle right sidebar"]');
+    await page.getByRole('button', { name: /toggle right sidebar/i }).click();
 
     // Wait for sidebar to open
     await page.waitForTimeout(2000);
 
     // Check if history entries are displayed (may be grouped by date or show work info)
-    const historyEntries = page.locator('text=/works\\/W2741809807|Today|Yesterday|Jason Priem|AUTHOR/');
+    const historyEntries = page.getByText(/works\/W2741809807/).or(page.getByText(/Jason Priem/)).or(page.getByText(/Today/));
     await expect(historyEntries.first()).toBeVisible({ timeout: 5000 });
   });
 
   test("should maintain sidebar state across page navigation", async ({ page }) => {
     // Open both sidebars
-    await page.click('button[aria-label="Toggle left sidebar"]');
-    await page.click('button[aria-label="Toggle right sidebar"]');
+    await page.getByRole('button', { name: /toggle left sidebar/i }).click();
+    await page.getByRole('button', { name: /toggle right sidebar/i }).click();
 
     // Navigate to another page
     await page.goto(`${BASE_URL}/#/about`, { waitUntil: "domcontentloaded", timeout: 15000 });
 
     // Check if sidebars remain open (they should)
-    const bookmarksSidebar = page.locator('text=Bookmarks');
-    const historySidebar = page.locator('text=History');
+    const bookmarksSidebar = page.getByRole('heading', { name: /bookmarks/i });
+    const historySidebar = page.getByRole('heading', { name: /history/i });
 
     await expect(bookmarksSidebar).toBeVisible({ timeout: 5000 });
     await expect(historySidebar).toBeVisible({ timeout: 5000 });
@@ -157,15 +157,15 @@ test.describe("Sidebar Functionality E2E Tests", () => {
 
   test("should allow searching in sidebars", async ({ page }) => {
     // Open left sidebar
-    await page.click('button[aria-label="Toggle left sidebar"]');
+    await page.getByRole('button', { name: /toggle left sidebar/i }).click();
 
     // Test search functionality - use a more specific selector to avoid conflicts
-    const searchInput = page.locator('input[placeholder="Search works, authors, institutions..."]').first();
+    const searchInput = page.getByPlaceholder(/search works, authors, institutions/i).first();
     await searchInput.fill("test");
 
     // Should show either "No bookmarks found" or actual bookmark entries
-    const noResults = page.locator('text="No bookmarks found"');
-    const bookmarkEntries = page.locator('text=/Bookmark|bookmark/');
+    const noResults = page.getByText('No bookmarks found');
+    const bookmarkEntries = page.getByText(/bookmark/i);
     await expect(noResults.or(bookmarkEntries)).toBeVisible();
   });
 });

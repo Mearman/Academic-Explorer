@@ -31,7 +31,7 @@ test.describe("Catalogue Entity Management", () => {
     await addToCatalogueButton.click();
 
     // Should open catalogue selection modal
-    await expect(page.locator('[role="dialog"]')).toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Add to Catalogue' })).toBeVisible();
 
     // Select the list using the Select dropdown
     await page.locator('[data-testid="add-to-list-select"]').click();
@@ -46,7 +46,7 @@ test.describe("Catalogue Entity Management", () => {
     await expect(page.locator('text="Added to List"')).toBeVisible({ timeout: 20000 });
 
     // Wait for modal to close
-    await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 3000 });
+    await expect(page.getByRole('dialog', { name: 'Add to Catalogue' })).not.toBeVisible({ timeout: 3000 });
 
     // Return to catalogue and verify entity was added
     await page.goto("http://localhost:5173/#/catalogue");
@@ -267,13 +267,14 @@ test.describe("Catalogue Entity Management", () => {
 
 async function createTestList(page: Page, listName: string): Promise<void> {
   await page.click('button:has-text("Create New List")');
-  await expect(page.locator('[role="dialog"]')).toBeVisible();
+  const createDialog = page.getByRole('dialog').filter({ hasText: 'Create' });
+  await expect(createDialog).toBeVisible();
 
   await page.fill('input:below(:text("Title"))', listName);
   await page.fill('textarea:below(:text("Description"))', `Test description for ${listName}`);
 
   await page.click('button:has-text("Create List")');
-  await expect(page.locator('[role="dialog"]')).not.toBeVisible();
+  await expect(createDialog).not.toBeVisible({ timeout: 5000 });
 
   // Wait for the list to appear in the selected list details section
   await expect(page.locator('[data-testid="selected-list-title"]:has-text("' + listName + '")')).toBeVisible({ timeout: 10000 });
@@ -290,7 +291,8 @@ async function addEntityToCatalogue(page: Page, entityId: string, entityType: st
   await addToCatalogueButton.click();
 
   // Modal opens directly with AddToListModal
-  await expect(page.locator('[role="dialog"]')).toBeVisible({ timeout: 5000 });
+  const addToListDialog = page.getByRole('dialog', { name: 'Add to Catalogue' });
+  await expect(addToListDialog).toBeVisible({ timeout: 5000 });
 
   // Select the first available list using the Select dropdown
   await page.locator('[data-testid="add-to-list-select"]').click();
@@ -300,7 +302,7 @@ async function addEntityToCatalogue(page: Page, entityId: string, entityType: st
   await page.locator('[data-testid="add-to-list-submit"]').click();
 
   // Wait for modal to close
-  await expect(page.locator('[role="dialog"]')).not.toBeVisible({ timeout: 5000 });
+  await expect(addToListDialog).not.toBeVisible({ timeout: 5000 });
 }
 
 async function createListWithMultipleEntities(page: Page, listName: string): Promise<void> {
