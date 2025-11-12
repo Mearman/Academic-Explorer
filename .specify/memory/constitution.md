@@ -1,17 +1,17 @@
 <!--
 Sync Impact Report:
-Version: 1.1.1 → 1.2.0 (test naming convention added to Principle II)
+Version: 1.2.0 → 1.3.0 (package import requirements added to Principle III)
 Modified Principles:
-  - II. Test-First Development: Added mandatory test file naming convention
+  - III. Monorepo Architecture: Added mandatory package alias import requirements
 Added Sections: None
 Removed Sections: None
 Templates Requiring Updates:
   - ✅ .specify/templates/plan-template.md (No changes needed - principle number unchanged)
   - ✅ .specify/templates/spec-template.md (No changes needed - principle number unchanged)
-  - ✅ .specify/templates/tasks-template.md (Updated test task examples to follow naming convention)
+  - ✅ .specify/templates/tasks-template.md (No changes needed - principle number unchanged)
 Follow-up TODOs:
-  - Existing test files should be gradually migrated to follow the naming convention
-  - CI/CD linting should validate test file naming patterns (optional enhancement)
+  - Existing cross-package relative imports should be migrated to use package aliases
+  - ESLint rule could enforce package alias imports (optional enhancement)
 -->
 
 # Academic Explorer Constitution
@@ -70,10 +70,28 @@ Structure requirements:
 - Shared config in `config/` directory
 - Each package MUST have clear, single responsibility
 
+Package import requirements:
+- **MUST use package aliases** for cross-package imports (e.g., `@academic-explorer/client`)
+- **NEVER use relative imports** to reference other packages (e.g., `../../packages/client`)
+- Relative imports are ONLY allowed within the same package
+- Package aliases defined in `tsconfig.base.json` paths:
+  - `@academic-explorer/client` → `packages/client/src/index.ts`
+  - `@academic-explorer/utils` → `packages/utils/src/index.ts`
+  - `@academic-explorer/graph` → `packages/graph/src/index.ts`
+  - `@academic-explorer/simulation` → `packages/simulation/src/index.ts`
+  - `@academic-explorer/types` → `packages/types/src/index.ts`
+  - `@academic-explorer/ui` → `packages/ui/src/index.ts`
+  - `@/*` → `apps/web/src/*` (web app internal imports only)
+
 **Rationale**: The project needs to share OpenAlex client code, graph structures, and UI
 components across web app and CLI. Nx caching speeds up CI/CD for iterative research
 development. The monorepo prevents drift between the interactive visualization tool and
-the command-line data management tool.
+the command-line data management tool. Package alias imports enable:
+1. **Refactoring safety** - Moving packages doesn't break imports across the monorepo
+2. **Build optimization** - Nx can correctly track package dependencies for caching
+3. **Code clarity** - Explicit package boundaries prevent circular dependencies
+4. **IDE support** - Better autocomplete and go-to-definition functionality
+5. **Module resolution** - Consistent import paths regardless of file location
 
 ### IV. Storage Abstraction
 
@@ -213,4 +231,4 @@ For runtime development guidance specific to Academic Explorer workflows, see `C
 in the project root. That file provides operational instructions (commands, architecture
 patterns, research context) while this constitution defines non-negotiable principles.
 
-**Version**: 1.2.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-12
+**Version**: 1.3.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-12
