@@ -1,19 +1,17 @@
 <!--
 Sync Impact Report:
-Version: 1.0.0 → 1.1.0 (new principle added)
-Modified Principles: None (existing principles unchanged)
-Added Sections:
-  - VI. Atomic Conventional Commits (new principle)
-  - Updated Development Workflow to reference commit discipline
+Version: 1.1.0 → 1.1.1 (clarification to Principle VI)
+Modified Principles:
+  - VI. Atomic Conventional Commits: Added explicit prohibition of `git add .` and `git add -A`
+Added Sections: None
 Removed Sections: None
 Templates Requiring Updates:
-  - ✅ .specify/templates/plan-template.md (Constitution Check section already flexible for new principles)
-  - ✅ .specify/templates/spec-template.md (Constitution Alignment section already flexible)
-  - ✅ .specify/templates/tasks-template.md (Phase N includes constitution verification checklist)
-  - ⚠ Task execution workflows should enforce commits between tasks
+  - ✅ .specify/templates/plan-template.md (No changes needed - principle number unchanged)
+  - ✅ .specify/templates/spec-template.md (No changes needed - principle number unchanged)
+  - ✅ .specify/templates/tasks-template.md (No changes needed - principle number unchanged)
 Follow-up TODOs:
-  - Agents/workflows should check for uncommitted changes before moving to next task
-  - CI/CD pipeline could enforce conventional commit format via commitlint (optional)
+  - Agents/workflows should use explicit file paths with git add (already practiced)
+  - Consider pre-commit hook to reject `git add .` and `git add -A` (optional)
 -->
 
 # Academic Explorer Constitution
@@ -115,6 +113,13 @@ Commit requirements:
 - Work-in-progress commits are allowed with `WIP:` prefix during development, but MUST be squashed before PR
 - NEVER move to a new task with uncommitted changes from the previous task
 
+Staging requirements:
+- **NEVER use `git add .` or `git add -A`** - these stage unrelated files and break atomicity
+- ALWAYS use explicit file paths: `git add path/to/file1.ts path/to/file2.ts`
+- Use `git add -p` (patch mode) for selective staging within files if needed
+- Verify staged files with `git status` before committing
+- Only stage files directly related to the atomic task being committed
+
 **Rationale**: The PhD research workflow involves iterative experimentation where the ability
 to bisect, revert, and understand historical changes is critical. Atomic commits enable:
 1. **Bisect debugging** - Quickly identify which specific change introduced a regression
@@ -125,6 +130,9 @@ to bisect, revert, and understand historical changes is critical. Atomic commits
 
 Conventional commit format provides automated changelog generation and semantic versioning,
 essential for maintaining the monorepo's multiple packages with independent version numbers.
+
+Prohibiting `git add .` prevents accidentally committing unrelated changes (debug logs,
+experiments, temporary files) that pollute the commit history and make bisecting impossible.
 
 ## Development Workflow
 
@@ -146,9 +154,10 @@ two places, extract it to `packages/utils` or create a shared package.
 
 **Commit discipline**: After completing each atomic task:
 1. Verify all quality gates pass for the changes
-2. Stage only the files related to the completed task
-3. Create a conventional commit with clear type and scope
-4. Push commits regularly to avoid losing work
+2. Stage ONLY the files related to the completed task using explicit paths
+3. Review staged changes with `git status` and `git diff --staged`
+4. Create a conventional commit with clear type and scope
+5. Push commits regularly to avoid losing work
 
 ## Quality Gates
 
@@ -174,6 +183,7 @@ to shared package APIs require documentation of migration path and approval from
 - Each commit MUST represent a single logical change
 - Commit messages MUST clearly describe the "why" not just the "what"
 - All commits MUST pass quality pipeline before pushing to shared branches
+- NO commits may use `git add .` or `git add -A` for staging
 
 ## Governance
 
@@ -190,4 +200,4 @@ For runtime development guidance specific to Academic Explorer workflows, see `C
 in the project root. That file provides operational instructions (commands, architecture
 patterns, research context) while this constitution defines non-negotiable principles.
 
-**Version**: 1.1.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-12
+**Version**: 1.1.1 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-12
