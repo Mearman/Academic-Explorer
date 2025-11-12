@@ -60,24 +60,24 @@ description: "Task list for Bookmark Query Views feature implementation"
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T010 [P] [US1] E2E test for bookmarking entity pages in `apps/web/src/test/e2e/bookmark-entity.e2e.test.ts`
-- [ ] T011 [P] [US1] E2E test for bookmarking query pages in `apps/web/src/test/e2e/bookmark-query.e2e.test.ts`
-- [ ] T012 [P] [US1] Unit test for bookmark storage operations in `packages/utils/src/storage/dexie-storage-provider.test.ts`
-- [ ] T013 [P] [US1] Unit test for URL parameter extraction in `packages/utils/src/url-parser.test.ts`
+- [X] T010 [P] [US1] E2E test for bookmarking entity pages in `apps/web/src/test/e2e/bookmark-entity.e2e.test.ts`
+- [X] T011 [P] [US1] E2E test for bookmarking query pages in `apps/web/src/test/e2e/bookmark-query.e2e.test.ts`
+- [X] T012 [P] [US1] Unit test for bookmark storage operations in `packages/utils/src/storage/dexie-storage-provider.test.ts`
+- [X] T013 [P] [US1] Unit test for URL parameter extraction in `packages/utils/src/url-parser.test.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T014 [P] [US1] Create bookmark button UI component in `packages/ui/src/bookmarks/BookmarkButton.tsx`
-- [ ] T015 [P] [US1] Create bookmark icon states (active/inactive) in `packages/ui/src/bookmarks/BookmarkIcon.tsx`
-- [ ] T016 [US1] Implement `useBookmarks` hook in `apps/web/src/hooks/useBookmarks.ts` (uses CatalogueStorageProvider)
-- [ ] T017 [US1] Create bookmark service for CRUD operations in `apps/web/src/services/bookmark-service.ts`
-- [ ] T018 [US1] Add bookmark button to entity page layouts in `apps/web/src/components/layouts/EntityLayout.tsx`
-- [ ] T019 [US1] Add bookmark button to search results page in `apps/web/src/routes/search/index.tsx`
-- [ ] T020 [US1] Create Bookmarks catalogue view route in `apps/web/src/routes/bookmarks/index.tsx`
-- [ ] T021 [US1] Implement bookmark list UI component in `packages/ui/src/bookmarks/BookmarkList.tsx`
-- [ ] T022 [US1] Add delete bookmark functionality to list items in `packages/ui/src/bookmarks/BookmarkListItem.tsx`
-- [ ] T023 [US1] Add timestamp formatting for bookmark creation dates in `packages/utils/src/formatters/date-formatter.ts`
-- [ ] T024 [US1] Implement entity type badge component in `packages/ui/src/bookmarks/EntityTypeBadge.tsx`
+- [X] T014 [P] [US1] Create bookmark button UI component in `packages/ui/src/bookmarks/BookmarkButton.tsx`
+- [X] T015 [P] [US1] Create bookmark icon states (active/inactive) in `packages/ui/src/bookmarks/BookmarkIcon.tsx`
+- [X] T016 [US1] Implement `useBookmarks` hook in `apps/web/src/hooks/useBookmarks.ts` (uses CatalogueStorageProvider)
+- [X] T017 [US1] Create bookmark service for CRUD operations in `apps/web/src/services/bookmark-service.ts`
+- [X] T018 [US1] Add bookmark button to entity page layouts in `apps/web/src/components/layouts/EntityLayout.tsx`
+- [X] T019 [US1] Add bookmark button to search results page in `apps/web/src/routes/search/index.tsx`
+- [X] T020 [US1] Create Bookmarks catalogue view route in `apps/web/src/routes/bookmarks/index.tsx`
+- [X] T021 [US1] Implement bookmark list UI component in `packages/ui/src/bookmarks/BookmarkList.tsx`
+- [X] T022 [US1] Add delete bookmark functionality to list items in `packages/ui/src/bookmarks/BookmarkListItem.tsx`
+- [X] T023 [US1] Add timestamp formatting for bookmark creation dates in `packages/utils/src/formatters/date-formatter.ts`
+- [X] T024 [US1] Implement entity type badge component in `packages/ui/src/bookmarks/EntityTypeBadge.tsx`
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
