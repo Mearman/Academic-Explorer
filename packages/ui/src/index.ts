@@ -60,6 +60,8 @@ export {
 	CompactFieldBadge,
 	type FieldSelectionPreviewProps,
 } from "./bookmarks/FieldSelectionPreview"
+export { TagInput, type TagInputProps } from "./bookmarks/TagInput"
+export { TagBadge, TagList, type TagBadgeProps, type TagListProps } from "./bookmarks/TagBadge"
 
 // Hooks
 export {

@@ -1,17 +1,17 @@
 <!--
 Sync Impact Report:
-Version: 1.1.0 → 1.1.1 (clarification to Principle VI)
+Version: 1.1.1 → 1.2.0 (test naming convention added to Principle II)
 Modified Principles:
-  - VI. Atomic Conventional Commits: Added explicit prohibition of `git add .` and `git add -A`
+  - II. Test-First Development: Added mandatory test file naming convention
 Added Sections: None
 Removed Sections: None
 Templates Requiring Updates:
   - ✅ .specify/templates/plan-template.md (No changes needed - principle number unchanged)
   - ✅ .specify/templates/spec-template.md (No changes needed - principle number unchanged)
-  - ✅ .specify/templates/tasks-template.md (No changes needed - principle number unchanged)
+  - ✅ .specify/templates/tasks-template.md (Updated test task examples to follow naming convention)
 Follow-up TODOs:
-  - Agents/workflows should use explicit file paths with git add (already practiced)
-  - Consider pre-commit hook to reject `git add .` and `git add -A` (optional)
+  - Existing test files should be gradually migrated to follow the naming convention
+  - CI/CD linting should validate test file naming patterns (optional enhancement)
 -->
 
 # Academic Explorer Constitution
@@ -35,6 +35,15 @@ experiments or user demonstrations.
 Red-Green-Refactor cycle strictly: write test → verify it fails → implement → verify it
 passes → refactor.
 
+Test file naming requirements:
+- **MUST follow pattern**: `foo.[type].test.ts[x]` where type is one of:
+  - `unit` - Isolated unit tests for individual functions/classes
+  - `integration` - Tests across multiple components/modules
+  - `component` - React component tests
+  - `e2e` - End-to-end tests (Playwright)
+- Examples: `auth.unit.test.ts`, `storage.integration.test.tsx`, `bookmark-search.e2e.test.ts`
+- **NEVER use** generic names like `foo.test.ts` or `foo.spec.ts` without type classifier
+
 For E2E tests with Playwright:
 - Tests MUST run serially (NOT parallel) to prevent OOM errors
 - Each E2E test MUST have isolated storage state
@@ -43,7 +52,11 @@ For E2E tests with Playwright:
 **Rationale**: The project's serial test execution requirement (due to memory constraints)
 makes test failures expensive. Writing failing tests first ensures we detect actual
 functionality gaps rather than accidentally passing tests. The E2E test isolation prevents
-cascading failures that waste research time.
+cascading failures that waste research time. The strict naming convention enables:
+1. **Test type identification** - Instantly recognize test category without reading content
+2. **Selective test execution** - Run only unit tests, or only E2E tests via glob patterns
+3. **Organization clarity** - Prevent test classification ambiguity in monorepo structure
+4. **Fail-fast efficiency** - Nx can intelligently order tests by type (unit → component → integration → e2e)
 
 ### III. Monorepo Architecture
 
@@ -200,4 +213,4 @@ For runtime development guidance specific to Academic Explorer workflows, see `C
 in the project root. That file provides operational instructions (commands, architecture
 patterns, research context) while this constitution defines non-negotiable principles.
 
-**Version**: 1.1.1 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-12
+**Version**: 1.2.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-12
