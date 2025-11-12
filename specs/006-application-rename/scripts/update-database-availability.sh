@@ -97,8 +97,10 @@ for name in $unverified_names; do
     jq_args=(--arg name "$name" --arg status "$status")
 
     for tld in "${tlds[@]}"; do
-        jq_update+=", ${tld}: \$${tld}"
-        jq_args+=(--argjson "$tld" "${tld_availability[$tld]}")
+        # Sanitize TLD for use as jq variable (replace dots with underscores)
+        tld_var=$(echo "$tld" | tr '.' '_')
+        jq_update+=", \"${tld}\": \$${tld_var}"
+        jq_args+=(--argjson "$tld_var" "${tld_availability[$tld]}")
     done
 
     jq_update+='}'

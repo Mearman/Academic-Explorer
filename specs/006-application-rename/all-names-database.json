@@ -2,7 +2,10 @@
   "config": {
     "tlds": [
       "com",
-      "io"
+      "io",
+      "net",
+      "co.uk",
+      "dev"
     ],
     "description": "Top-level domains to check for availability. Modify this list to check additional TLDs."
   },
@@ -11,8 +14,8 @@
     "totalNames": 129,
     "totalDomainsChecked": 238,
     "fullyAvailable": 6,
-    "partiallyAvailable": 30,
-    "allTaken": 93,
+    "partiallyAvailable": 52,
+    "allTaken": 71,
     "verificationType": "DNS lookups + Namecheap registrar verification",
     "extensionsChecked": [
       ".com",
@@ -31,9 +34,12 @@
       "researchScore": 25,
       "availability": {
         "status": "fully-available",
+        "verified": true,
         "com": true,
         "io": true,
-        "verified": true
+        "net": true,
+        "co.uk": true,
+        "dev": true
       },
       "pricing": {
         "com": "£8.58/yr (£6.49/yr with NEWCOM649)",
@@ -56,9 +62,12 @@
       "researchScore": 23,
       "availability": {
         "status": "fully-available",
+        "verified": true,
         "com": true,
         "io": true,
-        "verified": true
+        "net": true,
+        "co.uk": true,
+        "dev": true
       },
       "pricing": {
         "com": "£8.58/yr (£6.49/yr with NEWCOM649)",
@@ -81,9 +90,12 @@
       "researchScore": 22,
       "availability": {
         "status": "fully-available",
+        "verified": true,
         "com": true,
         "io": true,
-        "verified": true
+        "net": true,
+        "co.uk": true,
+        "dev": true
       },
       "pricing": {
         "com": "£8.58/yr (£6.49/yr with NEWCOM649)",
@@ -106,9 +118,12 @@
       "researchScore": 22,
       "availability": {
         "status": "fully-available",
+        "verified": true,
         "com": true,
         "io": true,
-        "verified": true
+        "net": true,
+        "co.uk": true,
+        "dev": true
       },
       "pricing": {
         "com": "£8.58/yr (£6.49/yr with NEWCOM649)",
@@ -130,10 +145,13 @@
       "vibe": "Elegant, memorable, flowing",
       "researchScore": null,
       "availability": {
-        "status": "all-taken",
+        "status": "partial",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [],
@@ -151,9 +169,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -171,9 +192,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "com": null,
-        "io": null,
-        "verified": true
+        "verified": true,
+        "com": false,
+        "io": true,
+        "net": true,
+        "co.uk": true,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [],
@@ -191,9 +215,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "com": null,
-        "io": null,
-        "verified": true
+        "verified": true,
+        "com": false,
+        "io": true,
+        "net": true,
+        "co.uk": false,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [
@@ -213,9 +240,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "com": null,
-        "io": null,
-        "verified": true
+        "verified": true,
+        "com": false,
+        "io": true,
+        "net": false,
+        "co.uk": true,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [],
@@ -232,10 +262,13 @@
       "vibe": "Strong, tech-forward, powerful",
       "researchScore": null,
       "availability": {
-        "status": "all-taken",
+        "status": "partial",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [
@@ -255,9 +288,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "com": null,
-        "io": null,
-        "verified": true
+        "verified": true,
+        "com": false,
+        "io": true,
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -277,9 +313,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -296,10 +335,13 @@
       "vibe": "Scholarly, comprehensive collection",
       "researchScore": null,
       "availability": {
-        "status": "all-taken",
+        "status": "partial",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": true,
+        "co.uk": false,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [
@@ -319,9 +361,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "com": null,
-        "io": null,
-        "verified": true
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": true,
+        "co.uk": false,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [
@@ -341,9 +386,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -360,10 +408,13 @@
       "vibe": "Smart, punchy, memorable",
       "researchScore": null,
       "availability": {
-        "status": "all-taken",
+        "status": "partial",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": true,
+        "co.uk": false,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [],
@@ -381,9 +432,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -403,9 +457,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "com": null,
-        "io": null,
-        "verified": true
+        "verified": true,
+        "com": true,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -422,10 +479,13 @@
       "vibe": "Mystical, intellectual, profound",
       "researchScore": null,
       "availability": {
-        "status": "all-taken",
+        "status": "partial",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [],
@@ -443,9 +503,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "com": null,
-        "io": null,
-        "verified": true
+        "verified": true,
+        "com": false,
+        "io": true,
+        "net": false,
+        "co.uk": true,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [],
@@ -462,10 +525,13 @@
       "vibe": "Scientific, established-sounding",
       "researchScore": null,
       "availability": {
-        "status": "all-taken",
+        "status": "partial",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [
@@ -484,10 +550,13 @@
       "vibe": "Technical, mathematical, precise",
       "researchScore": null,
       "availability": {
-        "status": "all-taken",
+        "status": "partial",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [
@@ -507,9 +576,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -529,9 +601,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -549,9 +624,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "com": null,
-        "io": null,
-        "verified": true
+        "verified": true,
+        "com": false,
+        "io": true,
+        "net": true,
+        "co.uk": true,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [
@@ -570,10 +648,13 @@
       "vibe": "Musical (like citara/sitar), elegant",
       "researchScore": null,
       "availability": {
-        "status": "all-taken",
+        "status": "partial",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [],
@@ -591,9 +672,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "com": null,
-        "io": null,
-        "verified": true
+        "verified": true,
+        "com": false,
+        "io": true,
+        "net": false,
+        "co.uk": true,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -613,9 +697,12 @@
       "researchScore": null,
       "availability": {
         "status": "fully-available",
+        "verified": true,
         "com": true,
         "io": true,
-        "verified": true
+        "net": true,
+        "co.uk": true,
+        "dev": true
       },
       "pricing": {
         "com": "£8.58/yr (£6.49/yr with NEWCOM649)",
@@ -637,10 +724,13 @@
       "vibe": "Global, accessible, friendly",
       "researchScore": null,
       "availability": {
-        "status": "all-taken",
+        "status": "partial",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [],
@@ -658,9 +748,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -680,9 +773,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -702,9 +798,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "com": null,
-        "io": null,
-        "verified": true
+        "verified": true,
+        "com": true,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -724,9 +823,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "com": null,
-        "io": null,
-        "verified": true
+        "verified": true,
+        "com": false,
+        "io": true,
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -746,9 +848,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -767,10 +872,13 @@
       "vibe": "Scholarly, community-focused, classical",
       "researchScore": null,
       "availability": {
-        "status": "all-taken",
+        "status": "partial",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [],
@@ -788,9 +896,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -808,9 +919,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -827,10 +941,13 @@
       "vibe": "Classical, authoritative, literary",
       "researchScore": null,
       "availability": {
-        "status": "all-taken",
+        "status": "partial",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [],
@@ -848,9 +965,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -867,10 +987,13 @@
       "vibe": "Scientific, modern, elegant",
       "researchScore": null,
       "availability": {
-        "status": "all-taken",
+        "status": "partial",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": true,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -887,10 +1010,13 @@
       "vibe": "Visual, analytical, multi-faceted",
       "researchScore": null,
       "availability": {
-        "status": "all-taken",
+        "status": "partial",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [],
@@ -908,9 +1034,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -928,9 +1057,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -948,9 +1080,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -968,9 +1103,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -987,10 +1125,13 @@
       "vibe": "Modern, feminine, memorable",
       "researchScore": null,
       "availability": {
-        "status": "all-taken",
+        "status": "partial",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": true,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1008,9 +1149,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1028,9 +1172,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1048,9 +1195,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1068,9 +1218,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "com": null,
-        "io": null,
-        "verified": true
+        "verified": true,
+        "com": false,
+        "io": true,
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1087,10 +1240,13 @@
       "vibe": "Scientific, mathematical, precise",
       "researchScore": null,
       "availability": {
-        "status": "all-taken",
+        "status": "partial",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": true,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -1109,10 +1265,13 @@
       "vibe": "Edgy, modern, unique",
       "researchScore": null,
       "availability": {
-        "status": "all-taken",
+        "status": "partial",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": true,
+        "co.uk": true,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [],
@@ -1130,9 +1289,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "com": null,
-        "io": null,
-        "verified": true
+        "verified": true,
+        "com": false,
+        "io": true,
+        "net": false,
+        "co.uk": false,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [],
@@ -1150,9 +1312,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "com": null,
-        "io": null,
-        "verified": true
+        "verified": true,
+        "com": false,
+        "io": true,
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1170,9 +1335,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "com": null,
-        "io": null,
-        "verified": true
+        "verified": true,
+        "com": false,
+        "io": true,
+        "net": false,
+        "co.uk": false,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [],
@@ -1190,9 +1358,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -1212,9 +1383,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -1234,9 +1408,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1254,9 +1431,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -1276,9 +1456,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -1297,10 +1480,13 @@
       "vibe": "Scientific, dynamic, mathematical",
       "researchScore": null,
       "availability": {
-        "status": "all-taken",
+        "status": "partial",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": true,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -1320,9 +1506,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1340,9 +1529,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "com": null,
-        "io": null,
-        "verified": true
+        "verified": true,
+        "com": false,
+        "io": true,
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -1362,9 +1554,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -1384,9 +1579,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -1406,9 +1604,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1426,9 +1627,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1446,9 +1650,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1466,9 +1673,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1486,9 +1696,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "com": null,
-        "io": null,
-        "verified": true
+        "verified": true,
+        "com": false,
+        "io": true,
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1506,9 +1719,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1526,9 +1742,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -1548,9 +1767,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1568,9 +1790,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1587,10 +1812,13 @@
       "vibe": "Valuable, precious knowledge",
       "researchScore": null,
       "availability": {
-        "status": "all-taken",
+        "status": "partial",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": true,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1608,9 +1836,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -1630,9 +1861,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -1652,9 +1886,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1672,9 +1909,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -1694,9 +1934,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -1716,9 +1959,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1736,9 +1982,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -1757,10 +2006,13 @@
       "vibe": "Central, pivotal, mathematical",
       "researchScore": null,
       "availability": {
-        "status": "all-taken",
+        "status": "partial",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": true,
+        "co.uk": false,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [
@@ -1780,9 +2032,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1800,9 +2055,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1820,9 +2078,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1840,9 +2101,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -1862,9 +2126,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1882,9 +2149,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1902,9 +2172,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "com": null,
-        "io": null,
-        "verified": true
+        "verified": true,
+        "com": false,
+        "io": true,
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1921,10 +2194,13 @@
       "vibe": "Fresh, new, illuminating",
       "researchScore": null,
       "availability": {
-        "status": "all-taken",
+        "status": "partial",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": true,
+        "co.uk": true,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -1942,9 +2218,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "com": null,
-        "io": null,
-        "verified": true
+        "verified": true,
+        "com": false,
+        "io": true,
+        "net": false,
+        "co.uk": false,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [],
@@ -1962,9 +2241,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -1984,9 +2266,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -2004,9 +2289,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -2024,9 +2312,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -2044,9 +2335,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "com": null,
-        "io": null,
-        "verified": true
+        "verified": true,
+        "com": false,
+        "io": true,
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -2064,9 +2358,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -2084,9 +2381,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -2104,9 +2404,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "com": null,
-        "io": null,
-        "verified": true
+        "verified": true,
+        "com": false,
+        "io": true,
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -2124,9 +2427,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -2144,9 +2450,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -2164,9 +2473,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -2184,9 +2496,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -2204,9 +2519,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -2226,9 +2544,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -2248,9 +2569,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [
@@ -2270,9 +2594,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
+        "verified": true,
         "com": false,
         "io": true,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [],
@@ -2290,9 +2617,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -2310,9 +2640,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -2330,9 +2663,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -2350,9 +2686,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
+        "verified": true,
         "com": false,
         "io": true,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [],
@@ -2370,9 +2709,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
+        "verified": true,
         "com": false,
         "io": true,
-        "verified": true
+        "net": true,
+        "co.uk": true,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [],
@@ -2390,9 +2732,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -2410,9 +2755,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
+        "verified": true,
         "com": false,
         "io": true,
-        "verified": true
+        "net": false,
+        "co.uk": true,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [],
@@ -2429,10 +2777,13 @@
       "vibe": "Modern SaaS, intelligent, crisp",
       "researchScore": null,
       "availability": {
-        "status": "all-taken",
+        "status": "partial",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": true,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -2450,9 +2801,12 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
+        "verified": true,
         "com": false,
         "io": true,
-        "verified": true
+        "net": true,
+        "co.uk": true,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -2470,9 +2824,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -2490,9 +2847,12 @@
       "researchScore": null,
       "availability": {
         "status": "all-taken",
+        "verified": true,
         "com": false,
         "io": false,
-        "verified": true
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -2512,7 +2872,10 @@
         "status": "all-taken",
         "verified": true,
         "com": false,
-        "io": false
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -2532,7 +2895,10 @@
         "status": "fully-available",
         "verified": true,
         "com": true,
-        "io": true
+        "io": true,
+        "net": true,
+        "co.uk": true,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [],
@@ -2552,7 +2918,10 @@
         "status": "partial",
         "verified": true,
         "com": false,
-        "io": true
+        "io": true,
+        "net": true,
+        "co.uk": true,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [],
@@ -2572,7 +2941,10 @@
         "status": "partial",
         "verified": true,
         "com": false,
-        "io": true
+        "io": true,
+        "net": false,
+        "co.uk": true,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [],
@@ -2592,7 +2964,10 @@
         "status": "all-taken",
         "verified": true,
         "com": false,
-        "io": false
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -2612,7 +2987,10 @@
         "status": "partial",
         "verified": true,
         "com": false,
-        "io": true
+        "io": true,
+        "net": false,
+        "co.uk": true,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -2632,7 +3010,10 @@
         "status": "partial",
         "verified": true,
         "com": false,
-        "io": true
+        "io": true,
+        "net": true,
+        "co.uk": true,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [],
@@ -2652,7 +3033,10 @@
         "status": "all-taken",
         "verified": true,
         "com": false,
-        "io": false
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
@@ -2669,10 +3053,13 @@
       "vibe": "Comprehensive, platform-like, professional",
       "researchScore": null,
       "availability": {
-        "status": "all-taken",
+        "status": "partial",
         "verified": true,
         "com": false,
-        "io": false
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": true
       },
       "pricing": null,
       "conflicts": [],
@@ -2692,7 +3079,10 @@
         "status": "all-taken",
         "verified": true,
         "com": false,
-        "io": false
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
       },
       "pricing": null,
       "conflicts": [],
