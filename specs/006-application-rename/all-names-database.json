@@ -1,0 +1,2198 @@
+{
+  "metadata": {
+    "generated": "2025-11-12",
+    "totalNames": 109,
+    "totalDomainsChecked": 218,
+    "fullyAvailable": 5,
+    "partiallyAvailable": 21,
+    "allTaken": 83,
+    "verificationType": "DNS lookups + Namecheap registrar verification",
+    "extensionsChecked": [".com", ".io"]
+  },
+  "names": [
+    {
+      "name": "ScholarWeave",
+      "type": "compound",
+      "category": "Original Top 4",
+      "origin": "Scholar + Weave",
+      "pronunciation": "SKOL-ar-weev",
+      "meaning": "Weaving together scholarly knowledge and research",
+      "vibe": "Elegant, collaborative, scholarly, interconnected",
+      "researchScore": 25,
+      "availability": {
+        "status": "fully-available",
+        "com": true,
+        "io": true,
+        "verified": true
+      },
+      "pricing": {
+        "com": "£8.58/yr (£6.49/yr with NEWCOM649)",
+        "io": "£26.61/yr",
+        "app": "£5.31/yr",
+        "org": "£5.69/yr"
+      },
+      "conflicts": [],
+      "recommendation": "highest",
+      "notes": "Highest research score, most elegant, clear winner"
+    },
+    {
+      "name": "CitationMesh",
+      "type": "compound",
+      "category": "Original Top 4",
+      "origin": "Citation + Mesh",
+      "pronunciation": "sy-TAY-shun-mesh",
+      "meaning": "Network/mesh of academic citations",
+      "vibe": "Technical, network-focused, descriptive, modern",
+      "researchScore": 23,
+      "availability": {
+        "status": "fully-available",
+        "com": true,
+        "io": true,
+        "verified": true
+      },
+      "pricing": {
+        "com": "£8.58/yr (£6.49/yr with NEWCOM649)",
+        "io": "£26.61/yr",
+        "app": "£5.31/yr",
+        "org": "£5.69/yr"
+      },
+      "conflicts": [],
+      "recommendation": "high",
+      "notes": "Most technically descriptive, strong runner-up"
+    },
+    {
+      "name": "Graphademia",
+      "type": "compound",
+      "category": "Original Top 4",
+      "origin": "Graph + Academia",
+      "pronunciation": "graf-ah-DEE-mee-ah",
+      "meaning": "Academic graph/network platform",
+      "vibe": "Academic, graph-oriented, portmanteau, scholarly",
+      "researchScore": 22,
+      "availability": {
+        "status": "fully-available",
+        "com": true,
+        "io": true,
+        "verified": true
+      },
+      "pricing": {
+        "com": "£8.58/yr (£6.49/yr with NEWCOM649)",
+        "io": "£26.61/yr",
+        "app": "£5.31/yr",
+        "org": "£5.69/yr"
+      },
+      "conflicts": [],
+      "recommendation": "medium-high",
+      "notes": "Strong portmanteau, graphademia.so is taken but uncommon extension"
+    },
+    {
+      "name": "ResearchLattice",
+      "type": "compound",
+      "category": "Original Top 4",
+      "origin": "Research + Lattice",
+      "pronunciation": "REE-search-LAT-iss",
+      "meaning": "Structured framework of research connections",
+      "vibe": "Scientific, structural, mathematical, organized",
+      "researchScore": 22,
+      "availability": {
+        "status": "fully-available",
+        "com": true,
+        "io": true,
+        "verified": true
+      },
+      "pricing": {
+        "com": "£8.58/yr (£6.49/yr with NEWCOM649)",
+        "io": "£26.61/yr",
+        "app": "£5.31/yr",
+        "org": "£5.69/yr"
+      },
+      "conflicts": [],
+      "recommendation": "medium-high",
+      "notes": "Scientific appeal, mathematical structure metaphor"
+    },
+    {
+      "name": "Scholara",
+      "type": "invented",
+      "category": "First Round Non-Compound",
+      "origin": "Scholar + aura/aurora",
+      "pronunciation": "skol-AH-rah",
+      "meaning": "Scholarly atmosphere, intellectual illumination",
+      "vibe": "Elegant, memorable, flowing",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Akademos",
+      "type": "classical",
+      "category": "First Round Non-Compound",
+      "origin": "Greek akademos (garden where Plato taught)",
+      "pronunciation": "ak-ah-DAY-mos",
+      "meaning": "The original academy, birthplace of learning",
+      "vibe": "Classical, authoritative, historical",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Erudia",
+      "type": "invented",
+      "category": "First Round Non-Compound",
+      "origin": "Erudite + India/media",
+      "pronunciation": "eh-ROO-dee-ah",
+      "meaning": "Land of the learned",
+      "vibe": "Sophisticated, fluid, memorable",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": null,
+        "io": null,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "low",
+      "notes": "Only one extension available (not specified which)"
+    },
+    {
+      "name": "Scholium",
+      "type": "classical",
+      "category": "First Round Non-Compound",
+      "origin": "Latin scholium (marginal note, commentary)",
+      "pronunciation": "SKO-lee-um",
+      "meaning": "Scholarly annotation or explanation",
+      "vibe": "Academic, classical, precise",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": null,
+        "io": null,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["scholium.ai (AI research assistant)"],
+      "recommendation": "none",
+      "notes": "Conflict with existing product, only one extension available"
+    },
+    {
+      "name": "Epistema",
+      "type": "classical",
+      "category": "First Round Non-Compound",
+      "origin": "Greek episteme (knowledge, understanding)",
+      "pronunciation": "ep-ih-STEE-mah",
+      "meaning": "Knowledge, scientific understanding",
+      "vibe": "Intellectual, Greek philosophy roots",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": null,
+        "io": null,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "low",
+      "notes": "Only one extension available"
+    },
+    {
+      "name": "Nexus",
+      "type": "single-word",
+      "category": "First Round Non-Compound",
+      "origin": "Latin nexus (connection point)",
+      "pronunciation": "NEK-sus",
+      "meaning": "Connection point, central link",
+      "vibe": "Strong, tech-forward, powerful",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Very common term, multiple products"],
+      "recommendation": "none",
+      "notes": "Both extensions taken, very common term"
+    },
+    {
+      "name": "Apex",
+      "type": "single-word",
+      "category": "First Round Non-Compound",
+      "origin": "Latin apex (peak, summit)",
+      "pronunciation": "AY-peks",
+      "meaning": "Peak, summit, highest point",
+      "vibe": "Aspirational, strong, memorable",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": null,
+        "io": null,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Widely used in various contexts"],
+      "recommendation": "low",
+      "notes": "Only one extension available, very common"
+    },
+    {
+      "name": "Cognate",
+      "type": "single-word",
+      "category": "First Round Non-Compound",
+      "origin": "Latin cognatus (related by blood/origin)",
+      "pronunciation": "KOG-nayt",
+      "meaning": "Related, connected through origin",
+      "vibe": "Academic term, implies relationships",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Lexicon",
+      "type": "single-word",
+      "category": "First Round Non-Compound",
+      "origin": "Greek lexicon (dictionary)",
+      "pronunciation": "LEK-sih-kon",
+      "meaning": "Dictionary, vocabulary of knowledge",
+      "vibe": "Scholarly, comprehensive collection",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Common term, likely trademark conflicts"],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Archive",
+      "type": "single-word",
+      "category": "First Round Non-Compound",
+      "origin": "Greek arkheion (public records)",
+      "pronunciation": "AR-kyv",
+      "meaning": "Collection of historical documents/records",
+      "vibe": "Preservation, knowledge repository",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": null,
+        "io": null,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Very generic term, many conflicts"],
+      "recommendation": "none",
+      "notes": "Only one extension available, very generic"
+    },
+    {
+      "name": "Scientia",
+      "type": "classical",
+      "category": "First Round Non-Compound",
+      "origin": "Latin scientia (knowledge, science)",
+      "pronunciation": "see-EN-tee-ah / sy-EN-sha",
+      "meaning": "Knowledge, systematic understanding",
+      "vibe": "Classical, scholarly, sophisticated",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Sagax",
+      "type": "classical",
+      "category": "First Round Non-Compound",
+      "origin": "Latin sagax (keen, sharp, perceptive)",
+      "pronunciation": "SAY-gaks",
+      "meaning": "Sharp-minded, perceptive",
+      "vibe": "Smart, punchy, memorable",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Noesis",
+      "type": "classical",
+      "category": "First Round Non-Compound",
+      "origin": "Greek noesis (perception, understanding)",
+      "pronunciation": "no-EE-sis",
+      "meaning": "Act of thinking, mental perception",
+      "vibe": "Philosophical, intellectual",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Multiple existing products with this name"],
+      "recommendation": "none",
+      "notes": "Both extensions taken, multiple conflicts"
+    },
+    {
+      "name": "Theseus",
+      "type": "mythological",
+      "category": "First Round Non-Compound",
+      "origin": "Greek hero, founder-king",
+      "pronunciation": "THEE-see-us",
+      "meaning": "Symbolic of building/founding",
+      "vibe": "Mythological, strong, memorable",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": null,
+        "io": null,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "low",
+      "notes": "Ship of Theseus philosophical paradox connection, partial availability"
+    },
+    {
+      "name": "Gnosis",
+      "type": "classical",
+      "category": "First Round Non-Compound",
+      "origin": "Greek gnosis (knowledge, insight)",
+      "pronunciation": "NO-sis",
+      "meaning": "Knowledge, spiritual insight",
+      "vibe": "Mystical, intellectual, profound",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Acadi",
+      "type": "invented",
+      "category": "First Round Non-Compound",
+      "origin": "Shortened from academia/Arcadia",
+      "pronunciation": "ah-KAH-dee",
+      "meaning": "Academic paradise",
+      "vibe": "Short, memorable, friendly",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": null,
+        "io": null,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "low",
+      "notes": "Only one extension available"
+    },
+    {
+      "name": "Scopus",
+      "type": "classical",
+      "category": "First Round Non-Compound",
+      "origin": "Greek skopos (target, aim, scope)",
+      "pronunciation": "SKO-pus",
+      "meaning": "Range of view, comprehensive scope",
+      "vibe": "Scientific, established-sounding",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Elsevier Scopus database - major conflict"],
+      "recommendation": "none",
+      "notes": "Both extensions taken, Elsevier has Scopus database"
+    },
+    {
+      "name": "Vertex",
+      "type": "mathematical",
+      "category": "First Round Non-Compound",
+      "origin": "Latin vertex (highest point, summit)",
+      "pronunciation": "VER-teks",
+      "meaning": "Top point, apex, node in graph",
+      "vibe": "Technical, mathematical, precise",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Common in tech/math contexts"],
+      "recommendation": "none",
+      "notes": "Both extensions taken, common term"
+    },
+    {
+      "name": "Axion",
+      "type": "scientific",
+      "category": "First Round Non-Compound",
+      "origin": "Greek axios (worthy) / physics particle",
+      "pronunciation": "AK-see-on",
+      "meaning": "Worthy, valuable; fundamental particle",
+      "vibe": "Scientific, modern, cutting-edge",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["axion.com is AI quality platform"],
+      "recommendation": "none",
+      "notes": "Both extensions taken, conflict with AI platform"
+    },
+    {
+      "name": "Codex",
+      "type": "classical",
+      "category": "First Round Non-Compound",
+      "origin": "Latin codex (book, manuscript)",
+      "pronunciation": "KO-deks",
+      "meaning": "Ancient manuscript, collection of knowledge",
+      "vibe": "Historical, scholarly, authoritative",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Scholix",
+      "type": "blend",
+      "category": "First Round Non-Compound",
+      "origin": "Scholar + helix/links",
+      "pronunciation": "SKO-liks",
+      "meaning": "Scholarly connections/spiral",
+      "vibe": "Modern, technical, memorable",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": null,
+        "io": null,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["scholix.org exists (scholarly link exchange)"],
+      "recommendation": "none",
+      "notes": "Partial availability, conflict with scholix.org"
+    },
+    {
+      "name": "Citara",
+      "type": "blend",
+      "category": "First Round Non-Compound",
+      "origin": "Citation + ara (altar) / clara (clear)",
+      "pronunciation": "sih-TAR-ah",
+      "meaning": "Clear citations, altar of knowledge",
+      "vibe": "Musical (like citara/sitar), elegant",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Graphon",
+      "type": "blend",
+      "category": "First Round Non-Compound",
+      "origin": "Graph + on (being)",
+      "pronunciation": "GRAF-on",
+      "meaning": "Graph entity, being of graphs",
+      "vibe": "Technical, memorable",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": null,
+        "io": null,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["graphon.com exists (remote desktop software)"],
+      "recommendation": "none",
+      "notes": "Partial availability, conflict with remote desktop software"
+    },
+    {
+      "name": "Bibliom",
+      "type": "blend",
+      "category": "First Round Non-Compound",
+      "origin": "Biblio + om (totality)",
+      "pronunciation": "BIB-lee-om",
+      "meaning": "Totality of bibliography",
+      "vibe": "Scholarly, comprehensive, unique",
+      "researchScore": null,
+      "availability": {
+        "status": "fully-available",
+        "com": true,
+        "io": true,
+        "verified": true
+      },
+      "pricing": {
+        "com": "£8.58/yr (£6.49/yr with NEWCOM649)",
+        "io": "£26.61/yr",
+        "app": "£5.31/yr",
+        "org": "£5.69/yr"
+      },
+      "conflicts": [],
+      "recommendation": "medium",
+      "notes": "Only non-compound name fully available from 105 options"
+    },
+    {
+      "name": "Conecta",
+      "type": "international",
+      "category": "First Round Non-Compound",
+      "origin": "Spanish/Latin conectar (to connect)",
+      "pronunciation": "ko-NEK-tah",
+      "meaning": "Connection, linking",
+      "vibe": "Global, accessible, friendly",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Sage",
+      "type": "single-word",
+      "category": "First Round Non-Compound",
+      "origin": "Wise person",
+      "pronunciation": "SAYJ",
+      "meaning": "Wise person, aromatic herb",
+      "vibe": "Wisdom, natural, timeless",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Very common word, many conflicts"],
+      "recommendation": "none",
+      "notes": "Both extensions taken, extremely common"
+    },
+    {
+      "name": "Quill",
+      "type": "single-word",
+      "category": "First Round Non-Compound",
+      "origin": "Writing instrument",
+      "pronunciation": "KWIL",
+      "meaning": "Writing instrument, scholarly tool",
+      "vibe": "Classic, literary, writing-focused",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Common term, many products"],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Tome",
+      "type": "single-word",
+      "category": "First Round Non-Compound",
+      "origin": "Large scholarly book",
+      "pronunciation": "TOHM",
+      "meaning": "Large scholarly book",
+      "vibe": "Academic, substantial, classic",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": null,
+        "io": null,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Generic term"],
+      "recommendation": "low",
+      "notes": "Partial availability, generic term"
+    },
+    {
+      "name": "Node",
+      "type": "technical",
+      "category": "First Round Non-Compound",
+      "origin": "Connection point in network",
+      "pronunciation": "NOHD",
+      "meaning": "Connection point in network",
+      "vibe": "Technical, precise, graph-oriented",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": null,
+        "io": null,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Very common in tech (Node.js, etc.)"],
+      "recommendation": "none",
+      "notes": "Partial availability, extremely common in tech"
+    },
+    {
+      "name": "Link",
+      "type": "single-word",
+      "category": "First Round Non-Compound",
+      "origin": "Connection, relationship",
+      "pronunciation": "LINK",
+      "meaning": "Connection, relationship",
+      "vibe": "Direct, simple, clear",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Extremely common word, countless conflicts"],
+      "recommendation": "none",
+      "notes": "Both extensions taken, extremely common"
+    },
+    {
+      "name": "Sapientum",
+      "type": "classical",
+      "category": "First Round Non-Compound",
+      "origin": "Latin sapiens (wise) + genitive plural",
+      "pronunciation": "sah-pee-EN-tum",
+      "meaning": "Of the wise ones",
+      "vibe": "Scholarly, community-focused, classical",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Docere",
+      "type": "classical",
+      "category": "First Round Non-Compound",
+      "origin": "Latin docere (to teach)",
+      "pronunciation": "DOH-keh-ray",
+      "meaning": "To teach, to instruct",
+      "vibe": "Educational, Latin elegance, memorable",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Graphos",
+      "type": "classical",
+      "category": "First Round Non-Compound",
+      "origin": "Greek graphos (writing)",
+      "pronunciation": "GRAF-os",
+      "meaning": "Writing, recording knowledge",
+      "vibe": "Classical meets technical",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Scriptor",
+      "type": "classical",
+      "category": "First Round Non-Compound",
+      "origin": "Latin scriptor (writer, author)",
+      "pronunciation": "SKRIP-tor",
+      "meaning": "One who writes, recorder",
+      "vibe": "Classical, authoritative, literary",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Cognitum",
+      "type": "classical",
+      "category": "First Round Non-Compound",
+      "origin": "Latin cognitus (known) + neuter form",
+      "pronunciation": "kog-NIH-tum",
+      "meaning": "That which is known",
+      "vibe": "Philosophical, knowledge-focused",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Helix",
+      "type": "scientific",
+      "category": "First Round Non-Compound",
+      "origin": "Greek helix (spiral)",
+      "pronunciation": "HEE-liks",
+      "meaning": "Spiral structure, DNA, interconnection",
+      "vibe": "Scientific, modern, elegant",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Prism",
+      "type": "scientific",
+      "category": "First Round Non-Compound",
+      "origin": "Greek prisma (something sawed)",
+      "pronunciation": "PRIZ-um",
+      "meaning": "Refracts light, shows multiple perspectives",
+      "vibe": "Visual, analytical, multi-faceted",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Lumen",
+      "type": "classical",
+      "category": "First Round Non-Compound",
+      "origin": "Latin lumen (light)",
+      "pronunciation": "LOO-men",
+      "meaning": "Light, illumination, enlightenment",
+      "vibe": "Enlightening, clear, positive",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Cipher",
+      "type": "cryptographic",
+      "category": "First Round Non-Compound",
+      "origin": "Arabic sifr (zero, empty)",
+      "pronunciation": "SY-fur",
+      "meaning": "Code, key to understanding",
+      "vibe": "Mysterious, intellectual, puzzle-like",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Beacon",
+      "type": "metaphorical",
+      "category": "First Round Non-Compound",
+      "origin": "Old English beacen (sign, signal)",
+      "pronunciation": "BEE-kun",
+      "meaning": "Guiding light, signal",
+      "vibe": "Helpful, directional, illuminating",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Vero",
+      "type": "ultra-short",
+      "category": "Expanded Round",
+      "origin": "Latin verus (true, genuine)",
+      "pronunciation": "VEH-roh",
+      "meaning": "Truth, genuine knowledge",
+      "vibe": "Clean, modern, trustworthy",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken despite short length"
+    },
+    {
+      "name": "Kyra",
+      "type": "ultra-short",
+      "category": "Expanded Round",
+      "origin": "Greek kyrios (authoritative) + suffix",
+      "pronunciation": "KY-rah",
+      "meaning": "Authoritative knowledge",
+      "vibe": "Modern, feminine, memorable",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Rezi",
+      "type": "ultra-short",
+      "category": "Expanded Round",
+      "origin": "Research + minimalist suffix",
+      "pronunciation": "REH-zee",
+      "meaning": "Research essence",
+      "vibe": "Tech-forward, minimalist, catchy",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Liro",
+      "type": "ultra-short",
+      "category": "Expanded Round",
+      "origin": "Library + research portmanteau",
+      "pronunciation": "LY-roh",
+      "meaning": "Library research",
+      "vibe": "Smooth, memorable, academic",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Noda",
+      "type": "ultra-short",
+      "category": "Expanded Round",
+      "origin": "Node + data blend",
+      "pronunciation": "NOH-dah",
+      "meaning": "Network node, data point",
+      "vibe": "Technical, minimal, graph-oriented",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Kynos",
+      "type": "ultra-short",
+      "category": "Expanded Round",
+      "origin": "Greek kynos (variant, invented)",
+      "pronunciation": "KY-nos",
+      "meaning": "Knowledge network",
+      "vibe": "Unique, scholarly, Greek roots",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": null,
+        "io": null,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "low",
+      "notes": "Only one extension available"
+    },
+    {
+      "name": "Zeta",
+      "type": "greek-letter",
+      "category": "Expanded Round",
+      "origin": "Greek letter, represents variables/research",
+      "pronunciation": "ZEE-tah / ZAY-tah",
+      "meaning": "Variable, research parameter",
+      "vibe": "Scientific, mathematical, precise",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Common Greek letter"],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Vyx",
+      "type": "ultra-short",
+      "category": "Expanded Round",
+      "origin": "Invented, tech-forward",
+      "pronunciation": "VIKS",
+      "meaning": "None (pure neologism)",
+      "vibe": "Edgy, modern, unique",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken despite being pure invention"
+    },
+    {
+      "name": "Dokma",
+      "type": "modified-academic",
+      "category": "Expanded Round",
+      "origin": "Greek dogma/dokein (to think, seem)",
+      "pronunciation": "DOK-mah",
+      "meaning": "Thought, opinion, knowledge",
+      "vibe": "Philosophical, thoughtful, unique",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": null,
+        "io": null,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "low",
+      "notes": "Only one extension available"
+    },
+    {
+      "name": "Texis",
+      "type": "modified-academic",
+      "category": "Expanded Round",
+      "origin": "Greek thesis modified",
+      "pronunciation": "TEK-sis",
+      "meaning": "Thesis, proposition, argument",
+      "vibe": "Academic, modern twist on classic term",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": null,
+        "io": null,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "low",
+      "notes": "Only one extension available"
+    },
+    {
+      "name": "Paedia",
+      "type": "modified-academic",
+      "category": "Expanded Round",
+      "origin": "Greek paideia (education, learning)",
+      "pronunciation": "py-DEE-ah / PAY-dee-ah",
+      "meaning": "Education, culture, learning",
+      "vibe": "Classical, educational, scholarly",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": null,
+        "io": null,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "low",
+      "notes": "Only one extension available"
+    },
+    {
+      "name": "Logos",
+      "type": "classical",
+      "category": "Expanded Round",
+      "origin": "Greek logos (word, reason, discourse)",
+      "pronunciation": "LOH-gos",
+      "meaning": "Reason, discourse, knowledge",
+      "vibe": "Philosophical, powerful, foundational",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Very common term, countless products"],
+      "recommendation": "none",
+      "notes": "Both extensions taken, extremely common"
+    },
+    {
+      "name": "Ethos",
+      "type": "classical",
+      "category": "Expanded Round",
+      "origin": "Greek ethos (character, custom)",
+      "pronunciation": "EE-thos",
+      "meaning": "Character, credibility, ethics",
+      "vibe": "Trustworthy, ethical, classical",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Common term"],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Telos",
+      "type": "classical",
+      "category": "Expanded Round",
+      "origin": "Greek telos (end, purpose, goal)",
+      "pronunciation": "TEH-los / TEE-los",
+      "meaning": "Ultimate purpose, goal",
+      "vibe": "Philosophical, purposeful, directed",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Quanta",
+      "type": "scientific",
+      "category": "Expanded Round",
+      "origin": "Latin quantus (how much), physics term",
+      "pronunciation": "KWAN-tah",
+      "meaning": "Discrete quantity, fundamental unit",
+      "vibe": "Scientific, precise, quantum-inspired",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Used in physics"],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Sigma",
+      "type": "greek-letter",
+      "category": "Expanded Round",
+      "origin": "Greek letter, represents summation",
+      "pronunciation": "SIG-mah",
+      "meaning": "Sum, total, aggregate",
+      "vibe": "Mathematical, statistical, precise",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Common Greek letter, many conflicts"],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Delta",
+      "type": "greek-letter",
+      "category": "Expanded Round",
+      "origin": "Greek letter, represents change",
+      "pronunciation": "DEL-tah",
+      "meaning": "Change, difference, transformation",
+      "vibe": "Scientific, dynamic, mathematical",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Extremely common, many conflicts (Delta Airlines, etc.)"],
+      "recommendation": "none",
+      "notes": "Both extensions taken, extremely common"
+    },
+    {
+      "name": "Graphia",
+      "type": "scientific",
+      "category": "Expanded Round",
+      "origin": "Greek graphia (writing, recording)",
+      "pronunciation": "GRAF-ee-ah",
+      "meaning": "Writing, recording knowledge",
+      "vibe": "Academic, recording-focused, classical",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Metrix",
+      "type": "scientific",
+      "category": "Expanded Round",
+      "origin": "Metric + X modifier",
+      "pronunciation": "MEH-triks",
+      "meaning": "Measurement, metrics, analysis",
+      "vibe": "Analytical, data-focused, modern",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": null,
+        "io": null,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Similar to 'metrics'"],
+      "recommendation": "low",
+      "notes": "Only one extension available"
+    },
+    {
+      "name": "Ratio",
+      "type": "classical",
+      "category": "Expanded Round",
+      "origin": "Latin ratio (reason, calculation)",
+      "pronunciation": "RAY-shee-oh / RAH-tee-oh",
+      "meaning": "Reason, method, calculation",
+      "vibe": "Logical, methodical, classical",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Common word"],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Veritas",
+      "type": "classical",
+      "category": "Expanded Round",
+      "origin": "Latin veritas (truth)",
+      "pronunciation": "veh-REE-tas",
+      "meaning": "Truth, reality",
+      "vibe": "Trustworthy, academic, Harvard motto",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Harvard connection"],
+      "recommendation": "none",
+      "notes": "Both extensions taken, Harvard motto"
+    },
+    {
+      "name": "Lucida",
+      "type": "classical",
+      "category": "Expanded Round",
+      "origin": "Latin lucidus (clear, bright)",
+      "pronunciation": "loo-SEE-dah",
+      "meaning": "Clear, illuminating, lucid",
+      "vibe": "Clarity-focused, bright, enlightening",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Clarion",
+      "type": "classical",
+      "category": "Expanded Round",
+      "origin": "Latin clarus (clear) + suffix",
+      "pronunciation": "KLAR-ee-on",
+      "meaning": "Clear, loud, announcing",
+      "vibe": "Bold, clear, announcing knowledge",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Meridian",
+      "type": "classical",
+      "category": "Expanded Round",
+      "origin": "Latin meridianus (midday, peak)",
+      "pronunciation": "meh-RID-ee-an",
+      "meaning": "Peak, zenith, highest point",
+      "vibe": "Aspirational, peak achievement",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Virtus",
+      "type": "classical",
+      "category": "Expanded Round",
+      "origin": "Latin virtus (excellence, virtue)",
+      "pronunciation": "VER-toos",
+      "meaning": "Excellence, virtue, merit",
+      "vibe": "Excellence-focused, classical, strong",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Orbis",
+      "type": "classical",
+      "category": "Expanded Round",
+      "origin": "Latin orbis (circle, sphere, world)",
+      "pronunciation": "OR-bis",
+      "meaning": "World, sphere, comprehensive circle",
+      "vibe": "Global, comprehensive, circular knowledge",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": null,
+        "io": null,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "low",
+      "notes": "Only one extension available"
+    },
+    {
+      "name": "Nexum",
+      "type": "classical",
+      "category": "Expanded Round",
+      "origin": "Latin nexus + neuter form",
+      "pronunciation": "NEK-sum",
+      "meaning": "Bond, connection, tie",
+      "vibe": "Connected, bound together, networked",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Quartz",
+      "type": "material",
+      "category": "Expanded Round",
+      "origin": "Crystal formation, clarity",
+      "pronunciation": "KWORTS",
+      "meaning": "Clear crystal, precision",
+      "vibe": "Clear, precise, structured",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Common mineral"],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Obsidian",
+      "type": "material",
+      "category": "Expanded Round",
+      "origin": "Volcanic glass, sharp clarity",
+      "pronunciation": "ob-SID-ee-an",
+      "meaning": "Sharp insight, volcanic glass",
+      "vibe": "Sharp, powerful, geological",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Mica",
+      "type": "material",
+      "category": "Expanded Round",
+      "origin": "Layered mineral",
+      "pronunciation": "MY-kah",
+      "meaning": "Layered knowledge, transparent sheets",
+      "vibe": "Layered, transparent, geological",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken despite short length"
+    },
+    {
+      "name": "Beryl",
+      "type": "material",
+      "category": "Expanded Round",
+      "origin": "Precious stone family (emerald, aquamarine)",
+      "pronunciation": "BEH-ril",
+      "meaning": "Precious, valuable, gemstone",
+      "vibe": "Valuable, precious knowledge",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Opal",
+      "type": "material",
+      "category": "Expanded Round",
+      "origin": "Iridescent gemstone",
+      "pronunciation": "OH-pal",
+      "meaning": "Multi-faceted, iridescent",
+      "vibe": "Colorful, multi-perspective, precious",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Common name"],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Aether",
+      "type": "abstract",
+      "category": "Expanded Round",
+      "origin": "Greek aithēr (upper air, pure essence)",
+      "pronunciation": "EE-ther",
+      "meaning": "Pure essence, quintessence",
+      "vibe": "Ethereal, essential, foundational",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Alternative spelling of 'ether'"],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Quintus",
+      "type": "classical",
+      "category": "Expanded Round",
+      "origin": "Latin quintus (fifth, quintessence)",
+      "pronunciation": "KWIN-tus",
+      "meaning": "Quintessence, fifth element",
+      "vibe": "Essential, fundamental, classical",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Zenith",
+      "type": "abstract",
+      "category": "Expanded Round",
+      "origin": "Highest point in sky",
+      "pronunciation": "ZEE-nith",
+      "meaning": "Peak, highest achievement",
+      "vibe": "Aspirational, peak excellence",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Common word"],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Aurora",
+      "type": "abstract",
+      "category": "Expanded Round",
+      "origin": "Latin aurora (dawn, new beginning)",
+      "pronunciation": "aw-ROR-ah",
+      "meaning": "Dawn, illumination, new light",
+      "vibe": "Illuminating, new beginning, beautiful",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Common name"],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Lumina",
+      "type": "classical",
+      "category": "Expanded Round",
+      "origin": "Latin lumina (lights, plural of lumen)",
+      "pronunciation": "loo-MEE-nah",
+      "meaning": "Lights, illuminations",
+      "vibe": "Multiple insights, enlightening, bright",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Radius",
+      "type": "mathematical",
+      "category": "Expanded Round",
+      "origin": "Latin radius (ray, spoke)",
+      "pronunciation": "RAY-dee-us",
+      "meaning": "Ray, reach, extent",
+      "vibe": "Reaching out, extending, mathematical",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Common geometric term"],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Axis",
+      "type": "mathematical",
+      "category": "Expanded Round",
+      "origin": "Latin axis (axle, pivot)",
+      "pronunciation": "AK-sis",
+      "meaning": "Central line, pivot point",
+      "vibe": "Central, pivotal, mathematical",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Common term"],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Vela",
+      "type": "phonetic-invention",
+      "category": "Expanded Round",
+      "origin": "Latin vela (sails, veils)",
+      "pronunciation": "VEE-lah / VEH-lah",
+      "meaning": "Sails, forward movement",
+      "vibe": "Moving forward, elegant, flowing",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Reva",
+      "type": "phonetic-invention",
+      "category": "Expanded Round",
+      "origin": "Invented (reverse + va)",
+      "pronunciation": "REE-vah",
+      "meaning": "Renewal, revision, review",
+      "vibe": "Modern, flowing, memorable",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Koda",
+      "type": "phonetic-invention",
+      "category": "Expanded Round",
+      "origin": "Invented (code + data)",
+      "pronunciation": "KOH-dah",
+      "meaning": "Code, data, knowledge encoding",
+      "vibe": "Tech-forward, modern, catchy",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken, similar to 'coda'"
+    },
+    {
+      "name": "Lyra",
+      "type": "phonetic-invention",
+      "category": "Expanded Round",
+      "origin": "Latin lyra (lyre, constellation)",
+      "pronunciation": "LY-rah",
+      "meaning": "Harmony, constellation, music",
+      "vibe": "Harmonious, celestial, elegant",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Musical instrument, astronomy"],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Ora",
+      "type": "phonetic-invention",
+      "category": "Expanded Round",
+      "origin": "Latin ora (edge, boundary, speech)",
+      "pronunciation": "OR-ah",
+      "meaning": "Edge, speech, boundary",
+      "vibe": "Minimal, elegant, speech/discourse focus",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken despite short length"
+    },
+    {
+      "name": "Neva",
+      "type": "phonetic-invention",
+      "category": "Expanded Round",
+      "origin": "Invented neologism",
+      "pronunciation": "NEE-vah / NEH-vah",
+      "meaning": "New, innovation",
+      "vibe": "Modern, fresh, innovative",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Kairo",
+      "type": "phonetic-invention",
+      "category": "Expanded Round",
+      "origin": "Greek kairos (opportune moment)",
+      "pronunciation": "KY-roh",
+      "meaning": "Right moment, opportune time",
+      "vibe": "Timely, opportune, philosophical",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": null,
+        "io": null,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "low",
+      "notes": "Only one extension available"
+    },
+    {
+      "name": "Zora",
+      "type": "phonetic-invention",
+      "category": "Expanded Round",
+      "origin": "Slavic zora (dawn, aurora)",
+      "pronunciation": "ZOR-ah",
+      "meaning": "Dawn, new beginning",
+      "vibe": "Fresh, new, illuminating",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Zynth",
+      "type": "tech-minimal",
+      "category": "Expanded Round",
+      "origin": "Synthesis shortened",
+      "pronunciation": "ZINTH",
+      "meaning": "Synthesis, bringing together",
+      "vibe": "Modern, edgy, synthetic",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": null,
+        "io": null,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "low",
+      "notes": "Only one extension available"
+    },
+    {
+      "name": "Flux",
+      "type": "tech-minimal",
+      "category": "Expanded Round",
+      "origin": "Latin fluxus (flow, change)",
+      "pronunciation": "FLUKS",
+      "meaning": "Flow, constant change, dynamic",
+      "vibe": "Dynamic, flowing, ever-changing",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Common tech term"],
+      "recommendation": "none",
+      "notes": "Both extensions taken, common in tech"
+    },
+    {
+      "name": "Qore",
+      "type": "tech-minimal",
+      "category": "Expanded Round",
+      "origin": "Core with Q (unique spelling)",
+      "pronunciation": "KOR",
+      "meaning": "Core, essence, center",
+      "vibe": "Essential, central, unique spelling",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken despite unique Q spelling"
+    },
+    {
+      "name": "Kore",
+      "type": "tech-minimal",
+      "category": "Expanded Round",
+      "origin": "Greek korē (maiden, core)",
+      "pronunciation": "KOR-ee / KOR-ay",
+      "meaning": "Core, essence, maiden",
+      "vibe": "Essential, Greek mythology connection",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Vyse",
+      "type": "tech-minimal",
+      "category": "Expanded Round",
+      "origin": "Invented, advice/devise inspired",
+      "pronunciation": "VYZ",
+      "meaning": "Guidance, advice, wisdom",
+      "vibe": "Modern, sharp, advisory",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Xylo",
+      "type": "tech-minimal",
+      "category": "Expanded Round",
+      "origin": "Greek xylon (wood) but sounds tech",
+      "pronunciation": "ZY-loh",
+      "meaning": "Structure, framework",
+      "vibe": "Structural, modern despite ancient root",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": null,
+        "io": null,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "low",
+      "notes": "Only one extension available"
+    },
+    {
+      "name": "Flint",
+      "type": "power-word",
+      "category": "Expanded Round",
+      "origin": "Hard stone that creates sparks",
+      "pronunciation": "FLINT",
+      "meaning": "Spark of knowledge, foundation",
+      "vibe": "Strong, foundational, spark-creating",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Crest",
+      "type": "power-word",
+      "category": "Expanded Round",
+      "origin": "Peak, top of wave/mountain",
+      "pronunciation": "KREST",
+      "meaning": "Peak, summit, achievement",
+      "vibe": "Achievement-focused, peak excellence",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Pulse",
+      "type": "power-word",
+      "category": "Expanded Round",
+      "origin": "Rhythmic beat, life force",
+      "pronunciation": "PULS",
+      "meaning": "Rhythm, life force, activity",
+      "vibe": "Active, alive, pulsing with knowledge",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "com": null,
+        "io": null,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "low",
+      "notes": "Only one extension available"
+    },
+    {
+      "name": "Forge",
+      "type": "power-word",
+      "category": "Expanded Round",
+      "origin": "Create through fire/pressure",
+      "pronunciation": "FORJ",
+      "meaning": "Create, build, shape knowledge",
+      "vibe": "Creation-focused, building, crafting",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Spark",
+      "type": "power-word",
+      "category": "Expanded Round",
+      "origin": "Small fire, inspiration",
+      "pronunciation": "SPARK",
+      "meaning": "Inspiration, ignition, idea",
+      "vibe": "Inspiring, igniting curiosity",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Thoth",
+      "type": "mythological",
+      "category": "Expanded Round",
+      "origin": "Egyptian god of knowledge/writing",
+      "pronunciation": "THOTH / TOTE",
+      "meaning": "Knowledge, writing, wisdom",
+      "vibe": "Ancient wisdom, powerful, authoritative",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken, pronunciation unclear"
+    },
+    {
+      "name": "Mimir",
+      "type": "mythological",
+      "category": "Expanded Round",
+      "origin": "Norse god of knowledge/wisdom",
+      "pronunciation": "MEE-meer",
+      "meaning": "Wisdom, counsel, knowledge",
+      "vibe": "Wise, counsel-focused, Norse mythology",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken"
+    },
+    {
+      "name": "Saga",
+      "type": "mythological",
+      "category": "Expanded Round",
+      "origin": "Norse sagas, long stories",
+      "pronunciation": "SAH-gah",
+      "meaning": "Story, narrative, long tale",
+      "vibe": "Narrative-focused, storytelling",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Common word"],
+      "recommendation": "none",
+      "notes": "Both extensions taken, common word"
+    },
+    {
+      "name": "Muse",
+      "type": "mythological",
+      "category": "Expanded Round",
+      "origin": "Greek Muses (inspiration goddesses)",
+      "pronunciation": "MYOOZ",
+      "meaning": "Inspiration, creativity, arts",
+      "vibe": "Inspiring, creative, artistic",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Very common word"],
+      "recommendation": "none",
+      "notes": "Both extensions taken, very common"
+    },
+    {
+      "name": "Atlas",
+      "type": "mythological",
+      "category": "Expanded Round",
+      "origin": "Greek titan who held up the world",
+      "pronunciation": "AT-las",
+      "meaning": "World-bearer, comprehensive collection",
+      "vibe": "Comprehensive, world-spanning, strong",
+      "researchScore": null,
+      "availability": {
+        "status": "all-taken",
+        "com": false,
+        "io": false,
+        "verified": true
+      },
+      "pricing": null,
+      "conflicts": ["Very common (maps, companies, etc.)"],
+      "recommendation": "none",
+      "notes": "Both extensions taken, extremely common"
+    }
+  ],
+  "recommendations": {
+    "highest": ["ScholarWeave"],
+    "high": ["CitationMesh"],
+    "medium": ["Graphademia", "ResearchLattice", "Bibliom"],
+    "avoid": [
+      "All names with 'all-taken' status",
+      "Names with major conflicts (Scopus, Node, Logos, Delta, Atlas, etc.)",
+      "Names with partial availability unless specific extension preference"
+    ]
+  },
+  "insights": {
+    "compoundWordsSuccessRate": "100% (4/4 available)",
+    "nonCompoundSuccessRate": "0.95% (1/105 available)",
+    "shortNamesSuccessRate": "0% (0/28 available)",
+    "classicalTermsSuccessRate": "0% (0/35 available)",
+    "keyFinding": "Compound portmanteaus dramatically outperform single-word names in availability",
+    "strongestCategory": "Original compound word research",
+    "weakestCategory": "Short 3-5 letter names and common classical terms"
+  }
+}
