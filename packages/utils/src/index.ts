@@ -251,3 +251,15 @@ export {
 	filterByTags,
 	applyFilters,
 } from "./bookmark-filters.js"
+
+// Bookmark export utilities
+export {
+	exportBookmarks,
+	exportToJSON,
+	exportToCSV,
+	exportToMarkdown,
+	exportToHTML,
+	downloadExport,
+	type ExportFormat,
+	type ExportOptions,
+} from "./bookmark-export.js"
