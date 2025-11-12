@@ -1,6 +1,7 @@
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import globals from "globals";
+import importPlugin from "eslint-plugin-import";
 
 /**
  * Simplified ESLint configuration for debugging
@@ -110,6 +111,7 @@ export default tseslint.config([
         },
         plugins: {
             "@typescript-eslint": tseslint.plugin,
+            "import": importPlugin,
         },
         rules: {
             "@typescript-eslint/no-unused-vars": [
@@ -122,6 +124,16 @@ export default tseslint.config([
             ],
             "@typescript-eslint/no-explicit-any": "warn",
             "@typescript-eslint/no-non-null-assertion": "error",
+            // Enforce package alias imports for cross-package dependencies
+            "import/no-relative-packages": "error",
+        },
+        settings: {
+            "import/resolver": {
+                "typescript": {
+                    "alwaysTryTypes": true,
+                    "project": "./tsconfig.base.json",
+                },
+            },
         },
     },
     // Configuration for test files

@@ -2,7 +2,7 @@
 
 import { join } from "path"
 import { fileURLToPath } from "url"
-import { generateAllIndexes } from "../../apps/web/src/lib/utils/static-data-index-generator.js"
+import { generateAllIndexes } from "@/lib/utils/static-data-index-generator.js"
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url))
 const STATIC_DATA_DIR = join(__dirname, "..", "public", "data", "openalex")
