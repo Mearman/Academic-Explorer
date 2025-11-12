@@ -156,6 +156,14 @@ export {
 	getEntityTypeFromEntity,
 } from "./entity-type-inference.js"
 
+// Entity URL detection utilities
+export {
+	detectEntityTypeFromURL,
+	extractEntityId,
+	isEntityPage,
+	parseEntityUrl,
+} from "./entity-detector.js"
+
 // Storage utilities
 export {
 	createIndexedDBStorage,
@@ -207,3 +215,11 @@ export {
 	type CompressedListData,
 	type ShareUrlData,
 } from "./url-compression.js"
+
+// URL parser utilities
+export {
+	parseURL,
+	extractSelectFields,
+	reconstructURL,
+	type ParsedURL,
+} from "./url-parser.js"

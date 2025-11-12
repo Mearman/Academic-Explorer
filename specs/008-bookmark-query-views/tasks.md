@@ -27,8 +27,8 @@ description: "Task list for Bookmark Query Views feature implementation"
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create bookmark types and schemas in `packages/types/src/bookmark.ts` with Zod validation
-- [ ] T002 [P] Add bookmark route type definitions to TanStack Router in `apps/web/src/routes/bookmarks/`
+- [X] T001 Create bookmark types and schemas in `packages/types/src/bookmark.ts` with Zod validation
+- [X] T002 [P] Add bookmark route type definitions to TanStack Router in `apps/web/src/routes/bookmarks/`
 - [ ] T003 [P] Configure ESLint rules for bookmark module consistency
 
 ---
@@ -39,12 +39,12 @@ description: "Task list for Bookmark Query Views feature implementation"
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 Verify CatalogueStorageProvider interface supports bookmark operations in `packages/utils/src/storage/catalogue-storage-provider.ts`
-- [ ] T005 Initialize Bookmarks special system catalogue with ID `bookmarks` in storage provider initialization
-- [ ] T006 Create bookmark entity data model extending base catalogue entity in `packages/types/src/bookmark.ts`
-- [ ] T007 Implement URL parameter extraction utility for preserving query parameters in `packages/utils/src/url-parser.ts`
-- [ ] T008 Create entity type detection utility from URL patterns in `packages/utils/src/entity-detector.ts`
-- [ ] T009 Add bookmark error types and validation in `packages/types/src/errors/bookmark-errors.ts`
+- [X] T004 Verify CatalogueStorageProvider interface supports bookmark operations in `packages/utils/src/storage/catalogue-storage-provider.ts`
+- [X] T005 Initialize Bookmarks special system catalogue with ID `bookmarks` in storage provider initialization
+- [X] T006 Create bookmark entity data model extending base catalogue entity in `packages/types/src/bookmark.ts`
+- [X] T007 Implement URL parameter extraction utility for preserving query parameters in `packages/utils/src/url-parser.ts`
+- [X] T008 Create entity type detection utility from URL patterns in `packages/utils/src/entity-detector.ts`
+- [X] T009 Add bookmark error types and validation in `packages/types/src/errors/bookmark-errors.ts`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
