@@ -3,6 +3,10 @@
   "compilerOptions": {
     "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "incremental": true,
+    "composite": true,
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": true,
     "target": "ES2022",
     "lib": ["ES2022"],
     "module": "ESNext",
