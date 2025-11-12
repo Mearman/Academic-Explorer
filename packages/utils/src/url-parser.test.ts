@@ -268,3 +268,246 @@ describe("integration: parse and reconstruct", () => {
 		expect(reconstructed).not.toContain("%2C")
 	})
 })
+
+describe("bookmark-specific URL parameter extraction", () => {
+	it("should preserve all query parameters when parsing bookmark URL", () => {
+		const bookmarkUrl =
+			"/works?select=id,title,doi&filter=publication_year:>2020&sort=cited_by_count:desc&page=2"
+		const parsed = parseURL(bookmarkUrl)
+
+		expect(parsed.queryParams).toEqual({
+			select: "id,title,doi",
+			filter: "publication_year:>2020",
+			sort: "cited_by_count:desc",
+			page: "2",
+		})
+	})
+
+	it("should extract select fields from bookmark URL with multiple parameters", () => {
+		const bookmarkUrl = "/authors?select=id,display_name,orcid,works_count&filter=x.id:I123"
+		const parsed = parseURL(bookmarkUrl)
+
+		expect(parsed.selectFields).toEqual(["id", "display_name", "orcid", "works_count"])
+		expect(parsed.queryParams.filter).toBe("x.id:I123")
+	})
+
+	it("should extract base path for bookmark without entity ID", () => {
+		const bookmarkUrl = "/works?filter=is_oa:true&select=id,title"
+		const parsed = parseURL(bookmarkUrl)
+
+		expect(parsed.basePath).toBe("/works")
+		expect(parsed.entityType).toBe("works")
+		expect(parsed.entityId).toBeNull()
+	})
+
+	it("should extract base path for bookmark with entity ID", () => {
+		const bookmarkUrl = "/authors/A123456789?select=id,display_name,cited_by_count"
+		const parsed = parseURL(bookmarkUrl)
+
+		expect(parsed.basePath).toBe("/authors/A123456789")
+		expect(parsed.entityType).toBe("authors")
+		expect(parsed.entityId).toBe("A123456789")
+	})
+
+	it("should reconstruct bookmark URL with all preserved parameters", () => {
+		const originalUrl =
+			"/works?select=id,title,doi&filter=is_oa:true&sort=publication_date:desc&page=3"
+		const parsed = parseURL(originalUrl)
+
+		const reconstructed = reconstructURL(
+			parsed.basePath,
+			parsed.queryParams,
+			parsed.selectFields
+		)
+
+		// Parse reconstructed URL to verify all components
+		const reparsed = parseURL(reconstructed)
+
+		expect(reparsed.basePath).toBe("/works")
+		expect(reparsed.selectFields).toEqual(["id", "title", "doi"])
+		expect(reparsed.queryParams.filter).toBe("is_oa:true")
+		expect(reparsed.queryParams.sort).toBe("publication_date:desc")
+		expect(reparsed.queryParams.page).toBe("3")
+	})
+
+	it("should handle bookmark URL with special characters in filter", () => {
+		const bookmarkUrl = "/works?filter=institutions.country_code:US|GB&select=id,title"
+		const parsed = parseURL(bookmarkUrl)
+
+		expect(parsed.queryParams.filter).toBe("institutions.country_code:US|GB")
+
+		const reconstructed = reconstructURL(
+			parsed.basePath,
+			parsed.queryParams,
+			parsed.selectFields
+		)
+
+		// Verify special characters are properly encoded in reconstruction
+		expect(reconstructed).toContain("filter=institutions.country_code%3AUS%7CGB")
+	})
+
+	it("should handle bookmark URL with encoded parameters", () => {
+		const bookmarkUrl =
+			"/works?filter=authorships.author.id%3AA123456&select=id%2Ctitle%2Cdoi"
+		const parsed = parseURL(bookmarkUrl)
+
+		// URL class automatically decodes parameters
+		expect(parsed.queryParams.filter).toBe("authorships.author.id:A123456")
+		expect(parsed.queryParams.select).toBe("id,title,doi")
+		expect(parsed.selectFields).toEqual(["id", "title", "doi"])
+	})
+
+	it("should handle bookmark URL with missing select parameter", () => {
+		const bookmarkUrl = "/authors?filter=last_known_institution.id:I123&page=1"
+		const parsed = parseURL(bookmarkUrl)
+
+		expect(parsed.selectFields).toEqual([])
+		expect(parsed.queryParams.filter).toBe("last_known_institution.id:I123")
+		expect(parsed.queryParams.page).toBe("1")
+
+		const reconstructed = reconstructURL(parsed.basePath, parsed.queryParams)
+
+		expect(reconstructed).not.toContain("select=")
+		expect(reconstructed).toContain("filter=last_known_institution.id%3AI123")
+	})
+
+	it("should handle bookmark URL with empty select parameter", () => {
+		const bookmarkUrl = "/works?select=&filter=is_oa:true"
+		const parsed = parseURL(bookmarkUrl)
+
+		expect(parsed.selectFields).toEqual([])
+		expect(parsed.queryParams.select).toBe("")
+		expect(parsed.queryParams.filter).toBe("is_oa:true")
+	})
+
+	it("should preserve complex filter expressions in bookmark URLs", () => {
+		const bookmarkUrl =
+			"/works?filter=publication_year:2020-2023,is_oa:true,type:journal-article&select=id,title"
+		const parsed = parseURL(bookmarkUrl)
+
+		expect(parsed.queryParams.filter).toBe(
+			"publication_year:2020-2023,is_oa:true,type:journal-article"
+		)
+
+		const reconstructed = reconstructURL(
+			parsed.basePath,
+			parsed.queryParams,
+			parsed.selectFields
+		)
+
+		// Verify filter is properly encoded
+		expect(reconstructed).toContain(
+			"filter=publication_year%3A2020-2023%2Cis_oa%3Atrue%2Ctype%3Ajournal-article"
+		)
+	})
+
+	it("should handle bookmark URL with search parameter", () => {
+		const bookmarkUrl = "/works?search=machine learning&select=id,title,cited_by_count"
+		const parsed = parseURL(bookmarkUrl)
+
+		expect(parsed.queryParams.search).toBe("machine learning")
+		expect(parsed.selectFields).toEqual(["id", "title", "cited_by_count"])
+
+		const reconstructed = reconstructURL(
+			parsed.basePath,
+			parsed.queryParams,
+			parsed.selectFields
+		)
+
+		expect(reconstructed).toContain("search=machine%20learning")
+	})
+
+	it("should handle bookmark URL with group_by parameter", () => {
+		const bookmarkUrl = "/works?group_by=publication_year&select=id,title"
+		const parsed = parseURL(bookmarkUrl)
+
+		expect(parsed.queryParams.group_by).toBe("publication_year")
+
+		const reconstructed = reconstructURL(
+			parsed.basePath,
+			parsed.queryParams,
+			parsed.selectFields
+		)
+
+		expect(reconstructed).toContain("group_by=publication_year")
+	})
+
+	it("should preserve per_page parameter in bookmark URL", () => {
+		const bookmarkUrl = "/authors?per_page=100&select=id,display_name&page=5"
+		const parsed = parseURL(bookmarkUrl)
+
+		expect(parsed.queryParams.per_page).toBe("100")
+		expect(parsed.queryParams.page).toBe("5")
+
+		const reconstructed = reconstructURL(
+			parsed.basePath,
+			parsed.queryParams,
+			parsed.selectFields
+		)
+
+		// Underscore should be encoded
+		expect(reconstructed).toContain("per_page=100")
+		expect(reconstructed).toContain("page=5")
+	})
+
+	it("should handle absolute bookmark URLs", () => {
+		const bookmarkUrl =
+			"https://api.openalex.org/works?select=id,title&filter=is_oa:true"
+		const parsed = parseURL(bookmarkUrl)
+
+		expect(parsed.basePath).toBe("/works")
+		expect(parsed.selectFields).toEqual(["id", "title"])
+
+		const reconstructed = reconstructURL(
+			"https://api.openalex.org/works",
+			parsed.queryParams,
+			parsed.selectFields
+		)
+
+		expect(reconstructed).toContain("https://api.openalex.org/works?")
+		expect(reconstructed).toContain("select=id,title")
+		expect(reconstructed).toContain("filter=is_oa%3Atrue")
+	})
+
+	it("should handle bookmark URL with multiple sort parameters", () => {
+		const bookmarkUrl = "/works?sort=cited_by_count:desc,publication_date:desc&select=id"
+		const parsed = parseURL(bookmarkUrl)
+
+		expect(parsed.queryParams.sort).toBe("cited_by_count:desc,publication_date:desc")
+
+		const reconstructed = reconstructURL(
+			parsed.basePath,
+			parsed.queryParams,
+			parsed.selectFields
+		)
+
+		// Verify commas and colons in sort are encoded
+		expect(reconstructed).toContain(
+			"sort=cited_by_count%3Adesc%2Cpublication_date%3Adesc"
+		)
+	})
+
+	it("should round-trip complex bookmark URL without data loss", () => {
+		const originalUrl =
+			"/works/W123456?select=id,title,doi,cited_by_count&filter=is_oa:true&sort=publication_date:desc&page=2&per_page=50"
+		const parsed = parseURL(originalUrl)
+
+		const reconstructed = reconstructURL(
+			parsed.basePath,
+			parsed.queryParams,
+			parsed.selectFields
+		)
+
+		const reparsed = parseURL(reconstructed)
+
+		// Verify all components are preserved
+		expect(reparsed.basePath).toBe(parsed.basePath)
+		expect(reparsed.entityType).toBe(parsed.entityType)
+		expect(reparsed.entityId).toBe(parsed.entityId)
+		expect(reparsed.selectFields).toEqual(parsed.selectFields)
+		expect(reparsed.queryParams.filter).toBe(parsed.queryParams.filter)
+		expect(reparsed.queryParams.sort).toBe(parsed.queryParams.sort)
+		expect(reparsed.queryParams.page).toBe(parsed.queryParams.page)
+		expect(reparsed.queryParams.per_page).toBe(parsed.queryParams.per_page)
+	})
+})

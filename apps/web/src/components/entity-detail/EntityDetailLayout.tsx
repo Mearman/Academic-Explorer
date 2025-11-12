@@ -172,6 +172,7 @@ export function EntityDetailLayout({
                   color={userInteractions.isBookmarked ? "yellow" : "gray"}
                   onClick={handleBookmarkToggle}
                   loading={userInteractions.isLoadingBookmarks}
+                  data-testid="entity-bookmark-button"
                 >
                   {userInteractions.isBookmarked ? (
                     <IconBookmark size={20} fill="currentColor" />

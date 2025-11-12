@@ -44,6 +44,13 @@ export {
 	formatLargeNumber,
 } from "./data.js"
 
+// Date formatter utilities
+export {
+	formatRelativeTime,
+	formatAbsoluteTime,
+	formatTimestamp,
+} from "./formatters/date-formatter.js"
+
 // Worker message schemas and types
 export * from "./workers/messages.js"
 
