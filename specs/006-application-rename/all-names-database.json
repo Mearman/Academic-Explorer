@@ -11,7 +11,7 @@
   },
   "metadata": {
     "generated": "2025-11-12",
-    "totalNames": 129,
+    "totalNames": 220,
     "totalDomainsChecked": 238,
     "fullyAvailable": 6,
     "partiallyAvailable": 52,
@@ -182,7 +182,7 @@
       "researchScore": null,
       "availability": {
         "status": "fully-available",
-        "verified": false,
+        "verified": true,
         "com": true,
         "io": true,
         "net": true,
@@ -219,7 +219,7 @@
       "researchScore": null,
       "availability": {
         "status": "fully-available",
-        "verified": false,
+        "verified": true,
         "com": true,
         "io": true,
         "net": true,
@@ -237,6 +237,27 @@
         "researchScore": 0,
         "nameLength": 8,
         "availableCount": 5,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Citero",
+      "availability": {
+        "status": "partial",
+        "verified": true,
+        "com": false,
+        "io": true,
+        "net": true,
+        "co.uk": true,
+        "dev": true
+      },
+      "rank": 39,
+      "rankComponents": {
+        "availabilityScore": 40,
+        "lengthScore": 95,
+        "researchScore": 0,
+        "nameLength": 6,
+        "availableCount": 4,
         "totalTlds": 5
       }
     },
@@ -273,6 +294,27 @@
       }
     },
     {
+      "name": "Methix",
+      "availability": {
+        "status": "partial",
+        "verified": true,
+        "com": false,
+        "io": true,
+        "net": true,
+        "co.uk": true,
+        "dev": true
+      },
+      "rank": 39,
+      "rankComponents": {
+        "availabilityScore": 40,
+        "lengthScore": 95,
+        "researchScore": 0,
+        "nameLength": 6,
+        "availableCount": 4,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Ratiom",
       "type": "invented",
       "category": "New Non-Compound Concepts",
@@ -283,7 +325,7 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "verified": false,
+        "verified": true,
         "com": false,
         "io": true,
         "net": true,
@@ -305,6 +347,27 @@
       }
     },
     {
+      "name": "Scholiq",
+      "availability": {
+        "status": "partial",
+        "verified": true,
+        "com": false,
+        "io": true,
+        "net": true,
+        "co.uk": true,
+        "dev": true
+      },
+      "rank": 38,
+      "rankComponents": {
+        "availabilityScore": 40,
+        "lengthScore": 90,
+        "researchScore": 0,
+        "nameLength": 7,
+        "availableCount": 4,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Scholix",
       "type": "blend",
       "category": "First Round Non-Compound",
@@ -315,7 +378,7 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "verified": false,
+        "verified": true,
         "com": false,
         "io": true,
         "net": true,
@@ -339,6 +402,27 @@
       }
     },
     {
+      "name": "Writeiq",
+      "availability": {
+        "status": "partial",
+        "verified": true,
+        "com": false,
+        "io": true,
+        "net": true,
+        "co.uk": true,
+        "dev": true
+      },
+      "rank": 38,
+      "rankComponents": {
+        "availabilityScore": 40,
+        "lengthScore": 90,
+        "researchScore": 0,
+        "nameLength": 7,
+        "availableCount": 4,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Praxison",
       "type": "invented",
       "category": "New Non-Compound Concepts",
@@ -349,7 +433,7 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "verified": false,
+        "verified": true,
         "com": false,
         "io": true,
         "net": true,
@@ -381,7 +465,7 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "verified": false,
+        "verified": true,
         "com": false,
         "io": true,
         "net": true,
@@ -413,7 +497,7 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "verified": false,
+        "verified": true,
         "com": false,
         "io": true,
         "net": false,
@@ -435,38 +519,6 @@
       }
     },
     {
-      "name": "Vyx",
-      "type": "ultra-short",
-      "category": "Expanded Round",
-      "origin": "Invented, tech-forward",
-      "pronunciation": "VIKS",
-      "meaning": "None (pure neologism)",
-      "vibe": "Edgy, modern, unique",
-      "researchScore": null,
-      "availability": {
-        "status": "partial",
-        "verified": false,
-        "com": false,
-        "io": false,
-        "net": true,
-        "co.uk": true,
-        "dev": true
-      },
-      "pricing": null,
-      "conflicts": [],
-      "recommendation": "none",
-      "notes": "Both extensions taken despite being pure invention",
-      "rank": 35,
-      "rankComponents": {
-        "availabilityScore": 30,
-        "lengthScore": 100,
-        "researchScore": 0,
-        "nameLength": 3,
-        "availableCount": 3,
-        "totalTlds": 5
-      }
-    },
-    {
       "name": "Auraton",
       "type": "invented",
       "category": "New Non-Compound Concepts",
@@ -477,7 +529,7 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "verified": false,
+        "verified": true,
         "com": false,
         "io": true,
         "net": false,
@@ -509,7 +561,7 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "verified": false,
+        "verified": true,
         "com": false,
         "io": true,
         "net": true,
@@ -531,6 +583,48 @@
       }
     },
     {
+      "name": "Logiciq",
+      "availability": {
+        "status": "partial",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": true,
+        "co.uk": true,
+        "dev": true
+      },
+      "rank": 33,
+      "rankComponents": {
+        "availabilityScore": 30,
+        "lengthScore": 90,
+        "researchScore": 0,
+        "nameLength": 7,
+        "availableCount": 3,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Paperiq",
+      "availability": {
+        "status": "partial",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": true,
+        "co.uk": true,
+        "dev": true
+      },
+      "rank": 33,
+      "rankComponents": {
+        "availabilityScore": 30,
+        "lengthScore": 90,
+        "researchScore": 0,
+        "nameLength": 7,
+        "availableCount": 3,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Querium",
       "type": "invented",
       "category": "New Non-Compound Concepts",
@@ -541,7 +635,7 @@
       "researchScore": null,
       "availability": {
         "status": "partial",
-        "verified": false,
+        "verified": true,
         "com": false,
         "io": true,
         "net": false,
@@ -652,6 +746,27 @@
       ],
       "recommendation": "none",
       "notes": "Both extensions taken",
+      "rank": 30,
+      "rankComponents": {
+        "availabilityScore": 20,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 4,
+        "availableCount": 2,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Docq",
+      "availability": {
+        "status": "partial",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": true,
+        "co.uk": true,
+        "dev": false
+      },
       "rank": 30,
       "rankComponents": {
         "availabilityScore": 20,
@@ -791,6 +906,27 @@
       }
     },
     {
+      "name": "Acadex",
+      "availability": {
+        "status": "partial",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": true,
+        "co.uk": false,
+        "dev": true
+      },
+      "rank": 29,
+      "rankComponents": {
+        "availabilityScore": 20,
+        "lengthScore": 95,
+        "researchScore": 0,
+        "nameLength": 6,
+        "availableCount": 2,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Paedia",
       "type": "modified-academic",
       "category": "Expanded Round",
@@ -812,6 +948,27 @@
       "conflicts": [],
       "recommendation": "low",
       "notes": "Only one extension available",
+      "rank": 29,
+      "rankComponents": {
+        "availabilityScore": 20,
+        "lengthScore": 95,
+        "researchScore": 0,
+        "nameLength": 6,
+        "availableCount": 2,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Writex",
+      "availability": {
+        "status": "partial",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": true,
+        "dev": true
+      },
       "rank": 29,
       "rankComponents": {
         "availabilityScore": 20,
@@ -846,6 +1003,27 @@
       ],
       "recommendation": "none",
       "notes": "Only one extension available, very generic",
+      "rank": 28,
+      "rankComponents": {
+        "availabilityScore": 20,
+        "lengthScore": 90,
+        "researchScore": 0,
+        "nameLength": 7,
+        "availableCount": 2,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Cognixa",
+      "availability": {
+        "status": "partial",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": true,
+        "dev": true
+      },
       "rank": 28,
       "rankComponents": {
         "availabilityScore": 20,
@@ -957,6 +1135,69 @@
       }
     },
     {
+      "name": "Quoteiq",
+      "availability": {
+        "status": "partial",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": true,
+        "dev": true
+      },
+      "rank": 28,
+      "rankComponents": {
+        "availabilityScore": 20,
+        "lengthScore": 90,
+        "researchScore": 0,
+        "nameLength": 7,
+        "availableCount": 2,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Thinkiq",
+      "availability": {
+        "status": "partial",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": true,
+        "dev": true
+      },
+      "rank": 28,
+      "rankComponents": {
+        "availabilityScore": 20,
+        "lengthScore": 90,
+        "researchScore": 0,
+        "nameLength": 7,
+        "availableCount": 2,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Citeflow",
+      "availability": {
+        "status": "partial",
+        "verified": true,
+        "com": false,
+        "io": true,
+        "net": false,
+        "co.uk": true,
+        "dev": false
+      },
+      "rank": 27,
+      "rankComponents": {
+        "availabilityScore": 20,
+        "lengthScore": 85,
+        "researchScore": 0,
+        "nameLength": 8,
+        "availableCount": 2,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Protasis",
       "type": "lexical",
       "category": "New Non-Compound Concepts",
@@ -1012,6 +1253,27 @@
       ],
       "recommendation": "low",
       "notes": "Only one extension available, very common",
+      "rank": 25,
+      "rankComponents": {
+        "availabilityScore": 10,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 4,
+        "availableCount": 1,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Arke",
+      "availability": {
+        "status": "partial",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": true
+      },
       "rank": 25,
       "rankComponents": {
         "availabilityScore": 10,
@@ -1479,6 +1741,38 @@
       }
     },
     {
+      "name": "Vyx",
+      "type": "ultra-short",
+      "category": "Expanded Round",
+      "origin": "Invented, tech-forward",
+      "pronunciation": "VIKS",
+      "meaning": "None (pure neologism)",
+      "vibe": "Edgy, modern, unique",
+      "researchScore": null,
+      "availability": {
+        "status": "partial",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": true
+      },
+      "pricing": null,
+      "conflicts": [],
+      "recommendation": "none",
+      "notes": "Both extensions taken despite being pure invention",
+      "rank": 25,
+      "rankComponents": {
+        "availabilityScore": 10,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 3,
+        "availableCount": 1,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Xylo",
       "type": "tech-minimal",
       "category": "Expanded Round",
@@ -1577,6 +1871,27 @@
       }
     },
     {
+      "name": "Cognix",
+      "availability": {
+        "status": "partial",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": true
+      },
+      "rank": 24,
+      "rankComponents": {
+        "availabilityScore": 10,
+        "lengthScore": 95,
+        "researchScore": 0,
+        "nameLength": 6,
+        "availableCount": 1,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Gnosis",
       "type": "classical",
       "category": "First Round Non-Compound",
@@ -1598,6 +1913,27 @@
       "conflicts": [],
       "recommendation": "none",
       "notes": "Both extensions taken",
+      "rank": 24,
+      "rankComponents": {
+        "availabilityScore": 10,
+        "lengthScore": 95,
+        "researchScore": 0,
+        "nameLength": 6,
+        "availableCount": 1,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Grapho",
+      "availability": {
+        "status": "partial",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": true
+      },
       "rank": 24,
       "rankComponents": {
         "availabilityScore": 10,
@@ -1711,6 +2047,27 @@
       }
     },
     {
+      "name": "Xypher",
+      "availability": {
+        "status": "partial",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": true
+      },
+      "rank": 24,
+      "rankComponents": {
+        "availabilityScore": 10,
+        "lengthScore": 95,
+        "researchScore": 0,
+        "nameLength": 6,
+        "availableCount": 1,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Conecta",
       "type": "international",
       "category": "First Round Non-Compound",
@@ -1732,6 +2089,48 @@
       "conflicts": [],
       "recommendation": "none",
       "notes": "Both extensions taken",
+      "rank": 23,
+      "rankComponents": {
+        "availabilityScore": 10,
+        "lengthScore": 90,
+        "researchScore": 0,
+        "nameLength": 7,
+        "availableCount": 1,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Graphex",
+      "availability": {
+        "status": "partial",
+        "verified": true,
+        "com": false,
+        "io": true,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 23,
+      "rankComponents": {
+        "availabilityScore": 10,
+        "lengthScore": 90,
+        "researchScore": 0,
+        "nameLength": 7,
+        "availableCount": 1,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Learniq",
+      "availability": {
+        "status": "partial",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": true
+      },
       "rank": 23,
       "rankComponents": {
         "availabilityScore": 10,
@@ -1935,6 +2334,48 @@
       }
     },
     {
+      "name": "Acme",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 20,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 4,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Aeon",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 20,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 4,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Atlas",
       "type": "mythological",
       "category": "Expanded Round",
@@ -2003,6 +2444,27 @@
       }
     },
     {
+      "name": "Axon",
+      "availability": {
+        "status": "all-taken",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 20,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 4,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Codex",
       "type": "classical",
       "category": "First Round Non-Compound",
@@ -2062,6 +2524,48 @@
         "lengthScore": 100,
         "researchScore": 0,
         "nameLength": 5,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Cyte",
+      "availability": {
+        "status": "all-taken",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 20,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 4,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Enso",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 20,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 4,
         "availableCount": 0,
         "totalTlds": 5
       }
@@ -2194,6 +2698,90 @@
         "lengthScore": 100,
         "researchScore": 0,
         "nameLength": 5,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Glyf",
+      "availability": {
+        "status": "all-taken",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 20,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 4,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Hexa",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 20,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 4,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Iota",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 20,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 4,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Kaos",
+      "availability": {
+        "status": "all-taken",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 20,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 4,
         "availableCount": 0,
         "totalTlds": 5
       }
@@ -2363,6 +2951,27 @@
       }
     },
     {
+      "name": "Lume",
+      "availability": {
+        "status": "all-taken",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 20,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 4,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Lumen",
       "type": "classical",
       "category": "First Round Non-Compound",
@@ -2418,6 +3027,27 @@
       ],
       "recommendation": "none",
       "notes": "Both extensions taken",
+      "rank": 20,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 4,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Meta",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
       "rank": 20,
       "rankComponents": {
         "availabilityScore": 0,
@@ -2623,6 +3253,48 @@
       }
     },
     {
+      "name": "Nodo",
+      "availability": {
+        "status": "all-taken",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 20,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 4,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Omni",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 20,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 4,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Opal",
       "type": "material",
       "category": "Expanded Round",
@@ -2689,6 +3361,27 @@
       }
     },
     {
+      "name": "Prax",
+      "availability": {
+        "status": "all-taken",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 20,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 4,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Qore",
       "type": "tech-minimal",
       "category": "Expanded Round",
@@ -2710,6 +3403,27 @@
       "conflicts": [],
       "recommendation": "none",
       "notes": "Both extensions taken despite unique Q spelling",
+      "rank": 20,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 4,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Qube",
+      "availability": {
+        "status": "all-taken",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
       "rank": 20,
       "rankComponents": {
         "availabilityScore": 0,
@@ -2842,6 +3556,27 @@
       "conflicts": [],
       "recommendation": "none",
       "notes": "Both extensions taken",
+      "rank": 20,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 4,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Ryze",
+      "availability": {
+        "status": "all-taken",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
       "rank": 20,
       "rankComponents": {
         "availabilityScore": 0,
@@ -2987,6 +3722,27 @@
       }
     },
     {
+      "name": "Synt",
+      "availability": {
+        "status": "all-taken",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 20,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 4,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Telos",
       "type": "classical",
       "category": "Expanded Round",
@@ -3014,6 +3770,27 @@
         "lengthScore": 100,
         "researchScore": 0,
         "nameLength": 5,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Texa",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 20,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 4,
         "availableCount": 0,
         "totalTlds": 5
       }
@@ -3072,6 +3849,27 @@
       "conflicts": [],
       "recommendation": "none",
       "notes": "Both extensions taken",
+      "rank": 20,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 4,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Velo",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
       "rank": 20,
       "rankComponents": {
         "availabilityScore": 0,
@@ -3147,6 +3945,90 @@
       }
     },
     {
+      "name": "Writ",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 20,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 4,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Xeno",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 20,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 4,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Yara",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 20,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 4,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Zeno",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 20,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 100,
+        "researchScore": 0,
+        "nameLength": 4,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Aether",
       "type": "abstract",
       "category": "Expanded Round",
@@ -3170,6 +4052,27 @@
       ],
       "recommendation": "none",
       "notes": "Both extensions taken",
+      "rank": 19,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 95,
+        "researchScore": 0,
+        "nameLength": 6,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Arkive",
+      "availability": {
+        "status": "all-taken",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
       "rank": 19,
       "rankComponents": {
         "availabilityScore": 0,
@@ -3247,6 +4150,27 @@
       }
     },
     {
+      "name": "Biblio",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 19,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 95,
+        "researchScore": 0,
+        "nameLength": 6,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Cipher",
       "type": "cryptographic",
       "category": "First Round Non-Compound",
@@ -3268,6 +4192,27 @@
       "conflicts": [],
       "recommendation": "none",
       "notes": "Both extensions taken",
+      "rank": 19,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 95,
+        "researchScore": 0,
+        "nameLength": 6,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Docent",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
       "rank": 19,
       "rankComponents": {
         "availabilityScore": 0,
@@ -3311,6 +4256,111 @@
       }
     },
     {
+      "name": "Eduvia",
+      "availability": {
+        "status": "all-taken",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 19,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 95,
+        "researchScore": 0,
+        "nameLength": 6,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Ethica",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 19,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 95,
+        "researchScore": 0,
+        "nameLength": 6,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Factum",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 19,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 95,
+        "researchScore": 0,
+        "nameLength": 6,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Ideate",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 19,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 95,
+        "researchScore": 0,
+        "nameLength": 6,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Lexica",
+      "availability": {
+        "status": "all-taken",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 19,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 95,
+        "researchScore": 0,
+        "nameLength": 6,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Lexora",
       "type": "invented",
       "category": "New Non-Compound Concepts",
@@ -3332,6 +4382,48 @@
       "conflicts": [],
       "recommendation": "research-needed",
       "notes": "Conveys refined lexical tooling",
+      "rank": 19,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 95,
+        "researchScore": 0,
+        "nameLength": 6,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Lithos",
+      "availability": {
+        "status": "all-taken",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 19,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 95,
+        "researchScore": 0,
+        "nameLength": 6,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Logica",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
       "rank": 19,
       "rankComponents": {
         "availabilityScore": 0,
@@ -3439,6 +4531,27 @@
       }
     },
     {
+      "name": "Neuron",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 19,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 95,
+        "researchScore": 0,
+        "nameLength": 6,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Noesis",
       "type": "classical",
       "category": "First Round Non-Compound",
@@ -3462,6 +4575,48 @@
       ],
       "recommendation": "none",
       "notes": "Both extensions taken, multiple conflicts",
+      "rank": 19,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 95,
+        "researchScore": 0,
+        "nameLength": 6,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Notion",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 19,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 95,
+        "researchScore": 0,
+        "nameLength": 6,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Praxis",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
       "rank": 19,
       "rankComponents": {
         "availabilityScore": 0,
@@ -3541,6 +4696,27 @@
       }
     },
     {
+      "name": "Quasar",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 19,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 95,
+        "researchScore": 0,
+        "nameLength": 6,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Radius",
       "type": "mathematical",
       "category": "Expanded Round",
@@ -3564,6 +4740,90 @@
       ],
       "recommendation": "none",
       "notes": "Both extensions taken",
+      "rank": 19,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 95,
+        "researchScore": 0,
+        "nameLength": 6,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Recite",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 19,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 95,
+        "researchScore": 0,
+        "nameLength": 6,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Schola",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 19,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 95,
+        "researchScore": 0,
+        "nameLength": 6,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Thesis",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 19,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 95,
+        "researchScore": 0,
+        "nameLength": 6,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Verify",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
       "rank": 19,
       "rankComponents": {
         "availabilityScore": 0,
@@ -3705,6 +4965,27 @@
       }
     },
     {
+      "name": "Edubase",
+      "availability": {
+        "status": "all-taken",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 18,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 90,
+        "researchScore": 0,
+        "nameLength": 7,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Graphia",
       "type": "scientific",
       "category": "Expanded Round",
@@ -3769,6 +5050,27 @@
       }
     },
     {
+      "name": "Infomap",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 18,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 90,
+        "researchScore": 0,
+        "nameLength": 7,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Lucerna",
       "type": "invented",
       "category": "New Non-Compound Concepts",
@@ -3822,6 +5124,48 @@
       "conflicts": [],
       "recommendation": "research-needed",
       "notes": "Communicates illumination of complex research",
+      "rank": 18,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 90,
+        "researchScore": 0,
+        "nameLength": 7,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Mindmap",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 18,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 90,
+        "researchScore": 0,
+        "nameLength": 7,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Notebox",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
       "rank": 18,
       "rankComponents": {
         "availabilityScore": 0,
@@ -3963,6 +5307,27 @@
       }
     },
     {
+      "name": "Academix",
+      "availability": {
+        "status": "all-taken",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 17,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 85,
+        "researchScore": 0,
+        "nameLength": 8,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Akademos",
       "type": "classical",
       "category": "First Round Non-Compound",
@@ -3984,6 +5349,27 @@
       "conflicts": [],
       "recommendation": "none",
       "notes": "Both extensions taken",
+      "rank": 17,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 85,
+        "researchScore": 0,
+        "nameLength": 8,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Archival",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
       "rank": 17,
       "rankComponents": {
         "availabilityScore": 0,
@@ -4027,6 +5413,27 @@
       }
     },
     {
+      "name": "Citeflex",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 17,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 85,
+        "researchScore": 0,
+        "nameLength": 8,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Cognitum",
       "type": "classical",
       "category": "First Round Non-Compound",
@@ -4059,6 +5466,90 @@
       }
     },
     {
+      "name": "Docubase",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 17,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 85,
+        "researchScore": 0,
+        "nameLength": 8,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Docuflow",
+      "availability": {
+        "status": "all-taken",
+        "verified": true,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 17,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 85,
+        "researchScore": 0,
+        "nameLength": 8,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Factbase",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 17,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 85,
+        "researchScore": 0,
+        "nameLength": 8,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Infobase",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 17,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 85,
+        "researchScore": 0,
+        "nameLength": 8,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Intellex",
       "type": "invented",
       "category": "New Non-Compound Concepts",
@@ -4080,6 +5571,90 @@
       "conflicts": [],
       "recommendation": "research-needed",
       "notes": "Modern tone suited for a SaaS knowledge hub",
+      "rank": 17,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 85,
+        "researchScore": 0,
+        "nameLength": 8,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Knowbase",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 17,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 85,
+        "researchScore": 0,
+        "nameLength": 8,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Knowflow",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 17,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 85,
+        "researchScore": 0,
+        "nameLength": 8,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Literate",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 17,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 85,
+        "researchScore": 0,
+        "nameLength": 8,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Literati",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
       "rank": 17,
       "rankComponents": {
         "availabilityScore": 0,
@@ -4187,6 +5762,69 @@
       }
     },
     {
+      "name": "Quotebox",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 17,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 85,
+        "researchScore": 0,
+        "nameLength": 8,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Readbase",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 17,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 85,
+        "researchScore": 0,
+        "nameLength": 8,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Readflow",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 17,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 85,
+        "researchScore": 0,
+        "nameLength": 8,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Scientia",
       "type": "classical",
       "category": "First Round Non-Compound",
@@ -4219,6 +5857,27 @@
       }
     },
     {
+      "name": "Academica",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 16,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 80,
+        "researchScore": 0,
+        "nameLength": 9,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
       "name": "Analytica",
       "type": "lexical",
       "category": "New Non-Compound Concepts",
@@ -4240,6 +5899,258 @@
       "conflicts": [],
       "recommendation": "research-needed",
       "notes": "Immediate association with insight tooling",
+      "rank": 16,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 80,
+        "researchScore": 0,
+        "nameLength": 9,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Briefcase",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 16,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 80,
+        "researchScore": 0,
+        "nameLength": 9,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Cognibase",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 16,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 80,
+        "researchScore": 0,
+        "nameLength": 9,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Edumetric",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 16,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 80,
+        "researchScore": 0,
+        "nameLength": 9,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Factcheck",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 16,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 80,
+        "researchScore": 0,
+        "nameLength": 9,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Graphflow",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 16,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 80,
+        "researchScore": 0,
+        "nameLength": 9,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Learnbase",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 16,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 80,
+        "researchScore": 0,
+        "nameLength": 9,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Metastudy",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 16,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 80,
+        "researchScore": 0,
+        "nameLength": 9,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Notespace",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 16,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 80,
+        "researchScore": 0,
+        "nameLength": 9,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Paperflow",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 16,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 80,
+        "researchScore": 0,
+        "nameLength": 9,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Scholarly",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 16,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 80,
+        "researchScore": 0,
+        "nameLength": 9,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Studyflow",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
+      "rank": 16,
+      "rankComponents": {
+        "availabilityScore": 0,
+        "lengthScore": 80,
+        "researchScore": 0,
+        "nameLength": 9,
+        "availableCount": 0,
+        "totalTlds": 5
+      }
+    },
+    {
+      "name": "Thinkbase",
+      "availability": {
+        "status": "unverified",
+        "verified": false,
+        "com": false,
+        "io": false,
+        "net": false,
+        "co.uk": false,
+        "dev": false
+      },
       "rank": 16,
       "rankComponents": {
         "availabilityScore": 0,
