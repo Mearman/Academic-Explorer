@@ -243,3 +243,11 @@ export {
 	areFieldSelectionsEquivalent,
 	validateFieldNames,
 } from "./field-summary.js"
+
+// Bookmark filter utilities
+export {
+	filterBySearch,
+	filterByEntityType,
+	filterByTags,
+	applyFilters,
+} from "./bookmark-filters.js"

@@ -10,6 +10,7 @@
 
 import { describe, it, expect } from "vitest";
 import type { Bookmark, EntityType } from "@academic-explorer/types";
+import { filterBySearch, filterByEntityType, filterByTags } from "./bookmark-filters.js";
 
 // Mock bookmark data for testing
 const createMockBookmark = (
@@ -35,69 +36,6 @@ const createMockBookmark = (
 		timestamp: new Date(),
 	},
 });
-
-// Filter functions to be implemented
-function filterBySearch(bookmarks: Bookmark[], searchQuery: string): Bookmark[] {
-	if (!searchQuery || searchQuery.trim() === "") {
-		return bookmarks;
-	}
-
-	const query = searchQuery.toLowerCase().trim();
-
-	return bookmarks.filter((bookmark) => {
-		// Search in title
-		if (bookmark.metadata.title.toLowerCase().includes(query)) {
-			return true;
-		}
-
-		// Search in notes
-		if (bookmark.notes && bookmark.notes.toLowerCase().includes(query)) {
-			return true;
-		}
-
-		// Search in tags
-		if (bookmark.metadata.tags?.some((tag) => tag.toLowerCase().includes(query))) {
-			return true;
-		}
-
-		// Search in entity type
-		if (bookmark.entityType.toLowerCase().includes(query)) {
-			return true;
-		}
-
-		return false;
-	});
-}
-
-function filterByEntityType(bookmarks: Bookmark[], entityType: EntityType | null): Bookmark[] {
-	if (!entityType) {
-		return bookmarks;
-	}
-
-	return bookmarks.filter((bookmark) => bookmark.entityType === entityType);
-}
-
-function filterByTags(bookmarks: Bookmark[], tags: string[], matchAll = false): Bookmark[] {
-	if (!tags || tags.length === 0) {
-		return bookmarks;
-	}
-
-	return bookmarks.filter((bookmark) => {
-		const bookmarkTags = bookmark.metadata.tags || [];
-
-		if (matchAll) {
-			// AND logic: bookmark must have ALL specified tags
-			return tags.every((tag) =>
-				bookmarkTags.some((bookmarkTag) => bookmarkTag.toLowerCase() === tag.toLowerCase())
-			);
-		} else {
-			// OR logic: bookmark must have AT LEAST ONE specified tag
-			return tags.some((tag) =>
-				bookmarkTags.some((bookmarkTag) => bookmarkTag.toLowerCase() === tag.toLowerCase())
-			);
-		}
-	});
-}
 
 describe("filterBySearch", () => {
 	it("should return all bookmarks when search query is empty", () => {
