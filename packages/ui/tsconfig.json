@@ -27,6 +27,9 @@
   "include": ["src/**/*"],
   "references": [
     {
+      "path": "../utils"
+    },
+    {
       "path": "../types"
     }
   ]
