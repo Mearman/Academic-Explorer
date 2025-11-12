@@ -29,7 +29,7 @@ test.describe("Catalogue Sharing Functionality", () => {
     // Verify share modal opens
     await expect(page.getByRole('dialog', { name: /Share/i })).toBeVisible();
     await expect(page.locator('h2:has-text("Share List")')).toBeVisible();
-    await expect(page.locator('text="Share this list"')).toBeVisible();
+    await expect(page.locator('text="Share this list with others by sending them this link:"')).toBeVisible();
   });
 
   test("should generate share URL", async ({ page }) => {
@@ -77,7 +77,7 @@ test.describe("Catalogue Sharing Functionality", () => {
     await expect(page.locator('input[value*="catalogue/shared/"]')).toBeVisible({ timeout: 15000 });
 
     // Click QR code button
-    await page.click('[data-testid="qr-code-button"]');
+    await page.click('[data-testid="toggle-qr-code-button"]');
 
     // Verify QR code is displayed
     await expect(page.locator('img[alt*="QR"], img[src*="data:image"]')).toBeVisible({ timeout: 10000 });
