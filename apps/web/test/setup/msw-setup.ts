@@ -21,9 +21,42 @@ export const mswServer = setupServer(...openalexHandlers);
  */
 export function startMSWServer() {
   mswServer.listen({
-    onUnhandledRequest: 'warn', // Warn about unmocked requests (helpful for debugging)
+    onUnhandledRequest(request, print) {
+      // Log all unhandled requests for debugging
+      const url = new URL(request.url);
+
+      // Only warn about OpenAlex API requests (ignore other domains)
+      if (url.hostname === 'api.openalex.org') {
+        console.warn(`⚠️  UNMOCKED REQUEST: ${request.method} ${request.url}`);
+        print.warning();
+      }
+    },
   });
+
+  // Add request lifecycle logging for debugging
+  mswServer.events.on('request:start', ({ request }) => {
+    const url = new URL(request.url);
+    if (url.hostname === 'api.openalex.org') {
+      console.log(`🔵 MSW intercepting: ${request.method} ${url.pathname}${url.search}`);
+    }
+  });
+
+  mswServer.events.on('request:match', ({ request }) => {
+    const url = new URL(request.url);
+    if (url.hostname === 'api.openalex.org') {
+      console.log(`✅ MSW matched handler: ${request.method} ${url.pathname}${url.search}`);
+    }
+  });
+
+  mswServer.events.on('request:unhandled', ({ request }) => {
+    const url = new URL(request.url);
+    if (url.hostname === 'api.openalex.org') {
+      console.error(`❌ MSW unhandled: ${request.method} ${url.pathname}${url.search}`);
+    }
+  });
+
   console.log('✅ MSW server started - intercepting api.openalex.org requests');
+  console.log('🔍 Verbose logging enabled for debugging HTTP 403 errors');
 }
 
 /**
