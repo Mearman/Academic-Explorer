@@ -158,3 +158,200 @@ This research involved:
 - Domain availability preliminary checks
 - Conflict analysis with existing products/services
 - Evaluation against uniqueness, relevance, and memorability criteria
+
+---
+
+# Domain Availability Research
+
+*Research conducted: 2025-11-12*
+
+## Available .com Domains (For Sale/Parked)
+
+### Short (4-5 letters)
+- **vexo.com** - Domain for sale
+- **edgix.com** - For sale
+
+### Longer (6-10 letters)
+- **scholara.com** - Ready for development
+- **scholarium.com** - Domain for sale
+- **academix.com** - For sale on Dan.com
+- **cognara.com** - For sale at $9,900 on GrandName.com
+- **citexa.com** - Domain pricing/sales page
+- **nodex.com** - "Under Construction - Coming Soon!"
+- **edgeplex.com** - Minimal content
+- **cognitrix.com** - Limited content, may be for sale
+
+## Taken Domains - Active Businesses
+
+### .com Domains
+- **quix.com** - Exists
+- **cognix.com** - Cognix company
+- **nexu.com** - NEXU marketplace platform
+- **scholix.com** - Exists
+- **cognarium.com** - JavaScript app
+- **lexis.com** - LexisNexis (major legal research)
+- **synthix.com** - Financial software
+- **axion.com** - AI quality platform
+- **logix.com** - Texas fiber network provider
+- **academon.com** - Essay/term paper service
+- **bibliographix.com** - Literature management tool (German)
+- **cognetwork.com** - Web hosting platform
+- **nodetrix.com** - Exists
+- **graphix.com** - Uniregistry parked domain
+- **graphon.com** - GraphOn (remote desktop software)
+- **nexal.com** - Exists
+- **linkis.com** - Link branding service (suspended, now Ridder.co)
+- **verix.com** - AI pharma platform
+- **cogix.com** - ViewsFlash survey software
+- **archix.com** - White-label project tools for architects
+- **graphoria.com** - Art gallery/energy healing
+- **nodexa.com** - French web agency
+- **nexium.com** - Photography & design services
+- **cognitix.com** - AI mental health platform
+- **academica.com** - Exists
+- **citex.com** - Iranian cryptocurrency exchange
+
+### .org Domains
+- **scholix.org** - Scholarly literature linking framework
+
+### .io Domains
+- **graphix.io** - App platform
+- **nexara.io** - Hong Kong virtual assets company
+- **vexo.io** - Exists
+- **cognix.io** - Cloud transformation consulting
+
+## Could Not Verify (Search Errors - Need Manual Check)
+
+### .com Domains
+- vertexium.com
+- nexarium.com
+- graphenon.com
+- citarium.com
+- epistrix.com
+- nodix.com
+- erudix.com
+- researchium.com
+- epistemon.com
+- citagraph.com
+- grapholith.com
+- neuronex.com
+- ontograph.com
+- scholarix.com
+- scholarnet.com
+- citexium.com
+- noderium.com
+- researchix.com
+- bibliox.com
+- epistemia.com
+- graphium.com
+- graphena.com
+- citara.com
+- nexara.com
+- scholium.com
+- edgeo.com
+- graphara.com
+- citographix.com
+- nexograph.com
+- scholograph.com
+
+### .io Domains
+- scholara.io
+- citarium.io
+- nodexa.io
+- edgix.io
+- academix.io
+- graphenon.io
+- epistrix.io
+- researchium.io
+- noderium.io
+- bibliox.io
+- ontograph.io
+- graphoria.io
+- nexarium.io
+- scholix.io
+- graphium.io
+- scholarium.io
+
+### .app Domains
+- scholix.app
+
+## Suggested Likely Unregistered Domains
+
+These are creative combinations that likely haven't been registered:
+
+### Short combinations (5-7 letters)
+- **grapho.io / .com** - Graph variation
+- **citara.io / .com** - Citation variation
+- **nodara.com / .io** - Node variation
+- **edgeo.io / .com** - Edge variation
+
+### Longer academic-focused (8-12 letters)
+- **scholograph.com / .io** - Scholarly + graph
+- **nexograph.com / .io** - Nexus + graph
+- **graphara.com / .io** - Graph variation
+- **citographix.com / .io** - Citation + graphix
+- **bibliograph.io** - Bibliography + graph
+- **epistexa.com / .io** - Episteme + unique ending
+- **cognograph.com / .io** - Cognitive + graph
+- **nodearium.com / .io** - Node repository
+- **graphenix.com / .io** - Graph + phoenix
+- **scholenix.com / .io** - Scholarly unique
+
+### Creative blends
+- **vertexo.com / .io** - Vertex variation
+- **grapheon.com / .io** - Graph concept
+- **scholario.com / .io** - Scholarly + io suffix
+- **edgraph.io** - Edge + graph
+
+## Domain Recommendations for Top App Names
+
+Based on the original naming research, here's domain availability for the top recommended names:
+
+### CitationMesh
+- **citationmesh.com** - Not verified, needs manual check
+- **citationmesh.io** - Not verified, needs manual check
+- **Likelihood**: HIGH - Very unique combination, likely available
+
+### ScholarWeave
+- **scholarweave.com** - Not verified, needs manual check
+- **scholarweave.io** - Not verified, needs manual check
+- **Likelihood**: HIGH - Very unique combination, likely available
+
+### Graphademia
+- **graphademia.com** - Not verified, needs manual check
+- **graphademia.io** - Not verified, needs manual check
+- **Likelihood**: HIGH - Unique portmanteau, likely available
+
+### ResearchLattice
+- **researchlattice.com** - Not verified, needs manual check
+- **researchlattice.io** - Not verified, needs manual check
+- **Likelihood**: HIGH - Unique combination, likely available
+
+## Action Items for Domain Registration
+
+1. **Immediately verify** primary name choices at:
+   - [Namecheap.com](https://www.namecheap.com)
+   - [GoDaddy.com](https://www.godaddy.com)
+   - [Google Domains](https://domains.google)
+   - [Cloudflare Registrar](https://www.cloudflare.com/products/registrar/)
+
+2. **Check multiple extensions** simultaneously:
+   - .com (preferred for professional presence)
+   - .io (popular for tech/research platforms)
+   - .app (good for web applications)
+   - .org (if positioning as open-source/research project)
+
+3. **Reserve immediately** once decided to prevent domain squatting
+
+4. **Consider buying variations** to protect brand:
+   - Common misspellings
+   - Alternative extensions
+   - Hyphenated versions
+
+## Notes
+
+- Domains marked "for sale" require purchasing from current owners (often expensive)
+- "Could not verify" domains should be checked manually at a registrar
+- .io domains are popular for tech/startup projects but slightly more expensive
+- Many domain searches failed due to API limitations - manual verification is essential
+- **Do not delay** domain registration - popular names get registered quickly
