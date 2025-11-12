@@ -64,17 +64,39 @@ total_checked=0
 for name in $unverified_names; do
     name_lower=$(echo "$name" | tr '[:upper:]' '[:lower:]')
 
-    # Check all configured TLDs
+    # Check all configured TLDs using both WHOIS and DNS
     declare -A tld_availability
     available_count=0
 
     for tld in "${tlds[@]}"; do
-        if ! host "${name_lower}.${tld}" &>/dev/null; then
+        domain="${name_lower}.${tld}"
+
+        # Method 1: WHOIS lookup (more reliable)
+        whois_available=false
+        whois_output=$(whois "$domain" 2>&1)
+
+        # Check for common "not found" patterns in WHOIS output
+        if echo "$whois_output" | grep -qiE "(no match|not found|no entries found|no data found|status: free|status: available)"; then
+            whois_available=true
+        fi
+
+        # Method 2: DNS lookup (faster but less reliable)
+        dns_available=false
+        if ! host "$domain" &>/dev/null; then
+            dns_available=true
+        fi
+
+        # Domain is available only if BOTH methods agree it's available
+        # If they disagree, assume taken (conservative approach)
+        if [ "$whois_available" = true ] && [ "$dns_available" = true ]; then
             tld_availability[$tld]=true
             available_count=$((available_count + 1))
         else
             tld_availability[$tld]=false
         fi
+
+        # Small delay to avoid rate limiting on WHOIS servers
+        sleep 0.5
     done
 
     # Determine status

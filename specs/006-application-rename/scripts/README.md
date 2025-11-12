@@ -78,13 +78,22 @@ The script will automatically:
 
 1. **Reads Configuration**: Extracts TLD list from `config.tlds`
 2. **Finds Unverified Names**: Queries JSON for entries with `verified: false`
-3. **DNS Checks**: For each name, checks `{name}.{tld}` using `host` command
+3. **Dual Verification** (WHOIS + DNS): For each name, performs two checks:
+   - **WHOIS Lookup**: Queries registrar database for actual registration status
+     - Checks for patterns: "no match", "not found", "no entries found", "status: free"
+     - Most reliable method - shows actual registration data
+   - **DNS Lookup**: Checks if domain resolves using `host` command
+     - Faster but less reliable - DNS may not be configured even if registered
+   - **Combined Logic**: Domain marked available only if BOTH methods confirm availability
+     - If methods disagree → assumes domain is taken (conservative approach)
+     - Prevents false positives (e.g., registered domains without DNS)
 4. **Determines Status**:
-   - `fully-available`: All configured TLDs available
+   - `fully-available`: All configured TLDs available (both WHOIS and DNS confirm)
    - `partial`: Some TLDs available
    - `all-taken`: No TLDs available
 5. **Updates Database**: Uses `jq` to update the JSON with results
 6. **Updates Metadata**: Recalculates totals and statistics
+7. **Rate Limiting**: 0.5s delay between checks to avoid WHOIS server throttling
 
 ### Output Example
 
@@ -142,7 +151,14 @@ Current database statistics:
   ```bash
   brew install jq  # macOS
   ```
+- **whois**: WHOIS client for registrar queries (usually pre-installed on macOS/Linux)
 - **host**: DNS lookup utility (usually pre-installed)
+
+### Performance Notes
+
+- **Speed**: ~0.5s per TLD check (due to WHOIS rate limiting)
+- **Estimated time**: 129 names × 5 TLDs × 0.5s = ~5.4 minutes for full verification
+- **Accuracy**: High - dual verification prevents false positives from DNS-only checks
 
 ### Database Structure
 
