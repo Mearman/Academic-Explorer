@@ -3,6 +3,7 @@ import { ActionIcon, Badge, Card, Group, Stack, Text, Tooltip } from "@mantine/c
 import { IconTrash } from "@tabler/icons-react";
 import { useState } from "react";
 import { FieldSelectionPreview } from "./FieldSelectionPreview";
+import { TagList } from "./TagBadge";
 
 /**
  * Props for the BookmarkListItem component
@@ -250,6 +251,18 @@ export function BookmarkListItem({
 						{truncatedNotes}
 					</Text>
 				)}
+
+		{/* Tags (if available) */}
+		{bookmark.metadata.tags && bookmark.metadata.tags.length > 0 && (
+			<TagList
+				tags={bookmark.metadata.tags}
+				size="xs"
+				variant="light"
+				maxVisible={5}
+				data-testid="bookmark-tags"
+			/>
+		)}
+
 
 				{/* Footer: Timestamp and field selection preview */}
 				<Group gap="xs" mt="xs" justify="space-between" wrap="wrap">
