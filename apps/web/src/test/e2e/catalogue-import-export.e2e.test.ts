@@ -101,7 +101,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
 
     // Open import modal
     await page.click('button:has-text("Import")');
-    await expect(page.getByRole('dialog').filter({ hasText: 'Import' })).toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Import Catalogue List' })).toBeVisible();
 
     // Look for compressed data import option
     const compressedDataTab = page.locator('button:has-text("Compressed Data"), label:has-text("Compressed")');
@@ -116,7 +116,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
       await page.click('button:has-text("Import List")');
 
       // Verify import success
-      await expect(page.getByRole('dialog').filter({ hasText: 'Import' })).not.toBeVisible();
+      await expect(page.getByRole('dialog', { name: 'Import Catalogue List' })).not.toBeVisible();
       await expect(page.locator('text="Export Test List (Imported)"')).toBeVisible({ timeout: 15000 });
     }
   });
@@ -124,7 +124,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
   test("should handle invalid import data gracefully", async ({ page }) => {
     // Open import modal
     await page.click('button:has-text("Import")');
-    await expect(page.getByRole('dialog').filter({ hasText: 'Import' })).toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Import Catalogue List' })).toBeVisible();
 
     // Try to import invalid JSON data
     const invalidDataTab = page.locator('button:has-text("JSON"), label:has-text("Data")');
@@ -163,7 +163,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
 
     // Open import modal
     await page.click('button:has-text("Import")');
-    await expect(page.getByRole('dialog').filter({ hasText: 'Import' })).toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Import Catalogue List' })).toBeVisible();
 
     // Look for file upload option
     const fileUploadTab = page.locator('button:has-text("File"), label:has-text("Upload")');
@@ -184,7 +184,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
       await page.click('button:has-text("Import List")');
 
       // Verify import success
-      await expect(page.getByRole('dialog').filter({ hasText: 'Import' })).not.toBeVisible();
+      await expect(page.getByRole('dialog', { name: 'Import Catalogue List' })).not.toBeVisible();
       await expect(page.locator('text="File Import Test"')).toBeVisible({ timeout: 15000 });
     }
   });
@@ -192,7 +192,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
   test("should validate import data structure", async ({ page }) => {
     // Open import modal
     await page.click('button:has-text("Import")');
-    await expect(page.getByRole('dialog').filter({ hasText: 'Import' })).toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Import Catalogue List' })).toBeVisible();
 
     // Try to import data with missing required fields
     const invalidStructure = {
@@ -239,7 +239,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
 
     // Open import modal
     await page.click('button:has-text("Import")');
-    await expect(page.getByRole('dialog').filter({ hasText: 'Import' })).toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Import Catalogue List' })).toBeVisible();
 
     const dataTab = page.locator('button:has-text("JSON"), label:has-text("Data")');
     if (await dataTab.isVisible()) {
@@ -255,7 +255,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
       await expect(page.locator('text="Importing", text="progress"')).toBeVisible({ timeout: 10000 });
 
       // Wait for completion
-      await expect(page.getByRole('dialog').filter({ hasText: 'Import' })).not.toBeVisible();
+      await expect(page.getByRole('dialog', { name: 'Import Catalogue List' })).not.toBeVisible();
       await expect(page.locator('text="Large Import Test"')).toBeVisible({ timeout: 30000 });
     }
   });
@@ -285,7 +285,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
 
     // Open import modal
     await page.click('button:has-text("Import")');
-    await expect(page.getByRole('dialog').filter({ hasText: 'Import' })).toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Import Catalogue List' })).toBeVisible();
 
     const dataTab = page.locator('button:has-text("JSON"), label:has-text("Data")');
     if (await dataTab.isVisible()) {
@@ -308,7 +308,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
         await page.click('button:has-text("Import"), button:has-text("Confirm Import")');
 
         // Verify import success
-        await expect(page.getByRole('dialog').filter({ hasText: 'Import' })).not.toBeVisible();
+        await expect(page.getByRole('dialog', { name: 'Import Catalogue List' })).not.toBeVisible();
         await expect(page.locator('text="Preview Test List"')).toBeVisible({ timeout: 15000 });
       }
     }
@@ -331,7 +331,7 @@ test.describe("Catalogue Import/Export Functionality", () => {
 
     // Open import modal
     await page.click('button:has-text("Import")');
-    await expect(page.getByRole('dialog').filter({ hasText: 'Import' })).toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Import Catalogue List' })).toBeVisible();
 
     const dataTab = page.locator('button:has-text("JSON"), label:has-text("Data")');
     if (await dataTab.isVisible()) {

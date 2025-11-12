@@ -105,7 +105,7 @@ test.describe("Catalogue Sharing Functionality", () => {
     await page.click('button:has-text("Import")');
 
     // Verify import modal opens
-    await expect(page.getByRole('dialog', { name: /Import/i })).toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Import Catalogue List' })).toBeVisible();
     await expect(page.locator('h2:has-text("Import Shared List")')).toBeVisible();
 
     // Paste the share URL
@@ -115,7 +115,7 @@ test.describe("Catalogue Sharing Functionality", () => {
     await page.click('button:has-text("Import List")');
 
     // Wait for import to complete
-    await expect(page.getByRole('dialog', { name: /Import/i })).not.toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Import Catalogue List' })).not.toBeVisible();
 
     // Verify imported list appears
     await expect(page.locator('text="Original Shared List (Imported)"')).toBeVisible({ timeout: 15000 });
@@ -133,7 +133,7 @@ test.describe("Catalogue Sharing Functionality", () => {
     await page.waitForLoadState("networkidle");
 
     // Should show import modal automatically
-    await expect(page.getByRole('dialog', { name: /Import/i })).toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Import Catalogue List' })).toBeVisible();
     await expect(page.locator('h2:has-text("Import Shared List")')).toBeVisible();
 
     // URL should be pre-filled
@@ -144,14 +144,14 @@ test.describe("Catalogue Sharing Functionality", () => {
     await page.click('button:has-text("Import List")');
 
     // Verify import is successful
-    await expect(page.getByRole('dialog', { name: /Import/i })).not.toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Import Catalogue List' })).not.toBeVisible();
     await expect(page.locator('text="(Imported)"')).toBeVisible({ timeout: 15000 });
   });
 
   test("should handle invalid shared URLs", async ({ page }) => {
     // Open import modal
     await page.click('button:has-text("Import")');
-    await expect(page.getByRole('dialog', { name: /Import/i })).toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Import Catalogue List' })).toBeVisible();
 
     // Enter invalid URL
     await page.fill('input:below(:text("URL"))', 'https://invalid-url.com/not-a-real-share');
