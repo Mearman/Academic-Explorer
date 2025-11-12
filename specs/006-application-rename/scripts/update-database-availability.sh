@@ -80,23 +80,43 @@ for name in $unverified_names; do
             whois_available=true
         fi
 
+        # Check if WHOIS actually returned useful data (not just registry info)
+        whois_has_data=false
+        if echo "$whois_output" | grep -qiE "(registrar:|creation date|registry expiry|domain status|name server)"; then
+            whois_has_data=true
+        elif echo "$whois_output" | grep -qiE "(no match|not found|no entries found|no data found)"; then
+            whois_has_data=true
+        fi
+
         # Method 2: DNS lookup (faster but less reliable)
         dns_available=false
         if ! host "$domain" &>/dev/null; then
             dns_available=true
         fi
 
-        # Domain is available only if BOTH methods agree it's available
-        # If they disagree, assume taken (conservative approach)
-        if [ "$whois_available" = true ] && [ "$dns_available" = true ]; then
-            tld_availability[$tld]=true
-            available_count=$((available_count + 1))
+        # Decision logic:
+        # - If WHOIS has useful data: use WHOIS + DNS consensus
+        # - If WHOIS has no useful data: fall back to DNS only
+        if [ "$whois_has_data" = true ]; then
+            # WHOIS is informative, require both to agree
+            if [ "$whois_available" = true ] && [ "$dns_available" = true ]; then
+                tld_availability[$tld]=true
+                available_count=$((available_count + 1))
+            else
+                tld_availability[$tld]=false
+            fi
         else
-            tld_availability[$tld]=false
+            # WHOIS not informative (e.g., .dev), use DNS only
+            if [ "$dns_available" = true ]; then
+                tld_availability[$tld]=true
+                available_count=$((available_count + 1))
+            else
+                tld_availability[$tld]=false
+            fi
         fi
 
         # Small delay to avoid rate limiting on WHOIS servers
-        sleep 0.5
+        sleep 1
     done
 
     # Determine status
