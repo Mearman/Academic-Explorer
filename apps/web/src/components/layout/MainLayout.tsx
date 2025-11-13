@@ -276,6 +276,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             display: "flex",
             height: "100%",
             position: "relative",
+            overflow: "hidden",
           }}
         >
           {/* Always visible left ribbon */}
@@ -284,7 +285,11 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           {/* Expandable sidebar content */}
           {leftSidebarOpen && (
             <>
-              <Box flex={1} p="sm" style={{ overflowY: "auto" }}>
+              <Box
+                flex={1}
+                p="sm"
+                data-testid="left-sidebar-content"
+              >
                 {/* Pinning controls */}
                 <Group justify="space-between" mb="sm" px="xs">
                   <Text size="xs" c="dimmed">
@@ -380,6 +385,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             display: "flex",
             height: "100%",
             position: "relative",
+            overflow: "hidden",
           }}
         >
           {/* Expandable sidebar content */}
@@ -426,7 +432,8 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               <Box
                 flex={1}
                 p="sm"
-                style={{ overflowY: "auto", marginLeft: rem(4) }}
+                style={{ marginLeft: rem(4) }}
+                data-testid="right-sidebar-content"
               >
                 {/* Pinning controls */}
                 <Group justify="space-between" mb="sm" px="xs">
@@ -481,15 +488,23 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       </AppShell.Aside>
 
       {/* Main Content Area */}
-      <AppShell.Main>
-        <Box h="calc(100vh - 60px)" p="md" style={{ overflow: "auto" }}>
-          {children ?? (
-            <Stack align="center" justify="center" h="100%" gap="md" c="dimmed">
-              <Title order={2}>Academic Explorer</Title>
-              <Text>Sidebars restored - Navigate to view content</Text>
-            </Stack>
-          )}
-        </Box>
+      <AppShell.Main
+        p="md"
+        data-testid="main-content"
+        styles={{
+          main: {
+            paddingTop: 0,
+            paddingBottom: 0,
+            overflow: "visible",
+          },
+        }}
+      >
+        {children ?? (
+          <Stack align="center" justify="center" h="100%" gap="md" c="dimmed">
+            <Title order={2}>Academic Explorer</Title>
+            <Text>Sidebars restored - Navigate to view content</Text>
+          </Stack>
+        )}
       </AppShell.Main>
     </AppShell>
   );
