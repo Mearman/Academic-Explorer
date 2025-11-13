@@ -121,7 +121,7 @@ describe("generateFieldListPreview", () => {
 	it("should respect custom max length", () => {
 		const result = generateFieldListPreview(["id", "display_name"], 10)
 		expect(result).toHaveLength(10)
-		expect(result).toBe("id, displ...")
+		expect(result).toBe("id, dis...")
 	})
 })
 
