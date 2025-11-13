@@ -1,38 +1,364 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { BookmarkManager } from "@/components/BookmarkManager";
+import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
+import { useBookmarks } from "@/hooks/useBookmarks";
+import { BookmarkList, BookmarkSearchFilters } from "@academic-explorer/ui";
+import { logger, applyFilters, exportBookmarks, downloadExport, SPECIAL_LIST_IDS } from "@academic-explorer/utils";
+import type { EntityType, Bookmark } from "@academic-explorer/types";
+import type { ExportFormat, ExportOptions, CatalogueEntity } from "@academic-explorer/utils";
+import {
+	Container,
+	Title,
+	Text,
+	Paper,
+	Stack,
+	Group,
+	Badge,
+	Button,
+	Alert,
+	Menu,
+	Modal,
+	Checkbox,
+	Select,
+} from "@mantine/core";
+import {
+	IconBookmark,
+	IconAlertCircle,
+	IconFileExport,
+	IconSortDescending,
+	IconSortAscending,
+} from "@tabler/icons-react";
+import { useState, useMemo } from "react";
 
-import { useNavigate } from "@tanstack/react-router";
+/**
+ * Convert CatalogueEntity to Bookmark type
+ */
+function convertToBookmark(entity: CatalogueEntity): Bookmark {
+	// Extract metadata from notes field (legacy format)
+	const notesLines = (entity.notes || "").split("\n");
+	const urlLine = notesLines.find((line) => line.startsWith("URL: "));
+	const titleLine = notesLines.find((line) => line.startsWith("Title: "));
+	const url = urlLine?.replace("URL: ", "") || "";
+	const title = titleLine?.replace("Title: ", "") || entity.entityId;
 
-function BookmarksPage() {
-  const navigate = useNavigate();
+	return {
+		id: entity.id || entity.entityId,
+		listId: SPECIAL_LIST_IDS.BOOKMARKS,
+		entityType: entity.entityType,
+		entityId: entity.entityId,
+		addedAt: new Date(entity.addedAt),
+		notes: entity.notes,
+		position: entity.position || 0,
+		metadata: {
+			url,
+			title,
+			entityType: entity.entityType,
+			entityId: entity.entityId,
+			timestamp: new Date(entity.addedAt),
+			tags: [], // Tags not yet supported in storage layer
+		},
+	};
+}
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto py-8">
-        <BookmarkManager
-          onNavigate={(url) => {
-            // Handle navigation to bookmarked URLs
-            if (url.startsWith("/")) {
-              // For hash-based routing, directly update the hash
-              // This is more reliable than using TanStack Router's navigate in this context
-              window.location.hash = url;
-            } else if (url.startsWith("https://api.openalex.org")) {
-              // Convert API URL to internal path for navigation
-              const internalPath = url.replace("https://api.openalex.org", "");
-              window.location.hash = internalPath;
-            } else {
-              // Use window.location for external URLs
-              window.location.href = url;
-            }
-          }}
-        />
-      </div>
-    </div>
-  );
+/**
+ * Bookmarks Index Route Component
+ *
+ * Displays all bookmarked entities in a list view with search, filters, and export functionality.
+ * Uses the useBookmarks hook for reactive bookmark state.
+ */
+function BookmarksIndexPage() {
+	const navigate = useNavigate();
+	const { bookmarks: catalogueBookmarks, removeBookmark, loading, error } = useBookmarks();
+
+	// Convert CatalogueEntity[] to Bookmark[]
+	const bookmarks = useMemo(
+		() => catalogueBookmarks.map((entity) => convertToBookmark(entity)),
+		[catalogueBookmarks]
+	);
+
+	// Filter state
+	const [searchQuery, setSearchQuery] = useState("");
+	const [entityTypeFilter, setEntityTypeFilter] = useState<EntityType | null>(null);
+	const [tagFilters, setTagFilters] = useState<string[]>([]);
+	const [matchAllTags, setMatchAllTags] = useState(false);
+
+	// View options state
+	const [groupByType, setGroupByType] = useState(true);
+	const [sortBy, setSortBy] = useState<"date" | "title" | "type">("date");
+	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
+	// Export modal state
+	const [exportModalOpen, setExportModalOpen] = useState(false);
+	const [exportFormat, setExportFormat] = useState<ExportFormat>("json");
+	const [exportOptions, setExportOptions] = useState<Omit<ExportOptions, "format">>({
+		includeNotes: true,
+		includeTags: true,
+		includeTimestamps: true,
+		includeFieldSelections: true,
+	});
+
+	logger.debug("bookmarks", "Bookmarks index page rendering", {
+		bookmarksCount: bookmarks.length,
+		searchQuery,
+		entityTypeFilter,
+		tagFilters,
+		groupByType,
+		sortBy,
+		sortOrder,
+	});
+
+	// Extract all unique tags from bookmarks
+	const availableTags = useMemo(() => {
+		const tagsSet = new Set<string>();
+		bookmarks.forEach((bookmark) => {
+			bookmark.metadata.tags?.forEach((tag) => tagsSet.add(tag));
+		});
+		return Array.from(tagsSet).sort();
+	}, [bookmarks]);
+
+	// Apply filters to bookmarks
+	const filteredBookmarks = useMemo(() => {
+		return applyFilters(bookmarks, {
+			searchQuery,
+			entityType: entityTypeFilter,
+			tags: tagFilters,
+			matchAllTags,
+		});
+	}, [bookmarks, searchQuery, entityTypeFilter, tagFilters, matchAllTags]);
+
+	// Handle navigation to bookmarked entity
+	const handleNavigate = (url: string) => {
+		logger.debug("bookmarks", "Navigating to bookmarked entity", { url });
+		// Convert full URL to relative path for router navigation
+		try {
+			const urlObj = new URL(url, window.location.origin);
+			const path = urlObj.pathname + urlObj.search + urlObj.hash;
+			navigate({ to: path as any });
+		} catch (err) {
+			logger.error("bookmarks", "Failed to navigate to bookmark", { url, error: err });
+		}
+	};
+
+	// Handle bookmark deletion
+	const handleDelete = async (bookmarkId: string) => {
+		try {
+			logger.debug("bookmarks", "Deleting bookmark", { bookmarkId });
+			await removeBookmark(bookmarkId);
+			logger.debug("bookmarks", "Bookmark deleted successfully", { bookmarkId });
+		} catch (err) {
+			logger.error("bookmarks", "Failed to delete bookmark", { bookmarkId, error: err });
+		}
+	};
+
+	// Handle export
+	const handleExport = () => {
+		try {
+			const options: ExportOptions = {
+				format: exportFormat,
+				...exportOptions,
+			};
+
+			const content = exportBookmarks(filteredBookmarks, options);
+			downloadExport(content, exportFormat);
+
+			setExportModalOpen(false);
+
+			logger.debug("bookmarks", "Bookmarks exported successfully", {
+				format: exportFormat,
+				count: filteredBookmarks.length,
+			});
+		} catch (err) {
+			logger.error("bookmarks", "Failed to export bookmarks", { error: err });
+		}
+	};
+
+	return (
+		<Container size="lg" p="xl" data-testid="bookmarks-page">
+			<Stack gap="xl">
+				{/* Header */}
+				<Paper p="xl" radius="md" withBorder>
+					<Group justify="space-between" align="flex-start">
+						<Stack gap="sm">
+							<Group gap="md" align="center">
+								<IconBookmark size={32} />
+								<Title order={1}>Bookmarks</Title>
+								<Badge size="lg" variant="light" color="blue">
+									{filteredBookmarks.length} of {bookmarks.length}{" "}
+									{bookmarks.length === 1 ? "item" : "items"}
+								</Badge>
+							</Group>
+							<Text c="dimmed">Bookmarked entities and query pages for quick access</Text>
+						</Stack>
+
+						{/* View Controls */}
+						<Group gap="sm">
+							<Button
+								variant={groupByType ? "filled" : "light"}
+								size="sm"
+								onClick={() => setGroupByType(!groupByType)}
+							>
+								{groupByType ? "Grouped" : "Flat"}
+							</Button>
+
+							<Menu shadow="md" width={200}>
+								<Menu.Target>
+									<Button variant="light" size="sm" leftSection={<IconSortDescending size={16} />}>
+										Sort: {sortBy}
+									</Button>
+								</Menu.Target>
+
+								<Menu.Dropdown>
+									<Menu.Label>Sort by</Menu.Label>
+									<Menu.Item onClick={() => setSortBy("date")}>Date Added</Menu.Item>
+									<Menu.Item onClick={() => setSortBy("title")}>Title</Menu.Item>
+									<Menu.Item onClick={() => setSortBy("type")}>Entity Type</Menu.Item>
+
+									<Menu.Divider />
+
+									<Menu.Label>Sort order</Menu.Label>
+									<Menu.Item
+										onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+										leftSection={
+											sortOrder === "asc" ? (
+												<IconSortAscending size={16} />
+											) : (
+												<IconSortDescending size={16} />
+											)
+										}
+									>
+										{sortOrder === "asc" ? "Ascending" : "Descending"}
+									</Menu.Item>
+								</Menu.Dropdown>
+							</Menu>
+
+							<Button
+								variant="light"
+								size="sm"
+								color="green"
+								leftSection={<IconFileExport size={16} />}
+								onClick={() => setExportModalOpen(true)}
+								disabled={filteredBookmarks.length === 0}
+							>
+								Export
+							</Button>
+						</Group>
+					</Group>
+				</Paper>
+
+				{/* Search and Filters */}
+				<BookmarkSearchFilters
+					searchQuery={searchQuery}
+					onSearchChange={setSearchQuery}
+					entityTypeFilter={entityTypeFilter}
+					onEntityTypeChange={setEntityTypeFilter}
+					tagFilters={tagFilters}
+					onTagFiltersChange={setTagFilters}
+					availableTags={availableTags}
+					resultCount={filteredBookmarks.length}
+					totalCount={bookmarks.length}
+					matchAllTags={matchAllTags}
+					onMatchAllTagsChange={setMatchAllTags}
+				/>
+
+				{/* Error State */}
+				{error && (
+					<Alert icon={<IconAlertCircle size={16} />} title="Error loading bookmarks" color="red" variant="light">
+						{error.message || "An error occurred while loading your bookmarks."}
+					</Alert>
+				)}
+
+				{/* Bookmark List */}
+				<BookmarkList
+					bookmarks={filteredBookmarks}
+					groupByType={groupByType}
+					sortBy={sortBy}
+					sortOrder={sortOrder}
+					onDeleteBookmark={handleDelete}
+					onNavigate={handleNavigate}
+					loading={loading}
+					emptyMessage="No bookmarks match your filters. Try adjusting your search or filters."
+					data-testid="bookmark-list"
+				/>
+			</Stack>
+
+			{/* Export Modal */}
+			<Modal
+				opened={exportModalOpen}
+				onClose={() => setExportModalOpen(false)}
+				title="Export Bookmarks"
+				size="md"
+			>
+				<Stack gap="md">
+					<Text size="sm" c="dimmed">
+						Export {filteredBookmarks.length} bookmark{filteredBookmarks.length !== 1 ? "s" : ""} to a file
+					</Text>
+
+					<Select
+						label="Export Format"
+						value={exportFormat}
+						onChange={(value) => setExportFormat(value as ExportFormat)}
+						data={[
+							{ value: "json", label: "JSON" },
+							{ value: "csv", label: "CSV" },
+							{ value: "markdown", label: "Markdown" },
+							{ value: "html", label: "HTML" },
+						]}
+					/>
+
+					<Stack gap="xs">
+						<Text size="sm" fw={500}>
+							Include in export:
+						</Text>
+						<Checkbox
+							label="Notes"
+							checked={exportOptions.includeNotes}
+							onChange={(event) =>
+								setExportOptions((prev) => ({ ...prev, includeNotes: event.currentTarget.checked }))
+							}
+						/>
+						<Checkbox
+							label="Tags"
+							checked={exportOptions.includeTags}
+							onChange={(event) =>
+								setExportOptions((prev) => ({ ...prev, includeTags: event.currentTarget.checked }))
+							}
+						/>
+						<Checkbox
+							label="Timestamps"
+							checked={exportOptions.includeTimestamps}
+							onChange={(event) =>
+								setExportOptions((prev) => ({
+									...prev,
+									includeTimestamps: event.currentTarget.checked,
+								}))
+							}
+						/>
+						<Checkbox
+							label="Custom Field Selections"
+							checked={exportOptions.includeFieldSelections}
+							onChange={(event) =>
+								setExportOptions((prev) => ({
+									...prev,
+									includeFieldSelections: event.currentTarget.checked,
+								}))
+							}
+						/>
+					</Stack>
+
+					<Group justify="flex-end" mt="md">
+						<Button variant="subtle" onClick={() => setExportModalOpen(false)}>
+							Cancel
+						</Button>
+						<Button color="green" leftSection={<IconFileExport size={16} />} onClick={handleExport}>
+							Export
+						</Button>
+					</Group>
+				</Stack>
+			</Modal>
+		</Container>
+	);
 }
 
 export const Route = createLazyFileRoute("/bookmarks")({
-  component: BookmarksPage,
+	component: BookmarksIndexPage,
 });
 
-export default BookmarksPage;
+export default BookmarksIndexPage;
