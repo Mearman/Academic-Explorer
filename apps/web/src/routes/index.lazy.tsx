@@ -57,18 +57,30 @@ function HomePage() {
   };
 
   return (
-    <Card
-      shadow="xl"
-      padding="xl"
-      radius="lg"
-      withBorder
+    <div
       style={{
-        backgroundColor: colors.background.blur,
-        backdropFilter: "blur(10px)",
-        maxWidth: "600px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: "100vh",
+        width: "100%",
+        padding: "1rem",
+        boxSizing: "border-box",
       }}
     >
-      <Stack gap="lg" align="center">
+      <Card
+        shadow="xl"
+        padding="xl"
+        radius="lg"
+        withBorder
+        style={{
+          backgroundColor: colors.background.blur,
+          backdropFilter: "blur(10px)",
+          maxWidth: "600px",
+          width: "100%",
+        }}
+      >
+        <Stack gap="lg" align="center">
         <Group>
           <IconGraph size={40} color={colors.primary} />
           <Title order={1} ta="center">
@@ -187,6 +199,7 @@ function HomePage() {
         </Stack>
       </Stack>
     </Card>
+    </div>
   );
 }
 
