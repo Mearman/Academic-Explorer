@@ -183,4 +183,114 @@ test.describe("Homepage E2E Tests", () => {
     // Note: Homepage is a landing page without full app layout
     // Theme toggle and sidebar controls are only in MainLayout (non-homepage routes)
   });
+
+  // Responsive Layout Tests (User Story 1)
+  test.describe("Responsive Layout", () => {
+    test("should display properly on mobile viewport (320px) without horizontal scroll", async ({
+      page,
+    }) => {
+      // Set mobile viewport
+      await page.setViewportSize({ width: 320, height: 568 });
+      await page.goto("/", {
+        waitUntil: "networkidle",
+        timeout: 30000,
+      });
+
+      // Verify content is visible
+      const title = page.locator('h1:has-text("Academic Explorer")');
+      await expect(title).toBeVisible({ timeout: 15000 });
+
+      // Check for horizontal scrollbar by comparing scrollWidth to clientWidth
+      const hasHorizontalScroll = await page.evaluate(() => {
+        return document.documentElement.scrollWidth > document.documentElement.clientWidth;
+      });
+      expect(hasHorizontalScroll).toBe(false);
+
+      // Verify card is within viewport using the Card component's role
+      const card = page.locator('[class*="mantine-Card-root"]').first();
+      const cardBox = await card.boundingBox();
+      expect(cardBox).toBeTruthy();
+      if (cardBox) {
+        expect(cardBox.width).toBeLessThanOrEqual(320);
+      }
+    });
+
+    test("should display properly on tablet viewport (768px) with card centered", async ({
+      page,
+    }) => {
+      // Set tablet viewport
+      await page.setViewportSize({ width: 768, height: 1024 });
+      await page.goto("/", {
+        waitUntil: "networkidle",
+        timeout: 30000,
+      });
+
+      // Verify content is visible
+      const title = page.locator('h1:has-text("Academic Explorer")');
+      await expect(title).toBeVisible({ timeout: 15000 });
+
+      // Verify card stays within reasonable bounds (should be centered with maxWidth)
+      const card = page.locator('[class*="mantine-Card-root"]').first();
+      const cardBox = await card.boundingBox();
+      expect(cardBox).toBeTruthy();
+      if (cardBox) {
+        // Card should be less than viewport width (allowing for centering)
+        expect(cardBox.width).toBeLessThanOrEqual(768);
+        // Card should have some margin on sides (not full width on tablet)
+        expect(cardBox.x).toBeGreaterThan(0);
+      }
+    });
+
+    test("should display properly on desktop viewport (1920px) with maxWidth constraint", async ({
+      page,
+    }) => {
+      // Set desktop viewport
+      await page.setViewportSize({ width: 1920, height: 1080 });
+      await page.goto("/", {
+        waitUntil: "networkidle",
+        timeout: 30000,
+      });
+
+      // Verify content is visible
+      const title = page.locator('h1:has-text("Academic Explorer")');
+      await expect(title).toBeVisible({ timeout: 15000 });
+
+      // Verify card respects maxWidth (should be constrained, not full width)
+      const card = page.locator('[class*="mantine-Card-root"]').first();
+      const cardBox = await card.boundingBox();
+      expect(cardBox).toBeTruthy();
+      if (cardBox) {
+        // Card should be significantly less than viewport width (respects maxWidth)
+        expect(cardBox.width).toBeLessThan(1000);
+        // Card should not be taking full viewport width
+        expect(cardBox.width).toBeLessThan(1920 * 0.9);
+      }
+    });
+
+    test("should display properly on 4K viewport (3840px) with content constrained", async ({
+      page,
+    }) => {
+      // Set 4K viewport
+      await page.setViewportSize({ width: 3840, height: 2160 });
+      await page.goto("/", {
+        waitUntil: "networkidle",
+        timeout: 30000,
+      });
+
+      // Verify content is visible
+      const title = page.locator('h1:has-text("Academic Explorer")');
+      await expect(title).toBeVisible({ timeout: 15000 });
+
+      // Verify card remains width-constrained with maxWidth
+      const card = page.locator('[class*="mantine-Card-root"]').first();
+      const cardBox = await card.boundingBox();
+      expect(cardBox).toBeTruthy();
+      if (cardBox) {
+        // Card should maintain maxWidth constraint
+        expect(cardBox.width).toBeLessThan(1000);
+        // Card should not be taking full viewport width
+        expect(cardBox.width).toBeLessThan(3840 * 0.9);
+      }
+    });
+  });
 });
