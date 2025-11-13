@@ -493,9 +493,11 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         data-testid="main-content"
         styles={{
           main: {
-            paddingTop: 0,
-            paddingBottom: 0,
+            paddingTop: "var(--mantine-spacing-md)",
+            paddingBottom: "var(--mantine-spacing-md)",
             overflow: "visible",
+            display: "flex",
+            flexDirection: "column",
           },
         }}
       >
