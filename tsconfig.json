@@ -32,12 +32,6 @@
     },
     {
       "path": "./tools/generators"
-    },
-    {
-      "path": "./apps/web"
-    },
-    {
-      "path": "./tools"
     }
   ]
 }
