@@ -32,12 +32,19 @@ A user wants to search for academic content and needs clear visual access to the
 
 **Independent Test**: Can be tested by interacting with the search input and button to verify they are properly positioned, sized, and functional.
 
-**Acceptance Scenarios**:
+**Acceptance Scenarios** (Layout):
 
 1. **Given** a user views the search form, **When** they look for the search input, **Then** it is clearly visible with adequate spacing from surrounding content
 2. **Given** a user interacts with the search field, **When** they type a query, **Then** the input field width accommodates the text without layout shifts
 3. **Given** a user types a search query, **When** they submit the form, **Then** the search button is easily accessible and properly aligned with the input
 4. **Given** a user views example searches, **When** they look at the examples section, **Then** it is visually distinct from the main search with proper spacing
+
+**Acceptance Scenarios** (Functional - per clarification 2025-11-13):
+
+5. **Given** a user types a valid search query, **When** they click the search button, **Then** the search executes and navigates to the search results page
+6. **Given** a user clicks an example search link, **When** the link is activated, **Then** the search executes with the pre-filled query
+7. **Given** a user submits an empty search form, **When** they click the search button, **Then** the button remains disabled and no navigation occurs
+8. **Given** a search query is executing, **When** the API request is in progress, **Then** the search button displays a loading state
 
 ---
 
@@ -66,6 +73,22 @@ A user scans the homepage to understand the application features and technology 
 - How does the layout handle very long search queries that exceed the input field width?
 - What happens when browser default font sizes are increased for accessibility?
 
+## Clarifications
+
+### Session 2025-11-13
+
+- **Q1**: Should E2E tests for this feature verify search **functionality** (query submission, navigation, results) or only search control **layout** (positioning, sizing, visibility)?
+  - **A**: Full functionality - E2E tests should verify both layout AND functional behavior including query execution, navigation to search results, and error handling
+
+- **Q2**: Should responsive spacing be implemented using fixed breakpoints, fluid viewport-relative units, or a hybrid approach?
+  - **A**: Fixed breakpoints with discrete spacing values (mobile: sm, tablet: md, desktop: lg) - aligns with Mantine design system and is easier to test consistently
+
+- **Q3**: Should the 44x44px minimum touch target size apply to only primary actions or all interactive elements?
+  - **A**: All clickable elements - the landing page has minimal interactive elements (search input, button, 3 example links), making full enforcement achievable without layout compromises
+
+- **Q4**: How should test flakiness (SC-005: 100% pass rate over 10 runs) be handled - explicit waits, retries, or root cause fixes?
+  - **A**: Investigate and fix root causes of flakiness without using retries - ensures robust implementation per constitution principle. **Exception**: Retries for API rate limit errors (429 status) are acceptable as these are expected transient external failures, not test implementation issues
+
 ## Requirements
 
 ### Functional Requirements
@@ -76,10 +99,10 @@ A user scans the homepage to understand the application features and technology 
 - **FR-004**: Example search links MUST be properly spaced and wrap gracefully on narrow screens
 - **FR-005**: Technology stack indicators MUST maintain equal spacing and alignment across viewport sizes
 - **FR-006**: Card container MUST have a maximum width to ensure readability on large screens
-- **FR-007**: All interactive elements MUST have adequate touch target sizes (minimum 44x44 pixels for mobile)
-- **FR-008**: Content sections MUST have consistent vertical spacing that creates clear visual hierarchy
-- **FR-009**: The card component MUST use responsive spacing that adapts to different screen sizes
-- **FR-010**: E2E tests MUST verify layout correctness, element positioning, and responsive behavior
+- **FR-007**: All interactive elements (search input, search button, example links) MUST have adequate touch target sizes (minimum 44x44 pixels per clarification Q3)
+- **FR-008**: Content sections MUST have consistent vertical spacing that creates clear visual hierarchy using fixed breakpoints (mobile: sm, tablet: md, desktop: lg per clarification Q2)
+- **FR-009**: The card component MUST use responsive spacing with discrete values at Mantine breakpoints (xs, sm, md, lg, xl) rather than fluid viewport-relative units (per clarification Q2)
+- **FR-010**: E2E tests MUST verify layout correctness, element positioning, responsive behavior, AND search functionality (query execution, navigation, loading states, error handling)
 
 ### Key Entities
 
@@ -97,7 +120,7 @@ A user scans the homepage to understand the application features and technology 
 - **SC-002**: All interactive elements (search input, button, example links) meet minimum touch target size of 44x44 pixels
 - **SC-003**: Vertical spacing between content sections follows a consistent rhythm (e.g., small/medium/large gaps)
 - **SC-004**: Homepage loads and displays correctly within 2 seconds on standard connections
-- **SC-005**: All layout-related E2E tests pass without flakiness (100% pass rate over 10 consecutive runs)
+- **SC-005**: All layout-related E2E tests pass without flakiness (100% pass rate over 10 consecutive runs without retries - per clarification Q4, flakiness must be fixed at root cause rather than masked with retries. Exception: API rate limit retries (429 status) are acceptable as external transient failures)
 - **SC-006**: Content remains centered and readable on viewport widths from 320px to 3840px
 - **SC-007**: Text remains readable when browser zoom is set to 200%
 - **SC-008**: Layout adapts responsively without breaking at common breakpoints (mobile, tablet, desktop)
