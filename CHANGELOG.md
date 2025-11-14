@@ -1,3 +1,10 @@
+## [13.1.1](https://github.com/Mearman/Academic-Explorer/compare/v13.1.0...v13.1.1) (2025-11-14)
+
+
+### Bug Fixes
+
+* **web:** make home page search functional ([ab38fd4](https://github.com/Mearman/Academic-Explorer/commit/ab38fd46a042af1e5efe799cb2d0b711eb64d74d))
+
 # [13.1.0](https://github.com/Mearman/Academic-Explorer/compare/v13.0.1...v13.1.0) (2025-11-14)
 
 
