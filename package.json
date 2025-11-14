@@ -14,6 +14,7 @@
   },
   "scripts": {
     "dev": "pnpm --filter @academic-explorer/web dev",
+    "preview": "pnpm --filter @academic-explorer/web preview",
     "cli": "tsx apps/cli/src/openalex-cli.ts",
     "generate:test-urls": "tsx scripts/generate-test-urls.ts",
     "test:urls": "tsx scripts/test-urls.ts",
