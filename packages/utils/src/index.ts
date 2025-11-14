@@ -263,3 +263,14 @@ export {
 	type ExportFormat,
 	type ExportOptions,
 } from "./bookmark-export.js"
+
+// Metadata improvements detection
+export {
+	detectMetadataImprovements,
+	hasMetadataImprovements,
+	getImprovementBadgeText,
+	getImprovementBadgeColor,
+	type MetadataImprovement,
+	type MetadataImprovementType,
+	type WorkMetadata,
+} from "./metadata-improvements.js"
