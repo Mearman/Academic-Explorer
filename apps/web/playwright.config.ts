@@ -15,9 +15,9 @@ export default defineConfig({
   testMatch: ["**/*.e2e.test.ts", "**/e2e/**/*.e2e.test.ts"],
   testIgnore: process.env.E2E_FULL_SUITE ? [] : ["**/manual/**", "**/*-full.e2e.test.ts"],
 
-  // Run tests in serial to prevent memory issues and API rate limiting
-  fullyParallel: false,
-  workers: 1,
+  // Run tests in parallel - E2E tests are browser-isolated
+  fullyParallel: true,
+  workers: process.env.CI ? 2 : 4,
 
   // Fail the build on CI if you accidentally left test.only in the source code
   forbidOnly: !!process.env.CI,
@@ -54,7 +54,7 @@ export default defineConfig({
 
     // Timeout settings
     actionTimeout: 10000,
-    navigationTimeout: 30000,
+    navigationTimeout: 20000,
 
     // Browser launch options for IndexedDB support
     launchOptions: {
@@ -73,7 +73,7 @@ export default defineConfig({
   },
 
   // Test timeout
-  timeout: 90000,
+  timeout: 60000,
 
   // Global setup and teardown for cache warming and cleanup
   globalSetup: "./playwright.global-setup.ts",
@@ -117,14 +117,14 @@ export default defineConfig({
 
   // Web server configuration for E2E tests
   webServer: {
-    command: "cd ../../ && pnpm dev",
+    command: process.env.CI ? "cd ../../ && pnpm build && pnpm preview" : "cd ../../ && pnpm dev",
     port: 5173,
     reuseExistingServer: !process.env.CI,
     stdout: "pipe",
     stderr: "pipe",
     timeout: 120000,
     env: {
-      NODE_ENV: "development",
+      NODE_ENV: process.env.CI ? "production" : "development",
       RUNNING_E2E: "true",
     },
   },
