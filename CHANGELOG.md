@@ -1,3 +1,11 @@
+## [13.1.3](https://github.com/Mearman/Academic-Explorer/compare/v13.1.2...v13.1.3) (2025-11-14)
+
+
+### Bug Fixes
+
+* **deps:** override js-yaml to >=4.1.1 to fix security vulnerability ([01fbe4f](https://github.com/Mearman/Academic-Explorer/commit/01fbe4fa5ad62fb8517fccf01850545a1723a346))
+* **web:** remove default select parameter from all entity routes ([efd641e](https://github.com/Mearman/Academic-Explorer/commit/efd641ed19d615e44032fe7a0315ae85d202a402))
+
 ## [13.1.2](https://github.com/Mearman/Academic-Explorer/compare/v13.1.1...v13.1.2) (2025-11-14)
 
 
