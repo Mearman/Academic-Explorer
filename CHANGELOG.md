@@ -1,3 +1,10 @@
+## [13.0.1](https://github.com/Mearman/Academic-Explorer/compare/v13.0.0...v13.0.1) (2025-11-14)
+
+
+### Bug Fixes
+
+* **web:** resolve React 19 scheduler error by removing manual chunking ([8ba8368](https://github.com/Mearman/Academic-Explorer/commit/8ba8368daceec38225f655d85cdf1fef2bb38dd3))
+
 # [13.0.0](https://github.com/Mearman/Academic-Explorer/compare/v12.2.6...v13.0.0) (2025-11-14)
 
 
