@@ -16,7 +16,6 @@ export default defineConfig({
   testMatch: process.env.E2E_FULL_SUITE
     ? ["**/*.e2e.test.ts", "**/e2e/**/*.e2e.test.ts"]
     : [
-        "**/deployed-verification.e2e.test.ts",
         "**/sample-urls-ci.e2e.test.ts",
       ],
   testIgnore: process.env.E2E_FULL_SUITE ? ["**/manual/**"] : ["**/manual/**", "**/*-full.e2e.test.ts"],
