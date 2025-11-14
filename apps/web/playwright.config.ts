@@ -16,8 +16,6 @@ export default defineConfig({
   testMatch: process.env.E2E_FULL_SUITE
     ? ["**/*.e2e.test.ts", "**/e2e/**/*.e2e.test.ts"]
     : [
-        "**/filesystem-cache.e2e.test.ts",
-        "**/*-smoke*.e2e.test.ts",
         "**/deployed-verification.e2e.test.ts",
         "**/sample-urls-ci.e2e.test.ts",
       ],
