@@ -183,9 +183,11 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <AppShell.Header>
         <Group justify="space-between" h="100%" px="md">
           <Group>
-            <Text size="xl" fw={600} c="blue">
-              Academic Explorer
-            </Text>
+            <Link to="/" style={{ textDecoration: 'none' }}>
+              <Text size="xl" fw={600} c="blue" style={{ cursor: 'pointer' }}>
+                Academic Explorer
+              </Text>
+            </Link>
           </Group>
 
           <Group gap="md">
