@@ -1,4 +1,4 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   Title,
   Text,
@@ -16,44 +16,35 @@ import {
   IconDatabase,
 } from "@tabler/icons-react";
 import { useState } from "react";
-import { useGraphData } from "@/hooks/use-graph-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useDocumentTitle } from "@/hooks/use-document-title";
-// import { pageTitle } from "../styles/layout.css"
-
-import { logError, logger } from "@academic-explorer/utils/logger";
 
 function HomePage() {
-  // Re-enabled all hooks after fixing graph store infinite loops
   const [searchQuery, setSearchQuery] = useState("");
-  const graphData = useGraphData();
-  const { search } = graphData;
-  // Don't disable search input based on graph loading state
-  const isLoading = false;
+  const navigate = useNavigate();
   const themeColors = useThemeColors();
   const { colors } = themeColors;
 
   // Set home page title
   useDocumentTitle(null); // This will use the default base title "Academic Explorer"
 
-  const handleSearch = async (e: React.FormEvent) => {
+  const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
 
-    try {
-      await search(searchQuery.trim());
-    } catch (error) {
-      logError(logger, "Search failed", error, "HomePage");
-    }
+    // Navigate to autocomplete page with search query
+    navigate({
+      to: "/autocomplete",
+      search: { q: searchQuery.trim(), filter: undefined, search: undefined },
+    });
   };
 
-  const handleExampleSearch = async (query: string) => {
-    setSearchQuery(query);
-    try {
-      await search(query);
-    } catch (error) {
-      logError(logger, "Example search failed", error, "HomePage");
-    }
+  const handleExampleSearch = (query: string) => {
+    // Navigate to autocomplete page with example query
+    navigate({
+      to: "/autocomplete",
+      search: { q: query, filter: undefined, search: undefined },
+    });
   };
 
   return (
@@ -96,9 +87,7 @@ function HomePage() {
 
         {/* Quick Search */}
         <form
-          onSubmit={(e) => {
-            void handleSearch(e);
-          }}
+          onSubmit={handleSearch}
           style={{ width: "100%" }}
         >
           <Stack gap="md">
@@ -110,13 +99,11 @@ function HomePage() {
                 setSearchQuery(e.target.value);
               }}
               leftSection={<IconSearch size={20} />}
-              disabled={isLoading}
               aria-label="Search academic literature"
             />
             <Button
               type="submit"
               size="lg"
-              loading={isLoading}
               disabled={!searchQuery.trim()}
               fullWidth
             >
@@ -134,9 +121,7 @@ function HomePage() {
             <Group gap="xs" wrap="wrap">
               <Anchor
                 size="sm"
-                onClick={() => {
-                  void handleExampleSearch("machine learning");
-                }}
+                onClick={() => handleExampleSearch("machine learning")}
                 style={{ cursor: "pointer" }}
               >
                 machine learning
@@ -146,9 +131,7 @@ function HomePage() {
               </Text>
               <Anchor
                 size="sm"
-                onClick={() => {
-                  void handleExampleSearch("climate change");
-                }}
+                onClick={() => handleExampleSearch("climate change")}
                 style={{ cursor: "pointer" }}
               >
                 climate change
@@ -158,9 +141,7 @@ function HomePage() {
               </Text>
               <Anchor
                 size="sm"
-                onClick={() => {
-                  void handleExampleSearch("0000-0003-1613-5981");
-                }}
+                onClick={() => handleExampleSearch("0000-0003-1613-5981")}
                 style={{ cursor: "pointer" }}
               >
                 ORCID example
