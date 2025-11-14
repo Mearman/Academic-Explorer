@@ -196,6 +196,7 @@ export const workSchema = baseEntitySchema.extend({
 	language: z.string().optional(),
 	topics: z.array(z.any()).optional(), // TopicItem schema would be complex
 	keywords: z.array(z.string()).optional(),
+	is_xpac: z.boolean().optional(),
 })
 
 // Concept schema
