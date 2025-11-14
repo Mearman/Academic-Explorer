@@ -40,11 +40,17 @@ const getDB = (): SettingsDB => {
 interface SettingsState {
   /** Email for OpenAlex polite pool */
   politePoolEmail: string;
+  /** Include Walden-related research data */
+  includeXpac: boolean;
+  /** Data format version */
+  dataVersion: '1' | '2' | undefined;
 }
 
 // Default values
 const DEFAULT_SETTINGS: SettingsState = {
   politePoolEmail: "",
+  includeXpac: true,
+  dataVersion: undefined,
 };
 
 // Email validation regex
@@ -53,6 +59,8 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+(?:\.[^\s@]+)+$/;
 // Settings keys for storage
 const SETTINGS_KEYS = {
   POLITE_POOL_EMAIL: "politePoolEmail",
+  INCLUDE_XPAC: "includeXpac",
+  DATA_VERSION: "dataVersion",
 } as const;
 
 /**
@@ -78,6 +86,12 @@ class SettingsStore {
       for (const record of records) {
         if (record.key === SETTINGS_KEYS.POLITE_POOL_EMAIL) {
           settings.politePoolEmail = record.value;
+        }
+        if (record.key === SETTINGS_KEYS.INCLUDE_XPAC) {
+          settings.includeXpac = record.value === "true";
+        }
+        if (record.key === SETTINGS_KEYS.DATA_VERSION) {
+          settings.dataVersion = record.value === "undefined" ? undefined : (record.value as '1' | '2');
         }
       }
 
@@ -106,6 +120,48 @@ class SettingsStore {
     } catch (error) {
       this.logger?.error("settings", "Failed to update polite pool email", {
         email,
+        error,
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Update include Xpac setting
+   */
+  async setIncludeXpac(value: boolean): Promise<void> {
+    try {
+      await this.db.settings.put({
+        key: SETTINGS_KEYS.INCLUDE_XPAC,
+        value: String(value),
+        updatedAt: new Date(),
+      });
+
+      this.logger.debug("settings", "Updated include Xpac", { value });
+    } catch (error) {
+      this.logger?.error("settings", "Failed to update include Xpac", {
+        value,
+        error,
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Update data version setting
+   */
+  async setDataVersion(value: '1' | '2' | undefined): Promise<void> {
+    try {
+      await this.db.settings.put({
+        key: SETTINGS_KEYS.DATA_VERSION,
+        value: value === undefined ? "undefined" : value,
+        updatedAt: new Date(),
+      });
+
+      this.logger.debug("settings", "Updated data version", { value });
+    } catch (error) {
+      this.logger?.error("settings", "Failed to update data version", {
+        value,
         error,
       });
       throw error;
