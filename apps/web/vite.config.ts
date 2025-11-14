@@ -71,58 +71,9 @@ function createWebConfig(): UserConfig {
           warn(warning);
         },
         output: {
-          manualChunks: (id) => {
-            // Core React ecosystem
-            if (id.includes('react') || id.includes('react-dom')) {
-              return 'vendor-react';
-            }
-            // TanStack ecosystem
-            if (id.includes('@tanstack/react-router')) {
-              return 'vendor-router';
-            }
-            if (id.includes('@tanstack/react-query')) {
-              return 'vendor-query';
-            }
-            // Mantine UI
-            if (id.includes('@mantine/core') || id.includes('@mantine/hooks')) {
-              return 'vendor-ui-core';
-            }
-            if (id.includes('@mantine/dates') || id.includes('@mantine/notifications')) {
-              return 'vendor-ui-extra';
-            }
-            if (id.includes('@tabler/icons-react')) {
-              return 'vendor-icons';
-            }
-            // Graph visualization
-            if (id.includes('@xyflow/react') || id.includes('@dnd-kit')) {
-              return 'vendor-xyflow';
-            }
-            if (id.includes('@react-three') || id.includes('three') || id.includes('react-force-graph') || id.includes('r3f-forcegraph')) {
-              return 'vendor-three';
-            }
-            // Database and storage
-            if (id.includes('dexie')) {
-              return 'vendor-storage';
-            }
-            // Workspace packages
-            if (id.includes('@academic-explorer/client')) {
-              return 'workspace-client';
-            }
-            if (id.includes('@academic-explorer/graph')) {
-              return 'workspace-graph';
-            }
-            if (id.includes('@academic-explorer/utils')) {
-              return 'workspace-utils';
-            }
-            if (id.includes('@academic-explorer/ui')) {
-              return 'workspace-ui';
-            }
-            if (id.includes('@academic-explorer/simulation')) {
-              return 'workspace-simulation';
-            }
-            // Default chunk
-            return 'chunk';
-          },
+          // Removed manual chunking - React 19 has initialization issues with manual vendor chunks
+          // Let Vite/Rollup handle chunking automatically
+          manualChunks: undefined,
           chunkFileNames: (chunkInfo) => {
             const facadeModuleId = chunkInfo.facadeModuleId ? chunkInfo.facadeModuleId.split('/').pop() : 'chunk';
             return `assets/[name]-[hash].js`;
@@ -145,11 +96,9 @@ function createWebConfig(): UserConfig {
             return `assets/[name]-[hash][extname]`;
           },
         },
-        treeshake: {
-          moduleSideEffects: false,
-          propertyReadSideEffects: false,
-          tryCatchDeoptimization: false,
-        },
+        // Removed aggressive tree-shaking config - use Rollup defaults
+        // React 19 scheduler requires proper module side effect handling
+        treeshake: true,
       },
       chunkSizeWarningLimit: 1000,
     },
