@@ -16,7 +16,7 @@
     "q=NSF": {
       "url": "https://api.openalex.org/autocomplete/funders?q=NSF",
       "$ref": "./q=NSF.json",
-      "lastRetrieved": "2025-11-13T22:08:42.916Z",
+      "lastRetrieved": "2025-11-14T22:55:57.859Z",
       "contentHash": "75f196f26b823bd3"
     }
   }
