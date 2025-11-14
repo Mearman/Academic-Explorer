@@ -34,10 +34,10 @@ function InstitutionRoute() {
   // Use the extracted institutionId since rawInstitutionId from TanStack Router doesn't work with hash routing
   usePrettyUrl("institutions", institutionId, decodedInstitutionId);
 
-  // Parse select parameter - if not provided, use all INSTITUTION_FIELDS (default behavior)
+  // Parse select parameter - only send select when explicitly provided in URL
   const selectFields = selectParam && typeof selectParam === 'string'
     ? selectParam.split(',').map(field => field.trim()) as InstitutionField[]
-    : [...INSTITUTION_FIELDS];
+    : undefined;
 
   // Fetch institution data
   const { data: institution, isLoading, error } = useQuery({
@@ -46,9 +46,10 @@ function InstitutionRoute() {
       if (!decodedInstitutionId) {
         throw new Error("Institution ID is required");
       }
-      const response = await cachedOpenAlex.client.institutions.getInstitution(decodedInstitutionId, {
-        select: selectFields,
-      });
+      const response = await cachedOpenAlex.client.institutions.getInstitution(
+        decodedInstitutionId,
+        selectFields ? { select: selectFields } : {}
+      );
       return response as InstitutionEntity;
     },
     enabled: !!decodedInstitutionId && decodedInstitutionId !== "random",
@@ -75,7 +76,7 @@ function InstitutionRoute() {
       entityId={decodedInstitutionId}
       displayName={institution.display_name || "Institution"}
       selectParam={(selectParam as string) || ''}
-      selectFields={selectFields}
+      selectFields={selectFields || []}
       viewMode={viewMode}
       onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
       data={institution as Record<string, unknown>}

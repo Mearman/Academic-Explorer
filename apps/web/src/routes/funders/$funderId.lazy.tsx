@@ -17,10 +17,10 @@ function FunderRoute() {
   const funderId = decodeEntityId(rawFunderId);
   usePrettyUrl("funders", rawFunderId, funderId);
 
-  // Parse select parameter - if not provided, use all FUNDER_FIELDS (default behavior)
+  // Parse select parameter - only send select when explicitly provided in URL
   const selectFields = selectParam && typeof selectParam === 'string'
     ? selectParam.split(',').map(field => field.trim()) as FunderField[]
-    : [...FUNDER_FIELDS];
+    : undefined;
 
   // Fetch funder data
   const { data: funder, isLoading, error } = useQuery({
@@ -29,9 +29,10 @@ function FunderRoute() {
       if (!funderId) {
         throw new Error("Funder ID is required");
       }
-      const response = await cachedOpenAlex.client.funders.getFunder(funderId, {
-        select: selectFields,
-      });
+      const response = await cachedOpenAlex.client.funders.getFunder(
+        funderId,
+        selectFields ? { select: selectFields } : {}
+      );
       return response as Funder;
     },
     enabled: !!funderId && funderId !== "random",
@@ -61,7 +62,7 @@ function FunderRoute() {
           <h1 className="text-2xl font-bold mb-2">{funder?.display_name || "Funder"}</h1>
           <div className="text-sm text-gray-600 mb-4">
             <strong>Funder ID:</strong> {funderId}<br />
-            <strong>Select fields:</strong> {selectParam && typeof selectParam === 'string' ? selectParam : `default (${selectFields.join(", ")})`}
+            <strong>Select fields:</strong> {selectParam && typeof selectParam === 'string' ? selectParam : `default (${selectFields?.join(", ") || "all"})`}
           </div>
           <button
             onClick={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}

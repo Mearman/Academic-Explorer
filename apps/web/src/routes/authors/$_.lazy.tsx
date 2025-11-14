@@ -34,10 +34,10 @@ function AuthorRoute() {
   // Use the extracted authorId since rawAuthorId from TanStack Router doesn't work with hash routing
   usePrettyUrl("authors", authorId, decodedAuthorId);
 
-  // Parse select parameter - if not provided, use all AUTHOR_FIELDS (default behavior)
+  // Parse select parameter - only send select when explicitly provided in URL
   const selectFields = selectParam && typeof selectParam === 'string'
     ? selectParam.split(',').map(field => field.trim()) as AuthorField[]
-    : [...AUTHOR_FIELDS];
+    : undefined;
 
   // Fetch author data
   const { data: author, isLoading, error } = useQuery({
@@ -46,9 +46,10 @@ function AuthorRoute() {
       if (!decodedAuthorId) {
         throw new Error("Author ID is required");
       }
-      const response = await cachedOpenAlex.client.authors.getAuthor(decodedAuthorId, {
-        select: selectFields,
-      });
+      const response = await cachedOpenAlex.client.authors.getAuthor(
+        decodedAuthorId,
+        selectFields ? { select: selectFields } : {}
+      );
       return response as Author;
     },
     enabled: !!decodedAuthorId && decodedAuthorId !== "random",
@@ -75,7 +76,7 @@ function AuthorRoute() {
       entityId={decodedAuthorId}
       displayName={author.display_name || "Author"}
       selectParam={(selectParam as string) || ''}
-      selectFields={selectFields}
+      selectFields={selectFields || []}
       viewMode={viewMode}
       onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
       data={author as Record<string, unknown>}

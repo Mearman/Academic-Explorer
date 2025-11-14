@@ -17,10 +17,10 @@ function PublisherRoute() {
   const publisherId = decodeEntityId(rawPublisherId);
   usePrettyUrl("publishers", rawPublisherId, publisherId);
 
-  // Parse select parameter - if not provided, use all PUBLISHER_FIELDS (default behavior)
+  // Parse select parameter - only send select when explicitly provided in URL
   const selectFields = selectParam && typeof selectParam === 'string'
     ? selectParam.split(',').map(field => field.trim()) as PublisherField[]
-    : [...PUBLISHER_FIELDS];
+    : undefined;
 
   // Fetch publisher data
   const { data: publisher, isLoading, error } = useQuery({
@@ -29,9 +29,10 @@ function PublisherRoute() {
       if (!publisherId) {
         throw new Error("Publisher ID is required");
       }
-      const response = await cachedOpenAlex.client.publishers.get(publisherId, {
-        select: selectFields,
-      });
+      const response = await cachedOpenAlex.client.publishers.get(
+        publisherId,
+        selectFields ? { select: selectFields } : {}
+      );
       return response as Publisher;
     },
     enabled: !!publisherId && publisherId !== "random",
@@ -61,7 +62,7 @@ function PublisherRoute() {
           <h1 className="text-2xl font-bold mb-2">{publisher?.display_name || "Publisher"}</h1>
           <div className="text-sm text-gray-600 mb-4">
             <strong>Publisher ID:</strong> {publisherId}<br />
-            <strong>Select fields:</strong> {selectParam && typeof selectParam === 'string' ? selectParam : `default (${selectFields.join(", ")})`}
+            <strong>Select fields:</strong> {selectParam && typeof selectParam === 'string' ? selectParam : `default (${selectFields?.join(", ") || "all"})`}
           </div>
           <button
             onClick={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}

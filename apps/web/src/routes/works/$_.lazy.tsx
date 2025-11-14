@@ -98,10 +98,10 @@ function WorkRoute() {
   // Use the extracted workId since rawWorkId from TanStack Router doesn't work with hash routing
   usePrettyUrl("works", workId, decodedWorkId);
 
-  // Parse select parameter - if not provided, use all WORK_FIELDS (default behavior)
+  // Parse select parameter - only send select when explicitly provided in URL
   const selectFields = selectParam && typeof selectParam === 'string'
     ? selectParam.split(',').map(field => field.trim()) as WorkField[]
-    : [...WORK_FIELDS];
+    : undefined;
 
   // Fetch work data using normalized ID
   const { data: work, isLoading, error } = useQuery({
@@ -110,9 +110,10 @@ function WorkRoute() {
       if (!normalizedWorkId) {
         throw new Error("Work ID is required");
       }
-      const response = await cachedOpenAlex.client.works.getWork(normalizedWorkId, {
-        select: selectFields,
-      });
+      const response = await cachedOpenAlex.client.works.getWork(
+        normalizedWorkId,
+        selectFields ? { select: selectFields } : {}
+      );
       return response as Work;
     },
     enabled: !!normalizedWorkId && normalizedWorkId !== "random" && !isProcessingExternalId,
@@ -207,7 +208,7 @@ function WorkRoute() {
       entityId={normalizedWorkId}
       displayName={work.display_name || work.title || "Work"}
       selectParam={(selectParam as string) || ''}
-      selectFields={selectFields}
+      selectFields={selectFields || []}
       viewMode={viewMode}
       onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
       data={work as Record<string, unknown>}

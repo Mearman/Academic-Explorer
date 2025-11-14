@@ -22,10 +22,10 @@ function TopicRoute() {
   // Use pretty URL hook to replace encoded IDs with decoded versions in the URL
   usePrettyUrl("topics", rawTopicId, topicId);
 
-  // Parse select parameter - if not provided, use all TOPIC_FIELDS (default behavior)
+  // Parse select parameter - only send select when explicitly provided in URL
   const selectFields = selectParam && typeof selectParam === 'string'
     ? selectParam.split(',').map(field => field.trim()) as TopicField[]
-    : [...TOPIC_FIELDS];
+    : undefined;
 
   // Fetch topic data
   const { data: topic, isLoading, error } = useQuery({
@@ -34,9 +34,10 @@ function TopicRoute() {
       if (!topicId) {
         throw new Error("Topic ID is required");
       }
-      const response = await cachedOpenAlex.client.topics.getTopic(topicId, {
-        select: selectFields,
-      });
+      const response = await cachedOpenAlex.client.topics.getTopic(
+        topicId,
+        selectFields ? { select: selectFields } : {}
+      );
       return response as Topic;
     },
     enabled: !!topicId && topicId !== "random",
@@ -65,7 +66,7 @@ function TopicRoute() {
       entityId={topicId || ''}
       displayName={topic.display_name || "Topic"}
       selectParam={typeof selectParam === 'string' ? selectParam : undefined}
-      selectFields={selectFields}
+      selectFields={selectFields || []}
       viewMode={viewMode}
       onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
       data={topic}

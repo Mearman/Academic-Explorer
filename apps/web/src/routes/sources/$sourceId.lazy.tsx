@@ -17,10 +17,10 @@ function SourceRoute() {
   const sourceId = decodeEntityId(rawSourceId);
   usePrettyUrl("sources", rawSourceId, sourceId);
 
-  // Parse select parameter - if not provided, use all SOURCE_FIELDS (default behavior)
+  // Parse select parameter - only send select when explicitly provided in URL
   const selectFields = selectParam && typeof selectParam === 'string'
     ? selectParam.split(',').map(field => field.trim()) as SourceField[]
-    : [...SOURCE_FIELDS];
+    : undefined;
 
   // Fetch source data
   const { data: source, isLoading, error } = useQuery({
@@ -29,9 +29,10 @@ function SourceRoute() {
       if (!sourceId) {
         throw new Error("Source ID is required");
       }
-      const response = await cachedOpenAlex.client.sources.getSource(sourceId, {
-        select: selectFields,
-      });
+      const response = await cachedOpenAlex.client.sources.getSource(
+        sourceId,
+        selectFields ? { select: selectFields } : {}
+      );
       return response as Source;
     },
     enabled: !!sourceId && sourceId !== "random",
@@ -58,7 +59,7 @@ function SourceRoute() {
       entityId={sourceId}
       displayName={source.display_name || "Source"}
       selectParam={(selectParam as string) || ''}
-      selectFields={selectFields}
+      selectFields={selectFields || []}
       viewMode={viewMode}
       onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
       data={source as Record<string, unknown>}

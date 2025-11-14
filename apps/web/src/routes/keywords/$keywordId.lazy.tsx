@@ -14,21 +14,22 @@ function KeywordRoute() {
   // Decode the keyword ID in case it's URL-encoded (for external IDs with special characters)
   const keywordId = decodeEntityId(rawKeywordId);
 
-  // Parse select parameter - if not provided, use all KEYWORD_FIELDS (default behavior)
+  // Parse select parameter - only send select when explicitly provided in URL
   const selectFields = selectParam && typeof selectParam === 'string'
     ? selectParam.split(',').map(field => field.trim()) as KeywordField[]
-    : [...KEYWORD_FIELDS];
+    : undefined;
 
   // Fetch keyword data
-  const { data: keyword, isLoading, error } = useQuery({
+  const { data: keyword, isLoading, error} = useQuery({
     queryKey: ["keyword", keywordId, selectParam],
     queryFn: async () => {
       if (!keywordId) {
         throw new Error("Keyword ID is required");
       }
-      const response = await cachedOpenAlex.client.keywords.getKeyword(keywordId, {
-        select: selectFields,
-      });
+      const response = await cachedOpenAlex.client.keywords.getKeyword(
+        keywordId,
+        selectFields ? { select: selectFields } : {}
+      );
       return response as Keyword;
     },
     enabled: !!keywordId && keywordId !== "random",
@@ -58,7 +59,7 @@ function KeywordRoute() {
           <h1 className="text-2xl font-bold mb-2">{keyword?.display_name || "Keyword"}</h1>
           <div className="text-sm text-gray-600 mb-4">
             <strong>Keyword ID:</strong> {keywordId}<br />
-            <strong>Select fields:</strong> {selectParam && typeof selectParam === 'string' ? selectParam : `default (${selectFields.join(", ")})`}
+            <strong>Select fields:</strong> {selectParam && typeof selectParam === 'string' ? selectParam : `default (${selectFields?.join(", ") || "all"})`}
           </div>
           <button
             onClick={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
