@@ -33,10 +33,7 @@ test.describe('Filesystem Cache', () => {
     });
 
     // Navigate to author page
-    await page.goto(`/#/authors/${cachedAuthorId}`, { waitUntil: 'networkidle' });
-
-    // Wait for page to be interactive
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto(`/#/authors/${cachedAuthorId}`, { waitUntil: 'domcontentloaded' });
 
     // Verify the page loaded (look for any heading or content)
     const bodyText = await page.textContent('body');
@@ -56,10 +53,7 @@ test.describe('Filesystem Cache', () => {
     console.log(`Cache file ${cacheExisted ? 'exists' : 'does not exist'}: ${cachePath}`);
 
     // Navigate to work page
-    await page.goto(`/#/works/${workId}`, { waitUntil: 'networkidle', timeout: 30000 });
-
-    // Wait for page to be interactive
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto(`/#/works/${workId}`, { waitUntil: 'domcontentloaded', timeout: 20000 });
 
     // Verify the page loaded
     const bodyText = await page.textContent('body');
@@ -76,10 +70,10 @@ test.describe('Filesystem Cache', () => {
     const nonExistentId = 'W9999999999';
 
     // Navigate to non-existent work
-    await page.goto(`/#/works/${nonExistentId}`);
+    await page.goto(`/#/works/${nonExistentId}`, { waitUntil: 'domcontentloaded' });
 
-    // Should show error or not found message
-    await page.waitForTimeout(5000);
+    // Wait for page to finish loading - should show error
+    await page.waitForLoadState('load');
 
     // Verify appropriate error handling
     const pageContent = await page.textContent('body');
@@ -92,48 +86,65 @@ test.describe('Filesystem Cache', () => {
     console.log(`✅ Test completed - Cache miss handled gracefully`);
   });
 
-  test('should use filesystem cache for multiple entities', async ({ page }) => {
-    // Test multiple entities to verify cache consistency
-    const testEntities = [
-      { type: 'authors', id: 'A5017898742' },
-      { type: 'works', id: 'W2741809807' },
-      { type: 'institutions', id: 'I161548249' },
-    ];
-
-    for (const entity of testEntities) {
+  test.describe.parallel('Multiple entity types', () => {
+    test('should use filesystem cache for author entity', async ({ page }) => {
+      const entity = { type: 'authors', id: 'A5017898742' };
       const cachePath = path.join(CACHE_DIR, entity.type, `${entity.id}.json`);
       const cacheExists = fs.existsSync(cachePath);
 
       console.log(`Testing ${entity.type}/${entity.id} - Cache ${cacheExists ? 'exists' : 'missing'}`);
 
-      // Navigate to entity page
-      await page.goto(`/#/${entity.type}/${entity.id}`, { waitUntil: 'networkidle', timeout: 30000 });
+      await page.goto(`/#/${entity.type}/${entity.id}`, { waitUntil: 'domcontentloaded', timeout: 20000 });
 
-      // Wait for page to be interactive
-      await page.waitForLoadState('domcontentloaded');
-
-      // Verify page loaded
       const bodyText = await page.textContent('body');
       expect(bodyText).toBeTruthy();
       expect(bodyText.length).toBeGreaterThan(100);
 
       console.log(`✅ ${entity.type}/${entity.id} loaded successfully`);
-    }
+    });
 
-    console.log(`✅ All entities loaded from filesystem cache`);
+    test('should use filesystem cache for work entity', async ({ page }) => {
+      const entity = { type: 'works', id: 'W2741809807' };
+      const cachePath = path.join(CACHE_DIR, entity.type, `${entity.id}.json`);
+      const cacheExists = fs.existsSync(cachePath);
+
+      console.log(`Testing ${entity.type}/${entity.id} - Cache ${cacheExists ? 'exists' : 'missing'}`);
+
+      await page.goto(`/#/${entity.type}/${entity.id}`, { waitUntil: 'domcontentloaded', timeout: 20000 });
+
+      const bodyText = await page.textContent('body');
+      expect(bodyText).toBeTruthy();
+      expect(bodyText.length).toBeGreaterThan(100);
+
+      console.log(`✅ ${entity.type}/${entity.id} loaded successfully`);
+    });
+
+    test('should use filesystem cache for institution entity', async ({ page }) => {
+      const entity = { type: 'institutions', id: 'I161548249' };
+      const cachePath = path.join(CACHE_DIR, entity.type, `${entity.id}.json`);
+      const cacheExists = fs.existsSync(cachePath);
+
+      console.log(`Testing ${entity.type}/${entity.id} - Cache ${cacheExists ? 'exists' : 'missing'}`);
+
+      await page.goto(`/#/${entity.type}/${entity.id}`, { waitUntil: 'domcontentloaded', timeout: 20000 });
+
+      const bodyText = await page.textContent('body');
+      expect(bodyText).toBeTruthy();
+      expect(bodyText.length).toBeGreaterThan(100);
+
+      console.log(`✅ ${entity.type}/${entity.id} loaded successfully`);
+    });
   });
 
   test('should preserve cache across page reloads', async ({ page }) => {
     const authorId = 'A5017898742';
 
     // First load
-    await page.goto(`/#/authors/${authorId}`, { waitUntil: 'networkidle' });
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto(`/#/authors/${authorId}`, { waitUntil: 'domcontentloaded' });
     const firstBodyText = await page.textContent('body');
 
     // Reload page
-    await page.reload({ waitUntil: 'networkidle' });
-    await page.waitForLoadState('domcontentloaded');
+    await page.reload({ waitUntil: 'domcontentloaded' });
     const secondBodyText = await page.textContent('body');
 
     // Both should have content (cache persisted)
