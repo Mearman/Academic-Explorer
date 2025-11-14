@@ -36,6 +36,19 @@ async function globalSetup(config: FullConfig) {
     console.log(`✅ Created HAR cache directory: ${HAR_CACHE_DIR}`);
   }
 
+  // Ensure filesystem cache directory exists
+  // Note: process.cwd() is already at apps/web when running E2E tests
+  const FILESYSTEM_CACHE_DIR = path.join(
+    process.cwd(),
+    "public/data/openalex"
+  );
+  if (!fs.existsSync(FILESYSTEM_CACHE_DIR)) {
+    fs.mkdirSync(FILESYSTEM_CACHE_DIR, { recursive: true });
+    console.log(`✅ Created filesystem cache directory: ${FILESYSTEM_CACHE_DIR}`);
+  } else {
+    console.log(`✅ Filesystem cache directory exists: ${FILESYSTEM_CACHE_DIR}`);
+  }
+
   // Check if we should warm up the cache
   // Skip cache warmup in CI environments to prevent hanging
   const shouldWarmCache =

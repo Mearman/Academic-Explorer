@@ -7,12 +7,12 @@ import { defineConfig, devices } from "@playwright/test";
 import * as fs from "fs";
 
 export default defineConfig({
-  // Test directory - using src for all tests
-  testDir: "./src",
+  // Test directory - using src and e2e for all tests
+  testDir: "./",
 
   // Test files pattern for E2E tests
   // Excludes manual directory and *-full.e2e.test.ts files by default
-  testMatch: "**/*.e2e.test.ts",
+  testMatch: ["**/*.e2e.test.ts", "**/e2e/**/*.e2e.test.ts"],
   testIgnore: process.env.E2E_FULL_SUITE ? [] : ["**/manual/**", "**/*-full.e2e.test.ts"],
 
   // Run tests in serial to prevent memory issues and API rate limiting
