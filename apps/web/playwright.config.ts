@@ -34,7 +34,7 @@ export default defineConfig({
   // Shared settings for all projects
   use: {
     // Base URL for tests - configurable for production testing
-    baseURL: process.env.E2E_BASE_URL ?? "http://localhost:5173",
+    baseURL: process.env.E2E_BASE_URL ?? (process.env.CI ? "http://localhost:4173" : "http://localhost:5173"),
 
     // Collect trace when retrying the failed test
     trace: "on-first-retry",
@@ -118,7 +118,7 @@ export default defineConfig({
   // Web server configuration for E2E tests
   webServer: {
     command: process.env.CI ? "cd ../../ && pnpm build && pnpm preview" : "cd ../../ && pnpm dev",
-    port: 5173,
+    port: process.env.CI ? 4173 : 5173,
     reuseExistingServer: !process.env.CI,
     stdout: "pipe",
     stderr: "pipe",
