@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
+    "composite": false,
     "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "incremental": true,
     "assumeChangesOnlyAffectDirectDependencies": true,
@@ -17,6 +18,7 @@
     "noUncheckedIndexedAccess": false,
     "baseUrl": ".",
     "paths": {
+      "@/*": ["../apps/web/src/*"],
       "@nx/devkit": ["../node_modules/@nx/devkit"],
       "*": ["node_modules/*", "../node_modules/*"]
     },
