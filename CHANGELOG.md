@@ -1,3 +1,10 @@
+## [13.1.2](https://github.com/Mearman/Academic-Explorer/compare/v13.1.1...v13.1.2) (2025-11-14)
+
+
+### Bug Fixes
+
+* **types:** remove invalid authorships_count field ([1cd89db](https://github.com/Mearman/Academic-Explorer/commit/1cd89db7c76b955f1c12e72c87f831f1ff4db570))
+
 ## [13.1.1](https://github.com/Mearman/Academic-Explorer/compare/v13.1.0...v13.1.1) (2025-11-14)
 
 
