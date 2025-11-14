@@ -316,7 +316,6 @@ export const WORK_FIELDS = keysOf<Work>()([
 	"type_crossref",
 	"indexed_in",
 	"open_access",
-	"authorships_count",
 	"cited_by_percentile_year",
 	"concepts",
 	"mesh",

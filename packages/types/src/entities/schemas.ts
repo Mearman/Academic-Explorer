@@ -114,7 +114,6 @@ export const workSchema = baseEntitySchema.extend({
 			any_repository_has_fulltext: z.boolean().optional(),
 		})
 		.optional(),
-	authorships_count: z.number().int().optional(),
 	cited_by_percentile_year: z
 		.object({
 			min: z.number().optional(),
