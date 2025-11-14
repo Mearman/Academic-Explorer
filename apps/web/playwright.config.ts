@@ -11,9 +11,17 @@ export default defineConfig({
   testDir: "./",
 
   // Test files pattern for E2E tests
-  // Excludes manual directory and *-full.e2e.test.ts files by default
-  testMatch: ["**/*.e2e.test.ts", "**/e2e/**/*.e2e.test.ts"],
-  testIgnore: process.env.E2E_FULL_SUITE ? [] : ["**/manual/**", "**/*-full.e2e.test.ts"],
+  // Smoke mode (CI default): Only run critical smoke tests
+  // Full mode (E2E_FULL_SUITE=true): Run all tests except manual
+  testMatch: process.env.E2E_FULL_SUITE
+    ? ["**/*.e2e.test.ts", "**/e2e/**/*.e2e.test.ts"]
+    : [
+        "**/filesystem-cache.e2e.test.ts",
+        "**/*-smoke*.e2e.test.ts",
+        "**/deployed-verification.e2e.test.ts",
+        "**/sample-urls-ci.e2e.test.ts",
+      ],
+  testIgnore: process.env.E2E_FULL_SUITE ? ["**/manual/**"] : ["**/manual/**", "**/*-full.e2e.test.ts"],
 
   // Run tests in parallel - E2E tests are browser-isolated
   fullyParallel: true,
