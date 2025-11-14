@@ -3,6 +3,9 @@
  * Pure UI components built with Mantine and TypeScript
  */
 
+// Atoms - Foundational Components
+export { Badge, type BadgeProps } from "./atoms/Badge";
+
 // Entity View Components
 export { RichEntityView } from "./components/entity-views";
 export type { RichEntityViewProps } from "./components/entity-views";
@@ -76,6 +79,7 @@ export {
 } from "./hooks/use-async-operation"
 
 // Component category exports for tree-shaking
+export * as Atoms from "./atoms"
 export * as DataDisplay from "./components/data-display"
 export * as Feedback from "./components/feedback"
 export * as Layout from "./components/layout"
