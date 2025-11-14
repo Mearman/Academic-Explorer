@@ -1,3 +1,10 @@
+# [13.1.0](https://github.com/Mearman/Academic-Explorer/compare/v13.0.1...v13.1.0) (2025-11-14)
+
+
+### Features
+
+* **web:** make app title clickable to navigate home ([b5e7b28](https://github.com/Mearman/Academic-Explorer/commit/b5e7b284e366e1273f36a2b32864a2f910ec5636))
+
 ## [13.0.1](https://github.com/Mearman/Academic-Explorer/compare/v13.0.0...v13.0.1) (2025-11-14)
 
 
