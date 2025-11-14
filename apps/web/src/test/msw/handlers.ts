@@ -1,12 +1,22 @@
 /**
  * MSW (Mock Service Worker) handlers for OpenAlex API endpoints
  * Used to mock API responses in tests and prevent unhandled network requests
+ *
+ * In E2E tests: Check filesystem cache first, then fall back to API or mocks
  */
 
-import { http, HttpResponse } from "msw";
+import { http, HttpResponse, passthrough } from "msw";
 import type { Work, Author, Institution, Authorship } from "@academic-explorer/types";
 
 const API_BASE = "https://api.openalex.org";
+
+/**
+ * Filesystem cache utilities interface (injected in E2E mode)
+ */
+interface FilesystemCacheUtils {
+  readFromFilesystemCache: (entityType: string, id: string) => Promise<{ found: boolean; data?: unknown }>;
+  writeToFilesystemCache: (entityType: string, id: string, data: unknown) => Promise<void>;
+}
 
 /**
  * Mock data factories for OpenAlex entities
@@ -205,11 +215,55 @@ const createMockInstitution = (id: string): Institution => ({
 });
 
 /**
- * MSW handlers for OpenAlex API endpoints
+ * Create filesystem cache helper functions with injected utilities
  */
-export const openalexHandlers = [
+function createCacheHelpers(cacheUtils?: FilesystemCacheUtils) {
+  /**
+   * Attempt to read from filesystem cache (E2E only)
+   */
+  async function tryFilesystemCache(entityType: string, id: string): Promise<unknown | null> {
+    if (!cacheUtils) return null;
+
+    try {
+      const result = await cacheUtils.readFromFilesystemCache(entityType, id);
+
+      if (result.found) {
+        console.log(`🎯 Filesystem cache hit: ${entityType}/${id}`);
+        return result.data;
+      }
+    } catch (error) {
+      console.warn(`⚠️ Filesystem cache error for ${entityType}/${id}:`, error);
+    }
+
+    return null;
+  }
+
+  /**
+   * Write to filesystem cache (E2E only)
+   */
+  async function writeToCache(entityType: string, id: string, data: unknown): Promise<void> {
+    if (!cacheUtils) return;
+
+    try {
+      await cacheUtils.writeToFilesystemCache(entityType, id, data);
+      console.log(`💾 Cached response: ${entityType}/${id}`);
+    } catch (error) {
+      console.error(`❌ Failed to write ${entityType}/${id} to cache:`, error);
+    }
+  }
+
+  return { tryFilesystemCache, writeToCache, isE2EMode: !!cacheUtils };
+}
+
+/**
+ * Create MSW handlers with optional filesystem cache support
+ */
+export function createOpenalexHandlers(cacheUtils?: FilesystemCacheUtils) {
+  const { tryFilesystemCache, writeToCache, isE2EMode } = createCacheHelpers(cacheUtils);
+
+  return [
   // Get single work by ID
-  http.get(`${API_BASE}/works/:id`, ({ params }) => {
+  http.get(`${API_BASE}/works/:id`, async ({ params, request }) => {
     const { id } = params;
 
     if (typeof id !== "string") {
@@ -225,7 +279,24 @@ export const openalexHandlers = [
       );
     }
 
-    // Handle rate limit simulation
+    // E2E mode: Try filesystem cache first
+    if (isE2EMode) {
+      const cachedData = await tryFilesystemCache('works', id);
+      if (cachedData) {
+        return HttpResponse.json(cachedData, {
+          headers: {
+            "x-powered-by": "filesystem-cache",
+            "x-cache-hit": "true",
+          },
+        });
+      }
+
+      // No cache hit - pass through to real API
+      console.log(`🌐 Filesystem cache miss, passing through to API: works/${id}`);
+      return passthrough();
+    }
+
+    // Handle rate limit simulation (test mode only)
     if (id === "W2799442855") {
       return HttpResponse.json(
         { error: "API rate limit exceeded" },
@@ -240,6 +311,7 @@ export const openalexHandlers = [
       );
     }
 
+    // Return mock data for non-E2E tests
     const work = createMockWork(id);
     return HttpResponse.json(work, {
       headers: {
@@ -250,7 +322,7 @@ export const openalexHandlers = [
   }),
 
   // Get single author by ID
-  http.get(`${API_BASE}/authors/:id`, ({ params }) => {
+  http.get(`${API_BASE}/authors/:id`, async ({ params }) => {
     const { id } = params;
 
     if (typeof id !== "string") {
@@ -266,6 +338,24 @@ export const openalexHandlers = [
       );
     }
 
+    // E2E mode: Try filesystem cache first
+    if (isE2EMode) {
+      const cachedData = await tryFilesystemCache('authors', id);
+      if (cachedData) {
+        return HttpResponse.json(cachedData, {
+          headers: {
+            "x-powered-by": "filesystem-cache",
+            "x-cache-hit": "true",
+          },
+        });
+      }
+
+      // No cache hit - pass through to real API
+      console.log(`🌐 Filesystem cache miss, passing through to API: authors/${id}`);
+      return passthrough();
+    }
+
+    // Return mock data for non-E2E tests
     const author = createMockAuthor(id);
     return HttpResponse.json(author, {
       headers: {
@@ -276,7 +366,7 @@ export const openalexHandlers = [
   }),
 
   // Get single institution by ID
-  http.get(`${API_BASE}/institutions/:id`, ({ params }) => {
+  http.get(`${API_BASE}/institutions/:id`, async ({ params }) => {
     const { id } = params;
 
     if (typeof id !== "string") {
@@ -292,6 +382,24 @@ export const openalexHandlers = [
       );
     }
 
+    // E2E mode: Try filesystem cache first
+    if (isE2EMode) {
+      const cachedData = await tryFilesystemCache('institutions', id);
+      if (cachedData) {
+        return HttpResponse.json(cachedData, {
+          headers: {
+            "x-powered-by": "filesystem-cache",
+            "x-cache-hit": "true",
+          },
+        });
+      }
+
+      // No cache hit - pass through to real API
+      console.log(`🌐 Filesystem cache miss, passing through to API: institutions/${id}`);
+      return passthrough();
+    }
+
+    // Return mock data for non-E2E tests
     const institution = createMockInstitution(id);
     return HttpResponse.json(institution, {
       headers: {
@@ -388,17 +496,110 @@ export const openalexHandlers = [
     );
   }),
 
-  // Catch-all for unhandled OpenAlex API routes
-  http.get(`${API_BASE}/*`, () => {
-    return HttpResponse.json(
-      { error: "Not found" },
-      {
-        status: 404,
-        headers: {
-          "x-powered-by": "msw",
-          "x-msw-request-id": "mock-catch-all",
-        },
-      },
-    );
+  // Catch-all for other entity types (sources, topics, publishers, funders, concepts)
+  http.get(`${API_BASE}/sources/:id`, async ({ params }) => {
+    const { id } = params;
+    if (typeof id !== "string") return HttpResponse.json({ error: "Invalid ID" }, { status: 400 });
+
+    if (isE2EMode) {
+      const cachedData = await tryFilesystemCache('sources', id);
+      if (cachedData) {
+        return HttpResponse.json(cachedData, { headers: { "x-powered-by": "filesystem-cache", "x-cache-hit": "true" } });
+      }
+      console.log(`🌐 Filesystem cache miss, passing through to API: sources/${id}`);
+      return passthrough();
+    }
+
+    return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Source ${id}`, type: "journal" });
   }),
-];
+
+  http.get(`${API_BASE}/topics/:id`, async ({ params }) => {
+    const { id } = params;
+    if (typeof id !== "string") return HttpResponse.json({ error: "Invalid ID" }, { status: 400 });
+
+    if (isE2EMode) {
+      const cachedData = await tryFilesystemCache('topics', id);
+      if (cachedData) {
+        return HttpResponse.json(cachedData, { headers: { "x-powered-by": "filesystem-cache", "x-cache-hit": "true" } });
+      }
+      console.log(`🌐 Filesystem cache miss, passing through to API: topics/${id}`);
+      return passthrough();
+    }
+
+    return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Topic ${id}` });
+  }),
+
+  http.get(`${API_BASE}/publishers/:id`, async ({ params }) => {
+    const { id } = params;
+    if (typeof id !== "string") return HttpResponse.json({ error: "Invalid ID" }, { status: 400 });
+
+    if (isE2EMode) {
+      const cachedData = await tryFilesystemCache('publishers', id);
+      if (cachedData) {
+        return HttpResponse.json(cachedData, { headers: { "x-powered-by": "filesystem-cache", "x-cache-hit": "true" } });
+      }
+      console.log(`🌐 Filesystem cache miss, passing through to API: publishers/${id}`);
+      return passthrough();
+    }
+
+    return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Publisher ${id}` });
+  }),
+
+  http.get(`${API_BASE}/funders/:id`, async ({ params }) => {
+    const { id } = params;
+    if (typeof id !== "string") return HttpResponse.json({ error: "Invalid ID" }, { status: 400 });
+
+    if (isE2EMode) {
+      const cachedData = await tryFilesystemCache('funders', id);
+      if (cachedData) {
+        return HttpResponse.json(cachedData, { headers: { "x-powered-by": "filesystem-cache", "x-cache-hit": "true" } });
+      }
+      console.log(`🌐 Filesystem cache miss, passing through to API: funders/${id}`);
+      return passthrough();
+    }
+
+    return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Funder ${id}` });
+  }),
+
+  http.get(`${API_BASE}/concepts/:id`, async ({ params }) => {
+    const { id } = params;
+    if (typeof id !== "string") return HttpResponse.json({ error: "Invalid ID" }, { status: 400 });
+
+    if (isE2EMode) {
+      const cachedData = await tryFilesystemCache('concepts', id);
+      if (cachedData) {
+        return HttpResponse.json(cachedData, { headers: { "x-powered-by": "filesystem-cache", "x-cache-hit": "true" } });
+      }
+      console.log(`🌐 Filesystem cache miss, passing through to API: concepts/${id}`);
+      return passthrough();
+    }
+
+    return HttpResponse.json({ id: `https://openalex.org/${id}`, display_name: `Mock Concept ${id}` });
+  }),
+
+    // Catch-all for unhandled OpenAlex API routes
+    http.get(`${API_BASE}/*`, () => {
+      // In E2E mode, pass through unhandled requests to real API
+      if (isE2EMode) {
+        console.log(`🌐 Unhandled request, passing through to API`);
+        return passthrough();
+      }
+
+      return HttpResponse.json(
+        { error: "Not found" },
+        {
+          status: 404,
+          headers: {
+            "x-powered-by": "msw",
+            "x-msw-request-id": "mock-catch-all",
+          },
+        },
+      );
+    }),
+  ];
+}
+
+/**
+ * Default handlers for non-E2E tests (no filesystem cache)
+ */
+export const openalexHandlers = createOpenalexHandlers();

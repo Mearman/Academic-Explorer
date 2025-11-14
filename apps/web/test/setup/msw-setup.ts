@@ -7,13 +7,24 @@
  */
 
 import { setupServer } from 'msw/node';
-import { openalexHandlers } from '../../src/test/msw/handlers';
+import { createOpenalexHandlers } from '../../src/test/msw/handlers';
+import { readFromFilesystemCache, writeToFilesystemCache } from './filesystem-cache';
 
 /**
- * MSW server instance
+ * Check if running in E2E mode
+ */
+const isE2E = process.env.RUNNING_E2E === 'true' || process.env.PLAYWRIGHT_TEST === 'true';
+
+/**
+ * Filesystem cache utilities (only available in E2E mode)
+ */
+const cacheUtils = isE2E ? { readFromFilesystemCache, writeToFilesystemCache } : undefined;
+
+/**
+ * MSW server instance with E2E filesystem cache support
  * Intercepts HTTP requests during Playwright test execution
  */
-export const mswServer = setupServer(...openalexHandlers);
+export const mswServer = setupServer(...createOpenalexHandlers(cacheUtils));
 
 /**
  * Start MSW server to begin intercepting requests
@@ -54,6 +65,39 @@ export function startMSWServer() {
       console.error(`❌ MSW unhandled: ${request.method} ${url.pathname}${url.search}`);
     }
   });
+
+  // Add response interceptor to cache API responses (E2E mode only)
+  const isE2E = process.env.RUNNING_E2E === 'true' || process.env.PLAYWRIGHT_TEST === 'true';
+  if (isE2E) {
+    mswServer.events.on('response:mocked', async ({ request, response }) => {
+      const url = new URL(request.url);
+
+      // Only cache OpenAlex API responses that passed through (not mocks)
+      if (url.hostname === 'api.openalex.org' && response.headers.get('x-powered-by') !== 'msw') {
+        try {
+          // Extract entity type and ID from URL
+          const apiMatch = url.pathname.match(/\/([a-z]+)\/([A-Z]\d+)/);
+          if (apiMatch) {
+            const [, entityType, entityId] = apiMatch;
+
+            // Read response body
+            const clonedResponse = response.clone();
+            const responseData = await clonedResponse.json();
+
+            // Import and use filesystem cache writer
+            const { writeToFilesystemCache } = await import('./filesystem-cache');
+            await writeToFilesystemCache(entityType, entityId, responseData);
+
+            console.log(`💾 Cached API passthrough response: ${entityType}/${entityId}`);
+          }
+        } catch (error) {
+          console.warn(`⚠️ Failed to cache passthrough response:`, error);
+        }
+      }
+    });
+
+    console.log('✅ Response cache interceptor enabled for E2E tests');
+  }
 
   console.log('✅ MSW server started - intercepting api.openalex.org requests');
   console.log('🔍 Verbose logging enabled for debugging HTTP 403 errors');
