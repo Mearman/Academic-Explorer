@@ -397,13 +397,15 @@ export class RelationshipDetectionService {
       switch (entityType) {
         case "works": {
           if (isWork(entityWithId)) {
+            // Type assertion after guard check for Work-specific properties
+            const work = entityWithId as Extract<typeof entityWithId, { authorships?: unknown }>;
             Object.assign(minimalData, {
-              authorships: entityWithId.authorships,
-              ...(entityWithId.primary_location && {
-                primary_location: entityWithId.primary_location,
+              authorships: work.authorships,
+              ...(work.primary_location && {
+                primary_location: work.primary_location,
               }),
-              ...(entityWithId.referenced_works && {
-                referenced_works: entityWithId.referenced_works,
+              ...(work.referenced_works && {
+                referenced_works: work.referenced_works,
               }),
             });
           }

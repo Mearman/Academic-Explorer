@@ -2277,7 +2277,7 @@ export class GraphDataService {
           logger.error(
             "graph",
             "Entity is not a valid Work",
-            { entityId: normalizedEntity.id },
+            { entityId: (normalizedEntity as { id?: string }).id },
             "GraphDataService",
           );
           break;
