@@ -28,9 +28,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { clearAllCacheLayers } from "@academic-explorer/utils/cache";
 import { clearAppMetadata } from "@academic-explorer/utils/cache";
 import { useLayoutStore } from "@/stores/layout-store";
-import { useSettingsStore, usePolitePoolEmail } from "@/stores/settings-store";
+import { useSettingsStore, usePolitePoolEmail, settingsStoreInstance } from "@/stores/settings-store";
 import { updateOpenAlexEmail } from "@academic-explorer/client";
 import { logger } from "@academic-explorer/utils/logger";
+import { XpacToggle } from "@academic-explorer/ui";
 
 interface ResetState {
   clearingCache: boolean;
@@ -48,6 +49,18 @@ export const SettingsSection: React.FC = () => {
   const { setPolitePoolEmail, isValidEmail } = useSettingsStore(
     (state) => state,
   );
+
+  // Local state for xpac setting
+  const [includeXpac, setIncludeXpac] = React.useState<boolean>(true);
+
+  // Load includeXpac setting from store on mount
+  React.useEffect(() => {
+    const loadXpacSetting = async () => {
+      const settings = await settingsStoreInstance.getSettings();
+      setIncludeXpac(settings.includeXpac);
+    };
+    void loadXpacSetting();
+  }, []);
 
   // Local state for email editing
   const [localEmail, setLocalEmail] = React.useState(politePoolEmail);
@@ -140,6 +153,21 @@ export const SettingsSection: React.FC = () => {
     },
     [handleEmailSave, handleEmailCancel],
   );
+
+  const handleXpacToggle = React.useCallback(async (value: boolean) => {
+    setIncludeXpac(value);
+    await settingsStoreInstance.setIncludeXpac(value);
+    logger.debug("settings", "Xpac setting updated", { includeXpac: value });
+
+    notifications.show({
+      title: "Setting Updated",
+      message: value
+        ? "Extended research outputs (xpac) enabled"
+        : "Extended research outputs (xpac) disabled",
+      color: "blue",
+      icon: <IconCheck size={16} />,
+    });
+  }, []);
 
   /**
    * Reset user preferences to defaults
@@ -422,6 +450,15 @@ export const SettingsSection: React.FC = () => {
           parties.
         </Text>
       </Stack>
+
+      <Divider />
+
+      {/* Xpac Toggle */}
+      <XpacToggle
+        value={includeXpac}
+        onChange={handleXpacToggle}
+        showDescription={true}
+      />
 
       <Divider />
 
