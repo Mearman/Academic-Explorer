@@ -60,7 +60,8 @@
     "monitor-ci": "tsx scripts/monitor-ci.ts",
     "ci:status": "tsx scripts/monitor-ci.ts status",
     "ci:watch": "tsx scripts/monitor-ci.ts watch",
-    "ci:logs": "tsx scripts/monitor-ci.ts logs"
+    "ci:logs": "tsx scripts/monitor-ci.ts logs",
+    "speckit": "uvx --from git+https://github.com/github/spec-kit.git specify"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.0.0",
