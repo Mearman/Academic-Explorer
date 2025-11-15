@@ -31,7 +31,8 @@ import { useLayoutStore } from "@/stores/layout-store";
 import { useSettingsStore, usePolitePoolEmail, settingsStoreInstance } from "@/stores/settings-store";
 import { updateOpenAlexEmail } from "@academic-explorer/client";
 import { logger } from "@academic-explorer/utils/logger";
-import { XpacToggle } from "@academic-explorer/ui";
+import { XpacToggle, DataVersionSelector } from "@academic-explorer/ui";
+import { isDataVersionSelectorVisible } from "@academic-explorer/utils";
 
 interface ResetState {
   clearingCache: boolean;
@@ -53,13 +54,17 @@ export const SettingsSection: React.FC = () => {
   // Local state for xpac setting
   const [includeXpac, setIncludeXpac] = React.useState<boolean>(true);
 
-  // Load includeXpac setting from store on mount
+  // Local state for data version setting
+  const [dataVersion, setDataVersion] = React.useState<'1' | '2' | undefined>(undefined);
+
+  // Load settings from store on mount
   React.useEffect(() => {
-    const loadXpacSetting = async () => {
+    const loadSettings = async () => {
       const settings = await settingsStoreInstance.getSettings();
       setIncludeXpac(settings.includeXpac);
+      setDataVersion(settings.dataVersion);
     };
-    void loadXpacSetting();
+    void loadSettings();
   }, []);
 
   // Local state for email editing
@@ -164,6 +169,20 @@ export const SettingsSection: React.FC = () => {
       message: value
         ? "Extended research outputs (xpac) enabled"
         : "Extended research outputs (xpac) disabled",
+      color: "blue",
+      icon: <IconCheck size={16} />,
+    });
+  }, []);
+
+  const handleDataVersionChange = React.useCallback(async (value: '1' | '2' | undefined) => {
+    setDataVersion(value);
+    await settingsStoreInstance.setDataVersion(value);
+    logger.debug("settings", "Data version setting updated", { dataVersion: value });
+
+    const versionLabel = value === '1' ? "Version 1 (legacy)" : value === '2' ? "Version 2 (current)" : "Auto (v2 default)";
+    notifications.show({
+      title: "Data Version Updated",
+      message: `OpenAlex data version set to ${versionLabel}`,
       color: "blue",
       icon: <IconCheck size={16} />,
     });
@@ -459,6 +478,18 @@ export const SettingsSection: React.FC = () => {
         onChange={handleXpacToggle}
         showDescription={true}
       />
+
+      {/* Data Version Selector - Only visible before December 2025 */}
+      {isDataVersionSelectorVisible() && (
+        <>
+          <Divider />
+          <DataVersionSelector
+            value={dataVersion}
+            onChange={handleDataVersionChange}
+            showDescription={true}
+          />
+        </>
+      )}
 
       <Divider />
 

@@ -80,6 +80,7 @@ export {
 
 // Settings Components
 export { XpacToggle, type XpacToggleProps } from "./components/settings/XpacToggle"
+export { DataVersionSelector, type DataVersionSelectorProps } from "./components/settings/DataVersionSelector"
 
 // Component category exports for tree-shaking
 export * as Atoms from "./atoms"

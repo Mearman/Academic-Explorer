@@ -50,6 +50,13 @@ export {
 	formatAbsoluteTime,
 	formatTimestamp,
 } from "./formatters/date-formatter.js"
+// Date-based visibility utilities
+export {
+	isDataVersionSelectorVisible,
+	getVersionSelectorCutoffDate,
+	getDaysUntilVersionSelectorHidden,
+} from "./date-utils.js"
+
 
 // Worker message schemas and types
 export * from "./workers/messages.js"
