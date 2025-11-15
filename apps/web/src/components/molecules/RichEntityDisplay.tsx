@@ -39,6 +39,11 @@ import {
   IconTarget,
   IconMapPin,
   IconClock,
+  IconDatabase,
+  IconCode,
+  IconFlask,
+  IconAlertCircle,
+  IconUserQuestion,
 } from "@tabler/icons-react";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
@@ -50,6 +55,9 @@ import {
   getNodeYear,
   getNodeOpenAccess,
   getNodeCitationCount,
+  getNodeWorkType,
+  getNodeIsXpac,
+  getNodeHasUnverifiedAuthor,
 } from "@academic-explorer/graph";
 
 interface RichEntityDisplayProps {
@@ -104,6 +112,43 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
     return num.toLocaleString();
   };
 
+  const getWorkTypeIcon = (workType: string) => {
+    const type = workType.toLowerCase();
+    switch (type) {
+      case "dataset":
+        return <IconDatabase size={14} />;
+      case "software":
+        return <IconCode size={14} />;
+      case "specimen":
+        return <IconFlask size={14} />;
+      case "other":
+        return <IconAlertCircle size={14} />;
+      default:
+        return null;
+    }
+  };
+
+  const getWorkTypeColor = (workType: string): string => {
+    const type = workType.toLowerCase();
+    switch (type) {
+      case "dataset":
+        return "cyan";
+      case "software":
+        return "violet";
+      case "specimen":
+        return "teal";
+      case "other":
+        return "orange";
+      default:
+        return "gray";
+    }
+  };
+
+  const isXpacWorkType = (workType: string): boolean => {
+    const xpacTypes = ["dataset", "software", "specimen", "other"];
+    return xpacTypes.includes(workType.toLowerCase());
+  };
+
   const handleEntityClick = ({
     entityId,
     entityType,
@@ -141,7 +186,17 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
               </Badge>
             )}
             {workEntity.type && (
-              <Badge size="lg" variant="light" color="gray">
+              <Badge
+                size="lg"
+                variant="light"
+                color={getWorkTypeColor(workEntity.type)}
+                leftSection={getWorkTypeIcon(workEntity.type)}
+                data-testid={
+                  isXpacWorkType(workEntity.type)
+                    ? "xpac-work-type-badge"
+                    : "work-type-badge"
+                }
+              >
                 {workEntity.type}
               </Badge>
             )}
@@ -238,52 +293,74 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
               <Stack gap="xs">
                 {workEntity.authorships
                   ?.slice(0, 10)
-                  .map((authorship, index: number) => (
-                    <Group
-                      key={
-                        authorship.author.id || `authorship-${String(index)}`
-                      }
-                      gap="sm"
-                      wrap="nowrap"
-                    >
-                      <Badge size="xs" variant="light">
-                        {authorship.author_position}
-                      </Badge>
-                      <Anchor
-                        size="xs"
-                        c={getEntityColor("authors")}
-
-                        onClick={() => {
-                          if (authorship.author.id) {
-                            handleEntityClick({
-                              entityId: authorship.author.id,
-                              entityType: "author",
-                            });
-                          }
-                        }}
+                  .map((authorship, index: number) => {
+                    const hasAuthorId = Boolean(authorship.author.id);
+                    return (
+                      <Group
+                        key={
+                          authorship.author.id || `authorship-${String(index)}`
+                        }
+                        gap="sm"
+                        wrap="nowrap"
                       >
-                        {authorship.author.display_name || "Unknown Author"}
-                      </Anchor>
-                      {authorship.institutions?.[0] && (
-                        <Anchor
-                          size="xs"
-                          c={getEntityColor("institutions")}
-                          truncate
-                          style={{ maxWidth: 150, cursor: "pointer" }}
-                          onClick={() => {
-                            if (authorship.institutions?.[0]?.id) {
-                              handleEntityClick({
-                                entityId: authorship.institutions[0].id,
-                                entityType: "institution",
-                              });
+                        <Badge size="xs" variant="light">
+                          {authorship.author_position}
+                        </Badge>
+                        <Group gap={4} wrap="nowrap">
+                          <Anchor
+                            size="xs"
+                            c={
+                              hasAuthorId
+                                ? getEntityColor("authors")
+                                : "dimmed"
                             }
-                          }}
-                        >
-                          {authorship.institutions[0]?.display_name}
-                        </Anchor>
-                      )}
-                    </Group>
-                  ))}
+                            style={{
+                              cursor: hasAuthorId ? "pointer" : "default",
+                            }}
+                            onClick={() => {
+                              if (authorship.author.id) {
+                                handleEntityClick({
+                                  entityId: authorship.author.id,
+                                  entityType: "author",
+                                });
+                              }
+                            }}
+                          >
+                            {authorship.author.display_name || "Unknown Author"}
+                          </Anchor>
+                          {!hasAuthorId && (
+                            <ThemeIcon
+                              size="xs"
+                              color="orange"
+                              variant="light"
+                              title="Unverified author (no Author ID)"
+                              data-testid="unverified-author-indicator"
+                            >
+                              <IconUserQuestion size={12} />
+                            </ThemeIcon>
+                          )}
+                        </Group>
+                        {authorship.institutions?.[0] && (
+                          <Anchor
+                            size="xs"
+                            c={getEntityColor("institutions")}
+                            truncate
+                            style={{ maxWidth: 150, cursor: "pointer" }}
+                            onClick={() => {
+                              if (authorship.institutions?.[0]?.id) {
+                                handleEntityClick({
+                                  entityId: authorship.institutions[0].id,
+                                  entityType: "institution",
+                                });
+                              }
+                            }}
+                          >
+                            {authorship.institutions[0]?.display_name}
+                          </Anchor>
+                        )}
+                      </Group>
+                    );
+                  })}
                 {workEntity.authorships && workEntity.authorships.length > 10 && (
                   <Text size="xs" c="dimmed" ta="center">
                     ... and {workEntity.authorships.length - 10} more
