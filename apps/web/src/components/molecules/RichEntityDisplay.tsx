@@ -44,7 +44,7 @@ import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useEntityInteraction } from "@/hooks/use-entity-interaction";
 import type { GraphNode } from "@academic-explorer/graph";
-import type { Authorship, OpenAlexEntity } from "@academic-explorer/types";
+import type { Authorship, OpenAlexEntity, Work, Author, InstitutionEntity } from "@academic-explorer/types";
 import { isWork, isAuthor, isInstitution } from "@academic-explorer/types";
 import {
   getNodeYear,
@@ -119,6 +119,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
   const WorksDisplay = ({ work }: { work: OpenAlexEntity }) => {
     // Type guard to ensure this is actually a Work entity
     if (!isWork(work)) return null;
+    const workEntity = work as Work;
 
     return (
       <Stack gap="md">
@@ -134,24 +135,24 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
           </Group>
 
           <Group wrap="wrap" gap="sm">
-            {work.publication_year && (
+            {workEntity.publication_year && (
               <Badge size="lg" variant="light" color="blue">
-                {work.publication_year}
+                {workEntity.publication_year}
               </Badge>
             )}
-            {work.type && (
+            {workEntity.type && (
               <Badge size="lg" variant="light" color="gray">
-                {work.type}
+                {workEntity.type}
               </Badge>
             )}
-            {work.open_access?.is_oa && (
+            {workEntity.open_access?.is_oa && (
               <Badge size="lg" variant="light" color="green">
                 Open Access
               </Badge>
             )}
           </Group>
 
-          {work.primary_location?.source && (
+          {workEntity.primary_location?.source && (
             <Group mt="sm" gap="xs">
               <Text size="xs" c="dimmed">
                 Published in:
@@ -161,15 +162,15 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                 fw={500}
                 c={getEntityColor("sources")}
                 onClick={() => {
-                  if (work.primary_location?.source?.id) {
+                  if (workEntity.primary_location?.source?.id) {
                     handleEntityClick({
-                      entityId: work.primary_location.source.id,
+                      entityId: workEntity.primary_location.source.id,
                       entityType: "source",
                     });
                   }
                 }}
               >
-                {work.primary_location.source.display_name}
+                {workEntity.primary_location.source.display_name}
               </Anchor>
             </Group>
           )}
@@ -192,7 +193,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                 <IconQuote size={16} color={colors.text.secondary} />
                 <Stack gap={0} align="center">
                   <NumberFormatter
-                    value={work.cited_by_count || 0}
+                    value={workEntity.cited_by_count || 0}
                     thousandSeparator
                     style={{ fontSize: "16px", fontWeight: 700 }}
                   />
@@ -208,7 +209,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                 <IconEye size={16} color={colors.text.secondary} />
                 <Stack gap={0} align="center">
                   <NumberFormatter
-                    value={work.counts_by_year[0]?.cited_by_count || 0}
+                    value={workEntity.counts_by_year[0]?.cited_by_count || 0}
                     thousandSeparator
                     style={{ fontSize: "16px", fontWeight: 700 }}
                   />
@@ -222,20 +223,20 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
         </Card>
 
         {/* Authors */}
-        {work.authorships && work.authorships.length > 0 && (
+        {workEntity.authorships && workEntity.authorships.length > 0 && (
           <Card padding="md" radius="md" withBorder>
             <Group gap="xs" mb="sm">
               <ThemeIcon variant="light" size="sm" color="blue">
                 <IconUsers size={16} />
               </ThemeIcon>
               <Text size="sm" fw={600}>
-                Authors ({work.authorships?.length || 0})
+                Authors ({workEntity.authorships?.length || 0})
               </Text>
             </Group>
 
             <ScrollArea.Autosize mah={120}>
               <Stack gap="xs">
-                {work.authorships
+                {workEntity.authorships
                   ?.slice(0, 10)
                   .map((authorship, index: number) => (
                     <Group
@@ -251,7 +252,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                       <Anchor
                         size="xs"
                         c={getEntityColor("authors")}
-                       
+
                         onClick={() => {
                           if (authorship.author.id) {
                             handleEntityClick({
@@ -283,9 +284,9 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                       )}
                     </Group>
                   ))}
-                {work.authorships && work.authorships.length > 10 && (
+                {workEntity.authorships && workEntity.authorships.length > 10 && (
                   <Text size="xs" c="dimmed" ta="center">
-                    ... and {work.authorships.length - 10} more
+                    ... and {workEntity.authorships.length - 10} more
                   </Text>
                 )}
               </Stack>
@@ -294,7 +295,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
         )}
 
         {/* Topics/Keywords */}
-        {work.topics && work.topics.length > 0 && (
+        {workEntity.topics && workEntity.topics.length > 0 && (
           <Card padding="md" radius="md" withBorder>
             <Group gap="xs" mb="sm">
               <ThemeIcon variant="light" size="sm" color="violet">
@@ -306,13 +307,13 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
             </Group>
 
             <Group gap="xs">
-              {work.topics.slice(0, 8).map((topic, index: number) => (
+              {workEntity.topics.slice(0, 8).map((topic, index: number) => (
                 <Badge
                   key={topic.id || `topic-${String(index)}`}
                   size="sm"
                   variant="light"
                   color={getEntityColor("topics")}
-                 
+
                   onClick={() => {
                     if (topic.id) {
                       handleEntityClick({
@@ -325,9 +326,9 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                   {topic.display_name}
                 </Badge>
               ))}
-              {work.topics.length > 8 && (
+              {workEntity.topics.length > 8 && (
                 <Text size="xs" c="dimmed">
-                  +{work.topics.length - 8} more
+                  +{workEntity.topics.length - 8} more
                 </Text>
               )}
             </Group>
@@ -340,6 +341,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
   const AuthorsDisplay = ({ author }: { author: OpenAlexEntity }) => {
     // Type guard to ensure this is actually an Author entity
     if (!isAuthor(author)) return null;
+    const authorEntity = author as Author;
 
     return (
       <Stack gap="md">
@@ -355,35 +357,35 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
           </Group>
 
           <Group wrap="wrap" gap="sm">
-            {author.last_known_institutions &&
-              author.last_known_institutions.length > 0 && (
+            {authorEntity.last_known_institutions &&
+              authorEntity.last_known_institutions.length > 0 && (
                 <Group gap="xs">
                   <IconBuilding size={14} />
                   <Anchor
                     size="sm"
                     c={getEntityColor("institutions")}
-                   
+
                     onClick={() => {
-                      if (author.last_known_institutions?.[0]?.id) {
+                      if (authorEntity.last_known_institutions?.[0]?.id) {
                         handleEntityClick({
-                          entityId: author.last_known_institutions[0].id,
+                          entityId: authorEntity.last_known_institutions[0].id,
                           entityType: "institution",
                         });
                       }
                     }}
                   >
-                    {author.last_known_institutions[0].display_name}
+                    {authorEntity.last_known_institutions[0].display_name}
                   </Anchor>
                 </Group>
               )}
-            {author.works_count && (
+            {authorEntity.works_count && (
               <Badge size="lg" variant="light" color="blue">
-                {formatNumber(author.works_count)} works
+                {formatNumber(authorEntity.works_count)} works
               </Badge>
             )}
-            {author.cited_by_count && (
+            {authorEntity.cited_by_count && (
               <Badge size="lg" variant="light" color="red">
-                {formatNumber(author.cited_by_count)} citations
+                {formatNumber(authorEntity.cited_by_count)} citations
               </Badge>
             )}
           </Group>
@@ -406,7 +408,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                 <IconStar size={16} color={colors.text.secondary} />
                 <Stack gap={0} align="center">
                   <Text fw={700} size="lg">
-                    {author.summary_stats?.h_index || 0}
+                    {authorEntity.summary_stats?.h_index || 0}
                   </Text>
                   <Text size="xs" c="dimmed">
                     H-Index
@@ -420,7 +422,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                 <IconBolt size={16} color={colors.text.secondary} />
                 <Stack gap={0} align="center">
                   <Text fw={700} size="lg">
-                    {author.summary_stats?.i10_index || 0}
+                    {authorEntity.summary_stats?.i10_index || 0}
                   </Text>
                   <Text size="xs" c="dimmed">
                     i10-Index
@@ -432,7 +434,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
         </Card>
 
         {/* Affiliations Timeline */}
-        {author.affiliations && author.affiliations.length > 0 && (
+        {authorEntity.affiliations && authorEntity.affiliations.length > 0 && (
           <Card padding="md" radius="md" withBorder>
             <Group gap="xs" mb="sm">
               <ThemeIcon variant="light" size="sm" color="orange">
@@ -444,7 +446,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
             </Group>
 
             <Timeline active={0} bulletSize={20} lineWidth={2}>
-              {author.affiliations
+              {authorEntity.affiliations
                 ?.slice(0, 5)
                 .map((affiliation, index: number) => (
                   <Timeline.Item
@@ -457,7 +459,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                       <Anchor
                         size="sm"
                         c={getEntityColor("institutions")}
-                       
+
                         onClick={() => {
                           if (affiliation.institution.id) {
                             handleEntityClick({
@@ -490,7 +492,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
         )}
 
         {/* Research Areas */}
-        {author.topics && author.topics.length > 0 && (
+        {authorEntity.topics && authorEntity.topics.length > 0 && (
           <Card padding="md" radius="md" withBorder>
             <Group gap="xs" mb="sm">
               <ThemeIcon variant="light" size="sm" color="violet">
@@ -502,7 +504,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
             </Group>
 
             <Stack gap="xs">
-              {author.topics.slice(0, 5).map((topic, index: number) => (
+              {authorEntity.topics.slice(0, 5).map((topic, index: number) => (
                 <Group
                   key={topic.id || `author-topic-${String(index)}`}
                   justify="space-between"
@@ -510,7 +512,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                   <Anchor
                     size="sm"
                     c={getEntityColor("topics")}
-                   
+
                     onClick={() => {
                       if (topic.id) {
                         handleEntityClick({
@@ -541,6 +543,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
   }) => {
     // Type guard to ensure this is actually an Institution entity
     if (!isInstitution(institution)) return null;
+    const institutionEntity = institution as InstitutionEntity;
 
     return (
       <Stack gap="md">
@@ -556,21 +559,21 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
           </Group>
 
           <Group wrap="wrap" gap="sm">
-            {institution.geo.city && (
+            {institutionEntity.geo.city && (
               <Group gap="xs">
                 <IconWorld size={14} />
                 <Text size="sm">
-                  {institution.geo.city}, {institution.geo.country}
+                  {institutionEntity.geo.city}, {institutionEntity.geo.country}
                 </Text>
               </Group>
             )}
-            {institution.type && (
+            {institutionEntity.type && (
               <Badge variant="light" color="orange">
-                {institution.type}
+                {institutionEntity.type}
               </Badge>
             )}
-            {institution.homepage_url && (
-              <Anchor size="sm" href={institution.homepage_url} target="_blank">
+            {institutionEntity.homepage_url && (
+              <Anchor size="sm" href={institutionEntity.homepage_url} target="_blank">
                 Visit Website
               </Anchor>
             )}
@@ -594,7 +597,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                 <IconFile size={16} color={colors.text.secondary} />
                 <Stack gap={0} align="center">
                   <NumberFormatter
-                    value={institution.works_count || 0}
+                    value={institutionEntity.works_count || 0}
                     thousandSeparator
                     style={{ fontSize: "16px", fontWeight: 700 }}
                   />
@@ -610,7 +613,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                 <IconQuote size={16} color={colors.text.secondary} />
                 <Stack gap={0} align="center">
                   <NumberFormatter
-                    value={institution.cited_by_count || 0}
+                    value={institutionEntity.cited_by_count || 0}
                     thousandSeparator
                     style={{ fontSize: "16px", fontWeight: 700 }}
                   />
@@ -624,7 +627,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
         </Card>
 
         {/* Associated Topics */}
-        {institution.topics && institution.topics.length > 0 && (
+        {institutionEntity.topics && institutionEntity.topics.length > 0 && (
           <Card padding="md" radius="md" withBorder>
             <Group gap="xs" mb="sm">
               <ThemeIcon variant="light" size="sm" color="violet">
@@ -636,7 +639,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
             </Group>
 
             <Stack gap="xs">
-              {institution.topics.slice(0, 6).map((topic, index: number) => (
+              {institutionEntity.topics.slice(0, 6).map((topic, index: number) => (
                 <Group
                   key={topic.id || `institution-topic-${String(index)}`}
                   justify="space-between"
@@ -644,7 +647,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
                   <Anchor
                     size="sm"
                     c={getEntityColor("topics")}
-                   
+
                     onClick={() => {
                       if (topic.id) {
                         handleEntityClick({
