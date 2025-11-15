@@ -78,6 +78,9 @@ export {
 	type UseAsyncOperationOptions,
 } from "./hooks/use-async-operation"
 
+// Settings Components
+export { XpacToggle, type XpacToggleProps } from "./components/settings/XpacToggle"
+
 // Component category exports for tree-shaking
 export * as Atoms from "./atoms"
 export * as DataDisplay from "./components/data-display"

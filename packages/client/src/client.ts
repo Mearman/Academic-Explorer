@@ -17,6 +17,8 @@ import type { OpenAlexError, OpenAlexResponse, QueryParams } from "@academic-exp
 export interface OpenAlexClientConfig {
   baseUrl?: string;
   userEmail?: string;
+  includeXpac?: boolean;
+  dataVersion?: '1' | '2';
   rateLimit?: {
     requestsPerSecond?: number;
     requestsPerDay?: number;
@@ -27,11 +29,19 @@ export interface OpenAlexClientConfig {
   headers?: Record<string, string>;
 }
 
-interface FullyConfiguredClient extends OpenAlexClientConfig {
+interface FullyConfiguredClient {
+  baseUrl: string;
+  userEmail: string;
+  includeXpac: boolean;
+  dataVersion: '1' | '2' | undefined;
   rateLimit: {
     requestsPerSecond: number;
     requestsPerDay: number;
   };
+  timeout: number;
+  retries: number;
+  retryDelay: number;
+  headers: Record<string, string>;
 }
 
 export class OpenAlexApiError extends Error {
@@ -170,6 +180,8 @@ export class OpenAlexBaseClient {
         ? "/api/openalex"
         : "https://api.openalex.org",
       userEmail: "",
+      includeXpac: false,
+      dataVersion: undefined,
       rateLimit: {
         requestsPerSecond: 10, // Conservative default
         requestsPerDay: 100000, // OpenAlex limit
@@ -328,6 +340,16 @@ export class OpenAlexBaseClient {
     // Add user email if provided (recommended by OpenAlex)
     if (this.config.userEmail) {
       url.searchParams.set("mailto", this.config.userEmail);
+    }
+
+    // Add include_xpac parameter if enabled
+    if (this.config.includeXpac) {
+      url.searchParams.set("include_xpac", "true");
+    }
+
+    // Add data_version parameter if specified
+    if (this.config.dataVersion) {
+      url.searchParams.set("data_version", this.config.dataVersion);
     }
 
     // Build URL string first, then manually append select parameter to avoid encoding commas
