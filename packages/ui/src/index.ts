@@ -82,6 +82,9 @@ export {
 export { XpacToggle, type XpacToggleProps } from "./components/settings/XpacToggle"
 export { DataVersionSelector, type DataVersionSelectorProps } from "./components/settings/DataVersionSelector"
 
+// Indicator Components
+export { VersionComparisonIndicator, type VersionComparisonIndicatorProps } from "./components/indicators"
+
 // Component category exports for tree-shaking
 export * as Atoms from "./atoms"
 export * as DataDisplay from "./components/data-display"

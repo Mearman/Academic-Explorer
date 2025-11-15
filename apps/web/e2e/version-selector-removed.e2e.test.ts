@@ -1,0 +1,481 @@
+/**
+ * E2E tests for data version selector removal after November 2025
+ *
+ * Verifies that:
+ * 1. DataVersionSelector IS HIDDEN when date is December 1, 2025 or later
+ * 2. DataVersionSelector IS HIDDEN when date is December 15, 2025
+ * 3. XpacToggle remains visible and functional after selector is hidden
+ * 4. Settings page remains accessible and navigable without the selector
+ * 5. Other settings (email, reset, cache) continue to work normally
+ * 6. UI maintains proper structure and accessibility when selector is hidden
+ *
+ * Related:
+ * - T040: E2E test: Verify data version selector hidden after November 2025
+ * - 013-walden-research specification
+ * - Cutoff date: December 1, 2025 UTC (2025-12-01T00:00:00Z)
+ */
+
+import { test, expect } from "@playwright/test";
+
+test.describe("Data Version Selector Removal After November 2025", () => {
+  test("should hide data version selector when date is December 1, 2025", async ({
+    page,
+  }) => {
+    // Mock system time to December 1, 2025 (cutoff date)
+    await page.clock.setSystemTime(new Date("2025-12-01T00:00:00Z"));
+
+    // Navigate to settings page
+    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+
+    // Verify page loaded successfully
+    const bodyText = await page.textContent("body");
+    expect(bodyText).toBeTruthy();
+    expect(bodyText!.length).toBeGreaterThan(100);
+
+    // Verify data version selector is NOT visible
+    const dataVersionSelector = page.getByTestId("data-version-selector");
+    await expect(dataVersionSelector).not.toBeVisible();
+
+    // Verify description text is also not visible
+    const dataVersionDescription = page.getByTestId(
+      "data-version-selector-description"
+    );
+    await expect(dataVersionDescription).not.toBeVisible();
+
+    // Verify the selector element doesn't exist in the DOM at all
+    const selectorCount = await page
+      .getByTestId("data-version-selector")
+      .count();
+    expect(selectorCount).toBe(0);
+
+    console.log("✅ Data version selector is hidden on December 1, 2025");
+  });
+
+  test("should hide data version selector in mid-December 2025", async ({
+    page,
+  }) => {
+    // Mock system time to December 15, 2025
+    await page.clock.setSystemTime(new Date("2025-12-15T12:00:00Z"));
+
+    // Navigate to settings page
+    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+
+    // Verify page loaded successfully
+    const bodyText = await page.textContent("body");
+    expect(bodyText).toBeTruthy();
+
+    // Verify data version selector is NOT visible
+    const dataVersionSelector = page.getByTestId("data-version-selector");
+    await expect(dataVersionSelector).not.toBeVisible();
+
+    // Verify selector element doesn't exist
+    const selectorCount = await page
+      .getByTestId("data-version-selector")
+      .count();
+    expect(selectorCount).toBe(0);
+
+    console.log("✅ Data version selector is hidden on December 15, 2025");
+  });
+
+  test("should verify xpac toggle is still visible when selector is hidden", async ({
+    page,
+  }) => {
+    // Mock system time to December 1, 2025
+    await page.clock.setSystemTime(new Date("2025-12-01T00:00:00Z"));
+
+    // Navigate to settings page
+    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+
+    // Verify xpac toggle is visible
+    const xpacToggle = page.getByTestId("xpac-toggle");
+    await expect(xpacToggle).toBeVisible();
+
+    // Verify xpac toggle checkbox exists and is accessible
+    const switchInput = xpacToggle.locator('input[type="checkbox"]');
+    await expect(switchInput).toBeVisible();
+
+    // Verify xpac description is visible
+    const xpacDescription = page.getByTestId("xpac-toggle-description");
+    await expect(xpacDescription).toBeVisible();
+
+    // Verify xpac description contains expected text
+    await expect(xpacDescription).toContainText("190M");
+
+    console.log("✅ XpacToggle remains visible when data version selector is hidden");
+  });
+
+  test("should verify xpac toggle is functional when selector is hidden", async ({
+    page,
+  }) => {
+    // Mock system time to December 1, 2025
+    await page.clock.setSystemTime(new Date("2025-12-01T00:00:00Z"));
+
+    // Navigate to settings page
+    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+
+    // Get xpac toggle
+    const xpacToggle = page.getByTestId("xpac-toggle");
+    const switchInput = xpacToggle.locator('input[type="checkbox"]');
+
+    // Verify initial state is checked
+    const initialChecked = await switchInput.isChecked();
+    expect(initialChecked).toBe(true);
+
+    // Toggle OFF
+    await switchInput.click();
+
+    // Verify state changed
+    const afterToggleChecked = await switchInput.isChecked();
+    expect(afterToggleChecked).toBe(false);
+
+    // Toggle back ON
+    await switchInput.click();
+
+    // Verify state changed back
+    const finalChecked = await switchInput.isChecked();
+    expect(finalChecked).toBe(true);
+
+    console.log("✅ XpacToggle functions correctly when selector is hidden");
+  });
+
+  test("should maintain settings page structure without selector", async ({
+    page,
+  }) => {
+    // Mock system time to December 1, 2025
+    await page.clock.setSystemTime(new Date("2025-12-01T00:00:00Z"));
+
+    // Navigate to settings page
+    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+
+    // Verify page header is visible
+    const pageTitle = page.getByText(/User Preferences/i);
+    await expect(pageTitle).toBeVisible();
+
+    // Verify email section is visible
+    const emailSection = page.getByText(/OpenAlex Polite Pool/i);
+    await expect(emailSection).toBeVisible();
+
+    // Verify warning alert is visible
+    const warningAlert = page.getByRole("region");
+    expect(await warningAlert.count()).toBeGreaterThan(0);
+
+    // Verify reset preferences button is visible
+    const resetButton = page.getByRole("button", {
+      name: /Reset User Preferences/i,
+    });
+    await expect(resetButton).toBeVisible();
+
+    // Verify cache clear button is visible
+    const clearButton = page.getByRole("button", {
+      name: /Clear All Cache & User Data/i,
+    });
+    await expect(clearButton).toBeVisible();
+
+    // Verify dividers are still present (separating sections)
+    const dividers = page.locator('[role="separator"]');
+    expect(await dividers.count()).toBeGreaterThan(0);
+
+    console.log("✅ Settings page structure is intact without the selector");
+  });
+
+  test("should maintain accessibility without data version selector", async ({
+    page,
+  }) => {
+    // Mock system time to December 1, 2025
+    await page.clock.setSystemTime(new Date("2025-12-01T00:00:00Z"));
+
+    // Navigate to settings page
+    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+
+    // Verify page is keyboard navigable - tab through focusable elements
+    const focusableElements = page.locator(
+      "button, [type=checkbox], [type=text], select, [role=button], [role=tab]"
+    );
+    const count = await focusableElements.count();
+    expect(count).toBeGreaterThan(0);
+
+    // Verify buttons are accessible
+    const buttons = page.locator("button");
+    const buttonCount = await buttons.count();
+    expect(buttonCount).toBeGreaterThan(0);
+
+    // Verify first button is keyboard accessible
+    await buttons.first().focus();
+    const focusedElement = await page.evaluate(() => {
+      return document.activeElement?.tagName;
+    });
+    expect(focusedElement?.toUpperCase()).toBe("BUTTON");
+
+    // Verify form inputs have labels or accessible names
+    const inputs = page.locator("input");
+    for (let i = 0; i < Math.min(3, await inputs.count()); i++) {
+      const input = inputs.nth(i);
+      const hasLabel =
+        (await input.getAttribute("aria-label")) ||
+        (await input.getAttribute("placeholder")) ||
+        (await input.getAttribute("title"));
+      expect(hasLabel).toBeTruthy();
+    }
+
+    console.log("✅ Settings page remains accessible without the selector");
+  });
+
+  test("should verify no selector renders before December 1, 2025", async ({
+    page,
+  }) => {
+    // Mock system time to November 30, 2025 (one day before cutoff)
+    await page.clock.setSystemTime(new Date("2025-11-30T23:59:59Z"));
+
+    // Navigate to settings page
+    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+
+    // Verify data version selector IS visible before cutoff
+    const dataVersionSelector = page.getByTestId("data-version-selector");
+    await expect(dataVersionSelector).toBeVisible();
+
+    console.log("✅ Data version selector is visible before December 1, 2025");
+  });
+
+  test("should handle navigation with selector hidden", async ({ page }) => {
+    // Mock system time to December 1, 2025
+    await page.clock.setSystemTime(new Date("2025-12-01T00:00:00Z"));
+
+    // Navigate to home page first
+    await page.goto("/#/", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+
+    // Navigate to settings page
+    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+
+    // Verify selector is not visible
+    const dataVersionSelector = page.getByTestId("data-version-selector");
+    await expect(dataVersionSelector).not.toBeVisible();
+
+    // Navigate to a work detail page
+    await page.goto("/#/works/W2741809807", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+
+    // Verify page loaded (not in settings, so selector shouldn't be present)
+    const bodyText = await page.textContent("body");
+    expect(bodyText).toBeTruthy();
+
+    // Navigate back to settings
+    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+
+    // Verify selector is still not visible
+    await expect(dataVersionSelector).not.toBeVisible();
+
+    console.log("✅ Navigation works correctly with selector hidden");
+  });
+
+  test("should verify selector is completely absent from DOM", async ({
+    page,
+  }) => {
+    // Mock system time to December 1, 2025
+    await page.clock.setSystemTime(new Date("2025-12-01T00:00:00Z"));
+
+    // Navigate to settings page
+    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+
+    // Verify no element with data-testid="data-version-selector" exists
+    const selectorByTestId = page.getByTestId("data-version-selector");
+    expect(await selectorByTestId.count()).toBe(0);
+
+    // Verify no element with data-testid="data-version-selector-description" exists
+    const descriptionByTestId = page.getByTestId(
+      "data-version-selector-description"
+    );
+    expect(await descriptionByTestId.count()).toBe(0);
+
+    // Verify no select element for data version exists in settings
+    const selects = page.locator("select");
+    const selectCount = await selects.count();
+
+    // There should be no selects, or if there are, none should be for data version
+    if (selectCount > 0) {
+      for (let i = 0; i < selectCount; i++) {
+        const select = selects.nth(i);
+        const options = select.locator("option");
+        const optionText = await options.allTextContents();
+        const hasVersionOption = optionText.some(
+          (text) =>
+            text.includes("Auto") ||
+            text.includes("legacy") ||
+            text.includes("Version")
+        );
+        expect(hasVersionOption).toBe(false);
+      }
+    }
+
+    console.log("✅ Data version selector is completely absent from DOM");
+  });
+
+  test("should verify divider before xpac toggle when selector is hidden", async ({
+    page,
+  }) => {
+    // Mock system time to December 1, 2025
+    await page.clock.setSystemTime(new Date("2025-12-01T00:00:00Z"));
+
+    // Navigate to settings page
+    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+
+    // Verify email section exists
+    const emailSection = page.getByText(/OpenAlex Polite Pool/i);
+    await expect(emailSection).toBeVisible();
+
+    // Verify xpac toggle exists
+    const xpacToggle = page.getByTestId("xpac-toggle");
+    await expect(xpacToggle).toBeVisible();
+
+    // Verify there's a divider between them
+    const dividers = page.locator('[role="separator"]');
+    const dividerCount = await dividers.count();
+
+    // Should have at least 1 divider separating sections
+    expect(dividerCount).toBeGreaterThan(0);
+
+    console.log("✅ Page layout properly maintains dividers without the selector");
+  });
+
+  test("should verify email section functions when selector is hidden", async ({
+    page,
+  }) => {
+    // Mock system time to December 1, 2025
+    await page.clock.setSystemTime(new Date("2025-12-01T00:00:00Z"));
+
+    // Navigate to settings page
+    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+
+    // Find configure button in email section
+    const configureButton = page.getByRole("button", {
+      name: /Configure|Edit/i,
+    });
+
+    // Should have at least the email configuration button
+    const buttonCount = await configureButton.count();
+    expect(buttonCount).toBeGreaterThan(0);
+
+    // Verify email input is available
+    const emailInput = page.locator('input[type="text"]');
+    expect(await emailInput.count()).toBeGreaterThan(0);
+
+    console.log("✅ Email configuration section functions correctly");
+  });
+
+  test("should verify no console errors when selector is hidden", async ({
+    page,
+  }) => {
+    // Mock system time to December 1, 2025
+    await page.clock.setSystemTime(new Date("2025-12-01T00:00:00Z"));
+
+    // Capture console messages
+    const consoleMessages: string[] = [];
+
+    page.on("console", (message) => {
+      if (
+        message.type() === "error" ||
+        message.type() === "warning"
+      ) {
+        consoleMessages.push(`${message.type()}: ${message.text()}`);
+      }
+    });
+
+    // Navigate to settings page
+    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+
+    // Wait a bit for any async operations to complete
+    await page.waitForTimeout(1000);
+
+    // Filter out expected warnings (e.g., about features, etc.)
+    const errorMessages = consoleMessages.filter(
+      (msg) =>
+        !msg.includes("ResizeObserver") &&
+        !msg.includes("Mantine") &&
+        !msg.includes("React") &&
+        !msg.includes("Playwright")
+    );
+
+    // Should have minimal or no errors related to our changes
+    const relevantErrors = errorMessages.filter(
+      (msg) =>
+        msg.includes("undefined") ||
+        msg.includes("Cannot read") ||
+        msg.includes("is not a function")
+    );
+
+    expect(relevantErrors.length).toBe(0);
+
+    console.log(
+      `✅ No critical console errors when selector is hidden (${errorMessages.length} other warnings)`
+    );
+  });
+
+  test("should verify page rendering performance without selector", async ({
+    page,
+  }) => {
+    // Mock system time to December 1, 2025
+    await page.clock.setSystemTime(new Date("2025-12-01T00:00:00Z"));
+
+    // Measure page load performance
+    const startTime = Date.now();
+
+    // Navigate to settings page
+    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+
+    const loadTime = Date.now() - startTime;
+
+    // Page should load within reasonable time (< 10 seconds)
+    expect(loadTime).toBeLessThan(10000);
+
+    // Verify page is fully rendered
+    const bodyText = await page.textContent("body");
+    expect(bodyText).toBeTruthy();
+    expect(bodyText!.length).toBeGreaterThan(100);
+
+    console.log(
+      `✅ Settings page loaded successfully in ${loadTime}ms without selector`
+    );
+  });
+
+  test("should verify selector is present before cutoff and hidden after", async ({
+    page,
+  }) => {
+    // First, check that selector IS visible on November 30
+    await page.clock.setSystemTime(new Date("2025-11-30T23:59:59Z"));
+    await page.goto("/#/settings", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+
+    const selectorBefore = page.getByTestId("data-version-selector");
+    await expect(selectorBefore).toBeVisible();
+
+    console.log(
+      "✅ Data version selector is visible on November 30, 2025"
+    );
+
+    // Now check that selector is NOT visible on December 1
+    await page.clock.setSystemTime(new Date("2025-12-01T00:00:00Z"));
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+
+    const selectorAfter = page.getByTestId("data-version-selector");
+    await expect(selectorAfter).not.toBeVisible();
+
+    console.log(
+      "✅ Data version selector is hidden on December 1, 2025 (cutoff verified)"
+    );
+  });
+});

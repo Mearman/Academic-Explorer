@@ -44,6 +44,9 @@ import {
 import { Link } from "@tanstack/react-router";
 import { convertOpenAlexToInternalLink, isOpenAlexId } from "@/utils/openalex-link-conversion";
 import { useThemeColors } from "@/hooks/use-theme-colors";
+import { useVersionComparison } from "@/hooks/use-version-comparison";
+import { VersionComparisonIndicator } from "@academic-explorer/ui";
+import { isDataVersionSelectorVisible } from "@academic-explorer/utils";
 
 interface ThemeColors {
   background: {
@@ -303,6 +306,13 @@ export function EntityDataDisplay({ data, title }: EntityDataDisplayProps) {
   const { colors } = useThemeColors();
   const groups = groupFields(data);
 
+  // Extract work ID if this is a Work entity
+  const workId = typeof data.id === 'string' && data.id.startsWith('W') ? data.id : undefined;
+
+  // Only fetch version comparison for Works during November transition period
+  const shouldShowComparison = workId && isDataVersionSelectorVisible();
+  const { comparison } = useVersionComparison(workId, shouldShowComparison);
+
   return (
     <Container size="100%" p={0}>
       <Stack gap="xl">
@@ -310,6 +320,15 @@ export function EntityDataDisplay({ data, title }: EntityDataDisplayProps) {
           <Title order={1} size="h1" fw={700} mb="md">
             {title}
           </Title>
+        )}
+
+        {/* Version Comparison Indicator - Only for Works during November 2025 transition */}
+        {shouldShowComparison && comparison && (
+          <VersionComparisonIndicator
+            currentVersion={comparison.currentVersion}
+            referencesCount={comparison.referencesCount}
+            locationsCount={comparison.locationsCount}
+          />
         )}
 
         {Object.entries(groups).map(([groupName, groupData]) => (
