@@ -188,6 +188,92 @@ export function nodeHasError(): boolean {
 }
 
 /**
+ * Get work type for a work node - extracted on-demand from entity data
+ */
+export function getNodeWorkType(node: GraphNode): string | undefined {
+	if (node.entityType === "works") {
+		const workType = node.entityData?.["type"]
+		if (workType && typeof workType === "string") {
+			return workType
+		}
+	}
+	return undefined
+}
+
+/**
+ * Check if a work is an XPAC work (dataset/software/specimen/other)
+ * Uses the is_xpac flag from OpenAlex if available, otherwise infers from type
+ */
+export function getNodeIsXpac(node: GraphNode): boolean | undefined {
+	if (node.entityType !== "works") {
+		return undefined
+	}
+
+	// First check the explicit isXpac flag if set on the node
+	if (node.isXpac !== undefined) {
+		return node.isXpac
+	}
+
+	// Check OpenAlex is_xpac field
+	const isXpac = node.entityData?.["is_xpac"]
+	if (isXpac !== undefined) {
+		return Boolean(isXpac)
+	}
+
+	// Fallback: infer from work type
+	const workType = getNodeWorkType(node)
+	if (workType) {
+		const xpacTypes = ["dataset", "software", "specimen", "other"]
+		return xpacTypes.includes(workType.toLowerCase())
+	}
+
+	return undefined
+}
+
+/**
+ * Check if a work has unverified authors (authors without Author IDs)
+ */
+export function getNodeHasUnverifiedAuthor(node: GraphNode): boolean | undefined {
+	if (node.entityType !== "works") {
+		return undefined
+	}
+
+	// First check the explicit hasUnverifiedAuthor flag if set on the node
+	if (node.hasUnverifiedAuthor !== undefined) {
+		return node.hasUnverifiedAuthor
+	}
+
+	// Check authorships in entity data
+	function isArray(value: unknown): value is unknown[] {
+		return Array.isArray(value)
+	}
+
+	function isAuthorshipRecord(value: unknown): value is Record<string, unknown> {
+		return value !== null && typeof value === "object"
+	}
+
+	const authorships = node.entityData?.["authorships"]
+	if (!isArray(authorships)) {
+		return undefined
+	}
+
+	// Check if any authorship lacks an author.id
+	for (const authorship of authorships) {
+		if (!isAuthorshipRecord(authorship)) continue
+
+		const author = authorship["author"]
+		if (!isAuthorshipRecord(author)) continue
+
+		// If author.id is missing or null, this is an unverified author
+		if (!author["id"]) {
+			return true
+		}
+	}
+
+	return false
+}
+
+/**
  * Get a summary of available data fields for debugging
  */
 export function getNodeDataSummary(node: GraphNode): {

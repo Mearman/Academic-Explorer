@@ -77,6 +77,10 @@ export interface GraphNode {
 
 	// Node metadata for loading states, errors, etc.
 	metadata?: Record<string, unknown>
+
+	// Work-specific metadata flags (User Story 2)
+	isXpac?: boolean // Indicates if this is an XPAC work (dataset/software/specimen/other)
+	hasUnverifiedAuthor?: boolean // Indicates if work has authors without Author IDs
 }
 
 export interface GraphEdge {
