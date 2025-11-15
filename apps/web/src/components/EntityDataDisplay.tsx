@@ -310,7 +310,7 @@ export function EntityDataDisplay({ data, title }: EntityDataDisplayProps) {
   const workId = typeof data.id === 'string' && data.id.startsWith('W') ? data.id : undefined;
 
   // Only fetch version comparison for Works during November transition period
-  const shouldShowComparison = workId && isDataVersionSelectorVisible();
+  const shouldShowComparison = Boolean(workId && isDataVersionSelectorVisible());
   const { comparison } = useVersionComparison(workId, shouldShowComparison);
 
   return (

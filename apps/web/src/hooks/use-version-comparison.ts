@@ -4,7 +4,7 @@
  */
 
 import { useQuery } from "@tanstack/react-query";
-import { client } from "@academic-explorer/client";
+import { cachedOpenAlex } from "@academic-explorer/client";
 import type { Work } from "@academic-explorer/types";
 import { settingsStoreInstance } from "@/stores/settings-store";
 
@@ -39,7 +39,7 @@ export function useVersionComparison(
       // Fetch work with both versions for comparison
       const fetchWorkWithVersion = async (version: '1' | '2' | undefined) => {
         try {
-          return await client.getWork(workId, {
+          return await cachedOpenAlex.client.works.getWork(workId, {
             select: ['id', 'referenced_works_count', 'locations_count'],
             dataVersion: version,
           });
