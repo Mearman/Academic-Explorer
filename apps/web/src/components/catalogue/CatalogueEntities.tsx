@@ -72,6 +72,12 @@ import {
 interface CatalogueEntitiesProps {
   /** Currently selected list */
   selectedList: CatalogueList | null;
+  /** Entities in the selected list */
+  entities: CatalogueEntity[];
+  /** Loading state for entities */
+  isLoadingEntities: boolean;
+  /** All lists (for bulk move operations) */
+  lists: CatalogueList[];
   /** Callback to navigate to entity pages */
   onNavigate?: (entityType: EntityType, entityId: string) => void;
 }
@@ -371,17 +377,20 @@ function SortableEntityRow({
   );
 }
 
-export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitiesProps) {
-  // T081: Hooks must be called unconditionally, so move them before guard clause
+export function CatalogueEntities({
+  selectedList,
+  entities,
+  isLoadingEntities,
+  lists,
+  onNavigate
+}: CatalogueEntitiesProps) {
+  // Get only the mutation functions from the hook (not the state)
   const {
-    entities,
-    isLoadingEntities,
     removeEntityFromList,
     reorderEntities,
     updateEntityNotes,
     bulkRemoveEntities,
     bulkMoveEntities,
-    lists,
   } = useCatalogue();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<string>("all");

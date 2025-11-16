@@ -365,6 +365,9 @@ export function CatalogueManager({ onNavigate, sharedToken, shareData }: Catalog
         {selectedList && (
           <CatalogueEntities
             selectedList={selectedList}
+            entities={entities}
+            isLoadingEntities={isLoadingEntities}
+            lists={lists}
             onNavigate={(entityType, entityId) => {
               const url = `/#/${entityType}/${entityId}`;
               if (onNavigate) {

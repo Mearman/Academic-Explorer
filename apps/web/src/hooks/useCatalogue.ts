@@ -193,11 +193,24 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
   const refreshEntities = useCallback(async (listId: string) => {
     if (!listId) return;
 
+    console.log("[useCatalogue] Refreshing entities for list:", listId);
+    logger.debug(CATALOGUE_LOGGER_CONTEXT, "Refreshing entities for list", { listId });
     setIsLoadingEntities(true);
     try {
       const listEntities = await storage.getListEntities(listId);
+      console.log("[useCatalogue] Entities fetched from storage:", {
+        listId,
+        entityCount: listEntities.length,
+        entityIds: listEntities.map(e => e.entityId)
+      });
+      logger.debug(CATALOGUE_LOGGER_CONTEXT, "Entities fetched from storage", {
+        listId,
+        entityCount: listEntities.length,
+        entities: listEntities.map(e => ({ id: e.id, entityId: e.entityId, entityType: e.entityType }))
+      });
       setEntities(listEntities);
     } catch (error) {
+      console.error("[useCatalogue] Failed to refresh list entities:", error);
       logger.error(CATALOGUE_LOGGER_CONTEXT, "Failed to refresh list entities", { listId, error });
       setEntities([]);
     } finally {
@@ -212,6 +225,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
 
   // Load entities when selected list changes
   useEffect(() => {
+    logger.debug(CATALOGUE_LOGGER_CONTEXT, "Selected list changed", { selectedListId });
     if (selectedListId) {
       void refreshEntities(selectedListId);
     } else {
