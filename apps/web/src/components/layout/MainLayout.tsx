@@ -491,13 +491,10 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
       {/* Main Content Area */}
       <AppShell.Main
-        p="md"
         data-testid="main-content"
         styles={{
           main: {
-            paddingTop: "var(--mantine-spacing-md)",
-            paddingBottom: "var(--mantine-spacing-md)",
-            overflow: "visible",
+            overflow: "auto",
             display: "flex",
             flexDirection: "column",
           },
