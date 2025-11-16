@@ -3,39 +3,39 @@
   "directories": {
     "works": {
       "$ref": "./works",
-      "lastModified": "2025-11-10T06:30:55.241Z"
+      "lastModified": "2025-11-15T20:09:28.403Z"
     },
     "general": {
       "$ref": "./general",
-      "lastModified": "2025-11-10T06:30:57.368Z"
+      "lastModified": "2025-11-15T20:09:29.649Z"
     },
     "authors": {
       "$ref": "./authors",
-      "lastModified": "2025-11-10T06:30:55.623Z"
+      "lastModified": "2025-11-15T20:09:28.607Z"
     },
     "sources": {
       "$ref": "./sources",
-      "lastModified": "2025-11-10T06:30:52.889Z"
+      "lastModified": "2025-11-15T20:09:27.573Z"
     },
     "institutions": {
       "$ref": "./institutions",
-      "lastModified": "2025-11-10T06:30:55.808Z"
+      "lastModified": "2025-11-15T20:09:28.702Z"
     },
     "topics": {
       "$ref": "./topics",
-      "lastModified": "2025-11-10T06:30:56.086Z"
+      "lastModified": "2025-11-15T20:09:28.909Z"
     },
     "publishers": {
       "$ref": "./publishers",
-      "lastModified": "2025-11-10T06:30:53.780Z"
+      "lastModified": "2025-11-15T20:09:27.894Z"
     },
     "funders": {
       "$ref": "./funders",
-      "lastModified": "2025-11-10T06:30:54.191Z"
+      "lastModified": "2025-11-15T20:09:27.986Z"
     },
     "concepts": {
       "$ref": "./concepts",
-      "lastModified": "2025-11-10T06:30:54.349Z"
+      "lastModified": "2025-11-15T20:09:28.098Z"
     }
   }
 }
