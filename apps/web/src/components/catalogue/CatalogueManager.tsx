@@ -63,11 +63,6 @@ export function CatalogueManager({ onNavigate, sharedToken, shareData }: Catalog
     importFromShareUrl,
     getListStats,
     searchLists,
-    removeEntityFromList,
-    reorderEntities,
-    updateEntityNotes,
-    bulkRemoveEntities,
-    bulkMoveEntities,
   } = useCatalogue();
 
   const [activeTab, setActiveTab] = useState<string | null>("lists");
@@ -370,9 +365,6 @@ export function CatalogueManager({ onNavigate, sharedToken, shareData }: Catalog
         {selectedList && (
           <CatalogueEntities
             selectedList={selectedList}
-            entities={entities}
-            isLoadingEntities={isLoadingEntities}
-            lists={lists}
             onNavigate={(entityType, entityId) => {
               const url = `/#/${entityType}/${entityId}`;
               if (onNavigate) {
@@ -381,11 +373,6 @@ export function CatalogueManager({ onNavigate, sharedToken, shareData }: Catalog
                 window.location.hash = `/${entityType}/${entityId}`;
               }
             }}
-            onRemoveEntity={removeEntityFromList}
-            onReorderEntities={reorderEntities}
-            onUpdateEntityNotes={updateEntityNotes}
-            onBulkRemoveEntities={bulkRemoveEntities}
-            onBulkMoveEntities={bulkMoveEntities}
           />
         )}
 

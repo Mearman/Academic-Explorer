@@ -72,20 +72,8 @@ import {
 interface CatalogueEntitiesProps {
   /** Currently selected list */
   selectedList: CatalogueList | null;
-  /** Entities in the selected list */
-  entities: CatalogueEntity[];
-  /** Loading state for entities */
-  isLoadingEntities: boolean;
-  /** All lists (for bulk move operations) */
-  lists: CatalogueList[];
   /** Callback to navigate to entity pages */
   onNavigate?: (entityType: EntityType, entityId: string) => void;
-  /** Mutation functions from useCatalogue hook */
-  onRemoveEntity: (listId: string, entityRecordId: string) => Promise<void>;
-  onReorderEntities: (listId: string, orderedEntityIds: string[]) => Promise<void>;
-  onUpdateEntityNotes: (entityRecordId: string, notes: string) => Promise<void>;
-  onBulkRemoveEntities: (listId: string, entityIds: string[]) => Promise<void>;
-  onBulkMoveEntities: (sourceListId: string, targetListId: string, entityIds: string[]) => Promise<void>;
 }
 
 interface SortableEntityRowProps {
@@ -383,20 +371,18 @@ function SortableEntityRow({
   );
 }
 
-export function CatalogueEntities({
-  selectedList,
-  entities,
-  isLoadingEntities,
-  lists,
-  onNavigate,
-  onRemoveEntity,
-  onReorderEntities,
-  onUpdateEntityNotes,
-  onBulkRemoveEntities,
-  onBulkMoveEntities,
-}: CatalogueEntitiesProps) {
-  // All mutation functions are now received as props from parent
-  // This avoids creating a second useCatalogue() hook instance
+export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitiesProps) {
+  // T081: Hooks must be called unconditionally, so move them before guard clause
+  const {
+    entities,
+    isLoadingEntities,
+    removeEntityFromList,
+    reorderEntities,
+    updateEntityNotes,
+    bulkRemoveEntities,
+    bulkMoveEntities,
+    lists,
+  } = useCatalogue();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("position");
@@ -470,7 +456,7 @@ export function CatalogueEntities({
     });
 
     try {
-      await onReorderEntities(selectedList.id!, reorderedIds);
+      await reorderEntities(selectedList.id!, reorderedIds);
       logger.debug("catalogue-ui", "Entities reordered successfully", {
         listId: selectedList.id!,
         entityCount: reorderedIds.length
@@ -500,7 +486,7 @@ export function CatalogueEntities({
     if (!selectedList) return;
 
     try {
-      await onRemoveEntity(selectedList.id!, entityRecordId);
+      await removeEntityFromList(selectedList.id!, entityRecordId);
       logger.debug("catalogue-ui", "Entity removed from list", {
         listId: selectedList.id!,
         entityRecordId
@@ -526,7 +512,7 @@ export function CatalogueEntities({
 
   const handleEditNotes = async (entityRecordId: string, notes: string) => {
     try {
-      await onUpdateEntityNotes(entityRecordId, notes);
+      await updateEntityNotes(entityRecordId, notes);
       logger.debug("catalogue-ui", "Entity notes updated", {
         entityRecordId,
         notesLength: notes.length
@@ -572,7 +558,7 @@ export function CatalogueEntities({
     if (!selectedList || selectedEntities.size === 0) return;
 
     try {
-      await onBulkRemoveEntities(selectedList.id!, Array.from(selectedEntities));
+      await bulkRemoveEntities(selectedList.id!, Array.from(selectedEntities));
 
       logger.debug("catalogue-ui", "Bulk remove completed", {
         listId: selectedList.id!,
@@ -604,7 +590,7 @@ export function CatalogueEntities({
     if (!selectedList || !targetListId || selectedEntities.size === 0) return;
 
     try {
-      await onBulkMoveEntities(selectedList.id!, targetListId, Array.from(selectedEntities));
+      await bulkMoveEntities(selectedList.id!, targetListId, Array.from(selectedEntities));
 
       logger.debug("catalogue-ui", "Bulk move completed", {
         sourceListId: selectedList.id!,
