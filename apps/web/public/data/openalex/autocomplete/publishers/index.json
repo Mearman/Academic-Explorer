@@ -16,7 +16,7 @@
     "q=Springer": {
       "url": "https://api.openalex.org/autocomplete/publishers?q=Springer",
       "$ref": "./q=Springer.json",
-      "lastRetrieved": "2025-11-15T20:09:27.880Z",
+      "lastRetrieved": "2025-11-16T10:11:14.428Z",
       "contentHash": "75f196f26b823bd3"
     }
   }

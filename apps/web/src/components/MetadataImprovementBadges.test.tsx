@@ -4,10 +4,15 @@
  * Verifies badge rendering for metadata improvements in works
  */
 
-import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, afterEach } from "vitest";
+import { render, screen, cleanup } from "@testing-library/react";
 import { MetadataImprovementBadges } from "./MetadataImprovementBadges";
 import { MantineProvider } from "@mantine/core";
+
+// Ensure cleanup runs after each test to prevent DOM pollution
+afterEach(() => {
+	cleanup();
+});
 
 // Wrapper component for Mantine context
 function renderWithMantine(component: React.ReactElement) {
