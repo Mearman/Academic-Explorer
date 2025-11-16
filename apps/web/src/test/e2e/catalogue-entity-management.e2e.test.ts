@@ -98,10 +98,6 @@ test.describe("Catalogue Entity Management", () => {
   });
 
   test("should remove entities from lists", async ({ page }) => {
-    // SKIPPED: Remove functionality UI implementation pending
-    // This test requires a remove button on entity items which may not be implemented yet
-    // TODO: Implement entity removal UI and enable this test
-
     // Create a list with entities
     await createListWithMultipleEntities(page, "Removal Test List");
 
@@ -109,38 +105,58 @@ test.describe("Catalogue Entity Management", () => {
     await page.goto("http://localhost:5173/#/catalogue");
     await page.waitForLoadState("networkidle");
 
-    await page.locator('[data-testid^="list-card-"]').filter({ hasText: "Removal Test List" }).first().click();
+    // Wait a bit for catalogue to fully load
+    await page.waitForTimeout(1000);
 
-    // Find entity items
-    await expect(page.locator('[data-testid="entity-item"], .entity-card')).toHaveCount(2, { timeout: 10000 });
+    // Find and click the list card
+    const listCard = page.locator('[data-testid^="list-card-"]').filter({ hasText: "Removal Test List" }).first();
+    await expect(listCard).toBeVisible({ timeout: 10000 });
+    await listCard.click();
 
-    // Look for remove button (UI may vary)
-    const firstEntity = page.locator('[data-testid="entity-item"], .entity-card').first();
-    await firstEntity.hover();
+    // Wait for list details to appear
+    await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10000 });
 
-    const removeButton = firstEntity.locator('button:has-text("Remove"), [aria-label*="remove"], [data-testid="remove-entity-button"]');
-    if (!(await removeButton.isVisible({ timeout: 2000 }))) {
-      console.log("Remove button not found - feature may not be implemented yet");
-      return;
+    // Wait for entity count stats to update (proves entities are in DB)
+    await expect(page.locator('[data-testid="stat-total"]:has-text("2")')).toBeVisible({ timeout: 10000 });
+
+    // Wait longer for entities to load in table (entities are fetched asynchronously from IndexedDB)
+    await page.waitForTimeout(5000);
+
+    // Find entity items - wait for either success or clear error message
+    const entityItems = page.locator('[data-testid="entity-item"]');
+    const noEntitiesMessage = page.locator('text="No entities yet"');
+
+    // Check if entities loaded or if we got the empty message
+    const entitiesVisible = await entityItems.count().then(count => count === 2).catch(() => false);
+    const emptyMessageVisible = await noEntitiesMessage.isVisible().catch(() => false);
+
+    if (emptyMessageVisible && !entitiesVisible) {
+      throw new Error("Entities are in database (stats show 2) but not displaying in table. This is a bug in CatalogueEntities component.");
     }
 
-    await removeButton.click();
+    await expect(entityItems).toHaveCount(2, { timeout: 5000 });
 
-    // Look for confirmation dialog
-    const confirmDialog = page.locator('text="Are you sure", [role="dialog"]');
-    if (await confirmDialog.isVisible({ timeout: 2000 })) {
-      await page.locator('button:has-text("Remove"), button:has-text("Confirm")').first().click();
-    }
+    // Look for remove button via the menu (three dots menu)
+    const firstEntity = page.locator('[data-testid="entity-item"]').first();
+
+    // Click the three-dots menu button
+    await firstEntity.locator('button').filter({ hasText: '' }).last().click();
+
+    // Click Remove menu item
+    await page.locator('[role="menuitem"]').filter({ hasText: "Remove" }).click();
+
+    // Confirm removal in modal
+    await expect(page.getByRole('dialog', { name: 'Confirm Removal' })).toBeVisible();
+    await page.locator('button:has-text("Remove")').last().click();
+
+    // Wait for removal to complete
+    await page.waitForTimeout(1000);
 
     // Verify entity count decreased
-    await expect(page.locator('[data-testid="entity-item"], .entity-card')).toHaveCount(1, { timeout: 5000 });
+    await expect(page.locator('[data-testid="entity-item"]')).toHaveCount(1, { timeout: 5000 });
   });
 
   test("should reorder entities via drag and drop", async ({ page }) => {
-    // SKIPPED: Drag-and-drop reordering UI implementation pending
-    // This test requires drag handles and reordering functionality which may not be fully implemented
-    // TODO: Verify drag-and-drop implementation and enable this test
-
     // Create a list with multiple entities
     await createListWithMultipleEntities(page, "Reorder Test List");
 
@@ -150,41 +166,39 @@ test.describe("Catalogue Entity Management", () => {
 
     await page.locator('[data-testid^="list-card-"]').filter({ hasText: "Reorder Test List" }).first().click();
 
+    // Wait for list details to appear
+    await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10000 });
+
+    // Wait for entities to load
+    await page.waitForTimeout(2000);
+
     // Get initial order of entities
-    const entities = page.locator('[data-testid="entity-item"], .entity-card');
+    const entities = page.locator('[data-testid="entity-item"]');
     await expect(entities).toHaveCount(2, { timeout: 10000 });
 
-    // Check if drag handles exist
-    const dragHandle = page.locator('[data-testid="drag-handle"], [aria-label*="drag"], .drag-handle').first();
-    if (!(await dragHandle.isVisible({ timeout: 2000 }))) {
-      console.log("Drag handles not found - drag-and-drop may not be implemented yet");
-      return;
-    }
+    // Get first entity ID before reordering
+    const firstEntityBefore = await entities.first().locator('text=/^(A|W)\\d+/').first().textContent();
 
-    // Get first entity text for verification
-    const firstEntityText = await entities.first().textContent();
+    // Find drag handle in first entity (grip icon)
+    const firstEntity = entities.first();
+    const dragHandle = firstEntity.locator('[role="button"]').first();
 
-    // Perform drag and drop
-    await entities.first().hover();
-    await page.mouse.down();
-
-    // Move to second entity position
+    // Perform drag and drop using Playwright's dragTo
     const secondEntity = entities.nth(1);
-    await secondEntity.hover();
-    await page.mouse.up();
+    await dragHandle.dragTo(secondEntity);
 
     // Wait for reordering to complete
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(1500);
 
-    // Verify entities still present (order verification depends on implementation)
+    // Verify entities still present
     await expect(entities).toHaveCount(2);
+
+    // Verify order changed (first entity is now second)
+    const firstEntityAfter = await entities.first().locator('text=/^(A|W)\\d+/').first().textContent();
+    expect(firstEntityAfter).not.toBe(firstEntityBefore);
   });
 
   test("should search and filter entities within a list", async ({ page }) => {
-    // SKIPPED: Search/filter UI implementation pending
-    // This test requires search functionality within list entity view
-    // TODO: Implement entity search/filter UI and enable this test
-
     // Create a list with various entities
     await createListWithMultipleEntities(page, "Filter Test List");
 
@@ -197,29 +211,34 @@ test.describe("Catalogue Entity Management", () => {
     // Wait for list to load
     await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10000 });
 
-    // Look for search input within entities view
-    const searchInput = page.locator('input[placeholder*="Search entities"], input[aria-label*="search"], [data-testid="entity-search-input"]');
-    if (!(await searchInput.isVisible({ timeout: 2000 }))) {
-      console.log("Search input not found - search functionality may not be implemented yet");
-      return;
-    }
+    // Wait for entities to load
+    await page.waitForTimeout(2000);
 
-    // Search for specific entity type
-    await searchInput.fill('author');
+    // Verify initial entity count
+    await expect(page.locator('[data-testid="entity-item"]')).toHaveCount(2, { timeout: 10000 });
+
+    // Find search input within entities view
+    const searchInput = page.locator('input[placeholder*="Search entities"]').or(page.locator('input[aria-label*="Search entities"]'));
+    await expect(searchInput).toBeVisible({ timeout: 5000 });
+
+    // Search for specific entity ID (author starts with A)
+    await searchInput.fill('A5017898742');
 
     // Wait for filtering to apply
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(500);
 
-    // Verify some entities are visible (exact verification depends on implementation)
-    const entityItems = page.locator('[data-testid="entity-item"], .entity-card');
-    await expect(entityItems.first()).toBeVisible({ timeout: 5000 });
+    // Verify filtered results (should show only 1 entity)
+    await expect(page.locator('[data-testid="entity-item"]')).toHaveCount(1, { timeout: 5000 });
+
+    // Clear search
+    await searchInput.clear();
+    await page.waitForTimeout(500);
+
+    // Verify all entities are shown again
+    await expect(page.locator('[data-testid="entity-item"]')).toHaveCount(2, { timeout: 5000 });
   });
 
   test("should add notes to entities", async ({ page }) => {
-    // SKIPPED: Entity notes editing UI implementation pending
-    // This test requires edit/notes buttons on entity items
-    // TODO: Implement entity notes editing UI and enable this test
-
     // Create a list with an entity
     await createListWithMultipleEntities(page, "Notes Test List");
 
@@ -229,34 +248,36 @@ test.describe("Catalogue Entity Management", () => {
 
     await page.locator('[data-testid^="list-card-"]').filter({ hasText: "Notes Test List" }).first().click();
 
+    // Wait for list details to appear
+    await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10000 });
+
     // Wait for entities to load
-    await expect(page.locator('[data-testid="entity-item"], .entity-card')).toHaveCount(2, { timeout: 10000 });
+    await page.waitForTimeout(2000);
 
-    // Find first entity and look for edit/notes button
-    const firstEntity = page.locator('[data-testid="entity-item"], .entity-card').first();
-    await firstEntity.hover();
+    // Verify entities loaded
+    await expect(page.locator('[data-testid="entity-item"]')).toHaveCount(2, { timeout: 10000 });
 
-    // Look for edit/notes button
-    const editButton = firstEntity.locator('button:has-text("Edit"), [aria-label*="edit"], [aria-label*="notes"], [data-testid="edit-entity-button"]');
-    if (!(await editButton.isVisible({ timeout: 2000 }))) {
-      console.log("Edit/notes button not found - feature may not be implemented yet");
-      return;
-    }
+    // Find first entity
+    const firstEntity = page.locator('[data-testid="entity-item"]').first();
 
-    await editButton.click();
+    // Click the edit notes button (pencil icon in the Notes column)
+    await firstEntity.locator('[aria-label="Edit notes"]').click();
 
-    // Add notes in modal/dialog
-    const notesInput = page.locator('textarea[placeholder*="notes"], textarea[aria-label*="notes"], [data-testid="entity-notes-input"]');
-    if (!(await notesInput.isVisible({ timeout: 2000 }))) {
-      console.log("Notes input not found - feature may not be fully implemented");
-      return;
-    }
+    // Find the notes textarea (should appear inline)
+    const notesInput = firstEntity.locator('textarea[placeholder*="Add notes"]');
+    await expect(notesInput).toBeVisible({ timeout: 3000 });
 
+    // Add notes
     await notesInput.fill('This is a test note for e2e testing');
-    await page.locator('button:has-text("Save"), button:has-text("Update")').first().click();
 
-    // Verify notes were saved (UI-dependent)
+    // Click Save button
+    await firstEntity.locator('button:has-text("Save")').click();
+
+    // Wait for save to complete
     await page.waitForTimeout(1000);
+
+    // Verify notes are displayed (not "No notes")
+    await expect(firstEntity.locator('text="This is a test note for e2e testing"')).toBeVisible({ timeout: 5000 });
   });
 
   test("should handle empty lists gracefully", async ({ page }) => {
@@ -289,10 +310,6 @@ test.describe("Catalogue Entity Management", () => {
   });
 
   test("should support bulk entity operations", async ({ page }) => {
-    // SKIPPED: Bulk operations UI implementation pending
-    // This test requires bulk selection and bulk action buttons
-    // TODO: Implement bulk operations UI and enable this test
-
     // Create a list with multiple entities
     await createListWithMultipleEntities(page, "Bulk Operations Test");
 
@@ -302,45 +319,38 @@ test.describe("Catalogue Entity Management", () => {
 
     await page.locator('[data-testid^="list-card-"]').filter({ hasText: "Bulk Operations Test" }).first().click();
 
+    // Wait for list details to appear
+    await expect(page.locator('[data-testid="selected-list-details"]')).toBeVisible({ timeout: 10000 });
+
     // Wait for entities to load
-    await expect(page.locator('[data-testid="entity-item"], .entity-card')).toHaveCount(2, { timeout: 10000 });
+    await page.waitForTimeout(2000);
 
-    // Look for bulk selection options
-    const selectAllButton = page.locator(
-      'button:has-text("Select All"), input[type="checkbox"][aria-label*="select all"], [data-testid="select-all-button"]'
-    );
+    // Verify entities loaded
+    await expect(page.locator('[data-testid="entity-item"]')).toHaveCount(2, { timeout: 10000 });
 
-    if (!(await selectAllButton.isVisible({ timeout: 2000 }))) {
-      console.log("Select All button not found - bulk operations may not be implemented yet");
-      return;
-    }
+    // Click "Select All" checkbox in table header
+    const selectAllCheckbox = page.locator('thead input[type="checkbox"][aria-label*="Select all"]');
+    await expect(selectAllCheckbox).toBeVisible({ timeout: 5000 });
+    await selectAllCheckbox.click();
 
-    await selectAllButton.click();
+    // Wait for bulk action buttons to appear
+    await page.waitForTimeout(500);
 
-    // Look for bulk action buttons
-    const bulkRemoveButton = page.locator(
-      'button:has-text("Remove Selected"), button:has-text("Bulk Remove"), [data-testid="bulk-remove-button"]'
-    );
-
-    if (!(await bulkRemoveButton.isVisible({ timeout: 2000 }))) {
-      console.log("Bulk remove button not found - bulk operations may not be fully implemented");
-      return;
-    }
-
+    // Find and click "Remove Selected" button
+    const bulkRemoveButton = page.locator('[data-testid="bulk-remove-button"]');
+    await expect(bulkRemoveButton).toBeVisible({ timeout: 5000 });
     await bulkRemoveButton.click();
 
-    // Look for confirmation dialog
-    const confirmDialog = page.locator('text="Are you sure", [role="dialog"]');
-    if (await confirmDialog.isVisible({ timeout: 2000 })) {
-      await page.locator('button:has-text("Remove"), button:has-text("Confirm")').first().click();
-    }
+    // Confirm in modal
+    await expect(page.getByRole('dialog', { name: 'Confirm Bulk Removal' })).toBeVisible();
+    await page.locator('button:has-text("Remove")').last().click();
 
     // Wait for operation to complete
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(1500);
 
-    // Verify all entities were removed
-    const entityItems = page.locator('[data-testid="entity-item"], .entity-card');
-    await expect(entityItems).toHaveCount(0, { timeout: 5000 });
+    // Verify all entities were removed - should show "No entities yet" message
+    await expect(page.locator('text="No entities yet"')).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('[data-testid="entity-item"]')).toHaveCount(0, { timeout: 5000 });
   });
 
   test("should display entity metadata correctly", async ({ page }) => {
@@ -460,7 +470,7 @@ async function createListWithMultipleEntities(page: Page, listName: string): Pro
   // Create the list first
   await createTestList(page, listName);
 
-  // Add multiple entities
-  await addEntityToCatalogue(page, "A5017898742", "authors");
-  await addEntityToCatalogue(page, "W4389376197", "works");
+  // Add multiple entities to the created list
+  await addEntityToCatalogue(page, "A5017898742", "authors", listName);
+  await addEntityToCatalogue(page, "W4389376197", "works", listName);
 }
