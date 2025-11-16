@@ -97,7 +97,7 @@ test.describe("Catalogue Entity Management", () => {
     console.log("Note: Multi-entity-type testing requires additional entity page support");
   });
 
-  test.skip("should remove entities from lists", async ({ page }) => {
+  test("should remove entities from lists", async ({ page }) => {
     // SKIPPED: Remove functionality UI implementation pending
     // This test requires a remove button on entity items which may not be implemented yet
     // TODO: Implement entity removal UI and enable this test
@@ -136,7 +136,7 @@ test.describe("Catalogue Entity Management", () => {
     await expect(page.locator('[data-testid="entity-item"], .entity-card')).toHaveCount(1, { timeout: 5000 });
   });
 
-  test.skip("should reorder entities via drag and drop", async ({ page }) => {
+  test("should reorder entities via drag and drop", async ({ page }) => {
     // SKIPPED: Drag-and-drop reordering UI implementation pending
     // This test requires drag handles and reordering functionality which may not be fully implemented
     // TODO: Verify drag-and-drop implementation and enable this test
@@ -180,7 +180,7 @@ test.describe("Catalogue Entity Management", () => {
     await expect(entities).toHaveCount(2);
   });
 
-  test.skip("should search and filter entities within a list", async ({ page }) => {
+  test("should search and filter entities within a list", async ({ page }) => {
     // SKIPPED: Search/filter UI implementation pending
     // This test requires search functionality within list entity view
     // TODO: Implement entity search/filter UI and enable this test
@@ -215,7 +215,7 @@ test.describe("Catalogue Entity Management", () => {
     await expect(entityItems.first()).toBeVisible({ timeout: 5000 });
   });
 
-  test.skip("should add notes to entities", async ({ page }) => {
+  test("should add notes to entities", async ({ page }) => {
     // SKIPPED: Entity notes editing UI implementation pending
     // This test requires edit/notes buttons on entity items
     // TODO: Implement entity notes editing UI and enable this test
@@ -288,7 +288,7 @@ test.describe("Catalogue Entity Management", () => {
     }
   });
 
-  test.skip("should support bulk entity operations", async ({ page }) => {
+  test("should support bulk entity operations", async ({ page }) => {
     // SKIPPED: Bulk operations UI implementation pending
     // This test requires bulk selection and bulk action buttons
     // TODO: Implement bulk operations UI and enable this test
