@@ -6,6 +6,7 @@ import { FUNDER_FIELDS, type Funder, type FunderField } from "@academic-explorer
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
 import { usePrettyUrl } from "@/hooks/use-pretty-url";
+import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { EntityDataDisplay } from "@/components/EntityDataDisplay";
 
 function FunderRoute() {
@@ -16,6 +17,13 @@ function FunderRoute() {
   // Decode the funder ID in case it's URL-encoded (for external IDs with special characters)
   const funderId = decodeEntityId(rawFunderId);
   usePrettyUrl("funders", rawFunderId, funderId);
+
+  // Track page visits in history
+  useUserInteractions({
+    entityId: funderId,
+    entityType: "funders",
+    autoTrackVisits: true,
+  });
 
   // Parse select parameter - only send select when explicitly provided in URL
   const selectFields = selectParam && typeof selectParam === 'string'

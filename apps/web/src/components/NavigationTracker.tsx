@@ -2,7 +2,6 @@
  * Navigation tracker component that logs route changes and page visits
  */
 
-import { historyDB } from "@/lib/history-db";
 import { useAppActivityStore } from "@/stores/app-activity-store";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { useLocation } from "@tanstack/react-router";
@@ -56,16 +55,6 @@ export function NavigationTracker() {
 
     // Debounce heavy operations to prevent excessive calls
     const timeoutId = setTimeout(() => {
-      // Add visit to history database (normalized routes)
-      historyDB.addVisit({
-        path: location.pathname,
-        search: location.search.toString(),
-        hash: location.hash,
-      }).catch((error) => {
-        // Silently handle database errors to prevent crashes
-        logger.warn("storage", "Failed to add visit to history", { error });
-      });
-
       // Extract page information with memoization
       const pageInfo = extractPageInfoMemoized(
         location.pathname,

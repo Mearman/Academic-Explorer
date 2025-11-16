@@ -6,6 +6,7 @@ import { PUBLISHER_FIELDS, type Publisher, type PublisherField } from "@academic
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
 import { usePrettyUrl } from "@/hooks/use-pretty-url";
+import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { EntityDataDisplay } from "@/components/EntityDataDisplay";
 
 function PublisherRoute() {
@@ -16,6 +17,13 @@ function PublisherRoute() {
   // Decode the publisher ID in case it's URL-encoded (for external IDs with special characters)
   const publisherId = decodeEntityId(rawPublisherId);
   usePrettyUrl("publishers", rawPublisherId, publisherId);
+
+  // Track page visits in history
+  useUserInteractions({
+    entityId: publisherId,
+    entityType: "publishers",
+    autoTrackVisits: true,
+  });
 
   // Parse select parameter - only send select when explicitly provided in URL
   const selectFields = selectParam && typeof selectParam === 'string'
