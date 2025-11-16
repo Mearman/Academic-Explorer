@@ -1,3 +1,31 @@
+# [13.2.0](https://github.com/Mearman/Academic-Explorer/compare/v13.1.3...v13.2.0) (2025-11-16)
+
+
+### Bug Fixes
+
+* **config:** disable Nx typescript-sync to prevent invalid tsconfig changes ([95bc591](https://github.com/Mearman/Academic-Explorer/commit/95bc5919903c51a325189c04a9ec14b5c431cf04))
+* **web:** add explicit type assertions after type guards ([f218a41](https://github.com/Mearman/Academic-Explorer/commit/f218a41a72739b22a2035e68d3bb55ca5882909d))
+* **web:** add missing node-styles.ts file (T025) ([85b400d](https://github.com/Mearman/Academic-Explorer/commit/85b400d6de8538469c6a47fe61fbc7f8c8173134))
+* **web:** resolve TypeScript type narrowing errors in services ([177d55e](https://github.com/Mearman/Academic-Explorer/commit/177d55e97d69c4aee115dc4dd7d90c76134a4ab7))
+
+
+### Features
+
+* **client:** add DataVersion and OpenAlexQueryParams types ([019f05e](https://github.com/Mearman/Academic-Explorer/commit/019f05e99b0c4f67b056b04a4653039c1e52355f))
+* **graph:** extend GraphNode with isXpac and hasUnverifiedAuthor metadata (T024) ([7bed1a0](https://github.com/Mearman/Academic-Explorer/commit/7bed1a01040725d2ee836e51aafbc93b6804e357))
+* **openalex-client:** add includeXpac and dataVersion config support (T019) ([2d8b490](https://github.com/Mearman/Academic-Explorer/commit/2d8b490851c32eeff24692cb59841b1e1c41e89b))
+* **types:** add is_xpac field to Work schema ([d51ecc8](https://github.com/Mearman/Academic-Explorer/commit/d51ecc811baea8d50bd4c71ce4210895c917ffad))
+* **ui:** add Badge component for metadata improvements ([4a5633e](https://github.com/Mearman/Academic-Explorer/commit/4a5633e10a3d6234e689f98728eb29199848fcb4))
+* **utils:** add metadata improvement detection logic ([cbfbd79](https://github.com/Mearman/Academic-Explorer/commit/cbfbd794d5aa5003a308f89a33a3a37ce142c3f3))
+* **web:** add data version selector with conditional visibility (T034-T036) ([246fd60](https://github.com/Mearman/Academic-Explorer/commit/246fd60dabea82e54d7b402f3e2a3fbc37ef6d43))
+* **web:** add graph node rendering utilities (T026) ([abe41e7](https://github.com/Mearman/Academic-Explorer/commit/abe41e75f97c5fbe2c5e4d48f20c715ab5c916e8))
+* **web:** add MetadataImprovementBadges component ([e693dbc](https://github.com/Mearman/Academic-Explorer/commit/e693dbceb5898d11edcacacd204e55d722f180a8))
+* **web:** add version comparison and E2E tests (T037-T042) ([8a79e65](https://github.com/Mearman/Academic-Explorer/commit/8a79e65822f7671d9aae48d6bed570f96f1851ee))
+* **web:** add visual indicators for XPAC works and unverified authors (T022, T023) ([e028017](https://github.com/Mearman/Academic-Explorer/commit/e028017eb77e16333acb0607d9b020d593491a53))
+* **web:** add Walden settings fields to settings store ([d31551e](https://github.com/Mearman/Academic-Explorer/commit/d31551e049b7e304a3725d4b279729cf7d3bc2da))
+* **web:** add xpac work styling functions (T025) ([73d3649](https://github.com/Mearman/Academic-Explorer/commit/73d3649ac9bf95f4f3328bec95f3028cfb1243f8))
+* **web:** integrate XpacToggle into SettingsSection (T021) ([467c657](https://github.com/Mearman/Academic-Explorer/commit/467c6576aaca1f84b32343b6e89fbc97cce026f7))
+
 ## [13.1.3](https://github.com/Mearman/Academic-Explorer/compare/v13.1.2...v13.1.3) (2025-11-14)
 
 
