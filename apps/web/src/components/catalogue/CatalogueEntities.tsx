@@ -395,11 +395,6 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
   const parentRef = useRef<HTMLDivElement>(null);
   const VIRTUALIZATION_THRESHOLD = 100;
 
-  // Guard clause - if no selected list or no ID, don't render
-  if (!selectedList?.id) {
-    return null;
-  }
-
   // Filter entities based on search and type
   const filteredEntities = entities.filter((entity) => {
     const matchesSearch = searchQuery === "" ||
@@ -428,6 +423,7 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
   });
 
   // T075: Setup virtualizer for large lists (>100 entities)
+  // T083: Must be called BEFORE guard clause to maintain consistent hook count
   const useVirtualization = sortedEntities.length > VIRTUALIZATION_THRESHOLD;
   const rowVirtualizer = useVirtualizer({
     count: sortedEntities.length,
@@ -436,6 +432,12 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
     enabled: useVirtualization,
     overscan: 10, // Render 10 items above and below viewport for smooth scrolling
   });
+
+  // Guard clause - if no selected list or no ID, don't render
+  // T083: Moved AFTER all hooks to maintain consistent hook count per React Rules of Hooks
+  if (!selectedList?.id) {
+    return null;
+  }
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
