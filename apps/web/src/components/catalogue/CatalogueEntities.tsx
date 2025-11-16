@@ -433,12 +433,6 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
     overscan: 10, // Render 10 items above and below viewport for smooth scrolling
   });
 
-  // Guard clause - if no selected list or no ID, don't render
-  // T083: Moved AFTER all hooks to maintain consistent hook count per React Rules of Hooks
-  if (!selectedList?.id) {
-    return null;
-  }
-
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
 
