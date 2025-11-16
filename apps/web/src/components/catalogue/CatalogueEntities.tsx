@@ -53,7 +53,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useCatalogue } from "@/hooks/useCatalogue";
+import { useCatalogueContext } from "@/contexts/catalogue-context";
 import { type CatalogueEntity, type EntityType, type CatalogueList } from "@academic-explorer/utils";
 import { notifications } from "@mantine/notifications";
 import { logger } from "@/lib/logger";
@@ -70,8 +70,6 @@ import {
 } from "@/utils/catalogue-guards";
 
 interface CatalogueEntitiesProps {
-  /** Currently selected list */
-  selectedList: CatalogueList | null;
   /** Callback to navigate to entity pages */
   onNavigate?: (entityType: EntityType, entityId: string) => void;
 }
@@ -371,9 +369,11 @@ function SortableEntityRow({
   );
 }
 
-export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitiesProps) {
+export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
   // T081: Hooks must be called unconditionally, so move them before guard clause
+  // Use context to share catalogue state with CatalogueManager
   const {
+    selectedList,
     entities,
     isLoadingEntities,
     removeEntityFromList,
@@ -382,7 +382,7 @@ export function CatalogueEntities({ selectedList, onNavigate }: CatalogueEntitie
     bulkRemoveEntities,
     bulkMoveEntities,
     lists,
-  } = useCatalogue();
+  } = useCatalogueContext();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("position");

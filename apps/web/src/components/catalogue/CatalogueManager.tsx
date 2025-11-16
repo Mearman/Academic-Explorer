@@ -33,7 +33,7 @@ import {
   IconEdit,
 } from "@tabler/icons-react";
 import { useHotkeys } from "@mantine/hooks";
-import { useCatalogue } from "@/hooks/useCatalogue";
+import { useCatalogueContext } from "@/contexts/catalogue-context";
 import { CatalogueListComponent } from "@/components/catalogue/CatalogueList";
 import { CatalogueEntities } from "@/components/catalogue/CatalogueEntities";
 import { CreateListModal } from "@/components/catalogue/CreateListModal";
@@ -63,7 +63,7 @@ export function CatalogueManager({ onNavigate, sharedToken, shareData }: Catalog
     importFromShareUrl,
     getListStats,
     searchLists,
-  } = useCatalogue();
+  } = useCatalogueContext();
 
   const [activeTab, setActiveTab] = useState<string | null>("lists");
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -364,7 +364,6 @@ export function CatalogueManager({ onNavigate, sharedToken, shareData }: Catalog
         {/* Selected List Entities */}
         {selectedList && (
           <CatalogueEntities
-            selectedList={selectedList}
             onNavigate={(entityType, entityId) => {
               const url = `/#/${entityType}/${entityId}`;
               if (onNavigate) {
