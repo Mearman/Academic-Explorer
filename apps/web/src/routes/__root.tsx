@@ -149,7 +149,7 @@ export const Route = createRootRoute({
           const queryIndex = updatedHash.indexOf("?");
           const queryParams = queryIndex !== -1 ? updatedHash.substring(queryIndex) : "";
 
-          const fixedUrl = window.location.pathname + window.location.search + urlPrefix + fixedSource + queryParams;
+          const fixedUrl = window.location.pathname + urlPrefix + fixedSource + queryParams;
 
           logger.debug("routing", "Fixing collapsed protocol slashes", {
             source: updatedHash ? "hash" : "pathname",

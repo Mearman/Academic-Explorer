@@ -40,6 +40,11 @@ export interface BookmarkListProps {
 	onNavigate: (url: string) => void;
 
 	/**
+	 * Callback fired when bookmark tags are updated
+	 */
+	onUpdateTags?: (bookmarkId: string, tags: string[]) => void | Promise<void>;
+
+	/**
 	 * Whether the list is in a loading state
 	 * @default false
 	 */
@@ -88,6 +93,7 @@ export function BookmarkList({
 	sortOrder = "desc",
 	onDeleteBookmark,
 	onNavigate,
+	onUpdateTags,
 	loading = false,
 	emptyMessage = "No bookmarks yet",
 	className,
@@ -182,6 +188,7 @@ export function BookmarkList({
 									bookmark={bookmark}
 									onDelete={onDeleteBookmark}
 									onNavigate={onNavigate}
+									onUpdateTags={onUpdateTags}
 								/>
 							))}
 						</Stack>
@@ -200,6 +207,7 @@ export function BookmarkList({
 					bookmark={bookmark}
 					onDelete={onDeleteBookmark}
 					onNavigate={onNavigate}
+					onUpdateTags={onUpdateTags}
 				/>
 			))}
 		</Stack>

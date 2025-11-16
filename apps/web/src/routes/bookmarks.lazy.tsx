@@ -1,4 +1,5 @@
-import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
+import { createLazyFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
+import type { BookmarksSearch } from "./bookmarks";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import { BookmarkList, BookmarkSearchFilters } from "@academic-explorer/ui";
 import { logger, applyFilters, exportBookmarks, downloadExport, SPECIAL_LIST_IDS } from "@academic-explorer/utils";
@@ -26,7 +27,9 @@ import {
 	IconSortDescending,
 	IconSortAscending,
 } from "@tabler/icons-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import { useStorageProvider } from "@/contexts/storage-provider-context";
+import { useDebouncedValue } from "@mantine/hooks";
 
 /**
  * Convert CatalogueEntity to Bookmark type
@@ -36,8 +39,11 @@ function convertToBookmark(entity: CatalogueEntity): Bookmark {
 	const notesLines = (entity.notes || "").split("\n");
 	const urlLine = notesLines.find((line) => line.startsWith("URL: "));
 	const titleLine = notesLines.find((line) => line.startsWith("Title: "));
+	const tagsLine = notesLines.find((line) => line.startsWith("Tags: "));
+
 	const url = urlLine?.replace("URL: ", "") || "";
 	const title = titleLine?.replace("Title: ", "") || entity.entityId;
+	const tags = tagsLine?.replace("Tags: ", "").split(",").map(t => t.trim()).filter(Boolean) || [];
 
 	return {
 		id: entity.id || entity.entityId,
@@ -53,7 +59,7 @@ function convertToBookmark(entity: CatalogueEntity): Bookmark {
 			entityType: entity.entityType,
 			entityId: entity.entityId,
 			timestamp: new Date(entity.addedAt),
-			tags: [], // Tags not yet supported in storage layer
+			tags,
 		},
 	};
 }
@@ -63,10 +69,15 @@ function convertToBookmark(entity: CatalogueEntity): Bookmark {
  *
  * Displays all bookmarked entities in a list view with search, filters, and export functionality.
  * Uses the useBookmarks hook for reactive bookmark state.
+ * Synchronizes filter state with URL parameters for shareable links.
  */
 function BookmarksIndexPage() {
 	const navigate = useNavigate();
+	const storage = useStorageProvider();
 	const { bookmarks: catalogueBookmarks, removeBookmark, loading, error } = useBookmarks();
+
+	// Get URL search parameters
+	const search = useSearch({ from: "/bookmarks" });
 
 	// Convert CatalogueEntity[] to Bookmark[]
 	const bookmarks = useMemo(
@@ -74,16 +85,21 @@ function BookmarksIndexPage() {
 		[catalogueBookmarks]
 	);
 
-	// Filter state
-	const [searchQuery, setSearchQuery] = useState("");
-	const [entityTypeFilter, setEntityTypeFilter] = useState<EntityType | null>(null);
-	const [tagFilters, setTagFilters] = useState<string[]>([]);
-	const [matchAllTags, setMatchAllTags] = useState(false);
+	// Initialize filter state from URL parameters
+	const [searchQuery, setSearchQuery] = useState(search.search || "");
+	const [entityTypeFilter, setEntityTypeFilter] = useState<EntityType | null>(
+		(search.entityType as EntityType) || null
+	);
+	const [tagFilters, setTagFilters] = useState<string[]>(search.tags || []);
+	const [matchAllTags, setMatchAllTags] = useState(search.matchAll || false);
 
-	// View options state
-	const [groupByType, setGroupByType] = useState(true);
-	const [sortBy, setSortBy] = useState<"date" | "title" | "type">("date");
-	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+	// View options state from URL
+	const [groupByType, setGroupByType] = useState(search.groupByType ?? true);
+	const [sortBy, setSortBy] = useState<"date" | "title" | "type">(search.sortBy || "date");
+	const [sortOrder, setSortOrder] = useState<"asc" | "desc">(search.sortOrder || "desc");
+
+	// Debounce search query to avoid too many URL updates
+	const [debouncedSearchQuery] = useDebouncedValue(searchQuery, 300);
 
 	// Export modal state
 	const [exportModalOpen, setExportModalOpen] = useState(false);
@@ -94,6 +110,25 @@ function BookmarksIndexPage() {
 		includeTimestamps: true,
 		includeFieldSelections: true,
 	});
+
+	// Sync state with URL parameters
+	useEffect(() => {
+		const newSearch: BookmarksSearch = {};
+
+		if (debouncedSearchQuery) newSearch.search = debouncedSearchQuery;
+		if (entityTypeFilter) newSearch.entityType = entityTypeFilter;
+		if (tagFilters.length > 0) newSearch.tags = tagFilters;
+		if (matchAllTags) newSearch.matchAll = matchAllTags;
+		if (sortBy !== "date") newSearch.sortBy = sortBy;
+		if (sortOrder !== "desc") newSearch.sortOrder = sortOrder;
+		if (!groupByType) newSearch.groupByType = groupByType;
+
+		navigate({
+			to: "/bookmarks",
+			search: newSearch,
+			replace: true,
+		});
+	}, [debouncedSearchQuery, entityTypeFilter, tagFilters, matchAllTags, sortBy, sortOrder, groupByType, navigate]);
 
 	logger.debug("bookmarks", "Bookmarks index page rendering", {
 		bookmarksCount: bookmarks.length,
@@ -147,6 +182,52 @@ function BookmarksIndexPage() {
 			logger.error("bookmarks", "Failed to delete bookmark", { bookmarkId, error: err });
 		}
 	};
+
+	// Handle tag updates
+	const handleUpdateTags = useCallback(
+		async (bookmarkId: string, tags: string[]) => {
+			try {
+				logger.debug("bookmarks", "Updating bookmark tags", { bookmarkId, tags });
+
+				// Find the bookmark to get its current data
+				const bookmark = catalogueBookmarks.find((b) => b.id === bookmarkId);
+				if (!bookmark) {
+					logger.error("bookmarks", "Bookmark not found for tag update", { bookmarkId });
+					return;
+				}
+
+				// Parse existing notes to preserve URL and Title
+				const notesLines = (bookmark.notes || "").split("\n");
+				const urlLine = notesLines.find((line) => line.startsWith("URL: "));
+				const titleLine = notesLines.find((line) => line.startsWith("Title: "));
+
+				// Build new notes with updated tags
+				const newNotesLines: string[] = [];
+				if (urlLine) newNotesLines.push(urlLine);
+				if (titleLine) newNotesLines.push(titleLine);
+				if (tags.length > 0) newNotesLines.push(`Tags: ${tags.join(", ")}`);
+
+				// Add any other notes that aren't URL, Title, or Tags
+				const otherNotes = notesLines.filter(
+					(line) =>
+						!line.startsWith("URL: ") && !line.startsWith("Title: ") && !line.startsWith("Tags: ")
+				);
+				if (otherNotes.length > 0) {
+					newNotesLines.push(...otherNotes);
+				}
+
+				const newNotes = newNotesLines.join("\n");
+
+				// Update via storage provider
+				await storage.updateEntityNotes(bookmarkId, newNotes);
+
+				logger.debug("bookmarks", "Bookmark tags updated successfully", { bookmarkId, tags });
+			} catch (err) {
+				logger.error("bookmarks", "Failed to update bookmark tags", { bookmarkId, tags, error: err });
+			}
+		},
+		[catalogueBookmarks, storage]
+	);
 
 	// Handle export
 	const handleExport = () => {
@@ -273,6 +354,7 @@ function BookmarksIndexPage() {
 					sortOrder={sortOrder}
 					onDeleteBookmark={handleDelete}
 					onNavigate={handleNavigate}
+					onUpdateTags={handleUpdateTags}
 					loading={loading}
 					emptyMessage="No bookmarks match your filters. Try adjusting your search or filters."
 					data-testid="bookmark-list"
