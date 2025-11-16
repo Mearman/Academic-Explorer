@@ -470,7 +470,13 @@ describe("useWebWorker", () => {
         });
       });
 
-      expect(result.current.isIdle).toBe(false);
+      // Wait for isLoading state to update after postMessage
+      await waitFor(
+        () => {
+          expect(result.current.isIdle).toBe(false);
+        },
+        { timeout: 100 },
+      );
 
       // Wait for success response and state update
       await waitFor(
