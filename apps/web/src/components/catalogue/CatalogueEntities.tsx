@@ -383,6 +383,17 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
     bulkMoveEntities,
     lists,
   } = useCatalogueContext();
+
+  // Debug logging
+  React.useEffect(() => {
+    logger.debug("catalogue-entities", "CatalogueEntities render", {
+      selectedListId: selectedList?.id,
+      selectedListTitle: selectedList?.title,
+      entitiesCount: entities.length,
+      isLoadingEntities
+    });
+  }, [selectedList, entities, isLoadingEntities]);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("position");

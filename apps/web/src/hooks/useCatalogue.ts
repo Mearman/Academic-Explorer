@@ -193,9 +193,11 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
   const refreshEntities = useCallback(async (listId: string) => {
     if (!listId) return;
 
+    logger.debug(CATALOGUE_LOGGER_CONTEXT, "refreshEntities called", { listId });
     setIsLoadingEntities(true);
     try {
       const listEntities = await storage.getListEntities(listId);
+      logger.debug(CATALOGUE_LOGGER_CONTEXT, "getListEntities returned", { listId, count: listEntities.length, entities: listEntities });
       setEntities(listEntities);
     } catch (error) {
       logger.error(CATALOGUE_LOGGER_CONTEXT, "Failed to refresh list entities", { listId, error });
@@ -212,6 +214,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
 
   // Load entities when selected list changes
   useEffect(() => {
+    logger.debug(CATALOGUE_LOGGER_CONTEXT, "selectedListId changed, refreshing entities", { selectedListId });
     if (selectedListId) {
       void refreshEntities(selectedListId);
     } else {
