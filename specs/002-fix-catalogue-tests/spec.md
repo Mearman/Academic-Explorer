@@ -2,8 +2,11 @@
 
 **Feature Branch**: `002-fix-catalogue-tests`
 **Created**: 2025-11-11
-**Status**: Draft
+**Status**: Obsolete
+**Obsoleted**: 2025-11-17
 **Input**: User description: "resolve the test failures"
+
+**Obsolescence Note**: All catalogue tests are now passing. Issues were resolved through implementation of spec 001 (storage abstraction with InMemoryStorageProvider for E2E tests). Current status: 1,422 tests passing with zero catalogue test failures.
 
 ## User Scenarios & Testing *(mandatory)*
 
