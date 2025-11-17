@@ -23,29 +23,33 @@ interface EdgeFiltersSectionProps {
 
 // Configuration for relation types with labels and descriptions
 const RELATION_TYPE_CONFIG = {
-  [RelationType.AUTHORED]: {
-    label: "Authored",
-    description: "Author wrote this work",
+  [RelationType.AUTHORSHIP]: {
+    label: "Authorship",
+    description: "Work → Author relationship",
   },
-  [RelationType.AFFILIATED]: {
-    label: "Affiliated",
-    description: "Author is affiliated with institution",
+  [RelationType.AFFILIATION]: {
+    label: "Affiliation",
+    description: "Author → Institution relationship",
   },
-  [RelationType.PUBLISHED_IN]: {
-    label: "Published In",
-    description: "Work was published in this source",
+  [RelationType.PUBLICATION]: {
+    label: "Publication",
+    description: "Work → Source relationship",
   },
   [RelationType.FUNDED_BY]: {
     label: "Funded By",
-    description: "Work was funded by this organization",
+    description: "Work → Funder relationship",
   },
-  [RelationType.REFERENCES]: {
-    label: "References",
-    description: "Work cites another work",
+  [RelationType.REFERENCE]: {
+    label: "Reference",
+    description: "Work → Work citation relationship",
   },
-  [RelationType.SOURCE_PUBLISHED_BY]: {
-    label: "Source Published By",
-    description: "Source is published by this publisher",
+  [RelationType.HOST_ORGANIZATION]: {
+    label: "Host Organization",
+    description: "Source → Publisher relationship",
+  },
+  [RelationType.LINEAGE]: {
+    label: "Lineage",
+    description: "Institution → Institution parent relationship",
   },
 };
 
