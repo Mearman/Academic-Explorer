@@ -1,31 +1,31 @@
-# Implementation Plan: Edge Direction Correction for OpenAlex Data Model
+# Implementation Plan: [FEATURE]
 
-**Branch**: `014-edge-direction-correction` | **Date**: 2025-11-17 | **Spec**: [spec.md](spec.md)
-**Input**: Feature specification from `/specs/014-edge-direction-correction/spec.md`
+**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
+**Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
 
 **Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
 
 ## Summary
 
-Correct all graph edge directions to match the OpenAlex data ownership model. Currently, edges point backwards (e.g., Author → Work for authorship), but the OpenAlex data model stores relationships on the entity that owns them (Work contains authorships, so Work → Author). This correction enables:
-
-1. **P1 (MVP)**: Accurate representation of the OpenAlex data structure with all edges pointing from data owner to referenced entity
-2. **P2**: Classification of edges as "outbound" (stored on entity) vs "inbound" (requires reverse lookup) to indicate data completeness
-3. **P3**: User-facing directional filters ("Show Outbound", "Show Inbound", "Show Both") for focused graph exploration
-
-Technical approach: Reverse edge source/target in relationship detection service, update RelationType enum labels, add edge direction classification, implement migration for existing graphs, and add directional filtering UI.
+[Extract from feature spec: primary requirement + technical approach from research]
 
 ## Technical Context
 
-**Language/Version**: TypeScript 5.x with strict mode enabled
-**Primary Dependencies**: @academic-explorer/graph (edge model), @academic-explorer/types (RelationType enum), Mantine 7.x (UI components), TanStack React Query (state management)
-**Storage**: IndexedDB via Dexie through storage provider interface (graph-store)
-**Testing**: Vitest (unit/integration/component tests), Playwright (E2E tests - serial execution), MSW (API mocking)
-**Target Platform**: Web (React 19 SPA via Vite), browsers with IndexedDB support
-**Project Type**: Monorepo web application (Nx workspace)
-**Performance Goals**: <1 second for directional filtering on graphs with 500 nodes, zero regression in existing graph operations
-**Constraints**: Serial test execution (memory), existing graphs must migrate automatically on load, breaking change acceptable per Development-Stage Pragmatism
-**Scale/Scope**: Affects all relationship types (6 core types: AUTHORED/HAS_AUTHOR, REFERENCES, PUBLISHED_IN, AFFILIATED, SOURCE_PUBLISHED_BY, INSTITUTION_CHILD_OF), impacts all existing graphs, ~500 LOC changes across 3 files
+<!--
+  ACTION REQUIRED: Replace the content in this section with the technical details
+  for the project. The structure here is presented in advisory capacity to guide
+  the iteration process.
+-->
+
+**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
+**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
+**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
+**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
+**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
+**Project Type**: [single/web/mobile - determines source structure]  
+**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
+**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
+**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
 
 ## Constitution Check
 
@@ -33,19 +33,19 @@ Technical approach: Reverse edge source/target in relationship detection service
 
 Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
 
-1. **Type Safety**: ✅ PASS - All edge direction changes use proper TypeScript types; RelationType enum is type-safe; no `any` types introduced
-2. **Test-First Development**: ✅ PASS - Will write E2E tests for edge direction verification before migration; existing unit tests for relationship detection will be updated to fail (Red), then implementation will fix them (Green)
-3. **Monorepo Architecture**: ✅ PASS - Changes isolated to existing packages/apps structure: `packages/graph` (GraphEdge model), `packages/types` (RelationType enum), `apps/web/src/services/relationship-detection-service.ts`, `apps/web/src/components/sections/EdgeFiltersSection.tsx`
-4. **Storage Abstraction**: ✅ PASS - Edge migration uses graph-store; no direct Dexie/IndexedDB coupling
-5. **Performance & Memory**: ✅ PASS - Tests run serially (existing requirement); directional filtering performance measured in success criteria (<1s for 500 nodes); no Web Workers needed for this feature
-6. **Atomic Conventional Commits**: ✅ PASS - Plan includes atomic commits: (1) update RelationType enum, (2) update relationship detection logic, (3) migrate existing edges, (4) add directional filtering UI
-7. **Development-Stage Pragmatism**: ✅ PASS - This is a breaking change (edge directions reversed); acceptable during development; existing graphs will migrate automatically on load
+1. **Type Safety**: No `any` types planned; use `unknown` with type guards
+2. **Test-First Development**: Tests written and failing before implementation begins
+3. **Monorepo Architecture**: Changes use proper Nx workspace structure (apps/ or packages/)
+4. **Storage Abstraction**: Any storage operations use provider interface (no direct Dexie/IndexedDB coupling)
+5. **Performance & Memory**: Tests run serially; memory constraints considered; Web Workers for heavy computation
+6. **Atomic Conventional Commits**: Incremental atomic commits created after each task completion
+7. **Development-Stage Pragmatism**: No backwards compatibility required; breaking changes acceptable during development
 
-**Complexity Justification Required?** ❌ NO
-- No new packages/apps added (uses existing structure)
-- No new storage provider implementations (uses existing graph-store)
-- No new worker threads required (directional filtering is synchronous, fast operation)
-- No YAGNI violations (correcting data model to match OpenAlex is foundational, not speculative)
+**Complexity Justification Required?** Document in Complexity Tracking section if this feature:
+- Adds new packages/apps beyond existing structure
+- Introduces new storage provider implementations
+- Requires new worker threads
+- Violates YAGNI or adds architectural complexity
 
 ## Project Structure
 
@@ -62,49 +62,97 @@ specs/[###-feature]/
 ```
 
 ### Source Code (repository root)
+<!--
+  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
+  for this feature. Delete unused options and expand the chosen structure with
+  real paths (e.g., apps/admin, packages/something). The delivered plan must
+  not include Option labels.
+-->
 
 ```text
-packages/
-├── graph/
-│   └── src/
-│       ├── edge-model.ts           # GraphEdge interface (add 'direction' field)
-│       └── relation-type.ts        # RelationType enum (update labels)
-│
-├── types/
-│   └── src/
-│       └── graph-types.ts          # Shared type definitions
-│
-└── utils/
-    └── src/
-        └── type-guards.ts          # Type guard helpers
+# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
+src/
+├── models/
+├── services/
+├── cli/
+└── lib/
 
-apps/
-└── web/
-    ├── src/
-    │   ├── services/
-    │   │   └── relationship-detection-service.ts  # MAIN: Reverse edge creation logic
-    │   ├── components/
-    │   │   └── sections/
-    │   │       └── EdgeFiltersSection.tsx         # Add directional filtering UI
-    │   ├── stores/
-    │   │   └── graph-store.tsx                    # Edge storage & migration
-    │   └── test/
-    │       ├── unit/
-    │       │   └── relationship-detection-service.unit.test.ts  # Update for reversed edges
-    │       ├── integration/
-    │       │   └── edge-direction-migration.integration.test.ts  # NEW: Migration tests
-    │       └── e2e/
-    │           └── edge-direction-verification.e2e.test.ts       # NEW: E2E verification
-    └── playwright.config.ts
+tests/
+├── contract/
+├── integration/
+└── unit/
+
+# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
+backend/
+├── src/
+│   ├── models/
+│   ├── services/
+│   └── api/
+└── tests/
+
+frontend/
+├── src/
+│   ├── components/
+│   ├── pages/
+│   └── services/
+└── tests/
+
+# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
+api/
+└── [same as backend above]
+
+ios/ or android/
+└── [platform-specific structure: feature modules, UI flows, platform tests]
 ```
 
-**Structure Decision**: Nx monorepo web application structure. Changes span three packages (`graph`, `types`, `utils`) and one app (`web`). Primary logic changes are in `relationship-detection-service.ts` (reverses source/target on edge creation). UI changes in `EdgeFiltersSection.tsx` (adds direction filters). Migration logic in `graph-store.tsx` (reverses edges on graph load if needed).
+**Structure Decision**: [Document the selected structure and reference the real
+directories captured above]
 
 ## Complexity Tracking
 
 > **Fill ONLY if Constitution Check has violations that must be justified**
 
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+**No complexity violations** - All Constitution principles satisfied. No justification required.
+
+This feature works within existing monorepo structure, uses established storage abstraction, follows test-first development, maintains strict type safety, and embraces Development-Stage Pragmatism (no backwards compatibility/migration needed).
+
+---
+
+## Phase 0 & 1 Completion Summary
+
+**Phase 0: Research** ✅ Complete
+- Created `research.md` with 5 key technical decisions
+- Resolved all architecture ambiguities via clarification session (2025-11-17)
+- Key decisions:
+  1. Edge direction semantics (source = owner, target = referenced)
+  2. RelationType enum naming (noun form matching OpenAlex fields)
+  3. Edge direction classification (outbound/inbound)
+  4. No migration strategy (re-detect from entity data on load)
+  5. Multi-modal visual distinction (line style + color + arrow style)
+
+**Phase 1: Design & Contracts** ✅ Complete
+- Created `data-model.md` defining GraphEdge and RelationType entities
+- Created `contracts/relationship-detection-service.contract.ts` (interface + test fixtures)
+- Created `contracts/edge-filters.contract.ts` (UI component contract + styling constants)
+- Created `quickstart.md` with step-by-step implementation guide (8-12 hour estimate)
+- Updated agent context via `.specify/scripts/bash/update-agent-context.sh claude`
+
+**Artifacts Generated**:
+```
+specs/014-edge-direction-correction/
+├── spec.md                    # Feature specification (with clarifications)
+├── plan.md                    # This file
+├── research.md                # Technical decisions
+├── data-model.md              # Entity definitions and metadata schemas
+├── quickstart.md              # Implementation guide
+├── checklists/
+│   └── requirements.md        # Spec quality validation
+└── contracts/
+    ├── relationship-detection-service.contract.ts
+    └── edge-filters.contract.ts
+```
+
+**Next Steps**:
+1. Run `/speckit.tasks` to generate atomic task breakdown (`tasks.md`)
+2. Begin implementation following quickstart.md Phase 1 (P1 MVP: 4-6 hours)
+3. Execute test-first workflow (write failing tests → implement → verify passing)
