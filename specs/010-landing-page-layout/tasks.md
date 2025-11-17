@@ -102,8 +102,8 @@ This phase is skipped as:
 - [x] T028 [US2] Manually test touch targets on mobile device or DevTools touch emulation
 - [x] T029 [US2] Verify search form alignment across all breakpoints
 - [x] T030 [US2] Run `pnpm typecheck` - ensure no type errors
-- [ ] T031 [US2] Create atomic commit: test(web): add search interaction touch target tests
-- [ ] T032 [US2] Create atomic commit: fix(web): ensure search controls meet 44px touch targets
+- [x] T031 [US2] Create atomic commit: test(web): add search interaction touch target tests
+- [x] T032 [US2] Create atomic commit: fix(web): ensure search controls meet WCAG touch targets
 
 **Checkpoint**: User Stories 1 AND 2 complete - homepage is responsive AND search controls are properly sized
 
