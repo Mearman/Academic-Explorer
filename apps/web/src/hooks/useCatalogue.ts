@@ -361,7 +361,9 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
   const reorderEntities = useCallback(async (listId: string, orderedEntityIds: string[]): Promise<void> => {
     try {
       await storage.reorderEntities(listId, orderedEntityIds);
-      logger.debug(CATALOGUE_LOGGER_CONTEXT, "Entities reordered successfully", {
+      // T085: Refresh entities after reordering to update UI
+      await refreshEntities(listId);
+      logger.debug(CATALOGUE_LOGGER_CONTEXT, "Entities reordered and list refreshed", {
         listId,
         entityCount: orderedEntityIds.length
       });
@@ -373,7 +375,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
       });
       throw error;
     }
-  }, [storage]);
+  }, [storage, refreshEntities]);
 
   // Update entity notes
   const updateEntityNotes = useCallback(async (entityRecordId: string, notes: string): Promise<void> => {
