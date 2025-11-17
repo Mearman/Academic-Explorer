@@ -65,8 +65,8 @@ This phase is skipped as:
 - [x] T012 [US1] Check for horizontal scrolling at 320px viewport
 - [x] T013 [US1] Verify content centering at 3840px viewport
 - [x] T014 [US1] Run `pnpm typecheck` - ensure no type errors
-- [ ] T015 [US1] Create atomic commit: test(homepage): add responsive layout E2E tests
-- [ ] T016 [US1] Create atomic commit: fix(ui): improve landing page card responsive sizing
+- [x] T015 [US1] Create atomic commit: test(homepage): add responsive layout E2E tests
+- [x] T016 [US1] Create atomic commit: fix(web): improve landing page responsive layout
 
 **Checkpoint**: User Story 1 complete - homepage layout is responsive across all viewport sizes
 
