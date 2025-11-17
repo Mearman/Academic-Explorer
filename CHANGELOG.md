@@ -1,3 +1,31 @@
+# [14.0.0](https://github.com/Mearman/Academic-Explorer/compare/v13.2.0...v14.0.0) (2025-11-17)
+
+
+### Bug Fixes
+
+* **web:** add refreshEntities call after reorderEntities ([ce86a02](https://github.com/Mearman/Academic-Explorer/commit/ce86a0277d86ddb7567b73652e64ce19f9a31031))
+* **web:** add refreshEntities calls after entity removal operations ([cff0ed7](https://github.com/Mearman/Academic-Explorer/commit/cff0ed7e869f96b7cec7531daadcd0e4cb99c936))
+* **web:** await onRemove in entity removal confirmation modal ([3f478a0](https://github.com/Mearman/Academic-Explorer/commit/3f478a0fe78070ce78042d44093a8aa92775c959))
+* **web:** correct AppShell.Main padding to respect Mantine's responsive layout ([7c2edb5](https://github.com/Mearman/Academic-Explorer/commit/7c2edb52cf3cdb67291fe2f84dff4c3f8b29df9a))
+* **web:** correct entity removal test by using proper button selector ([00130db](https://github.com/Mearman/Academic-Explorer/commit/00130db4c25f1ec7d3af65849299585046d8bb9f))
+* **web:** implement Catalogue Context Provider to fix state isolation ([d673710](https://github.com/Mearman/Academic-Explorer/commit/d673710c9c9628b5c23a094d799de724f3a2f94d))
+* **web:** move useSensors hooks before guard clauses to fix React hook violation ([8ee86b7](https://github.com/Mearman/Academic-Explorer/commit/8ee86b7ea2793a5f3b0c4f91c80ec7dd62ed827c))
+* **web:** pass mutation functions as props to CatalogueEntities ([46def9a](https://github.com/Mearman/Academic-Explorer/commit/46def9a4ee0f4be09341be29dc51f0b734cd3800))
+* **web:** remove duplicate guard clause in CatalogueEntities ([9210a97](https://github.com/Mearman/Academic-Explorer/commit/9210a977594f68927b348c82489d1bd4fb3c7ebd))
+* **web:** resolve React hook violation in CatalogueEntities ([a314425](https://github.com/Mearman/Academic-Explorer/commit/a3144253c229151cac5b711589546d635bf22894))
+
+
+### Features
+
+* **web:** implement bookmark URL parameters and tag editing ([4750f86](https://github.com/Mearman/Academic-Explorer/commit/4750f86535c24e2d467a7ac1da5f4aed4e0568a5))
+* **web:** migrate to catalogue-based history tracking system ([531ae22](https://github.com/Mearman/Academic-Explorer/commit/531ae2239594311abcbad531ebac16f1e9c1ae5a))
+
+
+### BREAKING CHANGES
+
+* **web:** Users will lose existing route-based history from legacy system.
+The new entity-based history will start fresh from this update forward.
+
 # [13.2.0](https://github.com/Mearman/Academic-Explorer/compare/v13.1.3...v13.2.0) (2025-11-16)
 
 
