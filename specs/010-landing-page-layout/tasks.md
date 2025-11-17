@@ -45,26 +45,26 @@ This phase is skipped as:
 
 > **CRITICAL**: Write these tests FIRST, ensure they FAIL before implementation
 
-- [ ] T001 [P] [US1] Add E2E test for mobile viewport (320px) - verify no horizontal scroll in apps/web/src/test/e2e/manual/homepage.e2e.test.ts
-- [ ] T002 [P] [US1] Add E2E test for tablet viewport (768px) - verify card centering in apps/web/src/test/e2e/manual/homepage.e2e.test.ts
-- [ ] T003 [P] [US1] Add E2E test for desktop viewport (1920px) - verify maxWidth constraint in apps/web/src/test/e2e/manual/homepage.e2e.test.ts
-- [ ] T004 [P] [US1] Add E2E test for 4K viewport (3840px) - verify content remains centered in apps/web/src/test/e2e/manual/homepage.e2e.test.ts
-- [ ] T005 [US1] Run homepage E2E tests - verify they FAIL (layout issues exist)
+- [x] T001 [P] [US1] Add E2E test for mobile viewport (320px) - verify no horizontal scroll in apps/web/src/test/e2e/manual/homepage.e2e.test.ts
+- [x] T002 [P] [US1] Add E2E test for tablet viewport (768px) - verify card centering in apps/web/src/test/e2e/manual/homepage.e2e.test.ts
+- [x] T003 [P] [US1] Add E2E test for desktop viewport (1920px) - verify maxWidth constraint in apps/web/src/test/e2e/manual/homepage.e2e.test.ts
+- [x] T004 [P] [US1] Add E2E test for 4K viewport (3840px) - verify content remains centered in apps/web/src/test/e2e/manual/homepage.e2e.test.ts
+- [x] T005 [US1] Run homepage E2E tests - verify they FAIL (layout issues exist)
 
 ### Implementation for User Story 1 (Green Phase)
 
-- [ ] T006 [US1] Adjust Card maxWidth for better mobile responsiveness in apps/web/src/routes/index.lazy.tsx
-- [ ] T007 [US1] Implement responsive padding using Mantine breakpoints in apps/web/src/routes/index.lazy.tsx
-- [ ] T008 [US1] Refine Stack gap between title and description sections in apps/web/src/routes/index.lazy.tsx
-- [ ] T009 [US1] Ensure proper vertical spacing for all content sections in apps/web/src/routes/index.lazy.tsx
-- [ ] T010 [US1] Verify layout manually in Chrome DevTools at all breakpoints
+- [x] T006 [US1] Adjust Card maxWidth for better mobile responsiveness in apps/web/src/routes/index.lazy.tsx
+- [x] T007 [US1] Implement responsive padding using Mantine breakpoints in apps/web/src/routes/index.lazy.tsx
+- [x] T008 [US1] Refine Stack gap between title and description sections in apps/web/src/routes/index.lazy.tsx
+- [x] T009 [US1] Ensure proper vertical spacing for all content sections in apps/web/src/routes/index.lazy.tsx
+- [x] T010 [US1] Verify layout manually in Chrome DevTools at all breakpoints
 
 ### Verification for User Story 1
 
-- [ ] T011 [US1] Run homepage E2E tests - verify they PASS
-- [ ] T012 [US1] Check for horizontal scrolling at 320px viewport
-- [ ] T013 [US1] Verify content centering at 3840px viewport
-- [ ] T014 [US1] Run `pnpm typecheck` - ensure no type errors
+- [x] T011 [US1] Run homepage E2E tests - verify they PASS
+- [x] T012 [US1] Check for horizontal scrolling at 320px viewport
+- [x] T013 [US1] Verify content centering at 3840px viewport
+- [x] T014 [US1] Run `pnpm typecheck` - ensure no type errors
 - [ ] T015 [US1] Create atomic commit: test(homepage): add responsive layout E2E tests
 - [ ] T016 [US1] Create atomic commit: fix(ui): improve landing page card responsive sizing
 

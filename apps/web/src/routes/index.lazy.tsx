@@ -55,7 +55,7 @@ function HomePage() {
         justifyContent: "center",
         minHeight: "100vh",
         width: "100%",
-        padding: "1rem",
+        padding: "clamp(0.5rem, 2vw, 2rem)",
         boxSizing: "border-box",
       }}
     >
@@ -67,19 +67,19 @@ function HomePage() {
         style={{
           backgroundColor: colors.background.blur,
           backdropFilter: "blur(10px)",
-          maxWidth: "600px",
+          maxWidth: "min(600px, 100%)",
           width: "100%",
         }}
       >
-        <Stack gap="lg" align="center">
-        <Group>
+        <Stack gap="xl" align="center">
+        <Group gap="md">
           <IconGraph size={40} color={colors.primary} />
           <Title order={1} ta="center">
             Academic Explorer
           </Title>
         </Group>
 
-        <Text ta="center" size="lg" c="dimmed" style={{ lineHeight: 1.5 }}>
+        <Text ta="center" size="lg" c="dimmed" style={{ lineHeight: 1.6, maxWidth: "100%" }}>
           Explore academic literature through interactive knowledge graphs.
           Search for papers, authors, journals, and institutions to see their
           connections.
@@ -88,9 +88,9 @@ function HomePage() {
         {/* Quick Search */}
         <form
           onSubmit={handleSearch}
-          style={{ width: "100%" }}
+          style={{ width: "100%", marginTop: "0.5rem" }}
         >
-          <Stack gap="md">
+          <Stack gap="sm">
             <TextInput
               size="lg"
               placeholder="Search papers, authors, DOIs, ORCIDs..."
@@ -113,12 +113,12 @@ function HomePage() {
         </form>
 
         {/* Example Searches */}
-        <Card padding="md" radius="md" withBorder style={{ width: "100%" }}>
-          <Text size="sm" fw={500} mb="xs">
+        <Card padding="md" radius="md" withBorder style={{ width: "100%", marginTop: "0.5rem" }}>
+          <Text size="sm" fw={500} mb="sm">
             Try these examples:
           </Text>
           <Stack gap="xs">
-            <Group gap="xs" wrap="wrap">
+            <Group gap="sm" wrap="wrap">
               <Anchor
                 size="sm"
                 onClick={() => handleExampleSearch("machine learning")}
@@ -151,8 +151,8 @@ function HomePage() {
         </Card>
 
         {/* Features */}
-        <Stack gap="sm" align="center" style={{ width: "100%" }}>
-          <Group gap="lg" justify="center">
+        <Stack gap="md" align="center" style={{ width: "100%", marginTop: "1rem" }}>
+          <Group gap="lg" justify="center" wrap="wrap">
             <Group gap="xs">
               <IconBrandReact size={16} color={colors.primary} />
               <Text size="xs" c="dimmed">
@@ -173,7 +173,7 @@ function HomePage() {
             </Group>
           </Group>
 
-          <Text size="xs" ta="center" c="dimmed" style={{ lineHeight: 1.4 }}>
+          <Text size="xs" ta="center" c="dimmed" style={{ lineHeight: 1.5, maxWidth: "90%" }}>
             Use the sidebar to search and filter • Click nodes to navigate •
             Double-click to expand relationships
           </Text>
