@@ -356,8 +356,8 @@ function SortableEntityRow({
             <Button variant="subtle" onClick={() => setShowRemoveConfirm(false)}>
               Cancel
             </Button>
-            <Button color="red" onClick={() => {
-              onRemove(entity.id!);
+            <Button color="red" onClick={async () => {
+              await onRemove(entity.id!);
               setShowRemoveConfirm(false);
             }}>
               Remove
