@@ -356,10 +356,14 @@ function SortableEntityRow({
             <Button variant="subtle" onClick={() => setShowRemoveConfirm(false)}>
               Cancel
             </Button>
-            <Button color="red" onClick={async () => {
-              await onRemove(entity.id!);
-              setShowRemoveConfirm(false);
-            }}>
+            <Button
+              color="red"
+              data-testid="confirm-remove-entity-button"
+              onClick={async () => {
+                await onRemove(entity.id!);
+                setShowRemoveConfirm(false);
+              }}
+            >
               Remove
             </Button>
           </Group>
@@ -498,10 +502,16 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
   };
 
   const handleRemoveEntity = async (entityRecordId: string) => {
-    if (!selectedList) return;
+    console.log("[DEBUG] handleRemoveEntity called", { entityRecordId, selectedListId: selectedList?.id });
+    if (!selectedList) {
+      console.log("[DEBUG] handleRemoveEntity: no selectedList, returning");
+      return;
+    }
 
     try {
+      console.log("[DEBUG] handleRemoveEntity: calling removeEntityFromList");
       await removeEntityFromList(selectedList.id!, entityRecordId);
+      console.log("[DEBUG] handleRemoveEntity: removeEntityFromList completed");
       logger.debug("catalogue-ui", "Entity removed from list", {
         listId: selectedList.id!,
         entityRecordId

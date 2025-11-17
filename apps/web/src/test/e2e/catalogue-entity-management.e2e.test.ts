@@ -147,7 +147,7 @@ test.describe("Catalogue Entity Management", () => {
 
     // Confirm removal in modal
     await expect(page.getByRole('dialog', { name: 'Confirm Removal' })).toBeVisible();
-    await page.locator('button:has-text("Remove")').last().click();
+    await page.getByTestId('confirm-remove-entity-button').click();
 
     // Wait for removal to complete
     await page.waitForTimeout(1000);
