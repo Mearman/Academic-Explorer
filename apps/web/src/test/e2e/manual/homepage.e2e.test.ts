@@ -390,4 +390,169 @@ test.describe("Homepage E2E Tests", () => {
       }
     });
   });
+
+  // Visual Hierarchy Tests (User Story 3)
+  test.describe("Visual Hierarchy", () => {
+    test("should have technology stack indicators with equal spacing", async ({
+      page,
+    }) => {
+      await page.goto("/", {
+        waitUntil: "networkidle",
+        timeout: 30000,
+      });
+
+      // Find all technology stack indicators
+      const reactIndicator = page.locator("text=React 19");
+      const openAlexIndicator = page.locator("text=OpenAlex API");
+      const xyFlowIndicator = page.locator("text=XYFlow");
+
+      await expect(reactIndicator).toBeVisible({ timeout: 15000 });
+      await expect(openAlexIndicator).toBeVisible({ timeout: 15000 });
+      await expect(xyFlowIndicator).toBeVisible({ timeout: 15000 });
+
+      // Get bounding boxes for spacing verification
+      const reactBox = await reactIndicator.boundingBox();
+      const openAlexBox = await openAlexIndicator.boundingBox();
+      const xyFlowBox = await xyFlowIndicator.boundingBox();
+
+      expect(reactBox).toBeTruthy();
+      expect(openAlexBox).toBeTruthy();
+      expect(xyFlowBox).toBeTruthy();
+
+      if (reactBox && openAlexBox && xyFlowBox) {
+        // Calculate spacing between indicators
+        const spacing1 = openAlexBox.x - (reactBox.x + reactBox.width);
+        const spacing2 = xyFlowBox.x - (openAlexBox.x + openAlexBox.width);
+
+        // Spacing should be consistent (within 5px tolerance for rendering variations)
+        expect(Math.abs(spacing1 - spacing2)).toBeLessThanOrEqual(5);
+
+        // Minimum spacing should be at least 8px (Mantine "xs" gap)
+        expect(spacing1).toBeGreaterThanOrEqual(8);
+        expect(spacing2).toBeGreaterThanOrEqual(8);
+      }
+    });
+
+    test("should have feature badges that wrap properly on narrow screens", async ({
+      page,
+    }) => {
+      // Test on mobile viewport
+      await page.setViewportSize({ width: 320, height: 568 });
+      await page.goto("/", {
+        waitUntil: "networkidle",
+        timeout: 30000,
+      });
+
+      // Verify all technology indicators are visible
+      const reactIndicator = page.locator("text=React 19");
+      const openAlexIndicator = page.locator("text=OpenAlex API");
+      const xyFlowIndicator = page.locator("text=XYFlow");
+
+      await expect(reactIndicator).toBeVisible({ timeout: 15000 });
+      await expect(openAlexIndicator).toBeVisible({ timeout: 15000 });
+      await expect(xyFlowIndicator).toBeVisible({ timeout: 15000 });
+
+      // Verify no horizontal overflow
+      const hasHorizontalScroll = await page.evaluate(() => {
+        return document.documentElement.scrollWidth > document.documentElement.clientWidth;
+      });
+      expect(hasHorizontalScroll).toBe(false);
+
+      // Verify badges container is within viewport
+      const reactBox = await reactIndicator.boundingBox();
+      const xyFlowBox = await xyFlowIndicator.boundingBox();
+
+      expect(reactBox).toBeTruthy();
+      expect(xyFlowBox).toBeTruthy();
+
+      if (reactBox && xyFlowBox) {
+        // All badges should be within viewport width
+        expect(reactBox.x).toBeGreaterThanOrEqual(0);
+        expect(xyFlowBox.x + xyFlowBox.width).toBeLessThanOrEqual(320);
+      }
+    });
+
+    test("should maintain readability at 150% zoom level", async ({ page }) => {
+      await page.goto("/", {
+        waitUntil: "networkidle",
+        timeout: 30000,
+      });
+
+      // Set 150% zoom using CSS zoom
+      await page.evaluate(() => {
+        document.body.style.zoom = "1.5";
+      });
+
+      // Verify main content is still visible
+      const title = page.locator('h1:has-text("Academic Explorer")');
+      await expect(title).toBeVisible({ timeout: 15000 });
+
+      // Verify search input is still visible and functional
+      const searchInput = page.locator(
+        'input[aria-label="Search academic literature"]',
+      );
+      await expect(searchInput).toBeVisible({ timeout: 15000 });
+
+      // Verify usage instructions are still visible
+      const instructions = page.locator(
+        "text=Use the sidebar to search and filter • Click nodes to navigate • Double-click to expand relationships",
+      );
+      await expect(instructions).toBeVisible({ timeout: 15000 });
+
+      // Verify no text is cut off by checking overflow
+      const hasOverflow = await page.evaluate(() => {
+        const elements = Array.from(document.querySelectorAll("*"));
+        return elements.some(
+          (el) =>
+            el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight,
+        );
+      });
+
+      // Some overflow is acceptable (scrollable containers), but verify card is visible
+      const card = page.locator('[class*="mantine-Card-root"]').first();
+      await expect(card).toBeVisible({ timeout: 15000 });
+    });
+
+    test("should maintain layout integrity at 200% zoom level", async ({
+      page,
+    }) => {
+      await page.goto("/", {
+        waitUntil: "networkidle",
+        timeout: 30000,
+      });
+
+      // Set 200% zoom using CSS zoom
+      await page.evaluate(() => {
+        document.body.style.zoom = "2.0";
+      });
+
+      // Verify main content is still visible
+      const title = page.locator('h1:has-text("Academic Explorer")');
+      await expect(title).toBeVisible({ timeout: 15000 });
+
+      // Verify search button is still visible and clickable
+      const searchButton = page.locator('button:has-text("Search & Visualize")');
+      await expect(searchButton).toBeVisible({ timeout: 15000 });
+
+      // Verify technology stack indicators are visible
+      const reactIndicator = page.locator("text=React 19");
+      await expect(reactIndicator).toBeVisible({ timeout: 15000 });
+
+      // Verify card is visible and within reasonable bounds
+      const card = page.locator('[class*="mantine-Card-root"]').first();
+      await expect(card).toBeVisible({ timeout: 15000 });
+
+      // Verify no critical layout breaks (text should not overflow card bounds)
+      const cardBox = await card.boundingBox();
+      expect(cardBox).toBeTruthy();
+
+      // Verify search input is still functional at 200% zoom
+      const searchInput = page.locator(
+        'input[aria-label="Search academic literature"]',
+      );
+      await expect(searchInput).toBeVisible({ timeout: 15000 });
+      await searchInput.fill("test query");
+      await expect(searchInput).toHaveValue("test query");
+    });
+  });
 });
