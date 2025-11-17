@@ -119,28 +119,28 @@ This phase is skipped as:
 
 > **CRITICAL**: Write these tests FIRST, ensure they FAIL before implementation
 
-- [ ] T033 [P] [US3] Add E2E test for technology stack alignment and spacing in apps/web/src/test/e2e/manual/homepage.e2e.test.ts
-- [ ] T034 [P] [US3] Add E2E test for feature badges wrapping behavior in apps/web/src/test/e2e/manual/homepage.e2e.test.ts
-- [ ] T035 [P] [US3] Add E2E test for 150% zoom readability in apps/web/src/test/e2e/manual/homepage.e2e.test.ts
-- [ ] T036 [P] [US3] Add E2E test for 200% zoom layout integrity in apps/web/src/test/e2e/manual/homepage.e2e.test.ts
-- [ ] T037 [US3] Run visual hierarchy E2E tests - verify they FAIL
+- [x] T033 [P] [US3] Add E2E test for technology stack alignment and spacing in apps/web/src/test/e2e/manual/homepage.e2e.test.ts
+- [x] T034 [P] [US3] Add E2E test for feature badges wrapping behavior in apps/web/src/test/e2e/manual/homepage.e2e.test.ts
+- [x] T035 [P] [US3] Add E2E test for 150% zoom readability in apps/web/src/test/e2e/manual/homepage.e2e.test.ts
+- [x] T036 [P] [US3] Add E2E test for 200% zoom layout integrity in apps/web/src/test/e2e/manual/homepage.e2e.test.ts
+- [x] T037 [US3] Run visual hierarchy E2E tests - verify they FAIL
 
 ### Implementation for User Story 3 (Green Phase)
 
-- [ ] T038 [US3] Ensure technology stack indicators have equal spacing in apps/web/src/routes/index.lazy.tsx
-- [ ] T039 [US3] Improve Group wrapping for feature badges in apps/web/src/routes/index.lazy.tsx
-- [ ] T040 [US3] Adjust line-height for usage instructions text in apps/web/src/routes/index.lazy.tsx
-- [ ] T041 [US3] Verify consistent vertical rhythm using Mantine spacing scale in apps/web/src/routes/index.lazy.tsx
-- [ ] T042 [US3] Test layout at 200% zoom in browser DevTools
+- [x] T038 [US3] Ensure technology stack indicators have equal spacing in apps/web/src/routes/index.lazy.tsx
+- [x] T039 [US3] Improve Group wrapping for feature badges in apps/web/src/routes/index.lazy.tsx
+- [x] T040 [US3] Adjust line-height for usage instructions text in apps/web/src/routes/index.lazy.tsx
+- [x] T041 [US3] Verify consistent vertical rhythm using Mantine spacing scale in apps/web/src/routes/index.lazy.tsx
+- [x] T042 [US3] Test layout at 200% zoom in browser DevTools
 
 ### Verification for User Story 3
 
-- [ ] T043 [US3] Run visual hierarchy E2E tests - verify they PASS
-- [ ] T044 [US3] Verify no text overflow at 200% zoom
-- [ ] T045 [US3] Verify feature badges wrap properly on narrow screens
-- [ ] T046 [US3] Run `pnpm typecheck` - ensure no type errors
-- [ ] T047 [US3] Create atomic commit: test(homepage): add visual hierarchy and zoom tests
-- [ ] T048 [US3] Create atomic commit: fix(ui): improve visual hierarchy and zoom support
+- [x] T043 [US3] Run visual hierarchy E2E tests - verify they PASS
+- [x] T044 [US3] Verify no text overflow at 200% zoom
+- [x] T045 [US3] Verify feature badges wrap properly on narrow screens
+- [x] T046 [US3] Run `pnpm typecheck` - ensure no type errors
+- [x] T047 [US3] Create atomic commit: test(web): add visual hierarchy and zoom tests
+- [x] T048 [US3] Create atomic commit: fix(web): improve visual hierarchy and zoom support
 
 **Checkpoint**: All user stories complete - homepage has responsive layout, proper touch targets, and clear visual hierarchy
 
