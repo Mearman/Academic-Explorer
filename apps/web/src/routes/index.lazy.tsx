@@ -159,7 +159,7 @@ function HomePage() {
         </Card>
 
         {/* Features */}
-        <Stack gap="md" align="center" style={{ width: "100%", marginTop: "1rem" }}>
+        <Stack gap="md" align="center" style={{ width: "100%" }} mt="lg">
           <Group gap="lg" justify="center" wrap="wrap">
             <Group gap="xs">
               <IconBrandReact size={16} color={colors.primary} />
@@ -181,7 +181,7 @@ function HomePage() {
             </Group>
           </Group>
 
-          <Text size="xs" ta="center" c="dimmed" style={{ lineHeight: 1.5, maxWidth: "90%" }}>
+          <Text size="xs" ta="center" c="dimmed" style={{ lineHeight: 1.7, maxWidth: "90%" }}>
             Use the sidebar to search and filter • Click nodes to navigate •
             Double-click to expand relationships
           </Text>
