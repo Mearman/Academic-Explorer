@@ -81,23 +81,23 @@ This is an Nx monorepo with packages at repository root:
 
 ### Implementation for User Story 2
 
-- [ ] T018 [P] [US2] Extend settings store in apps/web/src/stores/settings-store.ts to add includeXpac field (default: true)
-- [ ] T019 [P] [US2] Modify client request builder in packages/client/src/client.ts to send `include_xpac=true` when settings.includeXpac is true
-- [ ] T020 [P] [US2] Create XpacToggle component in packages/ui/src/molecules/XpacToggle.tsx (Mantine Switch component)
-- [ ] T021 [US2] Integrate XpacToggle into SettingsSection in apps/web/src/components/sections/SettingsSection.tsx
-- [ ] T022 [US2] Add work type display logic in apps/web/src/components/ to show non-traditional types (dataset, software, specimen)
-- [ ] T023 [US2] Add author name-string indicator logic in apps/web/src/components/ to flag unverified authors (when Author ID is missing)
-- [ ] T024 [US2] Extend GraphNode metadata in packages/graph/src/ to include isXpac and hasUnverifiedAuthor flags
-- [ ] T025 [US2] Add xpac work styling functions in apps/web/src/components/graph/ for visual distinction (dashed borders, muted colors)
-- [ ] T026 [US2] Apply conditional node styling in graph renderer based on xpac metadata flags
+- [X] T018 [P] [US2] Extend settings store in apps/web/src/stores/settings-store.ts to add includeXpac field (default: true)
+- [X] T019 [P] [US2] Modify client request builder in packages/client/src/client.ts to send `include_xpac=true` when settings.includeXpac is true
+- [X] T020 [P] [US2] Create XpacToggle component in packages/ui/src/molecules/XpacToggle.tsx (Mantine Switch component)
+- [X] T021 [US2] Integrate XpacToggle into SettingsSection in apps/web/src/components/sections/SettingsSection.tsx
+- [X] T022 [US2] Add work type display logic in apps/web/src/components/ to show non-traditional types (dataset, software, specimen)
+- [X] T023 [US2] Add author name-string indicator logic in apps/web/src/components/ to flag unverified authors (when Author ID is missing)
+- [X] T024 [US2] Extend GraphNode metadata in packages/graph/src/ to include isXpac and hasUnverifiedAuthor flags
+- [X] T025 [US2] Add xpac work styling functions in apps/web/src/components/graph/ for visual distinction (dashed borders, muted colors)
+- [X] T026 [US2] Apply conditional node styling in graph renderer based on xpac metadata flags
 
 ### E2E Tests for User Story 2
 
-- [ ] T027 [P] [US2] E2E test: Verify xpac works included by default in apps/web/e2e/xpac-default-enabled.e2e.test.ts
-- [ ] T028 [P] [US2] E2E test: Verify xpac toggle disables xpac works in apps/web/e2e/xpac-toggle.e2e.test.ts
-- [ ] T029 [P] [US2] E2E test: Verify work type display for non-traditional outputs in apps/web/e2e/work-type-display.e2e.test.ts
-- [ ] T030 [P] [US2] E2E test: Verify author name-string indicators in apps/web/e2e/author-verification.e2e.test.ts
-- [ ] T031 [P] [US2] E2E test: Verify xpac visual distinction in graphs in apps/web/e2e/graph-xpac-styling.e2e.test.ts
+- [X] T027 [P] [US2] E2E test: Verify xpac works included by default in apps/web/e2e/xpac-default-enabled.e2e.test.ts
+- [X] T028 [P] [US2] E2E test: Verify xpac toggle disables xpac works in apps/web/e2e/xpac-toggle.e2e.test.ts
+- [X] T029 [P] [US2] E2E test: Verify work type display for non-traditional outputs in apps/web/e2e/work-type-display.e2e.test.ts
+- [X] T030 [P] [US2] E2E test: Verify author name-string indicators in apps/web/e2e/author-verification.e2e.test.ts
+- [X] T031 [P] [US2] E2E test: Verify xpac visual distinction in graphs in apps/web/e2e/graph-xpac-styling.e2e.test.ts
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently - xpac works are included by default with visual distinction
 
@@ -111,20 +111,20 @@ This is an Nx monorepo with packages at repository root:
 
 ### Implementation for User Story 3
 
-- [ ] T032 [P] [US3] Extend settings store in apps/web/src/stores/settings-store.ts to add dataVersion field (default: undefined)
-- [ ] T033 [P] [US3] Modify client request builder in packages/client/src/client.ts to send `data-version=1` param when settings.dataVersion is '1'
-- [ ] T034 [P] [US3] Create DataVersionSelector component in packages/ui/src/molecules/DataVersionSelector.tsx (Mantine Select component)
-- [ ] T035 [US3] Add date-based visibility logic in packages/utils/src/ to determine if v1 access should be shown (before December 1, 2025)
-- [ ] T036 [US3] Integrate DataVersionSelector into SettingsSection in apps/web/src/components/sections/SettingsSection.tsx with conditional rendering
-- [ ] T037 [US3] Add metadata comparison display logic in apps/web/src/components/ to highlight v1/v2 differences when switching versions
-- [ ] T038 [US3] Add visual indicators for version-specific improvements (e.g., "New in v2: 5 more references")
+- [X] T032 [P] [US3] Extend settings store in apps/web/src/stores/settings-store.ts to add dataVersion field (default: undefined)
+- [X] T033 [P] [US3] Modify client request builder in packages/client/src/client.ts to send `data-version=1` param when settings.dataVersion is '1'
+- [X] T034 [P] [US3] Create DataVersionSelector component in packages/ui/src/molecules/DataVersionSelector.tsx (Mantine Select component)
+- [X] T035 [US3] Add date-based visibility logic in packages/utils/src/ to determine if v1 access should be shown (before December 1, 2025)
+- [X] T036 [US3] Integrate DataVersionSelector into SettingsSection in apps/web/src/components/sections/SettingsSection.tsx with conditional rendering
+- [X] T037 [US3] Add metadata comparison display logic in apps/web/src/components/ to highlight v1/v2 differences when switching versions
+- [X] T038 [US3] Add visual indicators for version-specific improvements (e.g., "New in v2: 5 more references")
 
 ### E2E Tests for User Story 3
 
-- [ ] T039 [P] [US3] E2E test: Verify data version selector available in November in apps/web/e2e/version-selector-november.e2e.test.ts
-- [ ] T040 [P] [US3] E2E test: Verify data version selector hidden after November in apps/web/e2e/version-selector-removed.e2e.test.ts
-- [ ] T041 [P] [US3] E2E test: Verify v1 parameter sent when v1 selected in apps/web/e2e/version-v1-parameter.e2e.test.ts
-- [ ] T042 [P] [US3] E2E test: Verify metadata differences highlighted between versions in apps/web/e2e/version-comparison.e2e.test.ts
+- [X] T039 [P] [US3] E2E test: Verify data version selector available in November in apps/web/e2e/version-selector-november.e2e.test.ts
+- [X] T040 [P] [US3] E2E test: Verify data version selector hidden after November in apps/web/e2e/version-selector-removed.e2e.test.ts
+- [X] T041 [P] [US3] E2E test: Verify v1 parameter sent when v1 selected in apps/web/e2e/version-v1-parameter.e2e.test.ts
+- [X] T042 [P] [US3] E2E test: Verify metadata differences highlighted between versions in apps/web/e2e/version-comparison.e2e.test.ts
 
 **Checkpoint**: All user stories should now be independently functional - users can compare v1/v2 during transition
 
@@ -134,19 +134,19 @@ This is an Nx monorepo with packages at repository root:
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T043 [P] Update quickstart.md in specs/013-walden-research/ with final implementation notes
-- [ ] T044 [P] Update CLAUDE.md with Walden feature context (data-version, include_xpac parameters)
-- [ ] T045 Code review and refactoring for consistency across all user stories
-- [ ] T046 Performance validation: Verify graph rendering under 5 seconds with xpac enabled (Success Criteria SC-007)
-- [ ] T047 Accessibility audit: Verify metadata badges and xpac indicators meet WCAG standards
-- [ ] T048 Run full quality pipeline: pnpm validate (typecheck + lint + test + build)
-- [ ] T049 Constitution compliance verification:
-  - [ ] No `any` types in implementation (Type Safety)
-  - [ ] All E2E tests written and passing (Test-First)
-  - [ ] Proper Nx workspace structure used (Monorepo Architecture)
-  - [ ] Settings use storage provider interface (Storage Abstraction)
-  - [ ] Performance requirements met; serial test execution maintained (Performance & Memory)
-  - [ ] Atomic conventional commits created after each phase (Atomic Conventional Commits)
+- [X] T043 [P] Update quickstart.md in specs/013-walden-research/ with final implementation notes
+- [X] T044 [P] Update CLAUDE.md with Walden feature context (data-version, include_xpac parameters)
+- [X] T045 Code review and refactoring for consistency across all user stories
+- [X] T046 Performance validation: Verify graph rendering under 5 seconds with xpac enabled (Success Criteria SC-007)
+- [X] T047 Accessibility audit: Verify metadata badges and xpac indicators meet WCAG standards
+- [X] T048 Run full quality pipeline: pnpm validate (typecheck + lint + test + build)
+- [X] T049 Constitution compliance verification:
+  - [X] No `any` types in implementation (Type Safety)
+  - [X] All E2E tests written and passing (Test-First)
+  - [X] Proper Nx workspace structure used (Monorepo Architecture)
+  - [X] Settings use storage provider interface (Storage Abstraction)
+  - [X] Performance requirements met; serial test execution maintained (Performance & Memory)
+  - [X] Atomic conventional commits created after each phase (Atomic Conventional Commits)
 
 ---
 
