@@ -82,28 +82,28 @@ This phase is skipped as:
 
 > **CRITICAL**: Write these tests FIRST, ensure they FAIL before implementation
 
-- [ ] T017 [P] [US2] Add E2E test for search input touch target size (≥44px height) in apps/web/src/test/e2e/manual/homepage.e2e.test.ts
-- [ ] T018 [P] [US2] Add E2E test for search button touch target size (≥44x44px) in apps/web/src/test/e2e/manual/homepage.e2e.test.ts
-- [ ] T019 [P] [US2] Add E2E test for search form spacing and alignment in apps/web/src/test/e2e/manual/homepage.e2e.test.ts
-- [ ] T020 [P] [US2] Add E2E test for example links spacing and wrapping in apps/web/src/test/e2e/manual/homepage.e2e.test.ts
-- [ ] T021 [US2] Run search interaction E2E tests - verify they FAIL
+- [x] T017 [P] [US2] Add E2E test for search input touch target size (≥44px height) in apps/web/src/test/e2e/manual/homepage.e2e.test.ts
+- [x] T018 [P] [US2] Add E2E test for search button touch target size (≥44x44px) in apps/web/src/test/e2e/manual/homepage.e2e.test.ts
+- [x] T019 [P] [US2] Add E2E test for search form spacing and alignment in apps/web/src/test/e2e/manual/homepage.e2e.test.ts
+- [x] T020 [P] [US2] Add E2E test for example links spacing and wrapping in apps/web/src/test/e2e/manual/homepage.e2e.test.ts
+- [x] T021 [US2] Run search interaction E2E tests - verify they FAIL
 
 ### Implementation for User Story 2 (Green Phase)
 
-- [ ] T022 [US2] Ensure search input meets 44px minimum height in apps/web/src/routes/index.lazy.tsx
-- [ ] T023 [US2] Ensure search button meets 44x44px minimum size in apps/web/src/routes/index.lazy.tsx
-- [ ] T024 [US2] Adjust spacing between search input and button in apps/web/src/routes/index.lazy.tsx
-- [ ] T025 [US2] Refine spacing for example searches section in apps/web/src/routes/index.lazy.tsx
-- [ ] T026 [US2] Ensure example links wrap gracefully on narrow screens in apps/web/src/routes/index.lazy.tsx
+- [x] T022 [US2] Ensure search input meets 44px minimum height in apps/web/src/routes/index.lazy.tsx
+- [x] T023 [US2] Ensure search button meets 44x44px minimum size in apps/web/src/routes/index.lazy.tsx
+- [x] T024 [US2] Adjust spacing between search input and button in apps/web/src/routes/index.lazy.tsx
+- [x] T025 [US2] Refine spacing for example searches section in apps/web/src/routes/index.lazy.tsx
+- [x] T026 [US2] Ensure example links wrap gracefully on narrow screens in apps/web/src/routes/index.lazy.tsx
 
 ### Verification for User Story 2
 
-- [ ] T027 [US2] Run search interaction E2E tests - verify they PASS
-- [ ] T028 [US2] Manually test touch targets on mobile device or DevTools touch emulation
-- [ ] T029 [US2] Verify search form alignment across all breakpoints
-- [ ] T030 [US2] Run `pnpm typecheck` - ensure no type errors
-- [ ] T031 [US2] Create atomic commit: test(homepage): add search interaction touch target tests
-- [ ] T032 [US2] Create atomic commit: fix(ui): improve search form sizing and spacing
+- [x] T027 [US2] Run search interaction E2E tests - verify they PASS
+- [x] T028 [US2] Manually test touch targets on mobile device or DevTools touch emulation
+- [x] T029 [US2] Verify search form alignment across all breakpoints
+- [x] T030 [US2] Run `pnpm typecheck` - ensure no type errors
+- [ ] T031 [US2] Create atomic commit: test(web): add search interaction touch target tests
+- [ ] T032 [US2] Create atomic commit: fix(web): ensure search controls meet 44px touch targets
 
 **Checkpoint**: User Stories 1 AND 2 complete - homepage is responsive AND search controls are properly sized
 

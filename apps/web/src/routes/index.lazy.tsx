@@ -100,12 +100,20 @@ function HomePage() {
               }}
               leftSection={<IconSearch size={20} />}
               aria-label="Search academic literature"
+              styles={{
+                input: {
+                  minHeight: "44px",
+                },
+              }}
             />
             <Button
               type="submit"
               size="lg"
               disabled={!searchQuery.trim()}
               fullWidth
+              style={{
+                minHeight: "44px",
+              }}
             >
               Search & Visualize
             </Button>

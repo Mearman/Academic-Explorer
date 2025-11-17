@@ -293,4 +293,101 @@ test.describe("Homepage E2E Tests", () => {
       }
     });
   });
+
+  // Search Interaction Tests (User Story 2)
+  test.describe("Search Interaction", () => {
+    test("should have search input with minimum 44px touch target height", async ({
+      page,
+    }) => {
+      await page.goto("/", {
+        waitUntil: "networkidle",
+        timeout: 30000,
+      });
+
+      const searchInput = page.locator(
+        'input[aria-label="Search academic literature"]',
+      );
+      await expect(searchInput).toBeVisible({ timeout: 15000 });
+
+      const inputBox = await searchInput.boundingBox();
+      expect(inputBox).toBeTruthy();
+      if (inputBox) {
+        // Minimum touch target size is 44px
+        expect(inputBox.height).toBeGreaterThanOrEqual(44);
+      }
+    });
+
+    test("should have search button with minimum 44x44px touch target size", async ({
+      page,
+    }) => {
+      await page.goto("/", {
+        waitUntil: "networkidle",
+        timeout: 30000,
+      });
+
+      const searchButton = page.locator('button:has-text("Search & Visualize")');
+      await expect(searchButton).toBeVisible({ timeout: 15000 });
+
+      const buttonBox = await searchButton.boundingBox();
+      expect(buttonBox).toBeTruthy();
+      if (buttonBox) {
+        // Minimum touch target size is 44x44px
+        expect(buttonBox.height).toBeGreaterThanOrEqual(44);
+        expect(buttonBox.width).toBeGreaterThanOrEqual(44);
+      }
+    });
+
+    test("should have proper spacing between search input and button", async ({
+      page,
+    }) => {
+      await page.goto("/", {
+        waitUntil: "networkidle",
+        timeout: 30000,
+      });
+
+      const searchInput = page.locator(
+        'input[aria-label="Search academic literature"]',
+      );
+      const searchButton = page.locator('button:has-text("Search & Visualize")');
+
+      await expect(searchInput).toBeVisible({ timeout: 15000 });
+      await expect(searchButton).toBeVisible({ timeout: 15000 });
+
+      const inputBox = await searchInput.boundingBox();
+      const buttonBox = await searchButton.boundingBox();
+
+      expect(inputBox).toBeTruthy();
+      expect(buttonBox).toBeTruthy();
+
+      if (inputBox && buttonBox) {
+        // Vertical spacing between input and button should be at least 8px
+        const spacing = buttonBox.y - (inputBox.y + inputBox.height);
+        expect(spacing).toBeGreaterThanOrEqual(8);
+      }
+    });
+
+    test("should have example links that wrap gracefully on narrow screens", async ({
+      page,
+    }) => {
+      // Test on mobile viewport
+      await page.setViewportSize({ width: 320, height: 568 });
+      await page.goto("/", {
+        waitUntil: "networkidle",
+        timeout: 30000,
+      });
+
+      // Check that example links are visible
+      const mlExample = page.locator('a:has-text("machine learning")');
+      await expect(mlExample).toBeVisible({ timeout: 15000 });
+
+      // Verify example links container doesn't overflow
+      const examplesCard = page.locator('text=Try these examples:').locator("..");
+      const cardBox = await examplesCard.boundingBox();
+      expect(cardBox).toBeTruthy();
+      if (cardBox) {
+        // Card should fit within viewport
+        expect(cardBox.width).toBeLessThanOrEqual(320);
+      }
+    });
+  });
 });
