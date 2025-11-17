@@ -341,6 +341,12 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
   const removeEntityFromList = useCallback(async (listId: string, entityRecordId: string): Promise<void> => {
     try {
       await storage.removeEntityFromList(listId, entityRecordId);
+      // T085: Refresh entities after removal to update UI
+      await refreshEntities(listId);
+      logger.debug(CATALOGUE_LOGGER_CONTEXT, "Entity removed and list refreshed", {
+        listId,
+        entityRecordId
+      });
     } catch (error) {
       logger.error(CATALOGUE_LOGGER_CONTEXT, "Failed to remove entity from catalogue list", {
         listId,
@@ -349,7 +355,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
       });
       throw error;
     }
-  }, []);
+  }, [storage, refreshEntities]);
 
   // Reorder entities in list
   const reorderEntities = useCallback(async (listId: string, orderedEntityIds: string[]): Promise<void> => {
@@ -397,7 +403,10 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
         await storage.removeEntityFromList(listId, entityId);
       }
 
-      logger.debug(CATALOGUE_LOGGER_CONTEXT, "Bulk remove completed successfully", {
+      // T085: Refresh entities after bulk removal to update UI
+      await refreshEntities(listId);
+
+      logger.debug(CATALOGUE_LOGGER_CONTEXT, "Bulk remove completed and list refreshed", {
         listId,
         removedCount: entityIds.length
       });
@@ -409,7 +418,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
       });
       throw error;
     }
-  }, [storage]);
+  }, [storage, refreshEntities]);
 
   // Bulk move entities from one list to another
   const bulkMoveEntities = useCallback(async (
@@ -441,7 +450,10 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
         await storage.removeEntityFromList(sourceListId, entity.id!);
       }
 
-      logger.debug(CATALOGUE_LOGGER_CONTEXT, "Bulk move completed successfully", {
+      // T085: Refresh source list after bulk move to update UI
+      await refreshEntities(sourceListId);
+
+      logger.debug(CATALOGUE_LOGGER_CONTEXT, "Bulk move completed and source list refreshed", {
         sourceListId,
         targetListId,
         movedCount: entitiesToMove.length
@@ -455,7 +467,7 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
       });
       throw error;
     }
-  }, [storage]);
+  }, [storage, refreshEntities]);
 
   // Search lists
   const searchLists = useCallback(async (query: string): Promise<CatalogueList[]> => {
