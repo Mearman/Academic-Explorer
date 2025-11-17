@@ -240,6 +240,7 @@ function SortableEntityRow({
             aria-label={`Drag to reorder ${entity.entityId}`}
             role="button"
             tabIndex={0}
+            data-testid={`drag-handle-${entity.entityId}`}
           >
             <IconGripVertical size={16} color="var(--mantine-color-gray-4)" />
           </div>

@@ -183,9 +183,27 @@ test.describe("Catalogue Entity Management", () => {
     const firstEntity = entities.first();
     const dragHandle = firstEntity.locator('[role="button"]').first();
 
-    // Perform drag and drop using Playwright's dragTo
+    // Get bounding boxes for drag operation
+    const dragHandleBox = await dragHandle.boundingBox();
     const secondEntity = entities.nth(1);
-    await dragHandle.dragTo(secondEntity);
+    const secondEntityBox = await secondEntity.boundingBox();
+
+    if (!dragHandleBox || !secondEntityBox) {
+      throw new Error("Could not get bounding boxes for drag operation");
+    }
+
+    // Perform drag using mouse events (required for @dnd-kit)
+    await page.mouse.move(
+      dragHandleBox.x + dragHandleBox.width / 2,
+      dragHandleBox.y + dragHandleBox.height / 2
+    );
+    await page.mouse.down();
+    await page.mouse.move(
+      secondEntityBox.x + secondEntityBox.width / 2,
+      secondEntityBox.y + secondEntityBox.height / 2,
+      { steps: 10 }
+    );
+    await page.mouse.up();
 
     // Wait for reordering to complete
     await page.waitForTimeout(1500);
