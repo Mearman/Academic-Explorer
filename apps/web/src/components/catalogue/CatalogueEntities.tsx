@@ -406,6 +406,14 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
   const parentRef = useRef<HTMLDivElement>(null);
   const VIRTUALIZATION_THRESHOLD = 100;
 
+  // T084: DnD sensors must be called before guard clauses to maintain consistent hook count
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   // Filter entities based on search and type
   const filteredEntities = entities.filter((entity) => {
     const matchesSearch = searchQuery === "" ||
@@ -786,12 +794,7 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
                 </Table.Thead>
                 <Table.Tbody>
                   <DndContext
-                    sensors={useSensors(
-                      useSensor(PointerSensor),
-                      useSensor(KeyboardSensor, {
-                        coordinateGetter: sortableKeyboardCoordinates,
-                      })
-                    )}
+                    sensors={sensors}
                     collisionDetection={closestCenter}
                     onDragEnd={handleDragEnd}
                   >
