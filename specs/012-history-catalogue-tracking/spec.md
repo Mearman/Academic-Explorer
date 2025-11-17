@@ -2,8 +2,11 @@
 
 **Feature Branch**: `012-history-catalogue-tracking`
 **Created**: 2025-11-13
-**Status**: Draft
+**Status**: Completed
+**Completed**: 2025-11-17
 **Input**: User description: "http://localhost:5173/#/history should use the catalogue system as a special "history" list and should show a history of entities, lists and views visited, not a "navigation history""
+
+**Implementation Note**: Implemented via commit `feat(web): migrate to catalogue-based history tracking system`. History now uses catalogue storage provider's special "history" list.
 
 ## User Scenarios & Testing *(mandatory)*
 

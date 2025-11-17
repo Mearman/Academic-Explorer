@@ -2,8 +2,11 @@
 
 **Feature Branch**: `011-fix-vertical-scrolling`
 **Created**: 2025-11-13-081734
-**Status**: Draft
+**Status**: Completed
+**Completed**: 2025-11-17
 **Input**: User description: "there is additional vertical scrolling in the central section and sidebars"
+
+**Implementation Note**: Fixed via commits `fix(layout): eliminate nested scrollbars` and `fix(layout): restore vertical padding`. Nested scrollbar issues resolved.
 
 ## User Scenarios & Testing *(mandatory)*
 
