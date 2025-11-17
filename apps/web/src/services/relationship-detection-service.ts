@@ -50,12 +50,13 @@ interface MinimalEntityData {
  * Detected relationship between nodes
  */
 interface DetectedRelationship {
-  sourceNodeId: string;
-  targetNodeId: string;
+  sourceNodeId: string; // Entity that owns the relationship data
+  targetNodeId: string; // Entity being referenced
   relationType: RelationType;
+  direction: 'outbound' | 'inbound'; // Data ownership direction
   label: string;
   weight?: number;
-  metadata?: Record<string, unknown>;
+  metadata?: Record<string, unknown>; // OpenAlex relationship metadata
 }
 
 /**
@@ -683,10 +684,11 @@ export class RelationshipDetectionService {
         );
         if (authorNode) {
           relationships.push({
-            sourceNodeId: authorship.author.id,
-            targetNodeId: workData.id,
-            relationType: RelationType.AUTHORED,
-            label: "authored",
+            sourceNodeId: workData.id, // Work owns the authorships[] data
+            targetNodeId: authorship.author.id, // Author is referenced
+            relationType: RelationType.AUTHORSHIP,
+            direction: 'outbound',
+            label: "authorship",
             weight: 1.0,
           });
         }
@@ -710,10 +712,11 @@ export class RelationshipDetectionService {
       );
       if (sourceNode) {
         relationships.push({
-          sourceNodeId: workData.id,
-          targetNodeId: sourceId,
-          relationType: RelationType.PUBLISHED_IN,
-          label: "published in",
+          sourceNodeId: workData.id, // Work owns primary_location.source data
+          targetNodeId: sourceId, // Source/venue
+          relationType: RelationType.PUBLICATION,
+          direction: 'outbound',
+          label: "publication",
         });
       }
     }
@@ -759,10 +762,11 @@ export class RelationshipDetectionService {
 
         if (referencedNode) {
           relationships.push({
-            sourceNodeId: workData.id,
-            targetNodeId: referencedWorkId,
-            relationType: RelationType.REFERENCES,
-            label: "references",
+            sourceNodeId: workData.id, // Work owns the referenced_works[] data
+            targetNodeId: referencedWorkId, // Referenced work
+            relationType: RelationType.REFERENCE,
+            direction: 'outbound',
+            label: "reference",
           });
         }
       }
@@ -845,10 +849,11 @@ export class RelationshipDetectionService {
       );
       if (institutionNode) {
         relationships.push({
-          sourceNodeId: authorData.id,
-          targetNodeId: institutionId,
-          relationType: RelationType.AFFILIATED,
-          label: "affiliated with",
+          sourceNodeId: authorData.id, // Author owns affiliations[] data
+          targetNodeId: institutionId, // Institution is referenced
+          relationType: RelationType.AFFILIATION,
+          direction: 'outbound',
+          label: "affiliation",
         });
       }
     }
@@ -881,10 +886,11 @@ export class RelationshipDetectionService {
       );
       if (publisherNode) {
         relationships.push({
-          sourceNodeId: sourceData.id,
-          targetNodeId: sourceData.publisher,
-          relationType: RelationType.SOURCE_PUBLISHED_BY,
-          label: "published by",
+          sourceNodeId: sourceData.id, // Source owns publisher data
+          targetNodeId: sourceData.publisher, // Publisher
+          relationType: RelationType.HOST_ORGANIZATION,
+          direction: 'outbound',
+          label: "host organization",
         });
       }
     }
@@ -917,10 +923,11 @@ export class RelationshipDetectionService {
           );
           if (parentNode) {
             relationships.push({
-              sourceNodeId: institutionData.id,
-              targetNodeId: parentId,
-              relationType: RelationType.INSTITUTION_CHILD_OF,
-              label: "child of",
+              sourceNodeId: institutionData.id, // Institution owns lineage[] data
+              targetNodeId: parentId, // Parent institution
+              relationType: RelationType.LINEAGE,
+              direction: 'outbound',
+              label: "lineage",
             });
           }
         }
@@ -1115,10 +1122,11 @@ export class RelationshipDetectionService {
           );
 
           relationships.push({
-            sourceNodeId: sourceData.id,
-            targetNodeId: referencedWorkId, // Use the entity ID to match the expected pattern
-            relationType: RelationType.REFERENCES,
-            label: "references",
+            sourceNodeId: sourceData.id, // Source work references this work
+            targetNodeId: referencedWorkId, // Referenced work
+            relationType: RelationType.REFERENCE,
+            direction: 'outbound',
+            label: "reference",
           });
         }
       }
