@@ -127,3 +127,4 @@
 - **Storage Abstraction**: If feature involves persistence, uses storage provider interface (no direct Dexie/IndexedDB)
 - **Performance & Memory**: Success criteria include performance metrics; memory constraints considered
 - **Atomic Conventional Commits**: Implementation tasks will be committed atomically with conventional commit messages
+- **Development-Stage Pragmatism**: Breaking changes acceptable; no backwards compatibility obligations during development

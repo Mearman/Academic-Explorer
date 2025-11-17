@@ -39,6 +39,7 @@ Verify alignment with Academic Explorer Constitution (`.specify/memory/constitut
 4. **Storage Abstraction**: Any storage operations use provider interface (no direct Dexie/IndexedDB coupling)
 5. **Performance & Memory**: Tests run serially; memory constraints considered; Web Workers for heavy computation
 6. **Atomic Conventional Commits**: Incremental atomic commits created after each task completion
+7. **Development-Stage Pragmatism**: No backwards compatibility required; breaking changes acceptable during development
 
 **Complexity Justification Required?** Document in Complexity Tracking section if this feature:
 - Adds new packages/apps beyond existing structure

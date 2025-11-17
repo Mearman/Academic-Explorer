@@ -1,17 +1,15 @@
 <!--
 Sync Impact Report:
-Version: 1.2.0 → 1.3.0 (package import requirements added to Principle III)
-Modified Principles:
-  - III. Monorepo Architecture: Added mandatory package alias import requirements
-Added Sections: None
+Version: 1.3.0 → 1.4.0 (New principle added)
+Modified Principles: None
+Added Sections:
+  - VII. Development-Stage Pragmatism (NEW principle)
 Removed Sections: None
 Templates Requiring Updates:
-  - ✅ .specify/templates/plan-template.md (No changes needed - principle number unchanged)
-  - ✅ .specify/templates/spec-template.md (No changes needed - principle number unchanged)
-  - ✅ .specify/templates/tasks-template.md (No changes needed - principle number unchanged)
-Follow-up TODOs:
-  - Existing cross-package relative imports should be migrated to use package aliases
-  - ESLint rule could enforce package alias imports (optional enhancement)
+  - ✅ .specify/templates/plan-template.md (Constitution Check section updated)
+  - ✅ .specify/templates/spec-template.md (Constitution Alignment section updated)
+  - ✅ .specify/templates/tasks-template.md (Constitution compliance verification updated)
+Follow-up TODOs: None
 -->
 
 # Academic Explorer Constitution
@@ -165,6 +163,37 @@ essential for maintaining the monorepo's multiple packages with independent vers
 Prohibiting `git add .` prevents accidentally committing unrelated changes (debug logs,
 experiments, temporary files) that pollute the commit history and make bisecting impossible.
 
+### VII. Development-Stage Pragmatism
+
+**Backwards compatibility and legacy support are NOT priorities during active development**.
+Since this application is in development stage for PhD research purposes, focus on forward
+progress and iteration speed rather than maintaining compatibility with previous versions.
+
+Development-stage requirements:
+- Breaking changes to APIs, data models, and interfaces are acceptable without migration paths
+- Database schema changes can be destructive (no data migration required)
+- Configuration formats can change without backward compatibility
+- Dependencies can be upgraded to latest versions without considering legacy support
+- Experimental features can be removed if they don't work out
+- Storage formats can change without preserving old data
+
+**IMPORTANT**: This principle applies ONLY during development. Before any public release or
+when the project transitions to production use, this principle MUST be revisited and likely
+removed or replaced with stricter compatibility requirements.
+
+**Rationale**: The project is currently in active PhD research development (June 2023+).
+Research iteration requires flexibility to pivot architectural decisions based on findings.
+Maintaining backwards compatibility during exploration phases would:
+1. Slow down experimentation and hypothesis testing
+2. Lock in suboptimal design decisions made early in research
+3. Create technical debt for features that may be discarded
+4. Waste research time on migration code that benefits no users (single researcher using it)
+5. Prevent adoption of better approaches discovered during research
+
+Once the research stabilizes and the tool is ready for wider academic use, a proper
+versioning and compatibility strategy will be essential. At that point, this principle
+should be replaced with appropriate stability guarantees.
+
 ## Development Workflow
 
 **Fail-fast test execution order**: TypeScript validation → Unit tests → Component tests
@@ -192,16 +221,18 @@ two places, extract it to `packages/utils` or create a shared package.
 
 ## Quality Gates
 
-**Constitution compliance**: Every PR MUST verify alignment with all six core principles.
+**Constitution compliance**: Every PR MUST verify alignment with all seven core principles.
 Feature specs MUST document how they respect type safety, test-first development, monorepo
-architecture, storage abstraction, performance constraints, and atomic commit discipline.
+architecture, storage abstraction, performance constraints, atomic commit discipline, and
+development-stage pragmatism.
 
 **Complexity justification**: Any feature that adds architectural complexity (new package,
 new storage provider, new worker) MUST document why a simpler alternative is insufficient.
 Follow YAGNI principles unless research requirements demand the complexity.
 
-**Breaking changes**: MAJOR.MINOR.PATCH versioning applies to all packages. Breaking changes
-to shared package APIs require documentation of migration path and approval from maintainers.
+**Breaking changes**: MAJOR.MINOR.PATCH versioning applies to all packages. During development
+stage (Principle VII), breaking changes are acceptable without MAJOR version bumps, but they
+MUST be documented in commit messages and changelogs.
 
 **Test coverage gates**:
 - All new storage operations MUST have unit tests with mock provider
@@ -231,4 +262,4 @@ For runtime development guidance specific to Academic Explorer workflows, see `C
 in the project root. That file provides operational instructions (commands, architecture
 patterns, research context) while this constitution defines non-negotiable principles.
 
-**Version**: 1.3.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-12
+**Version**: 1.4.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-17
