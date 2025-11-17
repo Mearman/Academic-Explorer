@@ -340,12 +340,9 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
   // Remove entity from list
   const removeEntityFromList = useCallback(async (listId: string, entityRecordId: string): Promise<void> => {
     try {
-      console.log("[DEBUG] useCatalogue.removeEntityFromList: starting", { listId, entityRecordId });
       await storage.removeEntityFromList(listId, entityRecordId);
-      console.log("[DEBUG] useCatalogue.removeEntityFromList: storage operation complete, calling refreshEntities");
       // T085: Refresh entities after removal to update UI
       await refreshEntities(listId);
-      console.log("[DEBUG] useCatalogue.removeEntityFromList: refreshEntities complete");
       logger.debug(CATALOGUE_LOGGER_CONTEXT, "Entity removed and list refreshed", {
         listId,
         entityRecordId

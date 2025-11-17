@@ -502,16 +502,10 @@ export function CatalogueEntities({ onNavigate }: CatalogueEntitiesProps) {
   };
 
   const handleRemoveEntity = async (entityRecordId: string) => {
-    console.log("[DEBUG] handleRemoveEntity called", { entityRecordId, selectedListId: selectedList?.id });
-    if (!selectedList) {
-      console.log("[DEBUG] handleRemoveEntity: no selectedList, returning");
-      return;
-    }
+    if (!selectedList) return;
 
     try {
-      console.log("[DEBUG] handleRemoveEntity: calling removeEntityFromList");
       await removeEntityFromList(selectedList.id!, entityRecordId);
-      console.log("[DEBUG] handleRemoveEntity: removeEntityFromList completed");
       logger.debug("catalogue-ui", "Entity removed from list", {
         listId: selectedList.id!,
         entityRecordId
