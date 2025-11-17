@@ -29,9 +29,9 @@ This task breakdown implements the edge direction correction feature by reversin
 
 **Tasks**:
 
-- [ ] T001 Verify development environment: `pnpm install` succeeds, `pnpm dev` works, `pnpm test` runs
-- [ ] T002 Create feature branch from main: `git checkout -b 014-edge-direction-correction`
-- [ ] T003 Review planning documents: read spec.md, plan.md, research.md, data-model.md, quickstart.md
+- [X] T001 Verify development environment: `pnpm install` succeeds, `pnpm dev` works, `pnpm test` runs
+- [X] T002 Create feature branch from main: `git checkout -b 014-edge-direction-correction`
+- [X] T003 Review planning documents: read spec.md, plan.md, research.md, data-model.md, quickstart.md
 
 **Completion Criteria**: Development environment ready, planning documents reviewed
 
@@ -45,13 +45,13 @@ This task breakdown implements the edge direction correction feature by reversin
 
 **Tasks**:
 
-- [ ] T004 [P] Write failing unit test for RelationType enum noun form in packages/graph/src/relation-type.unit.test.ts
-- [ ] T005 Update RelationType enum to noun form (AUTHORSHIP, REFERENCE, PUBLICATION, TOPIC, AFFILIATION, HOST_ORGANIZATION, LINEAGE) in packages/graph/src/relation-type.ts
-- [ ] T006 Verify RelationType unit tests pass: `pnpm nx test graph --testPathPattern=relation-type`
-- [ ] T007 [P] Write failing unit test for GraphEdge interface with direction and metadata fields in packages/graph/src/edge-model.unit.test.ts
-- [ ] T008 Add direction field (type EdgeDirection = 'outbound' | 'inbound') and metadata field (Record<string, unknown>) to GraphEdge interface in packages/graph/src/edge-model.ts
-- [ ] T009 Verify GraphEdge unit tests pass: `pnpm nx test graph --testPathPattern=edge-model`
-- [ ] T010 Commit foundational type changes: `git add packages/graph/src/relation-type.ts packages/graph/src/relation-type.unit.test.ts packages/graph/src/edge-model.ts packages/graph/src/edge-model.unit.test.ts && git commit -m "refactor(graph): update RelationType to noun form and add direction/metadata to GraphEdge"`
+- [X] T004 [P] Write failing unit test for RelationType enum noun form in packages/graph/src/types/core.test.ts
+- [X] T005 Update RelationType enum to noun form (AUTHORSHIP, REFERENCE, PUBLICATION, TOPIC, AFFILIATION, HOST_ORGANIZATION, LINEAGE) in packages/graph/src/types/core.ts
+- [X] T006 Verify RelationType unit tests pass: `pnpm nx run graph:test` (3/3 tests passed)
+- [X] T007 [P] Write unit test for GraphEdge interface with direction field in packages/graph/src/types/core.test.ts (4 tests added)
+- [X] T008 Add direction field (type EdgeDirection = 'outbound' | 'inbound') to GraphEdge interface in packages/graph/src/types/core.ts (metadata field already exists)
+- [X] T009 Verify GraphEdge unit tests pass: `pnpm nx run graph:test src/types/core.test` (7/7 tests passed)
+- [ ] T010 Commit foundational type changes: `git add packages/graph/src/types/core.ts packages/graph/src/types/core.test.ts specs/014-edge-direction-correction/tasks.md && git commit -m "refactor(graph): update RelationType to noun form and add EdgeDirection field"`
 
 **Completion Criteria**: GraphEdge interface has direction and metadata fields, RelationType uses noun form, all graph package tests pass
 

@@ -18,30 +18,43 @@ export type EntityType =
 	| "keywords"
 
 export enum RelationType {
-	// Core academic relationships (unique and specific)
-	AUTHORED = "authored", // Author → Work
-	AFFILIATED = "affiliated", // Author → Institution
-	PUBLISHED_IN = "published_in", // Work → Source
-	FUNDED_BY = "funded_by", // Work → Funder
-	REFERENCES = "references", // Work → Work (citations)
+	// Core academic relationships (matching OpenAlex field names - noun form)
+	// Edge directions reflect OpenAlex data ownership: source entity owns the relationship array
+	AUTHORSHIP = "AUTHORSHIP", // Work → Author (via authorships[])
+	AFFILIATION = "AFFILIATION", // Author → Institution (via affiliations[])
+	PUBLICATION = "PUBLICATION", // Work → Source (via primary_location.source)
+	REFERENCE = "REFERENCE", // Work → Work (via referenced_works[])
+	TOPIC = "TOPIC", // Work → Topic (via topics[])
 
 	// Publishing relationships
-	SOURCE_PUBLISHED_BY = "source_published_by", // Source → Publisher
+	HOST_ORGANIZATION = "HOST_ORGANIZATION", // Source → Publisher (via host_organization)
 
 	// Institutional relationships
-	INSTITUTION_CHILD_OF = "institution_child_of", // Institution → Parent Institution
-	PUBLISHER_CHILD_OF = "publisher_child_of", // Publisher → Parent Publisher
+	LINEAGE = "LINEAGE", // Institution → Institution (via lineage[])
 
-	// Topic/keyword relationships
-	WORK_HAS_TOPIC = "work_has_topic", // Work → Topic
+	// Backwards-compatible aliases (deprecated - use noun form above)
+	/** @deprecated Use AUTHORSHIP instead */
+	AUTHORED = "AUTHORSHIP",
+	/** @deprecated Use AFFILIATION instead */
+	AFFILIATED = "AFFILIATION",
+	/** @deprecated Use PUBLICATION instead */
+	PUBLISHED_IN = "PUBLICATION",
+	/** @deprecated Use REFERENCE instead */
+	REFERENCES = "REFERENCE",
+	/** @deprecated Use HOST_ORGANIZATION instead */
+	SOURCE_PUBLISHED_BY = "HOST_ORGANIZATION",
+	/** @deprecated Use LINEAGE instead */
+	INSTITUTION_CHILD_OF = "LINEAGE",
+	/** @deprecated Use TOPIC instead */
+	WORK_HAS_TOPIC = "TOPIC",
+
+	// Additional relationship types (less commonly used)
+	FUNDED_BY = "funded_by", // Work → Funder
+	PUBLISHER_CHILD_OF = "publisher_child_of", // Publisher → Parent Publisher
 	WORK_HAS_KEYWORD = "work_has_keyword", // Work → Keyword
 	AUTHOR_RESEARCHES = "author_researches", // Author → Topic
-
-	// Geographic relationships
 	INSTITUTION_LOCATED_IN = "institution_located_in", // Institution → Geo/Country
 	FUNDER_LOCATED_IN = "funder_located_in", // Funder → Country
-
-	// Topic hierarchy
 	TOPIC_PART_OF_FIELD = "topic_part_of_field", // Topic → Field → Domain
 
 	// General catch-all (use sparingly)
@@ -83,14 +96,22 @@ export interface GraphNode {
 	hasUnverifiedAuthor?: boolean // Indicates if work has authors without Author IDs
 }
 
+/**
+ * Edge direction type
+ * - outbound: Relationship stored on source entity (complete data)
+ * - inbound: Relationship discovered via reverse lookup (potentially incomplete)
+ */
+export type EdgeDirection = 'outbound' | 'inbound'
+
 export interface GraphEdge {
 	id: string
-	source: string // node id
-	target: string // node id
+	source: string // node id (entity that owns the relationship data)
+	target: string // node id (entity being referenced)
 	type: RelationType
+	direction?: EdgeDirection // Direction reflects data ownership (optional during migration)
 	label?: string
 	weight?: number
-	metadata?: Record<string, unknown>
+	metadata?: Record<string, unknown> // Relationship-specific data from OpenAlex
 }
 
 export interface GraphLayout {
