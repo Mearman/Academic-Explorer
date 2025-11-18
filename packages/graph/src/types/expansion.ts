@@ -137,4 +137,10 @@ export interface ProviderExpansionOptions {
 	 * Will be applied as the global default: `limits?.default ?? limit ?? 10`
 	 */
 	limit?: number
+
+	/**
+	 * Include reverse relationships (e.g., child institutions, citing works)
+	 * When true, performs reverse lookups to discover entities pointing to the current entity
+	 */
+	includeReverseRelationships?: boolean
 }

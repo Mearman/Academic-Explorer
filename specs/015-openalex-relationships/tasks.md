@@ -202,21 +202,21 @@ Academic Explorer monorepo structure:
 
 > **NAMING**: Tests follow pattern `*.test.ts` in packages/graph/tests/providers/
 
-- [ ] T050 [P] [US5] Write unit test for Institution → Parent edges in packages/graph/tests/providers/institutions.test.ts - verifies LINEAGE edges created from lineage[] array (FR-017)
-- [ ] T051 [P] [US5] Write integration test for complete hierarchy chain in packages/graph/tests/providers/institutions.test.ts - expand department, verify I123→I456→I789 complete hierarchy (FR-018, see spec.md lines 84-85)
-- [ ] T052 [P] [US5] Write unit test for reverse lineage lookup in packages/graph/tests/providers/institutions.test.ts - query university, discover all child departments (FR-019)
-- [ ] T053 [P] [US5] Write unit test for graceful handling of missing lineage in packages/graph/tests/providers/institutions.test.ts - institution with no lineage creates no edges (see spec.md lines 86-87)
+- [x] T050 [P] [US5] Write unit test for Institution → Parent edges in packages/graph/tests/providers/institutions.test.ts - verifies LINEAGE edges created from lineage[] array (FR-017)
+- [x] T051 [P] [US5] Write integration test for complete hierarchy chain in packages/graph/tests/providers/institutions.test.ts - expand department, verify I123→I456→I789 complete hierarchy (FR-018, see spec.md lines 84-85)
+- [x] T052 [P] [US5] Write unit test for reverse lineage lookup in packages/graph/tests/providers/institutions.test.ts - query university, discover all child departments (FR-019)
+- [x] T053 [P] [US5] Write unit test for graceful handling of missing lineage in packages/graph/tests/providers/institutions.test.ts - institution with no lineage creates no edges (see spec.md lines 86-87)
 
 **Run tests**: `pnpm test packages/graph -- --testPathPattern="institutions"` → **MUST FAIL**
 
 ### Implementation for User Story 5
 
-- [ ] T054 [P] [US5] Extract lineage[] array in expandInstitutionWithCache() in packages/graph/src/providers/openalex-provider.ts (FR-017)
-- [ ] T055 [US5] Create LINEAGE edges with source=institutionId, target=parentId for each lineage entry, direction='outbound' (FR-017)
-- [ ] T056 [US5] Support multiple hierarchy levels by iterating complete lineage[] array (FR-018)
-- [ ] T057 [US5] Implement reverse lookup to discover child institutions (FR-019)
-- [ ] T058 [US5] Apply configurable lineage limit using getRelationshipLimit(options, 'lineage') with default 5 (see research.md Section 4 line 526)
-- [ ] T059 [US5] Validate institution IDs in lineage[] before edge creation, handle missing lineage[] gracefully (FR-030, FR-031)
+- [x] T054 [P] [US5] Extract lineage[] array in expandInstitutionWithCache() in packages/graph/src/providers/openalex-provider.ts (FR-017)
+- [x] T055 [US5] Create LINEAGE edges with source=institutionId, target=parentId for each lineage entry, direction='outbound' (FR-017)
+- [x] T056 [US5] Support multiple hierarchy levels by iterating complete lineage[] array (FR-018)
+- [x] T057 [US5] Implement reverse lookup to discover child institutions (FR-019)
+- [x] T058 [US5] Apply configurable lineage limit using getRelationshipLimit(options, 'lineage') with default 5 (see research.md Section 4 line 526)
+- [x] T059 [US5] Validate institution IDs in lineage[] before edge creation, handle missing lineage[] gracefully (FR-030, FR-031)
 
 **Run tests**: `pnpm test packages/graph -- --testPathPattern="institutions"` → **MUST PASS**
 

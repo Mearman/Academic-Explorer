@@ -230,6 +230,19 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 				// Get the base entity data with expansion-specific fields
 				const baseEntity = await this.fetchEntityDataWithCache(nodeId, entityType, context)
 
+				// Add the base entity node
+				const baseNode: GraphNode = {
+					id: nodeId,
+					entityType,
+					entityId: nodeId,
+					label: this.extractLabel(baseEntity, entityType),
+					x: Math.random() * 800,
+					y: Math.random() * 600,
+					externalIds: this.extractExternalIds(baseEntity, entityType),
+					entityData: baseEntity,
+				}
+				nodes.push(baseNode)
+
 				// Expand based on entity type and available relationships
 				switch (entityType) {
 					case "works":
@@ -871,6 +884,147 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 		options: ProviderExpansionOptions,
 		context: CacheContext
 	): Promise<void> {
+		// T054-T056: Extract and create LINEAGE edges from institution hierarchy
+		const lineageArray = (institutionData.lineage as string[]) || []
+
+		// Apply limit for lineage relationships
+		const lineageLimit = getRelationshipLimit(options, RelationType.LINEAGE)
+
+		// Process lineage array (skip self at index 0, process parents starting at index 1)
+		for (let i = 1; i < Math.min(lineageArray.length, lineageLimit + 1); i++) {
+			const parentIdOrUrl = lineageArray[i]
+
+			// Extract bare ID from URL or use as-is
+			const parentId = extractOpenAlexId(parentIdOrUrl)
+
+			// Validate parent institution ID before creating edge
+			if (!validateOpenAlexId(parentId)) {
+				logger.warn(
+					"provider",
+					"Invalid parent institution ID, skipping",
+					{ institutionId, parentId: parentIdOrUrl },
+					"OpenAlexProvider"
+				)
+				continue
+			}
+
+			// Fetch parent institution data to create node
+			try {
+				const parentData = await this.fetchEntityDataWithCache(
+					parentId,
+					"institutions",
+					{
+						...context,
+						depth: (context.depth || 0) + 1,
+					}
+				)
+
+				// Create parent institution node
+				const parentNode: GraphNode = {
+					id: parentId,
+					entityType: "institutions",
+					entityId: parentId,
+					label: this.extractLabel(parentData, "institutions"),
+					x: Math.random() * 800,
+					y: Math.random() * 600,
+					externalIds: this.extractExternalIds(parentData, "institutions"),
+					entityData: parentData,
+				}
+
+				nodes.push(parentNode)
+
+				// Create LINEAGE edge: child → parent
+				const edge: GraphEdge = {
+					id: createCanonicalEdgeId(institutionId, parentId, RelationType.LINEAGE),
+					source: institutionId,
+					target: parentId,
+					type: RelationType.LINEAGE,
+					direction: 'outbound',
+					metadata: {
+						lineage_level: i, // 1-based index (1 for immediate parent, 2 for grandparent, etc.)
+					},
+				}
+
+				edges.push(edge)
+			} catch (error) {
+				logger.warn(
+					"provider",
+					`Failed to fetch parent institution ${parentId}`,
+					{ error, institutionId },
+					"OpenAlexProvider"
+				)
+			}
+		}
+
+		// T057: Reverse lookup - find child institutions (only when includeReverseRelationships is true)
+		if (options.includeReverseRelationships) {
+			try {
+				const childInstitutions = await this.client.institutions({
+					filter: { lineage: institutionId },
+					per_page: lineageLimit,
+				})
+
+				const childResults = Array.isArray(childInstitutions.results) ? childInstitutions.results : []
+
+				for (const child of childResults) {
+					const childRecord = child as Record<string, unknown>
+					const childId = extractOpenAlexId(String(childRecord.id))
+
+					// Validate child institution ID
+					if (!validateOpenAlexId(childId)) {
+						logger.warn(
+							"provider",
+							"Invalid child institution ID, skipping",
+							{ institutionId, childId: childRecord.id },
+							"OpenAlexProvider"
+						)
+						continue
+					}
+
+					// Create child institution node
+					const childNode: GraphNode = {
+						id: childId,
+						entityType: "institutions",
+						entityId: childId,
+						label: this.extractLabel(childRecord, "institutions"),
+						x: Math.random() * 800,
+						y: Math.random() * 600,
+						externalIds: this.extractExternalIds(childRecord, "institutions"),
+						entityData: childRecord,
+					}
+
+					nodes.push(childNode)
+
+					// Calculate lineage_level from child's lineage array
+					const childLineage = (childRecord.lineage as string[]) || []
+					const parentIndex = childLineage.findIndex((id) => extractOpenAlexId(id) === institutionId)
+					const lineageLevel = parentIndex > 0 ? parentIndex : 1 // Default to 1 if not found
+
+					// Create LINEAGE edge with inbound direction
+					// Note: semantic direction is still child → parent
+					const edge: GraphEdge = {
+						id: createCanonicalEdgeId(childId, institutionId, RelationType.LINEAGE),
+						source: childId,
+						target: institutionId,
+						type: RelationType.LINEAGE,
+						direction: 'inbound',
+						metadata: {
+							lineage_level: lineageLevel,
+						},
+					}
+
+					edges.push(edge)
+				}
+			} catch (error) {
+				logger.warn(
+					"provider",
+					`Failed to fetch child institutions for ${institutionId}`,
+					{ error },
+					"OpenAlexProvider"
+				)
+			}
+		}
+
 		// Add authors affiliated with this institution
 		try {
 			const authors = await this.client.authors({

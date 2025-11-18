@@ -574,7 +574,8 @@ describe('OpenAlexGraphProvider Error Handling', () => {
       };
 
       const expansion = await provider.expandEntity('A5017898742', { limit: 5 });
-      expect(expansion.nodes).toEqual([]);
+      expect(expansion.nodes).toHaveLength(1); // Base author node created despite expansion failure
+      expect(expansion.edges).toEqual([]);
     });
   });
 });

@@ -22,6 +22,7 @@ export interface ProviderExpansionOptions {
 	limit?: number
 	limits?: ExpansionLimits
 	includeMetadata?: boolean
+	includeReverseRelationships?: boolean
 }
 
 export interface GraphExpansion {

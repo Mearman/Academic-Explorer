@@ -671,7 +671,7 @@ describe('OpenAlexGraphProvider', () => {
 
       const expansion = await provider.expandEntity('W2741809807', options);
 
-      expect(expansion.nodes).toHaveLength(2); // Author and source
+      expect(expansion.nodes).toHaveLength(3); // Work (base) + Author + Source
       expect(expansion.edges).toHaveLength(2); // Authored and published-in relations
 
       // Check author node
@@ -701,7 +701,7 @@ describe('OpenAlexGraphProvider', () => {
       // Check metadata
       expect(expansion.metadata.expandedFrom).toBe('W2741809807');
       expect(expansion.metadata.depth).toBe(1);
-      expect(expansion.metadata.totalFound).toBe(2);
+      expect(expansion.metadata.totalFound).toBe(3); // Work (base) + Author + Source
       expect(expansion.metadata.options).toBe(options);
     });
 
@@ -726,10 +726,12 @@ describe('OpenAlexGraphProvider', () => {
         sort: 'publication_year:desc',
       });
 
-      expect(expansion.nodes).toHaveLength(2); // Two works
+      expect(expansion.nodes).toHaveLength(3); // Author (base) + Two works
       expect(expansion.edges).toHaveLength(2); // Two authored relations
 
-      expansion.nodes.forEach(node => {
+      const workNodes = expansion.nodes.filter(n => n.entityType === 'works');
+      expect(workNodes).toHaveLength(2);
+      workNodes.forEach(node => {
         expect(node.entityType).toBe('works');
       });
 
@@ -758,7 +760,7 @@ describe('OpenAlexGraphProvider', () => {
         sort: 'publication_year:desc',
       });
 
-      expect(expansion.nodes).toHaveLength(1);
+      expect(expansion.nodes).toHaveLength(2); // Source (base) + Work
       expect(expansion.edges).toHaveLength(1);
       expect(expansion.edges[0].type).toBe(RelationType.PUBLISHED_IN);
     });
@@ -779,7 +781,7 @@ describe('OpenAlexGraphProvider', () => {
         per_page: 10,
       });
 
-      expect(expansion.nodes).toHaveLength(2);
+      expect(expansion.nodes).toHaveLength(3); // Institution (base) + 2 Authors
       expect(expansion.edges).toHaveLength(2);
 
       expansion.edges.forEach(edge => {
@@ -805,7 +807,7 @@ describe('OpenAlexGraphProvider', () => {
         sort: 'publication_year:desc',
       });
 
-      expect(expansion.nodes).toHaveLength(1);
+      expect(expansion.nodes).toHaveLength(2); // Topic (base) + Work
       expect(expansion.edges).toHaveLength(1);
       expect(expansion.edges[0].type).toBe(RelationType.WORK_HAS_TOPIC);
     });
@@ -819,7 +821,7 @@ describe('OpenAlexGraphProvider', () => {
 
       const expansion = await provider.expandEntity('A5017898742', {});
 
-      expect(expansion.nodes).toHaveLength(0);
+      expect(expansion.nodes).toHaveLength(1); // Base author node still created
       expect(expansion.edges).toHaveLength(0);
       expect(loggerSpy).toHaveBeenCalledWith(
         'provider',
@@ -841,7 +843,7 @@ describe('OpenAlexGraphProvider', () => {
 
       const expansion = await provider.expandEntity('W2741809807', {});
 
-      expect(expansion.nodes).toHaveLength(0);
+      expect(expansion.nodes).toHaveLength(1); // Base work node still created
       expect(expansion.edges).toHaveLength(0);
     });
 
@@ -855,7 +857,7 @@ describe('OpenAlexGraphProvider', () => {
 
       const expansion = await provider.expandEntity('W2741809807', {});
 
-      expect(expansion.nodes).toHaveLength(0);
+      expect(expansion.nodes).toHaveLength(1); // Base work node still created
       expect(expansion.edges).toHaveLength(0);
     });
 
@@ -874,7 +876,7 @@ describe('OpenAlexGraphProvider', () => {
 
       const expansion = await provider.expandEntity('W2741809807', { limit: 5 });
 
-      expect(expansion.nodes).toHaveLength(5); // Limited to 5 authors
+      expect(expansion.nodes).toHaveLength(6); // Work (base) + 5 authors (limited)
       expect(expansion.edges).toHaveLength(5);
     });
 
@@ -1078,10 +1080,11 @@ describe('OpenAlexGraphProvider', () => {
 
       const expansion = await provider.expandEntity('W2741809807', {});
 
-      // Should only create node for valid author
-      expect(expansion.nodes).toHaveLength(1);
+      // Should create base work node + 1 valid author node
+      expect(expansion.nodes).toHaveLength(2); // Work (base) + Author
       expect(expansion.edges).toHaveLength(1);
-      expect(expansion.nodes[0].id).toBe('A5017898742');
+      const authorNode = expansion.nodes.find(n => n.entityType === 'authors');
+      expect(authorNode?.id).toBe('A5017898742');
     });
   });
 
