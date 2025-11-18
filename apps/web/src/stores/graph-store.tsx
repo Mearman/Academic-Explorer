@@ -11,6 +11,7 @@ import type {
   EntityType,
 } from "@academic-explorer/graph";
 import { RelationType } from "@academic-explorer/graph";
+import { logger } from "@academic-explorer/utils/logger";
 
 export interface GraphState {
   // Core state
@@ -997,6 +998,60 @@ export const graphStore = (() => {
     // Property getter for nodes
     get nodes(): Record<string, GraphNode> {
       return getState().nodes;
+    },
+
+    /**
+     * Re-detect edges for all nodes in the graph
+     * This re-runs relationship detection to fix edge directions and types
+     * after updates to the RelationType enum or relationship detection logic
+     *
+     * @param queryClient - TanStack QueryClient for API calls
+     * @returns Promise that resolves when edges have been re-detected and updated
+     */
+    redetectEdges: async (queryClient: any): Promise<void> => {
+      const state = getState();
+      const nodeIds = Object.keys(state.nodes);
+
+      if (nodeIds.length === 0) {
+        logger.debug("graph", "No nodes to re-detect edges for", {}, "graphStore.redetectEdges");
+        return;
+      }
+
+      logger.debug("graph", "Re-detecting edges for all nodes", {
+        nodeCount: nodeIds.length
+      }, "graphStore.redetectEdges");
+
+      try {
+        // Import RelationshipDetectionService dynamically to avoid circular dependencies
+        const { RelationshipDetectionService } = await import("../services/relationship-detection-service");
+
+        // Create service instance
+        const detectionService = new RelationshipDetectionService(queryClient);
+
+        // Detect relationships for all nodes
+        const newEdges = await detectionService.detectRelationshipsForNodes(nodeIds);
+
+        logger.debug("graph", "Re-detection complete", {
+          oldEdgeCount: Object.keys(state.edges).length,
+          newEdgeCount: newEdges.length
+        }, "graphStore.redetectEdges");
+
+        // Replace all edges with newly detected edges
+        // Keep nodes unchanged - only edges are re-detected
+        actions.setGraphData(
+          Object.values(state.nodes),
+          newEdges
+        );
+
+        logger.info("graph", "Edges re-detected successfully", {
+          edgeCount: newEdges.length
+        }, "graphStore.redetectEdges");
+      } catch (error) {
+        logger.error("graph", "Failed to re-detect edges", {
+          error: error instanceof Error ? error.message : String(error)
+        }, "graphStore.redetectEdges");
+        throw error;
+      }
     },
   };
 })();

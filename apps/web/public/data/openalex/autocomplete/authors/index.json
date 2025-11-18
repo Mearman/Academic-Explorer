@@ -28,13 +28,13 @@
     "q=Einstein": {
       "url": "https://api.openalex.org/autocomplete/authors?q=Einstein",
       "$ref": "./q=Einstein.json",
-      "lastRetrieved": "2025-11-16T21:31:49.894Z",
+      "lastRetrieved": "2025-11-17T20:17:50.598Z",
       "contentHash": "75f196f26b823bd3"
     },
     "q=Marie+Curie": {
       "url": "https://api.openalex.org/autocomplete/authors?q=Marie+Curie",
       "$ref": "./q=Marie+Curie.json",
-      "lastRetrieved": "2025-11-16T21:31:51.105Z",
+      "lastRetrieved": "2025-11-17T20:17:51.809Z",
       "contentHash": "75f196f26b823bd3"
     }
   }

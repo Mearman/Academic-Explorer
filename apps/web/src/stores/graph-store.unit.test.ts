@@ -892,4 +892,123 @@ describe("GraphStore", () => {
       expect(graphStore.isPinned("N1")).toBe(true);
     });
   });
+
+  describe("Edge Re-detection", () => {
+    it("should re-detect edges for all nodes in the graph", async () => {
+      // Setup: Add nodes and initial edges
+      const node1 = createTestNode("W1", "works");
+      const node2 = createTestNode("A1", "authors");
+      const node3 = createTestNode("W2", "works");
+
+      graphStore.addNode(node1);
+      graphStore.addNode(node2);
+      graphStore.addNode(node3);
+
+      // Add initial edges (potentially with incorrect directions)
+      const oldEdge1 = createTestEdge("E1", "W1", "A1", RelationType.AUTHORED);
+      const oldEdge2 = createTestEdge("E2", "W1", "W2", RelationType.REFERENCES);
+      graphStore.addEdge(oldEdge1);
+      graphStore.addEdge(oldEdge2);
+
+      // Verify initial state
+      const initialState = graphStore.getState();
+      expect(Object.keys(initialState.nodes).length).toBe(3);
+      expect(Object.keys(initialState.edges).length).toBe(2);
+
+      // Mock RelationshipDetectionService
+      const mockDetectedEdges: GraphEdge[] = [
+        {
+          id: "NEW-E1",
+          source: "W1",
+          target: "A1",
+          type: RelationType.AUTHORSHIP, // Corrected type
+          direction: "outbound",
+        },
+        {
+          id: "NEW-E2",
+          source: "W1",
+          target: "W2",
+          type: RelationType.REFERENCE, // Corrected type
+          direction: "outbound",
+        },
+      ];
+
+      // Mock the dynamic import of RelationshipDetectionService
+      vi.doMock("../services/relationship-detection-service", () => ({
+        RelationshipDetectionService: vi.fn().mockImplementation(() => ({
+          detectRelationshipsForNodes: vi.fn().mockResolvedValue(mockDetectedEdges),
+        })),
+      }));
+
+      // Create mock queryClient
+      const mockQueryClient = {
+        getQueryData: vi.fn(),
+        setQueryData: vi.fn(),
+        fetchQuery: vi.fn(),
+      };
+
+      // Call redetectEdges
+      await graphStore.redetectEdges(mockQueryClient);
+
+      // Verify edges were replaced
+      const finalState = graphStore.getState();
+      expect(Object.keys(finalState.nodes).length).toBe(3); // Nodes unchanged
+      expect(Object.keys(finalState.edges).length).toBe(2); // Same number of edges
+
+      // Verify new edges have correct types and directions
+      const edges = Object.values(finalState.edges);
+      expect(edges[0].type).toBe(RelationType.AUTHORSHIP);
+      expect(edges[0].direction).toBe("outbound");
+      expect(edges[1].type).toBe(RelationType.REFERENCE);
+      expect(edges[1].direction).toBe("outbound");
+
+      // Clean up mock
+      vi.doUnmock("../services/relationship-detection-service");
+    });
+
+    it("should handle empty graph gracefully", async () => {
+      // Verify no nodes in graph
+      const initialState = graphStore.getState();
+      expect(Object.keys(initialState.nodes).length).toBe(0);
+
+      const mockQueryClient = {
+        getQueryData: vi.fn(),
+        setQueryData: vi.fn(),
+        fetchQuery: vi.fn(),
+      };
+
+      // Call redetectEdges on empty graph
+      await graphStore.redetectEdges(mockQueryClient);
+
+      // Verify state unchanged
+      const finalState = graphStore.getState();
+      expect(Object.keys(finalState.nodes).length).toBe(0);
+      expect(Object.keys(finalState.edges).length).toBe(0);
+    });
+
+    it("should handle detection errors gracefully", async () => {
+      // Setup: Add a node
+      const node1 = createTestNode("W1", "works");
+      graphStore.addNode(node1);
+
+      // Mock RelationshipDetectionService to throw error
+      vi.doMock("../services/relationship-detection-service", () => ({
+        RelationshipDetectionService: vi.fn().mockImplementation(() => ({
+          detectRelationshipsForNodes: vi.fn().mockRejectedValue(new Error("Detection failed")),
+        })),
+      }));
+
+      const mockQueryClient = {
+        getQueryData: vi.fn(),
+        setQueryData: vi.fn(),
+        fetchQuery: vi.fn(),
+      };
+
+      // Call redetectEdges and expect it to throw
+      await expect(graphStore.redetectEdges(mockQueryClient)).rejects.toThrow("Detection failed");
+
+      // Clean up mock
+      vi.doUnmock("../services/relationship-detection-service");
+    });
+  });
 });
