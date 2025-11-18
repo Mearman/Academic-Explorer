@@ -1,14 +1,14 @@
 <!--
 Sync Impact Report:
-Version: 1.3.0 → 1.4.0 (New principle added)
+Version: 1.4.0 → 1.5.0 (New principle added)
 Modified Principles: None
 Added Sections:
-  - VII. Development-Stage Pragmatism (NEW principle)
+  - VIII. Test-First Bug Fixes (NEW principle)
 Removed Sections: None
 Templates Requiring Updates:
-  - ✅ .specify/templates/plan-template.md (Constitution Check section updated)
-  - ✅ .specify/templates/spec-template.md (Constitution Alignment section updated)
-  - ✅ .specify/templates/tasks-template.md (Constitution compliance verification updated)
+  - ✅ .specify/templates/plan-template.md (Constitution Check section updated to include 8 principles)
+  - ✅ .specify/templates/spec-template.md (Constitution Alignment section updated to include 8 principles)
+  - ✅ .specify/templates/tasks-template.md (Constitution compliance verification updated to include 8 principles)
 Follow-up TODOs: None
 -->
 
@@ -194,6 +194,42 @@ Once the research stabilizes and the tool is ready for wider academic use, a pro
 versioning and compatibility strategy will be essential. At that point, this principle
 should be replaced with appropriate stability guarantees.
 
+### VIII. Test-First Bug Fixes (NON-NEGOTIABLE)
+
+**When a bug is identified, test(s) MUST be written to confirm and diagnose it BEFORE
+fixing the bug**. The test(s) must demonstrate the bug's symptoms and fail reliably.
+Only after test verification should the fix be implemented.
+
+Test-first bug fix workflow:
+1. **Reproduce**: Write test(s) that reproduce the bug behavior
+2. **Verify Failure**: Confirm test(s) fail in the expected way
+3. **Diagnose**: Use failing test(s) to understand root cause
+4. **Fix**: Implement the minimal fix that makes test(s) pass
+5. **Verify Success**: Confirm test(s) now pass
+6. **Regression Prevention**: Tests remain in suite permanently
+
+Bug test requirements:
+- Test MUST fail before the fix is applied
+- Test MUST pass after the fix is applied
+- Test MUST use appropriate naming: `bug-[id]-[description].[type].test.ts[x]`
+- Test MUST include comments explaining the bug and expected behavior
+- Test MUST be committed separately from the fix (two atomic commits: test + fix)
+
+**Rationale**: Bug fixes without tests create regression risks and waste research time when
+bugs reappear. Writing tests first ensures:
+1. **Bug Confirmation** - Validates the bug exists and is reproducible
+2. **Regression Prevention** - Ensures the bug never returns undetected
+3. **Root Cause Understanding** - Forces clear diagnosis before attempting fixes
+4. **Fix Validation** - Provides objective proof the fix works
+5. **Documentation** - Tests serve as living documentation of historical issues
+6. **Research Reliability** - Prevents regressions from invalidating experiments
+
+This principle is especially critical for this PhD research project where:
+- Serial test execution makes debugging expensive
+- Experimental features may be temporarily removed and later re-added
+- Research reproducibility requires stable, regression-free code
+- Academic demonstrations must work reliably without surprises
+
 ## Development Workflow
 
 **Fail-fast test execution order**: TypeScript validation → Unit tests → Component tests
@@ -221,10 +257,10 @@ two places, extract it to `packages/utils` or create a shared package.
 
 ## Quality Gates
 
-**Constitution compliance**: Every PR MUST verify alignment with all seven core principles.
+**Constitution compliance**: Every PR MUST verify alignment with all eight core principles.
 Feature specs MUST document how they respect type safety, test-first development, monorepo
-architecture, storage abstraction, performance constraints, atomic commit discipline, and
-development-stage pragmatism.
+architecture, storage abstraction, performance constraints, atomic commit discipline,
+development-stage pragmatism, and test-first bug fixes.
 
 **Complexity justification**: Any feature that adds architectural complexity (new package,
 new storage provider, new worker) MUST document why a simpler alternative is insufficient.
@@ -239,6 +275,7 @@ MUST be documented in commit messages and changelogs.
 - All new storage operations MUST have E2E tests with in-memory provider
 - All new components MUST have component tests
 - All new graph features MUST have deterministic layout tests
+- All bug fixes MUST have regression tests written before the fix
 
 **Commit quality gates**:
 - All commits MUST follow Conventional Commits format
@@ -262,4 +299,4 @@ For runtime development guidance specific to Academic Explorer workflows, see `C
 in the project root. That file provides operational instructions (commands, architecture
 patterns, research context) while this constitution defines non-negotiable principles.
 
-**Version**: 1.4.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-17
+**Version**: 1.5.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-18

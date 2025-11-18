@@ -40,6 +40,7 @@ Verify alignment with Academic Explorer Constitution (`.specify/memory/constitut
 5. **Performance & Memory**: Tests run serially; memory constraints considered; Web Workers for heavy computation
 6. **Atomic Conventional Commits**: Incremental atomic commits created after each task completion
 7. **Development-Stage Pragmatism**: No backwards compatibility required; breaking changes acceptable during development
+8. **Test-First Bug Fixes**: Bug tests written to reproduce and fail before fixes implemented
 
 **Complexity Justification Required?** Document in Complexity Tracking section if this feature:
 - Adds new packages/apps beyond existing structure

@@ -128,3 +128,4 @@
 - **Performance & Memory**: Success criteria include performance metrics; memory constraints considered
 - **Atomic Conventional Commits**: Implementation tasks will be committed atomically with conventional commit messages
 - **Development-Stage Pragmatism**: Breaking changes acceptable; no backwards compatibility obligations during development
+- **Test-First Bug Fixes**: Any bugs discovered will have regression tests written before fixes

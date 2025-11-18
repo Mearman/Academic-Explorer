@@ -169,6 +169,7 @@ Examples of foundational tasks (adjust based on your project):
   - [ ] Performance requirements met; memory constraints respected (Performance & Memory)
   - [ ] Atomic conventional commits created after each task (Atomic Conventional Commits)
   - [ ] Breaking changes documented; no backwards compatibility obligations (Development-Stage Pragmatism)
+  - [ ] Bug regression tests written before fixes (Test-First Bug Fixes)
 
 ---
 
