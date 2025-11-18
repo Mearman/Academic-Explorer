@@ -265,10 +265,10 @@ Academic Explorer monorepo structure:
 
 **Functional Requirements**: FR-028, FR-029
 
-- [ ] T071 [P] Implement WORK_HAS_KEYWORD edges in expandWorkWithCache() from keywords[] array in packages/graph/src/providers/openalex-provider.ts (FR-028)
-- [ ] T072 [P] Write unit test for keyword edges in packages/graph/tests/providers/keywords.test.ts - verifies Work → Keyword edges created
-- [ ] T073 [P] Implement AUTHOR_RESEARCHES edges in expandAuthorWithCache() from author topics[] in packages/graph/src/providers/openalex-provider.ts (FR-029)
-- [ ] T074 [P] Write unit test for author research topics in packages/graph/tests/providers/author-topics.test.ts - verifies Author → Topic edges created
+- [x] T071 [P] Implement WORK_HAS_KEYWORD edges in expandWorkWithCache() from keywords[] array in packages/graph/src/providers/openalex-provider.ts (FR-028)
+- [x] T072 [P] Write unit test for keyword edges in packages/graph/src/providers/keywords.test.ts - verifies Work → Keyword edges created
+- [x] T073 [P] Implement AUTHOR_RESEARCHES edges in expandAuthorWithCache() from author topics[] in packages/graph/src/providers/openalex-provider.ts (FR-029)
+- [x] T074 [P] Write unit test for author research topics in packages/graph/src/providers/author-topics.test.ts - verifies Author → Topic edges created
 
 **Run tests**: `pnpm test packages/graph`
 

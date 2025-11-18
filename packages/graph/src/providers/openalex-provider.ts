@@ -744,6 +744,71 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 
 			edges.push(edge)
 		}
+
+		// Add keyword relationships (T071-T072: WORK_HAS_KEYWORD edges)
+		const keywords = (workData.keywords as Array<{ id?: string; display_name?: string; score?: number }>) || []
+
+		// Apply limit for keywords
+		const keywordLimit = getRelationshipLimit(options, RelationType.WORK_HAS_KEYWORD)
+		const limitedKeywords = keywords.slice(0, keywordLimit)
+
+		// Create WORK_HAS_KEYWORD edges for each keyword
+		for (const keyword of limitedKeywords) {
+			if (!keyword.id || typeof keyword.id !== 'string') {
+				continue
+			}
+
+			// Extract keyword slug from URL or use as-is
+			// Keywords use slug format: https://openalex.org/keywords/machine-learning → machine-learning
+			let keywordId = keyword.id
+			const keywordMatch = keyword.id.match(/\/keywords\/(.+?)(?:[?#]|$)/)
+			if (keywordMatch) {
+				keywordId = keywordMatch[1]
+			}
+
+			// Skip empty or invalid keyword IDs
+			if (!keywordId || keywordId.trim() === '') {
+				logger.warn(
+					"provider",
+					"Invalid keyword ID, skipping",
+					{ workId, keywordId: keyword.id },
+					"OpenAlexProvider"
+				)
+				continue
+			}
+
+			// Create keyword node (no API fetch needed - use display_name from keyword object)
+			const keywordNode: GraphNode = {
+				id: keywordId,
+				entityType: "keywords",
+				entityId: keywordId,
+				label: keyword.display_name || "Unknown Keyword",
+				x: Math.random() * 800,
+				y: Math.random() * 600,
+				externalIds: [],
+				entityData: keyword,
+			}
+
+			nodes.push(keywordNode)
+
+			// Create WORK_HAS_KEYWORD edge: work → keyword
+			const edge: GraphEdge = {
+				id: createCanonicalEdgeId(workId, keywordId, RelationType.WORK_HAS_KEYWORD),
+				source: workId,
+				target: keywordId,
+				type: RelationType.WORK_HAS_KEYWORD,
+				direction: 'outbound',
+			}
+
+			// Add score metadata if available
+			if (keyword.score !== undefined && keyword.score !== null) {
+				edge.metadata = {
+					score: keyword.score,
+				}
+			}
+
+			edges.push(edge)
+		}
 	}
 
 	private async expandAuthorWithCache(
@@ -816,6 +881,90 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 			}
 		} catch (error) {
 			logger.warn("provider", `Failed to expand author ${authorId}`, { error }, "OpenAlexProvider")
+		}
+
+		// Add research topics relationships (T073-T074: AUTHOR_RESEARCHES edges)
+		const topics = (authorData.topics as Array<{ id?: string; display_name?: string; count?: number; score?: number }>) || []
+
+		// Apply limit for topics
+		const topicLimit = getRelationshipLimit(options, RelationType.AUTHOR_RESEARCHES)
+		const limitedTopics = topics.slice(0, topicLimit)
+
+		// Create AUTHOR_RESEARCHES edges for each topic
+		for (const topic of limitedTopics) {
+			if (!topic.id) {
+				continue
+			}
+
+			// Extract bare ID from URL or use as-is
+			const topicId = extractOpenAlexId(topic.id)
+
+			// Validate topic ID before creating edge
+			if (!validateOpenAlexId(topicId)) {
+				logger.warn(
+					"provider",
+					"Invalid topic ID, skipping",
+					{ authorId, topicId: topic.id },
+					"OpenAlexProvider"
+				)
+				continue
+			}
+
+			// Fetch topic data to create node
+			try {
+				const topicData = await this.fetchEntityDataWithCache(
+					topicId,
+					"topics",
+					{
+						...context,
+						depth: (context.depth || 0) + 1,
+					}
+				)
+
+				// Create topic node
+				const topicNode: GraphNode = {
+					id: topicId,
+					entityType: "topics",
+					entityId: topicId,
+					label: this.extractLabel(topicData, "topics"),
+					x: Math.random() * 800,
+					y: Math.random() * 600,
+					externalIds: this.extractExternalIds(topicData, "topics"),
+					entityData: topicData,
+				}
+
+				nodes.push(topicNode)
+
+				// Create AUTHOR_RESEARCHES edge: author → topic
+				const edge: GraphEdge = {
+					id: createCanonicalEdgeId(authorId, topicId, RelationType.AUTHOR_RESEARCHES),
+					source: authorId,
+					target: topicId,
+					type: RelationType.AUTHOR_RESEARCHES,
+					direction: 'outbound',
+				}
+
+				// Add count and score metadata if available
+				const metadata: Record<string, unknown> = {}
+				if (topic.count !== undefined && topic.count !== null) {
+					metadata.count = topic.count
+				}
+				if (topic.score !== undefined && topic.score !== null) {
+					metadata.score = topic.score
+				}
+				if (Object.keys(metadata).length > 0) {
+					edge.metadata = metadata
+				}
+
+				edges.push(edge)
+			} catch (error) {
+				logger.warn(
+					"provider",
+					`Failed to fetch topic ${topicId}`,
+					{ error, authorId },
+					"OpenAlexProvider"
+				)
+			}
 		}
 	}
 
