@@ -90,16 +90,16 @@ describe("Entity Taxonomy", () => {
     });
 
     it("should have correct authored relation taxonomy", () => {
-      const authoredTaxon = RELATION_TAXONOMY[RelationType.AUTHORED];
-      expect(authoredTaxon.displayName).toBe("Authored");
+      const authoredTaxon = RELATION_TAXONOMY[RelationType.AUTHORSHIP];
+      expect(authoredTaxon.displayName).toBe("Authorship");
       expect(authoredTaxon.description).toContain("Author contributed");
       expect(authoredTaxon.color).toBe("green");
-      expect(authoredTaxon.plural).toBe("Authored");
+      expect(authoredTaxon.plural).toBe("Authorships");
     });
 
     it("should have correct references relation taxonomy", () => {
-      const referencesTaxon = RELATION_TAXONOMY[RelationType.REFERENCES];
-      expect(referencesTaxon.displayName).toBe("References");
+      const referencesTaxon = RELATION_TAXONOMY[RelationType.REFERENCE];
+      expect(referencesTaxon.displayName).toBe("Reference");
       expect(referencesTaxon.description).toContain("Work cites");
       expect(referencesTaxon.color).toBe("blue");
       expect(referencesTaxon.plural).toBe("References");
@@ -192,8 +192,8 @@ describe("Entity Taxonomy", () => {
       });
 
       it("should return correct authored relation taxon", () => {
-        const taxon = getRelationTaxon(RelationType.AUTHORED);
-        expect(taxon.displayName).toBe("Authored");
+        const taxon = getRelationTaxon(RelationType.AUTHORSHIP);
+        expect(taxon.displayName).toBe("Authorship");
         expect(taxon.color).toBe("green");
       });
     });

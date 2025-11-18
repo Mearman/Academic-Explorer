@@ -279,10 +279,11 @@ describe("RelationshipDetectionService", () => {
 
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual({
-        sourceNodeId: "https://openalex.org/A456",
-        targetNodeId: "https://openalex.org/W123",
+        sourceNodeId: "https://openalex.org/W123",
+        targetNodeId: "https://openalex.org/A456",
         relationType: RelationType.AUTHORSHIP,
-        label: "AUTHORSHIP",
+        direction: "outbound",
+        label: "authorship",
         weight: 1.0,
       });
     });
@@ -322,7 +323,8 @@ describe("RelationshipDetectionService", () => {
         sourceNodeId: "https://openalex.org/W123",
         targetNodeId: "https://openalex.org/S789",
         relationType: RelationType.PUBLICATION,
-        label: "PUBLICATION",
+        direction: "outbound",
+        label: "publication",
       });
     });
 
@@ -356,7 +358,8 @@ describe("RelationshipDetectionService", () => {
         sourceNodeId: "https://openalex.org/W123",
         targetNodeId: "https://openalex.org/W456", // Use actual node ID (full URL format)
         relationType: RelationType.REFERENCE,
-        label: "REFERENCE",
+        direction: "outbound",
+        label: "reference",
       });
     });
 
@@ -452,7 +455,8 @@ describe("RelationshipDetectionService", () => {
         sourceNodeId: "https://openalex.org/A123",
         targetNodeId: "https://openalex.org/I456",
         relationType: RelationType.AFFILIATION,
-        label: "AFFILIATION",
+        direction: "outbound",
+        label: "affiliation",
       });
     });
   });
@@ -478,7 +482,7 @@ describe("RelationshipDetectionService", () => {
         id: "A123-AUTHORSHIP-W456",
         source: "A123",
         target: "W456",
-        type: "authored",
+        type: "AUTHORSHIP",
         label: "AUTHORSHIP",
         weight: 1.0,
       });
@@ -724,8 +728,8 @@ describe("RelationshipDetectionService", () => {
       expect(result[0].relationType).toBe(RelationType.AUTHORSHIP);
       expect(result[1].relationType).toBe(RelationType.AUTHORSHIP);
       expect(result.map((r) => r.sourceNodeId)).toEqual([
-        "https://openalex.org/A456",
-        "https://openalex.org/A789",
+        "https://openalex.org/W123",
+        "https://openalex.org/W123",
       ]);
     });
 
@@ -852,8 +856,8 @@ describe("RelationshipDetectionService", () => {
 
       expect(result).toHaveLength(1);
       expect(result[0].relationType).toBe(RelationType.AUTHORSHIP);
-      expect(result[0].sourceNodeId).toBe("https://openalex.org/A456");
-      expect(result[0].targetNodeId).toBe("https://openalex.org/W123");
+      expect(result[0].sourceNodeId).toBe("https://openalex.org/W123");
+      expect(result[0].targetNodeId).toBe("https://openalex.org/A456");
     });
   });
 

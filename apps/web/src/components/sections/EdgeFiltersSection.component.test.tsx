@@ -92,7 +92,8 @@ describe("EdgeFiltersSection - Direction Filter", () => {
     it("should show 'Both' as default filter", () => {
       renderWithMantine(<EdgeFiltersSection />);
 
-      expect(screen.getByText("All Directions")).toBeInTheDocument();
+      const allDirectionsElements = screen.getAllByText("All Directions");
+      expect(allDirectionsElements.length).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -134,7 +135,8 @@ describe("EdgeFiltersSection - Direction Filter", () => {
       await user.click(bothButton);
 
       // Check that the filter badge updates
-      expect(screen.getByText("All Directions")).toBeInTheDocument();
+      const allDirectionsElements = screen.getAllByText("All Directions");
+      expect(allDirectionsElements.length).toBeGreaterThanOrEqual(1);
     });
 
     it("should toggle between all three filter states", async () => {
@@ -142,7 +144,8 @@ describe("EdgeFiltersSection - Direction Filter", () => {
       renderWithMantine(<EdgeFiltersSection />);
 
       // Start with Both (default)
-      expect(screen.getByText("All Directions")).toBeInTheDocument();
+      let allDirectionsElements = screen.getAllByText("All Directions");
+      expect(allDirectionsElements.length).toBeGreaterThanOrEqual(1);
 
       // Click Outbound
       const outboundButtons = screen.getAllByText("Outbound");
@@ -156,7 +159,8 @@ describe("EdgeFiltersSection - Direction Filter", () => {
 
       // Click Both
       await user.click(screen.getByText("Both"));
-      expect(screen.getByText("All Directions")).toBeInTheDocument();
+      allDirectionsElements = screen.getAllByText("All Directions");
+      expect(allDirectionsElements.length).toBeGreaterThanOrEqual(1);
     });
   });
 

@@ -589,8 +589,8 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       // Verify authorship edge was created
       expect(detectedEdges).toHaveLength(1);
       expect(detectedEdges[0]).toMatchObject({
-        source: authorId,
-        target: workId,
+        source: workId,
+        target: authorId,
         type: RelationType.AUTHORSHIP,
         label: "authorship",
       });
@@ -600,8 +600,8 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       const edgeValues = Object.values(mockStore.edges).filter(Boolean);
       expect(edgeValues).toHaveLength(1);
       expect(edgeValues[0]).toMatchObject({
-        source: authorId,
-        target: workId,
+        source: workId,
+        target: authorId,
         type: RelationType.AUTHORSHIP,
       });
     });
@@ -810,8 +810,8 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       const authorshipEdge = detectedEdges.find(
         (edge) =>
           edge.type === RelationType.AUTHORSHIP &&
-          edge.source === authorId &&
-          edge.target === workId,
+          edge.source === workId &&
+          edge.target === authorId,
       );
       expect(authorshipEdge).toBeDefined();
 
@@ -930,8 +930,8 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 
       // Verify the edge has the expected properties
       expect(edgeValues[0]).toMatchObject({
-        source: authorId,
-        target: workId,
+        source: workId,
+        target: authorId,
         type: RelationType.AUTHORSHIP,
       });
     });
