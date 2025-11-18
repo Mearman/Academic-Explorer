@@ -278,20 +278,20 @@ Academic Explorer monorepo structure:
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T075 [P] Add comprehensive error handling for missing relationship arrays across all expansion methods (FR-030)
-- [ ] T076 [P] Add warning logs for invalid entity IDs across all edge creation logic (FR-031)
-- [ ] T077 [P] Implement entity ID validation using validateOpenAlexId() before all edge creation (FR-032)
-- [ ] T078 [P] Apply configurable limits across all relationship types using getRelationshipLimit() (FR-033)
-- [ ] T079 [P] Ensure all expand*WithCache() methods follow consistent pattern: source=expanding entity, target=related entity (FR-034)
-- [ ] T080 [P] Add direction metadata field to all edge creation: 'outbound' for owned data, 'inbound' for reverse lookup (FR-035)
-- [ ] T081 [P] Implement batch preloading for all relationship types when cache available (FR-036)
-- [ ] T082 [P] Update relationship-specific metadata interfaces in packages/graph/src/types/metadata.ts based on actual OpenAlex data
-- [ ] T083 [P] Add truncation metadata to expansion results when limits applied (see research.md Section 4 lines 463-497)
+- [x] T075 [P] Add comprehensive error handling for missing relationship arrays across all expansion methods (FR-030)
+- [x] T076 [P] Add warning logs for invalid entity IDs across all edge creation logic (FR-031)
+- [x] T077 [P] Implement entity ID validation using validateOpenAlexId() before all edge creation (FR-032)
+- [x] T078 [P] Apply configurable limits across all relationship types using getRelationshipLimit() (FR-033)
+- [x] T079 [P] Ensure all expand*WithCache() methods follow consistent pattern: source=expanding entity, target=related entity (FR-034)
+- [x] T080 [P] Add direction metadata field to all edge creation: 'outbound' for owned data, 'inbound' for reverse lookup (FR-035)
+- [x] T081 [P] Implement batch preloading for all relationship types when cache available (FR-036)
+- [x] T082 [P] Update relationship-specific metadata interfaces in packages/graph/src/types/metadata.ts based on actual OpenAlex data
+- [x] T083 [P] Add truncation metadata to expansion results when limits applied (see research.md Section 4 lines 463-497)
 - [ ] T084 Documentation: Update data-model.md with implementation details and examples
 - [ ] T085 Documentation: Update contracts/ with actual edge creation patterns used
 - [ ] T086 Documentation: Create migration guide for breaking AUTHORSHIP direction change
-- [ ] T087 Run full test suite: `pnpm test packages/graph` - verify all 99+ tests pass
-- [ ] T088 Run type check: `pnpm nx typecheck graph` - verify zero TypeScript errors
+- [x] T087 Run full test suite: `pnpm test packages/graph` - verify all 99+ tests pass
+- [x] T088 Run type check: `pnpm nx typecheck graph` - verify zero TypeScript errors
 - [ ] T089 Run quickstart.md validation workflow to ensure all examples work
 - [ ] T090 Constitution compliance verification:
   - [ ] No `any` types in implementation (Type Safety) - grep packages/graph/src for ': any'
