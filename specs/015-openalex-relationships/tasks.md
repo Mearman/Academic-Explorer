@@ -287,8 +287,8 @@ Academic Explorer monorepo structure:
 - [x] T081 [P] Implement batch preloading for all relationship types when cache available (FR-036)
 - [x] T082 [P] Update relationship-specific metadata interfaces in packages/graph/src/types/metadata.ts based on actual OpenAlex data
 - [x] T083 [P] Add truncation metadata to expansion results when limits applied (see research.md Section 4 lines 463-497)
-- [ ] T084 Documentation: Update data-model.md with implementation details and examples
-- [ ] T085 Documentation: Update contracts/ with actual edge creation patterns used
+- [x] T084 Documentation: Update data-model.md with implementation details and examples
+- [x] T085 Documentation: Update contracts/ with actual edge creation patterns used
 - [ ] T086 Documentation: Create migration guide for breaking AUTHORSHIP direction change
 - [x] T087 Run full test suite: `pnpm test packages/graph` - verify all 99+ tests pass
 - [x] T088 Run type check: `pnpm nx typecheck graph` - verify zero TypeScript errors
