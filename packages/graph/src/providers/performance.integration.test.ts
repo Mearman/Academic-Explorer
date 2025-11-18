@@ -12,7 +12,8 @@ import {
   type ProviderExpansionOptions,
   type GraphExpansion,
 } from "./base-provider";
-import type { GraphNode, EntityType, EntityIdentifier } from "../types/core";
+import type { GraphNode, GraphEdge, EntityType, EntityIdentifier } from "../types/core";
+import { RelationType } from "../types/core";
 
 // Performance test thresholds (in milliseconds)
 const PERFORMANCE_THRESHOLDS = {
@@ -221,13 +222,7 @@ class MockGraphProvider extends GraphDataProvider {
 
         const limit = options.limit || 10;
         const nodes: GraphNode[] = [];
-        const edges: Array<{
-          id: string;
-          source: string;
-          target: string;
-          type: string;
-          metadata?: Record<string, unknown>;
-        }> = [];
+        const edges: GraphEdge[] = [];
 
         // Create mock expansion data
         let count = 0;
@@ -239,7 +234,7 @@ class MockGraphProvider extends GraphDataProvider {
               id: `${nodeId}-${id}`,
               source: nodeId,
               target: id,
-              type: "related_to",
+              type: RelationType.RELATED_TO,
             });
             count++;
             this.memoryUsage += 0.1;

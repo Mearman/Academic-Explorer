@@ -4,7 +4,7 @@
  * Enhanced with intelligent caching and context-aware field selection
  */
 
-import type { GraphNode, EntityType, EntityIdentifier } from "../types/core"
+import type { GraphNode, GraphEdge, EntityType, EntityIdentifier } from "../types/core"
 import { ProviderRegistry, type GraphDataProvider } from "../providers/base-provider"
 import { EntityDetectionService } from "./entity-detection-service"
 
@@ -108,13 +108,7 @@ export interface EntityExpansionOptions {
 
 export interface ExpansionResult {
 	nodes: GraphNode[]
-	edges: Array<{
-		id: string
-		source: string
-		target: string
-		type: string
-		metadata?: Record<string, unknown>
-	}>
+	edges: GraphEdge[]
 	expandedFrom: string
 	metadata?: {
 		depth: number
@@ -279,8 +273,12 @@ export class EntityResolver implements IEntityResolver {
 		return {
 			nodes: expansion.nodes,
 			edges: expansion.edges,
-			expandedFrom: nodeId,
-			metadata: expansion.metadata,
+			expandedFrom: expansion.metadata.expandedFrom,
+			metadata: {
+				depth: expansion.metadata.depth,
+				totalFound: expansion.metadata.totalFound,
+				options: fullOptions,
+			},
 		}
 	}
 

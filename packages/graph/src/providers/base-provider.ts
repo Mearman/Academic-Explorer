@@ -5,7 +5,7 @@
 
 import { EventEmitter } from "../utils/event-emitter"
 import { logger } from "@academic-explorer/utils"
-import type { GraphNode, EntityType, EntityIdentifier } from "../types/core"
+import type { GraphNode, GraphEdge, EntityType, EntityIdentifier } from "../types/core"
 import type { ExpansionLimits, TruncationInfo } from "../types/expansion"
 
 export interface SearchQuery {
@@ -26,13 +26,7 @@ export interface ProviderExpansionOptions {
 
 export interface GraphExpansion {
 	nodes: GraphNode[]
-	edges: Array<{
-		id: string
-		source: string
-		target: string
-		type: string
-		metadata?: Record<string, unknown>
-	}>
+	edges: GraphEdge[]
 	metadata: {
 		expandedFrom: string
 		depth: number

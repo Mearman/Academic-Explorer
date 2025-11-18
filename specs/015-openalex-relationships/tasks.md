@@ -167,22 +167,22 @@ Academic Explorer monorepo structure:
 
 > **NAMING**: Tests follow pattern `*.test.ts` in packages/graph/tests/providers/
 
-- [ ] T039 [P] [US4] Write unit test for Topic → Field edges in packages/graph/tests/providers/topics.test.ts - verifies TOPIC_PART_OF_FIELD edges created from field property (FR-013, FR-015)
-- [ ] T040 [P] [US4] Write unit test for Field → Domain edges in packages/graph/tests/providers/topics.test.ts - verifies FIELD_PART_OF_DOMAIN edges created from domain property (FR-014, FR-015)
-- [ ] T041 [P] [US4] Write integration test for complete taxonomy path in packages/graph/tests/providers/topics.test.ts - expand topic, verify T123→F456→D789 complete hierarchy (see spec.md lines 68-69)
-- [ ] T042 [P] [US4] Write unit test for reverse topic lookup in packages/graph/tests/providers/topics.test.ts - query field, discover all topics within field (FR-016)
+- [x] T039 [P] [US4] Write unit test for Topic → Field edges in packages/graph/tests/providers/topics.test.ts - verifies TOPIC_PART_OF_FIELD edges created from field property (FR-013, FR-015)
+- [x] T040 [P] [US4] Write unit test for Field → Domain edges in packages/graph/tests/providers/topics.test.ts - verifies FIELD_PART_OF_DOMAIN edges created from domain property (FR-014, FR-015)
+- [x] T041 [P] [US4] Write integration test for complete taxonomy path in packages/graph/tests/providers/topics.test.ts - expand topic, verify T123→F456→D789 complete hierarchy (see spec.md lines 68-69)
+- [x] T042 [P] [US4] Write unit test for reverse topic lookup in packages/graph/tests/providers/topics.test.ts - query field, discover all topics within field (FR-016)
 
 **Run tests**: `pnpm test packages/graph -- --testPathPattern="topics"` → **MUST FAIL**
 
 ### Implementation for User Story 4
 
-- [ ] T043 [P] [US4] Extract topic hierarchy properties (subfield, field, domain) in expandTopicWithCache() in packages/graph/src/providers/openalex-provider.ts (FR-015)
-- [ ] T044 [US4] Create TOPIC_PART_OF_FIELD edges with source=topicId, target=fieldId, direction='outbound' (FR-013)
-- [ ] T045 [US4] Create FIELD_PART_OF_DOMAIN edges with source=fieldId, target=domainId, direction='outbound' (FR-014)
-- [ ] T046 [US4] Create TOPIC_PART_OF_SUBFIELD edges if subfield data available (FR-027)
-- [ ] T047 [US4] Implement reverse lookup to find topics within field or domain (FR-016)
-- [ ] T048 [US4] Create field and domain stub nodes for taxonomy hierarchy visualization
-- [ ] T049 [US4] Validate topic hierarchy IDs before edge creation, handle missing hierarchy gracefully (FR-030, FR-031)
+- [x] T043 [P] [US4] Extract topic hierarchy properties (subfield, field, domain) in expandTopicWithCache() in packages/graph/src/providers/openalex-provider.ts (FR-015)
+- [x] T044 [US4] Create TOPIC_PART_OF_FIELD edges with source=topicId, target=fieldId, direction='outbound' (FR-013)
+- [x] T045 [US4] Create FIELD_PART_OF_DOMAIN edges with source=fieldId, target=domainId, direction='outbound' (FR-014)
+- [x] T046 [US4] Create TOPIC_PART_OF_SUBFIELD edges if subfield data available (FR-027)
+- [x] T047 [US4] Implement reverse lookup to find topics within field or domain (FR-016)
+- [x] T048 [US4] Create field and domain stub nodes for taxonomy hierarchy visualization
+- [x] T049 [US4] Validate topic hierarchy IDs before edge creation, handle missing hierarchy gracefully (FR-030, FR-031)
 
 **Run tests**: `pnpm test packages/graph -- --testPathPattern="topics"` → **MUST PASS**
 

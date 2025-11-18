@@ -17,6 +17,7 @@ import {
   type ProviderOptions,
 } from "./base-provider";
 import type { GraphNode, EntityType, EntityIdentifier } from "../types/core";
+import { RelationType } from "../types/core";
 
 // Mock implementation for testing abstract class
 class MockGraphDataProvider extends GraphDataProvider {
@@ -105,7 +106,7 @@ class MockGraphDataProvider extends GraphDataProvider {
           id: `edge-${nodeId}-${node.id}`,
           source: nodeId,
           target: node.id,
-          type: "related_to",
+          type: RelationType.RELATED_TO,
           metadata: { weight: i + 1 },
         }));
 

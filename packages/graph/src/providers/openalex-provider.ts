@@ -935,6 +935,98 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 		options: ProviderExpansionOptions,
 		context: CacheContext
 	): Promise<void> {
+		// Extract topic hierarchy properties (T043: Extract hierarchy from topic data)
+		const field = topicData.field as { id: string; display_name: string } | undefined
+		const domain = topicData.domain as { id: string; display_name: string } | undefined
+		const subfield = topicData.subfield as { id: string; display_name: string } | undefined
+
+		// T044: Create TOPIC_PART_OF_FIELD edge
+		if (field?.id && field?.display_name) {
+			const fieldId = this.extractFieldOrDomainId(field.id)
+
+			// Validate extracted field ID
+			if (fieldId) {
+				// Create field stub node (T048)
+				nodes.push({
+					id: fieldId,
+					entityType: "topics", // Fields are part of topics taxonomy
+					entityId: fieldId,
+					label: field.display_name,
+					x: Math.random() * 800,
+					y: Math.random() * 600,
+					externalIds: [],
+					entityData: { id: fieldId, display_name: field.display_name },
+				})
+
+				// Create edge: topic → field
+				edges.push({
+					id: createCanonicalEdgeId(topicId, fieldId, RelationType.TOPIC_PART_OF_FIELD),
+					source: topicId,
+					target: fieldId,
+					type: RelationType.TOPIC_PART_OF_FIELD,
+					direction: 'outbound',
+				})
+			}
+		}
+
+		// T045: Create FIELD_PART_OF_DOMAIN edge
+		if (field?.id && domain?.id && domain?.display_name) {
+			const fieldId = this.extractFieldOrDomainId(field.id)
+			const domainId = this.extractFieldOrDomainId(domain.id)
+
+			// Validate both IDs extracted successfully
+			if (fieldId && domainId) {
+				// Create domain stub node (T048)
+				nodes.push({
+					id: domainId,
+					entityType: "topics", // Domains are part of topics taxonomy
+					entityId: domainId,
+					label: domain.display_name,
+					x: Math.random() * 800,
+					y: Math.random() * 600,
+					externalIds: [],
+					entityData: { id: domainId, display_name: domain.display_name },
+				})
+
+				// Create edge: field → domain
+				edges.push({
+					id: createCanonicalEdgeId(fieldId, domainId, RelationType.FIELD_PART_OF_DOMAIN),
+					source: fieldId,
+					target: domainId,
+					type: RelationType.FIELD_PART_OF_DOMAIN,
+					direction: 'outbound',
+				})
+			}
+		}
+
+		// T046: Create TOPIC_PART_OF_SUBFIELD edge (if subfield available)
+		if (subfield?.id && subfield?.display_name) {
+			const subfieldId = this.extractFieldOrDomainId(subfield.id)
+
+			if (subfieldId) {
+				// Create subfield stub node
+				nodes.push({
+					id: subfieldId,
+					entityType: "topics",
+					entityId: subfieldId,
+					label: subfield.display_name,
+					x: Math.random() * 800,
+					y: Math.random() * 600,
+					externalIds: [],
+					entityData: { id: subfieldId, display_name: subfield.display_name },
+				})
+
+				// Create edge: topic → subfield
+				edges.push({
+					id: createCanonicalEdgeId(topicId, subfieldId, RelationType.TOPIC_PART_OF_SUBFIELD),
+					source: topicId,
+					target: subfieldId,
+					type: RelationType.TOPIC_PART_OF_SUBFIELD,
+					direction: 'outbound',
+				})
+			}
+		}
+
 		// Add recent works in this topic
 		try {
 			const works = await this.client.works({
@@ -985,6 +1077,39 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 		} catch (error) {
 			logger.warn("provider", `Failed to expand topic ${topicId}`, { error }, "OpenAlexProvider")
 		}
+	}
+
+	/**
+	 * Extract field or domain ID from OpenAlex URL or direct ID
+	 * Handles formats:
+	 *   - "https://openalex.org/fields/17" → "fields/17"
+	 *   - "https://openalex.org/domains/3" → "domains/3"
+	 *   - "fields/17" → "fields/17" (already in correct format)
+	 * T049: Validate IDs and handle missing hierarchy
+	 */
+	private extractFieldOrDomainId(urlOrId: string): string | null {
+		if (!urlOrId || typeof urlOrId !== 'string') {
+			return null
+		}
+
+		// If already in correct format (fields/17 or domains/3), return as-is
+		if (/^(fields|domains)\/\d+$/.test(urlOrId)) {
+			return urlOrId
+		}
+
+		// Match pattern: .../fields/17 or .../domains/3 from URL
+		const match = urlOrId.match(/\/(fields|domains)\/(\d+)/)
+		if (match) {
+			return `${match[1]}/${match[2]}`
+		}
+
+		logger.warn(
+			"provider",
+			`Failed to extract field/domain ID from URL: ${urlOrId}`,
+			{ urlOrId },
+			"OpenAlexProvider"
+		)
+		return null
 	}
 
 	private async expandFunderWithCache(

@@ -21,6 +21,7 @@ import {
   type SearchQuery,
 } from "../providers/base-provider";
 import type { GraphNode, EntityType, EntityIdentifier } from "../types/core";
+import { RelationType } from "../types/core";
 
 // Mock implementations
 class MockGraphDataProvider extends GraphDataProvider {
@@ -172,7 +173,7 @@ describe("EntityResolver", () => {
       id: "edge1",
       source: "A5017898742",
       target: "W2741809807",
-      type: "authored",
+      type: RelationType.AUTHORSHIP,
       metadata: {}
     }],
     metadata: {
@@ -392,7 +393,15 @@ describe("EntityResolver", () => {
         expandedFrom: "A5017898742",
         nodes: sampleExpansion.nodes,
         edges: sampleExpansion.edges,
-        metadata: sampleExpansion.metadata
+        metadata: {
+          depth: sampleExpansion.metadata.depth,
+          totalFound: sampleExpansion.metadata.totalFound,
+          options: {
+            maxDepth: 1,
+            limit: 10,
+            includeMetadata: true,
+          }
+        }
       });
     });
 
