@@ -3,16 +3,45 @@
  * Controls edge type visibility and filtering in the graph
  */
 
-import React from "react";
-import { IconLink, IconEye, IconEyeOff } from "@tabler/icons-react";
-import { Button, Checkbox, Badge, Group, Stack, Paper, Text } from "@mantine/core";
+import React, { useState, useMemo, useCallback } from "react";
+import { IconLink, IconEye, IconEyeOff, IconArrowRight, IconArrowLeft, IconArrowsLeftRight } from "@tabler/icons-react";
+import { Button, Checkbox, Badge, Group, Stack, Paper, Text, SegmentedControl } from "@mantine/core";
 import { useGraphStore } from "@/stores/graph-store";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { CollapsibleSection } from "@/components/molecules/CollapsibleSection";
 import { logger } from "@academic-explorer/utils/logger";
-import { RelationType } from "@academic-explorer/graph";
+import { RelationType, type GraphEdge } from "@academic-explorer/graph";
 import { safeParseRelationType } from "@academic-explorer/utils";
+
+// Direction filter types
+export type EdgeDirectionFilter = "outbound" | "inbound" | "both";
+
+/**
+ * Filter edges by direction with memoization for performance
+ * @param edges - Array of graph edges to filter
+ * @param direction - Direction filter to apply
+ * @returns Filtered array of edges matching the direction criterion
+ */
+export function filterByDirection(
+  edges: GraphEdge[],
+  direction: EdgeDirectionFilter
+): GraphEdge[] {
+  if (direction === "both") {
+    return edges;
+  }
+
+  return edges.filter((edge) => {
+    // If edge has explicit direction field, use it
+    if (edge.direction) {
+      return edge.direction === direction;
+    }
+
+    // Fallback: all edges without direction field are considered outbound
+    // (legacy edges or edges created before direction field was added)
+    return direction === "outbound";
+  });
+}
 
 // Constants
 const FLEX_JUSTIFY_SPACE_BETWEEN = "space-between";
@@ -60,9 +89,19 @@ export const EdgeFiltersSection: React.FC<EdgeFiltersSectionProps> = ({
   const { colors } = themeColors;
   const prefersReducedMotion = useReducedMotion();
 
+  // Direction filter state
+  const [directionFilter, setDirectionFilter] = useState<EdgeDirectionFilter>("both");
+
   // Get edge state from store
   const graphStore = useGraphStore();
   const { visibleEdgeTypes, edgeTypeStats, toggleEdgeTypeVisibility } = graphStore;
+
+  // Memoized filter function for performance
+  // This can be used by parent components that need to filter edges
+  const applyDirectionFilter = useCallback(
+    (edges: GraphEdge[]) => filterByDirection(edges, directionFilter),
+    [directionFilter]
+  );
 
   // Calculate visibility stats with proper types
   const totalVisibleEdges = edgeTypeStats.visible || 0;
@@ -234,21 +273,87 @@ export const EdgeFiltersSection: React.FC<EdgeFiltersSectionProps> = ({
         </Stack>
       </CollapsibleSection>
 
-      {/* Edge Direction Filters - Future Enhancement */}
+      {/* Edge Direction Filters */}
       <CollapsibleSection
-        title="Direction & Weight"
-        icon={<IconLink size={14} />}
-        defaultExpanded={false}
+        title="Edge Direction"
+        icon={<IconArrowsLeftRight size={14} />}
+        defaultExpanded={true}
         storageKey="edge-filters-direction"
       >
-        <Stack p="md" align="center">
-          <Text size="sm" c="dimmed" ta="center">
-            Direction and weight filtering
-          </Text>
-          <Text size="xs" c="dimmed" opacity={0.7} ta="center">
-            Coming soon: Filter by edge direction (incoming/outgoing) and
-            connection strength
-          </Text>
+        <Stack gap="md" style={{ marginTop: "8px" }}>
+          {/* Direction Filter Description */}
+          <Paper p="sm" radius="md" withBorder bg="var(--mantine-color-blue-0)">
+            <Text size="xs" c="dimmed">
+              Filter edges by their data ownership direction:
+            </Text>
+            <Stack gap={4} mt={4}>
+              <Group gap="xs">
+                <IconArrowRight size={12} />
+                <Text size="xs" fw={500}>Outbound</Text>
+                <Text size="xs" c="dimmed">- Data stored on source entity</Text>
+              </Group>
+              <Group gap="xs">
+                <IconArrowLeft size={12} />
+                <Text size="xs" fw={500}>Inbound</Text>
+                <Text size="xs" c="dimmed">- Data discovered via reverse lookup</Text>
+              </Group>
+            </Stack>
+          </Paper>
+
+          {/* Direction Segmented Control */}
+          <SegmentedControl
+            value={directionFilter}
+            onChange={(value) => {
+              const newFilter = value as EdgeDirectionFilter;
+              logger.debug("ui", `Direction filter changed to ${newFilter}`, {
+                previousFilter: directionFilter,
+                newFilter,
+              });
+              setDirectionFilter(newFilter);
+            }}
+            data={[
+              {
+                value: "outbound",
+                label: (
+                  <Group gap="xs" justify="center">
+                    <IconArrowRight size={14} />
+                    <Text size="sm">Outbound</Text>
+                  </Group>
+                ),
+              },
+              {
+                value: "inbound",
+                label: (
+                  <Group gap="xs" justify="center">
+                    <IconArrowLeft size={14} />
+                    <Text size="sm">Inbound</Text>
+                  </Group>
+                ),
+              },
+              {
+                value: "both",
+                label: (
+                  <Group gap="xs" justify="center">
+                    <IconArrowsLeftRight size={14} />
+                    <Text size="sm">Both</Text>
+                  </Group>
+                ),
+              },
+            ]}
+            fullWidth
+          />
+
+          {/* Filter Stats */}
+          <Paper p="sm" radius="md" withBorder>
+            <Group justify="space-between">
+              <Text size="xs" c="dimmed">
+                Current Filter
+              </Text>
+              <Badge size="sm" variant="light" color="blue" tt="capitalize">
+                {directionFilter === "both" ? "All Directions" : directionFilter}
+              </Badge>
+            </Group>
+          </Paper>
         </Stack>
       </CollapsibleSection>
     </Stack>
