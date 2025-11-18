@@ -247,6 +247,9 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 					case "topics":
 						await this.expandTopicWithCache(nodeId, baseEntity, nodes, edges, options, context)
 						break
+					case "funders":
+						await this.expandFunderWithCache(nodeId, baseEntity, nodes, edges, options, context)
+						break
 					default:
 						// Basic expansion for other entity types
 						break
@@ -679,6 +682,52 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 				logger.warn("provider", `Failed to fetch citing works for ${workId}`, { error }, "OpenAlexProvider")
 			}
 		}
+
+		// Add funding relationships (grants)
+		const grants = (workData.grants as Array<{ funder?: string; award_id?: string }>) || []
+
+		// Apply limit for grants
+		const grantLimit = getRelationshipLimit(options, RelationType.FUNDED_BY)
+		const limitedGrants = grants.slice(0, grantLimit)
+
+		// Create FUNDED_BY edges for each grant
+		for (const grant of limitedGrants) {
+			if (!grant.funder) {
+				continue
+			}
+
+			// Extract bare ID from URL or use as-is
+			const funderId = extractOpenAlexId(grant.funder)
+
+			// Validate funder ID before creating edge
+			if (!validateOpenAlexId(funderId)) {
+				logger.warn(
+					"provider",
+					"Invalid funder ID, skipping",
+					{ workId, funderId: grant.funder },
+					"OpenAlexProvider"
+				)
+				continue
+			}
+
+			// Create FUNDED_BY edge: work → funder
+			const edge: GraphEdge = {
+				id: createCanonicalEdgeId(workId, funderId, RelationType.FUNDED_BY),
+				source: workId,
+				target: funderId,
+				type: RelationType.FUNDED_BY,
+				direction: 'outbound',
+			}
+
+			// Add award_id metadata if available
+			if (grant.award_id) {
+				edge.metadata = {
+					award_id: grant.award_id,
+				}
+			}
+
+			edges.push(edge)
+		}
 	}
 
 	private async expandAuthorWithCache(
@@ -935,6 +984,85 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 			}
 		} catch (error) {
 			logger.warn("provider", `Failed to expand topic ${topicId}`, { error }, "OpenAlexProvider")
+		}
+	}
+
+	private async expandFunderWithCache(
+		funderId: string,
+		funderData: Record<string, unknown>,
+		nodes: GraphNode[],
+		edges: GraphEdge[],
+		options: ProviderExpansionOptions,
+		context: CacheContext
+	): Promise<void> {
+		// Add works funded by this funder (reverse lookup)
+		try {
+			// Apply limit for grants
+			const grantLimit = getRelationshipLimit(options, RelationType.FUNDED_BY)
+
+			const works = await this.client.works({
+				filter: { "grants.funder": funderId },
+				per_page: grantLimit,
+				sort: "publication_year:desc",
+			})
+
+			const workResults = Array.isArray(works.results) ? works.results : []
+			const workIds = workResults.map((work) => String((work as Record<string, unknown>).id))
+
+			// Batch preload works into cache
+			if (this.cache && workIds.length > 0) {
+				try {
+					const expansionContext = {
+						...context,
+						entityType: "works" as const,
+						depth: (context.depth || 0) + 1,
+					}
+					await this.cache.batchPreloadEntities(workIds, expansionContext)
+				} catch (error) {
+					logger.warn("provider", "Failed to preload funder works", { error }, "OpenAlexProvider")
+				}
+			}
+
+			for (const work of workResults) {
+				const workRecord = work as Record<string, unknown>
+				const workId = String(workRecord.id)
+
+				// Validate work ID before creating edge
+				if (!validateOpenAlexId(workId)) {
+					logger.warn(
+						"provider",
+						"Invalid work ID, skipping",
+						{ funderId, workId },
+						"OpenAlexProvider"
+					)
+					continue
+				}
+
+				const workNode: GraphNode = {
+					id: workId,
+					entityType: "works",
+					entityId: workId,
+					label: this.extractLabel(workRecord, "works"),
+					x: Math.random() * 800,
+					y: Math.random() * 600,
+					externalIds: this.extractExternalIds(workRecord, "works"),
+					entityData: workRecord,
+				}
+
+				nodes.push(workNode)
+
+				// Create FUNDED_BY edge with inbound direction
+				// Note: semantic direction is still work → funder
+				edges.push({
+					id: createCanonicalEdgeId(workId, funderId, RelationType.FUNDED_BY),
+					source: workId,
+					target: funderId,
+					type: RelationType.FUNDED_BY,
+					direction: 'inbound',
+				})
+			}
+		} catch (error) {
+			logger.warn("provider", `Failed to expand funder ${funderId}`, { error }, "OpenAlexProvider")
 		}
 	}
 

@@ -132,22 +132,22 @@ Academic Explorer monorepo structure:
 
 > **NAMING**: Tests follow pattern `*.test.ts` in packages/graph/tests/providers/
 
-- [ ] T028 [P] [US3] Write unit test for Work → Funder edges in packages/graph/tests/providers/funding.test.ts - verifies edges created from grants[] array (FR-009, FR-010)
-- [ ] T029 [P] [US3] Write unit test for grant metadata in packages/graph/tests/providers/funding.test.ts - verifies edge.metadata.award_id included when available (FR-011)
-- [ ] T030 [P] [US3] Write unit test for graceful handling of missing funding in packages/graph/tests/providers/funding.test.ts - work with no grants creates no edges (see spec.md lines 54-55)
-- [ ] T031 [P] [US3] Write unit test for funder expansion in packages/graph/tests/providers/funding.test.ts - expand funder, verify reverse lookup discovers all funded works (FR-012, FR-026)
+- [x] T028 [P] [US3] Write unit test for Work → Funder edges in packages/graph/tests/providers/funding.test.ts - verifies edges created from grants[] array (FR-009, FR-010)
+- [x] T029 [P] [US3] Write unit test for grant metadata in packages/graph/tests/providers/funding.test.ts - verifies edge.metadata.award_id included when available (FR-011)
+- [x] T030 [P] [US3] Write unit test for graceful handling of missing funding in packages/graph/tests/providers/funding.test.ts - work with no grants creates no edges (see spec.md lines 54-55)
+- [x] T031 [P] [US3] Write unit test for funder expansion in packages/graph/tests/providers/funding.test.ts - expand funder, verify reverse lookup discovers all funded works (FR-012, FR-026)
 
 **Run tests**: `pnpm test packages/graph -- --testPathPattern="funding"` → **MUST FAIL**
 
 ### Implementation for User Story 3
 
-- [ ] T032 [P] [US3] Extract grants[] array in expandWorkWithCache() in packages/graph/src/providers/openalex-provider.ts (FR-010)
-- [ ] T033 [US3] Create FUNDED_BY edges with source=workId, target=funderId, direction='outbound' from grants[] (FR-009)
-- [ ] T034 [US3] Extract and include award_id in edge.metadata for funding edges (FR-011)
-- [ ] T035 [US3] Create expandFunderWithCache() method in packages/graph/src/providers/openalex-provider.ts (FR-025)
-- [ ] T036 [US3] Implement reverse lookup in expandFunderWithCache() to discover all funded works via API query (FR-012, FR-026)
-- [ ] T037 [US3] Apply configurable grant limit using getRelationshipLimit(options, 'grants') with default 5 (see research.md Section 4 line 518)
-- [ ] T038 [US3] Validate funder IDs before edge creation, handle missing grants[] gracefully (FR-030, FR-031)
+- [x] T032 [P] [US3] Extract grants[] array in expandWorkWithCache() in packages/graph/src/providers/openalex-provider.ts (FR-010)
+- [x] T033 [US3] Create FUNDED_BY edges with source=workId, target=funderId, direction='outbound' from grants[] (FR-009)
+- [x] T034 [US3] Extract and include award_id in edge.metadata for funding edges (FR-011)
+- [x] T035 [US3] Create expandFunderWithCache() method in packages/graph/src/providers/openalex-provider.ts (FR-025)
+- [x] T036 [US3] Implement reverse lookup in expandFunderWithCache() to discover all funded works via API query (FR-012, FR-026)
+- [x] T037 [US3] Apply configurable grant limit using getRelationshipLimit(options, 'grants') with default 5 (see research.md Section 4 line 518)
+- [x] T038 [US3] Validate funder IDs before edge creation, handle missing grants[] gracefully (FR-030, FR-031)
 
 **Run tests**: `pnpm test packages/graph -- --testPathPattern="funding"` → **MUST PASS**
 
