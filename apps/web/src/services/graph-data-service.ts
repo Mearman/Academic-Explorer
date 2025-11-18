@@ -365,6 +365,34 @@ export class GraphDataService {
         );
       }
 
+      // Re-detect all edges to ensure correct types and directions
+      // This fixes any edges that were incorrectly detected or cached before enum changes
+      logger.debug(
+        "graph",
+        "Re-detecting edges to ensure correct types and directions",
+        {},
+        "GraphDataService",
+      );
+      try {
+        await graphStore.redetectEdges(this.queryClient);
+
+        // Update cached edges after re-detection
+        const state = graphStore.getState();
+        const allEdges = Object.values(state.edges);
+        setCachedGraphEdges({
+          queryClient: this.queryClient,
+          edges: allEdges,
+        });
+      } catch (error) {
+        logError(
+          logger,
+          "Failed to re-detect edges after initial load",
+          error,
+          "GraphDataService",
+          "graph",
+        );
+      }
+
       // Layout is now handled by the ReactFlow component's useLayout hook
       // No need for explicit layout application here
     } catch (error) {
