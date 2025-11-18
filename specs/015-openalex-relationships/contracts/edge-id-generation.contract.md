@@ -1,8 +1,8 @@
 # Edge ID Generation Contract
 
-**Contract Version**: 1.0
+**Contract Version**: 2.0
 **Last Updated**: 2025-11-18
-**Scope**: Canonical edge ID generation for graph deduplication
+**Scope**: Canonical edge ID generation for graph deduplication (Implemented)
 
 ## Purpose
 

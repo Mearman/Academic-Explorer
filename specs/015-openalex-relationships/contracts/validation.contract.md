@@ -1,8 +1,8 @@
 # Validation Contract
 
-**Contract Version**: 1.0
+**Contract Version**: 2.0
 **Last Updated**: 2025-11-18
-**Scope**: Data validation for OpenAlex relationship implementation
+**Scope**: Data validation for OpenAlex relationship implementation (Implemented)
 
 ## Purpose
 

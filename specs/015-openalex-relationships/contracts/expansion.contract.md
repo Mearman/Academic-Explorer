@@ -1,8 +1,8 @@
 # Expansion Method Contract
 
-**Contract Version**: 1.0
+**Contract Version**: 2.0
 **Last Updated**: 2025-11-18
-**Scope**: Entity expansion methods in OpenAlexGraphProvider
+**Scope**: Entity expansion methods in OpenAlexGraphProvider (Implemented)
 
 ## Purpose
 
