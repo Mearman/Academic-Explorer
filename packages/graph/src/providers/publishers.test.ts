@@ -6,13 +6,14 @@ import type { GraphEdge } from '../types/core';
 
 interface MockOpenAlexClient {
 	get: ReturnType<typeof vi.fn>;
-	institutions: { get: ReturnType<typeof vi.fn>; list: ReturnType<typeof vi.fn> };
-	works: { get: ReturnType<typeof vi.fn>; list: ReturnType<typeof vi.fn> };
-	authors: { get: ReturnType<typeof vi.fn>; list: ReturnType<typeof vi.fn> };
-	sources: { get: ReturnType<typeof vi.fn>; list: ReturnType<typeof vi.fn> };
-	funders: { get: ReturnType<typeof vi.fn>; list: ReturnType<typeof vi.fn> };
-	topics: { get: ReturnType<typeof vi.fn>; list: ReturnType<typeof vi.fn> };
-	publishers: { get: ReturnType<typeof vi.fn>; list: ReturnType<typeof vi.fn> };
+	getWork: ReturnType<typeof vi.fn>;
+	getAuthor: ReturnType<typeof vi.fn>;
+	getSource: ReturnType<typeof vi.fn>;
+	getInstitution: ReturnType<typeof vi.fn>;
+	works: ReturnType<typeof vi.fn>;
+	authors: ReturnType<typeof vi.fn>;
+	sources: ReturnType<typeof vi.fn>;
+	institutions: ReturnType<typeof vi.fn>;
 }
 
 describe('OpenAlexGraphProvider - Publisher Relationships', () => {
@@ -22,13 +23,14 @@ describe('OpenAlexGraphProvider - Publisher Relationships', () => {
 	beforeEach(() => {
 		mockClient = {
 			get: vi.fn(),
-			institutions: { get: vi.fn(), list: vi.fn() },
-			works: { get: vi.fn(), list: vi.fn() },
-			authors: { get: vi.fn(), list: vi.fn() },
-			sources: { get: vi.fn(), list: vi.fn() },
-			funders: { get: vi.fn(), list: vi.fn() },
-			topics: { get: vi.fn(), list: vi.fn() },
-			publishers: { get: vi.fn(), list: vi.fn() },
+			getWork: vi.fn(),
+			getAuthor: vi.fn(),
+			getSource: vi.fn(),
+			getInstitution: vi.fn(),
+			works: vi.fn().mockResolvedValue({ results: [] }),
+			authors: vi.fn().mockResolvedValue({ results: [] }),
+			sources: vi.fn().mockResolvedValue({ results: [] }),
+			institutions: vi.fn().mockResolvedValue({ results: [] }),
 		} as unknown as MockOpenAlexClient;
 
 		provider = new OpenAlexGraphProvider(mockClient as any);
@@ -62,8 +64,8 @@ describe('OpenAlexGraphProvider - Publisher Relationships', () => {
 			sources_api_url: 'https://api.openalex.org/sources?filter=host_organization.id:P45678901',
 		};
 
-		(mockClient.sources.get as ReturnType<typeof vi.fn>).mockResolvedValue(mockSource);
-		(mockClient.get as ReturnType<typeof vi.fn>).mockResolvedValue(mockPublisher);
+		mockClient.getSource.mockResolvedValue(mockSource);
+		mockClient.get.mockResolvedValue(mockPublisher);
 
 		// Act
 		const result = await provider.expandEntity('S12345678', { limit: 10 });
@@ -96,7 +98,7 @@ describe('OpenAlexGraphProvider - Publisher Relationships', () => {
 		expect(hostEdge.id).toBe('S12345678-HOST_ORGANIZATION-P45678901');
 
 		// Verify client calls
-		expect(mockClient.sources.get).toHaveBeenCalledWith('S12345678');
+		expect(mockClient.getSource).toHaveBeenCalledWith('S12345678');
 		expect(mockClient.get).toHaveBeenCalledWith('publishers', 'P45678901');
 	});
 
@@ -148,7 +150,7 @@ describe('OpenAlexGraphProvider - Publisher Relationships', () => {
 		};
 
 		(mockClient.get as ReturnType<typeof vi.fn>).mockResolvedValue(mockPublisher);
-		(mockClient.sources.list as ReturnType<typeof vi.fn>).mockResolvedValue(mockSourcesResponse);
+		mockClient.sources.mockResolvedValue(mockSourcesResponse);
 
 		// Act
 		const result = await provider.expandEntity('P45678901', {
@@ -197,7 +199,7 @@ describe('OpenAlexGraphProvider - Publisher Relationships', () => {
 
 		// Verify client calls
 		expect(mockClient.get).toHaveBeenCalledWith('publishers', 'P45678901');
-		expect(mockClient.sources.list).toHaveBeenCalledWith(
+		expect(mockClient.sources).toHaveBeenCalledWith(
 			expect.objectContaining({
 				filter: { 'host_organization.id': 'P45678901' },
 			})
@@ -249,7 +251,7 @@ describe('OpenAlexGraphProvider - Publisher Relationships', () => {
 			return Promise.reject(new Error(`Unknown publisher: ${id}`));
 		});
 
-		(mockClient.sources.list as ReturnType<typeof vi.fn>).mockResolvedValue(mockSourcesResponse);
+		mockClient.sources.mockResolvedValue(mockSourcesResponse);
 
 		// Act
 		const result = await provider.expandEntity('P12345678', { limit: 10 });
@@ -307,7 +309,7 @@ describe('OpenAlexGraphProvider - Publisher Relationships', () => {
 			homepage_url: 'https://example.com',
 		};
 
-		(mockClient.sources.get as ReturnType<typeof vi.fn>).mockResolvedValue(mockSourceWithoutHost);
+		mockClient.getSource.mockResolvedValue(mockSourceWithoutHost);
 
 		// Act
 		const result = await provider.expandEntity('S12345678', { limit: 10 });
@@ -335,7 +337,7 @@ describe('OpenAlexGraphProvider - Publisher Relationships', () => {
 		expect(result.nodes).toHaveLength(1);
 
 		// Verify client only called for source
-		expect(mockClient.sources.get).toHaveBeenCalledWith('S12345678');
+		expect(mockClient.getSource).toHaveBeenCalledWith('S12345678');
 		expect(mockClient.get).not.toHaveBeenCalled();
 	});
 });

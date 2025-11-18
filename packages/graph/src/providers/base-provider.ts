@@ -51,6 +51,14 @@ export interface GraphExpansion {
 			affiliations?: TruncationInfo
 			/** Lineage relationship truncation info (Institution → Parents) */
 			lineage?: TruncationInfo
+			/** Keywords relationship truncation info (Work → Keywords) */
+			keywords?: TruncationInfo
+			/** Author research topics truncation info (Author → Topics) */
+			author_researches?: TruncationInfo
+			/** Host organization truncation info (Source → Publisher) */
+			host_organization?: TruncationInfo
+			/** Publisher parent truncation info (Publisher → Parent) */
+			publisher_child_of?: TruncationInfo
 		}
 	}
 }

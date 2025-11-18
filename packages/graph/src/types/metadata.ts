@@ -30,3 +30,24 @@ export interface PublicationMetadata {
   is_oa?: boolean;
   version?: string;
 }
+
+export interface KeywordMetadata {
+  score?: number;
+}
+
+export interface AuthorResearchTopicMetadata {
+  count?: number;
+  score?: number;
+}
+
+export interface LineageMetadata {
+  lineage_level?: number;
+}
+
+export interface HostOrganizationMetadata {
+  // Currently no specific metadata fields from OpenAlex API
+}
+
+export interface PublisherParentMetadata {
+  // Currently no specific metadata fields from OpenAlex API
+}

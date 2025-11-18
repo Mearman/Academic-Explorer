@@ -6,30 +6,14 @@ import type { GraphEdge } from '../types/core';
 
 interface MockOpenAlexClient {
 	get: ReturnType<typeof vi.fn>;
-	institutions: {
-		get: ReturnType<typeof vi.fn>;
-		list: ReturnType<typeof vi.fn>;
-	};
-	works: {
-		get: ReturnType<typeof vi.fn>;
-		list: ReturnType<typeof vi.fn>;
-	};
-	authors: {
-		get: ReturnType<typeof vi.fn>;
-		list: ReturnType<typeof vi.fn>;
-	};
-	sources: {
-		get: ReturnType<typeof vi.fn>;
-		list: ReturnType<typeof vi.fn>;
-	};
-	funders: {
-		get: ReturnType<typeof vi.fn>;
-		list: ReturnType<typeof vi.fn>;
-	};
-	topics: {
-		get: ReturnType<typeof vi.fn>;
-		list: ReturnType<typeof vi.fn>;
-	};
+	getWork: ReturnType<typeof vi.fn>;
+	getAuthor: ReturnType<typeof vi.fn>;
+	getSource: ReturnType<typeof vi.fn>;
+	getInstitution: ReturnType<typeof vi.fn>;
+	works: ReturnType<typeof vi.fn>;
+	authors: ReturnType<typeof vi.fn>;
+	sources: ReturnType<typeof vi.fn>;
+	institutions: ReturnType<typeof vi.fn>;
 }
 
 describe('OpenAlexGraphProvider - Institution Lineage', () => {
@@ -39,16 +23,14 @@ describe('OpenAlexGraphProvider - Institution Lineage', () => {
 	beforeEach(() => {
 		mockClient = {
 			get: vi.fn(),
-			getInstitution: vi.fn(),
 			getWork: vi.fn(),
 			getAuthor: vi.fn(),
 			getSource: vi.fn(),
-			authors: vi.fn().mockResolvedValue({ results: [] }),
-			institutions: vi.fn().mockResolvedValue({ results: [] }),
+			getInstitution: vi.fn(),
 			works: vi.fn().mockResolvedValue({ results: [] }),
+			authors: vi.fn().mockResolvedValue({ results: [] }),
 			sources: vi.fn().mockResolvedValue({ results: [] }),
-			funders: vi.fn().mockResolvedValue({ results: [] }),
-			topics: vi.fn().mockResolvedValue({ results: [] }),
+			institutions: vi.fn().mockResolvedValue({ results: [] }),
 		} as unknown as MockOpenAlexClient;
 
 		provider = new OpenAlexGraphProvider(mockClient as any);
@@ -90,7 +72,7 @@ describe('OpenAlexGraphProvider - Institution Lineage', () => {
 			cited_by_count: 1500000,
 		};
 
-		(mockClient.institutions.get as ReturnType<typeof vi.fn>).mockImplementation((id: string) => {
+		mockClient.getInstitution.mockImplementation((id: string) => {
 			if (id === 'I12345678') return Promise.resolve(mockInstitution);
 			if (id === 'I45678901') return Promise.resolve(mockParent);
 			if (id === 'I78901234') return Promise.resolve(mockGrandparent);
@@ -166,7 +148,7 @@ describe('OpenAlexGraphProvider - Institution Lineage', () => {
 			cited_by_count: 1500000,
 		};
 
-		(mockClient.institutions.get as ReturnType<typeof vi.fn>).mockImplementation((id: string) => {
+		mockClient.getInstitution.mockImplementation((id: string) => {
 			if (id === 'I12345678') return Promise.resolve(mockInstitution);
 			if (id === 'I45678901') return Promise.resolve(mockParent);
 			if (id === 'I78901234') return Promise.resolve(mockGrandparent);
@@ -229,7 +211,7 @@ describe('OpenAlexGraphProvider - Institution Lineage', () => {
 			cited_by_count: 1500000,
 		};
 
-		(mockClient.institutions.get as ReturnType<typeof vi.fn>).mockImplementation((id: string) => {
+		mockClient.getInstitution.mockImplementation((id: string) => {
 			if (id === 'I12345678') return Promise.resolve(mockChild);
 			if (id === 'I45678901') return Promise.resolve(mockParent);
 			if (id === 'I78901234') return Promise.resolve(mockGrandparent);
@@ -336,7 +318,7 @@ describe('OpenAlexGraphProvider - Institution Lineage', () => {
 			cited_by_count: 1500000,
 		};
 
-		(mockClient.institutions.get as ReturnType<typeof vi.fn>).mockImplementation((id: string) => {
+		mockClient.getInstitution.mockImplementation((id: string) => {
 			if (id === 'I45678901') return Promise.resolve(mockParent);
 			if (id === 'I12345678') return Promise.resolve(mockChild);
 			if (id === 'I78901234') return Promise.resolve(mockGrandparent);
@@ -344,7 +326,7 @@ describe('OpenAlexGraphProvider - Institution Lineage', () => {
 		});
 
 		// Mock reverse lookup query: institutions where lineage contains I45678901
-		(mockClient.institutions.list as ReturnType<typeof vi.fn>).mockResolvedValue({
+		mockClient.institutions.mockResolvedValue({
 			results: [mockChild],
 			meta: {
 				count: 1,
