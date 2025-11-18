@@ -1,15 +1,20 @@
 <!--
 Sync Impact Report:
-Version: 1.4.0 → 1.5.0 (New principle added)
-Modified Principles: None
+Version: 1.5.0 → 2.0.0 (MAJOR: New deployment readiness principle fundamentally changes completion criteria)
+Modified Principles:
+  - VII. Development-Stage Pragmatism - Clarified that deployment readiness still applies
 Added Sections:
-  - VIII. Test-First Bug Fixes (NEW principle)
+  - IX. Deployment Readiness (NEW NON-NEGOTIABLE principle)
 Removed Sections: None
 Templates Requiring Updates:
-  - ✅ .specify/templates/plan-template.md (Constitution Check section updated to include 8 principles)
-  - ✅ .specify/templates/spec-template.md (Constitution Alignment section updated to include 8 principles)
-  - ✅ .specify/templates/tasks-template.md (Constitution compliance verification updated to include 8 principles)
-Follow-up TODOs: None
+  - ⚠ .specify/templates/plan-template.md (Constitution Check section needs update to include 9 principles)
+  - ⚠ .specify/templates/spec-template.md (Constitution Alignment section needs update to include 9 principles)
+  - ⚠ .specify/templates/tasks-template.md (Constitution compliance verification needs update to include 9 principles)
+  - ⚠ All spec completion criteria must now include deployment readiness verification
+Follow-up TODOs:
+  - Update template files to reflect 9 principles
+  - Review all in-progress specs for deployment readiness compliance
+  - Add deployment readiness verification to quality gates documentation
 -->
 
 # Academic Explorer Constitution
@@ -181,6 +186,11 @@ Development-stage requirements:
 when the project transitions to production use, this principle MUST be revisited and likely
 removed or replaced with stricter compatibility requirements.
 
+**Deployment Readiness Exception**: While this principle allows breaking changes during
+development, it does NOT exempt work from Principle IX (Deployment Readiness). All code
+MUST be deployment-ready even during development—pre-existing issues MUST be resolved
+before work is considered complete.
+
 **Rationale**: The project is currently in active PhD research development (June 2023+).
 Research iteration requires flexibility to pivot architectural decisions based on findings.
 Maintaining backwards compatibility during exploration phases would:
@@ -230,20 +240,90 @@ This principle is especially critical for this PhD research project where:
 - Research reproducibility requires stable, regression-free code
 - Academic demonstrations must work reliably without surprises
 
+### IX. Deployment Readiness (NON-NEGOTIABLE)
+
+**Work is NOT complete if there are ANY outstanding issues in the repository, including
+pre-existing issues**. Deployment cannot run if ANY package has typecheck errors, test
+failures, lint violations, or build failures. Before marking work as complete, ALL blocking
+issues across the entire monorepo MUST be resolved.
+
+Deployment readiness requirements:
+- **ALL packages** MUST pass `pnpm typecheck` with zero errors
+- **ALL packages** MUST pass `pnpm test` with zero failures
+- **ALL packages** MUST pass `pnpm lint` with zero violations
+- **ALL packages** MUST pass `pnpm build` successfully
+- Pre-existing issues MUST be fixed or explicitly deferred with documented reason
+- Commits using `--no-verify` to bypass pre-commit hooks are ONLY acceptable as temporary
+  measures and MUST be followed by immediate fix commits
+
+Zero-tolerance blocking issues:
+- TypeScript compilation errors in ANY package
+- Test failures in ANY test suite (unit, component, integration, E2E)
+- ESLint errors (warnings are acceptable if documented)
+- Build failures in ANY package
+- Pre-commit hook failures (unless explicitly bypassed with documented justification)
+
+Completion criteria for features/specs:
+- Feature implementation complete AND tests passing
+- ALL pre-existing issues blocking deployment are resolved
+- Full quality pipeline passes: `pnpm validate` succeeds across entire monorepo
+- CI/CD pipeline can deploy without errors or manual intervention
+- Branch is merge-ready with no known deployment blockers
+
+**Rationale**: The project uses GitHub Pages for deployment with automated CI/CD. If ANY
+package in the monorepo has errors, the entire deployment fails. This creates a critical
+dependency: new features cannot be deployed if pre-existing issues block the build pipeline.
+
+Research productivity is destroyed when:
+1. **Completed features can't be deployed** due to unrelated pre-existing errors
+2. **Demos fail** because deployment was blocked by issues in other packages
+3. **Time is wasted** tracking down "which issue broke deployment" across packages
+4. **False completion** occurs when features "work" but can't reach production
+5. **Technical debt accumulates** because "someone else's errors" are tolerated
+
+This principle ensures:
+- Every feature can be deployed immediately upon completion
+- No feature creates or leaves deployment blockers for future work
+- The main branch always remains in a deployable state
+- Pre-existing issues are surfaced and resolved, not ignored
+- Research demonstrations can be confidently scheduled knowing deployment works
+
+**Relationship to Development-Stage Pragmatism (Principle VII)**: While Principle VII allows
+breaking changes during development, it does NOT allow leaving the codebase in an
+undeployable state. Breaking changes are acceptable; broken builds are not.
+
+**Temporary Exception Handling**: If pre-existing issues are discovered that are genuinely
+outside the scope of current work AND would require significant effort to fix:
+1. Create a GitHub issue documenting the problem
+2. Add the issue to a deployment blockers tracking document
+3. Explicitly defer the fix with timeline and ownership
+4. Ensure current work does NOT make the issue worse
+5. Return to fix deployment blockers before starting new features
+
+This exception should be used sparingly—the default expectation is to fix all blockers
+before marking work complete.
+
 ## Development Workflow
 
 **Fail-fast test execution order**: TypeScript validation → Unit tests → Component tests
 → Integration tests → E2E tests. If unit tests fail, expensive E2E tests don't run.
 
 **Quality pipeline**: All code MUST pass `pnpm validate` before commit:
-1. `pnpm typecheck` - TypeScript validation (strict mode)
-2. `pnpm test` - Full test suite (serially managed by Nx)
-3. `pnpm build` - Production build verification
-4. `pnpm lint` - ESLint checking
+1. `pnpm typecheck` - TypeScript validation (strict mode) across ALL packages
+2. `pnpm test` - Full test suite (serially managed by Nx) across ALL packages
+3. `pnpm build` - Production build verification across ALL packages
+4. `pnpm lint` - ESLint checking across ALL packages
 
 **Nx-managed dependencies**: Use `nx affected:test` and `nx affected:build` to test/build
 only changed projects. The dependency graph prevents building downstream projects when
 upstream projects have type errors.
+
+**Deployment readiness verification**: Before considering ANY work complete:
+1. Run `pnpm validate` and ensure it passes completely
+2. Check for any pre-existing issues in other packages
+3. If issues found, either fix them or explicitly defer with documentation
+4. Verify CI/CD would succeed if triggered right now
+5. Only then mark work as complete
 
 **No DRY violations**: Create abstractions over duplication. If the same logic appears in
 two places, extract it to `packages/utils` or create a shared package.
@@ -257,10 +337,10 @@ two places, extract it to `packages/utils` or create a shared package.
 
 ## Quality Gates
 
-**Constitution compliance**: Every PR MUST verify alignment with all eight core principles.
+**Constitution compliance**: Every PR MUST verify alignment with all nine core principles.
 Feature specs MUST document how they respect type safety, test-first development, monorepo
 architecture, storage abstraction, performance constraints, atomic commit discipline,
-development-stage pragmatism, and test-first bug fixes.
+development-stage pragmatism, test-first bug fixes, and deployment readiness.
 
 **Complexity justification**: Any feature that adds architectural complexity (new package,
 new storage provider, new worker) MUST document why a simpler alternative is insufficient.
@@ -284,6 +364,13 @@ MUST be documented in commit messages and changelogs.
 - All commits MUST pass quality pipeline before pushing to shared branches
 - NO commits may use `git add .` or `git add -A` for staging
 
+**Deployment readiness gates** (NEW):
+- All commits MUST leave the repository in a deployable state
+- Pre-existing deployment blockers MUST be resolved or explicitly deferred
+- `pnpm validate` MUST pass completely before marking work as complete
+- CI/CD pipeline MUST be able to deploy without manual intervention
+- Any use of `--no-verify` MUST be followed by immediate fix commits
+
 ## Governance
 
 This constitution supersedes all other development practices. Amendments require:
@@ -299,4 +386,4 @@ For runtime development guidance specific to Academic Explorer workflows, see `C
 in the project root. That file provides operational instructions (commands, architecture
 patterns, research context) while this constitution defines non-negotiable principles.
 
-**Version**: 1.5.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-18
+**Version**: 2.0.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-18
