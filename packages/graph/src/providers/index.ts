@@ -2,7 +2,7 @@
  * Graph Data Providers
  */
 
-export { GraphDataProvider, ProviderRegistry } from "./base-provider"
+export { GraphDataProvider, ProviderRegistry, getRelationshipLimit } from "./base-provider"
 export { OpenAlexGraphProvider } from "./openalex-provider"
 
 export type {
@@ -12,3 +12,4 @@ export type {
 	ProviderStats,
 	ProviderOptions,
 } from "./base-provider"
+export type { ExpansionLimits, TruncationInfo } from "../types/expansion"

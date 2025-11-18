@@ -686,11 +686,11 @@ describe('OpenAlexGraphProvider', () => {
       expect(sourceNode!.id).toBe('S4210184550');
       expect(sourceNode!.label).toBe('Test Journal');
 
-      // Check authored edge
+      // Check authored edge (Work → Author direction)
       const authoredEdge = expansion.edges.find(e => e.type === RelationType.AUTHORED);
       expect(authoredEdge).toBeDefined();
-      expect(authoredEdge!.source).toBe('A5017898742');
-      expect(authoredEdge!.target).toBe('W2741809807');
+      expect(authoredEdge!.source).toBe('W2741809807');
+      expect(authoredEdge!.target).toBe('A5017898742');
 
       // Check published-in edge
       const publishedInEdge = expansion.edges.find(e => e.type === RelationType.PUBLISHED_IN);
@@ -733,9 +733,11 @@ describe('OpenAlexGraphProvider', () => {
         expect(node.entityType).toBe('works');
       });
 
+      // Authorship edges are always Work → Author, even when discovered via author expansion
       expansion.edges.forEach(edge => {
         expect(edge.type).toBe(RelationType.AUTHORED);
-        expect(edge.source).toBe('A5017898742');
+        expect(edge.target).toBe('A5017898742');
+        expect(['W3126653431', 'W2963537269']).toContain(edge.source);
       });
     });
 

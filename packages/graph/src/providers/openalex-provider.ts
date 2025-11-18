@@ -20,6 +20,7 @@ import type {
 } from "../types/core"
 import { RelationType } from "../types/core"
 import { EntityDetectionService } from "../services/entity-detection-service"
+import { createCanonicalEdgeId, validateOpenAlexId } from "../utils/edge-utils"
 
 // OpenAlex entity interfaces removed - unused after refactoring
 
@@ -534,6 +535,17 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 		// Add authors
 		for (const authorship of authorships.slice(0, options.limit || 10)) {
 			if (authorship.author?.id) {
+				// Validate author ID before creating edge
+				if (!validateOpenAlexId(authorship.author.id)) {
+					logger.warn(
+						"provider",
+						"Invalid author ID, skipping",
+						{ workId, authorId: authorship.author.id },
+						"OpenAlexProvider"
+					)
+					continue
+				}
+
 				const author = authorship.author as Record<string, unknown>
 				const authorNode: GraphNode = {
 					id: authorship.author.id,
@@ -548,11 +560,11 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 
 				nodes.push(authorNode)
 				edges.push({
-					id: `${workId}-authored-${authorship.author.id}`,
-					source: authorship.author.id,
-					target: workId,
+					id: createCanonicalEdgeId(workId, authorship.author.id, RelationType.AUTHORSHIP),
+					source: workId,
+					target: authorship.author.id,
 					type: RelationType.AUTHORSHIP,
-				direction: 'outbound',
+					direction: "outbound",
 				})
 			}
 		}
@@ -617,10 +629,23 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 
 			for (const work of workResults) {
 				const workRecord = work as Record<string, unknown>
+				const workId = String(workRecord.id)
+
+				// Validate work ID before creating edge
+				if (!validateOpenAlexId(workId)) {
+					logger.warn(
+						"provider",
+						"Invalid work ID, skipping",
+						{ authorId, workId },
+						"OpenAlexProvider"
+					)
+					continue
+				}
+
 				const workNode: GraphNode = {
-					id: String(workRecord.id),
+					id: workId,
 					entityType: "works",
-					entityId: String(workRecord.id),
+					entityId: workId,
 					label: this.extractLabel(workRecord, "works"),
 					x: Math.random() * 800,
 					y: Math.random() * 600,
@@ -630,11 +655,11 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 
 				nodes.push(workNode)
 				edges.push({
-					id: `${authorId}-authored-${workRecord.id}`,
-					source: authorId,
-					target: String(workRecord.id),
+					id: createCanonicalEdgeId(workId, authorId, RelationType.AUTHORSHIP),
+					source: workId,
+					target: authorId,
 					type: RelationType.AUTHORSHIP,
-				direction: 'outbound',
+					direction: "inbound",
 				})
 			}
 		} catch (error) {

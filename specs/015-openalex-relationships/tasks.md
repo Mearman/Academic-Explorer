@@ -28,11 +28,11 @@ Academic Explorer monorepo structure:
 
 **⚠️ CRITICAL**: These tasks MUST complete before ANY user story work begins
 
-- [ ] T001 [P] Add missing RelationType enum values in packages/graph/src/types/core.ts (FIELD_PART_OF_DOMAIN, TOPIC_PART_OF_SUBFIELD, TOPIC_SIBLING, WORK_HAS_KEYWORD, AUTHOR_RESEARCHES, PUBLISHER_CHILD_OF per FR-027)
-- [ ] T002 [P] Create edge ID generation utility function createCanonicalEdgeId() in packages/graph/src/utils/edge-utils.ts (supports FR-004 deduplication, see research.md Section 3)
-- [ ] T003 [P] Create edge ID validation function validateOpenAlexId() in packages/graph/src/utils/edge-utils.ts (supports FR-031, FR-032)
-- [ ] T004 [P] Create ExpansionLimits interface in packages/graph/src/types/expansion.ts with relationship-specific limits (supports FR-033, see research.md Section 4)
-- [ ] T005 [P] Create edge metadata type interfaces in packages/graph/src/types/metadata.ts (AuthorshipMetadata, CitationMetadata, FundingMetadata, AffiliationMetadata, TopicMetadata, PublicationMetadata per data-model.md lines 117-165)
+- [x] T001 [P] Add missing RelationType enum values in packages/graph/src/types/core.ts (FIELD_PART_OF_DOMAIN, TOPIC_PART_OF_SUBFIELD, TOPIC_SIBLING, WORK_HAS_KEYWORD, AUTHOR_RESEARCHES, PUBLISHER_CHILD_OF per FR-027)
+- [x] T002 [P] Create edge ID generation utility function createCanonicalEdgeId() in packages/graph/src/utils/edge-utils.ts (supports FR-004 deduplication, see research.md Section 3)
+- [x] T003 [P] Create edge ID validation function validateOpenAlexId() in packages/graph/src/utils/edge-utils.ts (supports FR-031, FR-032)
+- [x] T004 [P] Create ExpansionLimits interface in packages/graph/src/types/expansion.ts with relationship-specific limits (supports FR-033, see research.md Section 4)
+- [x] T005 [P] Create edge metadata type interfaces in packages/graph/src/types/metadata.ts (AuthorshipMetadata, CitationMetadata, FundingMetadata, AffiliationMetadata, TopicMetadata, PublicationMetadata per data-model.md lines 117-165)
 
 **Checkpoint**: Foundation utilities ready - user story implementation can now begin in parallel
 
@@ -44,10 +44,10 @@ Academic Explorer monorepo structure:
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T006 Implement edge deduplication logic in packages/graph/src/services/graph-repository.ts using edge.id as primary key (supports FR-004, see data-model.md lines 499-520)
-- [ ] T007 Implement batch entity preloading in packages/graph/src/services/entity-cache.ts for related entities (supports FR-036, see research.md Section 2)
-- [ ] T008 Implement getRelationshipLimit() helper function in packages/graph/src/providers/base-provider.ts to apply configurable limits (supports FR-033, see research.md Section 4 lines 441-461)
-- [ ] T009 Add truncation metadata to GraphExpansion interface in packages/graph/src/types/expansion.ts (supports FR-033, see research.md Section 4 lines 463-497)
+- [x] T006 Implement edge deduplication logic in packages/graph/src/services/graph-repository.ts using edge.id as primary key (supports FR-004, see data-model.md lines 499-520)
+- [x] T007 Implement batch entity preloading in packages/graph/src/services/entity-cache.ts for related entities (supports FR-036, see research.md Section 2)
+- [x] T008 Implement getRelationshipLimit() helper function in packages/graph/src/providers/base-provider.ts to apply configurable limits (supports FR-033, see research.md Section 4 lines 441-461)
+- [x] T009 Add truncation metadata to GraphExpansion interface in packages/graph/src/types/expansion.ts (supports FR-033, see research.md Section 4 lines 463-497)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -66,19 +66,19 @@ Academic Explorer monorepo structure:
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 > **NAMING**: Tests follow pattern `*.test.ts` in packages/graph/tests/providers/
 
-- [ ] T010 [P] [US1] Write unit test for Work → Author direction in packages/graph/tests/providers/authorship.test.ts - verifies edge.source = workId, edge.target = authorId, edge.direction = 'outbound' when expanding work (FR-001, FR-002)
-- [ ] T011 [P] [US1] Write unit test for author reverse lookup in packages/graph/tests/providers/authorship.test.ts - verifies edge.source = workId (NOT authorId), edge.target = authorId, edge.direction = 'inbound' when expanding author (FR-003)
-- [ ] T012 [P] [US1] Write integration test for bidirectional consistency in packages/graph/tests/providers/authorship.test.ts - expand work then author, verify no duplicate edges (same edge.id from both directions) (FR-004)
-- [ ] T013 [P] [US1] Write regression test for original bug in packages/graph/tests/providers/authorship.test.ts - assert no edges ever have source=authorId and target=workId (see research.md Section 5 lines 815-833)
+- [x] T010 [P] [US1] Write unit test for Work → Author direction in packages/graph/tests/providers/authorship.test.ts - verifies edge.source = workId, edge.target = authorId, edge.direction = 'outbound' when expanding work (FR-001, FR-002)
+- [x] T011 [P] [US1] Write unit test for author reverse lookup in packages/graph/tests/providers/authorship.test.ts - verifies edge.source = workId (NOT authorId), edge.target = authorId, edge.direction = 'inbound' when expanding author (FR-003)
+- [x] T012 [P] [US1] Write integration test for bidirectional consistency in packages/graph/tests/providers/authorship.test.ts - expand work then author, verify no duplicate edges (same edge.id from both directions) (FR-004)
+- [x] T013 [P] [US1] Write regression test for original bug in packages/graph/tests/providers/authorship.test.ts - assert no edges ever have source=authorId and target=workId (see research.md Section 5 lines 815-833)
 
 **Run tests**: `pnpm test packages/graph -- --testPathPattern="authorship"` → **MUST FAIL**
 
 ### Implementation for User Story 1
 
-- [ ] T014 [US1] Fix AUTHORSHIP edge creation in expandWorkWithCache() method in packages/graph/src/providers/openalex-provider.ts (lines ~550-556) - change source from authorship.author.id to workId, change target from workId to authorship.author.id, set direction='outbound' (FR-001, FR-002)
-- [ ] T015 [US1] Fix AUTHORSHIP edge creation in expandAuthorWithCache() method in packages/graph/src/providers/openalex-provider.ts (lines ~632-638) - ensure source=workId (NOT authorId), target=authorId, direction='inbound', use createCanonicalEdgeId() (FR-003)
-- [ ] T016 [US1] Update edge ID generation to use createCanonicalEdgeId(workId, authorId, RelationType.AUTHORSHIP) in both expansion methods (FR-004)
-- [ ] T017 [US1] Add validation for author IDs before edge creation in expandWorkWithCache() - skip invalid IDs with warning log (FR-031, FR-032)
+- [x] T014 [US1] Fix AUTHORSHIP edge creation in expandWorkWithCache() method in packages/graph/src/providers/openalex-provider.ts (lines ~550-556) - change source from authorship.author.id to workId, change target from workId to authorship.author.id, set direction='outbound' (FR-001, FR-002)
+- [x] T015 [US1] Fix AUTHORSHIP edge creation in expandAuthorWithCache() method in packages/graph/src/providers/openalex-provider.ts (lines ~632-638) - ensure source=workId (NOT authorId), target=authorId, direction='inbound', use createCanonicalEdgeId() (FR-003)
+- [x] T016 [US1] Update edge ID generation to use createCanonicalEdgeId(workId, authorId, RelationType.AUTHORSHIP) in both expansion methods (FR-004)
+- [x] T017 [US1] Add validation for author IDs before edge creation in expandWorkWithCache() - skip invalid IDs with warning log (FR-031, FR-032)
 
 **Run tests**: `pnpm test packages/graph -- --testPathPattern="authorship"` → **MUST PASS**
 

@@ -6,6 +6,7 @@
 import { EventEmitter } from "../utils/event-emitter"
 import { logger } from "@academic-explorer/utils"
 import type { GraphNode, EntityType, EntityIdentifier } from "../types/core"
+import type { ExpansionLimits, TruncationInfo } from "../types/expansion"
 
 export interface SearchQuery {
 	query: string
@@ -19,6 +20,7 @@ export interface ProviderExpansionOptions {
 	relationshipTypes?: string[]
 	maxDepth?: number
 	limit?: number
+	limits?: ExpansionLimits
 	includeMetadata?: boolean
 }
 
@@ -36,6 +38,25 @@ export interface GraphExpansion {
 		depth: number
 		totalFound: number
 		options: ProviderExpansionOptions
+		/**
+		 * Truncation metadata for relationship limits (FR-033, research.md Section 4)
+		 * Tracks how many entities are included vs available for each relationship type
+		 */
+		truncated?: {
+			[relationship: string]: TruncationInfo | undefined
+			/** Authorship relationship truncation info (Work → Authors) */
+			authorship?: TruncationInfo
+			/** Reference relationship truncation info (Work → Cited Works) */
+			references?: TruncationInfo
+			/** Grants relationship truncation info (Work → Funders) */
+			grants?: TruncationInfo
+			/** Topics relationship truncation info (Work → Topics) */
+			topics?: TruncationInfo
+			/** Affiliations relationship truncation info (Author → Institutions) */
+			affiliations?: TruncationInfo
+			/** Lineage relationship truncation info (Institution → Parents) */
+			lineage?: TruncationInfo
+		}
 	}
 }
 
@@ -54,6 +75,29 @@ export interface ProviderOptions {
 	retryAttempts?: number
 	retryDelay?: number
 	timeout?: number
+}
+
+/**
+ * Apply configurable relationship limits (FR-033, research.md Section 4)
+ * Returns the appropriate limit for a specific relationship type following priority:
+ * 1. Relationship-specific limit (options.limits?.[relationship])
+ * 2. Global default limit (options.limits?.default)
+ * 3. Legacy limit parameter (options.limit)
+ * 4. Fallback default (10)
+ *
+ * @param options - Provider expansion options containing limit configuration
+ * @param relationship - The relationship type key to get the limit for
+ * @returns The configured limit for the relationship, or 10 if not specified
+ */
+export function getRelationshipLimit(
+	options: ProviderExpansionOptions,
+	relationship: keyof ExpansionLimits
+): number {
+	// Priority: relationship-specific > global default > fallback default
+	return (options.limits?.[relationship] as number | undefined)
+		?? options.limits?.default
+		?? options.limit
+		?? 10
 }
 
 /**

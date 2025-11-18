@@ -43,6 +43,7 @@ export {
 	type AttachmentPoint,
 	type EdgeAttachment,
 } from "./utils/edge-calculations"
+export { createCanonicalEdgeId, validateOpenAlexId } from "./utils/edge-utils"
 export * from "./utils/node-helpers"
 export * from "./utils/performance-config"
 

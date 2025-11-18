@@ -116,6 +116,9 @@ const createInitialEdgeTypeFilter = (): Record<RelationType, boolean> => ({
   [RelationType.INSTITUTION_LOCATED_IN]: true,
   [RelationType.FUNDER_LOCATED_IN]: true,
   [RelationType.TOPIC_PART_OF_FIELD]: true,
+  [RelationType.FIELD_PART_OF_DOMAIN]: true,
+  [RelationType.TOPIC_PART_OF_SUBFIELD]: true,
+  [RelationType.TOPIC_SIBLING]: true,
 });
 
 const DEFAULT_REPOSITORY_STATE: RepositoryState = {

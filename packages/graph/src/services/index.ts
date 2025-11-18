@@ -21,6 +21,9 @@ export {
 	type DetectionResult,
 } from "./entity-detection-service"
 
+// Graph Repository - Edge deduplication and graph data persistence
+export { addEdgeWithDeduplication } from "./graph-repository"
+
 // Graph Analysis Service - Academic graph analysis and metrics calculation
 export {
 	GraphAnalyzer,

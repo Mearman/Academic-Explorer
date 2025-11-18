@@ -97,6 +97,15 @@ const initializeDefaultSettings = (): Record<
     [RelationType.TOPIC_PART_OF_FIELD]: getDefaultSettingsForTarget(
       RelationType.TOPIC_PART_OF_FIELD,
     ),
+    [RelationType.FIELD_PART_OF_DOMAIN]: getDefaultSettingsForTarget(
+      RelationType.FIELD_PART_OF_DOMAIN,
+    ),
+    [RelationType.TOPIC_PART_OF_SUBFIELD]: getDefaultSettingsForTarget(
+      RelationType.TOPIC_PART_OF_SUBFIELD,
+    ),
+    [RelationType.TOPIC_SIBLING]: getDefaultSettingsForTarget(
+      RelationType.TOPIC_SIBLING,
+    ),
   };
 };
 

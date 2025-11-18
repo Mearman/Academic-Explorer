@@ -49,13 +49,16 @@ export enum RelationType {
 	WORK_HAS_TOPIC = "TOPIC",
 
 	// Additional relationship types (less commonly used)
-	FUNDED_BY = "funded_by", // Work → Funder
-	PUBLISHER_CHILD_OF = "publisher_child_of", // Publisher → Parent Publisher
-	WORK_HAS_KEYWORD = "work_has_keyword", // Work → Keyword
 	AUTHOR_RESEARCHES = "author_researches", // Author → Topic
-	INSTITUTION_LOCATED_IN = "institution_located_in", // Institution → Geo/Country
+	FIELD_PART_OF_DOMAIN = "field_part_of_domain", // Field → Domain
+	FUNDED_BY = "funded_by", // Work → Funder
 	FUNDER_LOCATED_IN = "funder_located_in", // Funder → Country
+	INSTITUTION_LOCATED_IN = "institution_located_in", // Institution → Geo/Country
+	PUBLISHER_CHILD_OF = "publisher_child_of", // Publisher → Parent Publisher
 	TOPIC_PART_OF_FIELD = "topic_part_of_field", // Topic → Field → Domain
+	TOPIC_PART_OF_SUBFIELD = "topic_part_of_subfield", // Topic → Subfield
+	TOPIC_SIBLING = "topic_sibling", // Topic → Topic (sibling relationship)
+	WORK_HAS_KEYWORD = "work_has_keyword", // Work → Keyword
 
 	// General catch-all (use sparingly)
 	RELATED_TO = "related_to", // General relationships

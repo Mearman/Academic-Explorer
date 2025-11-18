@@ -431,9 +431,10 @@ describe("Example: Basic Provider Usage", () => {
       expect(authorshipEdges.length).toEqual(workNodes.length);
 
       // Best Practice: Verify edge consistency
+      // Authorship edges are always Work → Author, even when discovered via author expansion
       authorshipEdges.forEach((edge) => {
-        expect(edge.source).toBe(authorId);
-        expect(workNodes.some((n) => n.id === edge.target)).toBe(true);
+        expect(workNodes.some((n) => n.id === edge.source)).toBe(true);
+        expect(edge.target).toBe(authorId);
       });
     });
 
