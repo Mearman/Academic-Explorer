@@ -236,22 +236,22 @@ Academic Explorer monorepo structure:
 
 > **NAMING**: Tests follow pattern `*.test.ts` in packages/graph/tests/providers/
 
-- [ ] T060 [P] [US6] Write unit test for Source → Publisher edges in packages/graph/tests/providers/publishers.test.ts - verifies HOST_ORGANIZATION edge created from host_organization property (FR-020)
-- [ ] T061 [P] [US6] Write unit test for publisher expansion in packages/graph/tests/providers/publishers.test.ts - expand publisher, verify reverse lookup discovers all hosted sources (FR-021)
-- [ ] T062 [P] [US6] Write unit test for publisher hierarchy in packages/graph/tests/providers/publishers.test.ts - verifies PUBLISHER_CHILD_OF edges from parent_publisher (FR-022)
-- [ ] T063 [P] [US6] Write unit test for graceful handling of missing host in packages/graph/tests/providers/publishers.test.ts - source with no host_organization creates no edge (see spec.md line 103)
+- [x] T060 [P] [US6] Write unit test for Source → Publisher edges in packages/graph/tests/providers/publishers.test.ts - verifies HOST_ORGANIZATION edge created from host_organization property (FR-020)
+- [x] T061 [P] [US6] Write unit test for publisher expansion in packages/graph/tests/providers/publishers.test.ts - expand publisher, verify reverse lookup discovers all hosted sources (FR-021)
+- [x] T062 [P] [US6] Write unit test for publisher hierarchy in packages/graph/tests/providers/publishers.test.ts - verifies PUBLISHER_CHILD_OF edges from parent_publisher (FR-022)
+- [x] T063 [P] [US6] Write unit test for graceful handling of missing host in packages/graph/tests/providers/publishers.test.ts - source with no host_organization creates no edge (see spec.md line 103)
 
 **Run tests**: `pnpm test packages/graph -- --testPathPattern="publishers"` → **MUST FAIL**
 
 ### Implementation for User Story 6
 
-- [ ] T064 [P] [US6] Extract host_organization property in expandSourceWithCache() in packages/graph/src/providers/openalex-provider.ts (FR-020)
-- [ ] T065 [US6] Create HOST_ORGANIZATION edge with source=sourceId, target=publisherId, direction='outbound' (FR-020)
-- [ ] T066 [US6] Create expandPublisherWithCache() method in packages/graph/src/providers/openalex-provider.ts (FR-024)
-- [ ] T067 [US6] Implement reverse lookup in expandPublisherWithCache() to discover all hosted sources (FR-021)
-- [ ] T068 [US6] Extract parent_publisher property and create PUBLISHER_CHILD_OF edges in expandPublisherWithCache() (FR-022)
-- [ ] T069 [US6] Extract publisher lineage[] array and create LINEAGE edges for publisher hierarchies (FR-023)
-- [ ] T070 [US6] Validate publisher IDs before edge creation, handle missing host_organization gracefully (FR-030, FR-031)
+- [x] T064 [P] [US6] Extract host_organization property in expandSourceWithCache() in packages/graph/src/providers/openalex-provider.ts (FR-020)
+- [x] T065 [US6] Create HOST_ORGANIZATION edge with source=sourceId, target=publisherId, direction='outbound' (FR-020)
+- [x] T066 [US6] Create expandPublisherWithCache() method in packages/graph/src/providers/openalex-provider.ts (FR-024)
+- [x] T067 [US6] Implement reverse lookup in expandPublisherWithCache() to discover all hosted sources (FR-021)
+- [x] T068 [US6] Extract parent_publisher property and create PUBLISHER_CHILD_OF edges in expandPublisherWithCache() (FR-022)
+- [x] T069 [US6] Extract publisher lineage[] array and create LINEAGE edges for publisher hierarchies (FR-023)
+- [x] T070 [US6] Validate publisher IDs before edge creation, handle missing host_organization gracefully (FR-030, FR-031)
 
 **Run tests**: `pnpm test packages/graph -- --testPathPattern="publishers"` → **MUST PASS**
 
