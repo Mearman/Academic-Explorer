@@ -82,3 +82,33 @@ export function validateOpenAlexId(id: string | undefined | null): boolean {
   }
   return /^[A-Z]\d+$/.test(id)
 }
+
+/**
+ * Extracts OpenAlex ID from either a full URL or bare ID string
+ *
+ * Handles both formats:
+ * - Full URL: https://openalex.org/W2741809807 → W2741809807
+ * - Bare ID: W2741809807 → W2741809807
+ *
+ * @param idOrUrl - OpenAlex ID or full URL
+ * @returns Bare OpenAlex ID (e.g., W2741809807)
+ *
+ * @example
+ * extractOpenAlexId('https://openalex.org/W2741809807') // Returns: 'W2741809807'
+ * extractOpenAlexId('W2741809807') // Returns: 'W2741809807'
+ */
+export function extractOpenAlexId(idOrUrl: string): string {
+  // If it's already a bare ID, return as-is
+  if (/^[A-Z]\d+$/.test(idOrUrl)) {
+    return idOrUrl
+  }
+
+  // Extract from URL: https://openalex.org/W2741809807 or https://api.openalex.org/W2741809807
+  const urlMatch = idOrUrl.match(/\/([A-Z]\d+)(?:[?#]|$)/i)
+  if (urlMatch) {
+    return urlMatch[1].toUpperCase()
+  }
+
+  // Fallback: return original if no pattern matches
+  return idOrUrl
+}

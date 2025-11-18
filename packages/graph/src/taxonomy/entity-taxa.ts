@@ -171,6 +171,24 @@ export const RELATION_TAXONOMY: Record<RelationType, Taxon> = {
 		color: "red",
 		plural: "Parts Of Fields",
 	},
+	[RelationType.FIELD_PART_OF_DOMAIN]: {
+		displayName: "Field Part Of Domain",
+		description: "Research field belongs to a broader domain",
+		color: "red",
+		plural: "Fields Part Of Domains",
+	},
+	[RelationType.TOPIC_PART_OF_SUBFIELD]: {
+		displayName: "Topic Part Of Subfield",
+		description: "Topic belongs to a research subfield",
+		color: "red",
+		plural: "Topics Part Of Subfields",
+	},
+	[RelationType.TOPIC_SIBLING]: {
+		displayName: "Topic Sibling",
+		description: "Topics share the same parent field or subfield",
+		color: "red",
+		plural: "Topic Siblings",
+	},
 	[RelationType.RELATED_TO]: {
 		displayName: "Related To",
 		description: "General relationship between entities",

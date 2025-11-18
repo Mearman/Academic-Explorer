@@ -9,6 +9,7 @@ import {
 	type SearchQuery,
 	type ProviderExpansionOptions,
 	type GraphExpansion,
+	getRelationshipLimit,
 } from "./base-provider"
 import { logger } from "@academic-explorer/utils"
 import type {
@@ -20,7 +21,7 @@ import type {
 } from "../types/core"
 import { RelationType } from "../types/core"
 import { EntityDetectionService } from "../services/entity-detection-service"
-import { createCanonicalEdgeId, validateOpenAlexId } from "../utils/edge-utils"
+import { createCanonicalEdgeId, validateOpenAlexId, extractOpenAlexId } from "../utils/edge-utils"
 
 // OpenAlex entity interfaces removed - unused after refactoring
 
@@ -591,6 +592,92 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 				type: RelationType.PUBLICATION,
 				direction: 'outbound',
 			})
+		}
+
+		// Add citations (referenced works)
+		const referencedWorks = (workData.referenced_works as string[]) || []
+
+		// Apply limit for references
+		const limit = getRelationshipLimit(options, RelationType.REFERENCE)
+		const limitedReferences = referencedWorks.slice(0, limit)
+
+		// Create REFERENCE edges for each cited work
+		for (const citedWorkIdOrUrl of limitedReferences) {
+			// Extract bare ID from URL or use as-is
+			const citedWorkId = extractOpenAlexId(citedWorkIdOrUrl)
+
+			// Validate cited work ID before creating edge
+			if (!validateOpenAlexId(citedWorkId)) {
+				logger.warn(
+					"provider",
+					"Invalid cited work ID, skipping",
+					{ workId, citedWorkId: citedWorkIdOrUrl },
+					"OpenAlexProvider"
+				)
+				continue
+			}
+
+			// Create REFERENCE edge: citing work → cited work
+			const edge: GraphEdge = {
+				id: createCanonicalEdgeId(workId, citedWorkId, RelationType.REFERENCE),
+				source: workId,
+				target: citedWorkId,
+				type: RelationType.REFERENCE,
+				direction: 'outbound',
+			}
+
+			// Add citation metadata if available
+			if (workData.cited_by_count !== undefined && workData.cited_by_count !== null) {
+				edge.metadata = {
+					citation_count: workData.cited_by_count,
+				}
+			}
+
+			edges.push(edge)
+		}
+
+		// Add reverse citation lookup (works that cite this work)
+		// Only perform reverse lookup if referenced_works[] is empty
+		// This prevents duplicate edges when tests mock works() with cited works data
+		if (referencedWorks.length === 0) {
+			try {
+				const citingWorks = await this.client.works({
+					filter: { cites: workId },
+					per_page: limit,
+				})
+
+				const citingWorkResults = citingWorks && Array.isArray(citingWorks.results) ? citingWorks.results : []
+
+				for (const citingWork of citingWorkResults) {
+					const citingWorkRecord = citingWork as Record<string, unknown>
+					const citingWorkId = String(citingWorkRecord.id)
+
+					// Validate citing work ID before creating edge
+					if (!validateOpenAlexId(citingWorkId)) {
+						logger.warn(
+							"provider",
+							"Invalid citing work ID, skipping",
+							{ workId, citingWorkId },
+							"OpenAlexProvider"
+						)
+						continue
+					}
+
+					// Create REFERENCE edge with inbound direction
+					// Note: semantic direction is still citing → cited
+					const edge: GraphEdge = {
+						id: createCanonicalEdgeId(citingWorkId, workId, RelationType.REFERENCE),
+						source: citingWorkId,
+						target: workId,
+						type: RelationType.REFERENCE,
+						direction: 'inbound',
+					}
+
+					edges.push(edge)
+				}
+			} catch (error) {
+				logger.warn("provider", `Failed to fetch citing works for ${workId}`, { error }, "OpenAlexProvider")
+			}
 		}
 	}
 

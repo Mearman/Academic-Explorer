@@ -98,21 +98,21 @@ Academic Explorer monorepo structure:
 
 > **NAMING**: Tests follow pattern `*.test.ts` in packages/graph/tests/providers/
 
-- [ ] T018 [P] [US2] Write unit test for citing Work → cited Work edges in packages/graph/tests/providers/citations.test.ts - verifies edges created from referenced_works[] array with correct direction (FR-005, FR-006)
-- [ ] T019 [P] [US2] Write unit test for citation metadata extraction in packages/graph/tests/providers/citations.test.ts - verifies edge.metadata includes citation_count when available (FR-008)
-- [ ] T020 [P] [US2] Write integration test for citation chain in packages/graph/tests/providers/citations.test.ts - expand W1→W2→W3 citation path, verify complete directed chain (see spec.md lines 38-39)
-- [ ] T021 [P] [US2] Write unit test for reverse citation lookup in packages/graph/tests/providers/citations.test.ts - query for works citing a given work, verify reverse lookup discovers citing works (FR-007)
+- [x] T018 [P] [US2] Write unit test for citing Work → cited Work edges in packages/graph/tests/providers/citations.test.ts - verifies edges created from referenced_works[] array with correct direction (FR-005, FR-006)
+- [x] T019 [P] [US2] Write unit test for citation metadata extraction in packages/graph/tests/providers/citations.test.ts - verifies edge.metadata includes citation_count when available (FR-008)
+- [x] T020 [P] [US2] Write integration test for citation chain in packages/graph/tests/providers/citations.test.ts - expand W1→W2→W3 citation path, verify complete directed chain (see spec.md lines 38-39)
+- [x] T021 [P] [US2] Write unit test for reverse citation lookup in packages/graph/tests/providers/citations.test.ts - query for works citing a given work, verify reverse lookup discovers citing works (FR-007)
 
 **Run tests**: `pnpm test packages/graph -- --testPathPattern="citations"` → **MUST FAIL**
 
 ### Implementation for User Story 2
 
-- [ ] T022 [P] [US2] Extract referenced_works[] array in expandWorkWithCache() in packages/graph/src/providers/openalex-provider.ts (FR-006)
-- [ ] T023 [US2] Create REFERENCE edges with source=citingWorkId, target=citedWorkId, direction='outbound' in expandWorkWithCache() (FR-005)
-- [ ] T024 [US2] Add citation metadata extraction from OpenAlex work data and include in edge.metadata (FR-008)
-- [ ] T025 [US2] Implement reverse citation lookup in expandWorkWithCache() using OpenAlex API filter for citing works, create edges with direction='inbound' (FR-007)
-- [ ] T026 [US2] Apply configurable citation limit using getRelationshipLimit(options, 'references') with default 20 (see research.md Section 4 line 511)
-- [ ] T027 [US2] Validate cited work IDs before edge creation, skip invalid IDs with warning (FR-031, FR-032)
+- [x] T022 [P] [US2] Extract referenced_works[] array in expandWorkWithCache() in packages/graph/src/providers/openalex-provider.ts (FR-006)
+- [x] T023 [US2] Create REFERENCE edges with source=citingWorkId, target=citedWorkId, direction='outbound' in expandWorkWithCache() (FR-005)
+- [x] T024 [US2] Add citation metadata extraction from OpenAlex work data and include in edge.metadata (FR-008)
+- [x] T025 [US2] Implement reverse citation lookup in expandWorkWithCache() using OpenAlex API filter for citing works, create edges with direction='inbound' (FR-007)
+- [x] T026 [US2] Apply configurable citation limit using getRelationshipLimit(options, 'references') with default 20 (see research.md Section 4 line 511)
+- [x] T027 [US2] Validate cited work IDs before edge creation, skip invalid IDs with warning (FR-031, FR-032)
 
 **Run tests**: `pnpm test packages/graph -- --testPathPattern="citations"` → **MUST PASS**
 
