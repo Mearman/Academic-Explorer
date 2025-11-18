@@ -121,11 +121,11 @@ This task breakdown implements the edge direction correction feature by reversin
 
 ### Edge Styling System
 
-- [ ] T030 [P] [US2] Create edge-styles.ts file with getEdgeStyle() function (line style: solid for outbound, dashed for inbound) in apps/web/src/components/graph/edge-styles.ts
-- [ ] T031 [P] [US2] Write unit tests for getEdgeStyle() with all 14 combinations (7 types × 2 directions) in apps/web/src/components/graph/edge-styles.unit.test.ts
-- [ ] T032 [US2] Add TYPE_COLORS constant with WCAG AA compliant colors (AUTHORSHIP: '#4A90E2', REFERENCE: '#7B68EE', etc.) to edge-styles.ts
-- [ ] T033 [US2] Add getOutboundStyle() and getInboundStyle() helper functions to edge-styles.ts
-- [ ] T034 [US2] Verify edge styling unit tests pass: `pnpm nx test web --testPathPattern=edge-styles`
+- [X] T030 [P] [US2] Create edge-styles.ts with getEdgeStyle(), multi-modal visual distinction (line + color + arrow)
+- [X] T031 [P] [US2] Write unit tests - 32 tests covering all 14 combinations (7 types × 2 directions) + accessibility
+- [X] T032 [US2] Add TYPE_COLORS constant with WCAG AA compliant colors - 15 relationship type colors
+- [X] T033 [US2] Add getOutboundStyle() and getInboundStyle() helpers + hover/filtered states
+- [X] T034 [US2] Verify edge styling unit tests pass: 32/32 tests passed ✅
 
 ### Graph Rendering Integration
 
