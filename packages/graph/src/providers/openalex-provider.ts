@@ -263,6 +263,9 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 					case "funders":
 						await this.expandFunderWithCache(nodeId, baseEntity, nodes, edges, options, context)
 						break
+					case "publishers":
+						await this.expandPublisherWithCache(nodeId, baseEntity, nodes, edges, options, context)
+						break
 					default:
 						// Basic expansion for other entity types
 						break
@@ -874,6 +877,67 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 		} catch (error) {
 			logger.warn("provider", `Failed to expand source ${sourceId}`, { error }, "OpenAlexProvider")
 		}
+
+		// T064-T065: Extract host_organization and create HOST_ORGANIZATION edge
+		const hostOrgUrl = sourceData.host_organization as string | null
+		if (hostOrgUrl) {
+			const publisherId = extractOpenAlexId(hostOrgUrl)
+
+			// Validate publisher ID before creating edge
+			if (validateOpenAlexId(publisherId)) {
+				try {
+					// Fetch publisher data to create node
+					const publisherData = await this.fetchEntityDataWithCache(
+						publisherId,
+						"publishers",
+						{
+							...context,
+							depth: (context.depth || 0) + 1,
+						}
+					)
+
+					// Create publisher node
+					const publisherNode: GraphNode = {
+						id: publisherId,
+						entityType: "publishers",
+						entityId: publisherId,
+						label: this.extractLabel(publisherData, "publishers"),
+						x: Math.random() * 800,
+						y: Math.random() * 600,
+						externalIds: this.extractExternalIds(publisherData, "publishers"),
+						entityData: publisherData,
+					}
+
+					nodes.push(publisherNode)
+
+					// Create HOST_ORGANIZATION edge: source → publisher
+					const edge: GraphEdge = {
+						id: createCanonicalEdgeId(sourceId, publisherId, RelationType.HOST_ORGANIZATION),
+						source: sourceId,
+						target: publisherId,
+						type: RelationType.HOST_ORGANIZATION,
+						direction: 'outbound',
+						metadata: {},
+					}
+
+					edges.push(edge)
+				} catch (error) {
+					logger.warn(
+						"provider",
+						`Failed to fetch publisher ${publisherId}`,
+						{ error, sourceId },
+						"OpenAlexProvider"
+					)
+				}
+			} else {
+				logger.warn(
+					"provider",
+					"Invalid publisher ID, skipping",
+					{ sourceId, publisherId: hostOrgUrl },
+					"OpenAlexProvider"
+				)
+			}
+		}
 	}
 
 	private async expandInstitutionWithCache(
@@ -1342,6 +1406,205 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 			}
 		} catch (error) {
 			logger.warn("provider", `Failed to expand funder ${funderId}`, { error }, "OpenAlexProvider")
+		}
+	}
+
+	private async expandPublisherWithCache(
+		publisherId: string,
+		publisherData: Record<string, unknown>,
+		nodes: GraphNode[],
+		edges: GraphEdge[],
+		options: ProviderExpansionOptions,
+		context: CacheContext
+	): Promise<void> {
+		// T067: Reverse lookup - find all sources hosted by this publisher
+		if (options.includeReverseRelationships) {
+			try {
+				const hostOrgLimit = getRelationshipLimit(options, RelationType.HOST_ORGANIZATION)
+
+				const hostedSources = await this.client.sources({
+					filter: { 'host_organization.id': publisherId },
+					per_page: hostOrgLimit,
+				})
+
+				const sourceResults = Array.isArray(hostedSources.results) ? hostedSources.results : []
+
+				for (const source of sourceResults) {
+					const sourceRecord = source as Record<string, unknown>
+					const sourceId = extractOpenAlexId(String(sourceRecord.id))
+
+					// Validate source ID before creating edge
+					if (!validateOpenAlexId(sourceId)) {
+						logger.warn(
+							"provider",
+							"Invalid source ID, skipping",
+							{ publisherId, sourceId: sourceRecord.id },
+							"OpenAlexProvider"
+						)
+						continue
+					}
+
+					// Create source node
+					const sourceNode: GraphNode = {
+						id: sourceId,
+						entityType: "sources",
+						entityId: sourceId,
+						label: this.extractLabel(sourceRecord, "sources"),
+						x: Math.random() * 800,
+						y: Math.random() * 600,
+						externalIds: this.extractExternalIds(sourceRecord, "sources"),
+						entityData: sourceRecord,
+					}
+
+					nodes.push(sourceNode)
+
+					// Create HOST_ORGANIZATION edge (inbound)
+					edges.push({
+						id: createCanonicalEdgeId(sourceId, publisherId, RelationType.HOST_ORGANIZATION),
+						source: sourceId,
+						target: publisherId,
+						type: RelationType.HOST_ORGANIZATION,
+						direction: 'inbound',
+						metadata: {},
+					})
+				}
+			} catch (error) {
+				logger.warn(
+					"provider",
+					`Failed to fetch sources for publisher ${publisherId}`,
+					{ error },
+					"OpenAlexProvider"
+				)
+			}
+		}
+
+		// T068: Parent publisher relationship
+		const parentPublisherUrl = publisherData.parent_publisher as string | null
+		if (parentPublisherUrl) {
+			const parentId = extractOpenAlexId(parentPublisherUrl)
+
+			// Validate parent publisher ID before creating edge
+			if (validateOpenAlexId(parentId)) {
+				try {
+					// Fetch parent publisher data to create node
+					const parentData = await this.fetchEntityDataWithCache(
+						parentId,
+						"publishers",
+						{
+							...context,
+							depth: (context.depth || 0) + 1,
+						}
+					)
+
+					// Create parent publisher node
+					const parentNode: GraphNode = {
+						id: parentId,
+						entityType: "publishers",
+						entityId: parentId,
+						label: this.extractLabel(parentData, "publishers"),
+						x: Math.random() * 800,
+						y: Math.random() * 600,
+						externalIds: this.extractExternalIds(parentData, "publishers"),
+						entityData: parentData,
+					}
+
+					nodes.push(parentNode)
+
+					// Create PUBLISHER_CHILD_OF edge
+					edges.push({
+						id: createCanonicalEdgeId(publisherId, parentId, RelationType.PUBLISHER_CHILD_OF),
+						source: publisherId,
+						target: parentId,
+						type: RelationType.PUBLISHER_CHILD_OF,
+						direction: 'outbound',
+						metadata: {},
+					})
+				} catch (error) {
+					logger.warn(
+						"provider",
+						`Failed to fetch parent publisher ${parentId}`,
+						{ error, publisherId },
+						"OpenAlexProvider"
+					)
+				}
+			} else {
+				logger.warn(
+					"provider",
+					"Invalid parent publisher ID, skipping",
+					{ publisherId, parentId: parentPublisherUrl },
+					"OpenAlexProvider"
+				)
+			}
+		}
+
+		// T069: Publisher lineage (similar to institutions)
+		const lineageArray = (publisherData.lineage as string[]) || []
+		const lineageLimit = getRelationshipLimit(options, RelationType.LINEAGE)
+
+		// Process lineage array (skip self at index 0, process ancestors starting at index 1)
+		for (let i = 1; i < Math.min(lineageArray.length, lineageLimit + 1); i++) {
+			const ancestorIdOrUrl = lineageArray[i]
+
+			// Extract bare ID from URL or use as-is
+			const ancestorId = extractOpenAlexId(ancestorIdOrUrl)
+
+			// Validate ancestor publisher ID before creating edge
+			if (!validateOpenAlexId(ancestorId)) {
+				logger.warn(
+					"provider",
+					"Invalid ancestor publisher ID, skipping",
+					{ publisherId, ancestorId: ancestorIdOrUrl },
+					"OpenAlexProvider"
+				)
+				continue
+			}
+
+			// Fetch ancestor publisher data to create node
+			try {
+				const ancestorData = await this.fetchEntityDataWithCache(
+					ancestorId,
+					"publishers",
+					{
+						...context,
+						depth: (context.depth || 0) + 1,
+					}
+				)
+
+				// Create ancestor publisher node
+				const ancestorNode: GraphNode = {
+					id: ancestorId,
+					entityType: "publishers",
+					entityId: ancestorId,
+					label: this.extractLabel(ancestorData, "publishers"),
+					x: Math.random() * 800,
+					y: Math.random() * 600,
+					externalIds: this.extractExternalIds(ancestorData, "publishers"),
+					entityData: ancestorData,
+				}
+
+				nodes.push(ancestorNode)
+
+				// Create LINEAGE edge: descendant → ancestor
+				const edge: GraphEdge = {
+					id: createCanonicalEdgeId(publisherId, ancestorId, RelationType.LINEAGE),
+					source: publisherId,
+					target: ancestorId,
+					type: RelationType.LINEAGE,
+					direction: 'outbound',
+					metadata: {
+						lineage_level: i, // 1-based index (1 for immediate parent, 2 for grandparent, etc.)
+					},
+				}
+
+				edges.push(edge)
+			} catch (error) {
+				logger.warn(
+					"provider",
+					`Failed to fetch ancestor publisher ${ancestorId}`,
+					{ error, publisherId },
+					"OpenAlexProvider"
+				)
+			}
 		}
 	}
 
