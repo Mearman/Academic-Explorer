@@ -96,7 +96,7 @@ pnpm test packages/graph -- --testNamePattern="direction"
 
 ```bash
 # Full workflow tests (work expansion → author expansion)
-pnpm test packages/graph -- --testPathPattern="integration"
+pnpm test packages/graph -- integration
 ```
 
 ### Watch Mode (Development)
