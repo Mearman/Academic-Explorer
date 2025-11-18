@@ -312,7 +312,7 @@ export class GraphAnalyzer {
 		// Fetch entity and its citation network
 		const _entity = await provider.fetchEntity(nodeId)
 		const expansion = await provider.expandEntity(nodeId, {
-			relationshipTypes: [RelationType.REFERENCES],
+			relationshipTypes: [RelationType.REFERENCE],
 			maxDepth: 2,
 			limit: options.maxNetworkSize || 1000,
 		})
@@ -325,7 +325,7 @@ export class GraphAnalyzer {
 
 		// Calculate basic citation counts
 		const citationEdges = graphEdges.filter(
-			(e) => e.type === RelationType.REFERENCES && e.target === nodeId
+			(e) => e.type === RelationType.REFERENCE && e.target === nodeId
 		)
 		const citationSources = citationEdges.map((e) => e.source)
 
@@ -489,7 +489,7 @@ export class GraphAnalyzer {
 
 		// Expand to get authored works and co-authors
 		const expansion = await provider.expandEntity(authorId, {
-			relationshipTypes: [RelationType.AUTHORED, RelationType.AFFILIATED],
+			relationshipTypes: [RelationType.AUTHORSHIP, RelationType.AFFILIATION],
 			maxDepth: 2,
 			limit: options.maxNetworkSize || 1000,
 		})
@@ -502,7 +502,7 @@ export class GraphAnalyzer {
 
 		// Find all works authored by this person
 		const authoredWorks = graphEdges
-			.filter((e) => e.type === RelationType.AUTHORED && e.source === authorId)
+			.filter((e) => e.type === RelationType.AUTHORSHIP && e.source === authorId)
 			.map((e) => e.target)
 
 		// Get collaboration data for each work
@@ -1112,12 +1112,12 @@ export class GraphAnalyzer {
 			try {
 				const work = await provider.fetchEntity(workId)
 				const expansion = await provider.expandEntity(workId, {
-					relationshipTypes: [RelationType.AUTHORED],
+					relationshipTypes: [RelationType.AUTHORSHIP],
 					maxDepth: 1,
 				})
 
 				const collaborators = expansion.edges
-					.filter((e) => e.type === (RelationType.AUTHORED as string) && e.source !== authorId)
+					.filter((e) => e.type === (RelationType.AUTHORSHIP as string) && e.source !== authorId)
 					.map((e) => e.source)
 
 				collaborationData.push({

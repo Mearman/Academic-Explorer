@@ -285,20 +285,20 @@ export const ENTITY_PROPERTIES: Record<string, PropertyDefinition[]> = {
 
 // Default expansion settings for different targets - no filters, sorting, or limits by default
 export const DEFAULT_EXPANSION_SETTINGS: Record<string, ExpansionSettings> = {
-	[RelationType.REFERENCES]: {
-		target: RelationType.REFERENCES,
+	[RelationType.REFERENCE]: {
+		target: RelationType.REFERENCE,
 		name: "References",
 	},
-	[RelationType.AUTHORED]: {
-		target: RelationType.AUTHORED,
+	[RelationType.AUTHORSHIP]: {
+		target: RelationType.AUTHORSHIP,
 		name: "Works",
 	},
-	[RelationType.AFFILIATED]: {
-		target: RelationType.AFFILIATED,
+	[RelationType.AFFILIATION]: {
+		target: RelationType.AFFILIATION,
 		name: "Institutions",
 	},
-	[RelationType.PUBLISHED_IN]: {
-		target: RelationType.PUBLISHED_IN,
+	[RelationType.PUBLICATION]: {
+		target: RelationType.PUBLICATION,
 		name: "Sources",
 	},
 	[RelationType.FUNDED_BY]: {

@@ -281,8 +281,8 @@ describe("RelationshipDetectionService", () => {
       expect(result[0]).toEqual({
         sourceNodeId: "https://openalex.org/A456",
         targetNodeId: "https://openalex.org/W123",
-        relationType: RelationType.AUTHORED,
-        label: "authored",
+        relationType: RelationType.AUTHORSHIP,
+        label: "AUTHORSHIP",
         weight: 1.0,
       });
     });
@@ -321,8 +321,8 @@ describe("RelationshipDetectionService", () => {
       expect(result[0]).toEqual({
         sourceNodeId: "https://openalex.org/W123",
         targetNodeId: "https://openalex.org/S789",
-        relationType: RelationType.PUBLISHED_IN,
-        label: "published in",
+        relationType: RelationType.PUBLICATION,
+        label: "PUBLICATION",
       });
     });
 
@@ -355,8 +355,8 @@ describe("RelationshipDetectionService", () => {
       expect(result[0]).toEqual({
         sourceNodeId: "https://openalex.org/W123",
         targetNodeId: "https://openalex.org/W456", // Use actual node ID (full URL format)
-        relationType: RelationType.REFERENCES,
-        label: "references",
+        relationType: RelationType.REFERENCE,
+        label: "REFERENCE",
       });
     });
 
@@ -400,7 +400,7 @@ describe("RelationshipDetectionService", () => {
 
       expect(result).toHaveLength(2);
       expect(
-        result.every((r) => r.relationType === RelationType.REFERENCES),
+        result.every((r) => r.relationType === RelationType.REFERENCE),
       ).toBe(true);
       // targetNodeId should be the actual node ID (full URL format)
       expect(result.map((r) => r.targetNodeId)).toEqual([
@@ -451,8 +451,8 @@ describe("RelationshipDetectionService", () => {
       expect(result[0]).toEqual({
         sourceNodeId: "https://openalex.org/A123",
         targetNodeId: "https://openalex.org/I456",
-        relationType: RelationType.AFFILIATED,
-        label: "affiliated with",
+        relationType: RelationType.AFFILIATION,
+        label: "AFFILIATION",
       });
     });
   });
@@ -463,8 +463,8 @@ describe("RelationshipDetectionService", () => {
         {
           sourceNodeId: "A123",
           targetNodeId: "W456",
-          relationType: RelationType.AUTHORED,
-          label: "authored",
+          relationType: RelationType.AUTHORSHIP,
+          label: "AUTHORSHIP",
           weight: 1.0,
         },
       ];
@@ -475,11 +475,11 @@ describe("RelationshipDetectionService", () => {
 
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual({
-        id: "A123-authored-W456",
+        id: "A123-AUTHORSHIP-W456",
         source: "A123",
         target: "W456",
         type: "authored",
-        label: "authored",
+        label: "AUTHORSHIP",
         weight: 1.0,
       });
     });
@@ -721,8 +721,8 @@ describe("RelationshipDetectionService", () => {
       });
 
       expect(result).toHaveLength(2);
-      expect(result[0].relationType).toBe(RelationType.AUTHORED);
-      expect(result[1].relationType).toBe(RelationType.AUTHORED);
+      expect(result[0].relationType).toBe(RelationType.AUTHORSHIP);
+      expect(result[1].relationType).toBe(RelationType.AUTHORSHIP);
       expect(result.map((r) => r.sourceNodeId)).toEqual([
         "https://openalex.org/A456",
         "https://openalex.org/A789",
@@ -769,7 +769,7 @@ describe("RelationshipDetectionService", () => {
 
       expect(result).toHaveLength(2);
       expect(
-        result.every((r) => r.relationType === RelationType.REFERENCES),
+        result.every((r) => r.relationType === RelationType.REFERENCE),
       ).toBe(true);
       expect(result.map((r) => r.targetNodeId)).toEqual([
         "https://openalex.org/W456", // Use entity IDs as per the fixed pattern
@@ -851,7 +851,7 @@ describe("RelationshipDetectionService", () => {
       });
 
       expect(result).toHaveLength(1);
-      expect(result[0].relationType).toBe(RelationType.AUTHORED);
+      expect(result[0].relationType).toBe(RelationType.AUTHORSHIP);
       expect(result[0].sourceNodeId).toBe("https://openalex.org/A456");
       expect(result[0].targetNodeId).toBe("https://openalex.org/W123");
     });
@@ -907,7 +907,7 @@ describe("RelationshipDetectionService", () => {
 
       expect(result).toHaveLength(2);
       expect(
-        result.every((r) => r.relationType === RelationType.AFFILIATED),
+        result.every((r) => r.relationType === RelationType.AFFILIATION),
       ).toBe(true);
       expect(result.map((r) => r.targetNodeId)).toEqual([
         "https://openalex.org/I456",
@@ -1039,15 +1039,15 @@ describe("RelationshipDetectionService", () => {
         {
           sourceNodeId: "A123",
           targetNodeId: "W456",
-          relationType: RelationType.AUTHORED,
-          label: "authored",
+          relationType: RelationType.AUTHORSHIP,
+          label: "AUTHORSHIP",
           weight: 1.0,
         },
         {
           sourceNodeId: "W456",
           targetNodeId: "S789",
-          relationType: RelationType.PUBLISHED_IN,
-          label: "published in",
+          relationType: RelationType.PUBLICATION,
+          label: "PUBLICATION",
           weight: 0.8,
         },
       ];
@@ -1066,8 +1066,8 @@ describe("RelationshipDetectionService", () => {
         {
           sourceNodeId: "A123",
           targetNodeId: "W456",
-          relationType: RelationType.AUTHORED,
-          label: "authored",
+          relationType: RelationType.AUTHORSHIP,
+          label: "AUTHORSHIP",
           weight: 1.0,
           metadata: { collaborationType: "primary" },
         },
@@ -1086,14 +1086,14 @@ describe("RelationshipDetectionService", () => {
         {
           sourceNodeId: "A123",
           targetNodeId: "W456",
-          relationType: RelationType.AUTHORED,
-          label: "authored",
+          relationType: RelationType.AUTHORSHIP,
+          label: "AUTHORSHIP",
         },
         {
           sourceNodeId: "A789",
           targetNodeId: "W456",
-          relationType: RelationType.AUTHORED,
-          label: "authored",
+          relationType: RelationType.AUTHORSHIP,
+          label: "AUTHORSHIP",
         },
       ];
 
@@ -1102,8 +1102,8 @@ describe("RelationshipDetectionService", () => {
       );
 
       expect(result).toHaveLength(2);
-      expect(result[0].id).toBe("A123-authored-W456");
-      expect(result[1].id).toBe("A789-authored-W456");
+      expect(result[0].id).toBe("A123-AUTHORSHIP-W456");
+      expect(result[1].id).toBe("A789-AUTHORSHIP-W456");
       expect(result[0].id).not.toBe(result[1].id);
     });
   });

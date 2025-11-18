@@ -591,8 +591,8 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       expect(detectedEdges[0]).toMatchObject({
         source: authorId,
         target: workId,
-        type: RelationType.AUTHORED,
-        label: "authored",
+        type: RelationType.AUTHORSHIP,
+        label: "authorship",
       });
 
       // Note: The RelationshipDetectionService adds edges to the store automatically
@@ -602,7 +602,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       expect(edgeValues[0]).toMatchObject({
         source: authorId,
         target: workId,
-        type: RelationType.AUTHORED,
+        type: RelationType.AUTHORSHIP,
       });
     });
 
@@ -636,8 +636,8 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       expect(detectedEdges[0]).toMatchObject({
         source: workId,
         target: sourceId,
-        type: RelationType.PUBLISHED_IN,
-        label: "published in",
+        type: RelationType.PUBLICATION,
+        label: "publication",
       });
     });
 
@@ -707,15 +707,15 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       expect(citationEdge1).toMatchObject({
         source: citingWorkId,
         target: referencedWorkId1,
-        type: RelationType.REFERENCES,
-        label: "references",
+        type: RelationType.REFERENCE,
+        label: "reference",
       });
 
       expect(citationEdge2).toMatchObject({
         source: citingWorkId,
         target: referencedWorkId2,
-        type: RelationType.REFERENCES,
-        label: "references",
+        type: RelationType.REFERENCE,
+        label: "reference",
       });
     });
 
@@ -753,8 +753,8 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       expect(detectedEdges[0]).toMatchObject({
         source: authorId,
         target: institutionId,
-        type: RelationType.AFFILIATED,
-        label: "affiliated with",
+        type: RelationType.AFFILIATION,
+        label: "affiliation",
       });
     });
   });
@@ -809,7 +809,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       // Check for authorship edge
       const authorshipEdge = detectedEdges.find(
         (edge) =>
-          edge.type === RelationType.AUTHORED &&
+          edge.type === RelationType.AUTHORSHIP &&
           edge.source === authorId &&
           edge.target === workId,
       );
@@ -818,7 +818,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       // Check for affiliation edge
       const affiliationEdge = detectedEdges.find(
         (edge) =>
-          edge.type === RelationType.AFFILIATED &&
+          edge.type === RelationType.AFFILIATION &&
           edge.source === authorId &&
           edge.target === institutionId,
       );
@@ -827,7 +827,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       // Check for publication edge
       const publicationEdge = detectedEdges.find(
         (edge) =>
-          edge.type === RelationType.PUBLISHED_IN &&
+          edge.type === RelationType.PUBLICATION &&
           edge.source === workId &&
           edge.target === sourceId,
       );
@@ -879,7 +879,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       // Verify citation edge was created between the two works
       const citationEdge = detectedEdges.find(
         (edge) =>
-          edge.type === RelationType.REFERENCES &&
+          edge.type === RelationType.REFERENCE &&
           edge.source === citingWorkId &&
           edge.target === referencedWorkId,
       );
@@ -887,8 +887,8 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       expect(citationEdge).toMatchObject({
         source: citingWorkId,
         target: referencedWorkId,
-        type: RelationType.REFERENCES,
-        label: "references",
+        type: RelationType.REFERENCE,
+        label: "reference",
       });
     });
   });
@@ -932,7 +932,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
       expect(edgeValues[0]).toMatchObject({
         source: authorId,
         target: workId,
-        type: RelationType.AUTHORED,
+        type: RelationType.AUTHORSHIP,
       });
     });
 
@@ -969,7 +969,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 
       // Should create exactly 2 authorship edges (one for each work)
       const authorshipEdges = detectedEdges.filter(
-        (edge) => edge.type === RelationType.AUTHORED,
+        (edge) => edge.type === RelationType.AUTHORSHIP,
       );
       expect(authorshipEdges).toHaveLength(2);
 
@@ -1112,7 +1112,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 
       // Should detect multiple citation edges
       const citationEdges = detectedEdges.filter(
-        (edge) => edge.type === RelationType.REFERENCES,
+        (edge) => edge.type === RelationType.REFERENCE,
       );
       expect(citationEdges.length).toBeGreaterThan(0);
 

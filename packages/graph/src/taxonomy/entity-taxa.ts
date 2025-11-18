@@ -84,23 +84,36 @@ export const ENTITY_TAXONOMY: Record<EntityType, Taxon> = {
  * Taxonomy definitions for all relation types
  */
 export const RELATION_TAXONOMY: Record<RelationType, Taxon> = {
-	[RelationType.AUTHORED]: {
-		displayName: "Authored",
+	// Core relationships (noun form - preferred)
+	[RelationType.AUTHORSHIP]: {
+		displayName: "Authorship",
 		description: "Author contributed to or created the work",
 		color: "green",
-		plural: "Authored",
+		plural: "Authorships",
 	},
-	[RelationType.AFFILIATED]: {
-		displayName: "Affiliated",
+	[RelationType.AFFILIATION]: {
+		displayName: "Affiliation",
 		description: "Author is affiliated with an institution",
 		color: "orange",
-		plural: "Affiliated",
+		plural: "Affiliations",
 	},
-	[RelationType.PUBLISHED_IN]: {
-		displayName: "Published In",
+	[RelationType.PUBLICATION]: {
+		displayName: "Publication",
 		description: "Work was published in a source",
 		color: "purple",
-		plural: "Published In",
+		plural: "Publications",
+	},
+	[RelationType.REFERENCE]: {
+		displayName: "Reference",
+		description: "Work cites or references another work",
+		color: "blue",
+		plural: "References",
+	},
+	[RelationType.TOPIC]: {
+		displayName: "Topic",
+		description: "Work is associated with a research topic",
+		color: "red",
+		plural: "Topics",
 	},
 	[RelationType.FUNDED_BY]: {
 		displayName: "Funded By",
@@ -108,35 +121,25 @@ export const RELATION_TAXONOMY: Record<RelationType, Taxon> = {
 		color: "cyan",
 		plural: "Funded By",
 	},
-	[RelationType.REFERENCES]: {
-		displayName: "References",
-		description: "Work cites or references another work",
-		color: "blue",
-		plural: "References",
-	},
-	[RelationType.SOURCE_PUBLISHED_BY]: {
-		displayName: "Published By",
+	[RelationType.HOST_ORGANIZATION]: {
+		displayName: "Host Organization",
 		description: "Source is published by a publisher",
 		color: "teal",
-		plural: "Published By",
+		plural: "Host Organizations",
 	},
-	[RelationType.INSTITUTION_CHILD_OF]: {
-		displayName: "Child Of",
+	[RelationType.LINEAGE]: {
+		displayName: "Lineage",
 		description: "Institution is a subsidiary or department of another institution",
 		color: "orange",
-		plural: "Children Of",
+		plural: "Lineages",
 	},
+
+	// Additional relationship types
 	[RelationType.PUBLISHER_CHILD_OF]: {
 		displayName: "Child Of",
 		description: "Publisher is a subsidiary of another publisher",
 		color: "teal",
 		plural: "Children Of",
-	},
-	[RelationType.WORK_HAS_TOPIC]: {
-		displayName: "Has Topic",
-		description: "Work is associated with a research topic",
-		color: "red",
-		plural: "Has Topics",
 	},
 	[RelationType.WORK_HAS_KEYWORD]: {
 		displayName: "Has Keyword",

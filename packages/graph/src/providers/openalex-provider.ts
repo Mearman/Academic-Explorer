@@ -551,7 +551,8 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 					id: `${workId}-authored-${authorship.author.id}`,
 					source: authorship.author.id,
 					target: workId,
-					type: RelationType.AUTHORED,
+					type: RelationType.AUTHORSHIP,
+				direction: 'outbound',
 				})
 			}
 		}
@@ -575,7 +576,8 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 				id: `${workId}-published-in-${primaryLocation.source.id}`,
 				source: workId,
 				target: primaryLocation.source.id,
-				type: RelationType.PUBLISHED_IN,
+				type: RelationType.PUBLICATION,
+				direction: 'outbound',
 			})
 		}
 	}
@@ -631,7 +633,8 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 					id: `${authorId}-authored-${workRecord.id}`,
 					source: authorId,
 					target: String(workRecord.id),
-					type: RelationType.AUTHORED,
+					type: RelationType.AUTHORSHIP,
+				direction: 'outbound',
 				})
 			}
 		} catch (error) {
@@ -690,7 +693,8 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 					id: `${workRecord.id}-published-in-${sourceId}`,
 					source: String(workRecord.id),
 					target: sourceId,
-					type: RelationType.PUBLISHED_IN,
+					type: RelationType.PUBLICATION,
+				direction: 'outbound',
 				})
 			}
 		} catch (error) {
@@ -748,7 +752,8 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 					id: `${authorRecord.id}-affiliated-${institutionId}`,
 					source: String(authorRecord.id),
 					target: institutionId,
-					type: RelationType.AFFILIATED,
+					type: RelationType.AFFILIATION,
+				direction: 'outbound',
 				})
 			}
 		} catch (error) {
@@ -812,7 +817,8 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 					id: `${workRecord.id}-has-topic-${topicId}`,
 					source: String(workRecord.id),
 					target: topicId,
-					type: RelationType.WORK_HAS_TOPIC,
+					type: RelationType.TOPIC,
+				direction: 'outbound',
 				})
 			}
 		} catch (error) {
@@ -935,7 +941,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 					case "search":
 						return baseFields
 					case "expand":
-						return [...baseFields, ...this.getExpansionFields(entityType, RelationType.AUTHORED)]
+						return [...baseFields, ...this.getExpansionFields(entityType, RelationType.AUTHORSHIP)]
 					case "traverse":
 						return baseFields
 					default:
@@ -973,7 +979,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 	private getExpansionFields(entityType: EntityType, relationType: RelationType): string[] {
 		switch (entityType) {
 			case "works":
-				if (relationType === RelationType.AUTHORED) {
+				if (relationType === RelationType.AUTHORSHIP) {
 					return ["authorships.author.id", "authorships.author.display_name"]
 				}
 				return ["primary_location.source.id", "topics.id"]
