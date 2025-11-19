@@ -31,6 +31,12 @@ export interface UseEntityRelationshipsResult {
   /** Outgoing relationship sections (this entity → other entities) */
   outgoing: RelationshipSection[];
 
+  /** Total count of incoming relationships (sum of all section totals) */
+  incomingCount: number;
+
+  /** Total count of outgoing relationships (sum of all section totals) */
+  outgoingCount: number;
+
   /** Loading state */
   loading: boolean;
 
@@ -114,6 +120,15 @@ export function useEntityRelationships(
     return filtered;
   }, [allOutgoing, filter]);
 
+  // Calculate total counts (sum of all section totalCounts)
+  const incomingCount = useMemo(() => {
+    return incoming.reduce((sum, section) => sum + section.totalCount, 0);
+  }, [incoming]);
+
+  const outgoingCount = useMemo(() => {
+    return outgoing.reduce((sum, section) => sum + section.totalCount, 0);
+  }, [outgoing]);
+
   // Convert graph error to RelationshipError if needed
   const relationshipError: RelationshipError | undefined = graphError
     ? {
@@ -127,6 +142,8 @@ export function useEntityRelationships(
   return {
     incoming,
     outgoing,
+    incomingCount,
+    outgoingCount,
     loading: isLoading,
     error: relationshipError,
   };

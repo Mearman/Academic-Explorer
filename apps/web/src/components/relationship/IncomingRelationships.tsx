@@ -55,7 +55,7 @@ export const IncomingRelationships: React.FC<IncomingRelationshipsProps> = ({
     }
   }, [selectedTypes, storageKey]);
 
-  const { incoming, loading, error } = useEntityRelationships(
+  const { incoming, incomingCount, outgoingCount, loading, error } = useEntityRelationships(
     entityId,
     entityType,
     {
