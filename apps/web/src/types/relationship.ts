@@ -220,13 +220,13 @@ export interface RelationshipSection {
  */
 export interface RelationshipFilter {
   /** Direction filter: show outbound, inbound, or both */
-  direction: EdgeDirectionFilter;
+  direction?: EdgeDirectionFilter;
 
   /** Relationship types to display (empty = show all) */
-  types: RelationType[];
+  types?: RelationType[];
 
-  /** Whether to show self-referencing relationships */
-  showSelfReferences: boolean;
+  /** Whether to show self-referencing relationships (Phase 6) */
+  showSelfReferences?: boolean;
 }
 
 /**

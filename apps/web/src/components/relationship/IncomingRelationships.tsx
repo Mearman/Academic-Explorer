@@ -3,14 +3,16 @@
  * Displays all incoming relationship sections for an entity
  *
  * @module IncomingRelationships
- * @see specs/016-entity-relationship-viz/spec.md (User Story 1)
+ * @see specs/016-entity-relationship-viz/spec.md (User Story 1, User Story 3)
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Stack, Title, Paper, Text } from '@mantine/core';
 import type { EntityType } from '@academic-explorer/types';
+import { RelationType } from '@academic-explorer/graph';
 import { useEntityRelationships } from '@/hooks/use-entity-relationships';
 import { RelationshipSection } from './RelationshipSection';
+import { RelationshipTypeFilter } from './RelationshipTypeFilter';
 
 export interface IncomingRelationshipsProps {
   /** The entity whose incoming relationships to display */
@@ -28,7 +30,39 @@ export const IncomingRelationships: React.FC<IncomingRelationshipsProps> = ({
   entityId,
   entityType,
 }) => {
-  const { incoming, loading, error } = useEntityRelationships(entityId, entityType);
+  // Filter state with localStorage persistence (T047)
+  const storageKey = `entity-relationship-filter-${entityType}-${entityId}`;
+
+  const [selectedTypes, setSelectedTypes] = useState<RelationType[]>(() => {
+    try {
+      const stored = localStorage.getItem(storageKey);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        return Array.isArray(parsed) ? parsed : [];
+      }
+    } catch (error) {
+      // Ignore parse errors, use empty array
+    }
+    return [];
+  });
+
+  // Persist filter state to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(selectedTypes));
+    } catch (error) {
+      // Ignore storage errors (e.g., quota exceeded)
+    }
+  }, [selectedTypes, storageKey]);
+
+  const { incoming, loading, error } = useEntityRelationships(
+    entityId,
+    entityType,
+    {
+      types: selectedTypes,
+      direction: 'inbound',
+    }
+  );
 
   // Don't render if loading or error
   if (loading) {
@@ -55,6 +89,13 @@ export const IncomingRelationships: React.FC<IncomingRelationshipsProps> = ({
       <Title order={2} size="h3">
         Incoming Relationships
       </Title>
+
+      <RelationshipTypeFilter
+        selectedTypes={selectedTypes}
+        onChange={setSelectedTypes}
+        title="Filter Incoming Relationships"
+      />
+
       {incoming.map((section) => (
         <RelationshipSection key={section.id} section={section} />
       ))}
