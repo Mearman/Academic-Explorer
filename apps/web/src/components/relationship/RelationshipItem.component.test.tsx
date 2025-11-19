@@ -12,11 +12,13 @@ import { RelationshipItem } from './RelationshipItem';
 import type { RelationshipItem as RelationshipItemType } from '@/types/relationship';
 import { RelationType } from '@academic-explorer/graph';
 
-// Mock useEntityInteraction hook
+// Mock useEntityInteraction hook - create a spy that can be configured per test
+const mockHandleSidebarEntityClick = vi.fn();
+
 vi.mock('@/hooks/use-entity-interaction', () => ({
-  useEntityInteraction: () => ({
-    handleSidebarEntityClick: vi.fn(),
-  }),
+  useEntityInteraction: vi.fn(() => ({
+    handleSidebarEntityClick: mockHandleSidebarEntityClick,
+  })),
 }));
 
 // Test wrapper with MantineProvider
@@ -118,12 +120,6 @@ describe('RelationshipItem', () => {
   });
 
   it('should handle click navigation for outbound relationships', async () => {
-    const { useEntityInteraction } = await import('@/hooks/use-entity-interaction');
-    const mockHandleClick = vi.fn();
-    vi.mocked(useEntityInteraction).mockReturnValue({
-      handleSidebarEntityClick: mockHandleClick,
-    } as never);
-
     const user = userEvent.setup();
 
     render(
@@ -136,16 +132,10 @@ describe('RelationshipItem', () => {
     await user.click(link);
 
     // Should navigate to target entity for outbound relationships
-    expect(mockHandleClick).toHaveBeenCalledWith({ entityId: 'A456', entityType: 'authors' });
+    expect(mockHandleSidebarEntityClick).toHaveBeenCalledWith({ entityId: 'A456', entityType: 'authors' });
   });
 
   it('should handle click navigation for inbound relationships', async () => {
-    const { useEntityInteraction } = await import('@/hooks/use-entity-interaction');
-    const mockHandleClick = vi.fn();
-    vi.mocked(useEntityInteraction).mockReturnValue({
-      handleSidebarEntityClick: mockHandleClick,
-    } as never);
-
     const user = userEvent.setup();
 
     const inboundItem: RelationshipItemType = {
@@ -163,6 +153,6 @@ describe('RelationshipItem', () => {
     await user.click(link);
 
     // Should navigate to source entity for inbound relationships
-    expect(mockHandleClick).toHaveBeenCalledWith({ entityId: 'W123', entityType: 'works' });
+    expect(mockHandleSidebarEntityClick).toHaveBeenCalledWith({ entityId: 'W123', entityType: 'works' });
   });
 });

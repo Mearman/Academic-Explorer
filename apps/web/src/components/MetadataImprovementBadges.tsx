@@ -10,8 +10,7 @@
  * - 013-metadata-improvement-badges
  */
 
-import { Group } from "@mantine/core";
-import { Badge } from "@academic-explorer/ui";
+import { Group, Badge } from "@mantine/core";
 import {
 	detectMetadataImprovements,
 	type WorkMetadata,
@@ -31,19 +30,19 @@ export interface MetadataImprovementBadgesProps {
 }
 
 /**
- * Maps improvement types to badge variants
+ * Maps improvement types to badge colors
  * Uses semantic colors for different improvement types
  */
-const IMPROVEMENT_VARIANT_MAP: Record<
+const IMPROVEMENT_COLOR_MAP: Record<
 	MetadataImprovement["type"],
-	"success" | "info" | "warning"
+	string
 > = {
-	references: "info", // Blue for references
-	locations: "success", // Green for locations
-	language: "info",
-	topics: "info",
-	keywords: "info",
-	license: "info",
+	references: "blue", // Blue for references
+	locations: "green", // Green for locations
+	language: "blue",
+	topics: "blue",
+	keywords: "blue",
+	license: "blue",
 };
 
 /**
@@ -94,9 +93,9 @@ export function MetadataImprovementBadges({
 			{improvements.map((improvement, index) => (
 				<Badge
 					key={`${improvement.type}-${index}`}
-					variant={IMPROVEMENT_VARIANT_MAP[improvement.type]}
+					color={IMPROVEMENT_COLOR_MAP[improvement.type]}
 					size="sm"
-					style="light"
+					variant="light"
 					data-testid={`improvement-badge-${improvement.type}`}
 				>
 					{improvement.description}
