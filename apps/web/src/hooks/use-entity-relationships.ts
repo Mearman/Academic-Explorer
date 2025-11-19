@@ -22,6 +22,7 @@ import {
   DEFAULT_PAGE_SIZE,
   RELATIONSHIP_TYPE_LABELS,
 } from '@/types/relationship';
+import { filterByType, filterByDirection } from '@/utils/relationship-filters';
 
 export interface UseEntityRelationshipsResult {
   /** Incoming relationship sections (other entities → this entity) */
@@ -70,13 +71,48 @@ export function useEntityRelationships(
   }, [entityEdges, entityId]);
 
   // Group edges by RelationType and create RelationshipSection objects
-  const incoming = useMemo(() => {
+  const allIncoming = useMemo(() => {
     return createRelationshipSections(incomingEdges, 'inbound', entityId, nodes);
   }, [incomingEdges, entityId, nodes]);
 
-  const outgoing = useMemo(() => {
+  const allOutgoing = useMemo(() => {
     return createRelationshipSections(outgoingEdges, 'outbound', entityId, nodes);
   }, [outgoingEdges, entityId, nodes]);
+
+  // Apply filters if provided
+  const incoming = useMemo(() => {
+    if (!filter) return allIncoming;
+    let filtered = allIncoming;
+
+    // Apply type filter
+    if (filter.types && filter.types.length > 0) {
+      filtered = filterByType(filtered, filter.types);
+    }
+
+    // Apply direction filter
+    if (filter.direction && filter.direction !== 'both') {
+      filtered = filterByDirection(filtered, filter.direction);
+    }
+
+    return filtered;
+  }, [allIncoming, filter]);
+
+  const outgoing = useMemo(() => {
+    if (!filter) return allOutgoing;
+    let filtered = allOutgoing;
+
+    // Apply type filter
+    if (filter.types && filter.types.length > 0) {
+      filtered = filterByType(filtered, filter.types);
+    }
+
+    // Apply direction filter
+    if (filter.direction && filter.direction !== 'both') {
+      filtered = filterByDirection(filtered, filter.direction);
+    }
+
+    return filtered;
+  }, [allOutgoing, filter]);
 
   // Convert graph error to RelationshipError if needed
   const relationshipError: RelationshipError | undefined = graphError
