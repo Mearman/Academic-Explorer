@@ -11,6 +11,7 @@ import { useUrlNormalization } from "@/hooks/use-url-normalization";
 import { usePrettyUrl } from "@/hooks/use-pretty-url";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { logger } from "@academic-explorer/utils/logger";
+import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
 
 function WorkRoute() {
   const { _splat: rawWorkId } = useParams({ from: "/works/$_" });
@@ -212,7 +213,9 @@ function WorkRoute() {
       viewMode={viewMode}
       onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
       data={work as Record<string, unknown>}
-    />
+    >
+      <IncomingRelationships entityId={normalizedWorkId} entityType="works" />
+    </EntityDetailLayout>
   );
 }
 

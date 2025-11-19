@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
 import { usePrettyUrl } from "@/hooks/use-pretty-url";
 import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS } from "@/components/entity-detail";
+import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
 
 function SourceRoute() {
   const { sourceId: rawSourceId } = useParams({ strict: false });
@@ -62,8 +63,9 @@ function SourceRoute() {
       selectFields={selectFields || []}
       viewMode={viewMode}
       onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
-      data={source as Record<string, unknown>}
-    />
+      data={source as Record<string, unknown>}>
+      <IncomingRelationships entityId={sourceId} entityType="sources" />
+    </EntityDetailLayout>
   );
 }
 

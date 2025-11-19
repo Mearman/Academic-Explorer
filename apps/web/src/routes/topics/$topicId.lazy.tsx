@@ -10,6 +10,7 @@ import { EntityDetailLayout } from "@/components/entity-detail/EntityDetailLayou
 import { LoadingState } from "@/components/entity-detail/LoadingState";
 import { ErrorState } from "@/components/entity-detail/ErrorState";
 import { ENTITY_TYPE_CONFIGS } from "@/components/entity-detail/EntityTypeConfig";
+import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
 
 function TopicRoute() {
   const { topicId: rawTopicId } = useParams({ strict: false });
@@ -69,8 +70,9 @@ function TopicRoute() {
       selectFields={selectFields || []}
       viewMode={viewMode}
       onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
-      data={topic}
-    />
+      data={topic}>
+      <IncomingRelationships entityId={topicId || ""} entityType="topics" />
+    </EntityDetailLayout>
   );
 }
 
