@@ -6,7 +6,7 @@
  * @see specs/016-entity-relationship-viz/data-model.md
  */
 
-import { useMemo, useContext } from 'react';
+import { useMemo, useContext, useRef, useEffect } from 'react';
 import { GraphContext } from '@/stores/graph-store';
 import type { EntityType } from '@academic-explorer/types';
 import type { GraphEdge, GraphNode } from '@academic-explorer/graph';
@@ -68,8 +68,12 @@ export function useEntityRelationships(
   const isLoading = graphContext?.state.isLoading ?? false;
   const graphError = graphContext?.state.error ?? undefined;
 
+  // Create stable string representation of edge keys for dependency tracking
+  const edgeKeys = Object.keys(edges).sort().join(',');
+  const nodeKeys = Object.keys(nodes).sort().join(',');
+
   // Convert edges Record to array
-  const edgesArray = useMemo(() => Object.values(edges), [edges]);
+  const edgesArray = useMemo(() => Object.values(edges), [edgeKeys]);
 
   // Filter edges for this entity
   const entityEdges = useMemo(() => {
@@ -88,11 +92,11 @@ export function useEntityRelationships(
   // Group edges by RelationType and create RelationshipSection objects
   const allIncoming = useMemo(() => {
     return createRelationshipSections(incomingEdges, 'inbound', entityId, nodes);
-  }, [incomingEdges, entityId, nodes]);
+  }, [incomingEdges, entityId, nodeKeys]);
 
   const allOutgoing = useMemo(() => {
     return createRelationshipSections(outgoingEdges, 'outbound', entityId, nodes);
-  }, [outgoingEdges, entityId, nodes]);
+  }, [outgoingEdges, entityId, nodeKeys]);
 
   // Apply filters if provided
   const incoming = useMemo(() => {

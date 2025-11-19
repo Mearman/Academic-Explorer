@@ -34,6 +34,7 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
 // Import after mocks
 import { useParams, useSearch } from "@tanstack/react-router";
 import AuthorRoute from "./$_.lazy";
+import { GraphProvider } from "@/stores/graph-store";
 
 // Synthetic mock data for author
 const mockAuthorData = {
@@ -85,7 +86,9 @@ describe("AuthorRoute Integration Tests", () => {
     render(
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
-          <AuthorRoute />
+          <GraphProvider>
+            <AuthorRoute />
+          </GraphProvider>
         </MantineProvider>
       </QueryClientProvider>,
     );
@@ -103,7 +106,9 @@ describe("AuthorRoute Integration Tests", () => {
     render(
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
-          <AuthorRoute />
+          <GraphProvider>
+            <AuthorRoute />
+          </GraphProvider>
         </MantineProvider>
       </QueryClientProvider>,
     );
@@ -120,7 +125,9 @@ describe("AuthorRoute Integration Tests", () => {
     render(
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
-          <AuthorRoute />
+          <GraphProvider>
+            <AuthorRoute />
+          </GraphProvider>
         </MantineProvider>
       </QueryClientProvider>,
     );
@@ -143,7 +150,9 @@ describe("AuthorRoute Integration Tests", () => {
     render(
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
-          <AuthorRoute />
+          <GraphProvider>
+            <AuthorRoute />
+          </GraphProvider>
         </MantineProvider>
       </QueryClientProvider>,
     );
@@ -171,7 +180,9 @@ describe("AuthorRoute Integration Tests", () => {
     render(
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
-          <AuthorRoute />
+          <GraphProvider>
+            <AuthorRoute />
+          </GraphProvider>
         </MantineProvider>
       </QueryClientProvider>,
     );
@@ -205,7 +216,9 @@ describe("AuthorRoute Integration Tests", () => {
     render(
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
-          <AuthorRoute />
+          <GraphProvider>
+            <AuthorRoute />
+          </GraphProvider>
         </MantineProvider>
       </QueryClientProvider>,
     );

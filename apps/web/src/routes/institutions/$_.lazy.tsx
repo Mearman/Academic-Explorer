@@ -59,6 +59,12 @@ function InstitutionRoute() {
     enabled: !!decodedInstitutionId && decodedInstitutionId !== "random",
   });
 
+  // Get relationship counts for summary display - MUST be called before early returns (Rules of Hooks)
+  const { incomingCount, outgoingCount } = useEntityRelationships(
+    decodedInstitutionId || '',
+    'institutions'
+  );
+
   const config = ENTITY_TYPE_CONFIGS.institution;
 
   if (isLoading) {
@@ -72,12 +78,6 @@ function InstitutionRoute() {
   if (!institution || !decodedInstitutionId) {
     return null;
   }
-
-  // Get relationship counts for summary display
-  const { incomingCount, outgoingCount } = useEntityRelationships(
-    decodedInstitutionId,
-    'institutions'
-  );
 
 
   return (

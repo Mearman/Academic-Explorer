@@ -123,6 +123,12 @@ function WorkRoute() {
     enabled: !!normalizedWorkId && normalizedWorkId !== "random" && !isProcessingExternalId,
   });
 
+  // Get relationship counts for summary display - MUST be called before early returns (Rules of Hooks)
+  const { incomingCount, outgoingCount } = useEntityRelationships(
+    normalizedWorkId || '',
+    'works'
+  );
+
   const config = ENTITY_TYPE_CONFIGS.work;
 
   // Show processing state for external canonical IDs
@@ -204,12 +210,6 @@ function WorkRoute() {
   if (!work || !normalizedWorkId) {
     return null;
   }
-
-  // Get relationship counts for summary display
-  const { incomingCount, outgoingCount } = useEntityRelationships(
-    normalizedWorkId,
-    'works'
-  );
 
   return (
     <EntityDetailLayout

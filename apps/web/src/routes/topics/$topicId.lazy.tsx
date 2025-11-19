@@ -47,6 +47,12 @@ function TopicRoute() {
     enabled: !!topicId && topicId !== "random",
   });
 
+  // Get relationship counts for summary display - MUST be called before early returns (Rules of Hooks)
+  const { incomingCount, outgoingCount } = useEntityRelationships(
+    topicId || "",
+    'topics'
+  );
+
   // Handle loading state
   if (isLoading) {
     return <LoadingState entityType="Topic" entityId={topicId || ''} config={ENTITY_TYPE_CONFIGS.topic} />;
@@ -62,12 +68,6 @@ function TopicRoute() {
       />
     );
   }
-
-  // Get relationship counts for summary display
-  const { incomingCount, outgoingCount } = useEntityRelationships(
-    topicId || "",
-    'topics'
-  );
 
 
   return (

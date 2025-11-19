@@ -59,6 +59,12 @@ function AuthorRoute() {
     enabled: !!decodedAuthorId && decodedAuthorId !== "random",
   });
 
+  // Get relationship counts for summary display - MUST be called before early returns (Rules of Hooks)
+  const { incomingCount, outgoingCount } = useEntityRelationships(
+    decodedAuthorId || '',
+    'authors'
+  );
+
   const config = ENTITY_TYPE_CONFIGS.author;
 
   if (isLoading) {
@@ -72,12 +78,6 @@ function AuthorRoute() {
   if (!author || !decodedAuthorId) {
     return null;
   }
-
-  // Get relationship counts for summary display
-  const { incomingCount, outgoingCount } = useEntityRelationships(
-    decodedAuthorId,
-    'authors'
-  );
 
 
   return (

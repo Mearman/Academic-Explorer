@@ -42,6 +42,12 @@ function SourceRoute() {
     enabled: !!sourceId && sourceId !== "random",
   });
 
+  // Get relationship counts for summary display - MUST be called before early returns (Rules of Hooks)
+  const { incomingCount, outgoingCount } = useEntityRelationships(
+    sourceId || '',
+    'sources'
+  );
+
   const config = ENTITY_TYPE_CONFIGS.source;
 
   if (isLoading) {
@@ -55,12 +61,6 @@ function SourceRoute() {
   if (!source || !sourceId) {
     return null;
   }
-
-  // Get relationship counts for summary display
-  const { incomingCount, outgoingCount } = useEntityRelationships(
-    sourceId,
-    'sources'
-  );
 
 
   return (
