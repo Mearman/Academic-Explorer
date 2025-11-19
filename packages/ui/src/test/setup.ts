@@ -1,4 +1,5 @@
 import { vi } from "vitest"
+import "@testing-library/jest-dom/vitest"
 
 // Fix lru-cache ES module compatibility issue
 let originalLruCache: any = null
