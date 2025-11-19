@@ -7,7 +7,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Stack, Title, Paper, Text, Skeleton } from '@mantine/core';
+import { Stack, Title, Paper, Text, Skeleton, Button, Group } from '@mantine/core';
 import type { EntityType } from '@academic-explorer/types';
 import { RelationType } from '@academic-explorer/graph';
 import { useEntityRelationships } from '@/hooks/use-entity-relationships';
@@ -84,11 +84,31 @@ export const OutgoingRelationships: React.FC<OutgoingRelationshipsProps> = ({
   }
 
   if (error) {
+    const handleRetry = () => {
+      // Reload the page to retry graph loading
+      window.location.reload();
+    };
+
     return (
       <Paper p="md" withBorder data-testid="outgoing-relationships-error">
-        <Text c="red" size="sm">
-          Failed to load relationships: {error.message}
-        </Text>
+        <Stack gap="sm">
+          <Text c="red" size="sm">
+            Failed to load relationships: {error.message}
+          </Text>
+          {error.retryable && (
+            <Group>
+              <Button
+                size="xs"
+                variant="light"
+                color="red"
+                onClick={handleRetry}
+                data-testid="outgoing-relationships-retry-button"
+              >
+                Retry
+              </Button>
+            </Group>
+          )}
+        </Stack>
       </Paper>
     );
   }
