@@ -524,6 +524,19 @@ const GraphContext = createContext<{
 export const GraphProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(graphReducer, getInitialState());
 
+  // Expose graph actions globally for E2E tests
+  React.useEffect(() => {
+    if (typeof window !== "undefined" && (import.meta.env.DEV || import.meta.env.MODE === "test")) {
+      (window as any).graphStoreActions = {
+        addNode: (node: GraphNode) => dispatch({ type: "ADD_NODE", payload: node }),
+        addNodes: (nodes: GraphNode[]) => dispatch({ type: "ADD_NODES", payload: nodes }),
+        addEdge: (edge: GraphEdge) => dispatch({ type: "ADD_EDGE", payload: edge }),
+        addEdges: (edges: GraphEdge[]) => dispatch({ type: "ADD_EDGES", payload: edges }),
+        clear: () => dispatch({ type: "CLEAR" }),
+      };
+    }
+  }, [dispatch]);
+
   const value = { state, dispatch };
   return (
     <GraphContext.Provider value={value}>

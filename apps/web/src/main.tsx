@@ -174,7 +174,13 @@ import { routeTree } from "./routeTree.gen";
 // Load persisted app activity events on app start
 import { AppActivityProvider } from "@/stores/app-activity-store";
 import { LayoutProvider } from "@/stores/layout-store";
-import { GraphProvider } from "@/stores/graph-store";
+import { GraphProvider, graphStore } from "@/stores/graph-store";
+
+// Expose graph store globally for E2E tests
+if (typeof window !== "undefined" && (import.meta.env.DEV || import.meta.env.MODE === "test")) {
+  (window as any).graphStore = graphStore;
+  logger.debug("main", "Exposed graphStore globally for testing");
+}
 
 // Create Mantine theme using design tokens
 const theme = createTheme({

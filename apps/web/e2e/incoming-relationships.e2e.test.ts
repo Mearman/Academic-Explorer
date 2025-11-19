@@ -7,11 +7,26 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { populateWorkCitations, clearGraph } from './helpers/populate-graph';
 
 test.describe('Incoming Relationships - Work Citations', () => {
+  test.beforeEach(async ({ page }) => {
+    // Clear graph before each test for isolation
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    await clearGraph(page);
+  });
+
   test('should display incoming citations section on work detail page', async ({ page }) => {
-    // Navigate to a work that has incoming citations
+    // Navigate to work page
     await page.goto('/works/W2741809807');
+    await page.waitForLoadState('networkidle');
+
+    // Populate graph with test citation data
+    await populateWorkCitations(page);
+
+    // Wait for page to render with new graph data
+    await page.waitForTimeout(500);
 
     // Wait for page to load
     await expect(page.locator('h1')).toBeVisible();
@@ -32,6 +47,9 @@ test.describe('Incoming Relationships - Work Citations', () => {
 
   test('should display list of citing works', async ({ page }) => {
     await page.goto('/works/W2741809807');
+    await page.waitForLoadState('networkidle');
+    await populateWorkCitations(page);
+    await page.waitForTimeout(500);
 
     const citationsSection = page.locator('[data-testid="relationship-section-citations-inbound"]');
     await expect(citationsSection).toBeVisible();
@@ -47,6 +65,9 @@ test.describe('Incoming Relationships - Work Citations', () => {
 
   test('should navigate to citing work when clicked', async ({ page }) => {
     await page.goto('/works/W2741809807');
+    await page.waitForLoadState('networkidle');
+    await populateWorkCitations(page);
+    await page.waitForTimeout(500);
 
     const citationsSection = page.locator('[data-testid="relationship-section-citations-inbound"]');
     const firstCitation = citationsSection.locator('[data-testid^="relationship-item-"]').first();
@@ -69,6 +90,9 @@ test.describe('Incoming Relationships - Work Citations', () => {
   test('should display "Showing X of Y" count when citations exceed page size', async ({ page }) => {
     // Navigate to a work with many citations (>50)
     await page.goto('/works/W2741809807');
+    await page.waitForLoadState('networkidle');
+    await populateWorkCitations(page);
+    await page.waitForTimeout(500);
 
     const citationsSection = page.locator('[data-testid="relationship-section-citations-inbound"]');
     await expect(citationsSection).toBeVisible();
@@ -87,6 +111,9 @@ test.describe('Incoming Relationships - Work Citations', () => {
   test('should display "Load more" button when citations exceed 50', async ({ page }) => {
     // Navigate to a work with many citations
     await page.goto('/works/W2741809807');
+    await page.waitForLoadState('networkidle');
+    await populateWorkCitations(page);
+    await page.waitForTimeout(500);
 
     const citationsSection = page.locator('[data-testid="relationship-section-citations-inbound"]');
 
@@ -134,6 +161,9 @@ test.describe('Incoming Relationships - Work Citations', () => {
 
   test('should display work metadata in citation items', async ({ page }) => {
     await page.goto('/works/W2741809807');
+    await page.waitForLoadState('networkidle');
+    await populateWorkCitations(page);
+    await page.waitForTimeout(500);
 
     const citationsSection = page.locator('[data-testid="relationship-section-citations-inbound"]');
     const firstItem = citationsSection.locator('[data-testid^="relationship-item-"]').first();
