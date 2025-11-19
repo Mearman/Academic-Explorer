@@ -1,20 +1,17 @@
 <!--
 Sync Impact Report:
-Version: 1.5.0 → 2.0.0 (MAJOR: New deployment readiness principle fundamentally changes completion criteria)
-Modified Principles:
-  - VII. Development-Stage Pragmatism - Clarified that deployment readiness still applies
+Version: 2.0.0 → 2.1.0 (MINOR: New principle for continuous execution added)
+Modified Principles: None
 Added Sections:
-  - IX. Deployment Readiness (NEW NON-NEGOTIABLE principle)
+  - X. Continuous Execution (NEW principle for uninterrupted work)
 Removed Sections: None
 Templates Requiring Updates:
-  - ⚠ .specify/templates/plan-template.md (Constitution Check section needs update to include 9 principles)
-  - ⚠ .specify/templates/spec-template.md (Constitution Alignment section needs update to include 9 principles)
-  - ⚠ .specify/templates/tasks-template.md (Constitution compliance verification needs update to include 9 principles)
-  - ⚠ All spec completion criteria must now include deployment readiness verification
+  - ⚠ .specify/templates/plan-template.md (Constitution Check section needs update to include 10 principles)
+  - ⚠ .specify/templates/spec-template.md (Constitution Alignment section needs update to include 10 principles)
+  - ⚠ .specify/templates/tasks-template.md (Constitution compliance verification needs update to include 10 principles)
 Follow-up TODOs:
-  - Update template files to reflect 9 principles
-  - Review all in-progress specs for deployment readiness compliance
-  - Add deployment readiness verification to quality gates documentation
+  - Update template files to reflect 10 principles
+  - Update agent instructions for continuous execution behavior
 -->
 
 # Academic Explorer Constitution
@@ -303,6 +300,57 @@ outside the scope of current work AND would require significant effort to fix:
 This exception should be used sparingly—the default expectation is to fix all blockers
 before marking work complete.
 
+### X. Continuous Execution
+
+**Implementation work MUST NOT stop or pause between phases, tasks, or due to context window
+or token limits**. When executing multi-phase implementations (e.g., specs with 80+ tasks
+across 7 phases), work MUST continue seamlessly from one phase to the next without waiting
+for user approval or pausing for resource constraints.
+
+Continuous execution requirements:
+- Complete all planned phases in a single execution flow
+- Do NOT stop between Phase 1 and Phase 2, Phase 2 and Phase 3, etc.
+- Do NOT pause due to context window size or token usage
+- Do NOT ask for user confirmation to continue between phases
+- Commit work atomically after each task or small group of related tasks
+- Maintain progress tracking (TodoWrite) throughout continuous execution
+- Only stop when ALL phases are complete or a blocking error occurs
+
+Resource management during continuous execution:
+- Use efficient tool calls (parallel when possible, minimal reads)
+- Commit frequently to persist work and free memory
+- Prioritize essential information over verbose logging
+- Trust that work can continue even at high token usage
+- Focus on completing the implementation rather than reporting status
+
+Stopping conditions (ONLY stop if):
+- ALL planned phases/tasks are complete
+- A blocking error prevents further progress (build failure, test failure)
+- User explicitly requests to stop or pause
+- Deployment readiness gates fail and require manual intervention
+
+**Rationale**: The project involves large-scale feature implementations with 80+ atomic tasks
+spanning multiple phases (Setup → User Stories → Integration → Deployment). Pausing between
+phases breaks flow, wastes time, and creates coordination overhead. Research productivity
+requires uninterrupted execution of planned work.
+
+Continuous execution ensures:
+1. **Flow state preservation** - Maintain context and momentum across related tasks
+2. **Time efficiency** - Complete features in single sessions rather than fragmented work
+3. **Reduced overhead** - Eliminate coordination delays between phases
+4. **Better testing** - Full feature testing happens in one session with consistent state
+5. **Faster iteration** - Research experiments complete faster with uninterrupted execution
+6. **Context retention** - Implementation decisions remain fresh across all phases
+
+**Relationship to Atomic Commits (Principle VI)**: Continuous execution does NOT mean
+making one giant commit at the end. Commits MUST still be atomic and incremental throughout
+the continuous execution. The difference is that execution continues without pausing,
+while commits happen frequently to persist progress.
+
+**Relationship to Deployment Readiness (Principle IX)**: Continuous execution continues
+until deployment readiness is achieved. If pre-existing issues block deployment, they
+MUST be resolved as part of the continuous execution flow, not deferred to a separate session.
+
 ## Development Workflow
 
 **Fail-fast test execution order**: TypeScript validation → Unit tests → Component tests
@@ -337,10 +385,11 @@ two places, extract it to `packages/utils` or create a shared package.
 
 ## Quality Gates
 
-**Constitution compliance**: Every PR MUST verify alignment with all nine core principles.
+**Constitution compliance**: Every PR MUST verify alignment with all ten core principles.
 Feature specs MUST document how they respect type safety, test-first development, monorepo
 architecture, storage abstraction, performance constraints, atomic commit discipline,
-development-stage pragmatism, test-first bug fixes, and deployment readiness.
+development-stage pragmatism, test-first bug fixes, deployment readiness, and continuous
+execution.
 
 **Complexity justification**: Any feature that adds architectural complexity (new package,
 new storage provider, new worker) MUST document why a simpler alternative is insufficient.
@@ -386,4 +435,4 @@ For runtime development guidance specific to Academic Explorer workflows, see `C
 in the project root. That file provides operational instructions (commands, architecture
 patterns, research context) while this constitution defines non-negotiable principles.
 
-**Version**: 2.0.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-18
+**Version**: 2.1.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-19
