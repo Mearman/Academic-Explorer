@@ -6,29 +6,33 @@ import { FUNDER_FIELDS, type Funder, type FunderField } from "@academic-explorer
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
 import { usePrettyUrl } from "@/hooks/use-pretty-url";
-import { useUserInteractions } from "@/hooks/use-user-interactions";
-import { EntityDataDisplay } from "@/components/EntityDataDisplay";
+import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS } from "@/components/entity-detail";
+import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
+import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
+import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
+import { useEntityRelationships } from "@/hooks/use-entity-relationships";
 
 function FunderRoute() {
   const { funderId: rawFunderId } = useParams({ strict: false });
   const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
 
+  const config = ENTITY_TYPE_CONFIGS.funder;
+
   // Decode the funder ID in case it's URL-encoded (for external IDs with special characters)
   const funderId = decodeEntityId(rawFunderId);
   usePrettyUrl("funders", rawFunderId, funderId);
-
-  // Track page visits in history
-  useUserInteractions({
-    entityId: funderId,
-    entityType: "funders",
-    autoTrackVisits: true,
-  });
 
   // Parse select parameter - only send select when explicitly provided in URL
   const selectFields = selectParam && typeof selectParam === 'string'
     ? selectParam.split(',').map(field => field.trim()) as FunderField[]
     : undefined;
+
+  // Get relationship counts
+  const { incomingCount, outgoingCount } = useEntityRelationships(
+    funderId || "",
+    'funders'
+  );
 
   // Fetch funder data
   const { data: funder, isLoading, error } = useQuery({
@@ -46,52 +50,38 @@ function FunderRoute() {
     enabled: !!funderId && funderId !== "random",
   });
 
-  // Render content based on state
-  let content;
+  // Loading state
   if (isLoading) {
-    content = (
-      <div className="p-4 text-center">
-        <h2>Loading Funder...</h2>
-        <p>Funder ID: {funderId}</p>
-      </div>
-    );
-  } else if (error) {
-    content = (
-      <div className="p-4 text-center text-red-500">
-        <h2>Error Loading Funder</h2>
-        <p>Funder ID: {funderId}</p>
-        <p>Error: {String(error)}</p>
-      </div>
-    );
-  } else {
-    content = (
-      <div className="p-4">
-        <div className="mb-4">
-          <h1 className="text-2xl font-bold mb-2">{funder?.display_name || "Funder"}</h1>
-          <div className="text-sm text-gray-600 mb-4">
-            <strong>Funder ID:</strong> {funderId}<br />
-            <strong>Select fields:</strong> {selectParam && typeof selectParam === 'string' ? selectParam : `default (${selectFields?.join(", ") || "all"})`}
-          </div>
-          <button
-            onClick={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Toggle {viewMode === "raw" ? "Rich" : "Raw"} View
-          </button>
-        </div>
-
-        {viewMode === "raw" ? (
-          <pre className="bg-gray-100 p-4 rounded overflow-auto max-h-[600px]">
-            {JSON.stringify(funder, null, 2)}
-          </pre>
-        ) : (
-          <EntityDataDisplay data={funder as Record<string, unknown>} />
-        )}
-      </div>
-    );
+    return <LoadingState entityType="Funder" entityId={funderId || ''} config={config} />;
   }
 
-  return content;
+  // Error state
+  if (error) {
+    return <ErrorState entityType="Funder" entityId={funderId || ''} error={error} />;
+  }
+
+  // Null check
+  if (!funder || !funderId) {
+    return null;
+  }
+
+  return (
+    <EntityDetailLayout
+      config={config}
+      entityType="funder"
+      entityId={funderId}
+      displayName={funder.display_name || "Funder"}
+      selectParam={(selectParam as string) || ''}
+      selectFields={selectFields || []}
+      viewMode={viewMode}
+      onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
+      data={funder as Record<string, unknown>}
+    >
+      <RelationshipCounts incomingCount={incomingCount} outgoingCount={outgoingCount} />
+      <IncomingRelationships entityId={funderId} entityType="funders" />
+      <OutgoingRelationships entityId={funderId} entityType="funders" />
+    </EntityDetailLayout>
+  );
 }
 
 export const Route = createLazyFileRoute("/funders/$funderId")({
