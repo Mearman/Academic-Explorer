@@ -310,3 +310,38 @@ export const DEFAULT_RELATIONSHIP_FILTER: RelationshipFilter = {
  * Maximum relationships to load before warning user
  */
 export const MAX_RELATIONSHIPS_WARNING_THRESHOLD = 1000;
+
+/**
+ * Display labels for relationship types
+ * Note: Deprecated aliases (AUTHORED, AFFILIATED, etc.) have same string values as noun forms,
+ * so they automatically map to the same labels
+ */
+export const RELATIONSHIP_TYPE_LABELS: Record<RelationType, string> = {
+  // Core academic relationships
+  [RelationType.AUTHORSHIP]: 'Authors',
+  [RelationType.AFFILIATION]: 'Affiliations',
+  [RelationType.PUBLICATION]: 'Source',
+  [RelationType.REFERENCE]: 'Citations',
+  [RelationType.TOPIC]: 'Topics',
+
+  // Publishing relationships
+  [RelationType.HOST_ORGANIZATION]: 'Publisher',
+
+  // Institutional relationships
+  [RelationType.LINEAGE]: 'Parent Institution',
+
+  // Additional relationship types
+  [RelationType.AUTHOR_RESEARCHES]: 'Research Topics',
+  [RelationType.FIELD_PART_OF_DOMAIN]: 'Domain',
+  [RelationType.FUNDED_BY]: 'Funders',
+  [RelationType.FUNDER_LOCATED_IN]: 'Country',
+  [RelationType.INSTITUTION_LOCATED_IN]: 'Location',
+  [RelationType.PUBLISHER_CHILD_OF]: 'Parent Publisher',
+  [RelationType.TOPIC_PART_OF_FIELD]: 'Field',
+  [RelationType.TOPIC_PART_OF_SUBFIELD]: 'Subfield',
+  [RelationType.TOPIC_SIBLING]: 'Related Topics',
+  [RelationType.WORK_HAS_KEYWORD]: 'Keywords',
+
+  // General catch-all
+  [RelationType.RELATED_TO]: 'Related Entities',
+};

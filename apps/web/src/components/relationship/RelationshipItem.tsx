@@ -34,7 +34,7 @@ export const RelationshipItem: React.FC<RelationshipItemProps> = ({ item }) => {
   };
 
   return (
-    <Stack gap="xs">
+    <Stack gap="xs" data-testid={`relationship-item-${item.id}`}>
       <Group gap="xs">
         <Anchor onClick={handleClick} size="sm">
           {item.displayName}
@@ -46,12 +46,12 @@ export const RelationshipItem: React.FC<RelationshipItemProps> = ({ item }) => {
         )}
       </Group>
       {item.subtitle && (
-        <Text size="xs" c="dimmed">
+        <Text size="xs" c="dimmed" data-testid="relationship-subtitle">
           {item.subtitle}
         </Text>
       )}
       {item.metadata && (
-        <Text size="xs" c="dimmed">
+        <Text size="xs" c="dimmed" data-testid="relationship-metadata">
           {/* TODO: Format metadata based on type in Phase 6 */}
           {JSON.stringify(item.metadata)}
         </Text>

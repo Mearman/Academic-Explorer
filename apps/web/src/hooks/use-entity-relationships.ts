@@ -9,12 +9,19 @@
 import { useMemo } from 'react';
 import { useGraphStore } from '@/stores/graph-store';
 import type { EntityType } from '@academic-explorer/types';
+import type { GraphEdge, GraphNode } from '@academic-explorer/graph';
+import { RelationType } from '@academic-explorer/graph';
 import type {
   RelationshipSection,
   RelationshipError,
   RelationshipFilter,
+  RelationshipItem,
 } from '@/types/relationship';
-import { RelationshipErrorCode } from '@/types/relationship';
+import {
+  RelationshipErrorCode,
+  DEFAULT_PAGE_SIZE,
+  RELATIONSHIP_TYPE_LABELS,
+} from '@/types/relationship';
 
 export interface UseEntityRelationshipsResult {
   /** Incoming relationship sections (other entities → this entity) */
@@ -43,7 +50,7 @@ export function useEntityRelationships(
   entityType: EntityType,
   filter?: RelationshipFilter,
 ): UseEntityRelationshipsResult {
-  const { edges, isLoading, error: graphError } = useGraphStore();
+  const { edges, nodes, isLoading, error: graphError } = useGraphStore();
 
   // Convert edges Record to array
   const edgesArray = useMemo(() => Object.values(edges), [edges]);
@@ -62,10 +69,14 @@ export function useEntityRelationships(
     return { incomingEdges: incoming, outgoingEdges: outgoing };
   }, [entityEdges, entityId]);
 
-  // TODO: Group edges by RelationType and create RelationshipSection objects
-  // This will be implemented in Phase 2 (US1)
-  const incoming: RelationshipSection[] = [];
-  const outgoing: RelationshipSection[] = [];
+  // Group edges by RelationType and create RelationshipSection objects
+  const incoming = useMemo(() => {
+    return createRelationshipSections(incomingEdges, 'inbound', entityId, nodes);
+  }, [incomingEdges, entityId, nodes]);
+
+  const outgoing = useMemo(() => {
+    return createRelationshipSections(outgoingEdges, 'outbound', entityId, nodes);
+  }, [outgoingEdges, entityId, nodes]);
 
   // Convert graph error to RelationshipError if needed
   const relationshipError: RelationshipError | undefined = graphError
@@ -83,4 +94,82 @@ export function useEntityRelationships(
     loading: isLoading,
     error: relationshipError,
   };
+}
+
+/**
+ * Helper function to create RelationshipSection objects from edges
+ */
+function createRelationshipSections(
+  edges: GraphEdge[],
+  direction: 'inbound' | 'outbound',
+  currentEntityId: string,
+  nodes: Record<string, GraphNode>
+): RelationshipSection[] {
+  if (edges.length === 0) return [];
+
+  // Group edges by RelationType
+  const edgesByType = new Map<RelationType, GraphEdge[]>();
+  for (const edge of edges) {
+    const existing = edgesByType.get(edge.type) || [];
+    existing.push(edge);
+    edgesByType.set(edge.type, existing);
+  }
+
+  // Create RelationshipSection for each type
+  const sections: RelationshipSection[] = [];
+
+  edgesByType.forEach((typeEdges, relationType) => {
+    // Convert edges to RelationshipItem objects
+    const items: RelationshipItem[] = typeEdges.map((edge) => {
+      // Determine which entity is the "other" entity
+      const relatedEntityId = direction === 'inbound' ? edge.source : edge.target;
+      const relatedNode = nodes[relatedEntityId];
+
+      // Check if this is a self-reference
+      const isSelfReference = edge.source === edge.target;
+
+      return {
+        id: edge.id,
+        sourceId: edge.source,
+        targetId: edge.target,
+        sourceType: nodes[edge.source]?.entityType || 'works', // Fallback to 'works' if node not found
+        targetType: nodes[edge.target]?.entityType || 'works',
+        type: relationType,
+        direction,
+        displayName: relatedNode?.label || relatedEntityId, // Use label or fall back to ID
+        isSelfReference,
+        // TODO: Add subtitle and metadata extraction in Phase 6
+      };
+    });
+
+    // Create pagination state
+    const totalCount = items.length;
+    const pageSize = DEFAULT_PAGE_SIZE;
+    const visibleItems = items.slice(0, pageSize);
+    const visibleCount = visibleItems.length;
+    const hasMore = totalCount > pageSize;
+
+    const section: RelationshipSection = {
+      id: `${relationType}-${direction}`,
+      type: relationType,
+      direction,
+      label: RELATIONSHIP_TYPE_LABELS[relationType] || relationType,
+      items,
+      visibleItems,
+      totalCount,
+      visibleCount,
+      hasMore,
+      pagination: {
+        pageSize,
+        currentPage: 0,
+        totalPages: Math.ceil(totalCount / pageSize),
+        hasNextPage: hasMore,
+        hasPreviousPage: false,
+      },
+    };
+
+    sections.push(section);
+  });
+
+  return sections;
 }
