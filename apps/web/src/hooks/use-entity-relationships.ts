@@ -6,8 +6,8 @@
  * @see specs/016-entity-relationship-viz/data-model.md
  */
 
-import { useMemo } from 'react';
-import { useGraphStore } from '@/stores/graph-store';
+import { useMemo, useContext } from 'react';
+import { GraphContext } from '@/stores/graph-store';
 import type { EntityType } from '@academic-explorer/types';
 import type { GraphEdge, GraphNode } from '@academic-explorer/graph';
 import { RelationType } from '@academic-explorer/graph';
@@ -23,6 +23,10 @@ import {
   RELATIONSHIP_TYPE_LABELS,
 } from '@/types/relationship';
 import { filterByType, filterByDirection } from '@/utils/relationship-filters';
+
+// Stable empty objects to avoid hook dependency changes
+const EMPTY_EDGES: Record<string, GraphEdge> = {};
+const EMPTY_NODES: Record<string, GraphNode> = {};
 
 export interface UseEntityRelationshipsResult {
   /** Incoming relationship sections (other entities → this entity) */
@@ -57,7 +61,12 @@ export function useEntityRelationships(
   entityType: EntityType,
   filter?: RelationshipFilter,
 ): UseEntityRelationshipsResult {
-  const { edges, nodes, isLoading, error: graphError } = useGraphStore();
+  // Safely access GraphContext - use stable empty objects if not in provider
+  const graphContext = useContext(GraphContext);
+  const edges = graphContext?.state.edges ?? EMPTY_EDGES;
+  const nodes = graphContext?.state.nodes ?? EMPTY_NODES;
+  const isLoading = graphContext?.state.isLoading ?? false;
+  const graphError = graphContext?.state.error ?? undefined;
 
   // Convert edges Record to array
   const edgesArray = useMemo(() => Object.values(edges), [edges]);

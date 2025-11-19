@@ -515,7 +515,7 @@ function findNeighborIds({
 }
 
 // Context
-const GraphContext = createContext<{
+export const GraphContext = createContext<{
   state: GraphState;
   dispatch: React.Dispatch<GraphAction>;
 } | null>(null);
