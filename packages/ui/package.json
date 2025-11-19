@@ -74,6 +74,9 @@
     "react-dom": "^19.1.1"
   },
   "devDependencies": {
+    "@mantine/core": "^8.3.1",
+    "@mantine/hooks": "^8.3.1",
+    "@mantine/notifications": "^8.3.1",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^16.0.1",
     "@testing-library/user-event": "^14.6.1",
