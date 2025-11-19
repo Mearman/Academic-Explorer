@@ -3,8 +3,8 @@
  * @vitest-environment jsdom
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, cleanup } from '@testing-library/react';
 import { MantineProvider } from '@mantine/core';
 import '@testing-library/jest-dom';
 import { RelationshipSection } from './RelationshipSection';
@@ -65,6 +65,10 @@ describe('RelationshipSection', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    cleanup();
   });
 
   it('should render section with label', () => {
