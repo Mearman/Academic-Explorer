@@ -153,8 +153,8 @@ As a researcher scanning entity detail pages, I want to see summary counts of in
 
 ## Implementation Status
 
-**Progress**: 67/80 tasks (83.75%) complete
-**Status**: ⏳ Phases 1-6 complete, Phase 7 in progress
+**Progress**: 80/80 tasks (100%) complete ✅
+**Status**: ✅ All phases complete
 **PR**: #96 ([016-entity-relationship-viz branch](https://github.com/Mearman/Academic-Explorer/pull/96))
 
 ### Completed Phases
@@ -173,7 +173,7 @@ As a researcher scanning entity detail pages, I want to see summary counts of in
 **Phase 3: User Story 2 - Outgoing Relationships** (✅ Implemented)
 - OutgoingRelationships component displays all outbound edges
 - Same UI patterns as incoming (consistency)
-- Integrated into 5/7 entity detail pages (Works, Authors, Institutions, Sources, Topics)
+- Integrated into 7/7 entity detail pages (Works, Authors, Institutions, Sources, Topics, Funders, Publishers)
 
 **Phase 4: User Story 3 - Relationship Type Filtering** (✅ Implemented)
 - RelationshipTypeFilter component with checkboxes
@@ -185,7 +185,7 @@ As a researcher scanning entity detail pages, I want to see summary counts of in
 **Phase 5: User Story 4 - Relationship Count Summaries** (✅ Implemented)
 - RelationshipCounts component with three badges (Incoming, Outgoing, Total)
 - useEntityRelationships hook calculates counts
-- Integrated into 5 entity detail pages
+- Integrated into 7 entity detail pages (all entity types)
 - 7 component tests passing
 
 **Phase 6: Quality Assurance** (✅ Completed)
@@ -194,6 +194,11 @@ As a researcher scanning entity detail pages, I want to see summary counts of in
 - Loading skeletons (Skeleton components)
 - Performance tests (6 tests, <1s rendering)
 - Accessibility tests (10 tests, WCAG 2.1 AA with jest-axe)
+
+**Phase 7: Final Integration** (✅ Completed)
+- EntityDetailLayout migration for Funders and Publishers
+- Documentation updates (spec.md, CLAUDE.md)
+- Full 7/7 entity type coverage achieved
 
 ### Commits
 
@@ -205,6 +210,8 @@ As a researcher scanning entity detail pages, I want to see summary counts of in
 - `aa487d9b` - feat(web): add partial data warning to relationship sections
 - `accbdb27` - test(web): add performance and accessibility tests for RelationshipSection
 - `19a8debd` - fix(web): add cleanup to all relationship component tests
+- `6cb73f05` - docs(spec-016): add implementation status section to spec.md
+- `d58ae727` - feat(web): migrate Funders and Publishers to EntityDetailLayout
 
 ### Test Coverage
 
@@ -218,7 +225,7 @@ As a researcher scanning entity detail pages, I want to see summary counts of in
 
 ### Success Criteria Status
 
-- ✅ **SC-001**: Relationship sections render for all 7 entity types (5/7 complete, 2 deferred)
+- ✅ **SC-001**: Relationship sections render for all 7 entity types (7/7 complete)
 - ✅ **SC-002**: Filter state persists across page reloads (localStorage working)
 - ✅ **SC-003**: Loading states display during fetch (Skeleton components)
 - ✅ **SC-004**: Count summaries match actual relationship totals (reduce() calculations)
@@ -227,12 +234,17 @@ As a researcher scanning entity detail pages, I want to see summary counts of in
 - ✅ **SC-007**: Direction indicators clear (incoming/outgoing labels)
 - ✅ **SC-008**: Relationship count accuracy 100% (validated in tests)
 
-### Remaining Work
+### Implementation Complete
 
-**Deferred**:
-- Funders and Publishers entity integration (requires EntityDetailLayout migration)
+All phases complete. All 7 entity types (Works, Authors, Institutions, Sources, Topics, Funders, Publishers) now have:
+- Full relationship visualization
+- Type filtering with localStorage persistence
+- Relationship count summaries
+- Loading states, error states with retry
+- Partial data warnings
+- EntityDetailLayout integration
+- Bookmarking and catalogue functionality
 
-**Phase 7 Remaining** (3 tasks):
-- Documentation updates
-- PR description finalization
-- Final verification
+**Total Commits**: 11 commits
+**Total Tests**: 105 relationship tests passing
+**Coverage**: 7/7 entity types (100%)
