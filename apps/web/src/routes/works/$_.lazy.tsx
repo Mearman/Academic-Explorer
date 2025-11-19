@@ -13,6 +13,8 @@ import { EntityDetectionService } from "@academic-explorer/graph";
 import { logger } from "@academic-explorer/utils/logger";
 import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
 import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
+import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
+import { useEntityRelationships } from "@/hooks/use-entity-relationships";
 
 function WorkRoute() {
   const { _splat: rawWorkId } = useParams({ from: "/works/$_" });
@@ -203,6 +205,12 @@ function WorkRoute() {
     return null;
   }
 
+  // Get relationship counts for summary display
+  const { incomingCount, outgoingCount } = useEntityRelationships(
+    normalizedWorkId,
+    'works'
+  );
+
   return (
     <EntityDetailLayout
       config={config}
@@ -215,6 +223,7 @@ function WorkRoute() {
       onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
       data={work as Record<string, unknown>}
     >
+      <RelationshipCounts incomingCount={incomingCount} outgoingCount={outgoingCount} />
       <IncomingRelationships entityId={normalizedWorkId} entityType="works" />
       <OutgoingRelationships entityId={normalizedWorkId} entityType="works" />
     </EntityDetailLayout>

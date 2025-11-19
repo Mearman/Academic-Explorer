@@ -10,6 +10,8 @@ import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS } fro
 import { useUrlNormalization } from "@/hooks/use-url-normalization";
 import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
 import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
+import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
+import { useEntityRelationships } from "@/hooks/use-entity-relationships";
 
 function InstitutionRoute() {
   const { _splat: rawInstitutionId } = useParams({ from: "/institutions/$_" });
@@ -71,6 +73,13 @@ function InstitutionRoute() {
     return null;
   }
 
+  // Get relationship counts for summary display
+  const { incomingCount, outgoingCount } = useEntityRelationships(
+    decodedInstitutionId,
+    'institutions'
+  );
+
+
   return (
     <EntityDetailLayout
       config={config}
@@ -82,6 +91,7 @@ function InstitutionRoute() {
       viewMode={viewMode}
       onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
       data={institution as Record<string, unknown>}>
+      <RelationshipCounts incomingCount={incomingCount} outgoingCount={outgoingCount} />
       <IncomingRelationships entityId={decodedInstitutionId} entityType="institutions" />
       <OutgoingRelationships entityId={decodedInstitutionId} entityType="institutions" />
     </EntityDetailLayout>

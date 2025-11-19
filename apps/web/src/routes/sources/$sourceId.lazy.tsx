@@ -9,6 +9,8 @@ import { usePrettyUrl } from "@/hooks/use-pretty-url";
 import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS } from "@/components/entity-detail";
 import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
 import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
+import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
+import { useEntityRelationships } from "@/hooks/use-entity-relationships";
 
 function SourceRoute() {
   const { sourceId: rawSourceId } = useParams({ strict: false });
@@ -54,6 +56,13 @@ function SourceRoute() {
     return null;
   }
 
+  // Get relationship counts for summary display
+  const { incomingCount, outgoingCount } = useEntityRelationships(
+    sourceId,
+    'sources'
+  );
+
+
   return (
     <EntityDetailLayout
       config={config}
@@ -65,6 +74,7 @@ function SourceRoute() {
       viewMode={viewMode}
       onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
       data={source as Record<string, unknown>}>
+      <RelationshipCounts incomingCount={incomingCount} outgoingCount={outgoingCount} />
       <IncomingRelationships entityId={sourceId} entityType="sources" />
       <OutgoingRelationships entityId={sourceId} entityType="sources" />
     </EntityDetailLayout>

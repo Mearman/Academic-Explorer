@@ -12,6 +12,8 @@ import { ErrorState } from "@/components/entity-detail/ErrorState";
 import { ENTITY_TYPE_CONFIGS } from "@/components/entity-detail/EntityTypeConfig";
 import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
 import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
+import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
+import { useEntityRelationships } from "@/hooks/use-entity-relationships";
 
 function TopicRoute() {
   const { topicId: rawTopicId } = useParams({ strict: false });
@@ -61,6 +63,13 @@ function TopicRoute() {
     );
   }
 
+  // Get relationship counts for summary display
+  const { incomingCount, outgoingCount } = useEntityRelationships(
+    topicId || "",
+    'topics'
+  );
+
+
   return (
     <EntityDetailLayout
       config={ENTITY_TYPE_CONFIGS.topic}
@@ -72,6 +81,7 @@ function TopicRoute() {
       viewMode={viewMode}
       onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
       data={topic}>
+      <RelationshipCounts incomingCount={incomingCount} outgoingCount={outgoingCount} />
       <IncomingRelationships entityId={topicId || ""} entityType="topics" />
       <OutgoingRelationships entityId={topicId || ""} entityType="topics" />
     </EntityDetailLayout>

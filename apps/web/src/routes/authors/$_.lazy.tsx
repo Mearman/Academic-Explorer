@@ -10,6 +10,8 @@ import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS } fro
 import { useUrlNormalization } from "@/hooks/use-url-normalization";
 import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
 import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
+import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
+import { useEntityRelationships } from "@/hooks/use-entity-relationships";
 
 const AUTHOR_ROUTE_PATH = "/authors/$_";
 
@@ -71,6 +73,13 @@ function AuthorRoute() {
     return null;
   }
 
+  // Get relationship counts for summary display
+  const { incomingCount, outgoingCount } = useEntityRelationships(
+    decodedAuthorId,
+    'authors'
+  );
+
+
   return (
     <EntityDetailLayout
       config={config}
@@ -82,6 +91,7 @@ function AuthorRoute() {
       viewMode={viewMode}
       onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
       data={author as Record<string, unknown>}>
+      <RelationshipCounts incomingCount={incomingCount} outgoingCount={outgoingCount} />
       <IncomingRelationships entityId={decodedAuthorId} entityType="authors" />
       <OutgoingRelationships entityId={decodedAuthorId} entityType="authors" />
     </EntityDetailLayout>
