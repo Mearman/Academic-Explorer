@@ -9,6 +9,7 @@ import { usePrettyUrl } from "@/hooks/use-pretty-url";
 import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS } from "@/components/entity-detail";
 import { useUrlNormalization } from "@/hooks/use-url-normalization";
 import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
+import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
 
 const AUTHOR_ROUTE_PATH = "/authors/$_";
 
@@ -82,6 +83,7 @@ function AuthorRoute() {
       onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
       data={author as Record<string, unknown>}>
       <IncomingRelationships entityId={decodedAuthorId} entityType="authors" />
+      <OutgoingRelationships entityId={decodedAuthorId} entityType="authors" />
     </EntityDetailLayout>
   );
 }

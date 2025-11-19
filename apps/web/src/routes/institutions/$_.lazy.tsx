@@ -9,6 +9,7 @@ import { usePrettyUrl } from "@/hooks/use-pretty-url";
 import { EntityDetailLayout, LoadingState, ErrorState, ENTITY_TYPE_CONFIGS } from "@/components/entity-detail";
 import { useUrlNormalization } from "@/hooks/use-url-normalization";
 import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
+import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
 
 function InstitutionRoute() {
   const { _splat: rawInstitutionId } = useParams({ from: "/institutions/$_" });
@@ -82,6 +83,7 @@ function InstitutionRoute() {
       onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
       data={institution as Record<string, unknown>}>
       <IncomingRelationships entityId={decodedInstitutionId} entityType="institutions" />
+      <OutgoingRelationships entityId={decodedInstitutionId} entityType="institutions" />
     </EntityDetailLayout>
   );
 }

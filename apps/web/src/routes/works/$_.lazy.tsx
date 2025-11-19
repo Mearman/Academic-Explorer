@@ -12,6 +12,7 @@ import { usePrettyUrl } from "@/hooks/use-pretty-url";
 import { EntityDetectionService } from "@academic-explorer/graph";
 import { logger } from "@academic-explorer/utils/logger";
 import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
+import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
 
 function WorkRoute() {
   const { _splat: rawWorkId } = useParams({ from: "/works/$_" });
@@ -215,6 +216,7 @@ function WorkRoute() {
       data={work as Record<string, unknown>}
     >
       <IncomingRelationships entityId={normalizedWorkId} entityType="works" />
+      <OutgoingRelationships entityId={normalizedWorkId} entityType="works" />
     </EntityDetailLayout>
   );
 }
