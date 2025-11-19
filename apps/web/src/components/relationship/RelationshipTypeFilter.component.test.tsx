@@ -2,8 +2,8 @@
  * Component tests for RelationshipTypeFilter
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, within, cleanup } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { MantineProvider } from '@mantine/core';
 import { RelationshipTypeFilter } from './RelationshipTypeFilter';
@@ -36,6 +36,10 @@ describe('RelationshipTypeFilter', () => {
 
   beforeEach(() => {
     mockOnChange.mockClear();
+  });
+
+  afterEach(() => {
+    cleanup();
   });
 
   it('should render filter component with title', () => {

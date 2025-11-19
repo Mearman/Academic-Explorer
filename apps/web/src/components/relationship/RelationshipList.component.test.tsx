@@ -3,8 +3,8 @@
  * @vitest-environment jsdom
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, within, cleanup } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { MantineProvider } from '@mantine/core';
 import '@testing-library/jest-dom';
@@ -60,6 +60,10 @@ describe('RelationshipList', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    cleanup();
   });
 
   it('should render all items when count is less than page size', () => {

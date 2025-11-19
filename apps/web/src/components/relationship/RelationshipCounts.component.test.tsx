@@ -2,8 +2,8 @@
  * Component tests for RelationshipCounts
  */
 
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, afterEach } from 'vitest';
+import { render, screen, cleanup } from '@testing-library/react';
 import { MantineProvider } from '@mantine/core';
 import { RelationshipCounts } from './RelationshipCounts';
 
@@ -19,6 +19,10 @@ describe('RelationshipCounts', () => {
       </MantineProvider>
     );
   };
+
+  afterEach(() => {
+    cleanup();
+  });
 
   it('should render count summary with all badges', () => {
     renderComponent({ incomingCount: 5, outgoingCount: 10 });
