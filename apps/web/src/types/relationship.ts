@@ -1,0 +1,312 @@
+/**
+ * Type definitions for entity relationship visualization
+ *
+ * @module relationship
+ * @see specs/016-entity-relationship-viz/data-model.md
+ */
+
+import type { EntityType } from '@academic-explorer/types';
+import { RelationType } from '@academic-explorer/graph';
+
+/**
+ * Direction filter options
+ */
+export type EdgeDirectionFilter = 'outbound' | 'inbound' | 'both';
+
+/**
+ * Relationship error codes
+ */
+export enum RelationshipErrorCode {
+  /** Failed to load graph data */
+  GRAPH_LOAD_FAILED = 'GRAPH_LOAD_FAILED',
+
+  /** Invalid entity ID */
+  INVALID_ENTITY_ID = 'INVALID_ENTITY_ID',
+
+  /** No relationship data available */
+  NO_DATA_AVAILABLE = 'NO_DATA_AVAILABLE',
+
+  /** Network error */
+  NETWORK_ERROR = 'NETWORK_ERROR',
+
+  /** Unknown error */
+  UNKNOWN_ERROR = 'UNKNOWN_ERROR',
+}
+
+/**
+ * Relationship loading error
+ */
+export interface RelationshipError {
+  /** Error message */
+  message: string;
+
+  /** Error code */
+  code: RelationshipErrorCode;
+
+  /** Whether the error is retryable */
+  retryable: boolean;
+
+  /** Timestamp of error */
+  timestamp: Date;
+}
+
+/**
+ * Pagination state for relationship sections
+ */
+export interface PaginationState {
+  /** Items per page (default: 50) */
+  pageSize: number;
+
+  /** Current page (0-indexed) */
+  currentPage: number;
+
+  /** Total number of pages */
+  totalPages: number;
+
+  /** Whether there's a next page */
+  hasNextPage: boolean;
+
+  /** Whether there's a previous page */
+  hasPreviousPage: boolean;
+}
+
+/**
+ * Authorship-specific metadata
+ */
+export interface AuthorshipMetadata {
+  type: 'authorship';
+  /** Author position in author list (1-indexed) */
+  position?: number;
+  /** Whether author is corresponding author */
+  isCorresponding?: boolean;
+  /** Author's affiliation at time of publication */
+  affiliations?: string[];
+}
+
+/**
+ * Citation-specific metadata
+ */
+export interface CitationMetadata {
+  type: 'citation';
+  /** Publication year of citing work */
+  year?: number;
+  /** Citation context snippet */
+  context?: string;
+}
+
+/**
+ * Affiliation-specific metadata
+ */
+export interface AffiliationMetadata {
+  type: 'affiliation';
+  /** Affiliation start date */
+  startDate?: string;
+  /** Affiliation end date (if applicable) */
+  endDate?: string;
+  /** Whether this is the primary affiliation */
+  isPrimary?: boolean;
+}
+
+/**
+ * Funding-specific metadata
+ */
+export interface FundingMetadata {
+  type: 'funding';
+  /** Grant/award number */
+  awardId?: string;
+  /** Grant amount (if available) */
+  amount?: number;
+  /** Currency */
+  currency?: string;
+}
+
+/**
+ * Lineage-specific metadata (institutional hierarchy)
+ */
+export interface LineageMetadata {
+  type: 'lineage';
+  /** Hierarchy level (e.g., 1 = direct parent, 2 = grandparent) */
+  level?: number;
+}
+
+/**
+ * Optional relationship metadata
+ */
+export type RelationshipMetadata =
+  | AuthorshipMetadata
+  | CitationMetadata
+  | AffiliationMetadata
+  | FundingMetadata
+  | LineageMetadata;
+
+/**
+ * Individual relationship connection
+ */
+export interface RelationshipItem {
+  /** Unique identifier for this relationship */
+  id: string;
+
+  /** Source entity ID (data owner in OpenAlex model) */
+  sourceId: string;
+
+  /** Target entity ID (referenced entity) */
+  targetId: string;
+
+  /** Source entity type */
+  sourceType: EntityType;
+
+  /** Target entity type */
+  targetType: EntityType;
+
+  /** Relationship type */
+  type: RelationType;
+
+  /** Direction from perspective of viewed entity */
+  direction: 'outbound' | 'inbound';
+
+  /** Display name of the related entity */
+  displayName: string;
+
+  /** Optional subtitle (e.g., author affiliation, publication year) */
+  subtitle?: string;
+
+  /** Optional metadata (authorship position, citation context, etc.) */
+  metadata?: RelationshipMetadata;
+
+  /** Whether this is a self-referencing relationship */
+  isSelfReference: boolean;
+}
+
+/**
+ * Grouped display of a single relationship type
+ */
+export interface RelationshipSection {
+  /** Unique identifier for this section */
+  id: string;
+
+  /** Relationship type (AUTHORSHIP, REFERENCE, etc.) */
+  type: RelationType;
+
+  /** Direction of relationships in this section */
+  direction: EdgeDirectionFilter;
+
+  /** Display label (e.g., "Authors", "Citations", "Affiliations") */
+  label: string;
+
+  /** Icon identifier for UI rendering */
+  icon?: string;
+
+  /** All relationship items in this section */
+  items: RelationshipItem[];
+
+  /** Currently visible items (after pagination) */
+  visibleItems: RelationshipItem[];
+
+  /** Total count of relationships */
+  totalCount: number;
+
+  /** Number of currently visible items */
+  visibleCount: number;
+
+  /** Whether more items are available to load */
+  hasMore: boolean;
+
+  /** Pagination state */
+  pagination: PaginationState;
+}
+
+/**
+ * Relationship filter configuration
+ */
+export interface RelationshipFilter {
+  /** Direction filter: show outbound, inbound, or both */
+  direction: EdgeDirectionFilter;
+
+  /** Relationship types to display (empty = show all) */
+  types: RelationType[];
+
+  /** Whether to show self-referencing relationships */
+  showSelfReferences: boolean;
+}
+
+/**
+ * Per-type relationship counts
+ */
+export interface RelationshipTypeSummary {
+  /** Relationship type */
+  type: RelationType;
+
+  /** Incoming count for this type */
+  incomingCount: number;
+
+  /** Outgoing count for this type */
+  outgoingCount: number;
+
+  /** Total for this type */
+  totalCount: number;
+}
+
+/**
+ * Summary statistics for relationships
+ */
+export interface RelationshipSummary {
+  /** Total incoming relationships (all types) */
+  incomingCount: number;
+
+  /** Total outgoing relationships (all types) */
+  outgoingCount: number;
+
+  /** Total relationships (incoming + outgoing) */
+  totalCount: number;
+
+  /** Breakdown by relationship type */
+  byType: Record<RelationType, RelationshipTypeSummary>;
+}
+
+/**
+ * Complete relationship visualization for an entity detail page
+ */
+export interface EntityRelationshipView {
+  /** The entity whose relationships are being displayed */
+  entityId: string;
+
+  /** Entity type (e.g., 'works', 'authors', 'institutions') */
+  entityType: EntityType;
+
+  /** Incoming relationship sections (other entities → this entity) */
+  incomingSections: RelationshipSection[];
+
+  /** Outgoing relationship sections (this entity → other entities) */
+  outgoingSections: RelationshipSection[];
+
+  /** Total counts across all relationship types */
+  summary: RelationshipSummary;
+
+  /** Current filter state */
+  filter: RelationshipFilter;
+
+  /** Loading state */
+  loading: boolean;
+
+  /** Error state (if any) */
+  error?: RelationshipError;
+}
+
+/**
+ * Default pagination page size
+ */
+export const DEFAULT_PAGE_SIZE = 50;
+
+/**
+ * Default relationship filter
+ */
+export const DEFAULT_RELATIONSHIP_FILTER: RelationshipFilter = {
+  direction: 'both',
+  types: [],
+  showSelfReferences: true,
+};
+
+/**
+ * Maximum relationships to load before warning user
+ */
+export const MAX_RELATIONSHIPS_WARNING_THRESHOLD = 1000;

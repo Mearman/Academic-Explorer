@@ -43,12 +43,12 @@
 
 **Tasks**:
 
-- [ ] T001 [P] Create TypeScript types file at apps/web/src/types/relationship.ts with EntityRelationshipView, RelationshipSection, RelationshipItem, and RelationshipFilter interfaces from data-model.md
-- [ ] T002 [P] Create useEntityRelationships hook at apps/web/src/hooks/use-entity-relationships.ts with signature: (entityId: string, entityType: EntityType) => {incoming: RelationshipSection[], outgoing: RelationshipSection[], loading: boolean, error?: RelationshipError}
-- [ ] T003 [P] Create RelationshipItem component at apps/web/src/components/relationship/RelationshipItem.tsx to display individual relationship with clickable entity link and optional metadata
-- [ ] T004 [P] Create RelationshipList component at apps/web/src/components/relationship/RelationshipList.tsx with pagination support (50 items per page, "Load more" button)
-- [ ] T005 Create component tests at apps/web/test/component/relationship-item.component.test.tsx to verify RelationshipItem renders entity name, handles click navigation, and displays metadata
-- [ ] T006 Create component tests at apps/web/test/component/relationship-list.component.test.tsx to verify pagination works correctly, "Load more" button appears when hasMore=true, and displays count (e.g., "Showing 50 of 150")
+- [X] T001 [P] Create TypeScript types file at apps/web/src/types/relationship.ts with EntityRelationshipView, RelationshipSection, RelationshipItem, and RelationshipFilter interfaces from data-model.md
+- [X] T002 [P] Create useEntityRelationships hook at apps/web/src/hooks/use-entity-relationships.ts with signature: (entityId: string, entityType: EntityType) => {incoming: RelationshipSection[], outgoing: RelationshipSection[], loading: boolean, error?: RelationshipError}
+- [X] T003 [P] Create RelationshipItem component at apps/web/src/components/relationship/RelationshipItem.tsx to display individual relationship with clickable entity link and optional metadata
+- [X] T004 [P] Create RelationshipList component at apps/web/src/components/relationship/RelationshipList.tsx with pagination support (50 items per page, "Load more" button)
+- [X] T005 Create component tests at apps/web/test/component/relationship-item.component.test.tsx to verify RelationshipItem renders entity name, handles click navigation, and displays metadata
+- [X] T006 Create component tests at apps/web/test/component/relationship-list.component.test.tsx to verify pagination works correctly, "Load more" button appears when hasMore=true, and displays count (e.g., "Showing 50 of 150")
 
 **Completion Criteria**: Base components and hooks created; unit tests pass; no user stories implemented yet
 

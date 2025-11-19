@@ -1,0 +1,164 @@
+/**
+ * Component tests for RelationshipItem component
+ * @vitest-environment jsdom
+ */
+
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
+import { MantineProvider } from '@mantine/core';
+import '@testing-library/jest-dom';
+import { RelationshipItem } from './RelationshipItem';
+import type { RelationshipItem as RelationshipItemType } from '@/types/relationship';
+import { RelationType } from '@academic-explorer/graph';
+
+// Mock useEntityInteraction hook
+vi.mock('@/hooks/use-entity-interaction', () => ({
+  useEntityInteraction: () => ({
+    handleSidebarEntityClick: vi.fn(),
+  }),
+}));
+
+// Test wrapper with MantineProvider
+const TestWrapper = ({ children }: { children: React.ReactNode }) => (
+  <MantineProvider>{children}</MantineProvider>
+);
+
+describe('RelationshipItem', () => {
+  const mockItem: RelationshipItemType = {
+    id: 'rel-1',
+    sourceId: 'W123',
+    targetId: 'A456',
+    sourceType: 'works',
+    targetType: 'authors',
+    type: RelationType.AUTHORSHIP,
+    direction: 'outbound',
+    displayName: 'John Doe',
+    isSelfReference: false,
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should render entity name', () => {
+    render(
+      <TestWrapper>
+        <RelationshipItem item={mockItem} />
+      </TestWrapper>
+    );
+
+    expect(screen.getByText('John Doe')).toBeInTheDocument();
+  });
+
+  it('should render as clickable link', () => {
+    render(
+      <TestWrapper>
+        <RelationshipItem item={mockItem} />
+      </TestWrapper>
+    );
+
+    const link = screen.getByText('John Doe');
+    expect(link.tagName).toBe('A');
+  });
+
+  it('should display subtitle when provided', () => {
+    const itemWithSubtitle: RelationshipItemType = {
+      ...mockItem,
+      subtitle: 'University of Example',
+    };
+
+    render(
+      <TestWrapper>
+        <RelationshipItem item={itemWithSubtitle} />
+      </TestWrapper>
+    );
+
+    expect(screen.getByText('University of Example')).toBeInTheDocument();
+  });
+
+  it('should display self-reference indicator', () => {
+    const selfRefItem: RelationshipItemType = {
+      ...mockItem,
+      isSelfReference: true,
+    };
+
+    render(
+      <TestWrapper>
+        <RelationshipItem item={selfRefItem} />
+      </TestWrapper>
+    );
+
+    expect(screen.getByText('(self-reference)')).toBeInTheDocument();
+  });
+
+  it('should display metadata when provided', () => {
+    const itemWithMetadata: RelationshipItemType = {
+      ...mockItem,
+      metadata: {
+        type: 'authorship',
+        position: 1,
+        isCorresponding: true,
+      },
+    };
+
+    render(
+      <TestWrapper>
+        <RelationshipItem item={itemWithMetadata} />
+      </TestWrapper>
+    );
+
+    // Metadata is displayed (JSON stringified in current implementation)
+    const metadataText = screen.getByText(/authorship/i);
+    expect(metadataText).toBeInTheDocument();
+  });
+
+  it('should handle click navigation for outbound relationships', async () => {
+    const { useEntityInteraction } = await import('@/hooks/use-entity-interaction');
+    const mockHandleClick = vi.fn();
+    vi.mocked(useEntityInteraction).mockReturnValue({
+      handleSidebarEntityClick: mockHandleClick,
+    } as never);
+
+    const user = userEvent.setup();
+
+    render(
+      <TestWrapper>
+        <RelationshipItem item={mockItem} />
+      </TestWrapper>
+    );
+
+    const link = screen.getByText('John Doe');
+    await user.click(link);
+
+    // Should navigate to target entity for outbound relationships
+    expect(mockHandleClick).toHaveBeenCalledWith({ entityId: 'A456', entityType: 'authors' });
+  });
+
+  it('should handle click navigation for inbound relationships', async () => {
+    const { useEntityInteraction } = await import('@/hooks/use-entity-interaction');
+    const mockHandleClick = vi.fn();
+    vi.mocked(useEntityInteraction).mockReturnValue({
+      handleSidebarEntityClick: mockHandleClick,
+    } as never);
+
+    const user = userEvent.setup();
+
+    const inboundItem: RelationshipItemType = {
+      ...mockItem,
+      direction: 'inbound',
+    };
+
+    render(
+      <TestWrapper>
+        <RelationshipItem item={inboundItem} />
+      </TestWrapper>
+    );
+
+    const link = screen.getByText('John Doe');
+    await user.click(link);
+
+    // Should navigate to source entity for inbound relationships
+    expect(mockHandleClick).toHaveBeenCalledWith({ entityId: 'W123', entityType: 'works' });
+  });
+});
