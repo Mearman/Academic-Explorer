@@ -11,21 +11,15 @@ Add incoming/outgoing relationship visualization to entity detail pages, enablin
 
 ## Technical Context
 
-<!--
-  ACTION REQUIRED: Replace the content in this section with the technical details
-  for the project. The structure here is presented in advisory capacity to guide
-  the iteration process.
--->
-
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [single/web/mobile - determines source structure]  
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+**Language/Version**: TypeScript 5.x with strict mode enabled
+**Primary Dependencies**: React 19, TanStack Router v7, Mantine UI, @academic-explorer/graph (relationship types), @academic-explorer/ui (shared components)
+**Storage**: IndexedDB via storage provider interface (DexieStorageProvider for production, InMemoryStorageProvider for tests) - No new storage operations required for this feature
+**Testing**: Vitest (serial execution with fake-indexeddb), Playwright for E2E tests
+**Target Platform**: Web (React SPA in apps/web)
+**Project Type**: Web application (existing Nx monorepo)
+**Performance Goals**: 2-second load time for relationships (SC-001), <1s filtering (SC-005), handle 1000 relationships without degradation (SC-006)
+**Constraints**: Pagination at 50 items per section, 95% entity coverage (SC-002), serial test execution to prevent OOM
+**Scale/Scope**: 13 functional requirements (FR-001 to FR-013), 4 user stories (P1-P4), extends 7 entity types (works, authors, institutions, sources, publishers, funders, topics)
 
 ## Constitution Check
 
@@ -33,27 +27,24 @@ Add incoming/outgoing relationship visualization to entity detail pages, enablin
 
 Verify alignment with Academic Explorer Constitution (`.specify/memory/constitution.md`):
 
-1. **Type Safety**: No `any` types planned; use `unknown` with type guards
-2. **Test-First Development**: Tests written and failing before implementation begins
-3. **Monorepo Architecture**: Changes use proper Nx workspace structure (apps/ or packages/)
-4. **Storage Abstraction**: Any storage operations use provider interface (no direct Dexie/IndexedDB coupling)
-5. **Performance & Memory**: Tests run serially; memory constraints considered; Web Workers for heavy computation
-6. **Atomic Conventional Commits**: Incremental atomic commits created after each task completion
-7. **Development-Stage Pragmatism**: No backwards compatibility required; breaking changes acceptable during development
-8. **Test-First Bug Fixes**: Bug tests written to reproduce and fail before fixes implemented
+1. **Type Safety**: ✅ No `any` types planned; relationship direction uses union type `'outbound' | 'inbound'`; all component props strictly typed
+2. **Test-First Development**: ✅ Tests written and failing before implementation begins; acceptance scenarios define test cases
+3. **Monorepo Architecture**: ✅ Changes extend existing apps/web structure; may add shared components to packages/ui; uses @academic-explorer/* aliases
+4. **Storage Abstraction**: ✅ No new storage operations required; reads relationship data from existing graph store via provider interface
+5. **Performance & Memory**: ✅ Tests run serially; pagination at 50 items limits memory; no Web Workers needed (filtering is synchronous)
+6. **Atomic Conventional Commits**: ✅ Incremental atomic commits planned per user story (P1→P2→P3→P4)
+7. **Development-Stage Pragmatism**: ✅ May introduce breaking changes to entity detail page layouts; no backwards compatibility required
+8. **Test-First Bug Fixes**: ✅ Any rendering or data loading bugs will have regression tests written before fixes
+9. **Deployment Readiness**: ✅ All pre-existing issues will be resolved before marking work complete; feature must pass `pnpm validate`
 
-**Complexity Justification Required?** Document in Complexity Tracking section if this feature:
-- Adds new packages/apps beyond existing structure
-- Introduces new storage provider implementations
-- Requires new worker threads
-- Violates YAGNI or adds architectural complexity
+**Complexity Justification**: No violations. Feature extends existing structure without adding packages, storage providers, or worker threads. Reuses EdgeFiltersSection filtering patterns.
 
 ## Project Structure
 
 ### Documentation (this feature)
 
 ```text
-specs/[###-feature]/
+specs/016-entity-relationship-viz/
 ├── plan.md              # This file (/speckit.plan command output)
 ├── research.md          # Phase 0 output (/speckit.plan command)
 ├── data-model.md        # Phase 1 output (/speckit.plan command)
@@ -63,57 +54,59 @@ specs/[###-feature]/
 ```
 
 ### Source Code (repository root)
-<!--
-  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
-  for this feature. Delete unused options and expand the chosen structure with
-  real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
--->
 
 ```text
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
-src/
-├── models/
-├── services/
-├── cli/
-└── lib/
-
-tests/
-├── contract/
-├── integration/
-└── unit/
-
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
-
-frontend/
+apps/web/
 ├── src/
 │   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
+│   │   ├── relationship/                    # NEW: Relationship visualization components
+│   │   │   ├── RelationshipSection.tsx       # Grouped display of single relationship type
+│   │   │   ├── RelationshipItem.tsx          # Individual relationship connection
+│   │   │   ├── RelationshipList.tsx          # List container with pagination
+│   │   │   └── RelationshipCounts.tsx        # Summary count badges
+│   │   └── sections/
+│   │       └── EdgeFiltersSection.tsx        # EXISTING: Reuse filtering patterns
+│   ├── routes/
+│   │   ├── _entityType/
+│   │   │   ├── _authorId.lazy.tsx            # MODIFY: Add relationship sections
+│   │   │   ├── _workId.lazy.tsx              # MODIFY: Add relationship sections
+│   │   │   ├── _institutionId.lazy.tsx       # MODIFY: Add relationship sections
+│   │   │   ├── _sourceId.lazy.tsx            # MODIFY: Add relationship sections
+│   │   │   ├── _publisherId.lazy.tsx         # MODIFY: Add relationship sections
+│   │   │   ├── _funderId.lazy.tsx            # MODIFY: Add relationship sections
+│   │   │   └── _topicId.lazy.tsx             # MODIFY: Add relationship sections
+│   │   └── ...
+│   └── hooks/
+│       └── use-entity-relationships.ts       # NEW: Hook for fetching/filtering relationships
+└── test/
+    ├── component/
+    │   ├── relationship-section.component.test.tsx
+    │   ├── relationship-item.component.test.tsx
+    │   └── relationship-list.component.test.tsx
+    ├── integration/
+    │   └── entity-relationships.integration.test.tsx
+    └── e2e/
+        ├── incoming-relationships.e2e.test.ts
+        ├── outgoing-relationships.e2e.test.ts
+        ├── relationship-filtering.e2e.test.ts
+        └── relationship-pagination.e2e.test.ts
 
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
+packages/graph/
+└── src/
+    └── types/
+        └── core.ts                           # EXISTING: GraphEdge with direction metadata
 
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+packages/ui/
+└── src/
+    └── components/
+        └── relationship/                     # POTENTIAL: Shared components if needed
+            └── ...
 ```
 
-**Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+**Structure Decision**: Web application structure. Feature extends existing entity detail pages in `apps/web/src/routes/` by adding relationship visualization sections. New relationship components in `apps/web/src/components/relationship/`. Reuses existing `EdgeFiltersSection` filtering patterns. No new packages required; may optionally move components to `packages/ui` if shared across apps.
 
 ## Complexity Tracking
 
 > **Fill ONLY if Constitution Check has violations that must be justified**
 
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+No violations. This section intentionally left empty.
