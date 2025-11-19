@@ -7,7 +7,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Stack, Title, Paper, Text } from '@mantine/core';
+import { Stack, Title, Paper, Text, Skeleton } from '@mantine/core';
 import type { EntityType } from '@academic-explorer/types';
 import { RelationType } from '@academic-explorer/graph';
 import { useEntityRelationships } from '@/hooks/use-entity-relationships';
@@ -64,9 +64,23 @@ export const OutgoingRelationships: React.FC<OutgoingRelationshipsProps> = ({
     }
   );
 
-  // Don't render if loading or error
+  // Show loading skeleton while fetching
   if (loading) {
-    return null; // Entity detail page already handles loading state
+    return (
+      <Stack gap="md" data-testid="outgoing-relationships-loading">
+        <Title order={2} size="h3">Outgoing Relationships</Title>
+        <Paper p="md" withBorder>
+          <Skeleton height={8} width="40%" mb="sm" />
+          <Skeleton height={8} width="60%" mb="xs" />
+          <Skeleton height={8} width="50%" />
+        </Paper>
+        <Paper p="md" withBorder>
+          <Skeleton height={8} width="35%" mb="sm" />
+          <Skeleton height={8} width="55%" mb="xs" />
+          <Skeleton height={8} width="45%" />
+        </Paper>
+      </Stack>
+    );
   }
 
   if (error) {
