@@ -8,7 +8,8 @@
  */
 
 import React from 'react';
-import { Stack, Group, Text, Badge, Paper } from '@mantine/core';
+import { Stack, Group, Text, Badge, Paper, Alert } from '@mantine/core';
+import { IconAlertCircle } from '@tabler/icons-react';
 import { RelationshipList } from './RelationshipList';
 import type { RelationshipSection as RelationshipSectionType } from '@/types/relationship';
 
@@ -53,6 +54,19 @@ export const RelationshipSection: React.FC<RelationshipSectionProps> = ({
             {section.totalCount}
           </Badge>
         </Group>
+
+        {/* Partial data warning */}
+        {section.isPartialData && (
+          <Alert
+            icon={<IconAlertCircle size={16} />}
+            title="Incomplete Data"
+            color="yellow"
+            variant="light"
+            data-testid="partial-data-warning"
+          >
+            Relationship data may be incomplete. The graph visualization is still loading or only shows a subset of available relationships.
+          </Alert>
+        )}
 
         {/* Relationship list */}
         <RelationshipList section={section} onLoadMore={onLoadMore} />

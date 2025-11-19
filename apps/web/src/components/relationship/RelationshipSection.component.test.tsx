@@ -27,7 +27,8 @@ describe('RelationshipSection', () => {
   const createMockSection = (
     type: RelationType = RelationType.AUTHORSHIP,
     itemCount: number = 10,
-    label: string = 'Authors'
+    label: string = 'Authors',
+    isPartialData: boolean = false
   ): RelationshipSectionType => {
     const items = Array.from({ length: itemCount }, (_, i) => ({
       id: `rel-${i}`,
@@ -48,6 +49,7 @@ describe('RelationshipSection', () => {
       label,
       items,
       visibleItems: items.slice(0, Math.min(itemCount, 50)),
+      isPartialData,
       totalCount: itemCount,
       visibleCount: Math.min(itemCount, 50),
       hasMore: itemCount > 50,
@@ -174,5 +176,75 @@ describe('RelationshipSection', () => {
     // RelationshipList should have "Load more" button
     const loadMoreButton = screen.queryByRole('button', { name: /load more/i });
     expect(loadMoreButton).toBeInTheDocument();
+  });
+
+  describe('Partial Data Warning', () => {
+    it('should not show warning when isPartialData is false', () => {
+      const section = createMockSection(RelationType.AUTHORSHIP, 10, 'Authors', false);
+
+      render(
+        <TestWrapper>
+          <RelationshipSection section={section} />
+        </TestWrapper>
+      );
+
+      expect(screen.queryByTestId('partial-data-warning')).not.toBeInTheDocument();
+    });
+
+    it('should not show warning when isPartialData is undefined', () => {
+      const section = createMockSection(RelationType.AUTHORSHIP, 10, 'Authors');
+
+      render(
+        <TestWrapper>
+          <RelationshipSection section={section} />
+        </TestWrapper>
+      );
+
+      expect(screen.queryByTestId('partial-data-warning')).not.toBeInTheDocument();
+    });
+
+    it('should show warning when isPartialData is true', () => {
+      const section = createMockSection(RelationType.AUTHORSHIP, 10, 'Authors', true);
+
+      render(
+        <TestWrapper>
+          <RelationshipSection section={section} />
+        </TestWrapper>
+      );
+
+      const warning = screen.getByTestId('partial-data-warning');
+      expect(warning).toBeInTheDocument();
+      expect(warning).toHaveTextContent(/Incomplete Data/i);
+      expect(warning).toHaveTextContent(/Relationship data may be incomplete/i);
+    });
+
+    it('should show warning with yellow color variant', () => {
+      const section = createMockSection(RelationType.AUTHORSHIP, 10, 'Authors', true);
+
+      render(
+        <TestWrapper>
+          <RelationshipSection section={section} />
+        </TestWrapper>
+      );
+
+      const warning = screen.getByTestId('partial-data-warning');
+      // Mantine Alert with color="yellow" applies specific classes
+      expect(warning.className).toContain('mantine-Alert');
+    });
+
+    it('should show icon in warning message', () => {
+      const section = createMockSection(RelationType.AUTHORSHIP, 10, 'Authors', true);
+
+      const { container } = render(
+        <TestWrapper>
+          <RelationshipSection section={section} />
+        </TestWrapper>
+      );
+
+      const warning = screen.getByTestId('partial-data-warning');
+      // IconAlertCircle should be rendered within the warning
+      const icon = warning.querySelector('svg');
+      expect(icon).toBeInTheDocument();
+    });
   });
 });

@@ -213,6 +213,9 @@ export interface RelationshipSection {
 
   /** Pagination state */
   pagination: PaginationState;
+
+  /** Whether data might be incomplete (e.g., graph not fully loaded) */
+  isPartialData?: boolean;
 }
 
 /**
