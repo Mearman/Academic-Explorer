@@ -476,6 +476,105 @@ export const topicSchema = entityWithWorksSchema.extend({
 		.optional(),
 })
 
+// Domain schema (top level of taxonomy hierarchy)
+export const domainSchema = entityWithWorksSchema.extend({
+	description: z.string().optional(),
+	ids: z
+		.object({
+			openalex: openAlexIdSchema,
+			wikidata: z.string().optional(),
+			wikipedia: z.string().optional(),
+		})
+		.optional(),
+	display_name_alternatives: z.array(z.string()).optional(),
+	fields: z
+		.array(
+			z.object({
+				id: openAlexIdSchema,
+				display_name: z.string(),
+			})
+		)
+		.optional(),
+	siblings: z
+		.array(
+			z.object({
+				id: openAlexIdSchema,
+				display_name: z.string(),
+			})
+		)
+		.optional(),
+})
+
+// Field schema (middle level of taxonomy hierarchy)
+export const fieldSchema = entityWithWorksSchema.extend({
+	description: z.string().optional(),
+	ids: z
+		.object({
+			openalex: openAlexIdSchema,
+			wikidata: z.string().optional(),
+			wikipedia: z.string().optional(),
+		})
+		.optional(),
+	display_name_alternatives: z.array(z.string()).optional(),
+	domain: z.object({
+		id: openAlexIdSchema,
+		display_name: z.string(),
+	}),
+	subfields: z
+		.array(
+			z.object({
+				id: openAlexIdSchema,
+				display_name: z.string(),
+			})
+		)
+		.optional(),
+	siblings: z
+		.array(
+			z.object({
+				id: openAlexIdSchema,
+				display_name: z.string(),
+			})
+		)
+		.optional(),
+})
+
+// Subfield schema (below field, above topic in taxonomy hierarchy)
+export const subfieldSchema = entityWithWorksSchema.extend({
+	description: z.string().optional(),
+	ids: z
+		.object({
+			openalex: openAlexIdSchema,
+			wikidata: z.string().optional(),
+			wikipedia: z.string().optional(),
+		})
+		.optional(),
+	display_name_alternatives: z.array(z.string()).optional(),
+	field: z.object({
+		id: openAlexIdSchema,
+		display_name: z.string(),
+	}),
+	domain: z.object({
+		id: openAlexIdSchema,
+		display_name: z.string(),
+	}),
+	topics: z
+		.array(
+			z.object({
+				id: openAlexIdSchema,
+				display_name: z.string(),
+			})
+		)
+		.optional(),
+	siblings: z
+		.array(
+			z.object({
+				id: openAlexIdSchema,
+				display_name: z.string(),
+			})
+		)
+		.optional(),
+})
+
 // Keyword schema
 export const keywordSchema = baseEntitySchema.extend({
 	description: z.string().optional(),
@@ -496,4 +595,7 @@ export const sourceResponseSchema = openAlexResponseSchema(sourceSchema)
 export const publisherResponseSchema = openAlexResponseSchema(publisherSchema)
 export const funderResponseSchema = openAlexResponseSchema(funderSchema)
 export const topicResponseSchema = openAlexResponseSchema(topicSchema)
+export const domainResponseSchema = openAlexResponseSchema(domainSchema)
+export const fieldResponseSchema = openAlexResponseSchema(fieldSchema)
+export const subfieldResponseSchema = openAlexResponseSchema(subfieldSchema)
 export const keywordResponseSchema = openAlexResponseSchema(keywordSchema)

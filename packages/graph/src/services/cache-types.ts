@@ -475,6 +475,9 @@ export const isEntityType = (value: unknown): value is EntityType => {
 		"topics",
 		"concepts",
 		"keywords",
+		"domains",
+		"fields",
+		"subfields",
 	]
 	return typeof value === "string" && entityTypes.includes(value)
 }

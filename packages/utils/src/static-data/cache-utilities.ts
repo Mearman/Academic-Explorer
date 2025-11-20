@@ -17,6 +17,9 @@ export type EntityType =
 	| "funders"
 	| "concepts"
 	| "autocomplete"
+	| "domains"
+	| "fields"
+	| "subfields"
 
 export function isEntityType(value: string): value is EntityType {
 	const validEntityTypes: readonly string[] = [
@@ -29,6 +32,9 @@ export function isEntityType(value: string): value is EntityType {
 		"funders",
 		"concepts",
 		"autocomplete",
+		"domains",
+		"fields",
+		"subfields",
 	]
 	return validEntityTypes.includes(value)
 }

@@ -2,7 +2,7 @@ import { createLazyFileRoute } from "@tanstack/react-router";
 import { useParams, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 import { cachedOpenAlex } from "@academic-explorer/client";
-import { type Topic, type TopicField } from "@academic-explorer/types/entities";
+import { type Subfield } from "@academic-explorer/types/entities";
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
 import { usePrettyUrl } from "@/hooks/use-pretty-url";
@@ -10,10 +10,11 @@ import { EntityDetailLayout } from "@/components/entity-detail/EntityDetailLayou
 import { LoadingState } from "@/components/entity-detail/LoadingState";
 import { ErrorState } from "@/components/entity-detail/ErrorState";
 import { ENTITY_TYPE_CONFIGS } from "@/components/entity-detail/EntityTypeConfig";
-import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
-import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
-import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
-import { useEntityRelationships } from "@/hooks/use-entity-relationships";
+// Relationship components disabled for taxonomy entities
+// import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
+// import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
+// import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
+// import { useEntityRelationships } from "@/hooks/use-entity-relationships";
 
 function SubfieldRoute() {
   const { subfieldId: rawSubfieldId } = useParams({ strict: false }) as { subfieldId: string };
@@ -28,33 +29,34 @@ function SubfieldRoute() {
 
   // Parse select parameter - only send select when explicitly provided in URL
   const selectFields = selectParam && typeof selectParam === 'string'
-    ? selectParam.split(',').map(field => field.trim()) as TopicField[]
+    ? selectParam.split(',').map(field => field.trim())
     : undefined;
 
   // Construct full OpenAlex subfield URL
   const fullSubfieldId = subfieldId ? `https://openalex.org/subfields/${subfieldId}` : '';
 
-  // Fetch subfield data - subfields use the topics endpoint with full subfield URL
+  // Fetch subfield data - subfields use the subfields endpoint
   const { data: subfield, isLoading, error } = useQuery({
     queryKey: ["subfield", subfieldId, selectParam],
     queryFn: async () => {
       if (!subfieldId) {
         throw new Error("Subfield ID is required");
       }
-      const response = await cachedOpenAlex.client.topics.getTopic(
-        fullSubfieldId,
+      const response = await cachedOpenAlex.getById(
+        'subfields',
+        subfieldId,
         selectFields ? { select: selectFields } : {}
       );
-      return response as Topic;
+      return response as Subfield;
     },
     enabled: !!subfieldId,
   });
 
-  // Get relationship counts for summary display - MUST be called before early returns (Rules of Hooks)
-  const { incomingCount, outgoingCount } = useEntityRelationships(
-    fullSubfieldId,
-    'topics'
-  );
+  // Relationship counts disabled for taxonomy entities
+  // const { incomingCount, outgoingCount } = useEntityRelationships(
+  //   fullSubfieldId,
+  //   'subfields'
+  // );
 
   // Handle loading state
   if (isLoading) {
@@ -75,7 +77,7 @@ function SubfieldRoute() {
   return (
     <EntityDetailLayout
       config={ENTITY_TYPE_CONFIGS.topic}
-      entityType="topic"
+      entityType="subfield"
       entityId={fullSubfieldId}
       displayName={subfield.display_name || "Subfield"}
       selectParam={typeof selectParam === 'string' ? selectParam : undefined}
@@ -83,9 +85,7 @@ function SubfieldRoute() {
       viewMode={viewMode}
       onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
       data={subfield}>
-      <RelationshipCounts incomingCount={incomingCount} outgoingCount={outgoingCount} />
-      <IncomingRelationships entityId={fullSubfieldId} entityType="topics" />
-      <OutgoingRelationships entityId={fullSubfieldId} entityType="topics" />
+      {/* Relationship components disabled - taxonomy entities have hierarchical structure */}
     </EntityDetailLayout>
   );
 }

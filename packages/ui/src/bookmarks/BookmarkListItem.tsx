@@ -62,6 +62,9 @@ function getEntityTypeColor(entityType: EntityType): string {
 		publishers: "grape",
 		funders: "yellow",
 		keywords: "teal",
+		domains: "indigo",
+		fields: "lime",
+		subfields: "violet",
 	};
 	return colorMap[entityType] || "gray";
 }

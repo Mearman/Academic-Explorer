@@ -45,7 +45,7 @@ export function createRedirectMiddleware(
       { regex: /^\/api\/([A-Z]\d+.*)/, replacement: "/api/openalex/$1" },
       {
         regex:
-          /^\/api\/(works|authors|sources|institutions|topics|publishers|funders|keywords|concepts|autocomplete|text)/,
+          /^\/api\/(works|authors|sources|institutions|topics|publishers|funders|keywords|concepts|autocomplete|text|domains|fields|subfields)/,
         replacement: "/api/openalex/$1",
       },
     ];

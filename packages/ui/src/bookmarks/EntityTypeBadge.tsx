@@ -20,6 +20,9 @@ const ENTITY_TYPE_COLORS: Record<EntityType, MantineColor> = {
 	publishers: "indigo",
 	funders: "lime",
 	keywords: "grape",
+	domains: "cyan",
+	fields: "green",
+	subfields: "yellow",
 };
 
 /**

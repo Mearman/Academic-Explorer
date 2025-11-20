@@ -16,6 +16,9 @@ import {
 	publisherSchema,
 	funderSchema,
 	topicSchema,
+	domainSchema,
+	fieldSchema,
+	subfieldSchema,
 	keywordSchema,
 } from "./schemas"
 
@@ -156,6 +159,18 @@ export type Concept = z.infer<typeof conceptSchema>
 // Topic type inferred from comprehensive Zod schema
 export type Topic = z.infer<typeof topicSchema>
 
+// Domain entity (top level of taxonomy hierarchy)
+// Domain type inferred from comprehensive Zod schema
+export type Domain = z.infer<typeof domainSchema>
+
+// Field entity (middle level of taxonomy hierarchy)
+// Field type inferred from comprehensive Zod schema
+export type Field = z.infer<typeof fieldSchema>
+
+// Subfield entity (below field, above topic in taxonomy hierarchy)
+// Subfield type inferred from comprehensive Zod schema
+export type Subfield = z.infer<typeof subfieldSchema>
+
 // Publisher entity
 // Publisher type inferred from comprehensive Zod schema
 export type Publisher = z.infer<typeof publisherSchema>
@@ -201,6 +216,9 @@ export type OpenAlexEntity =
 	| Publisher
 	| Funder
 	| Keyword
+	| Domain
+	| Field
+	| Subfield
 
 export type EntityType =
 	| "works"
@@ -212,6 +230,9 @@ export type EntityType =
 	| "publishers"
 	| "funders"
 	| "keywords"
+	| "domains"
+	| "fields"
+	| "subfields"
 
 // Mapping from entity type to entity interface
 export type EntityTypeMap = {
@@ -224,6 +245,9 @@ export type EntityTypeMap = {
 	publishers: Publisher
 	funders: Funder
 	keywords: Keyword
+	domains: Domain
+	fields: Field
+	subfields: Subfield
 }
 
 // Field arrays for use with select parameter

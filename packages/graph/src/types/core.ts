@@ -16,6 +16,9 @@ export type EntityType =
 	| "topics"
 	| "concepts"
 	| "keywords"
+	| "domains"
+	| "fields"
+	| "subfields"
 
 export enum RelationType {
 	// Core academic relationships (matching OpenAlex field names - noun form)

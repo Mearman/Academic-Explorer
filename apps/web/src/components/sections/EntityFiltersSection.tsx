@@ -63,6 +63,9 @@ export const EntityFiltersSection: React.FC = () => {
         publishers: 0,
         funders: 0,
         keywords: 0,
+        domains: 0,
+        fields: 0,
+        subfields: 0,
       };
       const visible: Record<EntityType, number> = {
         works: 0,
@@ -74,6 +77,9 @@ export const EntityFiltersSection: React.FC = () => {
         publishers: 0,
         funders: 0,
         keywords: 0,
+        domains: 0,
+        fields: 0,
+        subfields: 0,
       };
 
       // Count nodes by type
@@ -100,6 +106,9 @@ export const EntityFiltersSection: React.FC = () => {
         publishers: 0,
         funders: 0,
         keywords: 0,
+        domains: 0,
+        fields: 0,
+        subfields: 0,
       };
       const emptyVisible: Record<EntityType, number> = {
         works: 0,
@@ -111,6 +120,9 @@ export const EntityFiltersSection: React.FC = () => {
         publishers: 0,
         funders: 0,
         keywords: 0,
+        domains: 0,
+        fields: 0,
+        subfields: 0,
       };
 
       return {
