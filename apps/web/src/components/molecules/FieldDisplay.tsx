@@ -65,18 +65,23 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
     entityId,
     entityType,
     onSuccess: (data) => {
+      console.log('[FieldDisplay] onSuccess called', { fieldName, data });
       // Extract the fetched field from the response
       const fetchedValue = (data as Record<string, unknown>)[fieldName];
+      console.log('[FieldDisplay] Extracted field value:', { fieldName, fetchedValue });
       setCurrentValue(fetchedValue);
       setHasBeenFetched(true);
 
       if (onDataFetched) {
-        onDataFetched(fetchedValue);
+        console.log('[FieldDisplay] Calling onDataFetched with full data object');
+        // Pass the full data object, not just the field value
+        onDataFetched(data);
       }
     },
   });
 
   const handleFetchClick = async () => {
+    console.log('[FieldDisplay] handleFetchClick called', { fieldName, entityId, entityType });
     await fetchField(fieldName);
   };
 
