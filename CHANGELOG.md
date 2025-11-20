@@ -1,3 +1,379 @@
+# [15.0.0](https://github.com/Mearman/Academic-Explorer/compare/v14.0.0...v15.0.0) (2025-11-20)
+
+
+### Bug Fixes
+
+* **docs:** correct Vitest integration test command in quickstart.md (T089) ([0a8d419](https://github.com/Mearman/Academic-Explorer/commit/0a8d419ba04aa5a4d292d05f2241e75433aaa1d3))
+* **graph,web:** migrate to new RelationType enum values and add edge direction ([89c3be0](https://github.com/Mearman/Academic-Explorer/commit/89c3be01bb4293bdf55980a2c357ff4d9df59393)), closes [#014-edge-direction-correction](https://github.com/Mearman/Academic-Explorer/issues/014-edge-direction-correction)
+* **graph,web:** update test expectations to match RelationType migration ([b0707f2](https://github.com/Mearman/Academic-Explorer/commit/b0707f258b21bc5688830a4c08086b44d6f37584)), closes [#014-edge-direction-correction](https://github.com/Mearman/Academic-Explorer/issues/014-edge-direction-correction)
+* **graph:** correct AUTHORSHIP edge direction (Work → Author) - US1 MVP ([83e32e4](https://github.com/Mearman/Academic-Explorer/commit/83e32e408be842e31fb873e349da63b924e4cc83))
+* **graph:** Phase 10 polish - metadata, truncation, test fixes ([5801c24](https://github.com/Mearman/Academic-Explorer/commit/5801c244c8b452c6ad42a4d69506de0572410c6a))
+* **shared-utils:** add DOM lib and node types to types package tsconfig ([7b674df](https://github.com/Mearman/Academic-Explorer/commit/7b674dfdc97ca2d1bbd50e3f90af546ab3e82007))
+* **ui-components:** add jest-dom/vitest import to test setup ([cebe129](https://github.com/Mearman/Academic-Explorer/commit/cebe129b8d85b6fe84b88f0bf00ba4c8245249c1))
+* **ui-components:** add Mantine packages to devDependencies for TypeScript resolution ([a98738f](https://github.com/Mearman/Academic-Explorer/commit/a98738fa927c9562dc6eeb13cd94fb6aa69e5139))
+* **web:** add cleanup to all relationship component tests ([19a8deb](https://github.com/Mearman/Academic-Explorer/commit/19a8debdf4dd4ecdf4dcd986ca9c4fdd4e010f43))
+* **web:** add vitest-axe type declarations ([3264c83](https://github.com/Mearman/Academic-Explorer/commit/3264c83e9d963d5947aa012a74465a2c95ef430c))
+* **web:** correct edge directions in relationship detection service ([c59bc0d](https://github.com/Mearman/Academic-Explorer/commit/c59bc0d53c621413ec16461d2166436ef25b837e))
+* **web:** correct Vitest mocking syntax in RelationshipItem tests ([951511f](https://github.com/Mearman/Academic-Explorer/commit/951511f675390cc10c8d24159b554b8d8952f7b4))
+* **web:** ensure search controls meet WCAG touch target requirements ([f0c080c](https://github.com/Mearman/Academic-Explorer/commit/f0c080c8245367ff8e2fba26785daa20aacc849f))
+* **web:** fix React hooks violations in entity routes ([11526ca](https://github.com/Mearman/Academic-Explorer/commit/11526ca8f23552fc6891956453cd12ac859e77c7))
+* **web:** improve landing page responsive layout ([620bd37](https://github.com/Mearman/Academic-Explorer/commit/620bd37ef7d05711620f78644d6e49435299fe03))
+* **web:** improve visual hierarchy and zoom support on landing page ([e7fe27c](https://github.com/Mearman/Academic-Explorer/commit/e7fe27c2566ac7dc104121af574c149f4ac137d3))
+* **web:** make useEntityRelationships hook work without GraphProvider context ([d10302f](https://github.com/Mearman/Academic-Explorer/commit/d10302f83572058c6a62438889c2946ce480234c))
+* **web:** prevent state updates after unmount in use-user-interactions hook ([63c2ea3](https://github.com/Mearman/Academic-Explorer/commit/63c2ea35274c4b5e8063c99cd0c22dc4593bd7ff))
+* **web:** resolve vitest 4 migration issues ([054bf02](https://github.com/Mearman/Academic-Explorer/commit/054bf0239941396ac8daed0e7feb3cc1a5ef0cd5))
+* **web:** update graph-store test for 18 edge types ([2376172](https://github.com/Mearman/Academic-Explorer/commit/2376172b4574dcabf667d00d9268211d409b2ea0))
+* **web:** use vitest-axe/matchers for accessibility tests ([0a1c989](https://github.com/Mearman/Academic-Explorer/commit/0a1c98906a0a5dfdea6c4a28dc3b1f6249949add))
+
+
+### chore
+
+* **deps:** upgrade vitest to v4.0.10 to fix glob vulnerability ([46aa4d1](https://github.com/Mearman/Academic-Explorer/commit/46aa4d1189f7946cee0988201458157ab948cdf4))
+
+
+### Code Refactoring
+
+* **graph:** update RelationType to noun form and add EdgeDirection field ([5e77550](https://github.com/Mearman/Academic-Explorer/commit/5e77550f7f84570e836bd918768269d94cf0a083))
+
+
+### Documentation
+
+* **docs:** amend constitution to v1.5.0 - add test-first bug fix principle ([166eb46](https://github.com/Mearman/Academic-Explorer/commit/166eb46e6b517a4dd7b84338478db9dacc3dc8d3))
+* **root:** amend constitution to v2.0.0 (deployment readiness principle) ([7cd2d0f](https://github.com/Mearman/Academic-Explorer/commit/7cd2d0f00949cff48e34ef61d3cccd6d593727e2))
+
+
+### Features
+
+* **graph:** implement FUNDED_BY edges (Work → Funder) - US3 ([40fb020](https://github.com/Mearman/Academic-Explorer/commit/40fb020537728096af2301a76134b41da0ee8992))
+* **graph:** implement institution LINEAGE edges - US5 ([0ec15d7](https://github.com/Mearman/Academic-Explorer/commit/0ec15d7a1fce69b9f94145c0bf15f01e3b016445))
+* **graph:** implement keyword and author topic edges - Phase 9 ([0d5e69a](https://github.com/Mearman/Academic-Explorer/commit/0d5e69ae758afe24e3f09d2c6d0fa1ce62c79bdd))
+* **graph:** implement publisher relationships - US6 ([0776932](https://github.com/Mearman/Academic-Explorer/commit/0776932df3667ab3ff62c11e7454e192f07e3e73))
+* **graph:** implement REFERENCE edges for citations (Work → Work) - US2 ([85f255a](https://github.com/Mearman/Academic-Explorer/commit/85f255a9800ddeb30dbd5dac9606ac086afb342c))
+* **graph:** implement topic taxonomy hierarchy edges - US4 ([d4bb090](https://github.com/Mearman/Academic-Explorer/commit/d4bb090789767301dc0512216447b168fb2a5499))
+* **web:** add direction filter toggle (outbound/inbound/both) to EdgeFiltersSection ([910316b](https://github.com/Mearman/Academic-Explorer/commit/910316bdafe0fdd43a0909d5fad42d08418e6f1b))
+* **web:** add E2E test infrastructure for relationship visualization ([a5703be](https://github.com/Mearman/Academic-Explorer/commit/a5703be5ace7d438d2d33e3a560e72dec6129615))
+* **web:** add edge rendering integration for graph visualization ([79a8d5f](https://github.com/Mearman/Academic-Explorer/commit/79a8d5f007bbd1781c1f2a4eaef09974b04edbae))
+* **web:** add error states with retry buttons to relationship components ([5b4c7db](https://github.com/Mearman/Academic-Explorer/commit/5b4c7db62b2d3e9e813b49842133ea5be348d5bd))
+* **web:** add loading skeletons to relationship components ([7eded73](https://github.com/Mearman/Academic-Explorer/commit/7eded7335a8e0ef6636c3cd001aac709ecdc1f15))
+* **web:** add multi-modal edge styling system with WCAG AA compliance ([d7a4640](https://github.com/Mearman/Academic-Explorer/commit/d7a4640e166708d648e0d4701f89fa7b77429f0d)), closes [#4A90E2](https://github.com/Mearman/Academic-Explorer/issues/4A90E2) [#7B68EE](https://github.com/Mearman/Academic-Explorer/issues/7B68EE) [#50C878](https://github.com/Mearman/Academic-Explorer/issues/50C878) [#FFA500](https://github.com/Mearman/Academic-Explorer/issues/FFA500)
+* **web:** add partial data warning to relationship sections ([aa487d9](https://github.com/Mearman/Academic-Explorer/commit/aa487d9b40f6f9761ae1fae34f0c63e9911a5f57))
+* **web:** add relationship count summaries and badges ([026827a](https://github.com/Mearman/Academic-Explorer/commit/026827ac6694270894e4c3cc2bc0c27fa7b5af61))
+* **web:** add relationship grouping logic (Phase 2) ([d641feb](https://github.com/Mearman/Academic-Explorer/commit/d641feb7426c668866db47693dd08bc913aa501f))
+* **web:** add relationship type filtering UI with localStorage persistence ([d312303](https://github.com/Mearman/Academic-Explorer/commit/d312303d3918e552de45297c721a9c1f2937ee3e))
+* **web:** implement outgoing relationships visualization (US2 P2) ([82a40a0](https://github.com/Mearman/Academic-Explorer/commit/82a40a0d757971bdb1f3d005e2ff3a9afb8dd744))
+* **web:** implement Phase 1 - Setup for entity relationship visualization ([1a21275](https://github.com/Mearman/Academic-Explorer/commit/1a21275ad79253bd8d58146b30aea2237bf5fae7))
+* **web:** implement relationship filtering core logic (US3 P3 partial) ([eef0063](https://github.com/Mearman/Academic-Explorer/commit/eef006300354584df0750f487f0988c2c3ef982e))
+* **web:** integrate incoming relationships into all entity pages (T015-T021) ([26df494](https://github.com/Mearman/Academic-Explorer/commit/26df49498fdcfc70b16f8e0e0ccd1b85c0bd9102))
+* **web:** integrate redetectEdges into graph load workflow ([68aebe7](https://github.com/Mearman/Academic-Explorer/commit/68aebe73e0393a42946d4952e9bc62a76281d1b5))
+* **web:** integrate RelationshipCounts component across all entity detail pages ([e0ed01f](https://github.com/Mearman/Academic-Explorer/commit/e0ed01f8f7734ded07a3aa33d9726d25be45f58a))
+* **web:** migrate Funders and Publishers to EntityDetailLayout ([d58ae72](https://github.com/Mearman/Academic-Explorer/commit/d58ae7272bf2bfa6ce929ac303535373fd04a44f))
+* **web:** update edge filter UI labels to match new RelationType enum ([5f10ce6](https://github.com/Mearman/Academic-Explorer/commit/5f10ce65b22715fef7f00c860e65bb0c72e0fa5d))
+
+
+### BREAKING CHANGES
+
+* **deps:** Upgrade vitest from 3.2.4 to 4.0.10 (major version bump)
+
+- Upgrade vitest from ^3.2.4 to ^4.0.10
+- Upgrade @vitest/coverage-v8 from ^3.2.4 to ^4.0.10
+- Upgrade @vitest/ui from ^3.2.4 to ^4.0.10
+- Add pnpm override for glob>=10.5.0 to fix CVE (GHSA-5j98-mcp5-4vw2)
+
+The vitest v4 upgrade removes the vulnerable glob@10.4.5 transitive dependency
+that was present in @vitest/coverage-v8@3.2.4 via test-exclude. The new version
+(4.0.10) no longer depends on test-exclude, eliminating the vulnerability entirely.
+
+Additionally, added a pnpm override to ensure all glob dependencies are >=10.5.0,
+which patches the command injection vulnerability in glob CLI (affects versions
+10.2.0-10.5.0).
+
+Security fix for:
+- Package: glob
+- Vulnerable versions: >=10.2.0 <10.5.0
+- Patched versions: >=10.5.0
+- CVE: GHSA-5j98-mcp5-4vw2 (high severity)
+
+Peer dependency warnings:
+- @nx/vite expects vitest ^1.3.1 || ^2.0.0 || ^3.0.0 (now using 4.0.10)
+  This is expected and does not affect functionality as Nx uses vitest
+  programmatically without relying on breaking API changes.
+
+Packages updated: +36 -125 (net: -89 packages)
+* **graph:** Adds TOPIC_PART_OF_FIELD and FIELD_PART_OF_DOMAIN edge types
+
+## Implementation
+
+**Topic Hierarchy (T043-T046)**:
+- Extract field, domain, subfield from topic data
+- Create edges: topic → field, field → domain, topic → subfield
+- Direction: 'outbound'
+- Stub nodes: field and domain entities for taxonomy visualization
+
+**ID Handling (T049)**:
+- Helper extractFieldOrDomainId() parses field/domain URLs
+- Format: https://openalex.org/fields/17 → fields/17
+- Validation with warnings (expected for taxonomy IDs)
+
+## Tests
+
+- T039: Unit test for Topic → Field edges ✅
+- T040: Unit test for Field → Domain edges ✅
+- T041: Integration test for complete taxonomy path ✅
+- T042: Unit test for reverse topic lookup ✅
+
+All topic tests passing. No regressions in authorship/citation/funding tests.
+
+## Files Changed
+
+- packages/graph/src/providers/topics.test.ts (new, 223 lines)
+- packages/graph/src/providers/openalex-provider.ts (enhanced expandTopicWithCache)
+- Type fixes in entity-resolver-interface.ts, base-provider.ts
+
+## Functional Requirements
+
+Implements FR-013, FR-014, FR-015, FR-016, FR-027, FR-030, FR-031
+
+## Checkpoint
+
+User Stories 1-4 complete - authorship, citations, funding, topics functional
+* **graph:** Adds FUNDED_BY edge type for funding networks
+
+## Implementation
+
+**Forward Funding (T032-T034)**:
+- Extract grants[] from work data
+- Create edges: work → funder
+- Direction: 'outbound'
+- Metadata: award_id from grant object
+- Configurable limit (default: 5 grants)
+
+**Reverse Funding (T035-T036)**:
+- Query OpenAlex API: works({ filter: { "grants.funder": funderId } })
+- Create edges: work → funder
+- Direction: 'inbound' (discovered via reverse lookup)
+- Maintains semantic direction even for reverse-discovered edges
+
+**Utilities (T037-T038)**:
+- Uses extractOpenAlexId() for URL and bare ID formats
+- ID validation using validateOpenAlexId()
+- Graceful handling of missing/invalid grants
+
+## Tests
+
+- T028: Unit test for Work → Funder funding edges ✅
+- T029: Unit test for grant metadata (award_id) ✅
+- T030: Unit test for missing funding handling ✅
+- T031: Unit test for funder reverse lookup ✅
+
+All 11 funding tests passing. All authorship/citation tests passing (no regressions).
+
+## Data Model
+
+Edge Direction Semantics:
+- Semantic: ALWAYS work → funder (source → target)
+- Discovery: 'outbound' (from grants[]) or 'inbound' (reverse lookup)
+- Canonical ID: createCanonicalEdgeId(workId, funderId, RelationType.FUNDED_BY)
+
+## Files Changed
+
+- packages/graph/src/providers/funding.test.ts (new, 693 lines)
+- packages/graph/src/providers/openalex-provider.ts (+95 lines)
+  - Added funding edge creation in expandWorkWithCache()
+  - Added new expandFunderWithCache() method
+  - Added funder case to entity expansion switch
+
+## Functional Requirements
+
+Implements FR-009, FR-010, FR-011, FR-012, FR-025, FR-026, FR-030, FR-031
+
+## Checkpoint
+
+User Stories 1, 2, AND 3 complete - authorship, citations, and funding networks functional
+* **graph:** Adds REFERENCE edge type for citation networks
+
+## Implementation
+
+**Forward Citations (T022-T024)**:
+- Extract referenced_works[] from work data
+- Create edges: citing work → cited work
+- Direction: 'outbound'
+- Metadata: citation_count from cited_by_count field
+- Configurable limit (default: 20 references)
+
+**Reverse Citations (T025)**:
+- Query OpenAlex API: works({ filter: { cites: workId } })
+- Create edges: citing work → cited work
+- Direction: 'inbound' (discovered via reverse lookup)
+- Maintains semantic direction even for reverse-discovered edges
+
+**Utilities (T027)**:
+- Added extractOpenAlexId() to handle URL and bare ID formats
+- ID validation using validateOpenAlexId()
+- Graceful handling of missing/invalid references
+
+## Tests
+
+- T018: Unit test for Work → Work citation edges ✅
+- T019: Unit test for citation metadata extraction ✅
+- T020: Integration test for citation chains (W1→W2→W3) ✅
+- T021: Unit test for reverse citation lookup ✅
+
+All 7 citation tests passing. All 8 authorship tests passing (no regressions).
+
+## Data Model
+
+Edge Direction Semantics:
+- Semantic: ALWAYS citing work → cited work (source → target)
+- Discovery: 'outbound' (from referenced_works[]) or 'inbound' (reverse lookup)
+- Canonical ID: createCanonicalEdgeId(citingWorkId, citedWorkId, RelationType.REFERENCE)
+
+## Files Changed
+
+- packages/graph/src/providers/citations.test.ts (new, 473 lines)
+- packages/graph/src/providers/openalex-provider.ts (+89 lines)
+- packages/graph/src/utils/edge-utils.ts (+30 lines)
+- packages/graph/src/taxonomy/entity-taxa.ts (added 3 RelationType entries)
+
+## Functional Requirements
+
+Implements FR-005, FR-006, FR-007, FR-008, FR-031, FR-032
+
+## Checkpoint
+
+User Stories 1 AND 2 complete - authorship and citation networks functional
+* **graph:** AUTHORSHIP edge direction reversed to match OpenAlex data model
+
+**Critical Bug Fixed**:
+Previously created edges with Author as source and Work as target (Author → Work).
+Now correctly creates edges with Work as source and Author as target (Work → Author).
+
+**User Story 1 (P1 - MVP)**: View Authorship Relationships Correctly ✅
+- FR-001: Reverse AUTHORSHIP edge direction (Work → Author)
+- FR-002: Set direction='outbound' for work expansion
+- FR-003: Set direction='inbound' for author expansion
+- FR-004: Use canonical edge IDs to prevent duplicates
+
+**Implementation** (Tasks T001-T017 - 17/90):
+
+Phase 1: Setup (T001-T005)
+- Added missing RelationType enum values
+- Created createCanonicalEdgeId() utility
+- Created validateOpenAlexId() utility
+- Created ExpansionLimits interface
+- Created edge metadata type interfaces
+
+Phase 2: Foundational (T006-T009)
+- Implemented edge deduplication logic
+- Implemented batch entity preloading
+- Implemented getRelationshipLimit() helper
+- Added truncation metadata to GraphExpansion
+
+Phase 3: US1 - AUTHORSHIP Fix (T010-T017)
+- Tests: 8 comprehensive tests (all passing)
+- Implementation: Fixed edge directions, canonical IDs, validation
+
+**Test Results**:
+✅ All 8 authorship tests passing
+✅ openalex-provider.unit.test.ts: 62/62 passing
+✅ basic-provider-usage.integration.test.ts: 12/12 passing
+
+Spec: specs/015-openalex-relationships/
+* **graph,web:** Updated RelationType enum usage across graph and web packages
+to align with spec 014 implementation (phases 1-3).
+
+Graph Package Changes (packages/graph/src/):
+- openalex-provider.ts: Migrated enum values and added direction field
+  - AUTHORED → AUTHORSHIP (3 occurrences)
+  - PUBLISHED_IN → PUBLICATION (2 occurrences)
+  - AFFILIATED → AFFILIATION (1 occurrence)
+  - WORK_HAS_TOPIC → TOPIC (1 occurrence)
+  - Added direction: 'outbound' to all 6 edge creation sites
+- graph-analyzer.ts: Updated relationship detection logic
+  - REFERENCES → REFERENCE (2 occurrences)
+  - AUTHORED → AUTHORSHIP (4 occurrences)
+  - AFFILIATED → AFFILIATION (1 occurrence)
+- entity-taxa.ts: Updated RELATION_TAXONOMY Record
+  - Added: AUTHORSHIP, AFFILIATION, PUBLICATION, REFERENCE, TOPIC,
+    FUNDED_BY, HOST_ORGANIZATION, LINEAGE
+  - Removed deprecated alias entries
+- expansion-settings.ts: Updated DEFAULT_EXPANSION_SETTINGS
+  - REFERENCES → REFERENCE
+  - AUTHORED → AUTHORSHIP
+  - AFFILIATED → AFFILIATION
+  - PUBLISHED_IN → PUBLICATION
+
+Web Package Test Changes (apps/web/src/):
+- relationship-detection-service.unit.test.ts: Updated expectations
+  - Enum values: AUTHORED→AUTHORSHIP, AFFILIATED→AFFILIATION,
+    PUBLISHED_IN→PUBLICATION, REFERENCES→REFERENCE
+  - Labels: "authored"→"authorship", "affiliated with"→"affiliation",
+    "published in"→"publication", "references"→"reference"
+  - Edge IDs: "A123-authored-W456"→"A123-AUTHORSHIP-W456"
+- intra-node-edge-population.integration.test.ts: Same migrations
+
+Deployment Readiness Progress:
+- ✅ Graph package typecheck: 0 errors (was 38 errors)
+- ✅ Web package typecheck: 0 errors
+- ⚠️  Web tests: 14 failures remaining (down from 18, 78% passing)
+
+Per Constitution Principle IX (Deployment Readiness), working towards
+zero outstanding issues. Remaining test failures require investigation.
+* **root:** Constitution v1.5.0 → v2.0.0
+
+Added Principle IX: Deployment Readiness (NON-NEGOTIABLE)
+
+Work is NOT complete if there are ANY outstanding issues in the repository,
+including pre-existing issues. Deployment cannot run if ANY package has
+typecheck errors, test failures, lint violations, or build failures.
+
+Key requirements:
+- ALL packages MUST pass typecheck, test, lint, build
+- Pre-existing issues MUST be fixed or explicitly deferred
+- Commits with --no-verify MUST be followed by immediate fixes
+- Features cannot be marked complete if deployment would fail
+
+Modified Principle VII: Development-Stage Pragmatism
+- Clarified that deployment readiness still applies during development
+- Breaking changes are acceptable; broken builds are not
+
+Updated Development Workflow:
+- Added deployment readiness verification step
+- Quality pipeline now explicitly covers ALL packages
+
+Updated Quality Gates:
+- Added deployment readiness gates section
+- pnpm validate MUST pass before marking work complete
+- CI/CD pipeline MUST be able to deploy without intervention
+
+Rationale:
+The project uses GitHub Pages with automated CI/CD. If ANY package has
+errors, the entire deployment fails. This creates critical dependency
+issues where completed features cannot be deployed due to unrelated
+pre-existing errors.
+
+This principle ensures:
+- Every feature can be deployed immediately upon completion
+- No feature leaves deployment blockers for future work
+- Main branch always remains in deployable state
+- Pre-existing issues are surfaced and resolved, not ignored
+- Research demonstrations can be scheduled confidently
+
+Templates requiring updates:
+- plan-template.md (Constitution Check → 9 principles)
+- spec-template.md (Constitution Alignment → 9 principles)
+- tasks-template.md (Constitution compliance → 9 principles)
+
+Addresses user requirement that work completion requires zero outstanding
+issues across the entire repository to enable successful deployment.
+* **docs:** Constitution now requires test-first approach for all bug fixes
+* **graph:** Type errors expected in consuming code. Phase 3 will update
+all services to use new enum names and add direction field to edges.
+
+Tests: packages/graph/src/types/core.test.ts (7/7 passed)
+Spec: specs/014-edge-direction-correction
+Phase: 2 (Foundational - Type Definitions)
+Tasks: T004-T010 complete
+
 # [14.0.0](https://github.com/Mearman/Academic-Explorer/compare/v13.2.0...v14.0.0) (2025-11-17)
 
 
