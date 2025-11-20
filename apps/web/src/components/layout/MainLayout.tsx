@@ -479,7 +479,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     </ActionIcon>
                   </Group>
                 </Group>
-                <HistorySidebar />
+                <RightSidebarDynamic />
               </Box>
             </>
           )}

@@ -270,16 +270,25 @@ export const useEntityInteraction = (
 
   /**
    * Convenience method for sidebar entity clicks (selection only)
+   * Sets preview immediately, then attempts graph operations
    */
   const handleSidebarEntityClick = useCallback(
     ({ entityId, entityType }: { entityId: string; entityType: string }) => {
+      // Set preview entity immediately - sidebar preview should work independently of graph
+      setPreviewEntity(entityId);
+
+      // Then attempt to interact with the entity in the graph (if it exists or can be loaded)
+      // This is best-effort and won't affect the preview if it fails
       return interactWithEntity({
         entityId,
         entityType,
-        options: INTERACTION_PRESETS.GRAPH_NODE_CLICK,
+        options: {
+          ...INTERACTION_PRESETS.GRAPH_NODE_CLICK,
+          updatePreview: false, // Don't set preview again, we already did it
+        },
       });
     },
-    [interactWithEntity],
+    [interactWithEntity, setPreviewEntity],
   );
 
   return {
