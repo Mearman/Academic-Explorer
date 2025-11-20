@@ -17,6 +17,7 @@ import {
   Paper,
   NumberFormatter,
   ScrollArea,
+  Button,
 } from "@mantine/core";
 import {
   IconFile,
@@ -44,7 +45,9 @@ import {
   IconFlask,
   IconAlertCircle,
   IconUserQuestion,
+  IconExternalLink,
 } from "@tabler/icons-react";
+import { Link } from "@tanstack/react-router";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useEntityInteraction } from "@/hooks/use-entity-interaction";
@@ -846,6 +849,19 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
           </Group>
         </Card>
       )}
+
+      {/* View Full Details Button */}
+      <Button
+        component={Link}
+        to={`/${entity.entityType}/${entity.entityId.split('/').pop() || entity.entityId}`}
+        variant="filled"
+        color={getEntityColor(entity.entityType)}
+        size="md"
+        fullWidth
+        leftSection={<IconExternalLink size={18} />}
+      >
+        View Full Details
+      </Button>
     </Stack>
   );
 };
