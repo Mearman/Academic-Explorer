@@ -876,6 +876,49 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
     const formatEntityReference = (value: unknown): React.ReactNode => {
       if (!value || typeof value !== 'object') return null;
       const entity = value as { id?: string; display_name?: string };
+
+      // If we have both id and display_name, make it a clickable link
+      if (entity.id && entity.display_name) {
+        let targetEntityType: string | undefined;
+        let entityId: string = entity.id;
+
+        // Try standard format first: https://openalex.org/W123, A456, etc.
+        const standardMatch = entity.id.match(/https:\/\/openalex\.org\/([A-Z])\d+/);
+        if (standardMatch) {
+          const prefix = standardMatch[1];
+          const entityTypeMap: Record<string, string> = {
+            W: "works",
+            A: "authors",
+            S: "sources",
+            I: "institutions",
+            P: "publishers",
+            F: "funders",
+            T: "topics",
+            C: "concepts",
+          };
+          targetEntityType = entityTypeMap[prefix];
+        } else {
+          // Try taxonomy format: https://openalex.org/domains/3, fields/17, subfields/1707
+          const taxonomyMatch = entity.id.match(/https:\/\/openalex\.org\/(domains|fields|subfields)\/(\d+)/);
+          if (taxonomyMatch) {
+            // Taxonomy entities have their own routes (e.g., /fields/17, /domains/3)
+            targetEntityType = taxonomyMatch[1]; // "domains", "fields", or "subfields"
+            entityId = taxonomyMatch[2]; // Just the numeric ID
+          }
+        }
+
+        if (targetEntityType) {
+          // Build the internal route path
+          const path = `/${targetEntityType}/${encodeURIComponent(entityId)}`;
+          return (
+            <Anchor component={Link} to={path} size="sm">
+              {entity.display_name}
+            </Anchor>
+          );
+        }
+      }
+
+      // Fallback to plain text if we can't create a link
       return entity.display_name || entity.id || null;
     };
 
