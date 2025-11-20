@@ -11,10 +11,11 @@ import '@testing-library/jest-dom';
 import { RelationshipSection } from './RelationshipSection';
 import type { RelationshipSection as RelationshipSectionType } from '@/types/relationship';
 import { RelationType } from '@academic-explorer/graph';
-import { axe, toHaveNoViolations } from 'jest-axe';
+import { axe } from 'vitest-axe';
+import * as matchers from 'vitest-axe/matchers';
 
-// Extend Jest matchers
-expect.extend(toHaveNoViolations);
+// Extend Vitest matchers
+expect.extend(matchers);
 
 // Mock useEntityInteraction hook
 vi.mock('@/hooks/use-entity-interaction', () => ({
