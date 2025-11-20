@@ -26,7 +26,7 @@ export type RelationshipTypeString =
   | 'topic_part_of_field'  // Lowercase to match RelationType enum value
   | 'topic_part_of_subfield'  // Lowercase to match RelationType enum value
   | 'field_part_of_domain'  // Lowercase to match RelationType enum value
-  | 'RELATED_TO'
+  | 'related_to'  // Lowercase to match RelationType enum value
   | 'institution_has_repository';  // Lowercase to match RelationType enum value
 
 /**
@@ -201,7 +201,7 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
       },
       {
         source: 'api',
-        type: 'RELATED_TO',
+        type: 'related_to',
         targetType: 'works',
         label: 'Related Works',
         buildFilter: (id) => `related_to:${id}`,
