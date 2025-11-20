@@ -419,13 +419,15 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
         label: 'Published By',
         extractEmbedded: (entityData) => {
           const hostOrg = entityData.host_organization as Record<string, unknown> | string | undefined;
+          const hostOrgName = entityData.host_organization_name as string | undefined;
+
           if (!hostOrg) return [];
 
           // host_organization can be either a string ID or an object
           if (typeof hostOrg === 'string') {
             return [{
               id: hostOrg,
-              displayName: hostOrg,
+              displayName: hostOrgName || hostOrg, // Use host_organization_name if available
               metadata: {},
             }];
           }
