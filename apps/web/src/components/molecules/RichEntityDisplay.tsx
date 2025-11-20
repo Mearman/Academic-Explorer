@@ -853,7 +853,24 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
       {/* View Full Details Button */}
       <Button
         component={Link}
-        to={`/${entity.entityType}/${entity.entityId.split('/').pop() || entity.entityId}`}
+        to={(() => {
+          // Extract clean ID from URL or use as-is
+          const cleanId = entity.entityId.split('/').pop() || entity.entityId;
+
+          // Detect correct entity type from ID prefix (more reliable than entity.entityType)
+          const firstChar = cleanId.charAt(0);
+          const detectedType =
+            firstChar === "A" ? "authors" :
+            firstChar === "W" ? "works" :
+            firstChar === "S" ? "sources" :
+            firstChar === "I" ? "institutions" :
+            firstChar === "T" ? "topics" :
+            firstChar === "P" ? "publishers" :
+            firstChar === "F" ? "funders" :
+            entity.entityType; // fallback to stored type if no match
+
+          return `/${detectedType}/${cleanId}`;
+        })()}
         variant="filled"
         color={getEntityColor(entity.entityType)}
         size="md"
