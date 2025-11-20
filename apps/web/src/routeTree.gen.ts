@@ -37,7 +37,10 @@ import { Route as AutocompleteIndexRouteImport } from './routes/autocomplete/ind
 import { Route as AuthorsIndexRouteImport } from './routes/authors/index'
 import { Route as WorksWorkIdRouteImport } from './routes/works/$_'
 import { Route as TopicsTopicIdRouteImport } from './routes/topics/$topicId'
+import { Route as SubfieldsSubfieldIdRouteImport } from './routes/subfields/$subfieldId'
 import { Route as SourcesSourceIdRouteImport } from './routes/sources/$sourceId'
+import { Route as FieldsFieldIdRouteImport } from './routes/fields/$fieldId'
+import { Route as DomainsdomainIdRouteImport } from './routes/domains/$domainId'
 import { Route as OpenalexUrlSplatRouteImport } from './routes/openalex-url/$'
 import { Route as InstitutionsInstitutionIdRouteImport } from './routes/institutions/$_'
 import { Route as HttpsSplatRouteImport } from './routes/https/$'
@@ -219,6 +222,27 @@ const TopicsTopicIdRoute = TopicsTopicIdRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
   import('./routes/topics/$topicId.lazy').then((d) => d.Route),
+)
+const SubfieldsSubfieldIdRoute = SubfieldsSubfieldIdRouteImport.update({
+  id: '/subfields/$subfieldId',
+  path: '/subfields/$subfieldId',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/subfields/$subfieldId.lazy').then((d) => d.Route),
+)
+const FieldsFieldIdRoute = FieldsFieldIdRouteImport.update({
+  id: '/fields/$fieldId',
+  path: '/fields/$fieldId',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/fields/$fieldId.lazy').then((d) => d.Route),
+)
+const DomainsDomainIdRoute = DomainsdomainIdRouteImport.update({
+  id: '/domains/$domainId',
+  path: '/domains/$domainId',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/domains/$domainId.lazy').then((d) => d.Route),
 )
 const SourcesSourceIdRoute = SourcesSourceIdRouteImport.update({
   id: '/sources/$sourceId',
@@ -581,6 +605,9 @@ export interface FileRouteTypes {
     | '/publishers/$publisherId'
     | '/sources/$sourceId'
     | '/topics/$topicId'
+    | '/subfields/$subfieldId'
+    | '/fields/$fieldId'
+    | '/domains/$domainId'
     | '/works/$_'
     | '/authors'
     | '/autocomplete'
@@ -637,6 +664,9 @@ export interface FileRouteTypes {
     | '/publishers/$publisherId'
     | '/sources/$sourceId'
     | '/topics/$topicId'
+    | '/subfields/$subfieldId'
+    | '/fields/$fieldId'
+    | '/domains/$domainId'
     | '/works/$_'
     | '/authors'
     | '/autocomplete'
@@ -693,6 +723,9 @@ export interface FileRouteTypes {
     | '/publishers/$publisherId'
     | '/sources/$sourceId'
     | '/topics/$topicId'
+    | '/subfields/$subfieldId'
+    | '/fields/$fieldId'
+    | '/domains/$domainId'
     | '/works/$_'
     | '/authors/'
     | '/autocomplete/'
@@ -1207,6 +1240,9 @@ const rootRouteChildren: RootRouteChildren = {
   PublishersPublisherIdRoute: PublishersPublisherIdRoute,
   SourcesSourceIdRoute: SourcesSourceIdRoute,
   TopicsTopicIdRoute: TopicsTopicIdRoute,
+  SubfieldsSubfieldIdRoute: SubfieldsSubfieldIdRoute,
+  FieldsFieldIdRoute: FieldsFieldIdRoute,
+  DomainsDomainIdRoute: DomainsDomainIdRoute,
   WorksWorkIdRoute: WorksWorkIdRoute,
   AuthorsIndexRoute: AuthorsIndexRoute,
   AutocompleteIndexRoute: AutocompleteIndexRoute,
