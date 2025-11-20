@@ -49,6 +49,7 @@ import { Link } from "@tanstack/react-router";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useEntityInteraction } from "@/hooks/use-entity-interaction";
+import { FieldDisplay } from "@/components/molecules/FieldDisplay";
 import type { GraphNode } from "@academic-explorer/graph";
 import type { Authorship, OpenAlexEntity, Work, Author, InstitutionEntity } from "@academic-explorer/types";
 import { isWork, isAuthor, isInstitution } from "@academic-explorer/types";
@@ -848,9 +849,117 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
     </Card>
   );
 
+  // Detailed fields section - shows all key fields with on-demand fetching
+  const DetailedFieldsCard = () => {
+    if (!rawData) return null;
+
+    const data = rawData as Record<string, unknown>;
+    const entityId = entity.entityId;
+    const entityType = entity.entityType as any; // EntityType from config/cache
+
+    // Common fields for all entities
+    const commonFields = [
+      { label: "Display Name", fieldName: "display_name", value: data.display_name },
+      { label: "Created Date", fieldName: "created_date", value: data.created_date },
+      { label: "Updated Date", fieldName: "updated_date", value: data.updated_date },
+    ];
+
+    // Entity-specific fields
+    let specificFields: Array<{ label: string; fieldName: string; value: unknown }> = [];
+
+    if (entity.entityType === "works") {
+      specificFields = [
+        { label: "DOI", fieldName: "doi", value: data.doi },
+        { label: "Publication Year", fieldName: "publication_year", value: data.publication_year },
+        { label: "Publication Date", fieldName: "publication_date", value: data.publication_date },
+        { label: "Type", fieldName: "type", value: data.type },
+        { label: "Cited By Count", fieldName: "cited_by_count", value: data.cited_by_count },
+        { label: "Referenced Works", fieldName: "referenced_works_count", value: data.referenced_works_count },
+        { label: "Open Access Status", fieldName: "open_access.oa_status", value: (data.open_access as any)?.oa_status },
+        { label: "Has Fulltext", fieldName: "has_fulltext", value: data.has_fulltext },
+        { label: "Language", fieldName: "language", value: data.language },
+        { label: "Abstract", fieldName: "abstract_inverted_index", value: data.abstract_inverted_index },
+      ];
+    } else if (entity.entityType === "authors") {
+      specificFields = [
+        { label: "ORCID", fieldName: "orcid", value: data.orcid },
+        { label: "Works Count", fieldName: "works_count", value: data.works_count },
+        { label: "Cited By Count", fieldName: "cited_by_count", value: data.cited_by_count },
+        { label: "H-Index", fieldName: "summary_stats.h_index", value: (data.summary_stats as any)?.h_index },
+        { label: "i10-Index", fieldName: "summary_stats.i10_index", value: (data.summary_stats as any)?.i10_index },
+        { label: "Last Known Institution", fieldName: "last_known_institution", value: data.last_known_institution },
+      ];
+    } else if (entity.entityType === "institutions") {
+      specificFields = [
+        { label: "ROR", fieldName: "ror", value: data.ror },
+        { label: "Country Code", fieldName: "country_code", value: data.country_code },
+        { label: "Type", fieldName: "type", value: data.type },
+        { label: "Works Count", fieldName: "works_count", value: data.works_count },
+        { label: "Cited By Count", fieldName: "cited_by_count", value: data.cited_by_count },
+        { label: "Homepage URL", fieldName: "homepage_url", value: data.homepage_url },
+      ];
+    } else if (entity.entityType === "sources") {
+      specificFields = [
+        { label: "ISSN", fieldName: "issn", value: data.issn },
+        { label: "ISSN-L", fieldName: "issn_l", value: data.issn_l },
+        { label: "Type", fieldName: "type", value: data.type },
+        { label: "Works Count", fieldName: "works_count", value: data.works_count },
+        { label: "Cited By Count", fieldName: "cited_by_count", value: data.cited_by_count },
+        { label: "Homepage URL", fieldName: "homepage_url", value: data.homepage_url },
+      ];
+    } else if (entity.entityType === "topics") {
+      specificFields = [
+        { label: "Works Count", fieldName: "works_count", value: data.works_count },
+        { label: "Cited By Count", fieldName: "cited_by_count", value: data.cited_by_count },
+        { label: "Domain", fieldName: "domain", value: data.domain },
+        { label: "Field", fieldName: "field", value: data.field },
+        { label: "Subfield", fieldName: "subfield", value: data.subfield },
+      ];
+    } else if (entity.entityType === "publishers") {
+      specificFields = [
+        { label: "Works Count", fieldName: "works_count", value: data.works_count },
+        { label: "Cited By Count", fieldName: "cited_by_count", value: data.cited_by_count },
+        { label: "Country Codes", fieldName: "country_codes", value: data.country_codes },
+        { label: "Homepage URL", fieldName: "homepage_url", value: data.homepage_url },
+      ];
+    } else if (entity.entityType === "funders") {
+      specificFields = [
+        { label: "Works Count", fieldName: "works_count", value: data.works_count },
+        { label: "Cited By Count", fieldName: "cited_by_count", value: data.cited_by_count },
+        { label: "Country Code", fieldName: "country_code", value: data.country_code },
+        { label: "Homepage URL", fieldName: "homepage_url", value: data.homepage_url },
+      ];
+    }
+
+    const allFields = [...commonFields, ...specificFields];
+
+    return (
+      <Card padding="md" radius="md" withBorder>
+        <Stack gap="xs">
+          <Text fw={600} size="sm" c="dimmed" mb="xs">
+            Detailed Information
+          </Text>
+          {allFields.map((field) => (
+            <FieldDisplay
+              key={field.fieldName}
+              label={field.label}
+              value={field.value}
+              fieldName={field.fieldName}
+              entityId={entityId}
+              entityType={entityType}
+            />
+          ))}
+        </Stack>
+      </Card>
+    );
+  };
+
   return (
     <Stack gap="md">
       <BasicInfoCard />
+
+      {/* Detailed fields section */}
+      {!isLoading && rawData && <DetailedFieldsCard />}
 
       {!isLoading && rawData && (
         <>
