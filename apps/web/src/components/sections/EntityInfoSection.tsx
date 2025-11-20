@@ -91,13 +91,14 @@ const useRouteEntityId = () => {
 };
 
 // Helper function to determine which entity to display
+// Priority: hover > preview (explicit click) > selection (graph) > route (current page)
 const getDisplayEntityId = ({
   hoveredNodeId,
   selectedNodeId,
   previewEntityId,
   routeEntityId,
 }): string | null => {
-  return hoveredNodeId ?? selectedNodeId ?? previewEntityId ?? routeEntityId;
+  return hoveredNodeId ?? previewEntityId ?? selectedNodeId ?? routeEntityId;
 };
 
 // Helper function to get entity source for logging
@@ -257,8 +258,8 @@ export const EntityInfoSection: React.FC<EntityInfoSectionProps> = ({
 
   const rawEntityData = useRawEntityData({
     options: {
-      entityId: routeEntityId,
-      enabled: !!routeEntityId && !entityNode,
+      entityId: displayEntityId,
+      enabled: !!displayEntityId && !entityNode,
     },
   });
 
@@ -292,8 +293,8 @@ export const EntityInfoSection: React.FC<EntityInfoSectionProps> = ({
   const entity = entityNode ?? convertRawEntityToGraphNode(rawEntityData.data);
 
   // Determine display state
-  const isLoading = routeEntityId && rawEntityData.isLoading && !entityNode;
-  const hasError = routeEntityId && rawEntityData.error && !entityNode;
+  const isLoading = displayEntityId && rawEntityData.isLoading && !entityNode;
+  const hasError = displayEntityId && rawEntityData.error && !entityNode;
   const hasNoEntity = !displayEntityId || (!entityNode && !rawEntityData.data);
   const shouldShowEntity = !isLoading && !hasError && !hasNoEntity && !!entity;
 
