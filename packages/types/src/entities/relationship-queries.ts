@@ -21,13 +21,13 @@ export type RelationshipTypeString =
   | 'TOPIC'
   | 'HOST_ORGANIZATION'
   | 'LINEAGE'
-  | 'AUTHOR_RESEARCHES'
-  | 'FUNDED_BY'
-  | 'TOPIC_PART_OF_FIELD'
-  | 'TOPIC_PART_OF_SUBFIELD'
-  | 'FIELD_PART_OF_DOMAIN'
+  | 'author_researches'  // Lowercase to match RelationType enum value
+  | 'funded_by'  // Lowercase to match RelationType enum value
+  | 'topic_part_of_field'  // Lowercase to match RelationType enum value
+  | 'topic_part_of_subfield'  // Lowercase to match RelationType enum value
+  | 'field_part_of_domain'  // Lowercase to match RelationType enum value
   | 'RELATED_TO'
-  | 'INSTITUTION_HAS_REPOSITORY';
+  | 'institution_has_repository';  // Lowercase to match RelationType enum value
 
 /**
  * Embedded relationship item extracted from entity data
@@ -153,7 +153,7 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
       },
       {
         source: 'embedded',
-        type: 'AUTHOR_RESEARCHES',
+        type: 'author_researches',
         targetType: 'topics',
         label: 'Research Topics',
         extractEmbedded: (entityData) => {
@@ -276,7 +276,7 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
       },
       {
         source: 'embedded',
-        type: 'FUNDED_BY',
+        type: 'funded_by',
         targetType: 'funders',
         label: 'Funded By',
         extractEmbedded: (entityData) => {
@@ -341,7 +341,7 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
       },
       {
         source: 'embedded',
-        type: 'INSTITUTION_HAS_REPOSITORY',
+        type: 'institution_has_repository',
         targetType: 'sources',
         label: 'Repositories',
         extractEmbedded: (entityData) => {
@@ -403,7 +403,7 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
       },
       {
         source: 'api',
-        type: 'INSTITUTION_HAS_REPOSITORY',
+        type: 'institution_has_repository',
         targetType: 'institutions',
         label: 'Hosting Institutions',
         buildFilter: (id) => `repositories.id:${id}`,
@@ -463,7 +463,7 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
       },
       {
         source: 'api',
-        type: 'AUTHOR_RESEARCHES',
+        type: 'author_researches',
         targetType: 'authors',
         label: 'Authors Researching',
         buildFilter: (id) => `topics.id:${id}`,
@@ -474,7 +474,7 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
     outbound: [
       {
         source: 'embedded',
-        type: 'TOPIC_PART_OF_FIELD',
+        type: 'topic_part_of_field',
         targetType: 'topics',
         label: 'Field',
         extractEmbedded: (entityData) => {
@@ -490,7 +490,7 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
       },
       {
         source: 'embedded',
-        type: 'FIELD_PART_OF_DOMAIN',
+        type: 'field_part_of_domain',
         targetType: 'topics',
         label: 'Domain',
         extractEmbedded: (entityData) => {
@@ -506,7 +506,7 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
       },
       {
         source: 'embedded',
-        type: 'TOPIC_PART_OF_SUBFIELD',
+        type: 'topic_part_of_subfield',
         targetType: 'topics',
         label: 'Subfield',
         extractEmbedded: (entityData) => {
@@ -561,7 +561,7 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
     inbound: [
       {
         source: 'api',
-        type: 'FUNDED_BY',
+        type: 'funded_by',
         targetType: 'works',
         label: 'Funded Works',
         buildFilter: (id) => `grants.funder:${id}`,
