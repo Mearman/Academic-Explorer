@@ -2,7 +2,8 @@
 
 **Feature Branch**: `015-openalex-relationships`
 **Created**: 2025-11-18
-**Status**: Draft
+**Status**: Completed
+**Completed**: 2025-11-18
 **Input**: User description: "correctly implement handling of ALL relationships"
 
 ## User Scenarios & Testing *(mandatory)*
