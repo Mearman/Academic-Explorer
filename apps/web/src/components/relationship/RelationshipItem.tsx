@@ -25,18 +25,35 @@ export const RelationshipItem: React.FC<RelationshipItemProps> = ({ item }) => {
 
   // Determine which entity to link to (the "other" entity, not the current one being viewed)
   const relatedEntityId = item.direction === 'inbound' ? item.sourceId : item.targetId;
+  const entityType = item.direction === 'inbound' ? item.sourceType : item.targetType;
+
+  // Extract just the ID portion if it's a full OpenAlex URL
+  const extractEntityId = (id: string): string => {
+    if (id.startsWith('https://openalex.org/') || id.startsWith('http://openalex.org/')) {
+      return id.split('/').pop() || id;
+    }
+    return id;
+  };
+
+  const cleanEntityId = extractEntityId(relatedEntityId);
+
+  // Build the entity URL for navigation
+  const entityUrl = `/#/${entityType}/${cleanEntityId}`;
 
   const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    // Determine the entity type from the item
-    const entityType = item.direction === 'inbound' ? item.sourceType : item.targetType;
-    handleSidebarEntityClick({ entityId: relatedEntityId, entityType });
+    // Only intercept normal left clicks (no modifier keys)
+    // This allows Ctrl+click, Cmd+click, middle-click to work as normal browser navigation
+    if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+      e.preventDefault();
+      handleSidebarEntityClick({ entityId: cleanEntityId, entityType });
+    }
+    // Otherwise, let the browser handle it (opens in new tab, etc.)
   };
 
   return (
     <Stack gap="xs" data-testid={`relationship-item-${item.id}`}>
       <Group gap="xs">
-        <Anchor onClick={handleClick} size="sm">
+        <Anchor href={entityUrl} onClick={handleClick} size="sm">
           {item.displayName}
         </Anchor>
         {item.isSelfReference && (
