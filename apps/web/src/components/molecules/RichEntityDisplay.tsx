@@ -46,6 +46,7 @@ import {
   IconUserQuestion,
 } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useEntityInteraction } from "@/hooks/use-entity-interaction";
@@ -80,6 +81,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
   const { isLoading } = rawEntityData;
   const entityInteraction = useEntityInteraction();
   const { handleSidebarEntityClick } = entityInteraction;
+  const queryClient = useQueryClient();
 
   const getEntityIcon = ({
     entityType,
@@ -933,6 +935,19 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
 
     const allFields = [...commonFields, ...specificFields];
 
+    // Callback to merge fetched field data into the query cache
+    const handleFieldFetched = (fetchedData: unknown) => {
+      if (!fetchedData || typeof fetchedData !== 'object') return;
+
+      const queryKey = ["raw-entity", entityType, entityId, "{}"];
+
+      // Merge the fetched data into the existing cached data
+      queryClient.setQueryData(queryKey, (oldData: unknown) => {
+        if (!oldData || typeof oldData !== 'object') return fetchedData;
+        return { ...oldData, ...fetchedData };
+      });
+    };
+
     return (
       <Card padding="md" radius="md" withBorder>
         <Stack gap="xs">
@@ -947,6 +962,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
               fieldName={field.fieldName}
               entityId={entityId}
               entityType={entityType}
+              onDataFetched={handleFieldFetched}
             />
           ))}
         </Stack>
