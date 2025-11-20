@@ -857,7 +857,19 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
 
     const data = rawData as Record<string, unknown>;
     const entityId = entity.entityId;
-    const entityType = entity.entityType as any; // EntityType from config/cache
+
+    // Detect correct entity type from ID prefix (more reliable than entity.entityType for relationship-loaded entities)
+    const cleanId = entityId.split('/').pop() || entityId;
+    const firstChar = cleanId.charAt(0);
+    const entityType =
+      firstChar === "A" ? "authors" :
+      firstChar === "W" ? "works" :
+      firstChar === "S" ? "sources" :
+      firstChar === "I" ? "institutions" :
+      firstChar === "T" ? "topics" :
+      firstChar === "P" ? "publishers" :
+      firstChar === "F" ? "funders" :
+      entity.entityType; // fallback to stored type if no match
 
     // Common fields for all entities
     const commonFields = [
@@ -869,7 +881,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
     // Entity-specific fields
     let specificFields: Array<{ label: string; fieldName: string; value: unknown }> = [];
 
-    if (entity.entityType === "works") {
+    if (entityType === "works") {
       specificFields = [
         { label: "DOI", fieldName: "doi", value: data.doi },
         { label: "Publication Year", fieldName: "publication_year", value: data.publication_year },
@@ -882,7 +894,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
         { label: "Language", fieldName: "language", value: data.language },
         { label: "Abstract", fieldName: "abstract_inverted_index", value: data.abstract_inverted_index },
       ];
-    } else if (entity.entityType === "authors") {
+    } else if (entityType === "authors") {
       specificFields = [
         { label: "ORCID", fieldName: "orcid", value: data.orcid },
         { label: "Works Count", fieldName: "works_count", value: data.works_count },
@@ -891,7 +903,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
         { label: "i10-Index", fieldName: "summary_stats.i10_index", value: (data.summary_stats as any)?.i10_index },
         { label: "Last Known Institution", fieldName: "last_known_institution", value: data.last_known_institution },
       ];
-    } else if (entity.entityType === "institutions") {
+    } else if (entityType === "institutions") {
       specificFields = [
         { label: "ROR", fieldName: "ror", value: data.ror },
         { label: "Country Code", fieldName: "country_code", value: data.country_code },
@@ -900,7 +912,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
         { label: "Cited By Count", fieldName: "cited_by_count", value: data.cited_by_count },
         { label: "Homepage URL", fieldName: "homepage_url", value: data.homepage_url },
       ];
-    } else if (entity.entityType === "sources") {
+    } else if (entityType === "sources") {
       specificFields = [
         { label: "ISSN", fieldName: "issn", value: data.issn },
         { label: "ISSN-L", fieldName: "issn_l", value: data.issn_l },
@@ -909,7 +921,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
         { label: "Cited By Count", fieldName: "cited_by_count", value: data.cited_by_count },
         { label: "Homepage URL", fieldName: "homepage_url", value: data.homepage_url },
       ];
-    } else if (entity.entityType === "topics") {
+    } else if (entityType === "topics") {
       specificFields = [
         { label: "Works Count", fieldName: "works_count", value: data.works_count },
         { label: "Cited By Count", fieldName: "cited_by_count", value: data.cited_by_count },
@@ -917,14 +929,14 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
         { label: "Field", fieldName: "field", value: data.field },
         { label: "Subfield", fieldName: "subfield", value: data.subfield },
       ];
-    } else if (entity.entityType === "publishers") {
+    } else if (entityType === "publishers") {
       specificFields = [
         { label: "Works Count", fieldName: "works_count", value: data.works_count },
         { label: "Cited By Count", fieldName: "cited_by_count", value: data.cited_by_count },
         { label: "Country Codes", fieldName: "country_codes", value: data.country_codes },
         { label: "Homepage URL", fieldName: "homepage_url", value: data.homepage_url },
       ];
-    } else if (entity.entityType === "funders") {
+    } else if (entityType === "funders") {
       specificFields = [
         { label: "Works Count", fieldName: "works_count", value: data.works_count },
         { label: "Cited By Count", fieldName: "cited_by_count", value: data.cited_by_count },
@@ -937,14 +949,22 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
 
     // Callback to merge fetched field data into the query cache
     const handleFieldFetched = (fetchedData: unknown) => {
-      if (!fetchedData || typeof fetchedData !== 'object') return;
+      console.log('[RichEntityDisplay] handleFieldFetched called', { fetchedData, entityType, entityId });
+      if (!fetchedData || typeof fetchedData !== 'object') {
+        console.warn('[RichEntityDisplay] fetchedData is not an object', { fetchedData });
+        return;
+      }
 
       const queryKey = ["raw-entity", entityType, entityId, "{}"];
+      console.log('[RichEntityDisplay] Updating query cache with key:', queryKey);
 
       // Merge the fetched data into the existing cached data
       queryClient.setQueryData(queryKey, (oldData: unknown) => {
+        console.log('[RichEntityDisplay] Old cache data:', oldData);
         if (!oldData || typeof oldData !== 'object') return fetchedData;
-        return { ...oldData, ...fetchedData };
+        const merged = { ...oldData, ...fetchedData };
+        console.log('[RichEntityDisplay] Merged cache data:', merged);
+        return merged;
       });
     };
 
