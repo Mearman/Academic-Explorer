@@ -5,7 +5,8 @@
  * @module use-entity-relationship-queries
  */
 
-import { useQueries } from '@tanstack/react-query';
+import React from 'react';
+import { useQueries, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import type { EntityType, RelationshipTypeString } from '@academic-explorer/types';
 import {
   getInboundQueries,
@@ -29,6 +30,38 @@ function isRelationType(value: string): value is RelationType {
   // Get all RelationType enum values (handles duplicates from deprecated aliases)
   const validTypes = new Set(Object.values(RelationType));
   return validTypes.has(value as RelationType);
+}
+
+/**
+ * Check if a displayName looks like an OpenAlex ID URL
+ * These need to be prefetched to get the actual display name
+ */
+function isOpenAlexIdUrl(displayName: string): boolean {
+  return displayName.startsWith('https://openalex.org/');
+}
+
+/**
+ * Extract entity type from OpenAlex ID URL
+ * E.g., "https://openalex.org/I123" → "institutions"
+ */
+function getEntityTypeFromId(id: string): EntityType | null {
+  const match = id.match(/https:\/\/openalex\.org\/([A-Z])/);
+  if (!match) return null;
+
+  const prefix = match[1];
+  const typeMap: Record<string, EntityType> = {
+    W: 'works',
+    A: 'authors',
+    S: 'sources',
+    I: 'institutions',
+    P: 'publishers',
+    F: 'funders',
+    T: 'topics',
+    C: 'concepts',
+    K: 'keywords',
+  };
+
+  return typeMap[prefix] || null;
 }
 
 export interface UseEntityRelationshipQueriesResult {
@@ -63,6 +96,8 @@ export function useEntityRelationshipQueries(
   entityId: string | undefined,
   entityType: EntityType,
 ): UseEntityRelationshipQueriesResult {
+  const queryClient = useQueryClient();
+
   // Get query configurations from registry
   const inboundConfigs = getInboundQueries(entityType);
   const outboundConfigs = getOutboundQueries(entityType);
@@ -121,6 +156,27 @@ export function useEntityRelationshipQueries(
   // Determine loading and error states
   const loading = queryResults.some((result) => result.isLoading);
   const error = queryResults.find((result) => result.error)?.error as Error | undefined;
+
+  // Background prefetch for ID-only relationships (displayName is OpenAlex ID URL)
+  // This happens asynchronously without blocking the UI
+  React.useEffect(() => {
+    if (loading || !entityId) return;
+
+    const allSections = [...incoming, ...outgoing];
+    const itemsNeedingFetch = allSections.flatMap((section) =>
+      section.items
+        .filter((item) => isOpenAlexIdUrl(item.displayName))
+        .map((item) => ({
+          id: item.direction === 'inbound' ? item.sourceId : item.targetId,
+          entityType: item.direction === 'inbound' ? item.sourceType : item.targetType,
+        }))
+    );
+
+    // Prefetch each entity in the background
+    itemsNeedingFetch.forEach(({ id, entityType: targetEntityType }) => {
+      prefetchEntity(queryClient, id, targetEntityType);
+    });
+  }, [loading, entityId, incoming, outgoing, queryClient]);
 
   return {
     incoming,
@@ -363,4 +419,66 @@ function createRelationshipItem(
     displayName,
     isSelfReference: false,
   };
+}
+
+/**
+ * Prefetch an entity in the background to populate the cache
+ * This is used for ID-only relationships where we only have the ID,
+ * not the full entity data (e.g., Institutions parent lineage)
+ */
+async function prefetchEntity(
+  queryClient: QueryClient,
+  entityId: string,
+  targetEntityType: EntityType
+): Promise<void> {
+  // Create query key for the entity
+  const queryKey = ['entity', targetEntityType, entityId];
+
+  // Check if already in cache
+  const existingData = queryClient.getQueryData(queryKey);
+  if (existingData) return; // Already cached
+
+  // Prefetch the entity
+  await queryClient.prefetchQuery({
+    queryKey,
+    queryFn: async () => {
+      switch (targetEntityType) {
+        case 'works': {
+          const response = await getWorks({
+            filter: `openalex_id:${entityId}`,
+            per_page: 1,
+            page: 1,
+          });
+          return response.results[0];
+        }
+        case 'authors': {
+          const response = await getAuthors({
+            filter: `openalex_id:${entityId}`,
+            per_page: 1,
+            page: 1,
+          });
+          return response.results[0];
+        }
+        case 'sources': {
+          const response = await getSources({
+            filters: { id: entityId },
+            per_page: 1,
+            page: 1,
+          });
+          return response.results[0];
+        }
+        case 'institutions': {
+          const response = await getInstitutions({
+            filters: { id: entityId },
+            per_page: 1,
+            page: 1,
+          });
+          return response.results[0];
+        }
+        default:
+          throw new Error(`Unsupported entity type for prefetch: ${targetEntityType}`);
+      }
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 }
