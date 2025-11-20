@@ -17,7 +17,6 @@ import {
   Paper,
   NumberFormatter,
   ScrollArea,
-  Button,
 } from "@mantine/core";
 import {
   IconFile,
@@ -45,7 +44,6 @@ import {
   IconFlask,
   IconAlertCircle,
   IconUserQuestion,
-  IconExternalLink,
 } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
@@ -113,6 +111,26 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
   const formatNumber = (num: number | undefined | null) => {
     if (!num || num === 0) return "0";
     return num.toLocaleString();
+  };
+
+  // Generate entity URL with automatic type detection from ID prefix
+  const getEntityUrl = (entity: GraphNode): string => {
+    // Extract clean ID from URL or use as-is
+    const cleanId = entity.entityId.split('/').pop() || entity.entityId;
+
+    // Detect correct entity type from ID prefix (more reliable than entity.entityType)
+    const firstChar = cleanId.charAt(0);
+    const detectedType =
+      firstChar === "A" ? "authors" :
+      firstChar === "W" ? "works" :
+      firstChar === "S" ? "sources" :
+      firstChar === "I" ? "institutions" :
+      firstChar === "T" ? "topics" :
+      firstChar === "P" ? "publishers" :
+      firstChar === "F" ? "funders" :
+      entity.entityType; // fallback to stored type if no match
+
+    return `/${detectedType}/${cleanId}`;
   };
 
   const getWorkTypeIcon = (workType: string) => {
@@ -796,7 +814,15 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
             style={{ wordWrap: "break-word" }}
             data-testid="rich-entity-display-title"
           >
-            {entity.label}
+            <Anchor
+              component={Link}
+              to={getEntityUrl(entity)}
+              c={getEntityColor(entity.entityType)}
+              underline="hover"
+              fw={600}
+            >
+              {entity.label}
+            </Anchor>
           </Title>
           {getNodeCitationCount(entity) !== undefined && (
             <Group gap="xs">
@@ -849,36 +875,6 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
           </Group>
         </Card>
       )}
-
-      {/* View Full Details Button */}
-      <Button
-        component={Link}
-        to={(() => {
-          // Extract clean ID from URL or use as-is
-          const cleanId = entity.entityId.split('/').pop() || entity.entityId;
-
-          // Detect correct entity type from ID prefix (more reliable than entity.entityType)
-          const firstChar = cleanId.charAt(0);
-          const detectedType =
-            firstChar === "A" ? "authors" :
-            firstChar === "W" ? "works" :
-            firstChar === "S" ? "sources" :
-            firstChar === "I" ? "institutions" :
-            firstChar === "T" ? "topics" :
-            firstChar === "P" ? "publishers" :
-            firstChar === "F" ? "funders" :
-            entity.entityType; // fallback to stored type if no match
-
-          return `/${detectedType}/${cleanId}`;
-        })()}
-        variant="filled"
-        color={getEntityColor(entity.entityType)}
-        size="md"
-        fullWidth
-        leftSection={<IconExternalLink size={18} />}
-      >
-        View Full Details
-      </Button>
     </Stack>
   );
 };
