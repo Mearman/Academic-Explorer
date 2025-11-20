@@ -24,7 +24,8 @@ export type RelationshipTypeString =
   | 'AUTHOR_RESEARCHES'
   | 'FUNDED_BY'
   | 'TOPIC_PART_OF_FIELD'
-  | 'FIELD_PART_OF_DOMAIN';
+  | 'FIELD_PART_OF_DOMAIN'
+  | 'RELATED_TO';
 
 /**
  * Configuration for a single relationship query
@@ -95,7 +96,7 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
 
   /**
    * Works
-   * - Outbound: Referenced works (same-type query), authors/sources/topics (from embedded data)
+   * - Outbound: Referenced works, related works (same-type queries), authors/sources/topics (from embedded data)
    * - Inbound: Works that cite this work (same-type query via cites filter)
    */
   works: {
@@ -115,6 +116,14 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
         targetType: 'works',
         label: 'References (Referenced Works)',
         buildFilter: (id) => `referenced_works:${id}`,
+        pageSize: 25,
+        select: ['id', 'display_name', 'publication_year', 'type', 'cited_by_count'],
+      },
+      {
+        type: 'RELATED_TO',
+        targetType: 'works',
+        label: 'Related Works',
+        buildFilter: (id) => `related_to:${id}`,
         pageSize: 25,
         select: ['id', 'display_name', 'publication_year', 'type', 'cited_by_count'],
       },
