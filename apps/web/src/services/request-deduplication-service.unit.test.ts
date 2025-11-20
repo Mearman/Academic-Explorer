@@ -88,7 +88,7 @@ describe("RequestDeduplicationService", () => {
 
       const result = await service.getEntity({
         entityId: "W123456789",
-        fetcher: mockFetcher,
+        fetcher: mockFetcher as any,
       });
 
       expect(result).toEqual(mockEntity);
@@ -100,7 +100,7 @@ describe("RequestDeduplicationService", () => {
 
       const result = await service.getEntity({
         entityId: "W123456789",
-        fetcher: mockFetcher,
+        fetcher: mockFetcher as any,
       });
 
       expect(result).toEqual(mockEntity);
@@ -113,11 +113,11 @@ describe("RequestDeduplicationService", () => {
       // Start two concurrent requests for the same entity
       const promise1 = service.getEntity({
         entityId: "W123456789",
-        fetcher: mockFetcher,
+        fetcher: mockFetcher as any,
       });
       const promise2 = service.getEntity({
         entityId: "W123456789",
-        fetcher: mockFetcher,
+        fetcher: mockFetcher as any,
       });
 
       const [result1, result2] = await Promise.all([promise1, promise2]);
@@ -130,7 +130,7 @@ describe("RequestDeduplicationService", () => {
     it("should cache entity after successful fetch", async () => {
       mockFetcher.mockResolvedValue(mockEntity);
 
-      await service.getEntity({ entityId: "W123456789", fetcher: mockFetcher });
+      await service.getEntity({ entityId: "W123456789", fetcher: mockFetcher as any });
 
       // Verify entity is cached
       const cachedEntity = queryClient.getQueryData(["entity", "W123456789"]);
@@ -142,7 +142,7 @@ describe("RequestDeduplicationService", () => {
       mockFetcher.mockRejectedValue(error);
 
       await expect(
-        service.getEntity({ entityId: "W123456789", fetcher: mockFetcher }),
+        service.getEntity({ entityId: "W123456789", fetcher: mockFetcher as any }),
       ).rejects.toThrow("Fetch failed");
 
       // Should be able to retry after error
@@ -151,7 +151,7 @@ describe("RequestDeduplicationService", () => {
 
       const result = await service.getEntity({
         entityId: "W123456789",
-        fetcher: mockFetcher,
+        fetcher: mockFetcher as any,
       });
       expect(result).toEqual(mockEntity);
       expect(mockFetcher).toHaveBeenCalledOnce();
@@ -171,7 +171,7 @@ describe("RequestDeduplicationService", () => {
       ongoingRequests.set("W123456789", undefined);
 
       await expect(
-        service.getEntity({ entityId: "W123456789", fetcher: mockFetcher }),
+        service.getEntity({ entityId: "W123456789", fetcher: mockFetcher as any }),
       ).rejects.toThrow("Request entry not found for W123456789");
     });
   });
@@ -181,7 +181,7 @@ describe("RequestDeduplicationService", () => {
       mockFetcher.mockResolvedValue(mockEntity);
 
       // Call getEntity which internally calls getCachedEntity
-      await service.getEntity({ entityId: "W123456789", fetcher: mockFetcher });
+      await service.getEntity({ entityId: "W123456789", fetcher: mockFetcher as any });
 
       // Verify fetcher was called (meaning cache miss)
       expect(mockFetcher).toHaveBeenCalledOnce();
@@ -195,7 +195,7 @@ describe("RequestDeduplicationService", () => {
 
       const result = await service.getEntity({
         entityId: "W123456789",
-        fetcher: mockFetcher,
+        fetcher: mockFetcher as any,
       });
 
       expect(result).toEqual(mockEntity);
@@ -221,7 +221,7 @@ describe("RequestDeduplicationService", () => {
       // Should still work despite cache errors
       const result = await errorService.getEntity({
         entityId: "W123456789",
-        fetcher: mockFetcher,
+        fetcher: mockFetcher as any,
       });
       expect(result).toEqual(mockEntity);
       expect(mockFetcher).toHaveBeenCalledOnce();
@@ -461,20 +461,20 @@ describe("RequestDeduplicationService", () => {
       mockFetcher.mockRejectedValue(nonErrorObject);
 
       await expect(
-        service.getEntity({ entityId: "W123456789", fetcher: mockFetcher }),
+        service.getEntity({ entityId: "W123456789", fetcher: mockFetcher as any }),
       ).rejects.toEqual(nonErrorObject);
     });
 
     it("should clean up ongoing request on both success and failure", async () => {
       // Test success cleanup
       mockFetcher.mockResolvedValue(mockEntity);
-      await service.getEntity({ entityId: "W123456789", fetcher: mockFetcher });
+      await service.getEntity({ entityId: "W123456789", fetcher: mockFetcher as any });
       expect(service.getStats().ongoingRequests).toBe(0);
 
       // Test failure cleanup
       mockFetcher.mockRejectedValue(new Error("Test error"));
       await expect(
-        service.getEntity({ entityId: "W987654321", fetcher: mockFetcher }),
+        service.getEntity({ entityId: "W987654321", fetcher: mockFetcher as any }),
       ).rejects.toThrow();
       expect(service.getStats().ongoingRequests).toBe(0);
     });
@@ -498,7 +498,7 @@ describe("RequestDeduplicationService", () => {
       // Should still return the entity even if caching fails
       const result = await errorService.getEntity({
         entityId: "W123456789",
-        fetcher: mockFetcher,
+        fetcher: mockFetcher as any,
       });
       expect(result).toEqual(mockEntity);
       expect(mockFetcher).toHaveBeenCalledOnce();
@@ -512,15 +512,15 @@ describe("RequestDeduplicationService", () => {
       // First call should fetch
       await service.getEntity({
         entityId: "W123456789",
-        fetcher: mockFetcher,
+        fetcher: mockFetcher as any,
       });
       const result2 = await service.getEntity({
         entityId: "W123456789",
-        fetcher: mockFetcher,
+        fetcher: mockFetcher as any,
       });
       const result3 = await service.getEntity({
         entityId: "W123456789",
-        fetcher: mockFetcher,
+        fetcher: mockFetcher as any,
       });
 
       expect(result2).toEqual(mockEntity);

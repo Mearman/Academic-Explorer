@@ -935,9 +935,11 @@ describe("GraphStore", () => {
 
       // Mock the dynamic import of RelationshipDetectionService
       vi.doMock("../services/relationship-detection-service", () => ({
-        RelationshipDetectionService: vi.fn().mockImplementation(() => ({
-          detectRelationshipsForNodes: vi.fn().mockResolvedValue(mockDetectedEdges),
-        })),
+        RelationshipDetectionService: vi.fn(function(this: any) {
+          return {
+            detectRelationshipsForNodes: vi.fn().mockResolvedValue(mockDetectedEdges),
+          };
+        }),
       }));
 
       // Create mock queryClient
@@ -993,9 +995,11 @@ describe("GraphStore", () => {
 
       // Mock RelationshipDetectionService to throw error
       vi.doMock("../services/relationship-detection-service", () => ({
-        RelationshipDetectionService: vi.fn().mockImplementation(() => ({
-          detectRelationshipsForNodes: vi.fn().mockRejectedValue(new Error("Detection failed")),
-        })),
+        RelationshipDetectionService: vi.fn(function(this: any) {
+          return {
+            detectRelationshipsForNodes: vi.fn().mockRejectedValue(new Error("Detection failed")),
+          };
+        }),
       }));
 
       const mockQueryClient = {

@@ -52,7 +52,7 @@ export function createMockStore<T extends Record<string, unknown>>(
 /**
  * Mock graph store with common test state
  */
-export const createMockGraphStore = () =>
+export const createMockGraphStore = (): any =>
   createMockStore({
     nodes: new Map(),
     edges: new Map(),
@@ -75,7 +75,7 @@ export const createMockGraphStore = () =>
 /**
  * Mock layout store with common test state
  */
-export const createMockLayoutStore = () =>
+export const createMockLayoutStore = (): any =>
   createMockStore({
     animationEnabled: true,
     autoLayout: false,
@@ -94,7 +94,7 @@ export const createMockLayoutStore = () =>
 /**
  * Mock settings store with common test state
  */
-export const createMockSettingsStore = () =>
+export const createMockSettingsStore = (): any =>
   createMockStore({
     theme: "light" as const,
     language: "en",
@@ -110,7 +110,7 @@ export const createMockSettingsStore = () =>
 /**
  * Mock expansion settings store with common test state
  */
-export const createMockExpansionSettingsStore = () =>
+export const createMockExpansionSettingsStore = (): any =>
   createMockStore({
     maxDepth: 2,
     maxNodes: 100,

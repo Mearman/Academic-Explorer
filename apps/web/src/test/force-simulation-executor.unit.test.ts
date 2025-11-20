@@ -35,7 +35,7 @@ describe("ForceSimulationExecutor", () => {
       pinnedNodes: ["node1"],
     };
 
-    const result = await executor(task, emitSpy);
+    const result = await executor(task, emitSpy as any);
 
     expect(result).toMatchObject({
       entityType: "FORCE_SIMULATION_CONTROL_ACK",
@@ -60,7 +60,7 @@ describe("ForceSimulationExecutor", () => {
       nodes: createTestNodes(),
       links: createTestLinks(),
     };
-    await executor(startTask, emitSpy);
+    await executor(startTask, emitSpy as any);
 
     emitSpy.mockClear();
 
@@ -69,7 +69,7 @@ describe("ForceSimulationExecutor", () => {
       entityType: "FORCE_SIMULATION_STOP",
     };
 
-    const result = await executor(stopTask, emitSpy);
+    const result = await executor(stopTask, emitSpy as any);
 
     expect(result).toMatchObject({
       entityType: "FORCE_SIMULATION_CONTROL_ACK",
@@ -85,7 +85,7 @@ describe("ForceSimulationExecutor", () => {
       nodes: createTestNodes(),
       links: createTestLinks(),
     };
-    await executor(startTask, emitSpy);
+    await executor(startTask, emitSpy as any);
 
     emitSpy.mockClear();
 
@@ -94,7 +94,7 @@ describe("ForceSimulationExecutor", () => {
       entityType: "FORCE_SIMULATION_PAUSE",
     };
 
-    const result = await executor(pauseTask, emitSpy);
+    const result = await executor(pauseTask, emitSpy as any);
 
     expect(result).toMatchObject({
       entityType: "FORCE_SIMULATION_CONTROL_ACK",
@@ -110,12 +110,12 @@ describe("ForceSimulationExecutor", () => {
       nodes: createTestNodes(),
       links: createTestLinks(),
     };
-    await executor(startTask, emitSpy);
+    await executor(startTask, emitSpy as any);
 
     const pauseTask: ForceSimulationTask = {
       entityType: "FORCE_SIMULATION_PAUSE",
     };
-    await executor(pauseTask, emitSpy);
+    await executor(pauseTask, emitSpy as any);
 
     emitSpy.mockClear();
 
@@ -124,7 +124,7 @@ describe("ForceSimulationExecutor", () => {
       entityType: "FORCE_SIMULATION_RESUME",
     };
 
-    const result = await executor(resumeTask, emitSpy);
+    const result = await executor(resumeTask, emitSpy as any);
 
     expect(result).toMatchObject({
       entityType: "FORCE_SIMULATION_CONTROL_ACK",
@@ -140,7 +140,7 @@ describe("ForceSimulationExecutor", () => {
       nodes: createTestNodes(),
       links: createTestLinks(),
     };
-    await executor(startTask, emitSpy);
+    await executor(startTask, emitSpy as any);
 
     emitSpy.mockClear();
 
@@ -153,7 +153,7 @@ describe("ForceSimulationExecutor", () => {
       },
     };
 
-    const result = await executor(updateTask, emitSpy);
+    const result = await executor(updateTask, emitSpy as any);
 
     expect(result).toMatchObject({
       entityType: "FORCE_SIMULATION_CONTROL_ACK",
@@ -171,7 +171,7 @@ describe("ForceSimulationExecutor", () => {
       pinnedNodes: ["node2"],
     };
 
-    const result = await executor(reheatTask, emitSpy);
+    const result = await executor(reheatTask, emitSpy as any);
 
     expect(result).toMatchObject({
       entityType: "FORCE_SIMULATION_CONTROL_ACK",
@@ -193,7 +193,7 @@ describe("ForceSimulationExecutor", () => {
       nodes: createTestNodes(),
       links: createTestLinks(),
     };
-    await executor(startTask, emitSpy);
+    await executor(startTask, emitSpy as any);
 
     emitSpy.mockClear();
 
@@ -209,7 +209,7 @@ describe("ForceSimulationExecutor", () => {
       alpha: 0.7,
     };
 
-    const result = await executor(updateLinksTask, emitSpy);
+    const result = await executor(updateLinksTask, emitSpy as any);
 
     expect(result).toMatchObject({
       entityType: "FORCE_SIMULATION_CONTROL_ACK",
@@ -227,7 +227,7 @@ describe("ForceSimulationExecutor", () => {
       nodes: createTestNodes(),
       links: createTestLinks(),
     };
-    await executor(startTask, emitSpy);
+    await executor(startTask, emitSpy as any);
 
     emitSpy.mockClear();
 
@@ -244,7 +244,7 @@ describe("ForceSimulationExecutor", () => {
       alpha: 0.6,
     };
 
-    const result = await executor(updateNodesTask, emitSpy);
+    const result = await executor(updateNodesTask, emitSpy as any);
 
     expect(result).toMatchObject({
       entityType: "FORCE_SIMULATION_CONTROL_ACK",
@@ -261,21 +261,21 @@ describe("ForceSimulationExecutor", () => {
       entityType: "INVALID_TASK_TYPE" as any,
     };
 
-    await expect(executor(invalidTask, emitSpy)).rejects.toThrow(
+    await expect(executor(invalidTask, emitSpy as any)).rejects.toThrow(
       "Unknown force simulation task entityType: INVALID_TASK_TYPE",
     );
   });
 
   it("should reject invalid payloads", async () => {
-    await expect(executor(null as any, emitSpy)).rejects.toThrow(
+    await expect(executor(null as any, emitSpy as any)).rejects.toThrow(
       "Invalid force simulation task payload",
     );
 
-    await expect(executor("invalid" as any, emitSpy)).rejects.toThrow(
+    await expect(executor("invalid" as any, emitSpy as any)).rejects.toThrow(
       "Invalid force simulation task payload",
     );
 
-    await expect(executor({} as any, emitSpy)).rejects.toThrow(
+    await expect(executor({} as any, emitSpy as any)).rejects.toThrow(
       "Invalid force simulation task payload",
     );
   });
@@ -287,7 +287,7 @@ describe("ForceSimulationExecutor", () => {
       links: createTestLinks(),
     };
 
-    await executor(task, emitSpy);
+    await executor(task, emitSpy as any);
 
     // Check that progress events have the correct structure
     const progressCalls = emitSpy.mock.calls.filter(

@@ -9,7 +9,7 @@ import React from "react";
 /**
  * Mock router with commonly used methods and properties
  */
-export const createMockRouter = (overrides: Record<string, unknown> = {}) => ({
+export const createMockRouter = (options?: any): any => (overrides: Record<string, unknown> = {}) => ({
   navigate: vi.fn(),
   back: vi.fn(),
   forward: vi.fn(),
@@ -66,7 +66,7 @@ export const createMockRouter = (overrides: Record<string, unknown> = {}) => ({
  */
 export const createMockNavigation = (
   overrides: Record<string, unknown> = {},
-) => ({
+): any => ({
   navigate: vi.fn(),
   buildLocation: vi.fn(),
   ...overrides,
@@ -93,7 +93,7 @@ export const createMockRouteContext = (
 /**
  * Mock match object for route matching
  */
-export const createMockMatch = (overrides: Record<string, unknown> = {}) => ({
+export const createMockMatch = (overrides: Record<string, unknown> = {}): any => ({
   id: "test-route",
   params: {},
   pathname: "/",
@@ -161,7 +161,7 @@ export function withMockRouter<P extends Record<string, unknown>>(
 /**
  * Mock TanStack Router hooks for testing
  */
-export const mockRouterHooks = {
+export const mockRouterHooks: any = {
   useRouter: () => createMockRouter(),
   useNavigate: () => vi.fn(),
   useLocation: () => ({

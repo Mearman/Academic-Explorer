@@ -122,7 +122,9 @@ describe("useWebWorker", () => {
     mockWorker = new MockWorker("test-worker.js");
 
     // Mock the global Worker constructor
-    global.Worker = vi.fn().mockImplementation(() => mockWorker) as any;
+    global.Worker = vi.fn(function(this: any, url: string, options?: WorkerOptions) {
+      return mockWorker;
+    }) as any;
   });
 
   afterEach(() => {

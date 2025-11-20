@@ -155,7 +155,7 @@ describe('OpenAlexGraphProvider', () => {
     });
 
     it('should use default options when not provided', () => {
-      const defaultProvider = new OpenAlexGraphProvider(mockClient);
+      const defaultProvider = new OpenAlexGraphProvider(mockClient as any);
       const info = defaultProvider.getProviderInfo();
 
       expect(info.name).toBe('openalex');

@@ -12,7 +12,7 @@
       "@academic-explorer/client": ["../client/dist/index.d.ts"],
       "@academic-explorer/graph": ["../graph/dist/index.d.ts"]
     },
-    "types": ["vitest", "@testing-library/jest-dom/vitest"],
+    "types": [],
     "declaration": true,
     "declarationMap": true,
     "composite": true,
@@ -26,6 +26,7 @@
     "skipDefaultLibCheck": true
   },
   "include": ["src/**/*"],
+  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/**/*.spec.ts", "src/**/*.spec.tsx", "src/test/**/*"],
   "references": [
     {
       "path": "../utils"

@@ -158,9 +158,9 @@ describe('GraphDataProvider Error Handling', () => {
       retryAttempts: 2
     });
 
-    eventSpy = vi.fn() as any;
-    provider.on('error', eventSpy);
-    provider.on('requestError', eventSpy);
+    eventSpy = vi.fn();
+    provider.on('error', eventSpy as any);
+    provider.on('requestError', eventSpy as any);
   });
 
   afterEach(() => {
@@ -364,9 +364,9 @@ describe('OpenAlexGraphProvider Error Handling', () => {
       retryAttempts: 1
     });
 
-    eventSpy = vi.fn() as any;
-    provider.on('error', eventSpy);
-    provider.on('requestError', eventSpy);
+    eventSpy = vi.fn();
+    provider.on('error', eventSpy as any);
+    provider.on('requestError', eventSpy as any);
   });
 
   afterEach(() => {

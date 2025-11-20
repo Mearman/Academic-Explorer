@@ -35,6 +35,9 @@ export default defineConfig(
 		test: {
 			environment: "jsdom",
 			setupFiles: ["./src/test/setup.ts"],
+			typecheck: {
+				tsconfig: "./tsconfig.vitest.json",
+			},
 			coverage: {
 			 reportsDirectory: "../../coverage/packages/ui",
 			},

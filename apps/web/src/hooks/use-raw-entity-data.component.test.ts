@@ -94,6 +94,9 @@ describe("useRawEntityData", () => {
       detectionMethod: "OpenAlex ID",
     });
 
+    // Re-apply useQuery mock after clearAllMocks
+    vi.mocked(reactQuery.useQuery).mockReturnValue(mockUseQueryResult as any);
+
     vi.spyOn(testLogger, "debug").mockImplementation(vi.fn());
   });
 

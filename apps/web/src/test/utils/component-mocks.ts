@@ -195,7 +195,7 @@ export const mockD3Force = () => {
 /**
  * Mock Web Workers for background processing
  */
-export const mockWebWorker = () => {
+export const mockWebWorker = (): any => {
   const mockWorker = {
     postMessage: vi.fn(),
     terminate: vi.fn(),
@@ -214,7 +214,7 @@ export const mockWebWorker = () => {
 /**
  * Mock Canvas API for components that use canvas rendering
  */
-export const mockCanvas = () => {
+export const mockCanvas = (): any => {
   const mockContext = {
     fillRect: vi.fn(),
     clearRect: vi.fn(),
@@ -266,7 +266,7 @@ export const mockCanvas = () => {
 /**
  * Mock IndexedDB for client-side storage testing
  */
-export const mockIndexedDB = () => {
+export const mockIndexedDB = (): any => {
   const mockDB = {
     close: vi.fn(),
     createObjectStore: vi.fn(),

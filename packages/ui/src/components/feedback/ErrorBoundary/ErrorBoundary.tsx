@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { Component } from "react";
 import * as React from "react";
 import type { ErrorInfo, ReactNode } from "react"
@@ -70,14 +71,14 @@ type DebugInfo = {
  * <ErrorBoundary
  *   onError={(error, errorInfo) => console.error('Error caught:', error)}
  *   reportUrl="https://github.com/your-repo/issues"
- *   showDebugInfo={process.env.NODE_ENV === 'development'}
+ *   showDebugInfo={import.meta.env.MODE === 'development'}
  * >
  *   <YourApp />
  * </ErrorBoundary>
  * ```
  */
 export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
-	private copyTimeout: NodeJS.Timeout | undefined = undefined
+	private copyTimeout: ReturnType<typeof setTimeout> | undefined = undefined
 
 	constructor(props: ErrorBoundaryProps) {
 		super(props)
@@ -113,7 +114,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
 			errorBoundary: "ErrorBoundary",
 			additionalContext: {
 				reactVersion: React.version || "unknown",
-				isDev: process.env.NODE_ENV === "development",
+				isDev: import.meta.env.MODE === "development",
 			},
 		}
 
