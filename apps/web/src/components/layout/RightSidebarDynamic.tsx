@@ -1,15 +1,24 @@
 import { EntityInfoSection } from "../sections/EntityInfoSection";
-import { useLayoutState } from "@/stores/layout-store";
+import { useLayoutState, useLayoutActions } from "@/stores/layout-store";
 import { Stack, Text } from "@mantine/core";
 import { IconInfoCircle } from "@tabler/icons-react";
+import { useEffect } from "react";
 
 /**
  * Right sidebar dynamic component - shows entity preview
  * When an entity is clicked in the relationship section or graph, displays EntityInfoSection
- * Otherwise shows a placeholder message
+ * Automatically closes sidebar when no entity is being previewed
  */
 export function RightSidebarDynamic() {
   const { previewEntityId } = useLayoutState();
+  const { setRightSidebarOpen } = useLayoutActions();
+
+  // Auto-close right sidebar when there's no entity to preview
+  useEffect(() => {
+    if (!previewEntityId) {
+      setRightSidebarOpen(false);
+    }
+  }, [previewEntityId, setRightSidebarOpen]);
 
   // Show entity preview if available, otherwise show placeholder
   if (previewEntityId) {
