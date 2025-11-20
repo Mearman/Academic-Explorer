@@ -31,6 +31,8 @@ export enum RelationType {
 
 	// Institutional relationships
 	LINEAGE = "LINEAGE", // Institution → Institution (via lineage[])
+	INSTITUTION_ASSOCIATED = "institution_associated", // Institution → Institution (via associated_institutions[])
+	INSTITUTION_HAS_REPOSITORY = "institution_has_repository", // Institution → Source (via repositories[])
 
 	// Backwards-compatible aliases (deprecated - use noun form above)
 	/** @deprecated Use AUTHORSHIP instead */

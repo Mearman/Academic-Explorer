@@ -332,6 +332,8 @@ export const RELATIONSHIP_TYPE_LABELS: Record<RelationType, string> = {
 
   // Institutional relationships
   [RelationType.LINEAGE]: 'Parent Institution',
+  [RelationType.INSTITUTION_ASSOCIATED]: 'Associated Institution',
+  [RelationType.INSTITUTION_HAS_REPOSITORY]: 'Repository',
 
   // Additional relationship types
   [RelationType.AUTHOR_RESEARCHES]: 'Research Topics',

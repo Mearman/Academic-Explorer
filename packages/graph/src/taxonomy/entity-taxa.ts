@@ -133,6 +133,18 @@ export const RELATION_TAXONOMY: Record<RelationType, Taxon> = {
 		color: "orange",
 		plural: "Lineages",
 	},
+	[RelationType.INSTITUTION_ASSOCIATED]: {
+		displayName: "Associated Institution",
+		description: "Institution has an association with another institution",
+		color: "orange",
+		plural: "Associated Institutions",
+	},
+	[RelationType.INSTITUTION_HAS_REPOSITORY]: {
+		displayName: "Has Repository",
+		description: "Institution maintains a research repository",
+		color: "purple",
+		plural: "Has Repositories",
+	},
 
 	// Additional relationship types
 	[RelationType.PUBLISHER_CHILD_OF]: {

@@ -386,6 +386,39 @@ All phases complete. The graph package now correctly implements ALL OpenAlex rel
 
 **Breaking Change**: AUTHORSHIP edge direction reversed (Author→Work became Work→Author). Migration guide available in MIGRATION.md.
 
+### Post-Completion Updates
+
+**Date**: 2025-11-20
+
+Following OpenAlex API verification, three additional relationships were implemented to achieve 100% coverage of documented OpenAlex entity fields:
+
+**Additional Relationships Implemented**:
+1. **TOPIC** (Work → Topic): Implemented edges from `topics[]` array on Work entities
+   - Extracts topic relationships with relevance scores
+   - Creates TOPIC edges for each work-topic association
+   - Adds score metadata for ranking
+
+2. **INSTITUTION_ASSOCIATED** (Institution → Institution): Implemented from `associated_institutions[]`
+   - Creates edges between associated institutions
+   - Includes relationship_type metadata (parent/child/related)
+   - Supports institutional collaboration networks
+
+3. **INSTITUTION_HAS_REPOSITORY** (Institution → Source): Implemented from `repositories[]`
+   - Links institutions to their research repositories
+   - Creates Institution → Source edges
+   - Enables repository discovery from institution nodes
+
+**Updated Components**:
+- `packages/graph/src/types/core.ts` - Added INSTITUTION_HAS_REPOSITORY to RelationType enum
+- `packages/graph/src/providers/openalex-provider.ts` - Implemented edge creation logic for all three relationships
+- `packages/graph/src/types/expansion.ts` - Added ExpansionLimits properties and DEFAULT_LIMITS values
+- `packages/graph/src/taxonomy/entity-taxa.ts` - Added taxonomy definitions for new relationship types
+- `specs/015-openalex-relationships/data-model.md` - Updated relationship matrix and detailed specifications
+
+**Testing**: All 868 existing tests continue to pass. TypeScript compilation successful with strict mode enabled.
+
+**Coverage**: OpenAlex relationship implementation now includes 100% of documented entity relationship fields across all seven entity types (Works, Authors, Sources, Institutions, Publishers, Funders, Topics).
+
 **Total Commits**: 10 commits (8 feature phases + 1 foundational + 1 polish)
 **Total Tasks**: 90 tasks complete
 **Test Strategy**: Test-first development (RED-GREEN-REFACTOR) throughout

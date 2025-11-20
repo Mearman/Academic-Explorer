@@ -226,6 +226,8 @@ export const NodeRepositorySection: React.FC = () => {
         [RelationType.FIELD_PART_OF_DOMAIN]: true,
         [RelationType.TOPIC_PART_OF_SUBFIELD]: true,
         [RelationType.TOPIC_SIBLING]: true,
+        [RelationType.INSTITUTION_ASSOCIATED]: true,
+        [RelationType.INSTITUTION_HAS_REPOSITORY]: true,
       },
       selectedRepositoryNodes,
       selectedRepositoryEdges: {},

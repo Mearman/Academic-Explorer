@@ -809,6 +809,66 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 
 			edges.push(edge)
 		}
+
+		// Add topic relationships (Work → Topic edges from topics[] array)
+		const topics = (workData.topics as Array<{ id?: string; display_name?: string; score?: number }>) || []
+
+		// Apply limit for topics
+		const topicLimit = getRelationshipLimit(options, RelationType.TOPIC)
+		const limitedTopics = topics.slice(0, topicLimit)
+
+		// Create TOPIC edges for each topic
+		for (const topic of limitedTopics) {
+			if (!topic.id || typeof topic.id !== 'string') {
+				continue
+			}
+
+			// Extract topic ID from URL or use as-is
+			const topicId = extractOpenAlexId(topic.id)
+
+			// Validate topic ID before creating edge
+			if (!validateOpenAlexId(topicId)) {
+				logger.warn(
+					"provider",
+					"Invalid topic ID, skipping",
+					{ workId, topicId: topic.id },
+					"OpenAlexProvider"
+				)
+				continue
+			}
+
+			// Create topic node (minimal data - will be fully loaded if expanded)
+			const topicNode: GraphNode = {
+				id: topicId,
+				entityType: "topics",
+				entityId: topicId,
+				label: topic.display_name || "Unknown Topic",
+				x: Math.random() * 800,
+				y: Math.random() * 600,
+				externalIds: [],
+				entityData: topic,
+			}
+
+			nodes.push(topicNode)
+
+			// Create TOPIC edge: work → topic
+			const edge: GraphEdge = {
+				id: createCanonicalEdgeId(workId, topicId, RelationType.TOPIC),
+				source: workId,
+				target: topicId,
+				type: RelationType.TOPIC,
+				direction: 'outbound',
+			}
+
+			// Add score metadata if available
+			if (topic.score !== undefined && topic.score !== null) {
+				edge.metadata = {
+					score: topic.score,
+				}
+			}
+
+			edges.push(edge)
+		}
 	}
 
 	private async expandAuthorWithCache(
@@ -1291,6 +1351,127 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 				{ error },
 				"OpenAlexProvider"
 			)
+		}
+
+		// Add associated institutions (from associated_institutions[] array)
+		const associatedInstitutions = (institutionData.associated_institutions as Array<{
+			id?: string
+			display_name?: string
+			relationship?: string
+		}>) || []
+
+		// Apply limit for associated institutions
+		const associatedLimit = getRelationshipLimit(options, RelationType.INSTITUTION_ASSOCIATED)
+		const limitedAssociated = associatedInstitutions.slice(0, associatedLimit)
+
+		// Create INSTITUTION_ASSOCIATED edges for each associated institution
+		for (const associated of limitedAssociated) {
+			if (!associated.id || typeof associated.id !== 'string') {
+				continue
+			}
+
+			// Extract bare ID from URL or use as-is
+			const associatedId = extractOpenAlexId(associated.id)
+
+			// Validate associated institution ID before creating edge
+			if (!validateOpenAlexId(associatedId)) {
+				logger.warn(
+					"provider",
+					"Invalid associated institution ID, skipping",
+					{ institutionId, associatedId: associated.id },
+					"OpenAlexProvider"
+				)
+				continue
+			}
+
+			// Create associated institution node (minimal data - will be fully loaded if expanded)
+			const associatedNode: GraphNode = {
+				id: associatedId,
+				entityType: "institutions",
+				entityId: associatedId,
+				label: associated.display_name || "Unknown Institution",
+				x: Math.random() * 800,
+				y: Math.random() * 600,
+				externalIds: [],
+				entityData: associated,
+			}
+
+			nodes.push(associatedNode)
+
+			// Create INSTITUTION_ASSOCIATED edge: institution → associated institution
+			const edge: GraphEdge = {
+				id: createCanonicalEdgeId(institutionId, associatedId, RelationType.INSTITUTION_ASSOCIATED),
+				source: institutionId,
+				target: associatedId,
+				type: RelationType.INSTITUTION_ASSOCIATED,
+				direction: 'outbound',
+			}
+
+			// Add relationship type metadata if available (parent/child/related)
+			if (associated.relationship) {
+				edge.metadata = {
+					relationship_type: associated.relationship,
+				}
+			}
+
+			edges.push(edge)
+		}
+
+		// Add repositories (from repositories[] array)
+		const repositories = (institutionData.repositories as Array<{
+			id?: string
+			display_name?: string
+			host_organization?: string
+		}>) || []
+
+		// Apply limit for repositories
+		const repositoryLimit = getRelationshipLimit(options, RelationType.INSTITUTION_HAS_REPOSITORY)
+		const limitedRepositories = repositories.slice(0, repositoryLimit)
+
+		// Create INSTITUTION_HAS_REPOSITORY edges for each repository
+		for (const repository of limitedRepositories) {
+			if (!repository.id || typeof repository.id !== 'string') {
+				continue
+			}
+
+			// Extract bare ID from URL or use as-is
+			const repositoryId = extractOpenAlexId(repository.id)
+
+			// Validate repository ID before creating edge
+			if (!validateOpenAlexId(repositoryId)) {
+				logger.warn(
+					"provider",
+					"Invalid repository ID, skipping",
+					{ institutionId, repositoryId: repository.id },
+					"OpenAlexProvider"
+				)
+				continue
+			}
+
+			// Create repository node (type: sources)
+			const repositoryNode: GraphNode = {
+				id: repositoryId,
+				entityType: "sources",
+				entityId: repositoryId,
+				label: repository.display_name || "Unknown Repository",
+				x: Math.random() * 800,
+				y: Math.random() * 600,
+				externalIds: [],
+				entityData: repository,
+			}
+
+			nodes.push(repositoryNode)
+
+			// Create INSTITUTION_HAS_REPOSITORY edge: institution → repository (source)
+			const edge: GraphEdge = {
+				id: createCanonicalEdgeId(institutionId, repositoryId, RelationType.INSTITUTION_HAS_REPOSITORY),
+				source: institutionId,
+				target: repositoryId,
+				type: RelationType.INSTITUTION_HAS_REPOSITORY,
+				direction: 'outbound',
+			}
+
+			edges.push(edge)
 		}
 	}
 

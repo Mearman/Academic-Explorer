@@ -106,6 +106,12 @@ const initializeDefaultSettings = (): Record<
     [RelationType.TOPIC_SIBLING]: getDefaultSettingsForTarget(
       RelationType.TOPIC_SIBLING,
     ),
+    [RelationType.INSTITUTION_ASSOCIATED]: getDefaultSettingsForTarget(
+      RelationType.INSTITUTION_ASSOCIATED,
+    ),
+    [RelationType.INSTITUTION_HAS_REPOSITORY]: getDefaultSettingsForTarget(
+      RelationType.INSTITUTION_HAS_REPOSITORY,
+    ),
   };
 };
 

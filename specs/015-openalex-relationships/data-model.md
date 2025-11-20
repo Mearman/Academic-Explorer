@@ -83,6 +83,7 @@ enum RelationType {
   // Institutional Hierarchy
   LINEAGE = "LINEAGE",                    // Institution → Institution (parent)
   INSTITUTION_ASSOCIATED = "institution_associated", // Institution → Institution
+  INSTITUTION_HAS_REPOSITORY = "institution_has_repository", // Institution → Source (repository)
   INSTITUTION_LOCATED_IN = "institution_located_in", // Institution → Country
 
   // Publishing Relationships
@@ -173,7 +174,7 @@ interface PublicationMetadata extends EdgeMetadata {
 | **AUTHORSHIP** | Author | `authorships[]` | outbound | P1 | ✅ Implemented (Phase 1) |
 | **PUBLICATION** | Source | `primary_location.source` | outbound | P1 | ✅ Pre-existing |
 | **REFERENCE** | Work | `referenced_works[]` | outbound | P1 | ✅ Implemented (Phase 2) |
-| **TOPIC** | Topic | `topics[]` | outbound | P1 | ✅ Pre-existing |
+| **TOPIC** | Topic | `topics[]` | outbound | P1 | ✅ Implemented (2025-11-20) |
 | **FUNDED_BY** | Funder | `grants[].funder` | outbound | P2 | ✅ Implemented (Phase 3) |
 | **WORK_HAS_KEYWORD** | Keyword | `keywords[]` | outbound | P3 | ✅ Implemented (Phase 8) |
 
@@ -198,7 +199,8 @@ interface PublicationMetadata extends EdgeMetadata {
 | Relationship | Target Entity | OpenAlex Field | Direction | Priority | Status |
 |-------------|---------------|----------------|-----------|----------|---------|
 | **LINEAGE** | Institution | `lineage[]` | outbound | P2 | ✅ Implemented (Phase 5) |
-| **INSTITUTION_ASSOCIATED** | Institution | `associated_institutions[]` | outbound | P3 | ❌ Not in Scope |
+| **INSTITUTION_ASSOCIATED** | Institution | `associated_institutions[]` | outbound | P3 | ✅ Implemented (2025-11-20) |
+| **INSTITUTION_HAS_REPOSITORY** | Source | `repositories[]` | outbound | P3 | ✅ Implemented (2025-11-20) |
 | **Affiliated Authors** (reverse) | Author | Reverse lookup | inbound | P1 | ✅ Pre-existing |
 
 ### Topics Relationships
@@ -483,6 +485,80 @@ for (const topic of (authorData.topics as Array<{id: string; count: number; disp
         count: topic.count,
         display_name: topic.display_name
       }
+    });
+  }
+}
+```
+
+### INSTITUTION_ASSOCIATED (Institution → Institution)
+
+**OpenAlex Field**: `associated_institutions[]` (on Institution entity)
+
+**Direction Rule**: Outbound from institution
+
+**Edge Structure**:
+```typescript
+{
+  id: `${institutionId}-institution_associated-${associatedId}`,
+  source: institutionId,         // Institution
+  target: associatedId,          // Associated institution
+  type: RelationType.INSTITUTION_ASSOCIATED,
+  direction: 'outbound',
+  metadata: {
+    relationship_type: string  // parent/child/related
+  }
+}
+```
+
+**Implementation Status**: ✅ Implemented (2025-11-20)
+
+**Data Extraction**:
+```typescript
+for (const associated of (institutionData.associated_institutions as Array<{id: string; display_name: string; relationship: string}>) || []) {
+  const associatedId = extractOpenAlexId(associated.id);
+  if (validateOpenAlexId(associatedId)) {
+    edges.push({
+      source: institutionId,
+      target: associatedId,
+      type: RelationType.INSTITUTION_ASSOCIATED,
+      direction: 'outbound',
+      metadata: {
+        relationship_type: associated.relationship
+      }
+    });
+  }
+}
+```
+
+### INSTITUTION_HAS_REPOSITORY (Institution → Source)
+
+**OpenAlex Field**: `repositories[]` (on Institution entity)
+
+**Direction Rule**: Outbound from institution
+
+**Edge Structure**:
+```typescript
+{
+  id: `${institutionId}-institution_has_repository-${repositoryId}`,
+  source: institutionId,         // Institution
+  target: repositoryId,          // Repository (Source entity)
+  type: RelationType.INSTITUTION_HAS_REPOSITORY,
+  direction: 'outbound'
+}
+```
+
+**Implementation Status**: ✅ Implemented (2025-11-20)
+
+**Data Extraction**:
+```typescript
+for (const repository of (institutionData.repositories as Array<{id: string; display_name: string}>) || []) {
+  const repositoryId = extractOpenAlexId(repository.id);
+  if (validateOpenAlexId(repositoryId)) {
+    edges.push({
+      source: institutionId,
+      target: repositoryId,
+      type: RelationType.INSTITUTION_HAS_REPOSITORY,
+      direction: 'outbound'
     });
   }
 }

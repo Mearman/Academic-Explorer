@@ -81,6 +81,12 @@ export interface ExpansionLimits {
 
 	/** Topic → Domain limit (FIELD_PART_OF_DOMAIN edges). Default: 10 */
 	'FIELD_PART_OF_DOMAIN'?: number
+
+	/** Institution → Associated Institution limit (INSTITUTION_ASSOCIATED edges). Default: 10 */
+	[RelationType.INSTITUTION_ASSOCIATED]?: number
+
+	/** Institution → Repository limit (INSTITUTION_HAS_REPOSITORY edges). Default: 10 */
+	[RelationType.INSTITUTION_HAS_REPOSITORY]?: number
 }
 
 /**
@@ -112,6 +118,10 @@ export const DEFAULT_LIMITS: ExpansionLimits = {
 	// Hierarchies (usually small)
 	[RelationType.LINEAGE]: 5, // Institution/publisher parents
 	[RelationType.TOPIC_PART_OF_FIELD]: 10, // Topic → Field relationship
+
+	// Institution relationships
+	[RelationType.INSTITUTION_ASSOCIATED]: 10, // Associated institutions
+	[RelationType.INSTITUTION_HAS_REPOSITORY]: 10, // Institution repositories
 
 	// Additional relationships
 	[RelationType.WORK_HAS_KEYWORD]: 10, // Keywords per work
