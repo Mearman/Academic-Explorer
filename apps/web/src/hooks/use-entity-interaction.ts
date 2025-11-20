@@ -41,7 +41,7 @@ export const useEntityInteraction = (
   centerOnNodeFn?: (nodeId: string, position: { x: number; y: number }) => void,
 ) => {
   const { loadEntityIntoGraph, expandNode } = useGraphData();
-  const { setPreviewEntity, autoPinOnLayoutStabilization } = useLayoutStore();
+  const { setPreviewEntity, autoPinOnLayoutStabilization, setRightSidebarOpen } = useLayoutStore();
   const { selectNode, clearAllPinnedNodes, pinNode } = useGraphStore();
 
   // Helper functions to reduce cognitive complexity
@@ -277,6 +277,9 @@ export const useEntityInteraction = (
       // Set preview entity immediately - sidebar preview should work independently of graph
       setPreviewEntity(entityId);
 
+      // Auto-open right sidebar to show the preview
+      setRightSidebarOpen(true);
+
       // Then attempt to interact with the entity in the graph (if it exists or can be loaded)
       // This is best-effort and won't affect the preview if it fails
       return interactWithEntity({
@@ -288,7 +291,7 @@ export const useEntityInteraction = (
         },
       });
     },
-    [interactWithEntity, setPreviewEntity],
+    [interactWithEntity, setPreviewEntity, setRightSidebarOpen],
   );
 
   return {
