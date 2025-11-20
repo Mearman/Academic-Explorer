@@ -12,6 +12,7 @@ import type { EntityType } from '@academic-explorer/types';
 import { RelationType } from '@academic-explorer/graph';
 import { useEntityRelationships } from '@/hooks/use-entity-relationships';
 import { useEntityRelationshipsFromData } from '@/hooks/use-entity-relationships-from-data';
+import { useEntityRelationshipQueries } from '@/hooks/use-entity-relationship-queries';
 import { RelationshipSection } from './RelationshipSection';
 import { RelationshipTypeFilter } from './RelationshipTypeFilter';
 
@@ -70,14 +71,34 @@ export const OutgoingRelationships: React.FC<OutgoingRelationshipsProps> = ({
     }
   );
 
-  // Fall back to data-based relationships if graph has no data
+  // Query for API-based relationships (works by author, etc.)
+  const apiRelationships = useEntityRelationshipQueries(entityId, entityType);
+
+  // Fall back to embedded data-based relationships if graph and API have no data
   const dataRelationships = useEntityRelationshipsFromData(entityData, entityType);
 
-  // Choose which source to use: graph if available, otherwise data
+  // Choose which source to use with priority: graph > API queries > embedded data
   const hasGraphData = graphRelationships.outgoing.length > 0 || graphRelationships.loading;
-  const { outgoing, loading, error } = hasGraphData
-    ? graphRelationships
-    : { outgoing: dataRelationships.outgoing, loading: false, error: graphRelationships.error };
+  const hasApiData = apiRelationships.outgoing.length > 0 || apiRelationships.loading;
+
+  let outgoing, loading, error;
+
+  if (hasGraphData) {
+    // Priority 1: Graph-based relationships (when entities are in graph)
+    outgoing = graphRelationships.outgoing;
+    loading = graphRelationships.loading;
+    error = graphRelationships.error;
+  } else if (hasApiData) {
+    // Priority 2: API-queried relationships (e.g., works by author)
+    outgoing = apiRelationships.outgoing;
+    loading = apiRelationships.loading;
+    error = apiRelationships.error;
+  } else {
+    // Priority 3: Embedded data relationships (fallback)
+    outgoing = dataRelationships.outgoing;
+    loading = false;
+    error = graphRelationships.error; // Preserve graph errors even when falling back
+  }
 
   // Show loading skeleton while fetching
   if (loading) {

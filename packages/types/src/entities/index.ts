@@ -16,6 +16,7 @@ export * from "./topics"
 export * from "./publishers"
 export * from "./funders"
 export * from "./keywords"
+export * from "./relationship-queries"
 
 // Type aliases for backward compatibility
 import type { EntityType } from "./entities"
