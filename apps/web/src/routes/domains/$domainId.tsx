@@ -7,7 +7,7 @@ const DomainRoute = lazy(() =>
   import("./$domainId.lazy").then((m) => ({ default: m.default })),
 );
 
-export const Route = createFileRoute("/domains/$domainId")({
+export const Route = createFileRoute("/domains/$domainId" as any)({
   component: () => (
     <LazyRoute>
       <DomainRoute />

@@ -16,9 +16,8 @@ import { RelationshipCounts } from "@/components/relationship/RelationshipCounts
 import { useEntityRelationships } from "@/hooks/use-entity-relationships";
 
 function FieldRoute() {
-  const params = useParams({ from: "/fields/$fieldId" });
-  const rawFieldId = params.fieldId;
-  const { select: selectParam } = useSearch({ strict: false });
+  const { fieldId: rawFieldId } = useParams({ strict: false }) as { fieldId: string };
+  const { select: selectParam } = useSearch({ strict: false }) as { select?: string };
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
 
   // Decode the field ID in case it's URL-encoded
@@ -76,7 +75,7 @@ function FieldRoute() {
   return (
     <EntityDetailLayout
       config={ENTITY_TYPE_CONFIGS.topic}
-      entityType="topics"
+      entityType="topic"
       entityId={fullFieldId}
       displayName={field.display_name || "Field"}
       selectParam={typeof selectParam === 'string' ? selectParam : undefined}

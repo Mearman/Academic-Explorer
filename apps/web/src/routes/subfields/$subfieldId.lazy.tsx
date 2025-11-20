@@ -16,9 +16,8 @@ import { RelationshipCounts } from "@/components/relationship/RelationshipCounts
 import { useEntityRelationships } from "@/hooks/use-entity-relationships";
 
 function SubfieldRoute() {
-  const params = useParams({ from: "/subfields/$subfieldId" });
-  const rawSubfieldId = params.subfieldId;
-  const { select: selectParam } = useSearch({ strict: false });
+  const { subfieldId: rawSubfieldId } = useParams({ strict: false }) as { subfieldId: string };
+  const { select: selectParam } = useSearch({ strict: false }) as { select?: string };
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
 
   // Decode the subfield ID in case it's URL-encoded
@@ -76,7 +75,7 @@ function SubfieldRoute() {
   return (
     <EntityDetailLayout
       config={ENTITY_TYPE_CONFIGS.topic}
-      entityType="topics"
+      entityType="topic"
       entityId={fullSubfieldId}
       displayName={subfield.display_name || "Subfield"}
       selectParam={typeof selectParam === 'string' ? selectParam : undefined}

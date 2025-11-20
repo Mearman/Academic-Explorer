@@ -7,7 +7,7 @@ const SubfieldRoute = lazy(() =>
   import("./$subfieldId.lazy").then((m) => ({ default: m.default })),
 );
 
-export const Route = createFileRoute("/subfields/$subfieldId")({
+export const Route = createFileRoute("/subfields/$subfieldId" as any)({
   component: () => (
     <LazyRoute>
       <SubfieldRoute />

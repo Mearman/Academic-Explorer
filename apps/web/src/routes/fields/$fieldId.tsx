@@ -7,7 +7,7 @@ const FieldRoute = lazy(() =>
   import("./$fieldId.lazy").then((m) => ({ default: m.default })),
 );
 
-export const Route = createFileRoute("/fields/$fieldId")({
+export const Route = createFileRoute("/fields/$fieldId" as any)({
   component: () => (
     <LazyRoute>
       <FieldRoute />

@@ -233,3 +233,5 @@ function WorkRoute() {
 export const Route = createLazyFileRoute("/works/$_")({
   component: WorkRoute,
 });
+
+export default WorkRoute;
