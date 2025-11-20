@@ -11,6 +11,7 @@ import { Stack, Title, Paper, Text, Skeleton, Button, Group } from '@mantine/cor
 import type { EntityType } from '@academic-explorer/types';
 import { RelationType } from '@academic-explorer/graph';
 import { useEntityRelationships } from '@/hooks/use-entity-relationships';
+import { useEntityRelationshipsFromData } from '@/hooks/use-entity-relationships-from-data';
 import { RelationshipSection } from './RelationshipSection';
 import { RelationshipTypeFilter } from './RelationshipTypeFilter';
 
@@ -20,6 +21,9 @@ export interface IncomingRelationshipsProps {
 
   /** The type of the entity */
   entityType: EntityType;
+
+  /** Optional raw entity data for fallback when graph context is not available */
+  entityData?: Record<string, unknown> | null;
 }
 
 /**
@@ -29,6 +33,7 @@ export interface IncomingRelationshipsProps {
 export const IncomingRelationships: React.FC<IncomingRelationshipsProps> = ({
   entityId,
   entityType,
+  entityData,
 }) => {
   // Filter state with localStorage persistence (T047)
   const storageKey = `entity-relationship-filter-${entityType}-${entityId}`;
@@ -55,7 +60,8 @@ export const IncomingRelationships: React.FC<IncomingRelationshipsProps> = ({
     }
   }, [selectedTypes, storageKey]);
 
-  const { incoming, incomingCount, outgoingCount, loading, error } = useEntityRelationships(
+  // Try graph-based relationships first
+  const graphRelationships = useEntityRelationships(
     entityId,
     entityType,
     {
@@ -63,6 +69,15 @@ export const IncomingRelationships: React.FC<IncomingRelationshipsProps> = ({
       direction: 'inbound',
     }
   );
+
+  // Fall back to data-based relationships if graph has no data
+  const dataRelationships = useEntityRelationshipsFromData(entityData, entityType);
+
+  // Choose which source to use: graph if available, otherwise data
+  const hasGraphData = graphRelationships.incoming.length > 0 || graphRelationships.loading;
+  const { incoming, loading, error } = hasGraphData
+    ? graphRelationships
+    : { incoming: dataRelationships.incoming, loading: false, error: undefined };
 
   // Show loading skeleton while fetching
   if (loading) {

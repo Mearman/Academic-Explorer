@@ -12,6 +12,7 @@ import { IncomingRelationships } from "@/components/relationship/IncomingRelatio
 import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
 import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
 import { useEntityRelationships } from "@/hooks/use-entity-relationships";
+import { useEntityRelationshipsFromData } from "@/hooks/use-entity-relationships-from-data";
 
 const AUTHOR_ROUTE_PATH = "/authors/$_";
 
@@ -59,11 +60,22 @@ function AuthorRoute() {
     enabled: !!decodedAuthorId && decodedAuthorId !== "random",
   });
 
-  // Get relationship counts for summary display - MUST be called before early returns (Rules of Hooks)
-  const { incomingCount, outgoingCount } = useEntityRelationships(
+  // Get relationship counts from both graph and data sources
+  const graphRelationships = useEntityRelationships(
     decodedAuthorId || '',
     'authors'
   );
+
+  const dataRelationships = useEntityRelationshipsFromData(
+    author || null,
+    'authors'
+  );
+
+  // Use graph counts if available, otherwise fall back to data-based counts
+  const hasGraphData = graphRelationships.incomingCount > 0 || graphRelationships.outgoingCount > 0;
+  const { incomingCount, outgoingCount } = hasGraphData
+    ? graphRelationships
+    : dataRelationships;
 
   const config = ENTITY_TYPE_CONFIGS.author;
 
@@ -92,8 +104,16 @@ function AuthorRoute() {
       onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
       data={author as Record<string, unknown>}>
       <RelationshipCounts incomingCount={incomingCount} outgoingCount={outgoingCount} />
-      <IncomingRelationships entityId={decodedAuthorId} entityType="authors" />
-      <OutgoingRelationships entityId={decodedAuthorId} entityType="authors" />
+      <IncomingRelationships
+        entityId={decodedAuthorId}
+        entityType="authors"
+        entityData={author as Record<string, unknown>}
+      />
+      <OutgoingRelationships
+        entityId={decodedAuthorId}
+        entityType="authors"
+        entityData={author as Record<string, unknown>}
+      />
     </EntityDetailLayout>
   );
 }
