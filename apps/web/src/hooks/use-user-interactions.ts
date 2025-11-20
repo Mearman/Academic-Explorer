@@ -3,7 +3,7 @@
  * Refactored to use catalogue service for bookmarks and history
  */
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation } from "@tanstack/react-router";
 import {
   catalogueService,
@@ -132,6 +132,16 @@ export function useUserInteractions(
   const [isLoadingBookmarks, setIsLoadingBookmarks] = useState(false);
   const [isLoadingStats, setIsLoadingStats] = useState(false);
 
+  // Track component mount status to prevent state updates after unmount
+  const isMountedRef = useRef(true);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   const refreshData = useCallback(async () => {
     setIsLoadingHistory(true);
     setIsLoadingBookmarks(true);
@@ -152,7 +162,9 @@ export function useUserInteractions(
 
         // Load recent history (last 20 entries)
         const historyEntries = await catalogueService.getHistory();
-        setRecentHistory(historyEntries.slice(-20).reverse());
+        if (isMountedRef.current) {
+          setRecentHistory(historyEntries.slice(-20).reverse());
+        }
 
         // Check bookmark status based on content type
         if (entityId && entityType) {
@@ -160,7 +172,9 @@ export function useUserInteractions(
             entityType as any,
             entityId
           );
-          setIsBookmarked(bookmarked);
+          if (isMountedRef.current) {
+            setIsBookmarked(bookmarked);
+          }
         } else if (searchQuery || url) {
           // For search and list bookmarks, we'll use a simple check in the bookmarks
           // This is a simplified approach - in a real implementation you might want
@@ -170,20 +184,26 @@ export function useUserInteractions(
           const bookmarked = allBookmarks.some(bookmark =>
             bookmark.notes?.includes(searchTerm || '')
           );
-          setIsBookmarked(bookmarked);
+          if (isMountedRef.current) {
+            setIsBookmarked(bookmarked);
+          }
         }
 
         // Load all bookmarks
         const allBookmarks = await catalogueService.getBookmarks();
-        setBookmarks(allBookmarks);
+        if (isMountedRef.current) {
+          setBookmarks(allBookmarks);
+        }
 
         // Calculate history stats
         const stats = await catalogueService.getListStats(SPECIAL_LIST_IDS.HISTORY);
-        setHistoryStats({
-          totalVisits: stats.totalEntities,
-          uniqueEntities: stats.totalEntities, // Each entry is unique in catalogue
-          byType: stats.entityCounts,
-        });
+        if (isMountedRef.current) {
+          setHistoryStats({
+            totalVisits: stats.totalEntities,
+            uniqueEntities: stats.totalEntities, // Each entry is unique in catalogue
+            byType: stats.entityCounts,
+          });
+        }
       })();
 
       // Race between data loading and timeout
@@ -196,18 +216,22 @@ export function useUserInteractions(
       );
 
       // Set default values when loading fails
-      setRecentHistory([]);
-      setBookmarks([]);
-      setHistoryStats({
-        totalVisits: 0,
-        uniqueEntities: 0,
-        byType: {},
-      });
-      setIsBookmarked(false);
+      if (isMountedRef.current) {
+        setRecentHistory([]);
+        setBookmarks([]);
+        setHistoryStats({
+          totalVisits: 0,
+          uniqueEntities: 0,
+          byType: {},
+        });
+        setIsBookmarked(false);
+      }
     } finally {
-      setIsLoadingHistory(false);
-      setIsLoadingBookmarks(false);
-      setIsLoadingStats(false);
+      if (isMountedRef.current) {
+        setIsLoadingHistory(false);
+        setIsLoadingBookmarks(false);
+        setIsLoadingStats(false);
+      }
     }
   }, [entityId, entityType, searchQuery, url]);
 
