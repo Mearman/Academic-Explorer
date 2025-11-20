@@ -77,7 +77,7 @@ export const IncomingRelationships: React.FC<IncomingRelationshipsProps> = ({
   const hasGraphData = graphRelationships.incoming.length > 0 || graphRelationships.loading;
   const { incoming, loading, error } = hasGraphData
     ? graphRelationships
-    : { incoming: dataRelationships.incoming, loading: false, error: undefined };
+    : { incoming: dataRelationships.incoming, loading: false, error: graphRelationships.error };
 
   // Show loading skeleton while fetching
   if (loading) {
