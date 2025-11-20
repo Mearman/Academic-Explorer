@@ -19,7 +19,7 @@ import type {
   PaginationState,
 } from '@/types/relationship';
 import { RELATIONSHIP_TYPE_LABELS, DEFAULT_PAGE_SIZE } from '@/types/relationship';
-import { getWorks, getAuthors, getSources } from '@academic-explorer/client';
+import { getWorks, getAuthors, getSources, getInstitutions } from '@academic-explorer/client';
 
 /**
  * Type guard to check if a string is a valid RelationType enum value
@@ -169,7 +169,15 @@ async function executeRelationshipQuery(
         ...(config.select && { select: config.select }),
       });
       break;
-    // TODO: Add institutions, topics, publishers, funders when needed
+    case 'institutions':
+      response = await getInstitutions({
+        filters: { id: filter }, // getInstitutions uses 'filters' object, not 'filter' string
+        per_page: pageSize,
+        page: 1,
+        ...(config.select && { select: config.select }),
+      });
+      break;
+    // TODO: Add topics, publishers, funders when needed
     default:
       throw new Error(`Unsupported target type: ${config.targetType}`);
   }

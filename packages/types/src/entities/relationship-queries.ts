@@ -25,7 +25,8 @@ export type RelationshipTypeString =
   | 'FUNDED_BY'
   | 'TOPIC_PART_OF_FIELD'
   | 'FIELD_PART_OF_DOMAIN'
-  | 'RELATED_TO';
+  | 'RELATED_TO'
+  | 'INSTITUTION_HAS_REPOSITORY';
 
 /**
  * Configuration for a single relationship query
@@ -114,8 +115,8 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
       {
         type: 'REFERENCE',
         targetType: 'works',
-        label: 'References (Referenced Works)',
-        buildFilter: (id) => `referenced_works:${id}`,
+        label: 'References (Works Cited)',
+        buildFilter: (id) => `cited_by:${id}`,
         pageSize: 25,
         select: ['id', 'display_name', 'publication_year', 'type', 'cited_by_count'],
       },
@@ -180,6 +181,14 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
         buildFilter: (id) => `primary_location.source.id:${id}`,
         pageSize: 25,
         select: ['id', 'display_name', 'publication_year', 'type', 'cited_by_count'],
+      },
+      {
+        type: 'INSTITUTION_HAS_REPOSITORY',
+        targetType: 'institutions',
+        label: 'Hosting Institutions',
+        buildFilter: (id) => `repositories.id:${id}`,
+        pageSize: 25,
+        select: ['id', 'display_name', 'country_code', 'type', 'works_count'],
       },
     ],
     outbound: [],
