@@ -291,6 +291,12 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 flex={1}
                 p="sm"
                 data-testid="left-sidebar-content"
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  height: "100%",
+                  overflow: "hidden",
+                }}
               >
                 {/* Pinning controls */}
                 <Group justify="space-between" mb="sm" px="xs">
@@ -334,8 +340,29 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     </ActionIcon>
                   </Group>
                 </Group>
-                {/* Bookmarks sidebar component */}
-                <BookmarksSidebar />
+
+                {/* Upper half: Bookmarks */}
+                <Box
+                  style={{
+                    flex: 1,
+                    minHeight: 0,
+                    overflow: "auto",
+                    marginBottom: "1rem",
+                  }}
+                >
+                  <BookmarksSidebar />
+                </Box>
+
+                {/* Lower half: History */}
+                <Box
+                  style={{
+                    flex: 1,
+                    minHeight: 0,
+                    overflow: "auto",
+                  }}
+                >
+                  <HistorySidebar />
+                </Box>
               </Box>
               {/* Left drag handle */}
               <Box
