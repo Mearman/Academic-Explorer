@@ -872,14 +872,22 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
       entity.entityType; // fallback to stored type if no match
 
     // Common fields for all entities
-    const commonFields = [
+    // Helper formatter for entity references (objects with id and display_name)
+    const formatEntityReference = (value: unknown): React.ReactNode => {
+      if (!value || typeof value !== 'object') return null;
+      const entity = value as { id?: string; display_name?: string };
+      return entity.display_name || entity.id || null;
+    };
+
+    // Common fields for all entities
+    const commonFields: Array<{ label: string; fieldName: string; value: unknown; formatter?: (value: unknown) => React.ReactNode }> = [
       { label: "Display Name", fieldName: "display_name", value: data.display_name },
       { label: "Created Date", fieldName: "created_date", value: data.created_date },
       { label: "Updated Date", fieldName: "updated_date", value: data.updated_date },
     ];
 
     // Entity-specific fields
-    let specificFields: Array<{ label: string; fieldName: string; value: unknown }> = [];
+    let specificFields: Array<{ label: string; fieldName: string; value: unknown; formatter?: (value: unknown) => React.ReactNode }> = [];
 
     if (entityType === "works") {
       specificFields = [
@@ -901,7 +909,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
         { label: "Cited By Count", fieldName: "cited_by_count", value: data.cited_by_count },
         { label: "H-Index", fieldName: "summary_stats.h_index", value: (data.summary_stats as any)?.h_index },
         { label: "i10-Index", fieldName: "summary_stats.i10_index", value: (data.summary_stats as any)?.i10_index },
-        { label: "Last Known Institution", fieldName: "last_known_institution", value: data.last_known_institution },
+        { label: "Last Known Institution", fieldName: "last_known_institution", value: data.last_known_institution, formatter: formatEntityReference },
       ];
     } else if (entityType === "institutions") {
       specificFields = [
@@ -925,9 +933,9 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
       specificFields = [
         { label: "Works Count", fieldName: "works_count", value: data.works_count },
         { label: "Cited By Count", fieldName: "cited_by_count", value: data.cited_by_count },
-        { label: "Domain", fieldName: "domain", value: data.domain },
-        { label: "Field", fieldName: "field", value: data.field },
-        { label: "Subfield", fieldName: "subfield", value: data.subfield },
+        { label: "Domain", fieldName: "domain", value: data.domain, formatter: formatEntityReference },
+        { label: "Field", fieldName: "field", value: data.field, formatter: formatEntityReference },
+        { label: "Subfield", fieldName: "subfield", value: data.subfield, formatter: formatEntityReference },
       ];
     } else if (entityType === "publishers") {
       specificFields = [
@@ -983,6 +991,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
               entityId={entityId}
               entityType={entityType}
               onDataFetched={handleFieldFetched}
+              formatter={field.formatter}
             />
           ))}
         </Stack>
