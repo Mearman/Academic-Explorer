@@ -1,3 +1,5 @@
+## [15.0.1](https://github.com/Mearman/Academic-Explorer/compare/v15.0.0...v15.0.1) (2025-11-20)
+
 # [15.0.0](https://github.com/Mearman/Academic-Explorer/compare/v14.0.0...v15.0.0) (2025-11-20)
 
 
