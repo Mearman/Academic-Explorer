@@ -60,7 +60,7 @@ function SubfieldRoute() {
 
   // Handle loading state
   if (isLoading) {
-    return <LoadingState entityType="Subfield" entityId={subfieldId || ''} config={ENTITY_TYPE_CONFIGS.topic} />;
+    return <LoadingState entityType="Subfield" entityId={subfieldId || ''} config={ENTITY_TYPE_CONFIGS.subfield} />;
   }
 
   // Handle error state
@@ -76,7 +76,7 @@ function SubfieldRoute() {
 
   return (
     <EntityDetailLayout
-      config={ENTITY_TYPE_CONFIGS.topic}
+      config={ENTITY_TYPE_CONFIGS.subfield}
       entityType="subfield"
       entityId={fullSubfieldId}
       displayName={subfield.display_name || "Subfield"}

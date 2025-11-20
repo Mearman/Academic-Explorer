@@ -78,6 +78,24 @@ export const ENTITY_TAXONOMY: Record<EntityType, Taxon> = {
 		color: "gray",
 		plural: "Keywords",
 	},
+	domains: {
+		displayName: "Domain",
+		description: "Top-level academic domains in the OpenAlex taxonomy",
+		color: "indigo",
+		plural: "Domains",
+	},
+	fields: {
+		displayName: "Field",
+		description: "Academic fields within domains",
+		color: "violet",
+		plural: "Fields",
+	},
+	subfields: {
+		displayName: "Subfield",
+		description: "Academic subfields within fields",
+		color: "lime",
+		plural: "Subfields",
+	},
 }
 
 /**
@@ -222,6 +240,9 @@ export const ENTITY_ICON_MAP: Record<EntityType, string> = {
 	topics: "IconTag",
 	concepts: "IconBulb",
 	keywords: "IconHash",
+	domains: "IconWorld",
+	fields: "IconFolders",
+	subfields: "IconFolder",
 }
 
 /**

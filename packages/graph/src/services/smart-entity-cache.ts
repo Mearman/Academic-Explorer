@@ -671,6 +671,9 @@ export class SmartEntityCache {
 			topics: ["id", "display_name", "works_count", "field", "domain"],
 			concepts: ["id", "display_name", "works_count", "level"],
 			keywords: ["id", "display_name", "works_count"],
+			domains: ["id", "display_name", "description", "works_count"],
+			fields: ["id", "display_name", "description", "works_count", "domain"],
+			subfields: ["id", "display_name", "description", "works_count", "field", "domain"],
 		}
 
 		return importantFieldsByType[entityType] || []

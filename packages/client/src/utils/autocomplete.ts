@@ -272,6 +272,9 @@ export class BaseAutocompleteApi {
       publishers: "publisher",
       funders: "funder",
       keywords: "keyword",
+      domains: "domain",
+      fields: "field",
+      subfields: "subfield",
     };
 
     return mapping[entityType];

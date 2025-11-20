@@ -49,6 +49,9 @@ const ENTITY_PATH_PATTERNS: Record<EntityType, RegExp> = {
 	topics: /\/topics\//i,
 	concepts: /\/concepts\//i,
 	keywords: /\/keywords\//i,
+	domains: /\/domains\//i,
+	fields: /\/fields\//i,
+	subfields: /\/subfields\//i,
 }
 
 /**
@@ -65,6 +68,9 @@ const ENTITY_ID_PATTERNS: Record<EntityType, RegExp> = {
 	topics: /\/topics\/([T]\d+)/i,
 	concepts: /\/concepts\/([C]\d+)/i,
 	keywords: /\/keywords\/([K]\d+)/i,
+	domains: /\/domains\/(\d+)/i,
+	fields: /\/fields\/(\d+)/i,
+	subfields: /\/subfields\/(\d+)/i,
 }
 
 /**

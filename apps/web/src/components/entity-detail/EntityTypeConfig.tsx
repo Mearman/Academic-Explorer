@@ -3,7 +3,7 @@
  * Uses the Vanilla Extract theme colors defined in theme.css.ts
  */
 
-export type EntityType = "author" | "work" | "institution" | "source" | "concept" | "topic" | "publisher" | "funder";
+export type EntityType = "author" | "work" | "institution" | "source" | "concept" | "topic" | "publisher" | "funder" | "domain" | "field" | "subfield";
 
 export interface EntityTypeConfig {
   name: string;
@@ -70,6 +70,27 @@ export const ENTITY_TYPE_CONFIGS: Record<EntityType, EntityTypeConfig> = {
     colorKey: "topic",
     icon: (
       <path d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+    ),
+  },
+  domain: {
+    name: "DOMAIN",
+    colorKey: "topic",
+    icon: (
+      <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+    ),
+  },
+  field: {
+    name: "FIELD",
+    colorKey: "topic",
+    icon: (
+      <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+    ),
+  },
+  subfield: {
+    name: "SUBFIELD",
+    colorKey: "topic",
+    icon: (
+      <path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
     ),
   },
 };

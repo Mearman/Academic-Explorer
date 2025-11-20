@@ -580,6 +580,30 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
     inbound: [],
     outbound: [],
   },
+
+  /**
+   * Domains (Taxonomy entities - hierarchical parent/child, not edge-based)
+   */
+  domains: {
+    inbound: [],
+    outbound: [],
+  },
+
+  /**
+   * Fields (Taxonomy entities - hierarchical parent/child, not edge-based)
+   */
+  fields: {
+    inbound: [],
+    outbound: [],
+  },
+
+  /**
+   * Subfields (Taxonomy entities - hierarchical parent/child, not edge-based)
+   */
+  subfields: {
+    inbound: [],
+    outbound: [],
+  },
 };
 
 /**

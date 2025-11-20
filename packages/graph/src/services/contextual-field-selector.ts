@@ -363,6 +363,27 @@ const FIELD_MAPPINGS: FieldMapping = {
 		],
 		[CacheContext.SEARCH]: [...CORE_FIELDS, "works_count"],
 	},
+	domains: {
+		[CacheContext.TRAVERSAL]: [...CORE_FIELDS, "description"],
+		[CacheContext.ANALYSIS]: [...CORE_FIELDS, "works_count", "cited_by_count"],
+		[CacheContext.UI_DISPLAY]: [...CORE_FIELDS, "description", "works_count"],
+		[CacheContext.EXPORT]: ["*"],
+		[CacheContext.SEARCH]: [...CORE_FIELDS, "description"],
+	},
+	fields: {
+		[CacheContext.TRAVERSAL]: [...CORE_FIELDS, "description", "domain.id"],
+		[CacheContext.ANALYSIS]: [...CORE_FIELDS, "works_count", "cited_by_count"],
+		[CacheContext.UI_DISPLAY]: [...CORE_FIELDS, "description", "works_count", "domain.display_name"],
+		[CacheContext.EXPORT]: ["*"],
+		[CacheContext.SEARCH]: [...CORE_FIELDS, "description"],
+	},
+	subfields: {
+		[CacheContext.TRAVERSAL]: [...CORE_FIELDS, "description", "field.id", "domain.id"],
+		[CacheContext.ANALYSIS]: [...CORE_FIELDS, "works_count", "cited_by_count"],
+		[CacheContext.UI_DISPLAY]: [...CORE_FIELDS, "description", "works_count", "field.display_name", "domain.display_name"],
+		[CacheContext.EXPORT]: ["*"],
+		[CacheContext.SEARCH]: [...CORE_FIELDS, "description"],
+	},
 }
 
 // Relationship field mappings for graph traversal
@@ -385,6 +406,9 @@ const RELATIONSHIP_FIELDS: Record<EntityType, string[]> = {
 	topics: ["subfields.id", "field.id", "domain.id"],
 	concepts: ["ancestors.id", "related_concepts.id"],
 	keywords: [],
+	domains: ["fields.id"],
+	fields: ["domain.id", "subfields.id"],
+	subfields: ["field.id", "domain.id"],
 }
 
 /**

@@ -140,6 +140,9 @@ export function generateEntityId(entityType: EntityType): string {
     funders: 'F',
     concepts: 'C',
     keywords: 'K',
+    domains: 'D',
+    fields: 'FI',
+    subfields: 'SF',
   };
 
   const prefix = prefixes[entityType] || 'X';

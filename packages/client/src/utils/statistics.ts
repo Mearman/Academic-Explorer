@@ -144,6 +144,9 @@ export class StatisticsApi {
 			publishers: 0,
 			funders: 0,
 			keywords: 0,
+			domains: 0,
+			fields: 0,
+			subfields: 0,
 		};
 
 		entityCounts.forEach(({ entityType, count }) => {
@@ -161,6 +164,9 @@ export class StatisticsApi {
 			publishers: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
 			funders: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
 			keywords: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
+			domains: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
+			fields: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
+			subfields: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
 		};
 
 		for (const entityType of entityTypes) {
