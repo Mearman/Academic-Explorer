@@ -28,13 +28,19 @@ export type RelationshipTypeString =
 
 /**
  * Configuration for a single relationship query
+ *
+ * @template SourceType - The type of the source entity (the entity we're querying from)
+ * @template TargetType - The type of the target entity (the entity type returned by the query)
  */
-export interface RelationshipQueryConfig {
+export interface RelationshipQueryConfig<
+  SourceType extends EntityType = EntityType,
+  TargetType extends EntityType = EntityType
+> {
   /** The type of relationship (e.g., AUTHORSHIP, REFERENCE) */
   type: RelationshipTypeString;
 
   /** The target entity type to query (e.g., 'works', 'authors') */
-  targetType: EntityType;
+  targetType: TargetType;
 
   /** Human-readable label for this relationship */
   label: string;
