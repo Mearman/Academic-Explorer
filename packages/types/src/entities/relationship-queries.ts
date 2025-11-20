@@ -76,12 +76,11 @@ export interface EntityRelationshipQueries {
 export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQueries> = {
   /**
    * Authors
-   * - Outbound: Works they authored, institutions they're affiliated with (from embedded data)
-   * - Inbound: None (works are queried as outbound)
+   * - Outbound: Institutions, topics (from embedded data in affiliations[], topics[])
+   * - Inbound: Works they authored (cross-type: author.id filter on works endpoint)
    */
   authors: {
-    inbound: [],
-    outbound: [
+    inbound: [
       {
         type: 'AUTHORSHIP',
         targetType: 'works',
@@ -91,12 +90,13 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
         select: ['id', 'display_name', 'publication_year', 'type', 'cited_by_count'],
       },
     ],
+    outbound: [],
   },
 
   /**
    * Works
-   * - Outbound: Authors, sources, topics, references (from embedded data)
-   * - Inbound: Works that cite this work
+   * - Outbound: Referenced works (same-type query), authors/sources/topics (from embedded data)
+   * - Inbound: Works that cite this work (same-type query via cites filter)
    */
   works: {
     inbound: [
@@ -109,13 +109,22 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
         select: ['id', 'display_name', 'publication_year', 'type', 'cited_by_count'],
       },
     ],
-    outbound: [],
+    outbound: [
+      {
+        type: 'REFERENCE',
+        targetType: 'works',
+        label: 'References (Referenced Works)',
+        buildFilter: (id) => `referenced_works:${id}`,
+        pageSize: 25,
+        select: ['id', 'display_name', 'publication_year', 'type', 'cited_by_count'],
+      },
+    ],
   },
 
   /**
    * Institutions
-   * - Outbound: Parent institutions via lineage (from embedded data)
-   * - Inbound: Authors affiliated, works from institution
+   * - Outbound: Child institutions (same-type query via lineage filter), parent via embedded lineage[]
+   * - Inbound: Authors affiliated, works from institution (cross-type queries)
    */
   institutions: {
     inbound: [
@@ -136,7 +145,16 @@ export const ENTITY_RELATIONSHIP_QUERIES: Record<EntityType, EntityRelationshipQ
         select: ['id', 'display_name', 'publication_year', 'type', 'cited_by_count'],
       },
     ],
-    outbound: [],
+    outbound: [
+      {
+        type: 'LINEAGE',
+        targetType: 'institutions',
+        label: 'Child Institutions',
+        buildFilter: (id) => `lineage:${id}`,
+        pageSize: 25,
+        select: ['id', 'display_name', 'country_code', 'type', 'works_count'],
+      },
+    ],
   },
 
   /**
