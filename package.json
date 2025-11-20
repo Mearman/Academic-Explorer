@@ -76,7 +76,7 @@
     "@nx/react": "22.0.3",
     "@nx/rollup": "^22.0.2",
     "@nx/storybook": "^22.0.2",
-    "@nx/vite": "22.0.2",
+    "@nx/vite": "22.1.0",
     "@nx/web": "22.0.2",
     "@octokit/rest": "^22.0.1",
     "@playwright/test": "^1.55.1",
@@ -152,7 +152,8 @@
     "overrides": {
       "koa": "^3.0.3",
       "js-yaml": ">=4.1.1",
-      "glob": ">=10.5.0"
+      "glob": ">=10.5.0",
+      "vitest": "4.0.10"
     }
   },
   "nx": {

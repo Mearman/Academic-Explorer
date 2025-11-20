@@ -4,13 +4,13 @@
  * Tests all functionality including initialization, entity fetching, search, expansion, and error handling
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { OpenAlexGraphProvider } from './openalex-provider';
 import type { SearchQuery, ProviderExpansionOptions } from './base-provider';
 import { RelationType } from '../types/core';
 import { logger } from "@academic-explorer/utils";
 
-// Mock OpenAlex client interface
+// Mock OpenAlex client interface - simple mock function types
 interface MockOpenAlexClient {
   getWork: ReturnType<typeof vi.fn>;
   getAuthor: ReturnType<typeof vi.fn>;
@@ -111,7 +111,7 @@ describe('OpenAlexGraphProvider', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2023-01-01T10:00:00.000Z'));
 
-    // Create mock client
+    // Create mock client - vi.fn() returns mocks with mockResolvedValue/mockRejectedValue methods
     mockClient = {
       getWork: vi.fn(),
       getAuthor: vi.fn(),
@@ -124,7 +124,9 @@ describe('OpenAlexGraphProvider', () => {
       institutions: vi.fn(),
     };
 
-    provider = new OpenAlexGraphProvider(mockClient, {
+    // Cast to any because mock methods don't match strict OpenAlexClient interface
+    // but will work at runtime with mockResolvedValue/mockRejectedValue
+    provider = new OpenAlexGraphProvider(mockClient as any, {
       name: 'test-provider',
       version: '2.0.0',
       maxConcurrentRequests: 5,

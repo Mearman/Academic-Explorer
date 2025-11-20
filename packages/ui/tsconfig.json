@@ -12,6 +12,7 @@
       "@academic-explorer/client": ["../client/dist/index.d.ts"],
       "@academic-explorer/graph": ["../graph/dist/index.d.ts"]
     },
+    "types": ["vitest", "@testing-library/jest-dom/vitest"],
     "declaration": true,
     "declarationMap": true,
     "composite": true,
