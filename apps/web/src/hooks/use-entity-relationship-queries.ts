@@ -73,14 +73,14 @@ export function useEntityRelationshipQueries(
       // Inbound queries
       ...inboundConfigs.map((config) => ({
         queryKey: ['entity-relationships', 'inbound', entityType, entityId, config.type],
-        queryFn: () => executeRelationshipQuery(entityId!, config),
+        queryFn: () => executeRelationshipQuery(entityId!, entityType, config),
         enabled: !!entityId,
         staleTime: 5 * 60 * 1000, // 5 minutes
       })),
       // Outbound queries
       ...outboundConfigs.map((config) => ({
         queryKey: ['entity-relationships', 'outbound', entityType, entityId, config.type],
-        queryFn: () => executeRelationshipQuery(entityId!, config),
+        queryFn: () => executeRelationshipQuery(entityId!, entityType, config),
         enabled: !!entityId,
         staleTime: 5 * 60 * 1000, // 5 minutes
       })),
@@ -133,61 +133,144 @@ export function useEntityRelationshipQueries(
 }
 
 /**
- * Execute a single relationship query using the OpenAlex API
+ * Execute a single relationship query using the OpenAlex API or embedded data extraction
  */
 async function executeRelationshipQuery(
   entityId: string,
+  entityType: EntityType,
   config: RelationshipQueryConfig
 ): Promise<RelationshipQueryResult> {
-  const filter = config.buildFilter(entityId);
-  const pageSize = config.pageSize || DEFAULT_PAGE_SIZE;
+  // Handle API-based queries
+  if (config.source === 'api') {
+    const filter = config.buildFilter(entityId);
+    const pageSize = config.pageSize || DEFAULT_PAGE_SIZE;
 
-  // Choose the appropriate API function based on target type
-  let response;
-  switch (config.targetType) {
-    case 'works':
-      response = await getWorks({
-        filter,
-        per_page: pageSize,
-        page: 1,
-        ...(config.select && { select: config.select }),
-      });
-      break;
-    case 'authors':
-      response = await getAuthors({
-        filter,
-        per_page: pageSize,
-        page: 1,
-        ...(config.select && { select: config.select }),
-      });
-      break;
-    case 'sources':
-      response = await getSources({
-        filters: { id: filter }, // getSources uses 'filters' object, not 'filter' string
-        per_page: pageSize,
-        page: 1,
-        ...(config.select && { select: config.select }),
-      });
-      break;
-    case 'institutions':
-      response = await getInstitutions({
-        filters: { id: filter }, // getInstitutions uses 'filters' object, not 'filter' string
-        per_page: pageSize,
-        page: 1,
-        ...(config.select && { select: config.select }),
-      });
-      break;
-    // TODO: Add topics, publishers, funders when needed
-    default:
-      throw new Error(`Unsupported target type: ${config.targetType}`);
+    // Choose the appropriate API function based on target type
+    let response;
+    switch (config.targetType) {
+      case 'works':
+        response = await getWorks({
+          filter,
+          per_page: pageSize,
+          page: 1,
+          ...(config.select && { select: config.select }),
+        });
+        break;
+      case 'authors':
+        response = await getAuthors({
+          filter,
+          per_page: pageSize,
+          page: 1,
+          ...(config.select && { select: config.select }),
+        });
+        break;
+      case 'sources':
+        response = await getSources({
+          filters: { id: filter }, // getSources uses 'filters' object, not 'filter' string
+          per_page: pageSize,
+          page: 1,
+          ...(config.select && { select: config.select }),
+        });
+        break;
+      case 'institutions':
+        response = await getInstitutions({
+          filters: { id: filter }, // getInstitutions uses 'filters' object, not 'filter' string
+          per_page: pageSize,
+          page: 1,
+          ...(config.select && { select: config.select }),
+        });
+        break;
+      // TODO: Add topics, publishers, funders when needed
+      default:
+        throw new Error(`Unsupported target type: ${config.targetType}`);
+    }
+
+    return {
+      results: response.results,
+      totalCount: response.meta.count,
+      page: response.meta.page || 1,
+      perPage: response.meta.per_page,
+    };
   }
 
-  return {
-    results: response.results,
-    totalCount: response.meta.count,
-    page: response.meta.page || 1,
-    perPage: response.meta.per_page,
-  };
+  // Handle embedded data extraction
+  if (config.source === 'embedded') {
+    // Fetch the entity data to extract embedded relationships from
+    let entityData: Record<string, unknown>;
+
+    switch (entityType) {
+      case 'works': {
+        const response = await getWorks({
+          filter: `openalex_id:${entityId}`,
+          per_page: 1,
+          page: 1,
+        });
+        if (response.results.length === 0) {
+          throw new Error(`Entity not found: ${entityId}`);
+        }
+        entityData = response.results[0] as Record<string, unknown>;
+        break;
+      }
+      case 'authors': {
+        const response = await getAuthors({
+          filter: `openalex_id:${entityId}`,
+          per_page: 1,
+          page: 1,
+        });
+        if (response.results.length === 0) {
+          throw new Error(`Entity not found: ${entityId}`);
+        }
+        entityData = response.results[0] as Record<string, unknown>;
+        break;
+      }
+      case 'sources': {
+        const response = await getSources({
+          filters: { id: entityId },
+          per_page: 1,
+          page: 1,
+        });
+        if (response.results.length === 0) {
+          throw new Error(`Entity not found: ${entityId}`);
+        }
+        entityData = response.results[0] as Record<string, unknown>;
+        break;
+      }
+      case 'institutions': {
+        const response = await getInstitutions({
+          filters: { id: entityId },
+          per_page: 1,
+          page: 1,
+        });
+        if (response.results.length === 0) {
+          throw new Error(`Entity not found: ${entityId}`);
+        }
+        entityData = response.results[0] as Record<string, unknown>;
+        break;
+      }
+      // TODO: Add topics, publishers, funders when needed
+      default:
+        throw new Error(`Unsupported entity type for embedded extraction: ${entityType}`);
+    }
+
+    // Extract embedded relationships
+    const embeddedItems = config.extractEmbedded(entityData);
+
+    // Transform embedded items into the same format as API results
+    const results = embeddedItems.map((item) => ({
+      id: item.id,
+      display_name: item.displayName,
+      ...item.metadata,
+    }));
+
+    return {
+      results,
+      totalCount: results.length,
+      page: 1,
+      perPage: results.length,
+    };
+  }
+
+  throw new Error('Invalid relationship query configuration: missing source property');
 }
 
 /**
