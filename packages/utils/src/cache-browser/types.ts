@@ -3,21 +3,16 @@
  * UI-agnostic interfaces for browsing cached entities
  */
 
-export type EntityType =
-	| "works"
-	| "authors"
-	| "sources"
-	| "institutions"
-	| "topics"
-	| "publishers"
-	| "funders"
-	| "keywords"
-	| "concepts"
-	| "autocomplete"
+import type { EntityType } from "@academic-explorer/types"
+
+/**
+ * Cache storage types include entity types + special "autocomplete" cache
+ */
+export type CacheStorageType = EntityType | "autocomplete"
 
 export interface CachedEntityMetadata {
 	id: string
-	type: EntityType
+	type: CacheStorageType
 	label: string
 	cacheTimestamp: number
 	storageLocation: "indexeddb" | "localstorage" | "memory" | "repository"
@@ -35,7 +30,7 @@ export interface CachedEntityMetadata {
 
 export interface CacheBrowserStats {
 	totalEntities: number
-	entitiesByType: Record<EntityType, number>
+	entitiesByType: Record<CacheStorageType, number>
 	entitiesByStorage: Record<string, number>
 	totalCacheSize: number
 	oldestEntry: number
@@ -44,7 +39,7 @@ export interface CacheBrowserStats {
 
 export interface CacheBrowserFilters {
 	searchQuery: string
-	entityTypes: Set<EntityType>
+	entityTypes: Set<CacheStorageType>
 	storageLocations: Set<string>
 	dateRange?: {
 		start: number

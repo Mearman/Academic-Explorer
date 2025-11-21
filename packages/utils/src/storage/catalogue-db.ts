@@ -6,6 +6,7 @@
 import Dexie from "dexie";
 import { logger } from "../logger.js";
 import type { GenericLogger } from "../logger.js";
+import type { EntityType } from "@academic-explorer/types";
 
 // Event system for catalogue changes
 type CatalogueEventListener = (event: {
@@ -57,19 +58,6 @@ export const SPECIAL_LIST_TYPES = {
   BOOKMARKS: "bookmarks" as const,
   HISTORY: "history" as const,
 } as const;
-
-// Entity types that can be added to lists
-export type EntityType =
-  | "works"
-  | "authors"
-  | "sources"
-  | "institutions"
-  | "topics"
-  | "publishers"
-  | "funders"
-  | "domains"
-  | "fields"
-  | "subfields";
 
 // List types
 export type ListType = "list" | "bibliography";
@@ -669,8 +657,10 @@ export class CatalogueService {
         sources: 0,
         institutions: 0,
         topics: 0,
+        concepts: 0,
         publishers: 0,
         funders: 0,
+        keywords: 0,
         domains: 0,
         fields: 0,
         subfields: 0,
@@ -694,8 +684,10 @@ export class CatalogueService {
           sources: 0,
           institutions: 0,
           topics: 0,
+          concepts: 0,
           publishers: 0,
           funders: 0,
+          keywords: 0,
           domains: 0,
           fields: 0,
           subfields: 0,
