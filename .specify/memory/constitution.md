@@ -1,17 +1,19 @@
 <!--
 Sync Impact Report:
-Version: 2.0.0 → 2.1.0 (MINOR: New principle for continuous execution added)
-Modified Principles: None
+Version: 2.1.0 → 2.2.0 (MINOR: Spec file commit requirement added to Principle VI)
+Modified Principles:
+  - VI. Atomic Conventional Commits → Extended with spec file commit requirements
 Added Sections:
-  - X. Continuous Execution (NEW principle for uninterrupted work)
+  - Spec file commit requirements (under Principle VI)
+  - Development Workflow: Spec file discipline (new subsection)
 Removed Sections: None
 Templates Requiring Updates:
-  - ⚠ .specify/templates/plan-template.md (Constitution Check section needs update to include 10 principles)
-  - ⚠ .specify/templates/spec-template.md (Constitution Alignment section needs update to include 10 principles)
-  - ⚠ .specify/templates/tasks-template.md (Constitution compliance verification needs update to include 10 principles)
+  - ✅ .specify/templates/plan-template.md (Constitution Check updated to 10 principles + spec commits)
+  - ✅ .specify/templates/spec-template.md (Constitution Alignment updated to 10 principles + spec commits)
+  - ✅ .specify/templates/tasks-template.md (Updated to reflect spec commit requirements)
 Follow-up TODOs:
-  - Update template files to reflect 10 principles
-  - Update agent instructions for continuous execution behavior
+  - Update command templates to enforce spec commits after each phase
+  - Update /speckit.implement to auto-commit spec changes
 -->
 
 # Academic Explorer Constitution
@@ -151,6 +153,15 @@ Staging requirements:
 - Verify staged files with `git status` before committing
 - Only stage files directly related to the atomic task being committed
 
+**Spec file commit requirements** (NEW):
+- **ALWAYS commit changes to `./specs/` directory after each phase completion**
+- Spec files include: `spec.md`, `plan.md`, `tasks.md`, `research.md`, `data-model.md`, contracts, checklists
+- Commit spec changes separately from implementation changes
+- Spec commits MUST use `docs(spec-###):` prefix (e.g., `docs(spec-018): complete Phase 1 setup tasks`)
+- Phase completion = all tasks in that phase marked complete + any generated artifacts
+- Do NOT wait until feature completion to commit spec changes
+- Enables tracking of progress even if implementation is interrupted
+
 **Rationale**: The PhD research workflow involves iterative experimentation where the ability
 to bisect, revert, and understand historical changes is critical. Atomic commits enable:
 1. **Bisect debugging** - Quickly identify which specific change introduced a regression
@@ -164,6 +175,13 @@ essential for maintaining the monorepo's multiple packages with independent vers
 
 Prohibiting `git add .` prevents accidentally committing unrelated changes (debug logs,
 experiments, temporary files) that pollute the commit history and make bisecting impossible.
+
+Committing spec changes after each phase ensures:
+1. **Progress persistence** - Work is never lost even if execution is interrupted
+2. **Audit trail** - Clear history of which phases completed and when
+3. **Collaboration readiness** - Other developers can see implementation progress
+4. **Recovery capability** - Can resume implementation from last completed phase
+5. **Documentation accuracy** - Spec files reflect actual implementation state
 
 ### VII. Development-Stage Pragmatism
 
@@ -313,6 +331,7 @@ Continuous execution requirements:
 - Do NOT pause due to context window size or token usage
 - Do NOT ask for user confirmation to continue between phases
 - Commit work atomically after each task or small group of related tasks
+- Commit spec file changes after each phase completion (Principle VI requirement)
 - Maintain progress tracking (TodoWrite) throughout continuous execution
 - Only stop when ALL phases are complete or a blocking error occurs
 
@@ -373,6 +392,13 @@ upstream projects have type errors.
 4. Verify CI/CD would succeed if triggered right now
 5. Only then mark work as complete
 
+**Spec file discipline**: After completing each phase of implementation:
+1. Update task statuses in `tasks.md` (mark completed tasks)
+2. Update any relevant artifacts (plan.md, data-model.md, contracts/)
+3. Stage ONLY the spec directory files: `git add specs/###-feature-name/`
+4. Create spec commit: `git commit -m "docs(spec-###): complete Phase X - <description>"`
+5. Continue to next phase without pausing
+
 **No DRY violations**: Create abstractions over duplication. If the same logic appears in
 two places, extract it to `packages/utils` or create a shared package.
 
@@ -412,8 +438,9 @@ MUST be documented in commit messages and changelogs.
 - Commit messages MUST clearly describe the "why" not just the "what"
 - All commits MUST pass quality pipeline before pushing to shared branches
 - NO commits may use `git add .` or `git add -A` for staging
+- Spec file changes MUST be committed after each phase completion
 
-**Deployment readiness gates** (NEW):
+**Deployment readiness gates**:
 - All commits MUST leave the repository in a deployable state
 - Pre-existing deployment blockers MUST be resolved or explicitly deferred
 - `pnpm validate` MUST pass completely before marking work as complete
@@ -435,4 +462,4 @@ For runtime development guidance specific to Academic Explorer workflows, see `C
 in the project root. That file provides operational instructions (commands, architecture
 patterns, research context) while this constitution defines non-negotiable principles.
 
-**Version**: 2.1.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-19
+**Version**: 2.2.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-21

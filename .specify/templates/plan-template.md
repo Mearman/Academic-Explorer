@@ -38,9 +38,11 @@ Verify alignment with Academic Explorer Constitution (`.specify/memory/constitut
 3. **Monorepo Architecture**: Changes use proper Nx workspace structure (apps/ or packages/)
 4. **Storage Abstraction**: Any storage operations use provider interface (no direct Dexie/IndexedDB coupling)
 5. **Performance & Memory**: Tests run serially; memory constraints considered; Web Workers for heavy computation
-6. **Atomic Conventional Commits**: Incremental atomic commits created after each task completion
+6. **Atomic Conventional Commits**: Incremental atomic commits created after each task completion; spec file changes committed after each phase
 7. **Development-Stage Pragmatism**: No backwards compatibility required; breaking changes acceptable during development
 8. **Test-First Bug Fixes**: Bug tests written to reproduce and fail before fixes implemented
+9. **Deployment Readiness**: All packages must pass typecheck/test/lint/build before work is complete
+10. **Continuous Execution**: Work continues without pausing between phases; spec commits after each phase completion
 
 **Complexity Justification Required?** Document in Complexity Tracking section if this feature:
 - Adds new packages/apps beyond existing structure
