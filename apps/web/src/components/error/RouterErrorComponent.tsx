@@ -14,7 +14,7 @@ export const RouterErrorComponent: React.FC<ErrorComponentProps> = ({
   reset,
   info,
 }) => {
-  // Log the router error
+  // Log the router error with PostHog analytics
   React.useEffect(() => {
     logger.error(
       "routing",
@@ -26,7 +26,37 @@ export const RouterErrorComponent: React.FC<ErrorComponentProps> = ({
       },
       "RouterErrorComponent",
     );
+
+    // Send error to PostHog for analytics
+    try {
+      if (typeof window !== 'undefined' && 'posthog' in window) {
+        const posthog = (window as any).posthog;
+        if (posthog) {
+          posthog.capture('error_occurred', {
+            error_type: 'router_error',
+            error_category: 'navigation_error',
+            component_name: 'RouterErrorComponent',
+            error_message: error.message,
+            user_agent_group: getUserAgentGroup(),
+            timestamp: new Date().toISOString(),
+          });
+        }
+      }
+    } catch (analyticsError) {
+      console.warn('Failed to send router error to PostHog:', analyticsError);
+    }
   }, [error, info]);
+
+  // Utility function for user agent grouping
+  function getUserAgentGroup(): string {
+    if (typeof navigator === 'undefined') return 'unknown';
+    const userAgent = navigator.userAgent.toLowerCase();
+    if (userAgent.includes('chrome')) return 'chrome';
+    if (userAgent.includes('firefox')) return 'firefox';
+    if (userAgent.includes('safari')) return 'safari';
+    if (userAgent.includes('edge')) return 'edge';
+    return 'other';
+  }
 
   // For context/hook errors and React Flow errors, throw to let GlobalErrorBoundary handle them
   if (

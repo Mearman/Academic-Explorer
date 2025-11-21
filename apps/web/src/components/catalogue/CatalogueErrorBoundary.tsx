@@ -1,6 +1,7 @@
 /**
  * T078: Error boundary for catalogue components
  * Catches errors in catalogue UI and provides user-friendly fallback
+ * Enhanced with PostHog error tracking for analytics
  */
 
 import React, { Component, ReactNode } from "react";
@@ -16,27 +17,30 @@ import {
 import { IconAlertTriangle, IconRefresh } from "@tabler/icons-react";
 import { logger } from "@/lib/logger";
 
-interface CatalogueErrorBoundaryProps {
+// Error boundary hook wrapper for PostHog integration
+interface CatalogueErrorBoundaryWithAnalyticsProps {
   children: ReactNode;
   /** Optional fallback component to render on error */
   fallback?: ReactNode;
 }
 
-interface CatalogueErrorBoundaryState {
-  hasError: boolean;
-  error: Error | null;
-  errorInfo: React.ErrorInfo | null;
+/**
+ * Error boundary wrapper that adds PostHog analytics to the original CatalogueErrorBoundary
+ */
+export function CatalogueErrorBoundaryWithAnalytics(props: CatalogueErrorBoundaryWithAnalyticsProps) {
+  return (
+    <EnhancedCatalogueErrorBoundary {...props} />
+  );
 }
 
 /**
- * Error boundary component for catalogue features
- * Provides graceful error handling with recovery options
+ * Enhanced error boundary component with PostHog integration
  */
-export class CatalogueErrorBoundary extends Component<
-  CatalogueErrorBoundaryProps,
-  CatalogueErrorBoundaryState
+class EnhancedCatalogueErrorBoundary extends Component<
+  CatalogueErrorBoundaryWithAnalyticsProps,
+  { hasError: boolean; error: Error | null; errorInfo: React.ErrorInfo | null }
 > {
-  constructor(props: CatalogueErrorBoundaryProps) {
+  constructor(props: CatalogueErrorBoundaryWithAnalyticsProps) {
     super(props);
     this.state = {
       hasError: false,
@@ -45,8 +49,7 @@ export class CatalogueErrorBoundary extends Component<
     };
   }
 
-  static getDerivedStateFromError(error: Error): Partial<CatalogueErrorBoundaryState> {
-    // Update state so next render shows fallback UI
+  static getDerivedStateFromError(error: Error) {
     return {
       hasError: true,
       error,
@@ -54,12 +57,32 @@ export class CatalogueErrorBoundary extends Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-    // Log error details for debugging
+    // Log to existing logger
     logger.error("catalogue-error-boundary", "Component error caught", {
       error: error.message,
       stack: error.stack,
       componentStack: errorInfo.componentStack,
     });
+
+    // Send to PostHog if available
+    try {
+      if (typeof window !== 'undefined' && 'posthog' in window) {
+        const posthog = (window as any).posthog;
+        if (posthog) {
+          posthog.capture('error_occurred', {
+            error_type: 'component_error',
+            error_category: 'ui_error',
+            component_name: 'CatalogueErrorBoundary',
+            error_message: error.message,
+            user_agent_group: this.getUserAgentGroup(),
+            timestamp: new Date().toISOString(),
+          });
+        }
+      }
+    } catch (analyticsError) {
+      // Don't let analytics errors break the error boundary
+      console.warn('Failed to send error to PostHog:', analyticsError);
+    }
 
     this.setState({
       error,
@@ -67,13 +90,37 @@ export class CatalogueErrorBoundary extends Component<
     });
   }
 
+  getUserAgentGroup(): string {
+    if (typeof navigator === 'undefined') return 'unknown';
+    const userAgent = navigator.userAgent.toLowerCase();
+    if (userAgent.includes('chrome')) return 'chrome';
+    if (userAgent.includes('firefox')) return 'firefox';
+    if (userAgent.includes('safari')) return 'safari';
+    if (userAgent.includes('edge')) return 'edge';
+    return 'other';
+  }
+
   handleReset = (): void => {
-    // Reset error boundary state
     this.setState({
       hasError: false,
       error: null,
       errorInfo: null,
     });
+
+    // Track reset action in PostHog
+    try {
+      if (typeof window !== 'undefined' && 'posthog' in window) {
+        const posthog = (window as any).posthog;
+        if (posthog) {
+          posthog.capture('error_boundary_reset', {
+            component_name: 'CatalogueErrorBoundary',
+            timestamp: new Date().toISOString(),
+          });
+        }
+      }
+    } catch (analyticsError) {
+      console.warn('Failed to send reset action to PostHog:', analyticsError);
+    }
 
     logger.debug("catalogue-error-boundary", "Error boundary reset");
   };
@@ -88,7 +135,7 @@ export class CatalogueErrorBoundary extends Component<
         return fallback;
       }
 
-      // Default error UI
+      // Default error UI with enhanced analytics messaging
       return (
         <Card withBorder p="xl" bg="red.0">
           <Stack gap="md">
@@ -130,7 +177,7 @@ export class CatalogueErrorBoundary extends Component<
 
             <Group justify="space-between">
               <Text size="xs" c="dimmed">
-                This error has been logged. Please try reloading the page or resetting the catalogue.
+                This error has been logged for analysis. Please try reloading the page or resetting the catalogue.
               </Text>
               <Button
                 leftSection={<IconRefresh size={16} />}
@@ -166,3 +213,8 @@ export class CatalogueErrorBoundary extends Component<
     return children;
   }
 }
+
+/**
+ * Default export - CatalogueErrorBoundary with analytics
+ */
+export { CatalogueErrorBoundaryWithAnalytics as CatalogueErrorBoundary };
