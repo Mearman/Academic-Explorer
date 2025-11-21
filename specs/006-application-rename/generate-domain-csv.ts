@@ -578,12 +578,14 @@ async function main() {
   let checked = 0;
   let skipped = 0;
 
-  for (const tld of TLDS_TO_CHECK) {
-    console.log(`\n🔍 Checking .${tld} for all ${db.names.length} domains sequentially...`);
-    const tldStart = Date.now();
-    let completed = 0;
+  for (let i = 0; i < db.names.length; i++) {
+    const name = db.names[i];
+    console.log(`\n🔍 [${i + 1}/${db.names.length}] Checking all TLDs for "${name.name}"...`);
+    const nameStart = Date.now();
+    let nameChecks = 0;
+    let nameSkips = 0;
 
-    for (const name of db.names) {
+    for (const tld of TLDS_TO_CHECK) {
       const existingRow = allRows.get(name.name);
 
       // Check if this TLD was recently checked
@@ -599,8 +601,8 @@ async function main() {
       }
 
       if (lastChecked && !needsRecheck(lastChecked)) {
-        completed++;
         skipped++;
+        nameSkips++;
         const currentValue = existingRow ?
           (tld === 'com' ? existingRow.com :
            tld === 'io' ? existingRow.io :
@@ -609,7 +611,7 @@ async function main() {
            tld === 'app' ? existingRow.app :
            tld === 'dev' ? existingRow.dev :
            tld === 'co.uk' ? existingRow.couk : '?') : '?';
-        process.stdout.write(`  [${completed}/${db.names.length}] ${name.name}.${tld}: ${currentValue} (cached)\n`);
+        process.stdout.write(`  .${tld.padEnd(6)} ${currentValue} (cached)\n`);
         continue;
       }
 
@@ -669,13 +671,13 @@ async function main() {
 
       csvWriter.enqueue(() => writeCsv(csvPath, allRows));
 
-      completed++;
       checked++;
-      process.stdout.write(`  [${completed}/${db.names.length}] ${name.name}.${tld}: ${formatAvailable(available)}\n`);
+      nameChecks++;
+      process.stdout.write(`  .${tld.padEnd(6)} ${formatAvailable(available)}\n`);
     }
 
-    const tldDuration = ((Date.now() - tldStart) / 1000).toFixed(2);
-    console.log(`✅ .${tld} complete in ${tldDuration}s\n`);
+    const nameDuration = ((Date.now() - nameStart) / 1000).toFixed(2);
+    console.log(`  ✅ Complete in ${nameDuration}s (${nameChecks} checked, ${nameSkips} cached)`);
   }
 
   console.log('⏳ Waiting for all writes to complete...');
