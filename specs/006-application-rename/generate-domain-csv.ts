@@ -27,7 +27,7 @@ const RDAP_SERVERS: Record<string, string> = {
   'com': 'https://rdap.verisign.com/com/v1/domain',
   'net': 'https://rdap.verisign.com/net/v1/domain',
   'org': 'https://rdap.publicinterestregistry.org/rdap/domain',
-  'io': 'https://rdap.nic.io/domain',
+  'io': 'https://rdap.identitydigital.services/rdap/domain',
   'app': 'https://rdap.nic.google/domain',
   'dev': 'https://rdap.nic.google/domain',
   'co.uk': 'https://rdap.nominet.uk/uk/domain'
