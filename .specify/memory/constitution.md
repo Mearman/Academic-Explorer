@@ -1,20 +1,15 @@
 <!--
 Sync Impact Report:
-Version: 2.4.1 → 2.4.2 (PATCH: Strengthen prohibition against relative imports between packages)
-Modified Principles:
-  - III. Monorepo Architecture → Strengthened "Package import requirements" with explicit examples and enforcement guidance
+Version: 2.4.2 → 2.4.3 (PATCH: Add slash command invocation guidance)
+Modified Principles: None
 Added Sections:
-  - Explicit examples of relative import violations between packages (under Principle III)
-  - Enforcement guidance for detecting violations
+  - "Slash Command Invocation" subsection in Development Workflow (after Spec file discipline)
 Removed Sections: None
 Templates Requiring Updates:
-  - ⚠ .specify/templates/plan-template.md (May need to emphasize relative import prohibition in Constitution Check)
-  - ⚠ .specify/templates/spec-template.md (May need to emphasize relative import prohibition in Constitution Alignment)
-Follow-up TODOs:
-  - Verify all existing packages comply with no relative import rule
-  - Add linting rules to detect relative imports between packages (if possible with ESLint)
-  - Update codebase search patterns to detect violations: grep -r "from ['\"]\.\.\/\.\.\/packages" apps/ packages/
+  - ⚠ .specify/templates/commands/*.md (May need to reference SlashCommand tool usage pattern)
+Follow-up TODOs: None
 Previous Amendments:
+  - v2.4.2: Strengthened prohibition against relative imports between packages
   - v2.4.1: Strengthened backward compatibility prohibition in Principle VII
   - v2.4.0: Added no re-export requirement to Principle III
 -->
@@ -510,6 +505,23 @@ upstream projects have type errors.
 4. Create spec commit: `git commit -m "docs(spec-###): complete Phase X - <description>"`
 5. Continue to next phase without pausing
 
+**Slash command invocation**: When invoking SpecKit workflow commands or other custom
+slash commands from the available commands list:
+- **MUST use the SlashCommand tool** - DO NOT attempt to invoke slash commands by simply
+  typing them in responses
+- Correct invocation pattern:
+  ```
+  <invoke name="SlashCommand">
+  <parameter name="command">/speckit.plan</parameter>
+  </invoke>
+  ```
+- Incorrect patterns (DO NOT USE):
+  - Typing `/speckit.plan` directly in response text (will not trigger command)
+  - Using echo or bash commands to "invoke" slash commands
+  - Attempting to manually expand command prompts
+- Available commands are listed in the SlashCommand tool description
+- This applies to ALL custom slash commands: /speckit.*, and any user-defined commands
+
 **No DRY violations**: Create abstractions over duplication. If the same logic appears in
 two places, extract it to `packages/utils` or create a shared package.
 
@@ -573,4 +585,4 @@ For runtime development guidance specific to Academic Explorer workflows, see `C
 in the project root. That file provides operational instructions (commands, architecture
 patterns, research context) while this constitution defines non-negotiable principles.
 
-**Version**: 2.4.2 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-21
+**Version**: 2.4.3 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-21
