@@ -124,6 +124,8 @@ const createInitialEdgeTypeFilter = (): Record<RelationType, boolean> => ({
   [RelationType.TOPIC_SIBLING]: true,
   [RelationType.INSTITUTION_ASSOCIATED]: true,
   [RelationType.INSTITUTION_HAS_REPOSITORY]: true,
+  [RelationType.CONCEPT]: true,
+  [RelationType.HAS_ROLE]: true,
 });
 
 const DEFAULT_REPOSITORY_STATE: RepositoryState = {

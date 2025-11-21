@@ -115,6 +115,12 @@ const initializeDefaultSettings = (): Record<
     [RelationType.INSTITUTION_HAS_REPOSITORY]: getDefaultSettingsForTarget(
       RelationType.INSTITUTION_HAS_REPOSITORY,
     ),
+    [RelationType.CONCEPT]: getDefaultSettingsForTarget(
+      RelationType.CONCEPT,
+    ),
+    [RelationType.HAS_ROLE]: getDefaultSettingsForTarget(
+      RelationType.HAS_ROLE,
+    ),
   };
 };
 

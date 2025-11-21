@@ -6,7 +6,7 @@
  */
 
 import type { EntityType } from "@academic-explorer/types"
-import { RelationType } from "../types/core"
+import { RelationType } from "@academic-explorer/types"
 import type { Taxon } from "@academic-explorer/types"
 import { ENTITY_METADATA } from "@academic-explorer/types"
 
@@ -110,6 +110,18 @@ export const RELATION_TAXONOMY: Record<RelationType, Taxon> = {
 		description: "Work is tagged with a keyword",
 		color: "gray",
 		plural: "Has Keywords",
+	},
+	[RelationType.CONCEPT]: {
+		displayName: "Has Concept",
+		description: "Work is associated with a legacy concept",
+		color: "violet",
+		plural: "Has Concepts",
+	},
+	[RelationType.HAS_ROLE]: {
+		displayName: "Has Role",
+		description: "Entity has a role in relation to another entity",
+		color: "indigo",
+		plural: "Has Roles",
 	},
 	[RelationType.AUTHOR_RESEARCHES]: {
 		displayName: "Researches",

@@ -6,7 +6,7 @@
  */
 
 import type { EntityType } from '@academic-explorer/types';
-import { RelationType } from '@academic-explorer/graph';
+import { RelationType } from '@academic-explorer/types';
 
 /**
  * Direction filter options
@@ -346,6 +346,8 @@ export const RELATIONSHIP_TYPE_LABELS: Record<RelationType, string> = {
   [RelationType.TOPIC_PART_OF_SUBFIELD]: 'Subfield',
   [RelationType.TOPIC_SIBLING]: 'Related Topics',
   [RelationType.WORK_HAS_KEYWORD]: 'Keywords',
+  [RelationType.CONCEPT]: 'Concepts',
+  [RelationType.HAS_ROLE]: 'Roles',
 
   // General catch-all
   [RelationType.RELATED_TO]: 'Related Entities',
