@@ -7,21 +7,44 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MantineProvider } from '@mantine/core';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { OutgoingRelationships } from './OutgoingRelationships';
 import type { UseEntityRelationshipsResult } from '@/hooks/use-entity-relationships';
 import { RelationshipErrorCode } from '@/types/relationship';
 
-// Mock the useEntityRelationships hook
+// Mock the hooks
 vi.mock('@/hooks/use-entity-relationships', () => ({
   useEntityRelationships: vi.fn(),
 }));
 
+vi.mock('@/hooks/use-entity-relationship-queries', () => ({
+  useEntityRelationshipQueries: vi.fn(),
+}));
+
+vi.mock('@/hooks/use-entity-relationships-from-data', () => ({
+  useEntityRelationshipsFromData: vi.fn(),
+}));
+
 // Import after mocking
 import { useEntityRelationships } from '@/hooks/use-entity-relationships';
+import { useEntityRelationshipQueries } from '@/hooks/use-entity-relationship-queries';
+import { useEntityRelationshipsFromData } from '@/hooks/use-entity-relationships-from-data';
 
-// Helper to render with Mantine provider
+// Helper to render with providers
 const renderWithProvider = (component: React.ReactElement) => {
-  return render(<MantineProvider>{component}</MantineProvider>);
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
+
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <MantineProvider>{component}</MantineProvider>
+    </QueryClientProvider>
+  );
 };
 
 describe('OutgoingRelationships', () => {
@@ -37,6 +60,23 @@ describe('OutgoingRelationships', () => {
       value: { reload: vi.fn() },
       writable: true,
       configurable: true,
+    });
+
+    // Set default mock return values for the additional hooks
+    vi.mocked(useEntityRelationshipQueries).mockReturnValue({
+      incoming: [],
+      outgoing: [],
+      incomingCount: 0,
+      outgoingCount: 0,
+      loading: false,
+      error: undefined,
+    });
+
+    vi.mocked(useEntityRelationshipsFromData).mockReturnValue({
+      incoming: [],
+      outgoing: [],
+      incomingCount: 0,
+      outgoingCount: 0,
     });
   });
 
