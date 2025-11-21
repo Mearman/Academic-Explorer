@@ -120,7 +120,7 @@ describe("Work Keywords Relationships - Integration", () => {
           {
             id: "K123456789",
             display_name: "Unscored Topic",
-            // Missing score field
+            score: undefined, // Explicitly set to undefined
           },
         ],
       };
@@ -168,7 +168,7 @@ describe("Work Keywords Relationships - Integration", () => {
         display_name: "Research Paper with Display Name Keywords",
         keywords: [
           {
-            // Missing id field
+            id: "", // Empty string for missing id
             display_name: "Artificial Intelligence",
             score: 0.92,
           },
@@ -400,9 +400,9 @@ describe("Work Keywords Relationships - Integration", () => {
       const mediumScoreRel = relationships.find(rel => rel.targetNodeId === "K222222222");
       const highScoreRel = relationships.find(rel => rel.targetNodeId === "K333333333");
 
-      expect(lowScoreRel?.metadata.keywordScore).toBe(0.15);
-      expect(mediumScoreRel?.metadata.keywordScore).toBe(0.67);
-      expect(highScoreRel?.metadata.keywordScore).toBe(0.94);
+      expect(lowScoreRel?.metadata?.keywordScore).toBe(0.15);
+      expect(mediumScoreRel?.metadata?.keywordScore).toBe(0.67);
+      expect(highScoreRel?.metadata?.keywordScore).toBe(0.94);
     });
   });
 });
