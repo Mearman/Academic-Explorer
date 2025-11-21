@@ -70,6 +70,18 @@ export const ENTITY_CACHE_TIMES = {
     stale: 1000 * 60 * 60 * 6, // 6 hours - related entities update occasionally
     gc: 1000 * 60 * 60 * 24, // 1 day - related data doesn't need long storage
   },
+  domains: {
+    stale: 1000 * 60 * 60 * 24 * 7, // 7 days - domains fairly stable
+    gc: 1000 * 60 * 60 * 24 * 30, // 30 days - keep for a month
+  },
+  fields: {
+    stale: 1000 * 60 * 60 * 24 * 7, // 7 days - fields fairly stable
+    gc: 1000 * 60 * 60 * 24 * 30, // 30 days - keep for a month
+  },
+  subfields: {
+    stale: 1000 * 60 * 60 * 24 * 7, // 7 days - subfields fairly stable
+    gc: 1000 * 60 * 60 * 24 * 30, // 30 days - keep for a month
+  },
 } as const;
 
 export type EntityType = keyof typeof ENTITY_CACHE_TIMES;

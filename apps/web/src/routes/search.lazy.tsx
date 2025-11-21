@@ -135,6 +135,9 @@ const getEntityTypeColor = (entityType: AutocompleteResult["entity_type"]) => {
     publisher: "grape",
     funder: "teal",
     keyword: "cyan",
+    domain: "indigo",
+    field: "lime",
+    subfield: "yellow",
   };
   return colors[entityType] || "gray";
 };

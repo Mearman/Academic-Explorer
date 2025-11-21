@@ -22,6 +22,9 @@ export const ENTITY_TYPE_LABELS: Record<EntityType, string> = {
   funder: 'Funder',
   publisher: 'Publisher',
   concept: 'Concept',
+  domain: 'Domain',
+  field: 'Field',
+  subfield: 'Subfield',
 };
 
 /**
@@ -36,6 +39,9 @@ export const ENTITY_TYPE_COLORS: Record<EntityType, string> = {
   funder: 'yellow',
   publisher: 'red',
   concept: 'gray',
+  domain: 'indigo',
+  field: 'lime',
+  subfield: 'cyan',
 };
 
 /**
