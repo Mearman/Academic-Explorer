@@ -746,6 +746,10 @@ export class RelationshipDetectionService {
             workData: newEntityData,
             existingNodes,
           })),
+          ...this.analyzeConceptRelationshipsForWork({
+            workData: newEntityData,
+            existingNodes,
+          }),
         );
         break;
       case "authors":
@@ -1605,6 +1609,59 @@ export class RelationshipDetectionService {
             subfield: topic.subfield,
             field: topic.field,
             domain: topic.domain,
+          },
+        });
+      }
+    }
+
+    return relationships;
+  }
+
+  /**
+   * Analyze concept relationships for a work entity
+   * Enables researchers to see legacy concept classifications on older works for historical continuity
+   *
+   * @param work - Work data containing concepts array
+   * @param existingNodes - Existing graph nodes to create relationships with
+   * @returns Array of detected concept relationships
+   */
+  private analyzeConceptRelationshipsForWork({
+    workData,
+    existingNodes,
+  }: {
+    workData: MinimalEntityData;
+    existingNodes: GraphNode[];
+  }): DetectedRelationship[] {
+    // T058: Add null-safety check for concepts
+    if (!workData.concepts || workData.concepts.length === 0) {
+      return [];
+    }
+
+    const relationships: DetectedRelationship[] = [];
+
+    // T059: Get existing graph nodes and iterate work.concepts array checking for concept node existence
+    for (const concept of workData.concepts) {
+      if (!concept || !concept.id) {
+        continue;
+      }
+
+      const conceptNode = existingNodes.find(
+        (node) => node.entityId === concept.id || node.id === concept.id,
+      );
+
+      if (conceptNode) {
+        // T060: Create GraphEdge with concept relationship
+        relationships.push({
+          sourceNodeId: workData.id,
+          targetNodeId: concept.id,
+          relationType: RelationType.CONCEPT,
+          direction: 'outbound',
+          label: 'classified as',
+          metadata: {
+            // T061: Store concept metadata in edge for hierarchy/score visualization
+            level: concept.level,
+            score: concept.score,
+            wikidata: concept.wikidata,
           },
         });
       }

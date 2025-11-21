@@ -346,7 +346,7 @@ export const RELATIONSHIP_TYPE_LABELS: Record<RelationType, string> = {
   [RelationType.TOPIC_PART_OF_SUBFIELD]: 'Subfield',
   [RelationType.TOPIC_SIBLING]: 'Related Topics',
   [RelationType.WORK_HAS_KEYWORD]: 'Keywords',
-  [RelationType.CONCEPT]: 'Concepts',
+  [RelationType.CONCEPT]: 'Concept (Legacy)',
   [RelationType.HAS_ROLE]: 'Roles',
 
   // General catch-all

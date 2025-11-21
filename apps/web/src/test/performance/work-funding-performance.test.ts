@@ -4,7 +4,7 @@
  */
 
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import { RelationshipDetectionService } from "@/services/relationship-detection-service";
+import { RelationshipDetectionService, createTestGraphNode } from "@/services/relationship-detection-service";
 import type { GraphNode, MinimalEntityData } from "@/services/relationship-detection-service";
 
 // Mock logger to avoid console noise during performance tests
@@ -96,15 +96,12 @@ describe("Work Funding Relationships - Performance", () => {
         })),
       };
 
-      const existingNodes: GraphNode[] = workData.grants?.slice(0, 100).map((grant, i): GraphNode => ({
+            const existingNodes: GraphNode[] = (workData.grants || []).slice(0, 100).map((grant, i) =>
+    createTestGraphNode({
         id: `F${String(i).padStart(10, "0")}`,
         entityId: grant.funder,
         entityType: "funders",
         label: grant.funder_display_name,
-        color: "#4285F4",
-        size: 25,
-        x: i * 50,
-        y: i * 50,
       }));
 
       const relationships: any[] = [];

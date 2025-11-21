@@ -4,7 +4,7 @@
  */
 
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import { RelationshipDetectionService } from "@/services/relationship-detection-service";
+import { RelationshipDetectionService, createTestGraphNode } from "@/services/relationship-detection-service";
 import { RelationType } from "@academic-explorer/types";
 import type { GraphNode, MinimalEntityData } from "@/services/relationship-detection-service";
 
