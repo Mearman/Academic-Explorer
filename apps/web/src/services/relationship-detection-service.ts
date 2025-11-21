@@ -90,6 +90,7 @@ export interface MinimalEntityData {
     id: string;
     display_name: string;
     host_organization: string;
+    host_organization_name?: string;
   }>;
   roles?: Array<{                          // T026: Add roles field
     role: string;
@@ -789,6 +790,15 @@ export class RelationshipDetectionService {
             entityType: 'institutions',
             existingNodes,
           }),
+          ...this.analyzeRepositoryRelationshipsForInstitution({
+            institution: newEntityData,
+            existingNodes,
+          }),
+          ...this.analyzeRoleRelationshipsForEntity({
+            entity: newEntityData,
+            entityType: 'institutions',
+            existingNodes,
+          }),
         );
         break;
       case "domains":
@@ -819,6 +829,24 @@ export class RelationshipDetectionService {
         relationships.push(
           ...this.analyzeTopicRelationships({
             topicData: newEntityData,
+            existingNodes,
+          }),
+        );
+        break;
+      case "publishers":
+        relationships.push(
+          ...this.analyzeRoleRelationshipsForEntity({
+            entity: newEntityData,
+            entityType: 'publishers',
+            existingNodes,
+          }),
+        );
+        break;
+      case "funders":
+        relationships.push(
+          ...this.analyzeRoleRelationshipsForEntity({
+            entity: newEntityData,
+            entityType: 'funders',
             existingNodes,
           }),
         );
@@ -1662,6 +1690,109 @@ export class RelationshipDetectionService {
             level: concept.level,
             score: concept.score,
             wikidata: concept.wikidata,
+          },
+        });
+      }
+    }
+
+    return relationships;
+  }
+
+  /**
+   * Analyze repository relationships for an institution
+   * Creates Institution → Repository edges when both exist in graph
+   */
+  private analyzeRepositoryRelationshipsForInstitution({
+    institution,
+    existingNodes,
+  }: {
+    institution: MinimalEntityData;
+    existingNodes: GraphNode[];
+  }): DetectedRelationship[] {
+    // T067: Add null-safety check
+    if (!institution.repositories || institution.repositories.length === 0) {
+      return [];
+    }
+
+    const relationships: DetectedRelationship[] = [];
+
+    // T068: Get existing graph nodes and iterate institution.repositories array
+    for (const repository of institution.repositories) {
+      if (!repository || !repository.id) {
+        continue; // Skip malformed repository data
+      }
+
+      // Check if repository source node exists in graph
+      const repositoryNode = existingNodes.find(
+        (node) => node.entityId === repository.id || node.id === repository.id
+      );
+
+      if (repositoryNode) {
+        // T069: Create GraphEdge with proper metadata
+        relationships.push({
+          sourceNodeId: institution.id,
+          targetNodeId: repository.id,
+          relationType: RelationType.INSTITUTION_HAS_REPOSITORY,
+          direction: 'outbound',
+          label: 'hosts repository',
+          metadata: {
+            host_organization: repository.host_organization,
+            host_organization_name: repository.host_organization_name,
+          },
+        });
+      }
+    }
+
+    return relationships;
+  }
+
+  /**
+   * Analyze role relationships for an entity (institutions, funders, publishers)
+   * Creates edges between entities of different types based on role mappings
+   */
+  private analyzeRoleRelationshipsForEntity({
+    entity,
+    entityType,
+    existingNodes,
+  }: {
+    entity: MinimalEntityData;
+    entityType: EntityType;
+    existingNodes: GraphNode[];
+  }): DetectedRelationship[] {
+    // T073: Add null-safety check and entityType validation
+    if (!entity.roles || entity.roles.length === 0) {
+      return [];
+    }
+
+    // Only process institutions, funders, and publishers
+    if (entityType !== 'institutions' && entityType !== 'funders' && entityType !== 'publishers') {
+      return [];
+    }
+
+    const relationships: DetectedRelationship[] = [];
+
+    // T074: Iterate entity.roles array and create edges between entities of different types
+    for (const role of entity.roles) {
+      if (!role || !role.id) {
+        continue; // Skip malformed role data
+      }
+
+      // Check if role target node exists in graph
+      const roleTargetNode = existingNodes.find(
+        (node) => node.entityId === role.id || node.id === role.id
+      );
+
+      if (roleTargetNode) {
+        // T075: Create GraphEdge with role metadata
+        relationships.push({
+          sourceNodeId: entity.id,
+          targetNodeId: role.id,
+          relationType: RelationType.HAS_ROLE,
+          direction: 'outbound',
+          label: `acts as ${role.role}`,
+          metadata: {
+            role: role.role,
+            works_count: role.works_count,
           },
         });
       }
