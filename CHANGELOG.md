@@ -1,3 +1,12 @@
+## 17.1.0 (2025-11-21)
+
+* docs(docs): add Mantine responsive layout specification (spec-021) ([9a0582b](https://github.com/Mearman/Academic-Explorer/commit/9a0582b))
+* refactor(web): update CatalogueErrorBoundary to use PostHogErrorBoundary ([7b1a002](https://github.com/Mearman/Academic-Explorer/commit/7b1a002))
+* feat(web): add React 19 error handlers for PostHog tracking ([6febd00](https://github.com/Mearman/Academic-Explorer/commit/6febd00))
+* feat(web): migrate PostHogProvider to official @posthog/react implementation ([2830ff8](https://github.com/Mearman/Academic-Explorer/commit/2830ff8))
+* build(deps): add @posthog/react package ([9360f0f](https://github.com/Mearman/Academic-Explorer/commit/9360f0f))
+* chore(release): 17.0.1 [skip ci] ([6fca77d](https://github.com/Mearman/Academic-Explorer/commit/6fca77d))
+
 ## <small>17.0.1 (2025-11-21)</small>
 
 * docs(docs): create Mantine responsive layout specification (spec-021) ([b04b3ee](https://github.com/Mearman/Academic-Explorer/commit/b04b3ee))
