@@ -10,11 +10,10 @@ import { EntityDetailLayout } from "@/components/entity-detail/EntityDetailLayou
 import { LoadingState } from "@/components/entity-detail/LoadingState";
 import { ErrorState } from "@/components/entity-detail/ErrorState";
 import { ENTITY_TYPE_CONFIGS } from "@/components/entity-detail/EntityTypeConfig";
-// Relationship components disabled for taxonomy entities
-// import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
-// import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
-// import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
-// import { useEntityRelationships } from "@/hooks/use-entity-relationships";
+import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
+import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
+import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
+import { useEntityRelationships } from "@/hooks/use-entity-relationships";
 
 function SubfieldRoute() {
   const { subfieldId: rawSubfieldId } = useParams({ strict: false }) as { subfieldId: string };
@@ -52,11 +51,11 @@ function SubfieldRoute() {
     enabled: !!subfieldId,
   });
 
-  // Relationship counts disabled for taxonomy entities
-  // const { incomingCount, outgoingCount } = useEntityRelationships(
-  //   fullSubfieldId,
-  //   'subfields'
-  // );
+  // Get relationship counts for summary display - MUST be called before early returns (Rules of Hooks)
+  const { incomingCount, outgoingCount } = useEntityRelationships(
+    fullSubfieldId,
+    'subfields'
+  );
 
   // Handle loading state
   if (isLoading) {
@@ -85,7 +84,9 @@ function SubfieldRoute() {
       viewMode={viewMode}
       onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
       data={subfield}>
-      {/* Relationship components disabled - taxonomy entities have hierarchical structure */}
+      <RelationshipCounts incomingCount={incomingCount} outgoingCount={outgoingCount} />
+      <IncomingRelationships entityId={fullSubfieldId} entityType="subfields" />
+      <OutgoingRelationships entityId={fullSubfieldId} entityType="subfields" />
     </EntityDetailLayout>
   );
 }

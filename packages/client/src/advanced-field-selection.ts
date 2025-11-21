@@ -11,6 +11,9 @@ export interface AdvancedEntityFieldSelections {
   concepts: { minimal: string[] };
   publishers: { minimal: string[] };
   funders: { minimal: string[] };
+  domains: { minimal: string[] };
+  fields: { minimal: string[] };
+  subfields: { minimal: string[] };
 }
 
 export const ADVANCED_FIELD_SELECTIONS: AdvancedEntityFieldSelections = {
@@ -36,7 +39,7 @@ export const ADVANCED_FIELD_SELECTIONS: AdvancedEntityFieldSelections = {
     minimal: ["id", "display_name", "country_code", "type", "lineage"],
   },
   topics: {
-    minimal: ["id", "display_name", "keywords"],
+    minimal: ["id", "display_name", "keywords", "subfield", "field", "domain"],
   },
   concepts: {
     minimal: ["id", "display_name", "keywords"],
@@ -46,6 +49,15 @@ export const ADVANCED_FIELD_SELECTIONS: AdvancedEntityFieldSelections = {
   },
   funders: {
     minimal: ["id", "display_name", "works_count"],
+  },
+  domains: {
+    minimal: ["id", "display_name", "fields"],
+  },
+  fields: {
+    minimal: ["id", "display_name", "domain", "subfields"],
+  },
+  subfields: {
+    minimal: ["id", "display_name", "field", "domain", "topics"],
   },
 };
 

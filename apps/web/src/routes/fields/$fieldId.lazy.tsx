@@ -10,11 +10,10 @@ import { EntityDetailLayout } from "@/components/entity-detail/EntityDetailLayou
 import { LoadingState } from "@/components/entity-detail/LoadingState";
 import { ErrorState } from "@/components/entity-detail/ErrorState";
 import { ENTITY_TYPE_CONFIGS } from "@/components/entity-detail/EntityTypeConfig";
-// Relationship components disabled for taxonomy entities
-// import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
-// import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
-// import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
-// import { useEntityRelationships } from "@/hooks/use-entity-relationships";
+import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
+import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
+import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
+import { useEntityRelationships } from "@/hooks/use-entity-relationships";
 
 function FieldRoute() {
   const { fieldId: rawFieldId } = useParams({ strict: false }) as { fieldId: string };
@@ -53,10 +52,10 @@ function FieldRoute() {
   });
 
   // Get relationship counts for summary display - MUST be called before early returns (Rules of Hooks)
-  // const { incomingCount, outgoingCount } = useEntityRelationships(
-  //   fullFieldId,
-  //   'fields'
-  // );
+  const { incomingCount, outgoingCount } = useEntityRelationships(
+    fullFieldId,
+    'fields'
+  );
 
   // Handle loading state
   if (isLoading) {
@@ -85,7 +84,9 @@ function FieldRoute() {
       viewMode={viewMode}
       onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
       data={field}>
-      {/* Relationship components disabled - taxonomy entities have hierarchical structure */}
+      <RelationshipCounts incomingCount={incomingCount} outgoingCount={outgoingCount} />
+      <IncomingRelationships entityId={fullFieldId} entityType="fields" />
+      <OutgoingRelationships entityId={fullFieldId} entityType="fields" />
     </EntityDetailLayout>
   );
 }

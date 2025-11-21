@@ -43,6 +43,13 @@ interface MinimalEntityData {
   last_known_institutions?: Array<{ id: string; display_name: string }>;
   lineage?: string[];
   publisher?: string;
+  // Taxonomy relationships
+  fields?: Array<{ id: string; display_name: string }>;
+  domain?: { id: string; display_name: string };
+  subfields?: Array<{ id: string; display_name: string }>;
+  field?: { id: string; display_name: string };
+  topics?: Array<{ id: string; display_name: string }>;
+  subfield?: { id: string; display_name: string };
 }
 
 /**
@@ -320,6 +327,12 @@ export class RelationshipDetectionService {
             return ADVANCED_FIELD_SELECTIONS.publishers.minimal;
           case "funders":
             return ADVANCED_FIELD_SELECTIONS.funders.minimal;
+          case "domains":
+            return ADVANCED_FIELD_SELECTIONS.domains.minimal;
+          case "fields":
+            return ADVANCED_FIELD_SELECTIONS.fields.minimal;
+          case "subfields":
+            return ADVANCED_FIELD_SELECTIONS.subfields.minimal;
           default:
             return ["id", "display_name"]; // Default for keywords or unknown types
         }
@@ -482,6 +495,67 @@ export class RelationshipDetectionService {
           }
           break;
         }
+        case "domains": {
+          const domainRecord = entityWithId as Record<string, unknown>;
+          if ("fields" in domainRecord && Array.isArray(domainRecord.fields)) {
+            Object.assign(minimalData, {
+              fields: domainRecord.fields,
+            });
+          }
+          break;
+        }
+        case "fields": {
+          const fieldRecord = entityWithId as Record<string, unknown>;
+          if ("domain" in fieldRecord && fieldRecord.domain) {
+            Object.assign(minimalData, {
+              domain: fieldRecord.domain,
+            });
+          }
+          if ("subfields" in fieldRecord && Array.isArray(fieldRecord.subfields)) {
+            Object.assign(minimalData, {
+              subfields: fieldRecord.subfields,
+            });
+          }
+          break;
+        }
+        case "subfields": {
+          const subfieldRecord = entityWithId as Record<string, unknown>;
+          if ("field" in subfieldRecord && subfieldRecord.field) {
+            Object.assign(minimalData, {
+              field: subfieldRecord.field,
+            });
+          }
+          if ("domain" in subfieldRecord && subfieldRecord.domain) {
+            Object.assign(minimalData, {
+              domain: subfieldRecord.domain,
+            });
+          }
+          if ("topics" in subfieldRecord && Array.isArray(subfieldRecord.topics)) {
+            Object.assign(minimalData, {
+              topics: subfieldRecord.topics,
+            });
+          }
+          break;
+        }
+        case "topics": {
+          const topicRecord = entityWithId as Record<string, unknown>;
+          if ("subfield" in topicRecord && topicRecord.subfield) {
+            Object.assign(minimalData, {
+              subfield: topicRecord.subfield,
+            });
+          }
+          if ("field" in topicRecord && topicRecord.field) {
+            Object.assign(minimalData, {
+              field: topicRecord.field,
+            });
+          }
+          if ("domain" in topicRecord && topicRecord.domain) {
+            Object.assign(minimalData, {
+              domain: topicRecord.domain,
+            });
+          }
+          break;
+        }
       }
 
       logger.debug(
@@ -599,6 +673,38 @@ export class RelationshipDetectionService {
         relationships.push(
           ...this.analyzeInstitutionRelationships({
             institutionData: newEntityData,
+            existingNodes,
+          }),
+        );
+        break;
+      case "domains":
+        relationships.push(
+          ...this.analyzeDomainRelationships({
+            domainData: newEntityData,
+            existingNodes,
+          }),
+        );
+        break;
+      case "fields":
+        relationships.push(
+          ...this.analyzeFieldRelationships({
+            fieldData: newEntityData,
+            existingNodes,
+          }),
+        );
+        break;
+      case "subfields":
+        relationships.push(
+          ...this.analyzeSubfieldRelationships({
+            subfieldData: newEntityData,
+            existingNodes,
+          }),
+        );
+        break;
+      case "topics":
+        relationships.push(
+          ...this.analyzeTopicRelationships({
+            topicData: newEntityData,
             existingNodes,
           }),
         );
@@ -929,6 +1035,257 @@ export class RelationshipDetectionService {
               label: "lineage",
             });
           }
+        }
+      }
+    }
+
+    return relationships;
+  }
+
+  /**
+   * Analyze relationships for a Domain entity
+   * Domains have outgoing relationships to Fields
+   */
+  private analyzeDomainRelationships({
+    domainData,
+    existingNodes,
+  }: {
+    domainData: MinimalEntityData;
+    existingNodes: GraphNode[];
+  }): DetectedRelationship[] {
+    const relationships: DetectedRelationship[] = [];
+
+    // Check for field relationships (domain -> fields)
+    if ("fields" in domainData && Array.isArray(domainData.fields)) {
+      for (const fieldRef of domainData.fields) {
+        const fieldId = typeof fieldRef === "string" ? fieldRef : (fieldRef as any).id;
+        if (fieldId && fieldId !== domainData.id) {
+          const fieldNode = existingNodes.find(
+            (node) => node.entityId === fieldId || node.id === fieldId,
+          );
+          if (fieldNode) {
+            relationships.push({
+              sourceNodeId: domainData.id, // Domain owns fields[] data
+              targetNodeId: fieldId, // Field
+              relationType: RelationType.FIELD_PART_OF_DOMAIN,
+              direction: 'outbound',
+              label: "field",
+            });
+          }
+        }
+      }
+    }
+
+    return relationships;
+  }
+
+  /**
+   * Analyze relationships for a Field entity
+   * Fields have incoming relationship from Domain and outgoing relationships to Subfields
+   */
+  private analyzeFieldRelationships({
+    fieldData,
+    existingNodes,
+  }: {
+    fieldData: MinimalEntityData;
+    existingNodes: GraphNode[];
+  }): DetectedRelationship[] {
+    const relationships: DetectedRelationship[] = [];
+
+    // Check for domain relationship (field <- domain)
+    if ("domain" in fieldData && fieldData.domain) {
+      const domainRef = fieldData.domain as any;
+      const domainId = typeof domainRef === "string" ? domainRef : domainRef.id;
+      if (domainId && domainId !== fieldData.id) {
+        const domainNode = existingNodes.find(
+          (node) => node.entityId === domainId || node.id === domainId,
+        );
+        if (domainNode) {
+          // This is an inbound relationship - the domain owns the fields[] array
+          // We create the reverse edge here for visualization
+          relationships.push({
+            sourceNodeId: domainId, // Domain is the source
+            targetNodeId: fieldData.id, // Field is the target
+            relationType: RelationType.FIELD_PART_OF_DOMAIN,
+            direction: 'inbound',
+            label: "field",
+          });
+        }
+      }
+    }
+
+    // Check for subfield relationships (field -> subfields)
+    if ("subfields" in fieldData && Array.isArray(fieldData.subfields)) {
+      for (const subfieldRef of fieldData.subfields) {
+        const subfieldId = typeof subfieldRef === "string" ? subfieldRef : (subfieldRef as any).id;
+        if (subfieldId && subfieldId !== fieldData.id) {
+          const subfieldNode = existingNodes.find(
+            (node) => node.entityId === subfieldId || node.id === subfieldId,
+          );
+          if (subfieldNode) {
+            relationships.push({
+              sourceNodeId: fieldData.id, // Field owns subfields[] data
+              targetNodeId: subfieldId, // Subfield
+              relationType: RelationType.TOPIC_PART_OF_FIELD, // Reusing existing type
+              direction: 'outbound',
+              label: "subfield",
+            });
+          }
+        }
+      }
+    }
+
+    return relationships;
+  }
+
+  /**
+   * Analyze relationships for a Subfield entity
+   * Subfields have incoming relationships from Field/Domain and outgoing relationships to Topics
+   */
+  private analyzeSubfieldRelationships({
+    subfieldData,
+    existingNodes,
+  }: {
+    subfieldData: MinimalEntityData;
+    existingNodes: GraphNode[];
+  }): DetectedRelationship[] {
+    const relationships: DetectedRelationship[] = [];
+
+    // Check for field relationship (subfield <- field)
+    if ("field" in subfieldData && subfieldData.field) {
+      const fieldRef = subfieldData.field as any;
+      const fieldId = typeof fieldRef === "string" ? fieldRef : fieldRef.id;
+      if (fieldId && fieldId !== subfieldData.id) {
+        const fieldNode = existingNodes.find(
+          (node) => node.entityId === fieldId || node.id === fieldId,
+        );
+        if (fieldNode) {
+          // This is an inbound relationship - the field owns the subfields[] array
+          relationships.push({
+            sourceNodeId: fieldId, // Field is the source
+            targetNodeId: subfieldData.id, // Subfield is the target
+            relationType: RelationType.TOPIC_PART_OF_FIELD,
+            direction: 'inbound',
+            label: "subfield",
+          });
+        }
+      }
+    }
+
+    // Check for domain relationship (subfield <- domain)
+    if ("domain" in subfieldData && subfieldData.domain) {
+      const domainRef = subfieldData.domain as any;
+      const domainId = typeof domainRef === "string" ? domainRef : domainRef.id;
+      if (domainId && domainId !== subfieldData.id) {
+        const domainNode = existingNodes.find(
+          (node) => node.entityId === domainId || node.id === domainId,
+        );
+        if (domainNode) {
+          relationships.push({
+            sourceNodeId: domainId, // Domain is the source
+            targetNodeId: subfieldData.id, // Subfield is the target
+            relationType: RelationType.FIELD_PART_OF_DOMAIN,
+            direction: 'inbound',
+            label: "domain",
+          });
+        }
+      }
+    }
+
+    // Check for topic relationships (subfield -> topics)
+    if ("topics" in subfieldData && Array.isArray(subfieldData.topics)) {
+      for (const topicRef of subfieldData.topics) {
+        const topicId = typeof topicRef === "string" ? topicRef : (topicRef as any).id;
+        if (topicId && topicId !== subfieldData.id) {
+          const topicNode = existingNodes.find(
+            (node) => node.entityId === topicId || node.id === topicId,
+          );
+          if (topicNode) {
+            relationships.push({
+              sourceNodeId: subfieldData.id, // Subfield owns topics[] data
+              targetNodeId: topicId, // Topic
+              relationType: RelationType.TOPIC_PART_OF_SUBFIELD,
+              direction: 'outbound',
+              label: "topic",
+            });
+          }
+        }
+      }
+    }
+
+    return relationships;
+  }
+
+  /**
+   * Analyze relationships for a Topic entity
+   * Topics have incoming relationships from Subfield, Field, and Domain
+   */
+  private analyzeTopicRelationships({
+    topicData,
+    existingNodes,
+  }: {
+    topicData: MinimalEntityData;
+    existingNodes: GraphNode[];
+  }): DetectedRelationship[] {
+    const relationships: DetectedRelationship[] = [];
+
+    // Check for subfield relationship (topic <- subfield)
+    if ("subfield" in topicData && topicData.subfield) {
+      const subfieldRef = topicData.subfield as any;
+      const subfieldId = typeof subfieldRef === "string" ? subfieldRef : subfieldRef.id;
+      if (subfieldId && subfieldId !== topicData.id) {
+        const subfieldNode = existingNodes.find(
+          (node) => node.entityId === subfieldId || node.id === subfieldId,
+        );
+        if (subfieldNode) {
+          // This is an inbound relationship - the subfield owns the topics[] array
+          relationships.push({
+            sourceNodeId: subfieldId, // Subfield is the source
+            targetNodeId: topicData.id, // Topic is the target
+            relationType: RelationType.TOPIC_PART_OF_SUBFIELD,
+            direction: 'inbound',
+            label: "topic",
+          });
+        }
+      }
+    }
+
+    // Check for field relationship (topic <- field)
+    if ("field" in topicData && topicData.field) {
+      const fieldRef = topicData.field as any;
+      const fieldId = typeof fieldRef === "string" ? fieldRef : fieldRef.id;
+      if (fieldId && fieldId !== topicData.id) {
+        const fieldNode = existingNodes.find(
+          (node) => node.entityId === fieldId || node.id === fieldId,
+        );
+        if (fieldNode) {
+          relationships.push({
+            sourceNodeId: fieldId, // Field is the source
+            targetNodeId: topicData.id, // Topic is the target
+            relationType: RelationType.TOPIC_PART_OF_FIELD,
+            direction: 'inbound',
+            label: "field",
+          });
+        }
+      }
+    }
+
+    // Check for domain relationship (topic <- domain)
+    if ("domain" in topicData && topicData.domain) {
+      const domainRef = topicData.domain as any;
+      const domainId = typeof domainRef === "string" ? domainRef : domainRef.id;
+      if (domainId && domainId !== topicData.id) {
+        const domainNode = existingNodes.find(
+          (node) => node.entityId === domainId || node.id === domainId,
+        );
+        if (domainNode) {
+          relationships.push({
+            sourceNodeId: domainId, // Domain is the source
+            targetNodeId: topicData.id, // Topic is the target
+            relationType: RelationType.FIELD_PART_OF_DOMAIN,
+            direction: 'inbound',
+            label: "domain",
+          });
         }
       }
     }

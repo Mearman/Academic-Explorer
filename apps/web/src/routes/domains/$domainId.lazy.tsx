@@ -10,12 +10,10 @@ import { EntityDetailLayout } from "@/components/entity-detail/EntityDetailLayou
 import { LoadingState } from "@/components/entity-detail/LoadingState";
 import { ErrorState } from "@/components/entity-detail/ErrorState";
 import { ENTITY_TYPE_CONFIGS } from "@/components/entity-detail/EntityTypeConfig";
-// Relationship components disabled for taxonomy entities (domains/fields/subfields)
-// These entities have hierarchical parent/child relationships, not edge-based relationships
-// import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
-// import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
-// import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
-// import { useEntityRelationships } from "@/hooks/use-entity-relationships";
+import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
+import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
+import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
+import { useEntityRelationships } from "@/hooks/use-entity-relationships";
 
 function DomainRoute() {
   const { domainId: rawDomainId } = useParams({ strict: false }) as { domainId: string };
@@ -53,11 +51,11 @@ function DomainRoute() {
     enabled: !!domainId,
   });
 
-  // Relationship counts disabled for taxonomy entities
-  // const { incomingCount, outgoingCount } = useEntityRelationships(
-  //   fullDomainId,
-  //   'domains'
-  // );
+  // Get relationship counts for summary display
+  const { incomingCount, outgoingCount } = useEntityRelationships(
+    fullDomainId,
+    'domains'
+  );
 
   // Handle loading state
   if (isLoading) {
@@ -86,7 +84,9 @@ function DomainRoute() {
       viewMode={viewMode}
       onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
       data={domain}>
-      {/* Relationship components disabled - taxonomy entities have hierarchical structure */}
+      <RelationshipCounts incomingCount={incomingCount} outgoingCount={outgoingCount} />
+      <IncomingRelationships entityId={fullDomainId} entityType="domains" />
+      <OutgoingRelationships entityId={fullDomainId} entityType="domains" />
     </EntityDetailLayout>
   );
 }
