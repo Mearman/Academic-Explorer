@@ -43,16 +43,16 @@ describe("Work Funding Relationships - Performance", () => {
         })),
       };
 
-      const existingNodes: GraphNode[] = workData.grants?.map((grant, i) => ({
-        id: `F${String(i).padStart(10, "0")}`,
-        entityId: grant.funder,
-        entityType: "funders",
-        label: grant.funder_display_name,
-        color: "#4285F4",
-        size: 25,
-        x: i * 50,
-        y: i * 50,
-      })) || [];
+      const existingNodes: GraphNode[] = workData.grants?.map((grant, i): GraphNode =>
+        createTestGraphNode({
+          id: `F${String(i).padStart(10, "0")}`,
+          entityId: grant.funder,
+          entityType: "funders",
+          label: grant.funder_display_name,
+          x: i * 50,
+          y: i * 50,
+        })
+      ) || [];
 
       const relationships: any[] = [];
 
@@ -96,7 +96,7 @@ describe("Work Funding Relationships - Performance", () => {
         })),
       };
 
-      const existingNodes: GraphNode[] = workData.grants?.slice(0, 100).map((grant, i) => ({
+      const existingNodes: GraphNode[] = workData.grants?.slice(0, 100).map((grant, i): GraphNode => ({
         id: `F${String(i).padStart(10, "0")}`,
         entityId: grant.funder,
         entityType: "funders",
@@ -137,16 +137,16 @@ describe("Work Funding Relationships - Performance", () => {
         })),
       };
 
-      const existingNodes: GraphNode[] = workData.grants?.map((grant, i) => ({
-        id: `F${String(i).padStart(10, "0")}`,
-        entityId: grant.funder,
-        entityType: "funders",
-        label: grant.funder_display_name,
-        color: "#4285F4",
-        size: 25,
-        x: i * 30,
-        y: i * 30,
-      })) || [];
+      const existingNodes: GraphNode[] = workData.grants?.map((grant, i): GraphNode =>
+        createTestGraphNode({
+          id: `F${String(i).padStart(10, "0")}`,
+          entityId: grant.funder,
+          entityType: "funders",
+          label: grant.funder_display_name,
+          x: i * 30,
+          y: i * 30,
+        })
+      ) || [];
 
       const durations: number[] = [];
 
@@ -186,7 +186,7 @@ describe("Work Funding Relationships - Performance", () => {
         })),
       };
 
-      const existingNodes: GraphNode[] = workData.grants?.slice(0, 50).map((grant, i) => ({
+      const existingNodes: GraphNode[] = workData.grants?.slice(0, 50).map((grant, i): GraphNode => ({
         id: `F${String(i).padStart(10, "0")}`,
         entityId: grant.funder,
         entityType: "funders",
@@ -265,16 +265,16 @@ describe("Work Funding Relationships - Performance", () => {
     it("should detect relationships for multiple works with grants efficiently", async () => {
       // Arrange
       const workIds = Array.from({ length: 10 }, (_, i) => `W${String(123456789 + i).padStart(9, "0")}`);
-      const existingNodes: GraphNode[] = Array.from({ length: 50 }, (_, i) => ({
-        id: `F${String(i).padStart(10, "0")}`,
-        entityId: `https://openalex.org/F${String(i).padStart(10, "0")}`,
-        entityType: "funders",
-        label: `Foundation ${i + 1}`,
-        color: "#4285F4",
-        size: 25,
-        x: i * 50,
-        y: i * 50,
-      }));
+      const existingNodes: GraphNode[] = Array.from({ length: 50 }, (_, i): GraphNode =>
+        createTestGraphNode({
+          id: `F${String(i).padStart(10, "0")}`,
+          entityId: `https://openalex.org/F${String(i).padStart(10, "0")}`,
+          entityType: "funders",
+          label: `Foundation ${i + 1}`,
+          x: i * 50,
+          y: i * 50,
+        })
+      );
 
       // Act
       const startTime = performance.now();
