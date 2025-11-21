@@ -29,6 +29,7 @@ import {
   IconPin,
   IconMenu,
   IconSearch,
+  IconX,
 } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 import { LeftSidebarDynamic } from "./LeftSidebarDynamic";
@@ -90,7 +91,10 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   // Mobile menu state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  
+  // Mobile search state
+  const [mobileSearchExpanded, setMobileSearchExpanded] = useState(false);
+
+
   // Theme toggle logic
   const cycleColorScheme = () => {
     if (colorScheme === "auto") {
@@ -203,17 +207,33 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           </Group>
 
           <Group gap="xs">
-            {/* Mobile search button */}
-            <ActionIcon
-              component={Link}
-              to="/search"
-              variant="subtle"
-              size="lg"
-              aria-label="Open search"
-              hiddenFrom="sm"
-            >
-              <IconSearch size={18} />
-            </ActionIcon>
+            {/* Mobile search - expandable input */}
+            <Box hiddenFrom="sm">
+              {!mobileSearchExpanded ? (
+                <ActionIcon
+                  onClick={() => setMobileSearchExpanded(true)}
+                  variant="subtle"
+                  size="lg"
+                  aria-label="Open search"
+                >
+                  <IconSearch size={18} />
+                </ActionIcon>
+              ) : (
+                <Group gap="xs">
+                  <Box style={{ width: '200px' }}>
+                    <HeaderSearchInput />
+                  </Box>
+                  <ActionIcon
+                    onClick={() => setMobileSearchExpanded(false)}
+                    variant="subtle"
+                    size="lg"
+                    aria-label="Close search"
+                  >
+                    <IconX size={18} />
+                  </ActionIcon>
+                </Group>
+              )}
+            </Box>
 
             {/* Sidebar toggle controls */}
             <ActionIcon
