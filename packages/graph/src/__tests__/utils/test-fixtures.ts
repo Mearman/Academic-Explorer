@@ -5,6 +5,8 @@
 
 import type { GraphNode, GraphEdge, EntityType, ExternalIdentifier } from '../../types/core';
 import { RelationType } from '../../types/core';
+import type { EntityType as GraphEntityType } from '@academic-explorer/types';
+import { getEntityIdPrefix } from '@academic-explorer/types';
 
 /**
  * Fixture generation options
@@ -128,24 +130,10 @@ let fixtureCounter = 1000000000; // Start at 1 billion for proper 10-digit IDs
 /**
  * Generate a unique OpenAlex-style ID for an entity type
  * Always generates 10+ digit IDs matching real OpenAlex format
+ * Uses centralized ID prefix from ENTITY_METADATA
  */
 export function generateEntityId(entityType: EntityType): string {
-  const prefixes: Record<EntityType, string> = {
-    works: 'W',
-    authors: 'A',
-    institutions: 'I',
-    sources: 'S',
-    topics: 'T',
-    publishers: 'P',
-    funders: 'F',
-    concepts: 'C',
-    keywords: 'K',
-    domains: 'D',
-    fields: 'FI',
-    subfields: 'SF',
-  };
-
-  const prefix = prefixes[entityType] || 'X';
+  const prefix = getEntityIdPrefix(entityType);
   return `${prefix}${fixtureCounter++}`;
 }
 

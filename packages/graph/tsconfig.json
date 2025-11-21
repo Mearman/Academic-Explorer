@@ -9,10 +9,7 @@
     "skipDefaultLibCheck": true,
     "strict": false,
     "noImplicitAny": false,
-    "types": ["node"],
-    "paths": {
-      "@academic-explorer/types": ["../types/dist/index.d.ts"]
-    }
+    "types": ["node"]
   },
   "include": ["src/**/*"],
   "exclude": [
@@ -20,6 +17,9 @@
     "node_modules"
   ],
   "references": [
+    {
+      "path": "../types"
+    },
     {
       "path": "../utils"
     }

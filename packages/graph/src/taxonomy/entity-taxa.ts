@@ -1,101 +1,32 @@
 /**
- * Entity and relation taxonomy definitions for Academic Explorer
- * Provides structured metadata for all entity and relation types
+ * Relation taxonomy definitions for Academic Explorer
+ *
+ * NOTE: Entity metadata has been moved to @academic-explorer/types/entities
+ * Import entity metadata directly from types package, not from here.
  */
 
 import type { EntityType } from "../types/core"
 import { RelationType } from "../types/core"
-
-/**
- * Taxonomy entry for entities and relations
- */
-export interface Taxon {
-	/** Human-readable display name */
-	displayName: string
-	/** Detailed description */
-	description: string
-	/** UI color identifier */
-	color: string
-	/** Plural form for display */
-	plural: string
-}
+import type { Taxon } from "@academic-explorer/types"
+import { ENTITY_METADATA } from "@academic-explorer/types"
 
 /**
  * Taxonomy definitions for all entity types
+ * @deprecated Use ENTITY_METADATA instead - maintained for backward compatibility
  */
 export const ENTITY_TAXONOMY: Record<EntityType, Taxon> = {
-	works: {
-		displayName: "Work",
-		description: "Academic publications, articles, books, and other scholarly outputs",
-		color: "blue",
-		plural: "Works",
-	},
-	authors: {
-		displayName: "Author",
-		description: "Researchers, scholars, and contributors to academic works",
-		color: "green",
-		plural: "Authors",
-	},
-	sources: {
-		displayName: "Source",
-		description: "Journals, conferences, books, and other publication venues",
-		color: "purple",
-		plural: "Sources",
-	},
-	institutions: {
-		displayName: "Institution",
-		description: "Universities, research centers, and academic organizations",
-		color: "orange",
-		plural: "Institutions",
-	},
-	publishers: {
-		displayName: "Publisher",
-		description: "Publishing companies and organizations",
-		color: "teal",
-		plural: "Publishers",
-	},
-	funders: {
-		displayName: "Funder",
-		description: "Funding agencies and research sponsors",
-		color: "cyan",
-		plural: "Funders",
-	},
-	topics: {
-		displayName: "Topic",
-		description: "Research topics and subject areas",
-		color: "red",
-		plural: "Topics",
-	},
-	concepts: {
-		displayName: "Concept",
-		description: "Semantic concepts and research areas from OpenAlex",
-		color: "pink",
-		plural: "Concepts",
-	},
-	keywords: {
-		displayName: "Keyword",
-		description: "User-defined keywords and tags",
-		color: "gray",
-		plural: "Keywords",
-	},
-	domains: {
-		displayName: "Domain",
-		description: "Top-level academic domains in the OpenAlex taxonomy",
-		color: "indigo",
-		plural: "Domains",
-	},
-	fields: {
-		displayName: "Field",
-		description: "Academic fields within domains",
-		color: "violet",
-		plural: "Fields",
-	},
-	subfields: {
-		displayName: "Subfield",
-		description: "Academic subfields within fields",
-		color: "lime",
-		plural: "Subfields",
-	},
+	works: ENTITY_METADATA.works,
+	authors: ENTITY_METADATA.authors,
+	sources: ENTITY_METADATA.sources,
+	institutions: ENTITY_METADATA.institutions,
+	publishers: ENTITY_METADATA.publishers,
+	funders: ENTITY_METADATA.funders,
+	topics: ENTITY_METADATA.topics,
+	concepts: ENTITY_METADATA.concepts,
+	keywords: ENTITY_METADATA.keywords,
+	domains: ENTITY_METADATA.domains,
+	fields: ENTITY_METADATA.fields,
+	subfields: ENTITY_METADATA.subfields,
 }
 
 /**
@@ -229,24 +160,26 @@ export const RELATION_TAXONOMY: Record<RelationType, Taxon> = {
 
 /**
  * Icon mappings for entity types using Tabler icon names
+ * @deprecated Use ENTITY_METADATA instead - maintained for backward compatibility
  */
 export const ENTITY_ICON_MAP: Record<EntityType, string> = {
-	works: "IconFileText",
-	authors: "IconUser",
-	sources: "IconBook",
-	institutions: "IconBuilding",
-	publishers: "IconPrinter",
-	funders: "IconCoin",
-	topics: "IconTag",
-	concepts: "IconBulb",
-	keywords: "IconHash",
-	domains: "IconWorld",
-	fields: "IconFolders",
-	subfields: "IconFolder",
+	works: ENTITY_METADATA.works.icon,
+	authors: ENTITY_METADATA.authors.icon,
+	sources: ENTITY_METADATA.sources.icon,
+	institutions: ENTITY_METADATA.institutions.icon,
+	publishers: ENTITY_METADATA.publishers.icon,
+	funders: ENTITY_METADATA.funders.icon,
+	topics: ENTITY_METADATA.topics.icon,
+	concepts: ENTITY_METADATA.concepts.icon,
+	keywords: ENTITY_METADATA.keywords.icon,
+	domains: ENTITY_METADATA.domains.icon,
+	fields: ENTITY_METADATA.fields.icon,
+	subfields: ENTITY_METADATA.subfields.icon,
 }
 
 /**
  * Helper function to get taxonomy information for an entity type
+ * @deprecated Use ENTITY_METADATA directly
  */
 export function getEntityTaxon(entityType: EntityType): Taxon {
 	return ENTITY_TAXONOMY[entityType]
@@ -257,34 +190,6 @@ export function getEntityTaxon(entityType: EntityType): Taxon {
  */
 export function getRelationTaxon(relationType: RelationType): Taxon {
 	return RELATION_TAXONOMY[relationType]
-}
-
-/**
- * Helper function to get the icon name for an entity type
- */
-export function getEntityIcon(entityType: EntityType): string {
-	return ENTITY_ICON_MAP[entityType]
-}
-
-/**
- * Helper function to get the color for an entity type
- */
-export function getEntityColor(entityType: EntityType): string {
-	return ENTITY_TAXONOMY[entityType].color
-}
-
-/**
- * Helper function to get the display name for an entity type
- */
-export function getEntityDisplayName(entityType: EntityType): string {
-	return ENTITY_TAXONOMY[entityType].displayName
-}
-
-/**
- * Helper function to get the plural form for an entity type
- */
-export function getEntityPlural(entityType: EntityType): string {
-	return ENTITY_TAXONOMY[entityType].plural
 }
 
 /**

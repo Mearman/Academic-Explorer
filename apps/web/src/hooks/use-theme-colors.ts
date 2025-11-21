@@ -5,10 +5,8 @@
 
 import { useMantineColorScheme, useMantineTheme } from "@mantine/core";
 import { useMemo, useCallback } from "react";
-import {
-  getEntityColor as getTaxonomyColorName,
-  detectEntityType,
-} from "@academic-explorer/graph";
+import { detectEntityType } from "@academic-explorer/graph";
+import { getEntityColor as getTaxonomyColorName } from "@academic-explorer/types";
 
 export function useThemeColors() {
   const theme = useMantineTheme();

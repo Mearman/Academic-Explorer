@@ -66,15 +66,12 @@ export {
 	type DetectionResult,
 } from "./services/entity-detection-service"
 
-// Taxonomy utilities
+// Taxonomy utilities (backward compatibility)
+// NOTE: Import entity metadata directly from @academic-explorer/types instead
 export {
-	getEntityColor,
-	getEntityDisplayName,
-	getEntityIcon,
-	getEntityPlural,
 	ENTITY_TAXONOMY,
 	ENTITY_ICON_MAP,
-	type Taxon,
+	getEntityTaxon,
 } from "./taxonomy/entity-taxa"
 
 // Force system

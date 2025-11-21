@@ -2,6 +2,7 @@
 export * from "./base"
 export * from "./common"
 export * from "./entities"
+export * from "./entity-metadata"
 export * from "./authors"
 export * from "./concepts"
 export * from "./filters"
