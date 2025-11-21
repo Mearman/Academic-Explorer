@@ -273,7 +273,7 @@ async function checkWhoisAvailability(domain: string, retryCount = 0): Promise<b
 }
 
 // Unified checking function with method selection and fallback
-async function checkDomainAvailability(name: string, tld: string, method: typeof CHECK_METHOD = CHECK_METHOD): Promise<boolean> {
+async function checkDomainAvailability(name: string, tld: string, method: typeof CHECK_METHOD = CHECK_METHOD): Promise<boolean | null> {
   const domain = `${name.toLowerCase()}.${tld}`;
 
   try {
@@ -344,9 +344,9 @@ async function checkDomainAvailability(name: string, tld: string, method: typeof
           return true; // Consensus: AVAILABLE (2+ methods agree)
         }
 
-        // No consensus (shouldn't happen with 3 methods, but handle it)
-        // Default to taken (conservative approach)
-        return false;
+        // No consensus - uncertain
+        // Leave CSV field empty instead of defaulting
+        return null;
     }
   } catch (error) {
     console.log(`  ❌ All methods failed for ${domain}, assuming taken`);
@@ -379,10 +379,11 @@ function escapeCsv(value: string | number | undefined | null): string {
 }
 
 // Helper to format availability
-function formatAvailable(available: boolean | undefined): string {
+function formatAvailable(available: boolean | null | undefined): string {
   if (available === true) return '✅';
   if (available === false) return '❌';
-  return '?';
+  if (available === null) return ''; // No consensus - leave empty
+  return '?'; // Unknown/not checked yet
 }
 
 // Helper to write CSV
