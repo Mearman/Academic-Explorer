@@ -385,6 +385,21 @@ jobs:
           GITHUB_PAGES: true
           NX_SKIP_NX_CACHE: true
 
+      - name: Install PostHog CLI
+        run: npm install -g @posthog/cli
+
+      - name: Inject source map metadata
+        run: posthog-cli sourcemap inject --version ${{ github.sha }} ./apps/web/dist
+
+      - name: Upload source maps to PostHog
+        run: |
+          posthog-cli sourcemap upload \
+            --project-id ${{ secrets.POSTHOG_CLI_ENV_ID }} \
+            --api-token ${{ secrets.POSTHOG_CLI_TOKEN }} \
+            --host https://eu.posthog.com \
+            --delete-after \
+            ./apps/web/dist
+
       - name: Upload build artifacts
         uses: actions/upload-pages-artifact@v4
         with:
