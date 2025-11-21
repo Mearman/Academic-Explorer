@@ -66,7 +66,10 @@ export type EntityType =
   | "institutions"
   | "topics"
   | "publishers"
-  | "funders";
+  | "funders"
+  | "domains"
+  | "fields"
+  | "subfields";
 
 // List types
 export type ListType = "list" | "bibliography";
@@ -668,6 +671,9 @@ export class CatalogueService {
         topics: 0,
         publishers: 0,
         funders: 0,
+        domains: 0,
+        fields: 0,
+        subfields: 0,
       };
 
       entities.forEach(entity => {
@@ -690,6 +696,9 @@ export class CatalogueService {
           topics: 0,
           publishers: 0,
           funders: 0,
+          domains: 0,
+          fields: 0,
+          subfields: 0,
         },
       };
     }

@@ -346,6 +346,9 @@ export class InMemoryStorageProvider implements CatalogueStorageProvider {
 			topics: 0,
 			publishers: 0,
 			funders: 0,
+			domains: 0,
+			fields: 0,
+			subfields: 0,
 		};
 
 		for (const entity of entities) {

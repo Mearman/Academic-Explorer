@@ -23,7 +23,7 @@ export interface CompressedListData {
   };
   /** Entities in the list */
   entities: Array<{
-    entityType: "works" | "authors" | "sources" | "institutions" | "topics" | "publishers" | "funders";
+    entityType: "works" | "authors" | "sources" | "institutions" | "topics" | "publishers" | "funders" | "domains" | "fields" | "subfields";
     entityId: string;
     notes?: string;
   }>;
