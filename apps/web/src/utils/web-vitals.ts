@@ -56,8 +56,50 @@ function reportMetric(metric: Metric) {
     });
   }
 
-  // Send to analytics if configured
-  // Note: This could be extended to send to Google Analytics, Sentry, etc.
+  // Send to PostHog for performance analytics
+  try {
+    if (typeof window !== 'undefined' && 'posthog' in window) {
+      const posthog = (window as any).posthog;
+      if (posthog) {
+        posthog.capture('performance_metric', {
+          metric_name: metric.name.toLowerCase(),
+          metric_value: Math.round(metric.value),
+          metric_rating: rating,
+          metric_id: metric.id,
+          navigation_type: metric.navigationType,
+          user_agent_group: getUserAgentGroup(),
+          timestamp: new Date().toISOString(),
+          feature_name: 'core_web_vitals',
+        });
+
+        // Send performance issue alerts for poor metrics
+        if (rating === 'poor') {
+          posthog.capture('performance_issue', {
+            metric_name: metric.name.toLowerCase(),
+            metric_value: Math.round(metric.value),
+            threshold_exceeded: 'poor',
+            user_agent_group: getUserAgentGroup(),
+            timestamp: new Date().toISOString(),
+          });
+        }
+      }
+    }
+  } catch (analyticsError) {
+    console.warn('Failed to send performance metric to PostHog:', analyticsError);
+  }
+}
+
+/**
+ * Get user agent group for analytics (privacy-friendly grouping)
+ */
+function getUserAgentGroup(): string {
+  if (typeof navigator === 'undefined') return 'unknown';
+  const userAgent = navigator.userAgent.toLowerCase();
+  if (userAgent.includes('chrome')) return 'chrome';
+  if (userAgent.includes('firefox')) return 'firefox';
+  if (userAgent.includes('safari')) return 'safari';
+  if (userAgent.includes('edge')) return 'edge';
+  return 'other';
 }
 
 /**

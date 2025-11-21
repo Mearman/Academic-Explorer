@@ -226,6 +226,17 @@ export const setupGlobalErrorHandling = (logger: GenericLogger) => {
 	window.addEventListener("unhandledrejection", (event) => {
 		try {
 			logError(logger, "Unhandled promise rejection", event.reason, "global")
+
+			// Send to PostHog if available
+			sendErrorToPostHog({
+				error_type: 'promise_rejection',
+				error_category: 'javascript_error',
+				component_name: 'GlobalErrorHandler',
+				error_message: event.reason?.message || 'Unhandled promise rejection',
+				error_name: event.reason?.name || 'PromiseRejection',
+				user_agent_group: getUserAgentGroup(),
+				timestamp: new Date().toISOString(),
+			})
 		} catch {
 			// Fallback to console if logging fails to prevent infinite loops
 			console.error("Unhandled promise rejection (logger failed):", event.reason)
@@ -253,9 +264,66 @@ export const setupGlobalErrorHandling = (logger: GenericLogger) => {
 			event.error instanceof Error ? event.error : new Error(event.message),
 			event.filename
 		)
+
+		// Send to PostHog if available
+		sendErrorToPostHog({
+			error_type: 'javascript_error',
+			error_category: 'javascript_error',
+			component_name: 'GlobalErrorHandler',
+			error_message: errorMessage,
+			error_filename: event.filename,
+			error_line: event.lineno,
+			error_column: event.colno,
+			user_agent_group: getUserAgentGroup(),
+			timestamp: new Date().toISOString(),
+		})
 	})
 
 	logger.debug("general", "Global error handling initialized", {}, "setupGlobalErrorHandling")
+}
+
+/**
+ * Send error data to PostHog for analytics
+ * Privacy-compliant error tracking without sensitive data
+ */
+interface PostHogErrorData {
+	error_type: string
+	error_category: string
+	component_name: string
+	error_message: string
+	error_name?: string
+	error_filename?: string
+	error_line?: number
+	error_column?: number
+	user_agent_group: string
+	timestamp: string
+}
+
+function sendErrorToPostHog(errorData: PostHogErrorData) {
+	try {
+		if (typeof window !== 'undefined' && 'posthog' in window) {
+			const posthog = (window as any).posthog;
+			if (posthog) {
+				posthog.capture('error_occurred', errorData);
+			}
+		}
+	} catch (analyticsError) {
+		// Don't let analytics errors break the error handler
+		console.warn('Failed to send global error to PostHog:', analyticsError);
+	}
+}
+
+/**
+ * Get user agent group for analytics (privacy-friendly grouping)
+ */
+function getUserAgentGroup(): string {
+	if (typeof navigator === 'undefined') return 'unknown';
+	const userAgent = navigator.userAgent.toLowerCase();
+	if (userAgent.includes('chrome')) return 'chrome';
+	if (userAgent.includes('firefox')) return 'firefox';
+	if (userAgent.includes('safari')) return 'safari';
+	if (userAgent.includes('edge')) return 'edge';
+	return 'other';
 }
 
 // Export a singleton logger instance for simple usage
