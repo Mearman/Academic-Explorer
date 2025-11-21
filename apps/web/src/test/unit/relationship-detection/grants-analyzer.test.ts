@@ -50,18 +50,18 @@ describe("RelationshipDetectionService - Grants Analyzer", () => {
       ];
 
       existingNodes = [
-        {
+        createTestGraphNode({
           id: "F4320332161",
           entityId: "https://openalex.org/F4320332161",
           entityType: "funders",
           label: "National Institutes of Health",
-        },
-        {
+        }),
+        createTestGraphNode({
           id: "F4320332162",
           entityId: "https://openalex.org/F4320332162",
           entityType: "funders",
           label: "National Science Foundation",
-        },
+        }),
       ];
 
       // Act
@@ -112,12 +112,12 @@ describe("RelationshipDetectionService - Grants Analyzer", () => {
       ];
 
       existingNodes = [
-        {
+        createTestGraphNode({
           id: "F4320332161",
           entityId: "https://openalex.org/F4320332161",
           entityType: "funders",
           label: "Anonymous Foundation",
-        },
+        }),
       ];
 
       // Act
@@ -158,12 +158,12 @@ describe("RelationshipDetectionService - Grants Analyzer", () => {
       ];
 
       existingNodes = [
-        {
+        createTestGraphNode({
           id: "F4320332161",
           entityId: "https://openalex.org/F4320332161",
           entityType: "funders",
           label: "National Institutes of Health",
-        },
+        }),
         // Note: F4320339999 is not in existingNodes
       ];
 
@@ -182,12 +182,12 @@ describe("RelationshipDetectionService - Grants Analyzer", () => {
     it("should handle missing grants field gracefully", () => {
       // Arrange - workData.grants is undefined
       existingNodes = [
-        {
+        createTestGraphNode({
           id: "F4320332161",
           entityId: "https://openalex.org/F4320332161",
           entityType: "funders",
           label: "National Institutes of Health",
-        },
+        }),
       ];
 
       // Act
@@ -205,12 +205,12 @@ describe("RelationshipDetectionService - Grants Analyzer", () => {
       // Arrange
       workData.grants = [];
       existingNodes = [
-        {
+        createTestGraphNode({
           id: "F4320332161",
           entityId: "https://openalex.org/F4320332161",
           entityType: "funders",
           label: "National Institutes of Health",
-        },
+        }),
       ];
 
       // Act
@@ -240,12 +240,12 @@ describe("RelationshipDetectionService - Grants Analyzer", () => {
       ];
 
       existingNodes = [
-        {
+        createTestGraphNode({
           id: "F4320332161",
           entityId: "https://openalex.org/F4320332161",
           entityType: "funders",
           label: "National Institutes of Health",
-        },
+        }),
       ];
 
       // Act
@@ -271,12 +271,12 @@ describe("RelationshipDetectionService - Grants Analyzer", () => {
       ];
 
       existingNodes = [
-        {
+        createTestGraphNode({
           id: "W123456789",
           entityId: "W123456789",
           entityType: "works",
           label: "Test Research Paper",
-        },
+        }),
       ];
 
       // Act
@@ -309,18 +309,18 @@ describe("RelationshipDetectionService - Grants Analyzer", () => {
       ];
 
       existingNodes = [
-        {
+        createTestGraphNode({
           id: "F4320332161",
           entityId: "https://openalex.org/F4320332161",
           entityType: "funders",
           label: "National Institutes of Health",
-        },
-        {
+        }),
+        createTestGraphNode({
           id: "F4320332162",
           entityId: "https://openalex.org/F4320332162",
           entityType: "funders",
           label: "National Science Foundation",
-        },
+        }),
       ];
 
       // Act & Assert - Should not throw error
