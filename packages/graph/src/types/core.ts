@@ -4,21 +4,7 @@
  */
 
 import type { GraphSnapshot } from "../data/graph-repository"
-
-// Core entity types from OpenAlex
-export type EntityType =
-	| "works"
-	| "authors"
-	| "sources"
-	| "institutions"
-	| "publishers"
-	| "funders"
-	| "topics"
-	| "concepts"
-	| "keywords"
-	| "domains"
-	| "fields"
-	| "subfields"
+import type { EntityType } from "@academic-explorer/types"
 
 export enum RelationType {
 	// Core academic relationships (matching OpenAlex field names - noun form)
