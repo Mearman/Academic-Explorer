@@ -48,7 +48,15 @@ export interface MinimalEntityData {
   domain?: { id: string; display_name: string };
   subfields?: Array<{ id: string; display_name: string }>;
   field?: { id: string; display_name: string };
-  topics?: Array<{ id: string; display_name: string }>;
+  topics?: Array<{
+    id: string;
+    display_name: string;
+    count?: number;
+    score?: number;
+    subfield?: { id: string; display_name: string };
+    field?: { id: string; display_name: string };
+    domain?: { id: string; display_name: string };
+  }>;
   subfield?: { id: string; display_name: string };
 
   // New relationship fields for complete OpenAlex support
@@ -60,7 +68,7 @@ export interface MinimalEntityData {
   keywords?: Array<{                       // T022: Add keywords field
     id: string;
     display_name: string;
-    score: number;
+    score?: number;
   }>;
   concepts?: Array<{                        // T023: Add concepts field (legacy)
     id: string;
@@ -746,6 +754,11 @@ export class RelationshipDetectionService {
             authorData: newEntityData,
             existingNodes,
           }),
+          ...this.analyzeTopicRelationshipsForEntity({
+            entityData: newEntityData,
+            entityType: 'authors',
+            existingNodes,
+          }),
         );
         break;
       case "sources":
@@ -754,12 +767,22 @@ export class RelationshipDetectionService {
             sourceData: newEntityData,
             existingNodes,
           }),
+          ...this.analyzeTopicRelationshipsForEntity({
+            entityData: newEntityData,
+            entityType: 'sources',
+            existingNodes,
+          }),
         );
         break;
       case "institutions":
         relationships.push(
           ...this.analyzeInstitutionRelationships({
             institutionData: newEntityData,
+            existingNodes,
+          }),
+          ...this.analyzeTopicRelationshipsForEntity({
+            entityData: newEntityData,
+            entityType: 'institutions',
             existingNodes,
           }),
         );
@@ -1047,6 +1070,57 @@ export class RelationshipDetectionService {
     }
   }
 
+  /**
+   * Analyze keyword relationships for a Work entity (T025)
+   * Work → Keyword relationships via work.keywords[] array
+   */
+  private analyzeKeywordsForWork({
+    workData,
+    existingNodes,
+    relationships,
+  }: {
+    workData: MinimalEntityData;
+    existingNodes: GraphNode[];
+    relationships: DetectedRelationship[];
+  }): void {
+    if (workData.keywords && Array.isArray(workData.keywords)) {
+      for (const keyword of workData.keywords) {
+        const keywordId = keyword.id || keyword.display_name;
+        if (keywordId && keywordId !== workData.id) {
+          const keywordNode = existingNodes.find(
+            (node) => node.entityId === keywordId || node.id === keywordId,
+          );
+          if (keywordNode) {
+            relationships.push({
+              sourceNodeId: workData.id,
+              targetNodeId: keywordId,
+              relationType: RelationType.WORK_HAS_KEYWORD,
+              direction: "outbound",
+              label: "has keyword",
+              metadata: {
+                keywordDisplayName: keyword.display_name,
+                keywordScore: keyword.score,
+              },
+            });
+
+            logger.debug(
+              "relationship-detection",
+              "Created work→keyword relationship",
+              {
+                workId: workData.id,
+                workTitle: workData.display_name,
+                keywordId,
+                keywordDisplayName: keyword.display_name,
+                keywordScore: keyword.score,
+              },
+              "RelationshipDetectionService",
+            );
+          }
+        }
+      }
+    }
+  }
+
   private async analyzeWorkRelationships({
     workData,
     existingNodes,
@@ -1084,6 +1158,11 @@ export class RelationshipDetectionService {
       relationships,
     });
     this.analyzeGrantsForWork({
+      workData,
+      existingNodes,
+      relationships,
+    });
+    this.analyzeKeywordsForWork({
       workData,
       existingNodes,
       relationships,
@@ -1473,6 +1552,68 @@ export class RelationshipDetectionService {
   }
 
   /**
+   * Analyze topic relationships for an entity (authors, sources, institutions)
+   *
+   * @param entityData - Entity data containing topics array
+   * @param entityType - Type of entity (must be authors, sources, or institutions)
+   * @param existingNodes - Existing graph nodes to create relationships with
+   * @returns Array of detected topic relationships
+   */
+  private analyzeTopicRelationshipsForEntity({
+    entityData,
+    entityType,
+    existingNodes,
+  }: {
+    entityData: MinimalEntityData;
+    entityType: EntityType;
+    existingNodes: GraphNode[];
+  }): DetectedRelationship[] {
+    // T044: Add null-safety check for topics
+    if (!entityData.topics || entityData.topics.length === 0) {
+      return [];
+    }
+
+    // T045: Add entityType validation - Only process if entityType is 'authors', 'sources', or 'institutions'
+    if (entityType !== 'authors' && entityType !== 'sources' && entityType !== 'institutions') {
+      return [];
+    }
+
+    const relationships: DetectedRelationship[] = [];
+
+    // T046: Get existing graph nodes and iterate entity.topics array checking for topic node existence
+    for (const topic of entityData.topics) {
+      if (!topic || !topic.id) {
+        continue;
+      }
+
+      const topicNode = existingNodes.find(
+        (node) => node.entityId === topic.id || node.id === topic.id,
+      );
+
+      if (topicNode) {
+        // T047: Create GraphEdge with topic relationship
+        relationships.push({
+          sourceNodeId: entityData.id,
+          targetNodeId: topic.id,
+          relationType: RelationType.TOPIC,
+          direction: 'outbound',
+          label: 'research topic',
+          metadata: {
+            // T048: Store topic metadata in edge
+            count: topic.count,
+            score: topic.score,
+            subfield: topic.subfield,
+            field: topic.field,
+            domain: topic.domain,
+          },
+        });
+      }
+    }
+
+    return relationships;
+  }
+
+  /**
    * Fetch entity without field selection (for debugging)
    */
   private async fetchEntityWithoutSelect({
@@ -1717,3 +1858,6 @@ export function createRelationshipDetectionService(
 ): RelationshipDetectionService {
   return new RelationshipDetectionService(queryClient);
 }
+
+// Re-export GraphNode from @academic-explorer/graph for test compatibility
+export type { GraphNode } from "@academic-explorer/graph";

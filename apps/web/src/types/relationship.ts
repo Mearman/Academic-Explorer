@@ -325,7 +325,7 @@ export const RELATIONSHIP_TYPE_LABELS: Record<RelationType, string> = {
   [RelationType.AFFILIATION]: 'Affiliations',
   [RelationType.PUBLICATION]: 'Source',
   [RelationType.REFERENCE]: 'Citations',
-  [RelationType.TOPIC]: 'Topics',
+  [RelationType.TOPIC]: 'Research Topic',
 
   // Publishing relationships
   [RelationType.HOST_ORGANIZATION]: 'Publisher',
