@@ -2,7 +2,6 @@ import { useState, useCallback, useEffect } from "react";
 import { TextInput } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
 import { useNavigate, useSearch, useLocation } from "@tanstack/react-router";
-import { useDebouncedCallback } from "@mantine/hooks";
 
 export function HeaderSearchInput() {
   const navigate = useNavigate();
@@ -26,23 +25,9 @@ export function HeaderSearchInput() {
     }
   }, [location.pathname, searchParams.q]);
 
-  // Debounced navigation to autocomplete page
-  const debouncedNavigate = useDebouncedCallback((searchQuery: string) => {
-    if (searchQuery.trim()) {
-      navigate({
-        to: "/autocomplete",
-        search: { q: searchQuery.trim(), filter: undefined, search: undefined },
-      });
-    }
-  }, 500);
-
-  const handleChange = useCallback(
-    (value: string) => {
-      setQuery(value);
-      debouncedNavigate(value);
-    },
-    [debouncedNavigate],
-  );
+  const handleChange = useCallback((value: string) => {
+    setQuery(value);
+  }, []);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
