@@ -5,6 +5,7 @@ import { KEYWORD_FIELDS, type Keyword, type KeywordField } from "@academic-explo
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
 import { EntityDataDisplay } from "@/components/EntityDataDisplay";
+import { useEntityRelationships } from "@/hooks/use-entity-relationships";
 
 function KeywordRoute() {
   const { keywordId: rawKeywordId } = useParams({ from: "/keywords/$keywordId" });
@@ -34,6 +35,12 @@ function KeywordRoute() {
     },
     enabled: !!keywordId && keywordId !== "random",
   });
+
+  // Get relationship counts for summary display - MUST be called before early returns (Rules of Hooks)
+  const { incomingCount, outgoingCount } = useEntityRelationships(
+    keywordId || "",
+    'keywords'
+  );
 
   // Render content based on state
   let content;
