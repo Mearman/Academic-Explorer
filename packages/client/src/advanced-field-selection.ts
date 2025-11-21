@@ -27,6 +27,7 @@ export const ADVANCED_FIELD_SELECTIONS: AdvancedEntityFieldSelections = {
       "authorships",
       "primary_location",
       "referenced_works",
+      "topics",
     ],
   },
   authors: {

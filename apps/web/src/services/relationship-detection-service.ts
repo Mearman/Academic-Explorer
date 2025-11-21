@@ -422,6 +422,12 @@ export class RelationshipDetectionService {
               }),
             });
           }
+
+          // Extract topics field for work→topic relationships
+          const workRecord = entityWithId as Record<string, unknown>;
+          if ("topics" in workRecord && Array.isArray(workRecord.topics)) {
+            Object.assign(minimalData, { topics: workRecord.topics });
+          }
           break;
         }
         case "authors": {
@@ -827,6 +833,36 @@ export class RelationshipDetectionService {
     }
   }
 
+  private analyzeTopicRelationshipsForWork({
+    workData,
+    existingNodes,
+    relationships,
+  }: {
+    workData: MinimalEntityData;
+    existingNodes: GraphNode[];
+    relationships: DetectedRelationship[];
+  }): void {
+    if (workData.topics && Array.isArray(workData.topics)) {
+      for (const topicRef of workData.topics) {
+        const topicId = typeof topicRef === "string" ? topicRef : (topicRef as { id: string }).id;
+        if (topicId && topicId !== workData.id) {
+          const topicNode = existingNodes.find(
+            (node) => node.entityId === topicId || node.id === topicId,
+          );
+          if (topicNode) {
+            relationships.push({
+              sourceNodeId: workData.id, // Work owns the topics[] data
+              targetNodeId: topicId, // Topic is referenced
+              relationType: RelationType.TOPIC,
+              direction: 'outbound',
+              label: "topic",
+            });
+          }
+        }
+      }
+    }
+  }
+
   private async analyzeCitationRelationshipsForWork({
     workData,
     existingNodes,
@@ -910,6 +946,11 @@ export class RelationshipDetectionService {
       relationships,
     });
     await this.analyzeCitationRelationshipsForWork({
+      workData,
+      existingNodes,
+      relationships,
+    });
+    this.analyzeTopicRelationshipsForWork({
       workData,
       existingNodes,
       relationships,
