@@ -1,3 +1,9 @@
+## <small>17.0.1 (2025-11-21)</small>
+
+* docs(docs): create Mantine responsive layout specification (spec-021) ([b04b3ee](https://github.com/Mearman/Academic-Explorer/commit/b04b3ee))
+* fix(web): correct EntityType imports and add vitest-axe type definitions ([707fdbd](https://github.com/Mearman/Academic-Explorer/commit/707fdbd))
+* chore(release): 17.0.0 [skip ci] ([0d04147](https://github.com/Mearman/Academic-Explorer/commit/0d04147))
+
 ## 17.0.0 (2025-11-21)
 
 * test(web): add E2E and integration tests for full entity support ([7c06edd](https://github.com/Mearman/Academic-Explorer/commit/7c06edd))
