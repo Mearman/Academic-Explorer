@@ -224,7 +224,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             </ActionIcon>
 
             {/* Desktop navigation - inline buttons */}
-            <Group gap={rem(4)} visibleFrom="md">
+            <Group gap={rem(4)} visibleFrom="xl">
               <Button
                 component={Link}
                 to="/"
@@ -274,7 +274,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   variant="subtle"
                   size="lg"
                   aria-label="Open navigation menu"
-                  hiddenFrom="md"
+                  hiddenFrom="xl"
                 >
                   <IconMenu size={18} />
                 </ActionIcon>
