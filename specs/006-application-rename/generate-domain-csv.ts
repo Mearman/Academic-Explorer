@@ -295,20 +295,46 @@ async function checkDomainAvailability(name: string, tld: string, method: typeof
 
       case 'auto':
       default:
-        // Auto mode: Try DNS first (fast), then RDAP, then WHOIS as fallback
-        const quickDns = await checkDnsAvailability(domain);
-        if (quickDns === false) {
-          // DNS shows it's registered, no need to check further
+        // Auto mode: Consensus-based checking (fastest to slowest)
+        // Strategy: DNS (70ms) → RDAP (100ms) → WHOIS (500-1000ms)
+        // If two methods agree domain is taken, mark as taken
+
+        // Step 1: DNS check (fastest)
+        const dnsCheck = await checkDnsAvailability(domain);
+
+        // Step 2: RDAP check (fast)
+        let rdapCheck: boolean | null = null;
+        try {
+          rdapCheck = await checkRdapAvailability(domain, tld);
+        } catch {
+          rdapCheck = null;
+        }
+
+        // If both DNS and RDAP agree it's taken, return taken immediately
+        if (dnsCheck === false && rdapCheck === false) {
+          return false; // Consensus: TAKEN (DNS + RDAP agree)
+        }
+
+        // If both DNS and RDAP agree it's available, return available immediately
+        if (dnsCheck === true && rdapCheck === true) {
+          return true; // Consensus: AVAILABLE (DNS + RDAP agree)
+        }
+
+        // No consensus - check WHOIS for final decision (slowest)
+        const whoisCheck = await checkWhoisAvailability(domain);
+
+        // If WHOIS says taken, prioritize that (WHOIS is most authoritative)
+        if (whoisCheck === false) {
           return false;
         }
 
-        // DNS uncertain or shows available - verify with RDAP
-        try {
-          return await checkRdapAvailability(domain, tld);
-        } catch {
-          // If RDAP fails, WHOIS fallback is already built into checkRdapAvailability
-          return false;
+        // If WHOIS says available and at least one fast method agrees, return available
+        if (whoisCheck === true && (dnsCheck === true || rdapCheck === true)) {
+          return true;
         }
+
+        // Default to taken if still uncertain
+        return false;
     }
   } catch (error) {
     console.log(`  ❌ All methods failed for ${domain}, assuming taken`);
@@ -529,7 +555,8 @@ async function main() {
   console.log('🔍 Starting domain availability verification...');
   console.log(`🎯 Method: ${CHECK_METHOD.toUpperCase()}`);
   if (CHECK_METHOD === 'auto') {
-    console.log('   Strategy: DNS (fast filter) → RDAP (primary) → WHOIS (fallback)');
+    console.log('   Strategy: DNS (70ms) → RDAP (100ms) → WHOIS (500ms) - consensus-based');
+    console.log('   Rule: If two methods agree domain is taken, mark as taken');
   }
   console.log(`📊 Checking ${db.names.length} names × ${TLDS_TO_CHECK.length} TLDs (${TLDS_TO_CHECK.join(', ')})`);
   console.log(`⏰ Skip check if updated within ${RECHECK_THRESHOLD_HOURS} hours\n`);
