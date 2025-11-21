@@ -10,7 +10,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Configuration
-const DELAY_MS = 1000; // 1 second delay between WHOIS checks
+const CONCURRENCY = 10; // Check 10 names in parallel
+const BATCH_DELAY_MS = 100; // 100ms delay between batches
 const TLDS_TO_CHECK = ['com', 'io', 'net', 'org', 'app', 'dev'];
 
 // Type definitions
@@ -32,6 +33,11 @@ interface NameEntry {
 
 interface Database {
   names: NameEntry[];
+}
+
+interface DomainCheckResult {
+  name: string;
+  availability: Record<string, boolean>;
 }
 
 // Helper function to check WHOIS availability
@@ -93,6 +99,23 @@ function checkWhoisAvailability(domain: string): boolean {
   }
 }
 
+// Helper function to check all TLDs for a name (in parallel)
+async function checkNameAvailability(name: string): Promise<DomainCheckResult> {
+  const availability: Record<string, boolean> = {};
+
+  // Check all TLDs in parallel for this name
+  const promises = TLDS_TO_CHECK.map(async (tld) => {
+    const domain = `${name.toLowerCase()}.${tld}`;
+    availability[tld] = await new Promise<boolean>((resolve) => {
+      resolve(checkWhoisAvailability(domain));
+    });
+  });
+
+  await Promise.all(promises);
+
+  return { name, availability };
+}
+
 // Helper function to escape CSV values
 function escapeCsv(value: string | number | undefined | null): string {
   if (value === undefined || value === null) return '';
@@ -110,105 +133,125 @@ function formatAvailable(available: boolean | undefined): string {
   return '?';
 }
 
-// Read the JSON database
-const dbPath = path.join(__dirname, 'all-names-database.json');
-const db: Database = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+// Main execution
+async function main() {
+  // Read the JSON database
+  const dbPath = path.join(__dirname, 'all-names-database.json');
+  const db: Database = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
 
-console.log('🔍 Starting WHOIS verification...');
-console.log(`⏱️  Delay: ${DELAY_MS}ms between checks`);
-console.log(`📊 Checking ${db.names.length} names × ${TLDS_TO_CHECK.length} TLDs`);
-console.log(`⏳ Estimated time: ~${Math.ceil((db.names.length * TLDS_TO_CHECK.length * DELAY_MS) / 1000 / 60)} minutes\n`);
+  console.log('🔍 Starting parallel WHOIS verification...');
+  console.log(`⚡ Concurrency: ${CONCURRENCY} names at a time`);
+  console.log(`⏱️  Batch delay: ${BATCH_DELAY_MS}ms`);
+  console.log(`📊 Checking ${db.names.length} names × ${TLDS_TO_CHECK.length} TLDs`);
+  console.log(`⏳ Estimated time: ~${Math.ceil((db.names.length / CONCURRENCY) * (TLDS_TO_CHECK.length * 2 + BATCH_DELAY_MS) / 1000 / 60)} minutes\n`);
 
-// CSV header
-const header = [
-  'Name',
-  'Type',
-  'Category',
-  'Research Score',
-  '.com',
-  '.io',
-  '.net',
-  '.co.uk',
-  '.dev',
-  '.app',
-  '.org',
-  'Status',
-  'Rank',
-  'Meaning',
-  'Vibe',
-  'Recommendation'
-].join(',');
+  const startTime = Date.now();
+  const rows: string[] = [];
+  let fullyAvailable = 0;
+  let partiallyAvailable = 0;
+  let allTaken = 0;
 
-const rows: string[] = [];
-let fullyAvailable = 0;
-let partiallyAvailable = 0;
-let allTaken = 0;
+  // Process names in batches
+  for (let i = 0; i < db.names.length; i += CONCURRENCY) {
+    const batch = db.names.slice(i, i + CONCURRENCY);
+    const batchStart = i + 1;
+    const batchEnd = Math.min(i + CONCURRENCY, db.names.length);
 
-for (let i = 0; i < db.names.length; i++) {
-  const name = db.names[i];
-  console.log(`[${i + 1}/${db.names.length}] Checking: ${name.name}`);
+    console.log(`[${batchStart}-${batchEnd}/${db.names.length}] Checking batch...`);
 
-  // Check WHOIS for each TLD
-  const availability: Record<string, boolean> = {};
+    // Check all names in the batch in parallel
+    const results = await Promise.all(
+      batch.map(name => checkNameAvailability(name.name))
+    );
 
-  for (const tld of TLDS_TO_CHECK) {
-    const domain = `${name.name.toLowerCase()}.${tld}`;
-    availability[tld] = checkWhoisAvailability(domain);
+    // Process results
+    for (let j = 0; j < batch.length; j++) {
+      const name = batch[j];
+      const result = results[j];
+      const availability = result.availability;
 
-    if (DELAY_MS > 0) {
-      execSync(`sleep ${DELAY_MS / 1000}`, { stdio: 'ignore' });
+      // Calculate availability count
+      const availableCount = Object.values(availability).filter(v => v).length;
+
+      // Determine status
+      let status: string;
+      if (availableCount === TLDS_TO_CHECK.length) {
+        status = 'fully-available';
+        fullyAvailable++;
+      } else if (availableCount > 0) {
+        status = 'partial';
+        partiallyAvailable++;
+      } else {
+        status = 'taken';
+        allTaken++;
+      }
+
+      console.log(`  ✅ ${name.name}: ${availableCount}/${TLDS_TO_CHECK.length} available`);
+
+      // Build CSV row
+      const row = [
+        escapeCsv(name.name),
+        escapeCsv(name.type),
+        escapeCsv(name.category),
+        name.researchScore || '',
+        formatAvailable(availability.com),
+        formatAvailable(availability.io),
+        formatAvailable(availability.net),
+        formatAvailable(name.availability?.['co.uk']), // From existing data
+        formatAvailable(availability.dev),
+        formatAvailable(availability.app),
+        formatAvailable(availability.org),
+        escapeCsv(status),
+        name.rank || '',
+        escapeCsv(name.meaning),
+        escapeCsv(name.vibe),
+        escapeCsv(name.recommendation)
+      ].join(',');
+
+      rows.push(row);
+    }
+
+    // Delay before next batch (except for last batch)
+    if (i + CONCURRENCY < db.names.length && BATCH_DELAY_MS > 0) {
+      await new Promise(resolve => setTimeout(resolve, BATCH_DELAY_MS));
     }
   }
 
-  // Calculate availability count
-  const availableCount = Object.values(availability).filter(v => v).length;
+  const duration = ((Date.now() - startTime) / 1000).toFixed(2);
 
-  // Determine status
-  let status: string;
-  if (availableCount === TLDS_TO_CHECK.length) {
-    status = 'fully-available';
-    fullyAvailable++;
-  } else if (availableCount > 0) {
-    status = 'partial';
-    partiallyAvailable++;
-  } else {
-    status = 'taken';
-    allTaken++;
-  }
-
-  console.log(`✅ ${name.name}: ${availableCount}/${TLDS_TO_CHECK.length} available\n`);
-
-  // Build CSV row
-  const row = [
-    escapeCsv(name.name),
-    escapeCsv(name.type),
-    escapeCsv(name.category),
-    name.researchScore || '',
-    formatAvailable(availability.com),
-    formatAvailable(availability.io),
-    formatAvailable(availability.net),
-    formatAvailable(name.availability?.['co.uk']), // From existing data
-    formatAvailable(availability.dev),
-    formatAvailable(availability.app),
-    formatAvailable(availability.org),
-    escapeCsv(status),
-    name.rank || '',
-    escapeCsv(name.meaning),
-    escapeCsv(name.vibe),
-    escapeCsv(name.recommendation)
+  // CSV header
+  const header = [
+    'Name',
+    'Type',
+    'Category',
+    'Research Score',
+    '.com',
+    '.io',
+    '.net',
+    '.co.uk',
+    '.dev',
+    '.app',
+    '.org',
+    'Status',
+    'Rank',
+    'Meaning',
+    'Vibe',
+    'Recommendation'
   ].join(',');
 
-  rows.push(row);
+  // Write CSV
+  const csv = [header, ...rows].join('\n');
+  const outputPath = path.join(__dirname, 'domain-availability-matrix.csv');
+  fs.writeFileSync(outputPath, csv, 'utf8');
+
+  console.log(`\n✅ CSV generated: ${outputPath}`);
+  console.log(`⏱️  Total time: ${duration}s`);
+  console.log('\n📈 Final statistics:');
+  console.log(`   Total names: ${db.names.length}`);
+  console.log(`   Fully available: ${fullyAvailable}`);
+  console.log(`   Partially available: ${partiallyAvailable}`);
+  console.log(`   All taken: ${allTaken}`);
+  console.log(`   Throughput: ${((db.names.length * TLDS_TO_CHECK.length) / parseFloat(duration)).toFixed(2)} checks/second`);
 }
 
-// Write CSV
-const csv = [header, ...rows].join('\n');
-const outputPath = path.join(__dirname, 'domain-availability-matrix.csv');
-fs.writeFileSync(outputPath, csv, 'utf8');
-
-console.log(`\n✅ CSV generated: ${outputPath}`);
-console.log('\n📈 Final statistics:');
-console.log(`   Total names: ${db.names.length}`);
-console.log(`   Fully available: ${fullyAvailable}`);
-console.log(`   Partially available: ${partiallyAvailable}`);
-console.log(`   All taken: ${allTaken}`);
+main().catch(console.error);
