@@ -20,6 +20,9 @@ function getMantineColor(entityType: EntityType): string {
     topic: 'pink',
     publisher: 'indigo',
     funder: 'lime',
+    domain: "Domain",
+    field: "Field",
+    subfield: "Subfield",
   };
   return colorMap[entityType] || 'blue';
 }

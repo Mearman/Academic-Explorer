@@ -52,6 +52,9 @@ const initializeDefaultSettings = (): Record<
     publishers: getDefaultSettingsForTarget("publishers"),
     funders: getDefaultSettingsForTarget("funders"),
     keywords: getDefaultSettingsForTarget("keywords"),
+    domains: getDefaultSettingsForTarget("domains"),
+    fields: getDefaultSettingsForTarget("fields"),
+    subfields: getDefaultSettingsForTarget("subfields"),
 
     // Relation types - each unique and specific
     [RelationType.AUTHORED]: getDefaultSettingsForTarget(RelationType.AUTHORED),
@@ -338,7 +341,10 @@ const expansionSettingsReducer = (
           | "concepts"
           | "publishers"
           | "funders"
-          | "keywords" {
+          | "keywords"
+          | "domains"
+          | "fields"
+          | "subfields" {
           return [
             "works",
             "authors",
@@ -349,6 +355,9 @@ const expansionSettingsReducer = (
             "publishers",
             "funders",
             "keywords",
+            "domains",
+            "fields",
+            "subfields",
           ].includes(k);
         }
 

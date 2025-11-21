@@ -98,6 +98,9 @@ export const createInitialNodeTypeFilter = (): Record<EntityType, boolean> => ({
   publishers: true,
   funders: true,
   keywords: true,
+  domains: true,
+  fields: true,
+  subfields: true,
 });
 
 const createInitialEdgeTypeFilter = (): Record<RelationType, boolean> => ({

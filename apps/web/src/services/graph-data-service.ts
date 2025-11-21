@@ -1682,6 +1682,9 @@ export class GraphDataService {
         publishers: 0,
         funders: 0,
         keywords: 0,
+        domains: 0,
+        fields: 0,
+        subfields: 0,
       };
 
       // Count results by entity type
@@ -2188,6 +2191,9 @@ export class GraphDataService {
       publishers: ["publishers"],
       funders: ["grants", "funders"],
       keywords: ["keywords"],
+      domains: [],
+      fields: [],
+      subfields: [],
     };
 
     const fieldsToCheck = fieldMappings[targetType];

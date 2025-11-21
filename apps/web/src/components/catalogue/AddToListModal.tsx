@@ -20,7 +20,7 @@ import { logger } from "@/lib/logger";
 import { notifications } from "@mantine/notifications";
 
 // Entity type from entity pages (singular form)
-type EntityPageType = "author" | "work" | "institution" | "source" | "concept" | "topic" | "publisher" | "funder";
+type EntityPageType = "author" | "work" | "institution" | "source" | "concept" | "topic" | "publisher" | "funder" | "domain" | "field" | "subfield";
 
 // Mapping from singular entity types to plural catalogue types
 function mapToCatalogueEntityType(entityType: EntityPageType): CatalogueEntityType {
@@ -33,6 +33,9 @@ function mapToCatalogueEntityType(entityType: EntityPageType): CatalogueEntityTy
     topic: "topics",
     publisher: "publishers",
     funder: "funders",
+    domain: "domains",
+    field: "fields",
+    subfield: "subfields",
   };
   return mapping[entityType];
 }
