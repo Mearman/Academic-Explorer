@@ -20,7 +20,10 @@ export type EntityType =
   | 'topic'
   | 'funder'
   | 'publisher'
-  | 'concept';
+  | 'concept'
+  | 'domain'
+  | 'field'
+  | 'subfield';
 
 // ==================
 // Catalogue List
