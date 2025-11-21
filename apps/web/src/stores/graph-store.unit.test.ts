@@ -150,8 +150,8 @@ describe("GraphStore", () => {
       expect(state.provider).toBeNull();
       expect(state.isLoading).toBe(false);
       expect(state.error).toBeNull();
-      expect(Object.keys(state.visibleEntityTypes).length).toBe(9);
-      expect(Object.keys(state.visibleEdgeTypes).length).toBe(18); // Includes all RelationType enum values
+      expect(Object.keys(state.visibleEntityTypes).length).toBe(12);
+      expect(Object.keys(state.visibleEdgeTypes).length).toBe(20); // Includes all RelationType enum values
     });
 
     it("should have correct default visible entity types", () => {
@@ -166,6 +166,9 @@ describe("GraphStore", () => {
         "publishers",
         "funders",
         "keywords",
+        "domains",
+        "fields",
+        "subfields",
       ];
 
       expectedTypes.forEach((type) => {
@@ -533,7 +536,7 @@ describe("GraphStore", () => {
       // Clear all first - this replaces current object entirely
       graphStore.setAllEntityTypesVisible(false);
       const falseState = graphStore.getState();
-      expect(Object.keys(falseState.visibleEntityTypes).length).toBe(9); // concepts, topics, keywords, works, authors, sources, institutions, publishers, funders
+      expect(Object.keys(falseState.visibleEntityTypes).length).toBe(12); // concepts, topics, keywords, works, authors, sources, institutions, publishers, funders
       // When false, all values should be false (the key exists but value is false)
       expect(falseState.visibleEntityTypes["works"]).toBe(false);
       expect(falseState.visibleEntityTypes["authors"]).toBe(false);
@@ -542,7 +545,7 @@ describe("GraphStore", () => {
       // Set all visible - this creates a new object with all true
       graphStore.setAllEntityTypesVisible(true);
       const state = graphStore.getState();
-      expect(Object.keys(state.visibleEntityTypes).length).toBe(9); // same 9 types
+      expect(Object.keys(state.visibleEntityTypes).length).toBe(12); // same 9 types
       expect(state.visibleEntityTypes["works"]).toBe(true);
       expect(state.visibleEntityTypes["authors"]).toBe(true);
       expect(state.visibleEntityTypes["sources"]).toBe(true);

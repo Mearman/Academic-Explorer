@@ -5,6 +5,7 @@ import { cachedOpenAlex } from "@academic-explorer/client";
 import type { AutocompleteResult } from "@academic-explorer/types/entities";
 import { convertToRelativeUrl } from "@academic-explorer/ui";
 import { formatLargeNumber, logger } from "@academic-explorer/utils";
+import { ENTITY_METADATA, toEntityType } from "@academic-explorer/types";
 import {
   Alert,
   Anchor,
@@ -123,23 +124,13 @@ const renderNoResultsState = (query: string) => (
   </Alert>
 );
 
-// Get entity type color for badges
+// Get entity type color for badges using centralized metadata
 const getEntityTypeColor = (entityType: AutocompleteResult["entity_type"]) => {
-  const colors: Record<AutocompleteResult["entity_type"], string> = {
-    work: "blue",
-    author: "green",
-    source: "orange",
-    institution: "purple",
-    topic: "red",
-    concept: "pink",
-    publisher: "grape",
-    funder: "teal",
-    keyword: "cyan",
-    domain: "indigo",
-    field: "lime",
-    subfield: "yellow",
-  };
-  return colors[entityType] || "gray";
+  const pluralForm = toEntityType(entityType);
+  if (pluralForm) {
+    return ENTITY_METADATA[pluralForm].color;
+  }
+  return "gray";
 };
 
 // Extract column definitions to reduce complexity

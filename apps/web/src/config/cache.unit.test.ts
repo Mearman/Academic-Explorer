@@ -283,6 +283,9 @@ describe("cache configuration", () => {
         "funders",
         "keywords",
         "concepts",
+        "domains",
+        "fields",
+        "subfields",
         "search",
         "related",
       ];
