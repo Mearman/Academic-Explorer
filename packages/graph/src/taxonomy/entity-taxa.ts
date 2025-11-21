@@ -35,7 +35,7 @@ export const ENTITY_TAXONOMY: Record<EntityType, Taxon> = {
 /**
  * Taxonomy definitions for all relation types
  */
-export const RELATION_TAXONOMY: Record<RelationType, Taxon> = {
+export const RELATION_TAXONOMY: Record<string, Taxon> = {
 	// Core relationships (noun form - preferred)
 	[RelationType.AUTHORSHIP]: {
 		displayName: "Authorship",
@@ -159,21 +159,18 @@ export const RELATION_TAXONOMY: Record<RelationType, Taxon> = {
 		color: "gray",
 		plural: "Related To",
 	},
-
-	// Missing relation types that need string keys
-	"concept": {
+	concept: {
 		displayName: "Has Concept",
 		description: "Work is associated with a legacy concept",
 		color: "violet",
 		plural: "Has Concepts",
 	},
-	"has_role": {
+	has_role: {
 		displayName: "Has Role",
 		description: "Entity has a role in relation to another entity",
 		color: "indigo",
 		plural: "Has Roles",
 	},
-
 }
 
 /**

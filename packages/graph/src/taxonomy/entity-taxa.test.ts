@@ -5,7 +5,7 @@
 
 import { describe, it, expect } from "vitest";
 import type { EntityType } from "@academic-explorer/types";
-import { RelationType } from "../types/core";
+import { RelationType } from "@academic-explorer/types";
 import {
   ENTITY_TAXONOMY,
   RELATION_TAXONOMY,
@@ -79,8 +79,10 @@ describe("Entity Taxonomy", () => {
   describe("RELATION_TAXONOMY", () => {
     it("should contain all relation types", () => {
       const relationTypes = Object.values(RelationType);
+      // Deduplicate to handle deprecated aliases that have same values
+      const uniqueRelationTypes = Array.from(new Set(relationTypes));
 
-      relationTypes.forEach((relationType) => {
+      uniqueRelationTypes.forEach((relationType) => {
         expect(RELATION_TAXONOMY).toHaveProperty(relationType);
         expect(RELATION_TAXONOMY[relationType]).toHaveProperty("displayName");
         expect(RELATION_TAXONOMY[relationType]).toHaveProperty("description");
@@ -180,8 +182,10 @@ describe("Entity Taxonomy", () => {
     describe("getRelationTaxon", () => {
       it("should return correct taxon for each relation type", () => {
         const relationTypes = Object.values(RelationType);
+        // Deduplicate to handle deprecated aliases that have same values
+        const uniqueRelationTypes = Array.from(new Set(relationTypes));
 
-        relationTypes.forEach((relationType) => {
+        uniqueRelationTypes.forEach((relationType) => {
           const taxon = getRelationTaxon(relationType);
           expect(taxon).toEqual(RELATION_TAXONOMY[relationType]);
           expect(taxon).toHaveProperty("displayName");
