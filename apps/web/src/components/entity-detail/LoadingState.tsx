@@ -36,7 +36,7 @@ export function LoadingState({ entityType, entityId, config }: LoadingStateProps
   logger.debug("ui", "LoadingState rendering", { entityType, colorKey: config.colorKey });
 
   return (
-    <Container size="sm" p="xl">
+    <Container size="sm" p="xl" data-testid="loading-state">
       <Flex h="100vh" justify="center" align="center">
         <Paper p="xl" radius="xl" withBorder w="100%" maw="32rem">
           <Stack align="center" gap="lg">

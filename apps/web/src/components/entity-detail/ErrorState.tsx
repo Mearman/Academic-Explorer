@@ -10,7 +10,7 @@ interface ErrorStateProps {
 
 export function ErrorState({ entityType, entityId, error }: ErrorStateProps) {
   return (
-    <Container size="md" p="xl">
+    <Container size="md" p="xl" data-testid="error-state">
       <Flex h="100vh" justify="center" align="center">
         <Paper p="xl" radius="xl" withBorder w="100%" maw="48rem">
           <Stack gap="lg">

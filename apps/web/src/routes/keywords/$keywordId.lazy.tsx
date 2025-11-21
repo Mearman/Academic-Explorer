@@ -4,11 +4,14 @@ import { cachedOpenAlex } from "@academic-explorer/client";
 import { KEYWORD_FIELDS, type Keyword, type KeywordField } from "@academic-explorer/types/entities";
 import { useQuery } from "@tanstack/react-query";
 import { decodeEntityId } from "@/utils/url-decoding";
-import { EntityDataDisplay } from "@/components/EntityDataDisplay";
 import { useEntityRelationships } from "@/hooks/use-entity-relationships";
+import { EntityDetailLayout } from "@/components/entity-detail/EntityDetailLayout";
 import { LoadingState } from "@/components/entity-detail/LoadingState";
 import { ErrorState } from "@/components/entity-detail/ErrorState";
 import { ENTITY_TYPE_CONFIGS } from "@/components/entity-detail/EntityTypeConfig";
+import { IncomingRelationships } from "@/components/relationship/IncomingRelationships";
+import { OutgoingRelationships } from "@/components/relationship/OutgoingRelationships";
+import { RelationshipCounts } from "@/components/relationship/RelationshipCounts";
 
 function KeywordRoute() {
   const { keywordId: rawKeywordId } = useParams({ from: "/keywords/$keywordId" });
@@ -61,31 +64,22 @@ function KeywordRoute() {
     );
   }
 
-  // Render main content
+  // Render main content with EntityDetailLayout
   return (
-    <div className="p-4">
-      <div className="mb-4">
-        <h1 className="text-2xl font-bold mb-2">{keyword?.display_name || "Keyword"}</h1>
-        <div className="text-sm text-gray-600 mb-4">
-          <strong>Keyword ID:</strong> {keywordId}<br />
-          <strong>Select fields:</strong> {selectParam && typeof selectParam === 'string' ? selectParam : `default (${selectFields?.join(", ") || "all"})`}
-        </div>
-        <button
-          onClick={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          {viewMode === "raw" ? "Switch to Rich View" : "Switch to Raw View"}
-        </button>
-      </div>
-
-      {viewMode === "raw" ? (
-        <pre className="bg-gray-100 p-4 rounded overflow-auto max-h-[600px]">
-          {JSON.stringify(keyword, null, 2)}
-        </pre>
-      ) : (
-        <EntityDataDisplay data={keyword as Record<string, unknown>} />
-      )}
-    </div>
+    <EntityDetailLayout
+      config={ENTITY_TYPE_CONFIGS.keywords}
+      entityType="keywords"
+      entityId={keywordId || ''}
+      displayName={keyword.display_name || "Keyword"}
+      selectParam={typeof selectParam === 'string' ? selectParam : undefined}
+      selectFields={selectFields || []}
+      viewMode={viewMode}
+      onToggleView={() => setViewMode(viewMode === "raw" ? "rich" : "raw")}
+      data={keyword}>
+      <RelationshipCounts incomingCount={incomingCount} outgoingCount={outgoingCount} />
+      <IncomingRelationships entityId={keywordId || ""} entityType="keywords" />
+      <OutgoingRelationships entityId={keywordId || ""} entityType="keywords" />
+    </EntityDetailLayout>
   );
 }
 

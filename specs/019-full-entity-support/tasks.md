@@ -24,8 +24,8 @@ Complete support for all 12 OpenAlex entity types (licenses excluded per researc
 
 #### Tasks
 
-- [ ] T001 [P] [US3] Audit EntityType union in packages/types/src/entities/entities.ts for all 12 types
-- [ ] T002 [P] [US3] Audit API client methods in packages/client/src/client.ts and packages/client/src/entities/ for all 12 entity types
+- [x] T001 [P] [US3] Audit EntityType union in packages/types/src/entities/entities.ts for all 12 types
+- [x] T002 [P] [US3] Audit API client methods in packages/client/src/client.ts and packages/client/src/entities/ for all 12 entity types
 
 **Acceptance**:
 - T001: TypeScript compiles, EntityType union includes: works, authors, sources, institutions, topics, concepts, publishers, funders, keywords, domains, fields, subfields (12 total, licenses excluded)
@@ -41,9 +41,9 @@ Complete support for all 12 OpenAlex entity types (licenses excluded per researc
 
 #### Tasks
 
-- [ ] T003 [US1] Write failing component tests in apps/web/src/routes/keywords/$keywordId.component.test.tsx
-- [ ] T004 [US1] Add useEntityRelationships hook to apps/web/src/routes/keywords/$keywordId.lazy.tsx
-- [ ] T005 [US1] Replace manual loading/error states with LoadingState/ErrorState in apps/web/src/routes/keywords/$keywordId.lazy.tsx
+- [x] T003 [US1] Write failing component tests in apps/web/src/routes/keywords/$keywordId.component.test.tsx
+- [x] T004 [US1] Add useEntityRelationships hook to apps/web/src/routes/keywords/$keywordId.lazy.tsx
+- [x] T005 [US1] Replace manual loading/error states with LoadingState/ErrorState in apps/web/src/routes/keywords/$keywordId.lazy.tsx
 - [ ] T006 [US1] Replace EntityDataDisplay with EntityDetailLayout wrapper in apps/web/src/routes/keywords/$keywordId.lazy.tsx
 - [ ] T007 [US1] Add RelationshipCounts, IncomingRelationships, OutgoingRelationships to apps/web/src/routes/keywords/$keywordId.lazy.tsx
 

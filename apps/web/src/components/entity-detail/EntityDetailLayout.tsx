@@ -105,7 +105,7 @@ export function EntityDetailLayout({
     }
   };
   return (
-    <Container size="lg" p="xl" bg="var(--mantine-color-body)" style={{ minHeight: "100vh" }}>
+    <Container size="lg" p="xl" bg="var(--mantine-color-body)" style={{ minHeight: "100vh" }} data-testid="entity-detail-layout">
       <Stack gap="xl">
         {/* Header Section */}
         <Paper p="xl" radius="xl" withBorder>
