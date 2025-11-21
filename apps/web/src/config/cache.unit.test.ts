@@ -4,11 +4,12 @@
  */
 
 import { describe, it, expect } from "vitest";
+import type { EntityType } from "@academic-explorer/types";
 import {
   CACHE_CONFIG,
   ENTITY_CACHE_TIMES,
   getCacheConfig,
-  type EntityType,
+  type CacheKeyType,
 } from "./cache";
 
 describe("cache configuration", () => {
@@ -156,7 +157,7 @@ describe("cache configuration", () => {
     });
 
     it("should have all required entity types", () => {
-      const requiredEntityTypes: EntityType[] = [
+      const requiredCacheKeys: CacheKeyType[] = [
         "works",
         "authors",
         "sources",
@@ -166,22 +167,25 @@ describe("cache configuration", () => {
         "funders",
         "keywords",
         "concepts",
+        "domains",
+        "fields",
+        "subfields",
         "search",
         "related",
       ];
 
-      for (const entityType of requiredEntityTypes) {
-        expect(ENTITY_CACHE_TIMES).toHaveProperty(entityType);
-        expect(ENTITY_CACHE_TIMES[entityType]).toHaveProperty("stale");
-        expect(ENTITY_CACHE_TIMES[entityType]).toHaveProperty("gc");
+      for (const cacheKey of requiredCacheKeys) {
+        expect(ENTITY_CACHE_TIMES).toHaveProperty(cacheKey);
+        expect(ENTITY_CACHE_TIMES[cacheKey]).toHaveProperty("stale");
+        expect(ENTITY_CACHE_TIMES[cacheKey]).toHaveProperty("gc");
       }
     });
 
     it("should have positive cache durations", () => {
-      const entityTypes = Object.keys(ENTITY_CACHE_TIMES) as EntityType[];
+      const cacheKeys = Object.keys(ENTITY_CACHE_TIMES) as CacheKeyType[];
 
-      for (const entityType of entityTypes) {
-        const config = ENTITY_CACHE_TIMES[entityType];
+      for (const cacheKey of cacheKeys) {
+        const config = ENTITY_CACHE_TIMES[cacheKey];
         expect(config.stale).toBeGreaterThan(0);
         expect(config.gc).toBeGreaterThan(0);
       }
@@ -232,8 +236,8 @@ describe("cache configuration", () => {
       expect(getCacheConfig("search")).toBe(ENTITY_CACHE_TIMES.search);
     });
 
-    it("should work with all valid entity types", () => {
-      const entityTypes: EntityType[] = [
+    it("should work with all valid cache keys", () => {
+      const cacheKeys: CacheKeyType[] = [
         "works",
         "authors",
         "sources",
@@ -243,12 +247,15 @@ describe("cache configuration", () => {
         "funders",
         "keywords",
         "concepts",
+        "domains",
+        "fields",
+        "subfields",
         "search",
         "related",
       ];
 
-      for (const entityType of entityTypes) {
-        const config = getCacheConfig(entityType);
+      for (const cacheKey of cacheKeys) {
+        const config = getCacheConfig(cacheKey);
         expect(config).toBeDefined();
         expect(config).toHaveProperty("stale");
         expect(config).toHaveProperty("gc");
