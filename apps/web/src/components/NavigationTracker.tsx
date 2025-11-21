@@ -76,6 +76,28 @@ export function NavigationTracker() {
             route: currentLocation,
           },
         });
+
+        // Send page view to PostHog
+        try {
+          if (typeof window !== 'undefined' && 'posthog' in window) {
+            const posthog = (window as any).posthog;
+            if (posthog) {
+              const eventProperties = {
+                page_type: pageInfo.isEntityPage ? 'entity_detail' : 'search',
+                entity_type: pageInfo.metadata.entityType || null,
+                has_search_query: !!(pageInfo.metadata.searchQuery),
+                has_filters: !!(pageInfo.metadata.filters),
+                user_agent_group: getUserAgentGroup(),
+                timestamp: new Date().toISOString(),
+                path: location.pathname,
+              };
+
+              posthog.capture('page_view', eventProperties);
+            }
+          }
+        } catch (analyticsError) {
+          console.warn('Failed to send page view to PostHog:', analyticsError);
+        }
       }
 
       // Log navigation if there's a previous location
@@ -202,4 +224,54 @@ export function NavigationTracker() {
   };
 
   return null; // This component doesn't render anything
+}
+
+/**
+ * Get user agent group for analytics (privacy-friendly grouping)
+ */
+function getUserAgentGroup(): string {
+  if (typeof navigator === 'undefined') return 'unknown';
+  const userAgent = navigator.userAgent.toLowerCase();
+  if (userAgent.includes('chrome')) return 'chrome';
+  if (userAgent.includes('firefox')) return 'firefox';
+  if (userAgent.includes('safari')) return 'safari';
+  if (userAgent.includes('edge')) return 'edge';
+  return 'other';
+}
+
+/**
+ * Get entity category for analytics (privacy-safe grouping)
+ */
+function getEntityCategory(entityType: string): string {
+  const workTypes = ['works'];
+  const peopleTypes = ['authors'];
+  const institutionTypes = ['institutions'];
+  const publicationTypes = ['sources', 'publishers'];
+  const researchTypes = ['topics', 'concepts'];
+  const fundingTypes = ['funders'];
+  const discoveryTypes = ['keywords'];
+
+  if (workTypes.includes(entityType)) return 'academic_work';
+  if (peopleTypes.includes(entityType)) return 'researcher';
+  if (institutionTypes.includes(entityType)) return 'research_institution';
+  if (publicationTypes.includes(entityType)) return 'publication_venue';
+  if (researchTypes.includes(entityType)) return 'research_topic';
+  if (fundingTypes.includes(entityType)) return 'funding_organization';
+  if (discoveryTypes.includes(entityType)) return 'discovery_term';
+
+  return 'other_entity';
+}
+
+/**
+ * Get search category for analytics (privacy-safe grouping without revealing actual queries)
+ */
+function getSearchCategory(query: string): string {
+  if (!query || typeof query !== 'string') return 'empty_search';
+
+  const trimmed = query.trim();
+  if (trimmed.length === 0) return 'empty_search';
+  if (trimmed.length < 5) return 'short_search';
+  if (trimmed.length < 10) return 'medium_search';
+  if (trimmed.length < 20) return 'long_search';
+  return 'very_long_search';
 }
