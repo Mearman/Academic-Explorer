@@ -3,10 +3,10 @@
  * Provides intelligent field-level caching for OpenAlex entities with context-aware optimization
  */
 
-import type { EntityType } from "../types/core"
+import type { EntityType } from "@academic-explorer/types"
 
 // Re-export core entity types for convenience
-export type { EntityType } from "../types/core"
+export type { EntityType } from "@academic-explorer/types"
 
 /**
  * Generic type for entity data - can be any OpenAlex entity type

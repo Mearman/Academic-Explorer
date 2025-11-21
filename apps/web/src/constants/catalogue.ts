@@ -9,7 +9,7 @@
  * Updated: Uses centralized ENTITY_METADATA for labels and colors
  */
 
-import type { EntityType } from '../types/catalogue';
+import type { EntityType } from '@academic-explorer/types';
 import { ENTITY_METADATA } from '@academic-explorer/types';
 
 /**
@@ -17,17 +17,18 @@ import { ENTITY_METADATA } from '@academic-explorer/types';
  * @deprecated Import directly from ENTITY_METADATA - maintained for backward compatibility
  */
 export const ENTITY_TYPE_LABELS: Record<EntityType, string> = {
-  work: ENTITY_METADATA.works.displayName,
-  author: ENTITY_METADATA.authors.displayName,
-  institution: ENTITY_METADATA.institutions.displayName,
-  source: ENTITY_METADATA.sources.displayName,
-  topic: ENTITY_METADATA.topics.displayName,
-  funder: ENTITY_METADATA.funders.displayName,
-  publisher: ENTITY_METADATA.publishers.displayName,
-  concept: ENTITY_METADATA.concepts.displayName,
-  domain: ENTITY_METADATA.domains.displayName,
-  field: ENTITY_METADATA.fields.displayName,
-  subfield: ENTITY_METADATA.subfields.displayName,
+  works: ENTITY_METADATA.works.displayName,
+  authors: ENTITY_METADATA.authors.displayName,
+  institutions: ENTITY_METADATA.institutions.displayName,
+  sources: ENTITY_METADATA.sources.displayName,
+  topics: ENTITY_METADATA.topics.displayName,
+  funders: ENTITY_METADATA.funders.displayName,
+  publishers: ENTITY_METADATA.publishers.displayName,
+  concepts: ENTITY_METADATA.concepts.displayName,
+  domains: ENTITY_METADATA.domains.displayName,
+  fields: ENTITY_METADATA.fields.displayName,
+  subfields: ENTITY_METADATA.subfields.displayName,
+  keywords: ENTITY_METADATA.keywords.displayName,
 };
 
 /**
@@ -35,17 +36,18 @@ export const ENTITY_TYPE_LABELS: Record<EntityType, string> = {
  * @deprecated Import directly from ENTITY_METADATA - maintained for backward compatibility
  */
 export const ENTITY_TYPE_COLORS: Record<EntityType, string> = {
-  work: ENTITY_METADATA.works.color,
-  author: ENTITY_METADATA.authors.color,
-  institution: ENTITY_METADATA.institutions.color,
-  source: ENTITY_METADATA.sources.color,
-  topic: ENTITY_METADATA.topics.color,
-  funder: ENTITY_METADATA.funders.color,
-  publisher: ENTITY_METADATA.publishers.color,
-  concept: ENTITY_METADATA.concepts.color,
-  domain: ENTITY_METADATA.domains.color,
-  field: ENTITY_METADATA.fields.color,
-  subfield: ENTITY_METADATA.subfields.color,
+  works: ENTITY_METADATA.works.color,
+  authors: ENTITY_METADATA.authors.color,
+  institutions: ENTITY_METADATA.institutions.color,
+  sources: ENTITY_METADATA.sources.color,
+  topics: ENTITY_METADATA.topics.color,
+  funders: ENTITY_METADATA.funders.color,
+  publishers: ENTITY_METADATA.publishers.color,
+  concepts: ENTITY_METADATA.concepts.color,
+  domains: ENTITY_METADATA.domains.color,
+  fields: ENTITY_METADATA.fields.color,
+  subfields: ENTITY_METADATA.subfields.color,
+  keywords: ENTITY_METADATA.keywords.color,
 };
 
 /**

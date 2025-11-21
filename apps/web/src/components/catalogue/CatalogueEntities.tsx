@@ -54,7 +54,8 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useCatalogueContext } from "@/contexts/catalogue-context";
-import { type CatalogueEntity, type EntityType, type CatalogueList } from "@academic-explorer/utils";
+import { type CatalogueEntity, type CatalogueList } from "@academic-explorer/utils"
+import type { EntityType } from "@academic-explorer/types";
 import { notifications } from "@mantine/notifications";
 import { logger } from "@/lib/logger";
 import { ENTITY_TYPE_COLORS, ENTITY_TYPE_LABELS } from "@/constants/catalogue";

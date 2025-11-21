@@ -9,7 +9,8 @@ import type {
   Source,
   Work,
 } from "@academic-explorer/types";
-import type { EntityType, GraphNode } from "@academic-explorer/graph";
+import type { GraphNode } from "@academic-explorer/graph";
+import type { EntityType } from "@academic-explorer/types";
 import { RelationType } from "@academic-explorer/graph";
 import { QueryClient } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";

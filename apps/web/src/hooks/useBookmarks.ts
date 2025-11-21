@@ -8,9 +8,9 @@ import {
   catalogueEventEmitter,
   logger,
   type CatalogueEntity,
-  type EntityType,
   type AddBookmarkParams
 } from "@academic-explorer/utils";
+import type { EntityType } from "@academic-explorer/types";
 import { useStorageProvider } from "@/contexts/storage-provider-context";
 
 const BOOKMARKS_LOGGER_CONTEXT = "bookmarks-hook";

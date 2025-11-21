@@ -129,7 +129,7 @@ function WorkRoute() {
     'works'
   );
 
-  const config = ENTITY_TYPE_CONFIGS.work;
+  const config = ENTITY_TYPE_CONFIGS.works;
 
   // Show processing state for external canonical IDs
   if (isProcessingExternalId) {
@@ -214,7 +214,7 @@ function WorkRoute() {
   return (
     <EntityDetailLayout
       config={config}
-      entityType="work"
+      entityType="works"
       entityId={normalizedWorkId}
       displayName={work.display_name || work.title || "Work"}
       selectParam={(selectParam as string) || ''}

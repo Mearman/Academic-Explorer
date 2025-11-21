@@ -13,8 +13,9 @@ import type {
 	BatchAddResult,
 	ShareAccessResult,
 } from './catalogue-storage-provider.js';
-import type { CatalogueList, CatalogueEntity, CatalogueShareRecord, EntityType } from './catalogue-db.js';
+import type { CatalogueList, CatalogueEntity, CatalogueShareRecord } from './catalogue-db.js';
 import { SPECIAL_LIST_IDS } from './catalogue-db.js';
+import type { EntityType } from '@academic-explorer/types';
 
 /**
  * In-memory storage provider for E2E and unit testing
@@ -344,8 +345,10 @@ export class InMemoryStorageProvider implements CatalogueStorageProvider {
 			sources: 0,
 			institutions: 0,
 			topics: 0,
+			concepts: 0,
 			publishers: 0,
 			funders: 0,
+			keywords: 0,
 			domains: 0,
 			fields: 0,
 			subfields: 0,

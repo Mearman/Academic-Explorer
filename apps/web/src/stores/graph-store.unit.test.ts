@@ -14,10 +14,10 @@ import type {
   GraphEdge,
   GraphProvider,
   GraphLayout,
-  EntityType,
 } from "@academic-explorer/graph";
 import { RelationType } from "@academic-explorer/graph";
 import { DEFAULT_FORCE_PARAMS } from "@academic-explorer/graph";
+import type { EntityType } from "@academic-explorer/types";
 
 // Mock localStorage for persistence testing
 const createLocalStorageMock = () => {

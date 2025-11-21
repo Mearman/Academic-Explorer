@@ -1,27 +1,22 @@
 <!--
 Sync Impact Report:
-Version: 2.4.0 → 2.4.1 (PATCH: Strengthen backward compatibility prohibition in Principle VII)
+Version: 2.4.1 → 2.4.2 (PATCH: Strengthen prohibition against relative imports between packages)
 Modified Principles:
-  - VII. Development-Stage Pragmatism → Strengthened prohibition against backward compatibility
+  - III. Monorepo Architecture → Strengthened "Package import requirements" with explicit examples and enforcement guidance
 Added Sections:
-  - Explicit backward compatibility prohibition (under Principle VII)
+  - Explicit examples of relative import violations between packages (under Principle III)
+  - Enforcement guidance for detecting violations
 Removed Sections: None
 Templates Requiring Updates:
-  - ⚠ .specify/templates/plan-template.md (May need to emphasize no backward compatibility in Constitution Check)
-  - ⚠ .specify/templates/spec-template.md (May need to emphasize no backward compatibility in Constitution Alignment)
-  - ⚠ specs/018-entity-consolidation/plan.md (CONFLICTS: plan includes re-exports for backward compatibility - MUST be removed)
-  - ⚠ specs/018-entity-consolidation/tasks.md (CONFLICTS: tasks T007, T010, T020 include re-export steps - MUST be removed)
-  - ⚠ specs/018-entity-consolidation/data-model.md (CONFLICTS: Contract 1 shows re-export pattern - MUST be removed)
-  - ⚠ specs/018-entity-consolidation/contracts/package-contracts.md (CONFLICTS: all contracts show re-export patterns - MUST be removed)
+  - ⚠ .specify/templates/plan-template.md (May need to emphasize relative import prohibition in Constitution Check)
+  - ⚠ .specify/templates/spec-template.md (May need to emphasize relative import prohibition in Constitution Alignment)
 Follow-up TODOs:
-  - Update spec-018 to remove ALL backward compatibility measures (re-exports, migration paths)
-  - Verify all existing packages comply with no re-export rule
-  - Update tasks.md to eliminate re-export steps in all phases
-  - Update package-contracts.md to show direct imports only (no compatibility layers)
-  - Remove all references to "maintaining backward compatibility" from all specs
-Previous Amendment (v2.4.0):
-  - Added no re-export requirement to Principle III (Monorepo Architecture)
-  - Templates updated: plan-template.md, spec-template.md
+  - Verify all existing packages comply with no relative import rule
+  - Add linting rules to detect relative imports between packages (if possible with ESLint)
+  - Update codebase search patterns to detect violations: grep -r "from ['\"]\.\.\/\.\.\/packages" apps/ packages/
+Previous Amendments:
+  - v2.4.1: Strengthened backward compatibility prohibition in Principle VII
+  - v2.4.0: Added no re-export requirement to Principle III
 -->
 
 # Academic Explorer Constitution
@@ -93,7 +88,53 @@ Package import requirements:
   - `@academic-explorer/ui` → `packages/ui/src/index.ts`
   - `@/*` → `apps/web/src/*` (web app internal imports only)
 
-**No re-export requirement** (NEW):
+**Relative import prohibition** (STRENGTHENED):
+- **Relative imports between packages are ABSOLUTELY FORBIDDEN**
+- This applies to imports from:
+  - `apps/` → `packages/` (e.g., web app importing from packages)
+  - `packages/` → `packages/` (e.g., graph package importing from utils)
+  - `packages/` → `apps/` (should never happen - apps depend on packages, not vice versa)
+- **Relative imports WITHIN a package** are allowed and encouraged (e.g., `./utils/helper.ts`)
+- **Example violations**:
+  ```typescript
+  // ❌ WRONG: apps/web/src/components/Graph.tsx
+  import { GraphNode } from "../../../packages/graph/src/types/core"
+
+  // ❌ WRONG: packages/graph/src/services/analyzer.ts
+  import { logger } from "../../utils/src/logger"
+
+  // ❌ WRONG: packages/utils/src/storage/dexie-provider.ts
+  import type { EntityType } from "../../types/src/entities"
+  ```
+- **Correct patterns**:
+  ```typescript
+  // ✅ CORRECT: apps/web/src/components/Graph.tsx
+  import type { GraphNode } from "@academic-explorer/graph"
+
+  // ✅ CORRECT: packages/graph/src/services/analyzer.ts
+  import { logger } from "@academic-explorer/utils"
+
+  // ✅ CORRECT: packages/utils/src/storage/dexie-provider.ts
+  import type { EntityType } from "@academic-explorer/types"
+
+  // ✅ CORRECT: Within same package - packages/graph/src/services/analyzer.ts
+  import { GraphNode } from "../types/core"
+  ```
+
+**Enforcement**:
+- Code reviewers MUST check for relative imports between packages
+- Use search patterns to detect violations:
+  ```bash
+  # Check apps/ for relative imports to packages/
+  grep -r "from ['\"]\.\.\/\.\.\/packages" apps/
+
+  # Check packages/ for relative imports to other packages/
+  grep -r "from ['\"]\.\.\/\.\.\/[^.]" packages/
+  ```
+- ESLint rules should be configured to detect and reject these patterns (if possible)
+- All imports between packages MUST use the `@academic-explorer/*` aliases
+
+**No re-export requirement**:
 - **Internal packages MUST NOT re-export exports from other internal packages**
 - Each package MUST define its own types, interfaces, and functions
 - If a type/function is needed by multiple packages, it MUST be defined in the most
@@ -127,6 +168,13 @@ the command-line data management tool. Package alias imports enable:
 3. **Code clarity** - Explicit package boundaries prevent circular dependencies
 4. **IDE support** - Better autocomplete and go-to-definition functionality
 5. **Module resolution** - Consistent import paths regardless of file location
+
+The relative import prohibition ensures:
+1. **Dependency transparency** - All cross-package dependencies are explicit in tsconfig.base.json
+2. **Build correctness** - Nx can accurately compute dependency graph for caching and incremental builds
+3. **Refactoring safety** - Moving files within packages doesn't break external consumers
+4. **Path consistency** - Same import pattern works from any file location in monorepo
+5. **Type resolution** - TypeScript module resolution works correctly with aliases, not brittle relative paths
 
 The no re-export requirement ensures:
 1. **Dependency transparency** - Import statements reveal true source of types/functions
@@ -193,7 +241,7 @@ Staging requirements:
 - Verify staged files with `git status` before committing
 - Only stage files directly related to the atomic task being committed
 
-**Spec file commit requirements** (NEW):
+**Spec file commit requirements**:
 - **ALWAYS commit changes to `./specs/` directory after each phase completion**
 - Spec files include: `spec.md`, `plan.md`, `tasks.md`, `research.md`, `data-model.md`, contracts, checklists
 - Commit spec changes separately from implementation changes
@@ -389,7 +437,7 @@ Continuous execution requirements:
 - Maintain progress tracking (TodoWrite) throughout continuous execution
 - Only stop when ALL phases are complete or a blocking error occurs
 
-**Automatic workflow progression** (NEW):
+**Automatic workflow progression**:
 - After completing `/speckit.plan`, if there are NO outstanding questions or clarifications needed, AUTOMATICALLY invoke `/speckit.tasks` then `/speckit.implement`
 - Do NOT wait for user approval to proceed from planning to task generation
 - Do NOT wait for user approval to proceed from task generation to implementation
@@ -525,4 +573,4 @@ For runtime development guidance specific to Academic Explorer workflows, see `C
 in the project root. That file provides operational instructions (commands, architecture
 patterns, research context) while this constitution defines non-negotiable principles.
 
-**Version**: 2.4.1 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-21
+**Version**: 2.4.2 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-21

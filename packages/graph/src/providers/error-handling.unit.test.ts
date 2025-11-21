@@ -15,7 +15,8 @@ import {
   type ProviderOptions
 } from './base-provider';
 import { OpenAlexGraphProvider } from './openalex-provider';
-import type { GraphNode, EntityType, EntityIdentifier } from '../types/core';
+import type { GraphNode, EntityIdentifier } from '../types/core';
+import type { EntityType } from '@academic-explorer/types';
 
 // Test implementations
 class MockProvider extends GraphDataProvider {

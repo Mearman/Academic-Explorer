@@ -3,7 +3,8 @@
  * Central export point for all graph package testing utilities
  */
 
-import type { EntityType, RelationType } from '../../types/core';
+import type { RelationType } from '../../types/core';
+import type { EntityType } from '@academic-explorer/types';
 
 // Core setup and configuration
 export { testUtils as vitestTestUtils, testEnvironment } from './vitest-setup';

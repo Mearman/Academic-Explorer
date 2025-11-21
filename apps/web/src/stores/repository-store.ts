@@ -8,9 +8,9 @@ import Dexie, { type Table } from "dexie";
 import type {
   GraphNode,
   GraphEdge,
-  EntityType,
 } from "@academic-explorer/graph";
 import { RelationType } from "@academic-explorer/graph";
+import type { EntityType } from "@academic-explorer/types";
 import { logger } from "@academic-explorer/utils/logger";
 
 // Database schema

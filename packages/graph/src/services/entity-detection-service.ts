@@ -9,7 +9,7 @@
  */
 
 import { logger } from "@academic-explorer/utils"
-import type { EntityType } from "../types/core"
+import type { EntityType } from "@academic-explorer/types"
 
 /**
  * Detection result containing the detected entity type and normalized identifier

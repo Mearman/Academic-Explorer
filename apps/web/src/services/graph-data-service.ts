@@ -14,6 +14,7 @@ import type {
   Source,
   Work,
   QueryParams,
+  EntityType,
 } from "@academic-explorer/types";
 import {
   cachedOpenAlex,
@@ -26,7 +27,6 @@ import {
   isWork,
 } from "@academic-explorer/types";
 import type {
-  EntityType,
   ExternalIdentifier,
   GraphCache,
   GraphEdge,

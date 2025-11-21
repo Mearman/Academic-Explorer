@@ -15,10 +15,10 @@ import { logger } from "@academic-explorer/utils"
 import type {
 	GraphNode,
 	GraphEdge,
-	EntityType,
 	EntityIdentifier,
 	ExternalIdentifier,
 } from "../types/core"
+import type { EntityType } from "@academic-explorer/types"
 import { RelationType } from "../types/core"
 import { EntityDetectionService } from "../services/entity-detection-service"
 import { createCanonicalEdgeId, validateOpenAlexId, extractOpenAlexId } from "../utils/edge-utils"

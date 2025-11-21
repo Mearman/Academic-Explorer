@@ -5,10 +5,13 @@
  * Import entity metadata directly from types package, not from here.
  */
 
-import type { EntityType } from "../types/core"
+import type { EntityType } from "@academic-explorer/types"
 import { RelationType } from "../types/core"
 import type { Taxon } from "@academic-explorer/types"
 import { ENTITY_METADATA } from "@academic-explorer/types"
+
+// Re-export Taxon for backward compatibility
+export type { Taxon }
 
 /**
  * Taxonomy definitions for all entity types
@@ -197,4 +200,36 @@ export function getRelationTaxon(relationType: RelationType): Taxon {
  */
 export function getRelationColor(relationType: RelationType): string {
 	return RELATION_TAXONOMY[relationType].color
+}
+
+/**
+ * Helper function to get the icon for an entity type
+ * @deprecated Use ENTITY_METADATA[entityType].icon directly
+ */
+export function getEntityIcon(entityType: EntityType): string {
+	return ENTITY_METADATA[entityType].icon
+}
+
+/**
+ * Helper function to get the color for an entity type
+ * @deprecated Use ENTITY_METADATA[entityType].color directly
+ */
+export function getEntityColor(entityType: EntityType): string {
+	return ENTITY_METADATA[entityType].color
+}
+
+/**
+ * Helper function to get the display name for an entity type
+ * @deprecated Use ENTITY_METADATA[entityType].displayName directly
+ */
+export function getEntityDisplayName(entityType: EntityType): string {
+	return ENTITY_METADATA[entityType].displayName
+}
+
+/**
+ * Helper function to get the plural form for an entity type
+ * @deprecated Use ENTITY_METADATA[entityType].plural directly
+ */
+export function getEntityPlural(entityType: EntityType): string {
+	return ENTITY_METADATA[entityType].plural
 }

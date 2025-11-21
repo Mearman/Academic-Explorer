@@ -17,7 +17,7 @@ function PublisherRoute() {
   const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
 
-  const config = ENTITY_TYPE_CONFIGS.publisher;
+  const config = ENTITY_TYPE_CONFIGS.publishers;
 
   // Decode the publisher ID in case it's URL-encoded (for external IDs with special characters)
   const publisherId = decodeEntityId(rawPublisherId);
@@ -68,7 +68,7 @@ function PublisherRoute() {
   return (
     <EntityDetailLayout
       config={config}
-      entityType="publisher"
+      entityType="publishers"
       entityId={publisherId}
       displayName={publisher.display_name || "Publisher"}
       selectParam={(selectParam as string) || ''}

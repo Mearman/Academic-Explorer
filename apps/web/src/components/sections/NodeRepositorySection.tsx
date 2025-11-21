@@ -20,7 +20,8 @@ import { IconSearch, IconTrash, IconDragDrop } from "@tabler/icons-react";
 import { useRepositoryStore, createInitialNodeTypeFilter } from "@/stores/repository-store";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { logger } from "@academic-explorer/utils/logger";
-import type { GraphNode, EntityType } from "@academic-explorer/graph";
+import type { GraphNode,  } from "@academic-explorer/graph"
+import type { EntityType } from "@academic-explorer/types";
 import { RelationType } from "@academic-explorer/graph";
 import type { RepositoryState } from "@/stores/repository-store";
 import {

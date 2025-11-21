@@ -8,10 +8,10 @@ import {
   catalogueEventEmitter,
   type CatalogueList,
   type CatalogueEntity,
-  type EntityType,
   type ListType,
 } from "@academic-explorer/utils";
 import { compressListData, createShareUrl, extractListDataFromUrl, validateListData, type CompressedListData, decompressListData } from "@academic-explorer/utils";
+import type { EntityType } from "@academic-explorer/types";
 import type { ExportFormat } from "@/types/catalogue";
 import { validateExportFormat } from "@/utils/catalogue-validation";
 import { logger } from "@academic-explorer/utils/logger";
@@ -688,6 +688,8 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
           topics: 0,
           publishers: 0,
           funders: 0,
+          concepts: 0,
+          keywords: 0,
           domains: 0,
           fields: 0,
           subfields: 0,
@@ -769,21 +771,6 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
       // Get all entities for the list
       const listEntities = await storage.getListEntities(listId);
 
-      // Helper function to convert plural entity type to singular
-      const toSingularType = (type: string): import("@/types/catalogue").EntityType => {
-        const mapping: Record<string, import("@/types/catalogue").EntityType> = {
-          "works": "work",
-          "authors": "author",
-          "sources": "source",
-          "institutions": "institution",
-          "topics": "topic",
-          "publishers": "publisher",
-          "funders": "funder",
-          "concepts": "concept",
-        };
-        return mapping[type] || type as import("@/types/catalogue").EntityType;
-      };
-
       // Convert to ExportFormat
       const exportData: ExportFormat = {
         version: "1.0",
@@ -797,13 +784,13 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
         },
         entities: listEntities.map(entity => ({
           entityId: entity.entityId,
-          type: toSingularType(entity.entityType),
+          type: entity.entityType,
           position: entity.position,
           note: entity.notes,
           addedAt: entity.addedAt instanceof Date ? entity.addedAt.toISOString() : entity.addedAt,
           // For now, create minimal metadata since CatalogueEntity doesn't store full metadata
           metadata: {
-            type: toSingularType(entity.entityType) as any,
+            type: entity.entityType,
             displayName: entity.entityId,
             worksCount: 0,
             citedByCount: 0,
@@ -1014,28 +1001,14 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
           isBibliography: listData.list.type === "bibliography",
         },
         entities: listData.entities.map((entity, index) => {
-          // Helper function to convert plural entity type to singular
-          const toSingularType = (type: string): import("@/types/catalogue").EntityType => {
-            const mapping: Record<string, import("@/types/catalogue").EntityType> = {
-              "works": "work",
-              "authors": "author",
-              "sources": "source",
-              "institutions": "institution",
-              "topics": "topic",
-              "publishers": "publisher",
-              "funders": "funder",
-            };
-            return mapping[type] || type as import("@/types/catalogue").EntityType;
-          };
-
           return {
             entityId: entity.entityId,
-            type: toSingularType(entity.entityType),
+            type: entity.entityType,
             position: index,
             note: entity.notes,
             addedAt: new Date().toISOString(),
             metadata: {
-              type: toSingularType(entity.entityType) as any,
+              type: entity.entityType,
               displayName: entity.entityId,
               worksCount: 0,
               citedByCount: 0,
@@ -1152,6 +1125,8 @@ export function useCatalogue(options: UseCatalogueOptions = {}): UseCatalogueRet
         topics: 0,
         publishers: 0,
         funders: 0,
+        concepts: 0,
+        keywords: 0,
         domains: 0,
         fields: 0,
         subfields: 0,

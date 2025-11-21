@@ -13,7 +13,7 @@ import type {
 	CacheBrowserFilters,
 	CacheBrowserOptions,
 	CacheBrowserResult,
-	EntityType,
+	CacheStorageType,
 } from "./types.js"
 
 export interface CacheBrowserConfig {
@@ -44,30 +44,36 @@ const DEFAULT_CONFIG: CacheBrowserConfig = {
 const CACHE_BROWSER_LOG_CONTEXT = "cache-browser"
 
 // Entity type detection patterns (unchanged)
-const ENTITY_TYPE_PATTERNS: Record<EntityType, RegExp[]> = {
+const ENTITY_TYPE_PATTERNS: Record<CacheStorageType, RegExp[]> = {
 	works: [/^W\d+$/, /\/works\/W\d+/, /works-.*/, /work_/],
 	authors: [/^A\d+$/, /\/authors\/A\d+/, /authors-.*/, /author_/],
 	sources: [/^S\d+$/, /\/sources\/S\d+/, /sources-.*/, /source_/],
 	institutions: [/^I\d+$/, /\/institutions\/I\d+/, /institutions-.*/, /institution_/],
 	topics: [/^T\d+$/, /\/topics\/T\d+/, /topics-.*/, /topic_/],
+	concepts: [/^C\d+$/, /\/concepts\/C\d+/, /concepts-.*/, /concept_/],
 	publishers: [/^P\d+$/, /\/publishers\/P\d+/, /publishers-.*/, /publisher_/],
 	funders: [/^F\d+$/, /\/funders\/F\d+/, /funders-.*/, /funder_/],
 	keywords: [/keyword/, /\/keywords\//, /keywords-.*/, /keyword_/],
-	concepts: [/^C\d+$/, /\/concepts\/C\d+/, /concepts-.*/, /concept_/],
+	domains: [/domain/, /\/domains\//, /domains-.*/, /domain_/],
+	fields: [/field/, /\/fields\//, /fields-.*/, /field_/],
+	subfields: [/subfield/, /\/subfields\//, /subfields-.*/, /subfield_/],
 	autocomplete: [/autocomplete/, /\/autocomplete\//, /autocomplete-.*/, /autocomplete_/],
 }
 
 // All entity types as a constant array for safe iteration
-const ALL_ENTITY_TYPES: readonly EntityType[] = [
+const ALL_ENTITY_TYPES: readonly CacheStorageType[] = [
 	"works",
 	"authors",
 	"sources",
 	"institutions",
 	"topics",
+	"concepts",
 	"publishers",
 	"funders",
 	"keywords",
-	"concepts",
+	"domains",
+	"fields",
+	"subfields",
 	"autocomplete",
 ] as const
 
@@ -278,7 +284,7 @@ export class CacheBrowserService {
 	): CachedEntityMetadata | null {
 		try {
 			// Detect entity type from key
-			const entityType = this.detectEntityType(key)
+			const entityType = this.detectCacheStorageType(key)
 			if (!entityType) {
 				return null
 			}
@@ -325,7 +331,7 @@ export class CacheBrowserService {
 		}
 	}
 
-	private detectEntityType(key: string): EntityType | null {
+	private detectCacheStorageType(key: string): CacheStorageType | null {
 		for (const type of ALL_ENTITY_TYPES) {
 			const patterns = ENTITY_TYPE_PATTERNS[type]
 			for (const pattern of patterns) {
@@ -344,7 +350,7 @@ export class CacheBrowserService {
 	}: {
 		key: string
 		value: unknown
-		type: EntityType
+		type: CacheStorageType
 	}): string | null {
 		// Try to extract from parsed value first
 		if (value && typeof value === "object" && value !== null) {
@@ -531,16 +537,19 @@ export class CacheBrowserService {
 	}
 
 	private calculateStats(entities: CachedEntityMetadata[]): CacheBrowserStats {
-		const entitiesByType: Record<EntityType, number> = {
+		const entitiesByType: Record<CacheStorageType, number> = {
 			works: 0,
 			authors: 0,
 			sources: 0,
 			institutions: 0,
 			topics: 0,
+			concepts: 0,
 			publishers: 0,
 			funders: 0,
 			keywords: 0,
-			concepts: 0,
+			domains: 0,
+			fields: 0,
+			subfields: 0,
 			autocomplete: 0,
 		}
 

@@ -16,7 +16,8 @@ import {
   type ProviderStats,
   type ProviderOptions,
 } from "./base-provider";
-import type { GraphNode, EntityType, EntityIdentifier } from "../types/core";
+import type { GraphNode, EntityIdentifier } from "../types/core";
+import type { EntityType } from "@academic-explorer/types";
 import { RelationType } from "../types/core";
 
 // Mock implementation for testing abstract class

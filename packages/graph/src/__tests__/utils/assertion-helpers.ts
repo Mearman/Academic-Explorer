@@ -4,8 +4,9 @@
  */
 
 import { expect } from 'vitest';
-import type { GraphNode, GraphEdge, GraphData, EntityType } from '../../types/core';
+import type { GraphNode, GraphEdge, GraphData } from '../../types/core';
 import { RelationType } from '../../types/core';
+import type { EntityType } from '@academic-explorer/types';
 import type { GraphExpansion } from '../../providers/base-provider';
 
 /**

@@ -6,6 +6,7 @@
 import { deflate, inflate } from "pako";
 import { logger } from "./logger.js";
 import type { GenericLogger } from "./logger.js";
+import type { EntityType } from "@academic-explorer/types";
 
 // Constants
 const LOG_CATEGORY = "url-compression";
@@ -23,7 +24,7 @@ export interface CompressedListData {
   };
   /** Entities in the list */
   entities: Array<{
-    entityType: "works" | "authors" | "sources" | "institutions" | "topics" | "publishers" | "funders" | "domains" | "fields" | "subfields";
+    entityType: EntityType;
     entityId: string;
     notes?: string;
   }>;

@@ -8,9 +8,9 @@ import type {
   GraphNode,
   GraphEdge,
   GraphLayout,
-  EntityType,
 } from "@academic-explorer/graph";
 import { RelationType } from "@academic-explorer/graph";
+import type { EntityType } from "@academic-explorer/types";
 import { logger } from "@academic-explorer/utils/logger";
 
 export interface GraphState {

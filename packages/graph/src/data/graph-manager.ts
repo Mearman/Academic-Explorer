@@ -4,10 +4,11 @@
  */
 
 import { EventEmitter } from "../utils/event-emitter"
-import type { GraphNode, GraphEdge, EntityType } from "../types/core"
+import type { GraphNode, GraphEdge } from "../types/core"
 import type { GraphStats, Community } from "../types/core"
 import type { GraphSnapshot } from "./graph-repository"
 import { RelationType } from "../types/core"
+import type { EntityType } from "@academic-explorer/types"
 
 export interface GraphManagerOptions {
 	maxNodes?: number

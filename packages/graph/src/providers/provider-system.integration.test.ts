@@ -16,7 +16,8 @@ import {
 } from './base-provider';
 import { OpenAlexGraphProvider } from './openalex-provider';
 import { EntityResolver } from '../services/entity-resolver-interface';
-import type { GraphNode, EntityType, EntityIdentifier, GraphEdge } from '../types/core';
+import type { GraphNode, EntityIdentifier, GraphEdge } from '../types/core';
+import type { EntityType } from '@academic-explorer/types';
 import { RelationType } from '../types/core';
 
 // Mock OpenAlex Client for testing

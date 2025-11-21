@@ -5,7 +5,8 @@
 
 import { EventEmitter } from "../utils/event-emitter"
 import { logger } from "@academic-explorer/utils"
-import type { GraphNode, GraphEdge, EntityType, EntityIdentifier } from "../types/core"
+import type { GraphNode, GraphEdge, EntityIdentifier } from "../types/core"
+import type { EntityType } from "@academic-explorer/types"
 import type { ExpansionLimits, TruncationInfo } from "../types/expansion"
 
 export interface SearchQuery {

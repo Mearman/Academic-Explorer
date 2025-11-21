@@ -14,7 +14,7 @@
  * - Comprehensive statistics and monitoring
  */
 
-import type { EntityType } from "../types/core"
+import type { EntityType } from "@academic-explorer/types"
 import { logger } from "@academic-explorer/utils"
 
 /**

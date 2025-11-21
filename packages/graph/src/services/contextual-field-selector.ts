@@ -4,7 +4,7 @@
  * and reduce bandwidth while ensuring all necessary data is retrieved for different use cases.
  */
 
-import type { EntityType } from "../types/core"
+import type { EntityType } from "@academic-explorer/types"
 import { CacheContext } from "./cache-types.js"
 
 // Field mapping configuration for each entity type and context

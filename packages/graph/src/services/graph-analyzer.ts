@@ -10,10 +10,11 @@
  * Uses the Phase 2 provider architecture for data access with caching for performance.
  */
 
-import type { GraphNode, GraphEdge, GraphData, EntityType } from "../types/core"
+import type { GraphNode, GraphEdge, GraphData } from "../types/core"
 import { logger } from "@academic-explorer/utils"
 import { RelationType } from "../types/core"
 import type { GraphDataProvider } from "../providers/base-provider"
+import type { EntityType } from "@academic-explorer/types"
 
 // ============================================================================
 // Core Analysis Interfaces

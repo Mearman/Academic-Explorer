@@ -65,7 +65,7 @@ function InstitutionRoute() {
     'institutions'
   );
 
-  const config = ENTITY_TYPE_CONFIGS.institution;
+  const config = ENTITY_TYPE_CONFIGS.institutions;
 
   if (isLoading) {
     return <LoadingState entityType="Institution" entityId={decodedInstitutionId || ''} config={config} />;
@@ -83,7 +83,7 @@ function InstitutionRoute() {
   return (
     <EntityDetailLayout
       config={config}
-      entityType="institution"
+      entityType="institutions"
       entityId={decodedInstitutionId}
       displayName={institution.display_name || "Institution"}
       selectParam={(selectParam as string) || ''}

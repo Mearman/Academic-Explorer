@@ -7,10 +7,10 @@
 import { createGraphDataService } from "../services/graph-data-service";
 import { useGraphStore, graphStore } from "@/stores/graph-store";
 import type {
-  EntityType,
   ExpansionOptions,
   SearchOptions,
 } from "@academic-explorer/graph";
+import type { EntityType } from "@academic-explorer/types";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";

@@ -8,7 +8,8 @@
 
 import { describe, it, expect, beforeEach } from "vitest";
 import { OpenAlexGraphProvider } from "../../../providers/openalex-provider";
-import type { EntityType, GraphNode } from "../../../types/core";
+import type { EntityType } from "@academic-explorer/types";
+import type { GraphNode } from "../../../types/core";
 import { RelationType } from "../../../types/core";
 
 // Mock OpenAlex client for testing

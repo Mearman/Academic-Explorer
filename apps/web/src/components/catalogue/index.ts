@@ -15,7 +15,6 @@ export { ImportModal } from "./ImportModal";
 export type {
   CatalogueList,
   CatalogueEntity,
-  EntityType,
   ListType,
   CatalogueService,
   CompressedListData,

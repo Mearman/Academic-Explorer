@@ -20,8 +20,9 @@ import {
   type GraphExpansion,
   type SearchQuery,
 } from "../providers/base-provider";
-import type { GraphNode, EntityType, EntityIdentifier } from "../types/core";
+import type { GraphNode, EntityIdentifier } from "../types/core";
 import { RelationType } from "../types/core";
+import type { EntityType } from "@academic-explorer/types";
 
 // Mock implementations
 class MockGraphDataProvider extends GraphDataProvider {

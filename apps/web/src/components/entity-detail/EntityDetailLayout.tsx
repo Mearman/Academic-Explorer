@@ -5,7 +5,8 @@ import { logger } from "@/lib/logger";
 import { useUserInteractions } from "@/hooks/use-user-interactions";
 import { useQueryBookmarking } from "@/hooks/use-query-bookmarking";
 import { useThemeColors } from "@/hooks/use-theme-colors";
-import { EntityTypeConfig, EntityType } from "./EntityTypeConfig";
+import type { EntityTypeConfig } from "./EntityTypeConfig";
+import type { EntityType } from "@academic-explorer/types";
 import { EntityDataDisplay } from "../EntityDataDisplay";
 import { AddToListModal } from "../catalogue/AddToListModal";
 
@@ -25,17 +26,18 @@ interface EntityDetailLayoutProps {
 // Helper function to map entity types to Mantine colors
 function getMantineColor(entityType: EntityType): string {
   const colorMap: Record<EntityType, string> = {
-    author: 'blue',
-    work: 'violet',
-    institution: 'orange',
-    source: 'teal',
-    concept: 'yellow',
-    topic: 'pink',
-    publisher: 'indigo',
-    funder: 'lime',
-    domain: "Domain",
-    field: "Field",
-    subfield: "Subfield",
+    authors: 'blue',
+    works: 'violet',
+    institutions: 'orange',
+    sources: 'teal',
+    concepts: 'yellow',
+    topics: 'pink',
+    publishers: 'indigo',
+    funders: 'lime',
+    domains: 'gray',
+    fields: 'cyan',
+    subfields: 'grape',
+    keywords: 'red',
   };
   return colorMap[entityType] || 'blue';
 }

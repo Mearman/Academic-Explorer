@@ -3,8 +3,9 @@
  * Provides pre-configured test scenarios and reusable patterns
  */
 
-import type { GraphNode, GraphEdge, GraphData, EntityType } from '../../types/core';
+import type { GraphNode, GraphEdge, GraphData } from '../../types/core';
 import { RelationType } from '../../types/core';
+import type { EntityType } from '@academic-explorer/types';
 import { TestGraphProvider, getProviderHelper, type ProviderTestHelper } from './provider-helpers';
 import { getEventHelper, type EventTestHelper } from './event-helpers';
 import { getPerformanceHelper, type PerformanceTestHelper } from './performance-helpers';

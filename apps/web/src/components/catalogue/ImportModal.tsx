@@ -30,7 +30,7 @@ import {
 import { logger } from "@/lib/logger";
 import { useCatalogue } from "@/hooks/useCatalogue";
 import type { ExportFormat } from "@/types/catalogue";
-import type { EntityType } from "@academic-explorer/utils";
+import type { EntityType } from "@academic-explorer/types";
 
 interface ImportModalProps {
   onClose: () => void;

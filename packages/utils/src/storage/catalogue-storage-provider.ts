@@ -14,8 +14,8 @@ import type {
   CatalogueEntity,
   CatalogueShareRecord,
   ListType,
-  EntityType,
 } from './catalogue-db.js';
+import type { EntityType } from '@academic-explorer/types';
 
 /**
  * Parameters for creating a new catalogue list

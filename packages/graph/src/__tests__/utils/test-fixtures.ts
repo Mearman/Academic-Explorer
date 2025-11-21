@@ -3,9 +3,9 @@
  * Provides consistent, realistic test data for graph package testing
  */
 
-import type { GraphNode, GraphEdge, EntityType, ExternalIdentifier } from '../../types/core';
+import type { GraphNode, GraphEdge, ExternalIdentifier } from '../../types/core';
 import { RelationType } from '../../types/core';
-import type { EntityType as GraphEntityType } from '@academic-explorer/types';
+import type { EntityType } from '@academic-explorer/types';
 import { getEntityIdPrefix } from '@academic-explorer/types';
 
 /**

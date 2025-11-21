@@ -10,7 +10,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ContextualFieldSelector } from './contextual-field-selector';
 import { CacheContext } from './cache-types';
-import type { EntityType } from '../types/core';
+import type { EntityType } from '@academic-explorer/types';
 
 describe('ContextualFieldSelector', () => {
   let fieldSelector: ContextualFieldSelector;

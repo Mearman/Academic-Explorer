@@ -3,7 +3,8 @@
  * Supports arbitrary sorting and filtering for entity/edge type expansions
  */
 
-import { EntityType, RelationType } from "./core"
+import type { EntityType } from "@academic-explorer/types"
+import { RelationType } from "./core"
 
 export type ExpansionTarget = EntityType | RelationType
 

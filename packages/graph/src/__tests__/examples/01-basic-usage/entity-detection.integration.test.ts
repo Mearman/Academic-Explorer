@@ -9,7 +9,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { OpenAlexGraphProvider } from "../../../providers/openalex-provider";
 import { EntityDetectionService } from "../../../services/entity-detection-service";
-import type { EntityType } from "../../../types/core";
+import type { EntityType } from "@academic-explorer/types";
 
 // Enhanced mock client that supports various identifier formats
 class ComprehensiveMockClient {

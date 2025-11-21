@@ -4,7 +4,7 @@
 
 export { CacheBrowserService, cacheBrowserService } from "./cache-browser-service.js"
 export type {
-	EntityType,
+	CacheStorageType,
 	CachedEntityMetadata,
 	CacheBrowserStats,
 	CacheBrowserFilters,

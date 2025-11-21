@@ -9,7 +9,7 @@ export { cacheBrowserService } from "./cache-browser/index.js"
 export type {
 	CachedEntityMetadata,
 	CacheBrowserStats,
-	EntityType as CacheBrowserEntityType,
+	CacheStorageType as CacheBrowserEntityType,
 	CacheBrowserFilters,
 	CacheBrowserOptions,
 	CacheBrowserResult,
@@ -204,7 +204,6 @@ export {
 	type CatalogueList,
 	type CatalogueEntity,
 	type CatalogueShareRecord,
-	type EntityType,
 	type ListType,
 } from "./storage/index.js"
 

@@ -61,7 +61,7 @@ function DomainRoute() {
 
   // Handle loading state
   if (isLoading) {
-    return <LoadingState entityType="Domain" entityId={domainId || ''} config={ENTITY_TYPE_CONFIGS.domain} />;
+    return <LoadingState entityType="Domain" entityId={domainId || ''} config={ENTITY_TYPE_CONFIGS.domains} />;
   }
 
   // Handle error state
@@ -77,8 +77,8 @@ function DomainRoute() {
 
   return (
     <EntityDetailLayout
-      config={ENTITY_TYPE_CONFIGS.domain}
-      entityType="domain"
+      config={ENTITY_TYPE_CONFIGS.domains}
+      entityType="domains"
       entityId={fullDomainId}
       displayName={domain.display_name || "Domain"}
       selectParam={typeof selectParam === 'string' ? selectParam : undefined}

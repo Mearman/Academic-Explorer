@@ -55,7 +55,7 @@ function TopicRoute() {
 
   // Handle loading state
   if (isLoading) {
-    return <LoadingState entityType="Topic" entityId={topicId || ''} config={ENTITY_TYPE_CONFIGS.topic} />;
+    return <LoadingState entityType="Topic" entityId={topicId || ''} config={ENTITY_TYPE_CONFIGS.topics} />;
   }
 
   // Handle error state
@@ -72,8 +72,8 @@ function TopicRoute() {
 
   return (
     <EntityDetailLayout
-      config={ENTITY_TYPE_CONFIGS.topic}
-      entityType="topic"
+      config={ENTITY_TYPE_CONFIGS.topics}
+      entityType="topics"
       entityId={topicId || ''}
       displayName={topic.display_name || "Topic"}
       selectParam={typeof selectParam === 'string' ? selectParam : undefined}

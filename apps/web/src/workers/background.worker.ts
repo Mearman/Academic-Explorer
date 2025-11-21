@@ -21,7 +21,8 @@ import type {
   SimulationCompleteEvent,
   SimulationErrorEvent,
 } from "@academic-explorer/simulation";
-import type { EntityType } from "@academic-explorer/graph";
+import type {  } from "@academic-explorer/graph"
+import type { EntityType } from "@academic-explorer/types";
 import {
   ForceSimulationEngine,
   DEFAULT_FORCE_PARAMS,

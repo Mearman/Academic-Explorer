@@ -77,7 +77,7 @@ function AuthorRoute() {
     ? graphRelationships
     : dataRelationships;
 
-  const config = ENTITY_TYPE_CONFIGS.author;
+  const config = ENTITY_TYPE_CONFIGS.authors;
 
   if (isLoading) {
     return <LoadingState entityType="Author" entityId={decodedAuthorId || ''} config={config} />;
@@ -95,7 +95,7 @@ function AuthorRoute() {
   return (
     <EntityDetailLayout
       config={config}
-      entityType="author"
+      entityType="authors"
       entityId={decodedAuthorId}
       displayName={author.display_name || "Author"}
       selectParam={(selectParam as string) || ''}

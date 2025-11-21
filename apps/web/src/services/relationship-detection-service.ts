@@ -4,7 +4,7 @@
  */
 
 import { graphStore } from "../stores/graph-store";
-import type { OpenAlexEntity } from "@academic-explorer/types";
+import type { OpenAlexEntity, EntityType } from "@academic-explorer/types";
 import {
   isAuthor,
   isInstitution,
@@ -17,7 +17,6 @@ import {
   cachedOpenAlex,
 } from "@academic-explorer/client";
 import type {
-  EntityType,
   GraphEdge,
   GraphNode,
 } from "@academic-explorer/graph";

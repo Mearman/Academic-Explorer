@@ -13,7 +13,7 @@ import {
   isValidIdentifier,
   detectEntity,
   } from './entity-detection-service';
-import type { EntityType } from '../types/core';
+import type { EntityType } from '@academic-explorer/types';
 
 describe('EntityDetectionService', () => {
   describe('DOI Detection', () => {

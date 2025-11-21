@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import type { EntityType } from "../types/core";
+import type { EntityType } from "@academic-explorer/types";
 import { RelationType } from "../types/core";
 import {
   ENTITY_TAXONOMY,

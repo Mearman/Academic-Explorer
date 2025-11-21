@@ -48,7 +48,7 @@ function SourceRoute() {
     'sources'
   );
 
-  const config = ENTITY_TYPE_CONFIGS.source;
+  const config = ENTITY_TYPE_CONFIGS.sources;
 
   if (isLoading) {
     return <LoadingState entityType="Source" entityId={sourceId || ''} config={config} />;
@@ -66,7 +66,7 @@ function SourceRoute() {
   return (
     <EntityDetailLayout
       config={config}
-      entityType="source"
+      entityType="sources"
       entityId={sourceId}
       displayName={source.display_name || "Source"}
       selectParam={(selectParam as string) || ''}

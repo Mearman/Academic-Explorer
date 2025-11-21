@@ -30,7 +30,8 @@ import {
   IconCheck,
 } from "@tabler/icons-react";
 import { useCatalogue } from "@/hooks/useCatalogue";
-import { type CatalogueList, type EntityType } from "@academic-explorer/utils";
+import { type CatalogueList } from "@academic-explorer/utils"
+import type { EntityType } from "@academic-explorer/types";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import { logger } from "@/lib/logger";

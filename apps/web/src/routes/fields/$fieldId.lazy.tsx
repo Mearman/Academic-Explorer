@@ -60,7 +60,7 @@ function FieldRoute() {
 
   // Handle loading state
   if (isLoading) {
-    return <LoadingState entityType="Field" entityId={fieldId || ''} config={ENTITY_TYPE_CONFIGS.field} />;
+    return <LoadingState entityType="Field" entityId={fieldId || ''} config={ENTITY_TYPE_CONFIGS.fields} />;
   }
 
   // Handle error state
@@ -76,8 +76,8 @@ function FieldRoute() {
 
   return (
     <EntityDetailLayout
-      config={ENTITY_TYPE_CONFIGS.field}
-      entityType="field"
+      config={ENTITY_TYPE_CONFIGS.fields}
+      entityType="fields"
       entityId={fullFieldId}
       displayName={field.display_name || "Field"}
       selectParam={typeof selectParam === 'string' ? selectParam : undefined}

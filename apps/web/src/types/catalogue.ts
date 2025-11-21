@@ -8,22 +8,12 @@
  * Created: 2025-11-11
  */
 
+import type { EntityType } from '@academic-explorer/types';
+
 // ==================
 // Entity Types
 // ==================
-
-export type EntityType =
-  | 'work'
-  | 'author'
-  | 'institution'
-  | 'source'
-  | 'topic'
-  | 'funder'
-  | 'publisher'
-  | 'concept'
-  | 'domain'
-  | 'field'
-  | 'subfield';
+// EntityType is imported from @academic-explorer/types (uses plural forms: works, authors, etc.)
 
 // ==================
 // Catalogue List

@@ -4,7 +4,8 @@
  * Enhanced with intelligent caching and context-aware field selection
  */
 
-import type { GraphNode, GraphEdge, EntityType, EntityIdentifier } from "../types/core"
+import type { GraphNode, GraphEdge, EntityIdentifier } from "../types/core"
+import type { EntityType } from "@academic-explorer/types"
 import { ProviderRegistry, type GraphDataProvider } from "../providers/base-provider"
 import { EntityDetectionService } from "./entity-detection-service"
 

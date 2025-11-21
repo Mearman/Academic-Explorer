@@ -17,7 +17,7 @@ function FunderRoute() {
   const { select: selectParam } = useSearch({ strict: false });
   const [viewMode, setViewMode] = useState<"raw" | "rich">("rich");
 
-  const config = ENTITY_TYPE_CONFIGS.funder;
+  const config = ENTITY_TYPE_CONFIGS.funders;
 
   // Decode the funder ID in case it's URL-encoded (for external IDs with special characters)
   const funderId = decodeEntityId(rawFunderId);
@@ -68,7 +68,7 @@ function FunderRoute() {
   return (
     <EntityDetailLayout
       config={config}
-      entityType="funder"
+      entityType="funders"
       entityId={funderId}
       displayName={funder.display_name || "Funder"}
       selectParam={(selectParam as string) || ''}

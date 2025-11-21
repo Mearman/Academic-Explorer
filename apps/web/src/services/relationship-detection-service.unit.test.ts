@@ -7,7 +7,8 @@ import { QueryClient } from "@tanstack/react-query";
 import { RelationshipDetectionService } from "./relationship-detection-service";
 import { graphStore } from "../stores/graph-store";
 import { RelationType } from "@academic-explorer/graph";
-import type { GraphNode, EntityType } from "@academic-explorer/graph";
+import type { GraphNode,  } from "@academic-explorer/graph"
+import type { EntityType } from "@academic-explorer/types";
 import { cachedOpenAlex } from "@academic-explorer/client";
 
 // Mock type guards from @academic-explorer/types

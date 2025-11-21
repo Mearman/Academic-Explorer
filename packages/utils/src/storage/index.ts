@@ -34,7 +34,6 @@ export type {
 	CatalogueList,
 	CatalogueEntity,
 	CatalogueShareRecord,
-	EntityType,
 	ListType,
 } from './catalogue-db.js';
 
