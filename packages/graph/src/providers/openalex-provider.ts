@@ -887,7 +887,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 				sort: "publication_year:desc",
 			})
 
-			const workResults = Array.isArray(works.results) ? works.results : []
+			const workResults = Array.isArray(works?.results) ? works.results : []
 			const workIds = workResults.map((work) => String((work as Record<string, unknown>).id))
 
 			// Batch preload works into cache
