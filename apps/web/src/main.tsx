@@ -15,6 +15,7 @@ import { initializeNetworkMonitoring } from "./services/network-interceptor";
 import { initWebVitals } from "@/utils/web-vitals";
 import { cachedOpenAlex } from "@academic-explorer/client";
 import { PostHogProvider } from "@/components/PostHogProvider";
+import posthog from "posthog-js";
 
 // Fix URL display issues immediately when page loads
 // This runs before React mounts to fix browser address bar display
@@ -272,7 +273,61 @@ if (!rootElement) {
   throw new Error("Root element not found");
 }
 
-createRoot(rootElement).render(
+/**
+ * React 19 error handlers for PostHog error tracking
+ * These callbacks capture errors at different stages of React's error handling
+ */
+const reactErrorHandlers = {
+  // Callback for errors not caught by an ErrorBoundary
+  onUncaughtError: (error: unknown, errorInfo: { componentStack?: string }) => {
+    logger.error("react", "Uncaught error in React component", {
+      error,
+      componentStack: errorInfo.componentStack,
+    });
+
+    // Send to PostHog if initialized
+    if (posthog.__loaded) {
+      posthog.captureException(error instanceof Error ? error : new Error(String(error)), {
+        error_type: 'uncaught_react_error',
+        component_stack: errorInfo.componentStack,
+      });
+    }
+  },
+
+  // Callback for errors caught by an ErrorBoundary
+  onCaughtError: (error: unknown, errorInfo: { componentStack?: string }) => {
+    logger.warn("react", "Error caught by ErrorBoundary", {
+      error,
+      componentStack: errorInfo.componentStack,
+    });
+
+    // Send to PostHog if initialized
+    if (posthog.__loaded) {
+      posthog.captureException(error instanceof Error ? error : new Error(String(error)), {
+        error_type: 'caught_react_error',
+        component_stack: errorInfo.componentStack,
+      });
+    }
+  },
+
+  // Callback for errors React automatically recovers from
+  onRecoverableError: (error: unknown, errorInfo: { componentStack?: string }) => {
+    logger.debug("react", "Recoverable React error", {
+      error,
+      componentStack: errorInfo.componentStack,
+    });
+
+    // Send to PostHog if initialized (with lower priority)
+    if (posthog.__loaded) {
+      posthog.captureException(error instanceof Error ? error : new Error(String(error)), {
+        error_type: 'recoverable_react_error',
+        component_stack: errorInfo.componentStack,
+      });
+    }
+  },
+};
+
+createRoot(rootElement, reactErrorHandlers).render(
   <QueryClientProvider client={queryClient}>
     <PostHogProvider>
       <MantineProvider theme={theme} defaultColorScheme="auto">
