@@ -47,6 +47,7 @@
     "@mantine/hooks": "^8.3.8",
     "@mantine/modals": "^8.3.8",
     "@mantine/notifications": "^8.3.8",
+    "@posthog/react": "^1.4.0",
     "@react-three/drei": "^10.7.6",
     "@react-three/fiber": "^9.4.0",
     "@tabler/icons-react": "^3.35.0",
