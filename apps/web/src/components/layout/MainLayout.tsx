@@ -17,6 +17,7 @@ import {
   rem,
   TextInput,
   Card,
+  Menu,
 } from "@mantine/core";
 import {
   IconMoon,
@@ -26,6 +27,7 @@ import {
   IconLayoutSidebarRight,
   IconPinned,
   IconPin,
+  IconMenu,
 } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 import { LeftSidebarDynamic } from "./LeftSidebarDynamic";
@@ -83,6 +85,9 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const [rightSidebarWidth, setRightSidebarWidth] = useState(300);
   const [isDragging, setIsDragging] = useState<"left" | "right" | null>(null);
   const dragStartRef = useRef<{ x: number; width: number } | null>(null);
+
+  // Mobile menu state
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   
   // Theme toggle logic
@@ -166,18 +171,18 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   return (
     <AppShell
-      header={{ height: 60 }}
+      header={{ height: { base: 50, sm: 60 } }}
       navbar={{
-        width: leftSidebarOpen ? leftSidebarWidth + 60 : 60,
+        width: leftSidebarOpen ? { base: 280, sm: leftSidebarWidth + 60 } : 60,
         breakpoint: "sm",
-        collapsed: { mobile: true },
+        collapsed: { mobile: true, desktop: !leftSidebarOpen },
       }}
       aside={{
-        width: rightSidebarOpen ? rightSidebarWidth + 60 : 60,
+        width: rightSidebarOpen ? { base: 280, sm: rightSidebarWidth + 60 } : 60,
         breakpoint: "sm",
-        collapsed: { mobile: true },
+        collapsed: { mobile: true, desktop: !rightSidebarOpen },
       }}
-      padding={0}
+      padding={{ base: 0, sm: 'xs', md: 'sm' }}
     >
       {/* Header */}
       <AppShell.Header>
@@ -191,7 +196,9 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           </Group>
 
           <Group gap="md">
-            <HeaderSearchInput />
+            <Box visibleFrom="sm">
+              <HeaderSearchInput />
+            </Box>
           </Group>
 
           <Group gap="md">
@@ -216,7 +223,8 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               <IconLayoutSidebarRight size={18} />
             </ActionIcon>
 
-            <Group>
+            {/* Desktop navigation - inline buttons */}
+            <Group gap="xs" visibleFrom="md">
               <Button
                 component={Link}
                 to="/"
@@ -258,6 +266,57 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 Catalogue
               </Button>
             </Group>
+
+            {/* Mobile navigation - dropdown menu */}
+            <Menu opened={mobileMenuOpen} onChange={setMobileMenuOpen}>
+              <Menu.Target>
+                <ActionIcon
+                  variant="subtle"
+                  size="lg"
+                  aria-label="Open navigation menu"
+                  hiddenFrom="md"
+                >
+                  <IconMenu size={18} />
+                </ActionIcon>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item
+                  component={Link}
+                  to="/"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Home
+                </Menu.Item>
+                <Menu.Item
+                  component={Link}
+                  to="/about"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  About
+                </Menu.Item>
+                <Menu.Item
+                  component={Link}
+                  to="/history"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  History
+                </Menu.Item>
+                <Menu.Item
+                  component={Link}
+                  to="/bookmarks"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Bookmarks
+                </Menu.Item>
+                <Menu.Item
+                  component={Link}
+                  to="/catalogue"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Catalogue
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
 
             <ActionIcon
               onClick={cycleColorScheme}
