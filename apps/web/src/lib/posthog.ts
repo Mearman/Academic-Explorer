@@ -71,12 +71,7 @@ export const POSTHOG_CONFIG: PostHogConfig = {
 
   // Development settings
   debug: import.meta.env.DEV && POSTHOG_ENABLED,
-  loaded: (posthog) => {
-    if (import.meta.env.DEV) {
-      console.info('📊 PostHog analytics loaded with EU privacy-compliant configuration')
-    }
-  },
-}
+} as any; // Type assertion to handle PostHog config interface compatibility
 
 /**
  * Academic-specific event types for PostHog analytics
