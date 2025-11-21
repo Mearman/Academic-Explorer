@@ -1,21 +1,24 @@
 <!--
 Sync Impact Report:
-Version: 2.2.0 → 2.3.0 (MINOR: Automatic workflow progression added to Principle X)
+Version: 2.3.0 → 2.4.0 (MINOR: No re-export principle added to Principle III)
 Modified Principles:
-  - X. Continuous Execution → Extended with automatic command chaining requirement
+  - III. Monorepo Architecture → Extended with no re-export requirement
 Added Sections:
-  - Automatic workflow progression (under Principle X)
+  - No re-export requirement (under Principle III)
 Removed Sections: None
 Templates Requiring Updates:
-  - ✅ .specify/templates/plan-template.md (Constitution Check updated to reflect automatic workflow)
-  - ✅ .specify/templates/spec-template.md (Constitution Alignment updated to reflect automatic workflow)
-  - ⚠ .specify/templates/commands/plan.md (Workflow logic needs implementation for auto-chaining)
-  - ⚠ .specify/templates/commands/clarify.md (Verify no workflow interruption after clarifications)
-  - ⚠ .specify/templates/commands/specify.md (Verify smooth handoff to /speckit.plan)
+  - ✅ .specify/templates/plan-template.md (Constitution Check includes re-export prohibition)
+  - ✅ .specify/templates/spec-template.md (Constitution Alignment includes re-export prohibition)
+  - ⚠ specs/018-entity-consolidation/plan.md (CONFLICTS: plan includes re-exports for backward compatibility)
+  - ⚠ specs/018-entity-consolidation/tasks.md (CONFLICTS: tasks T007, T010, T020 include re-export steps)
+  - ⚠ specs/018-entity-consolidation/data-model.md (CONFLICTS: Contract 1 shows re-export pattern)
+  - ⚠ specs/018-entity-consolidation/contracts/package-contracts.md (CONFLICTS: all contracts show re-export patterns)
 Follow-up TODOs:
-  - Implement automatic command chaining in /speckit.plan workflow
-  - Update /speckit.plan to check for outstanding questions before auto-progressing
-  - Ensure /speckit.tasks and /speckit.implement are invoked without user intervention
+  - Update spec-018 to remove all re-export tasks (T007, backward compatibility contracts)
+  - Verify all existing packages comply with no re-export rule
+  - Update tasks.md to eliminate re-export steps in Phase 1, 2, 3
+  - Update package-contracts.md to show direct imports only (no re-exports)
+  - Document migration path for consumers currently importing from graph/utils instead of types
 -->
 
 # Academic Explorer Constitution
@@ -87,6 +90,31 @@ Package import requirements:
   - `@academic-explorer/ui` → `packages/ui/src/index.ts`
   - `@/*` → `apps/web/src/*` (web app internal imports only)
 
+**No re-export requirement** (NEW):
+- **Internal packages MUST NOT re-export exports from other internal packages**
+- Each package MUST define its own types, interfaces, and functions
+- If a type/function is needed by multiple packages, it MUST be defined in the most
+  foundational package (typically `@academic-explorer/types` or `@academic-explorer/utils`)
+- Consumers MUST import directly from the canonical source, not through intermediary packages
+- Re-exports create hidden dependencies and make refactoring difficult
+- **Example violation**:
+  ```typescript
+  // ❌ WRONG: packages/graph/src/index.ts
+  export type { EntityType } from "@academic-explorer/types"
+
+  // ❌ WRONG: consumers importing from graph
+  import type { EntityType } from "@academic-explorer/graph"
+  ```
+- **Correct pattern**:
+  ```typescript
+  // ✅ CORRECT: consumers import directly from canonical source
+  import type { EntityType } from "@academic-explorer/types"
+  ```
+- **Backward compatibility exception**: Re-exports are NOT acceptable even for backward
+  compatibility. If types move between packages, consumers MUST update their imports.
+  This aligns with Principle VII (Development-Stage Pragmatism) which allows breaking
+  changes during active development.
+
 **Rationale**: The project needs to share OpenAlex client code, graph structures, and UI
 components across web app and CLI. Nx caching speeds up CI/CD for iterative research
 development. The monorepo prevents drift between the interactive visualization tool and
@@ -96,6 +124,13 @@ the command-line data management tool. Package alias imports enable:
 3. **Code clarity** - Explicit package boundaries prevent circular dependencies
 4. **IDE support** - Better autocomplete and go-to-definition functionality
 5. **Module resolution** - Consistent import paths regardless of file location
+
+The no re-export requirement ensures:
+1. **Dependency transparency** - Import statements reveal true source of types/functions
+2. **Refactoring clarity** - Moving code between packages doesn't break hidden re-export chains
+3. **Build performance** - Eliminates unnecessary re-export compilation overhead
+4. **Import traceability** - IDE "find all references" shows actual usage, not re-export layers
+5. **Architectural honesty** - Package dependencies are explicit in imports, not hidden in re-exports
 
 ### IV. Storage Abstraction
 
@@ -473,4 +508,4 @@ For runtime development guidance specific to Academic Explorer workflows, see `C
 in the project root. That file provides operational instructions (commands, architecture
 patterns, research context) while this constitution defines non-negotiable principles.
 
-**Version**: 2.3.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-21
+**Version**: 2.4.0 | **Ratified**: 2025-11-11 | **Last Amended**: 2025-11-21
