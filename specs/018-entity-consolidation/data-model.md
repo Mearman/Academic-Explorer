@@ -116,13 +116,15 @@ import type { EntityType } from "@academic-explorer/types"
 // Remove local definition
 
 // packages/graph/src/index.ts
-export type { EntityType } from "@academic-explorer/types"
+// REMOVED: Re-export prohibited per Constitution Principle III
+// export type { EntityType } from "@academic-explorer/types"
 ```
 
 **Validation**:
 - GraphNode interface type-checks with imported EntityType
-- No change to public API (re-export maintains compatibility)
-- Zero test changes required
+- Breaking change: EntityType re-export removed (Constitution Principle III)
+- Consumers must update imports to @academic-explorer/types
+- Zero test changes required (internal usage only)
 
 ### Contract 2: Utils Package - Catalogue DB
 
@@ -277,9 +279,9 @@ function getEntity<T extends EntityType>(type: T): EntityTypeMap[T] {
    - packages/types/src/entities/entities.ts (canonical)
 
 2. **Transition State**: Incremental refactoring
-   - Package N: Remove local definition, import from types
+   - Package N: Remove local definition, import from types, remove re-export
    - Package N+1: Still has local definition (unchanged)
-   - Backward compatibility: Re-exports maintained
+   - Breaking changes acceptable per Constitution Principle VII
 
 3. **Final State**: Single source of truth
    - Only packages/types defines EntityType
@@ -342,23 +344,33 @@ function getEntity<T extends EntityType>(type: T): EntityTypeMap[T] {
 
 **Validation**: TypeScript type checking ensures string literals match EntityType members
 
-## Backwards Compatibility
+## Breaking Changes (Constitution Compliance)
 
-### Re-Export Strategy
+### No Re-Exports (Principle III)
 
-**Transition Period** (optional, not required for this refactoring):
+**Prohibited Pattern**:
 ```typescript
-// packages/graph/src/index.ts
+// ❌ WRONG: packages/graph/src/index.ts
 export type { EntityType } from "@academic-explorer/types"
 ```
 
-**Benefit**: Existing imports from `@academic-explorer/graph` continue to work
+**Required Pattern**:
+```typescript
+// ✅ CORRECT: Consumers import directly
+import type { EntityType } from "@academic-explorer/types"
+```
 
-**Duration**: Permanent (no breaking changes to public APIs)
+**Rationale**: Constitution Principle III prohibits re-exports between internal packages
 
-### Deprecation Notices
+### No Backward Compatibility (Principle VII)
 
-None required - EntityType is a type-only export (no runtime deprecation possible)
+**Impact**: Consumers importing EntityType from @academic-explorer/graph or @academic-explorer/utils must update imports to @academic-explorer/types
+
+**Justification**: Application is unreleased in development. Backward compatibility adds complexity without value per Constitution Principle VII.
+
+### No Deprecation Notices
+
+Not required per Constitution Principle VII (breaking changes acceptable during development)
 
 ## Summary
 
@@ -373,6 +385,6 @@ None required - EntityType is a type-only export (no runtime deprecation possibl
 4. Type guard function
 5. EntityTypeMap lookup
 
-**Breaking Changes**: Zero (backward compatibility maintained via re-exports)
+**Breaking Changes**: Yes (re-exports removed, import paths must be updated per Constitution Principles III and VII)
 
 **Type Safety Improvements**: Stricter type checking, single source of truth, eliminates drift risk

@@ -6,11 +6,11 @@ This document defines the migration contracts for each package affected by the e
 
 | Package | Contract Type | Breaking Changes | Migration Effort |
 |---------|--------------|------------------|------------------|
-| packages/graph | Type import replacement | None | Low |
-| packages/utils (catalogue) | Type import replacement | None | Low |
+| packages/graph | Type import replacement | Yes (re-export removed) | Low |
+| packages/utils (catalogue) | Type import replacement | Yes (re-export removed) | Low |
 | packages/utils (cache-browser) | Type split + import | Internal only | Medium |
-| apps/web | Import path updates | None | Low |
-| apps/cli | Import path updates | None | Low |
+| apps/web | Import path updates | Yes (import paths change) | Low |
+| apps/cli | Import path updates | Yes (import paths change) | Low |
 
 ## Package Contracts
 
@@ -44,7 +44,8 @@ import type { EntityType } from "@academic-explorer/types"
 // Remove local definition
 
 // packages/graph/src/index.ts (AFTER)
-export type { EntityType } from "@academic-explorer/types"
+// REMOVED: Re-export prohibited per Constitution Principle III
+// export type { EntityType } from "@academic-explorer/types"
 ```
 
 **Affected Interfaces**:
@@ -54,14 +55,17 @@ export type { EntityType } from "@academic-explorer/types"
 **Migration Steps**:
 1. Add import statement to core.ts
 2. Remove local EntityType definition
-3. Update index.ts re-export path
+3. Remove EntityType re-export from index.ts (Constitution Principle III)
 4. Verify TypeScript compilation: `pnpm nx typecheck graph`
 5. Verify tests pass: `pnpm nx test graph`
 
 **Success Criteria**:
 - Zero type errors in graph package
 - All graph tests pass (zero failures)
-- Public API unchanged (re-export maintained)
+- No EntityType re-export remains in graph package
+
+**Breaking Change**:
+- Consumers importing EntityType from @academic-explorer/graph must update to @academic-explorer/types
 
 ---
 

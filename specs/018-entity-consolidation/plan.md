@@ -7,7 +7,7 @@
 
 ## Summary
 
-Consolidate all duplicate `EntityType` definitions across the Academic Explorer monorepo into a single canonical source in `@academic-explorer/types`. Eliminate duplicate definitions in graph, utils, and cache-browser packages. Ensure all entity metadata (colors, icons, display names, ID prefixes, route paths) is sourced from the centralized `ENTITY_METADATA` constant. Maintain backward compatibility through re-exports while establishing TypeScript type safety across all 8 packages.
+Consolidate all duplicate `EntityType` definitions across the Academic Explorer monorepo into a single canonical source in `@academic-explorer/types`. Eliminate duplicate definitions in graph, utils, and cache-browser packages. Remove all re-exports between internal packages per Constitution Principle III. Ensure all entity metadata (colors, icons, display names, ID prefixes, route paths) is sourced from the centralized `ENTITY_METADATA` constant. Establish TypeScript type safety across all 8 packages with direct imports only.
 
 ## Technical Context
 
@@ -18,7 +18,7 @@ Consolidate all duplicate `EntityType` definitions across the Academic Explorer 
 **Target Platform**: Node.js 18+ (build time), Browser (ES2022 runtime via Vite)
 **Project Type**: Monorepo (Nx workspace with 6 packages + 2 apps)
 **Performance Goals**: Zero runtime performance impact (compile-time only refactoring)
-**Constraints**: Must maintain backward compatibility via re-exports; all 738 existing tests must pass; zero breaking changes to public APIs
+**Constraints**: All 738 existing tests must pass; breaking changes acceptable per Constitution Principle VII (no backward compatibility during development); packages must not re-export exports from other internal packages per Constitution Principle III
 **Scale/Scope**: 8 projects total (types, graph, utils, client, simulation, ui, web, cli); ~3-5 files modified per package
 
 ## Constitution Check
@@ -112,7 +112,7 @@ apps/
 
 6. ✅ **Atomic Conventional Commits**: Will create incremental commits per package (e.g., `refactor(graph): remove duplicate EntityType`, `refactor(utils): import EntityType from types package`). Spec commits after each phase.
 
-7. ✅ **Development-Stage Pragmatism**: Backward compatibility maintained via re-exports. Breaking changes avoided by preserving existing import paths during transition period.
+7. ✅ **Development-Stage Pragmatism**: Breaking changes encouraged per Constitution Principle VII (no backward compatibility during development). Re-exports prohibited per Constitution Principle III. Consumers must update imports directly to @academic-explorer/types.
 
 8. ✅ **Test-First Bug Fixes**: N/A (refactoring task, not bug fix). If type mismatches discovered, will add regression tests before fixes.
 
@@ -146,7 +146,8 @@ N/A - No constitution violations. This refactoring reduces complexity by elimina
 3. **Consolidation Strategy**: Eliminate all duplicates, import from `@academic-explorer/types`
    - Create `CacheStorageType = EntityType | "autocomplete"` for cache browser
    - No domain-specific subsets needed (YAGNI-compliant)
-   - Maintain backward compatibility via re-exports
+   - No re-exports per Constitution Principle III (no re-exports between internal packages)
+   - Breaking changes acceptable per Constitution Principle VII (no backward compatibility)
 
 4. **Risk Assessment**: LOW (pure type refactoring, TypeScript compiler guarantees correctness)
 
@@ -184,10 +185,13 @@ N/A - No constitution violations. This refactoring reduces complexity by elimina
 import type { EntityType } from "@academic-explorer/types"
 ```
 
-**Backward Compatibility**:
+**No Re-Exports** (Constitution Principle III):
 ```typescript
-// Re-export in graph/utils packages maintains API compatibility
-export type { EntityType } from "@academic-explorer/types"
+// ❌ WRONG: graph/utils packages MUST NOT re-export from types package
+// export type { EntityType } from "@academic-explorer/types"
+
+// ✅ CORRECT: Consumers import directly from canonical source
+import type { EntityType } from "@academic-explorer/types"
 ```
 
 **Cache Storage Type**:
@@ -228,7 +232,7 @@ export type CacheStorageType = EntityType | "autocomplete"
 
 6. ✅ **Atomic Conventional Commits**: Migration plan defines 4 commits (one per package: graph, utils, web, cli). Each commit is atomic and independently verifiable. Format: `refactor(package): import EntityType from types package`.
 
-7. ✅ **Development-Stage Pragmatism**: Backward compatibility maintained via re-exports in graph/utils packages. Zero breaking changes to public APIs. No deprecation warnings needed (type-only).
+7. ✅ **Development-Stage Pragmatism**: Breaking changes encouraged per Constitution Principles III and VII. No re-exports between internal packages. Consumers must update imports to @academic-explorer/types directly. No deprecation warnings per constitution (breaking changes acceptable).
 
 8. ✅ **Test-First Bug Fixes**: N/A (refactoring, not bug fix). If type mismatches discovered during migration, regression tests will be added before fixes.
 
