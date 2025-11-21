@@ -325,7 +325,7 @@ describe("Work Keywords Relationships - Performance", () => {
 
       // Act
       const startTime = performance.now();
-      const relationships = await service.detectRelationshipsForNodes(workIds, existingNodes);
+      const relationships = await service.detectRelationshipsForNodes(workIds);
       const endTime = performance.now();
 
       // Assert
