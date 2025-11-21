@@ -192,23 +192,28 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       {/* Header */}
       <AppShell.Header>
         <Group justify="space-between" h="100%" px={{ base: 'xs', sm: 'md' }}>
-          <Group>
-            <Link to="/" style={{ textDecoration: 'none' }}>
-              <Text size="xl" fw={600} c="blue" style={{ cursor: 'pointer' }}>
-                Academic Explorer
-              </Text>
-            </Link>
+          {/* Left side - Title (hidden on mobile when search expanded) */}
+          <Group style={{ flex: mobileSearchExpanded ? 0 : 1 }}>
+            {!mobileSearchExpanded && (
+              <Link to="/" style={{ textDecoration: 'none' }}>
+                <Text size="xl" fw={600} c="blue" style={{ cursor: 'pointer' }}>
+                  Academic Explorer
+                </Text>
+              </Link>
+            )}
           </Group>
 
+          {/* Center - Desktop search */}
           <Group gap="xs">
             <Box visibleFrom="sm">
               <HeaderSearchInput />
             </Box>
           </Group>
 
+          {/* Right side - Controls */}
           <Group gap="xs">
             {/* Mobile search - expandable input */}
-            <Box hiddenFrom="sm">
+            <Box hiddenFrom="sm" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: mobileSearchExpanded ? 1 : 'none' }}>
               {!mobileSearchExpanded ? (
                 <ActionIcon
                   onClick={() => setMobileSearchExpanded(true)}
@@ -219,8 +224,8 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   <IconSearch size={18} />
                 </ActionIcon>
               ) : (
-                <Group gap="xs">
-                  <Box style={{ width: '200px' }}>
+                <>
+                  <Box style={{ flex: 1, minWidth: 0 }}>
                     <HeaderSearchInput />
                   </Box>
                   <ActionIcon
@@ -228,33 +233,38 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     variant="subtle"
                     size="lg"
                     aria-label="Close search"
+                    style={{ flexShrink: 0 }}
                   >
                     <IconX size={18} />
                   </ActionIcon>
-                </Group>
+                </>
               )}
             </Box>
 
-            {/* Sidebar toggle controls */}
-            <ActionIcon
-              onClick={toggleLeftSidebar}
-              variant="subtle"
-              size="lg"
-              aria-label="Toggle left sidebar"
-              color={leftSidebarOpen ? "blue" : "gray"}
-            >
-              <IconLayoutSidebar size={18} />
-            </ActionIcon>
+            {/* Sidebar toggle controls - hidden on mobile when search expanded */}
+            {!mobileSearchExpanded && (
+              <>
+                <ActionIcon
+                  onClick={toggleLeftSidebar}
+                  variant="subtle"
+                  size="lg"
+                  aria-label="Toggle left sidebar"
+                  color={leftSidebarOpen ? "blue" : "gray"}
+                >
+                  <IconLayoutSidebar size={18} />
+                </ActionIcon>
 
-            <ActionIcon
-              onClick={toggleRightSidebar}
-              variant="subtle"
-              size="lg"
-              aria-label="Toggle right sidebar"
-              color={rightSidebarOpen ? "blue" : "gray"}
-            >
-              <IconLayoutSidebarRight size={18} />
-            </ActionIcon>
+                <ActionIcon
+                  onClick={toggleRightSidebar}
+                  variant="subtle"
+                  size="lg"
+                  aria-label="Toggle right sidebar"
+                  color={rightSidebarOpen ? "blue" : "gray"}
+                >
+                  <IconLayoutSidebarRight size={18} />
+                </ActionIcon>
+              </>
+            )}
 
             {/* Desktop navigation - inline buttons */}
             <Group gap={rem(4)} visibleFrom="xl">
@@ -300,65 +310,70 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               </Button>
             </Group>
 
-            {/* Mobile navigation - dropdown menu */}
-            <Menu opened={mobileMenuOpen} onChange={setMobileMenuOpen}>
-              <Menu.Target>
-                <ActionIcon
-                  variant="subtle"
-                  size="lg"
-                  aria-label="Open navigation menu"
-                  hiddenFrom="xl"
-                >
-                  <IconMenu size={18} />
-                </ActionIcon>
-              </Menu.Target>
-              <Menu.Dropdown>
-                <Menu.Item
-                  component={Link}
-                  to="/"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Home
-                </Menu.Item>
-                <Menu.Item
-                  component={Link}
-                  to="/about"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  About
-                </Menu.Item>
-                <Menu.Item
-                  component={Link}
-                  to="/history"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  History
-                </Menu.Item>
-                <Menu.Item
-                  component={Link}
-                  to="/bookmarks"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Bookmarks
-                </Menu.Item>
-                <Menu.Item
-                  component={Link}
-                  to="/catalogue"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Catalogue
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
+            {/* Mobile navigation - dropdown menu (hidden when search expanded) */}
+            {!mobileSearchExpanded && (
+              <Menu opened={mobileMenuOpen} onChange={setMobileMenuOpen}>
+                <Menu.Target>
+                  <ActionIcon
+                    variant="subtle"
+                    size="lg"
+                    aria-label="Open navigation menu"
+                    hiddenFrom="xl"
+                  >
+                    <IconMenu size={18} />
+                  </ActionIcon>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item
+                    component={Link}
+                    to="/"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Home
+                  </Menu.Item>
+                  <Menu.Item
+                    component={Link}
+                    to="/about"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    About
+                  </Menu.Item>
+                  <Menu.Item
+                    component={Link}
+                    to="/history"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    History
+                  </Menu.Item>
+                  <Menu.Item
+                    component={Link}
+                    to="/bookmarks"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Bookmarks
+                  </Menu.Item>
+                  <Menu.Item
+                    component={Link}
+                    to="/catalogue"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Catalogue
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+            )}
 
-            <ActionIcon
-              onClick={cycleColorScheme}
-              variant="outline"
-              size="lg"
-              aria-label="Toggle color scheme"
-            >
-              {getThemeIcon()}
-            </ActionIcon>
+            {/* Theme toggle (hidden on mobile when search expanded) */}
+            {!mobileSearchExpanded && (
+              <ActionIcon
+                onClick={cycleColorScheme}
+                variant="outline"
+                size="lg"
+                aria-label="Toggle color scheme"
+              >
+                {getThemeIcon()}
+              </ActionIcon>
+            )}
           </Group>
         </Group>
       </AppShell.Header>
