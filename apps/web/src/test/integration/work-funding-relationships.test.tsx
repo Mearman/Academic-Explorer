@@ -130,16 +130,12 @@ describe("Work Funding Relationships - Integration", () => {
       };
 
       const existingNodes: GraphNode[] = [
-        {
+        createTestGraphNode({
           id: "F4320332161",
           entityId: "https://openalex.org/F4320332161",
           entityType: "funders",
           label: "Anonymous Foundation",
-          color: "#4285F4",
-          size: 20,
-          x: 150,
-          y: 150,
-        },
+        }),
       ];
 
       const relationships: DetectedRelationship[] = [];
@@ -184,16 +180,12 @@ describe("Work Funding Relationships - Integration", () => {
       };
 
       const existingNodes: GraphNode[] = [
-        {
+        createTestGraphNode({
           id: "F4320332161",
           entityId: "https://openalex.org/F4320332161",
           entityType: "funders",
           label: "Different Foundation",
-          color: "#4285F4",
-          size: 20,
-          x: 150,
-          y: 150,
-        },
+        }),
       ];
 
       const relationships: DetectedRelationship[] = [];
@@ -219,16 +211,12 @@ describe("Work Funding Relationships - Integration", () => {
       };
 
       const existingNodes: GraphNode[] = [
-        {
+        createTestGraphNode({
           id: "F4320332161",
           entityId: "https://openalex.org/F4320332161",
           entityType: "funders",
           label: "National Institutes of Health",
-          color: "#4285F4",
-          size: 20,
-          x: 150,
-          y: 150,
-        },
+        }),
       ];
 
       const relationships: DetectedRelationship[] = [];
@@ -268,26 +256,18 @@ describe("Work Funding Relationships - Integration", () => {
       };
 
       const existingNodes: GraphNode[] = [
-        {
+        createTestGraphNode({
           id: "F4320332161",
           entityId: "https://openalex.org/F4320332161",
           entityType: "funders",
           label: "Valid Foundation",
-          color: "#4285F4",
-          size: 20,
-          x: 100,
-          y: 100,
-        },
-        {
+        }),
+        createTestGraphNode({
           id: "F4320332162",
           entityId: "https://openalex.org/F4320332162",
           entityType: "funders",
           label: "Another Valid Foundation",
-          color: "#4285F4",
-          size: 20,
-          x: 200,
-          y: 200,
-        },
+        }),
       ];
 
       const relationships: DetectedRelationship[] = [];
