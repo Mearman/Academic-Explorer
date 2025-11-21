@@ -32,7 +32,7 @@ import {
  * Minimal entity data needed for relationship detection
  * Contains only the essential fields to determine relationships
  */
-interface MinimalEntityData {
+export interface MinimalEntityData {
   id: string;
   entityType: EntityType;
   display_name: string;
@@ -93,7 +93,7 @@ interface MinimalEntityData {
 /**
  * Detected relationship between nodes
  */
-interface DetectedRelationship {
+export interface DetectedRelationship {
   sourceNodeId: string; // Entity that owns the relationship data
   targetNodeId: string; // Entity being referenced
   relationType: RelationType;
@@ -101,6 +101,34 @@ interface DetectedRelationship {
   label: string;
   weight?: number;
   metadata?: Record<string, unknown>; // OpenAlex relationship metadata
+}
+
+/**
+ * Helper function to create a minimal GraphNode for testing
+ */
+export function createTestGraphNode(params: {
+  id: string;
+  entityId: string;
+  entityType: string;
+  label: string;
+  x?: number;
+  y?: number;
+  color?: string;
+  size?: number;
+}): GraphNode {
+  return {
+    id: params.id,
+    entityType: params.entityType as any,
+    label: params.label,
+    entityId: params.entityId,
+    x: params.x ?? 0,
+    y: params.y ?? 0,
+    externalIds: [],
+    entityData: {
+      color: params.color,
+      size: params.size,
+    },
+  };
 }
 
 /**
@@ -465,6 +493,21 @@ export class RelationshipDetectionService {
           const workRecord = entityWithId as Record<string, unknown>;
           if ("topics" in workRecord && Array.isArray(workRecord.topics)) {
             Object.assign(minimalData, { topics: workRecord.topics });
+          }
+
+          // Extract grants field for work→funder relationships (T024)
+          if ("grants" in workRecord && Array.isArray(workRecord.grants)) {
+            Object.assign(minimalData, { grants: workRecord.grants });
+          }
+
+          // Extract keywords field for work→keyword relationships (T025)
+          if ("keywords" in workRecord && Array.isArray(workRecord.keywords)) {
+            Object.assign(minimalData, { keywords: workRecord.keywords });
+          }
+
+          // Extract concepts field for work→concept relationships (legacy) (T026)
+          if ("concepts" in workRecord && Array.isArray(workRecord.concepts)) {
+            Object.assign(minimalData, { concepts: workRecord.concepts });
           }
           break;
         }
@@ -952,6 +995,58 @@ export class RelationshipDetectionService {
     }
   }
 
+  /**
+   * Analyze grant relationships for a Work entity (T023)
+   * Work → Funder relationships via work.grants[] array
+   */
+  private analyzeGrantsForWork({
+    workData,
+    existingNodes,
+    relationships,
+  }: {
+    workData: MinimalEntityData;
+    existingNodes: GraphNode[];
+    relationships: DetectedRelationship[];
+  }): void {
+    if (workData.grants && Array.isArray(workData.grants)) {
+      for (const grant of workData.grants) {
+        // Grant data structure: { funder: string, funder_display_name: string, award_id: string | null }
+        const funderId = grant.funder;
+        if (funderId && funderId !== workData.id) {
+          const funderNode = existingNodes.find(
+            (node) => node.entityId === funderId || node.id === funderId,
+          );
+          if (funderNode) {
+            relationships.push({
+              sourceNodeId: workData.id, // Work owns the grants[] data
+              targetNodeId: funderId, // Funder is referenced
+              relationType: RelationType.FUNDED_BY,
+              direction: 'outbound',
+              label: "funded by",
+              metadata: {
+                funderDisplayName: grant.funder_display_name,
+                awardId: grant.award_id,
+              },
+            });
+
+            logger.debug(
+              "relationship-detection",
+              "Created work→funder relationship",
+              {
+                workId: workData.id,
+                workTitle: workData.display_name,
+                funderId,
+                funderDisplayName: grant.funder_display_name,
+                awardId: grant.award_id,
+              },
+              "RelationshipDetectionService",
+            );
+          }
+        }
+      }
+    }
+  }
+
   private async analyzeWorkRelationships({
     workData,
     existingNodes,
@@ -984,6 +1079,11 @@ export class RelationshipDetectionService {
       relationships,
     });
     await this.analyzeCitationRelationshipsForWork({
+      workData,
+      existingNodes,
+      relationships,
+    });
+    this.analyzeGrantsForWork({
       workData,
       existingNodes,
       relationships,
