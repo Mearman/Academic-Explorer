@@ -186,7 +186,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     >
       {/* Header */}
       <AppShell.Header>
-        <Group justify="space-between" h="100%" px="md">
+        <Group justify="space-between" h="100%" px={{ base: 'xs', sm: 'md' }}>
           <Group>
             <Link to="/" style={{ textDecoration: 'none' }}>
               <Text size="xl" fw={600} c="blue" style={{ cursor: 'pointer' }}>
@@ -348,7 +348,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             <>
               <Box
                 flex={1}
-                p="sm"
+                p={{ base: 'xs', sm: 'sm' }}
                 data-testid="left-sidebar-content"
                 style={{
                   display: "flex",
@@ -423,7 +423,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   <HistorySidebar />
                 </Box>
               </Box>
-              {/* Left drag handle */}
+              {/* Left drag handle - desktop only */}
               <Box
                 role="slider"
                 aria-label="Resize left sidebar"
@@ -432,6 +432,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 aria-valuemin={200}
                 aria-valuemax={600}
                 tabIndex={0}
+                visibleFrom="md"
                 w={rem(4)}
                 h="100%"
                 bg={isDragging === "left" ? "blue" : "transparent"}
@@ -479,7 +480,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           {/* Expandable sidebar content */}
           {rightSidebarOpen && (
             <>
-              {/* Right drag handle */}
+              {/* Right drag handle - desktop only */}
               <Box
                 role="slider"
                 aria-label="Resize right sidebar"
@@ -488,6 +489,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 aria-valuemin={200}
                 aria-valuemax={600}
                 tabIndex={0}
+                visibleFrom="md"
                 w={rem(4)}
                 h="100%"
                 bg={isDragging === "right" ? "blue" : "transparent"}
@@ -519,7 +521,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               />
               <Box
                 flex={1}
-                p="sm"
+                p={{ base: 'xs', sm: 'sm' }}
                 style={{ marginLeft: rem(4) }}
                 data-testid="right-sidebar-content"
               >
