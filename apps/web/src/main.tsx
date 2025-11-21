@@ -14,6 +14,7 @@ import { StorageProviderWrapper } from "@/contexts/storage-provider-context";
 import { initializeNetworkMonitoring } from "./services/network-interceptor";
 import { initWebVitals } from "@/utils/web-vitals";
 import { cachedOpenAlex } from "@academic-explorer/client";
+import { PostHogProvider } from "@/components/PostHogProvider";
 
 // Fix URL display issues immediately when page loads
 // This runs before React mounts to fix browser address bar display
@@ -273,19 +274,21 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <QueryClientProvider client={queryClient}>
-    <MantineProvider theme={theme} defaultColorScheme="auto">
-      <ModalsProvider>
-        <Notifications />
-        <StorageProviderWrapper provider={storageProvider}>
-          <GraphProvider>
-            <LayoutProvider>
-              <AppActivityProvider>
-                <RouterProvider router={router} />
-              </AppActivityProvider>
-            </LayoutProvider>
-          </GraphProvider>
-        </StorageProviderWrapper>
-      </ModalsProvider>
-    </MantineProvider>
+    <PostHogProvider>
+      <MantineProvider theme={theme} defaultColorScheme="auto">
+        <ModalsProvider>
+          <Notifications />
+          <StorageProviderWrapper provider={storageProvider}>
+            <GraphProvider>
+              <LayoutProvider>
+                <AppActivityProvider>
+                  <RouterProvider router={router} />
+                </AppActivityProvider>
+              </LayoutProvider>
+            </GraphProvider>
+          </StorageProviderWrapper>
+        </ModalsProvider>
+      </MantineProvider>
+    </PostHogProvider>
   </QueryClientProvider>,
 );
