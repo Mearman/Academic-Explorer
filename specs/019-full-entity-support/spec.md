@@ -24,20 +24,28 @@ A researcher exploring academic keywords wants to view detailed information abou
 
 ---
 
-### User Story 2 - Access Licenses Entity Pages (Priority: P2)
+### User Story 2 - Access Licenses Entity Pages (Priority: N/A - Not Applicable)
 
-A researcher investigating open access licensing wants to view detailed information about specific license types by accessing dedicated license pages.
+**Status**: ❌ **NOT APPLICABLE** - Licenses are not first-class OpenAlex entities
 
-**Why this priority**: Licenses are referenced throughout OpenAlex data (in work locations, sources) but currently have no dedicated entity pages. Adding license pages enables researchers to understand licensing patterns, view all works under a specific license, and analyze open access trends. This is lower priority than keywords because licenses are less frequently accessed directly compared to keywords.
+**Research Finding**: After investigating the OpenAlex API documentation and analyzing static cache data during Phase 0 research (T001-T002), it was determined that **licenses are NOT first-class OpenAlex entities**. Licenses appear only as string fields within Work and Source entities (specifically in the `Location.license` field).
 
-**Independent Test**: Can be fully tested by navigating to `/licenses/{ID}` URLs (e.g., `/licenses/cc-by`) and verifying that the page displays license information with proper metadata, associated works, and relationship visualization.
+**Impact**: This user story cannot be implemented as originally specified because:
+1. OpenAlex does not provide a `/licenses` API endpoint
+2. Licenses have no unique identifiers or dedicated entity structure
+3. Licenses cannot be queried independently - they exist only as properties of works/sources
+4. No relationship data exists for licenses in the OpenAlex data model
 
-**Acceptance Scenarios**:
+**Original Intent**: A researcher investigating open access licensing wants to view detailed information about specific license types by accessing dedicated license pages.
 
-1. **Given** a valid license identifier (e.g., "cc-by", "cc-by-nc"), **When** user navigates to `/licenses/{id}`, **Then** the license detail page displays using EntityDetailLayout with license name, description, and metadata
-2. **Given** a license page is loaded, **When** user views the page, **Then** the page shows statistics about works using this license
-3. **Given** a license with associated entities, **When** the page loads, **Then** relationship sections display connections to works, sources, and other entities
-4. **Given** an invalid or non-existent license ID, **When** user attempts to access the page, **Then** the ErrorState component displays with appropriate messaging
+**Why this would have been valuable**: Licenses are referenced throughout OpenAlex data (in work locations, sources). Dedicated license pages would have enabled researchers to understand licensing patterns, view all works under a specific license, and analyze open access trends.
+
+**Alternative Implementation**: To achieve similar research goals, users can:
+1. Query works/sources filtered by license using OpenAlex API filter parameters
+2. Analyze license distribution through work/source aggregations
+3. Access license information directly from work/source entity pages
+
+**Scope Adjustment**: Entity type support reduced from originally planned 13 types to 12 types (licenses excluded).
 
 ---
 

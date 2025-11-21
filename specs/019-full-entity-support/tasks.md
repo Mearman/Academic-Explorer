@@ -44,8 +44,8 @@ Complete support for all 12 OpenAlex entity types (licenses excluded per researc
 - [x] T003 [US1] Write failing component tests in apps/web/src/routes/keywords/$keywordId.component.test.tsx
 - [x] T004 [US1] Add useEntityRelationships hook to apps/web/src/routes/keywords/$keywordId.lazy.tsx
 - [x] T005 [US1] Replace manual loading/error states with LoadingState/ErrorState in apps/web/src/routes/keywords/$keywordId.lazy.tsx
-- [ ] T006 [US1] Replace EntityDataDisplay with EntityDetailLayout wrapper in apps/web/src/routes/keywords/$keywordId.lazy.tsx
-- [ ] T007 [US1] Add RelationshipCounts, IncomingRelationships, OutgoingRelationships to apps/web/src/routes/keywords/$keywordId.lazy.tsx
+- [x] T006 [US1] Replace EntityDataDisplay with EntityDetailLayout wrapper in apps/web/src/routes/keywords/$keywordId.lazy.tsx
+- [x] T007 [US1] Add RelationshipCounts, IncomingRelationships, OutgoingRelationships to apps/web/src/routes/keywords/$keywordId.lazy.tsx
 
 **Acceptance**:
 - T003: Component tests exist and FAIL showing EntityDetailLayout not used
@@ -66,8 +66,8 @@ Complete support for all 12 OpenAlex entity types (licenses excluded per researc
 
 #### Tasks
 
-- [ ] T008 [P] [US1] Write E2E tests in apps/web/src/test/e2e/keywords-navigation.e2e.test.ts for navigation and relationship display
-- [ ] T009 [P] [US3] Write integration tests in apps/web/src/test/integration/entity-type-coverage.integration.test.ts for type/client/config validation
+- [x] T008 [P] [US1] Write E2E tests in apps/web/src/test/e2e/keywords-navigation.e2e.test.ts for navigation and relationship display
+- [x] T009 [P] [US3] Write integration tests in apps/web/src/test/integration/entity-type-coverage.integration.test.ts for type/client/config validation
 - [ ] T010 [P] Update apps/web/CLAUDE.md to document 12/12 entity type completion
 - [ ] T011 [P] Update specs/019-full-entity-support/spec.md to mark User Story 2 as "Not Applicable - licenses not OpenAlex entities"
 
