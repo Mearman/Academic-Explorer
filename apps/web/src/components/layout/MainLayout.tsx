@@ -195,13 +195,13 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             </Link>
           </Group>
 
-          <Group gap="md">
+          <Group gap="xs">
             <Box visibleFrom="sm">
               <HeaderSearchInput />
             </Box>
           </Group>
 
-          <Group gap="md">
+          <Group gap="xs">
             {/* Sidebar toggle controls */}
             <ActionIcon
               onClick={toggleLeftSidebar}
@@ -224,12 +224,12 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             </ActionIcon>
 
             {/* Desktop navigation - inline buttons */}
-            <Group gap="xs" visibleFrom="md">
+            <Group gap={rem(4)} visibleFrom="md">
               <Button
                 component={Link}
                 to="/"
                 variant="subtle"
-                size="sm"
+                size="xs"
               >
                 Home
               </Button>
@@ -237,7 +237,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 component={Link}
                 to="/about"
                 variant="subtle"
-                size="sm"
+                size="xs"
               >
                 About
               </Button>
@@ -245,7 +245,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 component={Link}
                 to="/history"
                 variant="subtle"
-                size="sm"
+                size="xs"
               >
                 History
               </Button>
@@ -253,7 +253,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 component={Link}
                 to="/bookmarks"
                 variant="subtle"
-                size="sm"
+                size="xs"
               >
                 Bookmarks
               </Button>
@@ -261,7 +261,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 component={Link}
                 to="/catalogue"
                 variant="subtle"
-                size="sm"
+                size="xs"
               >
                 Catalogue
               </Button>
